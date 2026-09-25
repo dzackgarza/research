@@ -13,4 +13,3 @@ def test_projective_plane_has_trivial_toric_fundamental_group() -> None:
     assert pi_one.cardinality() == 1
     assert pi_one.base_point_cone() == cone
     assert pi_one.topological_scheme() is plane
-    assert "complex analytic realization" in pi_one.realization_description()

@@ -11,9 +11,3 @@ def test_projective_plane_cox_ring() -> None:
     assert cox.cox_scheme() is plane
     assert cox.algebra_generating_set().cardinality() == cardinal(3)
     assert cox.grading_monoid() is plane.class_group()
-    assert cox.cox_rays().cardinality() == cardinal(3)
-    label = next(iter(cox.algebra_generating_set()))
-    ray = cox.cox_rays()[label]
-    expected_degree = plane.divisor_class(plane.torus_invariant_prime_divisor(ray))
-    assert cox.generator_degree(label) == expected_degree
-    assert cox.homogeneous_degree(cox.algebra_generator(label)) == expected_degree

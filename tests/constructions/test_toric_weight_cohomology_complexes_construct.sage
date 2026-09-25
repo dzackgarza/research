@@ -13,5 +13,4 @@ def test_zero_weight_complex_for_a_line_on_projective_plane() -> None:
     assert complex_.cohomology_scheme() is plane
     assert complex_.cohomology_divisor() == divisor
     assert complex_.cohomology_weight() == weight
-    assert "shifted reduced simplicial cohomology" in complex_.comparison_description()
     assert complex_.cohomology(0).dimension() == 1

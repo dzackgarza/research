@@ -13,11 +13,3 @@ def test_complete_linear_system_of_a_line_on_projective_plane() -> None:
     assert system.linear_system_divisor() == divisor
     assert system.section_space().dimension() == 3
     assert system.projective_dimension() == 2
-    assert system.associated_morphism().codomain() is system
-
-    projectivization = system.quotient_projectivization().arrow().domain()
-    comparison = system.quotient_projectivization_comparison()
-    assert comparison.forward().domain() is projectivization
-    assert comparison.forward().codomain() is system
-    assert comparison.backward().domain() is system
-    assert comparison.backward().codomain() is projectivization

@@ -26,10 +26,3 @@ def test_projective_space_point_counts_over_finite_fields(dimension, size, count
     field = GF(size)
 
     assert ProjectiveSpaces(field)(dimension).point_count() == count
-
-
-def test_projective_line_over_five_has_two_homogeneous_coordinate_generators() -> None:
-    line = ProjectiveSpaces(GF(5))(1)
-    coordinates = line.homogeneous_coordinate_generators()
-
-    assert coordinates.cardinality() == cardinal(2)

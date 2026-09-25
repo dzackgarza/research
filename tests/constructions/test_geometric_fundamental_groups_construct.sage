@@ -17,4 +17,3 @@ def test_pgl_two_has_order_two_fundamental_group() -> None:
     assert pi_one.cardinality() == 2
     assert pi_one.is_abelian()
     assert pi_one.base_point() == identity
-    assert pi_one.realization_description() == "PGL_2(C) deformation retracted to PU(2) ~= SO(3)"

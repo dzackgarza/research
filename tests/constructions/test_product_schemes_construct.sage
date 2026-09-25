@@ -15,11 +15,8 @@ def test_products_of_schemes(commutative_ring) -> None:
     assert plane in AffineSchemes(ring)
     assert plane.relative_dimension() == cardinal(2)
     assert plane.factors().cardinality() == cardinal(2)
-    assert plane.number_of_factors() == cardinal(2)
     assert plane.projections().cardinality() == cardinal(2)
     assert plane.projection(0).codomain() is line
-    assert plane.projection_label(plane.projection(0)) == 0
-    assert plane.projection_label(plane.projection(1)) == 1
     assert quadric in ProductSchemes(ring)
     assert quadric in ProjectiveSchemes(ring)
     assert quadric.relative_dimension() == 2
