@@ -138,7 +138,7 @@ class RingMorphism(Morphism):
             return other
         if other.is_identity():
             return self
-        return other.domain().Mor(self.codomain()).elementwise(
+        return OwnedRings().Mor(other.domain(), self.codomain()).elementwise(
             lambda element: self(other(element)),
         )
 
