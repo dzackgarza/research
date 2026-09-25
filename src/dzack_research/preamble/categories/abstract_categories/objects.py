@@ -93,16 +93,6 @@ class _SelectedFraming:
         return selected
 
 
-def _selected_framing_registry(target):
-    r"""Return the framing registry, including during pre-Parent construction."""
-    name = "_preamble_selected_framings"
-    selected_by_owner = getattr(target, name, None)
-    if selected_by_owner is None:
-        selected_by_owner = {}
-        setattr(target, name, selected_by_owner)
-    return selected_by_owner
-
-
 def _fix_selected_framing(
     target,
     owner,
@@ -112,7 +102,7 @@ def _fix_selected_framing(
     framing_morphism_factory,
 ):
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
-    selected_by_owner = _selected_framing_registry(target)
+    selected_by_owner = target._selected_framing_registry()
     if owner in selected_by_owner:
         raise ValueError(
             f"{target} already has a chosen generating surjection in {owner}; it cannot be given a second one"
@@ -263,7 +253,7 @@ class Objects(OwnedCategory):
 
         @cached_method
         def _selected_framing_registry(self):
-            return _selected_framing_registry(self)
+            return {}
 
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
