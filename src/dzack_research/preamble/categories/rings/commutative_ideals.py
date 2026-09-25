@@ -48,6 +48,23 @@ def _engine_commutative_ideal(ideal):
     return ideal._engine_ideal()
 
 
+def _maximal_order_number_field_ideal(ideal):
+    r"""Return the number-field ideal representing an ideal of a maximal order.
+
+    Sage's generic ideal predicates do not dispatch an ideal of a number-field
+    order to its number-field ideal implementation.  For a maximal order the
+    same generators, viewed in the number field, generate exactly the
+    corresponding integral ideal of the ring of integers.  Nonmaximal orders
+    are deliberately excluded: extension to the maximal order need not reflect
+    primality or maximality there.
+    """
+    engine = _engine_ring(ideal.ring())
+    if not isinstance(engine, SageNumberFieldOrder) or not engine.is_maximal():
+        return None
+    backend = ideal._engine_ideal()
+    return engine.number_field().ideal(*tuple(backend.gens()))
+
+
 @cached_function
 def _localized_commutative_ideal(source_ideal, localization_ring):
     r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal.
@@ -222,6 +239,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _localized_commutative_ideal(self, localization_ring)
 
         def is_prime(self):
+            number_field_ideal = _maximal_order_number_field_ideal(self)
+            if number_field_ideal is not None:
+                return bool(number_field_ideal.is_prime())
             backend = self._engine_ideal()
             match _realized_as_quotient(self.ring()):
                 case True:
@@ -230,6 +250,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     return bool(backend.is_prime())
 
         def is_maximal(self):
+            number_field_ideal = _maximal_order_number_field_ideal(self)
+            if number_field_ideal is not None:
+                return bool(number_field_ideal.is_maximal())
             backend = self._engine_ideal()
             match _realized_as_quotient(self.ring()):
                 case True:
