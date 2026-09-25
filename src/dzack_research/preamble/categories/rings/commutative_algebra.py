@@ -1942,6 +1942,21 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         """
         return self._exact_source_expression
 
+    def _cache_key(self):
+        r"""Return a conservative key for caches that accept completion elements.
+
+        Exact source expressions determine exact completion elements, so they
+        may key by that retained datum.  Without such an expression, finite
+        completion data need not decide equality; identity is then the only
+        sound cache key and deliberately does not merge two representatives.
+        """
+        source_expression = self.exact_source_expression()
+        match source_expression:
+            case None:
+                return (self.parent(), id(self))
+            case _:
+                return (self.parent(), source_expression)
+
     def _with_source_expression(self, backend_value, source_expression):
         return self.parent()._completion_element(
             backend_value,
@@ -1969,6 +1984,25 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
             self._backend() * other._backend(),
             source_expression,
         )
+
+    def __mul__(self, other):
+        r"""Multiply while retaining exact source data for completion scalars."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        other_parent = element_parent(other)
+        if other_parent is not self.parent() and other_parent in Modules(self.parent()):
+            return other_parent.scalar_multiple(self, other)
+        other = self._operator_operand(other)
+        if other is NotImplemented:
+            return NotImplemented
+        return self._mul_(other)
+
+    def __rmul__(self, other):
+        r"""Multiply a coerced left scalar without dropping exact source data."""
+        other = self._operator_operand(other)
+        if other is NotImplemented:
+            return NotImplemented
+        return other._mul_(self)
 
     def _neg_(self):
         source_expression = self.exact_source_expression()
@@ -2240,6 +2274,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             value_parent is source
             or value_parent is source.base_ring()
             or value_parent is None
+            or not isinstance(value, SageObject)
         ):
             return completion_map(source(value))
         return super()._element_constructor_(value)

@@ -60,6 +60,14 @@ def test_finite_p_adic_agreement_does_not_become_exact_equality_and_can_refine()
         approximate_inverse.refine_precision(8)
 
 
+def test_finite_p_adic_products_retain_exact_source_expressions() -> None:
+    coarse = Zp(5, 4, type="fixed-mod")
+    product = coarse(-1) * coarse(1)
+
+    assert product.exact_source_expression() == ZZ(-1)
+    assert product == -coarse.one()
+
+
 def test_presented_completion_preserves_genuine_nilpotence_not_truncation_nilpotence() -> None:
     fat_plane = (QQ.free_module(("x", "y")).symmetric_algebra()).quotient_by_relations(("x^2",),
     )
