@@ -2466,9 +2466,32 @@ class TensorProductModuleMorphism(ModuleMorphism):
     def __call__(self, *arguments):
         if len(arguments) == 1:
             return self._call_(arguments[0])
+        if len(arguments) == 2 and self._generator_image is not None:
+            return self._evaluate_by_bilinearity(*arguments)
         if len(arguments) == 2:
             return self._call_(self.domain().pure_tensor(*arguments))
         raise TypeError(f"the bilinear map on {self.domain()} takes one element of the tensor product or two elements, one from each factor, but was given {len(arguments)} arguments")
+
+    def _evaluate_by_bilinearity(self, left_element, right_element):
+        r"""``b(x, y) = sum_{l, r} x_l y_r b(e_l tensor e_r)`` for a map given on the tensor framing.
+
+        The framing of the tensor product is the set of pure tensors
+        ``e_l tensor e_r``, so the linear extension of the generator images
+        evaluated at ``x tensor y`` is this double sum.  Reading it from the
+        images directly leaves the pure tensor, an element of the tensor
+        product, unbuilt.
+        """
+        codomain = self.codomain()
+        left_coefficients = self.left_module().framing_coefficients(left_element)
+        right_coefficients = self.right_module().framing_coefficients(right_element)
+        value = codomain.zero()
+        for left_label, left_coefficient in left_coefficients.items():
+            for right_label, right_coefficient in right_coefficients.items():
+                value = value + codomain.scalar_multiple(
+                    left_coefficient * right_coefficient,
+                    self._gram_entry(left_label, right_label),
+                )
+        return value
 
     def coordinate_values(self):
 

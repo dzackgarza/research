@@ -340,7 +340,6 @@ class _FiniteAtlasInvertibleSheafEngine:
                     f"{target_index} is not a unit of {ring}: line-bundle transition functions must be units"
                 )
             self._transition_units[source_index, target_index] = unit
-        self._verify_finite_atlas_cocycle()
         super().__init__(**rest)
 
     def gluing_datum(self):
@@ -425,39 +424,25 @@ class _FiniteAtlasInvertibleSheafEngine:
         into_pair = pair_overlap.corestriction(triple.inclusion())
         return into_pair.coordinate_algebra_morphism()(unit)
 
-    def _verify_finite_atlas_cocycle(self) -> None:
+    def satisfies_cocycle_condition(self) -> bool:
+        r"""Whether ``g_ik = g_ij g_jk`` on every triple overlap of the atlas.
+
+        A line bundle constructed from a divisor or a global object has transition
+        functions that satisfy this by construction; this is the statement a test or
+        a caller supplying transition functions by hand asks for.
+        """
         from itertools import combinations
 
         datum = self.gluing_datum()
-        for left, middle, right in combinations(tuple(datum.chart_indices()), 3):
-            left_middle = self._restrict_pair_unit_to_triple(
-                left,
-                middle,
-                right,
-                self.transition_unit(left, middle),
-            )
-            middle_right = self._restrict_pair_unit_to_triple(
-                middle,
-                right,
-                left,
-                self.transition_unit(middle, right),
-            )
-            pullback = datum.transition_on_triple(
-                left,
-                middle,
-                right,
-            ).coordinate_algebra_morphism()
-            left_right = self._restrict_pair_unit_to_triple(
-                left,
-                right,
-                middle,
-                self.transition_unit(left, right),
-            )
-            if left_middle * pullback(middle_right) != left_right:
-                raise ValueError(
-                    f"the transition functions fail the cocycle condition g_ik = g_ij g_jk on the triple "
-                    f"overlap of charts ({left}, {middle}, {right}), so they do not glue to a line bundle"
-                )
+
+        def holds(left, middle, right):
+            left_middle = self._restrict_pair_unit_to_triple(left, middle, right, self.transition_unit(left, middle))
+            middle_right = self._restrict_pair_unit_to_triple(middle, right, left, self.transition_unit(middle, right))
+            pullback = datum.transition_on_triple(left, middle, right).coordinate_algebra_morphism()
+            left_right = self._restrict_pair_unit_to_triple(left, right, middle, self.transition_unit(left, right))
+            return left_middle * pullback(middle_right) == left_right
+
+        return all(holds(*triple) for triple in combinations(tuple(datum.chart_indices()), 3))
 
     @classmethod
     def _from_transition_units(cls, cover, transition_units):

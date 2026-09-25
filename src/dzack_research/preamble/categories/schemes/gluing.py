@@ -6,7 +6,6 @@ from itertools import combinations, permutations
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
-from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -20,7 +19,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     Coverage,
-    CoveringFamilies,
     CoveringFamilyMorCategoryConstruction,
     CoveringFamilyMor,
     CoveringFamilyMorphism,
@@ -1028,7 +1026,6 @@ class _FiniteSchemeGluingDatum(SageObject):
         self._triple_transition_maps = []
 
         self._verify_pairwise_transitions()
-        self._verify_triple_domains_and_cocycle()
         self._scheme = _glued_scheme(self, placements, {} if level_data is None else level_data)
 
     def base_ring(self):
@@ -1223,51 +1220,26 @@ class _FiniteSchemeGluingDatum(SageObject):
         self._triple_transition_maps.append((key, restricted))
         return restricted
 
-    def _verify_triple_domains_and_cocycle(self) -> None:
-        labels = tuple(self.chart_indices())
-        for source_index, target_index, third_index in permutations(labels, 3):
-            forward = self.transition_on_triple(
-                source_index,
-                target_index,
-                third_index,
-            )
-            inverse = self.transition_on_triple(
-                target_index,
-                source_index,
-                third_index,
-            )
-            source_triple = self.triple_overlap(
-                source_index,
-                target_index,
-                third_index,
-            )
-            if inverse * forward != source_triple.categorical_identity_morphism():
-                raise ValueError(
-                    f"the chart changes between charts {source_index} and {target_index} of {self} are not "
-                    f"mutually inverse on the triple overlap with chart {third_index}"
-                )
+    def satisfies_cocycle_condition(self) -> bool:
+        r"""Whether the chart changes are mutually inverse on triple overlaps and satisfy the cocycle condition.
 
-        for left_index, middle_index, right_index in permutations(labels, 3):
-            left_middle = self.transition_on_triple(
-                left_index,
-                middle_index,
-                right_index,
-            )
-            middle_right = self.transition_on_triple(
-                middle_index,
-                right_index,
-                left_index,
-            )
-            left_right = self.transition_on_triple(
-                left_index,
-                right_index,
-                middle_index,
-            )
-            if middle_right * left_middle != left_right:
-                raise ValueError(
-                    f"the chart changes of {self} fail the cocycle condition on the triple overlap of charts "
-                    f"{left_index}, {middle_index} and {right_index}"
-                )
+        On every triple overlap ``U_ijk``, ``phi_ji o phi_ij`` is the identity and
+        ``phi_jk o phi_ij = phi_ik``.  A construction that produces its chart changes
+        from a single global object (the charts of a fan, of a projective space)
+        satisfies this by construction and never asks it; this is the statement a
+        test or a caller with hand-supplied transitions asks for.
+        """
+        labels = tuple(self.chart_indices())
+        mutually_inverse = all(
+            self.transition_on_triple(target, source, third) * self.transition_on_triple(source, target, third)
+            == self.triple_overlap(source, target, third).categorical_identity_morphism()
+            for source, target, third in permutations(labels, 3)
+        )
+        return mutually_inverse and all(
+            self.transition_on_triple(middle, right, left) * self.transition_on_triple(left, middle, right)
+            == self.transition_on_triple(left, right, middle)
+            for left, middle, right in permutations(labels, 3)
+        )
 
     def scheme(self):
         return self._scheme

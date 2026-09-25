@@ -12,6 +12,7 @@ from contextlib import contextmanager
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
 from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
@@ -26,8 +27,13 @@ _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
 _IMPLEMENTATION_BASES = (Parent, Element, Morphism)
 
 
+@cached_function
 def _owned_mixins(category: Category, attr: str) -> tuple[type, ...]:
-    """Return owned nested method classes in category order."""
+    """Return owned nested method classes in category order.
+
+    A function of the category alone, which is a unique representation, so it
+    is computed once per category rather than once per object built in it.
+    """
     providers: list[type] = []
     for cat in category.all_super_categories(proper=False):
         for category_type in type(cat).__mro__:

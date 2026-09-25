@@ -141,7 +141,16 @@ class _OwnedOrderMetaclass(type):
         generated class immediately.  This is the order Sage's own
         ``parent_class`` has, where each category is a single class.
         ``type.mro`` is Python's documented hook for a metaclass to supply it.
+
+        Python stores the result as ``cls.__mro__`` when the class is created,
+        and ``type.__mro__`` answers ``None`` only before then.  Sage's
+        ``Parent.__init__`` calls ``self.__class__.mro()`` on every parent it
+        initializes (``sage/structure/parent.pyx``), so a created class answers
+        with its stored linearization instead of merging it again.
         """
+        stored = type.__dict__["__mro__"].__get__(cls)
+        if stored is not None:
+            return list(stored)
         own = _owned_providers(cls)
         others = [base for base in cls.__bases__ if base not in own]
         glued = {
@@ -1143,6 +1152,7 @@ class ConstructionContract:
             )
 
 
+@cached_function
 def _construction_contract_from_type(
     owner,
     implementation_type: type,
