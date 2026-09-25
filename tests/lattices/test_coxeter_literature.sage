@@ -219,6 +219,7 @@ def test_the_rank_two_schlaeflian_of_the_pentagon_is_five_minus_root_five_over_t
     r"""\(4\sin^2(\pi/5) = (5-\sqrt5)/2\), the smaller root of \(s^2-5s+5\)."""
     s = bracket(5).schlaflian()
 
+    assert s.parent() is AA
     assert s**2 - 5 * s + 5 == 0
     assert 1 < s < 2
 

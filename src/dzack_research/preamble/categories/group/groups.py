@@ -1364,8 +1364,12 @@ def _Euclidean(degree, ring):
 def _Heisenberg(degree=1, ring=0):
     from sage.groups.matrix_gps.catalog import Heisenberg
 
-    scalar_ring = ring if ring == 0 else _engine_ring(ring)
-    return _own_group(Heisenberg(_group_constructor_argument(degree), scalar_ring))
+    return _own_group(
+        Heisenberg(
+            _group_constructor_argument(degree),
+            _group_constructor_argument(ring),
+        )
+    )
 
 
 def _SemimonomialTransformation(ring, degree):

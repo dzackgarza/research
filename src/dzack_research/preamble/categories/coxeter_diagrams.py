@@ -631,7 +631,7 @@ class CoxeterDiagrams(OwnedCategory):
             from elliptic to parabolic.
             """
             normalized = _engine_component_matrix(self.schlafli_tensor())
-            return (2 * normalized).determinant()
+            return _cross_engine_ring_value((2 * normalized).determinant())
 
         def vinberg_invariant_matrix(self):
             r"""Return the Vinberg invariant matrix of this diagram.

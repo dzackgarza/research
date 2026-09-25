@@ -35,6 +35,11 @@ def test_a_gram_matrix_builds_a_lattice_over_every_ring(lattice_ring) -> None:
     assert lattice in FreeModules(ring)
     assert lattice in Modules(ring)
     assert lattice.base_ring() is ring
+    assert all(
+        lattice.gram_tensor()[row, column].parent() is ring
+        for row in range(2)
+        for column in range(2)
+    )
     assert lattice.module_rank() == 2
     assert lattice.b(e0, e1) == ring.one()
     assert lattice.b(e0, e0) == 2 * ring.one()

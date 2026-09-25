@@ -166,8 +166,12 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
         def defining_degrees(self):
             r"""The degrees ``d_1, ..., d_r`` of the selected regular sequence."""
+            integers = _own_ring(SageZZ)
             return finite_family(
-                tuple(int(equation.degree()) for equation in self.defining_equations()),
+                tuple(
+                    integers(int(equation.degree()))
+                    for equation in self.defining_equations()
+                ),
                 name="Complete-intersection defining degrees",
             )
 
@@ -220,8 +224,15 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             isomorphism are returned by :meth:`canonical_line_bundle` and
             :meth:`adjunction_isomorphism`.
             """
-            ambient_dimension = int(self.complete_intersection_ambient().relative_dimension())
-            return sum(self.defining_degrees()) - ambient_dimension - 1
+            integers = _own_ring(SageZZ)
+            ambient_dimension = integers(
+                int(self.complete_intersection_ambient().relative_dimension())
+            )
+            return (
+                sum(self.defining_degrees(), integers.zero())
+                - ambient_dimension
+                - integers.one()
+            )
 
         def is_gorenstein(self) -> bool:
             r"""Return ``True``: a quotient of a regular ring by a regular sequence is Gorenstein."""
@@ -255,9 +266,9 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
         def projective_degree(self):
             r"""Return the complete-intersection degree ``prod d_i``."""
-            degree = 1
+            degree = _own_ring(SageZZ).one()
             for value in self.defining_degrees():
-                degree *= int(value)
+                degree *= value
             return degree
 
         def anticanonical_twist_degree(self):

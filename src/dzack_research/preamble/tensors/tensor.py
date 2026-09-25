@@ -50,7 +50,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    SageRings,
     _engine_element,
+    _engine_numeral,
     _engine_ring,
     _own_ring,
 )
@@ -62,6 +64,7 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.static_types import ProductOfNaturalNumbers
 
 _Rings = OwnedRings()
+_SageRings = SageRings()
 
 
 def index_rank_family(ranks):
@@ -1589,6 +1592,18 @@ def _coordinate_component_repr(tensor_value) -> str:
     return repr(tensor_value._component_array())
 
 
+def _owned_coordinate_component(ring, value):
+    r"""Admit one tensor component, crossing raw Sage ring data only at ingress."""
+    parent = element_parent(value)
+    match parent:
+        case Parent() if parent in _Rings:
+            return ring(value)
+        case Parent() if parent in _SageRings:
+            return _owned_engine_element(ring, _engine_numeral(ring, value))
+        case _:
+            return ring(value)
+
+
 def _normalized_rank(rank):
     r"""The rank of one tensor slot: an ``int``, or ``Infinity`` for an infinite slot."""
     return Infinity if rank == Infinity else int(cardinal(rank).finite_value())
@@ -1710,7 +1725,10 @@ class _CoordinateTensorModule:
                 f"components; got {len(entries)}"
             )
         ring = self.base_ring()
-        return self.element_class(self, tuple(ring(entry) for entry in entries))
+        return self.element_class(
+            self,
+            tuple(_owned_coordinate_component(ring, entry) for entry in entries),
+        )
 
     def zero(self):
         assert Infinity not in self._index_ranks(), (

@@ -31,9 +31,11 @@ def test_the_quadric_cubic_complete_intersection_curve_in_p3_has_canonical_bundl
     curve = _quadric_cubic_curve()
 
     assert tuple(curve.defining_degrees()) == (2, 3)
+    assert all(degree.parent() is ZZ for degree in curve.defining_degrees())
     assert curve.complete_intersection_codimension() == 2
     assert curve.dimension() == 1
     assert curve.adjunction_twist_degree() == 1
+    assert curve.adjunction_twist_degree().parent() is ZZ
     assert curve.is_gorenstein()
 
 
@@ -66,10 +68,12 @@ def test_the_fermat_cubic_surface_is_a_del_pezzo_surface_of_degree_three() -> No
     assert cubic.dimension() == 2
     assert cubic.is_smooth()
     assert cubic.projective_degree() == 3
+    assert cubic.projective_degree().parent() is ZZ
     assert anticanonical.degree() == 1
     assert anticanonical.is_ample()
     assert cubic.is_del_pezzo()
     assert cubic.del_pezzo_degree() == 3
+    assert cubic.del_pezzo_degree().parent() is ZZ
 
 
 def test_the_fermat_quartic_surface_has_trivial_canonical_class_and_is_not_del_pezzo() -> None:
