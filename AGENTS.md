@@ -106,6 +106,12 @@ and each clone's local `main` is only a copy.  So:
   other host has committed; pull and merge before committing more.
 - Never trim, fork or keep a host-local `TODO.md`.  A node closed on one
   host is closed by the commit that reaches `origin/main`.
+- A `--no-verify` sync skips the gate, so it checks the one thing the gate
+  would have caught first: `from dzack_research.preamble.all import *`
+  succeeds in a fresh process.  A tree that does not import is not synced.
+  On 2026-09-25 `rack` committed 67 times on top of `83c2b4ec2`, a
+  checkpoint after which the session no longer imported, so none of those
+  commits had run; the reconciling merge found and repaired the breaks.
 
 On 2026-09-25 `rack`'s session committed to its local `main` for a day
 without pushing.  Its copy of `TODO.md` had shrunk to six nodes, with
