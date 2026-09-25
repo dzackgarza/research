@@ -76,7 +76,7 @@ def test_homs_taken_in_a_common_supercategory() -> None:
 def test_hom_modules_are_modules_and_hom_sets_are_sets() -> None:
     plane = ZZ.free_module(2)
     line = ZZ.free_module(1)
-    homs = plane.Hom(line)
+    homs = plane.Mor(line)
     assert homs in Modules(ZZ)
     assert homs.module_rank() == 2
     assert plane.Mor(line) in Cat()

@@ -4291,7 +4291,7 @@ when the real mathematics is a genus value object, a group morphism, or an ident
 L1.genus() == L2.genus()
 rho = L.O().action_on(L.discriminant_module())
 rho(x)
-L.Hom(L).identity()
+L.Mor(L).identity()
 ```
 
 Expose the value/morphism/universal object because it can then be compared, composed, restricted, factored, have kernel/image taken, etc.  A wrapper that only packages one obvious use hides that structure and adds another name to memorize.
@@ -4759,7 +4759,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Creating a distinct `MatrixSpace(R,m,n)` parent plus `as_module_morphism()` even though the canonical framings identify it with `Hom_R(F_R([n]),F_R([m]))`; creating a separate endomorphism-matrix ring instead of using `End_R(F_R([n]))`.
 
-- **Correct Example**: `[n]` is the canonical finite ordered set, `F_R([n])` is the corresponding canonically framed free module, and `MatrixSpace(R,m,n)` returns `F_R([n]).Hom(F_R([m]))` with the matrix-Hom refinement installed.  A matrix element *is* that module morphism; `matrix()` is its coordinate array/object only when such a coordinate view is requested, not another mathematical object.
+- **Correct Example**: `[n]` is the canonical finite ordered set, `F_R([n])` is the corresponding canonically framed free module, and `MatrixSpace(R,m,n)` returns `F_R([n]).Mor(F_R([m]))` with the matrix-Mor refinement installed.  A matrix element *is* that module morphism; `matrix()` is its coordinate array/object only when such a coordinate view is requested, not another mathematical object.
 
 #### `ARC-11`: Export Aggregators Are Not Architectural Dependencies
 
@@ -4987,7 +4987,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Public `own_ring(SageZZ)`, `own_group(SagePermutationGroup(...))`, `refine_free_module(SageFreeModule(...))`, `FinitelyPresentedModule(sage_submodule)`, or a morphism constructor that accepts a Sage `Map` as a supported public datum.
 
-- **Correct Example**: Public `PolynomialRing(ZZ, "x")`, `FreeModule(ZZ, 3)`, `Groups.S(4)`, `presentation_morphism.cokernel()`, and `A.Hom(B)(...)` consume preamble objects and mathematical data.  Any Sage/GAP representation needed to execute them is selected and constructed privately after the public call has crossed the API boundary.
+- **Correct Example**: Public `PolynomialRing(ZZ, "x")`, `FreeModule(ZZ, 3)`, `Groups.S(4)`, `presentation_morphism.cokernel()`, and `A.Mor(B)(...)` consume preamble objects and mathematical data.  Any Sage/GAP representation needed to execute them is selected and constructed privately after the public call has crossed the API boundary.
 
 #### `API-02`: Coordinates Are Framing Data; Coordinate Objects Keep Their Mathematical Type
 
@@ -5130,7 +5130,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `M.with_action(G, images)` constructing `rho` inside the module; recovering "the acting group" from the matrices appearing in a representation.
 
-- **Correct Example**: Construct `G`, construct `Aut(M)`, construct `rho` in `G.Hom(Aut(M))`, then pass `rho` to the structured-module construction.  If the intended group literally is a subgroup of `Aut(M)`, construct that subgroup and use its inclusion.
+- **Correct Example**: Construct `G`, construct `Aut(M)`, construct `rho` in `G.Mor(Aut(M))`, then pass `rho` to the structured-module construction.  If the intended group literally is a subgroup of `Aut(M)`, construct that subgroup and use its inclusion.
 
 #### `CON-03`: Transport Existing Structure Functorially
 
@@ -5166,7 +5166,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: A Hom accepting any object with matching endpoints and a matrix; `with_action(G, images)` constructing the group morphism internally; an element constructor accepting a bare vector whose parent/framing is unstated.
 
-- **Correct Example**: `G.Hom(Aut(M))(generator_images)` constructs and validates the action morphism, and the structured module consumes that `rho`; a free/presented module consumes its framing/presentation morphism; a matrix convenience, when mathematically unambiguous for a canonically framed Hom, immediately constructs that Hom element and returns no parallel representation.
+- **Correct Example**: `G.Mor(Aut(M))(generator_images)` constructs and validates the action morphism, and the structured module consumes that `rho`; a free/presented module consumes its framing/presentation morphism; a matrix convenience, when mathematically unambiguous for a canonically framed Mor, immediately constructs that Mor element and returns no parallel representation.
 
 #### `CON-07`: Chosen Structure Is Data; Derived Subcategory Membership Is Output
 
@@ -5262,7 +5262,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: An operation that yields several values yields **one element of the product of a family over an index set**.  Before writing a tuple, ask which product it is a point of *and over which index set*: a pair of naturals is the constant family \(\mathbb N\) over a chosen two-element set; a tensor's shape is the constant family \(\mathbb N\) over that tensor's own index set; the components of a commutative square are the family of its two homsets.  A bare Python tuple never appears in a public signature, a return, or an annotation.
 
-  Ask the objects, never a global constructor.  `STY-02` governs the call: `C = X.ambient_category()` and then the category's own product, the way `ARC-07` has a homset asked of its endpoints as `A.Hom(B)`.  A free `Product(A, B)`, `CartesianProductOfSets(...)` or `CartesianProductOfFamily(...)` is the global-dispatcher shape `STY-02` names, and the binary forms additionally pick `Sets.Δ[n-1]` silently, which is the arity-for-a-set substitution `CON-14` forbids.
+  Ask the objects, never a global constructor.  `STY-02` governs the call: `C = X.ambient_category()` and then the category's own product, the way `ARC-07` has a morphism object asked of its endpoints as `A.Mor(B)`.  A free `Product(A, B)`, `CartesianProductOfSets(...)` or `CartesianProductOfFamily(...)` is the global-dispatcher shape `STY-02` names, and the binary forms additionally pick `Sets.Δ[n-1]` silently, which is the arity-for-a-set substitution `CON-14` forbids.
 
   **Known gap.** The owned categorical hook is binary -- `_categorical_product(left, right)`, whose body calls the binary sugar -- so a category cannot currently be asked for a product over an index set, and this rule has no compliant spelling for the general case.  That is the finding, not a licence to use the free constructor: the hook wants a family form before the conversions this policy implies can be written.
 

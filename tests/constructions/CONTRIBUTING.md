@@ -61,7 +61,7 @@ test, and that failure is the finding: the universe lacks a word.  The
 vocabulary is never a filter on which expectations get written.
 
 **Use the notebook spelling.**  Integer literals are integers.  `QQ[G]` is a
-group algebra, `M / N` is a quotient, `M.Hom(N)` is a Hom module,
+group algebra, `M / N` is a quotient, `M.Mor(N)` is a Mor module,
 `K.class_group()` is the class group.  Do not wrap, cast, or translate an
 input into a form the implementation happens to want.  A test that has to
 say `ring(ZZ(2))` to be accepted has recorded a defect in the ring, not in
@@ -81,7 +81,7 @@ One rule per kind:
   `FiniteSets().free_underlying_adjunction(G)`.
 - A *construction on objects* is a method of the category that owns them,
   or of the object when one argument is distinguished: `M.tensor_product(N)`,
-  `M.Hom(N)`, `M.ext(N, n)`, `C.cohomology(n)`, `M.free_resolution()`.
+  `M.Mor(N)`, `M.ext(N, n)`, `C.cohomology(n)`, `M.free_resolution()`.
 - An *object constructor* is the category applied to the object's data:
   `FiniteGSets(G)(points, action)`, `Modules(ZZ[G])(M, action)`,
   `Subgroups(G)(predicate, description)`, `CochainComplexes(R)(pieces, differentials)`.

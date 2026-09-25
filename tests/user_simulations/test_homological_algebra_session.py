@@ -63,7 +63,7 @@ def test_a_homological_algebra_session(name) -> None:
     rendered(ext)
     assert ext.cardinality() == torsion.cardinality()
     assert ext.annihilator() == ring.ideal(ring(n))
-    assert torsion.Hom(ring.regular_module()).cardinality() == 1
+    assert torsion.Mor(ring.regular_module()).cardinality() == 1
 
     # Tor_1(R/n, R/m) = R/gcd(n, m), by tensoring the resolution with R/m.
     other = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(m),))
