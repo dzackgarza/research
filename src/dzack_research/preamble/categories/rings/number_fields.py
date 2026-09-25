@@ -269,23 +269,34 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
             positions = finite_ordered_set(range(len(engine_embeddings)))
 
-            primitive = self.primitive_element()
+            if source_engine is SageQQ:
+                def embedding_position(embedding):
+                    if (
+                        not isinstance(embedding, Morphism)
+                        or embedding.domain() is not self
+                        or embedding.codomain() is not target
+                        or positions.cardinality() != 1
+                    ):
+                        raise ValueError(f"{embedding} is not an embedding {self} -> {target}")
+                    return positions[0]
+            else:
+                primitive = self.primitive_element()
 
-            def embedding_position(embedding):
-                if (
-                    not isinstance(embedding, Morphism)
-                    or embedding.domain() is not self
-                    or embedding.codomain() is not target
-                ):
-                    raise ValueError(f"{embedding} is not an embedding {self} -> {target}")
-                primitive_image = embedding(primitive)
-                for position in positions:
-                    if embedding_at(position)(primitive) == primitive_image:
-                        return position
-                raise ValueError(
-                    f"{embedding} is not one of the embeddings {self} -> {target}: it sends the primitive "
-                    f"element {primitive} to {primitive_image}, which matches no embedding"
-                )
+                def embedding_position(embedding):
+                    if (
+                        not isinstance(embedding, Morphism)
+                        or embedding.domain() is not self
+                        or embedding.codomain() is not target
+                    ):
+                        raise ValueError(f"{embedding} is not an embedding {self} -> {target}")
+                    primitive_image = embedding(primitive)
+                    for position in positions:
+                        if embedding_at(position)(primitive) == primitive_image:
+                            return position
+                    raise ValueError(
+                        f"{embedding} is not one of the embeddings {self} -> {target}: it sends the primitive "
+                        f"element {primitive} to {primitive_image}, which matches no embedding"
+                    )
 
             return FiniteOrderedSets().from_indexed(
                 positions,

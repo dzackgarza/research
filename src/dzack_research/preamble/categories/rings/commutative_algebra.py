@@ -953,7 +953,9 @@ class QuotientRings(OwnedCategory):
             if source_engine is SageZZ:
                 generators = tuple(defining.ideal_generators())
                 generator = abs(
-                    SageZZ(generators[0]) if generators else SageZZ.zero()
+                    SageZZ(_engine_element(source, generators[0]))
+                    if generators
+                    else SageZZ.zero()
                 )
                 return _owned_engine_element(SageZZ, generator)
             coefficient_ring = _engine_coefficient_ring(source_engine)

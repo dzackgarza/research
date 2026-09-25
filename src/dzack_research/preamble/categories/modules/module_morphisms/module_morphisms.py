@@ -1535,20 +1535,20 @@ class ModuleMorphism(Morphism):
         )(forward, inverse)
 
     def _is_the_identity(self) -> bool:
-        r"""Return whether this morphism is its Mor object's identity."""
+        r"""Return whether this is the selected scalar realization of the identity."""
         if self.domain() is not self.codomain():
             return False
-        module = self.domain()
-        return self is module.module_category().Mor(module, module).identity()
+        from dzack_research.preamble.categories.group.additive_mors import (
+            _scalar_identity_coefficient,
+        )
+
+        scalar = _scalar_identity_coefficient(self)
+        return scalar is not None and scalar == self.parent().base_ring().one()
 
     def __mul__(self, other):
         r"""Return ``self . other`` for a composable arrow, or ``other * self`` for a scalar."""
         match other:
-            case _ if other in self.parent().base_ring():
-                return self.parent().scalar_multiple(other, self)
-            case _ if not _precomposable(self, other):
-                return NotImplemented
-            case _:
+            case _ if _precomposable(self, other):
                 if other.parent() is self.parent() and self.domain() is self.codomain():
                     return self.parent()._compose_endomorphisms(self, other)
                 source = other.domain()
@@ -1558,7 +1558,7 @@ class ModuleMorphism(Morphism):
                 # morphism that would then have to be compared with it.
                 if self._is_the_identity():
                     return other
-                if other is source.module_category().Mor(source, source).identity():
+                if other._is_the_identity():
                     return self
                 mor = source.module_category().Mor(source, target)
                 # Composition of certified linear maps is linear.  Keep that
@@ -1566,6 +1566,10 @@ class ModuleMorphism(Morphism):
                 # composite from all selected generator images and rechecking
                 # the source relations.
                 return _CompositeModuleMorphism(mor, self, other)
+            case _ if other in self.parent().base_ring():
+                return self.parent().scalar_multiple(other, self)
+            case _:
+                return NotImplemented
 
     @cached_method
     def cokernel(self):
@@ -2178,20 +2182,6 @@ def _initialize_module_mor_parent(
         base=ring.ring_center(),
     )
 
-    if domain is codomain:
-        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
-
-        # Construct composition in this exact parent; asking the Mor factory
-        # for these same endpoints while it is still constructing would
-        # recursively allocate another copy before it can be cached.
-        _algebra_from_native_ring(
-            parent,
-            parent._compose_endomorphisms,
-            _ModuleMorCommonMethods.identity.__get__(parent)(),
-            lambda scalar, arrow: _ModuleMorCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
-        )
-
-
 class _ModuleMorCommonMethods:
     r"""Python implementation shared by module-enriched Mor parents.
 
@@ -2260,7 +2250,7 @@ class _ModuleMorCommonMethods:
     def _scalar_identity(self, scalar):
         return _ScalarIdentityModuleMorphism(self, scalar)
 
-    def _compose_endomorphisms(self, left, right):
+    def _compose_module_endomorphisms(self, left, right):
         r"""Compose endomorphisms while retaining both module-linearity premises."""
         from dzack_research.preamble.categories.group.additive_mors import (
             _scalar_identity_coefficient,
@@ -2271,6 +2261,9 @@ class _ModuleMorCommonMethods:
         if left_scalar is not None and right_scalar is not None:
             return self._scalar_identity(left_scalar * right_scalar)
         return _CompositeModuleMorphism(self, left, right)
+
+    def _compose_endomorphisms(self, left, right):
+        return self._compose_module_endomorphisms(left, right)
 
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action defining this Mor's scalar enrichment."""

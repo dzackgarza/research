@@ -13,13 +13,15 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
-    BilinearMap,
     FramedModules,
     Modules,
     _fix_selected_module_framing,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    _FramedTensorBilinearEvaluationMorphism,
+)
 from dzack_research.preamble.categories.modules.tensor_quotients import (
     _TensorQuotientClassifierMorphism,
 )
@@ -38,6 +40,22 @@ class _NativeRingProductClassifierMorphism(_TensorQuotientClassifierMorphism):
 
     def _elementwise_linearity_derivation(self):
         return True
+
+
+class _NativeFramedRingProductClassifierMorphism(
+    _FramedTensorBilinearEvaluationMorphism
+):
+    r"""The direct framed classifier of a native ring product.
+
+    The primitive product is already bilinear for the scalar action retained
+    by the same native ring datum.  Keep its direct two-variable evaluation
+    while using the selected tensor framing to represent the induced linear
+    map.
+    """
+
+    def __init__(self, parent, product) -> None:
+        super().__init__(parent, product)
+        self._linearity_decision = True
 
 
 class _NativeModuleFrame:
@@ -203,14 +221,9 @@ class _RingModulePresentation:
         tensor = Modules(self.base_ring()).tensor_product((module, module))
         match module in FramedModules(self.base_ring()):
             case True:
-                return BilinearMap(
-                    module,
-                    module,
-                    module,
-                    lambda left, right: self._product(
-                        module.module_generator(left),
-                        module.module_generator(right),
-                    ),
+                return _NativeFramedRingProductClassifierMorphism(
+                    tensor.module_category().Mor(tensor, module),
+                    self._product,
                 )
             case False:
                 return _NativeRingProductClassifierMorphism(

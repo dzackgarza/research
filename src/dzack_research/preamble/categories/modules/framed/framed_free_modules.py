@@ -834,20 +834,22 @@ def _module_subobject_constructor_data(module, basis):
         )
     else:
         coordinate_matrix = None
-    coordinate_solver = (
-        None
-        if coordinate_matrix is None
-        else _integral_left_positional_solver(coordinate_matrix, ring)
-    )
+    coordinate_solver = None
 
     def lift_from_finite_support(source, element):
         r"""The preimage of ``element`` in the span, or ``None`` when ``element`` is outside it."""
+        nonlocal coordinate_solver
         element = element if element.parent() is module else module(element)
         coefficients = module.framing_coefficients(element)
         if any(label not in support_labels for label in coefficients.index_set()):
             return None
         if source_rank == 0:
             return None if coefficients else source.zero()
+        if coordinate_solver is None:
+            coordinate_solver = _integral_left_positional_solver(
+                coordinate_matrix,
+                ring,
+            )
         solution = coordinate_solver(
             (
                 coefficients.get(support_labels[j], ring.zero())

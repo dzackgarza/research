@@ -126,6 +126,38 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         return [AdditiveMorGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        def unformed_module(self):
+            r"""The endomorphism algebra is built on this already-constructed Mor module."""
+            return self
+
+        @cached_method
+        def multiplication(self):
+            r"""Classify composition as the bilinear multiplication of the endomorphism algebra."""
+            from dzack_research.preamble.categories.modules.native_modules import (
+                _RingModulePresentation,
+            )
+
+            presentation = _RingModulePresentation(
+                self,
+                self.base_ring(),
+                self._compose_endomorphisms,
+                self.identity(),
+                lambda scalar, arrow: self._owned_scalar_multiple(scalar, arrow),
+            )
+            return presentation.multiplication()
+
+        def multiplication_morphism(self):
+            r"""Return the retained tensor classifier of composition."""
+            return self.multiplication()
+
+        def associativity_decision(self):
+            r"""Composition of endomorphisms is associative by construction."""
+            return True
+
+        def unit_laws_decision(self):
+            r"""The identity endomorphism is a two-sided unit for composition."""
+            return True
+
         def _compose_endomorphisms(self, left, right):
             left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
             if left_scalar is not None and right_scalar is not None:
@@ -266,13 +298,6 @@ class AdditiveMor(CategoricalMor):
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
         category = AdditiveEndomorphismRings(self._base_ring) if domain is codomain else AdditiveMorGroups()
         super().__init__(family, domain, codomain, category=category, base=self._base_ring)
-        if domain is codomain:
-            from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
-
-            _algebra_from_native_ring(
-                self, self._compose_endomorphisms,
-                self.identity(), lambda scalar, arrow: AdditiveMor._owned_scalar_multiple(self, scalar, arrow),
-            )
 
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):

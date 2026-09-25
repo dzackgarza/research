@@ -115,6 +115,23 @@ class IndexedFamily[IndexT, ValueT]:
     def __iter__(self) -> Iterator[ValueT]:
         return (self.value(index) for index in self.index_set())
 
+    def __contains__(self, candidate: object) -> bool:
+        r"""Return whether candidate occurs among the values of a finite family.
+
+        The family retains its indexing data and is not identified with its
+        image set.  For a finite family, however, occurrence among the selected
+        values is decidable and is the membership operation used by finite
+        invariant and generator families.
+        """
+        if self.cardinality().is_finite() is not True:
+            raise TypeError(
+                "value membership is represented only for a finite indexed family"
+            )
+        return any(
+            (self.value(index) == candidate) is True
+            for index in self.index_set()
+        )
+
     def __len__(self) -> int:
         r"""Return the Python length when the mathematical index set is finite."""
         size = self.cardinality()
