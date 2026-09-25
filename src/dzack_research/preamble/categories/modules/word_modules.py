@@ -648,14 +648,21 @@ class _WordDegreeModule:
 def _word_degree_module(module, degree):
     r"""The homogeneous submodule of an already constructed word module."""
     ring = module.base_ring()
+    placements = (
+        GeneralModules(ring),
+        FramedModules(ring),
+        ModuleSubobjects(ring),
+        Modules(ring).Subobjects(module),
+    )
+    match module.generating_module() in FramedFreeModules(ring):
+        case True:
+            placements = (*placements, FramedFreeModules(ring))
+        case False:
+            pass
+    category = Cat().meet(placements)
     return _object_of(
-        Cat().meet((
-            GeneralModules(ring),
-            FramedModules(ring),
-            ModuleSubobjects(ring),
-            Modules(ring).Subobjects(module),
-        )),
-        _engine=(GeneralModules(ring), _WordDegreeModule, None),
+        category,
+        _engine=(category, _WordDegreeModule, None),
         base_ring=ring, word_module=module, word_degree=degree,
         subobject_ambient=module,
         subobject_inclusion_factory=lambda piece: Modules(ring).Mono(piece, module)._subobject_inclusion(
@@ -681,7 +688,7 @@ def _word_module(presentation, *, extra_categories=(), construction_data=None):
         ModulesWithChosenComponentPresentation(ring),
         *extra_categories,
     ))
-    engine = data.pop("_engine", (GeneralModules(ring), _WordModule, _WordModuleElement))
+    engine = data.pop("_engine", (category, _WordModule, _WordModuleElement))
     return _object_of(category, _engine=engine, base_ring=ring, word_presentation=presentation, **data)
 
 

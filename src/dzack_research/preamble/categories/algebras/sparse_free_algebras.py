@@ -15,7 +15,9 @@ from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebr
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules, Modules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules, Modules, ModulesWithChosenComponentPresentation,
+)
 from dzack_research.preamble.categories.modules.word_modules import (
     _WordModule, _WordModuleElement, _module_on_word_quotient, _has_component_presentation,
 )
@@ -30,6 +32,17 @@ class _SparseFreeAlgebra(_WordModule):
     The root owns the product.  The actual module quotient, homogeneous
     pieces, framing and arithmetic are inherited from its module realization.
     """
+
+    def __init__(self, word_presentation, **rest) -> None:
+        source = word_presentation.source_module()
+        match source in FramedFreeModules(source.base_ring()):
+            case True:
+                # This realization is the free algebra on the selected module
+                # basis, so its selected free-algebra framing is the identity.
+                rest["algebra_framing_source"] = self
+            case False:
+                pass
+        super().__init__(word_presentation, **rest)
 
     def flavor(self):
         return self.word_flavor()
@@ -53,7 +66,7 @@ class _SparseFreeAlgebra(_WordModule):
             case dict():
                 return super()._element_constructor_(value)
             case _ if source in Modules(self.base_ring()) and self._built_on_the_same_data(source):
-                return super()._element_constructor_(value)
+                return self._element_on_the_same_data(source, value)
             case _ if value in self.base_ring():
                 return self.scalar_multiple(self.base_ring()(value), self.one())
             case _:
@@ -295,7 +308,10 @@ def _sparse_free_algebra_of(source, flavor):
     categories = (flavor_category, FramedAlgebras(ring))
     if source in FramedFreeModules(ring):
         categories = (*categories, FreeAlgebras(ring), GradedFreeAlgebras(ring))
-    realization_owner = Cat().meet((GeneralModules(ring), FramedModules(ring), GradedModules(ring), Algebras(ring), *categories))
+    realization_owner = Cat().meet((
+        GeneralModules(ring), FramedModules(ring), GradedModules(ring),
+        ModulesWithChosenComponentPresentation(ring), Algebras(ring), *categories,
+    ))
     unit_piece = module.graded_piece(0)
     law_decisions = {"associativity": True, "unit": True, "grading": True}
     match flavor:
