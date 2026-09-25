@@ -79,6 +79,16 @@ def _canonical_pid_associate(ring, element):
     element = ring(element)
     if element == ring.zero():
         return element
+    if ring in LocalizationRings():
+        source = ring.localization_source()
+        if source in PrincipalIdealDomains():
+            # A denominator in the localization submonoid is a unit, so
+            # (a/s) and a generate the same principal ideal in S^{-1}R.
+            # Canonicalize in the source PID rather than in the localization's
+            # fraction-field engine, where every nonzero scalar is a unit.
+            return ring.localization_map()(
+                _canonical_pid_associate(source, element.numerator())
+            )
     backend = _engine_element(ring, element)
     canonical_associate = getattr(backend, "canonical_associate", None)
     if canonical_associate is None:
@@ -930,6 +940,26 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             assert ring in PrincipalIdealDomains(), (
                 "selected-presentation Smith reduction is represented here over a PID"
             )
+            if ring in LocalizationRings():
+                from dzack_research.preamble.categories.modules.localizations import (
+                    LocalizedModules,
+                )
+
+                if self in LocalizedModules(ring):
+                    source = self.numerator_module()
+                    source_ring = ring.localization_source()
+                    if (
+                        source in _SelectedFinitePresentationModules(source_ring)
+                        and source_ring in PrincipalIdealDomains()
+                    ):
+                        # The selected presentation of S^{-1}M is obtained by
+                        # applying R -> S^{-1}R coefficientwise to the selected
+                        # presentation of M.  Localize its unimodular Smith
+                        # basis changes as well; reducing the same matrix in the
+                        # fraction-field engine can introduce inverses of
+                        # nonunits of S^{-1}R and therefore does not describe
+                        # module automorphisms over the localization.
+                        return source._selected_presentation_smith_backend()
             backend_relation_matrix = _engine_matrix(self.presentation_matrix())
             return backend_relation_matrix.smith_form()
 
