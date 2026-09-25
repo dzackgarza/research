@@ -1835,6 +1835,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
+        @cached_method
+        def square_class_group(self):
+            r"""``R |-> R^×/(R^×)^2 : CRing -> Grp``, the square-class group functor."""
+            from dzack_research.preamble.categories.rings.square_classes import (
+                SquareClassGroupFunctor,
+            )
+
+            return SquareClassGroupFunctor()
+
         class SubcategoryMethods:
             def Local(self):
                 r"""Return this category with the axiom of a unique maximal ideal."""
@@ -1919,6 +1928,20 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         class ParentMethods:
             def is_commutative(self):
                 return True
+
+            @cached_method
+            def square_class_group(self):
+                r"""Return ``R^×/(R^×)^2``, the cokernel of squaring on the unit group.
+
+                For a field ``K`` this is the codomain of the spinor norm of a
+                quadratic space over ``K`` (Gritsenko--Hulek--Sankaran,
+                *Abelianisation of orthogonal groups*, arXiv:0810.1614, §1).
+                """
+                from dzack_research.preamble.categories.rings.square_classes import (
+                    _square_class_group,
+                )
+
+                return _square_class_group(self)
 
             def krull_dimension(self):
                 return _engine_krull_dimension(self)

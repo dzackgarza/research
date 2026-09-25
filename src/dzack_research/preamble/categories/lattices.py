@@ -94,6 +94,7 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     _isotropic_sublattice_locus,
     _primitive_isotropic_sublattice_locus,
 )
+from dzack_research.preamble.categories.group.predicate_subgroups import PreimageSubgroups
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeEmbeddingMor,
     LatticeMor,
@@ -101,6 +102,12 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     _lattice_embedding_mor,
     _lattice_mor,
     _lattice_isometry_mor,
+    _rational_spinor_norm_representative,
+)
+from dzack_research.preamble.categories.modules.base_change import (
+    _base_change_codomain,
+    _base_change_element,
+    _base_change_scalar,
 )
 from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
     DiscriminantBilinearModules,
@@ -133,8 +140,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    CommutativeRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    PrimeFields,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -1186,19 +1195,25 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def stable_orthogonal_group(self):
-            r"""Return ``ker(rho_L)`` as the stable orthogonal subgroup."""
+            r"""Return \(\tilde O(L)=\ker(O(L)\to O(A_L))\), the stable orthogonal group.
+
+            It is the kernel of the discriminant reduction morphism
+            :meth:`discriminant_representation`, the first term of
+            :meth:`discriminant_reduction_sequence` (Gritsenko--Hulek--Sankaran,
+            *Abelianisation of orthogonal groups*, arXiv:0810.1614, §1).
+            """
             target = self.discriminant_group().orthogonal_group()
             trivial = target.subgroup_on(())
             return self.Aut().discriminant_preimage(trivial)
 
-        def O_plus(self):
-            r"""Return the stable orthogonal group ``ker(O(L) -> O(A_L))``.
+        @cached_method
+        def discriminant_reduction_sequence(self):
+            r"""Return \(1\to\tilde O(L)\to O(L)\xrightarrow{f}O(A_L)\to C_L\to 1\).
 
-            The project vocabulary uses ``O_plus`` for the stable subgroup;
-            positive-cone preservation is exposed separately by
-            :meth:`O_component`.
+            ``f`` is :meth:`discriminant_representation`, its kernel is
+            :meth:`stable_orthogonal_group`, and \(C_L=O(A_L)/f(O(L))\).
             """
-            return self.stable_orthogonal_group()
+            return DiscriminantReductionSequence(self)
 
         @cached_method
         def special_orthogonal_group(self):
@@ -1209,10 +1224,214 @@ class Lattices(OwnedCategoryOverBaseRing):
         def SO(self, *args, **kwargs):
             return self.special_orthogonal_group(*args, **kwargs)
 
-        def spinor_kernel_subgroup(self):
-            r"""Return the kernel of the real spinor-norm sign on ``O(L)``."""
+        @cached_method(key=lambda self, ring_map: id(ring_map))
+        def base_change(self, ring_map):
+            r"""Return \(L\otimes_R S\) along ``ring_map`` \(\varphi\colon R\to S\), a lattice over \(S\).
 
-            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.real_spinor_norm_sign() == 1, "real spinor norm(g)=+1", character_data={"spinor_kernel": True})
+            The scalar extension of the underlying free module is the free
+            \(S\)-module on the same framing, and the form extends
+            \(S\)-bilinearly, so its Gram presentation is \(\varphi(G_L)\).  The
+            result is constructed in ``Lattices(S)`` on those data and keeps
+            the framing labels of \(L\).  Along the identity of \(R\) it is
+            \(L\).  Along \(R\to\operatorname{Frac}(R)\) it is the quadratic
+            space \(L_K=L\otimes_R K\) that :meth:`vector_space` returns.
+            """
+            if ring_map.is_identity():
+                return self
+            target_ring = _base_change_codomain(self, ring_map)
+            rank = self.module_rank()
+            assert rank.is_finite(), (
+                f"the scalar extension of {self!r} along {ring_map} is constructed here as a lattice only in "
+                f"finite rank, from its Gram matrix, and {self!r} has rank {rank}"
+            )
+            size = int(rank)
+            gram = self.gram_tensor()
+            changed = tensor(
+                target_ring,
+                (),
+                (size, size),
+                [[_base_change_scalar(ring_map, gram[row, column]) for column in range(size)] for row in range(size)],
+            )
+            return Lattices(target_ring)(changed, module_generators=self.module_generating_set())
+
+        def orthogonal_group_base_change(self, ring_map):
+            r"""Return \(O(L)\to O(L\otimes_R S)\), \(g\mapsto g\otimes S\), along ``ring_map``.
+
+            Scalar extension is a functor, so it carries an isometry of \(L\)
+            to an isometry of \(L\otimes_R S\), whose form is the scalar
+            extension of the form of \(L\), and it respects composition: this
+            is a group morphism.  The image of \(g\) sends \(e\otimes 1\) to
+            \(g(e)\otimes 1\) on the framing, through the scalar-extension
+            unit \(x\mapsto x\otimes 1\).  It is injective when that unit is,
+            as it is along \(R\to\operatorname{Frac}(R)\) for a lattice.
+            """
+            changed = self.base_change(ring_map)
+            target = changed.Aut()
+
+            def extend(isometry):
+                return target(
+                    lambda label: _base_change_element(
+                        self,
+                        changed,
+                        ring_map,
+                        isometry(self.module_generator(label)),
+                    )
+                )
+
+            return SetMorphism(self.Aut().Mor(target), extend)
+
+        @cached_method
+        def witt_index(self):
+            r"""Return the Witt index of \(L_K=L\otimes_R K\), \(K=\operatorname{Frac}(R)\).
+
+            The Witt index of a nondegenerate quadratic space \(V\) is the
+            common dimension of its maximal totally isotropic subspaces, and
+            it is the number \(r\) of hyperbolic planes in a splitting
+            \(V=H_1\perp\cdots\perp H_r\perp V_0\) with \(V_0\) zero or
+            anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
+            A lattice answers through its quadratic space :meth:`vector_space`.
+            Over \(K=\mathbb Q\) OSCAR computes it: \(r\) is the largest
+            number with \(H^r\) a subspace of \(V\), which Hecke decides from
+            the isometry classes of \(V\) and \(H^r\).
+            """
+            space = self.vector_space()
+            if space is not self:
+                return space.witt_index()
+            field = self.base_ring()
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"the Witt index is defined here for a nondegenerate quadratic space of finite dimension, "
+                f"and {self!r} is not one"
+            )
+            assert field in PrimeFields() and field.characteristic() == 0, (
+                f"the Witt index of {self!r} is computed here only over QQ, by OSCAR, and {self!r} is over {field}"
+            )
+            return _own_ring(SageZZ)(lattice_engines._rational_witt_index(self.gram_tensor()))
+
+        def spinor_norm(self, field_map=None, form_multiplier=None):
+            r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
+
+            Let \(K=\operatorname{Frac}(R)\), \(V=L\otimes_R K\) the quadratic
+            space :meth:`vector_space`, and \(c\in K^\times\) the
+            ``form_multiplier``.  Every \(g\in O(V)\) is a product
+            \(s_{v_1}\cdots s_{v_m}\) of reflections in anisotropic vectors,
+            and the class
+            \[\mathrm{sn}_K(g)=\prod_{i=1}^{m}c\,(v_i,v_i)\,(K^\times)^2\in K^\times/(K^\times)^2\]
+            does not depend on the factorization, so
+            \(\mathrm{sn}_K\colon O(V)\to K^\times/(K^\times)^2\) is a group
+            morphism (O'Meara, *Introduction to Quadratic Forms*, §55, where
+            \(c=1\)).  Gritsenko--Hulek--Sankaran (*Abelianisation of
+            orthogonal groups*, arXiv:0810.1614, §1, after Kneser) take
+            \(c=-\tfrac12\), the default here: in signature \((2,n)\) a
+            reflection in a vector of negative square then fixes each
+            component of the period domain.  Changing \(c\) multiplies
+            \(\mathrm{sn}_K(g)\) by \(c^m\), a square when \(m\) is even, so
+            every choice agrees on \(SO(V)\) (O'Meara §55).
+
+            A field morphism \(\varphi\colon K\to K'\) (``field_map``, by
+            default the identity of \(K\)) carries a factorization over \(K\)
+            to one over \(K'\), so
+            \(\mathrm{sn}_{K'}(g\otimes K')=\varphi_*\,\mathrm{sn}_K(g)\) for
+            \(g\in O(V)\), with \(\varphi_*\) the square-class functor
+            ``CommutativeRings().square_class_group()``.  The morphism returned
+            is \(g\mapsto\varphi_*\,\mathrm{sn}_K(g\otimes K)\) on \(O(L)\): it
+            is \(\mathrm{sn}_K\) of \(O(V)\) itself when \(R=K\), and along the
+            real place \(\mathbb Q\to\mathbb R\) it is the real spinor norm
+            whose kernel is :meth:`O_plus`.
+
+            \(\mathrm{sn}_K\) is computed for \(K=\mathbb Q\), by OSCAR's
+            rational spinor norm.
+            """
+            ring = self.base_ring()
+            field = ring.fraction_field()
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"{self!r} has no spinor norm: the spinor norm is defined on the orthogonal group of a "
+                f"nondegenerate quadratic space of finite dimension"
+            )
+            assert field in PrimeFields() and field.characteristic() == 0, (
+                f"the spinor norm of {self!r} is computed here only when Frac(R) is QQ, by OSCAR's rational "
+                f"spinor norm, and Frac(R) = {field}"
+            )
+            multiplier = _spinor_norm_multiplier(field, form_multiplier)
+            extension = self.orthogonal_group_base_change(ring.fraction_field_map())
+            square_classes = field.square_class_group()
+
+            def spinor_norm_class(isometry):
+                representative = _rational_spinor_norm_representative(extension(isometry))
+                odd_reflection_count = isometry.determinant() == -ring.one()
+                return square_classes(multiplier * representative if odd_reflection_count else representative)
+
+            match field_map:
+                case None:
+                    return SetMorphism(self.Aut().Mor(square_classes), spinor_norm_class)
+                case _:
+                    assert field_map.domain() is field, (
+                        f"the spinor norm of {self!r} is carried along a map out of Frac(R) = {field}, "
+                        f"but {field_map} starts at {field_map.domain()}"
+                    )
+                    change_of_field = CommutativeRings().square_class_group()(field_map)
+                    return SetMorphism(
+                        self.Aut().Mor(change_of_field.codomain()),
+                        lambda isometry: change_of_field(spinor_norm_class(isometry)),
+                    )
+
+        def spinor_kernel(self, field_map=None, form_multiplier=None):
+            r"""Return \(O_{\mathrm{sn}_{K'}}(L)=O(L)\cap\ker\mathrm{sn}_{K'}\) for :meth:`spinor_norm`.
+
+            With ``field_map`` omitted, \(K'=K=\operatorname{Frac}(R)\) and
+            this is the \(R\)-spinor kernel: the elements of \(O(L)\) lying in
+            the \(K\)-spinor kernel of :meth:`spinor_norm_sequence`.
+            Gritsenko--Hulek--Sankaran (arXiv:0810.1614, §1) write
+            \(O^+(L)=O(L)\cap\ker\mathrm{sn}_{\mathbb R}\), which is
+            :meth:`O_plus`, and \(O'(L)=SO(L)\cap\ker\mathrm{sn}_{\mathbb Q}\),
+            which is :meth:`spinorial_kernel`.
+            """
+            return _spinor_norm_kernel(
+                self.spinor_norm(field_map, form_multiplier),
+                "sn(g) = 1",
+            )
+
+        @cached_method
+        def O_plus(self):
+            r"""Return \(O^+(L)=O(L)\cap\ker\mathrm{sn}_{\mathbb R}\) (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, §1).
+
+            \(\mathrm{sn}_{\mathbb R}\) is :meth:`spinor_norm` along the real
+            place of \(\operatorname{Frac}(R)=\mathbb Q\), with the paper's
+            multiplier \(-\tfrac12\).  The positive-cone subgroup in signature
+            \((1,n)\) is :meth:`O_component`.
+            """
+            field = self.base_ring().fraction_field()
+            assert field in PrimeFields() and field.characteristic() == 0, (
+                f"O^+({self!r}) is the kernel of the real spinor norm at the real place of Frac(R); QQ has exactly "
+                f"one, but Frac(R) = {field}: pass a real embedding of it to spinor_kernel"
+            )
+            from dzack_research.preamble.rings.real import RR
+
+            real_place = field.Mor(RR)(lambda rational: RR(rational))
+            return _spinor_norm_kernel(
+                self.spinor_norm(real_place),
+                "sn_RR(g) = 1",
+                character_data={"spinor_kernel": True},
+            )
+
+        @cached_method
+        def spinorial_kernel(self):
+            r"""Return the spinorial kernel \(O'(L)=SO(L)\cap\ker\mathrm{sn}_{\mathbb Q}\).
+
+            Gritsenko--Hulek--Sankaran, arXiv:0810.1614, §1.  On \(SO\) the
+            spinor norm does not depend on its multiplier (O'Meara §55), so
+            neither does \(O'(L)\).
+            """
+            return self.SO().intersection(self.spinor_kernel())
+
+        @cached_method
+        def spinor_norm_sequence(self, form_multiplier=None):
+            r"""Return \(1\to K_{\mathrm{sn}_K}\to O(L_K)\xrightarrow{\mathrm{sn}_K}K^\times/(K^\times)^2\to C_{\mathrm{sn}_K}\to 1\).
+
+            \(K=\operatorname{Frac}(R)\), \(L_K\) is :meth:`vector_space` and
+            \(\mathrm{sn}_K\) is :meth:`spinor_norm` of \(L_K\) with the given
+            multiplier.
+            """
+            return SpinorNormSequence(self, form_multiplier)
 
         @cached_method
         def component_character(self):
@@ -3438,6 +3657,219 @@ class RankOneParabolicLeviExactSequence:
 
     def __repr__(self) -> str:
         return f"1 -> {self.kernel()} -> {self.source()} -> {self.target()} -> 1"
+
+
+def _spinor_norm_multiplier(field, form_multiplier):
+    r"""Return the multiplier \(c\) of a spinor norm \(s_v\mapsto[c\,(v,v)]\) over ``field``.
+
+    Omitted, it is \(-\tfrac12\), the choice of Gritsenko--Hulek--Sankaran
+    (arXiv:0810.1614, §1).
+    """
+    multiplier = field(-1) / field(2) if form_multiplier is None else field(form_multiplier)
+    assert multiplier.is_unit(), (
+        f"the spinor norm is taken for the reflection values c(v, v) with c a unit of {field}, but c = {multiplier}"
+    )
+    return multiplier
+
+
+def _spinor_norm_kernel(spinor_norm, description, *, character_data=None):
+    r"""Return \(\ker\mathrm{sn}=\mathrm{sn}^{-1}(\{[1]\})\), retaining \(\mathrm{sn}\) as its preimage morphism."""
+    square_classes = spinor_norm.codomain()
+    trivial = square_classes.predicate_subgroup(
+        lambda square_class: square_class.is_one(),
+        "the trivial square class",
+    )
+    return PreimageSubgroups(spinor_norm.domain())(
+        spinor_norm,
+        trivial,
+        predicate=lambda isometry: spinor_norm(isometry).is_one(),
+        description=description,
+        character_data=character_data,
+    )
+
+
+class DiscriminantReductionSequence:
+    r"""The discriminant reduction sequence \(1\to K_L\to O(L)\xrightarrow{f}O(A_L)\to C_L\to 1\).
+
+    An isometry \(g\) of \(L\) acts on the dual lattice \(L^\vee\) and
+    preserves \(L\), so it induces an isometry of the discriminant form
+    \(A_L=L^\vee/L\); \(f\colon g\mapsto\bar g\) is the discriminant
+    reduction morphism.  Its kernel \(K_L\), the discriminant reduction
+    kernel, is the stable orthogonal group \(\tilde O(L)\)
+    (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, §1), and
+    \(C_L=O(A_L)/f(O(L))\) is the discriminant reduction cokernel.  The
+    sequence is an exact sequence of groups exactly when \(f(O(L))\) is
+    normal in \(O(A_L)\): only then is \(C_L\) a group, and
+    :meth:`cokernel_projection` asserts it.
+    """
+
+    def __init__(self, lattice) -> None:
+        self._lattice = lattice
+
+    def lattice(self):
+        return self._lattice
+
+    def source(self):
+        r"""Return \(O(L)\)."""
+        return self._lattice.Aut()
+
+    def target(self):
+        r"""Return \(O(A_L)\)."""
+        return self._lattice.discriminant_group().orthogonal_group()
+
+    def morphism(self):
+        r"""Return the discriminant reduction morphism \(f\colon O(L)\to O(A_L)\)."""
+        return self._lattice.discriminant_representation()
+
+    def kernel(self):
+        r"""Return the discriminant reduction kernel \(K_L=\ker f=\tilde O(L)\)."""
+        return self._lattice.stable_orthogonal_group()
+
+    def kernel_inclusion(self):
+        r"""Return \(K_L\hookrightarrow O(L)\)."""
+        return self.kernel().inclusion()
+
+    def image(self):
+        r"""Return \(f(O(L))\le O(A_L)\)."""
+        return self._lattice.discriminant_image()
+
+    @cached_method
+    def cokernel_projection(self):
+        r"""Return \(O(A_L)\to C_L=O(A_L)/f(O(L))\).
+
+        \(O(A_L)\) is finite; GAP decides whether \(f(O(L))\) is normal in
+        it and forms the quotient group.
+        """
+        inclusion = self.image().inclusion()
+        assert inclusion.is_normal(), (
+            f"the discriminant reduction cokernel O(A_L)/f(O(L)) of {self._lattice!r} is not a group: the "
+            f"image f(O(L)) is not normal in O(A_L), so 1 -> ~O(L) -> O(L) -> O(A_L) -> C_L -> 1 is not an "
+            f"exact sequence of groups, and O(A_L)/f(O(L)) is the transitive O(A_L)-set of cosets"
+        )
+        return inclusion.cokernel_projection()
+
+    def cokernel(self):
+        r"""Return the discriminant reduction cokernel \(C_L=O(A_L)/f(O(L))\)."""
+        return self.cokernel_projection().codomain()
+
+    def __repr__(self) -> str:
+        return f"1 -> {self.kernel()} -> {self.source()} -> {self.target()} -> C_L -> 1"
+
+
+class SpinorNormSequence:
+    r"""The \(K\)-spinor norm sequence \(1\to K_{\mathrm{sn}_K}\to O(L_K)\xrightarrow{\mathrm{sn}_K}K^\times/(K^\times)^2\to C_{\mathrm{sn}_K}\to 1\).
+
+    Here \(K=\operatorname{Frac}(R)\), \(L_K=L\otimes_R K\) and
+    \(\mathrm{sn}_K\) is the spinor norm of \(L_K\) with the stated
+    multiplier (``Lattices(K)`` objects' ``spinor_norm``).  Its kernel
+    \(K_{\mathrm{sn}_K}\le O(L_K)\) is the \(K\)-spinor kernel; the
+    elements of \(O(L)\) lying in it form the \(R\)-spinor kernel, the
+    ``spinor_kernel`` of \(L\).  The target is abelian, so the image of
+    \(\mathrm{sn}_K\) is normal and \(C_{\mathrm{sn}_K}\) is a group.
+    """
+
+    def __init__(self, lattice, form_multiplier) -> None:
+        self._lattice = lattice
+        self._form_multiplier = _spinor_norm_multiplier(
+            lattice.base_ring().fraction_field(),
+            form_multiplier,
+        )
+
+    def lattice(self):
+        return self._lattice
+
+    def form_multiplier(self):
+        r"""Return \(c\), with \(\mathrm{sn}_K(s_v)=[c\,(v,v)]\)."""
+        return self._form_multiplier
+
+    def quadratic_space(self):
+        r"""Return \(L_K=L\otimes_R K\)."""
+        return self._lattice.vector_space()
+
+    def source(self):
+        r"""Return \(O(L_K)\)."""
+        return self.quadratic_space().Aut()
+
+    def target(self):
+        r"""Return \(K^\times/(K^\times)^2\)."""
+        return self.quadratic_space().base_ring().square_class_group()
+
+    @cached_method
+    def morphism(self):
+        r"""Return \(\mathrm{sn}_K\colon O(L_K)\to K^\times/(K^\times)^2\)."""
+        return self.quadratic_space().spinor_norm(form_multiplier=self._form_multiplier)
+
+    @cached_method
+    def kernel(self):
+        r"""Return the \(K\)-spinor kernel \(K_{\mathrm{sn}_K}=\ker\mathrm{sn}_K\le O(L_K)\)."""
+        return _spinor_norm_kernel(self.morphism(), "sn_K(g) = 1")
+
+    def kernel_inclusion(self):
+        r"""Return \(K_{\mathrm{sn}_K}\hookrightarrow O(L_K)\)."""
+        return self.kernel().inclusion()
+
+    @cached_method
+    def cokernel_projection(self):
+        r"""Return \(K^\times/(K^\times)^2\to C_{\mathrm{sn}_K}\), the quotient by the image of \(\mathrm{sn}_K\).
+
+        The image is generated by the spinor norms of the rotations, which
+        do not depend on \(c\), and the classes \([c\,(v,v)]\) of the
+        reflections (O'Meara, *Introduction to Quadratic Forms*, §55).  For
+        \(V=L_K\) over \(K=\mathbb Q\):
+
+        - in dimension at least 3, the rotations have as spinor norms all
+          of \(\mathbb Q^\times\) when \(V\) is indefinite, and exactly the
+          positive rationals when \(V\) is definite (O'Meara 101:8).  For
+          definite \(V\) the reflections add \([c\,(v,v)]\), whose sign is
+          that of \(c\) times the sign of the form: the image is the positive
+          classes when that sign is positive, and \(C_{\mathrm{sn}_K}\) is
+          then \(\{\pm1\}\) through the sign, and everything otherwise;
+        - when \(V\) is isotropic, that is when its Witt index is positive,
+          the rotations already have every class as spinor norm (O'Meara
+          55:2a), and \(C_{\mathrm{sn}_K}\) is trivial.
+
+        The image for an anisotropic space of dimension at most two is not
+        computed.
+        """
+        space = self.quadratic_space()
+        target = self.target()
+        field = space.base_ring()
+        assert field in PrimeFields() and field.characteristic() == 0, (
+            f"the K-spinor norm cokernel of {self._lattice!r} is computed here only for K = QQ, and K = {field}"
+        )
+        dimension = int(space.module_rank())
+        trivial = OwnedGroups().C(1)
+        onto = SetMorphism(target.Mor(trivial), lambda _square_class: trivial.one())
+        match dimension:
+            case _ if dimension >= 3 and not space.is_definite():
+                return onto
+            case _ if dimension >= 3:
+                form_is_positive = space.is_positive_definite()
+                reflection_classes_are_positive = (self._form_multiplier > 0) == form_is_positive
+                if not reflection_classes_are_positive:
+                    return onto
+                signs = OwnedGroups().C(2)
+                negative = signs.group_generators()[0]
+                return SetMorphism(
+                    target.Mor(signs),
+                    lambda square_class: signs.one() if square_class.representative() > 0 else negative,
+                )
+            case _:
+                assert space.witt_index() > 0, (
+                    f"the K-spinor norm cokernel of {self._lattice!r} is not computed: L_K is an anisotropic space "
+                    f"of dimension {dimension}, and the image of sn_K, generated by the classes c(v, v) of its "
+                    f"anisotropic vectors and the norms of its rotations (O'Meara 55:2), is not computed"
+                )
+                return onto
+
+    def cokernel(self):
+        r"""Return the \(K\)-spinor norm cokernel \(C_{\mathrm{sn}_K}\)."""
+        return self.cokernel_projection().codomain()
+
+    def __repr__(self) -> str:
+        return (
+            f"1 -> K_sn -> {self.source()} -> {self.target()} -> C_sn -> 1"
+        )
 
 
 class IsotropicReductions(OwnedCategoryOverBaseRing):

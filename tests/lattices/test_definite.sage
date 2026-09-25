@@ -297,15 +297,17 @@ def test_positive_cone_character_and_real_spinor_norm_are_independent_computatio
     assert negative_reflection.determinant() == -1
     assert positive_reflection.preserves_positive_cone() is False
     assert negative_reflection.preserves_positive_cone() is True
-    assert positive_reflection.real_spinor_norm_sign() == -1
-    assert negative_reflection.real_spinor_norm_sign() == 1
+    real_spinor_norm = lattice.spinor_norm(QQ.Mor(RR)(lambda rational: RR(rational)))
+    real_square_classes = RR.square_class_group()
+    assert real_spinor_norm(positive_reflection) == real_square_classes(-1)
+    assert real_spinor_norm(negative_reflection) == real_square_classes(1)
 
     cone_group = lattice.positive_cone_subgroup()
-    spinor_kernel = lattice.spinor_kernel_subgroup()
+    o_plus = lattice.O_plus()
     assert negative_reflection in cone_group
     assert positive_reflection not in cone_group
-    assert negative_reflection in spinor_kernel
-    assert positive_reflection not in spinor_kernel
+    assert negative_reflection in o_plus
+    assert positive_reflection not in o_plus
 
 
 def test_the_component_character_is_multiplicative_and_cuts_out_the_cone_subgroup() -> None:

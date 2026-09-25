@@ -11,21 +11,20 @@ provisioning remedy; nothing here substitutes another engine.
 from dzack_research.preamble.all import *
 
 
-def test_rational_spinor_norm_sign_of_hyperbolic_plane_isometries() -> None:
-    # Kneser's spinor norm of a reflection s_w is the square class of Q(w)
-    # (Cassels, Rational Quadratic Forms, Ch. 10 §3).  On U with e.f = 1:
-    # swap = s_{e-f} with Q(e-f) = -1; -1 = s_{e+f} s_{e-f} with product of
-    # square classes (+1)(-1) = -1.  The owned character multiplies OSCAR's
-    # sign by the determinant, so swap -> (-1)(-1) = +1 and -1 -> (-1)(+1) = -1.
+def test_rational_spinor_norm_of_hyperbolic_plane_isometries() -> None:
+    # The spinor norm of s_{v_1}...s_{v_m} is the square class of
+    # prod -(v_i, v_i)/2 (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, §1).
+    # On U with e.f = 1: swap = s_{e-f} with (e-f)^2 = -2, class [1];
+    # -1 = s_{e+f} s_{e-f} with (e+f)^2 = 2, class [-1][1] = [-1].
     lattice = Lattices(ZZ)("U")
     e, f = lattice.module_generators()
     swap = lattice.Aut()((f, e))
     minus_identity = lattice.Aut()((-e, -f))
+    spinor_norm = lattice.spinor_norm()
+    square_classes = QQ.square_class_group()
 
-    assert swap.determinant() == -1
-    assert swap.real_spinor_norm_sign() == 1
-    assert minus_identity.determinant() == 1
-    assert minus_identity.real_spinor_norm_sign() == -1
+    assert spinor_norm(swap) == square_classes(1)
+    assert spinor_norm(minus_identity) == square_classes(-1)
 
 
 def test_centralizer_discriminant_image_of_the_swap_on_a1_plus_a1() -> None:

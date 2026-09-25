@@ -317,6 +317,24 @@ def _tensor_view(morphism):
     return tensor.from_morphism(morphism)
 
 
+def _rational_spinor_norm_representative(isometry):
+    r"""Return \(b(v_1,v_1)\cdots b(v_m,v_m)\) for an automorphism \(s_{v_1}\cdots s_{v_m}\) of a space over \(\mathbb Q\).
+
+    The private computation behind ``Lattices.spinor_norm``.  OSCAR's
+    ``rational_spinor_norm`` with ``b = 1`` factors the isometry into
+    reflections over a diagonalized Gram matrix and multiplies the values
+    \(b(v_i,v_i)\): a representative of the spinor norm of the form \(b\)
+    (O'Meara, *Introduction to Quadratic Forms*, §55), with the whole square
+    class and not only its sign.  The owning morphism applies its multiplier.
+    """
+    space = isometry.domain()
+    value = lattice_engines._rational_spinor_norm(
+        space.gram_tensor(),
+        _tensor_view(isometry),
+    )
+    return _owned_engine_element(space.base_ring(), value)
+
+
 def _labelled_generator_images(domain, images):
     r"""Read the keys of a generator-image mapping as labels of ``domain``'s framing.
 
@@ -915,44 +933,6 @@ class LatticeIsometry(LatticeEmbedding):
             )
 
         return CyclicGroups()(self)
-
-    @cached_method
-    def real_spinor_norm_sign(self):
-        r"""Return the sign of the real spinor norm in Dawes' convention.
-
-        OSCAR computes the rational spinor norm with a reflection ``s_w``
-        represented by the square class of ``(w,w)``.  The convention used by
-        the arithmetic ``O^+(L)`` character is the square class of
-        ``-(w,w)/2``.  Their signs differ by the determinant character, so the
-        exact OSCAR sign is multiplied by ``det(self)`` here.
-        """
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"{self} has no spinor norm: it is an isometry from {self.domain()} to "
-                f"{self.codomain()}, not an element of an orthogonal group O(L)"
-            )
-        lattice = self.domain()
-        assert _engine_ring(lattice.base_ring()) is SageZZ, (
-            f"the real spinor norm of {self} is computed only for ZZ-lattices, but "
-            f"{lattice} is over {lattice.base_ring()}"
-        )
-        if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
-            raise ValueError(
-                f"{self} has no real spinor norm: {lattice} must be a nondegenerate "
-                f"lattice of finite rank"
-            )
-
-        ring = lattice.base_ring()
-        if lattice.is_positive_definite():
-            return self.determinant()
-        if lattice.is_negative_definite():
-            return ring.one()
-        backend_sign = SageZZ(
-            lattice_engines._rational_spinor_norm_sign(
-                lattice.gram_tensor(), _tensor_view(self)
-            )
-        )
-        return _owned_engine_element(ring, backend_sign) * self.determinant()
 
     def preserves_positive_cone(self) -> bool:
         r"""Return whether an isometry preserves a component of the positive cone.
