@@ -405,6 +405,10 @@ The first full execution of the suite since the tree stopped importing (2026-09-
 
 ## Post-remediation convergence
 
+- [ ] **`branches-absorbed-into-main`**. **Needs:** none.
+  **Owner and delta:** every local branch on this workstation and on `rack` that `main` does not contain: 17 here (`git branch --no-merged main`; newest the `remediate/*` branches of 2026-09-17, whose worktrees sit under a scratch directory) and 8 on `rack` (newest `steward/preamble-rescue-2026-09-09`). Each is read once. Work that `main` lacks is merged or re-expressed on `main`, and rejected work is recorded at its complaint owner. Then the branch and its worktree are deleted, as the `remote-remediation-branches` objective did for the `origin/remediate/*` branches.
+  **Closure:** `git branch --no-merged main` is empty on both hosts, and no worktree outside the main checkout remains.
+
 - [ ] **`refactor-audit`**. **Needs:** `terminal-session`.
   **Goal:** After the repaired mathematics runs end-to-end, audit the repository for duplicated authority, poor organization, and maintainability defects that survived the architecture work.
   Audit the whole repository for messy, disorganized or duplicated code after the complaint-derived architecture has been exercised through the final public session.
