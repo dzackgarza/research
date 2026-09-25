@@ -205,6 +205,19 @@ disabled because the session's operations are slow by construction, and
 example counts are kept small because every example is a full mathematical
 object.
 
+**Every map is stated; nothing is coerced implicitly.**  An element of one
+object enters another only through an explicit conversion into the target
+(`QQ(1) + QQ(1/2)`, `RR(4) / pi**2`) or a named morphism applied to it.  An
+expression that combines elements of two different objects and leaves the
+session to choose a map between them is not written here.  Combining
+elements needs a morphism, and the morphism is data even where it is
+unique (the unit `ZZ -> R` of a ring), so the test states it.  Actions are
+not coercions and stay as they are: `n * x` for an integer and an element of
+an abelian group, and `r * m` for a scalar and an element of an `R`-module,
+are the structure of those objects.  This is the convention the category
+core the preamble is expected to adopt enforces, and these files set the
+example for it (owner ruling, 2026-09-25).
+
 ## What does not belong here
 
 - A test of how the preamble does something.  Internals, class names,
