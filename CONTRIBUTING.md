@@ -5015,21 +5015,26 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: Public `PolynomialRing(ZZ, "x")`, `FreeModule(ZZ, 3)`, `Groups.S(4)`, `presentation_morphism.cokernel()`, and `A.Mor(B)(...)` consume preamble objects and mathematical data.  Any Sage/GAP representation needed to execute them is selected and constructed privately after the public call has crossed the API boundary.
 
-#### `API-02`: Coordinates Are Framing Data; Coordinate Objects Keep Their Mathematical Type
+#### `API-02`: Coordinates Are a Finitely Supported Function; Support Is Its Condition Subset
 
-- **Rule**: Coordinates of an element are exposed through the chosen framing as the owning module's `framing_coefficients(element)` map.
+- **Rule**: An element `v` of a module with a chosen basis `I` (a length-0 free resolution, `CAT-29`) is an `R`-linear combination of the basis elements.
+  Its coordinates are `v.to_vector()`: the finitely supported function `a_v : I -> R`, an element of `R^(I)`, which is the subobject of `Sets().Mor(I, R)` cut out by finite support.
+  `v.support()` is the condition subset `{i in I : a_v(i) != 0}` of `I` with its inclusion, lazy like every predicate subset: nothing is computed until a consumer asks for membership, a cardinality or an enumeration.
+  This is the support of a divisor in `Z^1(X)`, `Pic(X)` or `Cl(X)` as well.
+  Consumers evaluate `a_v`, compose it with morphisms, and enumerate the support when it is enumerable.
+  No coordinate readout has a dictionary interface: `items`, `get`, `keys`, `values` and `monomial_coefficients` are Sage and Python notions with no mathematical referent.
   When an algorithm genuinely requires an ordered coordinate array, use the owned object whose mathematics describes that array.
-  A coordinate vector may be a typed tensor when only variance/index data is intended.  A matrix of a linear map between finitely generated framed free modules is the corresponding Hom element
-  `Hom_R(F_R(S), F_R(T))`, framed by the matrix units indexed by `T × S`; it is not replaced by a tensor or backend matrix.
+  A coordinate vector may be a typed tensor when only variance/index data is intended.  A matrix of a linear map between finitely generated free modules is the corresponding Hom element
+  `Hom_R(F_R(S), F_R(T))`, with basis the matrix units indexed by `T × S`; it is not replaced by a tensor or backend matrix.
   A public coordinate operation never returns a Sage vector or Sage matrix.
 
-- **Rationale**: Coordinates depend on chosen framings, but the coordinate object can itself have intrinsic mathematics.
-  Raw backend arrays erase that structure; treating every array as a tensor erases it in a different way.
-  The coefficient map records the framing, tensors record variance when that is the intended structure, and matrices retain their canonical Hom interpretation.
+- **Rationale**: Coordinates depend on the chosen basis, but the coordinate object has intrinsic mathematics: it is a function, so its values, its support, its composites and its images are the operations of `Sets().Mor(I, R)` and its subsets.
+  A dictionary keyed by labels pretends to be that function and replaces every one of those operations with index manipulation; building its support as a new finite set at each readout is also what made one rank-2 pairing cost milliseconds (2026-09-26).
+  Raw backend arrays erase the structure in the same way; treating every array as a tensor erases it differently.
 
-- **Violation Example**: `M.coordinate_vector(x)` returning `M_engine.V().coordinate_vector(...)`; representing `Hom_R(R^n,R^m)` by `tensor.matrix(...)`; passing a raw Sage matrix downstream to reconstruct a morphism later.
+- **Violation Example**: `M.framing_coefficients(x).items()`; `x.monomial_coefficients()`; `coefficients.get(label, zero)`; a readout that builds the support as a new finite ordered set; `M.coordinate_vector(x)` returning `M_engine.V().coordinate_vector(...)`; representing `Hom_R(R^n,R^m)` by `tensor.matrix(...)`; passing a raw Sage matrix downstream to reconstruct a morphism later.
 
-- **Correct Example**: Use `M.framing_coefficients(x)` for the finite support of an element.  Use a typed tensor for a genuine tensor coordinate array.  For finite framed free modules, `MatrixSpace(R,m,n)` is literally `Hom_R(F_R([n]),F_R([m]))`, and a matrix element is that module morphism itself.
+- **Correct Example**: `v.to_vector()(i)` is the coefficient of the basis element `i`; `v.support()` is a subset of `I` with its inclusion; `sum(a(i) * b(i) for i in v.support())` is a dot product over the support.  For finite free modules, `MatrixSpace(R,m,n)` is literally `Hom_R(F_R([n]),F_R([m]))`, and a matrix element is that module morphism itself.
 
 #### `API-06`: The Session Namespace and Literal Constructors Are Owned
 
