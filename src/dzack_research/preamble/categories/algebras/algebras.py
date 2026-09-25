@@ -157,32 +157,36 @@ class MultiplicativeAlgebraMorphism(Morphism):
         domain = self.domain()
         codomain = self.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
-        source_multiplication = domain.multiplication_morphism()
-        target_multiplication = codomain.multiplication_morphism()
-        tensor_square = linear.tensor_product_map(
-            linear,
-            source=source_multiplication.domain(),
-            target=target_multiplication.domain(),
-        )
-        derived = self._multiplicativity_derivation()
-        preserved = (
-            linear * source_multiplication == target_multiplication * tensor_square
-            if derived is None
-            else derived
-        )
-        assert preserved is not False, "the stated linear map does not preserve the multiplication"
         self._underlying_morphism = linear
-        self._tensor_square_morphism = tensor_square
         self._underlying_linearity = linear.linearity_decision()
+        derived = self._multiplicativity_derivation()
+        if derived is None:
+            source_multiplication = domain.multiplication_morphism()
+            target_multiplication = codomain.multiplication_morphism()
+            preserved = (
+                linear * source_multiplication
+                == target_multiplication * self.tensor_square_morphism()
+            )
+        else:
+            preserved = derived
+        assert preserved is not False, "the stated linear map does not preserve the multiplication"
         self._preserves_multiplication = preserved
 
     def underlying_morphism(self):
         r"""The linear map this algebra morphism is, in the module Mor."""
         return self._underlying_morphism
 
+    @cached_method
     def tensor_square_morphism(self):
         r"""\(f\otimes f\colon A\otimes_R A\to B\otimes_R B\)."""
-        return self._tensor_square_morphism
+        source_multiplication = self.domain().multiplication_morphism()
+        target_multiplication = self.codomain().multiplication_morphism()
+        linear = self.underlying_morphism()
+        return linear.tensor_product_map(
+            linear,
+            source=source_multiplication.domain(),
+            target=target_multiplication.domain(),
+        )
 
     def linearity_decision(self):
         r"""Return the retained linearity decision of the underlying module map."""
