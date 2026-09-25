@@ -457,20 +457,13 @@ These are not prerequisites for the required mathematics, complaint remediation,
   **Goal:** the moduli of stable pointed curves over the owned scheme categories. The category of stable graphs of type `(g, n)` with contractions and automorphisms, the stratification of `Mbar_{g,n}` by dual graphs, and charts for `M_{0,n}`, `Mbar_{0,n}`, `M_{1,n}`, `M_{2,n}`. The cited values (Harris-Morrison, Arbarello-Cornalba, Chan) become rows of `tests/test_known_mathematics.sage` with their citations. Prior art: `archives/dm-moduli-spike/`.
 
 - [ ] **`optional-sage-categories-property-layer`**. **Needs:** `terminal-session`.
-  **Goal:** adopt the property and axiom layer of `sage-categories` (github.com/dzackgarza/sage-categories) in place of the preamble's Sage joins, meets and axiom closure, once that library's `kernel-cat-complete` milestone closes. An assessment against its `21041b20` (2026-09-25) found its design avoids four of the preamble's failures:
-  - an axiom requires a membership predicate, so no stored datum becomes an axiom;
-  - intersections are pullbacks;
-  - hom objects are owned categories;
-  - a public name defined by two incomparable owners is an error.
-  sage-categories is the core that abstracts the Python and Sage class machinery away, so that leaves are only mathematics and backend CAS wiring. Mathematics it does not yet have -- resolutions, chain complexes, projective classes, lattices, forms, number fields -- are leaves to write on it, not gaps in it. The blockers are in the core:
-  - its own milestone A is open;
-  - owned objects are not Sage parents, so the canonical maps a session uses as coercions (`ZZ -> QQ`) need the core's arrow machinery to supply them;
-  - its own top complaint says leaf authors still need kernel internals, which is the premise of the core;
-  - membership is an uncached graph search plus SymPy;
-  - an import costs about 15 s and 1 GB, and it depends on Julia, GAP, Rust, Maude and OSCAR;
-  - its suite does not collect in the research Sage environment without that provisioning.
-  A full rebuild would replace about 12,800 of the preamble's 156,500 lines (`owned_category.py`, `owned_category_bases.py`, `refine.py`, `categories/abstract_categories/`) and re-declare the rest.
-  **First specimen:** `ZZ` and `QQ` in `Modules(ZZ)`, `QQ` refused by `Modules(ZZ).FinitelyGenerated()`, the intersection computed as a pullback, `ZZ -> QQ` an owned morphism, and coercion `ZZ -> QQ` still working.
+  **Goal:** rebuild the preamble's category machinery on the kernel and `Cat` core of `sage-categories` (github.com/dzackgarza/sage-categories), starting with its property layer. The core abstracts the Python and Sage class machinery so that leaves are mathematics and backend CAS wiring; mathematics it lacks (resolutions, chain complexes, lattices, forms, number fields) is leaves to write on it. State of its code at `21041b20` (2026-09-25):
+  - leaves are isolated from the kernel: none of its 54 leaf files under `algebra/`, `geometry/`, `sets/`, `order/` (13,512 lines) imports `kernel` or `cat_kernel`, and one refers to Sage's category machinery; they import `cat` (221 imports, of which 28 name private helpers, mostly `_firewall`);
+  - leaf code states constructions by their universal properties: `algebra/free_modules.py` builds the biproduct of modules from the limit and colimit of a discrete diagram in abelian groups and the module action as the lift of a cone;
+  - axioms require a membership predicate, intersections are pullbacks (`cat/properties.py`, `cat_kernel/axioms.py`), hom objects are owned categories, and a public name defined by two incomparable owners raises `SemanticCollisionError` (`kernel/compiler.py`), so the preamble's failures from Sage joins, meets, `Sets()` hom categories and shadowed methods do not arise;
+  - the core selects no canonical maps between objects: elements of two different objects never combine (`_combine` in `cat/structured_objects.py` asserts one owner), and no coercion mechanism exists in `cat/` or `kernel/`. A session that adds an integer to a rational, or divides an integer by a real, needs one.
+  The replaced preamble machinery is `owned_category.py`, `owned_category_bases.py`, `refine.py` and `categories/abstract_categories/` (about 12,800 of 156,500 lines); every mathematical category is re-declared through `structure_functors`, `ObjectType` and `Axiom`.
+  **First specimen:** `ZZ` and `QQ` as objects of `Modules(ZZ)`, `QQ` refused by `Modules(ZZ).FinitelyGenerated()`, `ZZ -> QQ` an owned morphism selected as the canonical map, and `ZZ(1) + QQ(1/2)` evaluating through it.
 
 - [ ] **`optional-database`**. **Needs:** `terminal-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
   **Goal:** Add a research database adapter only for a concrete mathematical query whose data materially benefits a live research workflow.
