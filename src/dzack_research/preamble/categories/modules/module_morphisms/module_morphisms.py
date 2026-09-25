@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _enumerated_ring_elements,
     _owned_ring,
 )
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -62,7 +63,7 @@ def _finite_generating_elements(module):
 
     ring = module.base_ring()
     match module:
-        case _ if module in FramedModules(ring) and module.module_generating_set().cardinality().is_finite():
+        case _ if module in FramedModules(ring) and Cardinalities().lt(module.module_generating_set().cardinality(), aleph0):
             return iter(module.module_generators())
         case _ if module in TensorProductModules(ring) and module.tensor_factors().cardinality() == 2:
             left = _finite_generating_elements(module.tensor_factor(0))
