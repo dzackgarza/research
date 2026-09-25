@@ -5077,7 +5077,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: A lattice element prints as `[1, 2]`; a quotient element prints only its Smith-coordinate vector; a generic module printer applies integer sign tricks that assume an ordered coefficient ring.
 
-- **Correct Example**: An element of `Free_R(S)` renders as its finite formal `R`-linear combination of the actual symbols in `S`, using each coefficient/symbol's own representation.  Explicit `M.framing_coefficients(x)` exposes coordinates when the researcher asks for them.
+- **Correct Example**: An element of `Free_R(S)` renders as its finite formal `R`-linear combination of the actual symbols in `S`, using each coefficient/symbol's own representation.  Explicit `x.to_vector()` exposes coordinates when the researcher asks for them.
 
 #### `API-10`: Public Mathematical Signatures Are Closed and Precise
 
@@ -5120,7 +5120,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Adding `M.gen(i)` to an owned free module because one lattice invariant still calls Sage's free-module API; adding `M.submodule(vectors)` because a discriminant-form routine expects Sage submodules.
 
-- **Correct Example**: Rewrite the consumers to use `module_generator`, `module_generating_set`, `framing_morphism`, `subobject_on`, `framing_coefficients`, `presentation_matrix`, `invariant_factors`, `smith_form_module_generators`, and `invariant_factor_form` as the mathematics requires.
+- **Correct Example**: Rewrite the consumers to use `module_generator`, `module_generating_set`, `framing_morphism`, `subobject_on`, `to_vector`, `framing_morphism().lift`, `presentation_matrix`, `invariant_factors`, `smith_form_module_generators`, and `invariant_factor_form` as the mathematics requires.
 
 #### `API-04`: Chosen Presentations Survive Engine Normalization
 
@@ -6329,7 +6329,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Asserting `M.coordinate_vector(x) == M._engine.coordinate_vector(x)`, `hasattr(M, "gen")`, or that an owned subobject is a Sage submodule.
 
-- **Correct Example**: Assert that `M.framing_coefficients(x)` gives the coefficients in the selected framing, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
+- **Correct Example**: Assert that `x.to_vector()` gives the coordinates in the chosen basis, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
 
 #### `DEV-07`: Ownership Migrations Rewrite Their Consumers; They Do Not Preserve the Leak
 
@@ -6341,7 +6341,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: After replacing a reclassed or backend-element free module by a genuinely owned module, keep `.gen()`, `.basis_matrix()`, and `.coordinate_vector()` because Internal Hom, free resolutions, and lattice invariants still use those names.
 
-- **Correct Example**: Rewrite those consumers to `module_generator`, `framing_coefficients`, morphism tensors, `presentation_matrix`, `subobject_on`, and the documented private engine crossing where a specialized Smith computation is genuinely irreducible; then delete the old engine spellings from the public surface.
+- **Correct Example**: Rewrite those consumers to `module_generator`, `to_vector`, `framing_morphism().lift`, morphism tensors, `presentation_matrix`, `subobject_on`, and the documented private engine crossing where a specialized Smith computation is genuinely irreducible; then delete the old engine spellings from the public surface.
 
 #### `DEV-08`: Promote Durable Repository Memory into Concrete Policy Codes
 
