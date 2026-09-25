@@ -6,6 +6,8 @@ possible limit and colimit.  That makes the inherited ``Cat`` operations
 mathematically determined without adding any accidental structure.
 """
 
+import pytest
+
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
@@ -21,6 +23,9 @@ def test_discrete_category_objects_retain_values_and_endpoint_mor() -> None:
     assert category in DiscreteCategories()
     assert p.discrete_category() is category
     assert p.value() == "p"
+    assert category.arrows().cardinality() == cardinal(2)
+    assert category.arrows().value("p") == category.identity(p)
+    assert category.arrows().value("q") == category.identity(q)
     assert p.Mor(p) is category.Mor(p, p)
     assert p.Mor(p).cardinality() == cardinal(1)
     assert p.Mor(q).cardinality() == cardinal(0)
@@ -129,6 +134,55 @@ def test_discrete_category_universal_constructions_return_the_only_object() -> N
     assert span.apex() is star
     assert span.left_leg() == identity
     assert span.right_leg() == identity
+
+
+def test_discrete_category_universal_maps_are_the_forced_identities() -> None:
+    category = _point_category()
+    star = category("*")
+    identity = star.Mor(star).identity()
+    product = category.product_construction((star, star))
+    coproduct = category.coproduct_construction((star, star))
+    equalizer = category.equalizer_construction(identity, identity)
+    coequalizer = category.coequalizer_construction(identity, identity)
+    product_shape = product.diagram().domain()
+    coproduct_shape = coproduct.diagram().domain()
+
+    assert product.structure_morphism(product_shape(0)) == identity
+    assert product.structure_morphism(product_shape(1)) == identity
+    assert coproduct.costructure_morphism(coproduct_shape(0)) == identity
+    assert coproduct.costructure_morphism(coproduct_shape(1)) == identity
+    assert product.factor(product.cone()).apex_map() == identity
+    assert coproduct.factor(coproduct.cocone()).apex_map() == identity
+    assert equalizer.factor(equalizer.cone()).apex_map() == identity
+    assert coequalizer.factor(coequalizer.cocone()).apex_map() == identity
+
+
+def test_two_distinct_objects_of_a_discrete_category_have_no_product_or_coproduct() -> None:
+    category = DiscreteCategory(Sets()(("p", "q")))
+    p = category("p")
+    q = category("q")
+
+    with pytest.raises(ValueError, match="does not exist"):
+        category.product((p, q))
+    with pytest.raises(ValueError, match="does not exist"):
+        category.coproduct((p, q))
+
+
+def test_finite_constant_diagram_in_the_point_category_has_forced_limit_and_colimit() -> None:
+    category = _point_category()
+    star = category("*")
+    identity = star.Mor(star).identity()
+    shape = DiscreteCategory(Sets()(("i", "j")))
+    diagrams = Cat().Mor(shape, category)
+    diagram = diagrams.constant_functor(star)
+    limit = category.Limits(shape).construction(diagram)
+    colimit = category.Colimits(shape).construction(diagram)
+
+    assert limit.object() is star
+    assert colimit.object() is star
+    for index in shape.objects():
+        assert limit.structure_morphism(index) == identity
+        assert colimit.costructure_morphism(index) == identity
 
 
 def test_discrete_category_opposite_presheaves_and_yoneda_have_the_standard_shapes() -> None:

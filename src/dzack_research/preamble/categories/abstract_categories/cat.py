@@ -741,10 +741,11 @@ class Cat(CategoryPacketMethods, Category):
                 f"a fiber product needs a cospan X -> Z <- Y, but {left_leg} ends at {left_leg.codomain()} "
                 f"and {right_leg} ends at {right_leg.codomain()}"
             )
-            total = self.product([left_leg.domain(), right_leg.domain()])
+            product = self.product_construction((left_leg.domain(), right_leg.domain()))
+            shape = product.diagram().domain()
             return self.equalizer(
-                left_leg * total.left_projection(),
-                right_leg * total.right_projection(),
+                left_leg * product.structure_morphism(shape(0)),
+                right_leg * product.structure_morphism(shape(1)),
             )
 
         def span(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
@@ -799,11 +800,13 @@ class Cat(CategoryPacketMethods, Category):
                 f"a pushout needs a span X <- Z -> Y, but {left_leg} starts at {left_leg.domain()} "
                 f"and {right_leg} starts at {right_leg.domain()}"
             )
-            total = self.coproduct([left_leg.codomain(), right_leg.codomain()])
-            labels = total.index_set()
+            coproduct = self.coproduct_construction(
+                (left_leg.codomain(), right_leg.codomain())
+            )
+            shape = coproduct.diagram().domain()
             return self.coequalizer(
-                total.injection(labels(0)) * left_leg,
-                total.injection(labels(1)) * right_leg,
+                coproduct.costructure_morphism(shape(0)) * left_leg,
+                coproduct.costructure_morphism(shape(1)) * right_leg,
             )
 
         def opposite(self) -> Category:
