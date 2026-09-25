@@ -456,6 +456,12 @@ These are not prerequisites for the required mathematics, complaint remediation,
 - [ ] **`optional-manifold-tangent-bundles`**. **Needs:** `terminal-session`.
   **Goal:** the tangent bundle of an object of `SmoothManifolds` (`categories/manifolds.py`) as an owned vector bundle, with its module of sections `Der(C^oo(M))`, realized through SageManifolds' tangent bundle privately. Specimen: `TS^1` trivial of rank 1.
 
+- [ ] **`optional-random-lattices-of-given-invariants`**. **Needs:** `terminal-session`.
+  **Goal:** random lattices in `Lattices(ZZ)` with a prescribed signature, determinant or rank, built as a random `SL(n, ZZ)` congruence `A^T G A` of a diagonal Gram matrix with Sage's randomness scoped by `seed()`, returning owned lattices, not matrices; and a random isotropic subgroup of a discriminant module (`categories/modules/framed/formed/discriminant_modules.py`, next to `isotropic_subgroups`), feeding `overlattice`. Prior art and its tests: `archives/random-lattice-constructors/`. State the limit: congruence of a diagonal form reaches only odd unimodular lattices, so a random lattice within a genus needs a different construction.
+
+- [ ] **`optional-moduli-of-stable-curves`**. **Needs:** `terminal-session`.
+  **Goal:** the moduli of stable pointed curves over the owned scheme categories. The category of stable graphs of type `(g, n)` with contractions and automorphisms, the stratification of `Mbar_{g,n}` by dual graphs, and charts for `M_{0,n}`, `Mbar_{0,n}`, `M_{1,n}`, `M_{2,n}`. The cited values (Harris-Morrison, Arbarello-Cornalba, Chan) become rows of `tests/test_known_mathematics.sage` with their citations. Prior art: `archives/dm-moduli-spike/`.
+
 - [ ] **`optional-database`**. **Needs:** `terminal-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
   **Goal:** Add a research database adapter only for a concrete mathematical query whose data materially benefits a live research workflow.
   Select a concrete mathematical query before provisioning an adapter.
