@@ -567,44 +567,8 @@ ellipsis_range = _language_runtime.ellipsis_range
 ellipsis_iter = _language_runtime.ellipsis_iter
 
 
-def _realize_owned_categories_over(_ring) -> None:
-    r"""Create every owned category over ``_ring``, in one fixed order.
-
-    Sage orders a category's supercategories for class construction by
-    ``_cmp_key``, which is ``(flag, counter)`` with a global counter assigned
-    the first time a category is touched.  Sage's own graph is created while
-    ``sage.categories.all`` imports, so that order is the same every run.  The
-    owned graph is created lazily as a session reaches into it, so the counters
-    -- and with them the bases of every parent class -- depend on what the
-    session happened to build first.  Two sibling categories then linearize
-    their shared supercategories in opposite orders and a category above both
-    cannot be built at all: ``Lattices(ZZ)("A2").discriminant_group()`` raised
-    in a fresh session and succeeded after ``E8``'s.
-
-    Creating them here fixes the counters before a session can. Sorting by name
-    is what makes the order a property of the source rather than of the run.
-
-    ``ZZ`` alone, because the counter belongs to the category object and not to
-    its class, so this settles the categories over the initial ring and leaves a
-    category over any other ring to be created when a session first reaches it.
-    Extending the tuple below is how another ring joins them.
-    """
-    session = globals()
-    for _name in sorted(session):
-        _value = session[_name]
-        if isinstance(_value, type) and _value is not OwnedCategoryOverBaseRing and issubclass(_value, OwnedCategoryOverBaseRing):
-            _value(_ring)._cmp_key
-
-
-for _initial_ring in (globals()["ZZ"],):
-    _realize_owned_categories_over(_initial_ring)
-
-
-# The catalogue constructs named lattices at import time.  Keep that work
-# after the deterministic category realization above: constructing ``U`` or
-# ``E8`` earlier forces parent classes before all owned ``ZZ`` categories have
-# stable comparison keys, reintroducing the order-dependent MRO failure this
-# realization step exists to prevent.
+# The catalogue constructs named lattices at import time, so it is imported
+# last, after every name it uses exists.
 from dzack_research.preamble.catalogue import (  # noqa: E402,F401
     Embeddings,
     Involutions,
