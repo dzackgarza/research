@@ -470,6 +470,19 @@ The first full execution of the suite since the tree stopped importing (2026-09-
   Each is a construction on its owner, with the maps that relate them: chambers to group elements, apartments into buildings, and the Coxeter complex into the Tits cone. Theory and leads: `docs/theory/coxeter-groups-complexes-and-cell-structures.md`.
   **Closure specimens:** `Sigma(A_2)` is a hexagon, a triangulated `S^1` with 6 chambers. `Sigma` of the affine `A_1` group is a triangulated line. The Davis complex of the infinite dihedral group is a line. The building of `SL_3(F_2)` has 21 chambers and apartments that are hexagons.
 
+- [ ] **`modular-forms-and-hecke-algebras`**. **Needs:** `finite-index-subgroup-generators`, `operations-sited-where-defined`.
+  **Owner and delta:**
+  - Congruence subgroups of `SL_n(ZZ)` (`Γ(N)`, and `Γ_0(N)` and `Γ_1(N)` for `n = 2`) as subobjects with their inclusions and generators.
+  - The modular curves `Y_0(N)`, `X_0(N)`, `Y_1(N)`, `X_1(N)` and `X(N)`, with cusps, genus, and their moduli interpretation.
+  - Modular and cusp forms `M_k(Γ)` and `S_k(Γ)`, with Fourier (q-)expansions, inside the general setting of automorphic forms.
+  - The Hecke operators `T_n` and the Hecke algebra they generate, with its eigenforms.
+  - L-functions `L(s) = Σ a_n n^{-s}` with their Euler factorizations. Point counts of varieties over `ZZ` enter them: for an elliptic curve, `a_p = p + 1 − #E(F_p)`.
+  - The modularity correspondences: an elliptic curve `E/QQ` of conductor `N` with a newform in `S_2(Γ_0(N))`, a parametrization `X_0(N) → E`, and `E` as an isogeny factor of `J_0(N)`; and abelian varieties `A_f` by Eichler–Shimura.
+  - Isogenies and isogeny classes.
+  - Torsion points `E[n] = (1/n)Λ/Λ` of complex tori `ℂ^g/Λ`, found as the lattice points of `(1/n)Λ` in a fundamental domain.
+  Sage, PARI and LMFDB are private engines and specimen sources. Theory and leads: `docs/theory/modular-forms-and-hecke-operators.md`.
+  **Closure specimens:** `[SL_2(ZZ) : Γ_0(11)] = 12`, and `X_0(11)` has genus 1. `S_2(Γ_0(11))` is spanned by `q ∏ (1 − q^n)^2 (1 − q^{11n})^2`, whose `a_p` agree with `p + 1 − #E(F_p)` for `E = 11a1` at good primes. `T_2` acts on that form by `a_2 = −2`. `E[2]` of `ℂ/(ZZ + ZZi)` has 4 points.
+
 ## Common categorical authority and public boundaries
 
 - [ ] **`genera-are-finite-sets-of-isometry-classes`**. **Needs:** none.
