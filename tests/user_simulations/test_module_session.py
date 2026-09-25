@@ -95,7 +95,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert morphism.kernel().module_rank() == 0
     assert morphism.image().module_rank() == 3
     assert morphism.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
-    assert (morphism * morphism)(e0) == 2 * e1
+    assert (morphism * morphism)(e0) == e2
     assert morphism.kernel().module_rank() + morphism.image().module_rank() == 3
 
     # Base change to the fraction field, and localization where it applies.
