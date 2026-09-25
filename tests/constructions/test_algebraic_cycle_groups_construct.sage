@@ -11,3 +11,5 @@ def test_projective_plane_curve_cycles_are_algebraic_cycles() -> None:
     assert cycles.cycle_scheme() is plane
     assert cycles.cycle_dimension() == 1
     assert cycles.cycle_codimension() == 1
+    prime = next(iter(cycles.module_generating_set()))
+    assert cycles.prime_cycle(prime) == cycles.module_generator(prime)
