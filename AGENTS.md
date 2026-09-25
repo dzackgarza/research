@@ -1543,7 +1543,7 @@ coercion. The category owns its forgetful functor; no object-level `forget_*`
 forwarding API is introduced.
 
 `CON-16` and `OWN-15`--`OWN-17` own this distinction. Actual mathematical maps
-remain mandatory: inclusions, projections, selected framings, scalar-change
+remain mandatory: inclusions, projections, selected resolutions and bases, scalar-change
 units/counits and genuine chosen isomorphisms are not wrapper identifications.
 A free algebra's generating module and its full underlying module are different
 mathematical data and must not be merged merely to remove a source accessor.
@@ -1955,16 +1955,17 @@ Two kinds of subcategory, and the distinction decides method placement.
   statement, so its methods are predicates answered by placement
   (`is_finite` returns `True` because membership states it) and theorems the
   property entails.
-- A *data* subcategory states that members carry a chosen datum: a framing
-  (a chosen generating epimorphism $F(S)\twoheadrightarrow X$ from a free
-  object), a chosen presentation (a framing plus chosen free relations), a
-  chosen basis. Its methods consume the datum.
+- A chosen datum states that members carry a choice: a chosen generating
+  epimorphism $F(S)\twoheadrightarrow X$ from a free object, a chosen
+  presentation (that epimorphism plus chosen free relations), a chosen basis.
+  The first three are truncated resolutions and live in the category of
+  resolutions over the base (`CAT-29`); its methods consume the datum.
 
 A property is the propositional truncation of the corresponding data
-category: finitely generated = "some finite 1-framing exists"; finitely
-presented = "some finite 2-framing exists"; $FP_n$ continues through chosen
-syzygies, and each extension of a framing to the next level is itself a
-choice. So a method that consumes a choice lives on the data subcategory and
+category: finitely generated = "some resolution finite in degree 0 exists";
+finitely presented = "finite through truncation 1"; $FP_n$ continues through
+chosen syzygies, and each extension of a resolution to the next degree is
+itself a choice. So a method that consumes a choice lives on the data subcategory and
 never on the property one. A group can be provably finitely presented
 (arithmeticity) while no practical presentation algorithm exists; asking it
 for a presenting free group must be an absence, not a computation.
@@ -1979,27 +1980,51 @@ tower). Where the surrounding category supports it, prefer the principled
 package — an augmented chain complex for additive data, a DGA only when the
 resolution must carry multiplication — over loose tuples of maps.
 
-`C.Framed()` is the category of pairs `(x, Fr(x))`: `x` together with its
-chosen framing, supplied at construction. The image of `Free_C : Sets -> C` is
-framed by the identity, since the set it is free on was supplied. A framing
-travels along a forgetful functor, and what it becomes is decided by the
-mathematics of that functor, not by the axiom: `U : Alg_R -> Mod_R` carries
-the algebra framing `Free_Alg(S) -> A` to the module framing
-`Free_Mod(Mon(S)) -> U(A)`, the words in `S` spanning `A`. Finiteness is not
-preserved: `R[x]` is framed as an algebra by one generator, and `U(R[x])` is
-framed by the infinitely many monomials. An object placed in a framed
-category through a forgetful functor therefore receives the transported
-framing when it is constructed.
+Chosen generating sets, presentations and syzygy towers are truncations of
+one datum, a resolution, and they live in a category of resolutions over `C`
+(`CAT-29`), not in an axiom subcategory. Fix a projective class `P` in `C`,
+usually the retracts of the free objects `G(X)` for the free/forgetful
+comonad `G = FU`. `Res_{P,n}(C) -> C` has as fibre over `X` the augmented
+simplicial objects `P_* -> X`, truncated at `n`, levelwise in `P`, acyclic
+through `n`; `n = infinity` is a cofibrant replacement, and for modules
+Dold-Kan returns augmented chain complexes. Levelwise conditions pull back
+property classifiers along degree evaluation; acyclicity and length are
+global. Truncation (how far the resolution is chosen) and length (above which
+degree it vanishes) are different indices: a generating epimorphism
+`F(S) ->> X` is truncation 0, a presentation truncation 1, `FP_n` finiteness
+through truncation `n`. Every object is resolvable -- the counit
+`F(UX) ->> X` starts the canonical comonadic resolution -- so resolvability is
+never an axiom; frameability conditions (free, stably free, finitely
+generated, finitely presented, `FP_n`, finite length) are the relative
+properties.
+
+A *framing* is a length-0 resolution by free objects, `0 -> F(S) -> X -> 0`
+exact, i.e. a basis; free modules with a chosen basis are the framed
+modules. *Framed* in the geometric sense is the manifold notion: a framed
+manifold carries a length-0 resolution of its tangent bundle by trivial
+bundles, a trivialization of `TX` (nLab *framed manifold*, the `G = {e}`
+G-structure); a stable framing trivializes `TX + R^k`, a framing after
+stabilization. Through Serre-Swan a trivialization of `TM` is a basis of
+`Der(C^oo(M))`, and for an algebra the resolution computes the cotangent
+complex whose trivialization is the algebraic framing.
+
+A resolution travels along a forgetful functor, and what it becomes is
+decided by the mathematics of that functor: `U : Alg_R -> Mod_R` carries the
+algebra generating epimorphism `Free_Alg(S) ->> A` to the module one
+`Free_Mod(Mon(S)) ->> U(A)`, the words in `S` spanning `A`. Finiteness is not
+preserved: `R[x]` is generated as an algebra by one element, and `U(R[x])`
+needs the infinitely many monomials.
 
 ## Axioms live as high up as possible
 
 An axiomatic subcategory is declared once, at the highest category that can
 state it, and reached by `with_axiom` (the axiom name registered in
-`sage.categories.category_with_axiom.all_axioms`). `Framed` is the model
-case: one global axiom whose category owns everything derivable from the
-framing datum — generating set, generators, counts, presentation display —
-so that groups, modules, and algebras share one contract instead of three
-restatements.
+`sage.categories.category_with_axiom.all_axioms`). An axiom is a property.
+A chosen datum is never an axiom: Sage's joins close under axioms, so a
+datum registered as one propagates across the branches of every join as
+though each branch had it. The retired `Framed` axiom did exactly that
+(`CAT-29`). What groups, modules and algebras share about chosen generators
+is one contract on the category of resolutions, not one axiom.
 
 Duplication is the diagnostic: if two parallel categories restate the same
 contract or the same derived method, the axiom was attached too low. Never
@@ -2069,7 +2094,7 @@ or old framed-algebra/group intake classes
 are migration specimens, not patterns to copy.
 
 Constructions are uniformized as high as their mathematics allows: one free functor for the
-relevant category, one framing contract, one universal construction. A new capability is new
+relevant category, one resolution contract, one universal construction. A new capability is new
 owned category/type content plus only the representation machinery genuinely required by the
 host; it is never a parallel class hierarchy.
 
