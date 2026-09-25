@@ -4728,7 +4728,7 @@ def _torsion_module_presented_by_matrix(
         if module_generating_set is None
         else finite_ordered_set(module_generating_set)
     )
-    if labels.cardinality() != width:
+    if labels.cardinality() != cardinal(width):
         raise ValueError(
             "the module-generating set and relation matrix have different widths"
         )
