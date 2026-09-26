@@ -53,6 +53,8 @@ def test_centralizers_of_a_transposition_and_a_four_cycle_in_s4() -> None:
     cycle_centralizer = group.centralizer(group((1, 2, 3, 4)))
 
     assert transposition_centralizer.order() == 4
+    assert transposition_centralizer.inclusion().codomain() is group
+    assert transposition_centralizer.group_generators().cardinality().is_finite()
     assert transposition_centralizer.is_isomorphic_to(Groups.V4())
     assert group((3, 4)) in transposition_centralizer
     assert group((1, 3)) not in transposition_centralizer

@@ -70,6 +70,8 @@ def test_finite_group_subgroups_are_owned_and_keep_the_ambient_group() -> None:
     assert subgroups.cardinality() == 4
     assert tuple(subgroup.cardinality() for subgroup in subgroups) == (1, 2, 3, 6)
     assert all(subgroup.supergroup() is cyclic for subgroup in subgroups)
+    assert all(subgroup.inclusion().codomain() is cyclic for subgroup in subgroups)
+    assert all(subgroup.group_generators().cardinality().is_finite() for subgroup in subgroups)
 
 
 def test_the_three_cycle_generates_the_index_two_subgroup_a3_of_s3() -> None:

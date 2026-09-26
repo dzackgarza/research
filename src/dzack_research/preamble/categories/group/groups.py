@@ -1181,12 +1181,15 @@ def _own_group(
 
 def _transported_subgroup(group, engine_subgroup):
     r"""Return the subgroup of ``group`` computed by ``engine_subgroup``."""
-    return _object_of(
+    subgroup = _object_of(
         Cat().meet((_owned_group_category(engine_subgroup), Subgroups(group))),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
         supergroup=group,
     )
+    if _is_finitely_generated_witness(engine_subgroup):
+        _fix_selected_group_resolution(subgroup)
+    return subgroup
 
 
 def _generated_subgroup(group, engine_subgroup, generators):
