@@ -569,16 +569,31 @@ def Grp(category):
     return InternalGroupObjects(category)
 
 
-class EquivariantMorphism(Morphism):
+class EquivariantMorphismMethods:
     r"""A morphism of ``C`` between two ``G``-objects that commutes with the actions."""
 
-    def __init__(self, parent, arrow) -> None:
-        Morphism.__init__(self, parent)
-        self._arrow = arrow
+    def __init__(self, parent, arrow, *, equivariance_decision=None) -> None:
+        arrow = parent.underlying_mor()(arrow)
+        decision = (
+            parent.is_equivariant(arrow)
+            if equivariance_decision is None
+            else equivariance_decision
+        )
+        if decision is not True:
+            raise ValueError(
+                f"{arrow} is not known to be equivariant from {parent.domain()} to {parent.codomain()}"
+            )
+        if not hasattr(arrow, "_transport_initialization_to_mor"):
+            raise TypeError(
+                f"cannot thread the arrow type of {parent} through {arrow.parent()}: "
+                f"{arrow} has no representation-transport protocol"
+            )
+        args, options = arrow._transport_initialization_to_mor(parent)
+        super().__init__(*args, **options)
 
     def underlying_arrow(self):
         r"""Return the same morphism read in the underlying category."""
-        return self._arrow
+        return self.parent().underlying_mor()(self)
 
     def natural_transformation(self):
         r"""Return the corresponding natural transformation between action functors."""
@@ -591,7 +606,7 @@ class EquivariantMorphism(Morphism):
         ).morphism()
 
     def _call_(self, element):
-        return self._arrow(element)
+        return self.underlying_arrow()(element)
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():
@@ -602,7 +617,7 @@ class EquivariantMorphism(Morphism):
     def __eq__(self, other) -> bool:
         r"""Equal when the underlying morphisms of ``C`` are; ``other`` may be either."""
         match other:
-            case EquivariantMorphism():
+            case EquivariantMorphismMethods():
                 other = other.underlying_arrow()
         return self.underlying_arrow() == other
 
@@ -614,6 +629,10 @@ class EquivariantMorphism(Morphism):
 
     def _repr_(self) -> str:
         return f"Equivariant {self.underlying_arrow()}"
+
+
+class EquivariantMorphism(EquivariantMorphismMethods, Morphism):
+    r"""Compatibility shell for private equivariant-arrow realizations."""
 
 
 class ExternalInternalActionComparison(SageObject):
@@ -642,7 +661,7 @@ class GObjectMor(CategoricalMor):
     represented as finite.
     """
 
-    Element = EquivariantMorphism
+    ElementMethods = EquivariantMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         assert domain.acting_group() is codomain.acting_group(), (
@@ -685,17 +704,12 @@ class GObjectMor(CategoricalMor):
         )
 
     def _from_equivariant_arrow(self, arrow):
-        r"""Wrap an arrow whose equivariance follows from its construction."""
-        return self.element_class(self, arrow)
+        r"""Construct from an arrow whose equivariance follows from its construction."""
+        return self.element_class(self, arrow, equivariance_decision=True)
 
     def _element_constructor_(self, datum):
         arrow = self.underlying_mor()(datum)
-        if self.is_equivariant(arrow) is not True:
-            raise ValueError(
-                f"{arrow} is not equivariant from {self.domain()} to {self.codomain()}: it "
-                f"is not known to commute with the {self.domain().acting_group()}-actions"
-            )
-        return self._from_equivariant_arrow(arrow)
+        return self.element_class(self, arrow)
 
     def identity(self):
         assert self.domain() is self.codomain(), (

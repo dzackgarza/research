@@ -427,6 +427,16 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
 
+        def _transport_initialization_to_mor(self, mor):
+            r"""Return cooperative constructor data for this arrow in ``mor``.
+
+            The default lower-arrow representation is itself admissible as
+            the datum of the same mathematical arrow with stronger structure.
+            Representation owners whose constructor has a different shape
+            override this protected protocol at that owner.
+            """
+            return (mor, self), {}
+
     @cached_method
     def _generated_arrow_type(self) -> type:
         r"""Return the arrow type generated from this Mor category's graph."""

@@ -596,6 +596,18 @@ class SchemeMorphismMethods:
             point_coordinates=self._represented_point_coordinates(),
         )
 
+    def _transport_initialization_to_mor(self, mor):
+        r"""Retain this scheme-map representation while adding stronger arrow structure."""
+        return (
+            (self._native_morphism,),
+            {
+                "mor": mor,
+                "pullback": self._coordinate_pullback,
+                "cone_construction": self.cone_construction(),
+                "point_coordinates": self._represented_point_coordinates(),
+            },
+        )
+
     def _represented_coordinate_pullback(self):
         return self._coordinate_pullback
 
