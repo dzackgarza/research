@@ -1825,6 +1825,15 @@ class GroupMorphism:
         )
 
     @cached_method
+    def coset_cokernel(self):
+        r"""Return ``G'/f(G)`` as the pointed transitive left ``G'``-set of image cosets."""
+        return self.codomain().left_cosets(self.image())
+
+    def coset_cokernel_projection(self):
+        r"""Return the equivariant projection ``G' -> G'/f(G)`` of left ``G'``-sets."""
+        return self.coset_cokernel().projection()
+
+    @cached_method
     def _cokernel_data(self):
         r"""Return the quotient of the codomain by the normal closure of the image."""
         codomain = self.codomain()
@@ -2973,7 +2982,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             r"""Return the represented left-coset space ``G/H``."""
             match self:
                 case _ if self in OwnedFiniteGroups():
-                    return _engine_cosets(self, subgroup, "left")
+                    from dzack_research.preamble.categories.group.g_sets import (
+                        _left_coset_g_set,
+                    )
+
+                    return _left_coset_g_set(self, subgroup)
                 case _:
                     assert False, (
                         f"the left cosets of {subgroup} in {self} are defined, but the current "

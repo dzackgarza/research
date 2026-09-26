@@ -41,8 +41,13 @@ def test_a_transposition_of_s3_has_three_left_and_three_right_cosets() -> None:
     r"""$[S_3 : \langle (1\,2) \rangle] = 3$."""
     group = Groups.S(3)
     subgroup = group.subgroup((group((1, 2)),))
+    left = group.left_cosets(subgroup)
 
-    assert group.left_cosets(subgroup).cardinality() == cardinal(3)
+    assert left.cardinality() == cardinal(3)
+    assert left in FiniteGSets(group)
+    assert group.one() in left.base_point()
+    assert left.projection().codomain() is left
+    assert left.is_transitive_action()
     assert group.right_cosets(subgroup).cardinality() == cardinal(3)
 
 
@@ -123,8 +128,26 @@ def test_the_cokernel_of_the_inclusion_of_a3_in_s3_is_c2() -> None:
     r"""$A_3 \trianglelefteq S_3$ has index $2$, so $S_3 / A_3 \cong C_2$."""
     group = Groups.S(3)
     alternating = group.subgroup((group((1, 2, 3)),))
+    cosets = group.left_cosets(alternating)
+    comparison = cosets.normal_quotient_comparison()
 
     assert alternating.inclusion().cokernel().order() == 2
+    assert comparison.codomain().order() == 2
+    assert comparison(cosets.base_point()) == comparison.codomain().one()
+
+
+def test_a_finite_group_morphism_has_its_image_coset_cokernel_as_a_pointed_set() -> None:
+    r"""For $C_2 \to S_3$ with image a transposition, $S_3/f(C_2)$ has three points."""
+    source = Groups.C(2)
+    target = Groups.S(3)
+    morphism = source.Mor(target)(
+        {source.group_generators()[0]: target((1, 2))}
+    )
+    cosets = morphism.coset_cokernel()
+
+    assert cosets.cardinality() == cardinal(3)
+    assert morphism.coset_cokernel_projection().codomain() is cosets
+    assert target.one() in cosets.base_point()
 
 
 def test_the_abelianization_of_s3_is_c2() -> None:

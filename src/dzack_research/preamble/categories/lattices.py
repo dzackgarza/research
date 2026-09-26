@@ -3767,16 +3767,11 @@ class DiscriminantReductionSequence:
     def cokernel_projection(self):
         r"""Return \(O(A_L)\to C_L=O(A_L)/f(O(L))\).
 
-        \(O(A_L)\) is finite; GAP decides whether \(f(O(L))\) is normal in
-        it and forms the quotient group.
+        This is the equivariant projection to the left-coset pointed set.
+        When the image is normal, that coset space is canonically the ordinary
+        group cokernel.
         """
-        inclusion = self.image().inclusion()
-        assert inclusion.is_normal(), (
-            f"the discriminant reduction cokernel O(A_L)/f(O(L)) of {self._lattice!r} is not a group: the "
-            f"image f(O(L)) is not normal in O(A_L), so 1 -> ~O(L) -> O(L) -> O(A_L) -> C_L -> 1 is not an "
-            f"exact sequence of groups, and O(A_L)/f(O(L)) is the transitive O(A_L)-set of cosets"
-        )
-        return inclusion.cokernel_projection()
+        return self.morphism().coset_cokernel_projection()
 
     def cokernel(self):
         r"""Return the discriminant reduction cokernel \(C_L=O(A_L)/f(O(L))\)."""

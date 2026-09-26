@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObje
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
+    _engine_cosets,
     _integer_engine_point,
     _own_group,
     _owned_group,
@@ -331,6 +332,85 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             return f"{self.point_set()} with {self.acting_group()}-action"
 
 
+class LeftCosetGSets(OwnedParameterizedCategory):
+    r"""The represented transitive left-coset ``G``-sets ``G/H``."""
+
+    def parameter_category(self):
+        from dzack_research.preamble.categories.group.groups import Subgroups
+
+        subgroup = self.parameter()
+        return Subgroups(subgroup.supergroup())
+
+    def subgroup(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [FiniteGSets(self.subgroup().supergroup())]
+
+    def an_object(self):
+        subgroup = self.subgroup()
+        return _left_coset_g_set(subgroup.supergroup(), subgroup)
+
+    class ParentMethods:
+        def __init__(self, coset_subgroup, **rest) -> None:
+            self._coset_subgroup = coset_subgroup
+            super().__init__(**rest)
+
+        def subgroup(self):
+            r"""Return ``H <= G`` for this represented left-coset ``G/H``."""
+            return self._coset_subgroup
+
+        def coset_of(self, element):
+            r"""Return the unique left coset containing ``element``."""
+            group = self.acting_group()
+            element = group(element)
+            for coset in self.point_set():
+                if element in coset:
+                    return coset
+            raise ArithmeticError(
+                f"{element} belongs to no represented left coset of {self.subgroup()} in {group}"
+            )
+
+        def base_point(self):
+            r"""Return the distinguished point ``H`` of ``G/H``."""
+            return self.coset_of(self.acting_group().one())
+
+        @cached_method
+        def regular_g_set(self):
+            r"""Return ``G`` with its left regular action."""
+            group = self.acting_group()
+            points = finite_ordered_set(tuple(group))
+            return FiniteGSets(group)(
+                points,
+                lambda group_element, point: group_element * point,
+            )
+
+        @cached_method
+        def projection(self):
+            r"""Return the equivariant quotient map ``G -> G/H`` of left ``G``-sets."""
+            regular = self.regular_g_set()
+            return regular.Mor(self)(lambda element: self.coset_of(element))
+
+        @cached_method
+        def normal_quotient_comparison(self):
+            r"""Return the canonical set isomorphism ``G/H ~= coker(H -> G)`` when ``H`` is normal."""
+            inclusion = self.subgroup().inclusion()
+            assert inclusion.is_normal(), (
+                f"{self.subgroup()} is not normal in {self.acting_group()}, so {self} has no quotient-group structure"
+            )
+            quotient = inclusion.cokernel()
+            quotient_projection = inclusion.cokernel_projection()
+            forward = Sets().Mor(self, quotient)(
+                lambda coset: quotient_projection(next(iter(coset)))
+            )
+            inverse = Sets().Mor(quotient, self)(
+                lambda quotient_element: self.coset_of(
+                    quotient_projection.lift(quotient_element)
+                )
+            )
+            return Sets().Core().Mor(self, quotient)(forward, inverse)
+
+
 class GSetMorphismMethods:
     r"""A set map checked to commute with the represented group actions."""
 
@@ -584,7 +664,14 @@ def _owned_point_set(point_set):
     return finite_ordered_set(tuple(own_point(point) for point in point_set))
 
 
-def _finite_g_set_from_action(group, point_set, action):
+def _finite_g_set_from_action(
+    group,
+    point_set,
+    action,
+    *,
+    category=None,
+    construction_data=None,
+):
     r"""Construct a represented finite ``G``-set from a binary action.
 
     ``action(g, x)`` is read into the defining group morphism
@@ -629,10 +716,45 @@ def _finite_g_set_from_action(group, point_set, action):
                 f"cannot form the action of {group} on {point_set}: {group} has no chosen "
                 f"group generators and is not known to be finite"
             )
+    selected_category = (
+        FiniteGSets(permutation_representation.domain())
+        if category is None
+        else category
+    )
     return _object_of(
-        FiniteGSets(permutation_representation.domain()),
+        selected_category,
         point_set=point_set,
         permutation_representation=permutation_representation,
+        **dict(construction_data or {}),
+    )
+
+
+def _left_coset_g_set(group, subgroup):
+    r"""Return ``G/H`` as its pointed transitive left ``G``-set."""
+    group = _owned_group(group)
+    if subgroup.supergroup() is not group:
+        raise ValueError(
+            f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
+        )
+    cosets = _engine_cosets(group, subgroup, "left")
+
+    def coset_of(element):
+        element = group(element)
+        for coset in cosets:
+            if element in coset:
+                return coset
+        raise ArithmeticError(
+            f"{element} belongs to no represented left coset of {subgroup} in {group}"
+        )
+
+    return _finite_g_set_from_action(
+        group,
+        cosets,
+        lambda group_element, coset: coset_of(
+            group_element * next(iter(coset))
+        ),
+        category=LeftCosetGSets(subgroup),
+        construction_data={"coset_subgroup": subgroup},
     )
 
 
@@ -716,6 +838,7 @@ class Torsors(OwnedParameterizedCategory):
 
 __all__ = [
     "FiniteGSets",
+    "LeftCosetGSets",
     "GSetMor",
     "GSetMorphism",
     "OrbitSets",

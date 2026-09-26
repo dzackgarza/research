@@ -44,7 +44,7 @@ def test_the_discriminant_reduction_sequence_of_a2() -> None:
     assert sequence.target().order() == 2
     assert sequence.kernel().order() == 6
     assert sequence.kernel_inclusion().codomain() is sequence.source()
-    assert sequence.cokernel().order() == 1
+    assert sequence.cokernel().cardinality() == cardinal(1)
 
 
 def test_the_discriminant_reduction_sequence_of_a1() -> None:
@@ -56,7 +56,21 @@ def test_the_discriminant_reduction_sequence_of_a1() -> None:
     assert sequence.target().order() == 1
     assert sequence.kernel().order() == 2
     assert sequence.source().order() == 2
-    assert sequence.cokernel().order() == 1
+    assert sequence.cokernel().cardinality() == cardinal(1)
+
+
+def test_the_discriminant_reduction_cokernel_can_be_a_nonnormal_coset_space() -> None:
+    r"""For $A_2\oplus A_2\oplus E_6$, the image has order $16$ in a target of order $48$ and is not normal."""
+    lattice = Lattices(ZZ)("A2") + Lattices(ZZ)("A2") + Lattices(ZZ)("E6")
+    sequence = lattice.discriminant_reduction_sequence()
+    cokernel = sequence.cokernel()
+
+    assert sequence.target().order() == 48
+    assert sequence.image().order() == 16
+    assert not sequence.image().inclusion().is_normal()
+    assert cokernel in FiniteGSets(sequence.target())
+    assert cokernel.cardinality() == cardinal(3)
+    assert sequence.cokernel_projection().codomain() is cokernel
 
 
 def test_the_spinor_norm_is_the_whole_square_class() -> None:
