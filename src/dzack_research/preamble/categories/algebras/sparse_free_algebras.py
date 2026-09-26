@@ -3,7 +3,7 @@ r"""Tensor and symmetric products on the module of relationful words."""
 from math import prod
 from typing import Any
 
-from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
@@ -161,16 +161,22 @@ def _compose_with_free_construction(left, right):
     return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(linear)
 
 
-class SparseFreeAlgebraMorphism(Morphism):
+class SparseFreeAlgebraMorphism:
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
+
     def __init__(self, parent, images) -> None:
-        Morphism.__init__(self, parent)
-        domain = self.domain()
+        domain = parent.domain()
+        codomain = parent.codomain()
         labels = domain.algebra_generating_set()
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             self._generator_images = indexed_family(
                 labels,
-                lambda label: self.codomain()(images[source_indices(label)]),
+                lambda label: codomain(images[source_indices(label)]),
                 name="Generator images",
             )
         elif isinstance(images, dict):
@@ -187,13 +193,13 @@ class SparseFreeAlgebraMorphism(Morphism):
                 )
             self._generator_images = indexed_family(
                 labels,
-                lambda label: self.codomain()(images[label]),
+                lambda label: codomain(images[label]),
                 name="Generator images",
             )
         elif callable(images):
             self._generator_images = indexed_family(
                 labels,
-                lambda label: self.codomain()(images(label)),
+                lambda label: codomain(images(label)),
                 name="Generator images",
             )
         else:
@@ -202,6 +208,12 @@ class SparseFreeAlgebraMorphism(Morphism):
             )
         self._raw_image = self._generator_images.value
         self._component_maps: dict[Any, Any] = {}
+        linear = domain.module_category().Mor(
+            domain, codomain
+        )._from_constructed_element_map(
+            lambda element: self._call_(element)
+        )
+        super().__init__(parent, linear)
 
     def algebra_generator_images(self):
         return self._generator_images
@@ -260,7 +272,7 @@ class SparseFreeAlgebraMorphism(Morphism):
 
 
 class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
-    Element = SparseFreeAlgebraMorphism
+    ElementMethods = SparseFreeAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         assert domain in TensorAlgebras(domain.base_ring()) or domain in SymmetricAlgebras(domain.base_ring()), (
