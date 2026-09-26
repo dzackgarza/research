@@ -30,7 +30,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     ModuleMor,
-    ModuleMorphism,
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -215,7 +214,7 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
             return self.power_source().divided_power_algebra()
 
 
-class QuadraticModuleMorphism(ModuleMorphism):
+class QuadraticModuleMorphism:
     r"""A classifier ``Gamma^2(M) -> W``, read as the quadratic map ``M -> W``."""
 
     def __init__(self, parent, images, *, lift_coordinate_values=None) -> None:
@@ -355,7 +354,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
 class QuadraticModuleMor(ModuleMor):
     r"""The ordinary Hom ``Hom_R(Gamma^2(M),W)`` with quadratic-map syntax."""
 
-    Element = QuadraticModuleMorphism
+    ElementMethods = QuadraticModuleMorphism
 
     def _from_classifying_morphism(self, morphism, *, lift_coordinate_values=None):
         if morphism.domain() is not self.domain() or morphism.codomain() is not self.codomain():
