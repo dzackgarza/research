@@ -412,7 +412,7 @@ def _fix_selected_differential(
     )
 
 
-class DGAMorphism(GradedAlgebraMorphism):
+class DGAMorphism:
     r"""A graded algebra morphism commuting with the selected differentials."""
 
     def __init__(
@@ -431,8 +431,7 @@ class DGAMorphism(GradedAlgebraMorphism):
             underlying = morphism
         else:
             underlying = graded_mor(morphism)
-        self._underlying_graded_morphism = underlying
-        GradedAlgebraMorphism.__init__(self, parent, underlying)
+        super().__init__(parent, underlying)
         observed = self._decide_differential_compatibility()
         if observed is False:
             raise ValueError(
@@ -451,9 +450,6 @@ class DGAMorphism(GradedAlgebraMorphism):
                 )
             self._differential_compatibility = differential_compatibility
 
-    def underlying_graded_algebra_morphism(self):
-        return self._underlying_graded_morphism
-
     def differential_compatibility_decision(self):
         return self._differential_compatibility
 
@@ -467,14 +463,14 @@ class DGAMorphism(GradedAlgebraMorphism):
         if finite is not True:
             return Unknown
         comparisons = tuple(
-            self._underlying(source.d(source.algebra_generator(label)))
-            == target.d(self._underlying(source.algebra_generator(label)))
+            self(source.d(source.algebra_generator(label)))
+            == target.d(self(source.algebra_generator(label)))
             for label in labels
         )
         if any(answer is False for answer in comparisons):
             return False
         linear = (
-            self.underlying_algebra_morphism().linearity_decision() is True
+            self.linearity_decision() is True
             and source.differential().linearity_decision() is True
             and target.differential().linearity_decision() is True
         )
@@ -510,17 +506,18 @@ class DGAMorphism(GradedAlgebraMorphism):
             and other.differential_compatibility_decision() is True
             else Unknown
         )
+        graded = GradedAlgebras(source.base_ring(), source.grading_monoid())
         return DifferentialGradedAlgebras(source.base_ring()).Mor(
             source, self.codomain()
         )._from_differential_preserving_underlying_morphism(
-            self.underlying_graded_algebra_morphism()
-            * other.underlying_graded_algebra_morphism(),
+            graded.Mor(self.domain(), self.codomain())(self)
+            * graded.Mor(source, self.domain())(other),
             decision,
         )
 
 
 class DGAMor(CategoricalMor):
-    Element = DGAMorphism
+    ElementMethods = DGAMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():

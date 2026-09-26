@@ -462,20 +462,50 @@ def _cochain_complex(
     )
 
 
-class CochainMorphism(ModuleMorphism):
+def _cochain_components_from_elementwise(domain, codomain, function):
+    r"""Return the degreewise linear components of one elementwise cochain map."""
+    def component_at(degree):
+        degree = int(degree)
+        source = domain.graded_piece(degree)
+        target = codomain.graded_piece(degree)
+
+        def on_piece(element):
+            total = domain.from_component(degree, element)
+            image = codomain(function(total))
+            return image.homogeneous_component(degree)
+
+        return source.module_category().Mor(source, target).elementwise(on_piece)
+
+    return indexed_family(
+        domain.degree_index_set(),
+        component_at,
+        name="Elementwise cochain-morphism components",
+    )
+
+
+class CochainMorphismMethods:
     r"""A degree-zero morphism commuting with the selected differentials."""
 
     def _elementwise_linearity_derivation(self):
         return True
 
     def __init__(self, parent, components) -> None:
+        if isinstance(components, Morphism):
+            if (
+                components.domain() is not parent.domain()
+                or components.codomain() is not parent.codomain()
+            ):
+                raise ValueError(
+                    f"{components} is a map {components.domain()} -> {components.codomain()}, "
+                    f"not a cochain map {parent.domain()} -> {parent.codomain()}"
+                )
+            components = _cochain_components_from_elementwise(
+                parent.domain(),
+                parent.codomain(),
+                components,
+            )
         self._components = components
-        ModuleMorphism.__init__(
-            self,
-            parent,
-            self._evaluate_components,
-            elementwise=True,
-        )
+        super().__init__(parent, self._evaluate_components, elementwise=True)
         self._validate_components()
 
     def _raw_component(self, degree):
@@ -560,7 +590,7 @@ class CochainMorphism(ModuleMorphism):
         return self.parent().scalar_multiple(scalar, self)
 
     def __mul__(self, other):
-        if not isinstance(other, CochainMorphism) or other.codomain() is not self.domain():
+        if not isinstance(other, CochainMorphismMethods) or other.codomain() is not self.domain():
             return NotImplemented
         return CochainComplexes(self.domain().base_ring()).Mor(
             other.domain(), self.codomain()
@@ -573,8 +603,12 @@ class CochainMorphism(ModuleMorphism):
         )
 
 
+class CochainMorphism(CochainMorphismMethods, ModuleMorphism):
+    r"""Compatibility shell for private cochain-arrow realizations."""
+
+
 class CochainMor(CategoricalMor):
-    Element = CochainMorphism
+    ElementMethods = CochainMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
@@ -604,7 +638,7 @@ class CochainMor(CategoricalMor):
         )
 
     def _element_constructor_(self, components):
-        if isinstance(components, CochainMorphism):
+        if isinstance(components, CochainMorphismMethods):
             if components.domain() is not self.domain() or components.codomain() is not self.codomain():
                 raise ValueError(
                     f"{components} is a cochain map {components.domain()} -> {components.codomain()}, "
@@ -667,24 +701,12 @@ class CochainMor(CategoricalMor):
                 f"an element of {self} given elementwise needs a function on {self.domain()}, "
                 f"but got {function!r}"
             )
-        def component_at(degree):
-            degree = int(degree)
-            source = self.domain().graded_piece(degree)
-            target = self.codomain().graded_piece(degree)
-
-            def on_piece(element):
-                total = self.domain().from_component(degree, element)
-                image = self.codomain()(function(total))
-                return image.homogeneous_component(degree)
-
-            return source.module_category().Mor(source, target).elementwise(on_piece)
-
         return self.element_class(
             self,
-            indexed_family(
-                self.domain().degree_index_set(),
-                component_at,
-                name="Elementwise cochain-morphism components",
+            _cochain_components_from_elementwise(
+                self.domain(),
+                self.codomain(),
+                function,
             ),
         )
 
