@@ -459,7 +459,7 @@ A site that still raises keeps its node, and every node whose example passes and
   The discriminant cokernel descends the dual form through general `K/R` and `K/2R` value modules; the existing `A_1` specimens cover `A_L = ZZ/2`, while the added `TdP` and degenerate-plane specimens cover the dual identification and rank-one radicals.
   These specimens are retained unexecuted under terminal-phase `DEV-58`; source compilation and whitespace checks are clean.
 
-- [ ] **`lattice-represents-an-integer`**. **Needs:** none.
+- [ ] **`lattice-represents-an-integer`**. **Needs:** `higher-rank-integral-lattice-representation`.
   **Owner and delta:** `Lattices(R)` answers the existential question whether `L` represents `n`, i.e. whether the hypersurface `V(q - n)` has an `R`-point.
   It also answers `representation_vector(n)`, a witness as an element of `L`. The elementwise `represents` on form-module elements (`categories/modules/framed/formed/form_modules.py`, ~line 1260) is a different statement and stays.
   Routing is `case` on categorical membership.
@@ -469,6 +469,10 @@ A site that still raises keeps its node, and every node whose example passes and
   `n = 0` is isotropy (Hasse--Minkowski; Meyer for rank >= 5). Every theorem is cited from its source, and every engine call is private.
   **Closure specimens:** `E_8` represents 2 and not 1. `U` represents every integer.
   `A_1(-1) + A_1(-1) + A_1(-1)`, the form `-(x^2 + y^2 + z^2)`, does not represent `-7`, the Legendre obstruction at 2. `U + U` represents 0 with a nonzero witness.
+
+- [ ] **`higher-rank-integral-lattice-representation`**. **Needs:** none.
+  **Owner and delta:** the indefinite integral rank-at-least-three branches of `Lattices(ZZ).representation_vector(n)`. Do not use `QuadraticForm.solve`, which solves over `QQ`, as an integral witness. Rank at least four uses the real place plus the exact local tests at primes dividing `2 n det(L)` and the strong-approximation/Kneser route to construct an integral witness when the local conditions hold. Rank three uses the same local test followed by the finitely many spinor-exceptional square classes (Schulze-Pillot; Earnest--Hsia), with an exact witness construction in the positive cases. `n=0` is integral isotropy and requires a nonzero integral witness. Research maintained Sage/PARI/OSCAR algorithms before implementing; if none exposes the complete witness route, add the private engine adapter rather than substituting rational solvability or an unbounded search.
+  **Closure specimens:** `U + U` represents `0` by a nonzero vector; `-(x^2+y^2+z^2)` does not represent `-7`; one indefinite rank-four locally soluble positive example returns an exact integral witness.
 
 - [ ] **`lattice-reflection-groups`**. **Needs:** none.
   **Owner and delta:** every lattice `L` owns *the* reflection group `W(L) = <s_v : v in L_K, s_v in O(L)>` and `W_S(L) = <s_v in W(L) : v^2 in S>` for `S <= ZZ`, as `L.reflection_group(S)`. Its default `S` is the finite set `{n : n | 2 e(A_L)}` of admissible norms, so the call with no argument is `W(L)`. It is a subgroup of `O(L)`. When `L` is definite (finite root system) or hyperbolic (`W(L) cap O^+(L)`, the reflections in vectors of negative norm), it is also an object of a category of Coxeter groups, carrying the Coxeter system of a chamber: simple roots and Coxeter matrix, of possibly infinite rank.
