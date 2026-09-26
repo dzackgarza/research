@@ -242,6 +242,22 @@ def _affine_cover_refinement_cohomology_map(refinement, sheaf, degree):
 class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral cohomology groups of a specified topological realization/theory."""
 
+    def an_object(self):
+        r"""The degree-zero cohomology of a point with the selected coefficients."""
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        point = Schemes(_own_ring(SageQQ)).base_scheme()
+        return self.base_ring()._fresh_free_module_on(
+            finite_ordered_set(("H0",)),
+            _extra_categories=(self,),
+            _extra_construction_data=_integral_topology_construction_data(
+                point,
+                0,
+                "the complex realization of a point",
+                "topological cohomology",
+            ),
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "integral cohomology groups of specified topological realizations"
@@ -287,6 +303,22 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
 class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Ordinary integral singular cohomology of specified complex realizations."""
 
+    def an_object(self):
+        r"""The degree-zero singular cohomology of a point with the selected coefficients."""
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        point = Schemes(_own_ring(SageQQ)).base_scheme()
+        return self.base_ring()._fresh_free_module_on(
+            finite_ordered_set(("H0",)),
+            _extra_categories=(self,),
+            _extra_construction_data=_integral_topology_construction_data(
+                point,
+                0,
+                "the complex realization of a point",
+                "ordinary singular cohomology",
+            ),
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "ordinary integral singular cohomology groups"
@@ -298,6 +330,22 @@ class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
 class ResolutionIntegralCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral cohomology computed on a specified resolution/normalization."""
 
+    def an_object(self):
+        r"""The degree-zero cohomology of the identity resolution of a point."""
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        point = Schemes(_own_ring(SageQQ)).base_scheme()
+        return self.base_ring()._fresh_free_module_on(
+            finite_ordered_set(("H0",)),
+            _extra_categories=(self,),
+            _extra_construction_data=_integral_topology_construction_data(
+                point,
+                0,
+                "the identity resolution of the complex realization of a point",
+                "resolution cohomology via the identity resolution",
+            ),
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "integral resolution cohomology groups"
@@ -308,6 +356,22 @@ class ResolutionIntegralCohomologyGroups(OwnedCategoryOverBaseRing):
 
 class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
+
+    def an_object(self):
+        r"""The degree-zero cohomology of the complex toric projective line."""
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+
+        projective_line = ToricSchemes(_own_ring(SageQQ)).an_object()
+        return self.base_ring()._fresh_free_module_on(
+            finite_ordered_set(("H0",)),
+            _extra_categories=(self,),
+            _extra_construction_data=_integral_topology_construction_data(
+                projective_line,
+                0,
+                "the complex toric realization of the projective line",
+                "ordinary singular cohomology",
+            ),
+        )
 
     @classmethod
     def _repr_object_names(cls):
