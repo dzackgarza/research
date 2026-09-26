@@ -3999,7 +3999,7 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
             pass
     if engine in SageIntegralDomains():
         extra.append(OwnedRings().Commutative().NoZeroDivisors())
-    if engine is SageZZ or engine is SageQQ:
+    if engine is SageZZ or engine is SageQQ or engine is SageAA:
         extra.append(OwnedOrderedRings())
     field_decision = _engine_field_decision(engine)
     match field_decision:

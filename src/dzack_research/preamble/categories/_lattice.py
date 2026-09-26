@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedOrderedRings,
     OwnedRings,
     _engine_element,
     _engine_ring,
@@ -1293,19 +1294,13 @@ def _colimit_lattice(stage, *, category, row_support=None):
     return _lattice_object(category, module, _ColimitGram(module, stage, row_support=row_support))
 
 
-def _rational_fraction_field(ring):
-    r"""Return \(\operatorname{Frac}(R)\) when that field is \(\mathbb{Q}\).
-
-    The signature pair \((p,q)\) is the real signature of a quadratic
-    space over \(\mathbb{Q}\).  When \(\operatorname{Frac}(R)\) is a
-    number field, that invariant is not this pair; see the GW theory
-    of that field.
-    """
+def _ordered_fraction_field(ring):
+    r"""Return the represented ordered fraction field used for inertia."""
     field = ring.fraction_field()
-    assert _engine_ring(field) is QQ, (
-        f"the signature pair (p, q) is the real signature of a quadratic space over QQ; Frac({ring}) is {field}"
+    assert field in OwnedOrderedRings(), (
+        f"the signature pair (p, q) needs a chosen ordering on Frac({ring}), but {field} is not represented as an ordered field"
     )
-    return QQ
+    return _engine_ring(field)
 
 
 def signature_pairs():
@@ -1326,8 +1321,8 @@ def signature_pair(positive, negative):
 
 
 def _sylvester(gram: Tensor):
-    r"""Return $(p,q)$ by Sylvester's law on \(\operatorname{Frac}(R)=\mathbb{Q}\)."""
-    field = _rational_fraction_field(gram.base_ring())
+    r"""Return $(p,q)$ by Sylvester's law over the represented ordered fraction field."""
+    field = _ordered_fraction_field(gram.base_ring())
     engine_gram = _engine_component_matrix(gram).change_ring(field)
     positive, negative, _radical = QuadraticForm(
         field, engine_gram
