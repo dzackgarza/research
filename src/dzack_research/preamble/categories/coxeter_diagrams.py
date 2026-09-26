@@ -2,7 +2,6 @@ r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
 from itertools import combinations
 
-from sage.categories.morphism import Morphism
 from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
@@ -30,6 +29,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
@@ -74,7 +74,7 @@ def _coxeter_entry(q1, q2, pairing):
     )
 
 
-class CoxeterDiagramMorphism(Morphism):
+class CoxeterDiagramMorphism:
     r"""A vertex map preserving every Coxeter exponent.
 
     A Coxeter diagram is its symmetric matrix ``(m_vw)``.  A morphism sends
@@ -84,8 +84,11 @@ class CoxeterDiagramMorphism(Morphism):
     """
 
     def __init__(self, parent, function) -> None:
-        Morphism.__init__(self, parent)
         self._vertex_function = function
+        super().__init__(
+            parent,
+            Sets().Mor(parent.domain(), parent.codomain())(function),
+        )
 
     def __call__(self, vertex):
         source_vertex = self.domain().index_set()(vertex)
@@ -131,7 +134,7 @@ class CoxeterDiagramMorphism(Morphism):
 class CoxeterDiagramMor(CategoricalMor):
     r"""The bond-preserving maps between two represented Coxeter diagrams."""
 
-    Element = CoxeterDiagramMorphism
+    ElementMethods = CoxeterDiagramMorphism
 
     def _element_constructor_(self, datum):
         if isinstance(datum, CoxeterDiagramMorphism):
