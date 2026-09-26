@@ -1624,6 +1624,12 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
 class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     r"""Divided-power algebras ``Gamma(M)`` with their canonical grading."""
 
+    def an_object(self):
+        r"""The divided-power algebra on the standard module witness."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return Modules(self.base_ring()).an_object().divided_power_algebra()
+
     @classmethod
     def _repr_object_names(cls):
         return "divided power algebras"
