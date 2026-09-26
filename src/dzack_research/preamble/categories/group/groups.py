@@ -1055,7 +1055,7 @@ class _GroupElement(MultiplicativeGroupElement):
         return hash((id(self.parent()), self._backend()))
 
     def is_one(self):
-        return bool(self._backend() == _engine_group(self.parent()).one())
+        return self == self.parent().one()
 
     def order(self):
         r"""The order of this element: an integer when finite, else the cardinality of ``<g>``."""
