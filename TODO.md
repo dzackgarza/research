@@ -339,9 +339,10 @@ Regenerate the catalogue with the same command; the time gates are on by default
   **Site:** `categories/abstract_categories/arrow_categories.py:1087`, `SubobjectCategory.__init__`: "the subobject base must lie in its base category" (1,538). Reached from `_commutative_ideal` (`categories/rings/commutative_ideals.py:966`) through `Modules(R).Subobjects(R.regular_module())`; for `QQ['x,y']` the regular module is placed in `Modules(R)`, so the failing rings are the ones the Kähler-differential and cohomology constructions build.
   **Example:** `tests/algebras/test_cohomology.sage::test_dga_cohomology_is_a_graded_algebra_with_descended_product`.
 
-- [ ] **`triage-an-object-contracts`**. **Needs:** none.
+- [x] **`triage-an-object-contracts`**. **Needs:** none.
   **Site:** `sage/misc/abstract_method.py:218`: `NotImplementedError: <abstract method an_object>` (850): categories reached by the inhabitation specifications that do not exhibit an object.
   **Example:** `tests/algebras/test_native_free_algebra_module_factor.sage::test_free_algebra_on_the_zero_module_has_only_the_empty_word`.
+  **Source closure (2026-09-26):** every concrete category class exported by `preamble.all` that the inhabitation specification can construct nullary or over a ring now exhibits an object directly or inherits the concrete Mor-family witness. The remaining exported classes with no local `an_object` are parameterized families whose constructors require their mathematical parameters and are therefore outside that sweep. Geometry witnesses route through their existing projective, toric, cycle, section, and cohomology owners; downstream nonfield/engine frontiers remain owned by their separate triage nodes. Runtime confirmation remains in terminal T under `DEV-58`.
 
 - [ ] **`triage-owned-ring-custom-name`**. **Needs:** none.
   **Site:** `sage/cpython/getattr.pyx:362`: `'_OwnedRingParent_with_category' object has no attribute '_SageObject__custom_name'` (584): an owned ring reaches Sage's `rename`/repr machinery without `SageObject` initialization of that field.
