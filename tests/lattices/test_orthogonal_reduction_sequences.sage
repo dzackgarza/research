@@ -83,6 +83,30 @@ def test_the_spinor_norm_is_the_whole_square_class() -> None:
     assert lattice.spinor_norm()(minus_identity) != square_classes(-1)
     assert lattice.spinor_norm(form_multiplier=1)(minus_identity) == square_classes(6)
 
+    sequence = lattice.spinor_norm_sequence()
+    image = sequence.image()
+    projection = sequence.cokernel_projection()
+    assert square_classes(-3) in image
+    assert square_classes(-1) not in image
+    assert projection(square_classes(-3)).is_one()
+    assert not projection(square_classes(-1)).is_one()
+
+
+def test_the_anisotropic_binary_spinor_image_uses_the_norm_subgroup_and_reflection_coset() -> None:
+    r"""For ``<1,1>`` over ``QQ``, ``[2]`` is a rotation norm and ``[-2]`` is a reflection norm, while ``[3]`` is neither."""
+    lattice = Lattices(ZZ)([[1, 0], [0, 1]])
+    sequence = lattice.spinor_norm_sequence()
+    square_classes = QQ.square_class_group()
+    image = sequence.image()
+    projection = sequence.cokernel_projection()
+
+    assert square_classes(2) in image
+    assert square_classes(-2) in image
+    assert square_classes(3) not in image
+    assert projection(square_classes(2)).is_one()
+    assert projection(square_classes(-2)).is_one()
+    assert not projection(square_classes(3)).is_one()
+
 
 def test_a_minus_two_reflection_in_signature_two_one_lies_in_o_plus() -> None:
     r"""For \((v,v)=-2\), \(\mathrm{sn}_{\mathbb Q}(s_v)=[1]\) and so \(\mathrm{sn}_{\mathbb R}(s_v)=+1\): \(s_v\in O^+(L)\).

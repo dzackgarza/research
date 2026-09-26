@@ -1464,6 +1464,97 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     return quotient, projection
 
 
+class _AbelianSubgroupQuotientElement(MultiplicativeGroupElement):
+    r"""A coset in ``A/H`` represented by one element of the abelian group ``A``."""
+
+    def __init__(self, parent, representative) -> None:
+        MultiplicativeGroupElement.__init__(self, parent)
+        self._representative = parent.supergroup()(representative)
+
+    def representative(self):
+        return self._representative
+
+    def _mul_(self, other):
+        return self.parent()(self.representative() * other.representative())
+
+    def _invert_(self):
+        return self.parent()(~self.representative())
+
+    def __invert__(self):
+        return self._invert_()
+
+    def is_one(self) -> bool:
+        return self.representative() in self.parent().subgroup()
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, _AbelianSubgroupQuotientElement)
+            and other.parent() is self.parent()
+            and self.representative() * ~other.representative()
+            in self.parent().subgroup()
+        )
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        r"""A quotient class has no canonical representative in the general predicate case."""
+        return hash(id(self.parent()))
+
+    def _repr_(self):
+        return f"[{self.representative()}]"
+
+
+class _AbelianSubgroupQuotientGroup:
+    r"""The represented quotient ``A/H`` for a subgroup of an owned abelian group."""
+
+    def __init__(self, subgroup, **rest) -> None:
+        ambient = subgroup.supergroup()
+        assert ambient in OwnedAbelianGroups(), (
+            f"the quotient {ambient}/{subgroup} is constructed here from subgroup membership because the ambient "
+            f"group is abelian, but {ambient} is not represented as abelian"
+        )
+        self._subgroup = subgroup
+        super().__init__(**rest)
+
+    def subgroup(self):
+        return self._subgroup
+
+    def supergroup(self):
+        return self._subgroup.supergroup()
+
+    def __call__(self, representative):
+        return self._element_constructor_(representative)
+
+    def _element_constructor_(self, representative):
+        if isinstance(representative, _AbelianSubgroupQuotientElement) and representative.parent() is self:
+            return representative
+        return self.element_class(self, self.supergroup()(representative))
+
+    def __contains__(self, element) -> bool:
+        return isinstance(element, _AbelianSubgroupQuotientElement) and element.parent() is self
+
+    def one(self):
+        return self(self.supergroup().one())
+
+    @cached_method
+    def quotient_projection(self):
+        r"""Return the canonical group morphism ``A -> A/H``."""
+        return self.supergroup().Mor(self)(lambda element: self(element))
+
+    def _repr_(self):
+        return f"{self.supergroup()} / {self.subgroup()}"
+
+
+def _abelian_subgroup_quotient(subgroup):
+    r"""Construct ``A/H`` from represented membership in ``H <= A`` for abelian ``A``."""
+    return _object_of(
+        AbelianGroups(),
+        _engine=(OwnedGroups(), _AbelianSubgroupQuotientGroup, _AbelianSubgroupQuotientElement),
+        subgroup=subgroup,
+    )
+
+
 class SubgroupInclusion(SetMorphism):
     def is_injective(self):
         return True
@@ -1528,6 +1619,8 @@ class SubgroupInclusion(SetMorphism):
         """
         ambient = self.codomain()
         match ambient:
+            case _ if ambient in OwnedAbelianGroups():
+                return True
             case _ if ambient in OwnedFiniteGroups():
                 return bool(_gap_model(ambient).IsNormal(self._finite_subgroup_model()))
             case _:
@@ -1540,6 +1633,9 @@ class SubgroupInclusion(SetMorphism):
     def _cokernel_data(self):
         r"""Return the quotient by the normal closure of this subgroup image."""
         ambient = self.codomain()
+        if ambient in OwnedAbelianGroups():
+            quotient = _abelian_subgroup_quotient(self.domain())
+            return quotient, quotient.quotient_projection()
         normal_closure = libgap.NormalClosure(
             _gap_model(ambient),
             self._finite_subgroup_model(),
