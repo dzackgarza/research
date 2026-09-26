@@ -167,28 +167,6 @@ Gaussian heuristic.
 `RR` only. Repair: `categories-of-resolutions`, `framed-axiom-retired`,
 `integers-coerce-into-rationals-and-reals` in [TODO.md](TODO.md).
 
-### The spinor norm and Witt index are computed only over the rationals
-
-\(\mathrm{sn}_K\) and the Witt index are defined for a quadratic space over
-any field of characteristic not 2, and a lattice over an order \(R\) of a
-number field \(K\) asks for them over \(K\). The adapters
-(`categories/lattice_engines.py`) call OSCAR's `rational_spinor_norm`, which
-takes quadratic spaces over \(\mathbb Q\), and Hecke's isometry classes of
-rational spaces. OSCAR's exported `witt_index` takes a `SesquilinearForm` or
-`QuadraticForm` of its matrix-group code and calls GAP's `WittIndex`
-(`Oscar/src/Groups/matrices/forms.jl`); it has no method for a Hecke
-`QuadSpace`. Unresolved capability question: `Oscar.spin`, the
-reflection factorization behind `rational_spinor_norm`, is written for a
-diagonal Gram matrix over any field, and Hecke's `QuadSpaceCls` covers number
-fields; whether the bridge carries number-field matrices has not been
-checked.
-
-**Dependency path:** quadratic spaces over number fields -> their isometry
-classes and reflection factorizations -> \(\mathrm{sn}_K\), the Witt index.
-**Consumers:** `Lattices.spinor_norm`, `spinor_norm_sequence`, `witt_index`
-for lattices over rings of integers. Repair: `orthogonal-reduction-sequences`
-in [TODO.md](TODO.md).
-
 ### Scalar extension of an infinite-rank lattice is not a lattice
 
 \(L\otimes_R S\) along \(R\to S\) is a free \(S\)-module with the

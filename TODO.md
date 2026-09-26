@@ -459,11 +459,6 @@ A site that still raises keeps its node, and every node whose example passes and
   The discriminant cokernel descends the dual form through general `K/R` and `K/2R` value modules; the existing `A_1` specimens cover `A_L = ZZ/2`, while the added `TdP` and degenerate-plane specimens cover the dual identification and rank-one radicals.
   These specimens are retained unexecuted under terminal-phase `DEV-58`; source compilation and whitespace checks are clean.
 
-- [ ] **`orthogonal-reduction-sequences`**. **Needs:** none.
-  **Owner and delta:** `Lattices.spinor_norm` and `witt_index` (`categories/lattices.py`) together with the OSCAR adapters (`categories/lattice_engines.py`). One obligation remains for a nondegenerate lattice `L` over `R`, `K = Frac(R)`: `sn_K` and the Witt index when `K` is a number field; they are computed for `K = QQ`, through OSCAR's `rational_spinor_norm` and Hecke's isometry classes of rational spaces ([COMPLAINTS.md](COMPLAINTS.md#the-spinor-norm-and-witt-index-are-computed-only-over-the-rationals)). **Closure specimens:** `tests/lattices/test_orthogonal_reduction_sequences.sage`, executed at T. For `U + A_1(-1)` (signature `(2,1)` in the `(2,n)` convention), `sn_QQ` of the reflection in a vector `v` with `(v,v) = -2` is the class of `1`, its `sn_RR` is `+1`, and it lies in `O^+`; the reflection in a vector of square `2` lies in neither kernel.
-  `SO_{sn_QQ}(L)` is contained in `SO(L)` for this lattice, properly.
-  On `<6>`, `sn_QQ(-1) = [-3]`. The `QQ`-spinor norm cokernel of `E_8` has order 2 with the multiplier `-1/2` and order 1 with `1/2`. `U + U` has Witt index 2 over `QQ`, `U + A_1(-1)` has Witt index 1, and `E_8` has Witt index 0.
-
 - [ ] **`infinite-rank-lattice-base-change`**. **Needs:** none.
   **Owner and delta:** `Lattices.base_change` (`categories/lattices.py`) builds `L tensor_R S` in `Lattices(S)` from the Gram matrix, so only in finite rank.
   In infinite rank the Gram presentation is a pairing rule (`_PairingGram`, `categories/_lattice.py`), and `L tensor_R S` is the lattice in `Lattices(S)` on that rule carried along `R -> S` ([COMPLAINTS.md](COMPLAINTS.md#scalar-extension-of-an-infinite-rank-lattice-is-not-a-lattice)). **Closure specimens:** the base change of `Lattices(ZZ)(ZZ^NN)` along `ZZ -> QQ` is in `Lattices(QQ)`, of infinite rank, with `e_0^2 = 1` and `e_0 . e_1 = 0`.
@@ -643,7 +638,7 @@ A site that still raises keeps its node, and every node whose example passes and
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`, `orthogonal-reduction-sequences`, `infinite-rank-lattice-base-change`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
+- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`, `infinite-rank-lattice-base-change`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open.
   Each complaint's entire burden is discharged or retained in a required prerequisite.
   All alternative construction routes affected by a repair are inspected.
