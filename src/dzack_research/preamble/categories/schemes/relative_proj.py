@@ -40,6 +40,10 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_morphism_from_pullback,
 )
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    QuasiCoherentSheafMor,
+    QuasiCoherentSheafMorphismMethods,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -517,13 +521,13 @@ class _RelativeProjectivizationPulledSheafEngine:
         return self.relative_projectivization().projectivization_projection()
 
 
-class RelativeProjectivizationQuasiCoherentMorphism(Morphism):
+class RelativeProjectivizationQuasiCoherentMorphismMethods:
     r"""A QCoh arrow whose defining datum comes from the relative-Proj construction."""
 
     def __init__(self, parent, projectivization, *, identity=False) -> None:
         self._projectivization = projectivization
         self._identity = bool(identity)
-        Morphism.__init__(self, parent)
+        super().__init__(parent)
 
     def relative_projectivization(self):
         return self._projectivization
@@ -539,13 +543,13 @@ class RelativeProjectivizationQuasiCoherentMorphism(Morphism):
             return NotImplemented
         if self.is_identity():
             return other
-        if isinstance(other, RelativeProjectivizationQuasiCoherentMorphism) and other.is_identity():
+        if isinstance(other, RelativeProjectivizationQuasiCoherentMorphismMethods) and other.is_identity():
             return self
         return NotImplemented
 
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, RelativeProjectivizationQuasiCoherentMorphism)
+            isinstance(other, RelativeProjectivizationQuasiCoherentMorphismMethods)
             and other.parent() is self.parent()
             and other.relative_projectivization() is self.relative_projectivization()
             and other.is_identity() == self.is_identity()
@@ -557,16 +561,24 @@ class RelativeProjectivizationQuasiCoherentMorphism(Morphism):
     __hash__ = None
 
 
-class RelativeProjectivizationQuasiCoherentMor(CategoricalMor):
+class RelativeProjectivizationQuasiCoherentMorphism(
+    RelativeProjectivizationQuasiCoherentMorphismMethods,
+    QuasiCoherentSheafMorphismMethods,
+    Morphism,
+):
+    r"""Compatibility shell for private relative-Proj QCoh-arrow realizations."""
+
+
+class RelativeProjectivizationQuasiCoherentMor(QuasiCoherentSheafMor):
     r"""QCoh Mor on an exact relative Proj when no chartwise Mor is materialized."""
 
-    Element = RelativeProjectivizationQuasiCoherentMorphism
+    ElementMethods = RelativeProjectivizationQuasiCoherentMorphismMethods
 
     def _element_constructor_(self, datum):
         match datum:
-            case RelativeProjectivizationQuasiCoherentMorphism() if datum.parent() is self:
+            case RelativeProjectivizationQuasiCoherentMorphismMethods() if datum.parent() is self:
                 return datum
-            case RelativeProjectivizationQuasiCoherentMorphism():
+            case RelativeProjectivizationQuasiCoherentMorphismMethods():
                 if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                     raise ValueError(
                         f"the morphism {datum} of quasi-coherent sheaves goes from {datum.domain()} to "
