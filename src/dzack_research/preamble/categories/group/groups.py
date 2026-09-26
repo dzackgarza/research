@@ -91,6 +91,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
     aleph,
     cardinal,
+    continuum,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -2889,9 +2890,17 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return Unknown
 
         def is_finitely_generated(self):
-            if self in OwnedGroups().FinitelyGeneratedAsMagma():
-                return True
-            return Unknown
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
+                AbsoluteGaloisGroupsOfFiniteFields,
+            )
+
+            match self:
+                case _ if self in OwnedGroups().FinitelyGeneratedAsMagma():
+                    return True
+                case _ if self in AbsoluteGaloisGroupsOfFiniteFields():
+                    return False
+                case _:
+                    return Unknown
 
         def is_finitely_presented(self):
             return True if self in OwnedGroups().FinitelyPresentedAsGroup() else Unknown
@@ -2906,6 +2915,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def cardinality(self):
             from dzack_research.preamble.categories.group.cyclic_subgroups import (
                 CyclicGroups,
+            )
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
+                AbsoluteGaloisGroupsOfFiniteFields,
             )
 
             if self in CyclicGroups():
@@ -2922,6 +2934,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 if basis_cardinality == cardinal(0):
                     return cardinal(1)
                 return Cardinalities().supremum(aleph(0), basis_cardinality)
+            if self in AbsoluteGaloisGroupsOfFiniteFields():
+                return continuum
             if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
                 return aleph(0)
             assert False, (

@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
     ProfiniteGroups,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
-from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -84,17 +83,6 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
         ]
 
     class ParentMethods:
-        def order(self):
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-        def cardinality(self):
-            return continuum
-
-        def is_finitely_generated(self) -> bool:
-            return False
-
         def topological_group_generators(self):
             return finite_ordered_set((self.frobenius(),))
 
