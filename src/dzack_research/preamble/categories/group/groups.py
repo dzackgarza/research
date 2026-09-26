@@ -2903,7 +2903,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return Unknown
 
         def is_finitely_presented(self):
-            return True if self in OwnedGroups().FinitelyPresentedAsGroup() else Unknown
+            match self.is_finitely_generated():
+                case False:
+                    return False
+                case _ if self in OwnedGroups().FinitelyPresentedAsGroup():
+                    return True
+                case _:
+                    return Unknown
 
         def is_arithmetic_group(self):
             return Unknown
