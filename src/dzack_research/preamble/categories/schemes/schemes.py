@@ -2675,16 +2675,20 @@ class Schemes(OwnedCategoryOverBaseRing):
                 "extension degree must be at least 1"
             )
             base = self.scheme_base_ring()
-            assert base in OwnedFields() and base.cardinality().is_finite(), (
-                f"cannot count the points of {self}: its base ring {base} must be a finite field"
-            )
-            return finite_family(
-                tuple(
-                    _owned_engine_element(SageZZ, SageZZ(value))
-                    for value in _engine_scheme(self).count_points(degree)
-                ),
-                name="Point counts",
-            )
+            match base:
+                case _ if base in OwnedFields() and base.cardinality().is_finite():
+                    return finite_family(
+                        tuple(
+                            _owned_engine_element(SageZZ, SageZZ(value))
+                            for value in _engine_scheme(self).count_points(degree)
+                        ),
+                        name="Point counts",
+                    )
+                case _:
+                    assert False, (
+                        f"point counts of {self} are defined after choosing finite residue/extension fields, but the "
+                        f"current preamble computes them only when the base ring {base} is itself a finite field"
+                    )
 
         def point_count(self, extension_degree=1):
             r"""Return ``#X(F_{q^n})`` for the stated extension degree ``n``."""
