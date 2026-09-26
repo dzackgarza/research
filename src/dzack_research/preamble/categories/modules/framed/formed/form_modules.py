@@ -334,8 +334,18 @@ class FormedModuleMorphism:
 class FormEmbedding:
     r"""A form-preserving morphism whose module map is a monomorphism."""
 
-    def __init__(self, parent, module_morphism, value_morphism, *, quadratic: bool) -> None:
+    def __init__(
+        self,
+        parent,
+        module_morphism,
+        value_morphism,
+        *,
+        quadratic: bool | None = None,
+    ) -> None:
         super().__init__(parent, module_morphism, value_morphism)
+        if quadratic is None:
+            domain = parent.domain()
+            quadratic = domain in QuadraticFormModules(domain.base_ring())
         self._quadratic = bool(quadratic)
 
     def is_quadratic(self) -> bool:

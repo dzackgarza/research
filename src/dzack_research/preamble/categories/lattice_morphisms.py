@@ -411,34 +411,11 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
 
 
 
-class LatticeEmbedding(LatticeMorphism):
+class LatticeEmbeddingMethods:
     r"""A form-preserving monomorphism of lattices."""
 
-    def _injectivity_derivation(self):
-        return None
-
-    def __init__(self, parent, images, *, elementwise=False) -> None:
-        LatticeMorphism.__init__(self, parent, images, elementwise=elementwise)
-        decision = self._injectivity_derivation()
-        if decision is None:
-            decision = ModuleMorphism.is_injective(self)
-        if decision is False:
-            raise ValueError(
-                f"{self} is not a lattice embedding of {self.domain()} into "
-                f"{self.codomain()}: it is not injective"
-            )
-        if decision is not True:
-            raise ValueError(
-                f"{self} is not known to be a lattice embedding of {self.domain()} into "
-                f"{self.codomain()}: injectivity could not be decided"
-            )
-
-    def is_injective(self) -> bool:
-        return True
-
-
     def __mul__(self, other):
-        if not isinstance(other, LatticeEmbedding):
+        if not isinstance(other, LatticeEmbeddingMethods):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -564,6 +541,32 @@ class LatticeEmbedding(LatticeMorphism):
             images[label] = target_discriminant.projection()(dual_element)
 
         return source_form.Mono(target_form)(images, quadratic=target.is_even())
+
+
+class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
+    r"""Compatibility shell for private lattice-embedding realizations."""
+
+    def _injectivity_derivation(self):
+        return None
+
+    def __init__(self, parent, images, *, elementwise=False) -> None:
+        LatticeMorphism.__init__(self, parent, images, elementwise=elementwise)
+        decision = self._injectivity_derivation()
+        if decision is None:
+            decision = ModuleMorphism.is_injective(self)
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a lattice embedding of {self.domain()} into "
+                f"{self.codomain()}: it is not injective"
+            )
+        if decision is not True:
+            raise ValueError(
+                f"{self} is not known to be a lattice embedding of {self.domain()} into "
+                f"{self.codomain()}: injectivity could not be decided"
+            )
+
+    def is_injective(self) -> bool:
+        return True
 
 
 class _TransportedLatticeEmbedding(LatticeEmbedding):
@@ -1123,7 +1126,7 @@ class LatticeMor(CategoricalMor):
 
 
 class LatticeEmbeddingMor(CategoricalMor):
-    Element = LatticeEmbedding
+    ElementMethods = LatticeEmbeddingMethods
 
     def __init__(self, mor_family, domain, codomain, *, category=None) -> None:
         lattices = domain.lattice_category()
