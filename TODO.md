@@ -505,16 +505,6 @@ A site that still raises keeps its node, and every node whose example passes and
   **Closure specimens:** `S_3^ab = ZZ/2` with `[S_3, S_3] = A_3`. The free group `F_2` has abelianization `ZZ^2`, computed from its presentation.
   `SL_2(ZZ)^ab = ZZ/12`. `H_1(ZZ/n; ZZ) = ZZ/n`, `H^1(ZZ/n; ZZ) = 0`, `H^2(ZZ/n; ZZ) = ZZ/n`. `W(E_8)^ab = ZZ/2`.
 
-- [ ] **`subobjects-retain-their-inclusions`**. **Needs:** none.
-  **Owner and delta:** anything that is a subobject mathematically is returned through the subobject categories and APIs and keeps its monomorphism into its ambient object.
-  It is never an independent object with no morphism: subgroups, stabilizers, centralizers, kernels, images, intersections, sublattices, submodules, subschemes and pullback apexes alike.
-  A group that lands in a finitely generated or finitely presented category always answers its group generators and, where chosen, its presentation.
-  The routing happens once at the group level, by `case` on membership, with a subtree of case-specific algorithms (GAP for finite groups, Schreier generators for finite index, reflection generators for Coxeter groups, and so on).
-  The last case asserts which algorithm is missing (`CAT-01`, `operations-sited-where-defined`). Survey the population by these tells: a subgroup or submodule constructor returning a parent with no `inclusion()`; `_own_group(` or `_subgroup_from_gap(` results whose ambient is not recoverable; `FinitelyGenerated` or `FinitelyPresented` placements with no `group_generators` route.
-  Before editing, record how the population entered and the belief behind it.
-  **Closure specimens:** `O(L).centralizer(g).inclusion()` has codomain `O(L)`. `SL_2(ZZ).commutator_subgroup()` answers group generators through the finite-index route.
-  A kernel of a group morphism answers its inclusion into the domain.
-
 - [ ] **`pullbacks-in-every-category`**. **Needs:** none.
   **Owner and delta:** the fibre product `A x_C B` of a cospan is constructed once, at the general owner (`Cat.fiber_product` in `abstract_categories/cat.py`, from `product` and `equalizer`), and it is reachable in sets, groups, modules, algebras, schemes and every category with products and equalizers.
   The result is the limit cone: the apex, both projections and the universal map, never a bare object.
@@ -535,7 +525,8 @@ A site that still raises keeps its node, and every node whose example passes and
   The image of a predicate subgroup of finite index in `O(L)` is computed through its Schreier generators.
   A predicate subset with no route reaches an assertion that names the missing algorithm.
 
-- [ ] **`finite-index-subgroup-generators`**. **Needs:** `subobjects-retain-their-inclusions`. **Owner and delta:** a subgroup `H <= G` given by a membership test, known to have finite index (for example a preimage of a subgroup of a finite quotient), with `G` given by generators, answers generators of `H` by Schreier's lemma.
+- [ ] **`finite-index-subgroup-generators`**. **Needs:** none.
+  **Owner and delta:** a subgroup `H <= G` given by a membership test, known to have finite index (for example a preimage of a subgroup of a finite quotient), with `G` given by generators, answers generators of `H` by Schreier's lemma.
   It uses the action of `G` on the coset space and a transversal from `finite_image_lifts`. When `G` has a chosen presentation, it answers a presentation of `H` by Reidemeister–Schreier.
   This becomes a `case` of the group-level generator routing.
   Leads: `docs/theory/glue-stabilizers.md`, *Generators of finite-index subgroups*. **Closure specimens:** the kernel of `SL_2(ZZ) -> SL_2(ZZ/2)` has index 6, and its generators generate a subgroup of index 6. `\tilde O(L)` for an indefinite `L` with a generating set of `O(L)` answers generators, and each lies in the kernel of `rho`.
