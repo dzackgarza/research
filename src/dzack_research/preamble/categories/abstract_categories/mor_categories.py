@@ -52,7 +52,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import OwnedCategoryMixin, _object_of
 from dzack_research.preamble.refine import (
     construction_scope,
     realize_owned_category,
@@ -407,7 +407,7 @@ class _DiscreteTwoMorConstructions:
     _categorical_coproduct_morphism = _categorical_product_morphism
 
 
-class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
+class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
     r"""A represented Mor object which is both a Sage Mor and a category.
 
     This mixed runtime parent deliberately retains Sage's raw ``Category`` base.
@@ -423,6 +423,39 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
     ``Hom_C(A,B)``.  Concrete categories subclass this and add enrichment to
     the *same object*.
     """
+
+    class ElementMethods(Morphism):
+        r"""Root runtime for arrows generated from the fixed-Mor category graph."""
+
+    @cached_method
+    def _generated_arrow_type(self) -> type:
+        r"""Return the arrow type generated from this Mor category's graph."""
+        return self._make_named_class(
+            "element_class",
+            "ElementMethods",
+            cache=False,
+            picklable=False,
+        )
+
+    @property
+    def ElementType(self) -> type:
+        r"""The public arrow implementation type of this fixed Mor category."""
+        if getattr(type(self), "Element", None) is not None:
+            return Parent.element_class.f(self)
+        return self._generated_arrow_type()
+
+    @property
+    def element_class(self) -> type:
+        r"""Sage's element spelling of the owned arrow type.
+
+        A Mor class still declaring ``Element`` has not yet migrated onto the
+        category-generated arrow chain and keeps Sage's legacy construction.
+        Once it declares ``ElementMethods`` instead, the generated Hom element
+        type is the actual runtime arrow class.
+        """
+        if getattr(type(self), "Element", None) is not None:
+            return Parent.element_class.f(self)
+        return self.ElementType
 
     @staticmethod
     def __classcall__(cls, *arguments, **options):

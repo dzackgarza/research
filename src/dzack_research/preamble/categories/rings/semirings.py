@@ -14,13 +14,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
     AdditiveMonoids,
-    MonoidMorphism,
     Monoids,
     Semigroups,
 )
 
 
-class SemiringMorphism(MonoidMorphism):
+class SemiringMorphism:
     """A declared unital semiring morphism."""
 
     def __init__(self, parent, function) -> None:
@@ -30,7 +29,7 @@ class SemiringMorphism(MonoidMorphism):
                 f"{function!r} is not callable"
             )
         self._function = function
-        MonoidMorphism.__init__(self, parent, function)
+        super().__init__(parent, function)
 
     def _composition(self, right):
         if not (
@@ -45,7 +44,7 @@ class SemiringMorphism(MonoidMorphism):
 class SemiringMor(CategoricalMor):
     """The fixed Mor object of unital semiring morphisms."""
 
-    Element = SemiringMorphism
+    ElementMethods = SemiringMorphism
 
     def _element_constructor_(self, function):
         if isinstance(function, SemiringMorphism):

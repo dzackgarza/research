@@ -544,7 +544,7 @@ class SetMorCategory(CategoricalMor):
     the runtime parent its ``SetMorphism`` elements require.
     """
 
-    Element = OwnedSetMorphism
+    ElementMethods = OwnedSetMorphism
 
     def __init__(
         self,

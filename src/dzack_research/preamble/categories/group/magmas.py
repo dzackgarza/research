@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -166,7 +165,7 @@ class AdditiveGroups(OwnedCategory):
             return "commutative additive groups"
 
 
-class MonoidMorphism(OwnedSetMorphism):
+class MonoidMorphism:
     """A morphism in the owned category of monoids."""
 
     def __init__(self, parent, function) -> None:
@@ -177,7 +176,7 @@ class MonoidMorphism(OwnedSetMorphism):
                 f"and {function} is not a map"
             )
         self._function = function
-        OwnedSetMorphism.__init__(self, parent, function)
+        super().__init__(parent, function)
 
     def _composition(self, right):
         r"""``self ∘ right`` for a monoid morphism ``right``.
@@ -194,7 +193,7 @@ class MonoidMorphism(OwnedSetMorphism):
 class MonoidMor(CategoricalMor):
     r"""The owned fixed Mor category ``Mor_Mon(A,B)``."""
 
-    Element = MonoidMorphism
+    ElementMethods = MonoidMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         super().__init__(family, domain, codomain)
