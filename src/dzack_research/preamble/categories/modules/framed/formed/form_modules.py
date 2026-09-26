@@ -822,6 +822,52 @@ class PairingObjects(OwnedCategoryOverBaseRing):
             r"""Return the value module of the selected pairing."""
             return self._pairing_value_module()
 
+        @cached_method
+        def left_curry(self):
+            r"""Return ``X -> Hom_R(Y,W)``, ``x |-> (y |-> b(x,y))``."""
+            left = self.left_module()
+            right = self.right_module()
+            values = _represented_value_module(self)
+            internal_mor = right.module_category().Mor(right, values)
+            return left.module_category().Mor(
+                left, internal_mor
+            )._from_constructed_element_map(
+                lambda left_element: internal_mor._from_constructed_element_map(
+                    lambda right_element: _value_as_module_element(
+                        self,
+                        self.pairing(left_element, right_element),
+                    )
+                )
+            )
+
+        @cached_method
+        def right_curry(self):
+            r"""Return ``Y -> Hom_R(X,W)``, ``y |-> (x |-> b(x,y))``."""
+            left = self.left_module()
+            right = self.right_module()
+            values = _represented_value_module(self)
+            internal_mor = left.module_category().Mor(left, values)
+            return right.module_category().Mor(
+                right, internal_mor
+            )._from_constructed_element_map(
+                lambda right_element: internal_mor._from_constructed_element_map(
+                    lambda left_element: _value_as_module_element(
+                        self,
+                        self.pairing(left_element, right_element),
+                    )
+                )
+            )
+
+        @cached_method
+        def left_radical(self):
+            r"""Return ``ker(X -> Hom_R(Y,W))`` for the selected pairing."""
+            return self.left_curry().kernel()
+
+        @cached_method
+        def right_radical(self):
+            r"""Return ``ker(Y -> Hom_R(X,W))`` for the selected pairing."""
+            return self.right_curry().kernel()
+
 
 class PairedModules(OwnedParameterizedCategory):
     r"""Pairings \(X\otimes_R Y\to W\), the comma category of the tensor functor over ``W``.
@@ -1119,6 +1165,14 @@ class FormModules(OwnedCategoryOverBaseRing):
         def _pairing_value_module(self):
             return self.form().codomain()
 
+        def is_nondegenerate(self) -> bool:
+            r"""Return whether both radicals of this form are zero."""
+            match self in FormModules(self.base_ring()).Nondegenerate():
+                case True:
+                    return True
+                case False:
+                    return self.left_curry().is_injective() and self.right_curry().is_injective()
+
         def Mor(self, codomain, category=None):
             if category is None and codomain in FormModules(self.base_ring()):
                 return FormModules(self.base_ring()).Mor(self, codomain)
@@ -1271,7 +1325,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
     class SubcategoryMethods:
         def Nondegenerate(self):
-            r"""Return this category with the axiom that the correlation of the form has zero kernel."""
+            r"""Return this category with the axiom that both radicals of the form are zero."""
             return self._with_axiom("Nondegenerate")
 
         def Unimodular(self):
@@ -1279,7 +1333,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             return self._with_axiom("Unimodular")
 
     class Nondegenerate(CategoryWithAxiom):
-        r"""Form modules whose correlation morphism has zero kernel."""
+        r"""Form modules whose left and right radicals are zero."""
 
         _certifying_predicate = "is_nondegenerate"
 
@@ -2163,13 +2217,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
 
-        def is_nondegenerate(self) -> bool:
-            r"""Return whether the algebraic correlation is injective."""
-            injective = self in FormModules(self.base_ring()).Nondegenerate()
-            return _algebraic_correlation_morphism(
-                self, injective=injective
-            ).is_injective()
-
         def is_unimodular(self) -> bool:
             r"""Return whether the algebraic correlation is an isomorphism."""
             injective = self in FormModules(self.base_ring()).Nondegenerate()
@@ -2216,22 +2263,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
             @cached_method
             def radical(self):
-                r"""Return ``rad(M)=ker(M -> M^vee)`` as an actual module subobject.
-
-                This is the radical of the represented scalar-valued bilinear
-                form.  It is defined by the correlation morphism, so the kernel
-                construction remains authoritative and no second Gram-kernel
-                computation is introduced here.
-                """
-                if self.value_module() is not self.base_ring():
-                    raise TypeError(
-                        f"the radical of {self} is computed only for forms valued in {self.base_ring()}, "
-                        f"but its form takes values in {self.value_module()}"
-                    )
-                injective = self in FormModules(self.base_ring()).Nondegenerate()
-                return _algebraic_correlation_morphism(
-                    self, injective=injective
-                ).kernel()
+                r"""Return the left radical ``ker(M -> Hom_R(M,W))``."""
+                return self.left_radical()
 
             @cached_method
             def radical_quotient(self):

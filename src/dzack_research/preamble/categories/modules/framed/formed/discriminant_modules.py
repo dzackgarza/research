@@ -48,7 +48,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         r"""The discriminant group of U with its induced form."""
         from dzack_research.preamble.categories.lattices import Lattices
 
-        return Lattices(self.base_ring())("U").discriminant_group()
+        return Lattices(self.base_ring())("U").discriminant_module()
 
     @classmethod
     def _repr_object_names(cls):
@@ -168,7 +168,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         r"""The discriminant group of U, bilinear."""
         from dzack_research.preamble.categories.lattices import Lattices
 
-        return Lattices(self.base_ring())("U").discriminant_group()
+        return Lattices(self.base_ring())("U").discriminant_module()
 
     @classmethod
     def _repr_object_names(cls):
@@ -430,7 +430,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         r"""The discriminant group of U, quadratic."""
         from dzack_research.preamble.categories.lattices import Lattices
 
-        return Lattices(self.base_ring())("U").discriminant_group()
+        return Lattices(self.base_ring())("U").discriminant_module()
 
     @classmethod
     def _repr_object_names(cls):
@@ -998,16 +998,6 @@ def _discriminant_module(lattice):
         "source_lattice": lattice,
         "dual_lattice": dual_lattice,
     }
-
-    # The general quotient-value abstraction is present, but the active native
-    # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
-    # another PID until its fraction-field quotient engine exists.
-    if _engine_ring(ring) is not SageZZ:
-        return ModulesWithChosenFinitePresentation(ring)(
-            quotient.presentation(),
-            category=owned_category_join(tuple(categories)),
-            **construction_data,
-        )
 
     bilinear_values = FractionFieldQuotients(ring)(1)
     construction_data["bilinear_value_module"] = bilinear_values

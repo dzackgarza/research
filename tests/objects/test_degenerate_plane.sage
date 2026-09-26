@@ -25,10 +25,14 @@ def test_the_radical_is_the_line_through_e0_minus_e1() -> None:
     formed = degenerate()
     e0, e1 = formed.module_generator(0), formed.module_generator(1)
     radical = formed.radical()
+    left_radical = formed.left_radical()
+    right_radical = formed.right_radical()
     vector = radical.inclusion()(radical.module_generator(0))
     assert formed.determinant() == 0
     assert not formed.is_nondegenerate()
     assert radical.module_rank() == 1
+    assert left_radical.module_rank() == 1
+    assert right_radical.module_rank() == 1
     assert formed.b(vector, e0) == 0
     assert formed.b(vector, e1) == 0
     assert vector != formed.zero()

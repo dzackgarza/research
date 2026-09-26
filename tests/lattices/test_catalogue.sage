@@ -15,6 +15,21 @@ def test_named_surface_lattices_have_their_expected_signatures_and_ranks() -> No
     assert Lattices.LK3 is NamedLattices.LK3
 
 
+def test_tdp_metric_dual_is_the_formed_linear_dual() -> None:
+    lattice = NamedLattices.TdP
+    metric_dual = lattice.dual_lattice()
+    linear_dual = lattice.linear_dual()
+    identification = lattice.dual_lattice_to_linear_dual()
+
+    assert identification.domain() is metric_dual
+    assert identification.codomain() is linear_dual
+    assert metric_dual.value_module() is QQ
+    assert metric_dual in FormModules(ZZ).Nondegenerate()
+    assert identification * lattice.correlation_morphism() == lattice.algebraic_correlation_morphism()
+    for label in metric_dual.module_generating_set():
+        assert identification(metric_dual.module_generator(label)) == linear_dual.module_generator(label)
+
+
 def test_named_embedding_chain_is_form_preserving_and_injective() -> None:
     chain = (
         Embeddings.TCo_into_TEn,
@@ -92,7 +107,5 @@ def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
     assert all(
         candidate.signature_pair() == signature_pair(0, 4) for candidate in candidates
     )
-
-
 
 

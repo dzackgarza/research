@@ -1917,7 +1917,37 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case False:
                     rational = self.dual_module().equip_bilinear_form(fraction_field, dual_gram)
-                    return refine(rational, FormModules(ring).Nondegenerate())
+                    return FormModules(ring)(
+                        rational.form(),
+                        _extra_categories=(FormModules(ring).Nondegenerate(),),
+                    )
+
+        @cached_method
+        def dual_lattice_to_linear_dual(self):
+            r"""Return ``L^# -> L^*`` induced by ``x |-> b(x,-)``.
+
+            The represented metric dual is built on the selected algebraic
+            dual basis.  Its basis vector indexed by ``i`` is therefore sent
+            to the coordinate functional ``e_i^*``; this is exactly
+            ``x |-> b(x,-)`` on the metric dual.  The target internal-Mor
+            object need not itself have a selected module basis.
+            """
+            dual_lattice = self.dual_lattice()
+            linear_dual = self.linear_dual()
+
+            def coordinate_functional(label):
+                def value(source_label):
+                    match source_label == label:
+                        case True:
+                            return self.base_ring().one()
+                        case False:
+                            return self.base_ring().zero()
+
+                return linear_dual(value)
+
+            return self.module_category().Mor(dual_lattice, linear_dual)(
+                coordinate_functional
+            )
 
         def metric_dual(self):
             r"""Return the metric dual ``L^#``; explicit synonym for ``dual_lattice``."""

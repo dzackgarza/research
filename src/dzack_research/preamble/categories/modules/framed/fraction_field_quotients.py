@@ -19,7 +19,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import ModuleElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
-from sage.structure.richcmp import richcmp
+from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -43,8 +43,9 @@ from dzack_research.preamble.owned_category import _object_of, owned_category_jo
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     r"""Modules ``Frac(R) / a`` for a fractional ideal ``a`` of ``R``.
 
-    The active computation engine specializes this construction to
-    ``R = ZZ``, where Sage's :class:`QmodnZ` computes ``QQ / n ZZ``.
+    Sage's :class:`QmodnZ` remains the native engine for ``R = ZZ``.  Over a
+    general domain an element is represented by a chosen lift in ``Frac(R)``;
+    equality is the defining quotient relation ``x-y in aR``.
     """
 
     class ElementMethods(ModuleElement):
@@ -64,15 +65,40 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self._backend_element
 
         def _add_(self, other):
-            return _owned_engine_element(self.parent(), self._backend() + other._backend())
+            parent = self.parent()
+            match parent._engine:
+                case None:
+                    return parent._from_engine_element(
+                        parent._lift_backend(self._backend())
+                        + parent._lift_backend(other._backend())
+                    )
+                case _:
+                    return _owned_engine_element(
+                        parent,
+                        self._backend() + other._backend(),
+                    )
 
         def _neg_(self):
-            return _owned_engine_element(self.parent(), -self._backend())
+            parent = self.parent()
+            match parent._engine:
+                case None:
+                    return parent._from_engine_element(-parent._lift_backend(self._backend()))
+                case _:
+                    return _owned_engine_element(parent, -self._backend())
 
         def _lmul_(self, scalar):
-            return _owned_engine_element(self.parent(),
-                _engine_element(self.parent().base_ring(), scalar) * self._backend()
-            )
+            parent = self.parent()
+            match parent._engine:
+                case None:
+                    field = parent.fraction_field()
+                    return parent._from_engine_element(
+                        field(parent.base_ring()(scalar)) * parent._lift_backend(self._backend())
+                    )
+                case _:
+                    return _owned_engine_element(
+                        parent,
+                        _engine_element(parent.base_ring(), scalar) * self._backend(),
+                    )
 
         _rmul_ = _lmul_
 
@@ -82,36 +108,57 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         def _richcmp_(self, other, op):
             if other.parent() is not self.parent() or other.parent() is not self.parent():
                 return NotImplemented
-            return richcmp(self._backend(), other._backend(), op)
+            match self.parent()._engine:
+                case None:
+                    match op:
+                        case _ if op == op_EQ:
+                            return self == other
+                        case _ if op == op_NE:
+                            return self != other
+                        case _:
+                            return NotImplemented
+                case _:
+                    return richcmp(self._backend(), other._backend(), op)
 
         def __eq__(self, other):
             return (
                 other.parent() is self.parent()
                 and other.parent() is self.parent()
-                and self._backend() == other._backend()
+                and self.parent()._classes_equal(self._backend(), other._backend())
             )
 
         def __ne__(self, other):
             return not self == other
 
         def __hash__(self):
-            return hash((id(self.parent()), self._backend()))
+            return self.parent()._class_hash(self._backend())
 
         def lift(self):
             r"""Return this class's representative in \(K\) under the chosen section.
 
-            A coset of \(K/R\) has no canonical element.  The section this quotient
-            selects is the representative in \([0,n)\), and every caller that lifts
-            a discriminant value uses that one.
+            A coset of \(K/R\) has no canonical element.  ``QQ/nZZ`` retains the
+            native ``QmodnZ`` section; the general quotient retains the lift used
+            to construct the class.  Every equality is nevertheless quotient
+            equality, not equality of these representatives.
             """
-            fraction_field = self.parent().base_ring().fraction_field()
-            return _owned_engine_element(fraction_field,
-                _engine_ring(fraction_field)(self._backend().lift())
-            )
+            return self.parent()._lift_backend(self._backend())
 
         def additive_order(self):
-            order = SageZZ(self._backend().additive_order())
-            return _owned_engine_element(self.parent().base_ring(), order)
+            parent = self.parent()
+            match parent._engine:
+                case None:
+                    match self == parent.zero():
+                        case True:
+                            return _owned_engine_element(_own_ring(SageZZ), SageZZ.one())
+                        case False:
+                            raise TypeError(
+                                f"the additive order of {self} in {parent} has no selected computation over "
+                                f"{parent.base_ring()}; the represented quotient relation alone does not choose "
+                                "a denominator-ideal algorithm"
+                            )
+                case _:
+                    order = SageZZ(self._backend().additive_order())
+                    return _owned_engine_element(parent.base_ring(), order)
 
         def _repr_(self):
             return f"[{self.lift()}] in {self.parent()}"
@@ -124,15 +171,18 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         return self()
 
     def _call_(self, modulus=1):
-        r"""Return ``Frac(R) / modulus*R`` when the selected engine supports it."""
+        r"""Return ``Frac(R) / modulus*R``."""
         base_ring = self.base_ring()
-        assert _engine_ring(base_ring) is SageZZ, (
-            f"cannot form Frac(R)/nR for R = {base_ring}: this quotient is computed only "
-            "for R = ZZ, i.e. QQ/nZZ"
-        )
-        return _from_qmodnz_backend(
-            QmodnZ(_engine_element(base_ring, base_ring(modulus)))
-        )
+        match _engine_ring(base_ring) is SageZZ:
+            case True:
+                return _from_qmodnz_backend(
+                    QmodnZ(_engine_element(base_ring, base_ring(modulus)))
+                )
+            case False:
+                return _owned_general_fraction_field_quotient(
+                    base_ring,
+                    base_ring(modulus),
+                )
 
     @classmethod
     def _repr_object_names(cls):
@@ -145,17 +195,25 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     class ParentMethods:
         _derived_construction_parameters = frozenset({"base_ring"})
 
-        def __init__(self, engine: QmodnZ, **rest) -> None:
-            self._engine = engine
-            base_ring = _own_ring(SageZZ)
-            field = base_ring.fraction_field()
-            self._fraction_field_modulus = _owned_engine_element(field, SageQQ(engine.n))
-            super().__init__(
-                base_ring=base_ring,
-                module_generating_set=Sets.Δ[aleph0],
-                module_generator_function=self._divisibility_chain_generator,
-                **rest,
-            )
+        def __init__(self, engine=None, base_ring=None, modulus=None, **rest) -> None:
+            match engine:
+                case None:
+                    ring = _own_ring(base_ring)
+                    field = ring.fraction_field()
+                    self._engine = None
+                    self._fraction_field_modulus = field(modulus)
+                    super().__init__(base_ring=ring, **rest)
+                case _:
+                    self._engine = engine
+                    ring = _own_ring(SageZZ)
+                    field = ring.fraction_field()
+                    self._fraction_field_modulus = _owned_engine_element(field, SageQQ(engine.n))
+                    super().__init__(
+                        base_ring=ring,
+                        module_generating_set=Sets.Δ[aleph0],
+                        module_generator_function=self._divisibility_chain_generator,
+                        **rest,
+                    )
 
         def _selected_module_coefficients(self, element):
             r"""Return finite support in the chosen factorial divisibility framing."""
@@ -175,7 +233,19 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return {} if coefficient == self.base_ring().zero() else {label: coefficient}
 
         def _from_engine_element(self, value):
-            return self.element_class(self, self._engine(value))
+            match self._engine:
+                case None:
+                    field = self.fraction_field()
+                    match element_parent(value):
+                        case parent if parent is field:
+                            representative = value
+                        case parent if parent is not None and parent in OwnedRings():
+                            representative = field(value)
+                        case _:
+                            representative = _owned_engine_element(field, value)
+                    return self.element_class(self, representative)
+                case engine:
+                    return self.element_class(self, engine(value))
 
         def _engine_element(self, value):
             value = self(value)
@@ -213,10 +283,18 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return isinstance(value, self.category().ElementType) and value.parent() is self
 
         def zero(self):
-            return self._from_engine_element(self._engine.zero())
+            match self._engine:
+                case None:
+                    return self._from_engine_element(self.fraction_field().zero())
+                case engine:
+                    return self._from_engine_element(engine.zero())
 
         def an_element(self):
-            return self.module_generator(self.module_generating_set()(1))
+            match self._engine:
+                case None:
+                    return self.zero()
+                case _:
+                    return self.module_generator(self.module_generating_set()(1))
 
         def _repr_(self):
             return f"{self.fraction_field()} / ({self.modulus()}){self.base_ring()}"
@@ -236,8 +314,39 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         def lift(self, element):
             r"""Return the selected representative of ``element`` in the fraction field."""
             element = self(element)
-            representative = element._backend().lift()
-            return _owned_engine_element(self.fraction_field(), representative)
+            return self._lift_backend(element._backend())
+
+        def _lift_backend(self, backend):
+            match self._engine:
+                case None:
+                    return self.fraction_field()(backend)
+                case _:
+                    return _owned_engine_element(self.fraction_field(), backend.lift())
+
+        def _classes_equal(self, left, right) -> bool:
+            match self._engine:
+                case _ if self._engine is not None:
+                    return bool(left == right)
+                case None:
+                    difference = self.fraction_field()(left - right)
+                    modulus = self.modulus()
+                    match modulus.is_zero():
+                        case True:
+                            return bool(difference.is_zero())
+                        case False:
+                            return bool((difference / modulus) in self.base_ring())
+
+        def _class_hash(self, backend):
+            match self._engine:
+                case None:
+                    # Equality is modulo ``aR`` and a general domain need not
+                    # expose canonical coset representatives.  A constant
+                    # parent hash is therefore the correct hash contract:
+                    # equal classes always hash equally, without inventing a
+                    # normalization that is absent from the mathematics.
+                    return hash(id(self))
+                case _:
+                    return hash((id(self), backend))
 
         def divisibility_chain(self, index):
             r"""Return the chosen cofinal divisibility chain element ``d_index``."""
@@ -283,6 +392,16 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             reason the operation is exact despite the ambient module's
             countable framing.
             """
+            match self._engine:
+                case None:
+                    raise TypeError(
+                        f"cannot classify the submodule of {self} generated by {tuple(module_generators)}: "
+                        "the selected gcd/divisibility classification is the QQ/nZZ computation and no "
+                        f"general submodule-classification algorithm for Frac({self.base_ring()})/a{self.base_ring()} "
+                        "has been selected"
+                    )
+                case _:
+                    pass
             classes = tuple(self(element) for element in module_generators)
             assert not self.modulus().is_zero(), (
                 f"cannot classify the submodule of {self} generated by {classes}: the "
@@ -354,6 +473,26 @@ def _owned_fraction_field_quotient(engine: QmodnZ) -> ObjectOfCategory:
     if not engine.n.is_zero():
         placement.append(Modules(base_ring).Torsion())
     return _object_of(owned_category_join(placement), engine=engine)
+
+
+@cached_function
+def _owned_general_fraction_field_quotient(base_ring, modulus) -> ObjectOfCategory:
+    r"""Return represented ``Frac(R)/(modulus)R`` without a specialized backend."""
+    ring = _own_ring(base_ring)
+    field = ring.fraction_field()
+    modulus = field(modulus)
+    placement = [FractionFieldQuotients(ring)]
+    match modulus.is_zero():
+        case True:
+            pass
+        case False:
+            placement.append(Modules(ring).Torsion())
+    return _object_of(
+        owned_category_join(placement),
+        engine=None,
+        base_ring=ring,
+        modulus=modulus,
+    )
 
 
 def _from_qmodnz_backend(quotient):
