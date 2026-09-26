@@ -2900,6 +2900,75 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return CentralizerSubgroups(self)(element)
 
         @cached_method
+        def conjugation_g_set(self):
+            r"""Return ``G`` with its conjugation action ``g.x = g x g^-1``."""
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    from dzack_research.preamble.categories.group.g_sets import (
+                        FiniteGSets,
+                    )
+
+                    points = finite_ordered_set(tuple(self))
+                    return FiniteGSets(self)(
+                        points,
+                        lambda group_element, point: (
+                            group_element * point * group_element.inverse()
+                        ),
+                    )
+                case _:
+                    assert False, (
+                        f"the conjugation action of {self} is defined for every group, but the "
+                        "current preamble materializes orbit actions only for finite represented "
+                        "groups; a general G-set orbit realization is still missing"
+                    )
+
+        @cached_method
+        def conjugacy_classes(self):
+            r"""Return the orbit set of the conjugation action."""
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return self.conjugation_g_set().orbits()
+                case _:
+                    assert False, (
+                        f"the conjugacy classes of {self} are defined for every group, but the "
+                        "current preamble computes orbit sets only for finite represented groups"
+                    )
+
+        def conjugacy_class(self, representative):
+            r"""Return the conjugacy orbit of ``representative``."""
+            representative = self(representative)
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return self.conjugacy_classes().orbit_of(representative)
+                case _:
+                    assert False, (
+                        f"the conjugacy class of {representative} in {self} is defined, but the "
+                        "current preamble computes conjugacy orbits only for finite represented groups"
+                    )
+
+        def left_cosets(self, subgroup):
+            r"""Return the represented left-coset space ``G/H``."""
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return _engine_cosets(self, subgroup, "left")
+                case _:
+                    assert False, (
+                        f"the left cosets of {subgroup} in {self} are defined, but the current "
+                        "preamble materializes coset spaces only for finite represented groups"
+                    )
+
+        def right_cosets(self, subgroup):
+            r"""Return the represented right-coset space ``H\\G``."""
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return _engine_cosets(self, subgroup, "right")
+                case _:
+                    assert False, (
+                        f"the right cosets of {subgroup} in {self} are defined, but the current "
+                        "preamble materializes coset spaces only for finite represented groups"
+                    )
+
+        @cached_method
         def center(self):
             r"""Return the center as an owned subgroup in the represented finite case."""
             assert self in OwnedFiniteGroups(), (
@@ -3030,26 +3099,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     ),
                     name="Conjugacy-class representatives",
                 )
-
-            @cached_method
-            def conjugation_g_set(self):
-                r"""The finite ``G``-set ``G`` under conjugation."""
-                from dzack_research.preamble.categories.group.g_sets import FiniteGSets
-
-                points = finite_ordered_set(tuple(self))
-                return FiniteGSets(self)(
-                    points,
-                    lambda group_element, point: group_element * point * group_element.inverse(),
-                )
-
-            @cached_method
-            def conjugacy_classes(self):
-                r"""The orbit set of the conjugation action of this finite group."""
-                return self.conjugation_g_set().orbits()
-
-            def conjugacy_class(self, representative):
-                r"""The actual conjugacy orbit of ``representative``."""
-                return self.conjugacy_classes().orbit_of(self(representative))
 
             def class_function(self, codomain, values, *, representatives=None):
                 r"""Return the class function on this finite group with the stated values."""
@@ -3210,14 +3259,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 size = int(characters.cardinality())
                 field = characters[0].codomain()
                 return field.matrix_space(size, size).from_rows(tuple(tuple(character.values()) for character in characters))
-
-            def left_cosets(self, subgroup):
-                r"""Return the set of left cosets ``gH``, each an ordered set of elements."""
-                return _engine_cosets(self, subgroup, "left")
-
-            def right_cosets(self, subgroup):
-                r"""Return the set of right cosets ``Hg``, each an ordered set of elements."""
-                return _engine_cosets(self, subgroup, "right")
 
     class Infinite(CategoryWithAxiom):
         @classmethod
