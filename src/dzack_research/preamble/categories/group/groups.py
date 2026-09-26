@@ -3262,9 +3262,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
-            def is_finite(self):
-                return True
-
             def conjugacy_classes_representatives(self):
                 classes = _gap_model(self).ConjugacyClasses()
                 return FiniteOrderedSets().from_indexed(
@@ -3440,10 +3437,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         @classmethod
         def _repr_object_names(cls):
             return "infinite groups"
-
-        class ParentMethods:
-            def is_finite(self):
-                return False
 
     class FinitelyGeneratedAsMagma(CategoryWithAxiom):
         r"""Groups admitting some finite generating set."""
