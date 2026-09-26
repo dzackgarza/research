@@ -219,15 +219,11 @@ class ModuleSheaves(OwnedParameterizedCategory):
 
     def kernel(self, sheaf_morphism):
         r"""Return the represented kernel in sheaves of ``O_X``-modules."""
-
-        quasi_coherent = QuasiCoherentSheaves(self.scheme())
-        return quasi_coherent.associated_sheaf(sheaf_morphism.kernel())
+        return sheaf_morphism.kernel()
 
     def cokernel(self, sheaf_morphism):
         r"""Return the represented cokernel in sheaves of ``O_X``-modules."""
-
-        quasi_coherent = QuasiCoherentSheaves(self.scheme())
-        return quasi_coherent.associated_sheaf(sheaf_morphism.cokernel())
+        return sheaf_morphism.cokernel()
 
 
 class AlgebraSheaves(OwnedParameterizedCategory):
@@ -1222,38 +1218,66 @@ class _AffineModuleSheafEngine:
         return f"Affine module sheaf associated to {self.module()} on {self.scheme()}"
 
 
-class AffineQuasiCoherentSheafMorphism(Morphism):
-    r"""A morphism of affine quasi-coherent sheaves, represented by its module map."""
+class QuasiCoherentSheafMorphismMethods:
+    r"""Operations defined on every represented quasi-coherent sheaf arrow."""
 
-    def __init__(self, parent, module_morphism) -> None:
-        Morphism.__init__(self, parent)
-        source_module = self.domain().module()
-        target_module = self.codomain().module()
-        self._underlying_module_morphism = source_module.module_category().Mor(
-            source_module,
-            target_module,
-        )(module_morphism)
+    def _kernel_quasi_coherent_sheaf(self):
+        assert False, (
+            f"the kernel of {self} is a quasi-coherent sheaf, but the current realization "
+            f"{type(self).__name__} supplies no kernel computation"
+        )
 
-    def underlying_module_morphism(self):
-        return self._underlying_module_morphism
+    def _cokernel_quasi_coherent_sheaf(self):
+        assert False, (
+            f"the cokernel of {self} is a quasi-coherent sheaf, but the current realization "
+            f"{type(self).__name__} supplies no cokernel computation"
+        )
 
     def kernel(self):
-        return self.underlying_module_morphism().kernel()
+        return self._kernel_quasi_coherent_sheaf()
 
     def cokernel(self):
-        return self.underlying_module_morphism().cokernel()
+        return self._cokernel_quasi_coherent_sheaf()
 
     def projectivization_map(self):
-        r"""Return the induced map ``P(codomain) ---> P(domain)`` on its surjectivity locus."""
+        r"""Return the induced projectivization map on the quotient-surjectivity locus."""
         from dzack_research.preamble.categories.schemes.relative_proj import (
             _projectivization_map,
         )
 
         return _projectivization_map(self)
 
+
+class QuasiCoherentSheafMor(CategoricalMor):
+    ElementMethods = QuasiCoherentSheafMorphismMethods
+
+
+class AffineQuasiCoherentSheafMorphismMethods:
+    r"""A morphism of affine quasi-coherent sheaves, represented by its module map."""
+
+    def __init__(self, parent, module_morphism) -> None:
+        source_module = parent.domain().module()
+        target_module = parent.codomain().module()
+        self._underlying_module_morphism = source_module.module_category().Mor(
+            source_module,
+            target_module,
+        )(module_morphism)
+        super().__init__(parent)
+
+    def underlying_module_morphism(self):
+        return self._underlying_module_morphism
+
+    def _kernel_quasi_coherent_sheaf(self):
+        category = QuasiCoherentSheaves(self.domain().scheme())
+        return category.associated_sheaf(self.underlying_module_morphism().kernel())
+
+    def _cokernel_quasi_coherent_sheaf(self):
+        category = QuasiCoherentSheaves(self.domain().scheme())
+        return category.associated_sheaf(self.underlying_module_morphism().cokernel())
+
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, AffineQuasiCoherentSheafMorphism)
+            isinstance(other, AffineQuasiCoherentSheafMorphismMethods)
             and other.parent() is self.parent()
             and other.underlying_module_morphism() == self.underlying_module_morphism()
         )
@@ -1262,7 +1286,7 @@ class AffineQuasiCoherentSheafMorphism(Morphism):
         return not self == other
 
     def __mul__(self, other):
-        if not isinstance(other, AffineQuasiCoherentSheafMorphism):
+        if not isinstance(other, AffineQuasiCoherentSheafMorphismMethods):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -1275,16 +1299,24 @@ class AffineQuasiCoherentSheafMorphism(Morphism):
         )
 
 
-class AffineQuasiCoherentSheafMor(CategoricalMor):
+class AffineQuasiCoherentSheafMorphism(
+    AffineQuasiCoherentSheafMorphismMethods,
+    QuasiCoherentSheafMorphismMethods,
+    Morphism,
+):
+    r"""Compatibility shell for private affine QCoh-arrow realizations."""
+
+
+class AffineQuasiCoherentSheafMor(QuasiCoherentSheafMor):
     r"""``Hom_{O_X}(M~,N~)`` on affine ``X``, with sheaf endpoints."""
 
-    Element = AffineQuasiCoherentSheafMorphism
+    ElementMethods = AffineQuasiCoherentSheafMorphismMethods
 
     def _element_constructor_(self, module_morphism):
         match module_morphism:
-            case AffineQuasiCoherentSheafMorphism() if module_morphism.parent() is self:
+            case AffineQuasiCoherentSheafMorphismMethods() if module_morphism.parent() is self:
                 return module_morphism
-            case AffineQuasiCoherentSheafMorphism():
+            case AffineQuasiCoherentSheafMorphismMethods():
                 if (
                     module_morphism.domain() is not self.domain()
                     or module_morphism.codomain() is not self.codomain()

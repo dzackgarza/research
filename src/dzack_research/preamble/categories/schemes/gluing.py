@@ -3537,6 +3537,12 @@ class FiniteAtlasModuleSheafMorphism(FiniteAtlasModuleGluingMorphism):
     def target_datum(self):
         return self.codomain().gluing_datum()
 
+    def kernel(self):
+        return self.kernel_sheaf()
+
+    def cokernel(self):
+        return self.cokernel_sheaf()
+
     def projectivization_map(self):
         r"""Return the induced map of projectivizations on the quotient-surjectivity locus."""
         from dzack_research.preamble.categories.schemes.relative_proj import (

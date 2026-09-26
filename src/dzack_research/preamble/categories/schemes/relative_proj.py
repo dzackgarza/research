@@ -1893,7 +1893,7 @@ def _projectivization_map(sheaf_morphism):
         _glued_chartwise_distinguished_open,
     )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
-        AffineQuasiCoherentSheafMorphism,
+        AffineQuasiCoherentSheafMorphismMethods,
         QuasiCoherentSheaves,
     )
 
@@ -1933,7 +1933,7 @@ def _projectivization_map(sheaf_morphism):
             source_module = QuasiCoherentSheaves(scheme).global_sections(source_sheaf)
             target_module = QuasiCoherentSheaves(scheme).global_sections(target_sheaf)
             match sheaf_morphism:
-                case AffineQuasiCoherentSheafMorphism():
+                case AffineQuasiCoherentSheafMorphismMethods():
                     local_map = sheaf_morphism.underlying_module_morphism()
                 case _ChosenTrivializationQuasiCoherentMorphism():
                     local_map = sheaf_morphism.global_sections_map()
