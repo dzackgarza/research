@@ -14,6 +14,34 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Pairing-bearing module objects have no common operation owner
+
+A represented pairing consists of modules `X`, `Y`, a value module `W`, and a
+bilinear map `X tensor_R Y -> W`. The operations `left_module()`,
+`right_module()`, `value_module()` and `pairing(left,right)` depend only on
+that datum. A formed module is the diagonal case `X = Y`; choosing a form adds
+structure but does not define a second meaning for those four operations.
+
+Observed during the `FormModules` pass of `placement-audit` on 2026-09-26.
+`PairedModules(W)` and `FormModules(R)` in
+`categories/modules/framed/formed/form_modules.py` each introduce all four
+methods independently. `PairedModules(W)` has supercategory
+`Modules(R).SliceOver(W)`, while `FormModules(R)` has supercategory
+`Modules(R)`, and the live category graph declares no common pairing-bearing
+owner. The source itself states that equipping `X` with a pairing
+`X tensor X -> W` is `FormModules`, so this is the same mathematical interface,
+not an accidental method-name collision.
+
+**Dependency path:** represented pairing `X tensor Y -> W` -> pairing-bearing
+object interface -> general paired modules / diagonal formed modules -> forms,
+lattices and every consumer of their pairing data.
+**Consumers:** `PairedModules`, `FormModules`, lattices and form-valued
+constructions that ask for the paired factors or value module.
+**Coverage boundary:** this complaint concerns only the shared pairing
+interface; form-specific operations such as `form()`, `b()`, `norm()`, Gram
+tensors and index raising remain owned by formed modules.
+Repair: `paired-module-interface-owner` in [TODO.md](TODO.md).
+
 ### Fixed Mor categories with discrete 2-Morphisms do not realize their discrete universal constructions
 
 For an ordinary represented fixed Mor category `Mor_C(A,B)` whose selected

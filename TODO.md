@@ -284,7 +284,11 @@ An operation, arrow or construction placed at the wrong category is inherited wr
   A form embedding `L -> L + M` answers `is_primitive()`, `kernel()` and `cokernel()` from the module-arrow owner, with none of them written on a form-arrow class.
   A `LatticeEmbedding` built from images and one built from a module embedding answer the same operations.
 
-- [ ] **`placement-audit`**. **Needs:** none.
+- [ ] **`paired-module-interface-owner`**. **Needs:** none.
+  **Owner and delta:** the common category/interface of represented pairing-bearing module objects in `categories/modules/framed/formed/form_modules.py`. A pairing-bearing object has modules `X`, `Y`, a value module `W`, and a represented bilinear pairing `X tensor_R Y -> W`. `PairedModules(W)` is the general represented pairing object; a formed module is the diagonal specialization `X = Y`, with its selected form supplying the pairing. The public operations `pairing(left,right)`, `left_module()`, `right_module()` and `value_module()` are introduced exactly once at this common owner and inherited by both `PairedModules` and `FormModules`; neither category maintains a parallel copy. This is the missing maximum exposed by the `FormModules` pass of `placement-audit` (`CAT-05`).
+  **Closure specimens:** a non-diagonal object of `PairedModules(W)` and a formed module both lie in the common pairing-bearing category and answer all four operations through that owner; on a formed module `left_module() is right_module() is self` and `pairing(x,y) == b(x,y)`; `just placement FormModules PairedModules` reports no incomparable duplicate for those names after terminal regeneration.
+
+- [ ] **`placement-audit`**. **Needs:** `paired-module-interface-owner`.
   **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`.
   Arrow operations are placed by `arrows-thread-through-the-mor-category-graph`, since an arrow operation can move only to an arrow type that the arrow types below inherit.
   At its home an operation decides computability in one `case`/`match` on categorical containment: each case with a known algorithm routes to it, and the final `case _` asserts, naming the missing algorithm (`CAT-01`; AGENTS.md, *Abstract contracts are distinct from partial algorithms*).
