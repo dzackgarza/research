@@ -65,6 +65,18 @@ def test_the_countable_standard_lattice_has_rank_aleph_zero() -> None:
     assert Lattices(ZZ)(ZZ ** NN).module_rank() == aleph0
 
 
+def test_the_countable_standard_lattice_base_changes_as_a_lattice() -> None:
+    source = Lattices(ZZ)(ZZ ** NN)
+    changed = source.base_change(ZZ.fraction_field_map())
+    first = changed.basis_vector(0)
+    second = changed.basis_vector(1)
+
+    assert changed in Lattices(QQ)
+    assert changed.module_rank() == aleph0
+    assert first * first == QQ.one()
+    assert first * second == QQ.zero()
+
+
 def test_a_diagonal_gram_changes_only_its_stated_entry() -> None:
     lattice = Lattices(ZZ)((ZZ ** NN).diagonal_gram({0: -1}))
 

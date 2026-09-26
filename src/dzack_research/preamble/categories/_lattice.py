@@ -632,6 +632,63 @@ class _PairingGram(ModuleElement, Tensor):
         return self.scaled_by(scalar)
 
 
+class _BaseChangedGram(_PairingGram):
+    r"""The scalar extension of a represented pairing rule along ``R -> S``."""
+
+    def __init__(self, module, source_gram, ring_map, changed_form) -> None:
+        self._source_gram = source_gram
+        self._ring_map = ring_map
+        self._changed_form = changed_form
+        self._become_tensor_on(module)
+
+    def __getitem__(self, index):
+        labels = _basis_keys(self._module)
+        left = self._module.module_generator(_resolve_key(labels, index[0]))
+        right = self._module.module_generator(_resolve_key(labels, index[1]))
+        return self._changed_form(left, right)
+
+    def __call__(self, left, right):
+        return self._changed_form(self._module(left), self._module(right))
+
+    def pairings_against(self, vector):
+        from dzack_research.preamble.categories.modules.base_change import (
+            _base_change_scalar,
+        )
+
+        coordinates = self._module(vector).to_vector()
+        source_module = self._source_gram._module
+        result = {}
+        zero = self.base_ring().zero()
+        for source_label in coordinates.support().domain():
+            coefficient = coordinates(source_label)
+            source_basis = source_module.module_generator(source_label)
+            for target_label, source_value in self._source_gram.pairings_against(
+                source_basis
+            ).items():
+                value = coefficient * _base_change_scalar(
+                    self._ring_map,
+                    source_value,
+                )
+                result[target_label] = result.get(target_label, zero) + value
+        return {label: value for label, value in result.items() if value != zero}
+
+    def is_unimodular(self):
+        r"""An isomorphism remains an isomorphism after scalar extension."""
+        source_decision = self._source_gram.is_unimodular()
+        return True if source_decision is True else Unknown
+
+    def is_nondegenerate(self):
+        r"""Unimodularity survives every scalar extension; bare injectivity need not."""
+        return True if self.is_unimodular() is True else Unknown
+
+    def is_even_in(self, twice):
+        r"""The generic transported rule does not select an evenness decision."""
+        return Unknown
+
+    def _pairing_name(self) -> str:
+        return f"{self._source_gram._pairing_name()} base-changed along {self._ring_map}"
+
+
 class _ScaledGram(_PairingGram):
     r"""The pairing \(b'(x,y)=\mathrm{scalar}\cdot b(x,y)\)."""
 

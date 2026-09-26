@@ -31,6 +31,7 @@ from sage.structure.parent import Parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories._lattice import (
+    _BaseChangedGram,
     _IdentityGram,
     _block_offsets,
     _block_position,
@@ -1244,10 +1245,24 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return self
             target_ring = _base_change_codomain(self, ring_map)
             rank = self.module_rank()
-            assert rank.is_finite(), (
-                f"the scalar extension of {self!r} along {ring_map} is constructed here as a lattice only in "
-                f"finite rank, from its Gram matrix, and {self!r} has rank {rank}"
-            )
+            if not rank.is_finite():
+                from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+                    _formed_module_base_change,
+                )
+
+                changed_form_module = _formed_module_base_change(self, ring_map)
+                changed_module = changed_form_module.unformed_module()
+                changed_gram = _BaseChangedGram(
+                    changed_module,
+                    self.gram_tensor(),
+                    ring_map,
+                    changed_form_module.form(),
+                )
+                return _lattice_object(
+                    Lattices(target_ring),
+                    changed_module,
+                    changed_gram,
+                )
             size = int(rank)
             gram = self.gram_tensor()
             changed = tensor(
