@@ -6,7 +6,6 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
-from sage.categories.morphism import Morphism
 from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
@@ -35,7 +34,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 
@@ -674,12 +673,15 @@ def _holomorphic_map_from_engine(
     )
 
 
-class HolomorphicMap(Morphism):
+class HolomorphicMap:
     r"""A holomorphic map represented by polynomial formulas in selected complex charts."""
 
     def __init__(self, parent, presentation) -> None:
-        Morphism.__init__(self, parent)
         self._presentation = presentation
+        set_map = Sets().Mor(parent.domain(), parent.codomain())(
+            lambda point: self._evaluate_point(point)
+        )
+        super().__init__(parent, set_map)
 
     def presentation(self):
         return self._presentation
@@ -695,6 +697,31 @@ class HolomorphicMap(Morphism):
 
     def _engine_holomorphic_map(self):
         return self.presentation()._engine_map_crossing()
+
+    def _evaluate_point(self, point):
+        r"""Evaluate the retained chart formulas on one owned source point."""
+        source_point = self.domain()(point)
+        source_chart = self.source_chart()
+        assert source_point.chart().label() == source_chart.label(), (
+            f"cannot evaluate {self} at {source_point}: its coordinates are in the chart "
+            f"{source_point.chart().label()!r}, while this represented holomorphic map is written in "
+            f"{source_chart.label()!r}"
+        )
+        substitutions = {
+            _engine_manifold_expression(variable): _engine_manifold_expression(value)
+            for variable, value in zip(
+                source_chart.coordinates(),
+                source_point.coordinates(),
+                strict=True,
+            )
+        }
+        values = tuple(
+            _raise_manifold_expression(
+                _engine_manifold_expression(expression).subs(substitutions)
+            )
+            for expression in self.coordinate_expressions()
+        )
+        return self.codomain().point(values, self.target_chart().label())
 
     def __mul__(self, other):
         if not isinstance(other, HolomorphicMap) or other.codomain() is not self.domain():
@@ -738,7 +765,7 @@ class HolomorphicMap(Morphism):
 
 
 class ComplexManifoldMor(CategoricalMor):
-    Element = HolomorphicMap
+    ElementMethods = HolomorphicMap
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(self, mor_family, domain, codomain)
