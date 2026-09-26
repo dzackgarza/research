@@ -313,20 +313,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
             return _graded_derivations(self, target=target, shift=shift)
 
-        def homogeneous_degree(self, element):
-            r"""Return the selected degree of one nonzero homogeneous element."""
-            element = self(element)
-            if element == self.zero():
-                raise ValueError(f"the zero element of {self} has no degree")
-
-            components = tuple(element.homogeneous_components().items())
-            if len(components) != 1:
-                raise ValueError(
-                    f"{element} is not homogeneous in {self}: it has components in {len(components)} degrees"
-                )
-            degree, _component = components[0]
-            return self.grading_monoid()(degree)
-
         @cached_method
         def degree_zero_chart(self, localization):
             r"""Return ``(S_f)_0``, the degree-zero part of a graded localization.
@@ -399,13 +385,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             # Degree-preserving maps are selected explicitly through
             # ``GradedAlgebras(...).Mor``.
             return super()._Hom_(codomain, category=category)
-
-    class ElementMethods:
-        def is_homogeneous(self):
-            return len(tuple(self.homogeneous_components().items())) <= 1
-
-        def degree(self):
-            return self.parent().homogeneous_degree(self)
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
