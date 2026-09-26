@@ -385,16 +385,10 @@ class _AbsoluteGaloisGroupEngine:
             inverse,
         )
 
-    def is_finite(self):
-        return False if self._is_finite_field() else Unknown
-
     def order(self):
         return Infinity if self._is_finite_field() else Unknown
 
     cardinality = order
-
-    def is_abelian(self):
-        return True if self._is_finite_field() else Unknown
 
     def is_finitely_generated(self):
         r"""Return whether this absolute Galois group is algebraically finitely generated.

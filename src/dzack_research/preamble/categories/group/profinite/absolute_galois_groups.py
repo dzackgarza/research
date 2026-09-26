@@ -1,14 +1,16 @@
 r"""Owned categories for absolute Galois groups."""
 
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
-
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.group.groups import OwnedAbelianGroups, Subgroups
+from dzack_research.preamble.categories.group.groups import (
+    OwnedAbelianGroups,
+    OwnedInfiniteGroups,
+    Subgroups,
+)
 from dzack_research.preamble.categories.group.profinite.profinite_groups import (
     ProfiniteGroups,
 )
@@ -49,9 +51,6 @@ class AbsoluteGaloisGroups(OwnedCategory):
         def characteristic(self):
             return self.base_field().characteristic()
 
-        def is_abelian(self):
-            return Unknown
-
         def group_generators_are_computable(self) -> bool:
             r"""Whether an algebraic generating set is computable here.
 
@@ -78,12 +77,13 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
         return "absolute Galois groups of finite fields"
 
     def super_categories(self):
-        return [AbsoluteGaloisGroups(), OwnedAbelianGroups()]
+        return [
+            AbsoluteGaloisGroups(),
+            OwnedAbelianGroups(),
+            OwnedInfiniteGroups(),
+        ]
 
     class ParentMethods:
-        def is_finite(self) -> bool:
-            return False
-
         def order(self):
             from sage.rings.infinity import Infinity
 
@@ -91,9 +91,6 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
 
         def cardinality(self):
             return continuum
-
-        def is_abelian(self) -> bool:
-            return True
 
         def is_finitely_generated(self) -> bool:
             return False
