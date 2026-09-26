@@ -172,7 +172,7 @@ def _value_from_module_element(formed_module, element):
     return formed_module.value_module()(coordinates(unit_label))
 
 
-class FormedModuleMorphism(Morphism):
+class FormedModuleMorphism(ModuleMorphism):
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
@@ -182,7 +182,7 @@ class FormedModuleMorphism(Morphism):
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
-        Morphism.__init__(self, parent)
+        ModuleMorphism.__init__(self, parent, module_morphism)
         if module_morphism.domain() is not self.domain():
             raise ValueError(
                 f"a morphism of formed modules {self.domain()} -> {self.codomain()} needs a module map "
@@ -299,12 +299,6 @@ class FormedModuleMorphism(Morphism):
                 f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not equal "
                 f"the target form on the images of the generators"
             )
-
-    def __call__(self, element):
-        return self.module_morphism()(element)
-
-    def _call_(self, element):
-        return self.module_morphism()(element)
 
     def __eq__(self, other) -> bool:
         r"""A formed morphism is the pair ``(f,h)``; both components decide."""
