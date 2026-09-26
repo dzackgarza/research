@@ -2543,7 +2543,7 @@ def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
     return FramingMorphism(mor, generator_morphism)
 
 
-class TensorProductModuleMorphism(ModuleMorphism):
+class TensorProductModuleMorphismMethods:
     r"""A linear map out of a chosen tensor product, hence a bilinear map."""
 
     def left_module(self):
@@ -2652,6 +2652,10 @@ class TensorProductModuleMorphism(ModuleMorphism):
         if self.left_module() is not self.right_module():
             raise TypeError(f"cannot form the polar form of the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()}: its two arguments lie in different modules")
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
+
+
+class TensorProductModuleMorphism(TensorProductModuleMorphismMethods, ModuleMorphism):
+    r"""Compatibility shell for private tensor-product arrow realizations."""
 
 
 class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
@@ -2898,7 +2902,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
 class TensorProductModuleMor(ModuleMor):
     r"""The ordinary module Mor with tensor-domain bilinear constructor syntax."""
 
-    Element = TensorProductModuleMorphism
+    ElementMethods = TensorProductModuleMorphismMethods
 
     @staticmethod
     def _is_two_argument_callable(function) -> bool:
