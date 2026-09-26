@@ -20,6 +20,14 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "line-bundle cohomology spaces"
 
+    def an_object(self):
+        r"""A toric H^0(O(1)) witness over the stated base ring."""
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            ToricGeometricLineBundleCohomologySpaces,
+        )
+
+        return ToricGeometricLineBundleCohomologySpaces(self.base_ring()).an_object()
+
     def super_categories(self):
         return [VectorSpaces(self.base_ring())]
 

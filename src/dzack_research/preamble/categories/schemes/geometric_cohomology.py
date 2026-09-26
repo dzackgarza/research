@@ -36,6 +36,16 @@ from dzack_research.preamble.categories.sets.set_categories import (
 class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
     r"""Shifted reduced simplicial complexes computing one toric sheaf-cohomology weight."""
 
+    def an_object(self):
+        r"""The zero-character weight complex of O(1) on the toric projective line."""
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+
+        scheme = ToricSchemes(self.base_ring()).an_object()
+        return scheme.weight_cohomology_complex(
+            scheme.hyperplane_divisor(),
+            scheme.character_lattice().zero(),
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "toric weight cohomology complexes"
@@ -65,6 +75,13 @@ class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
 
 class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
     r"""Total toric line-bundle cohomology assembled from its live weight complexes."""
+
+    def an_object(self):
+        r"""The degree-zero cohomology of O(1) on the toric projective line."""
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+
+        scheme = ToricSchemes(self.base_ring()).an_object()
+        return scheme.line_bundle_cohomology(scheme.hyperplane_divisor(), 0)
 
     @classmethod
     def _repr_object_names(cls):

@@ -481,6 +481,11 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "projective jet spaces"
 
+    def an_object(self):
+        r"""The first jet of O(1) at a coordinate point of the projective line."""
+        projective_line = ProjectiveSpaces(self.base_ring()).an_object()
+        return projective_line.coordinate_point_jet_evaluation(1, 0, 1).codomain()
+
     def super_categories(self):
         return [VectorSpaces(self.base_ring())]
 
@@ -557,6 +562,11 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "linear systems with imposed multiplicity"
+
+    def an_object(self):
+        r"""Sections of O(1) on the projective line vanishing at one coordinate point."""
+        projective_line = ProjectiveSpaces(self.base_ring()).an_object()
+        return projective_line.imposed_multiplicity_linear_system(1, 0, 1)
 
     def super_categories(self):
         return [Schemes(self.base_ring()).Projective()]

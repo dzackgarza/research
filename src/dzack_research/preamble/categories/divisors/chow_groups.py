@@ -210,6 +210,13 @@ class TorusInvariantCycleGroups(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "torus-invariant cycle groups"
 
+    def an_object(self):
+        r"""The free cycle module on the torus fixed points of a toric projective line."""
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+
+        scheme = ToricSchemes(self.base_ring()).an_object()
+        return self(scheme, 0, scheme.fan().cones(int(scheme.dimension())))
+
     def super_categories(self):
         return [AlgebraicCycleGroups(self.base_ring())]
 
