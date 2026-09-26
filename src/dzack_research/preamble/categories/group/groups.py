@@ -71,7 +71,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
-    MonoidMorphism,
     Monoids,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -1673,7 +1672,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupMorphism(MonoidMorphism):
+class GroupMorphism:
     r"""An owned group morphism computed by a private GAP homomorphism."""
 
     def __init__(self, parent, gap_homomorphism, check=True) -> None:
@@ -1687,7 +1686,7 @@ class GroupMorphism(MonoidMorphism):
                 f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
             )
         self._gap_homomorphism = gap_homomorphism
-        MonoidMorphism.__init__(self, parent, self._evaluate_gap)
+        super().__init__(parent, self._evaluate_gap)
 
     def _gap_morphism_crossing(self):
         r"""Return the private GAP realization to the group computation owner."""
@@ -1816,7 +1815,7 @@ class GroupMorphism(MonoidMorphism):
 class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
     """The canonical owned ``Mor(G,H)``."""
 
-    Element = GroupMorphism
+    ElementMethods = GroupMorphism
 
     @staticmethod
     def __classcall__(cls, family, domain, codomain):
