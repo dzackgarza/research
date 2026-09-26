@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism, Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -123,12 +123,12 @@ def _finite_digraph_engine_with(mixin):
     )
 
 
-class GraphMorphism(OwnedSetMorphism):
+class GraphMorphism:
     r"""A vertex map preserving directed adjacency."""
 
     def __init__(self, parent, set_morphism) -> None:
         self._set_morphism = set_morphism
-        OwnedSetMorphism.__init__(self, parent, set_morphism)
+        super().__init__(parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
@@ -155,7 +155,7 @@ class GraphMorphism(OwnedSetMorphism):
 class DigraphMor(CategoricalMor):
     r"""Adjacency-preserving vertex maps between represented digraphs."""
 
-    Element = GraphMorphism
+    ElementMethods = GraphMorphism
 
     def _verify_graph_map(self, morphism) -> None:
         for left, right in self.domain().edges():

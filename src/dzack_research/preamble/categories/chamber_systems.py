@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism, Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -58,12 +58,12 @@ class _FiniteChamberSystemEngine:
         return self._chamber_pair_space((left, right)) in self._adjacent_pairs[type_]
 
 
-class ChamberSystemMorphism(OwnedSetMorphism):
+class ChamberSystemMorphism:
     r"""A type-preserving map of chambers preserving every adjacency."""
 
     def __init__(self, parent, set_morphism) -> None:
         self._set_morphism = set_morphism
-        OwnedSetMorphism.__init__(self, parent, set_morphism)
+        super().__init__(parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
@@ -88,7 +88,7 @@ class ChamberSystemMorphism(OwnedSetMorphism):
 
 
 class ChamberSystemMor(CategoricalMor):
-    Element = ChamberSystemMorphism
+    ElementMethods = ChamberSystemMorphism
 
     def _verify(self, morphism) -> None:
         if self.domain().type_set() != self.codomain().type_set():

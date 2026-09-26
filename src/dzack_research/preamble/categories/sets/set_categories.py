@@ -3690,7 +3690,7 @@ class TotallyOrderedSets(OwnedCategory):
         return [PartiallyOrderedSets()]
 
 
-class WellOrderedSetMorphism(OwnedSetMorphism):
+class WellOrderedSetMorphism:
     r"""An order-preserving map between represented well-ordered sets."""
 
     def __init__(self, parent, set_morphism) -> None:
@@ -3703,7 +3703,7 @@ class WellOrderedSetMorphism(OwnedSetMorphism):
                 f"{set_morphism.domain()} -> {set_morphism.codomain()}"
             )
         self._set_morphism = set_morphism
-        OwnedSetMorphism.__init__(self, parent, set_morphism)
+        super().__init__(parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
@@ -3746,7 +3746,7 @@ class WellOrderedSetMor(CategoricalMor):
     structured set categories.
     """
 
-    Element = WellOrderedSetMorphism
+    ElementMethods = WellOrderedSetMorphism
 
     def _verify_order_preserving(self, set_morphism) -> None:
         domain = self.domain()
