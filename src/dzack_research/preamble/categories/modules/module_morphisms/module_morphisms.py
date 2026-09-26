@@ -2708,8 +2708,20 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
 
 
 
-class ModuleAutomorphism(CategoricalIsomorphism):
+class ModuleAutomorphismMethods:
     r"""An invertible module endomorphism, as an element of ``Aut_R(M)``."""
+
+    def __init__(self, parent, forward, inverse) -> None:
+        module = parent.domain()
+        mor = module.module_category().Mor(module, module)
+        forward = mor(forward)
+        inverse = mor(inverse)
+        self._inverse = inverse
+        super().__init__(parent, forward)
+
+    def forward(self):
+        module = self.domain()
+        return module.module_category().Mor(module, module)(self)
 
     def as_morphism(self):
         return self.forward()
@@ -2730,7 +2742,7 @@ class ModuleAutomorphism(CategoricalIsomorphism):
     def __eq__(self, other):
         if self is other:
             return True
-        if not isinstance(other, ModuleAutomorphism) or other.parent() is not self.parent():
+        if not isinstance(other, ModuleAutomorphismMethods) or other.parent() is not self.parent():
             return False
         return self.forward() == other.forward()
 
@@ -2760,23 +2772,8 @@ class ModuleAutomorphism(CategoricalIsomorphism):
                 return self.forward() * other
 
 
-class _ConstructedModuleAutomorphism(ModuleAutomorphism):
-    r"""An automorphism whose inverse equations follow from its construction."""
-
-    def __init__(self, parent, forward, inverse) -> None:
-        Morphism.__init__(self, parent)
-        match (forward.domain() is self.domain(), forward.codomain() is self.codomain()):
-            case (True, True):
-                pass
-            case _:
-                raise ValueError(f"cannot form an automorphism of {self.domain()} from {forward.domain()} -> {forward.codomain()}: the map must go {self.domain()} -> {self.codomain()}")
-        match (inverse.domain() is self.codomain(), inverse.codomain() is self.domain()):
-            case (True, True):
-                pass
-            case _:
-                raise ValueError(f"cannot form an automorphism of {self.domain()} with inverse {inverse.domain()} -> {inverse.codomain()}: the inverse must go {self.codomain()} -> {self.domain()}")
-        self._forward = forward
-        self._inverse = inverse
+class ModuleAutomorphism(ModuleAutomorphismMethods, ModuleMorphism):
+    r"""Compatibility shell for private module-automorphism realizations."""
 
 
 class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
@@ -2813,7 +2810,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
     through its constructor rather than becoming a group element by inspection.
     """
 
-    Element = ModuleAutomorphism
+    ElementMethods = ModuleAutomorphismMethods
 
     def __init__(self, mor_family, module) -> None:
         self._base_ring = _owned_ring(module.base_ring())
@@ -2833,14 +2830,14 @@ class ModuleAutomorphismGroup(CategoricalMor):
         mor = module.module_category().Mor(module, module)
         forward = mor(forward)
         inverse = mor(inverse)
-        return _ConstructedModuleAutomorphism(self, forward, inverse)
+        return self.element_class(self, forward, inverse)
 
     def __call__(self, datum):
         r"""Construct an automorphism-group element rather than preserving a bare Iso arrow."""
         return self._element_constructor_(datum)
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, ModuleAutomorphism):
+        if isinstance(datum, ModuleAutomorphismMethods):
             if datum.parent() is self:
                 return datum
             datum = datum.as_morphism()
