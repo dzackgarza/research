@@ -240,10 +240,6 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             )
             return presentation.multiplication()
 
-        def multiplication_morphism(self):
-            r"""Return the retained tensor classifier of composition."""
-            return self.multiplication()
-
         def associativity_decision(self):
             r"""Composition of endomorphisms is associative by construction."""
             return True
