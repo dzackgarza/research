@@ -778,6 +778,15 @@ class LocalizationRings(OwnedCategory):
     class ParentMethods:
         _derived_construction_parameters = frozenset({"base_ring"})
 
+        def cardinality(self):
+            r"""Return ``|S^-1 R| = |R|`` when ``R`` is an integral domain."""
+            source = self.localization_source()
+            match source in OwnedRings().Commutative().NoZeroDivisors():
+                case True:
+                    return source.cardinality()
+                case False:
+                    return super().cardinality()
+
         def inverted_submonoid_meets(self, ideal) -> bool:
             r"""Decide ``I intersect S != empty`` for this localization ``S^-1 R``.
 
