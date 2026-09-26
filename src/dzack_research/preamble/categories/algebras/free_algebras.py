@@ -976,6 +976,24 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        def cardinality(self):
+            r"""Return the cardinality of the free algebra from its word basis."""
+            from dzack_research.preamble.categories.sets.cardinals import (
+                Cardinalities,
+                aleph0,
+                cardinal,
+            )
+
+            scalars = cardinal(self.base_ring().cardinality())
+            generators = cardinal(self.algebra_generating_set().cardinality())
+            match generators == Cardinalities().zero(), scalars == Cardinalities().one():
+                case True, _:
+                    return scalars
+                case False, True:
+                    return Cardinalities().one()
+                case False, False:
+                    return Cardinalities().supremum(scalars, generators, aleph0)
+
         def is_free(self) -> bool:
             return True
 
