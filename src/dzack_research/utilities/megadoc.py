@@ -196,12 +196,44 @@ def summarize(doc: str | None) -> str:
         return ""
     text = inspect.cleandoc(doc)
     text = text.split("\n\n", 1)[0].replace("\n", " ").strip()
-    return re.sub(r"\s+", " ", text)
+    return dollar_math(re.sub(r"\s+", " ", text))
+
+
+def dollar_math(text: str) -> str:
+    r"""Rewrite docstring TeX delimiters ``\(..\)`` and ``\[..\]`` as ``$..$``, ``$$..$$``.
+
+    Pandoc's Markdown reads dollar math by default (``tex_math_dollars``);
+    backslash-parenthesis math is the opt-in ``tex_math_single_backslash``.
+    The commit gate's formatter, flowmark, also leaves dollar math alone but
+    reads ``_`` inside ``\(..\)`` as emphasis and rewrites it to ``*``.
+    """
+    text = re.sub(r"\\\((.+?)\\\)", lambda m: f"${m.group(1).strip()}$", text)
+    return re.sub(r"\\\[(.+?)\\\]", lambda m: f"$${m.group(1).strip()}$$", text)
 
 
 def stable_runtime_text(text: str) -> str:
     r"""Remove process-local object addresses from generated reference text."""
     return RUNTIME_ADDRESS.sub("", text)
+
+
+def loose(items: list[str]) -> list[str]:
+    r"""A Markdown list with a blank line after each item.
+
+    The commit gate's formatter, flowmark, writes every list loose.  Its check
+    that reformatting leaves the pandoc reading unchanged fails on a tight list
+    whose items nest a sublist, so the reference is emitted loose already.
+    """
+    return [line for item in items for line in (item, "")]
+
+
+def table_row(cells: list[str]) -> str:
+    r"""One Markdown table row.
+
+    A pipe-table row is one line, so each cell's whitespace runs, newlines
+    included, collapse to a single space, and a literal ``|`` is escaped.  A
+    multi-line ``repr`` written raw splits the row and ends the table.
+    """
+    return "| " + " | ".join(" ".join(cell.split()).replace("|", "\\|") for cell in cells) + " |"
 
 
 def anchor(name: str) -> str:
@@ -265,7 +297,7 @@ class MethodDoc:
         head = f"- `{self.name}{self.signature}`"
         if self.mark:
             head += f" <sub>{self.mark}</sub>"
-        return f"{head}\n  - {self.summary}" if self.summary else head
+        return f"{head}\n\n  - {self.summary}" if self.summary else head
 
 
 @dataclass
@@ -467,10 +499,14 @@ class Survey:
 
     def collect_categories(self) -> None:
         pending: list[Category] = []
+        # One category exported under two names is one category; the first
+        # name in the session's sorted namespace is the one reported.
+        surveyed: set[type] = set()
         for name in self.names:
             value = getattr(self.session, name)
-            if not (inspect.isclass(value) and issubclass(value, Category)):
+            if not (inspect.isclass(value) and issubclass(value, Category)) or value in surveyed:
                 continue
+            surveyed.add(value)
             probe = self.probe_arguments(value)
             arity = probe[1] if probe is not None else "undeclared"
             doc = CategoryDoc(
@@ -1069,7 +1105,7 @@ class Report:
         )
         for functor in sorted(resolved, key=lambda f: (f.domain, f.name)):
             target = f"[`{functor.name}`](#{anchor('fun-' + functor.name)})"
-            self.out(f"| {functor.domain} | {target} | {functor.codomain} |")
+            self.out(table_row([functor.domain, target, functor.codomain]))
         self.out("")
         if adjunctions:
             self.out(
@@ -1080,7 +1116,7 @@ class Report:
             )
             for adjunction in sorted(adjunctions, key=lambda f: f.name):
                 target = f"[`{adjunction.name}`](#{anchor('fun-' + adjunction.name)})"
-                self.out(f"| {target} | {adjunction.domain} | ⊣ | {adjunction.codomain} |")
+                self.out(table_row([target, adjunction.domain, "⊣", adjunction.codomain]))
             self.out("")
         unresolved = [f for f in self.survey.functors if not f.domain]
         if unresolved:
@@ -1119,7 +1155,7 @@ class Report:
                 cells = [f"`{catalogue.name}.{specimen.name}`", specimen.repr_text]
                 cells += [specimen.invariants.get(key, "") for key in keys]
                 cells.append(specimen.category)
-                self.out("| " + " | ".join(cell.replace("|", "\\|") for cell in cells) + " |")
+                self.out(table_row(cells))
             self.out("")
 
     # ---- entries -------------------------------------------------------
@@ -1164,7 +1200,7 @@ class Report:
             shown = ", ".join(f"`{s}`" for s in doc.specimens)
             more = doc.specimen_total - len(doc.specimens)
             facts.append(f"- **specimens** {shown}" + (f", and {more} more" if more else ""))
-        self.out(*[line for line in facts if line], "")
+        self.out(*loose([line for line in facts if line]))
 
         if doc.own_methods:
             tally = ", ".join(f"{len(v)} on {k}" for k, v in doc.own_methods.items())
@@ -1174,7 +1210,7 @@ class Report:
                 if not methods:
                     continue
                 self.out(f"*on {label}*", "")
-                self.out(*[m.render() for m in methods], "")
+                self.out(*loose([m.render() for m in methods]))
         elif doc.instance_repr:
             self.out(
                 "Introduces no operations of its own: membership is the whole statement, and everything an object here answers to is inherited.",
@@ -1188,7 +1224,7 @@ class Report:
                 "| :--- | ---: | ---: | ---: |",
             )
             for owner, on_objects, on_elements, on_morphisms in doc.inherited:
-                self.out(f"| {self.link(owner)} | {on_objects or ''} | {on_elements or ''} | {on_morphisms or ''} |")
+                self.out(table_row([self.link(owner), str(on_objects or ''), str(on_elements or ''), str(on_morphisms or '')]))
             self.out("")
 
     def functor_entry(self, doc: FunctorDoc) -> None:
@@ -1202,9 +1238,9 @@ class Report:
         facts.append(f"- **built by** `{doc.name}{doc.init_signature}`")
         if doc.problem:
             facts.append(f"- **not resolved here**: {doc.problem}")
-        self.out(*[line for line in facts if line], "")
+        self.out(*loose([line for line in facts if line]))
         if doc.methods:
-            self.out("**Operations**", "", *[m.render() for m in doc.methods], "")
+            self.out("**Operations**", "", *loose([m.render() for m in doc.methods]))
 
     def plain_entry(self, doc: PlainDoc) -> None:
         self.out(f"#### `{doc.name}` <sub>{doc.kind}</sub>", "")
@@ -1215,9 +1251,9 @@ class Report:
             facts.append(f"- **in** {doc.category}")
         elif doc.signature:
             facts.append(f"- **built by** `{doc.name}{doc.signature}`")
-        self.out(*[line for line in facts if line], "")
+        self.out(*loose([line for line in facts if line]))
         if doc.methods:
-            self.out("**Operations**", "", *[m.render() for m in doc.methods], "")
+            self.out("**Operations**", "", *loose([m.render() for m in doc.methods]))
 
     def chapter(self, key: str, title: str, scope: str) -> None:
         self.out(f"## {title}", "", f"> {scope}", "")
@@ -1294,7 +1330,7 @@ class Report:
         for name, kind, target in sorted(set(rows)):
             title = SUBSYSTEM_TITLES.get(chapter_of.get(name, ""), ("", ""))[0]
             shown = f"[`{name}`]({target})" if target else f"`{name}`"
-            self.out(f"| {shown} | {kind} | {title} |")
+            self.out(table_row([shown, kind, title]))
         self.out("")
 
     def render(self) -> str:

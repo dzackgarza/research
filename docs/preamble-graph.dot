@@ -133,7 +133,6 @@ digraph preamble {
     "ProfiniteGroups" [label="ProfiniteGroups", fillcolor="#e0e7ff"];
     "Semigroups" [label="Semigroups", fillcolor="#e0e7ff"];
     "TopologicalGroups" [label="TopologicalGroups", fillcolor="#e0e7ff"];
-    "groups" [label="groups", fillcolor="#e0e7ff"];
   }
   subgraph cluster_6 {
     label="Rings, Fields &amp; Commutative Algebra"; fontsize=13; color="#cbd5e1"; style=rounded;
@@ -162,7 +161,6 @@ digraph preamble {
     "OwnedSemirings" [label="OwnedSemirings", fillcolor="#ccfbf1"];
     "PredicateSubrings" [label="PredicateSubrings", fillcolor="#ccfbf1"];
     "PrimeSpectra" [label="PrimeSpectra", fillcolor="#ccfbf1"];
-    "Rings" [label="Rings", fillcolor="#ccfbf1"];
   }
   subgraph cluster_7 {
     label="Schemes &amp; Algebraic Geometry"; fontsize=13; color="#cbd5e1"; style=rounded;
@@ -233,7 +231,6 @@ digraph preamble {
     "Cardinalities" [label="Cardinalities", fillcolor="#fce7f3"];
     "CartesianProductsOfSets" [label="CartesianProductsOfSets", fillcolor="#fce7f3"];
     "CoproductsOfSets" [label="CoproductsOfSets", fillcolor="#fce7f3"];
-    "DisjointUnionsOfSets" [label="DisjointUnionsOfSets", fillcolor="#fce7f3"];
     "EnumeratedByIntegers" [label="EnumeratedByIntegers", fillcolor="#fce7f3"];
     "EnumeratedByNaturals" [label="EnumeratedByNaturals", fillcolor="#fce7f3"];
     "EnumeratedSets" [label="EnumeratedSets", fillcolor="#fce7f3"];
@@ -332,7 +329,6 @@ digraph preamble {
   "DiscriminantModules" -> "Modules.FinitelyPresented.Torsion";
   "DiscriminantQuadraticModules" -> "DiscriminantBilinearModules";
   "DiscriminantQuadraticModules" -> "QuadraticFormModules.FinitelyPresented.Torsion";
-  "DisjointUnionsOfSets" -> "Sets";
   "DividedPowerAlgebras" -> "Algebras.Associative.Unital.Commutative";
   "DividedPowerModules" -> "Modules";
   "DividedSquareModules" -> "DividedPowerModules";
@@ -494,8 +490,6 @@ digraph preamble {
   "RestrictedScalarsAlgebras" -> "Algebras.Associative.Unital";
   "RestrictedScalarsModules" -> "Modules";
   "RingedSpaces" -> "SheafedSpaces";
-  "Rings" -> "OwnedRngs";
-  "Rings" -> "OwnedSemirings";
   "RootLattices" -> "BilinearFormModules.Even";
   "RootLattices" -> "BilinearFormModules.FinitelyPresented";
   "RootLattices" -> "FormModules.Nondegenerate";
@@ -545,5 +539,4 @@ digraph preamble {
   "VinbergInvariantMatrices" -> "LabelledGraphs";
   "WeilDivisorGroups" -> "DivisorGroups";
   "WellOrderedSets" -> "TotallyOrderedSets";
-  "groups" -> "Monoids";
 }

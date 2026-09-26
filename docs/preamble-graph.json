@@ -2036,7 +2036,7 @@
           {
             "name": "cycle_dimension",
             "signature": "()",
-            "summary": "The dimension \\(k\\) of the prime cycles framing this group.",
+            "summary": "The dimension $k$ of the prime cycles framing this group.",
             "mark": ""
           },
           {
@@ -2230,7 +2230,7 @@
           {
             "name": "algebra_structure_morphism",
             "signature": "()",
-            "summary": "The structure morphism \\(\\rho\\) of this \\(R\\)-algebra.",
+            "summary": "The structure morphism $\\rho$ of this $R$-algebra.",
             "mark": "cached"
           },
           {
@@ -2248,13 +2248,13 @@
           {
             "name": "center",
             "signature": "()",
-            "summary": "The centre \\(Z(A)=\\{z : zx = xz\\ \\text{for all}\\ x\\}\\).",
+            "summary": "The centre $Z(A)=\\{z : zx = xz\\ \\text{for all}\\ x\\}$.",
             "mark": "cached"
           },
           {
             "name": "center_inclusion",
             "signature": "()",
-            "summary": "The inclusion \\(Z(A)\\hookrightarrow A\\).",
+            "summary": "The inclusion $Z(A)\\hookrightarrow A$.",
             "mark": ""
           },
           {
@@ -2407,7 +2407,7 @@
           {
             "name": "is_multiplicative",
             "signature": "()",
-            "summary": "``True`` when \\(f\\,m_A = m_B\\,(f\\otimes f)\\) was decided, ``Unknown`` when it is the stated hypothesis.",
+            "summary": "``True`` when $f\\,m_A = m_B\\,(f\\otimes f)$ was decided, ``Unknown`` when it is the stated hypothesis.",
             "mark": ""
           },
           {
@@ -2419,7 +2419,7 @@
           {
             "name": "tensor_square_morphism",
             "signature": "()",
-            "summary": "\\(f\\otimes f\\colon A\\otimes_R A\\to B\\otimes_R B\\).",
+            "summary": "$f\\otimes f\\colon A\\otimes_R A\\to B\\otimes_R B$.",
             "mark": "cached"
           },
           {
@@ -3718,7 +3718,7 @@
       "display": "AugmentedAlgebras(R)",
       "subsystem": "algebras",
       "source": "src/dzack_research/preamble/categories/algebras/augmented_algebras.py:55",
-      "summary": "Associative unital \\(R\\)-algebras equipped with an augmentation.",
+      "summary": "Associative unital $R$-algebras equipped with an augmentation.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -3755,7 +3755,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Associative unital \\(R\\)-algebras equipped with an augmentation.",
+            "summary": "Associative unital $R$-algebras equipped with an augmentation.",
             "mark": ""
           },
           {
@@ -3853,7 +3853,7 @@
       "display": "AugmentedSimplexCategory",
       "subsystem": "sets",
       "source": "src/dzack_research/preamble/categories/sets/set_categories.py:203",
-      "summary": "The standard finite linear orders \\([n] = \\{0 < \\dots < n-1\\}\\).",
+      "summary": "The standard finite linear orders $[n] = \\{0 < \\dots < n-1\\}$.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -3879,7 +3879,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "The standard finite linear orders \\([n] = \\{0 < \\dots < n-1\\}\\).",
+            "summary": "The standard finite linear orders $[n] = \\{0 < \\dots < n-1\\}$.",
             "mark": ""
           },
           {
@@ -4019,7 +4019,7 @@
           {
             "name": "q",
             "signature": "(vector)",
-            "summary": "Return the quadratic form \\(q(v)=b(v,v)\\) of the bilinear form.",
+            "summary": "Return the quadratic form $q(v)=b(v,v)$ of the bilinear form.",
             "mark": ""
           }
         ],
@@ -4587,13 +4587,13 @@
           {
             "name": "from_coproduct_cocone",
             "signature": "(legs)",
-            "summary": "The unique map \\(\\bigoplus_i M_i \\to X\\) with the stated legs.",
+            "summary": "The unique map $\\bigoplus_i M_i \\to X$ with the stated legs.",
             "mark": ""
           },
           {
             "name": "from_product_cone",
             "signature": "(legs)",
-            "summary": "The unique map \\(X \\to \\prod_i M_i\\) with the stated legs.",
+            "summary": "The unique map $X \\to \\prod_i M_i$ with the stated legs.",
             "mark": ""
           },
           {
@@ -4605,49 +4605,49 @@
           {
             "name": "injection",
             "signature": "(index)",
-            "summary": "Return \\(\\iota_i : M_i \\to \\bigoplus_{j \\in I} M_j\\).",
+            "summary": "Return $\\iota_i : M_i \\to \\bigoplus_{j \\in I} M_j$.",
             "mark": ""
           },
           {
             "name": "left_inclusion",
             "signature": "()",
-            "summary": "Return \\(\\iota_0\\), the injection at the first index.",
+            "summary": "Return $\\iota_0$, the injection at the first index.",
             "mark": ""
           },
           {
             "name": "left_injection",
             "signature": "()",
-            "summary": "Return \\(\\iota_0\\), the injection at the first index.",
+            "summary": "Return $\\iota_0$, the injection at the first index.",
             "mark": ""
           },
           {
             "name": "left_projection",
             "signature": "()",
-            "summary": "Return \\(\\pi_0\\), the projection at the first index.",
+            "summary": "Return $\\pi_0$, the projection at the first index.",
             "mark": ""
           },
           {
             "name": "projection",
             "signature": "(index)",
-            "summary": "Return \\(\\pi_i : \\bigoplus_{j \\in I} M_j \\to M_i\\).",
+            "summary": "Return $\\pi_i : \\bigoplus_{j \\in I} M_j \\to M_i$.",
             "mark": ""
           },
           {
             "name": "right_inclusion",
             "signature": "()",
-            "summary": "Return \\(\\iota_1\\), the injection at the second index.",
+            "summary": "Return $\\iota_1$, the injection at the second index.",
             "mark": ""
           },
           {
             "name": "right_injection",
             "signature": "()",
-            "summary": "Return \\(\\iota_1\\), the injection at the second index.",
+            "summary": "Return $\\iota_1$, the injection at the second index.",
             "mark": ""
           },
           {
             "name": "right_projection",
             "signature": "()",
-            "summary": "Return \\(\\pi_1\\), the projection at the second index.",
+            "summary": "Return $\\pi_1$, the projection at the second index.",
             "mark": ""
           },
           {
@@ -5192,7 +5192,7 @@
           {
             "name": "ArrowCategory",
             "signature": "() -> 'Category'",
-            "summary": "Return \\(\\mathrm{Ar}(C) = [[1], C]\\), the functor category out of the walking arrow.",
+            "summary": "Return $\\mathrm{Ar}(C) = [[1], C]$, the functor category out of the walking arrow.",
             "mark": ""
           },
           {
@@ -5240,7 +5240,7 @@
           {
             "name": "CosliceUnder",
             "signature": "(base_object: 'Parent') -> 'Category'",
-            "summary": "Return the coslice \\(X/C\\).",
+            "summary": "Return the coslice $X/C$.",
             "mark": ""
           },
           {
@@ -5384,7 +5384,7 @@
           {
             "name": "SliceOver",
             "signature": "(base_object: 'Parent') -> 'Category'",
-            "summary": "Return the slice \\(C/X\\).",
+            "summary": "Return the slice $C/X$.",
             "mark": ""
           },
           {
@@ -5528,13 +5528,13 @@
           {
             "name": "opposite",
             "signature": "() -> 'Category'",
-            "summary": "Return \\(C^{op}\\).",
+            "summary": "Return $C^{op}$.",
             "mark": ""
           },
           {
             "name": "presheaves",
             "signature": "(value_category: 'Category | None' = None) -> 'Category'",
-            "summary": "Return \\(\\mathrm{Presh}(C, D) = [C^{op}, D]\\), with \\(D = \\mathbf{Set}\\) by default.",
+            "summary": "Return $\\mathrm{Presh}(C, D) = [C^{op}, D]$, with $D = \\mathbf{Set}$ by default.",
             "mark": ""
           },
           {
@@ -5564,7 +5564,7 @@
           {
             "name": "yoneda_embedding",
             "signature": "()",
-            "summary": "Return \\(y: C \\to [C^{op}, \\mathbf{Set}]\\), \\(X \\mapsto \\mathrm{Mor}_C(-, X)\\).",
+            "summary": "Return $y: C \\to [C^{op}, \\mathbf{Set}]$, $X \\mapsto \\mathrm{Mor}_C(-, X)$.",
             "mark": ""
           }
         ],
@@ -5672,7 +5672,7 @@
       "display": "ChowGroups(R)",
       "subsystem": "divisors",
       "source": "src/dzack_research/preamble/categories/divisors/chow_groups.py:71",
-      "summary": "Chow groups \\(A_k(X)\\) of one scheme, with a chosen presentation.",
+      "summary": "Chow groups $A_k(X)$ of one scheme, with a chosen presentation.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -5699,7 +5699,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Chow groups \\(A_k(X)\\) of one scheme, with a chosen presentation.",
+            "summary": "Chow groups $A_k(X)$ of one scheme, with a chosen presentation.",
             "mark": ""
           },
           {
@@ -5717,13 +5717,13 @@
           {
             "name": "cycle_dimension",
             "signature": "()",
-            "summary": "The dimension \\(k\\) of \\(A_k(X)\\).",
+            "summary": "The dimension $k$ of $A_k(X)$.",
             "mark": ""
           },
           {
             "name": "rational_equivalence_morphism",
             "signature": "()",
-            "summary": "The rational-equivalence morphism \\(\\rho\\) into the \\(k\\)-cycles with \\(A_k(X) = \\operatorname{coker}\\rho\\).",
+            "summary": "The rational-equivalence morphism $\\rho$ into the $k$-cycles with $A_k(X) = \\operatorname{coker}\\rho$.",
             "mark": ""
           }
         ],
@@ -5791,7 +5791,7 @@
       "display": "ClassGroups",
       "subsystem": "divisors",
       "source": "src/dzack_research/preamble/categories/divisors/class_groups.py:19",
-      "summary": "Weil divisor class groups \\(\\operatorname{Cl}(X)\\) with a chosen presentation.",
+      "summary": "Weil divisor class groups $\\operatorname{Cl}(X)$ with a chosen presentation.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -5816,7 +5816,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Weil divisor class groups \\(\\operatorname{Cl}(X)\\) with a chosen presentation.",
+            "summary": "Weil divisor class groups $\\operatorname{Cl}(X)$ with a chosen presentation.",
             "mark": ""
           },
           {
@@ -5828,7 +5828,7 @@
           {
             "name": "principal_to_weil_morphism",
             "signature": "()",
-            "summary": "The principal-divisor morphism \\(\\rho_W\\colon P \\to \\operatorname{Div}\\) with \\(\\operatorname{Cl}(X) = \\operatorname{coker}\\rho_W\\).",
+            "summary": "The principal-divisor morphism $\\rho_W\\colon P \\to \\operatorname{Div}$ with $\\operatorname{Cl}(X) = \\operatorname{coker}\\rho_W$.",
             "mark": ""
           }
         ],
@@ -7159,7 +7159,7 @@
       "display": "CommutatorLieAlgebras(R)",
       "subsystem": "algebras",
       "source": "src/dzack_research/preamble/categories/algebras/lie_algebras.py:25",
-      "summary": "Associative algebras read as Lie algebras under \\([x,y]=xy-yx\\).",
+      "summary": "Associative algebras read as Lie algebras under $[x,y]=xy-yx$.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -7186,7 +7186,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Associative algebras read as Lie algebras under \\([x,y]=xy-yx\\).",
+            "summary": "Associative algebras read as Lie algebras under $[x,y]=xy-yx$.",
             "mark": ""
           }
         ],
@@ -7980,7 +7980,7 @@
           {
             "name": "coxeter_group",
             "signature": "()",
-            "summary": "Return the Coxeter group \\(W\\) of this diagram.",
+            "summary": "Return the Coxeter group $W$ of this diagram.",
             "mark": ""
           },
           {
@@ -8148,7 +8148,7 @@
           {
             "name": "negative_inertia_index",
             "signature": "()",
-            "summary": "Return \\(n_-\\), the negative index of inertia of the Schlaefli form.",
+            "summary": "Return $n_-$, the negative index of inertia of the Schlaefli form.",
             "mark": ""
           },
           {
@@ -8196,7 +8196,7 @@
           {
             "name": "positive_inertia_index",
             "signature": "()",
-            "summary": "Return \\(n_+\\), the positive index of inertia of the Schlaefli form.",
+            "summary": "Return $n_+$, the positive index of inertia of the Schlaefli form.",
             "mark": ""
           },
           {
@@ -8262,7 +8262,7 @@
           {
             "name": "schlaflian",
             "signature": "()",
-            "summary": "Return \\(\\det C\\) for the Schlaefli matrix \\(C\\) of this diagram.",
+            "summary": "Return $\\det C$ for the Schlaefli matrix $C$ of this diagram.",
             "mark": ""
           },
           {
@@ -8340,7 +8340,7 @@
           {
             "name": "zero_inertia_index",
             "signature": "()",
-            "summary": "Return \\(n_0\\), the dimension of the radical of the Schlaefli form.",
+            "summary": "Return $n_0$, the dimension of the radical of the Schlaefli form.",
             "mark": ""
           }
         ],
@@ -10001,7 +10001,7 @@
           {
             "name": "primary_components",
             "signature": "()",
-            "summary": "Return the family \\(p\\mapsto A_p\\) over the primes dividing \\(|A|\\).",
+            "summary": "Return the family $p\\mapsto A_p$ over the primes dividing $|A|$.",
             "mark": ""
           },
           {
@@ -10414,79 +10414,6 @@
         {
           "from": "AdditiveMonoids",
           "objects": 1,
-          "elements": 0,
-          "morphisms": 0
-        }
-      ],
-      "specimens": [],
-      "problem": ""
-    },
-    "DisjointUnionsOfSets": {
-      "display": "DisjointUnionsOfSets",
-      "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:3083",
-      "summary": "Dependent coproducts (disjoint unions) of families of sets.",
-      "owned": true,
-      "exported": true,
-      "arity": "nullary",
-      "probed_as": "Category of coproducts of sets",
-      "supers": [
-        "Sets"
-      ],
-      "subcategories": [],
-      "ancestry": [
-        "Sets",
-        "Objects"
-      ],
-      "operations": {
-        "objects": [],
-        "elements": [],
-        "morphisms": []
-      },
-      "arrow_mor_class": "FixedMorCategory",
-      "arrow_type": "",
-      "arrow_type_source": "",
-      "arrow_unthreaded": [],
-      "inherits": [
-        {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
-          "morphisms": 0
-        },
-        {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "CategoryObject",
-          "objects": 14,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
-          "objects": 13,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "CoproductsOfSets",
-          "objects": 7,
-          "elements": 2,
-          "morphisms": 0
-        },
-        {
-          "from": "Element",
-          "objects": 0,
-          "elements": 9,
-          "morphisms": 0
-        },
-        {
-          "from": "Objects",
-          "objects": 3,
           "elements": 0,
           "morphisms": 0
         }
@@ -11180,7 +11107,7 @@
       "display": "EnumeratedByIntegers",
       "subsystem": "sets",
       "source": "src/dzack_research/preamble/categories/sets/enumerated/function_sets.py:271",
-      "summary": "Infinite enumerated sets whose functions are indexed by \\(\\mathbb Z\\).",
+      "summary": "Infinite enumerated sets whose functions are indexed by $\\mathbb Z$.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -11202,7 +11129,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Infinite enumerated sets whose functions are indexed by \\(\\mathbb Z\\).",
+            "summary": "Infinite enumerated sets whose functions are indexed by $\\mathbb Z$.",
             "mark": ""
           },
           {
@@ -11276,7 +11203,7 @@
       "display": "EnumeratedByNaturals",
       "subsystem": "sets",
       "source": "src/dzack_research/preamble/categories/sets/enumerated/function_sets.py:244",
-      "summary": "Infinite enumerated sets ranked by \\(\\mathbb N\\).",
+      "summary": "Infinite enumerated sets ranked by $\\mathbb N$.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -11298,7 +11225,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Infinite enumerated sets ranked by \\(\\mathbb N\\).",
+            "summary": "Infinite enumerated sets ranked by $\\mathbb N$.",
             "mark": ""
           },
           {
@@ -11874,7 +11801,7 @@
       "display": "FinitePowerSets",
       "subsystem": "sets",
       "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2409",
-      "summary": "Finite power objects \\(P_{fin}(X)\\), the finite subsets of \\(X\\).",
+      "summary": "Finite power objects $P_{fin}(X)$, the finite subsets of $X$.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -11892,7 +11819,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Finite power objects \\(P_{fin}(X)\\), the finite subsets of \\(X\\).",
+            "summary": "Finite power objects $P_{fin}(X)$, the finite subsets of $X$.",
             "mark": ""
           },
           {
@@ -13085,7 +13012,7 @@
           {
             "name": "ElementType",
             "signature": "(parent, backend_element) -> None",
-            "summary": "What a class in \\(\\operatorname{Frac}(R)/R\\) is.",
+            "summary": "What a class in $\\operatorname{Frac}(R)/R$ is.",
             "mark": ""
           },
           {
@@ -13153,7 +13080,7 @@
           {
             "name": "lift",
             "signature": "()",
-            "summary": "Return this class's representative in \\(K\\) under the chosen section.",
+            "summary": "Return this class's representative in $K$ under the chosen section.",
             "mark": ""
           }
         ],
@@ -15114,7 +15041,7 @@
       "display": "GradedAugmentedAlgebras",
       "subsystem": "algebras",
       "source": "src/dzack_research/preamble/categories/algebras/augmented_algebras.py:119",
-      "summary": "Graded algebras over an augmented \\(R\\)-algebra.",
+      "summary": "Graded algebras over an augmented $R$-algebra.",
       "owned": true,
       "exported": true,
       "arity": "undeclared",
@@ -15127,7 +15054,7 @@
           {
             "name": "ground_ring_augmentation",
             "signature": "()",
-            "summary": "The composite augmentation \\(A\\to A_u\\to R\\).",
+            "summary": "The composite augmentation $A\\to A_u\\to R$.",
             "mark": ""
           }
         ],
@@ -15565,7 +15492,7 @@
       "display": "GroupAlgebras(R)",
       "subsystem": "algebras",
       "source": "src/dzack_research/preamble/categories/algebras/group_algebras.py:45",
-      "summary": "Algebras of the form \\(R[G]\\), interned on their group.",
+      "summary": "Algebras of the form $R[G]$, interned on their group.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -15601,25 +15528,25 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Algebras of the form \\(R[G]\\), interned on their group.",
+            "summary": "Algebras of the form $R[G]$, interned on their group.",
             "mark": ""
           },
           {
             "name": "center",
             "signature": "()",
-            "summary": "The centre \\(Z(R[G])\\), the algebra on the span of the conjugacy-class sums.",
+            "summary": "The centre $Z(R[G])$, the algebra on the span of the conjugacy-class sums.",
             "mark": "cached"
           },
           {
             "name": "group",
             "signature": "()",
-            "summary": "The group \\(G\\) this algebra is \\(R[G]\\) of.",
+            "summary": "The group $G$ this algebra is $R[G]$ of.",
             "mark": ""
           },
           {
             "name": "group_inclusion",
             "signature": "()",
-            "summary": "The monoid morphism \\(G\\to R[G]\\), \\(g\\mapsto g\\).",
+            "summary": "The monoid morphism $G\\to R[G]$, $g\\mapsto g$.",
             "mark": "cached"
           },
           {
@@ -16002,7 +15929,7 @@
       "display": "HomogeneousPolynomialSectionSpaces(R)",
       "subsystem": "divisors",
       "source": "src/dzack_research/preamble/categories/divisors/linear_systems.py:96",
-      "summary": "Degree-\\(d\\) homogeneous polynomial section spaces \\(H^0(\\mathbb{P}^n, \\mathcal{O}(d))\\).",
+      "summary": "Degree-$d$ homogeneous polynomial section spaces $H^0(\\mathbb{P}^n, \\mathcal{O}(d))$.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -16028,7 +15955,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Degree-\\(d\\) homogeneous polynomial section spaces \\(H^0(\\mathbb{P}^n, \\mathcal{O}(d))\\).",
+            "summary": "Degree-$d$ homogeneous polynomial section spaces $H^0(\\mathbb{P}^n, \\mathcal{O}(d))$.",
             "mark": ""
           },
           {
@@ -16040,7 +15967,7 @@
           {
             "name": "homogeneous_degree",
             "signature": "()",
-            "summary": "The degree \\(d\\) of the homogeneous polynomials.",
+            "summary": "The degree $d$ of the homogeneous polynomials.",
             "mark": ""
           },
           {
@@ -16213,7 +16140,7 @@
           {
             "name": "edgewalk_is_reflective",
             "signature": "() -> bool",
-            "summary": "Return whether \\(W(L)\\) has finite index in \\(O(L)\\).",
+            "summary": "Return whether $W(L)$ has finite index in $O(L)$.",
             "mark": ""
           },
           {
@@ -16237,19 +16164,19 @@
           {
             "name": "is_cocompact",
             "signature": "(controlling_vector=None, *, max_roots=None, max_decompositions=None)",
-            "summary": "Return whether \\(W(L)\\) acts cocompactly, or ``Unknown``.",
+            "summary": "Return whether $W(L)$ acts cocompactly, or ``Unknown``.",
             "mark": ""
           },
           {
             "name": "is_reflective",
             "signature": "(controlling_vector=None, *, max_roots=None, max_decompositions=None)",
-            "summary": "Return whether \\(W(L)\\) has finite index in \\(O(L)\\), or ``Unknown``.",
+            "summary": "Return whether $W(L)$ has finite index in $O(L)$, or ``Unknown``.",
             "mark": ""
           },
           {
             "name": "isotropic_elements_below_height",
             "signature": "(timelike, height)",
-            "summary": "Return the isotropic \\(v\\in L\\) with \\(\\lvert b(v,t)\\rvert\\leq h\\).",
+            "summary": "Return the isotropic $v\\in L$ with $\\lvert b(v,t)\\rvert\\leq h$.",
             "mark": ""
           },
           {
@@ -16261,7 +16188,7 @@
           {
             "name": "possible_root_lengths",
             "signature": "()",
-            "summary": "Return the values \\(\\lvert q(r)\\rvert\\) a root of this lattice can take.",
+            "summary": "Return the values $\\lvert q(r)\\rvert$ a root of this lattice can take.",
             "mark": ""
           },
           {
@@ -16273,7 +16200,7 @@
           {
             "name": "reflection_group",
             "signature": "(controlling_vector=None, *, max_roots=None, max_decompositions=None)",
-            "summary": "Return \\(W(L)\\leq O(L)\\), generated by the reflections in the roots.",
+            "summary": "Return $W(L)\\leq O(L)$, generated by the reflections in the roots.",
             "mark": ""
           },
           {
@@ -16291,7 +16218,7 @@
           {
             "name": "weyl_group",
             "signature": "(controlling_vector=None, *, max_roots=None, max_decompositions=None)",
-            "summary": "Return the reflection/Weyl subgroup \\(W(L)\\leq O(L)\\).",
+            "summary": "Return the reflection/Weyl subgroup $W(L)\\leq O(L)$.",
             "mark": ""
           }
         ],
@@ -16946,7 +16873,7 @@
       "display": "IsotropicReductions(R)",
       "subsystem": "lattices",
       "source": "src/dzack_research/preamble/categories/lattices.py:3875",
-      "summary": "Lattices \\(K_I=I^\\perp/I\\) built from a totally isotropic \\(\\iota:I\\hookrightarrow L\\).",
+      "summary": "Lattices $K_I=I^\\perp/I$ built from a totally isotropic $\\iota:I\\hookrightarrow L$.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -16979,37 +16906,37 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Lattices \\(K_I=I^\\perp/I\\) built from a totally isotropic \\(\\iota:I\\hookrightarrow L\\).",
+            "summary": "Lattices $K_I=I^\\perp/I$ built from a totally isotropic $\\iota:I\\hookrightarrow L$.",
             "mark": ""
           },
           {
             "name": "inclusion",
             "signature": "()",
-            "summary": "Return \\(I\\hookrightarrow I^\\perp\\), the inclusion defining the quotient.",
+            "summary": "Return $I\\hookrightarrow I^\\perp$, the inclusion defining the quotient.",
             "mark": ""
           },
           {
             "name": "isotropic_embedding",
             "signature": "()",
-            "summary": "Return \\(\\iota:I\\hookrightarrow L\\), the embedding this reduces.",
+            "summary": "Return $\\iota:I\\hookrightarrow L$, the embedding this reduces.",
             "mark": ""
           },
           {
             "name": "isotropic_inclusion",
             "signature": "()",
-            "summary": "Return \\(I\\hookrightarrow I^\\perp\\).",
+            "summary": "Return $I\\hookrightarrow I^\\perp$.",
             "mark": ""
           },
           {
             "name": "isotropic_sublattice",
             "signature": "()",
-            "summary": "Return \\(I\\), the totally isotropic sublattice.",
+            "summary": "Return $I$, the totally isotropic sublattice.",
             "mark": ""
           },
           {
             "name": "levi_action",
             "signature": "()",
-            "summary": "Return \\(P_I\\to O(K_I)\\), \\(g\\mapsto\\bar g\\), the action on \\(I^\\perp/I\\).",
+            "summary": "Return $P_I\\to O(K_I)$, $g\\mapsto\\bar g$, the action on $I^\\perp/I$.",
             "mark": "cached"
           },
           {
@@ -17033,13 +16960,13 @@
           {
             "name": "lift_isometry",
             "signature": "(isometry)",
-            "summary": "Return \\(g\\in P_I\\) with \\(\\bar g=\\) ``isometry``, when \\(L\\) splits along the lifts.",
+            "summary": "Return $g\\in P_I$ with $\\bar g=$ ``isometry``, when $L$ splits along the lifts.",
             "mark": ""
           },
           {
             "name": "orthogonal_complement",
             "signature": "()",
-            "summary": "Return \\(I^\\perp\\hookrightarrow L\\) as a subobject of the lattice.",
+            "summary": "Return $I^\\perp\\hookrightarrow L$ as a subobject of the lattice.",
             "mark": ""
           },
           {
@@ -17051,7 +16978,7 @@
           {
             "name": "parabolic_subgroup",
             "signature": "()",
-            "summary": "Return \\(P_I=\\operatorname{Stab}_{O(L)}(I)\\), the setwise stabilizer of \\(I\\).",
+            "summary": "Return $P_I=\\operatorname{Stab}_{O(L)}(I)$, the setwise stabilizer of $I$.",
             "mark": "cached"
           },
           {
@@ -17075,13 +17002,13 @@
           {
             "name": "projection",
             "signature": "()",
-            "summary": "Return the quotient morphism \\(\\pi:I^\\perp\\twoheadrightarrow K_I\\).",
+            "summary": "Return the quotient morphism $\\pi:I^\\perp\\twoheadrightarrow K_I$.",
             "mark": "cached"
           },
           {
             "name": "quotient_lattice",
             "signature": "()",
-            "summary": "Return \\(K_I=I^\\perp/I\\), which is this lattice.",
+            "summary": "Return $K_I=I^\\perp/I$, which is this lattice.",
             "mark": ""
           },
           {
@@ -17093,13 +17020,13 @@
           {
             "name": "reduction_lifts",
             "signature": "()",
-            "summary": "Return the chosen lifts of the framing of \\(K_I\\) into \\(I^\\perp\\).",
+            "summary": "Return the chosen lifts of the framing of $K_I$ into $I^\\perp$.",
             "mark": ""
           },
           {
             "name": "unipotent_kernel",
             "signature": "()",
-            "summary": "Return \\(U_I=\\ker(P_I\\to GL(I)\\times O(K_I))\\), the unipotent radical.",
+            "summary": "Return $U_I=\\ker(P_I\\to GL(I)\\times O(K_I))$, the unipotent radical.",
             "mark": "cached"
           }
         ],
@@ -17700,7 +17627,7 @@
           {
             "name": "O_plus",
             "signature": "()",
-            "summary": "Return \\(O^+(L)=O(L)\\cap\\ker\\mathrm{sn}_{\\mathbb R}\\) (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, \u00a71).",
+            "summary": "Return $O^+(L)=O(L)\\cap\\ker\\mathrm{sn}_{\\mathbb R}$ (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, \u00a71).",
             "mark": "cached"
           },
           {
@@ -17736,7 +17663,7 @@
           {
             "name": "base_change",
             "signature": "(ring_map)",
-            "summary": "Return \\(L\\otimes_R S\\) along ``ring_map`` \\(\\varphi\\colon R\\to S\\), a lattice over \\(S\\).",
+            "summary": "Return $L\\otimes_R S$ along ``ring_map`` $\\varphi\\colon R\\to S$, a lattice over $S$.",
             "mark": "cached"
           },
           {
@@ -17778,7 +17705,7 @@
           {
             "name": "component_character",
             "signature": "()",
-            "summary": "Return \\(\\chi_\\Omega\\colon O(L)\\to C_2\\), the character of the positive cone.",
+            "summary": "Return $\\chi_\\Omega\\colon O(L)\\to C_2$, the character of the positive cone.",
             "mark": "cached"
           },
           {
@@ -17904,7 +17831,7 @@
           {
             "name": "discriminant_reduction_sequence",
             "signature": "()",
-            "summary": "Return \\(1\\to\\tilde O(L)\\to O(L)\\xrightarrow{f}O(A_L)\\to C_L\\to 1\\).",
+            "summary": "Return $1\\to\\tilde O(L)\\to O(L)\\xrightarrow{f}O(A_L)\\to C_L\\to 1$.",
             "mark": "cached"
           },
           {
@@ -17934,7 +17861,7 @@
           {
             "name": "divisibility_ideal",
             "signature": "(element)",
-            "summary": "Return the ideal \\(b(v, L) = \\{b(v,x) : x\\in L\\}\\) of the base ring.",
+            "summary": "Return the ideal $b(v, L) = \\{b(v,x) : x\\in L\\}$ of the base ring.",
             "mark": ""
           },
           {
@@ -17958,7 +17885,7 @@
           {
             "name": "eichler_transvection",
             "signature": "(isotropic, orthogonal)",
-            "summary": "Return the Eichler transvection \\(t(e,a)\\in O(L)\\).",
+            "summary": "Return the Eichler transvection $t(e,a)\\in O(L)$.",
             "mark": ""
           },
           {
@@ -18156,7 +18083,7 @@
           {
             "name": "is_totally_isotropic",
             "signature": "() -> 'bool'",
-            "summary": "Return whether the form vanishes identically: \\(\\operatorname{rad}(L)=L\\).",
+            "summary": "Return whether the form vanishes identically: $\\operatorname{rad}(L)=L$.",
             "mark": ""
           },
           {
@@ -18300,7 +18227,7 @@
           {
             "name": "orthogonal_group_base_change",
             "signature": "(ring_map)",
-            "summary": "Return \\(O(L)\\to O(L\\otimes_R S)\\), \\(g\\mapsto g\\otimes S\\), along ``ring_map``.",
+            "summary": "Return $O(L)\\to O(L\\otimes_R S)$, $g\\mapsto g\\otimes S$, along ``ring_map``.",
             "mark": ""
           },
           {
@@ -18474,25 +18401,25 @@
           {
             "name": "spinor_kernel",
             "signature": "(field_map=None, form_multiplier=None)",
-            "summary": "Return \\(O_{\\mathrm{sn}_{K'}}(L)=O(L)\\cap\\ker\\mathrm{sn}_{K'}\\) for :meth:`spinor_norm`.",
+            "summary": "Return $O_{\\mathrm{sn}_{K'}}(L)=O(L)\\cap\\ker\\mathrm{sn}_{K'}$ for :meth:`spinor_norm`.",
             "mark": ""
           },
           {
             "name": "spinor_norm",
             "signature": "(field_map=None, form_multiplier=None)",
-            "summary": "Return the spinor norm \\(g\\mapsto\\mathrm{sn}_{K'}(g\\otimes K')\\) on \\(O(L)\\).",
+            "summary": "Return the spinor norm $g\\mapsto\\mathrm{sn}_{K'}(g\\otimes K')$ on $O(L)$.",
             "mark": ""
           },
           {
             "name": "spinor_norm_sequence",
             "signature": "(form_multiplier=None)",
-            "summary": "Return \\(1\\to K_{\\mathrm{sn}_K}\\to O(L_K)\\xrightarrow{\\mathrm{sn}_K}K^\\times/(K^\\times)^2\\to C_{\\mathrm{sn}_K}\\to 1\\).",
+            "summary": "Return $1\\to K_{\\mathrm{sn}_K}\\to O(L_K)\\xrightarrow{\\mathrm{sn}_K}K^\\times/(K^\\times)^2\\to C_{\\mathrm{sn}_K}\\to 1$.",
             "mark": "cached"
           },
           {
             "name": "spinorial_kernel",
             "signature": "()",
-            "summary": "Return the spinorial kernel \\(O'(L)=SO(L)\\cap\\ker\\mathrm{sn}_{\\mathbb Q}\\).",
+            "summary": "Return the spinorial kernel $O'(L)=SO(L)\\cap\\ker\\mathrm{sn}_{\\mathbb Q}$.",
             "mark": "cached"
           },
           {
@@ -18510,7 +18437,7 @@
           {
             "name": "stable_orthogonal_group",
             "signature": "()",
-            "summary": "Return \\(\\tilde O(L)=\\ker(O(L)\\to O(A_L))\\), the stable orthogonal group.",
+            "summary": "Return $\\tilde O(L)=\\ker(O(L)\\to O(A_L))$, the stable orthogonal group.",
             "mark": "cached"
           },
           {
@@ -18552,7 +18479,7 @@
           {
             "name": "two_elementary_invariants",
             "signature": "()",
-            "summary": "Return Nikulin's \\((r,a,\\delta)\\) for an even 2-elementary lattice.",
+            "summary": "Return Nikulin's $(r,a,\\delta)$ for an even 2-elementary lattice.",
             "mark": ""
           },
           {
@@ -18618,7 +18545,7 @@
           {
             "name": "witt_index",
             "signature": "()",
-            "summary": "Return the Witt index of \\(L_K=L\\otimes_R K\\), \\(K=\\operatorname{Frac}(R)\\).",
+            "summary": "Return the Witt index of $L_K=L\\otimes_R K$, $K=\\operatorname{Frac}(R)$.",
             "mark": "cached"
           }
         ],
@@ -18662,7 +18589,7 @@
           {
             "name": "is_primitive",
             "signature": "() -> 'bool'",
-            "summary": "Return whether \\(Rv\\hookrightarrow L\\) has torsion-free cokernel.",
+            "summary": "Return whether $Rv\\hookrightarrow L$ has torsion-free cokernel.",
             "mark": ""
           },
           {
@@ -18674,7 +18601,7 @@
           {
             "name": "isotropic_reduction",
             "signature": "()",
-            "summary": "Return \\(v^\\perp/Rv\\) for an isotropic vector, with its parabolic data.",
+            "summary": "Return $v^\\perp/Rv$ for an isotropic vector, with its parabolic data.",
             "mark": ""
           },
           {
@@ -18686,7 +18613,7 @@
           {
             "name": "orthogonal_complement",
             "signature": "()",
-            "summary": "Return \\(v^\\perp\\hookrightarrow L\\) as a subobject of the lattice.",
+            "summary": "Return $v^\\perp\\hookrightarrow L$ as a subobject of the lattice.",
             "mark": ""
           },
           {
@@ -18716,13 +18643,13 @@
           {
             "name": "sublattice",
             "signature": "()",
-            "summary": "Return \\(Rv\\hookrightarrow L\\): the rank-one subobject spanned by this vector, with its inclusion.",
+            "summary": "Return $Rv\\hookrightarrow L$: the rank-one subobject spanned by this vector, with its inclusion.",
             "mark": ""
           },
           {
             "name": "to_covector",
             "signature": "()",
-            "summary": "Return \\(b(v,-)\\in\\operatorname{Hom}_R(L,R)\\), the image of \\(v\\) under the algebraic correlation.",
+            "summary": "Return $b(v,-)\\in\\operatorname{Hom}_R(L,R)$, the image of $v$ under the algebraic correlation.",
             "mark": ""
           }
         ],
@@ -18860,7 +18787,7 @@
       "display": "LineBundleCohomologySpaces(R)",
       "subsystem": "divisors",
       "source": "src/dzack_research/preamble/categories/divisors/cohomology.py:10",
-      "summary": "Vector spaces represented as \\(H^i(X, \\mathcal{O}_X(D))\\) for one divisor.",
+      "summary": "Vector spaces represented as $H^i(X, \\mathcal{O}_X(D))$ for one divisor.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -18888,25 +18815,25 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Vector spaces represented as \\(H^i(X, \\mathcal{O}_X(D))\\) for one divisor.",
+            "summary": "Vector spaces represented as $H^i(X, \\mathcal{O}_X(D))$ for one divisor.",
             "mark": ""
           },
           {
             "name": "cohomological_degree",
             "signature": "()",
-            "summary": "The degree \\(i\\) of \\(H^i(X, \\mathcal{O}_X(D))\\).",
+            "summary": "The degree $i$ of $H^i(X, \\mathcal{O}_X(D))$.",
             "mark": ""
           },
           {
             "name": "cohomology_divisor",
             "signature": "()",
-            "summary": "The divisor \\(D\\) of \\(H^i(X, \\mathcal{O}_X(D))\\).",
+            "summary": "The divisor $D$ of $H^i(X, \\mathcal{O}_X(D))$.",
             "mark": ""
           },
           {
             "name": "cohomology_scheme",
             "signature": "()",
-            "summary": "The scheme \\(X\\) of \\(H^i(X, \\mathcal{O}_X(D))\\).",
+            "summary": "The scheme $X$ of $H^i(X, \\mathcal{O}_X(D))$.",
             "mark": ""
           }
         ],
@@ -19886,7 +19813,7 @@
           {
             "name": "is_commutative",
             "signature": "()",
-            "summary": "Return whether \\(\\operatorname{End}_R(F)\\cong M_n(R)\\) commutes.",
+            "summary": "Return whether $\\operatorname{End}_R(F)\\cong M_n(R)$ commutes.",
             "mark": ""
           }
         ],
@@ -19894,7 +19821,7 @@
           {
             "name": "is_unit",
             "signature": "() -> bool",
-            "summary": "Return whether this endomorphism is invertible in \\(\\operatorname{End}_R(M)\\).",
+            "summary": "Return whether this endomorphism is invertible in $\\operatorname{End}_R(M)$.",
             "mark": ""
           },
           {
@@ -22457,8 +22384,7 @@
       "subcategories": [
         "Groups",
         "OwnedGroups",
-        "OwnedSemirings",
-        "groups"
+        "OwnedSemirings"
       ],
       "ancestry": [
         "Semigroups",
@@ -22583,7 +22509,7 @@
       "display": "Mors",
       "subsystem": "sets",
       "source": "",
-      "summary": "Mor objects \\(\\operatorname{Hom}(X,Y)\\), which are sets.",
+      "summary": "Mor objects $\\operatorname{Hom}(X,Y)$, which are sets.",
       "owned": true,
       "exported": false,
       "arity": "nullary",
@@ -22603,7 +22529,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Mor objects \\(\\operatorname{Hom}(X,Y)\\), which are sets.",
+            "summary": "Mor objects $\\operatorname{Hom}(X,Y)$, which are sets.",
             "mark": ""
           },
           {
@@ -23226,7 +23152,7 @@
       "display": "OrbitSets",
       "subsystem": "group",
       "source": "src/dzack_research/preamble/categories/group/g_sets.py:392",
-      "summary": "The finite orbit quotients \\(X/G\\) of a finite \\(G\\)-set.",
+      "summary": "The finite orbit quotients $X/G$ of a finite $G$-set.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -24022,10 +23948,10 @@
     "OwnedGroups": {
       "display": "OwnedGroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2232",
+      "source": "",
       "summary": "Groups whose notebook-facing group interface is owned by the preamble.",
       "owned": true,
-      "exported": true,
+      "exported": false,
       "arity": "nullary",
       "probed_as": "Category of groups",
       "supers": [
@@ -24977,10 +24903,10 @@
     "OwnedOrders": {
       "display": "OwnedOrders",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:2501",
+      "source": "",
       "summary": "Orders: integral domains finitely generated as ``ZZ``-modules (Neukirch I \u00a712).",
       "owned": true,
-      "exported": true,
+      "exported": false,
       "arity": "nullary",
       "probed_as": "Category of owned orders",
       "supers": [
@@ -26291,8 +26217,7 @@
         "Semigroups"
       ],
       "subcategories": [
-        "OwnedRings",
-        "Rings"
+        "OwnedRings"
       ],
       "ancestry": [
         "Semigroups",
@@ -26433,8 +26358,7 @@
         "Monoids"
       ],
       "subcategories": [
-        "OwnedRings",
-        "Rings"
+        "OwnedRings"
       ],
       "ancestry": [
         "Monoids",
@@ -26521,7 +26445,7 @@
       "display": "PairedModules",
       "subsystem": "modules",
       "source": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:826",
-      "summary": "Pairings \\(X\\otimes_R Y\\to W\\), the comma category of the tensor functor over ``W``.",
+      "summary": "Pairings $X\\otimes_R Y\\to W$, the comma category of the tensor functor over ``W``.",
       "owned": true,
       "exported": true,
       "arity": "undeclared",
@@ -26649,7 +26573,7 @@
       "display": "PicardGroups",
       "subsystem": "divisors",
       "source": "src/dzack_research/preamble/categories/divisors/picard_groups.py:21",
-      "summary": "Picard groups \\(\\operatorname{Pic}(X)\\) with a chosen presentation.",
+      "summary": "Picard groups $\\operatorname{Pic}(X)$ with a chosen presentation.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -26674,19 +26598,19 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Picard groups \\(\\operatorname{Pic}(X)\\) with a chosen presentation.",
+            "summary": "Picard groups $\\operatorname{Pic}(X)$ with a chosen presentation.",
             "mark": ""
           },
           {
             "name": "base_picard_inclusion",
             "signature": "()",
-            "summary": "The inclusion \\(\\operatorname{Pic}(S) \\to \\operatorname{Pic}(\\mathbb{P}^n_S)\\) of the base summand.",
+            "summary": "The inclusion $\\operatorname{Pic}(S) \\to \\operatorname{Pic}(\\mathbb{P}^n_S)$ of the base summand.",
             "mark": ""
           },
           {
             "name": "hyperplane_class",
             "signature": "()",
-            "summary": "The class \\([\\mathcal{O}(1)]\\) of the hyperplane summand.",
+            "summary": "The class $[\\mathcal{O}(1)]$ of the hyperplane summand.",
             "mark": ""
           },
           {
@@ -26698,13 +26622,13 @@
           {
             "name": "projective_base_picard_group",
             "signature": "()",
-            "summary": "The summand \\(\\operatorname{Pic}(S)\\) of \\(\\operatorname{Pic}(\\mathbb{P}^n_S) = \\operatorname{Pic}(S) \\oplus \\mathbb{Z}[\\mathcal{O}(1)]\\).",
+            "summary": "The summand $\\operatorname{Pic}(S)$ of $\\operatorname{Pic}(\\mathbb{P}^n_S) = \\operatorname{Pic}(S) \\oplus \\mathbb{Z}[\\mathcal{O}(1)]$.",
             "mark": ""
           },
           {
             "name": "projective_hyperplane_factor",
             "signature": "()",
-            "summary": "The summand \\(\\mathbb{Z}[\\mathcal{O}(1)]\\) of the projective-bundle presentation.",
+            "summary": "The summand $\\mathbb{Z}[\\mathcal{O}(1)]$ of the projective-bundle presentation.",
             "mark": ""
           }
         ],
@@ -26804,7 +26728,7 @@
       "display": "PowerSets",
       "subsystem": "sets",
       "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2095",
-      "summary": "The power object \\(P(X)\\), represented by subobjects of ``X``.",
+      "summary": "The power object $P(X)$, represented by subobjects of ``X``.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -26822,7 +26746,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "The power object \\(P(X)\\), represented by subobjects of ``X``.",
+            "summary": "The power object $P(X)$, represented by subobjects of ``X``.",
             "mark": ""
           },
           {
@@ -26852,19 +26776,19 @@
           {
             "name": "direct_image_morphism",
             "signature": "(morphism: 'SetMorphism') -> 'SetMorphism'",
-            "summary": "Direct image \\(A\\mapsto f(A)\\) on subsets, as a set map \\(P(X)\\to P(Y)\\).",
+            "summary": "Direct image $A\\mapsto f(A)$ on subsets, as a set map $P(X)\\to P(Y)$.",
             "mark": ""
           },
           {
             "name": "from_characteristic_morphism",
             "signature": "(characteristic_morphism: 'SetMorphism')",
-            "summary": "The subset classified by \\(\\chi\\colon X\\to\\Delta[1]\\): where \\(\\chi=1\\).",
+            "summary": "The subset classified by $\\chi\\colon X\\to\\Delta[1]$: where $\\chi=1$.",
             "mark": ""
           },
           {
             "name": "from_predicate",
             "signature": "(predicate: 'Callable[[SourcePointT], bool]')",
-            "summary": "The subset \\(\\{x\\in X : P(x)\\}\\) with its inclusion.",
+            "summary": "The subset $\\{x\\in X : P(x)\\}$ with its inclusion.",
             "mark": ""
           },
           {
@@ -27193,7 +27117,7 @@
       "display": "PrimeSpectra",
       "subsystem": "rings",
       "source": "src/dzack_research/preamble/categories/rings/commutative_algebra.py:115",
-      "summary": "The prime spectra \\(\\operatorname{Spec}R\\), ordered by inclusion.",
+      "summary": "The prime spectra $\\operatorname{Spec}R$, ordered by inclusion.",
       "owned": true,
       "exported": true,
       "arity": "nullary",
@@ -28385,7 +28309,7 @@
           {
             "name": "jet_stalk",
             "signature": "()",
-            "summary": "The local ring \\(\\mathcal{O}_{\\mathbb{P},p}\\) the jet quotient is taken of.",
+            "summary": "The local ring $\\mathcal{O}_{\\mathbb{P},p}$ the jet quotient is taken of.",
             "mark": ""
           }
         ],
@@ -30733,105 +30657,6 @@
       "specimens": [],
       "problem": ""
     },
-    "Rings": {
-      "display": "Rings",
-      "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1562",
-      "summary": "Unital rings whose notebook-facing ring interface is owned here.",
-      "owned": true,
-      "exported": true,
-      "arity": "nullary",
-      "probed_as": "Category of owned rings",
-      "supers": [
-        "OwnedRngs",
-        "OwnedSemirings"
-      ],
-      "subcategories": [],
-      "ancestry": [
-        "OwnedSemirings",
-        "Monoids",
-        "OwnedRngs",
-        "Semigroups",
-        "Magmas",
-        "AdditiveGroups.AdditiveCommutative",
-        "AdditiveGroups",
-        "AdditiveMonoids",
-        "AdditiveSemigroups",
-        "AdditiveMagmas",
-        "Sets",
-        "Objects"
-      ],
-      "operations": {
-        "objects": [],
-        "elements": [],
-        "morphisms": []
-      },
-      "arrow_mor_class": "RingMor",
-      "arrow_type": "RingMorphism",
-      "arrow_type_source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:106",
-      "arrow_unthreaded": [
-        "AdditiveGroups.AdditiveCommutative",
-        "Monoids"
-      ],
-      "inherits": [
-        {
-          "from": "OwnedRings",
-          "objects": 16,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
-          "morphisms": 0
-        },
-        {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "CategoryObject",
-          "objects": 14,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
-          "objects": 13,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Element",
-          "objects": 0,
-          "elements": 9,
-          "morphisms": 0
-        },
-        {
-          "from": "Objects",
-          "objects": 3,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Monoids",
-          "objects": 2,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "AdditiveMonoids",
-          "objects": 1,
-          "elements": 0,
-          "morphisms": 0
-        }
-      ],
-      "specimens": [],
-      "problem": ""
-    },
     "RootLattices": {
       "display": "RootLattices",
       "subsystem": "lattices",
@@ -32246,7 +32071,7 @@
       "display": "SectionRings(R)",
       "subsystem": "divisors",
       "source": "src/dzack_research/preamble/categories/divisors/section_rings.py:20",
-      "summary": "Section rings \\(R(X, L) = \\bigoplus_{n \\ge 0} H^0(X, L^{\\otimes n})\\).",
+      "summary": "Section rings $R(X, L) = \\bigoplus_{n \\ge 0} H^0(X, L^{\\otimes n})$.",
       "owned": true,
       "exported": true,
       "arity": "parameterized",
@@ -32283,7 +32108,7 @@
           {
             "name": "ElementType",
             "signature": "(...)",
-            "summary": "Section rings \\(R(X, L) = \\bigoplus_{n \\ge 0} H^0(X, L^{\\otimes n})\\).",
+            "summary": "Section rings $R(X, L) = \\bigoplus_{n \\ge 0} H^0(X, L^{\\otimes n})$.",
             "mark": ""
           },
           {
@@ -32295,7 +32120,7 @@
           {
             "name": "graded_piece",
             "signature": "(degree)",
-            "summary": "The section module \\(H^0(X, L^{\\otimes n})\\) in nonnegative degree ``n``.",
+            "summary": "The section module $H^0(X, L^{\\otimes n})$ in nonnegative degree ``n``.",
             "mark": "cached"
           },
           {
@@ -32319,13 +32144,13 @@
           {
             "name": "section_divisor",
             "signature": "()",
-            "summary": "The divisor \\(D\\) with \\(L = \\mathcal{O}_X(D)\\), when the ring was stated on a divisor.",
+            "summary": "The divisor $D$ with $L = \\mathcal{O}_X(D)$, when the ring was stated on a divisor.",
             "mark": ""
           },
           {
             "name": "section_line_bundle",
             "signature": "()",
-            "summary": "The line bundle \\(L\\), when the ring was stated on a line bundle.",
+            "summary": "The line bundle $L$, when the ring was stated on a line bundle.",
             "mark": ""
           },
           {
@@ -32337,7 +32162,7 @@
           {
             "name": "section_scheme",
             "signature": "()",
-            "summary": "The scheme \\(X\\) whose sections form this ring.",
+            "summary": "The scheme $X$ whose sections form this ring.",
             "mark": ""
           },
           {
@@ -32558,7 +32383,6 @@
         "ChamberSystems",
         "CoproductsOfSets",
         "Digraphs",
-        "DisjointUnionsOfSets",
         "FinitePowerSets",
         "Magmas",
         "Mors",
@@ -32706,7 +32530,7 @@
       "display": "Sets.Countable",
       "subsystem": "sets",
       "source": "",
-      "summary": "Sets whose cardinality is at most \\(\\aleph_0\\).",
+      "summary": "Sets whose cardinality is at most $\\aleph_0$.",
       "owned": true,
       "exported": false,
       "arity": "nullary",
@@ -36663,7 +36487,7 @@
           {
             "name": "coxeter_entry",
             "signature": "(left, right)",
-            "summary": "Return the Coxeter bond \\(m\\) between the two mirrors.",
+            "summary": "Return the Coxeter bond $m$ between the two mirrors.",
             "mark": ""
           },
           {
@@ -36705,7 +36529,7 @@
           {
             "name": "is_crystallographic",
             "signature": "() -> bool",
-            "summary": "Return whether every bond is \\(2, 3, 4, 6\\) or \\(\\infty\\).",
+            "summary": "Return whether every bond is $2, 3, 4, 6$ or $\\infty$.",
             "mark": ""
           },
           {
@@ -36747,7 +36571,7 @@
           {
             "name": "is_simply_laced",
             "signature": "() -> bool",
-            "summary": "Return whether every bond is \\(2\\) or \\(3\\).",
+            "summary": "Return whether every bond is $2$ or $3$.",
             "mark": ""
           },
           {
@@ -36759,7 +36583,7 @@
           {
             "name": "projective_line",
             "signature": "()",
-            "summary": "Return \\(\\mathbb P^1(R)\\), where the invariants take their values.",
+            "summary": "Return $\\mathbb P^1(R)$, where the invariants take their values.",
             "mark": ""
           },
           {
@@ -36783,13 +36607,13 @@
           {
             "name": "vinberg_invariant",
             "signature": "(left, right)",
-            "summary": "Return \\([4b(r,s)^2 : q(r)q(s)]\\in\\mathbb P^1(R)\\) for the two mirrors.",
+            "summary": "Return $[4b(r,s)^2 : q(r)q(s)]\\in\\mathbb P^1(R)$ for the two mirrors.",
             "mark": ""
           },
           {
             "name": "vinberg_ratio",
             "signature": "(left, right)",
-            "summary": "Return the dehomogenized invariant \\(t=4\\cos^2(\\pi/m)\\).",
+            "summary": "Return the dehomogenized invariant $t=4\\cos^2(\\pi/m)$.",
             "mark": ""
           },
           {
@@ -36916,7 +36740,7 @@
           {
             "name": "prime_divisor",
             "signature": "(point)",
-            "summary": "The generator \\(1 \\cdot P\\) of the prime divisor at the height-one point ``point``.",
+            "summary": "The generator $1 \\cdot P$ of the prime divisor at the height-one point ``point``.",
             "mark": ""
           },
           {
@@ -36934,7 +36758,7 @@
           {
             "name": "principal_divisor",
             "signature": "(rational_function)",
-            "summary": "\\(\\operatorname{div}(f)\\) of a nonzero rational function on the affine scheme.",
+            "summary": "$\\operatorname{div}(f)$ of a nonzero rational function on the affine scheme.",
             "mark": ""
           }
         ],
@@ -37155,88 +36979,6 @@
       "arrow_type_source": "",
       "arrow_unthreaded": [],
       "inherits": [],
-      "specimens": [],
-      "problem": ""
-    },
-    "groups": {
-      "display": "groups",
-      "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2232",
-      "summary": "Groups whose notebook-facing group interface is owned by the preamble.",
-      "owned": true,
-      "exported": true,
-      "arity": "nullary",
-      "probed_as": "Category of groups",
-      "supers": [
-        "Monoids"
-      ],
-      "subcategories": [],
-      "ancestry": [
-        "Monoids",
-        "Semigroups",
-        "Magmas",
-        "Sets",
-        "Objects"
-      ],
-      "operations": {
-        "objects": [],
-        "elements": [],
-        "morphisms": []
-      },
-      "arrow_mor_class": "FixedMorCategory",
-      "arrow_type": "",
-      "arrow_type_source": "",
-      "arrow_unthreaded": [],
-      "inherits": [
-        {
-          "from": "OwnedGroups",
-          "objects": 33,
-          "elements": 2,
-          "morphisms": 0
-        },
-        {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
-          "morphisms": 0
-        },
-        {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "CategoryObject",
-          "objects": 14,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
-          "objects": 13,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Element",
-          "objects": 0,
-          "elements": 9,
-          "morphisms": 0
-        },
-        {
-          "from": "Objects",
-          "objects": 3,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Monoids",
-          "objects": 2,
-          "elements": 0,
-          "morphisms": 0
-        }
-      ],
       "specimens": [],
       "problem": ""
     }

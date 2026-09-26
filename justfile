@@ -135,6 +135,10 @@ preamble-megadoc:
     # global QC resolves.
     PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
         -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
+    # Leave the reference in the form the commit gate's Markdown formatter
+    # writes, so a regenerated file stages unchanged.
+    uvx --from 'git+https://github.com/dzackgarza/flowmark.git' flowmark \
+        --inplace --nobackup --semantic "{{preamble_megadoc_file}}"
 
 # The CAT-05 placement worksheet: each category's introduced object, element and
 # arrow operations against its up-set U_C, with the mechanical findings.  Reads
