@@ -14,6 +14,52 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Arrows of a structured category do not inherit the arrow operations of the category below it
+
+Let `U : D -> C` be the forgetful functor of a structure on `C`-objects. An
+arrow `f : A -> B` of `D` is an arrow `U f : UA -> UB` of `C` that preserves
+the structure, sometimes with added data (a value map `h` for a form valued in
+a varying module). So every operation defined on arrows of `C` is defined on
+`f`. A form embedding of lattices is a module monomorphism, and primitivity
+(torsion-free cokernel) and isotropic reduction `I^perp / I` are questions
+about it. `CAT-05` and `CAT-10` place such operations on the arrow type of the
+Mor category of `C`, and `OWN-14` has the arrow type of `D` inherit them.
+
+Observed 2026-09-26 from `v.isotropic_reduction()` for a primitive isotropic
+`v` in `U + E_8(-1)`. `Lattice.element.isotropic_reduction`
+(`categories/lattices.py`) calls `sublattice().inclusion().isotropic_reduction()`.
+The inclusion is a `LatticeEmbedding`, and `isotropic_reduction` exists only on
+the private subclass `_TransportedLatticeEmbedding`
+(`categories/lattice_morphisms.py`), which an embedding gets only when its Mor
+set was built from a module embedding. Behind that, `IsotropicReductions._call_`
+asserts `into_perpendicular.is_primitive()` on a `FormEmbedding`.
+`FormedModuleMorphism` (`categories/modules/framed/formed/form_modules.py`)
+subclasses Sage's `Morphism`, stores `_module_morphism` and forwards `__call__`
+to it, so none of the 47 public operations of `ModuleMorphism` reaches it.
+
+Source census on `4648a24f1`. The object side is generated from the category
+graph (`owned_category.py`, `ObjectType` and `ElementType`). Arrow types are
+hand-written and attached by `Element = <class>` on about 100 Mor parents.
+70 arrow classes subclass Sage's `Morphism` directly. Among them are
+`FormedModuleMorphism`, `FiberedFormedModuleMorphism`, `AlgebraMorphism`,
+`MultiplicativeAlgebraMorphism`, `PresentedAlgebraMorphism`,
+`GradedAlgebraMorphism`, `DGAMorphism`, `CochainMorphism`,
+`SemilinearModuleMorphism`, `EquivariantMorphism`, `GroupMorphism` beside
+`MonoidMorphism`, `ExactFieldMorphism` beside the ring morphisms, and
+`HolomorphicMap` beside `ContinuousMap`. About twenty private arrow subclasses
+add public operations that their public arrow type lacks
+(`_TransportedLatticeEmbedding`; `is_open_immersion` on
+`_GluedSchemeOpenInclusion`, `_StandardMultiprojectiveChartEmbedding` and the
+relative-Proj morphisms), so the operations of an arrow depend on the route
+that built it. To rerun the census, walk `src/dzack_research/preamble` with
+`ast` for classes whose base is `Morphism`, and for private subclasses of
+public arrow classes that define public methods.
+
+The false belief is that arrows are threaded by hand beside the category graph,
+and that a structured arrow wraps the lower arrow instead of being one. The
+object side was repaired in `owned_category.py`; the arrow side was not.
+Remediation: `arrows-thread-through-the-mor-category-graph` in [TODO.md](TODO.md).
+
 ### Fixed Mor categories with discrete 2-Morphisms do not realize their discrete universal constructions
 
 For an ordinary represented fixed Mor category `Mor_C(A,B)` whose selected
