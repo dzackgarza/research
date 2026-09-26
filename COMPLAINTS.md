@@ -167,6 +167,35 @@ Gaussian heuristic.
 `RR` only. Repair: `categories-of-resolutions`, `framed-axiom-retired`,
 `integers-coerce-into-rationals-and-reals` in [TODO.md](TODO.md).
 
+### Indefinite integral lattices of rank at least three have no exact represented-value witness backend
+
+For an integral lattice `L` and integer `n`, `representation_vector(n)` must
+return an integral vector `v in L` with `q(v)=n`, or establish that none
+exists. Rational solvability of `q(v)=n` is a different problem. The current
+tree has exact maintained routes for the two lower-complexity regimes:
+definite lattices enumerate exact vectors through PARI `qfminim`, and Sage's
+`BinaryQF.solve_integer` delegates binary integral equations to PARI
+`qfbsolve`. Installed Sage/Hecke/OSCAR source was searched for the higher-rank
+integral operation. Hecke supplies rational quadratic-space isotropy,
+isometry-class representation and hyperbolic decomposition, but no complete
+integral lattice witness for a prescribed norm; OSCAR exposes the same
+quadratic-space layer here. Thus `QuadraticForm.solve`/Hecke `represents`
+cannot be used to justify the requested integral result.
+
+**Dependency path:** exact local integral representability -> strong
+approximation/Kneser construction in indefinite rank at least four; in rank
+three, local conditions plus the spinor-exceptional square classes -> exact
+integral witness or exact nonrepresentation.
+**Consumers:** `Lattices(ZZ).representation_vector(n)` and `represents(n)`;
+the distinguishing specimens are `U+U` at `n=0` and
+`-(x^2+y^2+z^2)` at `n=-7`.
+**Coverage boundary:** Sage's quadratic-form and binary-form sources, the
+installed Hecke/Oscar quadratic-form sources, and the repository's current
+lattice engine capability map were inspected. No complete maintained exact
+rank-at-least-three integral witness route was found. Repair requires the
+`higher-rank-representation-engine-ruling` and then
+`higher-rank-integral-lattice-representation` nodes in [TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
