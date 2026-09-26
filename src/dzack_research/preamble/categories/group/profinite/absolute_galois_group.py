@@ -385,9 +385,6 @@ class _AbsoluteGaloisGroupEngine:
             inverse,
         )
 
-    def is_profinite(self) -> bool:
-        return True
-
     def is_finite(self):
         return False if self._is_finite_field() else Unknown
 

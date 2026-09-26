@@ -2899,6 +2899,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def is_arithmetic_group(self):
             return Unknown
 
+        def is_topological_group(self) -> bool:
+            r"""Whether this represented group carries compatible topology data."""
+            return self in TopologicalGroups()
+
         def cardinality(self):
             from dzack_research.preamble.categories.group.cyclic_subgroups import (
                 CyclicGroups,
@@ -3531,8 +3535,13 @@ class TopologicalGroups(OwnedCategory):
         return [OwnedGroups()]
 
     class ParentMethods:
-        def is_topological_group(self) -> bool:
-            return True
+        def is_profinite(self):
+            r"""Whether this topological group is known to be profinite."""
+            from dzack_research.preamble.categories.group.profinite.profinite_groups import (
+                ProfiniteGroups,
+            )
+
+            return True if self in ProfiniteGroups() else Unknown
 
 
 class GroupsWithChosenFreeBasis(OwnedCategory):

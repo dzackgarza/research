@@ -26,9 +26,6 @@ class ProfiniteGroups(OwnedCategory):
         return [TopologicalGroups()]
 
     class ParentMethods:
-        def is_profinite(self):
-            return True
-
         def continuous_morphisms_to(self, codomain):
             r"""Return the owned group Mor used by represented continuous morphisms.
 

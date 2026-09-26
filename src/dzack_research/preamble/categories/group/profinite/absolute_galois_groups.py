@@ -49,9 +49,6 @@ class AbsoluteGaloisGroups(OwnedCategory):
         def characteristic(self):
             return self.base_field().characteristic()
 
-        def is_profinite(self) -> bool:
-            return True
-
         def is_abelian(self):
             return Unknown
 
