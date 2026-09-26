@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.algebras.graded_algebras import _graded_
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
@@ -316,7 +317,7 @@ def _alternating_extension(module_morphism):
         _constructed_algebra_morphism,
     )
 
-    if not isinstance(module_morphism, ModuleMorphism):
+    if not isinstance(module_morphism, ModuleMorphismMethods):
         raise TypeError(
             f"the extension Lambda(M) -> A starts from a module morphism M -> A, but {module_morphism!r} "
             "is not one"

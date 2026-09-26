@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
     _integral_left_solver,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -67,7 +68,7 @@ from dzack_research.preamble.tensors.tensor import (
 
 def _gram_rows(gram, rank):
     match gram:
-        case ModuleMorphism():
+        case ModuleMorphismMethods():
             parent = gram.parent()
             if parent not in MatrixSpaces(parent.base_ring()):
                 raise TypeError("a morphism Gram presentation must be an owned matrix Mor element")
@@ -1231,7 +1232,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             if datum.parent() is self:
                 return datum
             return self._from_engine(datum._engine())
-        if isinstance(datum, ModuleMorphism):
+        if isinstance(datum, ModuleMorphismMethods):
             return self.from_morphism(datum)
         return self._from_engine(datum)
 

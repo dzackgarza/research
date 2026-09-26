@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     ModuleMorphism,
+    ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -1039,7 +1040,7 @@ class LatticeMor(CategoricalMor):
         )
 
     def _element_constructor_(self, images):
-        if isinstance(images, ModuleMorphism):
+        if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the module morphism {images} goes from {images.domain()} to "
@@ -1123,7 +1124,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                     f"{self.domain()} into {self.codomain()}"
                 )
             return _TransportedLatticeEmbedding(self, images)
-        if isinstance(images, ModuleMorphism):
+        if isinstance(images, ModuleMorphismMethods):
             if (
                 images.domain() is not self.domain()
                 or images.codomain() is not self.codomain()

@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.modules.group_modules.isotypic import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
     _ModuleMorCommonMethods,
     _combined_linearity_decision,
 )
@@ -933,7 +934,7 @@ def _coefficient_morphism_from_images(
         if underlying.domain() is source and underlying.codomain() is target:
             return mor(underlying)
 
-    if isinstance(images, ModuleMorphism):
+    if isinstance(images, ModuleMorphismMethods):
         if images.domain() is source and images.codomain() is target:
             return mor(images)
         if images.domain() is parent.domain() and images.codomain() is parent.codomain():

@@ -189,7 +189,7 @@ def _scalar_linearity_generating_scalars(ring):
     return tuple(ring(scalar) for scalar in base_elements) + tuple(ring.algebra_generator(label) for label in labels)
 
 
-class ModuleMorphism(Morphism):
+class ModuleMorphismMethods:
     r"""The linear extension of a function on a chosen module framing.
 
     Construction data: the images of the framing of the domain, or an exact
@@ -202,6 +202,21 @@ class ModuleMorphism(Morphism):
     _scalar_extension_of = None
     _scalar_extension_functor = None
     _lift_function = None
+
+    def _initialize_lower_arrow(self, parent) -> None:
+        domain = parent.domain()
+        ring = domain.base_ring()
+        match ring.is_commutative():
+            case True:
+                scalar_map = ring.Mor(ring).identity()
+                super().__init__(
+                    parent,
+                    scalar_map,
+                    evaluator=self._call_,
+                    linearity_decision=Unknown,
+                )
+            case _:
+                super().__init__(parent, self._call_)
 
     def _elementwise_linearity_derivation(self):
         r"""Return the construction-derived linearity decision, or ``None``.
@@ -235,7 +250,7 @@ class ModuleMorphism(Morphism):
         scalar_extension_functor=None,
         lift=None,
     ) -> None:
-        Morphism.__init__(self, parent)
+        self._initialize_lower_arrow(parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
             f"cannot construct the base change {scalar_extension_of} along {scalar_extension_functor}: "
             "a map S tensor_R f must be given together with both f and the scalar-extension functor"
@@ -261,7 +276,7 @@ class ModuleMorphism(Morphism):
             and images.codomain() is codomain
         ):
             source_morphism = images
-            if isinstance(source_morphism, ModuleMorphism):
+            if isinstance(source_morphism, ModuleMorphismMethods):
                 self._direct_linearity_premise = source_morphism
             images = lambda element: source_morphism(element)
             elementwise = True
@@ -280,6 +295,7 @@ class ModuleMorphism(Morphism):
                 case _:
                     self._linearity_decision = derivation
             self._refute_invalid_selected_lift_when_decidable()
+            self._derived_linearity_decision = self._linearity_decision
             return
         labels = self.domain().module_generating_set()
         set_mor = Sets().Mor(labels, self.codomain())
@@ -372,6 +388,7 @@ class ModuleMorphism(Morphism):
             raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: give the images of the generators of {domain} as a dictionary, list, indexed family or function")
         self._linearity_decision = self._check_selected_domain_relations()
         self._refute_invalid_selected_lift_when_decidable()
+        self._derived_linearity_decision = self._linearity_decision
 
     def _refute_invalid_selected_lift_when_decidable(self) -> None:
         r"""Reject witnessed section-equation failures of a selected lift.
@@ -685,7 +702,7 @@ class ModuleMorphism(Morphism):
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if not isinstance(other, ModuleMorphism) or other.parent() is not self.parent():
+        if not isinstance(other, ModuleMorphismMethods) or other.parent() is not self.parent():
             return op == op_NE
         if self is other:
             return op == op_EQ
@@ -1748,6 +1765,13 @@ def _combined_linearity_decision(morphisms):
     return decision
 
 
+class ModuleMorphism(ModuleMorphismMethods, Morphism):
+    r"""Compatibility shell for private realizations not yet moved to generated Mor types."""
+
+    def _initialize_lower_arrow(self, parent) -> None:
+        Morphism.__init__(self, parent)
+
+
 class _PointwiseSumModuleMorphism(ModuleMorphism):
     r"""The sum of two admitted module maps, with exactly their law premises."""
 
@@ -2058,7 +2082,7 @@ class ModuleEmbeddingMor(CategoricalMor):
             if images.parent() is self:
                 return images
             return _TransportedModuleEmbedding(self, images, lift=lift)
-        if isinstance(images, ModuleMorphism):
+        if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             return _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
@@ -2204,7 +2228,7 @@ class _ModuleMorCommonMethods:
             and all(isinstance(row, (tuple, list)) for row in images)
         ):
             return self.from_rows(images)
-        if isinstance(images, ModuleMorphism):
+        if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
@@ -2388,7 +2412,7 @@ def _auxiliary_linear_module_mor(domain, codomain):
 
 
 class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
-    Element = ModuleMorphism
+    ElementMethods = ModuleMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         _initialize_module_mor_parent(

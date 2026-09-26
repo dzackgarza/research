@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -280,7 +281,7 @@ class SemilinearModuleMor(CategoricalMor):
                 additive = AdditiveGroups().AdditiveCommutative().MorCategory().Of(
                     self.domain(), self.codomain()
                 )(compatible_map)
-                if isinstance(compatible_map, ModuleMorphism):
+                if isinstance(compatible_map, ModuleMorphismMethods):
                     compatible_map = _DerivedRestrictedSemilinearMorphism(
                         compatible_mor,
                         lambda element: restricted.wrap(additive(element)),

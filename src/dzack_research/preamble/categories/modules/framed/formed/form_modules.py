@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.modules.hodge import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _presentation_matrix,
@@ -509,7 +510,7 @@ class FormedModuleMor(CategoricalMor):
         if (
             not explicit_pair
             and not isinstance(datum, FormedModuleMorphism)
-            and not isinstance(datum, ModuleMorphism)
+            and not isinstance(datum, ModuleMorphismMethods)
         ):
             domain = self.domain()
             codomain = self.codomain()
@@ -523,7 +524,7 @@ class FormedModuleMor(CategoricalMor):
             if datum.parent() is self:
                 return datum
             datum = (datum.module_morphism(), datum.value_morphism())
-        elif isinstance(datum, ModuleMorphism):
+        elif isinstance(datum, ModuleMorphismMethods):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"the module map {datum} is {datum.domain()} -> {datum.codomain()}, so it does not give "

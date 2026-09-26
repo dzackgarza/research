@@ -131,12 +131,12 @@ def _scalar_identity_coefficient(morphism):
     arithmetic and endomorphism centrality. It inspects the selected callable
     at those two declared engines, never infers a scalar by sampling a map.
     """
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphismMethods
 
     match morphism:
         case AdditiveMorphism():
             evaluation = morphism._function
-        case ModuleMorphism():
+        case ModuleMorphismMethods():
             evaluation = morphism._element_function
         case _:
             return None

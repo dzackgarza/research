@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbedding,
     ModuleMor,
     ModuleMorphism,
+    ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
@@ -446,7 +447,7 @@ class QuadraticModuleMor(ModuleMor):
         )
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, ModuleMorphism):
+        if isinstance(datum, ModuleMorphismMethods):
             return ModuleMor._element_constructor_(self, datum)
 
         if isinstance(datum, IndexedFamily) or (

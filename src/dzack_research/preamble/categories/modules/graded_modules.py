@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.group.magmas import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
     _initialize_module_mor_parent,
     _ModuleMorCommonMethods,
 )
@@ -154,7 +155,7 @@ class GradedModuleMorphism(ModuleMorphism):
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
         self._underlying_linearity_premise = (
-            images if isinstance(images, ModuleMorphism) else None
+            images if isinstance(images, ModuleMorphismMethods) else None
         )
         if self._underlying_linearity_premise is None:
             ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
@@ -248,7 +249,7 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         _initialize_module_mor_parent(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images):
-        if isinstance(images, ModuleMorphism):
+        if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"{images} is not a map {self.domain()} -> {self.codomain()}: it is a map "

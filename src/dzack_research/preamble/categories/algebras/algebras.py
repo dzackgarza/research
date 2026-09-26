@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
@@ -2615,7 +2616,7 @@ class AlgebraMorphism(Morphism):
         self._engine_morphism = None
         self._element_function = None
 
-        if isinstance(images, ModuleMorphism):
+        if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not domain or images.codomain() is not codomain:
                 raise ValueError(
                     f"cannot view the module map {images} as an algebra morphism {domain} -> {codomain}: it is a "
