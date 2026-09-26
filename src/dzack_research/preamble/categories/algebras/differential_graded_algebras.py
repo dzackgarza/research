@@ -1,6 +1,5 @@
 r"""Differential graded algebra categories and their morphisms."""
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 
@@ -19,12 +18,14 @@ from dzack_research.preamble.categories.algebras.graded_algebras import (
     GradedAlgebras,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class DegreewiseLinearMorphism(Morphism):
+class DegreewiseLinearMorphism(ModuleMorphism):
     r"""An ``R``-linear map between two represented homogeneous pieces.
 
     This is deliberately independent of a selected finite framing. When the
@@ -41,43 +42,15 @@ class DegreewiseLinearMorphism(Morphism):
                 f"they are over {domain.base_ring()} and {codomain.base_ring()}"
             )
         self._function = function
-        Morphism.__init__(
+        ModuleMorphism.__init__(
             self,
-            Sets().Mor(domain, codomain),
+            domain.module_category().Mor(domain, codomain),
+            function,
+            elementwise=True,
         )
-
-    def _call_(self, element):
-        if element.parent() is not self.domain():
-            element = self.domain()(element)
-        image = self._function(element)
-        return image if image.parent() is self.codomain() else self.codomain()(image)
-
-    def __call__(self, element):
-        return self._call_(element)
 
     def represented_module_morphism(self):
-
-        source = self.domain()
-        target = self.codomain()
-        ring = source.base_ring()
-        assert source.has_selected_module_resolution() and target.has_selected_module_resolution(), (
-            f"the differential component {self} is a module morphism only when {source} and {target} have "
-            "chosen generating sets"
-        )
-        labels = source.module_generating_set()
-        assert labels.cardinality().is_finite(), (
-            f"the differential component {self} is a module morphism only when {source} has finitely many "
-            f"chosen generators, but it has {labels.cardinality()}"
-        )
-        return source.module_category().Mor(source, target)(
-            {label: self(source.module_generator(label)) for label in labels}
-        )
-
-    def kernel(self):
-        return self.represented_module_morphism().kernel()
-
-    def image(self):
-        return self.represented_module_morphism().image()
+        return self
 
 
 class DifferentialComponentMorphism(DegreewiseLinearMorphism):
