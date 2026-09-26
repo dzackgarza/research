@@ -272,24 +272,8 @@ Paths below are relative to `src/dzack_research/preamble/` unless a different ro
 
 An operation, arrow or construction placed at the wrong category is inherited wrongly by every category below it, so these precede the test-suite and triage nodes.
 
-- [x] **`arrows-thread-through-the-mor-category-graph`**. **Needs:** none.
-  **Owner and delta:** the arrow types of the owned Mor categories (`owned_category.py`, `categories/abstract_categories/mor_categories.py`). The arrow type of `Mor_D(A, B)` is the `ElementType` of that Mor category, generated from its supercategories the way `ObjectType` already is.
-  For a structure `U : D -> C` it inherits the arrow type of `Mor_C(UA, UB)` and adds only what `D` introduces: the form square and value map for `FormModules(R)`, multiplicativity for `Algebras(R)`, equivariance for `G`-objects (`CAT-05`, `CAT-10`, `OWN-14`, `CON-16`). An operation defined on arrows of `C` is written once there and reached from every `D` above it.
-  Two defect shapes contradict this: a stored lower arrow with forwarding (`FormedModuleMorphism._module_morphism`), and an operation carried only by a private construction-route subclass (`_TransportedLatticeEmbedding.isotropic_reduction`; `is_open_immersion` on private scheme-morphism subclasses).
-  Population and census method: [COMPLAINTS.md](COMPLAINTS.md#arrows-of-a-structured-category-do-not-inherit-the-arrow-operations-of-the-category-below-it).
-  Repair the whole population: the chain `Modules(R) -> FormModules(R) -> Lattices(R)` with its embeddings first, then algebras over modules, groups over monoids, fields over rings, holomorphic over continuous maps, and schemes.
-  With the arrow types threaded, place each arrow operation by the `CAT-05` test with the `just placement` worksheet, as `placement-audit` does for object and element operations.
-  Read the object-side mechanism in `owned_category.py` and `PLAN-threading-set-behaviour` first; the arrow side uses that mechanism and adds no second one.
-  **Closure specimens:** for a primitive isotropic `v` in `U + E_8(-1)`, `v.isotropic_reduction()` returns `K_v = v^perp / ZZ v`, even unimodular of signature `(0, 8)`, with its parabolic data.
-  A form embedding `L -> L + M` answers `is_primitive()`, `kernel()` and `cokernel()` from the module-arrow owner, with none of them written on a form-arrow class.
-  A `LatticeEmbedding` built from images and one built from a module embedding answer the same operations.
-
-- [x] **`paired-module-interface-owner`**. **Needs:** none.
-  **Owner and delta:** the common category/interface of represented pairing-bearing module objects in `categories/modules/framed/formed/form_modules.py`. A pairing-bearing object has modules `X`, `Y`, a value module `W`, and a represented bilinear pairing `X tensor_R Y -> W`. `PairedModules(W)` is the general represented pairing object; a formed module is the diagonal specialization `X = Y`, with its selected form supplying the pairing.
-  The public operations `pairing(left,right)`, `left_module()`, `right_module()` and `value_module()` are introduced exactly once at this common owner and inherited by both `PairedModules` and `FormModules`; neither category maintains a parallel copy.
-  This is the missing maximum exposed by the `FormModules` pass of `placement-audit` (`CAT-05`). **Closure specimens:** a non-diagonal object of `PairedModules(W)` and a formed module both lie in the common pairing-bearing category and answer all four operations through that owner; on a formed module `left_module() is right_module() is self` and `pairing(x,y) == b(x,y)`; `just placement FormModules PairedModules` reports no incomparable duplicate for those names after terminal regeneration.
-
-- [ ] **`placement-audit`**. **Needs:** `dual-lattice-through-the-discriminant-sequence`. **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`. Arrow operations are placed by `arrows-thread-through-the-mor-category-graph`, since an arrow operation can move only to an arrow type that the arrow types below inherit.
+- [ ] **`placement-audit`**. **Needs:** none.
+  **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`. Arrow operations are placed by `arrows-thread-through-the-mor-category-graph`, since an arrow operation can move only to an arrow type that the arrow types below inherit.
   At its home an operation decides computability in one `case`/`match` on categorical containment: each case with a known algorithm routes to it, and the final `case _` asserts, naming the missing algorithm (`CAT-01`; AGENTS.md, *Abstract contracts are distinct from partial algorithms*). An operation placed low because only there can it be computed is the commonest misplacement: `conjugacy_classes`, `conjugacy_class`, `conjugation_g_set`, `left_cosets` and `right_cosets` sit on `Groups().Finite()` (`categories/group/groups.py`) though they are defined for every group, and they move to `Groups()` with the finite case as a route.
   Instrument: `just preamble-megadoc`, then `just placement [CATEGORY ...]`, forms the slice: for each category it prints the introduced object, element and arrow operations and the up-set `U_C` with each member's definition.
   It decides nothing about placement; `W_f` and its maximum come only from the investigation in the loop body.
@@ -301,19 +285,11 @@ An operation, arrow or construction placed at the wrong category is inherited wr
   `category-method-coverage-sweep` calls every method where it currently sits, so it certifies the current placement and cannot detect a misplacement; this node supplies that check.
   Each move is witnessed by an expectation that calls the operation on a specimen of the supercategory that is not in `C`. **Closure specimens:** `conjugacy_classes` asked of an infinite group reaches its own assertion, not an `AttributeError`; every owned category in the survey has had its pass, and each operation it moved answers on a specimen of its new home that is not in `C`.
 
-- [x] **`operations-sited-where-defined`**. **Needs:** none.
-  **Owner and delta:** an operation at its general owner whose body calls one engine unconditionally, with no routing, contradicts the `case`/`match` rule that `placement-audit` applies at every home (`CAT-01`). The abelianization functor (`functors/abelianization.py`, `_apply_object`) calls `_gap_model` for every group, and `commutator_subgroup` guards with a bare finiteness assert, not a `case` whose last branch names the missing algorithm.
-  **Provenance:** `f6549c0f72` introduced abelianization directly through GAP's derived-subgroup quotient; `434f90bace` introduced `commutator_subgroup` as a GAP-derived subgroup and `72777022cf` later added a finiteness assertion.
-  The shared belief was that an operation could live at its mathematical owner while its implementation body still silently equated that owner with the one engine/computability regime then available.
-  Repair the population, not only these specimens.
-  The tell, per subtree: `_gap_model(`, `_engine_ring(` or any other engine crossing at the top of an operation on a general category, outside a `case`. Before editing, record the commits that introduced these sites and the belief behind them: that an operation's home is where it is computable.
-  **Closure specimens:** `Groups().abelianization()` applied to an infinite finitely presented group reaches the assertion, which names the missing presentation route, until `group-exact-sequences-and-homology` adds that case.
-
 ## Test suite: specimens, speed and coverage
 
 The suite is the instrument that finds the rest; these make it fast and complete.
 
-- [ ] **`category-method-coverage-sweep`**. **Needs:** `placement-audit`, `arrows-thread-through-the-mor-category-graph`. The sweep asserts every operation at the category where it sits, so it waits until the placement of object, element and arrow operations has settled; expectations written before that are precursor material, not progress on this node.
+- [ ] **`category-method-coverage-sweep`**. **Needs:** `placement-audit`. The sweep asserts every operation at the category where it sits, so it waits until the placement of object, element and arrow operations has settled; expectations written before that are precursor material, not progress on this node.
   **Owner and delta:** for every category in the live session, construct its objects on small specimens and call every public method of the object, its elements and its morphisms, asserting the mathematical value (owner, 2026-09-24). The categories and operations come from a regenerated `just preamble-megadoc` survey; one test file per category, written to `tests/constructions/CONTRIBUTING.md`'s session standard.
   Loop body: one category, its whole public surface in one pass: every operation of its objects, elements and morphisms, from the survey's listing of what the category introduces, written into that category's one file and banked in one commit.
   A file or commit per method or per surface is not the unit; the category is.
@@ -327,114 +303,6 @@ A node's cause is the defect behind its site, which the node establishes; the si
 Work the catalogue in one pass, not one site at a time: read every site below, group the sites whose failures share a cause, repair each cause at its owner, then re-run the catalogue once.
 A site that still raises keeps its node, and every node whose example passes and whose site no longer raises closes in that pass (AGENTS.md, *Architecture before tests*). Regenerate the catalogue with the same command; the time gates are on by default.
 
-- [x] **`triage-native-module-additive-group`**. **Needs:** none.
-  **Site:** `categories/modules/native_modules.py:102` and `:103`, `_RingModulePresentation.construct`: "the action is on the supplied owned additive group" (1,924) and "native scalar structure cannot overwrite another chosen base" (185). **Example:** `tests/algebras/test_module_structure.sage::test_forgetful_functor_sends_an_algebra_to_its_underlying_module`; `tests/rings/test_local_base_maximal_ideals.sage::test_dual_numbers_over_a_field_are_local_at_the_nilpotent_alone`.
-
-- [x] **`triage-framing-source-base-ring`**. **Needs:** none.
-  **Site:** `categories/modules/pure/modules.py:3051`, `_fix_selected_module_framing`: "the selected framing source is a free module over this module's base ring" (1,571). **Example:** `tests/divisors/test_divisor_node_specimens.sage::test_normal_singular_surface_has_a_noncartier_weil_class`.
-
-- [x] **`triage-subobject-base-placement`**. **Needs:** none.
-  **Site:** `categories/abstract_categories/arrow_categories.py:1087`, `SubobjectCategory.__init__`: "the subobject base must lie in its base category" (1,538). Reached from `_commutative_ideal` (`categories/rings/commutative_ideals.py:966`) through `Modules(R).Subobjects(R.regular_module())`; for `QQ['x,y']` the regular module is placed in `Modules(R)`, so the failing rings are the ones the Kähler-differential and cohomology constructions build.
-  **Example:** `tests/algebras/test_cohomology.sage::test_dga_cohomology_is_a_graded_algebra_with_descended_product`.
-
-- [x] **`triage-an-object-contracts`**. **Needs:** none.
-  **Site:** `sage/misc/abstract_method.py:218`: `NotImplementedError: <abstract method an_object>` (850): categories reached by the inhabitation specifications that do not exhibit an object.
-  **Example:** `tests/algebras/test_native_free_algebra_module_factor.sage::test_free_algebra_on_the_zero_module_has_only_the_empty_word`. **Source closure (2026-09-26):** every concrete category class exported by `preamble.all` that the inhabitation specification can construct nullary or over a ring now exhibits an object directly or inherits the concrete Mor-family witness.
-  The remaining exported classes with no local `an_object` are parameterized families whose constructors require their mathematical parameters and are therefore outside that sweep.
-  Geometry witnesses route through their existing projective, toric, cycle, section, and cohomology owners; downstream nonfield/engine frontiers remain owned by their separate triage nodes.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-owned-ring-custom-name`**. **Needs:** none.
-  **Site:** `sage/cpython/getattr.pyx:362`: `'_OwnedRingParent_with_category' object has no attribute '_SageObject__custom_name'` (584): an owned ring reaches Sage's `rename`/repr machinery without `SageObject` initialization of that field.
-  **Example:** `tests/algebras/test_center_corestriction_archive.sage::test_central_algebra_map_corestricts_through_the_actual_center`. **Source closure (2026-09-26):** both Python ring-parent constructors that bypass Sage's cooperative initialization, `_OwnedRingParent` and `_PredicateSubringParent`, now initialize their `SageObject` state before calling `Parent.__init__`. This repairs the missing custom-name state at the host-runtime boundary rather than special-casing repr or rename.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-ring-cardinality-frontier`**. **Needs:** none.
-  **Site:** `categories/rings/ring_foundation.py:2163`, `OwnedRings.ParentMethods.cardinality`: the exact computation covers only finite, countably infinite and uncountable placements (348). **Example:** `tests/algebras/test_affine_semigroup_algebras.sage::test_affine_semigroup_algebra_retains_its_selected_binomial_presentation`. **Source closure (2026-09-26):** exact cardinality now follows the construction owner instead of requiring every ring to arrive with a size placement: affine semigroup algebras use their retained semigroup, free algebras use the scalar and word-basis cardinals, ordinary algebras use their underlying module, localizations of domains use the source cardinal, and predicate subrings cover finite ambient rings and characteristic-zero countable ambients.
-  Native size propagation now preserves uncountable polynomial/fraction-field cases; quotient rings and formal power-series rings already own their formulas.
-  Genuinely undetermined arbitrary predicate subrings/quotients/completions remain informative computational-frontier cases rather than being assigned a guessed size.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-module-mor-endpoints`**. **Needs:** none.
-  **Site:** `categories/modules/pure/modules.py:904`, `Modules.Mor`: "an R-module Mor requires two R-modules" (338). **Example:** `tests/algebras/test_de_rham.sage::test_relative_conormal_and_tangent_comparison_for_xy_equals_t`. **Source closure (2026-09-26):** the catalogue predates the scalar-change/ideal repairs now in the live tree.
-  For the recorded relative-differentials example, `(xy-t)` is a principal ideal in the domain `QQ[t][x,y]`; its framed-free scalar extension calls `_base_change_codomain`, which now returns the exact owned quotient algebra and rebuilds the module over it.
-  The ambient differential module is built over that same algebra, so `conormal_module.module_category().Mor(conormal_module, ambient_differentials)` has two genuine `Modules(algebra)` endpoints.
-  Keep the strict endpoint check; runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-subring-base`**. **Needs:** none.
-  **Site:** `sage/categories/rings.py:1705`: "base must be a subring of this ring" (177), raised by Sage when an owned construction passes a base that Sage does not recognize as a subring.
-  **Example:** `tests/sets/test_standard_cardinals_archive.sage::test_matrix_ring_cardinality_tracks_the_coefficient_ring`. **Source closure (2026-09-26):** the remaining owned-to-Sage base leak was the common `CategoricalMor` constructor: additive and module Mor parents supplied an owned scalar ring through `SageHomset(..., base=...)` even though the private Homset is intentionally constructed only in Sage `Sets()` and the owned enrichment carries its own scalar data.
-  That base channel is removed; module Mor reads its base from the endpoints and additive Mor exposes its stored `ZZ` explicitly.
-  A static census now finds no `_Sage*` constructor receiving an unlowered owned `base`/`base_ring`/`ring`, and no `CategoricalMor` caller retains the removed channel.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-an-element`**. **Needs:** none.
-  **Site:** `sage/structure/parent.pyx:2847`: `please implement _an_element_` for join-category, product and coproduct parents (158 + 37 + 23). **Example:** `tests/functions/test_lebesgue_quotient.sage::test_quotient_keeps_a_nonzero_function_and_does_not_sample_callable_equality`. **Source closure (2026-09-26):** the three reported parent families now exhibit canonical elements at their mathematical owners.
-  A general module returns its zero element, so modules constructed in category joins such as the Lebesgue quotient do not ask Sage to sample their underlying function set.
-  A Cartesian product chooses each factor's `an_element()` lazily, including the unique empty-product section; a coproduct chooses one represented summand and one element of it.
-  Empty coproducts correctly remain without a witness.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-category-c3-keys`**. **Needs:** none.
-  **Site:** `sage/misc/c3_controlled.pyx:945`: `KeyError` on a category sort key while Sage linearizes super categories (143 + 49); a category is joined whose comparison key is not registered.
-  **Example:** `tests/algebras/test_cartan_calculus.sage::test_vector_fields_are_derivations_and_have_the_expected_lie_bracket`. **Source closure (2026-09-26):** owned category joins now normalize before Sage's join/C3 machinery.
-  The live owner supplies deterministic structural `_cmp_key` values and `owned_category_join` flattens/sorts branches without Sage's subcategory sorter.
-  Core Mor and module construction joins were migrated first, including the Cartan/derivation route, and every remaining direct `Category.join(...)` in `preamble/categories` was migrated as the same architectural repair.
-  A zero-residue source census now finds no direct Sage category join in the category implementation tree.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-construction-contract`**. **Needs:** none.
-  **Site:** `owned_category.py:802`, the construction-contract check: invertible-sheaf categories on join-category schemes (138). **Example:** none current: the cited test was removed in b9b95babe, and `O(d)` on `P^n` no longer raises here (88d2dc923). Find an invertible sheaf on a join-category scheme that still raises at this site before working the node, or remove the node with that evidence.
-  **Source closure (2026-09-26):** no live specimen remains.
-  Commit `88d2dc923` records the former cause exactly: the projective-line-bundle engine computed its standard atlas and transition units but had not declared them as derived construction data; it now declares `gluing_datum` and `transition_units`. The current invertible-sheaf entry routes those data through `QuasiCoherentSheaves(...).object`, and owned joins are normalized before contract discovery.
-  The node therefore has no current source defect to repair; runtime catalogue confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-selected-framing-at-construction`**. **Needs:** none.
-  **Site:** `categories/abstract_categories/objects.py:264`: polynomial rings "constructed without" their selected framing (126). **Example:** `tests/algebras/test_relative_presentations.sage::test_zero_relation_presentation_lifts_through_the_identity_engine`. **Source closure (2026-09-26):** the cited global selected-framing accessor no longer exists.
-  Algebra framings were absorbed into the selected-resolution construction: a native polynomial ring enters through `_polynomial_ring -> _native_free_algebra -> _NativeFreeAlgebraParent`, whose `_OwnedAlgebraParent` construction fixes the degree-zero algebra resolution with the polynomial algebra itself as its free source; a presented quotient supplies its presentation ring as that source and immediately promotes the same selected resolution to the truncation-one finite presentation.
-  Thus the framing datum is fixed on the construction path before any public generator/presentation accessor can read it.
-  The cited zero-relation test is no longer present in the live test file.
-  Runtime confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-indexed-cardinal-finiteness`**. **Needs:** none.
-  **Site:** `categories/sets/cardinals.py:478`: "finiteness is not selected for an arbitrary indexed cardinal family" (108). **Example:** `tests/algebras/test_center_corestriction_archive.sage::test_exterior_algebra_center_is_the_archived_predicate_subring`. **Source closure (2026-09-26):** the recorded path predates the selected-resolution/direct-sum refactor and is no longer a live cardinality defect.
-  Infinite indexed cardinal sums and products remain deliberately non-normal: their finiteness is not determined by the index cardinal alone.
-  The current exterior algebra is built as the finite-support graded direct sum over `ZZ`; `_direct_sum_of_modules` does not infer a componentwise module resolution by visiting infinitely many pieces, so the generic centre route cannot obtain a module generating set from that construction and then ask the old arbitrary indexed cardinal whether it is finite.
-  The cited archived-predicate-subring test name is absent from the live test file, whose centre specimens now exercise the current construction.
-  Any remaining centre/framing failure belongs to its current module-resolution owner rather than to cardinal arithmetic.
-  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-discriminant-over-general-rings`**. **Needs:** `dual-lattice-through-the-discriminant-sequence`. **Site:** `categories/lattices.py:2222`: "discriminant_group is the ZZ specialization; use discriminant_module" (106), reached by `DiscriminantBilinearModules` over rings other than `ZZ`. **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[AA-DiscriminantBilinearModules]`. **Source closure (2026-09-26):** the three discriminant-category witnesses now route through `discriminant_module()` rather than the integer-only `discriminant_group()` alias.
-  The discriminant construction no longer drops its bilinear/quadratic structure outside `ZZ`: `FractionFieldQuotients(R)(a)` represents the required principal quotient `Frac(R)/aR` directly over a domain, with equality given by the quotient relation, while retaining Sage's `QmodnZ` only as the private `ZZ` engine.
-  Thus the non-`ZZ` witness reaches the same `K/R`-valued descended form as the integer specialization.
-  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-toric-charts-over-fields`**. **Needs:** none.
-  **Site:** `categories/schemes/toric/toric_schemes.py:1907`: "the semigroup algebras of the charts are algebras over a field" (100), reached by toric categories over non-fields.
-  **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[GF(5)[t]-ADELogPairs]`.
-  **Source closure (2026-09-26):** toric schemes are now constructed from the same affine semigroup charts over an arbitrary represented base ring. The semigroup algebra receives the integral-domain placement only when the base is a domain; `ToricSchemes(R)` likewise advertises integral/variety and normal placements only under the corresponding base hypotheses. The global Sage `ToricVariety` and Sage toric-morphism realizations are retained only over fields, while the owned affine gluing and chartwise pullbacks are the realization over a general base. Runtime confirmation of the cited `GF(5)[t]` witness remains in terminal T under `DEV-58`.
-
-- [x] **`triage-missing-owned-operations`**. **Needs:** none.
-  **Site:** `sage/cpython/getattr.pyx:357`/`:362`: `AttributeError` for operations the owned objects do not have: on module Mor elements (99 + 37), sparse free module object types (83), `DistinguishedAffineCovers.subcategory_class` (92), and the `mor`, `point_mor`, `nilradical`, `free_bilinear_form_adjunction` and `cardinality` names that the specifications call.
-  **Example:** `tests/algebras/test_algebra_base_change_archive.sage::test_scalar_restriction_retains_the_selected_ring_map_identity`.
-  **Source closure (2026-09-26):** the catalogue predates the Mor-graph and owned-category propagation repairs. Generated module arrows now receive `ModuleMorphismMethods` from their Mor categories; sparse free modules receive the framed-free parent API, including exact cardinality; and owned category roots propagate Cat constructions through `subcategory_class`, including `DistinguishedAffineCovers`.
-  The live set-Mor owner supplies `mor`; no current specification calls the former public `point_mor` spelling; `Modules(R)` supplies the archived `free_bilinear_form_adjunction` spelling; and every commutative ring now owns `nilradical = sqrt((0))` together with reducedness at the commutative-ring owner.
-  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-signature-over-ordered-fields`**. **Needs:** none.
-  **Site:** `categories/_lattice.py:1296`: the signature pair asserted for quadratic spaces whose base is not a subfield of the reals (78). **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[AA-HyperbolicLattices]`.
-  **Source closure (2026-09-26):** finite-rank signature now uses Sylvester inertia over the represented ordered fraction field rather than requiring `Frac(R) = QQ`. The owned ring classifier places the algebraic real field `AA` in `OwnedOrderedRings`, so the cited hyperbolic-lattice witness reaches the same signature construction as `ZZ` and `QQ`.
-  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`triage-kahler-backend`**. **Needs:** none.
-  **Site:** `categories/algebras/derivations.py:61`: "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative presentation" (74). **Example:** `tests/constructions/test_algebras_construct.sage::test_kahler_differentials_of_a_ring_over_itself_vanish[AA]`.
-  **Source closure (2026-09-26):** the cited case is the identity algebra `A/A`, so `Omega^1_{A/A} = 0` independently of any presentation. The Kähler-differential constructor now recognizes that semantic case first and constructs the zero free `A`-module in `KahlerDifferentialModules(A)`; only genuinely relative algebras continue to the localization or finite-presentation backends.
-  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
-
-- [x] **`closed-immersion-citation`**. **Needs:** none.
-  **Site:** `categories/schemes/schemes.py`, `is_closed_immersion`, cites Stacks Tag 01HV, which is Lemma 26.5.4 (sections of `M~` on `Spec R`). Cite the Stacks result that a morphism of affine schemes is a closed immersion exactly when its ring map is surjective, after opening it.
-  **Source closure (2026-09-26):** `is_closed_immersion` now cites Stacks Tag `0H2N`, Lemma 37.81.1, for the affine surjective-ring-map criterion.
-
 - [ ] **`triage-long-tail`**. **Needs:** `mor-hom-expectation-ruling`.
   **Site:** the remaining 699 sites of the catalogue, together about 2,200 failures, among them `categories/rings/commutative_ideals.py:946` (59), `categories/group/g_sets.py:167` (54), `categories/modules/pure/modules.py:4681` (53), `categories/modules/framed/fraction_field_quotients.py:123` (50), `sage/matrix/matrix_gfpn_dense.pyx:429` (`GF(27)` in MeatAxe, 36), and 27 specification tests calling `Hom`, which the session does not export under `Mor` as its only spelling.
   Also: deciding whether an endomorphism of a free module lies in the image of the zero module's Mor (`module_morphisms.py:1139`, "cannot decide whether ... is in the image"), reached by the centre of a unital associative algebra (`tests/algebras/test_algebra_preservation.sage`). **Closure:** a re-run of the catalogue with no failure at these sites; split any site whose cause is shared by others into its own node first.
@@ -446,18 +314,6 @@ A site that still raises keeps its node, and every node whose example passes and
   **Acceptance:** one owner ruling makes the prescriptions consistent and names the required source delta: either the protected mathematical expectation is explicitly corrected under its sole allowed exception, or `ARC-07` is explicitly revised to require a public owned `Hom` spelling with the Sage-boundary consequences repaired. Apply that ruling across the whole named population, not only the three currently visible calls, then return the resulting source obligation to `triage-long-tail` for terminal verification.
 
 ## Forms, actions and arithmetic realizations
-
-- [x] **`dual-lattice-through-the-discriminant-sequence`**. **Needs:** none.
-  **Owner and delta:** for an `R`-lattice `L` with form `b` valued in `K = Frac(R)` and an `R`-submodule `S <= K`, `L^# = {x in V : b(x, L) <= O}` for `V = L_K = L tensor_R K`, and `L` is `A`-modular for a fractional ideal `A` when `A L^# = L`, unimodular when `A = O` (Kirschmer, *Definite quadratic and hermitian forms with small class number*, Def.
-  2.3.3; arXiv:1904.04518, Def.
-  2.1). For invertible `A`, `A L^# = {x in V : b(x, L) <= A}`, so `A`-modularity says this `A`-dual of `L` is `L`. Kirschmer's `L^A = {x in L : b(x, L) <= A}` (same Def., item 8) is the sub-bilinear module of `L` cut out by the same condition.
-  The maps are `L -> L^#` when `b(L, L) <= O`, with cokernel `A_L`, and `L^# -> L^* = Hom_R(L, R)`, `x |-> b(x, -)`. The form on `L^*` is transported along that map.
-  `Lattices.dual_lattice` (`categories/lattices.py`) instead equips the dual module with a `QQ`-valued form and refines it into `FormModules(ZZ).Nondegenerate()`, whose predicate asks for a correlation `M -> Hom_R(M, R)` (`categories/modules/hodge.py`, `_algebraic_correlation_morphism`) defined only for `W = R`. **Invariants:** the left and right radicals are the kernels of the two curried maps `L -> Hom_R(L, W)`, `x |-> b(x, -)` and `y |-> b(-, y)`, from `b: L tensor_R L -> W` by tensor-hom adjunction, for every value module `W`; nondegeneracy is that both radicals are zero.
-  The `W = R` case is recovered, not special-cased.
-  **Closure specimens:** `NamedLattices.TdP.dual_lattice()` returns `L^*` with its transported form and the map `L -> L^*`; `A_1` has `A_L = ZZ/2`; the form with Gram matrix `[[1,1],[1,1]]` on `ZZ^2` has a radical of rank one.
-  **Source closure (2026-09-26):** pairing objects now own the two elementwise curries into represented internal-Hom modules, and form-module nondegeneracy is defined by injectivity of both curries; left and right radicals are their kernels for arbitrary value module `W`. The non-integral metric dual is constructed directly as the nondegenerate formed algebraic dual instead of certifying it through the scalar-valued correlation predicate, and `dual_lattice_to_linear_dual()` gives the canonical coordinate-functional identification `L^# -> Hom_R(L,R)` without requiring the target internal-Hom to be framed.
-  The discriminant cokernel descends the dual form through general `K/R` and `K/2R` value modules; the existing `A_1` specimens cover `A_L = ZZ/2`, while the added `TdP` and degenerate-plane specimens cover the dual identification and rank-one radicals.
-  These specimens are retained unexecuted under terminal-phase `DEV-58`; source compilation and whitespace checks are clean.
 
 - [ ] **`lattice-represents-an-integer`**. **Needs:** `higher-rank-integral-lattice-representation`.
   **Owner and delta:** `Lattices(R)` answers the existential question whether `L` represents `n`, i.e. whether the hypersurface `V(q - n)` has an `R`-point.
@@ -496,7 +352,8 @@ A site that still raises keeps its node, and every node whose example passes and
 - [ ] **`hyperbolic-restricted-reflection-engine-ruling`**. **Needs:** none.
   **Owner decision required by `ENG-06`:** no maintained exact operation was found that takes a hyperbolic integral lattice and a norm predicate and returns the reflection subgroup generated by every root satisfying it. Coxeter-system packages can form a reflection subgroup from a supplied finite family of roots, but that does not solve the infinite root-family construction here. Decide whether to own the required reflection-subgroup/chamber algorithm or authorize a maintained exact backend that computes this norm-defined subgroup with a completeness certificate.
 
-- [ ] **`group-exact-sequences-and-homology`**. **Needs:** `operations-sited-where-defined`. **Owner and delta:** one owned construction for a short exact sequence of groups `1 -> N -> G -> Q -> 1`: the normal subobject `N -> G`, the quotient `G -> Q`, and exactness.
+- [ ] **`group-exact-sequences-and-homology`**. **Needs:** none.
+  **Owner and delta:** one owned construction for a short exact sequence of groups `1 -> N -> G -> Q -> 1`: the normal subobject `N -> G`, the quotient `G -> Q`, and exactness.
   `RankOneParabolicLeviExactSequence` (`categories/lattices.py`) and the discriminant reduction sequence are instances of it, not separate classes.
   Exactness only as pointed sets, when the image is not normal, uses the finite image-coset construction in `categories/group/g_sets.py`. The first group-exact instance is the commutator sequence `1 -> [G,G] -> G -> G^ab -> 1`, whose quotient map is the unit of `(-)^ab -| i` (`functors/abelianization.py`). Group homology `H_n(G; M)` and cohomology `H^n(G; M)` for a `ZZ[G]`-module `M`, as derived functors of coinvariants and invariants: through the resolution categories of `categories-of-resolutions`, computed privately by GAP's HAP or Sage.
   With them come the identifications `H_1(G; ZZ) = G^ab` (from `I_G/I_G^2 = G^ab` for the augmentation ideal `I_G`), `H^1(G; ZZ) = Hom(G, ZZ) = Hom(G^ab, ZZ)`, which sees only the free part, and `H^2(G; ZZ) = Hom(G, QQ/ZZ)` for finite `G`, the Pontryagin dual of `G^ab` (Brown, *Cohomology of Groups*, II.3 and III.1; cite from the source).
@@ -531,7 +388,7 @@ A site that still raises keeps its node, and every node whose example passes and
   This becomes a `case` of the group-level generator routing.
   Leads: `docs/theory/glue-stabilizers.md`, *Generators of finite-index subgroups*. **Closure specimens:** the kernel of `SL_2(ZZ) -> SL_2(ZZ/2)` has index 6, and its generators generate a subgroup of index 6. `\tilde O(L)` for an indefinite `L` with a generating set of `O(L)` answers generators, and each lies in the kernel of `rho`.
 
-- [ ] **`lattice-glue-stabilizers`**. **Needs:** `pullbacks-in-every-category`, `finite-index-subgroup-generators`, `images-of-subgroups-and-predicate-subsets`, `operations-sited-where-defined`. **Owner and delta:** for a primitive extension `S + T -> L` with glue `gamma: H_S -> H_T` (`Lattices.glue_map`), the preamble constructs:
+- [ ] **`lattice-glue-stabilizers`**. **Needs:** `pullbacks-in-every-category`, `finite-index-subgroup-generators`, `images-of-subgroups-and-predicate-subsets`. **Owner and delta:** for a primitive extension `S + T -> L` with glue `gamma: H_S -> H_T` (`Lattices.glue_map`), the preamble constructs:
 
   - the restriction morphisms `Stab_{O(L)}(S) -> O(S)` and `-> O(T)`, and `rho-bar_S: O(S)_{H_S} -> O(H_S)`;
 
@@ -540,7 +397,7 @@ A site that still raises keeps its node, and every node whose example passes and
   - `Gamma_{h,T} = rho-bar_T^{-1}(gamma rho-bar_S(O(S,h)) gamma^{-1})` as a subgroup of `O(T)` with its inclusion.
     With generators of `O(S,h)` and `O(T)` (and relations, if any), it answers generators (and a presentation) of `Gamma_{h,T}`. The theory and its leads (Peters–Sterk 15.1; Nikulin 1979) are in `docs/theory/glue-stabilizers.md`. **Closure specimens:** for `L = U + U` with `S = U` and `T = U`, the stabilizer of `S` is `O(U) x O(U)`. For `L` unimodular, `Gamma_{h,T} = rho_T^{-1}(gamma rho_S(O(S,h)) gamma^{-1})`. For a rank-one `S = <h>` with `h^2 = 2` in `II_{1,9}`, the pullback description reconstructs the stabilizer of `h`.
 
-- [ ] **`coxeter-group-structure`**. **Needs:** `lattice-reflection-groups`, `operations-sited-where-defined`. **Owner and delta:** the category of Coxeter systems `(W, S)` owns:
+- [ ] **`coxeter-group-structure`**. **Needs:** `lattice-reflection-groups`. **Owner and delta:** the category of Coxeter systems `(W, S)` owns:
 
   - word length and reduced words;
 
@@ -596,7 +453,7 @@ A site that still raises keeps its node, and every node whose example passes and
     The Davis complex of the infinite dihedral group is a line.
     The building of `SL_3(F_2)` has 21 chambers and apartments that are hexagons.
 
-- [ ] **`modular-forms-and-hecke-algebras`**. **Needs:** `finite-index-subgroup-generators`, `operations-sited-where-defined`. **Owner and delta:**
+- [ ] **`modular-forms-and-hecke-algebras`**. **Needs:** `finite-index-subgroup-generators`. **Owner and delta:**
 
   - Congruence subgroups of `SL_n(ZZ)` (`Γ(N)`, and `Γ_0(N)` and `Γ_1(N)` for `n = 2`) as subobjects with their inclusions and generators.
 
@@ -645,7 +502,7 @@ A site that still raises keeps its node, and every node whose example passes and
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
+- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open.
   Each complaint's entire burden is discharged or retained in a required prerequisite.
   All alternative construction routes affected by a repair are inspected.
@@ -675,7 +532,7 @@ A site that still raises keeps its node, and every node whose example passes and
   **Observed (2026-09-26):** the smallest `ADELogPairs` witness, type `A_1`, costs 0.7 s per base ring and `P^2` from its fan 0.9 s, nearly all of it in the fan's chart changes.
   **Closure:** the default suite run is green on all four gates, with no gate raised.
 
-- [ ] **`terminal-session`**. **Needs:** `architecture-remediation`, `group-categories-defined-by-data`, `triage-native-module-additive-group`, `triage-framing-source-base-ring`, `triage-subobject-base-placement`, `triage-an-object-contracts`, `triage-owned-ring-custom-name`, `triage-ring-cardinality-frontier`, `triage-module-mor-endpoints`, `triage-subring-base`, `triage-an-element`, `triage-category-c3-keys`, `triage-construction-contract`, `triage-selected-framing-at-construction`, `triage-indexed-cardinal-finiteness`, `triage-discriminant-over-general-rings`, `triage-toric-charts-over-fields`, `triage-missing-owned-operations`, `triage-signature-over-ordered-fields`, `triage-kahler-backend`, `closed-immersion-citation`, `triage-long-tail`, `category-method-coverage-sweep`, `function-spaces-are-subobjects-of-mor`, `suite-within-time-gates`, `scalar-extension-is-order-independent`, `genera-are-finite-sets-of-isometry-classes`, `arrows-thread-through-the-mor-category-graph`, `placement-audit`.
+- [ ] **`terminal-session`**. **Needs:** `architecture-remediation`, `group-categories-defined-by-data`, `triage-long-tail`, `category-method-coverage-sweep`, `function-spaces-are-subobjects-of-mor`, `suite-within-time-gates`, `scalar-extension-is-order-independent`, `genera-are-finite-sets-of-isometry-classes`, `placement-audit`.
 
 - [ ] **`scalar-extension-is-order-independent`**. **Needs:** none.
   **Site:** `categories/algebras/`, algebra scalar extension along `ZZ -> QQ`. `tests/algebras/test_algebra_base_change_archive.sage::test_archived_algebra_base_change_is_the_live_scalar_extension_functor` passes when its file runs alone and fails when `tests/modules`, `tests/sets`, `tests/rings`, `tests/forms` and `tests/tensors` ran first in the same process, with `TypeError: cannot apply Algebra scalar extension along ZZ -> QQ ... to Generic endomorphism of Ring over Integer Ring: it is not a morphism ... of Category of algebras` (observed 2026-09-26, before and after the coordinate sweep).
