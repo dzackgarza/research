@@ -439,7 +439,7 @@ def _fix_selected_differential(
     )
 
 
-class DGAMorphism(Morphism):
+class DGAMorphism(GradedAlgebraMorphism):
     r"""A graded algebra morphism commuting with the selected differentials."""
 
     def __init__(
@@ -449,15 +449,17 @@ class DGAMorphism(Morphism):
         *,
         differential_compatibility=None,
     ) -> None:
-        Morphism.__init__(self, parent)
-        source = self.domain()
+        source = parent.domain()
+        target = parent.codomain()
         graded_mor = GradedAlgebras(
             source.base_ring(), source.grading_monoid()
-        ).Mor(source, self.codomain())
+        ).Mor(source, target)
         if isinstance(morphism, GradedAlgebraMorphism) and morphism.parent() is graded_mor:
-            self._underlying = morphism
+            underlying = morphism
         else:
-            self._underlying = graded_mor(morphism)
+            underlying = graded_mor(morphism)
+        self._underlying_graded_morphism = underlying
+        GradedAlgebraMorphism.__init__(self, parent, underlying)
         observed = self._decide_differential_compatibility()
         if observed is False:
             raise ValueError(
@@ -477,13 +479,7 @@ class DGAMorphism(Morphism):
             self._differential_compatibility = differential_compatibility
 
     def underlying_graded_algebra_morphism(self):
-        return self._underlying
-
-    def underlying_algebra_morphism(self):
-        return self._underlying.underlying_algebra_morphism()
-
-    def degree_preservation_decision(self):
-        return self._underlying.degree_preservation_decision()
+        return self._underlying_graded_morphism
 
     def differential_compatibility_decision(self):
         return self._differential_compatibility
@@ -510,12 +506,6 @@ class DGAMorphism(Morphism):
             and target.differential().linearity_decision() is True
         )
         return True if linear and all(answer is True for answer in comparisons) else Unknown
-
-    def _call_(self, element):
-        return self._underlying(element)
-
-    def __call__(self, element):
-        return self._call_(element)
 
     def component(self, degree):
         r"""Return the degree-``degree`` linear component of this DGA map."""
