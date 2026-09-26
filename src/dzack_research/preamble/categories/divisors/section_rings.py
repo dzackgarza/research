@@ -27,6 +27,12 @@ class SectionRings(OwnedCategoryOverBaseRing):
     \(L = \mathcal{O}_X(D)\).
     """
 
+    def an_object(self):
+        r"""The section ring of O(1) on the projective line over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+        return ProjectiveSpaces(self.base_ring()).an_object().O(1).section_ring()
+
     def super_categories(self):
         return [GradedAlgebras(self.base_ring(), NN)]
 
