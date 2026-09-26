@@ -1,4 +1,4 @@
-r"""Toric varieties: schemes built from a fan in a cocharacter lattice.
+r"""Toric schemes: schemes built from a fan in a cocharacter lattice.
 
 A toric variety is a normal separated variety \(X\) containing a torus
 \(T_N\) as a dense open subset, with the torus action on itself extending to
@@ -118,20 +118,24 @@ def _semigroup_algebra(cone, base_ring):
     computed by ``sage.schemes.toric.ideal.ToricIdeal``, whose matrix
     convention is exactly one column per variable.
 
-    The result is an integral domain: \(k[S_\sigma]\) is the subalgebra of the
-    group algebra \(k[M]\) spanned by the characters of \(S_\sigma\), and
-    \(k[M]\) is a Laurent polynomial ring over a field, so the toric ideal is
-    prime.  That placement is what lets a localization of a chart read a
-    denominator as a power of the character it inverts, which is how the
-    transition out of a face localization is written.
+    When the base is a domain, the result is a domain: \(R[S_\sigma]\) embeds
+    in the group algebra \(R[M]\), a Laurent polynomial ring over \(R\).
+    That placement is what lets a localization of a chart read a denominator
+    as a power of the character it inverts, which is how the transition out of
+    a face localization is written.  No domain placement is asserted over a
+    base with zero divisors.
     """
     generators = cone.semigroup_generators()
-    return AffineSemigroupAlgebras(base_ring)(
+    base = _own_ring(base_ring)
+    extra_categories = (
+        (OwnedIntegralDomains(),) if base in OwnedIntegralDomains() else ()
+    )
+    return AffineSemigroupAlgebras(base)(
         (
             tuple(_engine_vector(cone.character_lattice(), generator))
             for generator in generators
         ),
-        extra_categories=(OwnedIntegralDomains(),),
+        extra_categories=extra_categories,
     )
 
 
@@ -451,7 +455,7 @@ def _owned_incidence_morphism(base, source, target, engine_matrix):
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
-    r"""Toric varieties over the stated base field, each constructed from its fan.
+    r"""Toric schemes over the stated base ring, each constructed from its fan.
 
     The level datum is the fan ``Sigma`` and the lattice polytope it was
     obtained from, or ``None``.  An object is the scheme glued from the charts
@@ -468,13 +472,19 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         )
 
     def _repr_object_names(self):
-        return f"toric varieties over {self.base_ring()}"
+        return f"toric schemes over {self.base_ring()}"
 
     def super_categories(self):
-        return [
-            Varieties(self.base_ring()),
-            Schemes(self.base_ring()).Normal(),
-        ]
+        base = self.base_ring()
+        schemes = Schemes(base)
+        categories = [schemes.Separated().FiniteType()]
+        if base in OwnedIntegralDomains():
+            categories.append(Varieties(base))
+        from dzack_research.preamble.categories.schemes.schemes import _normal_placement
+
+        if _normal_placement(base):
+            categories.append(schemes.Normal())
+        return categories
 
     class ParentMethods:
         def __init__(self, toric_fan, polarizing_polytope, **rest) -> None:
@@ -1841,10 +1851,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 ),
                 name="Chart pullbacks of a toric morphism",
             )
-            native = _engine_scheme(self).hom(
-                _engine_fan_morphism(lattice_morphism, self.fan(), codomain_fan),
-                _engine_scheme(codomain),
-            )
+            engine_base = _engine_ring(base)
+            native = None
+            if bool(engine_base.is_field()):
+                native = _engine_scheme(self).hom(
+                    _engine_fan_morphism(lattice_morphism, self.fan(), codomain_fan),
+                    _engine_scheme(codomain),
+                )
             return _scheme_mor_category(self, codomain)(
                 lambda mor: ToricSchemeMorphism(
                     mor,
@@ -1892,36 +1905,41 @@ def _engine_fan_morphism(lattice_morphism, domain_fan, codomain_fan):
 
 
 def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **level_data):
-    r"""The toric variety ``X_Sigma`` of a fan over a field, an object of ``ToricSchemes(k)``.
+    r"""The toric scheme ``X_Sigma`` of a fan over a ring, an object of ``ToricSchemes(R)``.
 
     ``X_Sigma`` is the scheme glued from the affine charts of the maximal cones
     along the face localizations of their pairwise intersections (CLS
     Thm. 3.1.5); the atlas is indexed by the maximal cones themselves, so a
     chart is asked for by the cone it belongs to.  The gluing constructs it
-    in ``ToricSchemes(k)`` with the fan and the polarizing polytope as that
+    in ``ToricSchemes(R)`` with the fan and the polarizing polytope as that
     level's data, together with the placements the fan decides at
     construction (smooth exactly when the fan is, CLS Thm. 3.1.19; a curve or
     a surface by the rank of ``N``) and the further ``placements`` a caller
-    constructs it in.  Sage's ``ToricVariety`` of the same fan is its private
-    Sage scheme; it is not the object and it does not reach a session.
+    constructs it in.  Over a field, Sage's ``ToricVariety`` of the same fan
+    is retained as a private realization; over a general base the owned affine
+    gluing is the realization.
     """
     base = _own_ring(base_ring)
     assert fan in RationalPolyhedralFans(fan.cocharacter_lattice()), (
         f"a toric variety is built from a rational polyhedral fan, but {fan} is in {fan.category()}"
     )
-    assert bool(_engine_ring(base).is_field()), (
-        f"toric varieties are constructed here only over a field, but {base} is not a field"
-    )
     decided = [ToricSchemes(base)]
     if fan.is_smooth():
         decided.append(Schemes(base).Smooth())
-    match int(fan.dimension()):
-        case 1:
-            decided.append(Curves(base))
-        case 2:
-            decided.append(Surfaces(base))
-        case _:
-            pass
+    if base in OwnedIntegralDomains():
+        match int(fan.dimension()):
+            case 1:
+                decided.append(Curves(base))
+            case 2:
+                decided.append(Surfaces(base))
+            case _:
+                pass
+    engine_base = _engine_ring(base)
+    native = (
+        _SageToricVariety(_engine_fan(fan), base_ring=engine_base)
+        if bool(engine_base.is_field())
+        else None
+    )
     cones = fan.maximal_cones()
     return Schemes(base).glue_affine_atlas(
         {cone: _affine_chart(cone, base) for cone in cones},
@@ -1930,7 +1948,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
             for source_cone, target_cone in combinations(cones, 2)
         ),
         placements=(*decided, *placements),
-        scheme_engine=_SageToricVariety(_engine_fan(fan), base_ring=_engine_ring(base)),
+        scheme_engine=native,
         toric_fan=fan,
         polarizing_polytope=polarizing_polytope,
         **level_data,

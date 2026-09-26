@@ -409,9 +409,10 @@ A site that still raises keeps its node, and every node whose example passes and
   Thus the non-`ZZ` witness reaches the same `K/R`-valued descended form as the integer specialization.
   Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
-- [ ] **`triage-toric-charts-over-fields`**. **Needs:** none.
+- [x] **`triage-toric-charts-over-fields`**. **Needs:** none.
   **Site:** `categories/schemes/toric/toric_schemes.py:1907`: "the semigroup algebras of the charts are algebras over a field" (100), reached by toric categories over non-fields.
   **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[GF(5)[t]-ADELogPairs]`.
+  **Source closure (2026-09-26):** toric schemes are now constructed from the same affine semigroup charts over an arbitrary represented base ring. The semigroup algebra receives the integral-domain placement only when the base is a domain; `ToricSchemes(R)` likewise advertises integral/variety and normal placements only under the corresponding base hypotheses. The global Sage `ToricVariety` and Sage toric-morphism realizations are retained only over fields, while the owned affine gluing and chartwise pullbacks are the realization over a general base. Runtime confirmation of the cited `GF(5)[t]` witness remains in terminal T under `DEV-58`.
 
 - [ ] **`triage-missing-owned-operations`**. **Needs:** none.
   **Site:** `sage/cpython/getattr.pyx:357`/`:362`: `AttributeError` for operations the owned objects do not have: on module Mor elements (99 + 37), sparse free module object types (83), `DistinguishedAffineCovers.subcategory_class` (92), and the `mor`, `point_mor`, `nilradical`, `free_bilinear_form_adjunction` and `cardinality` names that the specifications call.
