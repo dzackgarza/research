@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
+    ModuleEmbeddingMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
 )
@@ -1113,7 +1114,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             realize_owned_category(self)
 
     def _element_constructor_(self, images):
-        if isinstance(images, ModuleEmbedding):
+        if isinstance(images, ModuleEmbeddingMethods):
             if (
                 images.domain() is not self.domain()
                 or images.codomain() is not self.codomain()

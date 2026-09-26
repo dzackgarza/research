@@ -1976,7 +1976,7 @@ class FramingMorphism(ModuleMorphism):
         return True
 
 
-class ModuleEmbedding(ModuleMorphism):
+class ModuleEmbeddingMethods:
     r"""An admitted injective module morphism."""
 
     def _injectivity_derivation(self):
@@ -1984,12 +1984,12 @@ class ModuleEmbedding(ModuleMorphism):
         return None
 
     def __init__(self, parent, images, **options) -> None:
-        ModuleMorphism.__init__(self, parent, images, **options)
+        super().__init__(parent, images, **options)
         if self.linearity_decision() is not True:
             raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: it is not known to be {self.domain().base_ring()}-linear")
         decision = self._injectivity_derivation()
         if decision is None:
-            decision = ModuleMorphism.is_injective(self)
+            decision = ModuleMorphismMethods.is_injective(self)
         if decision is False:
             raise ValueError(f"{self.domain()} -> {self.codomain()} is not an injective linear map: its kernel is nonzero")
         if decision is not True:
@@ -1998,6 +1998,10 @@ class ModuleEmbedding(ModuleMorphism):
 
     def is_injective(self) -> bool:
         return self._injectivity_decision
+
+
+class ModuleEmbedding(ModuleEmbeddingMethods, ModuleMorphism):
+    r"""Compatibility shell for private embedding realizations not yet graph-generated."""
 
 
 class _SubobjectInclusionModuleMorphism(ModuleEmbedding):
@@ -2065,7 +2069,7 @@ class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
 class ModuleEmbeddingMor(CategoricalMor):
     r"""The declared monomorphisms between two modules over one scalar ring."""
 
-    Element = ModuleEmbedding
+    ElementMethods = ModuleEmbeddingMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         modules = domain.module_category()
@@ -2076,7 +2080,7 @@ class ModuleEmbeddingMor(CategoricalMor):
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images, *, lift=None):
-        if isinstance(images, ModuleEmbedding):
+        if isinstance(images, ModuleEmbeddingMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:

@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.structure.richcmp import op_EQ
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -38,7 +39,6 @@ from dzack_research.preamble.categories.modules.hodge import (
     _multivector_hodge_star,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -173,7 +173,7 @@ def _value_from_module_element(formed_module, element):
     return formed_module.value_module()(coordinates(unit_label))
 
 
-class FormedModuleMorphism(ModuleMorphism):
+class FormedModuleMorphism:
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
@@ -183,19 +183,20 @@ class FormedModuleMorphism(ModuleMorphism):
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
-        ModuleMorphism.__init__(self, parent, module_morphism)
-        if module_morphism.domain() is not self.domain():
+        domain = parent.domain()
+        codomain = parent.codomain()
+        if module_morphism.domain() is not domain:
             raise ValueError(
-                f"a morphism of formed modules {self.domain()} -> {self.codomain()} needs a module map "
-                f"with domain {self.domain()}, but {module_morphism} has domain {module_morphism.domain()}"
+                f"a morphism of formed modules {domain} -> {codomain} needs a module map "
+                f"with domain {domain}, but {module_morphism} has domain {module_morphism.domain()}"
             )
-        if module_morphism.codomain() is not self.codomain():
+        if module_morphism.codomain() is not codomain:
             raise ValueError(
-                f"a morphism of formed modules {self.domain()} -> {self.codomain()} needs a module map "
-                f"with codomain {self.codomain()}, but {module_morphism} has codomain {module_morphism.codomain()}"
+                f"a morphism of formed modules {domain} -> {codomain} needs a module map "
+                f"with codomain {codomain}, but {module_morphism} has codomain {module_morphism.codomain()}"
             )
-        source_values = _represented_value_module(self.domain())
-        target_values = _represented_value_module(self.codomain())
+        source_values = _represented_value_module(domain)
+        target_values = _represented_value_module(codomain)
         if value_morphism.domain() is not source_values:
             raise ValueError(
                 f"the value map {value_morphism} must start at the value module {source_values} of "
@@ -206,12 +207,9 @@ class FormedModuleMorphism(ModuleMorphism):
                 f"the value map {value_morphism} must end at the value module {target_values} of "
                 f"{self.codomain()}, but ends at {value_morphism.codomain()}"
             )
-        self._module_morphism = module_morphism
         self._value_morphism = value_morphism
+        super().__init__(parent, module_morphism)
         self._check_form_square()
-
-    def module_morphism(self):
-        return self._module_morphism
 
     def value_morphism(self):
         return self._value_morphism
@@ -233,13 +231,13 @@ class FormedModuleMorphism(ModuleMorphism):
         if domain in Modules(domain.base_ring()).FinitelyPresented().Torsion():
             images = []
             for element in domain.elements():
-                image = self.module_morphism()(element)
+                image = self(element)
                 if any(image == previous for previous in images):
                     return False
                 images.append(image)
             return True
 
-        return self.module_morphism().is_injective()
+        return ModuleMorphismMethods.is_injective(self)
 
     def map_value(self, value):
         source_element = _value_as_module_element(self.domain(), value)
@@ -249,13 +247,6 @@ class FormedModuleMorphism(ModuleMorphism):
 
     def _check_form_square(self) -> None:
         domain = self.domain()
-        source_values = _represented_value_module(domain)
-        if (
-            domain is self.codomain()
-            and self.module_morphism() is domain.module_category().Mor(domain, domain).identity()
-            and self.value_morphism() is source_values.module_category().Mor(source_values, source_values).identity()
-        ):
-            return
         source_form = self.domain().form()
         target_form = self.codomain().form()
         source_generators = tuple(self.domain().module_generators())
@@ -268,7 +259,7 @@ class FormedModuleMorphism(ModuleMorphism):
             commutes = all(
                 self.map_value(self.domain().b(left, right))
                 == self.codomain().b(
-                    self.module_morphism()(left), self.module_morphism()(right)
+                    self(left), self(right)
                 )
                 for left in source_generators
                 for right in source_generators
@@ -286,7 +277,7 @@ class FormedModuleMorphism(ModuleMorphism):
             )
             commutes = all(
                 self.map_value(self.domain().norm(element))
-                == self.codomain().norm(self.module_morphism()(element))
+                == self.codomain().norm(self(element))
                 for element in probes
             )
         else:
@@ -296,7 +287,7 @@ class FormedModuleMorphism(ModuleMorphism):
             )
         if not commutes:
             raise ValueError(
-                f"({self.module_morphism()}, {self.value_morphism()}) is not a morphism of formed modules "
+                f"({self}, {self.value_morphism()}) is not a morphism of formed modules "
                 f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not equal "
                 f"the target form on the images of the generators"
             )
@@ -309,16 +300,13 @@ class FormedModuleMorphism(ModuleMorphism):
             return True
         if self.parent() is not other.parent():
             return False
-        return (
-            self.module_morphism() == other.module_morphism()
-            and self.value_morphism() == other.value_morphism()
-        )
+        module_equal = ModuleMorphismMethods._richcmp_(self, other, op_EQ)
+        return module_equal and self.value_morphism() == other.value_morphism()
 
     def __ne__(self, other) -> bool:
         return not self == other
 
-    def __hash__(self) -> int:
-        return hash((id(self.parent()), id(self.module_morphism())))
+    __hash__ = None
 
     def __mul__(self, other):
         if not isinstance(other, FormedModuleMorphism):
@@ -328,32 +316,30 @@ class FormedModuleMorphism(ModuleMorphism):
                 f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
                 f"is not the domain {self.domain()} of {self}"
             )
-        return FormModules(other.domain().base_ring()).Mor(other.domain(), self.codomain())(
+        source = other.domain()
+        target = self.codomain()
+        modules = source.module_category()
+        module_composite = modules.Mor(source, target)(
+            modules.Mor(self.domain(), target)(self)
+            * modules.Mor(source, self.domain())(other)
+        )
+        return FormModules(source.base_ring()).Mor(source, target)(
             (
-                self.module_morphism() * other.module_morphism(),
+                module_composite,
                 self.value_morphism() * other.value_morphism(),
             )
         )
 
 
-class FormEmbedding(FormedModuleMorphism):
+class FormEmbedding:
     r"""A form-preserving morphism whose module map is a monomorphism."""
 
     def __init__(self, parent, module_morphism, value_morphism, *, quadratic: bool) -> None:
-        FormedModuleMorphism.__init__(self, parent, module_morphism, value_morphism)
+        super().__init__(parent, module_morphism, value_morphism)
         self._quadratic = bool(quadratic)
 
     def is_quadratic(self) -> bool:
         return self._quadratic
-
-    def lift(self, element):
-        r"""Return the unique preimage through this formed monomorphism.
-
-        The form carries no additional lifting datum: lift through the
-        underlying module monomorphism whose construction owns the selected
-        preimage operation.
-        """
-        return self.module_morphism().lift(element)
 
     @cached_method
     def orthogonal_complement(self):
@@ -420,7 +406,7 @@ class FormEmbedding(FormedModuleMorphism):
 class FormEmbeddingMor(CategoricalMor):
     r"""The form-preserving monomorphisms between two formed modules."""
 
-    Element = FormEmbedding
+    ElementMethods = FormEmbedding
 
     def __init__(self, mor_family, domain, codomain) -> None:
         ring = domain.base_ring()
@@ -441,7 +427,7 @@ class FormEmbeddingMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            images = images.module_morphism()
+            images = domain.module_category().Mor(domain, codomain)(images)
 
         domain = self.domain()
         codomain = self.codomain()
@@ -485,7 +471,7 @@ class FormEmbeddingMor(CategoricalMor):
 
 
 class FormedModuleMor(CategoricalMor):
-    Element = FormedModuleMorphism
+    ElementMethods = FormedModuleMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() != codomain.base_ring():
@@ -523,7 +509,8 @@ class FormedModuleMor(CategoricalMor):
                 )
             if datum.parent() is self:
                 return datum
-            datum = (datum.module_morphism(), datum.value_morphism())
+            module_mor = self.domain().module_category().Mor(self.domain(), self.codomain())
+            datum = (module_mor(datum), datum.value_morphism())
         elif isinstance(datum, ModuleMorphismMethods):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(

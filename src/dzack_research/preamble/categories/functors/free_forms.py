@@ -24,7 +24,9 @@ class _UnderlyingFormModuleFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         r"""Forget the form from an arrow of the formed-module domain."""
-        return morphism.module_morphism()
+        return Modules(morphism.domain().base_ring()).Mor(
+            morphism.domain(), morphism.codomain()
+        )(morphism)
 
 
 class _ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
