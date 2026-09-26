@@ -2822,7 +2822,7 @@ class AlgebraMorphism(Morphism):
         )
 
 
-class PresentedAlgebraMorphism(Morphism):
+class PresentedAlgebraMorphism:
     r"""A map from an algebra with a chosen finite presentation.
 
     The map is defined on the presentation algebra, its selected relations are
@@ -2830,9 +2830,15 @@ class PresentedAlgebraMorphism(Morphism):
     No Sage target-ring protocol is involved.
     """
 
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
+
     def __init__(self, parent, images) -> None:
-        Morphism.__init__(self, parent)
-        domain = self.domain()
+        domain = parent.domain()
+        codomain = parent.codomain()
         labels = domain.algebra_generating_set()
         size = labels.cardinality()
         if not size.is_finite():
@@ -2844,7 +2850,7 @@ class PresentedAlgebraMorphism(Morphism):
             source_indices = images.index_set()
             selected = indexed_family(
                 labels,
-                lambda label: self.codomain()(images[source_indices(label)]),
+                lambda label: codomain(images[source_indices(label)]),
                 name="Generator images",
             )
         elif isinstance(images, dict):
@@ -2856,7 +2862,7 @@ class PresentedAlgebraMorphism(Morphism):
                 )
             selected = indexed_family(
                 labels,
-                lambda label: self.codomain()(images[label]),
+                lambda label: codomain(images[label]),
                 name="Generator images",
             )
         elif isinstance(images, (tuple, list)):
@@ -2867,13 +2873,13 @@ class PresentedAlgebraMorphism(Morphism):
                 )
             selected = indexed_family(
                 labels,
-                lambda label: self.codomain()(values[int(labels.ranking_map()(label))]),
+                lambda label: codomain(values[int(labels.ranking_map()(label))]),
                 name="Generator images",
             )
         elif callable(images):
             selected = indexed_family(
                 labels,
-                lambda label: self.codomain()(images(label)),
+                lambda label: codomain(images(label)),
                 name="Generator images",
             )
         else:
@@ -2881,14 +2887,20 @@ class PresentedAlgebraMorphism(Morphism):
                 f"a morphism out of {domain} is given by the images of its algebra generators, but got {images!r}"
             )
         self._generator_images = selected
-        self._presentation_map = Algebras(domain.presentation_ring().base_ring()).Associative().Unital().Mor(domain.presentation_ring(), self.codomain())(selected)
-        zero = self.codomain().zero()
+        self._presentation_map = Algebras(domain.presentation_ring().base_ring()).Associative().Unital().Mor(domain.presentation_ring(), codomain)(selected)
+        zero = codomain.zero()
         for relation in domain.relations():
             if self._presentation_map(relation) != zero:
                 raise ValueError(
                     f"the generator images do not define a morphism out of {domain}: the relation {relation} is "
                     f"sent to {self._presentation_map(relation)}, not to 0"
                 )
+        linear = domain.module_category().Mor(domain, codomain)._from_constructed_element_map(
+            lambda element: codomain(
+                self._presentation_map(domain.lift_to_presentation(domain(element)))
+            )
+        )
+        super().__init__(parent, linear)
 
     def algebra_generator_morphism(self):
         return SetMorphism(
@@ -2979,7 +2991,7 @@ def _corestrict_algebra_morphism_to_center(morphism):
 
 
 class PresentedAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
-    Element = PresentedAlgebraMorphism
+    ElementMethods = PresentedAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(

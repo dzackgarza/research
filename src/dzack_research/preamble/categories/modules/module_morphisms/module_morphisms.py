@@ -1841,6 +1841,16 @@ class _TransportedModuleMorphism(ModuleMorphism):
         return self._transported_morphism.linearity_decision()
 
 
+class _ConstructedElementwiseModuleMorphism(ModuleMorphism):
+    r"""An elementwise map whose supplying construction proves linearity."""
+
+    def __init__(self, parent, function) -> None:
+        super().__init__(parent, function, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
 class _ScalarIdentityModuleMorphism(ModuleMorphism):
     r"""The scalar multiple of the identity, linear by the module action."""
 
@@ -2430,6 +2440,15 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def __call__(self, images):
         r"""Construct a module morphism without Sage coercion discovery."""
         return self._element_constructor_(images)
+
+    def _from_constructed_element_map(self, function):
+        r"""Admit an elementwise map whose construction proves module-linearity."""
+        if not callable(function):
+            raise TypeError(
+                f"a constructed linear map {self.domain()} -> {self.codomain()} needs a function on elements, "
+                f"but got {function!r}"
+            )
+        return _ConstructedElementwiseModuleMorphism(self, function)
 
     def presentation_matrix(self):
         r"""Return the relation rows of the presented model of this Mor module."""
