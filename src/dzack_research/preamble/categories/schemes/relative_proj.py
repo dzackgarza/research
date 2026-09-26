@@ -1889,7 +1889,7 @@ def _projectivization_map(sheaf_morphism):
         _ChosenTrivializationQuasiCoherentMorphism,
     )
     from dzack_research.preamble.categories.schemes.gluing import (
-        FiniteAtlasModuleSheafMorphism,
+        FiniteAtlasModuleSheafMorphismMethods,
         _glued_chartwise_distinguished_open,
     )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -1970,7 +1970,7 @@ def _projectivization_map(sheaf_morphism):
                     )
         case False:
             match sheaf_morphism:
-                case FiniteAtlasModuleSheafMorphism() | _ChosenTrivializationQuasiCoherentMorphism():
+                case FiniteAtlasModuleSheafMorphismMethods() | _ChosenTrivializationQuasiCoherentMorphism():
                     pass
                 case _:
                     raise TypeError(

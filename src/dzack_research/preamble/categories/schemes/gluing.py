@@ -55,6 +55,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     AlgebraSheaves,
     DistinguishedAffineCovers,
+    QuasiCoherentSheafMor,
+    QuasiCoherentSheafMorphismMethods,
     QuasiCoherentSheaves,
     SheafObjects,
     ZariskiCoveringFamilies,
@@ -3287,7 +3289,7 @@ class _FiniteAtlasModuleGluingDatumEngine:
         return FiniteAtlasModuleGluingData(datum)(local_modules, transitions)
 
 
-class FiniteAtlasModuleGluingMorphism(Morphism):
+class FiniteAtlasModuleGluingMorphismMethods:
     r"""A morphism of finite-atlas module descent data.
 
     One linear map is supplied on every affine chart.  On each pair overlap
@@ -3296,7 +3298,7 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
     """
 
     def __init__(self, parent, local_maps) -> None:
-        Morphism.__init__(self, parent)
+        super().__init__(parent)
         source = self.source_datum()
         target = self.target_datum()
         if source.gluing_datum() is not target.gluing_datum():
@@ -3339,7 +3341,7 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
 
     def __mul__(self, other):
         match other:
-            case FiniteAtlasModuleGluingMorphism() if other.codomain() is self.domain():
+            case FiniteAtlasModuleGluingMorphismMethods() if other.codomain() is self.domain():
                 return self.domain().category().Mor(other.domain(), self.codomain())(
                     {
                         index: self.local_map(index) * other.local_map(index)
@@ -3528,7 +3530,14 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
                 )
 
 
-class FiniteAtlasModuleSheafMorphism(FiniteAtlasModuleGluingMorphism):
+class FiniteAtlasModuleGluingMorphism(
+    FiniteAtlasModuleGluingMorphismMethods,
+    Morphism,
+):
+    r"""Compatibility shell for private finite-atlas module-gluing arrows."""
+
+
+class FiniteAtlasModuleSheafMorphismMethods:
     r"""The sheaf-endpoint realization of a finite-atlas descent morphism."""
 
     def source_datum(self):
@@ -3537,31 +3546,37 @@ class FiniteAtlasModuleSheafMorphism(FiniteAtlasModuleGluingMorphism):
     def target_datum(self):
         return self.codomain().gluing_datum()
 
-    def kernel(self):
+    def _kernel_quasi_coherent_sheaf(self):
         return self.kernel_sheaf()
 
-    def cokernel(self):
+    def _cokernel_quasi_coherent_sheaf(self):
         return self.cokernel_sheaf()
 
-    def projectivization_map(self):
-        r"""Return the induced map of projectivizations on the quotient-surjectivity locus."""
-        from dzack_research.preamble.categories.schemes.relative_proj import (
-            _projectivization_map,
-        )
 
-        return _projectivization_map(self)
+class FiniteAtlasModuleSheafMorphism(
+    FiniteAtlasModuleSheafMorphismMethods,
+    QuasiCoherentSheafMorphismMethods,
+    FiniteAtlasModuleGluingMorphism,
+):
+    r"""Compatibility shell for private finite-atlas QCoh-arrow realizations."""
 
 
-class FiniteAtlasModuleSheafMor(CategoricalMor):
+class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
     r"""The represented Mor between two finite-atlas module sheaves."""
 
-    Element = FiniteAtlasModuleSheafMorphism
+    ElementMethods = FiniteAtlasModuleSheafMorphismMethods
+
+    def super_categories(self):
+        source = self.domain().gluing_datum()
+        target = self.codomain().gluing_datum()
+        gluing = source.category().Mor(source, target)
+        return [gluing, *super().super_categories()]
 
     def _element_constructor_(self, local_maps):
         match local_maps:
-            case FiniteAtlasModuleSheafMorphism() if local_maps.parent() is self:
+            case FiniteAtlasModuleSheafMorphismMethods() if local_maps.parent() is self:
                 return local_maps
-            case FiniteAtlasModuleSheafMorphism():
+            case FiniteAtlasModuleSheafMorphismMethods():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                     raise ValueError(
                         f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
@@ -3592,7 +3607,7 @@ class FiniteAtlasModuleSheafMor(CategoricalMor):
 class FiniteAtlasModuleGluingMor(CategoricalMor):
     r"""Compatible local maps between two module descent data on one finite atlas."""
 
-    Element = FiniteAtlasModuleGluingMorphism
+    ElementMethods = FiniteAtlasModuleGluingMorphismMethods
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.gluing_datum() is not codomain.gluing_datum():
@@ -3605,9 +3620,9 @@ class FiniteAtlasModuleGluingMor(CategoricalMor):
 
     def _element_constructor_(self, local_maps):
         match local_maps:
-            case FiniteAtlasModuleGluingMorphism() if local_maps.parent() is self:
+            case FiniteAtlasModuleGluingMorphismMethods() if local_maps.parent() is self:
                 return local_maps
-            case FiniteAtlasModuleGluingMorphism():
+            case FiniteAtlasModuleGluingMorphismMethods():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                     raise ValueError(
                         f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
