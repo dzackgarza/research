@@ -3,7 +3,6 @@ r"""The realized parent (G_K=\operatorname{Aut}_K(\bar K))."""
 from typing import cast
 
 from sage.categories.finite_fields import FiniteFields
-from sage.categories.morphism import Morphism
 from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
@@ -781,17 +780,17 @@ def AbsoluteGaloisGroup(field, closure=None, embedding=None):
     )
 
 
-class OpenSubgroupInclusion(Morphism):
+class OpenSubgroupInclusion:
     r"""The literal inclusion of a realized open subgroup into its supergroup group."""
 
     def __init__(self, parent) -> None:
-        Morphism.__init__(self, parent)
-        assert self.domain().supergroup() is self.codomain(), (
-            f"the inclusion of {self.domain()} must land in {self.domain().supergroup()}, "
-            f"but its codomain is {self.codomain()}"
+        assert parent.domain().supergroup() is parent.codomain(), (
+            f"the inclusion of {parent.domain()} must land in {parent.domain().supergroup()}, "
+            f"but its codomain is {parent.codomain()}"
         )
+        super().__init__(parent, self._evaluate_inclusion)
 
-    def _call_(self, element):
+    def _evaluate_inclusion(self, element):
         subgroup = self.domain()
         element = subgroup(element)
         supergroup = self.codomain()
@@ -811,7 +810,7 @@ class OpenSubgroupInclusion(Morphism):
 
 def _open_subgroup_inclusion_rule(mor):
     r"""The group-Mor realization rule for an open absolute-Galois subgroup inclusion."""
-    return OpenSubgroupInclusion(mor)
+    return mor._from_realization_engine(OpenSubgroupInclusion)
 
 
 class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):

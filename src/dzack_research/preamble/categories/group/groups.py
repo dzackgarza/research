@@ -97,7 +97,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, finite_ordinal_set
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import (
+    _implementation_with_engine,
+    _object_of,
+)
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
 
@@ -1608,6 +1611,15 @@ class IndexedFreeGroupMorphism:
 
 
 class _GroupMorRealizationMixin:
+    def _from_realization_engine(self, engine, *args, **kwargs):
+        r"""Insert one private realization behind the generated group-arrow type."""
+        realized_type = _implementation_with_engine(
+            self.element_class,
+            GroupMorphism,
+            engine,
+        )
+        return realized_type(self, *args, **kwargs)
+
     def _from_realization_rule(self, rule):
         r"""Realize a specialized group arrow through this canonical Mor parent."""
         morphism = rule(self)
@@ -2152,7 +2164,7 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     specific constructor has been selected.
     """
 
-    Element = Morphism
+    ElementMethods = GroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         category = Monoids() if domain is codomain else None
@@ -2173,21 +2185,7 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     def identity(self):
         assert self.domain() is self.codomain(), f"there is no identity homomorphism {self.domain()} -> {self.codomain()}: the domain and codomain differ"
         domain = self.domain()
-        return _ElementwiseGroupMorphism(self, lambda element: domain(element))
-
-
-class _ElementwiseGroupMorphism(Morphism):
-    r"""Private elementwise realization used only when the group law supplies the map."""
-
-    def __init__(self, parent, function) -> None:
-        self._function = function
-        Morphism.__init__(self, parent)
-
-    def _call_(self, element):
-        return self.codomain()(self._function(self.domain()(element)))
-
-    def _in_mor(self, mor):
-        return _ElementwiseGroupMorphism(mor, self._function)
+        return self.element_class(self, lambda element: domain(element))
 
 
 class GroupMorCategoryConstruction(MorCategoryConstruction):

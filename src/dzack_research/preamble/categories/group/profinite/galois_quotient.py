@@ -1,7 +1,6 @@
 r"""Finite coordinates and restriction maps of an absolute Galois group."""
 
 from sage.categories.finite_fields import FiniteFields as SageFiniteFields
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
@@ -454,22 +453,22 @@ def FiniteGaloisQuotient(extension):
 
 
 
-class GaloisRestrictionMap(Morphism):
+class GaloisRestrictionMap:
     r"""The continuous quotient map (G_K\to\operatorname{Gal}(L/K))."""
 
     def __init__(self, parent, extension) -> None:
-        Morphism.__init__(self, parent)
-        self._extension = self.domain().extension_data(extension)
-        assert self.codomain() is self.domain().finite_quotient(self._extension), (
+        self._extension = parent.domain().extension_data(extension)
+        assert parent.codomain() is parent.domain().finite_quotient(self._extension), (
             f"the restriction map to {self._extension} must land in its Galois group "
-            f"{self.domain().finite_quotient(self._extension)}, but its codomain is "
-            f"{self.codomain()}"
+            f"{parent.domain().finite_quotient(self._extension)}, but its codomain is "
+            f"{parent.codomain()}"
         )
+        super().__init__(parent, self._evaluate_restriction)
 
     def extension(self) -> FiniteGaloisExtension:
         return self._extension
 
-    def _call_(self, element):
+    def _evaluate_restriction(self, element):
         r"""``sigma |-> sigma|_L``: a realized finite coordinate, else the automorphism of ``L`` agreeing with ``sigma`` on its generators."""
         element = self.domain()(element)
         coordinate = element.restriction_coordinate(self.extension())
@@ -510,7 +509,10 @@ class GaloisRestrictionMap(Morphism):
 
 def _galois_restriction_rule(extension):
     r"""The group-Mor realization rule for restriction to one finite Galois stage."""
-    return lambda mor: GaloisRestrictionMap(mor, extension)
+    return lambda mor: mor._from_realization_engine(
+        GaloisRestrictionMap,
+        extension,
+    )
 
 
 class _LiftCosetEngine:
