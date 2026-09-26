@@ -3472,6 +3472,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         what lets the module level's construction step -- registering the
         scalar action -- run on this route with nothing left to guess.
         """
+        SageObject.__init__(self)
         canonical_native = base is None and category is None
         self._engine = engine
         self._preamble_ring_display = None
