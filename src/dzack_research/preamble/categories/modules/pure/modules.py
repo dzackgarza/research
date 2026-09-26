@@ -2807,6 +2807,16 @@ class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "modules with a chosen component presentation"
 
+    def an_object(self):
+        from dzack_research.preamble.categories.modules.word_modules import (
+            _module_on_word_quotient,
+        )
+
+        return _module_on_word_quotient(
+            Modules(self.base_ring()).an_object(),
+            "tensor",
+        )
+
     def super_categories(self):
         return [Modules(self.base_ring())]
 

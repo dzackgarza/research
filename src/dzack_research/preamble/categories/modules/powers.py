@@ -155,6 +155,9 @@ class _PowerModuleParentMethods:
 
 
 class TensorPowerModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        return Modules(self.base_ring()).an_object().tensor_power(2)
+
     @classmethod
     def _repr_object_names(cls):
         return "tensor powers of modules"
@@ -170,6 +173,9 @@ class TensorPowerModules(OwnedCategoryOverBaseRing):
 
 
 class SymmetricPowerModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        return Modules(self.base_ring()).an_object().symmetric_power(2)
+
     @classmethod
     def _repr_object_names(cls):
         return "symmetric powers of modules"
@@ -185,6 +191,9 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
 
 
 class AlternatingPowerModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        return Modules(self.base_ring()).an_object().exterior_power(2)
+
     @classmethod
     def _repr_object_names(cls):
         return "exterior powers of modules"
@@ -200,6 +209,9 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
 
 
 class DividedPowerModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        return Modules(self.base_ring()).an_object().divided_power_module(2)
+
     @classmethod
     def _repr_object_names(cls):
         return "divided powers of modules"

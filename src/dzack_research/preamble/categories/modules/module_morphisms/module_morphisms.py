@@ -2783,6 +2783,9 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "module automorphism groups"
 
+    def an_object(self):
+        return Modules(self.base_ring()).an_object().Aut()
+
     def super_categories(self):
         from dzack_research.preamble.categories.group.groups import OwnedGroups
 

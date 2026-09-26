@@ -406,6 +406,9 @@ class FunctionModules(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls) -> str:
         return "function modules"
 
+    def an_object(self):
+        return self.smooth()
+
     def super_categories(self) -> list:
         return [Modules(self.base_ring())]
 
