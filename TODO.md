@@ -305,6 +305,7 @@ An operation, arrow or construction placed at the wrong category is inherited wr
 - [ ] **`operations-sited-where-defined`**. **Needs:** none.
   **Owner and delta:** an operation at its general owner whose body calls one engine unconditionally, with no routing, contradicts the `case`/`match` rule that `placement-audit` applies at every home (`CAT-01`).
   The abelianization functor (`functors/abelianization.py`, `_apply_object`) calls `_gap_model` for every group, and `commutator_subgroup` guards with a bare finiteness assert, not a `case` whose last branch names the missing algorithm.
+  **Provenance:** `f6549c0f72` introduced abelianization directly through GAP's derived-subgroup quotient; `434f90bace` introduced `commutator_subgroup` as a GAP-derived subgroup and `72777022cf` later added a finiteness assertion. The shared belief was that an operation could live at its mathematical owner while its implementation body still silently equated that owner with the one engine/computability regime then available.
   Repair the population, not only these specimens.
   The tell, per subtree: `_gap_model(`, `_engine_ring(` or any other engine crossing at the top of an operation on a general category, outside a `case`.
   Before editing, record the commits that introduced these sites and the belief behind them: that an operation's home is where it is computable.
