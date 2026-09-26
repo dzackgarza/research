@@ -71,6 +71,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
+    MonoidMorphism,
     Monoids,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -1672,19 +1673,21 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupMorphism(Morphism):
+class GroupMorphism(MonoidMorphism):
     r"""An owned group morphism computed by a private GAP homomorphism."""
 
     def __init__(self, parent, gap_homomorphism, check=True) -> None:
-        Morphism.__init__(self, parent)
+        domain = parent.domain()
+        codomain = parent.codomain()
         if check:
-            assert gap_homomorphism.Source() == _gap_model(self.domain()), (
-                f"the GAP homomorphism is not a homomorphism out of {self.domain()}: its source differs from {self.domain()}"
+            assert gap_homomorphism.Source() == _gap_model(domain), (
+                f"the GAP homomorphism is not a homomorphism out of {domain}: its source differs from {domain}"
             )
-            assert gap_homomorphism.Range() == _gap_model(self.codomain()), (
-                f"the GAP homomorphism is not a homomorphism into {self.codomain()}: its range differs from {self.codomain()}"
+            assert gap_homomorphism.Range() == _gap_model(codomain), (
+                f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
             )
         self._gap_homomorphism = gap_homomorphism
+        MonoidMorphism.__init__(self, parent, self._evaluate_gap)
 
     def _gap_morphism_crossing(self):
         r"""Return the private GAP realization to the group computation owner."""
@@ -1724,7 +1727,7 @@ class GroupMorphism(Morphism):
             )
         )
 
-    def _call_(self, element):
+    def _evaluate_gap(self, element):
         model = _element_to_engine(self.domain(), element)
         if self.parent()._is_twisted():
             model = model.Inverse()
