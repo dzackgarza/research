@@ -2403,7 +2403,7 @@ class _AuxiliaryLinearModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     recursively demand another internal-Mor module presentation.
     """
 
-    Element = ModuleMorphism
+    ElementMethods = ModuleMorphismMethods
 
     def __init__(self, domain, codomain) -> None:
         from dzack_research.preamble.categories.modules.pure.modules import Modules
