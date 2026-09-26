@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
 )
+from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
 
 
 class _ScalarIdentityEvaluation:
@@ -228,18 +229,12 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             return Unknown
 
 
-class AdditiveMorphism(Morphism):
+class AdditiveMorphism(OwnedSetMorphism):
     r"""An additive map with a supplied elementwise realization."""
 
     def __init__(self, parent, function) -> None:
         self._function = function
-        Morphism.__init__(self, parent)
-
-    def __call__(self, element):
-        return self._call_(element)
-
-    def _call_(self, element):
-        return self.codomain()(self._function(self.domain()(element)))
+        OwnedSetMorphism.__init__(self, parent, function)
 
     def _add_(self, other):
         return AdditiveMorGroups.ElementMethods._add_(self, other)

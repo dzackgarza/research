@@ -1,12 +1,11 @@
 """The owned operation spine below groups."""
 
-from sage.categories.morphism import Morphism
-
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -167,11 +166,10 @@ class AdditiveGroups(OwnedCategory):
             return "commutative additive groups"
 
 
-class MonoidMorphism(Morphism):
+class MonoidMorphism(OwnedSetMorphism):
     """A morphism in the owned category of monoids."""
 
     def __init__(self, parent, function) -> None:
-        Morphism.__init__(self, parent)
         if not callable(function):
             raise TypeError(
                 f"cannot build a morphism in {parent} from {function}: a monoid morphism "
@@ -179,12 +177,7 @@ class MonoidMorphism(Morphism):
                 f"and {function} is not a map"
             )
         self._function = function
-
-    def __call__(self, element):
-        return self._call_(element)
-
-    def _call_(self, element):
-        return self.codomain()(self._function(self.domain()(element)))
+        OwnedSetMorphism.__init__(self, parent, function)
 
     def _composition(self, right):
         r"""``self ∘ right`` for a monoid morphism ``right``.

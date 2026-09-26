@@ -5,7 +5,6 @@ semiring Mor theory by their stronger ring Mor theory, while every unital ring
 still receives the unique semiring morphism from the natural numbers.
 """
 
-from sage.categories.morphism import Morphism
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -15,28 +14,23 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
     AdditiveMonoids,
+    MonoidMorphism,
     Monoids,
     Semigroups,
 )
 
 
-class SemiringMorphism(Morphism):
+class SemiringMorphism(MonoidMorphism):
     """A declared unital semiring morphism."""
 
     def __init__(self, parent, function) -> None:
-        Morphism.__init__(self, parent)
         if not callable(function):
             raise TypeError(
-                f"a semiring morphism {self.domain()} -> {self.codomain()} needs a map on elements, but "
+                f"a semiring morphism {parent.domain()} -> {parent.codomain()} needs a map on elements, but "
                 f"{function!r} is not callable"
             )
         self._function = function
-
-    def __call__(self, element):
-        return self._call_(element)
-
-    def _call_(self, element):
-        return self.codomain()(self._function(self.domain()(element)))
+        MonoidMorphism.__init__(self, parent, function)
 
     def _composition(self, right):
         if not (
