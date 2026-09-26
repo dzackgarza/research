@@ -10,7 +10,7 @@ from sage.all import (
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
-from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
-    AlgebraMorphism,
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebraCoproducts,
@@ -1652,18 +1651,24 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
 
 
-class FramedFreeAlgebraMorphism(AlgebraMorphism):
+class FramedFreeAlgebraMorphism:
     r"""A generator-defined map from a framed free algebra to any algebra."""
 
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
+
     def __init__(self, parent, images) -> None:
-        Morphism.__init__(self, parent)
-        domain = cast(Any, self.domain())
+        domain = cast(Any, parent.domain())
+        codomain = parent.codomain()
         labels = domain.algebra_generating_set()
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             self._images = indexed_family(
                 labels,
-                lambda label: self.codomain()(images[source_indices(label)]),
+                lambda label: codomain(images[source_indices(label)]),
                 name="Generator images",
             )
         elif isinstance(images, dict):
@@ -1680,7 +1685,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 )
             self._images = indexed_family(
                 labels,
-                lambda label: self.codomain()(images[label]),
+                lambda label: codomain(images[label]),
                 name="Generator images",
             )
         elif isinstance(images, (tuple, list)):
@@ -1697,13 +1702,13 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 )
             self._images = indexed_family(
                 labels,
-                lambda label: self.codomain()(values[int(labels.ranking_map()(label))]),
+                lambda label: codomain(values[int(labels.ranking_map()(label))]),
                 name="Generator images",
             )
         elif callable(images):
             self._images = indexed_family(
                 labels,
-                lambda label: self.codomain()(images(label)),
+                lambda label: codomain(images(label)),
                 name="Generator images",
             )
         else:
@@ -1716,8 +1721,23 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         self._preamble_is_identity = False
         generating = domain.generating_module()
         generating.module_category().Mor(
-            generating, self.codomain().underlying_module()
+            generating, codomain.underlying_module()
         )(self._images.value)
+        linear = domain.module_category().Mor(
+            domain, codomain
+        )._from_constructed_element_map(
+            lambda element: self._call_(element)
+        )
+        super().__init__(parent, linear)
+
+    def algebra_generator_images(self):
+        return self._generator_images
+
+    def algebra_generator_morphism(self):
+        return SetMorphism(
+            Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
+            self._generator_images.value,
+        )
 
     def _tensor_terms(self, element):
         domain = self.domain()
@@ -1799,7 +1819,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
 
 class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
-    Element = FramedFreeAlgebraMorphism
+    ElementMethods = FramedFreeAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(
