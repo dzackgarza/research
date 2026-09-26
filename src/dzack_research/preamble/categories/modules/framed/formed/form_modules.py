@@ -224,21 +224,6 @@ class FormedModuleMorphism:
         # morphisms extensionally would require extra finite-presentation data.
         return value_morphism is values.module_category().Mor(values, values).identity()
 
-    def is_injective(self) -> bool:
-        r"""Return whether the underlying module map is injective."""
-        domain = self.domain()
-
-        if domain in Modules(domain.base_ring()).FinitelyPresented().Torsion():
-            images = []
-            for element in domain.elements():
-                image = self(element)
-                if any(image == previous for previous in images):
-                    return False
-                images.append(image)
-            return True
-
-        return ModuleMorphismMethods.is_injective(self)
-
     def map_value(self, value):
         source_element = _value_as_module_element(self.domain(), value)
         return _value_from_module_element(
