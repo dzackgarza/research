@@ -92,6 +92,17 @@ def test_the_spinor_norm_is_the_whole_square_class() -> None:
     assert not projection(square_classes(-1)).is_one()
 
 
+def test_spinor_norm_and_witt_index_over_a_quadratic_number_field() -> None:
+    r"""The hyperbolic plane over ``O_{QQ(sqrt(5))}`` has Witt index one on its generic fibre, and a reflection has its norm square class."""
+    field = QuadraticField(5, "a")
+    lattice = Lattices(field.ring_of_integers())("U")
+    e, f = lattice.module_generators()
+    reflection = lattice.reflection(e + f)
+
+    assert lattice.witt_index() == 1
+    assert lattice.spinor_norm(form_multiplier=1)(reflection) == field.square_class_group()(field(2))
+
+
 def test_the_anisotropic_binary_spinor_image_uses_the_norm_subgroup_and_reflection_coset() -> None:
     r"""For ``<1,1>`` over ``QQ``, ``[2]`` is a rotation norm and ``[-2]`` is a reflection norm, while ``[3]`` is neither."""
     lattice = Lattices(ZZ)([[1, 0], [0, 1]])

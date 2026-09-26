@@ -105,6 +105,7 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     _lattice_embedding_mor,
     _lattice_mor,
     _lattice_isometry_mor,
+    _number_field_spinor_norm_representative,
     _rational_spinor_norm_representative,
 )
 from dzack_research.preamble.categories.modules.base_change import (
@@ -1293,9 +1294,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(V=H_1\perp\cdots\perp H_r\perp V_0\) with \(V_0\) zero or
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
-            Over \(K=\mathbb Q\) OSCAR computes it: \(r\) is the largest
-            number with \(H^r\) a subspace of \(V\), which Hecke decides from
-            the isometry classes of \(V\) and \(H^r\).
+            Over number fields the private OSCAR/Hecke realization decomposes
+            the Gram form into its anisotropic and hyperbolic summands; half
+            the dimension of the latter is the Witt index.
             """
             space = self.vector_space()
             if space is not self:
@@ -1305,10 +1306,27 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"the Witt index is defined here for a nondegenerate quadratic space of finite dimension, "
                 f"and {self!r} is not one"
             )
-            assert field in PrimeFields() and field.characteristic() == 0, (
-                f"the Witt index of {self!r} is computed here only over QQ, by OSCAR, and {self!r} is over {field}"
+            from sage.rings.rational_field import QQ as SageQQ
+            from dzack_research.preamble.categories.rings.number_fields import (
+                NumberFieldsWithChosenPrimitiveElement,
+                OwnedNumberFields,
             )
-            return _own_ring(SageZZ)(lattice_engines._rational_witt_index(self.gram_tensor()))
+
+            match field:
+                case _ if _engine_ring(field) is SageQQ:
+                    index = lattice_engines._rational_witt_index(self.gram_tensor())
+                case _ if (
+                    field in OwnedNumberFields()
+                    and field in NumberFieldsWithChosenPrimitiveElement()
+                    and _engine_ring(field).is_absolute()
+                ):
+                    index = lattice_engines._number_field_witt_index(field, self.gram_tensor())
+                case _:
+                    assert False, (
+                        f"the Witt index of {self!r} is computed here over represented absolute number fields, "
+                        f"but {self!r} is over {field}"
+                    )
+            return _own_ring(SageZZ)(index)
 
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
@@ -1341,8 +1359,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             real place \(\mathbb Q\to\mathbb R\) it is the real spinor norm
             whose kernel is :meth:`O_plus`.
 
-            \(\mathrm{sn}_K\) is computed for \(K=\mathbb Q\), by OSCAR's
-            rational spinor norm.
+            The private computation diagonalizes the Gram form and uses
+            OSCAR's reflection factorization.  The rational specialization
+            retains OSCAR's ``rational_spinor_norm`` wrapper; represented
+            absolute number fields use the same generic ``spin`` algorithm
+            through their selected primitive-element presentation.
             """
             ring = self.base_ring()
             field = ring.fraction_field()
@@ -1350,16 +1371,37 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"{self!r} has no spinor norm: the spinor norm is defined on the orthogonal group of a "
                 f"nondegenerate quadratic space of finite dimension"
             )
-            assert field in PrimeFields() and field.characteristic() == 0, (
-                f"the spinor norm of {self!r} is computed here only when Frac(R) is QQ, by OSCAR's rational "
-                f"spinor norm, and Frac(R) = {field}"
+            from sage.rings.rational_field import QQ as SageQQ
+            from dzack_research.preamble.categories.rings.number_fields import (
+                NumberFieldsWithChosenPrimitiveElement,
+                OwnedNumberFields,
+            )
+
+            supported_number_field = (
+                field in OwnedNumberFields()
+                and (
+                    _engine_ring(field) is SageQQ
+                    or (
+                        field in NumberFieldsWithChosenPrimitiveElement()
+                        and _engine_ring(field).is_absolute()
+                    )
+                )
+            )
+            assert supported_number_field, (
+                f"the spinor norm of {self!r} is computed here over represented absolute number fields, "
+                f"but Frac(R) = {field}"
             )
             multiplier = _spinor_norm_multiplier(field, form_multiplier)
             extension = self.orthogonal_group_base_change(ring.fraction_field_map())
             square_classes = field.square_class_group()
 
             def spinor_norm_class(isometry):
-                representative = _rational_spinor_norm_representative(extension(isometry))
+                changed = extension(isometry)
+                match field:
+                    case _ if _engine_ring(field) is SageQQ:
+                        representative = _rational_spinor_norm_representative(changed)
+                    case _:
+                        representative = _number_field_spinor_norm_representative(changed)
                 odd_reflection_count = isometry.determinant() == -ring.one()
                 return square_classes(multiplier * representative if odd_reflection_count else representative)
 

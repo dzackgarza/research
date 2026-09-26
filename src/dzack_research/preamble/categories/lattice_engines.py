@@ -12,7 +12,10 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import (
@@ -90,6 +93,49 @@ def _rational_engine_matrix(value, *, transpose=False):
     return engine.transpose() if transpose else engine
 
 
+def _number_field_descriptor(field):
+    r"""Return the selected absolute number field as rational power-basis data."""
+    from sage.categories.number_fields import NumberFields as SageNumberFields
+
+    engine = _engine_ring(field)
+    assert engine in SageNumberFields() and engine is not SageQQ, (
+        f"the OSCAR number-field lattice adapter needs a nontrivial absolute number field, but got {field}"
+    )
+    assert engine.is_absolute(), (
+        f"the OSCAR number-field lattice adapter needs an absolute primitive-element presentation, but {field} "
+        "is represented as a relative number field"
+    )
+    polynomial = engine.defining_polynomial()
+    return tuple(SageQQ(coefficient) for coefficient in polynomial.list())
+
+
+def _number_field_element_coefficients(field, value):
+    r"""Return ``value`` in the selected power basis of the Sage realization of ``field``."""
+    engine = _engine_ring(field)
+    element = engine(value)
+    coefficients = list(element.list())
+    coefficients.extend([SageQQ.zero()] * (engine.degree() - len(coefficients)))
+    return tuple(SageQQ(coefficient) for coefficient in coefficients)
+
+
+def _number_field_engine_matrix(value, field, *, transpose=False):
+    r"""Lower a represented matrix to nested rational power-basis coefficients."""
+    if not isinstance(value, Tensor) or value.tensor_order() != 2:
+        raise TypeError(
+            f"{value} cannot be passed to OSCAR as a number-field matrix: it must be a tensor with two indices"
+        )
+    engine = _engine_component_matrix(value)
+    if transpose:
+        engine = engine.transpose()
+    return [
+        [
+            list(_number_field_element_coefficients(field, engine[row, column]))
+            for column in range(engine.ncols())
+        ]
+        for row in range(engine.nrows())
+    ]
+
+
 _OSCAR_LATTICE_ADAPTER_SOURCE = r"""
 module DzackResearchOscarLatticeAdapter
 using Oscar
@@ -111,6 +157,36 @@ function _qq_matrix(entries)
         rows,
         columns,
         [QQ(entries[i, j]) for i in 1:rows for j in 1:columns],
+    )
+end
+
+function _number_field(defining_coefficients)
+    QQx, x = polynomial_ring(QQ, "a")
+    polynomial = sum(
+        QQ(defining_coefficients[i]) * x^(i - 1)
+        for i in eachindex(defining_coefficients)
+    )
+    return number_field(polynomial, "a")
+end
+
+function _number_field_element(K, a, coefficients)
+    return sum(
+        K(QQ(coefficients[i])) * a^(i - 1)
+        for i in eachindex(coefficients)
+    )
+end
+
+function _number_field_matrix(K, a, entries)
+    rows = length(entries)
+    columns = rows == 0 ? 0 : length(entries[1])
+    return matrix(
+        K,
+        rows,
+        columns,
+        [
+            _number_field_element(K, a, entries[i][j])
+            for i in 1:rows for j in 1:columns
+        ],
     )
 end
 
@@ -148,6 +224,25 @@ function rational_witt_index(gram_entries)
         index += 1
     end
     return index
+end
+
+function number_field_spinor_norm_class(defining_coefficients, gram_entries, isometry_entries)
+    K, a = _number_field(defining_coefficients)
+    gram = _number_field_matrix(K, a, gram_entries)
+    isometry = _number_field_matrix(K, a, isometry_entries)
+    D, U = Oscar.Hecke._gram_schmidt(gram, K)
+    transformed = U * isometry * inv(U)
+    value = Oscar.spin(D, transformed)
+    return [QQ(coeff(value, i)) for i in 0:(degree(K) - 1)]
+end
+
+function number_field_witt_index(defining_coefficients, gram_entries)
+    K, a = _number_field(defining_coefficients)
+    gram = _number_field_matrix(K, a, gram_entries)
+    _anisotropic, hyperbolic, radical = Oscar.Hecke._quadratic_form_decomposition(gram)
+    nrows(radical) == 0 || error("Witt index requires a nondegenerate quadratic space")
+    iseven(nrows(hyperbolic)) || error("Hecke returned an odd-dimensional hyperbolic summand")
+    return div(nrows(hyperbolic), 2)
 end
 
 function centralizer_discriminant_image(gram_entries, isometry_entries)
@@ -356,6 +451,43 @@ class _OscarLatticeAdapter:
             raise ArithmeticError(
                 f"OSCAR computed Witt index {index} for the form {gram}, but a Witt index r "
                 f"satisfies 0 <= 2r <= the dimension"
+            )
+        return index
+
+    def number_field_spinor_norm_class(self, field, gram, isometry):
+        r"""Return an untwisted spinor-norm representative over the absolute number field ``field``."""
+        coefficients = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.number_field_spinor_norm_class",
+            list(_number_field_descriptor(field)),
+            _number_field_engine_matrix(gram, field),
+            _number_field_engine_matrix(isometry, field, transpose=True),
+        )
+        engine = _engine_ring(field)
+        generator = engine.gen()
+        value = engine.zero()
+        for exponent, coefficient in enumerate(coefficients):
+            value += SageQQ(coefficient) * generator**exponent
+        if value == 0:
+            raise ArithmeticError(
+                f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram} over {field}, but "
+                "a spinor norm is a nonzero square class"
+            )
+        return _owned_engine_element(field, value)
+
+    def number_field_witt_index(self, field, gram):
+        r"""Return the Witt index of a nondegenerate quadratic space over ``field``."""
+        engine_gram = _engine_component_matrix(gram)
+        index = SageZZ(
+            self._bridge().call(
+                "DzackResearchOscarLatticeAdapter.number_field_witt_index",
+                list(_number_field_descriptor(field)),
+                _number_field_engine_matrix(gram, field),
+            )
+        )
+        if not 0 <= 2 * index <= engine_gram.nrows():
+            raise ArithmeticError(
+                f"Hecke computed Witt index {index} for the form {gram} over {field}, but a Witt index r "
+                "satisfies 0 <= 2r <= the dimension"
             )
         return index
 
@@ -660,6 +792,20 @@ engine_capabilities.register(
     provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
+    "lattice.number_field_spinor_norm",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.number_field_spinor_norm_class,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.number_field_witt_index",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.number_field_witt_index,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
     "lattice.centralizer_discriminant_image",
     _OSCAR_PROVIDER,
     _oscar_lattices.centralizer_discriminant_image,
@@ -714,6 +860,23 @@ def _rational_spinor_norm(gram, isometry):
 def _rational_witt_index(gram):
     return engine_capabilities.compute(
         "lattice.rational_witt_index",
+        gram,
+    )
+
+
+def _number_field_spinor_norm(field, gram, isometry):
+    return engine_capabilities.compute(
+        "lattice.number_field_spinor_norm",
+        field,
+        gram,
+        isometry,
+    )
+
+
+def _number_field_witt_index(field, gram):
+    return engine_capabilities.compute(
+        "lattice.number_field_witt_index",
+        field,
         gram,
     )
 

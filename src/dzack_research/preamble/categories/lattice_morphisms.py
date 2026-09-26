@@ -337,6 +337,17 @@ def _rational_spinor_norm_representative(isometry):
     return _owned_engine_element(space.base_ring(), value)
 
 
+def _number_field_spinor_norm_representative(isometry):
+    r"""Return the untwisted spinor-norm representative of an automorphism over an owned number field."""
+    space = isometry.domain()
+    field = space.base_ring()
+    return lattice_engines._number_field_spinor_norm(
+        field,
+        space.gram_tensor(),
+        _tensor_view(isometry),
+    )
+
+
 def _labelled_generator_images(domain, images):
     r"""Read the keys of a generator-image mapping as labels of ``domain``'s framing.
 
