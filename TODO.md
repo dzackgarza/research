@@ -459,10 +459,6 @@ A site that still raises keeps its node, and every node whose example passes and
   The discriminant cokernel descends the dual form through general `K/R` and `K/2R` value modules; the existing `A_1` specimens cover `A_L = ZZ/2`, while the added `TdP` and degenerate-plane specimens cover the dual identification and rank-one radicals.
   These specimens are retained unexecuted under terminal-phase `DEV-58`; source compilation and whitespace checks are clean.
 
-- [ ] **`infinite-rank-lattice-base-change`**. **Needs:** none.
-  **Owner and delta:** `Lattices.base_change` (`categories/lattices.py`) builds `L tensor_R S` in `Lattices(S)` from the Gram matrix, so only in finite rank.
-  In infinite rank the Gram presentation is a pairing rule (`_PairingGram`, `categories/_lattice.py`), and `L tensor_R S` is the lattice in `Lattices(S)` on that rule carried along `R -> S` ([COMPLAINTS.md](COMPLAINTS.md#scalar-extension-of-an-infinite-rank-lattice-is-not-a-lattice)). **Closure specimens:** the base change of `Lattices(ZZ)(ZZ^NN)` along `ZZ -> QQ` is in `Lattices(QQ)`, of infinite rank, with `e_0^2 = 1` and `e_0 . e_1 = 0`.
-
 - [ ] **`lattice-represents-an-integer`**. **Needs:** none.
   **Owner and delta:** `Lattices(R)` answers the existential question whether `L` represents `n`, i.e. whether the hypersurface `V(q - n)` has an `R`-point.
   It also answers `representation_vector(n)`, a witness as an element of `L`. The elementwise `represents` on form-module elements (`categories/modules/framed/formed/form_modules.py`, ~line 1260) is a different statement and stays.
@@ -638,7 +634,7 @@ A site that still raises keeps its node, and every node whose example passes and
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`, `infinite-rank-lattice-base-change`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
+- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open.
   Each complaint's entire burden is discharged or retained in a required prerequisite.
   All alternative construction routes affected by a repair are inspected.

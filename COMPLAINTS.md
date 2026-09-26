@@ -167,23 +167,6 @@ Gaussian heuristic.
 `RR` only. Repair: `categories-of-resolutions`, `framed-axiom-retired`,
 `integers-coerce-into-rationals-and-reals` in [TODO.md](TODO.md).
 
-### Scalar extension of an infinite-rank lattice is not a lattice
-
-\(L\otimes_R S\) along \(R\to S\) is a free \(S\)-module with the
-\(S\)-bilinear extension of the form, an object of `Lattices(S)` at every
-rank. `Lattices.base_change` (`categories/lattices.py`) builds it from the
-Gram matrix, so it asserts finite rank; an infinite-rank lattice's Gram is a
-pairing rule (`_PairingGram` in `categories/_lattice.py`), and no rule
-transports a pairing along a ring map. The formed-module base change
-(`_formed_module_base_change`) handles pairing rules but lands in
-`FormModules(S)`, outside `Lattices(S)`.
-
-**Dependency path:** pairing-rule Gram tensors -> their image along a ring
-map -> `Lattices(S)` on that rule.
-**Consumers:** `vector_space`, `spinor_norm`, `witt_index` of infinite-rank
-lattices; none observed in the tree. Repair:
-`infinite-rank-lattice-base-change` in [TODO.md](TODO.md).
-
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
