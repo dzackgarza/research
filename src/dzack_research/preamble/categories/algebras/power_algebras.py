@@ -5,7 +5,6 @@ module constructions ``Lambda^n(M)`` and ``Gamma^n(M)``.  This module forms
 their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
@@ -17,7 +16,6 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras, _alge
 from dzack_research.preamble.categories.algebras.graded_algebras import _graded_multiplication_from_components
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -113,38 +111,50 @@ class _PowerAlgebra:
         return f"{symbol}({self.generating_module()})"
 
 
-class PowerAlgebraMorphism(Morphism):
+class PowerAlgebraMorphism:
     r"""A morphism induced by a linear map on the degree-one generators."""
 
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
+
     def __init__(self, parent, degree_one_map) -> None:
-        Morphism.__init__(self, parent)
         self._preamble_is_identity = False
-        source_module = self.domain().generating_module()
-        target_module = self.codomain().generating_module()
-        if isinstance(degree_one_map, ModuleMorphism):
+        domain = parent.domain()
+        codomain = parent.codomain()
+        source_module = domain.generating_module()
+        target_module = codomain.generating_module()
+        if isinstance(degree_one_map, ModuleMorphismMethods):
             if degree_one_map.domain() is not source_module or degree_one_map.codomain() is not target_module:
                 raise ValueError(
                     f"cannot view {degree_one_map} as the degree-one part {source_module} -> {target_module} of a "
                     f"power algebra morphism: it is a map {degree_one_map.domain()} -> {degree_one_map.codomain()}"
                 )
             self._degree_one_map = degree_one_map
-            return
-
-        def target_component(label):
-            image = degree_one_map[label] if isinstance(degree_one_map, dict) else degree_one_map(label)
-            if element_parent(image) is self.codomain():
-                if not image.is_homogeneous() or image.degree() != 1:
+        else:
+            def target_component(label):
+                image = degree_one_map[label] if isinstance(degree_one_map, dict) else degree_one_map(label)
+                if element_parent(image) is codomain:
+                    if not image.is_homogeneous() or image.degree() != 1:
+                        raise ValueError(
+                            f"the image {image} of the generator {label} must lie in degree 1 of {codomain}"
+                        )
+                    return image.homogeneous_component(1)
+                if image not in target_module:
                     raise ValueError(
-                        f"the image {image} of the generator {label} must lie in degree 1 of {self.codomain()}"
+                        f"the image {image} of the generator {label} must lie in {target_module}"
                     )
-                return image.homogeneous_component(1)
-            if image not in target_module:
-                raise ValueError(
-                    f"the image {image} of the generator {label} must lie in {target_module}"
-                )
-            return target_module(image)
+                return target_module(image)
 
-        self._degree_one_map = source_module.module_category().Mor(source_module, target_module)(target_component)
+            self._degree_one_map = source_module.module_category().Mor(source_module, target_module)(target_component)
+        linear = domain.module_category().Mor(
+            domain, codomain
+        )._from_constructed_element_map(
+            lambda element: self._call_(element)
+        )
+        super().__init__(parent, linear)
 
     def degree_one_map(self):
         return self._degree_one_map
@@ -180,7 +190,7 @@ class PowerAlgebraMorphism(Morphism):
 
 
 class PowerAlgebraMor(CategoricalMor):
-    Element = PowerAlgebraMorphism
+    ElementMethods = PowerAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         category = mor_family.base_category()
