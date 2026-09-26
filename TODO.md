@@ -344,9 +344,10 @@ Regenerate the catalogue with the same command; the time gates are on by default
   **Example:** `tests/algebras/test_native_free_algebra_module_factor.sage::test_free_algebra_on_the_zero_module_has_only_the_empty_word`.
   **Source closure (2026-09-26):** every concrete category class exported by `preamble.all` that the inhabitation specification can construct nullary or over a ring now exhibits an object directly or inherits the concrete Mor-family witness. The remaining exported classes with no local `an_object` are parameterized families whose constructors require their mathematical parameters and are therefore outside that sweep. Geometry witnesses route through their existing projective, toric, cycle, section, and cohomology owners; downstream nonfield/engine frontiers remain owned by their separate triage nodes. Runtime confirmation remains in terminal T under `DEV-58`.
 
-- [ ] **`triage-owned-ring-custom-name`**. **Needs:** none.
+- [x] **`triage-owned-ring-custom-name`**. **Needs:** none.
   **Site:** `sage/cpython/getattr.pyx:362`: `'_OwnedRingParent_with_category' object has no attribute '_SageObject__custom_name'` (584): an owned ring reaches Sage's `rename`/repr machinery without `SageObject` initialization of that field.
   **Example:** `tests/algebras/test_center_corestriction_archive.sage::test_central_algebra_map_corestricts_through_the_actual_center`.
+  **Source closure (2026-09-26):** both Python ring-parent constructors that bypass Sage's cooperative initialization, `_OwnedRingParent` and `_PredicateSubringParent`, now initialize their `SageObject` state before calling `Parent.__init__`. This repairs the missing custom-name state at the host-runtime boundary rather than special-casing repr or rename. Runtime confirmation remains in terminal T under `DEV-58`.
 
 - [ ] **`triage-ring-cardinality-frontier`**. **Needs:** none.
   **Site:** `categories/rings/ring_foundation.py:2163`, `OwnedRings.ParentMethods.cardinality`: the exact computation covers only finite, countably infinite and uncountable placements (348). **Example:** `tests/algebras/test_affine_semigroup_algebras.sage::test_affine_semigroup_algebra_retains_its_selected_binomial_presentation`.
