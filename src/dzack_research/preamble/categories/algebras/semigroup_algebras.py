@@ -43,6 +43,34 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         return "affine semigroup algebras"
 
     class ParentMethods:
+        def cardinality(self):
+            r"""Return the cardinality of ``R[S]`` from its affine semigroup.
+
+            A finitely generated submonoid of a lattice is trivial exactly when
+            all selected generators are zero; otherwise it is countably
+            infinite, since a nonzero generator has pairwise distinct positive
+            multiples.  The semigroup algebra is the finite-support free
+            ``R``-module on ``S``.
+            """
+            from dzack_research.preamble.categories.sets.cardinals import (
+                Cardinalities,
+                aleph0,
+            )
+
+            coordinates = self.affine_semigroup_generator_coordinates()
+            trivial = all(
+                all(entry == self.base_ring().zero() for entry in coordinates[label])
+                for label in coordinates.index_set()
+            )
+            scalars = self.base_ring().cardinality()
+            match trivial, scalars == Cardinalities().one():
+                case True, _:
+                    return scalars
+                case False, True:
+                    return Cardinalities().one()
+                case False, False:
+                    return Cardinalities().supremum(scalars, aleph0)
+
         def affine_semigroup_generator_coordinates(self):
             r"""Return the selected lattice-generator coordinates as an owned family."""
             raw = self._affine_semigroup_presentation._raw_generator_coordinates()
