@@ -2939,6 +2939,17 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case False:
                     return size
 
+        def quotient_by_relators(self, relators):
+            r"""Return ``G / <<relators>>``, the quotient by their normal closure."""
+            match self:
+                case _ if self in GroupsWithChosenFinitePresentation():
+                    return _engine_quotient_by_relators(self, relators)
+                case _:
+                    assert False, (
+                        f"the quotient of {self} by the normal closure of {relators} is defined for every group, "
+                        "but the current preamble computes it only for groups with a chosen finite presentation"
+                    )
+
         def order_is_invertible_in(self, ring) -> bool:
             r"""Return whether ``|G|`` is a unit in ``ring`` for this finite group."""
             assert self in OwnedFiniteGroups(), (
@@ -3733,11 +3744,6 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                 )
             )
             return OwnedGroups().Core().Mor(self, source)(forward, inverse)
-
-        def quotient_by_relators(self, relators):
-            r"""Return ``G / <<relators>>``, the quotient by the normal closure of ``relators``."""
-            return _engine_quotient_by_relators(self, relators)
-
 
 class AbelianGroupEndomorphismRings(OwnedCategory):
     r"""The rings ``End(A)`` of endomorphisms of an abelian group ``A``.
