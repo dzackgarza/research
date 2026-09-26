@@ -2865,7 +2865,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             raise TypeError(f"the homomorphisms {self} -> {codomain} in {category} are not group homomorphisms: {codomain} must be a group and {category} a category of groups")
 
         def is_finite(self):
-            return Unknown
+            from dzack_research.preamble.categories.group.cyclic_subgroups import (
+                CyclicGroups,
+            )
+
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return True
+                case _ if self in OwnedInfiniteGroups():
+                    return False
+                case _ if self in CyclicGroups():
+                    return cardinal(self.group_generator().order()).is_finite()
+                case _:
+                    return Unknown
 
         def is_abelian(self):
             match self:
@@ -2888,6 +2900,17 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return Unknown
 
         def cardinality(self):
+            from dzack_research.preamble.categories.group.cyclic_subgroups import (
+                CyclicGroups,
+            )
+
+            if self in CyclicGroups():
+                generator_order = cardinal(self.group_generator().order())
+                return (
+                    generator_order
+                    if generator_order.is_finite()
+                    else aleph(0)
+                )
             if self in OwnedFiniteGroups():
                 return cardinal(_finite_order(self))
             if self in GroupsWithChosenFreeBasis():
