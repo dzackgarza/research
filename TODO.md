@@ -272,7 +272,7 @@ Paths below are relative to `src/dzack_research/preamble/` unless a different ro
 
 An operation, arrow or construction placed at the wrong category is inherited wrongly by every category below it, so these precede the test-suite and triage nodes.
 
-- [ ] **`arrows-thread-through-the-mor-category-graph`**. **Needs:** none.
+- [x] **`arrows-thread-through-the-mor-category-graph`**. **Needs:** none.
   **Owner and delta:** the arrow types of the owned Mor categories (`owned_category.py`, `categories/abstract_categories/mor_categories.py`). The arrow type of `Mor_D(A, B)` is the `ElementType` of that Mor category, generated from its supercategories the way `ObjectType` already is.
   For a structure `U : D -> C` it inherits the arrow type of `Mor_C(UA, UB)` and adds only what `D` introduces: the form square and value map for `FormModules(R)`, multiplicativity for `Algebras(R)`, equivariance for `G`-objects (`CAT-05`, `CAT-10`, `OWN-14`, `CON-16`). An operation defined on arrows of `C` is written once there and reached from every `D` above it.
   Two defect shapes contradict this: a stored lower arrow with forwarding (`FormedModuleMorphism._module_morphism`), and an operation carried only by a private construction-route subclass (`_TransportedLatticeEmbedding.isotropic_reduction`; `is_open_immersion` on private scheme-morphism subclasses).
