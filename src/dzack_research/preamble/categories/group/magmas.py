@@ -1,5 +1,7 @@
 """The owned operation spine below groups."""
 
+from sage.misc.abstract_method import abstract_method
+
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
@@ -142,6 +144,10 @@ class Monoids(OwnedCategory):
             return generic_power(self, exponent)
 
     class ParentMethods:
+        @abstract_method
+        def one(self):
+            r"""Return the identity element of this monoid."""
+
         def generated_submonoid(
             self, generators, *, description=None, structure_data=None
         ):
