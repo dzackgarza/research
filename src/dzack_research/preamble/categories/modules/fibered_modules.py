@@ -78,7 +78,8 @@ class SemilinearModuleMorphism:
                 f"a semilinear map into {codomain} lies over a ring map into its base ring "
                 f"{codomain.base_ring()}, but {scalar_map} ends at {scalar_map.codomain()}"
             )
-        restricted = parent.restricted_codomain(scalar_map)
+        adjunction = Modules(domain.base_ring()).base_change_adjunction(scalar_map)
+        restricted = adjunction.right_adjoint()(codomain)
         self._scalar_map = scalar_map
         self._restricted_codomain = restricted
         self._restricted_morphism = None
@@ -152,7 +153,9 @@ class SemilinearModuleMorphism:
         )
 
     def extended_source(self):
-        return self.parent().extended_domain(self.scalar_map())
+        return Modules(self.domain().base_ring()).base_change_adjunction(
+            self.scalar_map()
+        ).left_adjoint()(self.domain())
 
     def __eq__(self, other):
         if self is other:
