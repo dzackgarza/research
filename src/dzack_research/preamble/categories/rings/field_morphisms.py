@@ -96,9 +96,6 @@ class ExactFieldMorphism:
         image = target(self._engine_morphism(source(backend_element)))
         return _owned_engine_element(self.codomain(), image)
 
-    def is_injective(self) -> bool:
-        return True
-
     def inverse(self):
         r"""Return the inverse exact field morphism of this field automorphism."""
         if self.domain() is not self.codomain():

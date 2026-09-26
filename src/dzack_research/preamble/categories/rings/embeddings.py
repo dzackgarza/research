@@ -66,9 +66,6 @@ class NumberFieldEmbedding:
             )
         )
 
-    def is_injective(self) -> bool:
-        return True
-
     def __mul__(self, other):
         from dzack_research.preamble.categories.rings.ring_foundation import (
             _is_ring_map_into,
@@ -181,9 +178,6 @@ class OrderEmbedding:
         source_owned = source_field(self.domain()(element))
         image = self.field_embedding()(source_owned)
         return self.codomain()(image)
-
-    def is_injective(self) -> bool:
-        return True
 
     def __mul__(self, other):
         if not isinstance(other, OrderEmbedding) or other.codomain() is not self.domain():

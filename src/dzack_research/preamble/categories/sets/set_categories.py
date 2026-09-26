@@ -469,15 +469,25 @@ class OwnedSetMorphism(SetMorphism):
         return Sets().image_set(self, self.domain())
 
     def is_injective(self) -> bool | UnknownClass:
-        r"""Decide ``f(x) = f(y) => x = y`` by counting the image.
+        r"""Decide ``f(x) = f(y) => x = y`` by the represented mathematical case.
 
-        Decided on a finite enumerated domain; ``Unknown`` otherwise, which
-        is the hypothesis the answer needs and does not have.
+        A unital morphism out of a field is injective. Otherwise the generic
+        represented algorithm counts the image of a finite enumerated domain;
+        unsupported infinite cases retain ``Unknown``.
         """
         domain = self.domain()
-        if domain not in FiniteSets() or domain not in EnumeratedSets():
-            return Unknown
-        return self.image().cardinality() == domain.cardinality()
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            OwnedFields,
+            OwnedOrders,
+        )
+
+        match domain:
+            case _ if domain in OwnedFields() or domain in OwnedOrders():
+                return True
+            case _ if domain in FiniteSets() and domain in EnumeratedSets():
+                return self.image().cardinality() == domain.cardinality()
+            case _:
+                return Unknown
 
     def is_surjective(self) -> bool | UnknownClass:
         r"""Decide that every point of the codomain is a value.
