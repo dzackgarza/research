@@ -1,7 +1,6 @@
 r"""Exact embeddings of number fields and number-field orders."""
 
 from sage.categories.map import Map
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.richcmp import op_EQ, op_NE
@@ -9,55 +8,38 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.field_morphisms import ExactFieldMorphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
+    RingMorphism,
     _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-class NumberFieldEmbedding(Morphism):
+class NumberFieldEmbedding(ExactFieldMorphism):
     r"""An exact field embedding between owned number fields."""
 
     def __init__(self, parent, engine_morphism) -> None:
-        Morphism.__init__(self, parent)
+        domain = parent.domain()
+        codomain = parent.codomain()
         if not isinstance(engine_morphism, Map):
             raise TypeError(
-                f"cannot form the embedding {self.domain()} -> {self.codomain()} from {engine_morphism!r}: "
+                f"cannot form the embedding {domain} -> {codomain} from {engine_morphism!r}: "
                 f"an embedding of number fields must be a ring morphism, but this is a {type(engine_morphism).__name__}"
             )
-        if _engine_ring(engine_morphism.domain()) is not _engine_ring(self.domain()):
+        if _engine_ring(engine_morphism.domain()) is not _engine_ring(domain):
             raise ValueError(
-                f"cannot form an embedding {self.domain()} -> {self.codomain()} from {engine_morphism}: "
-                f"its domain is {engine_morphism.domain()}, not {self.domain()}"
+                f"cannot form an embedding {domain} -> {codomain} from {engine_morphism}: "
+                f"its domain is {engine_morphism.domain()}, not {domain}"
             )
-        if _engine_ring(engine_morphism.codomain()) is not _engine_ring(self.codomain()):
+        if _engine_ring(engine_morphism.codomain()) is not _engine_ring(codomain):
             raise ValueError(
-                f"cannot form an embedding {self.domain()} -> {self.codomain()} from {engine_morphism}: "
-                f"its codomain is {engine_morphism.codomain()}, not {self.codomain()}"
+                f"cannot form an embedding {domain} -> {codomain} from {engine_morphism}: "
+                f"its codomain is {engine_morphism.codomain()}, not {codomain}"
             )
-        self._engine_morphism = engine_morphism
-
-    def __call__(self, element):
-        r"""Apply the exact embedding to an element of the owned facade field.
-
-        Owned number fields are facade parents: their elements retain the
-        native Sage number field as concrete parent.  Going through Sage's
-        generic ``Map.__call__`` would therefore ask for an irrelevant
-        conversion map from the engine field to its owned facade before the
-        actual field embedding runs.  The mathematical map is already the
-        exact engine embedding, so cross that boundary directly.
-        """
-        return self._call_(element)
-
-    def _call_(self, element):
-        _engine_ring(self.domain())
-        target = _engine_ring(self.codomain())
-        backend_source = _engine_element(self.domain(), self.domain()(element))
-        image = self._engine_morphism(backend_source)
-        return _owned_engine_element(self.codomain(), target(image))
+        ExactFieldMorphism.__init__(self, parent, engine_morphism)
 
     def _primitive_image_key(self):
         engine_domain = _engine_ring(self.domain())
@@ -163,41 +145,39 @@ class NumberFieldMor(CategoricalMor):
         return f"Emb({self.domain()}, {self.codomain()})"
 
 
-class OrderEmbedding(Morphism):
+class OrderEmbedding(RingMorphism):
     r"""A unital embedding of orders, represented by its fraction-field extension."""
 
     def __init__(self, parent, field_embedding: NumberFieldEmbedding) -> None:
-        Morphism.__init__(self, parent)
-        source_field = self.domain().fraction_field()
-        target_field = self.codomain().fraction_field()
+        domain = parent.domain()
+        codomain = parent.codomain()
+        source_field = domain.fraction_field()
+        target_field = codomain.fraction_field()
         if _engine_ring(field_embedding.domain()) is not _engine_ring(source_field):
             raise ValueError(
-                f"cannot restrict {field_embedding} to the order {self.domain()}: "
+                f"cannot restrict {field_embedding} to the order {domain}: "
                 f"its domain is {field_embedding.domain()}, not the fraction field {source_field} of that order"
             )
         if _engine_ring(field_embedding.codomain()) is not _engine_ring(target_field):
             raise ValueError(
-                f"cannot restrict {field_embedding} to a morphism into the order {self.codomain()}: "
+                f"cannot restrict {field_embedding} to a morphism into the order {codomain}: "
                 f"its codomain is {field_embedding.codomain()}, not the fraction field {target_field} of that order"
             )
-        for basis_element in self.domain().integral_basis():
+        for basis_element in domain.integral_basis():
             source_owned = source_field(basis_element)
             image = field_embedding(source_owned)
-            if image not in self.codomain():
+            if image not in codomain:
                 raise ValueError(
-                    f"{field_embedding} does not restrict to a morphism of orders {self.domain()} -> {self.codomain()}: "
-                    f"it sends the basis element {basis_element} to {image}, which is not in {self.codomain()}"
+                    f"{field_embedding} does not restrict to a morphism of orders {domain} -> {codomain}: "
+                    f"it sends the basis element {basis_element} to {image}, which is not in {codomain}"
                 )
         self._field_embedding = field_embedding
+        RingMorphism.__init__(self, parent, self._evaluate_field_embedding)
 
     def field_embedding(self) -> NumberFieldEmbedding:
         return self._field_embedding
 
-    def __call__(self, element):
-        r"""Apply the order embedding without facade-parent coercion discovery."""
-        return self._call_(element)
-
-    def _call_(self, element):
+    def _evaluate_field_embedding(self, element):
         source_field = self.domain().fraction_field()
         source_owned = source_field(self.domain()(element))
         image = self.field_embedding()(source_owned)
