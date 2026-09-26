@@ -1526,7 +1526,15 @@ class SubgroupInclusion(SetMorphism):
         and ``H -> G -> G/H`` exact, exactly when this holds; otherwise
         :meth:`cokernel` is ``G`` modulo the normal closure of ``H``.
         """
-        return bool(_gap_model(self.codomain()).IsNormal(self._finite_subgroup_model()))
+        ambient = self.codomain()
+        match ambient:
+            case _ if ambient in OwnedFiniteGroups():
+                return bool(_gap_model(ambient).IsNormal(self._finite_subgroup_model()))
+            case _:
+                assert False, (
+                    f"whether {self.domain()} is normal in {ambient} is defined for every subgroup inclusion, "
+                    "but the current preamble decides it only inside finite represented groups"
+                )
 
     @cached_method
     def _cokernel_data(self):
@@ -1964,18 +1972,21 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
 
     @cached_method
     def cardinality(self):
-        r"""Return the exact number of homomorphisms between finite endpoints."""
+        r"""Return the cardinality of the represented homomorphism object."""
         domain = self.domain()
         codomain = self.codomain()
-        assert domain in OwnedFiniteGroups() and codomain in OwnedFiniteGroups(), (
-            f"the number of homomorphisms {domain} -> {codomain} is computed here only when both groups are finite, "
-            f"and {domain} or {codomain} is not known to be finite"
-        )
-        homomorphisms = libgap.AllHomomorphisms(
-            _gap_model(domain),
-            _gap_model(codomain),
-        )
-        return cardinal(int(homomorphisms.Length()))
+        match (domain, codomain):
+            case (source, target) if source in OwnedFiniteGroups() and target in OwnedFiniteGroups():
+                homomorphisms = libgap.AllHomomorphisms(
+                    _gap_model(source),
+                    _gap_model(target),
+                )
+                return cardinal(int(homomorphisms.Length()))
+            case _:
+                assert False, (
+                    f"the cardinality of Mor({domain}, {codomain}) is defined as a set cardinality, but the current "
+                    "preamble computes it only when both groups are finite represented groups"
+                )
 
     def _repr_(self):
         return f"Mor({self.domain()}, {self.codomain()})"
@@ -2699,18 +2710,26 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         def conjugation_morphism(self):
             r"""The morphism ``G -> Aut(G)`` stated on the selected generators."""
-            automorphisms = self.Aut()
-            model = _gap_model(self)
-            images = {
-                generator: automorphisms(
-                    libgap.ConjugatorAutomorphism(
-                        model,
-                        _element_to_engine(self, generator),
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    automorphisms = self.Aut()
+                    model = _gap_model(self)
+                    images = {
+                        generator: automorphisms(
+                            libgap.ConjugatorAutomorphism(
+                                model,
+                                _element_to_engine(self, generator),
+                            )
+                        )
+                        for generator in self.group_generators()
+                    }
+                    return self.Mor(automorphisms)(images)
+                case _:
+                    assert False, (
+                        f"the conjugation morphism {self} -> Aut({self}) is defined for every group, but the "
+                        "current preamble computes it only for finite represented groups; a general "
+                        "automorphism-group/conjugation construction is still missing"
                     )
-                )
-                for generator in self.group_generators()
-            }
-            return self.Mor(automorphisms)(images)
 
         @cached_method
         def classifying_category(self):
@@ -2970,19 +2989,28 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def center(self):
-            r"""Return the center as an owned subgroup in the represented finite case."""
-            assert self in OwnedFiniteGroups(), (
-                f"the center of {self} is computed here only for finite groups, and {self} is not known to be finite"
-            )
-            return _subgroup_from_gap(self, _gap_model(self).Center())
+            r"""Return ``Z(G)`` as an owned subgroup."""
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return _subgroup_from_gap(self, _gap_model(self).Center())
+                case _:
+                    assert False, (
+                        f"the center Z({self}) is defined for every group, but the current preamble computes it "
+                        "only for finite represented groups; no general center algorithm is installed"
+                    )
 
         @cached_method
         def commutator_subgroup(self):
-            r"""Return ``[G,G]`` as the represented derived subgroup when finite."""
-            assert self in OwnedFiniteGroups(), (
-                f"the commutator subgroup of {self} is computed here only for finite groups, and {self} is not known to be finite"
-            )
-            return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
+            r"""Return the derived subgroup ``[G,G]``."""
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
+                case _:
+                    assert False, (
+                        f"the commutator subgroup [{self},{self}] is defined for every group, but the current "
+                        "preamble computes it only for finite represented groups; the presentation route is "
+                        "still missing"
+                    )
 
         def derived_subgroup(self, *args, **kwargs):
             return self.commutator_subgroup(*args, **kwargs)
@@ -2997,15 +3025,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             ambient group and canonical inclusion remain the same owned data used
             by ``subgroup(...)`` and the subgroup categories.
             """
-            assert self in OwnedFiniteGroups(), (
-                f"the subgroups of {self} are listed here only for finite groups, and {self} is not known to be finite"
-            )
-            return finite_ordered_set(
-                tuple(
-                    _subgroup_from_gap(self, subgroup)
-                    for subgroup in _gap_model(self).AllSubgroups()
-                )
-            )
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return finite_ordered_set(
+                        tuple(
+                            _subgroup_from_gap(self, subgroup)
+                            for subgroup in _gap_model(self).AllSubgroups()
+                        )
+                    )
+                case _:
+                    assert False, (
+                        f"the subgroup collection of {self} is defined, but the current preamble enumerates all "
+                        "subgroups only for finite represented groups"
+                    )
 
         def supergroup(self):
             r"""The group this one was constructed as a subgroup of; a group that is not is its own.
@@ -3026,10 +3058,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return OwnedGroups().Aut(self)
 
         def is_isomorphic_to(self, other):
-            if self.is_finite() is not True or other.is_finite() is not True:
-                return Unknown
-            found = _gap_model(self).IsomorphismGroups(_gap_model(other))
-            return str(found) != "fail"
+            match (self, other):
+                case (left, right) if left in OwnedFiniteGroups() and right in OwnedFiniteGroups():
+                    found = _gap_model(left).IsomorphismGroups(_gap_model(right))
+                    return str(found) != "fail"
+                case _:
+                    assert False, (
+                        f"whether {self} is isomorphic to {other} is defined for every pair of groups, but the "
+                        "current preamble decides it only for finite represented groups"
+                    )
 
     class Commutative(CategoryWithAxiom):
         def an_object(self):

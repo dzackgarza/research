@@ -34,18 +34,30 @@ class _AbelianizationFunctor(Functor):
         self._quotient_projections = {}
 
     def _apply_object(self, group):
-        model = _gap_model(group)
-        derived = libgap.DerivedSubgroup(model)
-        projection = libgap.NaturalMorphismByNormalSubgroup(model, derived)
-        # A quotient of a finite group is finite.
-        placement = (
-            OwnedFiniteAbelianGroups() if group.is_finite() is True else OwnedAbelianGroups()
-        )
-        quotient = _own_group(
-            GroupLibGAP(projection.Range()),
-            refinements=(placement,),
-        )
-        quotient_projection = group.Mor(quotient)(projection)
+        match group:
+            case _ if group in OwnedAbelianGroups():
+                quotient = group
+                quotient_projection = group.Mor(group).identity()
+            case _ if group in OwnedFiniteGroups():
+                model = _gap_model(group)
+                derived = libgap.DerivedSubgroup(model)
+                projection = libgap.NaturalMorphismByNormalSubgroup(model, derived)
+                quotient = _own_group(
+                    GroupLibGAP(projection.Range()),
+                    refinements=(OwnedFiniteAbelianGroups(),),
+                )
+                quotient_projection = group.Mor(quotient)(projection)
+            case _ if group in OwnedGroups().FinitelyPresentedAsGroup():
+                assert False, (
+                    f"the abelianization of the finitely presented group {group} is defined, but the current "
+                    "preamble has no presentation-quotient route for G/[G,G]; add it at the group exact-sequence "
+                    "owner rather than passing this group to GAP unconditionally"
+                )
+            case _:
+                assert False, (
+                    f"the abelianization of {group} is defined for every group, but the current preamble computes "
+                    "only already-abelian groups and finite represented groups; no general quotient route is installed"
+                )
         self._quotient_projections[id(group)] = (
             group,
             quotient,
@@ -77,37 +89,47 @@ class _AbelianizationFunctor(Functor):
         target_abelianization = self(morphism.codomain())
         source_projection = self.quotient_projection(morphism.domain())
         target_projection = self.quotient_projection(morphism.codomain())
-        source_model = _gap_model(source_abelianization)
-        target_model = _gap_model(target_abelianization)
-        generators = tuple(source_model.GeneratorsOfGroup())
-        images = tuple(
-            _element_to_engine(
-                target_abelianization,
-                target_projection(
-                    morphism(
-                        source_projection.lift(
-                            _element_from_engine(
-                                source_abelianization,
-                                generator,
+        match (morphism.domain(), morphism.codomain()):
+            case (source, target) if source in OwnedAbelianGroups() and target in OwnedAbelianGroups():
+                return source_abelianization.Mor(target_abelianization)(morphism)
+            case (source, target) if source in OwnedFiniteGroups() and target in OwnedFiniteGroups():
+                source_model = _gap_model(source_abelianization)
+                target_model = _gap_model(target_abelianization)
+                generators = tuple(source_model.GeneratorsOfGroup())
+                images = tuple(
+                    _element_to_engine(
+                        target_abelianization,
+                        target_projection(
+                            morphism(
+                                source_projection.lift(
+                                    _element_from_engine(
+                                        source_abelianization,
+                                        generator,
+                                    )
+                                )
                             )
-                        )
+                        ),
                     )
-                ),
-            )
-            for generator in generators
-        )
-        induced = libgap.GroupHomomorphismByImages(
-            source_model,
-            target_model,
-            list(generators),
-            list(images),
-        )
-        if induced.is_bool():
-            raise ValueError(
-                f"the group morphism {morphism} does not induce a map of abelianizations "
-                f"{source_abelianization} -> {target_abelianization}"
-            )
-        return source_abelianization.Mor(target_abelianization)(induced)
+                    for generator in generators
+                )
+                induced = libgap.GroupHomomorphismByImages(
+                    source_model,
+                    target_model,
+                    list(generators),
+                    list(images),
+                )
+                if induced.is_bool():
+                    raise ValueError(
+                        f"the group morphism {morphism} does not induce a map of abelianizations "
+                        f"{source_abelianization} -> {target_abelianization}"
+                    )
+                return source_abelianization.Mor(target_abelianization)(induced)
+            case _:
+                assert False, (
+                    f"the induced map on abelianizations of {morphism} is defined by the universal property, but "
+                    "the current preamble realizes it only for maps between already-abelian groups or finite "
+                    "represented groups; the general quotient-factorization route is missing"
+                )
 
     def _repr_(self):
         return "Abelianization functor"
@@ -140,34 +162,11 @@ class _AbelianizationAdjunction(Adjunction):
 
     def _counit_component(self, abelian_group):
         abelianization = self.left_adjoint()(abelian_group)
-        projection = self.left_adjoint().quotient_projection(abelian_group)
-        quotient_model = _gap_model(abelianization)
-        target_model = _gap_model(abelian_group)
-        generators = tuple(quotient_model.GeneratorsOfGroup())
-        images = tuple(
-            _element_to_engine(
-                abelian_group,
-                projection.lift(
-                    _element_from_engine(
-                        abelianization,
-                        generator,
-                    )
-                ),
-            )
-            for generator in generators
+        assert abelianization is abelian_group, (
+            f"the counit of abelianization at {abelian_group} must identify its abelianization with the same "
+            f"abelian group, but the object map returned {abelianization}"
         )
-        engine = libgap.GroupHomomorphismByImages(
-            quotient_model,
-            target_model,
-            list(generators),
-            list(images),
-        )
-        if engine.is_bool():
-            raise ValueError(
-                f"the abelian group {abelian_group} is not isomorphic to its abelianization {abelianization} "
-                "through the quotient map"
-            )
-        return abelianization.Mor(abelian_group)(engine)
+        return abelian_group.Mor(abelian_group).identity()
 
 
     def _repr_(self):
