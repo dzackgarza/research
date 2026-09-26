@@ -106,6 +106,10 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "homogeneous polynomial section spaces"
 
+    def an_object(self):
+        r"""The linear forms on the projective line over the base ring."""
+        return ProjectiveSpaces(self.base_ring()).an_object().O(1).global_sections()
+
     def super_categories(self):
         return [VectorSpaces(self.base_ring())]
 
@@ -280,6 +284,10 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "multihomogeneous polynomial section spaces"
 
+    def an_object(self):
+        r"""The bidegree-(1,1) sections on a product of two projective lines."""
+        return ProductProjectiveSpaces(self.base_ring()).an_object().O(1, 1).global_sections()
+
     def super_categories(self):
         return [VectorSpaces(self.base_ring())]
 
@@ -362,6 +370,10 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "projective linear systems"
+
+    def an_object(self):
+        r"""The complete projective linear system of O(1) on the projective line."""
+        return ProjectiveSpaces(self.base_ring()).an_object().O(1).linear_system()
 
     def super_categories(self):
         return [Schemes(self.base_ring()).Projective()]
