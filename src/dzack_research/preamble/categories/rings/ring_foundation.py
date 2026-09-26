@@ -2348,18 +2348,25 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
             category = self.category()
-            if category.is_subcategory(owned_sets.FiniteSets()):
-                from sage.rings.integer_ring import ZZ as SageZZ
+            match category:
+                case _ if category.is_subcategory(owned_sets.FiniteSets()):
+                    from sage.rings.integer_ring import ZZ as SageZZ
 
-                integers = _own_ring(SageZZ)
-                return cardinal(_owned_engine_element(integers, SageZZ(_engine_ring(self).cardinality())))
-            if category.is_subcategory(owned_sets.CountablyInfiniteSets()):
-                return aleph0
-            if category.is_subcategory(owned_sets.UncountableSets()):
-                return continuum
-            # No size placement on the ring: its underlying set may still be
-            # constructed at a lower level, as M_n(R) is the free module R^(n^2).
-            return super().cardinality()
+                    integers = _own_ring(SageZZ)
+                    return cardinal(
+                        _owned_engine_element(
+                            integers,
+                            SageZZ(_engine_ring(self).cardinality()),
+                        )
+                    )
+                case _ if category.is_subcategory(owned_sets.CountablyInfiniteSets()):
+                    return aleph0
+                case _ if category.is_subcategory(owned_sets.UncountableSets()):
+                    return continuum
+                case _:
+                    # No size placement on the ring: its underlying set may still be
+                    # constructed at a lower level, as M_n(R) is the free module R^(n^2).
+                    return super().cardinality()
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
             r"""Return whether this ring carries a nontrivial selected exact presentation.
