@@ -1039,6 +1039,15 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
+        def cardinality(self):
+            r"""Return the cardinality of the module carrying this algebra."""
+            module = self.unformed_module()
+            match module is self:
+                case True:
+                    return super().cardinality()
+                case False:
+                    return module.cardinality()
+
         def _specialized_algebra_with_structure(
             self,
             base_ring,
