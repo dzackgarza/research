@@ -48,7 +48,7 @@ class _DerivedRestrictedSemilinearMorphism(ModuleMorphism):
         return self._semilinear_linearity_decision
 
 
-class SemilinearModuleMorphism(Morphism):
+class SemilinearModuleMorphism:
     r"""A module arrow over a morphism of commutative scalar rings.
 
     If ``sigma : R -> S``, the defining map is the equivalent ``R``-linear map
@@ -58,23 +58,25 @@ class SemilinearModuleMorphism(Morphism):
     """
 
     def __init__(self, parent, scalar_map, restricted_morphism) -> None:
-        Morphism.__init__(self, parent)
-        if scalar_map.domain() is not self.domain().base_ring():
+        domain = parent.domain()
+        codomain = parent.codomain()
+        if scalar_map.domain() is not domain.base_ring():
             raise ValueError(
-                f"a semilinear map out of {self.domain()} lies over a ring map out of its base ring "
-                f"{self.domain().base_ring()}, but {scalar_map} starts at {scalar_map.domain()}"
+                f"a semilinear map out of {domain} lies over a ring map out of its base ring "
+                f"{domain.base_ring()}, but {scalar_map} starts at {scalar_map.domain()}"
             )
-        if scalar_map.codomain() is not self.codomain().base_ring():
+        if scalar_map.codomain() is not codomain.base_ring():
             raise ValueError(
-                f"a semilinear map into {self.codomain()} lies over a ring map into its base ring "
-                f"{self.codomain().base_ring()}, but {scalar_map} ends at {scalar_map.codomain()}"
+                f"a semilinear map into {codomain} lies over a ring map into its base ring "
+                f"{codomain.base_ring()}, but {scalar_map} ends at {scalar_map.codomain()}"
             )
         restricted = parent.restricted_codomain(scalar_map)
-        linear_mor = Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
+        linear_mor = Modules(domain.base_ring()).Mor(domain, restricted)
         restricted_morphism = linear_mor(restricted_morphism)
         self._scalar_map = scalar_map
         self._restricted_codomain = restricted
         self._restricted_morphism = restricted_morphism
+        super().__init__(parent, self._evaluate_semilinear)
 
     def scalar_map(self):
         return self._scalar_map
@@ -120,7 +122,7 @@ class SemilinearModuleMorphism(Morphism):
     def extended_source(self):
         return self.parent().extended_domain(self.scalar_map())
 
-    def _call_(self, element):
+    def _evaluate_semilinear(self, element):
         return self.additive_map()(element)
 
     def __eq__(self, other):
@@ -200,7 +202,7 @@ class SemilinearModuleMorphism(Morphism):
 class SemilinearModuleMor(CategoricalMor):
     r"""All semilinear arrows between two modules over commutative rings."""
 
-    Element = SemilinearModuleMorphism
+    ElementMethods = SemilinearModuleMorphism
 
     def _validate_scalar_map(self, scalar_map) -> None:
         source_ring = self.domain().base_ring()
