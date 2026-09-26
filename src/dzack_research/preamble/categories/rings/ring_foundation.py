@@ -796,11 +796,33 @@ class LocalizationRings(OwnedCategory):
         _derived_construction_parameters = frozenset({"base_ring"})
 
         def cardinality(self):
-            r"""Return ``|S^-1 R| = |R|`` when ``R`` is an integral domain."""
+            r"""Return the exact cardinality of a localization of a domain.
+
+            If ``0 in S`` then ``S^-1 R`` is the zero ring.  Otherwise the
+            canonical map ``R -> S^-1 R`` is injective, while every fraction is
+            represented by a pair in ``R x S``, so ``|S^-1 R| = |R|``.
+            """
             source = self.localization_source()
             match source in OwnedRings().Commutative().NoZeroDivisors():
                 case True:
-                    return source.cardinality()
+                    from dzack_research.preamble.categories.rings.commutative_algebra import (
+                        _submonoid_contains_zero_in_domain,
+                    )
+                    from dzack_research.preamble.categories.sets.cardinals import (
+                        Cardinalities,
+                    )
+
+                    contains_zero = _submonoid_contains_zero_in_domain(
+                        source,
+                        self.localization_submonoid(),
+                    )
+                    match contains_zero:
+                        case False:
+                            return source.cardinality()
+                        case True:
+                            return Cardinalities().one()
+                        case _:
+                            return super().cardinality()
                 case False:
                     return super().cardinality()
 

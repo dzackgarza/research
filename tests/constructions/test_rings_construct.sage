@@ -522,12 +522,16 @@ def test_localizing_the_integers_at_a_prime_gives_a_discrete_valuation_ring() ->
 
 def test_inverting_a_set_of_elements_of_the_integers() -> None:
     inverted = ZZ.localization(6)
+    collapsed = ZZ.localization(0)
+
     assert inverted(2).is_unit()
     assert inverted(3).is_unit()
     assert not inverted(5).is_unit()
     assert inverted in IntegralDomains()
     assert inverted not in LocalRings()
     assert inverted.fraction_field() is QQ
+    assert inverted.cardinality() == aleph0
+    assert collapsed.cardinality() == cardinal(1)
 
 
 @pytest.mark.parametrize(
