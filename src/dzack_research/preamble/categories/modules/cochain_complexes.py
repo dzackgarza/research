@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
     _initialize_module_mor_parent,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -461,12 +462,20 @@ def _cochain_complex(
     )
 
 
-class CochainMorphism(Morphism):
+class CochainMorphism(ModuleMorphism):
     r"""A degree-zero morphism commuting with the selected differentials."""
 
+    def _elementwise_linearity_derivation(self):
+        return True
+
     def __init__(self, parent, components) -> None:
-        Morphism.__init__(self, parent)
         self._components = components
+        ModuleMorphism.__init__(
+            self,
+            parent,
+            self._evaluate_components,
+            elementwise=True,
+        )
         self._validate_components()
 
     def _raw_component(self, degree):
@@ -528,7 +537,7 @@ class CochainMorphism(Morphism):
                         f"of degree {degree}"
                     )
 
-    def _call_(self, element):
+    def _evaluate_components(self, element):
         element = self.domain()(element)
         return self.codomain().from_components(
             {
@@ -536,9 +545,6 @@ class CochainMorphism(Morphism):
                 for degree, component in element.homogeneous_components().items()
             }
         )
-
-    def __call__(self, element):
-        return self._call_(element)
 
     def __add__(self, other):
         other = self.parent()(other)
