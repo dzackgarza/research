@@ -335,7 +335,7 @@ Regenerate the catalogue with the same command; the time gates are on by default
 - [x] **`triage-framing-source-base-ring`**. **Needs:** none.
   **Site:** `categories/modules/pure/modules.py:3051`, `_fix_selected_module_framing`: "the selected framing source is a free module over this module's base ring" (1,571). **Example:** `tests/divisors/test_divisor_node_specimens.sage::test_normal_singular_surface_has_a_noncartier_weil_class`.
 
-- [ ] **`triage-subobject-base-placement`**. **Needs:** none.
+- [x] **`triage-subobject-base-placement`**. **Needs:** none.
   **Site:** `categories/abstract_categories/arrow_categories.py:1087`, `SubobjectCategory.__init__`: "the subobject base must lie in its base category" (1,538). Reached from `_commutative_ideal` (`categories/rings/commutative_ideals.py:966`) through `Modules(R).Subobjects(R.regular_module())`; for `QQ['x,y']` the regular module is placed in `Modules(R)`, so the failing rings are the ones the Kähler-differential and cohomology constructions build.
   **Example:** `tests/algebras/test_cohomology.sage::test_dga_cohomology_is_a_graded_algebra_with_descended_product`.
 
