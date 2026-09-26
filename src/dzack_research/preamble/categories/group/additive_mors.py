@@ -301,14 +301,6 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         def one(self):
             return self.identity()
 
-        def is_commutative(self):
-            r"""Return the undetermined value for a general endomorphism ring.
-
-            Represented matrix endomorphism rings supply their rank-dependent
-            decision in their more specific category.
-            """
-            return Unknown
-
 
 class AdditiveMorphism:
     r"""An additive map with a supplied elementwise realization."""
