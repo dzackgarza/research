@@ -154,7 +154,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
             def permute(group_element, point):
                 permutation = permutations(permutation_representation(group_element))
-                return permutation(point)
+                return _owned_point(permutation(_integer_engine_point(point)))
 
             match group:
                 case _ if group.has_selected_group_resolution():
