@@ -1774,10 +1774,13 @@ class Modules(OwnedCategoryOverBaseRing):
                     )
                 case _:
                     from dzack_research.preamble.categories.modules.general_modules import GeneralModules
-                    from dzack_research.preamble.owned_category import _object_of
+                    from dzack_research.preamble.owned_category import (
+                        _object_of,
+                        owned_category_join,
+                    )
 
                     return _object_of(
-                        Category.join((GeneralModules(self.base_ring()), *categories)),
+                        owned_category_join((GeneralModules(self.base_ring()), *categories)),
                         base_ring=self.base_ring(), rho=self.scalar_action(),
                         **construction_data,
                     )
@@ -3688,9 +3691,9 @@ def _restricted_scalars_view(
             subobject_inclusion_factory=_subobject_inclusion_factory,
         )
 
-    from dzack_research.preamble.owned_category import _object_of
+    from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
-    return _object_of(Category.join(tuple(placement)), **data)
+    return _object_of(owned_category_join(tuple(placement)), **data)
 
 
 def _tensor_label_set(factors):

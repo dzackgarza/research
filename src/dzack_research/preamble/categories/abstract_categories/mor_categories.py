@@ -52,7 +52,11 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
-from dzack_research.preamble.owned_category import OwnedCategoryMixin, _object_of
+from dzack_research.preamble.owned_category import (
+    OwnedCategoryMixin,
+    _object_of,
+    owned_category_join,
+)
 from dzack_research.preamble.refine import (
     construction_scope,
     realize_owned_category,
@@ -251,7 +255,7 @@ def _fixed_mor_arrow_object(
     arrows = category.base_category().ArrowCategory()
     represented = arrows(arrow)
     return _object_of(
-        Category.join((arrows, category)),
+        owned_category_join((arrows, category)),
         functor=represented.functor(),
         fixed_mor_category=category,
     )
