@@ -128,6 +128,46 @@ from the DAG in its priority order, and let failing tests serve as the
 specimens of the structural node that owns them.  A test that fails for a
 reason no node names is a finding: file the node, then repair it.
 
+**Progress is the required work completed, judged by its mathematics.**
+Read the source against a node's acceptance and ask which required delta
+now exists that did not.  Commits, files, tests written and tests passing
+measure none of it.  While the architecture is still changing, tests are
+not the signal at all: an expectation written against an operation's
+current placement is precursor material, and repairing tests against a
+placement that is about to move is churn.
+
+The churn has a mechanism, and every step of it feels like diligence:
+
+- **Selection by availability.** The pressure to keep a node in flight
+  selects the work whose next step is always possible and never
+  ambiguous: another expectation file, another surface covered.  The
+  architecture nodes carry a design question at every step, so they are
+  deferred without anyone deciding to defer them.  Availability is never a
+  reason to take a node; take the node whose delta changes the most of the
+  architecture that remains, most of all when it is the hard one.
+- **Throughput read as progress.** Small units yield a steady stream of
+  completion events -- a commit, a file, a closed surface -- and each one
+  satisfies the letter of *Bank before you wait* and of specimen-first
+  doctrine.  On 2026-09-26 a session made 402 single-surface test commits in
+  twelve hours against about sixteen lines of source change to the
+  architecture nodes, and closed one node.
+- **Verification as the target.** Reaching for test counts, pass rates or a
+  run of the suite to answer "is this done" replaces the semantic judgement
+  with an instrument.  The same day, asked whether that session was making
+  progress, the steward proposed running its tests and lifting the
+  execution suspension so they could pass.
+- **Literal compliance with a node.** A structural node is taken and the
+  smallest edit its words permit is made: `FormedModuleMorphism`'s base
+  class swapped to `ModuleMorphism` by hand, the stored lower arrow kept,
+  while the node's delta -- arrow types generated from the Mor category
+  graph -- is untouched.  The node reads as started; nothing it requires
+  exists.
+
+At every node closure and at every selection, name the required delta that
+the last stretch of commits delivered, in the node's own terms.  If there
+is none, the stretch was churn, whatever it produced; the next unit is the
+architecture node, and it is worked by its stated delta.
+
 ## Bank before you wait
 
 Work that is written but uncommitted lives only in this chat's working tree, and a turn that
@@ -799,7 +839,7 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
   When a type is genuinely unnameable because the object is load-injected from a `.sage` file mypy cannot import, the fix is to make it importable (move to `.py`, add a stub, or restructure the import boundary) — not to annotate around the absence.
   Never probe the QC config (`mypy-global.ini`, `ai-review-ci`) looking for what `Any`-related settings might be allowed. The rule is: never use `object`, and use `Any` only where *`object` is never a type; `Any` has exactly one position* permits it. That is already known from the errors mypy reports. Looking for a loophole is hacking the gate, not doing the work.
 
-Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus: `.agents/references/displacement-pattern-index.md` (D1–D6). These are review criteria for plans and completion claims alike — the Review Guidelines below guard completion *claims*; this section guards the loop that never claims.
+Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus: `.agents/references/displacement-pattern-index.md` (D1–D7). These are review criteria for plans and completion claims alike — the Review Guidelines below guard completion *claims*; this section guards the loop that never claims.
 This discipline is culture, not a gate: do not build detectors, hooks, or mandatory checklists from it.
 
 **Pre-push terminology audit (invented language).** Run this audit once, after a coherent feature is implemented and before pushing it. Never run it on an individual edit, correction, commit, issue body, plan card, or partial feature slice.
