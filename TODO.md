@@ -414,9 +414,12 @@ A site that still raises keeps its node, and every node whose example passes and
   **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[GF(5)[t]-ADELogPairs]`.
   **Source closure (2026-09-26):** toric schemes are now constructed from the same affine semigroup charts over an arbitrary represented base ring. The semigroup algebra receives the integral-domain placement only when the base is a domain; `ToricSchemes(R)` likewise advertises integral/variety and normal placements only under the corresponding base hypotheses. The global Sage `ToricVariety` and Sage toric-morphism realizations are retained only over fields, while the owned affine gluing and chartwise pullbacks are the realization over a general base. Runtime confirmation of the cited `GF(5)[t]` witness remains in terminal T under `DEV-58`.
 
-- [ ] **`triage-missing-owned-operations`**. **Needs:** none.
+- [x] **`triage-missing-owned-operations`**. **Needs:** none.
   **Site:** `sage/cpython/getattr.pyx:357`/`:362`: `AttributeError` for operations the owned objects do not have: on module Mor elements (99 + 37), sparse free module object types (83), `DistinguishedAffineCovers.subcategory_class` (92), and the `mor`, `point_mor`, `nilradical`, `free_bilinear_form_adjunction` and `cardinality` names that the specifications call.
   **Example:** `tests/algebras/test_algebra_base_change_archive.sage::test_scalar_restriction_retains_the_selected_ring_map_identity`.
+  **Source closure (2026-09-26):** the catalogue predates the Mor-graph and owned-category propagation repairs. Generated module arrows now receive `ModuleMorphismMethods` from their Mor categories; sparse free modules receive the framed-free parent API, including exact cardinality; and owned category roots propagate Cat constructions through `subcategory_class`, including `DistinguishedAffineCovers`.
+  The live set-Mor owner supplies `mor`; no current specification calls the former public `point_mor` spelling; `Modules(R)` supplies the archived `free_bilinear_form_adjunction` spelling; and every commutative ring now owns `nilradical = sqrt((0))` together with reducedness at the commutative-ring owner.
+  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
 - [ ] **`triage-signature-over-ordered-fields`**. **Needs:** none.
   **Site:** `categories/_lattice.py:1296`: the signature pair asserted for quadratic spaces whose base is not a subfield of the reals (78). **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[AA-HyperbolicLattices]`.
