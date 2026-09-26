@@ -114,7 +114,7 @@ from dzack_research.preamble.lexicon.category_theory import (
     ElementOfCategoryObject,
     ObjectOfCategory,
 )
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 for _scheme_axiom in (
@@ -1835,7 +1835,7 @@ def _affine_scheme(algebra, base, placements=(), **level_data):
     if _integral_placement(algebra):
         categories.append(schemes.Integral())
     return _object_of(
-        Category.join((*categories, *placements)),
+        owned_category_join((*categories, *placements)),
         scheme_base_ring=base,
         scheme_engine=_engine_affine_spectrum(algebra, base),
         coordinate_algebra=algebra,
@@ -3110,7 +3110,7 @@ def _projective_closed_subscheme(
     equations = _projective_equation_family(_equation_family(equations))
     base = ambient.scheme_base_ring()
     engine = _engine_projective_subscheme(_engine_scheme(ambient), equations) if _engine is None else _engine
-    category = Category.join(
+    category = owned_category_join(
         (Schemes(base).Projective(), ClosedEmbeddings(ambient), ClosedSubschemes(base), *placements)
     )
     data = dict(construction_data or {})
@@ -3736,7 +3736,7 @@ def _affine_space(base, coordinates, placements=(), **level_data):
     """
     engine, algebra = coordinates
     return _object_of(
-        Category.join((
+        owned_category_join((
             AffineSpaces(base),
             *_space_placements(base, int(algebra.algebra_generating_set().cardinality())),
             *placements,
@@ -3851,7 +3851,7 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
     """
     engine = _SageProjectiveSpace(int(dimension), _engine_ring(base), names=_normalized_space_names(names))
     return _object_of(
-        Category.join((ProjectiveSpaces(base), *_space_placements(base, dimension), *placements)),
+        owned_category_join((ProjectiveSpaces(base), *_space_placements(base, dimension), *placements)),
         scheme_base_ring=base,
         scheme_engine=engine,
         **level_data,
@@ -4653,7 +4653,7 @@ def _scheme_product(*schemes, placements=(), **level_data):
             )
             offsets = tuple(sum(widths[:position]) for position in range(len(widths)))
             return _object_of(
-                Category.join((ProductProjectiveSpaces(base), *_space_placements(base, sum(width - 1 for width in widths)), *placements)),
+                owned_category_join((ProductProjectiveSpaces(base), *_space_placements(base, sum(width - 1 for width in widths)), *placements)),
                 scheme_base_ring=base,
                 scheme_engine=engine,
                 factors=factors,
@@ -5529,7 +5529,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             match codomain:
                 case _ if codomain in Schemes(base).Projective():
                     return _object_of(
-                        Category.join((OpenImmersions(codomain), Schemes(base).QuasiProjective())),
+                        owned_category_join((OpenImmersions(codomain), Schemes(base).QuasiProjective())),
                         scheme_base_ring=base,
                         scheme_engine=_SageAlgebraicSchemeSubscheme.complement(_engine_scheme(self), _engine_scheme(codomain)),
                         inclusion_codomain=codomain,

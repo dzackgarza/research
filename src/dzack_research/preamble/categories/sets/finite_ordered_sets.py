@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     finite_ordinal_set,
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
@@ -109,9 +109,9 @@ class OrderedEnumeratedSets(OwnedCategory):
             placement = category if category is not None else OrderedEnumeratedSets()
             match index_set:
                 case _ if index_set in FiniteSets():
-                    placement = Category.join((placement, FiniteSets()))
+                    placement = owned_category_join((placement, FiniteSets()))
                 case _ if index_set in Sets().Infinite():
-                    placement = Category.join((placement, Sets().Infinite()))
+                    placement = owned_category_join((placement, Sets().Infinite()))
             super().__init__(category=placement, facade=True, **rest)
 
         def index_set(self) -> Sets().ObjectType:

@@ -74,7 +74,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     UncountableSets,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
 
@@ -2542,7 +2542,7 @@ def _quotient_ring(source, defining_ideal):
         placements.append(OwnedRings().Artinian())
 
     return _object_of(
-        Category.join((QuotientRings(), Algebras(source).Associative().Unital().Commutative(), *placements)),
+        owned_category_join((QuotientRings(), Algebras(source).Associative().Unital().Commutative(), *placements)),
         source=source,
         defining_ideal=defining_ideal,
         _engine_ring=quotient_engine,
@@ -2839,7 +2839,7 @@ def _finite_generated_localization(source, submonoid):
         if algebra_source in Algebras(algebra_base).Associative().Unital().Commutative():
             algebra_categories.append(Algebras(algebra_base).Associative().Unital().Commutative())
     return _object_of(
-        Category.join((LocalizationRings(), *placements, *algebra_categories)),
+        owned_category_join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
         submonoid=submonoid,
         _engine_ring=localization_engine,
@@ -2913,7 +2913,7 @@ def _fraction_field_localization(source, submonoid):
                 Algebras(algebra_base).Associative().Unital().Commutative()
             )
     return _object_of(
-        Category.join((LocalizationRings(), *placements, *algebra_categories)),
+        owned_category_join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
         submonoid=submonoid,
         _engine_ring=fraction_engine,
@@ -3236,7 +3236,7 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         if source in Algebras(base).Associative().Unital().Commutative():
             placements.append(Algebras(base).Associative().Unital().Commutative())
     return _object_of(
-        Category.join([PrimeLocalizations(), *placements]),
+        owned_category_join([PrimeLocalizations(), *placements]),
         source=source,
         submonoid=submonoid,
         fraction_field=fraction_field,

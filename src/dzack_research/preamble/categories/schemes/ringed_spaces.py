@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -1478,7 +1478,7 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
         category = (
             self
             if not categories
-            else Category.join((self, *tuple(categories)))
+            else owned_category_join((self, *tuple(categories)))
         )
         return _object_of(
             category,

@@ -82,7 +82,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family_from_values,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 class _CanonicalDescentRestrictionMorphism(ModuleMorphism):
@@ -758,7 +758,7 @@ def _glued_scheme(datum, placements, level_data):
     base = datum.base_ring()
     category = Schemes(base)
     if placements:
-        category = Category.join((category, *placements))
+        category = owned_category_join((category, *placements))
     data = dict(level_data)
     native = data.pop("scheme_engine", None)
     object_engine = data.pop("_object_engine", None)
@@ -2027,7 +2027,7 @@ class FiniteAffineAtlases(OwnedParameterizedCategory):
 def _finite_atlas_quasi_coherent_sheaves(atlas):
     r"""The concrete sheaf/QCoh intersection for one finite-atlas presentation."""
     scheme = atlas.scheme()
-    return Category.join(
+    return owned_category_join(
         (
             atlas.cech_coverage().sheaves(Modules(atlas.global_function_algebra())),
             QuasiCoherentSheaves(scheme),

@@ -38,7 +38,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 if TYPE_CHECKING:
@@ -2697,7 +2697,7 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
             # factors (for example matrix Mor objects) know their structural
             # category before exposing a cardinality computation.
             placements.append(CountableSets())
-    return _object_of(Category.join(placements), family=family)
+    return _object_of(owned_category_join(placements), family=family)
 
 
 class CartesianProductsOfSets(OwnedCategory):
@@ -3401,7 +3401,7 @@ def _finite_words(alphabet, *, commutative):
         case False:
             size_category = CountablyInfiniteSets()
     return _object_of(
-        Category.join((EnumeratedCoproductsOfSets(), size_category)),
+        owned_category_join((EnumeratedCoproductsOfSets(), size_category)),
         _engine=(CoproductsOfSets(), _FiniteWordSet, None),
         alphabet=alphabet, commutative=commutative,
     )
@@ -3462,7 +3462,7 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
             placements.append(FiniteSets())
         else:
             placements.append(CountablyInfiniteSets())
-    return _object_of(Category.join(placements), family=family)
+    return _object_of(owned_category_join(placements), family=family)
 
 
 def _coproduct_morphism[IndexT](

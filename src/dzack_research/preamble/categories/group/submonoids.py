@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 class SubmonoidInclusion(MonoidMorphism):
@@ -191,7 +191,7 @@ def _predicate_submonoid(
     placements=(),
     structure_data=None,
 ):
-    category = Category.join((Monoids().Subobjects(ambient), *placements))
+    category = owned_category_join((Monoids().Subobjects(ambient), *placements))
     return _object_of(
         category,
         _engine=(category, _SubmonoidEngine, None),

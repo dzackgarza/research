@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 class GSetMorCategoryConstruction(MorCategoryConstruction):
@@ -686,7 +686,7 @@ class Torsors(OwnedParameterizedCategory):
                 f"{self.group()}-set whose action is free and transitive"
             )
         return _object_of(
-            Category.join((candidate.category(), self)),
+            owned_category_join((candidate.category(), self)),
             point_set=candidate.point_set(),
             permutation_representation=candidate.permutation_representation(),
         )

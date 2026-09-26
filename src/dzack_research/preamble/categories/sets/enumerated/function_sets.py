@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 def _integers():
@@ -164,7 +164,7 @@ class FunctionEnumeratedSets(OwnedCategory):
     ) -> Sets().ObjectType:
         r"""Construct the set of symbols with this prefix, indexed as ``indexing`` states."""
         return _object_of(
-            Category.join([self, indexing]),
+            owned_category_join([self, indexing]),
             _engine=(self, IndexedSymbolicFunctionSet, None),
             symbol_prefix=symbol_prefix,
             latex_symbol_prefix=latex_symbol_prefix,

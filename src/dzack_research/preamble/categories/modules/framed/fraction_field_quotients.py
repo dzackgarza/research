@@ -37,7 +37,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
@@ -332,7 +332,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
             subobject = ModulesWithChosenFinitePresentation(self.base_ring())(
                 cyclic.presentation(),
-                category=Category.join((
+                category=owned_category_join((
                     ModuleSubobjects(self.base_ring()),
                     Modules(self.base_ring()).FinitelyPresented().Torsion(),
                 )),
@@ -353,7 +353,7 @@ def _owned_fraction_field_quotient(engine: QmodnZ) -> ObjectOfCategory:
     placement = [FractionFieldQuotients(base_ring)]
     if not engine.n.is_zero():
         placement.append(Modules(base_ring).Torsion())
-    return _object_of(Category.join(placement), engine=engine)
+    return _object_of(owned_category_join(placement), engine=engine)
 
 
 def _from_qmodnz_backend(quotient):
