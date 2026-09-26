@@ -150,34 +150,17 @@ def _selected_homogeneous_degree(element):
     return degree
 
 
-class GradedModuleMorphism(ModuleMorphism):
+class GradedModuleMorphismMethods:
     r"""A degree-zero morphism of graded modules."""
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
-        self._underlying_linearity_premise = (
-            images if isinstance(images, ModuleMorphismMethods) else None
-        )
-        if self._underlying_linearity_premise is None:
-            ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
-        else:
-            ModuleMorphism.__init__(
-                self,
-                parent,
-                lambda element: images(element),
-                elementwise=True,
-            )
+        super().__init__(parent, images, elementwise=elementwise)
         if self.linearity_decision() is not True:
             raise ValueError(
                 f"the proposed map {parent.domain()} -> {parent.codomain()} is not known to be "
                 f"{parent.domain().base_ring()}-linear, so it is not a graded-module morphism"
             )
         self._check_selected_degrees()
-
-    def _elementwise_linearity_derivation(self):
-        premise = self._underlying_linearity_premise
-        if premise is None:
-            return super()._elementwise_linearity_derivation()
-        return premise.linearity_decision()
 
     def _check_selected_degrees(self) -> None:
 
@@ -208,7 +191,7 @@ class GradedModuleMorphism(ModuleMorphism):
                 )
 
     def __mul__(self, other):
-        if not isinstance(other, GradedModuleMorphism):
+        if not isinstance(other, GradedModuleMorphismMethods):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -219,6 +202,10 @@ class GradedModuleMorphism(ModuleMorphism):
             self,
             other,
         )
+
+
+class GradedModuleMorphism(GradedModuleMorphismMethods, ModuleMorphism):
+    r"""Compatibility shell for private graded-module arrow realizations."""
 
 
 class _CompositeGradedModuleMorphism(GradedModuleMorphism):
@@ -234,7 +221,7 @@ class _CompositeGradedModuleMorphism(GradedModuleMorphism):
 
 
 class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
-    Element = GradedModuleMorphism
+    ElementMethods = GradedModuleMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         indices = domain.grading_index_set()
@@ -255,7 +242,7 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
                     f"{images} is not a map {self.domain()} -> {self.codomain()}: it is a map "
                     f"{images.domain()} -> {images.codomain()}"
                 )
-            if isinstance(images, GradedModuleMorphism) and images.parent() is self:
+            if isinstance(images, GradedModuleMorphismMethods) and images.parent() is self:
                 return images
             return self.element_class(self, images)
         return super()._element_constructor_(images)

@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _assert_not_refuted,
     _associativity,
@@ -103,17 +102,16 @@ def _homogeneous_degree(element):
     return parent.homogeneous_degree(element)
 
 
-class GradedAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
+class GradedAlgebraMorphism:
     r"""An algebra morphism preserving the selected grading."""
 
-    def __init__(self, parent, images) -> None:
-        domain = parent.domain()
-        codomain = parent.codomain()
-        self._underlying = Algebras(domain.base_ring()).Associative().Unital().Mor(
-            domain, codomain
-        )(images)
-        UnitalMultiplicativeAlgebraMorphism.__init__(self, parent, self._underlying)
-        derived = self._degree_preservation_derivation()
+    def __init__(self, parent, images, *, degree_preservation=None) -> None:
+        super().__init__(parent, images)
+        derived = (
+            self._degree_preservation_derivation()
+            if degree_preservation is None
+            else degree_preservation
+        )
         self._degree_preservation_decision = (
             self._decide_degree_preservation() if derived is None else derived
         )
@@ -121,9 +119,6 @@ class GradedAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
             f"{images} does not define a morphism of graded algebras {self.domain()} -> {self.codomain()}: "
             "it does not preserve degree"
         )
-
-    def underlying_algebra_morphism(self):
-        return self._underlying
 
     def degree_preservation_decision(self):
         r"""Return ``True`` when degree preservation is established, else its ``Unknown`` hypothesis."""
@@ -145,7 +140,7 @@ class GradedAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
         for label in labels:
             generator = domain.algebra_generator(label)
             source_degree = _homogeneous_degree(generator)
-            image = self._underlying(generator)
+            image = self(generator)
             zero_decision = image == codomain.zero()
             if zero_decision is True:
                 continue
@@ -169,21 +164,15 @@ class GradedAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
             source.base_ring(),
             _require_grading_monoid(source.grading_monoid()),
         ).Mor(source, self.codomain())
+        ordinary = Algebras(source.base_ring()).Associative().Unital()
         return mor._from_degree_preserving_underlying_morphism(
-            self.underlying_algebra_morphism()
-            * other.underlying_algebra_morphism()
+            ordinary.Mor(self.domain(), self.codomain())(self)
+            * ordinary.Mor(source, self.domain())(other)
         )
 
 
-class _ConstructedDegreePreservingGradedAlgebraMorphism(GradedAlgebraMorphism):
-    r"""A graded map whose construction supplies degree preservation."""
-
-    def _degree_preservation_derivation(self):
-        return True
-
-
 class GradedAlgebraMor(CategoricalMor):
-    Element = GradedAlgebraMorphism
+    ElementMethods = GradedAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         self._grading_monoid = mor_family.base_category().grading_monoid()
@@ -215,11 +204,11 @@ class GradedAlgebraMor(CategoricalMor):
 
     def _from_degree_preserving_generator_map(self, images):
         r"""Construct a graded map whose generator construction preserves degree."""
-        return _ConstructedDegreePreservingGradedAlgebraMorphism(self, images)
+        return self.element_class(self, images, degree_preservation=True)
 
     def _from_degree_preserving_underlying_morphism(self, morphism):
         r"""Lift an actual weaker algebra morphism whose construction preserves degree."""
-        return _ConstructedDegreePreservingGradedAlgebraMorphism(self, morphism)
+        return self.element_class(self, morphism, degree_preservation=True)
 
     def identity(self):
         if self.domain() is not self.codomain():
