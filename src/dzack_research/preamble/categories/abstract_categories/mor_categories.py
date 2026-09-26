@@ -440,7 +440,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     @property
     def ElementType(self) -> type:
         r"""The public arrow implementation type of this fixed Mor category."""
-        if getattr(type(self), "Element", None) is not None:
+        if type(self).__dict__.get("Element") is not None:
             return Parent.element_class.f(self)
         return self._generated_arrow_type()
 

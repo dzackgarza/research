@@ -330,11 +330,11 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             return f"{self.point_set()} with {self.acting_group()}-action"
 
 
-class GSetMorphism(SetMorphism):
+class GSetMorphismMethods:
     r"""A set map checked to commute with the represented group actions."""
 
     def __init__(self, parent, function) -> None:
-        SetMorphism.__init__(self, parent, function)
+        super().__init__(parent, function)
         if parent.is_equivariant(self) is not True:
             raise ValueError(
                 f"the map {parent.domain()} -> {parent.codomain()} is not a morphism of "
@@ -349,12 +349,6 @@ class GSetMorphism(SetMorphism):
             lambda point: self(other(point))
         )
 
-    def _as_set_map(self):
-        r"""The same function read in ``Sets``, between the finite point sets."""
-        return Sets().Mor(self.domain().point_set(), self.codomain().point_set())(
-            lambda point: self(point)
-        )
-
     def natural_transformation(self):
         r"""Return this equivariant map as the corresponding transformation ``BG => Set``."""
         source = self.domain().action_functor()
@@ -366,17 +360,15 @@ class GSetMorphism(SetMorphism):
             source, target, lambda _obj: component
         ).morphism()
 
-    def is_injective(self) -> bool:
-        return self._as_set_map().is_injective()
 
-    def is_surjective(self) -> bool:
-        return self._as_set_map().is_surjective()
+class GSetMorphism(GSetMorphismMethods, SetMorphism):
+    r"""Compatibility shell for private finite-G-set arrow realizations."""
 
 
 class GSetMor(GObjectMor):
     r"""The equivariant Mor category between represented finite ``G``-sets."""
 
-    Element = GSetMorphism
+    ElementMethods = GSetMorphismMethods
 
     def _element_constructor_(self, function):
         return self.element_class(self, function)
