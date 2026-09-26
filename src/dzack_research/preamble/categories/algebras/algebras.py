@@ -1221,8 +1221,30 @@ class Algebras(OwnedCategoryOverBaseRing):
             if stated is not None:
                 return stated
             native = self._native_module_presentation()
-            assert native is not None, f"{self} was constructed without a multiplication"
-            return native.multiplication()
+            match native:
+                case _ if native is not None:
+                    return native.multiplication()
+                case _:
+                    from dzack_research.preamble.categories.group.additive_mors import (
+                        AdditiveEndomorphismRings,
+                    )
+
+                    match self:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()):
+                            from dzack_research.preamble.categories.modules.native_modules import (
+                                _RingModulePresentation,
+                            )
+
+                            presentation = _RingModulePresentation(
+                                self,
+                                self.base_ring(),
+                                self._compose_endomorphisms,
+                                self.identity(),
+                                lambda scalar, arrow: self._owned_scalar_multiple(scalar, arrow),
+                            )
+                            return presentation.multiplication()
+                        case _:
+                            assert False, f"{self} was constructed without a multiplication"
 
         @cached_method
         def multiplication_morphism(self):

@@ -224,22 +224,6 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             r"""The endomorphism algebra is built on this already-constructed Mor module."""
             return self
 
-        @cached_method
-        def multiplication(self):
-            r"""Classify composition as the bilinear multiplication of the endomorphism algebra."""
-            from dzack_research.preamble.categories.modules.native_modules import (
-                _RingModulePresentation,
-            )
-
-            presentation = _RingModulePresentation(
-                self,
-                self.base_ring(),
-                self._compose_endomorphisms,
-                self.identity(),
-                lambda scalar, arrow: self._owned_scalar_multiple(scalar, arrow),
-            )
-            return presentation.multiplication()
-
         def _compose_endomorphisms(self, left, right):
             left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
             if left_scalar is not None and right_scalar is not None:
