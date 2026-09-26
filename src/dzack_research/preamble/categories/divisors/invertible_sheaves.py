@@ -22,6 +22,8 @@ from dzack_research.preamble.categories.schemes.gluing import (
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     InvertibleSheavesWithChosenTrivialization,
+    QuasiCoherentSheafMor,
+    QuasiCoherentSheafMorphismMethods,
     QuasiCoherentSheaves,
 )
 
@@ -1654,13 +1656,12 @@ def _line_bundle_identity_local_maps(source, target):
     }
 
 
-class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
+class _ChosenTrivializationQuasiCoherentMorphismMethods:
     r"""A line-bundle sheaf morphism represented by compatible maps in one trivialization."""
 
     def __init__(self, parent, local_maps) -> None:
-        Morphism.__init__(self, parent)
-        source = self.domain()
-        target = self.codomain()
+        source = parent.domain()
+        target = parent.codomain()
         if source.gluing_datum() is not target.gluing_datum():
             raise ValueError(
                 f"cannot build a morphism {source} -> {target} from local maps: the two line bundles "
@@ -1683,20 +1684,13 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
                     f"cannot build a morphism {source} -> {target} from local maps: the two line bundles "
                     "are not both glued on a distinguished affine cover or both on a finite affine atlas"
                 )
+        super().__init__(parent)
 
     def descent_morphism(self):
         return self._descent_morphism
 
     def local_map(self, index):
         return self.descent_morphism().local_map(index)
-
-    def projectivization_map(self):
-        r"""Return the induced projectivization map on its quotient-surjectivity locus."""
-        from dzack_research.preamble.categories.schemes.relative_proj import (
-            _projectivization_map,
-        )
-
-        return _projectivization_map(self)
 
     @cached_method
     def global_sections_map(self):
@@ -1728,7 +1722,7 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
 
     def __eq__(self, other) -> bool:
         match other:
-            case _ChosenTrivializationQuasiCoherentMorphism() if other.parent() is self.parent():
+            case _ChosenTrivializationQuasiCoherentMorphismMethods() if other.parent() is self.parent():
                 return all(
                     self.local_map(index) == other.local_map(index)
                     for index in self.domain().gluing_datum().chart_index_set()
@@ -1741,7 +1735,7 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
 
     def __mul__(self, other):
         match other:
-            case _ChosenTrivializationQuasiCoherentMorphism():
+            case _ChosenTrivializationQuasiCoherentMorphismMethods():
                 pass
             case _:
                 return NotImplemented
@@ -1758,16 +1752,24 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
         )
 
 
-class _ChosenTrivializationQuasiCoherentMor(CategoricalMor):
+class _ChosenTrivializationQuasiCoherentMorphism(
+    _ChosenTrivializationQuasiCoherentMorphismMethods,
+    QuasiCoherentSheafMorphismMethods,
+    Morphism,
+):
+    r"""Compatibility shell for private chosen-trivialization QCoh arrows."""
+
+
+class _ChosenTrivializationQuasiCoherentMor(QuasiCoherentSheafMor):
     r"""The QCoh Mor of line bundles carrying one represented trivializing cover."""
 
-    Element = _ChosenTrivializationQuasiCoherentMorphism
+    ElementMethods = _ChosenTrivializationQuasiCoherentMorphismMethods
 
     def _element_constructor_(self, local_maps):
         match local_maps:
-            case _ChosenTrivializationQuasiCoherentMorphism() if local_maps.parent() is self:
+            case _ChosenTrivializationQuasiCoherentMorphismMethods() if local_maps.parent() is self:
                 return local_maps
-            case _ChosenTrivializationQuasiCoherentMorphism():
+            case _ChosenTrivializationQuasiCoherentMorphismMethods():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                     raise ValueError(
                         f"{local_maps} is a morphism {local_maps.domain()} -> {local_maps.codomain()}, not "
@@ -1799,13 +1801,12 @@ def _chosen_trivialization_isomorphism(source, target):
     return sheaves.Core().Mor(source, target)(forward, inverse)
 
 
-class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
+class _PullbackLineBundleQuasiCoherentMorphismMethods:
     r"""The pullback of a represented ambient line-bundle morphism along one closed immersion."""
 
     def __init__(self, parent, ambient_morphism) -> None:
-        Morphism.__init__(self, parent)
-        source = self.domain()
-        target = self.codomain()
+        source = parent.domain()
+        target = parent.codomain()
         if source.pullback_morphism() is not target.pullback_morphism():
             raise ValueError(
                 f"cannot pull back a morphism to {source} -> {target}: the two line bundles are "
@@ -1819,21 +1820,14 @@ class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
             ambient_source,
             ambient_target,
         )(ambient_morphism)
+        super().__init__(parent)
 
     def ambient_morphism(self):
         return self._ambient_morphism
 
-    def projectivization_map(self):
-        r"""Return the induced projectivization map on its quotient-surjectivity locus."""
-        from dzack_research.preamble.categories.schemes.relative_proj import (
-            _projectivization_map,
-        )
-
-        return _projectivization_map(self)
-
     def __eq__(self, other) -> bool:
         match other:
-            case _PullbackLineBundleQuasiCoherentMorphism() if other.parent() is self.parent():
+            case _PullbackLineBundleQuasiCoherentMorphismMethods() if other.parent() is self.parent():
                 return other.ambient_morphism() == self.ambient_morphism()
             case _:
                 return False
@@ -1843,7 +1837,7 @@ class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
 
     def __mul__(self, other):
         match other:
-            case _PullbackLineBundleQuasiCoherentMorphism():
+            case _PullbackLineBundleQuasiCoherentMorphismMethods():
                 pass
             case _:
                 return NotImplemented
@@ -1855,16 +1849,24 @@ class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
         )(self.ambient_morphism() * other.ambient_morphism())
 
 
-class _PullbackLineBundleQuasiCoherentMor(CategoricalMor):
+class _PullbackLineBundleQuasiCoherentMorphism(
+    _PullbackLineBundleQuasiCoherentMorphismMethods,
+    QuasiCoherentSheafMorphismMethods,
+    Morphism,
+):
+    r"""Compatibility shell for private pulled-back line-bundle QCoh arrows."""
+
+
+class _PullbackLineBundleQuasiCoherentMor(QuasiCoherentSheafMor):
     r"""The QCoh Mor represented by pullback from ambient line-bundle morphisms."""
 
-    Element = _PullbackLineBundleQuasiCoherentMorphism
+    ElementMethods = _PullbackLineBundleQuasiCoherentMorphismMethods
 
     def _element_constructor_(self, ambient_morphism):
         match ambient_morphism:
-            case _PullbackLineBundleQuasiCoherentMorphism() if ambient_morphism.parent() is self:
+            case _PullbackLineBundleQuasiCoherentMorphismMethods() if ambient_morphism.parent() is self:
                 return ambient_morphism
-            case _PullbackLineBundleQuasiCoherentMorphism():
+            case _PullbackLineBundleQuasiCoherentMorphismMethods():
                 if ambient_morphism.domain() is not self.domain() or ambient_morphism.codomain() is not self.codomain():
                     raise ValueError(
                         f"{ambient_morphism} is a morphism {ambient_morphism.domain()} -> "

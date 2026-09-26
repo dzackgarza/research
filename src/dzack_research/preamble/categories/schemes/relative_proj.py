@@ -1898,7 +1898,7 @@ def _empty_projectivization_map(
 def _projectivization_map(sheaf_morphism):
     r"""Construct the projectivization map on the locus where the induced quotient is surjective."""
     from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        _ChosenTrivializationQuasiCoherentMorphism,
+        _ChosenTrivializationQuasiCoherentMorphismMethods,
     )
     from dzack_research.preamble.categories.schemes.gluing import (
         FiniteAtlasModuleSheafMorphismMethods,
@@ -1947,7 +1947,7 @@ def _projectivization_map(sheaf_morphism):
             match sheaf_morphism:
                 case AffineQuasiCoherentSheafMorphismMethods():
                     local_map = sheaf_morphism.underlying_module_morphism()
-                case _ChosenTrivializationQuasiCoherentMorphism():
+                case _ChosenTrivializationQuasiCoherentMorphismMethods():
                     local_map = sheaf_morphism.global_sections_map()
                 case _:
                     raise TypeError(
@@ -1982,7 +1982,7 @@ def _projectivization_map(sheaf_morphism):
                     )
         case False:
             match sheaf_morphism:
-                case FiniteAtlasModuleSheafMorphismMethods() | _ChosenTrivializationQuasiCoherentMorphism():
+                case FiniteAtlasModuleSheafMorphismMethods() | _ChosenTrivializationQuasiCoherentMorphismMethods():
                     pass
                 case _:
                     raise TypeError(
