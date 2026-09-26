@@ -2997,6 +2997,12 @@ class CartesianProductsOfSets(OwnedCategory):
 class CartesianProductsOfAdditiveMonoids(OwnedCategory):
     r"""Cartesian products with the componentwise additive-monoid structure."""
 
+    def an_object(self):
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+        factor = AdditiveMonoids().an_object()
+        return Sets().product((factor, factor))
+
     def super_categories(self):
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
@@ -3078,6 +3084,9 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
 
 class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
     r"""Finite dependent products carrying their mixed-radix enumeration."""
+
+    def an_object(self):
+        return CartesianProductsOfSets().an_object()
 
     def super_categories(self):
         return [
@@ -3212,6 +3221,9 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
     diagonalized instead.  A coproduct of arbitrary sets has no such
     enumeration and stays in :class:`CoproductsOfSets`.
     """
+
+    def an_object(self):
+        return CoproductsOfSets().an_object()
 
     def super_categories(self):
         return [CoproductsOfSets(), EnumeratedSets()]

@@ -604,6 +604,11 @@ def _canonical_map(domain, codomain, engine_map=None):
 class ZariskiClosedSubobjects(OwnedParameterizedCategory):
     r"""Closed subsets of one prime spectrum, retaining their defining ideal."""
 
+    def an_object(self):
+        spectrum = self.base()
+        ring = spectrum.ring()
+        return spectrum.closed_set(ring.ideal(ring.zero()))
+
     def parameter_category(self):
         return PrimeSpectra()
 
@@ -624,6 +629,10 @@ class ZariskiClosedSubobjects(OwnedParameterizedCategory):
 
 class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
     r"""Distinguished open subsets of one prime spectrum, retaining ``f``."""
+
+    def an_object(self):
+        spectrum = self.base()
+        return spectrum.distinguished_open(spectrum.ring().one())
 
     def parameter_category(self):
         return PrimeSpectra()
@@ -678,6 +687,10 @@ def _distinguished_open_subobject(spectrum, function):
 
 class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
+
+    def an_object(self):
+        integers = _own_ring(SageZZ)
+        return integers.quotient_ring(integers.ideal(integers(2)))
 
     class ElementMethods(Element):
         r"""What a class in \(R/I\) is."""
@@ -1443,6 +1456,9 @@ class MaximalAdicLocalizationCompletionComparison(SageObject):
 
 class PrimeLocalizations(OwnedCategory):
     r"""Prime local rings ``R_p`` represented by fractions with denominator outside ``p``."""
+
+    def an_object(self):
+        return _own_ring(SageZZ).localize_at_prime(2)
 
     def super_categories(self):
         r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""

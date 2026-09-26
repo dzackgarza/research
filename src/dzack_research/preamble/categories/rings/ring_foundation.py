@@ -621,6 +621,10 @@ class PredicateSubrings(OwnedCategory):
 class LocalizationRings(OwnedCategory):
     r"""Commutative localizations carrying their selected source and submonoid."""
 
+    def an_object(self):
+        r"""The integers with 2 inverted."""
+        return _own_ring(SageZZ).localization(2)
+
     class ElementMethods(CommutativeRingElement):
         r"""A represented fraction ``a/s`` in ``S^{-1}R``."""
 
