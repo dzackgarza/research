@@ -3690,26 +3690,23 @@ class TotallyOrderedSets(OwnedCategory):
         return [PartiallyOrderedSets()]
 
 
-class WellOrderedSetMorphism(Morphism):
+class WellOrderedSetMorphism(OwnedSetMorphism):
     r"""An order-preserving map between represented well-ordered sets."""
 
     def __init__(self, parent, set_morphism) -> None:
-        Morphism.__init__(self, parent)
         if (
-            set_morphism.domain() is not self.domain()
-            or set_morphism.codomain() is not self.codomain()
+            set_morphism.domain() is not parent.domain()
+            or set_morphism.codomain() is not parent.codomain()
         ):
             raise ValueError(
-                f"{set_morphism} cannot underlie a map {self.domain()} -> {self.codomain()}: it is a set map "
+                f"{set_morphism} cannot underlie a map {parent.domain()} -> {parent.codomain()}: it is a set map "
                 f"{set_morphism.domain()} -> {set_morphism.codomain()}"
             )
         self._set_morphism = set_morphism
+        OwnedSetMorphism.__init__(self, parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
-
-    def __call__(self, point):
-        return self.underlying_set_morphism()(point)
 
     def __eq__(self, other):
         if element_parent(other) is not self.parent():
