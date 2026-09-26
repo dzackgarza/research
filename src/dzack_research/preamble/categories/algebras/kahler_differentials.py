@@ -245,6 +245,19 @@ def _cached_kahler_differentials(algebra):
 
 def _construct_kahler_differentials(algebra):
     r"""Private realization selected by ``KahlerDifferentialModules(A)(A)``."""
+    if algebra.base_ring() is algebra:
+        # Every derivation A -> M over A vanishes: d(a) = d(a * 1)
+        # = a d(1), while d(1) = d(1 * 1) = 2 d(1), hence d(1) = 0.
+        # Thus Omega^1_{A/A} is the zero A-module, independently of any
+        # presentation or computation backend for A.
+        return algebra._fresh_free_module_on(
+            finite_ordered_set(()),
+            _extra_categories=(KahlerDifferentialModules(algebra),),
+            _extra_construction_data={
+                "source_algebra": algebra,
+            },
+        )
+
     if algebra in LocalizationRings():
         source = algebra.localization_source()
         if source.base_ring() is not algebra.base_ring():
