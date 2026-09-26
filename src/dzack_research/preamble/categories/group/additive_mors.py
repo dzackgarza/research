@@ -240,14 +240,6 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             )
             return presentation.multiplication()
 
-        def associativity_decision(self):
-            r"""Composition of endomorphisms is associative by construction."""
-            return True
-
-        def unit_laws_decision(self):
-            r"""The identity endomorphism is a two-sided unit for composition."""
-            return True
-
         def _compose_endomorphisms(self, left, right):
             left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
             if left_scalar is not None and right_scalar is not None:

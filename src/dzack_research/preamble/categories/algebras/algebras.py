@@ -1594,6 +1594,10 @@ class Algebras(OwnedCategoryOverBaseRing):
     class Associative(CategoryWithAxiom):
         r"""Algebras whose multiplication is associative."""
 
+        class ParentMethods:
+            def associativity_decision(self):
+                return True
+
         class SubcategoryMethods:
             def Unital(self):
                 r"""Return the associative refinement with a two-sided unit."""
@@ -1871,6 +1875,9 @@ class Algebras(OwnedCategoryOverBaseRing):
             )
 
         class ParentMethods:
+            def unit_laws_decision(self):
+                return True
+
             def __init__(self, unit=None, *, _engine_unit=None, **rest) -> None:
                 match _engine_unit:
                     case None:
