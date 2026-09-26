@@ -36,6 +36,9 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_automorphism_from_engine_matrix,
     _torsion_form_isometry,
 )
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    _represented_value_module,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     ModuleEmbeddingMethods,
@@ -350,8 +353,44 @@ def _labelled_generator_images(domain, images):
     }
 
 
-class LatticeMorphism(ModuleMorphism):
+class LatticeMorphismMethods:
     r"""A module morphism preserving the lattice form."""
+
+    def __init__(self, parent, images, *, elementwise=False) -> None:
+        domain = parent.domain()
+        codomain = parent.codomain()
+        module_mor = domain.module_category().Mor(domain, codomain)
+        module_morphism = (
+            module_mor.elementwise(images)
+            if elementwise
+            else module_mor(images)
+        )
+        values = _represented_value_module(domain)
+        target_values = _represented_value_module(codomain)
+        if target_values is not values:
+            raise TypeError(
+                f"a lattice morphism {domain} -> {codomain} needs both forms valued in one module, "
+                f"but they take values in {values} and {target_values}"
+            )
+        super().__init__(
+            parent,
+            module_morphism,
+            values.module_category().Mor(values, values).identity(),
+        )
+
+    def __mul__(self, other):
+        if not isinstance(other, LatticeMorphism):
+            return super().__mul__(other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        source = other.domain()
+        return source.Mor(self.codomain())(
+            lambda label: self(other(source.module_generator(label)))
+        )
+
+
+class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
+    r"""Compatibility shell for private lattice-arrow realizations not yet graph-generated."""
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
         ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
@@ -369,16 +408,6 @@ class LatticeMorphism(ModuleMorphism):
                     f"{self} is not a lattice morphism from {domain} to {codomain}: the "
                     f"pullback of the form of {codomain} is not the form of {domain}"
                 )
-
-    def __mul__(self, other):
-        if not isinstance(other, LatticeMorphism):
-            return super().__mul__(other)
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        source = other.domain()
-        return source.Mor(self.codomain())(
-            lambda label: self(other(source.module_generator(label)))
-        )
 
 
 
@@ -1023,7 +1052,7 @@ class LatticeIsometry(LatticeEmbedding):
 
 
 class LatticeMor(CategoricalMor):
-    Element = LatticeMorphism
+    ElementMethods = LatticeMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         domain.base_ring()
