@@ -421,8 +421,10 @@ A site that still raises keeps its node, and every node whose example passes and
   The live set-Mor owner supplies `mor`; no current specification calls the former public `point_mor` spelling; `Modules(R)` supplies the archived `free_bilinear_form_adjunction` spelling; and every commutative ring now owns `nilradical = sqrt((0))` together with reducedness at the commutative-ring owner.
   Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
-- [ ] **`triage-signature-over-ordered-fields`**. **Needs:** none.
+- [x] **`triage-signature-over-ordered-fields`**. **Needs:** none.
   **Site:** `categories/_lattice.py:1296`: the signature pair asserted for quadratic spaces whose base is not a subfield of the reals (78). **Example:** `tests/constructions/test_categories_inhabited.sage::test_a_category_over_a_ring_is_inhabited_over_every_ring[AA-HyperbolicLattices]`.
+  **Source closure (2026-09-26):** finite-rank signature now uses Sylvester inertia over the represented ordered fraction field rather than requiring `Frac(R) = QQ`. The owned ring classifier places the algebraic real field `AA` in `OwnedOrderedRings`, so the cited hyperbolic-lattice witness reaches the same signature construction as `ZZ` and `QQ`.
+  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
 - [ ] **`triage-kahler-backend`**. **Needs:** none.
   **Site:** `categories/algebras/derivations.py:61`: "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative presentation" (74). **Example:** `tests/constructions/test_algebras_construct.sage::test_kahler_differentials_of_a_ring_over_itself_vanish[AA]`.
