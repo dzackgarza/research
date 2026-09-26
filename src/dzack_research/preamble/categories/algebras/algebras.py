@@ -138,7 +138,7 @@ def _selected_scalar_base_reaches(extension_ring, base_ring) -> bool:
 # ---------------------------------------------------------------------------
 
 
-class MultiplicativeAlgebraMorphism(ModuleMorphism):
+class MultiplicativeAlgebraMorphism:
     r"""An algebra morphism: an ``R``-linear \(f\colon A\to B\) with \(f\,m_A = m_B\,(f\otimes f)\).
 
     The datum is the linear map, an element of the module Mor.  The defining
@@ -158,15 +158,13 @@ class MultiplicativeAlgebraMorphism(ModuleMorphism):
         domain = parent.domain()
         codomain = parent.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
-        ModuleMorphism.__init__(self, parent, linear)
-        self._underlying_morphism = linear
-        self._underlying_linearity = linear.linearity_decision()
+        super().__init__(parent, linear)
         derived = self._multiplicativity_derivation()
         if derived is None:
             source_multiplication = domain.multiplication_morphism()
             target_multiplication = codomain.multiplication_morphism()
             preserved = (
-                linear * source_multiplication
+                ModuleMorphismMethods.__mul__(self, source_multiplication)
                 == target_multiplication * self.tensor_square_morphism()
             )
         else:
@@ -177,25 +175,16 @@ class MultiplicativeAlgebraMorphism(ModuleMorphism):
         )
         self._preserves_multiplication = preserved
 
-    def underlying_morphism(self):
-        r"""The linear map this algebra morphism is, in the module Mor."""
-        return self._underlying_morphism
-
     @cached_method
     def tensor_square_morphism(self):
         r"""\(f\otimes f\colon A\otimes_R A\to B\otimes_R B\)."""
         source_multiplication = self.domain().multiplication_morphism()
         target_multiplication = self.codomain().multiplication_morphism()
-        linear = self.underlying_morphism()
-        return linear.tensor_product_map(
-            linear,
+        return self.tensor_product_map(
+            self,
             source=source_multiplication.domain(),
             target=target_multiplication.domain(),
         )
-
-    def linearity_decision(self):
-        r"""Return the retained linearity decision of the underlying module map."""
-        return self._underlying_linearity
 
     def is_multiplicative(self):
         r"""``True`` when \(f\,m_A = m_B\,(f\otimes f)\) was decided, ``Unknown`` when it is the stated hypothesis."""
@@ -213,7 +202,7 @@ class MultiplicativeAlgebraMorphism(ModuleMorphism):
         the difference from the module cokernel; for Lie algebras it is the
         quotient by the Lie ideal the image generates.
         """
-        image = self.underlying_morphism().image()
+        image = ModuleMorphismMethods.image(self)
         return self.codomain().quotient_by_generated_algebra_ideal(image)
 
     @cached_method
@@ -223,31 +212,20 @@ class MultiplicativeAlgebraMorphism(ModuleMorphism):
         category = self.parent().mor_category()
         return category.Mor(self.codomain(), quotient)(quotient.algebra_quotient_projection())
 
-    def __eq__(self, other) -> bool:
-        match element_parent(other):
-            case parent if parent is self.parent():
-                return self.underlying_morphism() == other.underlying_morphism()
-            case _:
-                return False
-
-    def __ne__(self, other):
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
-
-    __hash__ = None
-
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
         category = self.parent().mor_category()
-        forget = Algebras(self.domain().algebra_base_ring()).underlying_module()
-        return category.Mor(other.domain(), self.codomain())(self.underlying_morphism() * forget(other))
+        linear = ModuleMorphismMethods.__mul__(self, other)
+        if linear is NotImplemented:
+            return NotImplemented
+        return category.Mor(other.domain(), self.codomain())(linear)
 
 
 class MultiplicativeAlgebraMor(CategoricalMor):
     r"""``Hom_{R-Alg}(A, B)``: the linear maps preserving the multiplication."""
 
-    Element = MultiplicativeAlgebraMorphism
+    ElementMethods = MultiplicativeAlgebraMorphism
 
     def __call__(self, datum):
         return self._element_constructor_(datum)
@@ -278,7 +256,7 @@ class MultiplicativeAlgebraMor(CategoricalMor):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
 
 
-class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
+class UnitalMultiplicativeAlgebraMorphism:
     r"""A morphism of unital algebras: multiplicative and \(f(1) = 1\)."""
 
     def _unit_preservation_derivation(self):
@@ -306,7 +284,7 @@ class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
 class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
     r"""``Mor`` of unital algebras: the multiplicative linear maps preserving the unit."""
 
-    Element = UnitalMultiplicativeAlgebraMorphism
+    ElementMethods = UnitalMultiplicativeAlgebraMorphism
 
     def _repr_(self):
         return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
