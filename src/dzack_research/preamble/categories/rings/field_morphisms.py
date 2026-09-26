@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
-    RingMorphism,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -68,7 +67,7 @@ def _field_generators(field):
     ))
 
 
-class ExactFieldMorphism(RingMorphism):
+class ExactFieldMorphism:
     r"""A field morphism with owned endpoints and an exact Sage field map retained privately.
 
     The private map is admitted by the exact field Mor's element constructor,
@@ -77,11 +76,8 @@ class ExactFieldMorphism(RingMorphism):
     """
 
     def __init__(self, parent, engine_morphism: Map) -> None:
-        RingMorphism.__init__(
-            self,
-            parent,
-            self._evaluate_engine,
-            engine_morphism=engine_morphism,
+        super().__init__(
+            parent, self._evaluate_engine, engine_morphism=engine_morphism
         )
 
     def _engine_morphism_crossing(self) -> Map:
@@ -210,7 +206,7 @@ class ExactFieldMorphism(RingMorphism):
 
 
 class _ExactFieldMor(CategoricalMor):
-    Element = ExactFieldMorphism
+    ElementMethods = ExactFieldMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(

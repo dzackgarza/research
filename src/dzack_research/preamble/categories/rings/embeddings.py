@@ -11,14 +11,13 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.rings.field_morphisms import ExactFieldMorphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
-    RingMorphism,
     _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-class NumberFieldEmbedding(ExactFieldMorphism):
+class NumberFieldEmbedding:
     r"""An exact field embedding between owned number fields."""
 
     def __init__(self, parent, engine_morphism) -> None:
@@ -39,7 +38,7 @@ class NumberFieldEmbedding(ExactFieldMorphism):
                 f"cannot form an embedding {domain} -> {codomain} from {engine_morphism}: "
                 f"its codomain is {engine_morphism.codomain()}, not {codomain}"
             )
-        ExactFieldMorphism.__init__(self, parent, engine_morphism)
+        super().__init__(parent, engine_morphism)
 
     def _primitive_image_key(self):
         engine_domain = _engine_ring(self.domain())
@@ -91,7 +90,7 @@ class NumberFieldEmbedding(ExactFieldMorphism):
 
 
 class NumberFieldMor(CategoricalMor):
-    Element = NumberFieldEmbedding
+    ElementMethods = NumberFieldEmbedding
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(self, mor_family, domain, codomain)
@@ -145,7 +144,7 @@ class NumberFieldMor(CategoricalMor):
         return f"Emb({self.domain()}, {self.codomain()})"
 
 
-class OrderEmbedding(RingMorphism):
+class OrderEmbedding:
     r"""A unital embedding of orders, represented by its fraction-field extension."""
 
     def __init__(self, parent, field_embedding: NumberFieldEmbedding) -> None:
@@ -172,7 +171,7 @@ class OrderEmbedding(RingMorphism):
                     f"it sends the basis element {basis_element} to {image}, which is not in {codomain}"
                 )
         self._field_embedding = field_embedding
-        RingMorphism.__init__(self, parent, self._evaluate_field_embedding)
+        super().__init__(parent, self._evaluate_field_embedding)
 
     def field_embedding(self) -> NumberFieldEmbedding:
         return self._field_embedding
@@ -195,7 +194,7 @@ class OrderEmbedding(RingMorphism):
 
 
 class OrderMor(CategoricalMor):
-    Element = OrderEmbedding
+    ElementMethods = OrderEmbedding
 
     def __init__(self, domain, codomain) -> None:
         CategoricalMor.__init__(

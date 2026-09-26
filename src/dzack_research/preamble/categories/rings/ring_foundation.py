@@ -74,7 +74,6 @@ from dzack_research.preamble.categories.rings.semirings import (
     OwnedRngs,
     OwnedSemirings,
     RingMorCategoryConstruction,
-    SemiringMorphism,
 )
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -103,19 +102,21 @@ if "Prime" not in all_axioms:
     all_axioms.add("Prime")
 
 
-class RingMorphism(SemiringMorphism):
+class RngMorphism:
+    r"""A rng morphism; additive and multiplicative behavior comes from the Mor graph."""
+
+    def __init__(self, parent, function, *, engine_morphism=None) -> None:
+        _ = engine_morphism
+        super().__init__(parent, function)
+
+
+class RingMorphism:
     r"""A unital ring morphism in the owned ring category."""
 
     def __init__(self, parent, function, *, engine_morphism=None) -> None:
-        SemiringMorphism.__init__(self, parent, function)
         self._engine_morphism = engine_morphism
         self._preamble_is_identity = False
-
-    def __call__(self, element):
-        return self._call_(element)
-
-    def _call_(self, element):
-        return self.codomain()(self._function(self.domain()(element)))
+        super().__init__(parent, function)
 
     def _engine_morphism_crossing(self):
         r"""Return the private engine realization when one was selected.
@@ -319,10 +320,64 @@ def _selected_engine_ring_morphism(morphism):
     return morphism._engine_morphism
 
 
+def _ringlike_mor_element(parent, datum, provider_type):
+    r"""Admit one rng/ring arrow at its fixed-Mor owner."""
+    if isinstance(datum, provider_type):
+        if datum.domain() is not parent.domain() or datum.codomain() is not parent.codomain():
+            raise ValueError(
+                f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): it is a "
+                f"morphism {datum.domain()} -> {datum.codomain()}"
+            )
+        if datum.parent() is parent:
+            return datum
+        return parent.elementwise(datum)
+    if isinstance(datum, Mapping):
+        from dzack_research.preamble.categories.algebras.algebras import (
+            _engine_algebra_morphism_from_generator_images,
+        )
+
+        engine_morphism = _engine_algebra_morphism_from_generator_images(
+            parent.domain(),
+            parent.codomain(),
+            datum,
+        )
+        return _ringlike_mor_element(parent, engine_morphism, provider_type)
+    if isinstance(datum, Map):
+        source_engine = _engine_ring(parent.domain())
+        target_engine = _engine_ring(parent.codomain())
+
+        def engine_endpoint(ring):
+            return _engine_ring(ring) if ring in OwnedRings() else ring
+
+        if engine_endpoint(datum.domain()) is not source_engine:
+            raise ValueError(
+                f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): "
+                f"its domain is {datum.domain()}"
+            )
+        if engine_endpoint(datum.codomain()) is not target_engine:
+            raise ValueError(
+                f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): "
+                f"its codomain is {datum.codomain()}"
+            )
+        return parent.element_class(
+            parent,
+            lambda element: _owned_engine_element(
+                parent.codomain(), datum(_engine_element(parent.domain(), element))
+            ),
+            engine_morphism=datum,
+        )
+    if callable(datum):
+        return parent.elementwise(datum)
+    raise TypeError(
+        f"cannot build a morphism {parent.domain()} -> {parent.codomain()} from {datum!r}: give "
+        "the images of the ring generators or a map on elements"
+    )
+
+
 class RngMor(CategoricalMor):
     r"""The owned set ``Hom_Rng(A,B)`` of maps preserving sum and product."""
 
-    Element = RingMorphism
+    ElementMethods = RngMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(self, mor_family, domain, codomain)
@@ -334,58 +389,7 @@ class RngMor(CategoricalMor):
         return self.domain() is self.codomain()
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, RingMorphism):
-            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                raise ValueError(
-                    f"cannot view {datum} as an element of Mor({self.domain()}, {self.codomain()}): it is a "
-                    f"morphism {datum.domain()} -> {datum.codomain()}"
-                )
-            if datum.parent() is self:
-                return datum
-            return self.elementwise(datum)
-        if isinstance(datum, Mapping):
-            from dzack_research.preamble.categories.algebras.algebras import (
-                _engine_algebra_morphism_from_generator_images,
-            )
-
-            engine_morphism = _engine_algebra_morphism_from_generator_images(
-                self.domain(),
-                self.codomain(),
-                datum,
-            )
-            return self._element_constructor_(engine_morphism)
-        if isinstance(datum, Map):
-            source_engine = _engine_ring(self.domain())
-            target_engine = _engine_ring(self.codomain())
-
-            def engine_endpoint(ring):
-                # An engine map has Sage rings as endpoints; an owned map's
-                # endpoints are lowered to their engines.
-                return _engine_ring(ring) if ring in OwnedRings() else ring
-
-            if engine_endpoint(datum.domain()) is not source_engine:
-                raise ValueError(
-                    f"cannot view {datum} as an element of Mor({self.domain()}, {self.codomain()}): its domain "
-                    f"is {datum.domain()}"
-                )
-            if engine_endpoint(datum.codomain()) is not target_engine:
-                raise ValueError(
-                    f"cannot view {datum} as an element of Mor({self.domain()}, {self.codomain()}): its codomain "
-                    f"is {datum.codomain()}"
-                )
-            return self.element_class(
-                self,
-                lambda element: _owned_engine_element(self.codomain(),
-                    datum(_engine_element(self.domain(), element))
-                ),
-                engine_morphism=datum,
-            )
-        if callable(datum):
-            return self.elementwise(datum)
-        raise TypeError(
-            f"cannot build a ring morphism {self.domain()} -> {self.codomain()} from {datum!r}: give "
-            "the images of the ring generators or a map on elements"
-        )
+        return _ringlike_mor_element(self, datum, RngMorphism)
 
     def elementwise(self, function):
         return self.element_class(self, function)
@@ -508,13 +512,42 @@ def _ring_morphisms_equal(left, right):
 
 
 
-class RingMor(RngMor):
-    r"""The owned set ``Hom_Ring(A,B)``: rng morphisms that also preserve ``1``.
+class RingMor(CategoricalMor):
+    r"""The owned set ``Hom_Ring(A,B)`` generated from semiring and rng Mors."""
 
-    Unital rings are not a full subcategory of rngs, so this is a subset of
-    ``Hom_Rng(A,B)`` and never the same object: the Mor family of rings
-    builds it rather than inheriting the rng Mor.
-    """
+    ElementMethods = RingMorphism
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
+
+    def __call__(self, datum):
+        return self._element_constructor_(datum)
+
+    def is_endomorphism_set(self):
+        return self.domain() is self.codomain()
+
+    def _element_constructor_(self, datum):
+        return _ringlike_mor_element(self, datum, RingMorphism)
+
+    def elementwise(self, function):
+        return self.element_class(self, function)
+
+    def _elementwise_with_engine(self, function, engine_morphism):
+        return self.element_class(
+            self, function, engine_morphism=engine_morphism
+        )
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"the identity morphism exists only on Mor(R, R), but this is Mor({self.domain()}, {self.codomain()})"
+            )
+        identity = self.elementwise(lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
+
+    def _repr_(self):
+        return f"Mor_Ring({self.domain()}, {self.codomain()})"
 
 class PredicateSubrings(OwnedCategory):
     def an_object(self):
