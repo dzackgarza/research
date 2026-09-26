@@ -9,7 +9,6 @@ assert at the computational frontier when arbitrary openness is not
 represented.
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
@@ -24,6 +23,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
+    OwnedSetMorphism,
     Sets,
 )
 from dzack_research.preamble.owned_category import _object_of
@@ -132,27 +132,24 @@ class _FiniteTopologicalSpaceEngine:
         return self.unstructured_set().cardinality()
 
 
-class ContinuousMap(Morphism):
+class ContinuousMap(OwnedSetMorphism):
     r"""A continuous map, retaining its underlying set morphism."""
 
     def __init__(self, parent, set_morphism) -> None:
-        Morphism.__init__(self, parent)
         if (
-            set_morphism.domain() is not self.domain()
-            or set_morphism.codomain() is not self.codomain()
+            set_morphism.domain() is not parent.domain()
+            or set_morphism.codomain() is not parent.codomain()
         ):
             raise ValueError(
-                f"{set_morphism} cannot underlie a continuous map {self.domain()} -> "
-                f"{self.codomain()}: it is a map {set_morphism.domain()} -> "
+                f"{set_morphism} cannot underlie a continuous map {parent.domain()} -> "
+                f"{parent.codomain()}: it is a map {set_morphism.domain()} -> "
                 f"{set_morphism.codomain()}"
             )
         self._set_morphism = set_morphism
+        OwnedSetMorphism.__init__(self, parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
-
-    def __call__(self, point):
-        return self.underlying_set_morphism()(point)
 
     def __mul__(self, other):
         if not _precomposable(self, other):
