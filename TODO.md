@@ -426,8 +426,10 @@ A site that still raises keeps its node, and every node whose example passes and
   **Source closure (2026-09-26):** finite-rank signature now uses Sylvester inertia over the represented ordered fraction field rather than requiring `Frac(R) = QQ`. The owned ring classifier places the algebraic real field `AA` in `OwnedOrderedRings`, so the cited hyperbolic-lattice witness reaches the same signature construction as `ZZ` and `QQ`.
   Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
-- [ ] **`triage-kahler-backend`**. **Needs:** none.
+- [x] **`triage-kahler-backend`**. **Needs:** none.
   **Site:** `categories/algebras/derivations.py:61`: "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative presentation" (74). **Example:** `tests/constructions/test_algebras_construct.sage::test_kahler_differentials_of_a_ring_over_itself_vanish[AA]`.
+  **Source closure (2026-09-26):** the cited case is the identity algebra `A/A`, so `Omega^1_{A/A} = 0` independently of any presentation. The Kähler-differential constructor now recognizes that semantic case first and constructs the zero free `A`-module in `KahlerDifferentialModules(A)`; only genuinely relative algebras continue to the localization or finite-presentation backends.
+  Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
 - [ ] **`closed-immersion-citation`**. **Needs:** none.
   **Site:** `categories/schemes/schemes.py`, `is_closed_immersion`, cites Stacks Tag 01HV, which is Lemma 26.5.4 (sections of `M~` on `Spec R`). Cite the Stacks result that a morphism of affine schemes is a closed immersion exactly when its ring map is surjective, after opening it.
