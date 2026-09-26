@@ -584,11 +584,11 @@ class _TransportedLatticeEmbedding(LatticeEmbedding):
         return True
 
 
-class LatticeIsometry(LatticeEmbedding):
+class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
     def __init__(self, parent, images) -> None:
-        LatticeEmbedding.__init__(self, parent, images)
+        super().__init__(parent, images)
         if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
             raise ValueError(
                 f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: "
@@ -610,7 +610,7 @@ class LatticeIsometry(LatticeEmbedding):
         if self is other:
             return True
         return (
-            isinstance(other, LatticeIsometry)
+            isinstance(other, LatticeIsometryMethods)
             and other.domain() is self.domain()
             and other.codomain() is self.codomain()
             and _tensor_view(other) == _tensor_view(self)
@@ -638,7 +638,7 @@ class LatticeIsometry(LatticeEmbedding):
         return _module_matrix(self).determinant()
 
     def __mul__(self, other):
-        if isinstance(other, LatticeIsometry) and other.codomain() is self.domain():
+        if isinstance(other, LatticeIsometryMethods) and other.codomain() is self.domain():
             if self.domain() is self.codomain() and other.parent() is self.parent():
                 return self.parent().compose(self, other)
             source = other.domain()
@@ -1052,6 +1052,10 @@ class LatticeIsometry(LatticeEmbedding):
                 f"for {self} has order {image.order()}, but OSCAR reports order {expected_order}"
             )
         return image
+
+
+class LatticeIsometry(LatticeIsometryMethods, LatticeEmbedding):
+    r"""Compatibility shell for private lattice-isometry realizations."""
 
 
 class LatticeMor(CategoricalMor):
@@ -1491,7 +1495,7 @@ class LatticeEmbeddingMor(CategoricalMor):
 
 
 class LatticeIsometryMor(LatticeEmbeddingMor):
-    Element = LatticeIsometry
+    ElementMethods = LatticeIsometryMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         categories = []
@@ -1519,7 +1523,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             self._retain_group_framing(self._computed_group_generators())
 
     def _element_constructor_(self, images):
-        if isinstance(images, LatticeIsometry):
+        if isinstance(images, LatticeIsometryMethods):
             if (
                 images.domain() is not self.domain()
                 or images.codomain() is not self.codomain()
