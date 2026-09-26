@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _unit_from_multiplication,
 )
 from dzack_research.preamble.categories.modules.graded_modules import (
+    GradedModuleMorphismMethods,
     GradedModules,
     _concentrated_graded_module,
     _require_grading_monoid,
@@ -106,53 +107,14 @@ class GradedAlgebraMorphism:
     r"""An algebra morphism preserving the selected grading."""
 
     def __init__(self, parent, images, *, degree_preservation=None) -> None:
+        if degree_preservation is None and isinstance(images, GradedModuleMorphismMethods):
+            degree_preservation = images.degree_preservation_decision()
+        self._graded_algebra_degree_preservation_premise = degree_preservation
         super().__init__(parent, images)
-        derived = (
-            self._degree_preservation_derivation()
-            if degree_preservation is None
-            else degree_preservation
-        )
-        self._degree_preservation_decision = (
-            self._decide_degree_preservation() if derived is None else derived
-        )
-        assert self._degree_preservation_decision is not False, (
-            f"{images} does not define a morphism of graded algebras {self.domain()} -> {self.codomain()}: "
-            "it does not preserve degree"
-        )
-
-    def degree_preservation_decision(self):
-        r"""Return ``True`` when degree preservation is established, else its ``Unknown`` hypothesis."""
-        return self._degree_preservation_decision
 
     def _degree_preservation_derivation(self):
-        r"""Return a construction-derived decision, or ``None`` to inspect represented data."""
-        return None
-
-    def _decide_degree_preservation(self):
-        r"""Decide degree preservation on finite selected generators, else retain ``Unknown``."""
-        domain = self.domain()
-        codomain = self.codomain()
-        if not domain.is_framed_algebra():
-            return Unknown
-        labels = domain.algebra_generating_set()
-        if labels.cardinality().is_finite() is not True:
-            return Unknown
-        for label in labels:
-            generator = domain.algebra_generator(label)
-            source_degree = _homogeneous_degree(generator)
-            image = self(generator)
-            zero_decision = image == codomain.zero()
-            if zero_decision is True:
-                continue
-            if zero_decision is Unknown:
-                return Unknown
-            target_degree = _homogeneous_degree(image)
-            degree_equal = target_degree == source_degree
-            if degree_equal is False:
-                return False
-            if degree_equal is not True:
-                return Unknown
-        return True
+        r"""Pass a construction-derived grading premise to the graded-module owner."""
+        return self._graded_algebra_degree_preservation_premise
 
     def __mul__(self, other):
         if not isinstance(other, GradedAlgebraMorphism):

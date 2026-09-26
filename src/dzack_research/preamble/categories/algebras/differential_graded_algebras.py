@@ -476,26 +476,6 @@ class DGAMorphism:
         )
         return True if linear and all(answer is True for answer in comparisons) else Unknown
 
-    def component(self, degree):
-        r"""Return the degree-``degree`` linear component of this DGA map."""
-        degree = int(degree)
-        if degree < 0:
-            source = self.domain()._negative_cochain_zero_module()
-            target = self.codomain()._negative_cochain_zero_module()
-            return DegreewiseLinearMorphism(
-                source,
-                target,
-                lambda _element: target.zero(),
-            )
-        source = self.domain().graded_piece(degree)
-        target = self.codomain().graded_piece(degree)
-
-        def image(element):
-            source_element = self.domain().from_graded_piece(degree, element)
-            return self(source_element).homogeneous_component(degree)
-
-        return DegreewiseLinearMorphism(source, target, image)
-
     def __mul__(self, other):
         if not isinstance(other, DGAMorphism) or other.codomain() is not self.domain():
             return NotImplemented

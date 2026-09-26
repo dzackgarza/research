@@ -489,6 +489,9 @@ class CochainMorphismMethods:
     def _elementwise_linearity_derivation(self):
         return True
 
+    def _degree_preservation_derivation(self):
+        return True
+
     def __init__(self, parent, components) -> None:
         if isinstance(components, Morphism):
             if (
@@ -512,16 +515,11 @@ class CochainMorphismMethods:
         degree = int(degree)
         return self._components(self.domain().degree_index_set()(degree))
 
-    def component(self, degree):
+    def _selected_degree_component(self, degree):
+        return self._raw_component(degree)
+
+    def _validate_degree_component(self, degree, selected):
         degree = int(degree)
-        source = self.domain().graded_piece(degree)
-        target = self.codomain().graded_piece(degree)
-        selected = self._raw_component(degree)
-        if selected.domain() is not source or selected.codomain() is not target:
-            raise ValueError(
-                f"the degree-{degree} component of the cochain map {self} must be a map "
-                f"{source} -> {target}, but it is {selected.domain()} -> {selected.codomain()}"
-            )
         if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
             following = self._raw_component(degree + 1)
             following_source = self.domain().graded_piece(degree + 1)

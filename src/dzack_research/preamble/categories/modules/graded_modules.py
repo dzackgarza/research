@@ -1,6 +1,7 @@
 """Modules graded by a monoid."""
 
 from sage.misc.cachefunc import cached_function
+from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
@@ -153,42 +154,103 @@ def _selected_homogeneous_degree(element):
 class GradedModuleMorphismMethods:
     r"""A degree-zero morphism of graded modules."""
 
-    def __init__(self, parent, images, *, elementwise=False) -> None:
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        elementwise=False,
+        degree_preservation=None,
+    ) -> None:
         super().__init__(parent, images, elementwise=elementwise)
         if self.linearity_decision() is not True:
             raise ValueError(
                 f"the proposed map {parent.domain()} -> {parent.codomain()} is not known to be "
                 f"{parent.domain().base_ring()}-linear, so it is not a graded-module morphism"
             )
-        self._check_selected_degrees()
+        derived = (
+            self._degree_preservation_derivation()
+            if degree_preservation is None
+            else degree_preservation
+        )
+        self._degree_preservation_decision = (
+            self._decide_degree_preservation() if derived is None else derived
+        )
+        if self._degree_preservation_decision is False:
+            raise ValueError(
+                f"the proposed map {parent.domain()} -> {parent.codomain()} does not preserve degree"
+            )
 
-    def _check_selected_degrees(self) -> None:
+    def _degree_preservation_derivation(self):
+        r"""Return a construction-derived degree-preservation decision, or ``None``."""
+        return None
+
+    def degree_preservation_decision(self):
+        r"""Return the retained decision that this map preserves degree."""
+        return self._degree_preservation_decision
+
+    def _decide_degree_preservation(self):
+        r"""Decide degree preservation on selected homogeneous generators when possible."""
 
         domain = self.domain()
         if not domain.has_selected_module_resolution():
-            return
+            return Unknown
         labels = domain.module_generating_set()
         if not labels.cardinality().is_finite():
-            return
+            return Unknown
+        answer = True
         for label in labels:
             source = domain.module_generator(label)
             source_degree = _represented_homogeneous_degree_or_none(source)
             if source_degree is None:
+                answer = Unknown
                 continue
             image = self(source)
-            if image == self.codomain().zero():
+            zero = image == self.codomain().zero()
+            if zero is True:
+                continue
+            if zero is not False:
+                answer = Unknown
                 continue
             target_degree = _represented_homogeneous_degree_or_none(image)
             if target_degree is None:
-                raise ValueError(
-                    f"{self} does not preserve degree: the generator {source} of degree {source_degree} "
-                    f"maps to {image}, which has no single degree in {self.codomain()}"
-                )
+                return False
             if target_degree != source_degree:
-                raise ValueError(
-                    f"{self} does not preserve degree: the generator {source} of degree {source_degree} "
-                    f"maps to {image} of degree {target_degree}"
+                return False
+        return answer
+
+    def _selected_degree_component(self, degree):
+        r"""Return a construction-selected component map, or ``None``."""
+        return None
+
+    def _validate_degree_component(self, degree, component):
+        r"""Validate specialization-specific laws for one selected component."""
+        return component
+
+    def component(self, degree):
+        r"""Return the linear map on the degree-``degree`` graded pieces."""
+        degree = self.domain().grading_index_set()(degree)
+        source = self.domain().graded_piece(degree)
+        target = self.codomain().graded_piece(degree)
+        selected = self._selected_degree_component(degree)
+        if selected is None:
+            source_inclusion = source.inclusion()
+            target_inclusion = target.inclusion()
+            component = source.module_category().Mor(
+                source, target
+            )._from_constructed_element_map(
+                lambda element: target_inclusion.lift(
+                    self(source_inclusion(source(element)))
                 )
+            )
+        else:
+            component = selected
+            if component.domain() is not source or component.codomain() is not target:
+                raise ValueError(
+                    f"the degree-{degree} component of {self} must be a map {source} -> {target}, "
+                    f"but it is {component.domain()} -> {component.codomain()}"
+                )
+        return self._validate_degree_component(degree, component)
 
     def __mul__(self, other):
         if not isinstance(other, GradedModuleMorphismMethods):
@@ -217,6 +279,9 @@ class _CompositeGradedModuleMorphism(GradedModuleMorphism):
         super().__init__(parent, lambda element: left(right(element)), elementwise=True)
 
     def _elementwise_linearity_derivation(self):
+        return True
+
+    def _degree_preservation_derivation(self):
         return True
 
 
