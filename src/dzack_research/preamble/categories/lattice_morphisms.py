@@ -406,47 +406,6 @@ class LatticeEmbedding(LatticeMorphism):
         return True
 
 
-class _TransportedLatticeEmbedding(LatticeEmbedding):
-    r"""A represented module embedding read in the corresponding lattice Mono."""
-
-    def __init__(self, parent, embedding) -> None:
-        self._underlying_module_embedding = embedding
-        source = parent.domain()
-        super().__init__(
-            parent,
-            lambda label: embedding(source.module_generator(label)),
-        )
-
-    def _injectivity_derivation(self):
-        return True
-
-    def factor_through(self, target_embedding):
-        r"""Factor this lattice embedding through a module embedding when possible."""
-        factor = self.factor_through_or_none(target_embedding)
-        if factor is None:
-            raise ValueError(
-                f"{self} does not factor through {target_embedding}: the image of "
-                f"{self.domain()} is not contained in the image of {target_embedding.domain()}"
-            )
-        return factor
-
-    def factor_through_or_none(self, target_embedding):
-        r"""Return the module factor through target_embedding, or None."""
-        if target_embedding.codomain() is not self.codomain():
-            raise ValueError(
-                f"{self} cannot factor through {target_embedding}: their codomains "
-                f"{self.codomain()} and {target_embedding.codomain()} differ"
-            )
-        source = self.domain()
-        target = target_embedding.domain()
-        images = {}
-        for label in source.module_generating_set():
-            image = self(source.module_generator(label))
-            if not target_embedding.is_in_image(image):
-                return None
-            images[label] = target_embedding.lift(image)
-        return source.module_category().Mor(source, target)(images)
-
     def __mul__(self, other):
         if not isinstance(other, LatticeEmbedding):
             return super().__mul__(other)
@@ -574,6 +533,21 @@ class _TransportedLatticeEmbedding(LatticeEmbedding):
             images[label] = target_discriminant.projection()(dual_element)
 
         return source_form.Mono(target_form)(images, quadratic=target.is_even())
+
+
+class _TransportedLatticeEmbedding(LatticeEmbedding):
+    r"""A represented module embedding read in the corresponding lattice Mono."""
+
+    def __init__(self, parent, embedding) -> None:
+        self._underlying_module_embedding = embedding
+        source = parent.domain()
+        super().__init__(
+            parent,
+            lambda label: embedding(source.module_generator(label)),
+        )
+
+    def _injectivity_derivation(self):
+        return True
 
 
 class LatticeIsometry(LatticeEmbedding):
