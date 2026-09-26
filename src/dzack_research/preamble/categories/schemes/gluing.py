@@ -1492,7 +1492,7 @@ class _FiniteAffineAtlasEngine:
         return f"Finite affine atlas of {self.scheme()} indexed by {self.chart_index_set()}"
 
 
-class FiniteAtlasRefinement(CoveringFamilyMorphism):
+class FiniteAtlasRefinementMethods:
     r"""A represented refinement of one finite affine atlas by another.
 
     A refinement consists of a map from fine chart labels to coarse chart
@@ -1794,14 +1794,18 @@ class FiniteAtlasRefinement(CoveringFamilyMorphism):
         return FiniteAtlasLineBundlePullbackComparison(self, line_bundle)
 
 
+class FiniteAtlasRefinement(FiniteAtlasRefinementMethods, CoveringFamilyMorphism):
+    r"""Compatibility shell for private finite-atlas refinement realizations."""
+
+
 class FiniteAtlasMor(CoveringFamilyMor):
     r"""Refinements/comparisons between two finite affine atlases."""
 
-    Element = FiniteAtlasRefinement
+    ElementMethods = FiniteAtlasRefinementMethods
 
     def _element_constructor_(self, index_map, chart_maps=None, *, target_map=None):
         match index_map:
-            case FiniteAtlasRefinement() if chart_maps is None and target_map is None:
+            case FiniteAtlasRefinementMethods() if chart_maps is None and target_map is None:
                 if index_map.parent() is self:
                     return index_map
                 if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
