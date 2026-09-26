@@ -1969,7 +1969,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupAutomorphism(GroupMorphism):
+class GroupAutomorphismMethods:
     def _composition(self, right):
         r"""Compose automorphisms inside their represented automorphism group."""
         if right.parent() is self.parent():
@@ -1978,6 +1978,10 @@ class GroupAutomorphism(GroupMorphism):
                 check=False,
             )
         return super()._composition(right)
+
+
+class GroupAutomorphism(GroupAutomorphismMethods, GroupMorphism):
+    r"""Compatibility shell for GAP-backed group automorphisms."""
 
 
 class GroupAutomorphismGroups(OwnedCategory):
@@ -2079,7 +2083,7 @@ class GroupAutomorphismGroups(OwnedCategory):
 
 
 class GroupAutomorphismGroup(GroupMor):
-    Element = GroupAutomorphism
+    ElementMethods = GroupAutomorphismMethods
 
     @staticmethod
     def __classcall__(cls, mor_family, group):
