@@ -362,8 +362,9 @@ Regenerate the catalogue with the same command; the time gates are on by default
   **Example:** `tests/sets/test_standard_cardinals_archive.sage::test_matrix_ring_cardinality_tracks_the_coefficient_ring`.
   **Source closure (2026-09-26):** the remaining owned-to-Sage base leak was the common `CategoricalMor` constructor: additive and module Mor parents supplied an owned scalar ring through `SageHomset(..., base=...)` even though the private Homset is intentionally constructed only in Sage `Sets()` and the owned enrichment carries its own scalar data. That base channel is removed; module Mor reads its base from the endpoints and additive Mor exposes its stored `ZZ` explicitly. A static census now finds no `_Sage*` constructor receiving an unlowered owned `base`/`base_ring`/`ring`, and no `CategoricalMor` caller retains the removed channel. Runtime confirmation remains in terminal T under `DEV-58`.
 
-- [ ] **`triage-an-element`**. **Needs:** none.
+- [x] **`triage-an-element`**. **Needs:** none.
   **Site:** `sage/structure/parent.pyx:2847`: `please implement _an_element_` for join-category, product and coproduct parents (158 + 37 + 23). **Example:** `tests/functions/test_lebesgue_quotient.sage::test_quotient_keeps_a_nonzero_function_and_does_not_sample_callable_equality`.
+  **Source closure (2026-09-26):** the three reported parent families now exhibit canonical elements at their mathematical owners. A general module returns its zero element, so modules constructed in category joins such as the Lebesgue quotient do not ask Sage to sample their underlying function set. A Cartesian product chooses each factor's `an_element()` lazily, including the unique empty-product section; a coproduct chooses one represented summand and one element of it. Empty coproducts correctly remain without a witness. Runtime confirmation remains in terminal T under `DEV-58`.
 
 - [ ] **`triage-category-c3-keys`**. **Needs:** none.
   **Site:** `sage/misc/c3_controlled.pyx:945`: `KeyError` on a category sort key while Sage linearizes super categories (143 + 49); a category is joined whose comparison key is not registered.
