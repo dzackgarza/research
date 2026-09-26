@@ -1448,6 +1448,7 @@ class _PredicateSubringParent(Parent):
         return _PredicateSubringElement
 
     def __init__(self, ambient_ring, predicate, description, category):
+        SageObject.__init__(self)
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
             raise TypeError(f"{ambient_ring} is not a ring")
         ambient_ring = _own_ring(ambient_ring)
