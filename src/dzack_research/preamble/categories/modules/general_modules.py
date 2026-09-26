@@ -290,6 +290,10 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def zero(self):
             return self(self._zero_value)
 
+        def an_element(self):
+            r"""The zero element, which every module contains."""
+            return self.zero()
+
         def _add_elements(self, left, right):
             return self(
                 self._addition(

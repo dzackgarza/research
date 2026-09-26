@@ -2856,6 +2856,10 @@ class CartesianProductsOfSets(OwnedCategory):
             )
             return factor
 
+        def an_element(self):
+            r"""Choose one point componentwise from the factors."""
+            return self(lambda index: self.factor(index).an_element())
+
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
             return self._element_constructor_(*args, **kwargs)
@@ -3167,6 +3171,11 @@ class CoproductsOfSets(OwnedCategory):
                 f"the cofactor at index {normalized} of {self} is {cofactor}, which is not a set"
             )
             return cofactor
+
+        def an_element(self):
+            r"""Choose one point from one represented summand."""
+            index = self.index_set().an_element()
+            return self(index, self.cofactor(index).an_element())
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
