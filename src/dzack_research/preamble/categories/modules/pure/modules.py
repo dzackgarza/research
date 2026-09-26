@@ -1921,14 +1921,14 @@ class Modules(OwnedCategoryOverBaseRing):
             ring; it is unrelated to ``L.twist(a)``, which rescales a lattice
             form while leaving its scalar action unchanged.
             """
-            ring = _engine_ring(self.base_ring())
+            ring = self.base_ring()
             if (
-                _engine_ring(ring_endomorphism.domain()) is not ring
-                or _engine_ring(ring_endomorphism.codomain()) is not ring
+                ring_endomorphism.domain() is not ring
+                or ring_endomorphism.codomain() is not ring
             ):
                 raise ValueError(
                     f"{ring_endomorphism} cannot twist the scalar action of {self}: it must be an endomorphism of "
-                    f"{self.base_ring()}, but it is a map {ring_endomorphism.domain()} -> {ring_endomorphism.codomain()}"
+                    f"{ring}, but it is a map {ring_endomorphism.domain()} -> {ring_endomorphism.codomain()}"
                 )
             return self.restrict_scalars(ring_endomorphism)
 
