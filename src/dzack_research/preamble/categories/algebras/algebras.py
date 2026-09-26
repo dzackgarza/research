@@ -137,7 +137,7 @@ def _selected_scalar_base_reaches(extension_ring, base_ring) -> bool:
 # ---------------------------------------------------------------------------
 
 
-class MultiplicativeAlgebraMorphism(Morphism):
+class MultiplicativeAlgebraMorphism(ModuleMorphism):
     r"""An algebra morphism: an ``R``-linear \(f\colon A\to B\) with \(f\,m_A = m_B\,(f\otimes f)\).
 
     The datum is the linear map, an element of the module Mor.  The defining
@@ -154,10 +154,10 @@ class MultiplicativeAlgebraMorphism(Morphism):
         return None
 
     def __init__(self, parent, underlying_morphism) -> None:
-        Morphism.__init__(self, parent)
-        domain = self.domain()
-        codomain = self.codomain()
+        domain = parent.domain()
+        codomain = parent.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
+        ModuleMorphism.__init__(self, parent, linear)
         self._underlying_morphism = linear
         self._underlying_linearity = linear.linearity_decision()
         derived = self._multiplicativity_derivation()
@@ -221,9 +221,6 @@ class MultiplicativeAlgebraMorphism(Morphism):
         quotient = self.cokernel()
         category = self.parent().mor_category()
         return category.Mor(self.codomain(), quotient)(quotient.algebra_quotient_projection())
-
-    def _call_(self, element):
-        return self.codomain()(self.underlying_morphism()(self.domain()(element)))
 
     def __eq__(self, other) -> bool:
         match element_parent(other):
