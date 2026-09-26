@@ -3222,9 +3222,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return self.parent().scalar_multiple(exponent, self)
 
         class ParentMethods:
-            def is_abelian(self):
-                return True
-
             @cached_method
             def endomorphism_ring(self):
                 r"""The ring ``End(A)`` of group endomorphisms, under pointwise sum and composition."""
@@ -3465,10 +3462,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def resolution_classifier(self):
             return self.resolution_category().target_functor()
 
-        class ParentMethods:
-            def is_finitely_generated(self):
-                return True
-
     class FinitelyPresentedAsGroup(CategoryWithAxiom):
         r"""Groups admitting some finite presentation."""
 
@@ -3501,9 +3494,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return self.resolution_category().target_functor()
 
         class ParentMethods:
-            def is_finitely_presented(self):
-                return True
-
             @cached_method
             def presentation(self):
                 r"""Return one selected finite-presentation model of this group.
