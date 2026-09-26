@@ -958,7 +958,7 @@ class SchemeMorphismMethods:
         return source in OpenImmersions(self.codomain()) and self is source.inclusion()
 
     def is_closed_immersion(self) -> bool:
-        r"""Whether ``f^#`` is surjective, for affine ``f`` (Stacks, Tag 01HV)."""
+        r"""Whether ``f^#`` is surjective, for affine ``f`` (Stacks, Tag 0H2N, Lemma 37.81.1)."""
         base = self.domain().scheme_base_ring()
         assert self.domain() in Schemes(base).Affine() and self.codomain() in Schemes(base).Affine(), (
             f"cannot decide whether {self} is a closed immersion: this is decided here only for "
