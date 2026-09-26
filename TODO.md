@@ -268,6 +268,44 @@ Preserve the phase-T execution rules.
 A wrong answer outranks every failure that raises: a false value is trusted, a raised error is not.
 Paths below are relative to `src/dzack_research/preamble/` unless a different root is given.
 
+## Foundations that block many consumers
+
+An operation, arrow or construction placed at the wrong category is inherited wrongly by every category below it, so these precede the test-suite and triage nodes.
+
+- [ ] **`arrows-thread-through-the-mor-category-graph`**. **Needs:** none.
+  **Owner and delta:** the arrow types of the owned Mor categories (`owned_category.py`, `categories/abstract_categories/mor_categories.py`). The arrow type of `Mor_D(A, B)` is the `ElementType` of that Mor category, generated from its supercategories the way `ObjectType` already is.
+  For a structure `U : D -> C` it inherits the arrow type of `Mor_C(UA, UB)` and adds only what `D` introduces: the form square and value map for `FormModules(R)`, multiplicativity for `Algebras(R)`, equivariance for `G`-objects (`CAT-05`, `CAT-10`, `OWN-14`, `CON-16`). An operation defined on arrows of `C` is written once there and reached from every `D` above it.
+  Two defect shapes contradict this: a stored lower arrow with forwarding (`FormedModuleMorphism._module_morphism`), and an operation carried only by a private construction-route subclass (`_TransportedLatticeEmbedding.isotropic_reduction`; `is_open_immersion` on private scheme-morphism subclasses).
+  Population and census method: [COMPLAINTS.md](COMPLAINTS.md#arrows-of-a-structured-category-do-not-inherit-the-arrow-operations-of-the-category-below-it).
+  Repair the whole population: the chain `Modules(R) -> FormModules(R) -> Lattices(R)` with its embeddings first, then algebras over modules, groups over monoids, fields over rings, holomorphic over continuous maps, and schemes.
+  With the arrow types threaded, place each arrow operation by the `CAT-05` test with the `just placement` worksheet, as `placement-audit` does for object and element operations.
+  Read the object-side mechanism in `owned_category.py` and `PLAN-threading-set-behaviour` first; the arrow side uses that mechanism and adds no second one.
+  **Closure specimens:** for a primitive isotropic `v` in `U + E_8(-1)`, `v.isotropic_reduction()` returns `K_v = v^perp / ZZ v`, even unimodular of signature `(0, 8)`, with its parabolic data.
+  A form embedding `L -> L + M` answers `is_primitive()`, `kernel()` and `cokernel()` from the module-arrow owner, with none of them written on a form-arrow class.
+  A `LatticeEmbedding` built from images and one built from a module embedding answer the same operations.
+
+- [ ] **`placement-audit`**. **Needs:** none.
+  **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`.
+  Arrow operations are placed by `arrows-thread-through-the-mor-category-graph`, since an arrow operation can move only to an arrow type that the arrow types below inherit.
+  At its home an operation decides computability in one `case`/`match` on categorical containment: each case with a known algorithm routes to it, and the final `case _` asserts, naming the missing algorithm (`CAT-01`; AGENTS.md, *Abstract contracts are distinct from partial algorithms*).
+  An operation placed low because only there can it be computed is the commonest misplacement: `conjugacy_classes`, `conjugacy_class`, `conjugation_g_set`, `left_cosets` and `right_cosets` sit on `Groups().Finite()` (`categories/group/groups.py`) though they are defined for every group, and they move to `Groups()` with the finite case as a route.
+  Instrument: `just preamble-megadoc`, then `just placement [CATEGORY ...]`, prints for each category its introduced object, element and arrow operations and its up-set `U_C` with each member's definition; only the judgement of well-definedness is mathematical.
+  It also prints three mechanical findings: a name introduced on `C` and again in `U_C`; the lowest categories of `U_C` whose arrow type the arrow type of `C` does not inherit, and every Mor class that declares no arrow type; and each name introduced on pairwise incomparable categories, with their minimal common upper bounds in `P`.
+  Loop body: one category `C`, deciding for each introduced object and element operation `f` which members of `U_C` it is well-defined on, from their definitions, then moving `f` and routing its computation.
+  The categories are independent.
+  A move that cannot be made in the loop body becomes its own node, named by the mathematics it needs, and this node `Needs` it: several maximal elements of `W_f`, or a maximum absent from `P`, is a missing category, axiom or property, or a defect in the declared graph (`degree` and `is_homogeneous` sit on `GradedAlgebras` and `GradedModules` with no common upper bound, so graded algebras are not declared graded modules); a consumer that breaks because it reached the operation through the old placement is repaired in the same loop body.
+  `category-method-coverage-sweep` calls every method where it currently sits, so it certifies the current placement and cannot detect a misplacement; this node supplies that check.
+  Each move is witnessed by an expectation that calls the operation on a specimen of the supercategory that is not in `C`.
+  **Closure specimens:** `conjugacy_classes` asked of an infinite group reaches its own assertion, not an `AttributeError`; the worksheet reports no introduced object or element operation that is well-defined on a member of its up-set.
+
+- [ ] **`operations-sited-where-defined`**. **Needs:** none.
+  **Owner and delta:** an operation at its general owner whose body calls one engine unconditionally, with no routing, contradicts the `case`/`match` rule that `placement-audit` applies at every home (`CAT-01`).
+  The abelianization functor (`functors/abelianization.py`, `_apply_object`) calls `_gap_model` for every group, and `commutator_subgroup` guards with a bare finiteness assert, not a `case` whose last branch names the missing algorithm.
+  Repair the population, not only these specimens.
+  The tell, per subtree: `_gap_model(`, `_engine_ring(` or any other engine crossing at the top of an operation on a general category, outside a `case`.
+  Before editing, record the commits that introduced these sites and the belief behind them: that an operation's home is where it is computable.
+  **Closure specimens:** `Groups().abelianization()` applied to an infinite finitely presented group reaches the assertion, which names the missing presentation route, until `group-exact-sequences-and-homology` adds that case.
+
 ## Test suite: specimens, speed and coverage
 
 The suite is the instrument that finds the rest; these make it fast and complete.
@@ -405,39 +443,6 @@ Regenerate the catalogue with the same command; the time gates are on by default
   Predicate-defined subgroups of `O(L)` go through the kernel route that `cokernel` already uses.
   **Closure specimens:** `S_3^ab = ZZ/2` with `[S_3, S_3] = A_3`. The free group `F_2` has abelianization `ZZ^2`, computed from its presentation.
   `SL_2(ZZ)^ab = ZZ/12`. `H_1(ZZ/n; ZZ) = ZZ/n`, `H^1(ZZ/n; ZZ) = 0`, `H^2(ZZ/n; ZZ) = ZZ/n`. `W(E_8)^ab = ZZ/2`.
-
-- [ ] **`placement-audit`**. **Needs:** none.
-  **Owner and delta:** every public operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`. Several maximal elements, or a maximum absent from the poset, is filed as the missing category, axiom or property, or as the graph defect, with its own node.
-  Instrument: `just preamble-megadoc`, then `just placement [CATEGORY ...]`, prints for each category its introduced object, element and arrow operations and its up-set `U_C` with each member's definition; only the judgement of well-definedness is mathematical.
-  It also prints three mechanical findings: a name introduced on `C` and again in `U_C`; the lowest categories of `U_C` whose arrow type the arrow type of `C` does not inherit, and every Mor class that declares no arrow type (137 categories); and each name introduced on pairwise incomparable categories, with their minimal common upper bounds in `P`. An absent bound there is a graph defect: `degree` and `is_homogeneous` sit on `GradedAlgebras` and `GradedModules` with no common upper bound, so graded algebras are not declared graded modules.
-  Loop body: one category `C`, deciding for each introduced object, element and arrow operation `f` which members of `U_C` it is well-defined on, from their definitions.
-  The categories are independent.
-  `category-method-coverage-sweep` calls every method where it currently sits, so it certifies the current placement and cannot detect a misplacement; this node supplies that missing check.
-  Each move is witnessed by an expectation that calls the operation on a specimen of the supercategory that is not in `C`. **Closure specimens:** `is_primitive`, `kernel` and `cokernel` answer on a form embedding and on a lattice embedding; `conjugacy_classes` is reached on an infinite group; the regenerated survey lists arrow operations for `Modules(R)`, `FormModules(R)` and `Lattices(R)`, and no operation introduced on `FormModules(R)` or `Lattices(R)` is well-defined on `Modules(R)`.
-
-- [ ] **`arrows-thread-through-the-mor-category-graph`**. **Needs:** none.
-  **Owner and delta:** the arrow types of the owned Mor categories (`owned_category.py`, `categories/abstract_categories/mor_categories.py`). The arrow type of `Mor_D(A, B)` is the `ElementType` of that Mor category, generated from its supercategories the way `ObjectType` already is.
-  For a structure `U : D -> C` it inherits the arrow type of `Mor_C(UA, UB)` and adds only what `D` introduces: the form square and value map for `FormModules(R)`, multiplicativity for `Algebras(R)`, equivariance for `G`-objects (`CAT-05`, `CAT-10`, `OWN-14`, `CON-16`). An operation defined on arrows of `C` is written once there and reached from every `D` above it.
-  Two defect shapes contradict this: a stored lower arrow with forwarding (`FormedModuleMorphism._module_morphism`), and an operation carried only by a private construction-route subclass (`_TransportedLatticeEmbedding.isotropic_reduction`; `is_open_immersion` on private scheme-morphism subclasses).
-  Population and census method: [COMPLAINTS.md](COMPLAINTS.md#arrows-of-a-structured-category-do-not-inherit-the-arrow-operations-of-the-category-below-it).
-  Repair the whole population: the chain `Modules(R) -> FormModules(R) -> Lattices(R)` with its embeddings first, then algebras over modules, groups over monoids, fields over rings, holomorphic over continuous maps, and schemes.
-  Read the object-side mechanism in `owned_category.py` and `PLAN-threading-set-behaviour` first; the arrow side uses that mechanism and adds no second one.
-  **Closure specimens:** for a primitive isotropic `v` in `U + E_8(-1)`, `v.isotropic_reduction()` returns `K_v = v^perp / ZZ v`, even unimodular of signature `(0, 8)`, with its parabolic data.
-  A form embedding `L -> L + M` answers `is_primitive()`, `kernel()` and `cokernel()` from the module-arrow owner, with none of them written on a form-arrow class.
-  A `LatticeEmbedding` built from images and one built from a module embedding answer the same operations.
-
-- [ ] **`operations-sited-where-defined`**. **Needs:** none.
-  **Owner and delta:** an operation lives on the category where it is mathematically defined, and computability is decided in one `case`/`match` inside it: each case whose algorithm is known routes to it, and the final `case _` asserts with an informative message naming the missing computational implementation (`CAT-01`; CONTRIBUTING, "route known cases and assertion-gate the unsupported computational remainder"; AGENTS.md, *Abstract contracts are distinct from partial algorithms*). Extending coverage is then only adding a case.
-  Two defect shapes contradict this.
-  \(1) An operation placed on a narrower category because only there can it be computed.
-  In `categories/group/groups.py`, `conjugacy_classes`, `conjugacy_class`, `conjugation_g_set`, `left_cosets` and `right_cosets` sit on `Groups().Finite()`, though they are defined for every group.
-  \(2) An operation placed at its general owner whose body calls one engine unconditionally, with no routing.
-  The abelianization functor (`functors/abelianization.py`, `_apply_object`) calls `_gap_model` for every group.
-  `commutator_subgroup` guards with a bare finiteness assert, not a `case` whose last branch names the missing algorithm.
-  Repair both shapes across the population, not only these specimens.
-  The tells, per subtree: operations defined under an axiom or finiteness subcategory (`class Finite`, `FinitelyGenerated...`) whose definition does not need that hypothesis; and `_gap_model(`, `_engine_ring(` or any other engine crossing at the top of an operation on a general category, outside a `case`. Before editing, record the commits that introduced these placements and the belief behind them: that an operation's home is where it is computable.
-  **Closure specimens:** `Groups().abelianization()` applied to an infinite finitely presented group reaches the assertion, which names the missing presentation route, until `group-exact-sequences-and-homology` adds that case.
-  `conjugacy_classes` is asked of an infinite group and reaches its own assertion, not an `AttributeError`.
 
 - [ ] **`subobjects-retain-their-inclusions`**. **Needs:** none.
   **Owner and delta:** anything that is a subobject mathematically is returned through the subobject categories and APIs and keeps its monomorphism into its ambient object.
