@@ -68,6 +68,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.owned_category import owned_category_join
 
 
 class _PowerModuleInclusion(ModuleEmbedding):
@@ -763,7 +764,7 @@ def _presented_degree_power(
     )
     return ModulesWithChosenFinitePresentation(ring)(
         presentation,
-        category=Category.join(extra_categories) if extra_categories else None,
+        category=owned_category_join(extra_categories) if extra_categories else None,
         **(extra_construction_data or {}),
     )
 

@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import owned_category_join
 
 
 def _engine_commutative_ideal(ideal):
@@ -838,7 +839,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
         changed.presentation(),
         subobject_ambient=ambient_module,
         subobject_generator_images=generator_images,
-        category=Category.join((CommutativeIdeals(target),)),
+        category=owned_category_join((CommutativeIdeals(target),)),
         **construction_data,
     )
 
@@ -922,7 +923,7 @@ def _commutative_ideal(source, generators):
             )
             for position, label in enumerate(labels)
         },
-        category=Category.join((CommutativeIdeals(source),)),
+        category=owned_category_join((CommutativeIdeals(source),)),
         **{
             "engine_ideal": backend,
             "ideal_generators": tuple(

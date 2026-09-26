@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.owned_category import owned_category_join
 
 
 class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
@@ -314,7 +315,7 @@ def _construct_kahler_differentials(algebra):
         relation_map = relation_module.module_category().Mor(relation_module, ambient_differentials)(conormal_morphism.module_generator_images().value)
         omega = ModulesWithChosenFinitePresentation(algebra)(
             relation_map,
-            category=Category.join((KahlerDifferentialModules(algebra),)),
+            category=owned_category_join((KahlerDifferentialModules(algebra),)),
             **{
                 "source_algebra": algebra,
                 "conormal_module": conormal_module,

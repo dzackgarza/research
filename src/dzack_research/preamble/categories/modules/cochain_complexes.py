@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
+from dzack_research.preamble.owned_category import owned_category_join
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -760,7 +761,7 @@ def _cohomology(complex_, degree):
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
     result = ModulesWithChosenFinitePresentation(ring)(
         boundary_in_cycles,
-        category=Category.join((CohomologyModules(ring),)),
+        category=owned_category_join((CohomologyModules(ring),)),
         **{
             "cohomology_complex": complex_,
             "cohomology_degree": degree,

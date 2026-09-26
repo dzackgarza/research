@@ -851,6 +851,7 @@ class LocalizationRings(OwnedCategory):
             self._fraction_field_realization = fraction_field_realization
             self._preamble_engine_ring = _engine_ring
             from dzack_research.preamble.categories.algebras.algebras import Algebras
+            from dzack_research.preamble.owned_category import owned_category_join
 
             algebra = (
                 Algebras(self.algebra_base_ring())
@@ -858,7 +859,7 @@ class LocalizationRings(OwnedCategory):
                 .Unital()
                 .Commutative()
             )
-            rest["category"] = Category.join((rest["category"], algebra))
+            rest["category"] = owned_category_join((rest["category"], algebra))
             super().__init__(
                 base_ring=self.algebra_base_ring(),
                 _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
@@ -1475,6 +1476,8 @@ class _PredicateSubringParent(Parent):
 
     def __init__(self, ambient_ring, predicate, description, category):
         SageObject.__init__(self)
+        from dzack_research.preamble.owned_category import owned_category_join
+
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
             raise TypeError(f"{ambient_ring} is not a ring")
         ambient_ring = _own_ring(ambient_ring)
@@ -1502,7 +1505,7 @@ class _PredicateSubringParent(Parent):
                 ))
             case False:
                 placements.append(algebra)
-        Parent.__init__(self, base=base, category=Category.join(tuple(placements)))
+        Parent.__init__(self, base=base, category=owned_category_join(tuple(placements)))
         realize_owned_category(self)
         # A predicate-subring datum asserts closure and the ring constants.
         # Refute a decided false constant, but do not treat an undecided
@@ -1563,9 +1566,11 @@ _OwnedRingBootstrapParent.register(_PredicateSubringParent)
 
 
 def _predicate_subring(ambient_ring, predicate, description, category=None):
+    from dzack_research.preamble.owned_category import owned_category_join
+
     placement = PredicateSubrings()
     if category is not None:
-        placement = Category.join((placement, category))
+        placement = owned_category_join((placement, category))
     return _PredicateSubringParent(
         ambient_ring,
         predicate,

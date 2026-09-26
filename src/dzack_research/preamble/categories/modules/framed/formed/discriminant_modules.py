@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import owned_category_join
 
 
 class DiscriminantModules(OwnedCategoryOverBaseRing):
@@ -885,7 +886,7 @@ def _discriminant_subgroup(ambient, generators):
             prototype.presentation(),
             subobject_ambient=ambient,
             subobject_generator_images=images,
-            category=Category.join(categories),
+            category=owned_category_join(categories),
             **construction_data,
         )
     else:
@@ -896,7 +897,7 @@ def _discriminant_subgroup(ambient, generators):
             free.module_category().Mor(free, free).identity(),
             subobject_ambient=ambient,
             subobject_generator_images={0: ambient.zero()},
-            category=Category.join(categories),
+            category=owned_category_join(categories),
             **construction_data,
         )
     return source
@@ -1004,7 +1005,7 @@ def _discriminant_module(lattice):
     if _engine_ring(ring) is not SageZZ:
         return ModulesWithChosenFinitePresentation(ring)(
             quotient.presentation(),
-            category=Category.join(tuple(categories)),
+            category=owned_category_join(tuple(categories)),
             **construction_data,
         )
 

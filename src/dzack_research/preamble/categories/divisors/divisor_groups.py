@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category import owned_category_join
 
 
 def _integers():
@@ -35,7 +36,7 @@ def _cokernel_in_category(presentation, category, **data):
     """
     return ModulesWithChosenFinitePresentation(presentation.codomain().base_ring())(
         presentation,
-        category=Category.join((category,)),
+        category=owned_category_join((category,)),
         **data,
     )
 
