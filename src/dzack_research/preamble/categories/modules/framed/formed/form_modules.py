@@ -1173,6 +1173,10 @@ class FormModules(OwnedCategoryOverBaseRing):
                 return form(element)
             return form(element, element)
 
+        def q(self, element):
+            r"""Return the selected quadratic/norm value of ``element``."""
+            return self.norm(element)
+
         def gram_tensor(self):
             r"""Return the scalar Gram as its intrinsic type-``(0,2)`` tensor."""
             form = self.form()
@@ -1333,21 +1337,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             r"""Return ``b^flat : M -> Hom_R(M,R)`` for this scalar-valued bilinear form."""
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
-
-        def q(self, vector):
-            r"""Return the quadratic form \(q(v)=b(v,v)\) of the bilinear form.
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: I2 = Lattices(ZZ)(ZZ^2)
-                sage: I2.q(I2.module_generator(0))
-                1
-                sage: A2 = Lattices(ZZ)("A2")
-                sage: A2.q(A2.module_generator(0))
-                -2
-            """
-            return self.b(vector, vector)
 
     class SubcategoryMethods:
         def Symmetric(self):
@@ -1781,14 +1770,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     _MorCategory = FormedModuleMorCategoryConstruction
 
     class ParentMethods:
-        def q(self, element):
-            r"""Evaluate the equipped quadratic form on ``element``."""
-            if element not in self:
-                raise TypeError(
-                    f"the quadratic form on {self} is defined on its elements, but {element} is not in {self}"
-                )
-            return self.norm(element)
-
         def associated_bilinear_module(self):
             r"""Return the bilinear module polarized from this quadratic form.
 
