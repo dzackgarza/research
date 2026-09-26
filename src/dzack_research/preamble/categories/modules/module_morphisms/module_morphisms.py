@@ -2221,7 +2221,6 @@ def _initialize_module_mor_parent(
         domain,
         codomain,
         category=placement,
-        base=ring.ring_center(),
     )
 
 class _ModuleMorCommonMethods:

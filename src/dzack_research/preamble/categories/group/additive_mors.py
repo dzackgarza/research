@@ -397,7 +397,11 @@ class AdditiveMor(CategoricalMor):
         self._base_ring = _own_ring(SageZZ)
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
         category = AdditiveEndomorphismRings(self._base_ring) if domain is codomain else AdditiveMorGroups()
-        super().__init__(family, domain, codomain, category=category, base=self._base_ring)
+        super().__init__(family, domain, codomain, category=category)
+
+    def base_ring(self):
+        r"""The integer scalar ring of this additive Mor group."""
+        return self._base_ring
 
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):

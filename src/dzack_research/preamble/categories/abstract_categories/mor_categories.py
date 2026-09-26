@@ -483,7 +483,6 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         codomain: Parent,
         *,
         category: Category | None = None,
-        base: Parent | None = None,
     ) -> None:
         self._family = family
         self._end_family = None
@@ -504,7 +503,6 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             domain,
             codomain,
             category=SageSets(),
-            base=base,
         )
         if category is not None:
             # Sage ``Mor`` insists on constructing first in ``Sets`` so it
