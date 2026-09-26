@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedNoetherianRings,
     _own_ring,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -32,6 +33,13 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "algebraic cycle groups"
+
+    def an_object(self):
+        r"""The zero cycle group on the base scheme."""
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        scheme = Schemes(self.base_ring()).base_scheme()
+        return self(scheme, 0, finite_ordered_set(()))
 
     def super_categories(self):
         return [FreeModules(self.base_ring())]
@@ -80,6 +88,12 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "Chow groups"
+
+    def an_object(self):
+        r"""The zero Chow group presented by the zero cycle group."""
+        cycles = AlgebraicCycleGroups(self.base_ring()).an_object()
+        relation = cycles.module_category().Mor(cycles, cycles).zero()
+        return self(cycles.cycle_scheme(), cycles.cycle_dimension(), relation)
 
     def super_categories(self):
         return [FinitelyPresentedModules(self.base_ring())]
