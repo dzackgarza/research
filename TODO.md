@@ -320,7 +320,7 @@ The suite is the instrument that finds the rest; these make it fast and complete
 The first full execution of the suite since the tree stopped importing (2026-09-07), run once as a triage catalogue on 2026-09-23 with `--no-time-gates --timeout=1 -o timeout_func_only=true` (16,311 tests collected): 11,874 failed, 4,335 passed.
 Failures are grouped here by the site that raises them; paths are relative to `src/dzack_research/preamble/` unless a different root is given.
 A node's cause is the defect behind its site, which the node establishes; the site and example are where to start.
-Each node closes when its example passes and a re-run of the catalogue shows no failure raised at its site.
+Work the catalogue in one pass, not one site at a time: read every site below, group the sites whose failures share a cause, repair each cause at its owner, then re-run the catalogue once. A site that still raises keeps its node, and every node whose example passes and whose site no longer raises closes in that pass (AGENTS.md, *Architecture before tests*).
 Regenerate the catalogue with the same command; the time gates are on by default.
 
 - [ ] **`triage-native-module-additive-group`**. **Needs:** none.
