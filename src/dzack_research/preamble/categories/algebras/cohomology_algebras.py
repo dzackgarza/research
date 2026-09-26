@@ -12,7 +12,6 @@ used by the cochain-complex owner therefore remain the private computation autho
 both commutative and noncommutative source DGAs.
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.structure.element import parent as element_parent
 
@@ -117,27 +116,44 @@ def CohomologyAlgebraElement(parent, components):
 
 
 
-class CohomologyAlgebraMorphism(Morphism):
+class CohomologyAlgebraMorphism:
     r"""The graded algebra morphism induced on cohomology by a DGA morphism."""
 
     def __init__(self, parent, dga_morphism) -> None:
-        Morphism.__init__(self, parent)
+        domain = parent.domain()
+        codomain = parent.codomain()
         if not isinstance(dga_morphism, DGAMorphism):
             raise TypeError(
-                f"a morphism {self.domain()} -> {self.codomain()} of cohomology algebras is induced by a "
+                f"a morphism {domain} -> {codomain} of cohomology algebras is induced by a "
                 f"morphism of differential graded algebras, but {dga_morphism!r} is not one"
             )
-        if dga_morphism.domain() is not self.domain().source_dga():
+        if dga_morphism.domain() is not domain.source_dga():
             raise ValueError(
-                f"a morphism of cohomology algebras {self.domain()} -> {self.codomain()} is induced by a map "
-                f"starting at {self.domain().source_dga()}, but {dga_morphism} starts at {dga_morphism.domain()}"
+                f"a morphism of cohomology algebras {domain} -> {codomain} is induced by a map "
+                f"starting at {domain.source_dga()}, but {dga_morphism} starts at {dga_morphism.domain()}"
             )
-        if dga_morphism.codomain() is not self.codomain().source_dga():
+        if dga_morphism.codomain() is not codomain.source_dga():
             raise ValueError(
-                f"a morphism of cohomology algebras {self.domain()} -> {self.codomain()} is induced by a map "
-                f"ending at {self.codomain().source_dga()}, but {dga_morphism} ends at {dga_morphism.codomain()}"
+                f"a morphism of cohomology algebras {domain} -> {codomain} is induced by a map "
+                f"ending at {codomain.source_dga()}, but {dga_morphism} ends at {dga_morphism.codomain()}"
             )
         self._dga_morphism = dga_morphism
+        linear = domain.module_category().Mor(
+            domain, codomain
+        )._from_constructed_element_map(
+            lambda element: self._call_(element)
+        )
+        super().__init__(
+            parent,
+            linear,
+            degree_preservation=True,
+        )
+
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
 
     def underlying_dga_morphism(self):
         return self._dga_morphism
@@ -172,7 +188,7 @@ class CohomologyAlgebraMorphism(Morphism):
 
 
 class CohomologyAlgebraMor(CategoricalMor):
-    Element = CohomologyAlgebraMorphism
+    ElementMethods = CohomologyAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(self, mor_family, domain, codomain)
