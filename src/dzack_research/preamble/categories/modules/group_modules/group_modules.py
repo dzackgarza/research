@@ -61,6 +61,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     LinearEndCategoryConstruction,
     LinearMorModules,
+    ModuleMorCategoryConstruction,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -692,10 +693,10 @@ class ModulesOverGroupAlgebra(Modules):
                 preimage = inclusion._preimage_or_none(coefficient_module(element))
                 return None if preimage is None else acted(preimage)
 
-            return _RestrictedActionInclusionMorphism(
-                acted.Mor(self),
+            return acted.Mor(self)._from_equivariant_images(
                 lambda label: self(inclusion(submodule.module_generator(label))),
                 lift=lift_from_ambient,
+                selected_lift_exact=True,
             )
 
         def restrict_endomorphism_to(self, endomorphism, inclusion):
@@ -929,7 +930,7 @@ def _coefficient_morphism_from_images(
     target = parent.codomain().unformed_module()
     mor = source.module_category().Mor(source, target)
 
-    if isinstance(images, GroupModuleMorphism):
+    if isinstance(images, GroupModuleMorphismMethods):
         underlying = images.underlying_module_morphism()
         if underlying.domain() is source and underlying.codomain() is target:
             return mor(underlying)
@@ -977,7 +978,7 @@ def _coefficient_morphism_from_images(
     return mor(images)
 
 
-class GroupModuleMorphism(ModuleMorphism):
+class GroupModuleMorphismMethods:
     r"""An ``R``-linear map commuting with the chosen ``G``-actions."""
 
     def __init__(
@@ -987,6 +988,8 @@ class GroupModuleMorphism(ModuleMorphism):
         *,
         elementwise=False,
         lift=None,
+        equivariance_decision=None,
+        selected_lift_exact=False,
     ) -> None:
         underlying = _coefficient_morphism_from_images(
             parent,
@@ -998,7 +1001,17 @@ class GroupModuleMorphism(ModuleMorphism):
                 f"{underlying} is not known to be {underlying.domain().base_ring()}-linear, so it is not a "
                 f"morphism {parent.domain()} -> {parent.codomain()}"
             )
-        self._preamble_underlying_module_morphism = underlying
+        decision = (
+            parent.is_equivariant(underlying)
+            if equivariance_decision is None
+            else equivariance_decision
+        )
+        if decision is not True:
+            raise ValueError(
+                f"{underlying} is not known to be {parent.domain().group()}-equivariant, so it is not a "
+                f"morphism {parent.domain()} -> {parent.codomain()}"
+            )
+        self._selected_group_module_lift_exact = bool(selected_lift_exact)
         super().__init__(
             parent,
             lambda element: parent.codomain()(
@@ -1007,41 +1020,30 @@ class GroupModuleMorphism(ModuleMorphism):
             elementwise=True,
             lift=lift,
         )
-        match self._equivariance_derivation():
-            case True:
-                pass
-            case False:
-                raise ValueError(
-                    f"{underlying} is not {parent.domain().group()}-equivariant, so it is not a morphism "
-                    f"{parent.domain()} -> {parent.codomain()}"
-                )
-            case _:
-                match parent.is_equivariant(self):
-                    case True:
-                        pass
-                    case _:
-                        raise ValueError(
-                            f"{underlying} is not known to be {parent.domain().group()}-equivariant, so it is "
-                            f"not a morphism {parent.domain()} -> {parent.codomain()}"
-                        )
-
-    def _equivariance_derivation(self):
-        r"""Return a construction-derived equivariance decision, or ``None``."""
-        return None
 
     def _elementwise_linearity_derivation(self):
-        return self._preamble_underlying_module_morphism.linearity_decision()
+        return True
 
+    def _selected_lift_derivation(self):
+        return True if self._selected_group_module_lift_exact else None
+
+    @cached_method
     def underlying_module_morphism(self):
         r"""The same map in ``Hom_R(Res M, Res N)``."""
-        return self._preamble_underlying_module_morphism
+        source = self.domain().unformed_module()
+        target = self.codomain().unformed_module()
+        return source.module_category().Mor(
+            source, target
+        )._from_constructed_element_map(
+            lambda element: target(self(self.domain()(element)))
+        )
 
     underlying_arrow = underlying_module_morphism
 
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if not isinstance(other, GroupModuleMorphism):
+        if not isinstance(other, GroupModuleMorphismMethods):
             return op == op_NE
         if other.parent() is not self.parent():
             return op == op_NE
@@ -1049,7 +1051,7 @@ class GroupModuleMorphism(ModuleMorphism):
         return equal if op == op_EQ else not equal
 
     def __mul__(self, other):
-        if not isinstance(other, GroupModuleMorphism):
+        if not isinstance(other, GroupModuleMorphismMethods):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -1131,22 +1133,12 @@ class GroupModuleMorphism(ModuleMorphism):
         )
 
 
-class _ConstructedEquivariantGroupModuleMorphism(GroupModuleMorphism):
-    r"""An equivariant map whose construction already proves the action square."""
-
-    def _equivariance_derivation(self):
-        return True
-
-
-class _RestrictedActionInclusionMorphism(_ConstructedEquivariantGroupModuleMorphism):
-    r"""The equivariant inclusion induced from an admitted stable module subobject."""
-
-    def _selected_lift_derivation(self):
-        return True
+class GroupModuleMorphism(GroupModuleMorphismMethods, ModuleMorphism):
+    r"""Compatibility shell for private equivariant-module arrow realizations."""
 
 
 class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
-    Element = GroupModuleMorphism
+    ElementMethods = GroupModuleMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         assert domain.group() == codomain.group(), (
@@ -1174,6 +1166,15 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             category=LinearMorModules(scalar_ring),
         )
 
+    def super_categories(self):
+        r"""The same maps as ordinary ``R[G]``-linear maps, with equivariance remembered."""
+        generic_modules = GeneralModules(self.domain().base_ring())
+        ordinary = ModuleMorCategoryConstruction(generic_modules).Of(
+            self.domain(),
+            self.codomain(),
+        )
+        return [ordinary]
+
     def underlying_mor(self):
         r"""``Hom_R(Res M, Res N)``, containing the equivariant maps."""
         source = self.domain().unformed_module()
@@ -1196,7 +1197,7 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         )
 
     def _element_constructor_(self, images, *, lift=None):
-        if isinstance(images, GroupModuleMorphism) and images.parent() is self and lift is None:
+        if isinstance(images, GroupModuleMorphismMethods) and images.parent() is self and lift is None:
             return images
         return self.element_class(self, images, lift=lift)
 
@@ -1205,6 +1206,8 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         images,
         *,
         elementwise=False,
+        lift=None,
+        selected_lift_exact=False,
     ):
         r"""Construct a map whose equivariance follows from its construction.
 
@@ -1212,10 +1215,13 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         compositions.  Arbitrary user-supplied maps still use the ordinary
         constructor and are checked on the selected group/module generators.
         """
-        return _ConstructedEquivariantGroupModuleMorphism(
+        return self.element_class(
             self,
             images,
             elementwise=elementwise,
+            lift=lift,
+            equivariance_decision=True,
+            selected_lift_exact=selected_lift_exact,
         )
 
     def identity(self):
