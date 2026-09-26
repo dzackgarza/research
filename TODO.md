@@ -332,7 +332,7 @@ Regenerate the catalogue with the same command; the time gates are on by default
 - [x] **`triage-native-module-additive-group`**. **Needs:** none.
   **Site:** `categories/modules/native_modules.py:102` and `:103`, `_RingModulePresentation.construct`: "the action is on the supplied owned additive group" (1,924) and "native scalar structure cannot overwrite another chosen base" (185). **Example:** `tests/algebras/test_module_structure.sage::test_forgetful_functor_sends_an_algebra_to_its_underlying_module`; `tests/rings/test_local_base_maximal_ideals.sage::test_dual_numbers_over_a_field_are_local_at_the_nilpotent_alone`.
 
-- [ ] **`triage-framing-source-base-ring`**. **Needs:** none.
+- [x] **`triage-framing-source-base-ring`**. **Needs:** none.
   **Site:** `categories/modules/pure/modules.py:3051`, `_fix_selected_module_framing`: "the selected framing source is a free module over this module's base ring" (1,571). **Example:** `tests/divisors/test_divisor_node_specimens.sage::test_normal_singular_surface_has_a_noncartier_weil_class`.
 
 - [ ] **`triage-subobject-base-placement`**. **Needs:** none.
