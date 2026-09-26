@@ -40,6 +40,13 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
     r"""Projective spaces ``|D| = P(H^0(X,O_X(D)))`` with their defining data."""
 
+    def an_object(self):
+        r"""The hyperplane system on the toric projective line over the base ring."""
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+
+        projective_line = ToricSchemes(self.base_ring()).an_object()
+        return projective_line.complete_linear_system(projective_line.hyperplane_divisor())
+
     @classmethod
     def _repr_object_names(cls):
         return "complete linear systems"

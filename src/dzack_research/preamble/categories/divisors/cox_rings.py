@@ -38,6 +38,10 @@ class CoxRings(OwnedParameterizedCategory):
     def grading_group(self):
         return self.scheme().class_group()
 
+    def an_object(self):
+        r"""The Cox ring of the parameter toric scheme."""
+        return self.scheme().cox_ring()
+
     def super_categories(self):
         return [
             GradedAlgebras(
