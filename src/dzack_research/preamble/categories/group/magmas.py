@@ -8,7 +8,70 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
+class MagmaMorphism:
+    r"""A map preserving the selected binary operation."""
+
+    def __init__(self, parent, function) -> None:
+        if not callable(function):
+            raise TypeError(
+                f"cannot build a morphism in {parent} from {function}: an operation-preserving "
+                "morphism is given by a map on elements"
+            )
+        self._function = function
+        super().__init__(parent, function)
+
+    def _composition(self, right):
+        if right.codomain() is not self.domain():
+            return NotImplemented
+        category = self.parent().mor_family().base_category()
+        if (
+            right.domain() not in category
+            or not right.parent().mor_family().base_category().is_subcategory(category)
+        ):
+            return NotImplemented
+        return self.parent().mor_family().Of(
+            right.domain(), self.codomain()
+        )(lambda element: self(right(element)))
+
+
+class MagmaMor(CategoricalMor):
+    r"""The fixed Mor category of operation-preserving magma maps."""
+
+    ElementMethods = MagmaMorphism
+
+    def _element_constructor_(self, function):
+        if isinstance(function, MagmaMorphism):
+            if function.domain() is not self.domain() or function.codomain() is not self.codomain():
+                raise ValueError(
+                    f"{function} is a morphism {function.domain()} -> {function.codomain()}, "
+                    f"not a morphism {self.domain()} -> {self.codomain()}"
+                )
+            if function.parent() is self:
+                return function
+            function = function.__call__
+        if not callable(function):
+            raise TypeError(
+                f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, "
+                f"but got {function!r}"
+            )
+        return self.element_class(self, function)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
+            )
+        return self(lambda element: element)
+
+
+class MagmaMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self):
+        return MagmaMor
+
+
 class Magmas(OwnedCategory):
+    _MorCategory = MagmaMorCategoryConstruction
+
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -47,6 +110,8 @@ class MonoidMorCategoryConstruction(MorCategoryConstruction):
 
 
 class Semigroups(OwnedCategory):
+    _MorCategory = MagmaMorCategoryConstruction
+
     def super_categories(self):
         return [Magmas()]
 
@@ -112,6 +177,14 @@ class Monoids(OwnedCategory):
 
 
 class AdditiveMagmas(OwnedCategory):
+    class _MorCategory(MorCategoryConstruction):
+        def fixed_category_class(self):
+            from dzack_research.preamble.categories.group.additive_mors import (
+                AdditiveMagmaMor,
+            )
+
+            return AdditiveMagmaMor
+
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -124,11 +197,27 @@ class AdditiveMagmas(OwnedCategory):
 
 
 class AdditiveSemigroups(OwnedCategory):
+    class _MorCategory(MorCategoryConstruction):
+        def fixed_category_class(self):
+            from dzack_research.preamble.categories.group.additive_mors import (
+                AdditiveMagmaMor,
+            )
+
+            return AdditiveMagmaMor
+
     def super_categories(self):
         return [AdditiveMagmas()]
 
 
 class AdditiveMonoids(OwnedCategory):
+    class _MorCategory(MorCategoryConstruction):
+        def fixed_category_class(self):
+            from dzack_research.preamble.categories.group.additive_mors import (
+                AdditiveMonoidMor,
+            )
+
+            return AdditiveMonoidMor
+
     def super_categories(self):
         return [AdditiveSemigroups()]
 
@@ -138,6 +227,14 @@ class AdditiveMonoids(OwnedCategory):
 
 
 class AdditiveGroups(OwnedCategory):
+    class _MorCategory(MorCategoryConstruction):
+        def fixed_category_class(self):
+            from dzack_research.preamble.categories.group.additive_mors import (
+                AdditiveMonoidMor,
+            )
+
+            return AdditiveMonoidMor
+
     def an_object(self):
         r"""The additive group of the owned integers."""
         from sage.rings.integer_ring import ZZ as SageZZ
@@ -169,25 +266,7 @@ class MonoidMorphism:
     """A morphism in the owned category of monoids."""
 
     def __init__(self, parent, function) -> None:
-        if not callable(function):
-            raise TypeError(
-                f"cannot build a morphism in {parent} from {function}: a monoid morphism "
-                f"is given by a map sending each element of the domain to the codomain, "
-                f"and {function} is not a map"
-            )
-        self._function = function
         super().__init__(parent, function)
-
-    def _composition(self, right):
-        r"""``self ∘ right`` for a monoid morphism ``right``.
-
-        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
-        morphism's domain; a map outside the monoid Mor is not composed here.
-        """
-        if right.domain() not in Monoids() or not right.parent().mor_family().base_category().is_subcategory(Monoids()):
-            return NotImplemented
-        mor = self.parent().mor_family().Of(right.domain(), self.codomain())
-        return mor(lambda element: self(right(element)))
 
 
 class MonoidMor(CategoricalMor):

@@ -24,6 +24,84 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
+class AdditiveMagmaMorphism:
+    r"""A map preserving the selected additive binary operation."""
+
+    def __init__(self, parent, function) -> None:
+        if not callable(function):
+            raise TypeError(
+                f"cannot build a morphism in {parent} from {function}: an additive morphism needs a map on elements"
+            )
+        self._function = function
+        super().__init__(parent, function)
+
+    def _composition(self, right):
+        if right.codomain() is not self.domain():
+            return NotImplemented
+        category = self.parent().mor_family().base_category()
+        if (
+            right.domain() not in category
+            or not right.parent().mor_family().base_category().is_subcategory(category)
+        ):
+            return NotImplemented
+        return self.parent().mor_family().Of(
+            right.domain(), self.codomain()
+        )(lambda element: self(right(element)))
+
+
+def _additive_operation_mor_element(parent, datum):
+    if isinstance(datum, Morphism):
+        if datum.domain() is not parent.domain() or datum.codomain() is not parent.codomain():
+            raise ValueError(
+                f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a morphism "
+                f"{parent.domain()} -> {parent.codomain()}"
+            )
+        if datum.parent() is parent:
+            return datum
+        datum = datum.__call__
+    if not callable(datum):
+        raise TypeError(
+            f"an additive morphism {parent.domain()} -> {parent.codomain()} needs a map on elements, "
+            f"but got {datum!r}"
+        )
+    return parent.element_class(parent, datum)
+
+
+class AdditiveMagmaMor(CategoricalMor):
+    ElementMethods = AdditiveMagmaMorphism
+
+    def _element_constructor_(self, datum):
+        return _additive_operation_mor_element(self, datum)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
+            )
+        return self(lambda element: element)
+
+
+class AdditiveMonoidMorphism:
+    r"""An additive-monoid morphism; the lower additive map is inherited."""
+
+    def __init__(self, parent, function) -> None:
+        super().__init__(parent, function)
+
+
+class AdditiveMonoidMor(CategoricalMor):
+    ElementMethods = AdditiveMonoidMorphism
+
+    def _element_constructor_(self, datum):
+        return _additive_operation_mor_element(self, datum)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
+            )
+        return self(lambda element: element)
+
+
 class _ScalarIdentityEvaluation:
     r"""Native evaluation of the scalar endomorphism r.id, from its actual r.
 
