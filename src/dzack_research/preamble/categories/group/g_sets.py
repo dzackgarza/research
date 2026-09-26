@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.functors.core import NaturalTransformation
 from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObjects
 from dzack_research.preamble.categories.group.groups import (
+    OwnedFiniteGroups,
     OwnedGroups,
     _integer_engine_point,
     _own_group,
@@ -655,6 +656,21 @@ class Torsors(OwnedParameterizedCategory):
         return self.base()
 
     acting_group = group
+
+    def an_object(self):
+        r"""The regular torsor of a represented finite acting group."""
+        group = self.group()
+        assert group in OwnedFiniteGroups(), (
+            f"a torsor under {group} exists for every group, but the current finite-G-set realization can "
+            "exhibit the regular torsor only when the acting group is represented as finite"
+        )
+        points = finite_ordered_set(tuple(group))
+        return self(
+            FiniteGSets(group)(
+                points,
+                lambda group_element, point: group_element * point,
+            )
+        )
 
     def super_categories(self):
         return [GObjects(self.group(), Sets())]

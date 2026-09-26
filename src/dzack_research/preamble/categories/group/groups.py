@@ -2015,6 +2015,10 @@ class GroupAutomorphismGroups(OwnedCategory):
     retains its inclusion without becoming another fixed ``Iso(G,G)``.
     """
 
+    def an_object(self):
+        r"""The automorphism group of the cyclic group of order two."""
+        return Groups.C(2).Aut()
+
     def super_categories(self):
         return [OwnedGroups()]
 
@@ -3397,6 +3401,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 class TopologicalGroups(OwnedCategory):
     r"""Owned groups equipped with a represented compatible topology."""
 
+    def an_object(self):
+        r"""The procyclic absolute Galois group of ``GF(2)``."""
+        from dzack_research.preamble.categories.group.profinite.profinite_groups import (
+            ProfiniteGroups,
+        )
+
+        return ProfiniteGroups().an_object()
+
     def super_categories(self):
         return [OwnedGroups()]
 
@@ -3411,6 +3423,10 @@ class GroupsWithChosenFreeBasis(OwnedCategory):
     The datum is the basis ``S``: the group is the free group ``F(S)``, and
     its morphisms out are determined by set maps out of ``S``.
     """
+
+    def an_object(self):
+        r"""The free group on one chosen generator."""
+        return Groups.Free(1)
 
     def super_categories(self):
         return [OwnedGroups()]
@@ -3603,6 +3619,13 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
     ``A`` written additively or multiplicatively, and multiplication is
     composition.
     """
+
+    def an_object(self):
+        r"""The endomorphism ring of the additive group of the integers."""
+        return _object_of(
+            self,
+            group=AdditiveGroups().an_object(),
+        )
 
     def super_categories(self):
         return [OwnedRings()]

@@ -72,6 +72,14 @@ class MagmaMorCategoryConstruction(MorCategoryConstruction):
 class Magmas(OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
+    def an_object(self):
+        r"""The owned integers under multiplication."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -112,11 +120,17 @@ class MonoidMorCategoryConstruction(MorCategoryConstruction):
 class Semigroups(OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
+    def an_object(self):
+        return Magmas().an_object()
+
     def super_categories(self):
         return [Magmas()]
 
 
 class Monoids(OwnedCategory):
+    def an_object(self):
+        return Magmas().an_object()
+
     def super_categories(self):
         return [Semigroups()]
 
@@ -185,6 +199,14 @@ class AdditiveMagmas(OwnedCategory):
 
             return AdditiveMagmaMor
 
+    def an_object(self):
+        r"""The owned integers under addition."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -205,6 +227,9 @@ class AdditiveSemigroups(OwnedCategory):
 
             return AdditiveMagmaMor
 
+    def an_object(self):
+        return AdditiveMagmas().an_object()
+
     def super_categories(self):
         return [AdditiveMagmas()]
 
@@ -217,6 +242,9 @@ class AdditiveMonoids(OwnedCategory):
             )
 
             return AdditiveMonoidMor
+
+    def an_object(self):
+        return AdditiveMagmas().an_object()
 
     def super_categories(self):
         return [AdditiveSemigroups()]

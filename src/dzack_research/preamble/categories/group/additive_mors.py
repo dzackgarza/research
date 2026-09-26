@@ -146,6 +146,14 @@ def _scalar_identity_coefficient(morphism):
 class AdditiveMorGroups(OwnedCategory):
     r"""Additively enriched Mor groups with pointwise operations."""
 
+    def an_object(self):
+        r"""The additive endomorphism group of the rank-one integer module."""
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        module = _own_ring(SageZZ).regular_module()
+        return module.Mor(module)
+
     def super_categories(self):
         return [AdditiveGroups().AdditiveCommutative()]
 
@@ -192,6 +200,14 @@ class AdditiveMorGroups(OwnedCategory):
 
 class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
     r"""Endomorphism algebras over their selected commutative scalar ring."""
+
+    def an_object(self):
+        r"""The endomorphism ring of the regular rank-one module."""
+        assert self.base_ring() in OwnedRings().Commutative(), (
+            f"{self} is defined over a commutative ring, but {self.base_ring()} is not known to be commutative"
+        )
+        module = self.base_ring().regular_module()
+        return module.Mor(module)
 
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
