@@ -486,21 +486,6 @@ class _AbsoluteGaloisGroupEngine:
 
         return FrobeniusConjugacyClass(self, prime)
 
-    def topological_group_generators(self):
-        assert self._is_finite_field(), (
-            f"topological generators of {self} are known only when the base field is "
-            f"finite, but it is {self._field}"
-        )
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
-
-        return finite_ordered_set((self.frobenius(),))
-
-    def topological_generating_family(self):
-        r"""Return the selected topological generating family when represented."""
-        return self.topological_group_generators()
-
     def _finite_frobenius_image(self, element, exponent):
         if not self._is_finite_field():
             raise TypeError(
