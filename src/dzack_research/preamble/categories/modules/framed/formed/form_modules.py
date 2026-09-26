@@ -795,6 +795,34 @@ def _value_module_of(value_object):
     return value_object
 
 
+class PairingObjects(OwnedCategoryOverBaseRing):
+    r"""Module objects carrying one represented pairing ``X tensor_R Y -> W``."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "pairing-bearing module objects"
+
+    def an_object(self):
+        return PairedModules(self.base_ring()).an_object()
+
+    class ParentMethods:
+        def pairing(self, left, right):
+            r"""Evaluate this object's selected pairing on ``(left,right)``."""
+            return self._pairing_value(left, right)
+
+        def left_module(self):
+            r"""Return the left module of the selected pairing."""
+            return self._pairing_left_module()
+
+        def right_module(self):
+            r"""Return the right module of the selected pairing."""
+            return self._pairing_right_module()
+
+        def value_module(self):
+            r"""Return the value module of the selected pairing."""
+            return self._pairing_value_module()
+
+
 class PairedModules(OwnedParameterizedCategory):
     r"""Pairings \(X\otimes_R Y\to W\), the comma category of the tensor functor over ``W``.
 
@@ -819,7 +847,10 @@ class PairedModules(OwnedParameterizedCategory):
         return self.base().base_ring()
 
     def super_categories(self):
-        return [Modules(self.base_ring()).SliceOver(self.base())]
+        return [
+            Modules(self.base_ring()).SliceOver(self.base()),
+            PairingObjects(self.base_ring()),
+        ]
 
     def an_object(self):
         r"""``R (x) R -> W`` sending the pure tensor of the units to a chosen element of ``W``."""
@@ -864,17 +895,16 @@ class PairedModules(OwnedParameterizedCategory):
         return _object_of(self, arrow=pairing)
 
     class ParentMethods:
-        def pairing(self, left, right):
-            r"""Evaluate the pairing on a pair of elements."""
+        def _pairing_value(self, left, right):
             return self.arrow()(self.arrow().domain().pure_tensor(left, right))
 
-        def left_module(self):
+        def _pairing_left_module(self):
             return self.arrow().domain().tensor_factor(0)
 
-        def right_module(self):
+        def _pairing_right_module(self):
             return self.arrow().domain().tensor_factor(1)
 
-        def value_module(self):
+        def _pairing_value_module(self):
             return self.arrow().codomain()
 
         def _repr_(self) -> str:
@@ -991,8 +1021,10 @@ class FormModules(OwnedCategoryOverBaseRing):
         return "form modules"
 
     def super_categories(self):
-
-        return [Modules(self.base_ring())]
+        return [
+            Modules(self.base_ring()),
+            PairingObjects(self.base_ring()),
+        ]
 
     def _call_(
         self,
@@ -1075,16 +1107,16 @@ class FormModules(OwnedCategoryOverBaseRing):
                 {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
-        def pairing(self, left, right):
+        def _pairing_value(self, left, right):
             return self.b(left, right)
 
-        def left_module(self):
+        def _pairing_left_module(self):
             return self
 
-        def right_module(self):
+        def _pairing_right_module(self):
             return self
 
-        def value_module(self):
+        def _pairing_value_module(self):
             return self.form().codomain()
 
         def Mor(self, codomain, category=None):
