@@ -2581,13 +2581,18 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
             return self.Mor(target)(images)
 
 
-class AlgebraMorphism(Morphism):
+class AlgebraMorphism:
     r"""An ``R``-algebra morphism specified by the images of algebra generators."""
 
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
+
     def __init__(self, parent, images) -> None:
-        Morphism.__init__(self, parent)
-        domain = self.domain()
-        codomain = self.codomain()
+        domain = parent.domain()
+        codomain = parent.codomain()
         engine_domain = _engine_ring(domain)
         engine_codomain = _engine_ring(codomain)
         framed_domain = domain.is_framed_algebra()
@@ -2630,6 +2635,7 @@ class AlgebraMorphism(Morphism):
                 )
             else:
                 self._generator_images = None
+            super().__init__(parent, images)
             return
         if isinstance(images, Map):
             if images.domain() is domain and images.codomain() is codomain:
@@ -2643,6 +2649,12 @@ class AlgebraMorphism(Morphism):
                     )
                 else:
                     self._generator_images = None
+                linear = domain.module_category().Mor(
+                    domain, codomain
+                )._from_constructed_element_map(
+                    lambda element: codomain(images(domain(element)))
+                )
+                super().__init__(parent, linear)
                 return
             if images.domain() is not engine_domain or images.codomain() is not engine_codomain:
                 raise ValueError(
@@ -2659,6 +2671,14 @@ class AlgebraMorphism(Morphism):
                 )
             else:
                 self._generator_images = None
+            linear = domain.module_category().Mor(
+                domain, codomain
+            )._from_constructed_element_map(
+                lambda element: codomain(
+                    images(engine_domain(domain(element)))
+                )
+            )
+            super().__init__(parent, linear)
             return
         assert framed_domain, (
             f"{domain} has no chosen algebra generators, so a morphism out of it must be given as a ring "
@@ -2733,6 +2753,14 @@ class AlgebraMorphism(Morphism):
             codomain,
             self._generator_images,
         )
+        linear = domain.module_category().Mor(
+            domain, codomain
+        )._from_constructed_element_map(
+            lambda element: codomain(
+                self._engine_morphism(engine_domain(domain(element)))
+            )
+        )
+        super().__init__(parent, linear)
 
     def __call__(self, element):
         r"""Apply this owned algebra morphism to an engine-backed facade element."""
@@ -3025,7 +3053,7 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
 
 
 class AlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
-    Element = AlgebraMorphism
+    ElementMethods = AlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(
