@@ -530,7 +530,7 @@ class SchemeConeMorphismConstruction:
         return image.with_cone_construction(self)
 
 
-class SchemeMorphism(Morphism):
+class SchemeMorphismMethods:
     r"""A morphism of owned schemes, an element of the owned Mor of its endpoints.
 
     The defining datum is one of: the coordinate pullback ``O(Y) -> O(X)``
@@ -564,7 +564,7 @@ class SchemeMorphism(Morphism):
         self._coordinate_pullback = pullback
         self._cone_construction = cone_construction
         self._point_coordinates = point_coordinates
-        Morphism.__init__(self, mor)
+        super().__init__(mor)
 
     def with_cone_construction(self, construction):
         r"""This morphism, retaining the universal cone it was induced by."""
@@ -964,7 +964,7 @@ class SchemeMorphism(Morphism):
         """
         if self is other:
             return True
-        if not isinstance(other, SchemeMorphism):
+        if not isinstance(other, SchemeMorphismMethods):
             return False
         if self.domain() is not other.domain() or self.codomain() is not other.codomain():
             return False
@@ -995,6 +995,10 @@ class SchemeMorphism(Morphism):
 
     def _repr_(self) -> str:
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
+
+
+class SchemeMorphism(SchemeMorphismMethods, Morphism):
+    r"""Compatibility shell for private scheme-arrow realizations."""
 
 
 class _ScalarStructureSchemeMorphism(SchemeMorphism):
@@ -1370,7 +1374,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
     def __eq__(self, other):
         if self is other:
             return True
-        if not isinstance(other, SchemeMorphism) or other.domain() is not self.domain() or other.codomain() is not self.codomain():
+        if not isinstance(other, SchemeMorphismMethods) or other.domain() is not self.domain() or other.codomain() is not self.codomain():
             return False
         other = _projective_coordinate_morphism(other)
         ring = self.coefficient_map().codomain()
@@ -1493,7 +1497,7 @@ class SchemeMorCategory(CategoricalMor):
     for, so a Mor whose endpoint has no engine still constructs.
     """
 
-    Element = SchemeMorphism
+    ElementMethods = SchemeMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
         CategoricalMor.__init__(self, mor_family, domain, codomain)
@@ -1509,7 +1513,7 @@ class SchemeMorCategory(CategoricalMor):
         base = codomain.scheme_base_ring()
         affine_endpoints = domain in Schemes(domain.scheme_base_ring()).Affine() and codomain in Schemes(base).Affine()
         match datum:
-            case SchemeMorphism() if datum.parent() is self:
+            case SchemeMorphismMethods() if datum.parent() is self:
                 return datum
             case _ProjectiveCoordinateMorphism():
                 assert datum.domain() is domain and datum.codomain() is codomain, (
@@ -1540,7 +1544,7 @@ class SchemeMorCategory(CategoricalMor):
                         f"morphism does not commute with the structure morphisms to Spec {base}"
                     )
                 return _ScalarStructureSchemeMorphism(self, datum.scalar_pullback(), cone_construction=datum.cone_construction())
-            case SchemeMorphism() if affine_endpoints:
+            case SchemeMorphismMethods() if affine_endpoints:
                 assert datum.domain() is domain and datum.codomain() is codomain, (
                     f"cannot make {datum} a morphism {domain} -> {codomain}: it is a morphism "
                     f"{datum.domain()} -> {datum.codomain()}"
@@ -1551,7 +1555,7 @@ class SchemeMorCategory(CategoricalMor):
                     cone_construction=datum.cone_construction(),
                     point_coordinates=datum._represented_point_coordinates(),
                 )
-            case SchemeMorphism():
+            case SchemeMorphismMethods():
                 assert datum.domain() is domain and datum.codomain() is codomain, (
                     f"cannot make {datum} a morphism {domain} -> {codomain}: it is a morphism "
                     f"{datum.domain()} -> {datum.codomain()}"

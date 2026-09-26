@@ -64,6 +64,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
     SchemeMorCategory,
     SchemeMorphism,
+    SchemeMorphismMethods,
     Schemes,
     _affine_scheme,
     _affine_structure_morphism_to_base,
@@ -595,7 +596,7 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
 
     def __mul__(self, other):
         match other:
-            case SchemeMorphism():
+            case SchemeMorphismMethods():
                 pass
             case _:
                 return NotImplemented
@@ -618,7 +619,7 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
         match other:
             case _ if self is other:
                 return True
-            case SchemeMorphism() if (
+            case SchemeMorphismMethods() if (
                 other.domain() is self.domain()
                 and other.codomain() is self.codomain()
             ):
