@@ -431,8 +431,9 @@ A site that still raises keeps its node, and every node whose example passes and
   **Source closure (2026-09-26):** the cited case is the identity algebra `A/A`, so `Omega^1_{A/A} = 0` independently of any presentation. The Kähler-differential constructor now recognizes that semantic case first and constructs the zero free `A`-module in `KahlerDifferentialModules(A)`; only genuinely relative algebras continue to the localization or finite-presentation backends.
   Runtime catalogue confirmation remains in terminal T under `DEV-58`.
 
-- [ ] **`closed-immersion-citation`**. **Needs:** none.
+- [x] **`closed-immersion-citation`**. **Needs:** none.
   **Site:** `categories/schemes/schemes.py`, `is_closed_immersion`, cites Stacks Tag 01HV, which is Lemma 26.5.4 (sections of `M~` on `Spec R`). Cite the Stacks result that a morphism of affine schemes is a closed immersion exactly when its ring map is surjective, after opening it.
+  **Source closure (2026-09-26):** `is_closed_immersion` now cites Stacks Tag `0H2N`, Lemma 37.81.1, for the affine surjective-ring-map criterion.
 
 - [ ] **`triage-long-tail`**. **Needs:** none.
   **Site:** the remaining 699 sites of the catalogue, together about 2,200 failures, among them `categories/rings/commutative_ideals.py:946` (59), `categories/group/g_sets.py:167` (54), `categories/modules/pure/modules.py:4681` (53), `categories/modules/framed/fraction_field_quotients.py:123` (50), `sage/matrix/matrix_gfpn_dense.pyx:429` (`GF(27)` in MeatAxe, 36), and 27 specification tests calling `Hom`, which the session does not export under `Mor` as its only spelling.
