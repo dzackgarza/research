@@ -2009,6 +2009,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def is_commutative(self):
                 return True
 
+            def nilradical(self):
+                r"""Return the nilradical ``sqrt((0))`` of this commutative ring."""
+                return self.ideal(self.zero()).radical()
+
+            def is_reduced(self) -> bool:
+                r"""Return whether this commutative ring has zero nilradical."""
+                zero_ideal = self.ideal(self.zero())
+                return self.nilradical() == zero_ideal
+
             @cached_method
             def square_class_group(self):
                 r"""Return ``R^×/(R^×)^2``, the cokernel of squaring on the unit group.
