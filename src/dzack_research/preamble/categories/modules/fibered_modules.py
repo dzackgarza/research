@@ -57,7 +57,15 @@ class SemilinearModuleMorphism:
     adjunction when that represented scalar extension is available.
     """
 
-    def __init__(self, parent, scalar_map, restricted_morphism) -> None:
+    def __init__(
+        self,
+        parent,
+        scalar_map,
+        restricted_morphism=None,
+        *,
+        evaluator=None,
+        linearity_decision=Unknown,
+    ) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
         if scalar_map.domain() is not domain.base_ring():
@@ -71,12 +79,31 @@ class SemilinearModuleMorphism:
                 f"{codomain.base_ring()}, but {scalar_map} ends at {scalar_map.codomain()}"
             )
         restricted = parent.restricted_codomain(scalar_map)
-        linear_mor = Modules(domain.base_ring()).Mor(domain, restricted)
-        restricted_morphism = linear_mor(restricted_morphism)
         self._scalar_map = scalar_map
         self._restricted_codomain = restricted
-        self._restricted_morphism = restricted_morphism
-        super().__init__(parent, self._evaluate_semilinear)
+        self._restricted_morphism = None
+        self._derived_linearity_decision = linearity_decision
+        match restricted_morphism, evaluator:
+            case None, None:
+                raise TypeError(
+                    f"a semilinear map {domain} -> {codomain} needs its defining linear map "
+                    f"{domain} -> {restricted} or a construction-derived evaluator"
+                )
+            case None, _:
+                pass
+            case _, None:
+                linear_mor = Modules(domain.base_ring()).Mor(domain, restricted)
+                self._restricted_morphism = linear_mor(restricted_morphism)
+                evaluator = lambda element: codomain(
+                    self._restricted_morphism(element).underlying_element()
+                )
+                self._derived_linearity_decision = self._restricted_morphism.linearity_decision()
+            case _, _:
+                raise TypeError(
+                    "a semilinear arrow is defined either by its restricted linear morphism "
+                    "or by a construction-derived evaluator, not both"
+                )
+        super().__init__(parent, evaluator)
 
     def scalar_map(self):
         return self._scalar_map
@@ -91,9 +118,18 @@ class SemilinearModuleMorphism:
         r"""Return ``Res_sigma(N)``, the target read in the source fibre."""
         return self._restricted_codomain
 
+    @cached_method
     def restricted_morphism(self):
         r"""Return the defining ``R``-linear map ``M -> Res_sigma(N)``."""
-        return self._restricted_morphism
+        if self._restricted_morphism is not None:
+            return self._restricted_morphism
+        restricted = self.restricted_codomain()
+        linear_mor = Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
+        return _DerivedRestrictedSemilinearMorphism(
+            linear_mor,
+            lambda element: restricted.wrap(self(element)),
+            self._derived_linearity_decision,
+        )
 
     @cached_method
     def additive_map(self):
@@ -102,11 +138,7 @@ class SemilinearModuleMorphism:
             self.domain(),
             self.codomain(),
         )
-        return additive.elementwise(
-            lambda element: self.codomain()(
-                self.restricted_morphism()(element).underlying_element()
-            )
-        )
+        return additive.elementwise(lambda element: self(element))
 
     @cached_method
     def linearization(self):
@@ -121,9 +153,6 @@ class SemilinearModuleMorphism:
 
     def extended_source(self):
         return self.parent().extended_domain(self.scalar_map())
-
-    def _evaluate_semilinear(self, element):
-        return self.additive_map()(element)
 
     def __eq__(self, other):
         if self is other:
