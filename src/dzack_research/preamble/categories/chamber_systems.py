@@ -6,7 +6,6 @@ preserve the type set and every typed adjacency relation.  This is the standard
 notion used for buildings; see Abramenko--Brown, *Buildings*, Section 1.4.
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 
@@ -17,7 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism, Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -59,18 +58,15 @@ class _FiniteChamberSystemEngine:
         return self._chamber_pair_space((left, right)) in self._adjacent_pairs[type_]
 
 
-class ChamberSystemMorphism(Morphism):
+class ChamberSystemMorphism(OwnedSetMorphism):
     r"""A type-preserving map of chambers preserving every adjacency."""
 
     def __init__(self, parent, set_morphism) -> None:
-        Morphism.__init__(self, parent)
         self._set_morphism = set_morphism
+        OwnedSetMorphism.__init__(self, parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
-
-    def __call__(self, chamber):
-        return self.underlying_set_morphism()(chamber)
 
     def __mul__(self, other):
         if not _precomposable(self, other):

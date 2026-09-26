@@ -8,7 +8,6 @@ standard graph-homomorphism notions (see Diestel, *Graph Theory*, Chapter 1,
 and Bang-Jensen--Gutin, *Digraphs*, Chapter 1).
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
@@ -20,7 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism, Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -124,18 +123,15 @@ def _finite_digraph_engine_with(mixin):
     )
 
 
-class GraphMorphism(Morphism):
+class GraphMorphism(OwnedSetMorphism):
     r"""A vertex map preserving directed adjacency."""
 
     def __init__(self, parent, set_morphism) -> None:
-        Morphism.__init__(self, parent)
         self._set_morphism = set_morphism
+        OwnedSetMorphism.__init__(self, parent, set_morphism)
 
     def underlying_set_morphism(self):
         return self._set_morphism
-
-    def __call__(self, vertex):
-        return self.underlying_set_morphism()(vertex)
 
     def __mul__(self, other):
         if not _precomposable(self, other):
