@@ -735,6 +735,16 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [self.underlying_category()]
 
+    def _mor_endpoints_in_supercategory(self, supercategory, domain, codomain):
+        if supercategory is self.underlying_category():
+            forget = self.forgetful_functor()
+            return forget(domain), forget(codomain)
+        return super()._mor_endpoints_in_supercategory(
+            supercategory,
+            domain,
+            codomain,
+        )
+
     def _repr_object_names(self):
         return f"{self.acting_group()}-objects in {self.underlying_category()._repr_object_names()}"
 

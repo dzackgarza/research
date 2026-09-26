@@ -662,16 +662,22 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
 
     def super_categories(self):
         supers = []
+        base = self.base_category()
         for supercategory in _packet_supercategories(self.base_category()):
+            domain, codomain = base._mor_endpoints_in_supercategory(
+                supercategory,
+                self.domain_object(),
+                self.codomain_object(),
+            )
             supers.append(
                 self.mor_family().family_over(supercategory).Of(
-                    self.domain_object(), self.codomain_object()
+                    domain, codomain
                 )
             )
             if self.end_family() is not None:
                 supers.append(
                     self.end_family().family_over(supercategory).Of(
-                        self.domain_object()
+                        domain
                     )
                 )
         return supers or [Objects()]
@@ -931,17 +937,23 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
 
     def super_categories(self):
         supers = []
+        base = self.base_category()
         for supercategory in _packet_supercategories(self.base_category()):
+            domain, codomain = base._mor_endpoints_in_supercategory(
+                supercategory,
+                self.domain_object(),
+                self.codomain_object(),
+            )
             supers.append(
                 self.mor_family().family_over(supercategory).Of(
-                    self.domain_object(),
-                    self.codomain_object(),
+                    domain,
+                    codomain,
                 )
             )
             if self.end_family() is not None:
                 supers.append(
                     self.end_family().family_over(supercategory).Of(
-                        self.domain_object()
+                        domain
                     )
                 )
         return supers or [Objects()]
@@ -993,10 +1005,13 @@ class FixedRestrictedMorCategory(FixedMorCategory):
         base = _category_packet(self.base_category()).Mors().Of(
             self.domain_object(), self.codomain_object()
         )
+        owner = self.base_category()
         inherited = [
-            self.mor_family().family_over(supercategory).Of(
-                self.domain_object(), self.codomain_object()
-            )
+            self.mor_family().family_over(supercategory).Of(*owner._mor_endpoints_in_supercategory(
+                supercategory,
+                self.domain_object(),
+                self.codomain_object(),
+            ))
             for supercategory in _packet_supercategories(self.base_category())
         ]
         return [base, *inherited]

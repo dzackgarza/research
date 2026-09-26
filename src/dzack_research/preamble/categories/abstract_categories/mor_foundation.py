@@ -187,6 +187,24 @@ class CategoryPacketMethods:
         """
         return obj
 
+    def _mor_endpoints_in_supercategory(
+        self,
+        supercategory: Category,
+        domain: Parent | Category,
+        codomain: Parent | Category,
+    ):
+        r"""Forget this category's endpoints into one declared supercategory.
+
+        The default inclusion keeps the mathematical objects and lets the
+        supercategory apply its ordinary endpoint normalization.  A category
+        whose declared supercategory is reached by a genuine forgetful functor
+        overrides this one construction hook and returns the functor images.
+        """
+        return (
+            supercategory._mor_endpoint(domain),
+            supercategory._mor_endpoint(codomain),
+        )
+
     def category_packet(self):
         r"""Return the Mor/End/Mono/Epi/Iso/Aut packet owned by this category."""
         from dzack_research.preamble.categories.abstract_categories.mor_categories import (
