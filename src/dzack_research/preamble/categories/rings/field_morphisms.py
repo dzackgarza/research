@@ -12,7 +12,6 @@ from sage.categories.finite_fields import FiniteFields as SageFiniteFields
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.rings.rational_field import QQ as SageQQ
 from sage.categories.map import Map
-from sage.categories.morphism import Morphism
 from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
@@ -21,7 +20,13 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    RingMorphism,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
@@ -63,7 +68,7 @@ def _field_generators(field):
     ))
 
 
-class ExactFieldMorphism(Morphism):
+class ExactFieldMorphism(RingMorphism):
     r"""A field morphism with owned endpoints and an exact Sage field map retained privately.
 
     The private map is admitted by the exact field Mor's element constructor,
@@ -72,8 +77,12 @@ class ExactFieldMorphism(Morphism):
     """
 
     def __init__(self, parent, engine_morphism: Map) -> None:
-        Morphism.__init__(self, parent)
-        self._engine_morphism = engine_morphism
+        RingMorphism.__init__(
+            self,
+            parent,
+            self._evaluate_engine,
+            engine_morphism=engine_morphism,
+        )
 
     def _engine_morphism_crossing(self) -> Map:
         r"""Return the private exact Sage field-map realization.
@@ -84,10 +93,7 @@ class ExactFieldMorphism(Morphism):
         """
         return self._engine_morphism
 
-    def __call__(self, element):
-        return self._call_(element)
-
-    def _call_(self, element):
+    def _evaluate_engine(self, element):
         source = _engine_ring(self.domain())
         target = _engine_ring(self.codomain())
         backend_element = _engine_element(self.domain(), self.domain()(element))
