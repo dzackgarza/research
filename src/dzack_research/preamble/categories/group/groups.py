@@ -1552,7 +1552,7 @@ def _canonical_subgroup_inclusion(subgroup):
     )
 
 
-class IndexedFreeGroupMorphism(Morphism):
+class IndexedFreeGroupMorphism:
     r"""A morphism out of the free group on a chosen set.
 
     The universal property of the free group ``F(S)`` makes a group morphism
@@ -1562,13 +1562,13 @@ class IndexedFreeGroupMorphism(Morphism):
     """
 
     def __init__(self, parent, generator_morphism) -> None:
-        Morphism.__init__(self, parent)
         self._generator_morphism = generator_morphism
+        super().__init__(parent, self._evaluate_reduced_word)
 
     def generator_morphism(self):
         return self._generator_morphism
 
-    def _call_(self, element):
+    def _evaluate_reduced_word(self, element):
         codomain = self.codomain()
         return reduce(
             mul,
@@ -1619,7 +1619,7 @@ class _GroupMorRealizationMixin:
 class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     """The canonical Mor object out of the free group on a chosen set."""
 
-    Element = IndexedFreeGroupMorphism
+    ElementMethods = IndexedFreeGroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         category = Monoids() if domain is codomain else None
