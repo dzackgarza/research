@@ -1,7 +1,6 @@
 """Algebras graded by a monoid."""
 
 from sage.categories.category_with_axiom import all_axioms
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -13,6 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _assert_not_refuted,
     _associativity,
@@ -103,13 +103,16 @@ def _homogeneous_degree(element):
     return parent.homogeneous_degree(element)
 
 
-class GradedAlgebraMorphism(Morphism):
+class GradedAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
     r"""An algebra morphism preserving the selected grading."""
 
     def __init__(self, parent, images) -> None:
-        Morphism.__init__(self, parent)
-
-        self._underlying = Algebras(self.domain().base_ring()).Associative().Unital().Mor(self.domain(), self.codomain())(images)
+        domain = parent.domain()
+        codomain = parent.codomain()
+        self._underlying = Algebras(domain.base_ring()).Associative().Unital().Mor(
+            domain, codomain
+        )(images)
+        UnitalMultiplicativeAlgebraMorphism.__init__(self, parent, self._underlying)
         derived = self._degree_preservation_derivation()
         self._degree_preservation_decision = (
             self._decide_degree_preservation() if derived is None else derived
@@ -155,12 +158,6 @@ class GradedAlgebraMorphism(Morphism):
             if degree_equal is not True:
                 return Unknown
         return True
-
-    def _call_(self, element):
-        return self._underlying(element)
-
-    def __call__(self, element):
-        return self._call_(element)
 
     def __mul__(self, other):
         if not isinstance(other, GradedAlgebraMorphism):
