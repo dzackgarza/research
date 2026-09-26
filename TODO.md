@@ -312,6 +312,7 @@ The suite is the instrument that finds the rest; these make it fast and complete
 
 - [ ] **`category-method-coverage-sweep`**. **Needs:** none.
   **Owner and delta:** for every category in the live session, construct its objects on small specimens and call every public method of the object, its elements and its morphisms, asserting the mathematical value (owner, 2026-09-24). The categories and operations come from a regenerated `just preamble-megadoc` survey; one test file per category, written to `tests/constructions/CONTRIBUTING.md`'s session standard.
+  Loop body: one category, its whole public surface in one pass: every operation of its objects, elements and morphisms, from the survey's listing of what the category introduces, written into that category's one file and banked in one commit. A file or commit per method or per surface is not the unit; the category is.
   **Closure:** every category of the survey has its file, and `just coverage-report` shows no public method of the preamble that no passing test calls, other than those whose failure is a recorded node.
 
 ## Runtime triage catalogue
