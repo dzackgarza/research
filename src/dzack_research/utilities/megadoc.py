@@ -283,8 +283,18 @@ class CategoryDoc:
     supers: list[str] = field(default_factory=list)
     ancestry: list[str] = field(default_factory=list)
     subcategories: list[str] = field(default_factory=list)
-    own_methods: dict[str, list[MethodDoc]] = field(default_factory=dict)
+    own_methods: defaultdict[str, list[MethodDoc]] = field(default_factory=lambda: defaultdict(list))
     inherited: list[tuple[str, int, int, int]] = field(default_factory=list)
+    # The fixed Mor class of this category, and its declared element class,
+    # the arrow type; the arrow type is empty when the Mor class declares none.
+    arrow_mor_class: str = ""
+    arrow_type: str = ""
+    arrow_type_source: str = ""
+    # Every owned class the arrow type inherits from, with its public operations.
+    arrow_lineage: dict[str, list[MethodDoc]] = field(default_factory=dict)
+    # The lowest categories of the up-set whose arrow type the arrow type of
+    # this one does not inherit, though every arrow here is an arrow there.
+    arrow_unthreaded: list[str] = field(default_factory=list)
     specimens: list[str] = field(default_factory=list)
     specimen_total: int = 0
     problem: str = ""
@@ -488,6 +498,7 @@ class Survey:
 
         self.close_ancestry(pending)
         self.invert_edges()
+        self.settle_arrow_operations()
 
     def describe(self, doc: CategoryDoc, instance: Category) -> None:
         doc.instance_repr = stable_runtime_text(repr(instance))
@@ -504,6 +515,73 @@ class Survey:
                 if name not in doc.ancestry:
                     doc.ancestry.append(name)
         self.read_methods(doc, instance)
+        self.read_arrow_type(doc, instance)
+
+    def read_arrow_type(self, doc: CategoryDoc, instance: Category) -> None:
+        r"""Record the arrow type of ``instance`` and the owned classes it inherits.
+
+        An arrow of ``C`` is an element of a fixed Mor object of ``C``, whose
+        class is ``C.MorCategory().fixed_category_class()``; its ``Element`` is
+        the arrow type.  Sage never instantiates ``morphism_class``, so arrow
+        operations cannot be read there.  A fixed Mor class with no ``Element``
+        declares no arrow type: its element constructor builds arrows of
+        whatever class its code names, and only the Mor class is recorded.
+        """
+        if not self.is_owned(self.family_of(instance)[1]):
+            return
+        fixed = instance.MorCategory().fixed_category_class()
+        doc.arrow_mor_class = fixed.__qualname__
+        arrow = next(
+            (vars(klass)["Element"] for klass in fixed.__mro__ if "Element" in vars(klass)),
+            None,
+        )
+        if not inspect.isclass(arrow):
+            return
+        doc.arrow_type = arrow.__qualname__
+        doc.arrow_type_source = source_of(arrow)
+        for klass in arrow.__mro__:
+            if self.is_owned(klass.__module__):
+                doc.arrow_lineage[klass.__qualname__] = self.members(klass)
+
+    def settle_arrow_operations(self) -> None:
+        r"""Keep, for each category, the arrow operations it introduces.
+
+        An arrow operation is introduced on ``C`` when the arrow type of ``C``
+        has it and the arrow type of no category in the up-set of ``C`` does.
+        A lowest category of the up-set whose arrow type is not among the classes
+        the arrow type of ``C`` inherits is recorded as unthreaded: every arrow
+        of ``C`` is an arrow there, so its operations are owed here.
+        """
+        for doc in self.categories.values():
+            if not doc.arrow_lineage:
+                continue
+            above = {
+                (klass, method.name)
+                for name in doc.ancestry
+                if name in self.categories
+                for klass, methods in self.categories[name].arrow_lineage.items()
+                for method in methods
+            }
+            introduced = [
+                method
+                for klass, methods in doc.arrow_lineage.items()
+                for method in methods
+                if (klass, method.name) not in above
+            ]
+            if introduced:
+                doc.own_methods.setdefault("morphisms", []).extend(introduced)
+            missed = {
+                name
+                for name in doc.ancestry
+                if name in self.categories
+                and self.categories[name].arrow_lineage
+                and self.categories[name].arrow_type not in doc.arrow_lineage
+            }
+            doc.arrow_unthreaded = sorted(
+                name
+                for name in missed
+                if not any(name in self.categories[lower].ancestry for lower in missed if lower != name)
+            )
 
     def read_methods(self, doc: CategoryDoc, instance: Category) -> None:
         r"""Split every operation an object of this category answers to by owner.
@@ -1273,10 +1351,14 @@ def graph_json(survey: Survey) -> str:
                         "summary": m.summary,
                         "mark": m.mark,
                     }
-                    for m in methods
+                    for m in doc.own_methods[label]
                 ]
-                for label, methods in doc.own_methods.items()
+                for label in ("objects", "elements", "morphisms")
             },
+            "arrow_mor_class": doc.arrow_mor_class,
+            "arrow_type": doc.arrow_type,
+            "arrow_type_source": doc.arrow_type_source,
+            "arrow_unthreaded": doc.arrow_unthreaded,
             "inherits": [
                 {
                     "from": owner,

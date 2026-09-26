@@ -18,7 +18,6 @@ digraph preamble {
     "LabelledGraphs" [label="LabelledGraphs", fillcolor="#dbeafe"];
     "MorCategories" [label="MorCategories", fillcolor="#dbeafe"];
     "Objects" [label="Objects", fillcolor="#dbeafe"];
-    "Objects.Framed" [label="Objects.Framed", fillcolor="#dbeafe"];
     "PrimitiveIsotropicSubobjects" [label="PrimitiveIsotropicSubobjects(R)", fillcolor="#dbeafe"];
     "TopologicalSpaces" [label="TopologicalSpaces", fillcolor="#dbeafe"];
     "VectorConfigurations" [label="VectorConfigurations(R)", fillcolor="#dbeafe"];
@@ -66,7 +65,6 @@ digraph preamble {
     "Modules.FinitelyGenerated" [label="Modules.FinitelyGenerated", fillcolor="#fae8ff"];
     "Modules.FinitelyPresented" [label="Modules.FinitelyPresented", fillcolor="#fae8ff"];
     "Modules.FinitelyPresented.Torsion" [label="Modules.FinitelyPresented.Torsion", fillcolor="#fae8ff"];
-    "Modules.Framed" [label="Modules.Framed", fillcolor="#fae8ff"];
     "Modules.Free" [label="Modules.Free", fillcolor="#fae8ff"];
     "Modules.Projective" [label="Modules.Projective", fillcolor="#fae8ff"];
     "Modules.Torsion" [label="Modules.Torsion", fillcolor="#fae8ff"];
@@ -85,8 +83,8 @@ digraph preamble {
     "Algebras.Associative" [label="Algebras.Associative", fillcolor="#ffe4e6"];
     "Algebras.Associative.Unital" [label="Algebras.Associative.Unital", fillcolor="#ffe4e6"];
     "Algebras.Associative.Unital.Commutative" [label="Algebras.Associative.Unital.Commutative", fillcolor="#ffe4e6"];
+    "Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra" [label="Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra", fillcolor="#ffe4e6"];
     "Algebras.Associative.Unital.FinitelyPresentedAsAlgebra" [label="Algebras.Associative.Unital.FinitelyPresentedAsAlgebra", fillcolor="#ffe4e6"];
-    "Algebras.Associative.Unital.Framed" [label="Algebras.Associative.Unital.Framed", fillcolor="#ffe4e6"];
     "Algebras.Commutative" [label="Algebras.Commutative", fillcolor="#ffe4e6"];
     "Algebras.Lie" [label="Algebras.Lie", fillcolor="#ffe4e6"];
     "Algebras.Unital" [label="Algebras.Unital", fillcolor="#ffe4e6"];
@@ -132,10 +130,10 @@ digraph preamble {
     "OwnedGroups.Commutative" [label="OwnedGroups.Commutative", fillcolor="#e0e7ff"];
     "OwnedGroups.FinitelyGeneratedAsMagma" [label="OwnedGroups.FinitelyGeneratedAsMagma", fillcolor="#e0e7ff"];
     "OwnedGroups.FinitelyPresentedAsGroup" [label="OwnedGroups.FinitelyPresentedAsGroup", fillcolor="#e0e7ff"];
-    "OwnedGroups.Framed" [label="OwnedGroups.Framed", fillcolor="#e0e7ff"];
     "ProfiniteGroups" [label="ProfiniteGroups", fillcolor="#e0e7ff"];
     "Semigroups" [label="Semigroups", fillcolor="#e0e7ff"];
     "TopologicalGroups" [label="TopologicalGroups", fillcolor="#e0e7ff"];
+    "groups" [label="groups", fillcolor="#e0e7ff"];
   }
   subgraph cluster_6 {
     label="Rings, Fields &amp; Commutative Algebra"; fontsize=13; color="#cbd5e1"; style=rounded;
@@ -145,6 +143,7 @@ digraph preamble {
     "FormalPowerSeriesRings" [label="FormalPowerSeriesRings(R)", fillcolor="#ccfbf1"];
     "NumberFieldsWithChosenPrimitiveElement" [label="NumberFieldsWithChosenPrimitiveElement", fillcolor="#ccfbf1"];
     "OrderedRings" [label="OrderedRings", fillcolor="#ccfbf1"];
+    "Orders" [label="Orders", fillcolor="#ccfbf1"];
     "OwnedAdicallyCompleteRings" [label="OwnedAdicallyCompleteRings", fillcolor="#ccfbf1"];
     "OwnedNumberFields" [label="OwnedNumberFields", fillcolor="#ccfbf1"];
     "OwnedOrderedRings" [label="OwnedOrderedRings", fillcolor="#ccfbf1"];
@@ -228,12 +227,9 @@ digraph preamble {
     "TorusInvariantCycleGroups" [label="TorusInvariantCycleGroups(R)", fillcolor="#ede9fe"];
     "WeilDivisorGroups" [label="WeilDivisorGroups", fillcolor="#ede9fe"];
   }
-  subgraph cluster_10 {
-    label="Function Spaces &amp; Analysis"; fontsize=13; color="#cbd5e1"; style=rounded;
-    "LebesgueGradedModules" [label="LebesgueGradedModules(R)", fillcolor="#cffafe"];
-  }
   subgraph cluster_11 {
     label="Sets, Cardinals &amp; Ordinals"; fontsize=13; color="#cbd5e1"; style=rounded;
+    "AugmentedSimplexCategory" [label="AugmentedSimplexCategory", fillcolor="#fce7f3"];
     "Cardinalities" [label="Cardinalities", fillcolor="#fce7f3"];
     "CartesianProductsOfSets" [label="CartesianProductsOfSets", fillcolor="#fce7f3"];
     "CoproductsOfSets" [label="CoproductsOfSets", fillcolor="#fce7f3"];
@@ -241,11 +237,14 @@ digraph preamble {
     "EnumeratedByIntegers" [label="EnumeratedByIntegers", fillcolor="#fce7f3"];
     "EnumeratedByNaturals" [label="EnumeratedByNaturals", fillcolor="#fce7f3"];
     "EnumeratedSets" [label="EnumeratedSets", fillcolor="#fce7f3"];
+    "FiniteOrderedSets" [label="FiniteOrderedSets", fillcolor="#fce7f3"];
     "FinitePowerSets" [label="FinitePowerSets", fillcolor="#fce7f3"];
     "FinitelySupportedFunctionSets" [label="FinitelySupportedFunctionSets", fillcolor="#fce7f3"];
     "FunctionEnumeratedSets" [label="FunctionEnumeratedSets", fillcolor="#fce7f3"];
     "FunctionSets" [label="FunctionSets", fillcolor="#fce7f3"];
-    "OrdinalSemirings" [label="OrdinalSemirings", fillcolor="#fce7f3"];
+    "Mors" [label="Mors", fillcolor="#fce7f3"];
+    "OrderedEnumeratedSets" [label="OrderedEnumeratedSets", fillcolor="#fce7f3"];
+    "Ordinals" [label="Ordinals", fillcolor="#fce7f3"];
     "PartiallyOrderedSets" [label="PartiallyOrderedSets", fillcolor="#fce7f3"];
     "PowerSets" [label="PowerSets", fillcolor="#fce7f3"];
     "Sets" [label="Sets", fillcolor="#fce7f3"];
@@ -253,6 +252,7 @@ digraph preamble {
     "Sets.Finite" [label="Sets.Finite", fillcolor="#fce7f3"];
     "Sets.Infinite" [label="Sets.Infinite", fillcolor="#fce7f3"];
     "TotallyOrderedSets" [label="TotallyOrderedSets", fillcolor="#fce7f3"];
+    "WellOrderedSets" [label="WellOrderedSets", fillcolor="#fce7f3"];
   }
   subgraph cluster_16 {
     label="Preamble Entrypoints &amp; Utilities"; fontsize=13; color="#cbd5e1"; style=rounded;
@@ -286,17 +286,16 @@ digraph preamble {
   "Algebras.Associative.Unital.Commutative" -> "Algebras.Associative.Unital";
   "Algebras.Associative.Unital.Commutative" -> "Algebras.Commutative";
   "Algebras.Associative.Unital.Commutative" -> "OwnedRings.Commutative";
-  "Algebras.Associative.Unital.FinitelyPresentedAsAlgebra" -> "Algebras.Associative.Unital";
-  "Algebras.Associative.Unital.Framed" -> "Algebras.Associative.Unital";
-  "Algebras.Associative.Unital.Framed" -> "Modules.Framed";
+  "Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra" -> "Algebras.Associative.Unital";
+  "Algebras.Associative.Unital.FinitelyPresentedAsAlgebra" -> "Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra";
   "Algebras.Commutative" -> "Algebras";
   "Algebras.Lie" -> "Algebras";
   "Algebras.Unital" -> "Algebras";
   "AlgebrasWithChosenFinitePresentation" -> "Algebras.Associative.Unital.Commutative";
   "AlgebrasWithChosenFinitePresentation" -> "Algebras.Associative.Unital.FinitelyPresentedAsAlgebra";
-  "AlgebrasWithChosenFinitePresentation" -> "Algebras.Associative.Unital.Framed";
   "AlternatingAlgebras" -> "GradedAlgebras.Supercommutative.Alternating";
   "AugmentedAlgebras" -> "Algebras.Associative.Unital";
+  "AugmentedSimplexCategory" -> "FiniteOrderedSets";
   "BilinearFormModules" -> "FormModules";
   "BilinearFormModules.Even" -> "BilinearFormModules";
   "BilinearFormModules.FinitelyPresented" -> "BilinearFormModules";
@@ -310,7 +309,7 @@ digraph preamble {
   "Cat" -> "Objects";
   "ChamberSystems" -> "Sets";
   "ChowGroups" -> "Modules.FinitelyPresented";
-  "ClassGroups" -> "Modules.Framed";
+  "ClassGroups" -> "Modules";
   "ClosedSubschemes" -> "Schemes";
   "CohomologyModules" -> "Modules.FinitelyPresented";
   "CommutativeAlgebraCoproducts" -> "Algebras.Associative.Unital.Commutative";
@@ -322,7 +321,6 @@ digraph preamble {
   "CoxeterDiagrams" -> "LabelledGraphs";
   "Curves" -> "Varieties";
   "CyclicGroups" -> "OwnedGroups.Commutative";
-  "CyclicGroups" -> "OwnedGroups.Framed";
   "DeRhamAlgebras" -> "DifferentialGradedAlgebras";
   "DeRhamAlgebras" -> "GradedAlgebras.Supercommutative.Alternating";
   "DifferentialGradedAlgebras" -> "CochainComplexes";
@@ -345,6 +343,8 @@ digraph preamble {
   "EnumeratedByNaturals" -> "Sets.Infinite";
   "EnumeratedSets" -> "Sets.Countable";
   "FiberProductSchemes" -> "Schemes";
+  "FiniteOrderedSets" -> "OrderedEnumeratedSets";
+  "FiniteOrderedSets" -> "Sets.Finite";
   "FinitePowerSets" -> "Sets";
   "FinitelySupportedFunctionSets" -> "FunctionSets";
   "FormModules" -> "Modules";
@@ -354,21 +354,20 @@ digraph preamble {
   "FormalDivisorGroups" -> "FramedFreeModules";
   "FormalPowerSeriesRings" -> "Algebras.Associative.Unital.Commutative";
   "FormalPowerSeriesRings" -> "OwnedAdicallyCompleteRings";
-  "FractionFieldQuotients" -> "Modules.Framed";
+  "FractionFieldQuotients" -> "Modules";
   "FractionalIdeals" -> "ModuleSubobjects";
-  "FractionalIdeals" -> "Modules.Framed";
-  "FramedFreeModules" -> "Modules.Framed";
+  "FractionalIdeals" -> "Modules";
   "FramedFreeModules" -> "Modules.Free";
   "FramedFreeModules.FinitelyGenerated" -> "FramedFreeModules";
   "FramedFreeModules.FinitelyGenerated" -> "ModulesWithChosenFinitePresentation";
-  "FreeAlgebras" -> "Algebras.Associative.Unital.Framed";
+  "FreeAlgebras" -> "Algebras.Associative.Unital";
   "FreeFormModules" -> "FormModules";
   "FreeFormModules" -> "FramedFreeModules";
   "FreeFormModules.FinitelyGenerated" -> "FormModules.FinitelyPresented";
   "FreeFormModules.FinitelyGenerated" -> "FramedFreeModules.FinitelyGenerated";
   "FreeFormModules.FinitelyGenerated" -> "FreeFormModules";
   "FunctionEnumeratedSets" -> "EnumeratedSets";
-  "FunctionSets" -> "Sets";
+  "FunctionSets" -> "Mors";
   "GeneralModules" -> "Modules";
   "GeometricFundamentalGroups" -> "OwnedGroups";
   "GradedAlgebras.Supercommutative.Alternating" -> "GradedAlgebras.Supercommutative";
@@ -377,7 +376,6 @@ digraph preamble {
   "GroupAlgebras" -> "AugmentedAlgebras";
   "Groups" -> "Monoids";
   "GroupsWithChosenFinitePresentation" -> "OwnedGroups.FinitelyPresentedAsGroup";
-  "GroupsWithChosenFinitePresentation" -> "OwnedGroups.Framed";
   "HomogeneousPolynomialSectionSpaces" -> "VectorSpaces";
   "HyperbolicLattices" -> "Lattices";
   "ImposedMultiplicityLinearSystems" -> "Schemes.Projective";
@@ -391,14 +389,13 @@ digraph preamble {
   "LabelledGraphs" -> "LabelledDigraphs";
   "Lattices" -> "BilinearFormModules.Symmetric";
   "Lattices" -> "FreeFormModules";
-  "LebesgueGradedModules" -> "Modules";
   "LineBundleCohomologySpaces" -> "VectorSpaces";
   "LinearMorModules" -> "Modules";
   "LocalizedModules" -> "Modules";
   "LocallyRingedSpaces" -> "RingedSpaces";
   "LogPairs" -> "Schemes";
   "Magmas" -> "Sets";
-  "MatrixAlgebras" -> "Algebras.Associative.Unital.Framed";
+  "MatrixAlgebras" -> "Algebras.Associative.Unital";
   "MatrixAlgebras" -> "MatrixEndomorphismSpaces";
   "MatrixEndomorphismSpaces" -> "AdditiveEndomorphismRings";
   "MatrixEndomorphismSpaces" -> "MatrixSpaces";
@@ -410,16 +407,14 @@ digraph preamble {
   "Modules.FinitelyPresented" -> "Modules.FinitelyGenerated";
   "Modules.FinitelyPresented.Torsion" -> "Modules.FinitelyPresented";
   "Modules.FinitelyPresented.Torsion" -> "Modules.Torsion";
-  "Modules.Framed" -> "Modules";
-  "Modules.Framed" -> "Objects.Framed";
   "Modules.Free" -> "Modules.Projective";
   "Modules.Projective" -> "Modules";
   "Modules.Torsion" -> "Modules";
   "ModulesOverCommutativeRings" -> "AdditiveGroups.AdditiveCommutative";
   "ModulesWithChosenFinitePresentation" -> "Modules.FinitelyPresented";
-  "ModulesWithChosenFinitePresentation" -> "Modules.Framed";
   "Monoids" -> "Semigroups";
   "MorCategories" -> "Cat";
+  "Mors" -> "Sets";
   "NoncrystallographicRootLattices" -> "BilinearFormModules.Even";
   "NoncrystallographicRootLattices" -> "BilinearFormModules.FinitelyPresented";
   "NoncrystallographicRootLattices" -> "FormModules.Nondegenerate";
@@ -427,17 +422,20 @@ digraph preamble {
   "NoncrystallographicRootLattices" -> "Lattices";
   "NumberFieldsWithChosenPrimitiveElement" -> "OwnedNumberFields";
   "ObjectSetsOfDiscreteCategories" -> "SetsWithPartialMaps";
-  "Objects.Framed" -> "Objects";
   "OrbitSets" -> "Sets.Finite";
+  "OrderedEnumeratedSets" -> "EnumeratedSets";
+  "OrderedEnumeratedSets" -> "WellOrderedSets";
   "OrderedRings" -> "OwnedRings";
-  "OrdinalSemirings" -> "OwnedSemirings";
+  "Orders" -> "Algebras.Associative.Unital.Commutative";
+  "Orders" -> "Modules.FinitelyGenerated";
+  "Orders" -> "OwnedRings.NoZeroDivisors.Commutative";
+  "Orders" -> "OwnedRings.Noetherian";
+  "Ordinals" -> "Objects";
   "OwnedAdicallyCompleteRings" -> "OwnedRings.Commutative";
   "OwnedGroups" -> "Monoids";
   "OwnedGroups.Commutative" -> "OwnedGroups";
   "OwnedGroups.FinitelyGeneratedAsMagma" -> "OwnedGroups";
   "OwnedGroups.FinitelyPresentedAsGroup" -> "OwnedGroups.FinitelyGeneratedAsMagma";
-  "OwnedGroups.Framed" -> "Objects.Framed";
-  "OwnedGroups.Framed" -> "OwnedGroups";
   "OwnedNumberFields" -> "OwnedRings.Division.Commutative";
   "OwnedOrderedRings" -> "OwnedRings";
   "OwnedOrders" -> "Algebras.Associative.Unital.Commutative";
@@ -461,12 +459,12 @@ digraph preamble {
   "OwnedRings.NoZeroDivisors.Commutative" -> "OwnedRings.Commutative";
   "OwnedRings.NoZeroDivisors.Commutative" -> "OwnedRings.NoZeroDivisors";
   "OwnedRings.Noetherian" -> "OwnedRings";
-  "OwnedRngs" -> "AdditiveGroups";
+  "OwnedRngs" -> "AdditiveGroups.AdditiveCommutative";
   "OwnedRngs" -> "Semigroups";
   "OwnedSemirings" -> "AdditiveMonoids";
   "OwnedSemirings" -> "Monoids";
   "PartiallyOrderedSets" -> "Sets";
-  "PicardGroups" -> "Modules.Framed";
+  "PicardGroups" -> "Modules";
   "PowerSets" -> "Sets";
   "PredicateSubrings" -> "OwnedRings";
   "PrimeSpectra" -> "PartiallyOrderedSets";
@@ -546,4 +544,6 @@ digraph preamble {
   "VectorSpaces" -> "Modules";
   "VinbergInvariantMatrices" -> "LabelledGraphs";
   "WeilDivisorGroups" -> "DivisorGroups";
+  "WellOrderedSets" -> "TotallyOrderedSets";
+  "groups" -> "Monoids";
 }

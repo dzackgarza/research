@@ -131,23 +131,24 @@ docs-preview: docs-assets
 
 # Survey a live session into the preamble reference, its graph JSON, and the interactive graph
 preamble-megadoc:
-    # The survey imports the preamble, so run it through the selected full Sage
-    # driver.  The checkout driver owns `-python`; its resolved target need not
-    # have a sibling `python3`.
-    sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
-    case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
-    PYTHONPATH=src "$sage_launcher" -python \
+    # The survey imports the preamble, so it runs under Sage's Python, which the
+    # global QC resolves.
+    PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
         -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
+
+# The CAT-05 placement worksheet: each category's introduced object, element and
+# arrow operations against its up-set U_C, with the mechanical findings.  Reads
+# docs/preamble-graph.json; run `just preamble-megadoc` first when it is stale.
+placement *categories:
+    PYTHONPATH=src python3 -m dzack_research.utilities.placement {{categories}}
 
 # Every declared category and its declared supercategories, read from source
 # without importing it -- so it answers on a tree that does not currently load.
 # FORMAT: table (default), by-supercategory, foreign, audit, shape, cells, dot, json.
 category-graph format="table":
-    # The graph theory is Sage's, so use the selected full Sage driver exactly
-    # as `preamble-megadoc` does.
-    sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
-    case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
-    PYTHONPATH=src "$sage_launcher" -python \
+    # The graph theory is Sage's, so it runs under Sage's Python as
+    # `preamble-megadoc` does.
+    PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
         -m dzack_research.utilities.category_graph --format {{format}}
 
 # The declared category graph as a rendered image, for reading the shape of it
