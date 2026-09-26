@@ -95,9 +95,6 @@ class CyclicGroups(OwnedCategory):
                 return True
             return cardinal(self.group_generator().order()).is_finite()
 
-        def is_abelian(self):
-            return True
-
         @cached_method
         def _finite_elements(self):
             r"""The powers ``1, g, g^2, ...`` of the generator up to its order."""
