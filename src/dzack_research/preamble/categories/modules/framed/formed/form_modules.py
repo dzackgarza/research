@@ -563,7 +563,7 @@ class FormedModuleMonoCategoryConstruction(MonoCategoryConstruction):
         return FormEmbeddingMor
 
 
-class FiberedFormedModuleMorphism(Morphism):
+class FiberedFormedModuleMorphism:
     r"""A formed-module morphism over a coefficient-ring map ``g:S1 -> S2``.
 
     The actual linear data live in the target fiber, exactly as required by
@@ -579,21 +579,22 @@ class FiberedFormedModuleMorphism(Morphism):
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
-        Morphism.__init__(self, parent)
+        domain = parent.domain()
+        codomain = parent.codomain()
         changed = parent.base_changed_domain()
         if module_morphism.domain() is not changed:
             raise ValueError(
                 f"a morphism of formed modules over {parent.ring_map()} needs a module map out of the "
-                f"scalar extension {changed} of {self.domain()}, but {module_morphism} starts at "
+                f"scalar extension {changed} of {domain}, but {module_morphism} starts at "
                 f"{module_morphism.domain()}"
             )
-        if module_morphism.codomain() is not self.codomain():
+        if module_morphism.codomain() is not codomain:
             raise ValueError(
-                f"a morphism of formed modules into {self.codomain()} needs a module map with that "
+                f"a morphism of formed modules into {codomain} needs a module map with that "
                 f"codomain, but {module_morphism} ends at {module_morphism.codomain()}"
             )
         source_values = _represented_value_module(changed)
-        target_values = _represented_value_module(self.codomain())
+        target_values = _represented_value_module(codomain)
         if value_morphism.domain() is not source_values:
             raise ValueError(
                 f"the value map {value_morphism} must start at the value module {source_values} of the "
@@ -602,14 +603,17 @@ class FiberedFormedModuleMorphism(Morphism):
         if value_morphism.codomain() is not target_values:
             raise ValueError(
                 f"the value map {value_morphism} must end at the value module {target_values} of "
-                f"{self.codomain()}, but ends at {value_morphism.codomain()}"
+                f"{codomain}, but ends at {value_morphism.codomain()}"
             )
-        self._module_morphism = module_morphism
         self._value_morphism = value_morphism
-        self._underlying_semilinear_morphism = parent.module_mor()._from_linearization(
-            self.ring_map(),
+        module_mor = parent.module_mor()
+        compatible = module_mor.base_change_adjunction(
+            parent.ring_map()
+        ).mor_set_isomorphism_forward(
             module_morphism,
+            domain,
         )
+        super().__init__(parent, parent.ring_map(), compatible)
         self._check_form_square()
 
     def ring_map(self):
@@ -617,13 +621,6 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def base_changed_domain(self):
         return self.parent().base_changed_domain()
-
-    def module_morphism(self):
-        return self._module_morphism
-
-    def underlying_semilinear_morphism(self):
-        r"""Forget the form and retain the arrow in the varying-ring module category."""
-        return self._underlying_semilinear_morphism
 
     def value_morphism(self):
         return self._value_morphism
@@ -637,6 +634,7 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def _check_form_square(self) -> None:
         changed = self.base_changed_domain()
+        module_morphism = self.linearization()
         source_form = changed.form()
         target_form = self.codomain().form()
         generators = tuple(changed.module_generators())
@@ -649,7 +647,7 @@ class FiberedFormedModuleMorphism(Morphism):
             commutes = all(
                 self.map_value(changed.b(left, right))
                 == self.codomain().b(
-                    self.module_morphism()(left), self.module_morphism()(right)
+                    module_morphism(left), module_morphism(right)
                 )
                 for left in generators
                 for right in generators
@@ -667,7 +665,7 @@ class FiberedFormedModuleMorphism(Morphism):
             )
             commutes = all(
                 self.map_value(changed.norm(element))
-                == self.codomain().norm(self.module_morphism()(element))
+                == self.codomain().norm(module_morphism(element))
                 for element in probes
             )
         else:
@@ -677,17 +675,10 @@ class FiberedFormedModuleMorphism(Morphism):
             )
         if not commutes:
             raise ValueError(
-                f"({self.module_morphism()}, {self.value_morphism()}) is not a morphism of formed modules "
+                f"({module_morphism}, {self.value_morphism()}) is not a morphism of formed modules "
                 f"{changed} -> {self.codomain()} over {self.ring_map()}: the value map applied to the source "
                 f"form does not equal the target form on the images of the generators"
             )
-
-    def _call_(self, element):
-        r"""Apply the equivalent semilinear map to an element of the original source."""
-        return self.underlying_semilinear_morphism()(element)
-
-    def __call__(self, element):
-        return self._call_(element)
 
     def __mul__(self, other):
         if not isinstance(other, FiberedFormedModuleMorphism):
@@ -705,8 +696,8 @@ class FiberedFormedModuleMorphism(Morphism):
         direct_changed = mor.base_changed_domain()
         middle_changed = self.base_changed_domain()
         module_semilinear = (
-            self.underlying_semilinear_morphism()
-            * other.underlying_semilinear_morphism()
+            self.parent().module_mor()(self)
+            * other.parent().module_mor()(other)
         )
         module_map = module_semilinear.linearization()
         if module_map.domain() is not direct_changed:
@@ -739,7 +730,7 @@ class FiberedFormedModuleMorphism(Morphism):
 
 
 class FiberedFormedModuleMor(CategoricalMor):
-    Element = FiberedFormedModuleMorphism
+    ElementMethods = FiberedFormedModuleMorphism
 
     def __init__(self, domain, codomain, ring_map) -> None:
 
@@ -774,6 +765,10 @@ class FiberedFormedModuleMor(CategoricalMor):
     def module_mor(self):
         r"""Return the underlying Mor in the varying-ring module category."""
         return self._module_mor
+
+    def super_categories(self):
+        r"""The lower arrow theory is the varying-ring semilinear module Mor."""
+        return [self.module_mor()]
 
     def _element_constructor_(self, datum):
         module_morphism, value_morphism = datum
