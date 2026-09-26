@@ -565,23 +565,6 @@ class PredicateSubrings(OwnedCategory):
         def ambient_ring(self):
             return self._ambient_ring
 
-        def cardinality(self):
-            r"""Return the exact cardinality when the ambient size determines it."""
-            from dzack_research.preamble.categories.sets.cardinals import (
-                aleph0,
-                cardinal,
-            )
-
-            ambient = self.ambient_ring()
-            size = cardinal(ambient.cardinality())
-            match size.is_finite(), size.is_countably_infinite(), self.characteristic() == 0:
-                case True, _, _:
-                    return cardinal(sum(1 for element in ambient if element in self))
-                case False, True, True:
-                    return aleph0
-                case _:
-                    return super().cardinality()
-
         def defining_predicate(self):
             return self._predicate
 

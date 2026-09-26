@@ -1400,6 +1400,9 @@ class Sets(OwnedCategory):
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
                 OrderedEnumeratedSets,
             )
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                PredicateSubrings,
+            )
 
             match self:
                 case _ if self in AugmentedSimplexCategory():
@@ -1437,6 +1440,31 @@ class Sets(OwnedCategory):
                         self.index_set(),
                         lambda index: cardinal(self.cofactor(index).cardinality()),
                     )
+                case _ if self in PredicateSubrings():
+                    ambient = self.ambient_ring()
+                    size = cardinal(ambient.cardinality())
+                    match (
+                        size.is_finite(),
+                        size.is_countably_infinite(),
+                        self.characteristic() == 0,
+                    ):
+                        case True, _, _:
+                            return cardinal(
+                                sum(1 for element in ambient if element in self)
+                            )
+                        case False, True, True:
+                            return _aleph0()
+                        case _:
+                            match self:
+                                case _ if self in Sets().Finite():
+                                    return cardinal(sum(1 for _point in self))
+                                case _:
+                                    assert self in Sets().Countable() and self in Sets().Infinite(), (
+                                        f"cannot compute the cardinality of {self}: its predicate-subring data do not "
+                                        f"determine a size, and it is not known to be finite or countably infinite "
+                                        f"(it is in {self.category()})"
+                                    )
+                                    return _aleph0()
                 case _ if self in Sets().Finite():
                     return cardinal(sum(1 for _point in self))
                 case _:
