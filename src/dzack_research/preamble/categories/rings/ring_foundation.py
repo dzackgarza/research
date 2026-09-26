@@ -4109,12 +4109,22 @@ def _owned_ring_size(engine):
         coefficient_size = _owned_ring_size(engine.base_ring())
         if engine.ngens() == 0:
             return coefficient_size
-        if coefficient_size.is_subcategory(owned_sets.FiniteSets()) or coefficient_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
-            return owned_sets.CountablyInfiniteSets()
+        match coefficient_size:
+            case _ if coefficient_size.is_subcategory(owned_sets.FiniteSets()) or coefficient_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
+                return owned_sets.CountablyInfiniteSets()
+            case _ if coefficient_size.is_subcategory(owned_sets.UncountableSets()):
+                return owned_sets.UncountableSets()
+            case _:
+                pass
     if engine.category().is_subcategory(SageQuotientFields()):
         source_size = _owned_ring_size(engine.ring())
-        if source_size.is_subcategory(owned_sets.FiniteSets()) or source_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
-            return owned_sets.CountablyInfiniteSets()
+        match source_size:
+            case _ if source_size.is_subcategory(owned_sets.FiniteSets()) or source_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
+                return owned_sets.CountablyInfiniteSets()
+            case _ if source_size.is_subcategory(owned_sets.UncountableSets()):
+                return owned_sets.UncountableSets()
+            case _:
+                pass
     return owned_sets.Sets()
 
 
