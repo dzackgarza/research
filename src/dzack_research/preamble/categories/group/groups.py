@@ -1673,36 +1673,56 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
 
 
 class GroupMorphism:
-    r"""An owned group morphism computed by a private GAP homomorphism."""
+    r"""A group morphism, optionally carrying a private GAP realization."""
 
-    def __init__(self, parent, gap_homomorphism, check=True) -> None:
+    def __init__(self, parent, realization, check=True) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
-        if check:
-            assert gap_homomorphism.Source() == _gap_model(domain), (
-                f"the GAP homomorphism is not a homomorphism out of {domain}: its source differs from {domain}"
-            )
-            assert gap_homomorphism.Range() == _gap_model(codomain), (
-                f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
-            )
-        self._gap_homomorphism = gap_homomorphism
-        super().__init__(parent, self._evaluate_gap)
+        self._gap_homomorphism = None
+        match realization:
+            case GapElement():
+                if check:
+                    assert realization.Source() == _gap_model(domain), (
+                        f"the GAP homomorphism is not a homomorphism out of {domain}: its source differs from {domain}"
+                    )
+                    assert realization.Range() == _gap_model(codomain), (
+                        f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
+                    )
+                self._gap_homomorphism = realization
+                evaluator = self._evaluate_gap
+            case _ if callable(realization):
+                evaluator = realization
+            case _:
+                raise TypeError(
+                    f"a group morphism {domain} -> {codomain} needs an elementwise map or a GAP homomorphism, "
+                    f"but got {realization!r}"
+                )
+        super().__init__(parent, evaluator)
 
     def _gap_morphism_crossing(self):
         r"""Return the private GAP realization to the group computation owner."""
+        assert self._gap_homomorphism is not None, (
+            f"cannot compute with {self} through GAP: this group morphism was constructed without a GAP realization"
+        )
         return self._gap_homomorphism
 
     def __eq__(self, other):
-        r"""Decide equality on the generators of the source's GAP model."""
+        r"""Decide equality on represented determining data when available."""
         if not isinstance(other, Morphism) or other.parent() is not self.parent():
             return False
         if self is other:
             return True
         source = self.domain()
-        return all(
-            self(_element_from_engine(source, generator)) == other(_element_from_engine(source, generator))
-            for generator in _gap_model(source).GeneratorsOfGroup()
-        )
+        match source:
+            case _ if source.has_selected_group_resolution():
+                return all(
+                    self(generator) == other(generator)
+                    for generator in source.group_generators()
+                )
+            case _ if source.is_finite() is True:
+                return all(self(element) == other(element) for element in source)
+            case _:
+                return Unknown
 
     def __ne__(self, other):
         return not self == other
@@ -1856,6 +1876,8 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 return images
             case tuple() | list():
                 return self._from_gap_generator_images(images, check=check)
+            case _ if callable(images):
+                return self._from_finite_elementwise_rule(images)
         raise TypeError(f"unable to convert {images!r} to an element of {self}")
 
     def _from_finite_elementwise_rule(self, function):
@@ -1871,7 +1893,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
             f"a function on elements defines a homomorphism {domain} -> {self.codomain()} here only when {domain} is "
             f"finite, so that the homomorphism law can be checked on all pairs of elements; {domain} is not known to be finite"
         )
-        morphism = _ElementwiseGroupMorphism(self, function)
+        morphism = self.element_class(self, function)
         assert all(
             morphism(left * right) == morphism(left) * morphism(right)
             for left in domain
