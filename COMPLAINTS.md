@@ -14,6 +14,32 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Backing-core constructor narrowing and colimit lifting block integration specimens
+
+The backing core must preserve the constructor of a fixed-endpoint Mor under
+property restriction and must use a selected forgetful functor's supplied
+coequalizer lifting. These are prerequisites for owned subset inclusions and
+presented modules, respectively.
+
+Fresh Sage execution on rack at sage-categories `5867543f` demonstrates two
+failures. `Mor(Sets)(X,X).Monomorphisms().construction_owner()` returns the
+unfixed Mor family, so supplying a map raises a missing-`codomain` error.
+`SetSubobjects.from_predicate` reaches that route. Separately, the existing
+presented-module consumer over M2(F2) registers the required colimit lift but
+`FullSubcategory.colimit_construction` delegates to its ambient without
+consulting selected-functor liftings; the coequalizer construction fails.
+
+The inspected core already implements nested group construction, composite
+structure transport, exact-category implementation installation and lifted
+universal maps, with passing consumers in this assessment. The gap is the
+shared constructor/dispatch route, not a claim that those foundations are
+absent. The source owners, minimal reproduction, runtime and exact coverage
+boundary are in [the execution assessment](docs/sage-categories-readiness.md).
+The backing-core repair belongs to sage-categories; its research consumers
+are `constructor-discovery` and `optional-sage-categories-property-layer` in
+TODO. Later module factorization assertions remain unverified until quotient
+construction succeeds.
+
 ### Fixed Mor categories with discrete 2-Morphisms do not realize their discrete universal constructions
 
 For an ordinary represented fixed Mor category `Mor_C(A,B)` whose selected
