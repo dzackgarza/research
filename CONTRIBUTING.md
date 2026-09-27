@@ -6945,11 +6945,14 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   way to reach T, and the repository accumulates unexecuted constructions for as long as that
   lasts; on 2026-09-13 it had banked sixty of them after the condition was already satisfied.
   The current required source nodes decide whether the suspension applies.
-  A new source-remediation workstream explicitly placed before T suspends execution
-  until that workstream closes. Failures discovered while executing T stay in its
+  The milestone DAG places M1 source remediation before T. Its
+  `architecture-remediation` closure starts T at `core-usability-session`.
+  M2 audits and API freeze, M3 full-suite acceptance, and M4 capability growth
+  follow that executed daily core; their open nodes do not suspend execution.
+  Failures discovered while executing T stay in its
   repair phase and are re-executed there; they do not restart the pre-T programme.
 
-- **Rule**: Terminal T is the final verification phase of the preamble programme, after the required pre-T architecture, mathematical implementation, integration, and transfer nodes in `TODO.md`. While those source nodes remain open, run no preamble tests, QC gates, Sage executions, or notebooks. The explicitly post-T audit and typing nodes do not suspend terminal execution. Write and commit the construction and the mathematical specimens that would falsify it, explicitly unverified. References in other contribution policies to testing a work unit do not override this phase rule.
+- **Rule**: T is the execution phase after the M1 source prerequisites in `TODO.md`. It begins with the selected daily mathematical core; `terminal-session` later owns complete frozen-API acceptance, and `extended-mathematics-session` owns required feature acceptance. While the M1 source prerequisites remain open, run no preamble tests, QC gates, Sage executions, or notebooks. Write and commit constructions and their falsifying mathematical specimens explicitly unverified. Once the daily-core session begins, keep execution and owner-local repair active through the later milestones. Their acceptance scopes are distinct: ordinary usability does not require the entire unsettled suite to pass, while frozen-API acceptance does. References in other contribution policies to testing a work unit do not override this phase rule.
 
   Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
 

@@ -2,12 +2,12 @@
 
 ## Execution priorities
 
-Build the remaining general scheme-theory toolkit from the current `src/dzack_research/preamble/` tree.
+Make the existing preamble reliable for daily mathematics, stabilize its construction language, and prove the frozen API before expanding its required capabilities.
 Complete shared mathematical dependencies before extending their consumers.
-Geometry has priority over independent arithmetic applications; an arithmetic computation moves earlier only when a named geometric construction needs its result.
+Within a milestone, geometry has priority over independent arithmetic applications; an arithmetic computation moves earlier only when a named geometric construction needs its result.
 
-Among ready nodes, take the groups below in this order (owner, 2026-09-25): wrong answers; the foundations that block many consumers; the test-suite nodes; the remaining runtime triage catalogue; then the forms, categorical-authority and public-interaction nodes that feed `architecture-remediation`. Geometry-before-arithmetic breaks ties within a group.
-Priority orders ready nodes; it is never an edge.
+Select from the earliest unfinished milestone. Within its ready frontier, fix wrong mathematical answers first, then shared architectural causes, then the remaining owner repairs and exercises. Preserve the placement and extensibility contract while doing so. Later capability growth consumes the accepted architecture through explicit gate edges below.
+Priority orders ready nodes; it is never an edge. Milestone acceptance is an actual required output and therefore has a node and dependency edges.
 
 This is an executable work list, not a record of past work.
 Remove an item when its stated work is delivered; retain only its unfinished obligations if delivery is partial.
@@ -18,7 +18,7 @@ The requirements below specify new deltas from existing constructions.
 A source path identifies where to extend or repair, not an instruction to recreate that subsystem.
 Inspect the live constructor and its consumers before editing.
 Uncertainty explicitly assigned to a source review is not a claim of a runtime failure.
-The pending terminal verification applies to the entire implementation, including constructions no longer listed as implementation work.
+The pending acceptance sessions cover the entire required implementation, including banked proof for constructions no longer listed as source work. M1 proves the selected daily core, M3 proves the frozen existing API, and M4 proves the required additions.
 
 Follow [CONTRIBUTING.md](CONTRIBUTING.md), especially `DEV-50` through `DEV-68`. Begin new additions with its [mathematical dependency trace](CONTRIBUTING.md#mathematical-dependency-tracing), before selecting an implementation.
 Record observed missing foundations and papercuts in [COMPLAINTS.md](COMPLAINTS.md), including independent discoveries.
@@ -26,7 +26,7 @@ That file owns the observed need and evidence; this queue owns the selected rema
 Link them instead of copying status.
 The [design philosophy](CONTRIBUTING.md#preamble-design-philosophy) and [architecture specification](CONTRIBUTING.md#preamble-architecture-specification) govern how every item is implemented, including already-existing dependencies.
 The intended result is one recursively owned mathematical language composed from shared constructions and maintained computations, not a larger local CAS. Read the generated `docs/preamble-megadoc.md` before preamble implementation under the governing `AGENTS.md` prerequisites.
-This queue does not authorize running preamble tests, QC, Sage, or notebooks before terminal T.
+Under DEV-58, only M1 source closure precedes the execution phase. The daily-core session starts that phase; M2 audits, M3 full acceptance and M4 additions then retain execution of affected proof.
 
 ### Select from the live dependency graph
 
@@ -41,31 +41,34 @@ Take the ready frontier in dependency order and carry each selected node through
 A node that closes unblocks its dependents; a node that merely grows does not.
 This repository has one worker, so selection has no claim or reservation layer.
 
+## Milestones
+
+| Milestone | Delivered result | Acceptance boundary |
+| --- | --- | --- |
+| M1 — Daily mathematical work | A broad core of ordinary research workflows works through owned objects, maps and category methods; algorithms can gain cases without narrowing the API | Source repairs and the daily exercises feed `core-usability-session`; the core passes in fresh and composed sessions with usable display and response time |
+| M2 — Auditable minimal API | One documented generating construction language, a coherent category graph, highest valid method owners and discoverable constructors | `minimal-api-freeze` closes after the finite source audits and constructor audit; existing capability is preserved |
+| M3 — Compact mathematical test suite | The frozen API has substantive exercises, a consolidated suite and explicit meaningful-method coverage | `terminal-session` requires 100 percent pass rate for the retained required suite and greater than 90 percent meaningful method coverage, with performance gates intact |
+| M4 — Required mathematical expansion | The pending group, lattice, geometric and automorphic constructions extend stable owners and computational cases | `extended-mathematics-session` proves the required additions together with the retained core |
+| M5 — Optional research extensions | Additional named research consumers use the accepted architecture | Each optional node supplies its own mathematics and proof; it never becomes a hidden prerequisite of required work |
+
+A milestone is an acceptance boundary, not a claim that the mathematics outside it is absent.
+M1's broad core is chosen from actual mathematical work before its tests run. Its failures are repaired at their owners. Failures elsewhere stay visible for M3; they do not justify reducing the core or requiring the entire current suite to pass before ordinary work becomes usable.
+M2 freezes independent contracts and their derivations, not today's implementation classes or a reduced feature set.
+M3 audits and consolidates the existing suite before making whole-suite success the gate.
+M4 retains every required feature obligation and engine decision below. A feature whose foundation is broken repairs that prerequisite before extending the consumer.
+M5 remains optional. A substantial category-kernel replacement is an explicit architectural revision with renewed affected freeze and proof obligations.
+
+The node sections below are the milestone assignments. Only their Needs lists define edges; the overview is not a second graph or completion ledger.
+Remove completed nodes and their references under DEV-50. Retain a milestone's acceptance node until its evidence is delivered.
+
 ### Contents
 
 - [Execution decisions](#execution-decisions-for-every-item), [workstreams](#workstreams), and [DAG rules](#remaining-workstreams-as-a-dependency-graph)
-
-- [Delivery and regression boundaries](#delivery-and-regression-boundaries), [bounded closure](#bounded-closure)
-
-- [Wrong answers](#wrong-answers)
-
-- [Foundations blocking many consumers](#foundations-blocking-many-consumers)
-
-- [Test suite: specimens, speed and coverage](#test-suite-specimens-speed-and-coverage)
-
-- [Runtime triage catalogue](#runtime-triage-catalogue)
-
-- [Forms, actions and arithmetic realizations](#forms-actions-and-arithmetic-realizations)
-
-- [Common categorical authority and public boundaries](#common-categorical-authority-and-public-boundaries)
-
-- [Public mathematical interaction](#public-mathematical-interaction)
-
-- [Source convergence and terminal proof](#source-convergence-and-terminal-proof)
-
-- [Post-remediation convergence](#post-remediation-convergence)
-
-- [Optional research consumers](#optional-research-consumers)
+- [M1: Daily mathematical work](#m1--daily-mathematical-work)
+- [M2: Auditable minimal API](#m2--auditable-minimal-api)
+- [M3: Compact mathematical test suite](#m3--compact-mathematical-test-suite)
+- [M4: Required mathematical expansion](#m4--required-mathematical-expansion)
+- [M5: Optional research extensions](#m5--optional-research-extensions)
 
 ### Execution decisions for every item
 
@@ -138,7 +141,7 @@ Complexity follows [COMPLEXITY.md](COMPLEXITY.md), measures the assigned respons
 | Terminal proof and convergence | Executed distinguishing evidence, then finite whole-repo review and justified typing repair | 15 for execution; score newly observed repairs at their actual owners |
 
 Among ready items, close a shared constructor/admission prerequisite before its dependent API polish.
-Geometry precedes independent arithmetic.
+Within the selected milestone, geometry precedes independent arithmetic.
 An already-integrated route is preserved and reviewed against its remaining obligation, not rewritten from its historical complaint.
 Carry one node to its full source acceptance before selecting another (`DEV-60`). No workstream gets a separate claim/status ledger.
 
@@ -166,7 +169,7 @@ Every source delivery must establish:
   Aggregate closure requires all required descendants closed.
 
 Writing or revising this DAG records work; it does not execute or close the nodes.
-During subsequent source implementation, `DEV-58` defers Sage, tests, QC, notebook execution and live megadoc generation until T; inspect current source alongside the existing generated reference.
+During M1 source implementation, `DEV-58` defers Sage, tests, QC, notebook execution and live megadoc generation until the daily-core session starts T; inspect current source alongside the existing generated reference. Later milestone repairs keep focused execution active.
 Specimens stated below describe mathematics and do not invent callable APIs.
 
 ### Delivery and regression boundaries
@@ -233,7 +236,7 @@ Cross-references explain requirements; they do not create extra edges.
 If prose requires an unfinished output, reflect it in Needs or explicitly place the mutually dependent obligations in one coherent node.
 Do not conceal cycles behind words such as "with", "later", or "integration".
 
-Select a node with no remaining prerequisites, subject to the existing geometry priority.
+Select a node with no remaining prerequisites in the earliest unfinished milestone, subject to the existing geometry priority.
 Apply `DEV-61` to foreign edits or reservations; do not create a claim layer.
 Priority is a preference among ready nodes, not an edge.
 File conflicts, shared owners, and related mathematical subjects are not dependency edges either.
@@ -248,10 +251,10 @@ General module products and equalizers are shared inputs; diagram specialization
 The general construction does not wait for completion's implementation.
 
 Before committing a queue change, check that every checkbox has exactly one ID and one Needs list, IDs are unique, all references resolve, and there is no self-edge or cycle.
-Required pre-T implementation nodes must feed `architecture-remediation` and the terminal chain that verifies them.
-Once T begins, newly exposed repairs feed the still-open terminal or post-T node that found them, whose acceptance includes re-execution of affected proof.
+M1 source nodes must feed `architecture-remediation` and its usability session. Every later required node must reach its milestone acceptance node. The explicit milestone gate edges keep feature growth after frozen-API acceptance.
+Once the daily-core execution phase begins, newly exposed repairs feed the still-open acceptance or audit node that found them, whose acceptance includes re-execution of affected proof.
 Do not resurrect closed phase nodes or restart the source-phase execution suspension.
-The terminal nodes form their own final chain.
+The milestone acceptance nodes form the required delivery chain.
 No required or terminal node may depend on an optional node.
 Optional work must name its concrete consumer and dependencies before implementation; a required engine repair belongs in the required consumer's dependency path, never in the optional branch.
 
@@ -263,17 +266,12 @@ Repairs and re-execution within terminal verification do not create a back-edge 
 New failure-specific work becomes a prerequisite of the still-open terminal repair or final-verification node, with the required re-execution in its acceptance.
 Preserve the phase-T execution rules.
 
-## Wrong answers
+## M1 — Daily mathematical work
 
-A wrong answer outranks every failure that raises: a false value is trusted, a raised error is not.
-Paths below are relative to `src/dzack_research/preamble/` unless a different root is given.
-
-## Foundations that block many consumers
-
-An operation, arrow or construction placed at the wrong category is inherited wrongly by every category below it, so these precede the test-suite and triage nodes.
+Repair the existing public construction routes and inherited methods before proving the daily core. Placement and engine audits cover the existing preamble; the exercise core tests mathematically useful composed pathways.
 
 - [ ] **`placement-audit`**. **Needs:** none.
-  **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`. Arrow operations are placed by `arrows-thread-through-the-mor-category-graph`, since an arrow operation can move only to an arrow type that the arrow types below inherit.
+  **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`. Include arrow operations and inspect the delivered Mor-category inheritance: an arrow operation can move only to an arrow type that the arrow types below inherit.
   At its home an operation decides computability in one `case`/`match` on categorical containment: each case with a known algorithm routes to it, and the final `case _` asserts, naming the missing algorithm (`CAT-01`; AGENTS.md, *Abstract contracts are distinct from partial algorithms*). An operation placed low because only there can it be computed is the commonest misplacement: `conjugacy_classes`, `conjugacy_class`, `conjugation_g_set`, `left_cosets` and `right_cosets` sit on `Groups().Finite()` (`categories/group/groups.py`) though they are defined for every group, and they move to `Groups()` with the finite case as a route.
   Instrument: `just preamble-megadoc`, then `just placement [CATEGORY ...]`, forms the slice: for each category it prints the introduced object, element and arrow operations and the up-set `U_C` with each member's definition.
   It decides nothing about placement; `W_f` and its maximum come only from the investigation in the loop body.
@@ -284,36 +282,191 @@ An operation, arrow or construction placed at the wrong category is inherited wr
   A move that cannot be made in the loop body becomes its own node, named by the mathematics it needs, and this node `Needs` it: several maximal elements of `W_f`, or a maximum absent from `P`, is a missing category, axiom or property, or a defect in the declared graph (`degree` and `is_homogeneous` sit on `GradedAlgebras` and `GradedModules` with no common upper bound, so graded algebras are not declared graded modules); a consumer that breaks because it reached the operation through the old placement is repaired in the same loop body.
   `category-method-coverage-sweep` calls every method where it currently sits, so it certifies the current placement and cannot detect a misplacement; this node supplies that check.
   Each move is witnessed by an expectation that calls the operation on a specimen of the supercategory that is not in `C`. **Closure specimens:** `conjugacy_classes` asked of an infinite group reaches its own assertion, not an `AttributeError`; every owned category in the survey has had its pass, and each operation it moved answers on a specimen of its new home that is not in `C`.
+  **Extension contract:** place the mathematical operation at the weakest sufficient structure; keep its signature, defining maps and existing computable cases usable as new cases arrive. Use category-aware `match`/`case`, specialization, or an owner-local algorithm registry with explicit applicability and precedence. Registration must not make a general category import or enumerate its descendants. Overlapping cases must select a mathematically compatible implementation. A new backend or case adds capability through this extension point; it must not narrow the old domain or replace inherited semantics. A substantial refactor carries an explicit contract change and the affected mathematical proof.
 
-## Test suite: specimens, speed and coverage
+- [ ] **`engine-wiring-audit`**. **Needs:** none.
+  **Owner and delta:** every owned construction that computes, itself, behaviour a maintained engine provides, starting with the set layer (`categories/sets/`): membership, position and order of finite sets, images, products, coproducts, power sets and function sets, as tabulated in [COMPLAINTS.md](COMPLAINTS.md#set-theoretic-behaviour-is-re-implemented-instead-of-wired-to-a-set-engine), then the whole preamble.
+  **Invariants:** public mathematics stays owned; the computation behind it is the engine's, reached privately at its owner (`OWN-06`). A membership decision follows the set's definition -- predicate, identity of listed points, inverse of an image -- and never searches an enumeration.
+  An enumeration is a chosen bijection from an ordinal, separate from membership.
+  No owned code re-implements what Sage, GAP, SymPy, PARI or the Python standard library computes, unless the engine lacks it, which is then recorded in `TRAPS.md` with the measurement.
+  **Coverage:** survey the preamble once for owned code whose body is a general algorithm -- loops that search, compare element by element, enumerate to decide, or rebuild an object to read one value -- and map each to the engine routine that computes it or to the recorded reason there is none.
+  The profiled sites of 2026-09-23 are the first evidence, not the population.
+  **Closure specimens:** membership of a point in a finite set of SR symbols, an image, a product and a power set answered without comparing against every point; a rank-16 diagonal lattice built in time linear in its Gram entries; each audited family's route read from its public entry to the engine call.
 
-The suite is the instrument that finds the rest; these make it fast and complete.
+- [ ] **`group-categories-defined-by-data`**. **Needs:** none.
+  **Owner and delta:** `categories/group/groups.py`. The groups whose category is fixed by mathematical data, per `CAT-28`: `SymmetricGroups()(Omega)` for a set `Omega`, `GeneralLinearGroups()(R, n)`, `FreeGroupQuotients()(F, R)` (a free group and a set of relators), `CoxeterGroups()(M)` for a Coxeter matrix, and an `Arithmetic` axiom on `OwnedGroups`. Each is built from main's current `groups.py`, with its morphisms and its `CAT-22` owner search.
+  `remediate/groups` (`bbce862e3`, deleted 2026-09-25) drafted these, and complaint 10 in `COMPLAINTS.md` records why that draft was rejected: it replaced working catalogue entries with assertions, and it gave a number field the automorphism group of the original field as its Galois group.
+  **Closure:** `SymmetricGroups()(Sets.Delta[2])` has order 6; `GeneralLinearGroups()(GF(2), 2)` has order 6 and is isomorphic to it; `FreeGroupQuotients()(F_2, {a^2, b^3, (ab)^2})` has order 6; `CoxeterGroups()` of the `A_2` matrix is that same group; the arithmetic axiom holds for `SL_2(ZZ)`.
 
-- [ ] **`category-method-coverage-sweep`**. **Needs:** `placement-audit`. The sweep asserts every operation at the category where it sits, so it waits until the placement of object, element and arrow operations has settled; expectations written before that are precursor material, not progress on this node.
+- [ ] **`function-spaces-are-subobjects-of-mor`**. **Needs:** none.
+  **Owner and delta:** the owned function spaces (`categories/functions/real_functions.py`), under `CON-17`. Each space is a family of functors in both arguments, and its constructor takes both: `C(n, A, B)`, `Lp(p, A, B)`, `ell(p, A, B)`; the tests now construct `C(Infinity, RR, RR)`, `Lp(2, RR, RR)` and `ell(2, NN, RR)`. Coordinates are owned by the domain: `RR.coordinate()` is the coordinate of ℝ (for ℝ² it is the pair (x = (x_0, x_1))), and a map is built from it, `C(Infinity, RR, RR)(x^2 + 1)`. `Lp(p)` (maps ℝ → ℝ) is built with `indeterminate=SR.var("x")` and `ell(p)` (maps ℕ → ℝ) with `SR.var("n")`; each stores the variable, hands it out as `indeterminate()`, and reads `space(expr)` as the map t ↦ expr.
+  The delta: each space is the subobject of `Sets().Mor(X, Y)` cut out by its condition (integrability, summability, smoothness, boundedness), with its module structure; element construction is `Mor(X, Y)`'s element constructor (callables, formulas binding their own variable, finitary data), and the space admits the element by its condition; `indeterminate()` and the stored variable are removed, together with their consumers: `convolution.py` and `lebesgue_quotients.py` substitute into `parent().indeterminate()`, and `modules/pure/function_modules.py:378` defaults a formula's variable to `x`. Each works on the map it is given.
+  **Observed:** the formulas are Sage symbolic expressions in the stored variable, and owned numbers never enter Sage's symbolic ring (`AGENTS.md`, ruled 2026-09-23), so `x**2`, `2 ** (-n)` and `1 / (1 + x**2)` raise `TypeError` in `tests/functions/test_function_modules_archive.sage`, `test_real_functions.sage` and `test_young_convolution.sage`. Those tests use `indeterminate()` and are rewritten with the delivery to define their maps (`f(t) = exp(-t^2)`). **Closure:** the maps t ↦ t², t ↦ 1/(1 + t²), t ↦ exp(−t²) and k ↦ 2⁻ᵏ, each defined with its own variable, are constructed in `Mor(X, Y)` and admitted by their spaces; no space supplies a point of its domain, and `X.coordinate()` of a function space, where it exists, is a general element of that space.
+
+- [ ] **`scalar-extension-is-order-independent`**. **Needs:** none.
+  **Site:** `categories/algebras/`, algebra scalar extension along `ZZ -> QQ`. `tests/algebras/test_algebra_base_change_archive.sage::test_archived_algebra_base_change_is_the_live_scalar_extension_functor` passes when its file runs alone and fails when `tests/modules`, `tests/sets`, `tests/rings`, `tests/forms` and `tests/tensors` ran first in the same process, with `TypeError: cannot apply Algebra scalar extension along ZZ -> QQ ... to Generic endomorphism of Ring over Integer Ring: it is not a morphism ... of Category of algebras` (observed 2026-09-26, before and after the coordinate sweep).
+  A construction whose answer depends on what the session built earlier reads shared state that some earlier construction changed; the node finds that state and makes scalar extension read only its own data.
+  **Closure:** the test passes in the batched run.
+
+- [ ] **`genera-are-finite-sets-of-isometry-classes`**. **Needs:** none.
+  **Owner and delta:** `Genus` in `categories/lattices.py` (line 371) is a plain Python class holding a signature and a discriminant quadratic form.
+  A genus of integral lattices is the finite set of isometry classes of lattices with that signature and discriminant form, so it is an object of a category of genera that forgets to finite sets.
+  Its cardinality is the class number, and parity (even or odd) is an axiom on it, the same for every member.
+  It is constructed through its owner, not as a bare class, per `CAT-28`. `representatives()` and `class_number()` become that set's enumeration and cardinality.
+  The spike built this and it reached main's history as PR #59 (`d2891a225`) and `5766b97d1`, then was lost when the spike was absorbed; do not port that code.
+  **Closure:** the genus of `E8` has cardinality 1; the genus of `E8 + E8` has cardinality 2 (`E8 + E8` and `D16^+`); the genus of `A2` is even; the genus of `I_1 + I_1` is odd; `representatives()` enumerates that finite set.
+
+- [ ] **`daily-core-exercises`**. **Needs:** `placement-audit`.
+  **Owner and delta:** a broad, bounded mathematical exercise core under the existing object and session test conventions. Select from the live public API and the research notebook before executing; keep its collection explicit in the existing test configuration, with the exercised mathematical contracts in the test files. Include rings and their ideals, quotients and localizations; free and nonfree modules, linear maps, kernels, images, cokernels and base change; groups, actions and quotients; forms and lattices; affine and projective schemes, morphisms and basic geometric constructions. Use small examples over integers, rationals, finite fields and polynomial or quotient rings, and finite/infinite and degenerate/nondegenerate cases where the operation claims them.
+  Construct each selected object through its sanctioned entrypoints and exercise all of its mathematically applicable public object, element and morphism methods. Assert independently known values, equations, universal maps and compatibility with change of base. Follow the test guidelines and `tests/constructions/CONTRIBUTING.md`; existence, category membership and agreement between two calls alone do not establish a mathematical result. Parameterization must vary mathematical cases, not multiply identical witness checks.
+  **Acceptance:** the core covers composed day-to-day pathways, including localization followed by module scalar extension, a presentation followed by a quotient and its induced map, a group action followed by an orbit or stabilizer, and a scheme construction followed by its maps. Include notebook display and session-order specimens. Record genuine unsupported algorithms explicitly; an assertion from an unsupported branch is boundary evidence, not a successful computation. A missing operation needed by a selected workflow is an owner repair prerequisite, not grounds to shrink the core. Bank these specimens for execution by the usability session; preserve the broader suite for its later audit.
+
+- [ ] **`architecture-remediation`**. **Needs:** `placement-audit`, `engine-wiring-audit`, `group-categories-defined-by-data`, `function-spaces-are-subobjects-of-mor`, `scalar-extension-is-order-independent`, `genera-are-finite-sets-of-isometry-classes`, `daily-core-exercises`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against the unresolved complaints affecting the existing public API and the daily core. Required capability additions retain their full contracts in M4; they are not prerequisites merely because they are unfinished. If a daily-core route actually consumes one of their outputs, split that prerequisite intact and put its edge here.
+  **Invariants:** every M1 source descendant closes before this node; introducing a residual child keeps this node open.
+  Each complaint's entire burden is discharged or retained in a required prerequisite.
+  All alternative construction routes affected by a repair are inspected.
+  No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`). **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens.
+  Review later changes to each shared contract against its delivery evidence.
+  In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair.
+  Existing evidence for unaffected routes remains usable.
+  **Closure evidence:** bank falsifying specimens for every repaired obligation, including inherited operations, wrong nearby inputs and relevant infinite/nonfree/base-change cases.
+  Commits record source coverage and unexecuted proof.
+  Review composed consumers after their prerequisites, without rerunning an unrelated whole-tree inventory after every leaf.
+  Source closure authorizes T; it does not claim runtime success.
+
+- [ ] **`core-usability-session`**. **Needs:** `architecture-remediation`.
+  **Owner and delta:** start the execution phase defined by `DEV-58` and establish a preamble usable for ordinary mathematical work. Run the daily core in a fresh process and in composed sessions; use japi to execute the research notebook and inspect its rendered mathematics. Confirm startup, object display, tab/help discovery, maps and results through the owned interface. Regenerate the megadoc and category graph at this point and reconcile them with the live API.
+  **Acceptance:** the selected workflows and their mathematical assertions pass, standard small constructions and displays respond within the applicable existing budgets, and session order does not change results. Diagnose failures by shared mathematical owner and repair the affected routes. Preserve every failure outside the core under `triage-long-tail` or its concrete repair node. Broad-suite failures do not prevent this milestone if they neither invalidate the core's mathematics nor expose an unresolved shared defect on its routes. This is executed usability evidence, not a claim that the whole suite passes. Runtime repairs and focused re-execution remain active after this node closes.
+
+## M2 — Auditable minimal API
+
+Use the executed core to settle the construction language and finite source audits. Carry forward unchanged placement evidence; repair each new finding at its owner.
+
+- [ ] **`refactor-audit`**. **Needs:** `core-usability-session`. **Goal:** After the repaired mathematics runs end-to-end, audit the repository for duplicated authority, poor organization, and maintainability defects that survived the architecture work.
+  Audit the whole repository for messy, disorganized or duplicated code after the complaint-derived architecture has been exercised through the daily public session.
+  The public mathematical API need not change and should not change incidentally; this pass is about internal sources of truth, ownership and maintainability that survive the mandatory architecture repairs.
+
+  Fix the whole-repository source population at entry and cover it once for organization, sources of truth, ownership and duplication.
+  Inspect the authored owners of generated projections and any participating local changes; preserve unrelated foreign work.
+  Review concrete declarations and consumers, not only search matches.
+  Apply the bounded-closure rule above: a repair revisits its changed route and affected uses, without restarting the repository survey.
+
+  Repair a bounded finding at its owner.
+  If it crosses independent owners, give its concrete repair a DAG row with source-backed acceptance and make this node depend on it.
+  Re-execute affected proof in the active terminal phase.
+  Newly observed required findings are repaired by the same rule; they do not initiate another general audit.
+  Do not create rows whose deliverable is only a report, inventory, approval or proof that the audit ran.
+
+  **Acceptance:** the stated whole-repository coverage is complete, every resulting required finding is repaired, and the changed routes and their consumers have been reviewed and re-exercised on the closing tree.
+  Unchanged, unaffected coverage carries forward; no second whole-repository discovery pass is required.
+  Record the inspected coverage and residual uncertainty without claiming that no future defect can exist.
+  A clean pass requires no receipt commit.
+
+- [ ] **`type-paydown`**. **Needs:** `refactor-audit`. **Goal:** Improve static type information only where it clarifies the mathematics and makes correctness easier to reason about; do not contort code merely to lower an error count.
+  Pay down type errors where doing so is reasonable, and not one step further.
+  **Acceptance:** inspect the diagnostics from the prescribed typing boundary once, resolve their shared causes at the mathematical or typing owner, and give every retained diagnostic an evidence-backed disposition there.
+  Check changed declarations and affected uses after each coherent repair; broaden only for a demonstrated new effect.
+  No required behavior or proof is bypassed.
+  Re-execute affected mathematical specimens after behavioral changes under the already-active terminal phase.
+  Every typing decision must improve the legibility of the code, the ability to understand what it does, and the ability to reason statically about whether it is correct.
+  That is the standard the change is judged against, not the error count.
+  A retained false positive needs source-backed justification; a missing mathematical contract remains required work.
+
+  Golfing the code into oblivion -- distortions that exist only to silence a checker -- is the failure mode.
+  Where a contortion is genuinely warranted, it must be judged as significantly serving the goal above, and the argument for it recorded explicitly in the commit message.
+  A type annotation nobody can read has made the code worse even when the checker is quieter.
+
+- [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`. The legacy identifier is retained for stable references, but this is a finite terminal convergence pass, not a permanently open audit loop.
+  Read the governing `AGENTS.md`, `CONTRIBUTING.md` and this DAG at entry.
+  Use `policy-index` to select the review skill for the actual boundary, and load narrower skills only for findings that need them.
+  Loading another skill supplies a method for the stated obligations; it does not create another workstream, proof requirement or repository-wide round.
+
+  Fix the source population at the post-typing tree.
+  Cover categorical/math owner placement; duplicate or derivable retained state; public type/API design; tests as behavioral proofs rather than implementation mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle structure; notebook/session usability; generated/static projection boundaries; and AI-slop or locally tidy code that violates the architectural contract.
+  Reuse the preceding audit's coverage for overlapping questions only where the route and its dependencies remain unchanged; complete the other questions across the whole repository once.
+  Protected mathematical expectations retain their own correction rule.
+  Search the dependency or upstream owner before improving a local mechanism that may not need to exist.
+
+  Repair a small, well-supported finding and commit the behavioral regression or mathematical consumer that proves it.
+  If a finding spans several owners, add a concrete repair row with the necessary edges; this node cannot close until that repair closes.
+  Revisit the repaired route, affected callers and evidence.
+  A repeated finding with the same cause requires shared-owner repair and review of its sibling uses, not another whole-tree search.
+  Never create a node merely to say that an audit ran, and never leave a required finding in COMPLAINTS as a substitute for repair.
+
+  **Acceptance:** every stated question has complete coverage, every resulting required finding has been repaired, and each subsequent change has its affected source and proof revalidated on the closing tree.
+  Re-execute affected mathematical proof after repairs and confirm the final public session after bootstrap/export changes.
+  Stop at that condition; there is no repeat-until-empty whole-repository discovery step.
+  A clean pass makes no receipt commit.
+  Later regressions are new owner-local defects and do not retroactively turn this completed convergence pass into a perpetual queue.
+
+- [ ] **`constructor-discovery`**. **Needs:** `core-usability-session`.
+  **Owner and delta:** audit the existing public construction families and give each one a single discoverable mathematical owner, defining datum and map contract. Direct construction, object methods, functor images, catalogue examples and raised results use that owner. Help, signatures and the generated reference lead a user from the category or object to the constructor; private implementation classes and global factory aliases are not competing entrypoints.
+  **Acceptance:** for each family in the freeze scope, inspect the full route and exercise representative consumers. In particular a commutative ring owns `localization(S)` for its multiplicative submonoid, with the structure map and universal factorization; inversion, prime localization and fraction fields specialize it under their hypotheses. The owner is the commutative-ring category (or its equivalent refinement in the declared graph), not an arbitrary noncommutative ring with an unsupported generic promise. Constructor centralization retains current mathematical generality and maps.
+
+- [ ] **`mor-hom-expectation-ruling`**. **Needs:** `core-usability-session`.
+  **Owner and delta:** resolve the direct conflict between the protected-expectation rule in `AGENTS.md` and `ARC-07`. The protected `tests/constructions/` and `tests/user_simulations/` files currently contain global `Hom(...)` expectations and may not be edited merely to match an implementation; `ARC-07` simultaneously states that `Mor` is the only owned spelling and `Hom` names Sage's private construction and may appear nowhere in the public preamble universe. The long-tail catalogue records these missing `Hom` calls as failures. Per `AGENTS.md`, *if two rules conflict, the conflict is recorded for the owner to rule on*; no implementation choice is authorized until that ruling determines which prescription is corrected.
+  **Acceptance:** one owner ruling makes the prescriptions consistent and names the required source delta: either the protected mathematical expectation is explicitly corrected under its sole allowed exception, or `ARC-07` is explicitly revised to require a public owned `Hom` spelling with the Sage-boundary consequences repaired. Apply that ruling across the whole named population, not only the three currently visible calls, then return the resulting source obligation to `triage-long-tail` for terminal verification.
+
+- [ ] **`minimal-api-freeze`**. **Needs:** `bloat-audit-loop`, `constructor-discovery`, `mor-hom-expectation-ruling`.
+  **Owner and delta:** publish an auditable minimal generating API and category graph in the existing architecture specification and generated reference. For every public construction and operation record its mathematical owner, defining data, hypotheses, domain/codomain, induced maps and computational cases. Distinguish primitive construction contracts from methods derived through them; minimality concerns independent authorities, not removal of useful capabilities.
+  **Acceptance:** the graph expresses inheritance and structural forgetful maps; every operation is at the highest mathematically valid owner under `CAT-05`; constructors have one discoverable authority; derived conveniences compose that authority. Resolve duplicate meanings, incomparable-owner collisions and hidden representation requirements. Reuse M1 placement evidence on unchanged routes and inspect subsequent changes instead of restarting an unrelated sweep.
+  The freeze captures the complete existing public surface and its minimal generating contracts, including supported and explicitly unsupported computational regimes. It supplies the denominator for the method audit in M3. Adding an algorithm case preserves these contracts. A substantial architectural revision explicitly revises the freeze and reopens only the affected acceptance and proof. The daily core remains usable throughout.
+
+## M3 — Compact mathematical test suite
+
+Consolidate the suite around the frozen API, retaining distinct mathematical obligations. The historical runtime catalogue is evidence to refresh here, not a current count of defects.
+
+- [ ] **`suite-compactification`**. **Needs:** `minimal-api-freeze`.
+  **Owner and delta:** audit the whole existing suite against the frozen mathematical contracts and the test guidelines. Consolidate repeated setup and duplicate mathematical cases, replace vacuous checks with distinguishing results, use small specimens with the same mathematical force, and organize exercises by object/category and composed workflow. Preserve each distinct mathematical obligation and its generality when consolidating files or parameter families.
+  Protected expectation files retain their mathematical correction rule: consolidation preserves the statements and hypotheses; a changed expectation needs a mathematical justification, never agreement with the implementation. Unresolved specification conflicts are settled at their owner before editing those statements.
+  **Acceptance:** every existing obligation has a retained exercise or a source-backed disposition in the delivery commit. Separate exercises of the frozen API from specifications of genuinely new M4 capabilities by their mathematical contracts, before execution. Retain the latter with their required feature nodes and expose their collection separately; a failure of an existing frozen contract cannot be moved there. The default frozen-API suite collects every retained test of that API. Real product failures remain required repairs; no skip, expected failure, changed oracle or reduced parameter domain obtains a green result. Coverage follows meaningful assertions about results and maps, not incidental execution, introspection or counts of inhabited categories.
+
+- [ ] **`category-method-coverage-sweep`**. **Needs:** `suite-compactification`. Write and audit the exercises against the frozen API and category graph, retaining valid daily-core and existing mathematical specimens.
   **Owner and delta:** for every category in the live session, construct its objects on small specimens and call every public method of the object, its elements and its morphisms, asserting the mathematical value (owner, 2026-09-24). The categories and operations come from a regenerated `just preamble-megadoc` survey; one test file per category, written to `tests/constructions/CONTRIBUTING.md`'s session standard.
   Loop body: one category, its whole public surface in one pass: every operation of its objects, elements and morphisms, from the survey's listing of what the category introduces, written into that category's one file and banked in one commit.
   A file or commit per method or per surface is not the unit; the category is.
   **Closure:** every category of the survey has its file, and `just coverage-report` shows no public method of the preamble that no passing test calls, other than those whose failure is a recorded node.
+  **Measurement:** reconcile the frozen public object, element and morphism methods with actual mathematical assertions. Count each semantic method contract once at its declaring owner; inherited copies, aliases, private helpers and generated accessors do not inflate the denominator or numerator. Account separately for distinct coefficient, representation and hypothesis regimes. A method is meaningfully covered only when a passing exercise establishes an independently justified result or map property; mere execution or an unsupported-case assertion is insufficient. Publish numerator, denominator, uncovered methods and the inspected regimes with the existing coverage report. The acceptance threshold is strictly greater than 90 percent meaningful method coverage, with all core contracts covered; retain the stronger survey obligation to exercise every available public method and disposition every gap. Line/branch coverage is supplementary evidence.
 
-## Runtime triage catalogue
-
-The first full execution of the suite since the tree stopped importing (2026-09-07), run once as a triage catalogue on 2026-09-23 with `--no-time-gates --timeout=1 -o timeout_func_only=true` (16,311 tests collected): 11,874 failed, 4,335 passed.
-Failures are grouped here by the site that raises them; paths are relative to `src/dzack_research/preamble/` unless a different root is given.
-A node's cause is the defect behind its site, which the node establishes; the site and example are where to start.
-Work the catalogue in one pass, not one site at a time: read every site below, group the sites whose failures share a cause, repair each cause at its owner, then re-run the catalogue once.
-A site that still raises keeps its node, and every node whose example passes and whose site no longer raises closes in that pass (AGENTS.md, *Architecture before tests*). Regenerate the catalogue with the same command; the time gates are on by default.
-
-- [ ] **`triage-long-tail`**. **Needs:** `mor-hom-expectation-ruling`.
+- [ ] **`triage-long-tail`**. **Needs:** `minimal-api-freeze`.
+  **Catalogue origin:** the suite run recorded on 2026-09-23 used `--no-time-gates --timeout=1 -o timeout_func_only=true` to locate failure sites. Refresh that diagnostic catalogue once after grouping and repairing shared causes; acceptance runs retain the default time gates. Inspect the owning cause, not only the historical line number.
   **Site:** the remaining 699 sites of the catalogue, together about 2,200 failures, among them `categories/rings/commutative_ideals.py:946` (59), `categories/group/g_sets.py:167` (54), `categories/modules/pure/modules.py:4681` (53), `categories/modules/framed/fraction_field_quotients.py:123` (50), `sage/matrix/matrix_gfpn_dense.pyx:429` (`GF(27)` in MeatAxe, 36), and 27 specification tests calling `Hom`, which the session does not export under `Mor` as its only spelling.
   Also: deciding whether an endomorphism of a free module lies in the image of the zero module's Mor (`module_morphisms.py:1139`, "cannot decide whether ... is in the image"), reached by the centre of a unital associative algebra (`tests/algebras/test_algebra_preservation.sage`). **Closure:** a re-run of the catalogue with no failure at these sites; split any site whose cause is shared by others into its own node first.
   **Source narrowing (2026-09-26):** several named clusters predate later owner repairs. Ideal construction no longer has the `syzygy_rows is None` fallback/assertion: exact syzygy routes now cover the represented number-field-order, quotient-ring and polynomial cases. `FractionFieldQuotients(R)` now has a general `Frac(R)/aR` realization, retaining `QmodnZ` only for `ZZ`. Module-subobject inclusions now certify their selected lifts as exact construction data, so `None` means genuine nonmembership rather than the former undecidable-image error. These repairs all postdate the catalogue commit `3aede5875`.
   The former module-presentation-width failure was the comparison `labels.cardinality() != width`; commit `280023972` postdates the catalogue and compares with `cardinal(width)` instead, which the current constructor retains. The finite-G-set preservation site remained live because its private permutation application returned an engine point; it now lowers the owned input point and raises the permutation image before the action re-enters the represented point set. The protected expectation subtrees still contain three global `Hom(...)` calls, but `ARC-07` reserves `Hom` for Sage and requires owned `A.Mor(B)`; neither adding a public `Hom` alias nor rewriting those protected expectations is permitted without resolving that specification conflict at its governing owner.
+  **Execution scope:** refresh the historical catalogue on the frozen API. Group failures by cause, preserve independently justified mathematical expectations, and repair the required cases. Old site counts are leads, not the acceptance population. All unresolved required failures feed terminal acceptance.
 
-- [ ] **`mor-hom-expectation-ruling`**. **Needs:** none.
-  **Owner and delta:** resolve the direct conflict between the protected-expectation rule in `AGENTS.md` and `ARC-07`. The protected `tests/constructions/` and `tests/user_simulations/` files currently contain global `Hom(...)` expectations and may not be edited merely to match an implementation; `ARC-07` simultaneously states that `Mor` is the only owned spelling and `Hom` names Sage's private construction and may appear nowhere in the public preamble universe. The long-tail catalogue records these missing `Hom` calls as failures. Per `AGENTS.md`, *if two rules conflict, the conflict is recorded for the owner to rule on*; no implementation choice is authorized until that ruling determines which prescription is corrected.
-  **Acceptance:** one owner ruling makes the prescriptions consistent and names the required source delta: either the protected mathematical expectation is explicitly corrected under its sole allowed exception, or `ARC-07` is explicitly revised to require a public owned `Hom` spelling with the Sage-boundary consequences repaired. Apply that ruling across the whole named population, not only the three currently visible calls, then return the resulting source obligation to `triage-long-tail` for terminal verification.
+- [ ] **`suite-within-time-gates`**. **Needs:** `suite-compactification`.
+  **Owner and delta:** the suite passes its gates in `dzack_research.utilities.suite_budget`: star import 2 s after `sage.all`, collection 30 s, execution 100 ms per selected test, no test over its per-test limit.
+  **Observed:** the catalogue executed in about 6.5 minutes, 24 ms per test; with tracebacks on, formatting failure reports dominates because owned `_repr_` methods compute (a ring's repr computes its cardinality).
+  16 tests exceeded 1 s. Measured 2026-09-25: each process that reaches the Julia bridge pays about 20 s to start Julia and load Oscar (compile cache warm), and `test_centralizer_discriminant_image_of_the_swap_on_a1_plus_a1` spends 72 s in one call; the tests on large lattices are `small-specimen-tests`. pytest-timeout's `SIGALRM` inside Cython code is caught by cysignals as `AlarmInterrupt`, which stops the run.
+  **Observed after the rack reconciliation (2026-09-25, single process, --timeout=600):** the enumerating lattice specimens slowed.
+  Pre-merge `1e1a69be2` against merged `d14a3878f`: `test_equivariant_vector_orbits.sage::test_representatives_are_the_same_live_orbit_package` 113 s → 145 s; `test_centralizer_gluing.sage::test_the_a2_centralizer_splits_the_single_root_orbit_in_two` 79 s → 99 s; `::test_the_a2_centralizer_separates_two_roots_that_o_a2_identifies` 29 s → 58 s; `test_cyclotomic_centralizer.sage::test_the_centralizer_of_minus_one_on_Z3_is_the_signed_permutation_group_of_order_48` 55 s → 58 s. Each builds one isometry per group element through module Mor membership tests; the cyclotomic profile had category `__contains__` at 57 of 120 profiled seconds before `d14a3878f`. **Observed (2026-09-25):** the expectation subtrees collect 13,154 cases, and `tests/constructions/test_categories_inhabited.sage` (3.6 KB) is 8,500 of them, one per session category and witness check.
+  A run of the two subtrees on three workers does not finish in 10 minutes.
+  **Observed (2026-09-25):** `tests/constructions/test_schemes_construct.sage` does not finish: run alone it passed 42% of its cases in the first minutes, then sat for 40 minutes inside one case despite `--timeout=60`, so the blocking call does not return to Python.
+  `test_rings_construct.sage` exceeds 300 s run alone.
+  **Observed (2026-09-26):** the smallest `ADELogPairs` witness, type `A_1`, costs 0.7 s per base ring and `P^2` from its fan 0.9 s, nearly all of it in the fan's chart changes.
+  **Closure:** the default suite run is green on all four gates, with no gate raised.
 
-## Forms, actions and arithmetic realizations
+- [ ] **`terminal-session`**. **Needs:** `category-method-coverage-sweep`, `triage-long-tail`, `suite-within-time-gates`.
+
+  **Owner and delta:** execute the integrated mathematical proof burden against the frozen API on the final owned session and research notebook. This is full acceptance within the already-active execution phase.
+  **Invariants:** a fresh process imports `from dzack_research.preamble.all import *` and exposes Cat and Lattices.
+  This is a prerequisite, not mathematical acceptance.
+  Regenerate `docs/preamble-megadoc.md` and the graph through `just preamble-megadoc`; inspect their agreement with live categories, operations, domains and codomains.
+  Preamble warnings and order-dependent imports require repair.
+  **Closure evidence:** execute all required banked construction specimens and the protected expectation/user-simulation obligations through the prescribed project recipes, classify actual failures at their owners and repair them without weakening expectations.
+  Cover direct, convenience, functor, catalogue and engine-raised routes; free/nonfree, finite/infinite and changed-base regimes where claimed.
+  A previous run certifies only the source it exercised.
+  Use japi for notebook execution and inspect actual rendered mathematical outputs; source, saved files and successful imports do not prove rendering or mathematical claims.
+  Run the prescribed final QC at its applicable boundary, retaining explicit evidence for any remaining failures.
+  A required failure keeps this node open; fixes and focused re-execution stay within T rather than restarting the architecture suspension.
+  Respect push authorization.
+  **Frozen-suite acceptance:** every retained test of the frozen API passes in its complete default suite, with 100 percent pass rate and strictly greater than 90 percent meaningful public-method coverage as defined by the coverage sweep. No failure of that API is waived to reach the threshold. Audit the residual uncovered contracts, execute its banked obligations on the integrated tree, and retain the existing performance gates. The frozen scope and test population cannot shrink to obtain the result. Preserved specifications of new M4 capabilities belong to their feature acceptance; they neither count as passing frozen-API tests nor disappear from the required programme.
+
+## M4 — Required mathematical expansion
+
+These remain required constructions with their original generality, maps, specimens and unresolved engine decisions. Their roots wait for the accepted frozen API. Split a genuine prerequisite needed earlier into the consuming milestone, retaining the rest here.
 
 - [ ] **`lattice-represents-an-integer`**. **Needs:** `higher-rank-integral-lattice-representation`.
   **Owner and delta:** `Lattices(R)` answers the existential question whether `L` represents `n`, i.e. whether the hypersurface `V(q - n)` has an `R`-point.
@@ -330,7 +483,7 @@ A site that still raises keeps its node, and every node whose example passes and
   **Owner and delta:** the indefinite integral rank-at-least-three branches of `Lattices(ZZ).representation_vector(n)`. Do not use `QuadraticForm.solve`, which solves over `QQ`, as an integral witness. Rank at least four uses the real place plus the exact local tests at primes dividing `2 n det(L)` and the strong-approximation/Kneser route to construct an integral witness when the local conditions hold. Rank three uses the same local test followed by the finitely many spinor-exceptional square classes (Schulze-Pillot; Earnest--Hsia), with an exact witness construction in the positive cases. `n=0` is integral isotropy and requires a nonzero integral witness. Research maintained Sage/PARI/OSCAR algorithms before implementing; if none exposes the complete witness route, add the private engine adapter rather than substituting rational solvability or an unbounded search.
   **Closure specimens:** `U + U` represents `0` by a nonzero vector; `-(x^2+y^2+z^2)` does not represent `-7`; one indefinite rank-four locally soluble positive example returns an exact integral witness.
 
-- [ ] **`higher-rank-representation-engine-ruling`**. **Needs:** none.
+- [ ] **`higher-rank-representation-engine-ruling`**. **Needs:** `terminal-session`.
   **Owner decision required by `ENG-06`:** source audit found exact maintained routes for definite integral forms (`PARI qfminim`, already wrapped by `vectors_of_square`) and binary integral forms (`Sage BinaryQF.solve_integer`, delegating to `PARI qfbsolve`). Installed Sage, Hecke and OSCAR expose rational-space representation/isotropy machinery but no complete exact integral rank-at-least-three witness operation; Hecke's `represents` is an isometry-class/subspace statement over the fraction field, not an integral lattice-point solver. No maintained rank-at-least-three integral witness route was found in the current engine population.
   Under `ENG-06`, implementing the Kneser/strong-approximation and ternary spinor-exception algorithms locally materially expands the repository's correctness burden and therefore needs an explicit project/owner decision. The ruling must choose either (a) deliberately own that algorithm here, with cited source-grounded contracts and a private engine boundary, or (b) designate a maintained external exact solver and authorize the adapter. Rational solvability, local solvability alone, or an unbounded witness search are not acceptable substitutes.
 
@@ -343,16 +496,16 @@ A site that still raises keeps its node, and every node whose example passes and
 - [ ] **`higher-signature-reflection-group-search`**. **Needs:** `higher-signature-reflection-engine-ruling`.
   **Owner and delta:** construct `W(L)` for indefinite integral lattices with both inertia indices at least two. The defining group is generated by all integral reflections, and the admissible primitive root norms are still bounded by divisors of twice the discriminant exponent, but unlike the definite case the set of roots of one admissible norm need not be finite and unlike signature `(1,n)` there is no Vinberg chamber search. Research a maintained exact arithmetic-group/reflection-subgroup algorithm before adding local enumeration. A finite or interrupted search may return only the subgroup generated by the reflections it actually found, with that incompleteness stated in the returned construction; it must not be named `W(L)` without a completeness certificate.
 
-- [ ] **`higher-signature-reflection-engine-ruling`**. **Needs:** none.
+- [ ] **`higher-signature-reflection-engine-ruling`**. **Needs:** `terminal-session`.
   **Owner decision required by `ENG-06`:** Sage/OSCAR/Hecke and current project backends expose orthogonal groups, individual reflections and the hyperbolic Vinberg case, but no exact construction of the subgroup generated by all integral reflections of a lattice with both inertia indices at least two. Magma's documented reflection-group facilities start from a supplied reflection representation/root datum or supplied roots; they do not construct this arithmetic reflection subgroup from an arbitrary integral lattice. Decide whether the project deliberately owns the missing arithmetic search/certification algorithm, or designate and authorize a maintained exact backend that supplies it. A bounded vector search without a completeness theorem is not `W(L)`.
 
 - [ ] **`hyperbolic-restricted-norm-reflection-groups`**. **Needs:** `hyperbolic-restricted-reflection-engine-ruling`.
   **Owner and delta:** construct `W_S(L)` for hyperbolic lattices and a proper selected norm set `S`. Vinberg's simple roots generate the full reflection group `W(L)`, but merely discarding simple roots whose norms are not in `S` need not generate the subgroup generated by *all* reflections with norms in `S`; conjugation by reflections of other norms can produce further `S`-roots. Research the correct chamber/orbit construction or a maintained implementation. The full-group call with the default admissible norm set continues to use the existing Vinberg wall enumeration.
 
-- [ ] **`hyperbolic-restricted-reflection-engine-ruling`**. **Needs:** none.
+- [ ] **`hyperbolic-restricted-reflection-engine-ruling`**. **Needs:** `terminal-session`.
   **Owner decision required by `ENG-06`:** no maintained exact operation was found that takes a hyperbolic integral lattice and a norm predicate and returns the reflection subgroup generated by every root satisfying it. Coxeter-system packages can form a reflection subgroup from a supplied finite family of roots, but that does not solve the infinite root-family construction here. Decide whether to own the required reflection-subgroup/chamber algorithm or authorize a maintained exact backend that computes this norm-defined subgroup with a completeness certificate.
 
-- [ ] **`group-exact-sequences-and-homology`**. **Needs:** none.
+- [ ] **`group-exact-sequences-and-homology`**. **Needs:** `terminal-session`.
   **Owner and delta:** one owned construction for a short exact sequence of groups `1 -> N -> G -> Q -> 1`: the normal subobject `N -> G`, the quotient `G -> Q`, and exactness.
   `RankOneParabolicLeviExactSequence` (`categories/lattices.py`) and the discriminant reduction sequence are instances of it, not separate classes.
   Exactness only as pointed sets, when the image is not normal, uses the finite image-coset construction in `categories/group/g_sets.py`. The first group-exact instance is the commutator sequence `1 -> [G,G] -> G -> G^ab -> 1`, whose quotient map is the unit of `(-)^ab -| i` (`functors/abelianization.py`). Group homology `H_n(G; M)` and cohomology `H^n(G; M)` for a `ZZ[G]`-module `M`, as derived functors of coinvariants and invariants: through the resolution categories of `categories-of-resolutions`, computed privately by GAP's HAP or Sage.
@@ -362,7 +515,7 @@ A site that still raises keeps its node, and every node whose example passes and
   **Closure specimens:** `S_3^ab = ZZ/2` with `[S_3, S_3] = A_3`. The free group `F_2` has abelianization `ZZ^2`, computed from its presentation.
   `SL_2(ZZ)^ab = ZZ/12`. `H_1(ZZ/n; ZZ) = ZZ/n`, `H^1(ZZ/n; ZZ) = 0`, `H^2(ZZ/n; ZZ) = ZZ/n`. `W(E_8)^ab = ZZ/2`.
 
-- [ ] **`pullbacks-in-every-category`**. **Needs:** none.
+- [ ] **`pullbacks-in-every-category`**. **Needs:** `terminal-session`.
   **Owner and delta:** the fibre product `A x_C B` of a cospan is constructed once, at the general owner (`Cat.fiber_product` in `abstract_categories/cat.py`, from `product` and `equalizer`), and it is reachable in sets, groups, modules, algebras, schemes and every category with products and equalizers.
   The result is the limit cone: the apex, both projections and the universal map, never a bare object.
   Leaf categories only place structure and properties on the apex so that it lives in the correct category: a subgroup of `A x B`, a submodule, a subalgebra.
@@ -372,7 +525,7 @@ A site that still raises keeps its node, and every node whose example passes and
   The fibre product of two points over a point is a point in both sets and schemes.
   `Spec QQ(i) x_{Spec QQ} Spec QQ(i)` has two points.
 
-- [ ] **`images-of-subgroups-and-predicate-subsets`**. **Needs:** none.
+- [ ] **`images-of-subgroups-and-predicate-subsets`**. **Needs:** `terminal-session`.
   **Owner and delta:** research, then construction.
   The image of a subgroup with generators under a group morphism is the subgroup generated by the images, as an owned subobject of the codomain.
   The image of a subset given only by a predicate is an existential projection, `{f(x) : P(x)}`, and is not computable in general.
@@ -382,7 +535,7 @@ A site that still raises keeps its node, and every node whose example passes and
   The image of a predicate subgroup of finite index in `O(L)` is computed through its Schreier generators.
   A predicate subset with no route reaches an assertion that names the missing algorithm.
 
-- [ ] **`finite-index-subgroup-generators`**. **Needs:** none.
+- [ ] **`finite-index-subgroup-generators`**. **Needs:** `terminal-session`.
   **Owner and delta:** a subgroup `H <= G` given by a membership test, known to have finite index (for example a preimage of a subgroup of a finite quotient), with `G` given by generators, answers generators of `H` by Schreier's lemma.
   It uses the action of `G` on the coset space and a transversal from `finite_image_lifts`. When `G` has a chosen presentation, it answers a presentation of `H` by Reidemeister–Schreier.
   This becomes a `case` of the group-level generator routing.
@@ -475,149 +628,17 @@ A site that still raises keeps its node, and every node whose example passes and
     Theory and leads: `docs/theory/modular-forms-and-hecke-operators.md`. **Closure specimens:** `[SL_2(ZZ) : Γ_0(11)] = 12`, and `X_0(11)` has genus 1. `S_2(Γ_0(11))` is spanned by `q ∏ (1 − q^n)^2 (1 − q^{11n})^2`, whose `a_p` agree with `p + 1 − #E(F_p)` for `E = 11a1` at good primes.
     `T_2` acts on that form by `a_2 = −2`. `E[2]` of `ℂ/(ZZ + ZZi)` has 4 points.
 
-## Common categorical authority and public boundaries
+- [ ] **`extended-mathematics-session`**. **Needs:** `lattice-represents-an-integer`, `lattice-glue-stabilizers`, `group-exact-sequences-and-homology`, `coxeter-complexes-and-buildings`, `modular-forms-and-hecke-algebras`.
+  **Owner and delta:** exercise every required M4 construction and its maps together with the frozen core, through the public session and applicable research notebook. Extend the API reference and meaningful-method denominator with the new contracts. Run the distinguishing specimens retained in each feature node, including its full hypotheses and computational regimes.
+  **Acceptance:** required feature specimens and the retained suite pass, meaningful-method coverage remains above 90 percent, and ordinary workflows preserve their previous capability. Repair shared owners before extending dependent consumers. An unresolved engine-ownership ruling keeps its required construction and this node open; it does not reopen the earlier usable-core milestone.
 
-- [ ] **`genera-are-finite-sets-of-isometry-classes`**. **Needs:** none.
-  **Owner and delta:** `Genus` in `categories/lattices.py` (line 371) is a plain Python class holding a signature and a discriminant quadratic form.
-  A genus of integral lattices is the finite set of isometry classes of lattices with that signature and discriminant form, so it is an object of a category of genera that forgets to finite sets.
-  Its cardinality is the class number, and parity (even or odd) is an axiom on it, the same for every member.
-  It is constructed through its owner, not as a bare class, per `CAT-28`. `representatives()` and `class_number()` become that set's enumeration and cardinality.
-  The spike built this and it reached main's history as PR #59 (`d2891a225`) and `5766b97d1`, then was lost when the spike was absorbed; do not port that code.
-  **Closure:** the genus of `E8` has cardinality 1; the genus of `E8 + E8` has cardinality 2 (`E8 + E8` and `D16^+`); the genus of `A2` is even; the genus of `I_1 + I_1` is odd; `representatives()` enumerates that finite set.
+## M5 — Optional research extensions
 
-- [ ] **`group-categories-defined-by-data`**. **Needs:** none.
-  **Owner and delta:** `categories/group/groups.py`. The groups whose category is fixed by mathematical data, per `CAT-28`: `SymmetricGroups()(Omega)` for a set `Omega`, `GeneralLinearGroups()(R, n)`, `FreeGroupQuotients()(F, R)` (a free group and a set of relators), `CoxeterGroups()(M)` for a Coxeter matrix, and an `Arithmetic` axiom on `OwnedGroups`. Each is built from main's current `groups.py`, with its morphisms and its `CAT-22` owner search.
-  `remediate/groups` (`bbce862e3`, deleted 2026-09-25) drafted these, and complaint 10 in `COMPLAINTS.md` records why that draft was rejected: it replaced working catalogue entries with assertions, and it gave a number field the automorphism group of the original field as its Galois group.
-  **Closure:** `SymmetricGroups()(Sets.Delta[2])` has order 6; `GeneralLinearGroups()(GF(2), 2)` has order 6 and is isomorphic to it; `FreeGroupQuotients()(F_2, {a^2, b^3, (ab)^2})` has order 6; `CoxeterGroups()` of the `A_2` matrix is that same group; the arithmetic axiom holds for `SL_2(ZZ)`.
+These consumers follow required acceptance and never block it. Each extension retains the frozen contracts or explicitly revises and re-proves the affected architectural boundary.
 
-- [ ] **`engine-wiring-audit`**. **Needs:** none.
-  **Owner and delta:** every owned construction that computes, itself, behaviour a maintained engine provides, starting with the set layer (`categories/sets/`): membership, position and order of finite sets, images, products, coproducts, power sets and function sets, as tabulated in [COMPLAINTS.md](COMPLAINTS.md#set-theoretic-behaviour-is-re-implemented-instead-of-wired-to-a-set-engine), then the whole preamble.
-  **Invariants:** public mathematics stays owned; the computation behind it is the engine's, reached privately at its owner (`OWN-06`). A membership decision follows the set's definition -- predicate, identity of listed points, inverse of an image -- and never searches an enumeration.
-  An enumeration is a chosen bijection from an ordinal, separate from membership.
-  No owned code re-implements what Sage, GAP, SymPy, PARI or the Python standard library computes, unless the engine lacks it, which is then recorded in `TRAPS.md` with the measurement.
-  **Coverage:** survey the preamble once for owned code whose body is a general algorithm -- loops that search, compare element by element, enumerate to decide, or rebuild an object to read one value -- and map each to the engine routine that computes it or to the recorded reason there is none.
-  The profiled sites of 2026-09-23 are the first evidence, not the population.
-  **Closure specimens:** membership of a point in a finite set of SR symbols, an image, a product and a power set answered without comparing against every point; a rank-16 diagonal lattice built in time linear in its Gram entries; each audited family's route read from its public entry to the engine call.
-## Public mathematical interaction
+- [ ] **`optional-framed-manifolds`**. **Needs:** `extended-mathematics-session`, `optional-manifold-tangent-bundles`. **Goal:** the framed manifolds of `CAT-29`: a smooth manifold with a length-0 resolution of its tangent bundle by trivial bundles, i.e. a trivialization of `TX` (nLab *framed manifold*; the `G = {e}` G-structure), with stable framings as trivializations of `TX + R^k` and `n`-framings as trivializations of `TX + R^(n - dim X)`. Specimens: `S^1` and a Lie group framed by left-invariant vector fields; `S^2` not framable and stably framable.
 
-## Source convergence and terminal proof
-
-- [ ] **`architecture-remediation`**. **Needs:** `engine-wiring-audit`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
-  **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open.
-  Each complaint's entire burden is discharged or retained in a required prerequisite.
-  All alternative construction routes affected by a repair are inspected.
-  No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`). **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens.
-  Review later changes to each shared contract against its delivery evidence.
-  In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair.
-  Existing evidence for unaffected routes remains usable.
-  **Closure evidence:** bank falsifying specimens for every repaired obligation, including inherited operations, wrong nearby inputs and relevant infinite/nonfree/base-change cases.
-  Commits record source coverage and unexecuted proof.
-  Review composed consumers after their prerequisites, without rerunning an unrelated whole-tree inventory after every leaf.
-  Source closure authorizes T; it does not claim runtime success.
-
-- [ ] **`function-spaces-are-subobjects-of-mor`**. **Needs:** none.
-  **Owner and delta:** the owned function spaces (`categories/functions/real_functions.py`), under `CON-17`. Each space is a family of functors in both arguments, and its constructor takes both: `C(n, A, B)`, `Lp(p, A, B)`, `ell(p, A, B)`; the tests now construct `C(Infinity, RR, RR)`, `Lp(2, RR, RR)` and `ell(2, NN, RR)`. Coordinates are owned by the domain: `RR.coordinate()` is the coordinate of ℝ (for ℝ² it is the pair (x = (x_0, x_1))), and a map is built from it, `C(Infinity, RR, RR)(x^2 + 1)`. `Lp(p)` (maps ℝ → ℝ) is built with `indeterminate=SR.var("x")` and `ell(p)` (maps ℕ → ℝ) with `SR.var("n")`; each stores the variable, hands it out as `indeterminate()`, and reads `space(expr)` as the map t ↦ expr.
-  The delta: each space is the subobject of `Sets().Mor(X, Y)` cut out by its condition (integrability, summability, smoothness, boundedness), with its module structure; element construction is `Mor(X, Y)`'s element constructor (callables, formulas binding their own variable, finitary data), and the space admits the element by its condition; `indeterminate()` and the stored variable are removed, together with their consumers: `convolution.py` and `lebesgue_quotients.py` substitute into `parent().indeterminate()`, and `modules/pure/function_modules.py:378` defaults a formula's variable to `x`. Each works on the map it is given.
-  **Observed:** the formulas are Sage symbolic expressions in the stored variable, and owned numbers never enter Sage's symbolic ring (`AGENTS.md`, ruled 2026-09-23), so `x**2`, `2 ** (-n)` and `1 / (1 + x**2)` raise `TypeError` in `tests/functions/test_function_modules_archive.sage`, `test_real_functions.sage` and `test_young_convolution.sage`. Those tests use `indeterminate()` and are rewritten with the delivery to define their maps (`f(t) = exp(-t^2)`). **Closure:** the maps t ↦ t², t ↦ 1/(1 + t²), t ↦ exp(−t²) and k ↦ 2⁻ᵏ, each defined with its own variable, are constructed in `Mor(X, Y)` and admitted by their spaces; no space supplies a point of its domain, and `X.coordinate()` of a function space, where it exists, is a general element of that space.
-
-- [ ] **`suite-within-time-gates`**. **Needs:** none.
-  **Owner and delta:** the suite passes its gates in `dzack_research.utilities.suite_budget`: star import 2 s after `sage.all`, collection 30 s, execution 100 ms per selected test, no test over its per-test limit.
-  **Observed:** the catalogue executed in about 6.5 minutes, 24 ms per test; with tracebacks on, formatting failure reports dominates because owned `_repr_` methods compute (a ring's repr computes its cardinality).
-  16 tests exceeded 1 s. Measured 2026-09-25: each process that reaches the Julia bridge pays about 20 s to start Julia and load Oscar (compile cache warm), and `test_centralizer_discriminant_image_of_the_swap_on_a1_plus_a1` spends 72 s in one call; the tests on large lattices are `small-specimen-tests`. pytest-timeout's `SIGALRM` inside Cython code is caught by cysignals as `AlarmInterrupt`, which stops the run.
-  **Observed after the rack reconciliation (2026-09-25, single process, --timeout=600):** the enumerating lattice specimens slowed.
-  Pre-merge `1e1a69be2` against merged `d14a3878f`: `test_equivariant_vector_orbits.sage::test_representatives_are_the_same_live_orbit_package` 113 s → 145 s; `test_centralizer_gluing.sage::test_the_a2_centralizer_splits_the_single_root_orbit_in_two` 79 s → 99 s; `::test_the_a2_centralizer_separates_two_roots_that_o_a2_identifies` 29 s → 58 s; `test_cyclotomic_centralizer.sage::test_the_centralizer_of_minus_one_on_Z3_is_the_signed_permutation_group_of_order_48` 55 s → 58 s. Each builds one isometry per group element through module Mor membership tests; the cyclotomic profile had category `__contains__` at 57 of 120 profiled seconds before `d14a3878f`. **Observed (2026-09-25):** the expectation subtrees collect 13,154 cases, and `tests/constructions/test_categories_inhabited.sage` (3.6 KB) is 8,500 of them, one per session category and witness check.
-  A run of the two subtrees on three workers does not finish in 10 minutes.
-  **Observed (2026-09-25):** `tests/constructions/test_schemes_construct.sage` does not finish: run alone it passed 42% of its cases in the first minutes, then sat for 40 minutes inside one case despite `--timeout=60`, so the blocking call does not return to Python.
-  `test_rings_construct.sage` exceeds 300 s run alone.
-  **Observed (2026-09-26):** the smallest `ADELogPairs` witness, type `A_1`, costs 0.7 s per base ring and `P^2` from its fan 0.9 s, nearly all of it in the fan's chart changes.
-  **Closure:** the default suite run is green on all four gates, with no gate raised.
-
-- [ ] **`terminal-session`**. **Needs:** `architecture-remediation`, `group-categories-defined-by-data`, `triage-long-tail`, `category-method-coverage-sweep`, `function-spaces-are-subobjects-of-mor`, `suite-within-time-gates`, `scalar-extension-is-order-independent`, `genera-are-finite-sets-of-isometry-classes`, `placement-audit`.
-
-- [ ] **`scalar-extension-is-order-independent`**. **Needs:** none.
-  **Site:** `categories/algebras/`, algebra scalar extension along `ZZ -> QQ`. `tests/algebras/test_algebra_base_change_archive.sage::test_archived_algebra_base_change_is_the_live_scalar_extension_functor` passes when its file runs alone and fails when `tests/modules`, `tests/sets`, `tests/rings`, `tests/forms` and `tests/tensors` ran first in the same process, with `TypeError: cannot apply Algebra scalar extension along ZZ -> QQ ... to Generic endomorphism of Ring over Integer Ring: it is not a morphism ... of Category of algebras` (observed 2026-09-26, before and after the coordinate sweep).
-  A construction whose answer depends on what the session built earlier reads shared state that some earlier construction changed; the node finds that state and makes scalar extension read only its own data.
-  **Closure:** the test passes in the batched run.
-
-  **Owner and delta:** execute the integrated mathematical proof burden on the final owned session and research notebook; `DEV-58` governs this transition.
-  **Invariants:** a fresh process imports `from dzack_research.preamble.all import *` and exposes Cat and Lattices.
-  This is a prerequisite, not mathematical acceptance.
-  Regenerate `docs/preamble-megadoc.md` and the graph through `just preamble-megadoc`; inspect their agreement with live categories, operations, domains and codomains.
-  Preamble warnings and order-dependent imports require repair.
-  **Closure evidence:** execute all required banked construction specimens and the protected expectation/user-simulation obligations through the prescribed project recipes, classify actual failures at their owners and repair them without weakening expectations.
-  Cover direct, convenience, functor, catalogue and engine-raised routes; free/nonfree, finite/infinite and changed-base regimes where claimed.
-  A previous run certifies only the source it exercised.
-  Use japi for notebook execution and inspect actual rendered mathematical outputs; source, saved files and successful imports do not prove rendering or mathematical claims.
-  Run the prescribed final QC at its applicable boundary, retaining explicit evidence for any remaining failures.
-  A required failure keeps this node open; fixes and focused re-execution stay within T rather than restarting the architecture suspension.
-  Respect push authorization.
-
-## Post-remediation convergence
-
-- [ ] **`refactor-audit`**. **Needs:** `terminal-session`. **Goal:** After the repaired mathematics runs end-to-end, audit the repository for duplicated authority, poor organization, and maintainability defects that survived the architecture work.
-  Audit the whole repository for messy, disorganized or duplicated code after the complaint-derived architecture has been exercised through the final public session.
-  The public mathematical API need not change and should not change incidentally; this pass is about internal sources of truth, ownership and maintainability that survive the mandatory architecture repairs.
-
-  Fix the whole-repository source population at entry and cover it once for organization, sources of truth, ownership and duplication.
-  Inspect the authored owners of generated projections and any participating local changes; preserve unrelated foreign work.
-  Review concrete declarations and consumers, not only search matches.
-  Apply the bounded-closure rule above: a repair revisits its changed route and affected uses, without restarting the repository survey.
-
-  Repair a bounded finding at its owner.
-  If it crosses independent owners, give its concrete repair a DAG row with source-backed acceptance and make this node depend on it.
-  Re-execute affected proof in the active terminal phase.
-  Newly observed required findings are repaired by the same rule; they do not initiate another general audit.
-  Do not create rows whose deliverable is only a report, inventory, approval or proof that the audit ran.
-
-  **Acceptance:** the stated whole-repository coverage is complete, every resulting required finding is repaired, and the changed routes and their consumers have been reviewed and re-exercised on the closing tree.
-  Unchanged, unaffected coverage carries forward; no second whole-repository discovery pass is required.
-  Record the inspected coverage and residual uncertainty without claiming that no future defect can exist.
-  A clean pass requires no receipt commit.
-
-- [ ] **`type-paydown`**. **Needs:** `refactor-audit`. **Goal:** Improve static type information only where it clarifies the mathematics and makes correctness easier to reason about; do not contort code merely to lower an error count.
-  Pay down type errors where doing so is reasonable, and not one step further.
-  **Acceptance:** inspect the diagnostics from the prescribed typing boundary once, resolve their shared causes at the mathematical or typing owner, and give every retained diagnostic an evidence-backed disposition there.
-  Check changed declarations and affected uses after each coherent repair; broaden only for a demonstrated new effect.
-  No required behavior or proof is bypassed.
-  Re-execute affected mathematical specimens after behavioral changes under the already-active terminal phase.
-  Every typing decision must improve the legibility of the code, the ability to understand what it does, and the ability to reason statically about whether it is correct.
-  That is the standard the change is judged against, not the error count.
-  A retained false positive needs source-backed justification; a missing mathematical contract remains required work.
-
-  Golfing the code into oblivion -- distortions that exist only to silence a checker -- is the failure mode.
-  Where a contortion is genuinely warranted, it must be judged as significantly serving the goal above, and the argument for it recorded explicitly in the commit message.
-  A type annotation nobody can read has made the code worse even when the checker is quieter.
-
-- [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`. The legacy identifier is retained for stable references, but this is a finite terminal convergence pass, not a permanently open audit loop.
-  Read the governing `AGENTS.md`, `CONTRIBUTING.md` and this DAG at entry.
-  Use `policy-index` to select the review skill for the actual boundary, and load narrower skills only for findings that need them.
-  Loading another skill supplies a method for the stated obligations; it does not create another workstream, proof requirement or repository-wide round.
-
-  Fix the source population at the post-typing tree.
-  Cover categorical/math owner placement; duplicate or derivable retained state; public type/API design; tests as behavioral proofs rather than implementation mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle structure; notebook/session usability; generated/static projection boundaries; and AI-slop or locally tidy code that violates the architectural contract.
-  Reuse the preceding audit's coverage for overlapping questions only where the route and its dependencies remain unchanged; complete the other questions across the whole repository once.
-  Protected mathematical expectations retain their own correction rule.
-  Search the dependency or upstream owner before improving a local mechanism that may not need to exist.
-
-  Repair a small, well-supported finding and commit the behavioral regression or mathematical consumer that proves it.
-  If a finding spans several owners, add a concrete repair row with the necessary edges; this node cannot close until that repair closes.
-  Revisit the repaired route, affected callers and evidence.
-  A repeated finding with the same cause requires shared-owner repair and review of its sibling uses, not another whole-tree search.
-  Never create a node merely to say that an audit ran, and never leave a required finding in COMPLAINTS as a substitute for repair.
-
-  **Acceptance:** every stated question has complete coverage, every resulting required finding has been repaired, and each subsequent change has its affected source and proof revalidated on the closing tree.
-  Re-execute affected mathematical proof after repairs and confirm the final public session after bootstrap/export changes.
-  Stop at that condition; there is no repeat-until-empty whole-repository discovery step.
-  A clean pass makes no receipt commit.
-  Later regressions are new owner-local defects and do not retroactively turn this completed convergence pass into a perpetual queue.
-
-## Optional research consumers
-
-These are not prerequisites for the required mathematics, complaint remediation, terminal verification, or convergence audits.
-
-- [ ] **`optional-framed-manifolds`**. **Needs:** `terminal-session`, `optional-manifold-tangent-bundles`. **Goal:** the framed manifolds of `CAT-29`: a smooth manifold with a length-0 resolution of its tangent bundle by trivial bundles, i.e. a trivialization of `TX` (nLab *framed manifold*; the `G = {e}` G-structure), with stable framings as trivializations of `TX + R^k` and `n`-framings as trivializations of `TX + R^(n - dim X)`. Specimens: `S^1` and a Lie group framed by left-invariant vector fields; `S^2` not framable and stably framable.
-
-- [ ] **`optional-brauer-manin-obstructions`**. **Needs:** `terminal-session`. **Goal:** the Brauer--Manin pairing `X(A_k) x Br(X) -> Q/Z` and the obstruction sets for rational and integral points of varieties over a number field `k`, with the cases where the obstruction is computable or is the only one.
+- [ ] **`optional-brauer-manin-obstructions`**. **Needs:** `extended-mathematics-session`. **Goal:** the Brauer--Manin pairing `X(A_k) x Br(X) -> Q/Z` and the obstruction sets for rational and integral points of varieties over a number field `k`, with the cases where the obstruction is computable or is the only one.
   Tori and their torsors (Sansuc).
   Homogeneous spaces of connected linear groups with connected or abelian stabilizers (Borovoi).
   Integral points on spin-group homogeneous spaces, including the rank-3 spinor exceptions of `lattice-represents-an-integer` (Colliot-Thelene--Xu; Borovoi--Demarche).
@@ -628,16 +649,16 @@ These are not prerequisites for the required mathematics, complaint remediation,
   Every notion used to state or compute these results is an owned construction in the preamble, and this node is exploded into its prerequisite DAG before any leaf is built (`DEV-56`, *A missing foundation parks the work that found it*). The expected prerequisites, to be confirmed by that trace: `G_K`-modules and Galois representations; étale cohomology specializing to Galois and group cohomology; categories of algebraic groups and their theory, with connectedness, commutativity, reductivity and simple connectedness decided or theorem-backed; tori with their character and cocharacter lattices as Galois lattices; torsors and principal `G`-bundles; homogeneous spaces and stabilizers in general; Tate--Shafarevich groups; symmetric spaces and basic Shimura-variety machinery; abelian varieties with elliptic curves as a specialization, their cohomology with its structures, torsion subgroups and Tate modules; the Brauer group of a scheme.
   **Specimens:** the Iskovskikh conic bundle, or the Cassels--Guy cubic, failing the Hasse principle through a Brauer class; an integral spinor-exceptional example taken from Colliot-Thelene--Xu, which has local points everywhere and fails only through the integral Brauer--Manin obstruction.
 
-- [ ] **`optional-manifold-tangent-bundles`**. **Needs:** `terminal-session`. **Goal:** the tangent bundle of an object of `SmoothManifolds` (`categories/manifolds.py`) as an owned vector bundle, with its module of sections `Der(C^oo(M))`, realized through SageManifolds' tangent bundle privately.
+- [ ] **`optional-manifold-tangent-bundles`**. **Needs:** `extended-mathematics-session`. **Goal:** the tangent bundle of an object of `SmoothManifolds` (`categories/manifolds.py`) as an owned vector bundle, with its module of sections `Der(C^oo(M))`, realized through SageManifolds' tangent bundle privately.
   Specimen: `TS^1` trivial of rank 1.
 
-- [ ] **`optional-random-lattices-of-given-invariants`**. **Needs:** `terminal-session`. **Goal:** random lattices in `Lattices(ZZ)` with a prescribed signature, determinant or rank, built as a random `SL(n, ZZ)` congruence `A^T G A` of a diagonal Gram matrix with Sage's randomness scoped by `seed()`, returning owned lattices, not matrices; and a random isotropic subgroup of a discriminant module (`categories/modules/framed/formed/discriminant_modules.py`, next to `isotropic_subgroups`), feeding `overlattice`. Prior art and its tests: `archives/random-lattice-constructors/`. State the limit: congruence of a diagonal form reaches only odd unimodular lattices, so a random lattice within a genus needs a different construction.
+- [ ] **`optional-random-lattices-of-given-invariants`**. **Needs:** `extended-mathematics-session`. **Goal:** random lattices in `Lattices(ZZ)` with a prescribed signature, determinant or rank, built as a random `SL(n, ZZ)` congruence `A^T G A` of a diagonal Gram matrix with Sage's randomness scoped by `seed()`, returning owned lattices, not matrices; and a random isotropic subgroup of a discriminant module (`categories/modules/framed/formed/discriminant_modules.py`, next to `isotropic_subgroups`), feeding `overlattice`. Prior art and its tests: `archives/random-lattice-constructors/`. State the limit: congruence of a diagonal form reaches only odd unimodular lattices, so a random lattice within a genus needs a different construction.
 
-- [ ] **`optional-moduli-of-stable-curves`**. **Needs:** `terminal-session`. **Goal:** the moduli of stable pointed curves over the owned scheme categories.
+- [ ] **`optional-moduli-of-stable-curves`**. **Needs:** `extended-mathematics-session`. **Goal:** the moduli of stable pointed curves over the owned scheme categories.
   The category of stable graphs of type `(g, n)` with contractions and automorphisms, the stratification of `Mbar_{g,n}` by dual graphs, and charts for `M_{0,n}`, `Mbar_{0,n}`, `M_{1,n}`, `M_{2,n}`. The cited values (Harris-Morrison, Arbarello-Cornalba, Chan) become rows of `tests/test_known_mathematics.sage` with their citations.
   Prior art: `archives/dm-moduli-spike/`.
 
-- [ ] **`optional-sage-categories-property-layer`**. **Needs:** `terminal-session`. **Goal:** rebuild the preamble's category machinery on the kernel and `Cat` core of `sage-categories` (github.com/dzackgarza/sage-categories), starting with its property layer.
+- [ ] **`optional-sage-categories-property-layer`**. **Needs:** `extended-mathematics-session`. **Goal:** rebuild the preamble's category machinery on the kernel and `Cat` core of `sage-categories` (github.com/dzackgarza/sage-categories), starting with its property layer.
   The core abstracts the Python and Sage class machinery so that leaves are mathematics and backend CAS wiring; mathematics it lacks (resolutions, chain complexes, lattices, forms, number fields) is leaves to write on it.
   State of its code at `21041b20` (2026-09-25):
 
@@ -653,11 +674,11 @@ These are not prerequisites for the required mathematics, complaint remediation,
     The delta is the failure: it says only that the points belong to different objects, where it should name the morphisms available between them.
     The replaced preamble machinery is `owned_category.py`, `owned_category_bases.py`, `refine.py` and `categories/abstract_categories/` (about 12,800 of 156,500 lines); every mathematical category is re-declared through `structure_functors`, `ObjectType` and `Axiom`. **First specimen:** `ZZ` and `QQ` as objects of `Modules(ZZ)`, `QQ` refused by `Modules(ZZ).FinitelyGenerated()`, `QQ(1) + QQ(1/2) == QQ(3/2)`, and `ZZ(1) + QQ(1/2)` refused with an error naming the ring morphism `ZZ -> QQ`.
 
-- [ ] **`optional-database`**. **Needs:** `terminal-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
+- [ ] **`optional-database`**. **Needs:** `extended-mathematics-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
   **Goal:** Add a research database adapter only for a concrete mathematical query whose data materially benefits a live research workflow.
   Select a concrete mathematical query before provisioning an adapter.
 
-- [ ] **`optional-engine`**. **Needs:** `terminal-session`. Extend private engine integrations when a named construction benefits: Sage/Singular for local and polynomial algebra, libGAP for group actions, persistent `sage-julia-bridge` for OSCAR/Hecke, optional Macaulay2 for its exact algebra strengths, and `py_polyhedral` for required polyhedral binaries.
+- [ ] **`optional-engine`**. **Needs:** `extended-mathematics-session`. Extend private engine integrations when a named construction benefits: Sage/Singular for local and polynomial algebra, libGAP for group actions, persistent `sage-julia-bridge` for OSCAR/Hecke, optional Macaulay2 for its exact algebra strengths, and `py_polyhedral` for required polyhedral binaries.
   **Goal:** Extend private CAS/engine integrations only for a named mathematical construction that benefits from that engine, returning owned objects and maps at the public boundary.
   Maxima stays within its symbolic-calculus domain.
   **Decision:** search existing interfaces first; provision only the needed dependency; put reusable codecs and bridge defects at their actual owner.
