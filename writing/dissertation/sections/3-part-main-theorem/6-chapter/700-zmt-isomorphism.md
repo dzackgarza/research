@@ -3,7 +3,7 @@
 In this section, we apply Zariski’s Main Theorem to the classifying morphism $\phi: \normalize{B} \to \cpt{\fent}$ constructed in previous sections, obtaining a precise modular isomorphism between the KSBA compactification and the explicit semitoroidal model described via folded ramification semifans.
 
 :::{.theorem
-    title=""
+    title="Zariski's main theorem"
     #thm:zariski-main-theorem
 }
 Let $f: X \to Y$ be a morphism of varieties. Suppose:
