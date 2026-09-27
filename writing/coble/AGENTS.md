@@ -99,8 +99,7 @@ tag against the tag page before using it, since a wrong tag still renders.
 Numbered environments go through the `custom-numbered-blocks` filter:
 
 ```markdown
-::: {.Theorem #thm:coble-cusps}
-### Cusps of the Coble moduli space
+::: {.Theorem #thm:coble-cusps title="Cusps of the Coble moduli space"}
 
 ...
 :::

@@ -1,7 +1,6 @@
 # Coxeter systems and their classification
 
-::: {.Remark}
-### Orientation and sign convention
+::: {.Remark title="Orientation and sign convention"}
 
 A Coxeter--Vinberg diagram (\longref{def:coxeter-vinberg-diagram}) is the combinatorial record of a symmetric bilinear form, and the geometry on which the associated reflection group acts is determined by the definiteness of that form.
 
