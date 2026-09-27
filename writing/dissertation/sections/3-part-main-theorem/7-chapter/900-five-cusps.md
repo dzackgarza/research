@@ -29,23 +29,10 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 1
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-1};
-\scoped[on background layer] \draw[parabolic] (A-6.center) -- (A-7.center) -- (A-0.center) -- (A-1.center) -- (A-2.center) -- (A-11.center);
-\scoped[on background layer] \draw[parabolic] (A-4.center) -- (A-5.center) -- (A-6.center);
-\scoped[on background layer] \draw[parabolic] (A-6.center) -- (A-8.center);
-\pic[root labels] (B) at (6,0) {object=coxeter/sterk-cusp-1};
-\scoped[on background layer] \draw[parabolic] (B-6.center) -- (B-7.center) -- (B-0.center) -- (B-1.center);
-\scoped[on background layer] \draw[parabolic] (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center);
-\scoped[on background layer] \draw[parabolic] (B-6.center) -- (B-8.center);
-\scoped[on background layer] \draw[parabolic] (B-10.center) -- (B-11.center);
-\pic[root labels] (C) at (0,6) {object=coxeter/sterk-cusp-1};
-\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-7.center) -- (C-0.center) -- (C-1.center) -- (C-2.center) -- (C-3.center);
-\scoped[on background layer] \draw[parabolic] (C-5.center) -- (C-6.center);
-\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-8.center);
-\scoped[on background layer] \draw[parabolic] (C-11.center) -- (C-2.center);
-\pic[root labels] (D) at (6,6) {object=coxeter/sterk-cusp-1};
-\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-7.center) -- (D-0.center) -- (D-1.center) -- (D-2.center) -- (D-3.center) -- (D-4.center) -- (D-5.center) -- (D-6.center);
-\scoped[on background layer] \draw[parabolic] (D-9.center) -- (D-10.center);
+\pic[root labels, subdiagram={0,1,2,4,5,6,7,8,11}] (A) at (0,0) {object=coxeter/sterk-cusp-1};
+\pic[root labels, subdiagram={0,1,3,4,5,6,7,8,10,11}] (B) at (6,0) {object=coxeter/sterk-cusp-1};
+\pic[root labels, subdiagram={0,1,2,3,5,6,7,8,11}] (C) at (0,6) {object=coxeter/sterk-cusp-1};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,9,10}] (D) at (6,6) {object=coxeter/sterk-cusp-1};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,10,0)_1$ of $\fen$, and $\Gamma(\mcz_0) = \RP^2$.
@@ -82,19 +69,9 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 3
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-3};
-\scoped[on background layer] \draw[parabolic] (A-1.center) -- (A-2.center) -- (A-3.center) -- (A-4.center) -- (A-5.center) -- (A-6.center) -- (A-7.center);
-\scoped[on background layer] \draw[parabolic] (A-4.center) -- (A-9.center);
-\scoped[on background layer] \draw[parabolic] (A-10.center) -- (A-11.center);
-\pic[root labels] (B) at (6.5,0) {object=coxeter/sterk-cusp-3};
-\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-2.center) -- (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center) -- (B-7.center);
-\scoped[on background layer] \draw[parabolic] (B-4.center) -- (B-9.center);
-\scoped[on background layer] \draw[parabolic] (B-7.center) -- (B-8.center);
-\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-0.center);
-\pic[root labels] (C) at (13,0) {object=coxeter/sterk-cusp-3};
-\scoped[on background layer] \draw[parabolic] (C-9.center) -- (C-4.center) -- (C-5.center) -- (C-4.center) -- (C-3.center) -- (C-0.center);
-\scoped[on background layer] \draw[parabolic] (C-7.center) -- (C-8.center);
-\scoped[on background layer] \draw[parabolic] (C-11.center) -- (C-8.center);
+\pic[root labels, subdiagram={1,2,3,4,5,6,7,9,10,11}] (A) at (0,0) {object=coxeter/sterk-cusp-3};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,8,9}] (B) at (6.5,0) {object=coxeter/sterk-cusp-3};
+\pic[root labels, subdiagram={0,3,4,5,7,8,9,11}] (C) at (13,0) {object=coxeter/sterk-cusp-3};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -112,23 +89,10 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 4
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-4};
-\scoped[on background layer] \draw[parabolic] (A-1.center) -- (A-2.center) -- (A-3.center) -- (A-4.center) -- (A-5.center) -- (A-6.center) -- (A-7.center);
-\scoped[on background layer] \draw[parabolic] (A-2.center) -- (A-9.center);
-\scoped[on background layer] \draw[parabolic] (A-6.center) -- (A-10.center);
-\pic[root labels] (B) at (6,0) {object=coxeter/sterk-cusp-4};
-\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-0.center);
-\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-2.center) -- (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center) -- (B-7.center);
-\scoped[on background layer] \draw[parabolic] (B-6.center) -- (B-10.center);
-\pic[root labels] (C) at (0,6) {object=coxeter/sterk-cusp-4};
-\scoped[on background layer] \draw[parabolic] (C-1.center) -- (C-0.center);
-\scoped[on background layer] \draw[parabolic] (C-1.center) -- (C-2.center) -- (C-3.center) -- (C-4.center) -- (C-5.center) -- (C-6.center) -- (C-7.center) -- (C-8.center);
-\pic[root labels] (D) at (6,6) {object=coxeter/sterk-cusp-4};
-\scoped[on background layer] \draw[parabolic] (D-1.center) -- (D-0.center);
-\scoped[on background layer] \draw[parabolic] (D-1.center) -- (D-2.center) -- (D-3.center);
-\scoped[on background layer] \draw[parabolic] (D-5.center) -- (D-6.center) -- (D-7.center) -- (D-8.center);
-\scoped[on background layer] \draw[parabolic] (D-2.center) -- (D-9.center);
-\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-10.center);
+\pic[root labels, subdiagram={1,2,3,4,5,6,7,9,10}] (A) at (0,0) {object=coxeter/sterk-cusp-4};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,10}] (B) at (6,0) {object=coxeter/sterk-cusp-4};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,8}] (C) at (0,6) {object=coxeter/sterk-cusp-4};
+\pic[root labels, subdiagram={0,1,2,3,5,6,7,8,9,10}] (D) at (6,6) {object=coxeter/sterk-cusp-4};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -146,37 +110,11 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 5
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-5};
-\scoped[on background layer] \draw[parabolic] (A-0.center) -- (A-1.center) -- (A-2.center) -- (A-3.center) -- (A-4.center) -- (A-5.center) -- (A-6.center) -- (A-7.center) -- (A-0.center);
-\scoped[on background layer] \draw[parabolic] (A-13.center) -- (A-12.center);
-\pic[root labels] (B) at (6,0) {object=coxeter/sterk-cusp-5};
-\scoped[on background layer] \draw[parabolic] (B-0.center) -- (B-1.center) -- (B-2.center) -- (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center) -- (B-7.center) -- (B-0.center);
-\scoped[on background layer] \draw[parabolic] (B-2.center) -- (B-9.center);
-\scoped[on background layer] \draw[parabolic] (B-4.center) -- (B-10.center);
-\pic[root labels] (C) at (12,0) {object=coxeter/sterk-cusp-5};
-\scoped[on background layer] \draw[parabolic] (C-0.center) -- (C-1.center) -- (C-2.center);
-\scoped[on background layer] \draw[parabolic] (C-4.center) -- (C-10.center);
-\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-7.center) -- (C-0.center);
-\scoped[on background layer] \draw[parabolic] (C-2.center) -- (C-9.center);
-\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-11.center);
-\scoped[on background layer] \draw[parabolic] (C-13.center) -- (C-12.center);
-\scoped[on background layer] \draw[parabolic] (C-9.center) -- (C-13.center);
-\scoped[on background layer] \draw[parabolic] (C-11.center) -- (C-13.center);
-\scoped[on background layer] \draw[parabolic] (C-10.center) -- (C-12.center);
-\pic[root labels] (D) at (4,6) {object=coxeter/sterk-cusp-5};
-\scoped[on background layer] \draw[parabolic] (D-2.center) -- (D-3.center) -- (D-4.center);
-\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-7.center) -- (D-0.center);
-\scoped[on background layer] \draw[parabolic] (D-0.center) -- (D-8.center);
-\scoped[on background layer] \draw[parabolic] (D-2.center) -- (D-9.center);
-\scoped[on background layer] \draw[parabolic] (D-4.center) -- (D-10.center);
-\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-11.center);
-\pic[root labels] (E) at (10,6) {object=coxeter/sterk-cusp-5};
-\scoped[on background layer] \draw[parabolic] (E-1.center) -- (E-2.center) -- (E-3.center);
-\scoped[on background layer] \draw[parabolic] (E-5.center) -- (E-6.center) -- (E-7.center);
-\scoped[on background layer] \draw[parabolic] (E-2.center) -- (E-9.center);
-\scoped[on background layer] \draw[parabolic] (E-6.center) -- (E-11.center);
-\scoped[on background layer] \draw[parabolic] (E-8.center) -- (E-12.center);
-\scoped[on background layer] \draw[parabolic] (E-10.center) -- (E-12.center);
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,12,13}] (A) at (0,0) {object=coxeter/sterk-cusp-5};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,9,10}] (B) at (6,0) {object=coxeter/sterk-cusp-5};
+\pic[root labels, subdiagram={0,1,2,4,6,7,9,10,11,12,13}] (C) at (12,0) {object=coxeter/sterk-cusp-5};
+\pic[root labels, subdiagram={0,2,3,4,6,7,8,9,10,11}] (D) at (4,6) {object=coxeter/sterk-cusp-5};
+\pic[root labels, subdiagram={1,2,3,5,6,7,8,9,10,11,12}] (E) at (10,6) {object=coxeter/sterk-cusp-5};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -194,12 +132,12 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 We conclude with the following summary:
 
 | $\eta$ | $\Gamma(\mcz_0)$ | $W_{\irrelevant}$ | $\semifan{F}$ | Type $\mathrm{II}$ | Type $\mathrm{III}$ | Total |
-|--------|------------------|-------------------|---------------|--------------------|---------------------|-------|
-| 1      | $\RP^2$          | Infinite          | Semi.         | 2                  | 0                   | 2     |
-| 2      | $\DD^2$          | $S_2$             | Tor.          | 2                  | 7                   | 9     |
-| 3      | $\DD^2$          | Inf.              | Semi.         | 2                  | 7                   | 9     |
-| 4      | $\DD^2$          | $S_2^2$           | Tor.          | 4                  | 7                   | 11    |
-| 5      | $\DD^2$          | Inf.              | Semi.         | 3                  | 0                   | 3     |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | $\RP^2$ | Infinite | Semi. | 2 | 0 | 2 |
+| 2 | $\DD^2$ | $S_2$ | Tor. | 2 | 7 | 9 |
+| 3 | $\DD^2$ | Inf. | Semi. | 2 | 7 | 9 |
+| 4 | $\DD^2$ | $S_2^2$ | Tor. | 4 | 7 | 11 |
+| 5 | $\DD^2$ | Inf. | Semi. | 3 | 0 | 3 |
 
 : Summary of the five cusps: dual complex, irrelevant Weyl group, semifan type, and boundary divisor counts.
 
