@@ -51,10 +51,10 @@ as the dual complex of the $\mcx_0$ of a divisor model with monodromy invariant 
 Suppose $(\mcx, \mcr) \to (C,0)$ is a divisor model for a family of K3 surfaces admitting an involution $\ien$ that preserves $\mcr$. The **half-divisor model** is the quotient
 
 \begin{align*}
-(\mcz, \mcr_\mcz) := (\mcx, \mcr)/\ien.
+(\mcz, \mcr_\mcz) := (\mcx, \mcr)/\ien
 .\end{align*}
 
-These models realize degenerations of Enriques pairs as quotients of K3 divisor models, and in generic settings, the quotient inherits slc singularities, and the divisor structure matches the normalization of the image of $\mcr$[2, Prop. 4.5].
+These models realize degenerations of Enriques pairs as quotients of K3 divisor models, and in generic settings, the quotient inherits slc singularities, and the divisor structure matches the normalization of the image of $\mcr$ [2, Prop. 4.5].
 :::
 
 :::{.proposition title="{Geometric Types and Boundary Strata}" #prop:geometric-types}
