@@ -1,7 +1,7 @@
 ### The Five Cusps {#sec:five-cusps}
 
-This section provides an explicit, case-by-case analysis of the five 0-cusps of $\fent$, describing the structure of the corresponding semifans, dual complexes, integral-affine data, and involution symmetries arising in the boundary of the KSBA compactification, as described in @AEGS25.
-The semifans $\semifan{F}_k$ are defined by intersecting the ambient ramification semifan $\semifan{F}_{\ram}(\tdp)$ with the Enriques lattice subspace $\ten$, for each lattice polarization $\tdp$ occurring at a cusp. By @sec:five-cusps, the resulting collection $\semifans{F} = \{\semifan{F}_k\}_{k=1}^{5}$ consists of generalized Coxeter semifans governing the semitoroidal structure at each cusp.
+This section provides an explicit, case-by-case analysis of the five 0-cusps of $\fent$, describing the structure of the corresponding semifans, dual complexes, integral-affine data, and involution symmetries arising in the boundary of the KSBA compactification, as described in @AEGS25. The semifans $\semifan{F}_k$ are defined by intersecting the ambient ramification semifan $\semifan{F}_{\ram}(\tdp)$ with the Enriques lattice subspace $\ten$, for each lattice polarization $\tdp$ occurring at a cusp.
+By @sec:five-cusps, the resulting collection $\semifans{F} = \{\semifan{F}_k\}_{k=1}^{5}$ consists of generalized Coxeter semifans governing the semitoroidal structure at each cusp.
 Each semifan encodes the stratified boundary behavior of the compactification via its rays (corresponding to degenerations of Types $\II$ and $\III$) and the folding symmetries inherited from involutions on the integral-affine structures.
 Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $F_{\En,2}$ as in Proposition 4.5. The following facts hold for each such degeneration:
 
@@ -43,7 +43,8 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Rays in the Coxeter compactification:** 4 Type $\II$ rays corresponding to the 4 elliptic subdiagrams above; 4 type $\III$ rays corresponding to maximal parabolic subdiagrams; a total of 8 rays.
 
-- **Rays in the Semitoroidal compactification:** 2 Type $\II$ rays, 0 Type $\III$ rays; a total of 2 rays. These correspond to subdiagrams for the Coxeter compactification above, where any subdiagram which has a connected component of irrelevant roots is removed.
+- **Rays in the Semitoroidal compactification:** 2 Type $\II$ rays, 0 Type $\III$ rays; a total of 2 rays.
+  These correspond to subdiagrams for the Coxeter compactification above, where any subdiagram which has a connected component of irrelevant roots is removed.
 
 - **IAS Symmetry:** $\lambda \in \thecone{C}^J$ if and only if $\ell_i = \ell_{8+i}$ ($i=0,\ldots,7$), $\ell_{16} = \ell_{18}$, $\ell_{17} = \ell_{19}$; involution acts as $180^\circ$ rotation on each hemisphere, swapping $P$ and $P^{\opop}$.
 
@@ -140,7 +141,6 @@ We conclude with the following summary:
 | 5 | $\DD^2$ | Inf. | Semi. | 3 | 0 | 3 |
 
 : Summary of the five cusps: dual complex, irrelevant Weyl group, semifan type, and boundary divisor counts.
-
 
 <!-- CUSP DATA
 
