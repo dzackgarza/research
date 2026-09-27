@@ -50,6 +50,39 @@ just tags json src/dzack_research/preamble/categories/group
 
 Inspect the receiver and declaration-side contract before calling a private access a violation. The duplicate view retains its original relative source locations and roots. It detects literal AST-body reuse, not all equivalent algorithms. A same-name survey also exposes distinct return shapes: those may indicate different operations that need different names.
 
+## Constructor discovery: decorators and registries
+
+The constructor audit should compare three mechanisms before changing runtime construction:
+
+| Mechanism | Useful role | Cost or limit |
+| --- | --- | --- |
+| Ordinary category methods with source introspection | Preserve explicit signatures, inheritance and editor navigation | Hook names alone miss named mathematical constructors |
+| A declaration decorator on an existing constructor method | Mark named constructors for collection into help, the megadoc and inspection reports | Decoration alone neither exposes a method on its owner nor establishes inherited construction data |
+| An owner-local implementation registry | Add computational cases for one construction without editing its general owner | Requires explicit applicability, ambiguity handling and deterministic loading |
+
+**Recommendation for evaluation:** retain ordinary category methods, use a small declaration decorator if it materially improves their discovery, and reserve implementation registries for constructions with independently supplied cases. A decorator can declare a registry entry; these are complementary mechanisms. This is a design candidate for `constructor-discovery`, not a runtime API decision.
+
+Collect declarations into a derived catalogue grouped by mathematical owner. A constructor declared on its owner should obtain that owner from its declaration rather than repeat it in a second hierarchy table. Read its signature, documentation and source location directly. Record additional metadata only when source structure cannot express the construction's role. The same declarations should supply documentation and opt-in inspection, so adding a constructor does not require editing another list.
+
+Inspect these existing routes as initial specimens:
+
+| Family | Source specimen | Question for collection and routing |
+| --- | --- | --- |
+| Sets | `categories/sets/set_categories.py` | Which named set constructions are category methods, and which require an existing ambient set? |
+| Rings | `categories/rings/rings.py` and its imported owners | Which declarations own construction, and which only re-export it? Keep localization on the ring object under its commutativity hypotheses. |
+| Modules | `categories/modules/pure/modules.py`, `Modules._call_` | Can discovery explain both the scalar-action datum and the route with its underlying object explicitly supplied? |
+| Algebras | `categories/algebras/algebras.py`, `_call_(module, multiplication)` | Can a user discover construction from an existing module and the additional multiplication, including the extra unit datum where required? |
+| Bilinear and other formed modules | `categories/modules/framed/formed/form_modules.py`, `_call_(form)` and named `from_module` methods | Does each named route establish the same underlying module and selected form, with its actual symmetry and value-module hypotheses? |
+| Lattices | `categories/lattices.py`, `Lattices._call_` | Do named and Gram presentations reach the same formed-module construction and retain its maps? |
+
+These are source specimens, not proof that the routes satisfy their contracts. Collection must distinguish methods on a category, methods on its objects, element constructors, and private realization functions. A catalogue may show all of them with their roles; exposing every descendant constructor on `Sets` would erase that distinction. Place a construction at the highest owner that has its defining data, not the highest owner of its result.
+
+For implementation registration, dispatch must account for category parameters, supplied maps and hypotheses. Python's [`singledispatch`](https://docs.python.org/3/library/functools.html#functools.singledispatch) selects by the first argument's Python type; it is therefore not by itself a dispatcher for this mathematical relation. Compare reuse of existing category dispatch with a local registry before introducing another dispatcher. Distinct named input forms need not be forced into one overloaded call.
+
+An acceptable registry must expose the applicable cases and the reason for its selection. An incomparable overlap needs a declared mathematical resolution; import order or last registration cannot decide it. An extension adds a case while preserving the construction contract and previous cases. Loading must be explicit and reproducible, with the general category independent of imports of its descendants. Source inspection must distinguish declared providers from loaded runtime providers. Python [decorators execute when a definition is evaluated](https://docs.python.org/3/reference/compound_stmts.html#function-definitions), so a runtime registry alone cannot inventory unloaded modules.
+
+Evaluate the candidate on two different families before generalizing it. Exercise help and completion, inherited discovery, exact signatures, source-only collection, runtime binding, duplicate declarations, overlapping cases and module-loading order. Trace the constructed objects and their maps as well. Registration cannot repair a specialization that fails to use its general construction. Add the resulting queries to the existing tools; keep architectural judgments available for review rather than turning them into gates.
+
 ## Slice the category relation and method surface
 
 Edges run from a more structured category to a supercategory. `--direction up` includes the chosen category and reachable supercategories; `down` includes its descendants; `both` takes their union. `--between LOWER UPPER` selects a closed interval. Category arguments and `--select` accept quoted glob patterns.
