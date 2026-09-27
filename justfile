@@ -140,20 +140,17 @@ preamble-megadoc:
     uvx --from 'git+https://github.com/dzackgarza/flowmark.git' flowmark \
         --inplace --nobackup --semantic "{{preamble_megadoc_file}}"
 
-# The CAT-05 placement worksheet: each category's introduced object, element and
-# arrow operations against its up-set U_C, with the mechanical findings.  Reads
-# docs/preamble-graph.json; run `just preamble-megadoc` first when it is stale.
+# Slice a saved live category survey by category, direction, interval or method (--help)
+[positional-arguments]
 placement *categories:
-    PYTHONPATH=src python3 -m dzack_research.utilities.placement {{categories}}
+    PYTHONPATH=src python3 -m dzack_research.utilities.placement "$@"
 
 # Every declared category and its declared supercategories, read from source
 # without importing it -- so it answers on a tree that does not currently load.
-# FORMAT: table (default), by-supercategory, foreign, audit, shape, cells, dot, json.
-category-graph format="table":
-    # The graph theory is Sage's, so it runs under Sage's Python as
-    # `preamble-megadoc` does.
-    PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
-        -m dzack_research.utilities.category_graph --format {{format}}
+# Inspect declared categories: table, json, slice, audit, shape, cells or topology (--help)
+[positional-arguments]
+category-graph format="table" *args:
+    @case "$1" in audit|shape|cells|topology) inspection_python="$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" ;; *) inspection_python=python3 ;; esac; inspection_format="$1"; shift; PYTHONPATH=src "$inspection_python" -m dzack_research.utilities.category_graph --format "$inspection_format" "$@"
 
 # The declared category graph as a rendered image, for reading the shape of it
 category-graph-svg:
@@ -169,9 +166,10 @@ preamble-imports:
 preamble-complexity:
     PYTHONPATH=src python3 -m dzack_research.utilities.complexity_analysis src/dzack_research/preamble
 
-# Generate a ctags index for the installable package source
-tags:
-    ctags -R --languages=Python -f tags src
+# Index Python symbols for navigation; json emits scoped symbols to stdout
+[positional-arguments]
+tags format="tags" root="src":
+    @case "$1" in tags) ctags -R --languages=Python -f tags "$2" ;; json) ctags -R --languages=Python --output-format=json --fields=+n --extras=+q "$2" ;; *) echo 'format must be tags or json' >&2; exit 2 ;; esac
 
 # Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
 sage-init-install:
@@ -384,9 +382,11 @@ _coverage-pytest data log *args:
 # divergent codomains (CONTRIBUTING.md LEX-11), and censuses the call sites by
 # syntactic shape, which is the plan for the change (DEF-07, CON-15).
 #   just refactor-survey signature_pair
-#   just refactor-survey "tensor_valence tensor_shape"
-refactor-survey names:
-    PYTHONPATH=src python3 -m dzack_research.utilities.refactor_survey {{names}}
+#   just refactor-survey tensor_valence tensor_shape
+# Inspect definitions, callers, constructors, private accesses or duplicate bodies (--help)
+[positional-arguments]
+refactor-survey *args:
+    PYTHONPATH=src python3 -m dzack_research.utilities.refactor_survey "$@"
 
 # Check that the proof surface stays inside the mathematical universe.
 # Policies: CONTRIBUTING.md DEV-37 (a test stays inside the universe) and

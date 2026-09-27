@@ -52,6 +52,7 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.utilities.source_inventory import source_fingerprint
 
 
 @runtime_checkable
@@ -292,6 +293,7 @@ class MethodDoc:
     signature: str
     summary: str
     mark: str = ""
+    source: str = ""
 
     def render(self) -> str:
         head = f"- `{self.name}{self.signature}`"
@@ -710,6 +712,7 @@ class Survey:
                     signature=signature_of(target),
                     summary=summarize(inspect.getdoc(target)),
                     mark=mark,
+                    source=source_of(target),
                 )
             )
         return found
@@ -1386,6 +1389,7 @@ def graph_json(survey: Survey) -> str:
                         "signature": m.signature,
                         "summary": m.summary,
                         "mark": m.mark,
+                        "source": m.source,
                     }
                     for m in doc.own_methods[label]
                 ]
@@ -1434,7 +1438,14 @@ def graph_json(survey: Survey) -> str:
         for specimen in catalogue.specimens
     ]
     return json.dumps(
-        {"categories": categories, "functors": functors, "specimens": specimens},
+        {
+            "source": {
+                "fingerprint": source_fingerprint(REPO_ROOT / "src/dzack_research/preamble"),
+                "scope": "src/dzack_research/preamble/**/*.py",
+                "basis": "live session; each category record states its sampled parameters in probed_as",
+            },
+            "categories": categories, "functors": functors, "specimens": specimens,
+        },
         indent=2,
         sort_keys=False,
     )

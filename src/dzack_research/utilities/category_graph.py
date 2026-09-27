@@ -17,11 +17,14 @@ import argparse
 import ast
 import json
 from dataclasses import dataclass, field
+from fnmatch import fnmatchcase
+from graphlib import TopologicalSorter
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from sage.graphs.digraph import DiGraph
-from sage.graphs.graph import Graph
-from sage.topology.simplicial_complex import SimplicialComplex
+if TYPE_CHECKING:
+    from sage.graphs.digraph import DiGraph
+    from sage.graphs.graph import Graph
 
 CATEGORY_BASES: frozenset[str] = frozenset(
     {
@@ -264,17 +267,16 @@ def _origin(
 def read_tree(root: Path) -> list[CategoryDeclaration]:
     """Read every category declared under ``root``, in source order per file."""
     sources = sorted(root.rglob("*.py"))
+    assert root.is_dir() and sources, f"No Python source tree at {root}"
     parsed: list[tuple[Path, ast.Module]] = []
     for path in sources:
-        try:
-            parsed.append((path, ast.parse(path.read_text(encoding="utf-8"))))
-        except SyntaxError:
-            continue
+        parsed.append((path, ast.parse(path.read_text(encoding="utf-8"), filename=str(path))))
 
     known: set[str] = set()
-    # Two passes: a category declared through another category's name is only
-    # recognisable once that name is known, and files are read in path order.
-    for _ in range(2):
+    # Close the declared Python inheritance chain independently of file order.
+    previous: set[str] | None = None
+    while previous != known:
+        previous = known.copy()
         for _, tree in parsed:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef) and _is_category(node, known):
@@ -606,10 +608,14 @@ def _base_of(vertex: str) -> str:
 
 
 def _graph(edges: set[tuple[str, str]]) -> Graph:
+    from sage.graphs.graph import Graph
+
     return Graph(sorted(edges))
 
 
 def _digraph(edges: set[tuple[str, str]]) -> DiGraph:
+    from sage.graphs.digraph import DiGraph
+
     return DiGraph(sorted(edges))
 
 
@@ -730,12 +736,8 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
 
 
 def render_cells(declarations: list[CategoryDeclaration]) -> str:
-    r"""Homology of the declaration graph, and the cycles owing a 2-cell.
-
-    Each generator is two routes between the same pair of categories, asserted
-    to be the same composite of forgetful functors; nothing in the source
-    proves it.  Homology is unreduced (Sage's default is reduced).
-    """
+    r"""Graph homology and cycle witnesses for inspection, not coherence verdicts."""
+    from sage.topology.simplicial_complex import SimplicialComplex
     edges = _all_edges(declarations)
     graph = _graph(edges)
     homology = SimplicialComplex([list(edge) for edge in edges]).homology(reduced=False)
@@ -760,6 +762,8 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
 
     lines = [
         "Homology of the declaration graph.",
+        "This is the one-dimensional undirected complex, not the category nerve.",
+        "Cycles do not by themselves establish missing functors or failed coherence.",
         "",
         f"  0-cells {graph.order()}    1-cells {graph.size()}    2-cells 0",
         f"  H_0 = {homology[0]}    H_1 = {homology[1]}    H_n = 0, n >= 2",
@@ -786,7 +790,7 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
         lines.extend(" -> ".join(c + c[:1]) for c in sorted(joins, key=lambda c: (len(c), c)))
         lines += [
             "",
-            f"## Owing a real 2-cell, in the block of {len(block)} ({len(remaining)})",
+            f"## Other cycle witnesses for review, in the block of {len(block)} ({len(remaining)})",
             "",
         ]
         lines.extend(" -> ".join(c + c[:1]) for c in sorted(remaining, key=lambda c: (len(c), c)))
@@ -836,6 +840,96 @@ def _default_root() -> Path:
     return Path(__file__).resolve().parents[1] / "preamble"
 
 
+def select_vertices(
+    declarations: list[CategoryDeclaration], patterns: list[str], direction: str,
+    between: list[str], remove: list[str],
+) -> tuple[set[str], set[tuple[str, str]]]:
+    """Slice declared reachability; conditional declarations remain a union.
+
+    Dynamic programming follows Python's dependency order, not a local graph
+    algorithm: https://docs.python.org/3/library/graphlib.html
+    A cyclic relation raises CycleError and cannot be presented as a poset.
+    """
+    edges = _all_edges(declarations)
+    vertices = {d.vertex for d in declarations} | {v for e in edges for v in e}
+    self_declarations = [d.vertex for d in declarations if any(s.vertex == d.vertex for s in d.supercategories)]
+    assert not self_declarations, f"Self-declarations cannot define a strict category order: {self_declarations}"
+    supers = {v: {b for a, b in edges if a == v} for v in vertices}
+    above: dict[str, set[str]] = {}
+    for vertex in TopologicalSorter(supers).static_order():
+        above[vertex] = set(supers[vertex])
+        for parent in supers[vertex]:
+            above[vertex].update(above[parent])
+    seeds = {v for v in vertices if any(fnmatchcase(v, p) for p in patterns)}
+    assert not patterns or seeds, f"No declared vertices match {patterns!r}"
+    selected = set(vertices) if not patterns else seeds.copy()
+    if direction in {"up", "both"}:
+        selected.update(v for seed in seeds for v in above[seed])
+    if direction in {"down", "both"}:
+        selected.update(v for v in vertices if above[v] & seeds)
+    if between:
+        lower, upper = between
+        assert lower in above and upper in above, f"Unknown interval endpoints: {between!r}"
+        assert lower == upper or upper in above[lower], f"Endpoints are not ordered: {between!r}"
+        selected &= (above[lower] | {lower}) & {v for v in vertices if v == upper or upper in above[v]}
+    selected -= {v for v in selected if any(fnmatchcase(v, p) for p in remove)}
+    return selected, {(a, b) for a, b in edges if a in selected and b in selected}
+
+
+def render_slice(declarations: list[CategoryDeclaration], vertices: set[str], edges: set[tuple[str, str]]) -> str:
+    return json.dumps({
+        "basis": "source declarations plus computed axiom edges; conditional branches are unioned",
+        "orientation": "subcategory -> supercategory",
+        "vertices": sorted(vertices),
+        "edges": sorted(edges),
+        "declarations": json.loads(render_json([d for d in declarations if d.vertex in vertices])),
+        "boundary": "Parameters, dynamic returns and aliases require source review; absent paths are not proofs of missing mathematics.",
+    }, indent=2)
+
+
+def render_topology(
+    vertices: set[str], edges: set[tuple[str, str]], complex_kind: str,
+    max_vertices: int, fundamental_group: bool,
+) -> str:
+    """Delegate explicitly chosen complexes to Sage, retaining all isolated vertices.
+
+    References: Sage Graph.clique_complex, FinitePoset.order_complex, and
+    SimplicialComplex.homology/fundamental_group in the Sage reference manual.
+    """
+    from sage.combinat.posets.posets import Poset
+    from sage.graphs.digraph import DiGraph
+    from sage.graphs.graph import Graph
+    from sage.topology.simplicial_complex import SimplicialComplex
+
+    assert vertices, "Select a nonempty category slice"
+    assert len(vertices) <= max_vertices, f"Slice has {len(vertices)} vertices; narrow it or explicitly raise --max-vertices={max_vertices}"
+    graph = Graph([sorted(vertices), sorted(edges)], format="vertices_and_edges")
+    match complex_kind:
+        case "graph":
+            complex_ = SimplicialComplex([[v] for v in sorted(vertices)] + [list(e) for e in sorted(edges)])
+        case "flag":
+            complex_ = graph.clique_complex()
+        case "order":
+            directed = DiGraph([sorted(vertices), sorted(edges)], format="vertices_and_edges")
+            complex_ = Poset(directed, facade=True).order_complex()
+        case _:
+            raise ValueError(complex_kind)
+    lines = [
+        f"# {complex_kind} complex of the selected category relation", "",
+        "These invariants describe this complex; they are not architecture scores.",
+        "A clique fills a simplex in the flag complex. An order complex uses chains.",
+        "A global top or bottom makes the order complex contractible; inspect proper intervals when appropriate.",
+        f"Vertices: {', '.join(sorted(vertices))}",
+        f"Facets: {complex_.facets()}", f"f-vector: {complex_.f_vector()}",
+        f"Integral unreduced homology: {complex_.homology(reduced=False)}",
+        f"Connected components: {graph.connected_components(sort=True)}",
+    ]
+    if fundamental_group:
+        assert graph.is_connected(), "Select one connected component for the fundamental group"
+        lines.append(f"Fundamental group presentation: {complex_.fundamental_group(simplify=False)}")
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="List every declared category and its declared supercategories, without importing the tree."
@@ -852,13 +946,35 @@ def main() -> None:
             "cells",
             "dot",
             "json",
+            "slice",
+            "topology",
         ),
         default="table",
     )
     parser.add_argument("-o", "--output", type=Path)
+    parser.add_argument("--select", action="append", default=[], help="category vertex glob; repeatable")
+    parser.add_argument("--direction", choices=("self", "up", "down", "both"), default="self")
+    parser.add_argument("--between", nargs=2, default=[], metavar=("LOWER", "UPPER"))
+    parser.add_argument("--remove", action="append", default=[], help="remove vertex glob from the selected complex")
+    parser.add_argument("--complex", choices=("graph", "flag", "order"), default="order")
+    parser.add_argument("--max-vertices", type=int, default=40, help="explicit size bound for topology")
+    parser.add_argument("--fundamental-group", action="store_true")
     arguments = parser.parse_args()
 
     declarations = read_tree(arguments.root)
+    if arguments.format in {"slice", "topology"}:
+        vertices, edges = select_vertices(declarations, arguments.select, arguments.direction, arguments.between, arguments.remove)
+        rendered = (
+            render_slice(declarations, vertices, edges) if arguments.format == "slice"
+            else render_topology(vertices, edges, arguments.complex, arguments.max_vertices, arguments.fundamental_group)
+        )
+        if arguments.output:
+            arguments.output.write_text(rendered, encoding="utf-8")
+        else:
+            print(rendered)
+        return
+    if arguments.select or arguments.between or arguments.remove:
+        parser.error("selection options require --format slice or topology")
     rendered = {
         "table": render_table,
         "by-supercategory": render_by_supercategory,

@@ -26,11 +26,18 @@ Run ``python -m dzack_research.utilities.placement [CATEGORY ...]``, or
 ``just placement``.
 """
 
+from __future__ import annotations
+
 import argparse
+import hashlib
 import json
 from collections import defaultdict
+from fnmatch import fnmatchcase
+from itertools import combinations
 from pathlib import Path
 from typing import Final, TypedDict
+
+from dzack_research.utilities.source_inventory import source_fingerprint
 
 GRAPH: Final = Path(__file__).resolve().parents[3] / "docs" / "preamble-graph.json"
 KINDS: Final = ("objects", "elements", "morphisms")
@@ -79,26 +86,22 @@ def minimal_common_upper_bounds(poset: Poset, names: set[str]) -> list[str]:
     )
 
 
-def incomparable_introductions(poset: Poset) -> dict[tuple[str, str], set[str]]:
-    r"""Operation names introduced on two or more pairwise incomparable categories."""
+def incomparable_introductions(poset: Poset) -> list[tuple[str, str, set[str]]]:
+    r"""All incomparable pairs, including pairs within a mixed comparable family."""
     sites: dict[tuple[str, str], set[str]] = defaultdict(set)
     for name, record in poset.items():
         for kind in KINDS:
             for operation in introduced(record, kind):
                 sites[(kind, operation["name"])].add(name)
-    return {
-        key: names
+    return [
+        (*key, {left, right})
         for key, names in sites.items()
-        if len(names) > 1
-        and all(
-            left == right or (right not in up_set(poset, left) and left not in up_set(poset, right))
-            for left in names
-            for right in names
-        )
-    }
+        for left, right in combinations(sorted(names), 2)
+        if right not in up_set(poset, left) and left not in up_set(poset, right)
+    ]
 
 
-def worksheet(poset: Poset, name: str) -> list[str]:
+def worksheet(poset: Poset, name: str, methods: list[str]) -> list[str]:
     record = poset[name]
     above = up_set(poset, name)
     lines = [f"## {record['display']}", "", f"`{record['source']}` -- {record['summary']}", ""]
@@ -121,6 +124,8 @@ def worksheet(poset: Poset, name: str) -> list[str]:
             continue
         lines += ["", f"### Introduced on {kind}", ""]
         for operation in operations:
+            if methods and not any(fnmatchcase(operation["name"], pattern) for pattern in methods):
+                continue
             again = [d for d in above if any(o["name"] == operation["name"] for o in introduced(poset[d], kind))]
             line = f"- `{operation['name']}{operation['signature']}` {operation['summary']}"
             if again:
@@ -131,20 +136,86 @@ def worksheet(poset: Poset, name: str) -> list[str]:
     return [*lines, ""]
 
 
+def selected_categories(poset: Poset, patterns: list[str], direction: str, between: list[str]) -> list[str]:
+    seeds = {name for name in poset if any(fnmatchcase(name, p) for p in patterns)}
+    assert not patterns or seeds, f"No snapshot category matches {patterns!r}"
+    names = seeds.copy() if patterns else {name for name, record in poset.items() if record["owned"]}
+    if direction in {"up", "both"}:
+        names.update(above for name in seeds for above in up_set(poset, name))
+    if direction in {"down", "both"}:
+        names.update(name for name in poset if set(up_set(poset, name)) & seeds)
+    if between:
+        lower, upper = between
+        assert lower in poset and upper in poset, f"Unknown interval endpoints: {between!r}"
+        assert lower == upper or upper in up_set(poset, lower), f"Unordered interval: {between!r}"
+        names &= (set(up_set(poset, lower)) | {lower}) & {n for n in poset if n == upper or upper in up_set(poset, n)}
+    return sorted(names)
+
+
+def snapshot_relations(poset: Poset) -> set[tuple[str, ...]]:
+    """Relations whose changes remain reviewable independently of rendering."""
+    relations = {(name, "category") for name in poset}
+    for name, record in poset.items():
+        relations.update((name, "super", parent) for parent in record["supers"])
+        for kind in KINDS:
+            relations.update((name, kind, op["name"], op["signature"]) for op in introduced(record, kind))
+        relations.add((name, "arrow", record["arrow_type"]))
+        relations.update((name, "unthreaded", parent) for parent in record["arrow_unthreaded"])
+    return relations
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("categories", nargs="*", help="categories to print; all owned ones by default")
     parser.add_argument("--graph", type=Path, default=GRAPH)
+    parser.add_argument("--direction", choices=("self", "up", "down", "both"), default="self")
+    parser.add_argument("--between", nargs=2, default=[], metavar=("LOWER", "UPPER"))
+    parser.add_argument("--method", action="append", default=[], help="operation glob; repeatable")
+    parser.add_argument("--format", choices=("markdown", "json", "dot"), default="markdown")
+    parser.add_argument("--compare", type=Path, help="earlier graph snapshot; report added and removed relations")
+    parser.add_argument("--source-root", type=Path, default=GRAPH.parents[1] / "src/dzack_research/preamble")
     arguments = parser.parse_args()
-    poset: Poset = json.loads(arguments.graph.read_text())["categories"]
-    names = arguments.categories or sorted(
-        name for name, record in poset.items() if record["owned"] and any(introduced(record, k) for k in KINDS)
-    )
-    lines = ["# Placement worksheet", ""]
+    content = arguments.graph.read_bytes()
+    snapshot = json.loads(content)
+    poset: Poset = snapshot["categories"]
+    names = selected_categories(poset, arguments.categories, arguments.direction, arguments.between)
+    metadata = snapshot.get("source", {})
+    freshness = "unrecorded: this snapshot has no source fingerprint"
+    if "fingerprint" in metadata:
+        assert arguments.source_root.is_dir(), f"Source tree not found: {arguments.source_root}"
+        freshness = "matches source" if metadata["fingerprint"] == source_fingerprint(arguments.source_root) else "stale: source differs from snapshot"
+    evidence = {
+        "snapshot": str(arguments.graph), "snapshot_sha256": hashlib.sha256(content).hexdigest(),
+        "freshness": freshness, "source": metadata,
+        "boundary": "Sampled runtime categories, not all parameter regimes. Candidate owners require mathematical review.",
+    }
+    if arguments.compare:
+        before: Poset = json.loads(arguments.compare.read_text())["categories"]
+        old, new = snapshot_relations(before), snapshot_relations(poset)
+        print(json.dumps({**evidence, "previous": str(arguments.compare), "added": sorted(new - old), "removed": sorted(old - new)}, indent=2))
+        return
+    if arguments.format == "json":
+        selected = {
+            name: {**poset[name], "operations": {
+                kind: [op for op in introduced(poset[name], kind) if not arguments.method or any(fnmatchcase(op["name"], p) for p in arguments.method)]
+                for kind in KINDS
+            }} for name in names
+        }
+        print(json.dumps({**evidence, "categories": selected}, indent=2))
+        return
+    if arguments.format == "dot":
+        lines = ["digraph category_slice {", "  rankdir=BT;"]
+        lines.extend(f"  {json.dumps(name)};" for name in names)
+        lines.extend(f"  {json.dumps(name)} -> {json.dumps(parent)};" for name in names for parent in poset[name]["supers"] if parent in names)
+        print("\n".join([*lines, "}"]))
+        return
+    lines = ["# Placement worksheet", "", f"Snapshot: {arguments.graph}; {freshness}", evidence["boundary"], ""]
     for name in names:
-        lines += worksheet(poset, name)
+        lines += worksheet(poset, name, arguments.method)
     lines += ["# Operation names introduced on incomparable categories", ""]
-    for (kind, operation), sites in sorted(incomparable_introductions(poset).items()):
+    for kind, operation, sites in incomparable_introductions(poset):
+        if arguments.method and not any(fnmatchcase(operation, p) for p in arguments.method):
+            continue
         if not sites.isdisjoint(names):
             bounds = minimal_common_upper_bounds(poset, sites) or ["none in P"]
             lines.append(
