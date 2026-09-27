@@ -106,7 +106,7 @@ class ArchitectureInspection(unittest.TestCase):
     @staticmethod
     def category_record(name: str, supers: list[str], ancestry: list[str], methods: list[str]) -> CategoryRecord:
         return {
-            "display": name, "source": f"specimen.py:1", "summary": name, "owned": True,
+            "display": name, "source": "specimen.py:1", "summary": name, "owned": True,
             "supers": supers, "ancestry": ancestry,
             "operations": {"objects": [{"name": method, "signature": "()", "summary": "inclusion map", "mark": ""} for method in methods], "elements": [], "morphisms": []},
             "arrow_mor_class": "", "arrow_type": "", "arrow_type_source": "", "arrow_unthreaded": [],

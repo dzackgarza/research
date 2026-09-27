@@ -820,13 +820,20 @@ def render_json(declarations: list[CategoryDeclaration]) -> str:
         {
             "name": d.name,
             "qualified_name": d.qualified_name,
+            "vertex": d.vertex,
+            "axiom_of": d.axiom_of,
             "source": f"{d.path}:{d.line}",
             "bases": list(d.bases),
             "summary": d.summary,
             "declares": d.declares,
             "abstract": d.abstract,
             "supercategories": [
-                {"expression": s.expression, "head": s.head, "resolved": s.resolved, "origin": s.origin}
+                {
+                    "expression": s.expression, "head": s.head,
+                    "resolved": s.resolved, "origin": s.origin,
+                    "vertex": s.vertex, "axioms": list(s.axioms),
+                    "parameters": list(s.parameters),
+                }
                 for s in d.supercategories
             ],
             "heads": list(d.heads),
@@ -861,6 +868,8 @@ def select_vertices(
         for parent in supers[vertex]:
             above[vertex].update(above[parent])
     seeds = {v for v in vertices if any(fnmatchcase(v, p) for p in patterns)}
+    unmatched = [p for p in patterns if not any(fnmatchcase(v, p) for v in vertices)]
+    assert not unmatched, f"No declared vertices match {unmatched!r}"
     assert not patterns or seeds, f"No declared vertices match {patterns!r}"
     selected = set(vertices) if not patterns else seeds.copy()
     if direction in {"up", "both"}:
@@ -872,16 +881,30 @@ def select_vertices(
         assert lower in above and upper in above, f"Unknown interval endpoints: {between!r}"
         assert lower == upper or upper in above[lower], f"Endpoints are not ordered: {between!r}"
         selected &= (above[lower] | {lower}) & {v for v in vertices if v == upper or upper in above[v]}
+    unmatched_removals = [p for p in remove if not any(fnmatchcase(v, p) for v in selected)]
+    assert not unmatched_removals, f"No selected vertices match removal patterns {unmatched_removals!r}"
     selected -= {v for v in selected if any(fnmatchcase(v, p) for p in remove)}
+    for vertex in selected:
+        declarations_of_vertex = [f"{d.path}:{d.line}" for d in declarations if d.vertex == vertex]
+        assert len(declarations_of_vertex) <= 1, f"Ambiguous source vertex {vertex}: {declarations_of_vertex}; inspect raw declarations"
     return selected, {(a, b) for a, b in edges if a in selected and b in selected}
 
 
 def render_slice(declarations: list[CategoryDeclaration], vertices: set[str], edges: set[tuple[str, str]]) -> str:
+    declared = _declared_edges(declarations)
     return json.dumps({
         "basis": "source declarations plus computed axiom edges; conditional branches are unioned",
         "orientation": "subcategory -> supercategory",
         "vertices": sorted(vertices),
         "edges": sorted(edges),
+        "edge_evidence": [
+            {
+                "from": a, "to": b,
+                "kind": "declared or parameter projection" if (a, b) in declared else "computed axiom edge",
+                "declaration_sources": [f"{d.path}:{d.line}" for d in declarations if d.vertex == a],
+            }
+            for a, b in sorted(edges)
+        ],
         "declarations": json.loads(render_json([d for d in declarations if d.vertex in vertices])),
         "boundary": "Parameters, dynamic returns and aliases require source review; absent paths are not proofs of missing mathematics.",
     }, indent=2)

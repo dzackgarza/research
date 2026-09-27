@@ -35,7 +35,7 @@ from collections import defaultdict
 from fnmatch import fnmatchcase
 from itertools import combinations
 from pathlib import Path
-from typing import Final, TypedDict
+from typing import Final, NotRequired, TypedDict
 
 from dzack_research.utilities.source_inventory import source_fingerprint
 
@@ -48,6 +48,7 @@ class Operation(TypedDict):
     signature: str
     summary: str
     mark: str
+    source: NotRequired[str]
 
 
 class CategoryRecord(TypedDict):
@@ -62,6 +63,8 @@ class CategoryRecord(TypedDict):
     arrow_type: str
     arrow_type_source: str
     arrow_unthreaded: list[str]
+    problem: NotRequired[str]
+    probed_as: NotRequired[str]
 
 
 type Poset = dict[str, CategoryRecord]
@@ -105,6 +108,10 @@ def worksheet(poset: Poset, name: str, methods: list[str]) -> list[str]:
     record = poset[name]
     above = up_set(poset, name)
     lines = [f"## {record['display']}", "", f"`{record['source']}` -- {record['summary']}", ""]
+    if record.get("probed_as"):
+        lines.append(f"Sampled as: {record['probed_as']}")
+    if record.get("problem"):
+        lines.append(f"Survey problem: {record['problem']}")
     if record["arrow_type"]:
         lines.append(f"Arrow type: `{record['arrow_type']}` {record['arrow_type_source']}")
     elif record["arrow_mor_class"]:
@@ -128,6 +135,8 @@ def worksheet(poset: Poset, name: str, methods: list[str]) -> list[str]:
                 continue
             again = [d for d in above if any(o["name"] == operation["name"] for o in introduced(poset[d], kind))]
             line = f"- `{operation['name']}{operation['signature']}` {operation['summary']}"
+            if operation.get("source"):
+                line += f" ({operation['source']})"
             if again:
                 line += " **Finding:** also introduced on " + ", ".join(f"`{d}`" for d in again)
             lines.append(line)
@@ -137,6 +146,8 @@ def worksheet(poset: Poset, name: str, methods: list[str]) -> list[str]:
 
 
 def selected_categories(poset: Poset, patterns: list[str], direction: str, between: list[str]) -> list[str]:
+    unmatched = [p for p in patterns if not any(fnmatchcase(name, p) for name in poset)]
+    assert not unmatched, f"No snapshot category matches {unmatched!r}"
     seeds = {name for name in poset if any(fnmatchcase(name, p) for p in patterns)}
     assert not patterns or seeds, f"No snapshot category matches {patterns!r}"
     names = seeds.copy() if patterns else {name for name, record in poset.items() if record["owned"]}
@@ -175,6 +186,8 @@ def main() -> None:
     parser.add_argument("--compare", type=Path, help="earlier graph snapshot; report added and removed relations")
     parser.add_argument("--source-root", type=Path, default=GRAPH.parents[1] / "src/dzack_research/preamble")
     arguments = parser.parse_args()
+    if arguments.compare and (arguments.categories or arguments.method or arguments.between or arguments.direction != "self" or arguments.format != "markdown"):
+        parser.error("--compare compares whole snapshots and emits JSON; omit slice and format options")
     content = arguments.graph.read_bytes()
     snapshot = json.loads(content)
     poset: Poset = snapshot["categories"]
@@ -204,7 +217,7 @@ def main() -> None:
         print(json.dumps({**evidence, "categories": selected}, indent=2))
         return
     if arguments.format == "dot":
-        lines = ["digraph category_slice {", "  rankdir=BT;"]
+        lines = ["// " + json.dumps(evidence), "digraph category_slice {", "  rankdir=BT;"]
         lines.extend(f"  {json.dumps(name)};" for name in names)
         lines.extend(f"  {json.dumps(name)} -> {json.dumps(parent)};" for name in names for parent in poset[name]["supers"] if parent in names)
         print("\n".join([*lines, "}"]))
