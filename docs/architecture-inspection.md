@@ -64,6 +64,12 @@ The constructor audit should compare three mechanisms before changing runtime co
 
 Collect declarations into a derived catalogue grouped by mathematical owner. A constructor declared on its owner should obtain that owner from its declaration rather than repeat it in a second hierarchy table. Read its signature, documentation and source location directly. Record additional metadata only when source structure cannot express the construction's role. The same declarations should supply documentation and opt-in inspection, so adding a constructor does not require editing another list.
 
+The [KDnuggets registry-pattern article](https://www.kdnuggets.com/stop-using-if-else-chains-use-the-registry-pattern-in-python-instead) supplies a concrete candidate: implementations register a discrete key beside their definition, and a stable dispatcher looks up the callable. Its reusable version rejects duplicate keys and exposes available entries. It also identifies import-time registration and the limited fit for conditions that are not discrete choices. Apply that pattern directly when a construction has named, interchangeable providers under one contract.
+
+For this repository, distinguish two keys: a constructor name identifies a mathematical operation; a provider key identifies an implementation of that operation. A category's constructor catalogue can collect different signatures for discovery, while each operation's provider registry must preserve that operation's own signature and datum. A named lattice catalogue is a candidate for discrete lookup; selection by ring properties or overlapping category membership still needs mathematical applicability rules. Keep those rules explicit rather than replacing a conditional chain with an ordered list of predicates. Existing `_register_indecomposable_gram` records display names by Gram data; it is not already a constructor-provider registry.
+
+Evaluate explicit decorators before automatic subclass registration: a private implementation subclass need not introduce a public construction, and the category runtime also creates classes. Registering every subclass would confuse those roles. A decorator attached to the actual construction declaration can instead make the intended extension and its owner visible to source inspection.
+
 Inspect these existing routes as initial specimens:
 
 | Family | Source specimen | Question for collection and routing |
