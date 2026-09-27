@@ -59,14 +59,14 @@ just category-graph slice --select Subgroups --direction both
 just category-graph slice --between PredicateSubgroups OwnedGroups
 just placement --direction up --method inclusion '*Subgroup*'
 just placement --direction down --method '*quotient*' --format json Groups
-just placement --between PredicateSubgroups Groups --format dot
+just placement --between Groups Sets --format dot
 ```
 
 Source class names and live exported names can differ (`OwnedGroups` and `Groups`, for example). Discover the names in the relevant JSON surface rather than guessing a crosswalk. Source projection also unions conditional declarations and does not instantiate category parameters. Cycles prevent treating that projection as a partial order; inspect the raw declarations or the cycle audit first.
 
 For a method-placement review, read its mathematical definition and hypotheses beside each candidate upper category. The worksheet cannot decide where a method is well-defined. It shows same-name introductions on incomparable pairs, including such pairs within a family that also contains comparable owners. Inspect signatures and codomains before identifying those operations. An override may supply a specialized algorithm without introducing a new mathematical operation.
 
-The live survey records the parameters in `probed_as` and any construction problem in `problem`. One sampled base ring is not evidence for all rings. New surveys also carry a fingerprint of the preamble's Python source and a source location for each introduced method. Queries report `matches source`, `stale`, or an unrecorded fingerprint. Source agreement does not establish identical dependency versions or prove correctness.
+The live survey records the parameters in `probed_as` and any construction problem in `problem`. An entry with no observed instance contains only class declarations: its empty ancestry is not evidence of incomparability or a root category. The worksheet labels it, JSON lists the unobserved population, and automatic incomparable-owner comparisons use observed entries. Use source slices for uninstantiated parameterized families such as the subgroup entries in the saved survey. One sampled base ring is not evidence for all rings. New surveys also carry a fingerprint of the preamble's Python source and a source location for each introduced method. Queries report `matches source`, `stale`, or an unrecorded fingerprint. Source agreement does not establish identical dependency versions or prove correctness.
 
 Compare two explicitly saved survey JSON files with:
 

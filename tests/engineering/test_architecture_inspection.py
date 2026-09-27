@@ -92,6 +92,13 @@ class ArchitectureInspection(unittest.TestCase):
             self.assertEqual(json.loads(result.stdout)["freshness"], "matches source")
             worksheet = self.run_tool("placement", "--graph", str(graph), "--source-root", directory, "--method", "inclusion", "Groups")
             self.assertIn("`Groups`, `Modules` -- minimal common upper bounds: `Sets`", worksheet.stdout)
+            categories["Unprobed"] = self.category_record("Unprobed", [], [], ["inclusion"])
+            categories["Unprobed"]["probed_as"] = ""
+            graph.write_text(json.dumps({"categories": categories}))
+            unprobed = self.run_tool("placement", "--graph", str(graph), "Unprobed")
+            self.assertIn("No live instance was observed", unprobed.stdout)
+            self.assertNotIn("on `Groups`, `Unprobed`", unprobed.stdout)
+            graph.write_text(json.dumps({"categories": categories, "source": {"fingerprint": source_fingerprint(root)}}))
             previous = root / "previous.json"
             previous.write_bytes(graph.read_bytes())
             categories["FiniteGroups"]["operations"]["objects"] = []
@@ -107,6 +114,7 @@ class ArchitectureInspection(unittest.TestCase):
     def category_record(name: str, supers: list[str], ancestry: list[str], methods: list[str]) -> CategoryRecord:
         return {
             "display": name, "source": "specimen.py:1", "summary": name, "owned": True,
+            "probed_as": name,
             "supers": supers, "ancestry": ancestry,
             "operations": {"objects": [{"name": method, "signature": "()", "summary": "inclusion map", "mark": ""} for method in methods], "elements": [], "morphisms": []},
             "arrow_mor_class": "", "arrow_type": "", "arrow_type_source": "", "arrow_unthreaded": [],

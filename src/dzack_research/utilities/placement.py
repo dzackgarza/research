@@ -17,10 +17,10 @@ no judgement and are printed as findings:
 * the lowest categories of ``U_C`` whose arrow type the arrow type of ``C``
   does not inherit, although every arrow of ``C`` is an arrow there, and a Mor
   class that declares no arrow type at all;
-* an operation name introduced on several pairwise incomparable categories,
+* an operation name introduced on sampled, pairwise incomparable categories,
   with the minimal common upper bounds of those categories in ``P``.  When
   ``f`` means the same thing on each, its home is at or below one of those
-  bounds, and a missing bound is a missing category.
+  bounds. Missing bounds in a partial survey require review of its coverage.
 
 Run ``python -m dzack_research.utilities.placement [CATEGORY ...]``, or
 ``just placement``.
@@ -93,6 +93,8 @@ def incomparable_introductions(poset: Poset) -> list[tuple[str, str, set[str]]]:
     r"""All incomparable pairs, including pairs within a mixed comparable family."""
     sites: dict[tuple[str, str], set[str]] = defaultdict(set)
     for name, record in poset.items():
+        if not record.get("probed_as") or record.get("problem"):
+            continue
         for kind in KINDS:
             for operation in introduced(record, kind):
                 sites[(kind, operation["name"])].add(name)
@@ -108,6 +110,8 @@ def worksheet(poset: Poset, name: str, methods: list[str]) -> list[str]:
     record = poset[name]
     above = up_set(poset, name)
     lines = [f"## {record['display']}", "", f"`{record['source']}` -- {record['summary']}", ""]
+    if not record.get("probed_as"):
+        lines.append("No live instance was observed. Methods are class declarations; empty ancestry is not a poset fact.")
     if record.get("probed_as"):
         lines.append(f"Sampled as: {record['probed_as']}")
     if record.get("problem"):
@@ -158,6 +162,7 @@ def selected_categories(poset: Poset, patterns: list[str], direction: str, betwe
     if between:
         lower, upper = between
         assert lower in poset and upper in poset, f"Unknown interval endpoints: {between!r}"
+        assert poset[lower].get("probed_as") and poset[upper].get("probed_as"), f"Interval endpoints need live observations: {between!r}; inspect the source slice"
         assert lower == upper or upper in up_set(poset, lower), f"Unordered interval: {between!r}"
         names &= (set(up_set(poset, lower)) | {lower}) & {n for n in poset if n == upper or upper in up_set(poset, n)}
     return sorted(names)
@@ -201,6 +206,7 @@ def main() -> None:
         "snapshot": str(arguments.graph), "snapshot_sha256": hashlib.sha256(content).hexdigest(),
         "freshness": freshness, "source": metadata,
         "boundary": "Sampled runtime categories, not all parameter regimes. Candidate owners require mathematical review.",
+        "unobserved_categories": sorted(name for name, record in poset.items() if not record.get("probed_as")),
     }
     if arguments.compare:
         before: Poset = json.loads(arguments.compare.read_text())["categories"]
@@ -230,7 +236,7 @@ def main() -> None:
         if arguments.method and not any(fnmatchcase(operation, p) for p in arguments.method):
             continue
         if not sites.isdisjoint(names):
-            bounds = minimal_common_upper_bounds(poset, sites) or ["none in P"]
+            bounds = minimal_common_upper_bounds(poset, sites) or ["none observed in this survey"]
             lines.append(
                 f"- {kind} `{operation}` on "
                 + ", ".join(f"`{s}`" for s in sorted(sites))

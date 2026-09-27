@@ -1379,6 +1379,7 @@ def graph_json(survey: Survey) -> str:
             "exported": doc.exported,
             "arity": doc.arity,
             "probed_as": doc.instance_repr,
+            "observation": "live instance" if doc.instance_repr else "class declarations only",
             "supers": sorted(set(doc.supers)),
             "subcategories": doc.subcategories,
             "ancestry": doc.ancestry,
