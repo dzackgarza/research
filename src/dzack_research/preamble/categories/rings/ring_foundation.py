@@ -2398,12 +2398,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 )
             return rings.Mor(self, codomain)
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the exact represented cardinal of the underlying set."""
             from dzack_research.preamble.categories.sets.cardinals import (
                 aleph0,
                 cardinal,
-                continuum,
             )
 
             category = self.category()
@@ -2420,12 +2419,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     )
                 case _ if category.is_subcategory(owned_sets.CountablyInfiniteSets()):
                     return aleph0
-                case _ if category.is_subcategory(owned_sets.UncountableSets()):
-                    return continuum
                 case _:
                     # No size placement on the ring: its underlying set may still be
                     # constructed at a lower level, as M_n(R) is the free module R^(n^2).
-                    return super().cardinality()
+                    return super()._cardinality_decision()
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
             r"""Return whether this ring carries a nontrivial selected exact presentation.
