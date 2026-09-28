@@ -1566,6 +1566,16 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _:
                     return self._finite_presentation_decision()
 
+        def _projectivity_decision(self):
+            return Unknown
+
+        def is_projective(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).Projective():
+                    return True
+                case _:
+                    return self._projectivity_decision()
+
         def is_framed_module(self) -> bool:
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
             return self.has_selected_module_resolution()
@@ -2388,9 +2398,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         class ParentMethods:
-            def is_projective(self) -> bool:
-                return True
-
             def projective_rank(self, point):
                 r"""Return the local free rank of a finite projective module at ``point``."""
                 if self not in Modules(self.base_ring()).FinitelyGenerated():

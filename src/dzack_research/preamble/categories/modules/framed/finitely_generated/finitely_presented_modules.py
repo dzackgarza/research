@@ -1462,7 +1462,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 * normalization
             )
 
-        def is_projective(self) -> bool:
+        def _projectivity_decision(self) -> bool:
             r"""Decide finite projectivity of the selected presentation.
 
             Over a principal ideal domain the structure theorem decides it and

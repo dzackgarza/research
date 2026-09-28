@@ -2275,7 +2275,7 @@ class _ModuleMorCommonMethods:
             return self._morphism_from_internal_model(self._internal_mor_model()(images))
         return self.element_class(self, images)
 
-    def is_projective(self):
+    def _projectivity_decision(self):
         r"""Decide projectivity of ``Hom_R(M, N)`` where its endpoints determine it.
 
         Over a commutative ring, ``Hom_R(F_R(S), F_R(T))`` between finite

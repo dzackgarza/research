@@ -235,7 +235,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                 self._module_generator_values,
             ) is not None
 
-        def is_projective(self) -> bool:
+        def _projectivity_decision(self) -> bool:
             ring = _engine_ring(self.base_ring())
             if ring is SageZZ:
                 return True
