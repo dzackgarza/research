@@ -1,6 +1,6 @@
 # Geometric preliminaries
 
-::: {.Remark}
+::: {.Remark title="Coble surfaces as fixed-curve degenerations of Enriques K3 covers"}
 
 Following [@Dol17 §5.1], Coble surfaces can be obtained by degenerating $(X, \tau)$ a K3 with a fixed-point-free involution to a K3 surface $(X_0, \tau_0)$ where the fixed locus of $\tau_0$ is a smooth rational curve.
 The resulting quotient $X_0/\tau_0$ is a Coble surface.
@@ -10,7 +10,7 @@ The deck transformation of $\phi_{ij}$ is a biregular automorphism of $S$.
 The $f_i$ come from an *isotropic sequence* and are obtained by modifying the basis $e_0,\dots, e_{10}$ of $K_S^{\perp \Num(S)} \cong E_{10}$ where $e_0$ is the preimage of a hyperplane class and $e_1,\dots, e_{10}$ are the classes of exceptional curves in the blowup of a plane sextic at 10 $A_1$ singularities.
 :::
 
-::: {.Remark}
+::: {.Remark title="Terminal Coble surfaces of K3 type"}
 
 We recall the objects whose stable limits are taken.
 A Coble surface is a smooth rational projective surface $S$ with $\abs{-K_S} = \varnothing$ but $\abs{-2K_S} \neq \varnothing$ [@DM20; @DK25]. It is *terminal of K3 type* when $\abs{-2K_S}$ contains a reduced divisor $C = C_1 + \cdots + C_n$ of disjoint smooth rational curves with $C_i^2 = -4$; the $C_i$ are the *boundary components*, and one has
@@ -20,12 +20,12 @@ $$
 [@DM20; @DK25]. In the case $n = 1$ studied here, the anti-bicanonical divisor is a single smooth rational curve $C$ with $C^2 = -4$; this is the curve that reappears as the contracted curve on the stable model.
 :::
 
-::: {.Remark}
+::: {.Remark title="Basic rational models and plane sextics"}
 
 Such a terminal Coble surface is *basic rational*: it admits a birational morphism to $\PP^2$ obtained by blowing up $N = 9 + n$ points [@DK25]. For $n = 1$ one recovers the classical Coble surface by blowing up the ten $A_1$-singularities of an irreducible rational plane sextic, whose proper transform then lies in $\abs{-2K_S}$ [@Cob19; @Cob29; @CDL25]. Coble surfaces are the anti-bicanonical analogue, among Cremona-special point configurations, of the unnodal Halphen surfaces [@CD12], and every terminal Coble surface of K3 type is tied to both a K3 double cover and an index-$2$ Halphen surface [@DK25; @CD12].
 :::
 
-::: {.Remark}
+::: {.Remark title="Degree-two polarization and the stable ramification divisor"}
 
 The polarization enters through the degree-$2$ numerically polarized Enriques picture into which the Coble locus embeds.
 A degree-$2$ numerically polarized Enriques surface is a pair $(Z, [\mathcal L_Z])$ with $[\mathcal L_Z] \in \Num(Z)$ an ample class of degree $2$; the system $\abs{\mathcal L_Z^{\tensor 2}}$ is basepoint-free and realizes $Z$ as a double cover $\rho\colon Z \to W$ of a quartic del Pezzo surface $W$ with singularities of type $4A_1$ or $A_3 + 2A_1$, branched along a divisor $B \containedin W$ [@CDL25]. This is the finite analogue of the map $\phi_{ij}$ above, which in the Coble case fails to be finite.
@@ -66,7 +66,7 @@ ${}_2\beta$ the ABCDE type of the index-two nonsymplectic quotient $Z\to W$
 [@AEGS25 §6].
 :::
 
-::: {.Remark}
+::: {.Remark title="Coble stable components are selected by the cusp folding"}
 
 The stable limits of Coble surfaces are quotients of nodal K3 surfaces by an
 involution with fixed points, so their components are read off this list in the
