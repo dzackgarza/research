@@ -5,7 +5,7 @@
 A generalized element with domain $T$ is defined in @def-generalized-element; it is a morphism $T\to X$.
 If $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def-category-of-elements.
 
-::: {#def-element-functor}
+::: {#def-element-functor .def}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
 $$
 U\cong\operatorname{Hom}_C(P,-)
@@ -20,7 +20,7 @@ Categories of objects with chosen structure are instead described by their forge
 
 ## Subobjects {#sec-containment}
 
-::: {#def-subobject-relation}
+::: {#def-subobject-relation .def}
 A *subobject* of $M\in C$ is an isomorphism class of monomorphisms $i\colon N\hookrightarrow M$.
 A representative of the subobject is a specific monomorphism.
 Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\xrightarrow{\sim}N'$ with $i=i'\circ u$ [@MM12, I.5].
@@ -33,7 +33,7 @@ A construction that uses an embedding names a particular monomorphism.
 
 ## Fibers of a morphism {#sec-fibers}
 
-::: {#def-fiber-over-point title="The fiber over a point"}
+::: {#def-fiber-over-point .def title="The fiber over a point"}
 
 Let $C$ have a terminal object $1$ and the relevant pullbacks, let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
 The *fiber of $f$ over $y$* is the apex of the cartesian square
@@ -72,7 +72,7 @@ A relation or morphism involving the images is formed in $E$ and does not identi
 
 ## Solution functors {#sec-solution-functors}
 
-::: {#def-solution-presheaf}
+::: {#def-solution-presheaf .def}
 Let $A,B\colon C^{\mathrm{op}}\to\mathbf{Set}$ be presheaves and let $\alpha,\beta\colon A\Rightarrow B$ be natural transformations.
 Their equalizer
 $$

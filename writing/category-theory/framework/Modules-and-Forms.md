@@ -2,7 +2,7 @@
 
 Fix a commutative ring $R$.
 
-::: {#def-modules-over-ring title="Modules over a ring"}
+::: {#def-modules-over-ring .def title="Modules over a ring"}
 
 For a ring $A$, write $A\text{-}\mathbf{Mod}$ for the category of left $A$-modules.
 A right $A$-module is a left $A^{\mathrm{op}}$-module.
@@ -16,7 +16,7 @@ When $A$ is commutative, the identity $A=A^{\mathrm{op}}$ identifies left and ri
 For a general ring, an equivalence between left and right module categories is additional data; it does not follow merely from notation.
 :::
 
-::: {#def-module-base-change title="Base change"}
+::: {#def-module-base-change .def title="Base change"}
 
 Let $\varphi\colon A\to B$ be a homomorphism of commutative rings.
 Extension and restriction of scalars define an adjunction
@@ -39,7 +39,7 @@ $b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
 
 ## Module properties {#sec-module-properties}
 
-::: {#def-module-subcategories}
+::: {#def-module-subcategories .def}
 The following isomorphism-invariant properties define replete full subcategories of $R\text{-}\mathbf{Mod}$:
 
 - finitely generated: some $R^n\twoheadrightarrow M$ is surjective;
@@ -54,7 +54,7 @@ If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated
 Over a general ring, a torsion subcategory is used only after a torsion theory has been specified.
 :::
 
-::: {#def-based-module title="Bases"}
+::: {#def-based-module .def title="Bases"}
 
 Fix a set $I$.
 A *basis* of an $R$-module $M$ indexed by $I$ is an isomorphism $e\colon R^{(I)}\xrightarrow{\ \sim\ }M$, and a *based* module is a pair $(M,e)$.
@@ -73,7 +73,7 @@ is faithful.
 It is not full: the hom-set from $(R,\operatorname{id})$ to itself is $\{\operatorname{id}\}$, while $\operatorname{Hom}_R(R,R)=R$.
 :::
 
-::: {#prp-basis-is-structure title="A basis is structure"}
+::: {#prp-basis-is-structure .prop title="A basis is structure"}
 
 The fibre of $U_{\mathrm{bas}}$ over $M$ is the discrete category on $\operatorname{Bas}_I(M)$.
 
@@ -87,7 +87,7 @@ Dropping the requirement that $e$ be an isomorphism and asking only that it be s
 A basis is the case of a generating frame whose structure map is an isomorphism.
 :::
 
-::: {#def-free-module-orientation title="Orientation of a free module"}
+::: {#def-free-module-orientation .def title="Orientation of a free module"}
 
 Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.
 The top exterior power $\det(M)\coloneqq\bigwedge^n M$ is a free $R$-module of rank $1$.
@@ -99,4 +99,3 @@ Fix a subgroup of units $U\le R^\times$.
 An *orientation modulo $U$* is an orbit of such isomorphisms under the action of $U$ by scalar multiplication.
 Two ordered bases $(e_1,\dots,e_n)$ and $(f_1,\dots,f_n)$ of $M$ determine the same orientation modulo $U$ if and only if the change-of-basis matrix $A\in\operatorname{GL}_n(R)$, defined by $f_j=\sum_{i=1}^n A_{ij}e_i$, satisfies $\det(A)\in U$.
 :::
-
