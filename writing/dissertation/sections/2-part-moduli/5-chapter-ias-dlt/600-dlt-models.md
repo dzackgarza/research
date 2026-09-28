@@ -34,7 +34,7 @@ $$
 This induces a bijection between $(K+D)$-trivial involution pairs and such log del Pezzo pairs with branch data.
 For instance, in the boundary analysis of $\fent$, the image pairs $(Y, C)$ arising in this way include the rational log del Pezzo surfaces of type $A_n$, $D_n$, $E_n$, and their foldings, as classified by the corresponding diagrams in @AEGS25.
 
-::: {.example}
+::: {.example title="The integral-affine polygon at the third Enriques cusp"}
 The following is an example corresponding to the third cusp $\eta_3$ in $\fent$.
 A monodromy vector $\lambda$ satisfying
 $$
