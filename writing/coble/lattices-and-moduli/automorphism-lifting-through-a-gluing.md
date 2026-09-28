@@ -1,6 +1,6 @@
 # Automorphism lifting through a gluing {#sec:automorphism-lifting}
 
-::: {.Remark}
+::: {.Remark title="Liftability is a stabilizer condition on the gluing datum"}
 
 Let $L$ be an even overlattice of $M\oplus N$ in which $M$ and $N$ are primitive,
 and let $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
@@ -29,7 +29,7 @@ isomorphism of $L\dual$ and so descends to $A_L = L\dual/L$
 [@Nik80 §1.4].
 :::
 
-::: {.Remark}
+::: {.Remark title="The discriminant representation is additive on orthogonal sums"}
 
 For an orthogonal direct sum, $A_{M\oplus N} = A_M\oplus A_N$ and
 $\rho_{M\oplus N}(\varphi_M\oplus\varphi_N) = \bar\varphi_M\oplus\bar\varphi_N$,
