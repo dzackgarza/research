@@ -254,6 +254,24 @@ the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
 ## Workflow Papercuts
 
+### Finite cyclic subgroup membership is decided by enumerating powers
+
+`CyclicGroups.__contains__` in
+`categories/group/cyclic_subgroups.py` currently answers membership in a
+finite cyclic subgroup by constructing `_finite_elements()` and comparing the
+candidate against every power of the selected generator. Membership in the
+represented subgroup is a group-engine question when the ambient realization
+supports subgroup membership; enumeration is a separate chosen presentation
+of the finite set and should not be the decision procedure.
+
+**Dependency path:** selected cyclic generator -> represented subgroup in the
+ambient group engine -> engine membership decision -> owned subgroup
+membership. Infinite cyclic membership retains its explicit discrete-log
+computability boundary when no maintained route applies.
+**Consumer:** `CyclicGroups.__contains__`; iteration may continue to enumerate
+finite cyclic groups, but membership must not depend on that enumeration.
+**Repair:** `engine-wiring-audit` in [TODO.md](TODO.md).
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
