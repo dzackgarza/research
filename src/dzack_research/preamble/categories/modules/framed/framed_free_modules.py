@@ -470,7 +470,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 return Cardinalities().one()
             return Cardinalities().supremum(scalars, labels)
 
-        def is_finite(self) -> bool:
+        def _finiteness_decision(self) -> bool:
             r"""Return whether the underlying free module is finite."""
             return self.cardinality().is_finite()
 

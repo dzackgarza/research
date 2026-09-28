@@ -3748,7 +3748,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_integral_domain(self, *args, **kwargs):
         return self._engine.is_integral_domain(*args, **kwargs)
 
-    def is_finite(self):
+    def _finiteness_decision(self):
         return self._engine.is_finite()
 
     def _preamble_is_number_field_order(self):

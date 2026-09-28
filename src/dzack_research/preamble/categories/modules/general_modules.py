@@ -228,7 +228,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             """
             return cardinal(self.underlying_set().cardinality())
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             r"""Whether the underlying set is placed as finite: ``True``, ``False`` or ``Unknown``.
 
             Read from placement rather than from ``cardinality``, which asserts

@@ -1365,6 +1365,20 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        def _finiteness_decision(self):
+            r"""Protected computation of finiteness when placement does not decide it."""
+            return Unknown
+
+        def is_finite(self):
+            r"""Return whether the underlying set has finite cardinality."""
+            match self:
+                case _ if self in Sets().Finite():
+                    return True
+                case _ if self in Sets().Infinite():
+                    return False
+                case _:
+                    return self._finiteness_decision()
+
         def cardinality(self) -> Cardinalities.ObjectType:
             r"""The cardinality ``|X|``, an object of ``Card``.
 

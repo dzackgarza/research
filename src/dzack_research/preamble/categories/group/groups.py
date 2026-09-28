@@ -2865,7 +2865,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return groups.Mor(self, codomain)
             raise TypeError(f"the homomorphisms {self} -> {codomain} in {category} are not group homomorphisms: {codomain} must be a group and {category} a category of groups")
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             from dzack_research.preamble.categories.group.cyclic_subgroups import (
                 CyclicGroups,
             )

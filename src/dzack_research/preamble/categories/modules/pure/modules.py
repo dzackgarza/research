@@ -1546,7 +1546,7 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
             return self.has_selected_module_resolution()
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             return Unknown
 
         def is_flat(self) -> bool:

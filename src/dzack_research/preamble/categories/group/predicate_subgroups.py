@@ -103,7 +103,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 or data.get("discriminant_preimages", ())
             )
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             r"""A subgroup of a finite group is finite; finite-index character preimages inherit infinitude."""
             ambient = self.supergroup().is_finite()
             if ambient is True:

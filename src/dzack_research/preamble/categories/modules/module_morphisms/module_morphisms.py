@@ -2869,7 +2869,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
     def module(self):
         return self.domain()
 
-    def is_finite(self):
+    def _finiteness_decision(self):
         r"""A finite module has finitely many automorphisms; otherwise this is not decided here.
 
         An infinite module can have a finite automorphism group (``Aut_Z(Z)``

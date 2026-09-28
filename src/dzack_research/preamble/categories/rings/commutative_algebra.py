@@ -859,7 +859,7 @@ class QuotientRings(OwnedCategory):
             r"""Whether this is ``R/R``, the zero ring."""
             return bool(_engine_ideal(self.quotient_source(), self.defining_ideal()).is_one())
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             if self._is_zero_ring():
                 return True
             if self._preamble_engine_ring is not None:
