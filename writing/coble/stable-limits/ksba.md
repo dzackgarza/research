@@ -152,7 +152,7 @@ The divisor is identified; establishing that this pair is KSBA stable remains a 
 - and a controlled account of how the anti-bicanonical $(-4)$-curve is seen on the smooth resolution versus on the stable model.
 :::
 
-::: {.Conjecture #conj:coble_quarter_singularity}
+::: {.Conjecture #conj:coble_quarter_singularity title="The fixed K3 node descends to a quarter singularity"}
 
 On the stable quotient $\bar S$, an $A_1$-node of the K3 cover fixed by $\iota_\En$ descends to a cyclic quotient singularity of type $\frac{1}{4}(1,1)$, and the anti-bicanonical $(-4)$-curve on the smooth Coble resolution is the curve contracted to this point.
 In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@Hor77], the local input producing the $A_1$-node on the double cover is a $\tau$-invariant $(4,4)$-curve passing through a $\tau$-fixed point with nondegenerate quadratic term.
@@ -165,7 +165,7 @@ The local singularity package of [the quarter-singularity conjecture](#conj:cobl
 
 ## The restricted ramification semifan
 
-::: {.Conjecture #conj:restricted_ramification_semifan}
+::: {.Conjecture #conj:restricted_ramification_semifan title="Restriction of the Enriques ramification semifan to the Coble locus"}
 
 The semitoroidal model of the polarized Coble locus is obtained by restricting the Enriques ramification semifan of the degree-$2$ compactification problem to the hyperplane cut out by the Coble root, and keeping exactly those walls whose relative interiors meet the Coble positive cone.
 Under this restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant.
@@ -183,12 +183,12 @@ Proving that this restriction defines the semitoroidal fan requires showing that
 The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via [the Baily--Borel embedding lemma](../lattices-and-moduli/lattices.md#lem:locally_closed_embedding_BB). The proposed comparison proceeds by restricting the universal K3 stable-pair family over $F_{(2,2,0)}$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against [the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan).
 :::
 
-::: {.Conjecture #conj:ksba_semitoroidal_comparison}
+::: {.Conjecture #conj:ksba_semitoroidal_comparison title="Normalized KSBA equals the restricted semitoroidal compactification"}
 
 After normalization, the KSBA compactification of the polarized Coble locus agrees with the semitoroidal compactification induced by the restricted ramification semifan.
 :::
 
-::: {.Conjecture #conj:no_moduli_loss}
+::: {.Conjecture #conj:no_moduli_loss title="The stable quotient remembers the marked Coble root"}
 
 The stable quotient remembers the marked Coble root.
 Geometrically, this memory is carried by the $\frac{1}{4}(1,1)$ singularity of [the quarter-singularity conjecture](#conj:coble_quarter_singularity) -- equivalently, by the contracted anti-bicanonical $(-4)$-curve on the resolution -- so that degenerations differing only by their marked root are not identified.

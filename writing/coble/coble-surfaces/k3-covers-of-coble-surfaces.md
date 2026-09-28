@@ -93,7 +93,7 @@ surrounding discussion, \longref{prop:double-cover-is-k3} is the assertion cited
 statement is the twist by $2$ used in \longref{prop:coble-invariant-lattice}.
 :::
 
-::: {.Proposition #prop:coble-invariant-lattice}
+::: {.Proposition #prop:coble-invariant-lattice title="The invariant lattice of the Coble K3 cover"}
 
 Let $f: X\to S$ be the K3 double cover of a terminal Coble surface of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
 Write $\Pic(S) = \gens{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
@@ -146,7 +146,7 @@ Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal abs
 That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in \longref{rmk:k3-cover-invariants}.
 :::
 
-::: {.Remark #rmk:k3-cover-twist}
+::: {.Remark #rmk:k3-cover-twist title="The K3 double cover twists the Coble lattice by two"}
 
 Following [@CD12], we note that this computation is a special case of a general construction.
 Let $S$ be any basic rational surface and write $S$ as the blowup of $\PP^2$ at $N$ points $p_1,\cdots, p_N$ with $N\geq 9$.

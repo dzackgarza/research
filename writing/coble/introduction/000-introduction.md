@@ -126,7 +126,7 @@ This schematic is carried over from the earlier draft, where it was drawn but ne
 A fundamental polyhedron $P$ for the Weyl group of a hyperbolic lattice acting on the positive cone $\cC$, together with its images under the reflections in the walls of $P$; the Coxeter fan is the resulting decomposition of $\cC$. Such a polyhedron is computed by Vinberg's algorithm [@Vin75 §1].
 :::
 
-::: {.Theorem #thm:main}
+::: {.Theorem #thm:main title="Semitoroidal comparison and Coxeter control of stable Coble limits"}
 
 There is a semifan $\cF$ such that there exists a morphism
 $$

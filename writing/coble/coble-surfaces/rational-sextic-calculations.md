@@ -1,6 +1,6 @@
 # Rational Sextic Calculations
 
-::: {.Lemma #lem:rational_sextic_ten_nodes}
+::: {.Lemma #lem:rational_sextic_ten_nodes title="A nodal sextic is rational exactly with ten nodes"}
 
 Let $C \subset \PP^2$ be an irreducible sextic curve with at worst $A_1$ singularities.
 Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singularities.

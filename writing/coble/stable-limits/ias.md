@@ -21,7 +21,7 @@ $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\ien$ where $\cX \to (C, 0)$ and
 $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
 :::
 
-::: {.Definition #def:singular_ias}
+::: {.Definition #def:singular_ias title="Singular integral affine structures on Type III dual complexes"}
 
 The dual complex $\Gamma(\cX_0)$ of a Type III Kulikov model carries a canonical
 *singular integral affine structure*: away from a finite singular set its charts
@@ -32,7 +32,7 @@ The total charge is $24$, which constrains the number and type of singularities;
 for instance one may have $24$ singularities of type $I_1$.
 :::
 
-::: {.Definition #def:symington_polytope}
+::: {.Definition #def:symington_polytope title="Symington polytopes and their doubled affine spheres"}
 
 Given a monodromy invariant $\lambda$ with barycentric coordinates
 $\ell_i = \lambda \cdot \alpha_i$, the *Symington polytope* $P(\lambda)$ is the

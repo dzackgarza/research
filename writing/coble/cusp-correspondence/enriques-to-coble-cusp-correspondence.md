@@ -1,6 +1,6 @@
 # Enriques to Coble correspondence
 
-::: {.Theorem #thm:cusp_correspondence}
+::: {.Theorem #thm:cusp_correspondence title="The Enriques--Coble cusp correspondence"}
 
 The embedding $\eta: F_\Co\to F_\En$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
 :::
@@ -13,7 +13,7 @@ Cusp correspondence $F_\Co \to F_\En$.
 
 We prove the cusp correspondence by comparing divisibilities of isotropic vectors at the corresponding 0-cusps and 1-cusps in both moduli spaces.
 
-::: {.Lemma #lem:divisibilityAlwaysTwoTco}
+::: {.Lemma #lem:divisibilityAlwaysTwoTco title="Nonorthogonal vectors in the Coble transcendental lattice have divisibility two"}
 
 Any $v\in T_\Co$ satisfies $\di_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co$ for which $v\cdot v' \neq 0$.
 :::
@@ -41,7 +41,7 @@ where $\inner{\cdot}{\cdot}$ is the standard Euclidean inner product.
 Thus 2 divides $v\cdot v'$, and since $\di_{T_\Co}(v) \in \ts{1, 2}$ for any $v \in T_\Co$, the result follows.
 :::
 
-::: {.Lemma #lem:divisibilityTcoOne}
+::: {.Lemma #lem:divisibilityTcoOne title="The first image cusp vector has Enriques divisibility two"}
 
 Fixing notation,
 
@@ -81,7 +81,7 @@ since $y\in U(2)$ and $\tilde e'\in (U\oplus E_8(2))^{\perp \ten}$.
 Thus $\beta_{\ten}(\tilde e', \ten) = \beta_{\ten}(\tilde e', U(2)) = 2\bZ$ since $\tilde e'\cdot\tilde f' = 2$.
 :::
 
-::: {.Lemma #lem:w1_perp_calculation}
+::: {.Lemma #lem:w1_perp_calculation title="The Coble zero-cusp maps to the $(10,8,0)$ Enriques cusp"}
 
 The 0-cusp $(9,9,1)_1$ in $\fco$ maps to the 0-cusp $(10, 8, 0)_1$ in $\fen$.
 :::
@@ -108,7 +108,7 @@ Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w
 Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0)_1$ is also 2 and the two Enriques 0-cusps are distinguished by divisibility, the correspondence follows.
 :::
 
-::: {.Lemma #lem:1_cusp_correspondence}
+::: {.Lemma #lem:1_cusp_correspondence title="The Coble one-cusp maps to the $(8,6,0)$ Enriques cusp"}
 
 The 1-cusp $(7,7,1)_0$ in $F_\Co$ maps to the 1-cusp $(8, 6, 0)_0$ in $F_\En$.
 :::
@@ -160,7 +160,7 @@ This can additionally be verified by [@AE22 Prop. 5.13]: the 1-cusp $(7,7,1)$ in
 We conjecture that general correspondences on 1-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of [the one-cusp correspondence lemma](#lem:1_cusp_correspondence).
 :::
 
-::: {.Lemma #lem:cusp_map_dP}
+::: {.Lemma #lem:cusp_map_dP title="Coble cusps under the degree-two K3 period embedding"}
 
 Let $\tilde w_i$ be the images of $v_i$ in $\tdp$ under the embedding described in [the sequence-of-embeddings lemma](../lattices-and-moduli/lattices.md#lem:sequence_of_embeddings). Then
 
@@ -204,7 +204,7 @@ However, observing that $\tilde w_2\cdot \alpha_3 = 1$, we immediately obtain th
 Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
 :::
 
-::: {.Proposition #prop:rank_16_cusp_D16}
+::: {.Proposition #prop:rank_16_cusp_D16 title="The rank-sixteen cusp lattice is $D_{16}^+$"}
 
 The negative-definite lattice $\tilde w_2^{\perp T_\dP}/\tilde w_2 \cong (16,0,0)_0$ of [the del Pezzo cusp-map lemma](#lem:cusp_map_dP) is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
 :::
