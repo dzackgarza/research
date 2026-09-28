@@ -9,7 +9,7 @@ Simple roots are negative-definite directions of norm $-2$, following the algebr
 
 ## Coxeter matrices and their Gram forms
 
-::: {.Definition #def:coxeter-matrix}
+::: {.Definition #def:coxeter-matrix title="Coxeter matrices, systems, and diagrams"}
 
 Let $S$ be a finite set.
 A **Coxeter matrix** on $S$ is a symmetric matrix $M = (m_{st})_{s,t\in S}$ with
@@ -91,7 +91,7 @@ Then $C = -G(M)$, and every definiteness statement below is read with the opposi
 
 ## Classification by definiteness
 
-::: {.Definition #def:coxeter-system-type}
+::: {.Definition #def:coxeter-system-type title="Spherical, euclidean, and hyperbolic Coxeter systems"}
 
 Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Coxeter matrix $M$ and Gram form $G = G(M)$.
 Say that $(W,S)$, or $M$, is
@@ -137,7 +137,7 @@ Statement (3) asserts nothing about the volume of $P$: the finite-volume and com
 
 ## Subdiagrams and the inheritance of signature
 
-::: {.Definition #def:coxeter-subdiagram}
+::: {.Definition #def:coxeter-subdiagram title="Coxeter subdiagrams and standard parabolic subgroups"}
 
 Let $\Sigma$ be the Coxeter diagram of $(W,S)$ and let $I\containedin S$.
 The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form the principal submatrix $G[I,I]$.
@@ -174,7 +174,7 @@ If $P\leq V$ is positive definite of dimension $n_+(\beta)$, then $\beta$ is pos
 Applying both to $-\beta$ gives the statement for $n_-$.
 :::
 
-::: {.Corollary #cor:subdiagram-inheritance}
+::: {.Corollary #cor:subdiagram-inheritance title="Definiteness inherited by Coxeter subdiagrams"}
 
 Let $\Sigma$ be a Coxeter diagram on $S$ and $J\containedin I\containedin S$.
 
@@ -257,12 +257,12 @@ For $\tilde E_8$ the coefficients are the marks $(1,2,3,4,6,5,4,3,2)$ of the hig
 
 ## Crystallographic Coxeter systems
 
-::: {.Definition #def:crystallographic-coxeter}
+::: {.Definition #def:crystallographic-coxeter title="Crystallographic Coxeter matrices"}
 
 A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\ts{2,3,4,6,\infty}$ for all $s\neq t$.
 :::
 
-::: {.Theorem #thm:crystallographic-lattice}
+::: {.Theorem #thm:crystallographic-lattice title="Crystallographic Coxeter groups are exactly the lattice-preserving ones"}
 
 A Coxeter matrix $M$ is crystallographic if and only if the group $W(M)$ preserves a lattice of full rank in $\RR^S$ [@Bou08; @Hum90].
 :::
@@ -284,7 +284,7 @@ For $m_{st} = 6$ the same rescaling by $\sqrt3$ gives norms $-2$ and $-6$ with p
 For $m_{st}\in\ts{2,3}$ the entries $0$ and $1$ are already integral, and the simply-laced diagrams need no rescaling.
 :::
 
-::: {.Definition #def:coxeter-base-field}
+::: {.Definition #def:coxeter-base-field title="The base field of a Coxeter matrix"}
 
 Let $M$ be a Coxeter matrix on $S$.
 Its **base field** is the subfield
@@ -295,7 +295,7 @@ $$
 the smallest field over which the Gram form $G(M)$ is defined.
 :::
 
-::: {.Proposition #prop:coxeter-base-field-degree}
+::: {.Proposition #prop:coxeter-base-field-degree title="Cyclotomic degree of Coxeter Gram entries"}
 
 For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \zeta_{2m}\inv$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
 $$

@@ -16,7 +16,7 @@ extension of $\beta_L$.
 
 ## Quadratic forms and the polarization identity
 
-::: {.Definition #def:coble-quadratic-form}
+::: {.Definition #def:coble-quadratic-form title="Quadratic forms and their polar forms"}
 
 A **quadratic form** on a $\ZZ$-module $L$ is a map of sets $q: L \to \QQ$ such
 that $q(\lambda v) = \lambda^2 q(v)$ for all $v\in L$ and all $\lambda\in\ZZ$,
@@ -47,7 +47,7 @@ This identity is the source of the bijection recorded below.
 
 ## The correspondence between bilinear and quadratic forms
 
-::: {.Lemma #lem:coble-bilinear-quadratic-correspondence}
+::: {.Lemma #lem:coble-bilinear-quadratic-correspondence title="Correspondence between symmetric bilinear and quadratic forms"}
 
 Every $\QQ$-valued symmetric bilinear module $(L, \beta)$ determines a
 $\QQ$-valued quadratic module $(L, q_\beta)$ by
@@ -60,7 +60,7 @@ Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric
 bilinear module $(L, \beta_q)$ via its polar form from [the quadratic-form definition](#def:coble-quadratic-form).
 :::
 
-::: {.Lemma #lem:coble-even-lattice-bijection}
+::: {.Lemma #lem:coble-even-lattice-bijection title="Even integral bilinear forms are equivalent to integral quadratic forms"}
 
 There is a bijection between even symmetric integral bilinear forms on $L$ and
 integral quadratic forms on $L$:
@@ -104,7 +104,7 @@ The two assignments are mutually inverse.
 
 ## Torsion bilinear and quadratic forms
 
-::: {.Definition #def:coble-torsion-forms}
+::: {.Definition #def:coble-torsion-forms title="Torsion bilinear and quadratic forms"}
 
 A **torsion bilinear form** is a pair $(G, \beta)$ where $G$ is a finitely
 generated torsion $\ZZ$-module and
@@ -136,7 +136,7 @@ multiplication-by-$2$ isomorphism.
 
 ## The discriminant bilinear and quadratic forms
 
-::: {.Definition #def:coble-discriminant-forms}
+::: {.Definition #def:coble-discriminant-forms title="Discriminant bilinear and quadratic forms"}
 
 Let $(L, \beta_L)$ be a nondegenerate even lattice with discriminant group
 $A_L = L\dual/L$, and let $\beta$ also denote the $\QQ$-valued extension of the
@@ -176,7 +176,7 @@ since $\beta(L\dual, L)\containedin\ZZ$ and $L$ is even.
 These forms are Nikulin's discriminant forms [@Nik80].
 :::
 
-::: {.Proposition #prop:discriminant-nondegenerate}
+::: {.Proposition #prop:discriminant-nondegenerate title="Nondegeneracy and polarization of discriminant forms"}
 
 The discriminant forms $b_L$ and $q_L$ of a nondegenerate lattice $L$ are
 themselves nondegenerate, meaning that $b_L(\bar x, \,\cdot\,) = 0$ in
@@ -206,7 +206,7 @@ lifts.
 
 ## Properties of the dual lattice
 
-::: {.Proposition #prop:dual-properties}
+::: {.Proposition #prop:dual-properties title="Duality, Gram matrices, discriminants, and twists"}
 
 Let $L$ and $M$ be nondegenerate lattices.
 The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
@@ -237,7 +237,7 @@ Theory section.
 
 ## Geometric identification of the dual lattice
 
-::: {.Theorem #thm:dual-geometric-identification}
+::: {.Theorem #thm:dual-geometric-identification title="Geometric realization of the dual lattice"}
 
 For a nondegenerate integral lattice $(L, \beta_L)$, the dual lattice is
 identified with a $\ZZ$-submodule of $L_\QQ = L\tensor_\ZZ\QQ$ via
@@ -270,7 +270,7 @@ values.
 
 ## The genus, class group, and class number
 
-::: {.Definition #def:coble-genus}
+::: {.Definition #def:coble-genus title="Genus, class group, and class number"}
 
 Two lattices $L_1, L_2$ belong to the same **genus** if
 $L_{1, \ZZ_p} \cong L_{2, \ZZ_p}$ for every prime $p$, where
@@ -291,7 +291,7 @@ For definite lattices the situation is reversed: class number $1$ is
 comparatively rare.
 :::
 
-::: {.Proposition #prop:scattone-bound}
+::: {.Proposition #prop:scattone-bound title="Scattone's lower bound for nontrivial class number"}
 
 If $\rank(L) > 16 + \ell(L)$, where $\ell(L)$ is the length of
 [the discriminant-form definition](#def:coble-discriminant-forms), then the class number satisfies
