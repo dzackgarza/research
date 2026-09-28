@@ -14,7 +14,10 @@ def test_group_orbit_and_coset_operations_are_sited_on_groups() -> None:
     assert group in Groups()
     assert group not in Groups().Finite()
     assert group.cardinality() == aleph0
-    assert Groups.C(6).cardinality() == cardinal(6)
+    finite_group = Groups.C(6)
+    assert finite_group.cardinality() == cardinal(6)
+    assert finite_group.order_is_invertible_in(QQ)
+    assert not hasattr(group, "order_is_invertible_in")
 
     with pytest.raises(AssertionError, match="conjugation action.*defined for every group"):
         group.conjugation_g_set()

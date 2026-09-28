@@ -3019,13 +3019,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         "but the current preamble computes it only for groups with a chosen finite presentation"
                     )
 
-        def order_is_invertible_in(self, ring) -> bool:
-            r"""Return whether ``|G|`` is a unit in ``ring`` for this finite group."""
-            assert self in OwnedFiniteGroups(), (
-                f"cannot decide whether the order of {self} is a unit in {ring}: {self} is not known to be finite"
-            )
-            return bool(ring(int(self.order())).is_unit())
-
         def finite_image_lifts(
             self,
             image,
@@ -3329,6 +3322,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
+            def order_is_invertible_in(self, ring) -> bool:
+                r"""Return whether the finite order ``|G|`` is a unit in ``ring``."""
+                return bool(ring(int(self.order())).is_unit())
+
             def conjugacy_classes_representatives(self):
                 classes = _gap_model(self).ConjugacyClasses()
                 return FiniteOrderedSets().from_indexed(
