@@ -125,7 +125,7 @@ Then $M=N\oplus N^{\perp}$ and the sum is orthogonal, so
 $$
 (M,b)\cong(N,b|_N)\perp(N^{\perp},b|_{N^{\perp}})
 $$
-in the sense of @def-orthogonal-sum [@MH73, I §3.1].
+in the sense of @def-orthogonal-sum; see [@MH73, I §3.1].
 If $x_1,\dots,x_k\in M$ have invertible Gram matrix $\bigl(b(x_i,x_j)\bigr)$, then they are linearly independent and this applies to the free submodule they span [@MH73, I §3.2].
 :::
 
