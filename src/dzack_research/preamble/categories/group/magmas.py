@@ -87,6 +87,11 @@ class Magmas(OwnedCategory):
 
         return [Sets()]
 
+    class ElementMethods:
+        @abstract_method
+        def __mul__(self, other):
+            r"""Return the value of the selected magma law on ``(self, other)``."""
+
     class ParentMethods:
         def _commutativity_decision(self):
             r"""Protected decision procedure for the magma commutativity predicate."""
