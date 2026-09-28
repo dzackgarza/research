@@ -40,9 +40,6 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
     _parallel_pair_diagram,
 )
-from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
-    AssociativeAlgebraMorCategoryConstruction,
-)
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleAutomorphismGroup,
@@ -68,6 +65,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    RingMor,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
@@ -120,6 +118,51 @@ class ModuleMorCategoryConstruction(MorCategoryConstruction):
 
     def fixed_category_class_for(self, domain, codomain):
         return domain._module_mor_class()
+
+
+class MatrixEndomorphismMor(ModuleMor):
+    r"""Linear endomorphism-space maps which also preserve composition and its unit."""
+
+    class ElementMethods(ModuleMorphismMethods, RingMor.ElementMethods):
+        pass
+
+
+class MatrixEndomorphismMorCategoryConstruction(MorCategoryConstruction):
+    r"""Fixed Mor of matrix endomorphism objects over an arbitrary base ring.
+
+    Unverified specimens under ``DEV-58`` distinguish the two branches.  Over
+    a noncommutative coefficient ring the fixed Mor retains the linear matrix
+    structure and the composition-ring structure without claiming an algebra
+    over that coefficient ring::
+
+        sage: base = ZZ.matrix_space(2, 2)
+        sage: matrices = base.matrix_space(1, 1)
+        sage: mor = MatrixEndomorphismSpaces(base).Mor(matrices, matrices)
+        sage: identity = mor.identity()
+        sage: identity.parent() is mor and isinstance(identity, ModuleMorphism)
+        True
+        sage: identity(matrices.one()) == matrices.one()
+        True
+
+    Over a commutative base the existing unital multiplicative algebra Mor is
+    retained::
+
+        sage: matrices = ZZ.matrix_space(2, 2)
+        sage: identity = MatrixEndomorphismSpaces(ZZ).Mor(matrices, matrices).identity()
+        sage: identity(matrices.one()) == matrices.one() and identity.preserves_unit()
+        True
+    """
+
+    def fixed_category_class_for(self, domain, codomain):
+        match self.base_category().base_ring() in OwnedRings().Commutative():
+            case True:
+                from dzack_research.preamble.categories.algebras.algebras import (
+                    UnitalMultiplicativeAlgebraMor,
+                )
+
+                return UnitalMultiplicativeAlgebraMor
+            case False:
+                return MatrixEndomorphismMor
 
 
 class ModuleMonoCategoryConstruction(MonoCategoryConstruction):
@@ -4919,10 +4962,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
                 multiplicative_owner = OwnedRings()
         return [MatrixSpaces(ring), multiplicative_owner]
 
-    # The commutative-base branch has the associative-algebra Mor owner below.
-    # The noncommutative ring/module intersection still lacks its own fixed-Mor
-    # declaration; that source finding is recorded in COMPLAINTS.md.
-    _MorCategory = AssociativeAlgebraMorCategoryConstruction
+    _MorCategory = MatrixEndomorphismMorCategoryConstruction
 
     class ParentMethods:
         def _compose_endomorphisms(self, left, right):
