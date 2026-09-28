@@ -907,7 +907,7 @@ class QuotientRings(OwnedCategory):
             r"""Return whether R/I is a field, equivalently whether I is maximal."""
             return bool(self.defining_ideal().is_maximal())
 
-        def is_integral_domain(self):
+        def _integral_domain_decision(self):
             return bool(self.defining_ideal().is_prime())
 
         def krull_dimension(self):

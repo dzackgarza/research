@@ -1814,9 +1814,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return _own_ring(SageZZ)
 
             class ParentMethods:
-                def is_integral_domain(self, *args, **kwargs):
-                    return True
-
                 def fractional_ideal(self, *module_generators):
                     r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
                     from dzack_research.preamble.categories.modules.fractional_ideals import (
@@ -1882,9 +1879,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return _own_ring(SageZZ)
 
         class ParentMethods:
-            def is_noetherian(self):
-                return True
-
     class Artinian(CategoryWithAxiom):
         r"""Artinian rings: the descending chain condition on ideals."""
 
@@ -1901,9 +1895,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return [OwnedRings().Noetherian()]
 
         class ParentMethods:
-            def is_artinian(self):
-                return True
-
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
 
@@ -1950,9 +1941,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._with_axiom("Complete")
 
             class ParentMethods:
-                def is_local(self):
-                    return True
-
                 def local_ring_construction(self):
                     construction = self._selected_local_ring_construction()
                     assert construction is not None, (
@@ -2190,6 +2178,25 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        def _integral_domain_decision(self):
+            return Unknown
+
+        def is_integral_domain(self):
+            match self:
+                case _ if self in OwnedRings().NoZeroDivisors().Commutative():
+                    return True
+                case _:
+                    return self._integral_domain_decision()
+
+        def is_noetherian(self):
+            return True if self in OwnedRings().Noetherian() else Unknown
+
+        def is_artinian(self):
+            return True if self in OwnedRings().Artinian() else Unknown
+
+        def is_local(self):
+            return True if self in OwnedRings().Commutative().Local() else Unknown
+
         def _selected_local_ring_construction(self):
             r"""Return an installed local-ring datum, or ``None``.
 
@@ -3745,8 +3752,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _commutativity_decision(self):
         return self._engine.is_commutative()
 
-    def is_integral_domain(self, *args, **kwargs):
-        return self._engine.is_integral_domain(*args, **kwargs)
+    def _integral_domain_decision(self):
+        return self._engine.is_integral_domain()
 
     def _finiteness_decision(self):
         return self._engine.is_finite()
