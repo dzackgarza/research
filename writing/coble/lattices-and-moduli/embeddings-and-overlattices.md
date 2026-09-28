@@ -410,7 +410,7 @@ An inclusion $L\containedin L'$ with $L'$ maximal and $L'$ an overlattice of $L$
 the sense of [the overlattice definition](#def:overlattice) is a **maximal overlattice** of $L$.
 :::
 
-::: {.Lemma #lem:maximal-overlattice-exists}
+::: {.Lemma #lem:maximal-overlattice-exists title="Existence of maximal even overlattices"}
 
 Every even lattice admits a maximal overlattice.
 A unimodular lattice is maximal.

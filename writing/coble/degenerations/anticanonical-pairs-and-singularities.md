@@ -7,7 +7,7 @@ The components of a Type III degeneration are anticanonical pairs, and the combi
 
 ## Anticanonical pairs and their charge
 
-::: {.Definition #def:anticanonical-pair}
+::: {.Definition #def:anticanonical-pair title="Anticanonical pairs"}
 
 An **anticanonical pair** $(V, D)$ consists of a smooth projective rational surface $V$ together with a reduced effective snc divisor $D$ such that
 $$
@@ -17,7 +17,7 @@ $$
 Anticanonical pairs are also known as **log Calabi--Yau surfaces**.
 :::
 
-::: {.Definition #def:charge}
+::: {.Definition #def:charge title="Charge of an anticanonical pair"}
 
 The **charge** of an anticanonical pair $(V, D)$, with $D = \Sum_j D_j$ its decomposition into irreducible components, measures the deviation of $(V, D)$ from being toric.
 It is defined by
@@ -67,7 +67,7 @@ The identity is [@FM83 Prop. 3.7], proved there in the setting of the dual compl
 
 ## Singularities in the minimal model program
 
-::: {.Definition #def:discrepancy}
+::: {.Definition #def:discrepancy title="Discrepancy of a divisor over a pair"}
 
 Let $(X, D)$ be a normal pair with $K_X + D$ $\QQ$-Cartier, and let $f\colon Y \to X$ be a log resolution.
 The **discrepancy** $a(E, X, D)$ of a divisor $E$ over $X$ is defined by
@@ -77,7 +77,7 @@ K_Y + D_Y = f^*(K_X + D) + \Sum_E a(E, X, D)\, E
 $$
 :::
 
-::: {.Definition #def:mmp-singularities}
+::: {.Definition #def:mmp-singularities title="Terminal, canonical, klt, and log canonical singularities"}
 
 With discrepancies as in [the discrepancy definition](#def:discrepancy), the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
 
@@ -93,7 +93,7 @@ With discrepancies as in [the discrepancy definition](#def:discrepancy), the pai
 The definitions of these singularity classes follow [@KM98].
 :::
 
-::: {.Definition #def:demi-normal-slc}
+::: {.Definition #def:demi-normal-slc title="Demi-normal and semi-log-canonical pairs"}
 
 For non-normal varieties one has the following notions.
 

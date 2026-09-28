@@ -15,7 +15,7 @@ $$
 \end{aligned}
 $$
 
-::: {.Lemma #lem:primitive_embedding_eta}
+::: {.Lemma #lem:primitive_embedding_eta title="The primitive embedding $T_\Co\hookrightarrow T_\En$"}
 
 Writing
 
@@ -40,7 +40,7 @@ the identity on the $E_{10}(2)$ summand.
 Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 :::
 
-::: {.Lemma #lem:sequence_of_embeddings}
+::: {.Lemma #lem:sequence_of_embeddings title="The unique primitive embedding chain from Coble to the K3 lattice"}
 
 There is a sequence of primitive embeddings
 
@@ -91,7 +91,7 @@ Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
 :::
 
-::: {.Lemma #lem:locally_closed_embedding_BB}
+::: {.Lemma #lem:locally_closed_embedding_BB title="Period-domain embeddings extend to Baily--Borel compactifications"}
 
 The embeddings of lattices
 $\eta: T_\Co\injects T_\En$ (resp.
@@ -106,7 +106,7 @@ Baily--Borel compactifications.
 This follows from [@KK72 §5, Thm.2].
 :::
 
-::: {.Theorem #thm:normalization}
+::: {.Theorem #thm:normalization title="Coble moduli normalize their image in Enriques moduli"}
 
 $\fco$ is the normalization of a closed subvariety of $\fen$.
 :::

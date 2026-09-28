@@ -12,7 +12,7 @@ All of the combinatorial invariants recorded below—root counts, simple systems
 
 ## General root lattices
 
-::: {.Definition #def:root-lattice}
+::: {.Definition #def:root-lattice title="Roots, simple systems, and root lattices"}
 
 Let $L$ be a lattice (in the Euclidean model, positive definite).
 The set of **roots** of $L$ is
@@ -55,7 +55,7 @@ For a root lattice we may identify the Gram matrix $G_L$ with $G_{\ZZ\Phi(L)}$, 
 
 The simply-laced root lattices $A_n$, $D_n$, $E_n$ have a single root length and are the ones that occur in the lattice theory of $K3$ and Coble surfaces.
 
-::: {.Definition #def:lattice-An}
+::: {.Definition #def:lattice-An title="The root lattice $A_n$"}
 
 Let $\ZZ^{n+1}$ denote the standard diagonal lattice $\gens{1}^{\oplus (n+1)}$ with orthonormal generators $\ts{e_1,\dots,e_{n+1}}$, and set $v_{n+1} \da \Sum_{i=1}^{n+1} e_i$.
 The root lattice $A_n$ is realized as the primitive sublattice
@@ -78,7 +78,7 @@ $$
 $$
 :::
 
-::: {.Definition #def:lattice-Dn}
+::: {.Definition #def:lattice-Dn title="The root lattice $D_n$"}
 
 The root lattice $D_n$ is the sublattice of $\ZZ^n$ cut out by the even-coordinate-sum condition, i.e. the kernel of the reduction $\varepsilon_2: \ZZ^n \to \ZZ/2\ZZ$, $x\mapsto \Sum_i x_i \bmod 2$:
 $$
@@ -102,7 +102,7 @@ $$
 $$
 :::
 
-::: {.Definition #def:lattice-En}
+::: {.Definition #def:lattice-En title="The root lattices $E_6$, $E_7$, and $E_8$"}
 
 The root lattice $E_8$ is realized inside $\QQ^8$ as
 $$
@@ -140,7 +140,7 @@ Indeed $\binom{8}{2}\cdot 4 = 112$ and $2^{8-1} = 128$, giving $240$ in total.
 There are $8$ simple roots comprising $\Phi(E_8)$, and the Weyl group $W(E_8)$ acts transitively on the root set $R(E_8)$.
 :::
 
-::: {.Theorem #thm:E8-characterization}
+::: {.Theorem #thm:E8-characterization title="Characterization of the $E_8$ lattice"}
 
 $E_8$ is the unique even, unimodular, positive-definite lattice of rank $8$.
 In particular it is self-dual, $E_8 \cong E_8\dual$.
@@ -161,7 +161,7 @@ The systems recorded in this section are exactly the crystallographic ones (\lon
 The remaining finite reflection groups $H_3$, $H_4$ and $I_2(p)$ for $p\notin\ts{2,3,4,6}$ preserve no lattice of full rank (\longref{thm:crystallographic-lattice}), and so are finite Coxeter systems that are the Weyl group of no root system in a lattice; their Gram forms are defined over the real number fields of \longref{ex:noncrystallographic-base-rings} rather than over $\ZZ$.
 :::
 
-::: {.Definition #def:root-system-Bn-Cn}
+::: {.Definition #def:root-system-Bn-Cn title="The root systems $B_n$ and $C_n$"}
 
 The root system $R(B_n)\containedin \ZZ^n$ consists of the **short roots** $r_i \da \pm e_i$ for $1\leq i\leq n$ together with the **long roots** $r_{ij} \da \pm e_i \pm e_j$ for $1\leq i < j\leq n$; there are $2n + 2n(n-1) = 2n^2$ roots in total ($2n$ short, $2n(n-1)$ long).
 A simple system is
@@ -180,7 +180,7 @@ $$
 $$
 :::
 
-::: {.Definition #def:root-system-F4-G2}
+::: {.Definition #def:root-system-F4-G2 title="The root systems $F_4$ and $G_2$"}
 
 The root system $F_4$ is realized in $\ZZ^4$ with root set $R(F_4)$ comprising the $24$ long roots $\pm e_i \pm e_j$ for $1\leq i < j\leq 4$ together with the $24$ short roots consisting of the $8$ vectors $\pm e_i$ ($1\leq i\leq 4$) and the $16$ half-sums $\tfrac12(\pm e_1 \pm e_2 \pm e_3 \pm e_4)$ ranging over all $2^4$ sign patterns, giving $48$ roots in all.
 A system of simple roots is
@@ -207,7 +207,7 @@ $$
 
 The realization of $E_8$ in [the $E_n$ lattice definition](#def:lattice-En) is an instance of a general overlattice construction for the $D_n$ family.
 
-::: {.Definition #def:plus-construction}
+::: {.Definition #def:plus-construction title="The plus and minus overlattices of $D_n$"}
 
 Define two vectors in $\QQ^n$ by
 $$
@@ -226,7 +226,7 @@ $$
 each obtained by adjoining one half-integer coset to $D_n$.
 :::
 
-::: {.Theorem #thm:plus-construction}
+::: {.Theorem #thm:plus-construction title="Integrality, parity, and unimodularity of $D_n^+$"}
 
 Let $D_n^+ = D_n\union(v_+ + D_n)$ with $v_+ = \tfrac12(1,\dots,1)$ be the overlattice of [the plus-construction definition](#def:plus-construction).
 
