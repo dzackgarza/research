@@ -6,7 +6,7 @@
 Let $\pi\colon \mcx \to C$ be a flat, proper morphism, with $C$ a germ of a smooth complex curve (typically taken as a disk $\Delta = \{ t \in \CC \colon |t| < \epsilon\}$). The **$\mcx_0$** $\mcx_0 = \pi^{-1}(0)$ encodes the limiting geometry of the family as $t \to 0$. For $t \neq 0$, the fibers $\mcx_t$ are assumed smooth, often K3 or Enriques surfaces. The **punctured disk** $\Delta^* = \Delta \setminus \{0\}$ and the corresponding smooth locus $\mcx^* = \pi^{-1}(\Delta^*)$ are natural analytic settings for studying the variation of Hodge structures in the family.
 Over $\Delta^*$, the fibers $\mcx_t$ are smooth and give rise to a variation of Hodge structure on the local system $R^2 \pi_* \ZZ$. The behavior of $\mcx_0$ reflects the limiting geometry and possible singularities, providing key topological and moduli-theoretic invariants that determine both the topological degeneration type and the locus in the compactified moduli space.
 
-###### Dual Complexes
+##### Dual Complexes
 
 If $\mcx_0$ is a simple normal crossings (snc) divisor, its **dual complex** $\Gamma(\mcx_0)$ is the finite simplicial complex constructed as follows:
 
@@ -21,7 +21,7 @@ For degenerations of Enriques surfaces constructed as quotients by a biregular, 
 
 This distinction can be read off from the intersection pairing on the lattice $\bdlattice{T}{I}$ attached to the relevant cusp $I$ and the structure of $\mcx_0$.
 
-#### Kulikov Models
+#### Kulikov model conditions
 
 A **Kulikov model** of a family of projective surfaces is a degeneration $\mcx \to C$ in which:
 
@@ -69,7 +69,7 @@ These types are naturally stratified by the rank of isotropic subspaces in the b
 
 #### Picard-Lefschetz Theory
 
-###### Picard–Lefschetz Transformations
+##### Picard–Lefschetz Transformations
 
 :::{.definition title="Picard–Lefschetz Transformation" #def:picard-lefschetz-transformation}
 Let $p\colon \mcx \to \Delta$ be a Kulikov model (or a semistable degeneration) with central fiber $\mcx_0$. The sheaf $\RR^2 p_*\underline{\ZZ}_{\Delta}$ restricts to a locally constant system over the punctured disk $\Delta^*$, whose fiber over $t \in \Delta^*$ is $H^2(\mcx_t; \ZZ)$.
