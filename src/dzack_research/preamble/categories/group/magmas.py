@@ -247,6 +247,11 @@ class AdditiveMagmas(OwnedCategory):
 
         return [Sets()]
 
+    class ElementMethods:
+        @abstract_method
+        def __add__(self, other):
+            r"""Return the value of the selected additive magma law on ``(self, other)``."""
+
     class SubcategoryMethods:
         def AdditiveCommutative(self):
             r"""Return this category with the axiom ``x + y = y + x``."""
@@ -285,6 +290,10 @@ class AdditiveMonoids(OwnedCategory):
         return [AdditiveSemigroups()]
 
     class ParentMethods:
+        @abstract_method
+        def zero(self):
+            r"""Return the identity element for the additive monoid law."""
+
         def monoidal_unit(self):
             return self.zero()
 
