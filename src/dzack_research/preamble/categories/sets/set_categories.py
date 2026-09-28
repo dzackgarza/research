@@ -12,7 +12,6 @@ from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
-from sage.combinat.subset import Subsets as SageSubsets
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown, UnknownClass
@@ -2201,7 +2200,20 @@ class PowerSets(OwnedCategory):
 
     def _call_(self, base_set):
         r"""Construct the power object of ``base_set``."""
-        return _object_of(self, base_set=base_set)
+        placements = [self]
+        engine = None
+        if base_set in FiniteSets():
+            placements.append(FiniteSets())
+            if base_set in EnumeratedSets():
+                placements.append(EnumeratedSets())
+                engine = (self, _EnumeratedPowerSetEngine, None)
+        elif base_set in InfiniteSets():
+            placements.append(UncountableSets())
+        return _object_of(
+            owned_category_join(placements),
+            _engine=engine,
+            base_set=base_set,
+        )
 
     class ParentMethods:
         def __init__(self, base_set: Parent, **rest) -> None:
@@ -2344,26 +2356,55 @@ class PowerSets(OwnedCategory):
 
             return Sets().Mor(self, target)(direct_image)
 
-        def __iter__(self):
-            r"""Enumerate the subsets of a finite enumerated base.
-
-            Sage's ``Subsets`` (sage/combinat/subset.py) is the engine that
-            enumerates them; each subset it yields is read back through this
-            power set's element constructor (`OWN-06`).
-            """
-            base = self.base_set()
-            assert base in FiniteSets() and base in EnumeratedSets(), (
-                f"cannot list the subsets of {base}: the power set is enumerated here only for a finite "
-                "enumerated set"
-            )
-            return (self(subset) for subset in SageSubsets(base))
-
         def cardinality_comparison(self) -> CardinalityMorphism:
             size = self.cardinality()
             return _cardinalities().Mor(size, size).identity()
 
         def _repr_(self) -> str:
             return f"Power set of {self.base_set()}"
+
+
+def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
+    r"""Rank finite subsets of an enumerated source by their binary support."""
+    source_size = cardinal(source.cardinality())
+
+    def point_at(position):
+        position = int(position)
+        bound = 1 << int(source_size.finite_value()) if source_size.is_finite() else None
+        if position < 0 or (bound is not None and position >= bound):
+            raise IndexError(
+                f"position {position} is out of range for {subset_set}, which has cardinality {subset_set.cardinality()}"
+            )
+        members = []
+        source_position = 0
+        remaining_bits = position
+        while remaining_bits:
+            if remaining_bits & 1:
+                members.append(source[source_position])
+            source_position += 1
+            remaining_bits >>= 1
+        return subset_set(tuple(members))
+
+    def position_of(subset):
+        subset = subset_set(subset)
+        remaining = int(cardinal(subset.cardinality()).finite_value())
+        position = 0
+        source_position = 0
+        while remaining:
+            point = source[source_position]
+            if point in subset:
+                position |= 1 << source_position
+                remaining -= 1
+            source_position += 1
+        return position
+
+    return subset_set._ranking_isomorphism(position_of, point_at)
+
+
+class _EnumeratedPowerSetEngine:
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        return _finite_subset_ranking_map(self, self.base_set())
 
 
 @cached_function
@@ -2434,8 +2475,23 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def _call_(self, source, subset_cardinality):
         r"""Construct the set of subsets of ``source`` of the stated cardinality."""
+        subset_cardinality = int(subset_cardinality)
+        placements = [self]
+        engine = None
+        if subset_cardinality == 0 or source in FiniteSets():
+            placements.append(FiniteSets())
+        elif source in CountablyInfiniteSets():
+            placements.append(CountablyInfiniteSets())
+        elif source in UncountableSets():
+            placements.append(UncountableSets())
+        elif source in CountableSets():
+            placements.append(CountableSets())
+        if source in EnumeratedSets():
+            placements.append(EnumeratedSets())
+            engine = (self, _EnumeratedFixedCardinalitySubsetSetEngine, None)
         return _object_of(
-            self,
+            owned_category_join(placements),
+            _engine=engine,
             source=source,
             subset_cardinality=subset_cardinality,
         )
@@ -2474,22 +2530,35 @@ class FixedCardinalitySubsetSets(OwnedCategory):
                 return False
             return ambient_power_set(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
 
-        def __iter__(self):
-            r"""Enumerate the ``k``-subsets of a finite enumerated source.
-
-            Sage's ``Subsets`` (sage/combinat/subset.py) is the engine that
-            enumerates them; each is read back through this object's element
-            constructor (`OWN-06`).
-            """
-            source = self.source()
-            assert source in FiniteSets() and source in EnumeratedSets(), (
-                f"cannot list the {self.subset_cardinality()}-element subsets of {source}: they are enumerated "
-                "here only for a finite enumerated set"
-            )
-            return (self(tuple(subset)) for subset in SageSubsets(source, self.subset_cardinality()))
-
         def _repr_(self) -> str:
             return f"Subsets of {self.source()} of cardinality {self.subset_cardinality()}"
+
+
+class _EnumeratedFixedCardinalitySubsetSetEngine:
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        selections = self.source().ordered_subsets_of_size(self.subset_cardinality())
+
+        def point_at(position):
+            return self(tuple(selections.ranking_map().inverse()(position)))
+
+        def position_of(subset):
+            subset = self(subset)
+            needed = self.subset_cardinality()
+
+            def source_positions():
+                found = 0
+                source_position = 0
+                while found < needed:
+                    if self.source()[source_position] in subset:
+                        yield source_position
+                        found += 1
+                    source_position += 1
+
+            selection = selections.from_source_rank_positions(source_positions())
+            return selections.ranking_map()(selection)
+
+        return self._ranking_isomorphism(position_of, point_at)
 
 
 @cached_function
@@ -2513,7 +2582,24 @@ class FinitePowerSets(OwnedCategory):
 
     def _call_(self, source):
         r"""Construct the finite-subset object of ``source``."""
-        return _object_of(self, source=source)
+        placements = [self]
+        engine = None
+        if source in FiniteSets():
+            placements.append(FiniteSets())
+        elif source in CountablyInfiniteSets():
+            placements.append(CountablyInfiniteSets())
+        elif source in UncountableSets():
+            placements.append(UncountableSets())
+        elif source in CountableSets():
+            placements.append(CountableSets())
+        if source in EnumeratedSets():
+            placements.append(EnumeratedSets())
+            engine = (self, _EnumeratedFinitePowerSetEngine, None)
+        return _object_of(
+            owned_category_join(placements),
+            _engine=engine,
+            source=source,
+        )
 
     class ParentMethods:
         def __init__(self, source: Parent, **rest) -> None:
@@ -2539,17 +2625,14 @@ class FinitePowerSets(OwnedCategory):
                 return False
             return ambient_power_set(candidate).domain().cardinality().is_finite()
 
-        def __iter__(self):
-            r"""Enumerate the subsets of a finite enumerated source, through Sage's ``Subsets`` (`OWN-06`)."""
-            source = self.source()
-            assert source in FiniteSets() and source in EnumeratedSets(), (
-                f"cannot list the finite subsets of {source}: they are enumerated here only for a finite "
-                "enumerated set"
-            )
-            return (self(tuple(subset)) for subset in SageSubsets(source))
-
         def _repr_(self) -> str:
             return f"Finite subsets of {self.source()}"
+
+
+class _EnumeratedFinitePowerSetEngine:
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        return _finite_subset_ranking_map(self, self.source())
 
 
 @cached_function
