@@ -5,7 +5,7 @@ The constructions of this chapter take place over the additive category of modul
 
 ## Rings with involution and duality {#sec-ring-with-involution}
 
-::: {#def-ring-with-involution title="Involutions and the duality functor"}
+::: {#def-ring-with-involution .def title="Involutions and the duality functor"}
 
 An *involution* on a ring $A$ is a ring isomorphism $A\to A^{\mathrm{op}}$, written $a\mapsto\bar a$, with $\bar{\bar a}=a$ for every $a\in A$.
 It defines the *duality functor*
@@ -24,7 +24,7 @@ $$
 is an isomorphism [@Ran98, §20].
 :::
 
-::: {#def-epsilon-symmetric-form title="$\epsilon$-symmetric and $\epsilon$-quadratic forms"}
+::: {#def-epsilon-symmetric-form .def title="$\epsilon$-symmetric and $\epsilon$-quadratic forms"}
 
 Let $\epsilon\in A$ be a central unit with $\bar\epsilon=\epsilon^{-1}$.
 An *$\epsilon$-symmetric form* $(M,\phi)$ is a finitely generated projective $A$-module $M$ together with an $A$-module morphism $\phi\colon M\to M^{*}$ making the triangle
@@ -55,14 +55,14 @@ For $M$ finitely generated projective, the hyperbolic form of @def-hyperbolic-fo
 
 ## Complexes, duality, and $L$-groups {#sec-poincare-complexes}
 
-::: {#def-chain-complexes title="Chain complexes in an additive category"}
+::: {#def-chain-complexes .def title="Chain complexes in an additive category"}
 
 Let $\mathcal A$ be an additive category.
 A *chain complex* in $\mathcal A$ is a family of objects $C_n$ together with morphisms $d_n\colon C_n\to C_{n-1}$ satisfying $d_{n-1}d_n=0$.
 Chain maps are the degreewise morphisms commuting with the differentials, and $\mathbf{Ch}(\mathcal A)$ is again additive [@Wei94, §1.1–1.2].
 :::
 
-::: {#thm-dold-kan title="The Dold–Kan correspondence"}
+::: {#thm-dold-kan .theorem title="The Dold–Kan correspondence"}
 
 Let $\mathcal A$ be an abelian category and let $X$ be a simplicial object of $\mathcal A$, with face maps $d_i$.
 The *normalized chain complex* has
@@ -73,7 +73,7 @@ and differential induced by $d_0$.
 Then $N$ is an equivalence between the category of simplicial objects of $\mathcal A$ and $\mathbf{Ch}_{\geq0}(\mathcal A)$ [@Wei94, Thm. 8.4.1].
 :::
 
-::: {#def-comonad-resolution title="Comonad resolutions and the bar construction"}
+::: {#def-comonad-resolution .def title="Comonad resolutions and the bar construction"}
 
 Let $F\colon\mathcal C\to\mathcal A$ be left adjoint to $U\colon\mathcal A\to\mathcal C$.
 The composite $\bot=FU$, with counit $\varepsilon\colon\bot\Rightarrow\operatorname{id}_{\mathcal A}$ and comultiplication built from the unit, is a comonad on $\mathcal A$ [@Wei94, Def. 8.6.1, Main Application 8.6.2].
@@ -81,7 +81,7 @@ For an object $X$ of $\mathcal A$ the associated augmented simplicial object has
 For $\mathcal A=A\text{-}\mathbf{Mod}$ and $F$ the free module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mathcal A$.
 :::
 
-::: {#def-n-dual-complex title="The $n$-dual of a complex"}
+::: {#def-n-dual-complex .def title="The $n$-dual of a complex"}
 
 Let $A$ be a ring with involution and $C$ an $A$-module chain complex, and write $C^{r}=(C_r)^{*}$.
 The *$n$-dual* $C^{n-*}$ is the $A$-module chain complex with
@@ -93,13 +93,13 @@ $$
 [@Ran98, §20].
 :::
 
-::: {#def-poincare-complex title="Algebraic Poincaré complexes and $L$-groups"}
+::: {#def-poincare-complex .def title="Algebraic Poincaré complexes and $L$-groups"}
 
 An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\otimes_AC$ given by $x\otimes y\mapsto(-1)^{pq}\epsilon\,y\otimes x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, §20].
 For a $*$-invariant subgroup $U\subseteq\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
 :::
 
-::: {#thm-l-zero-is-witt title="The zero-dimensional $L$-group"}
+::: {#thm-l-zero-is-witt .theorem title="The zero-dimensional $L$-group"}
 
 $L^{0}_{U}(A,\epsilon)$ is the Witt group of nonsingular $\epsilon$-symmetric forms over $A$, and $L^{U}_{0}(A,\epsilon)$ the Witt group of nonsingular $\epsilon$-quadratic forms; a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].
 :::
@@ -108,13 +108,13 @@ For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the g
 
 ## Model presentation {#sec-model-presentation}
 
-::: {#def-model-category title="Model categories"}
+::: {#def-model-category .def title="Model categories"}
 
 A *model category* is a category together with three classes of maps in it, the fibrations, the cofibrations, and the weak equivalences, satisfying the axioms of [@Qui67, Ch. I §1, Def. 1].
 Its *homotopy category* is the localization at the weak equivalences [@Qui67, Ch. I §1, Def. 6].
 :::
 
-::: {#thm-projective-model-structure title="The projective model structure on complexes"}
+::: {#thm-projective-model-structure .theorem title="The projective model structure on complexes"}
 
 Let $\mathcal A$ be an abelian category with enough projectives and let $C_{+}(\mathcal A)$ be the category of chain complexes in $\mathcal A$ that are bounded below.
 Then $C_{+}(\mathcal A)$ is a model category in which
@@ -134,7 +134,7 @@ The corresponding $\infty$-categorical constructions are @def-loops-suspension, 
 
 ## Stabilization {#sec-stabilization-of-modules}
 
-::: {#def-stable-infinity-category title="Stable $\infty$-categories"}
+::: {#def-stable-infinity-category .def title="Stable $\infty$-categories"}
 
 An $\infty$-category $\mathcal C$ is *stable* if it has a zero object, every morphism of $\mathcal C$ admits a kernel and a cokernel, and a triangle in $\mathcal C$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
 The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def-loops-suspension are mutually inverse equivalences [@Lur09, §2].
@@ -147,7 +147,7 @@ $$
 $$
 A pointed $\mathcal C$ is stable if and only if it admits finite limits and colimits and a square in $\mathcal C$ is a pushout if and only if it is a pullback [@Lur09, Prop. 4.4].
 
-::: {#def-prespectrum title="Prespectrum and spectrum objects"}
+::: {#def-prespectrum .def title="Prespectrum and spectrum objects"}
 
 Let $\mathcal C$ be an $\infty$-category.
 A *prespectrum object* of $\mathcal C$ is a functor $X\colon\mathrm N(\mathbf Z\times\mathbf Z)\to\mathcal C$ whose value $X(i,j)$ is a zero object of $\mathcal C$ whenever $i\neq j$; write $E_n=X(n,n)$ [@Lur09, Def. 8.1, Rmk. 8.3].
@@ -177,13 +177,13 @@ which correspond to one another under $\Sigma\dashv\Omega$.
 The prespectrum is a *spectrum object* when every $\varepsilon_n$ is an equivalence; the spectrum objects span a full subcategory $\mathrm{Sp}(\mathcal C)\subseteq\mathrm{PSp}(\mathcal C)$ [@Lur09, Def. 8.4].
 :::
 
-::: {#thm-stabilization-universal title="The universal property of the stabilization"}
+::: {#thm-stabilization-universal .theorem title="The universal property of the stabilization"}
 
 For an $\infty$-category $\mathcal C$ the stabilization $\mathrm{Stab}(\mathcal C)$ is universal among stable $\infty$-categories equipped with a left exact functor to $\mathcal C$ [@Lur09, Prop. 10.12].
 The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mathcal S_{*})=\mathrm{Stab}(\mathcal S)$ [@Lur09, Def. 9.1], and it is freely generated under colimits, as a stable $\infty$-category, by the sphere spectrum [@Lur09, Cor. 15.6].
 :::
 
-::: {#thm-derived-category-heart title="The derived $\infty$-category"}
+::: {#thm-derived-category-heart .theorem title="The derived $\infty$-category"}
 
 Let $\mathcal A$ be an abelian category with enough projectives.
 Then $\mathcal D^{-}(\mathcal A)$ is a stable $\infty$-category, the subcategories of complexes with vanishing homology in negative and in positive degrees determine a $t$-structure on it, and its heart is equivalent to the nerve of $\mathcal A$ [@Lur09, Prop. 13.10].
@@ -193,14 +193,14 @@ Taking $\mathcal A=A\text{-}\mathbf{Mod}$ places the complexes of @def-poincare-
 
 ## Ring spectra and trace invariants {#sec-ring-spectra-trace}
 
-::: {#def-ring-spectrum title="Ring spectra and their modules"}
+::: {#def-ring-spectrum .def title="Ring spectra and their modules"}
 
 Let $B$ be a commutative $S$-algebra.
 A *$B$-algebra* is a monoid in the symmetric monoidal category of $B$-modules under $\wedge_B$, and a module spectrum over it is a module for that monoid [@EKMM07].
 The *enveloping $B$-algebra* of a $B$-algebra $A$ is $A^{e}=A\wedge_B A^{\mathrm{op}}$.
 :::
 
-::: {#def-thh title="Topological Hochschild homology"}
+::: {#def-thh .def title="Topological Hochschild homology"}
 
 For a $B$-algebra $A$ and an $(A,A)$-bimodule $M$, the *topological Hochschild homology* of $A$ with coefficients in $M$ is the derived smash product
 $$
