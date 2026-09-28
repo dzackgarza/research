@@ -3488,6 +3488,14 @@ class _OwnedIntegerElement(_OwnedRingElement):
     def __index__(self) -> int:
         return int(self)
 
+    def _integer_(self, integer_ring):
+        r"""This integer in ``integer_ring``, by Sage's ``Integer(x)`` conversion protocol.
+
+        ``sage/rings/integer.pyx:Integer.__init__`` reads ``x._integer_`` and
+        does not consult ``__index__``.
+        """
+        return integer_ring(self._backend())
+
 
 class _OwnedRingParent(UniqueRepresentation, Parent):
     r"""An owned ring parent with one private computational realization.

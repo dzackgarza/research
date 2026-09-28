@@ -231,15 +231,19 @@ class _RestrictionOfScalarsFunctor(Functor):
     def ring_map(self):
         return self._ring_map
 
-    # Along ``R -> R[G]`` an ``R[G]``-module is an ``R``-module with a chosen
-    # action, and restriction forgets the action: the image is the module the
-    # action was stated on, and elements pass to it by coercion.  Along any
-    # other map the image is the restricted-scalars view.
+    # Along an identity ``R -> R`` restriction is the identity functor, as
+    # scalar extension along it is.  Along ``R -> R[G]`` an ``R[G]``-module is
+    # an ``R``-module with a chosen action, and restriction forgets the
+    # action: the image is the module the action was stated on, and elements
+    # pass to it by coercion.  Along any other map the image is the
+    # restricted-scalars view.
 
     def _restricts_group_modules(self) -> bool:
         return self._target_ring in GroupAlgebras(self._source_ring)
 
     def _apply_object(self, module):
+        if self.ring_map().is_identity():
+            return module
         if self._restricts_group_modules():
             return module.unformed_module()
         return module.restrict_scalars(self.ring_map())
@@ -250,6 +254,8 @@ class _RestrictionOfScalarsFunctor(Functor):
 
     def _extension_element(self, source_module, restricted, element):
         r"""Read an element of ``restricted`` back in ``source_module``."""
+        if self.ring_map().is_identity():
+            return element
         if self._restricts_group_modules():
             return source_module(element)
         return element.underlying_element()
@@ -260,6 +266,8 @@ class _RestrictionOfScalarsFunctor(Functor):
         # through the restricted parents, and its ``R``-linearity is the
         # ``S``-linearity of ``g`` along ``f``, not a runtime condition.  A
         # framing of the source is therefore not part of the statement.
+        if self.ring_map().is_identity():
+            return morphism
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return _RestrictionModuleMorphism(
@@ -413,7 +421,9 @@ class _BaseChangeAdjunction(Adjunction):
         restricted = self.right_adjoint()(module)
         extended = self.left_adjoint()(restricted)
         return extended.module_category().Mor(extended, module)(
-            lambda label: restricted.module_generator(label).underlying_element()
+            lambda label: self.right_adjoint()._extension_element(
+                module, restricted, restricted.module_generator(label)
+            )
         )
 
 
