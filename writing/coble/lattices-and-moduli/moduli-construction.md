@@ -24,7 +24,7 @@ $$
 
 where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta).
 
-::: {.Question}
+::: {.Question title="An explicit description of the polarized Coble arithmetic group"}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
 :::
 
@@ -392,7 +392,7 @@ this section does not settle.
 
 ## KSBA spaces
 
-::: {.Remark}
+::: {.Remark title="Baily--Borel maps induce cusp correspondences"}
 
 By [the Baily--Borel extension lemma](lattices.md#lem:locally_closed_embedding_BB), there are morphisms
 $\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and
@@ -400,7 +400,7 @@ $\overline{\fco}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
 correspondences between the boundary cusps.
 :::
 
-::: {.Remark}
+::: {.Remark title="Constructing Coble KSBA spaces from the ramification divisor"}
 
 We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly
 using the ramification divisor of the K3 involution (which is in this case not
