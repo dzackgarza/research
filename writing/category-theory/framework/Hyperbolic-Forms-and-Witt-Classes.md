@@ -236,7 +236,7 @@ $$
 \qquad
 \sigma\bigl[\langle1\rangle\bigr]=1,
 $$
-with $\langle1\rangle$ as in @exm-rank-one-forms [@MH73, Ch. II §4].
+with $\langle1\rangle$ as in @exm-rank-one-forms; see [@MH73, Ch. II §4].
 :::
 
 ::: {#exm-witt-classes-over-z .ex title="Witt classes over $\mathbb Z$"}

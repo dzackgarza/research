@@ -12,7 +12,7 @@ The right notion sits between, and it must be compatible with reflexivity, $a = 
 
 ## The identification space {#sec-identification-space}
 
-Work in $\mathbf{Cat}_{\infty,\infty}$ ([Higher categories and universes](Higher-Categories-and-Universes.md#def-infinity-category-universe)); the subcategory, quotient, and fiber constructions below use the [suspension, loop, and homotopy-fiber constructions](Loops-and-Suspension.md).
+Work in $\mathbf{Cat}_{\infty,\infty}$ ([Higher categories and universes](Higher-Categories-and-Universes.md#def-higher-category)); the subcategory, quotient, and fiber constructions below use the [suspension, loop, and homotopy-fiber constructions](Loops-and-Suspension.md).
 For objects $C,D$, the internal hom
 $$
 [C,D]_{\mathbf{Cat}_{\infty,\infty}}

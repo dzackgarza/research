@@ -274,7 +274,7 @@ A point of the family over $s$ is a point
 $$
 x\colon *\longrightarrow\int_*(F^{\sharp}\circ s).
 $$
-For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def-higher-category [@nlab:grothendieck_construction].
+For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def-higher-category and [@nlab:grothendieck_construction].
 :::
 
 ::: {#def-internal-hom .def title="Local hom-objects"}
