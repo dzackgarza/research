@@ -1,6 +1,6 @@
 # Kulikov models and limiting mixed Hodge structures
 
-::: {.Remark}
+::: {.Remark title="Kulikov models, monodromy type, and limiting mixed Hodge structures"}
 
 We collect the local structure theory attached to a one-parameter degeneration of K3 surfaces: the Kulikov models that provide a well-behaved semistable representative of a degeneration, the trichotomy of such models by the nilpotency of the log monodromy operator, and the limiting mixed Hodge structure whose monodromy weight filtration records the same trichotomy on the Baily--Borel boundary.
 :::
@@ -82,7 +82,7 @@ The even-weight pieces at $0, 2, 4$ occur instead for Type $\mathrm{III}$, which
 
 :::: {.Remark title="Source notes carried no citations"}
 
-::: {.Warning}
+::: {.Warning title="Primary-source attributions for the migrated Kulikov notes require confirmation"}
 The two migrated research notes (Kulikov Models; Limiting Mixed Hodge Structure and Degenerations) contained no inline citations.
 The attributions above (Kul77, PP81, Sch73, FS86) were supplied from verified bibliography keys as standard attributions of the concepts the notes name; the author should confirm the intended primary sources.
 The notes contained no Clemens--Schmid statement, no explicit semistable-reduction theorem, and no $N^k$ nilpotent-orbit computation beyond the trichotomy reproduced above.

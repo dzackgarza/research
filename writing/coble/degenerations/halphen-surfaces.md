@@ -1,6 +1,6 @@
 # Halphen Surfaces
 
-::: {.Remark}
+::: {.Remark title="Terminal Coble surfaces as blowups of Halphen surfaces"}
 
 It is well-known (e.g. as in [@DZ99] and [@CDL25 Ch.5 §6]) that a Halphen
 surface of index $n$ is a relative minimal elliptic surface $S$ with $F_1$ the
@@ -31,7 +31,7 @@ indicates that the moduli space of general Halphen surfaces of index 2 has
 dimension 9.
 :::
 
-::: {.Warning}
+::: {.Warning title="The claimed dimension of index-two Halphen moduli lacks a verified source"}
 Attribution unverified: Prop. 9.1.8 as published computes $h^1(\Theta_{V/k}) = 10+2n$; neither it nor its proof mentions the dimension of Halphen moduli. Locate the intended source.
 :::
 
@@ -53,7 +53,7 @@ Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 of a Halphen surface of index 2 is a Coble surface.
 :::
 
-::: {.Remark}
+::: {.Remark title="Conjectural correspondence between Coble and index-two Halphen moduli"}
 
 Why introduce Halphen surfaces? I conjecture that the geometric construction(s)
 above yield some kind of correspondence between moduli spaces of Coble surfaces
