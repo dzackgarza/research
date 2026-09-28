@@ -1595,7 +1595,7 @@ It is not an attempt to advance any of the proofs.
 
 ## Strategy A: normalize the Heegner closure inside the AEGS compactification {#sec-strategy-heegner}
 
-### Outline {#sec-strategy-heegner-outline}
+### Heegner-closure strategy outline {#sec-strategy-heegner-outline}
 
 Fix a root $\alpha\in T_{\mathrm{En}}$ and let $\Delta_\alpha$ be the corresponding degree-$2$ Heegner component.
 Let
@@ -1685,7 +1685,7 @@ These failures do not discredit Strategy A.  They identify the exact new lemmas 
 
 ## Strategy B: autonomous Coble theory in the style of AEGS {#sec-strategy-autonomous}
 
-### Outline {#sec-strategy-autonomous-outline}
+### Autonomous Coble strategy outline {#sec-strategy-autonomous-outline}
 
 This strategy never defines the direct Coble objects as a locus in Enriques moduli.
 It begins with the direct cover datum of [Definition (direct resolved Coble cover datum)](#definition-direct-cover-datum), computes its period theory, and reproduces Coble analogues of the AEGS constructions.
