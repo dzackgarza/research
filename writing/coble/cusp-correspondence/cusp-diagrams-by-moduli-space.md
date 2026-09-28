@@ -75,7 +75,7 @@ This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_
 
 ## Sterk's moduli space and the K3 cusps
 
-:::: {.Remark}
+:::: {.Remark title="Sterk cusps and their divisibilities in the Enriques and K3 lattices"}
 
 We recall Sterk's cusp diagram for $\fent$:
 
@@ -100,7 +100,7 @@ We have the following divisibilities in various lattices:
 : Isotropic vectors in $\fent$ and their divisibilities.
 ::::
 
-:::: {.Remark}
+:::: {.Remark title="The cusp diagram of the degree-$(2,2,0)$ K3 involution space"}
 
 We recall the cusp diagram for $F_{(2,2,0)}$:
 
