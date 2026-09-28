@@ -326,9 +326,6 @@ class AugmentedSimplexCategory(OwnedCategory):
                 raise ValueError(f"{element!r} is not an element of {self}")
             return NN(int(element))
 
-        def __len__(self):
-            return self._size
-
         def _repr_(self):
             if not self._size:
                 return "{}"
@@ -1602,6 +1599,11 @@ class Sets(OwnedCategory):
         def extra_super_categories(self) -> list[Category]:
             r"""A finite set is countable."""
             return [Sets().Countable()]
+
+        class ParentMethods:
+            def __len__(self) -> int:
+                r"""Return the finite cardinality as a Python length."""
+                return int(self.cardinality())
 
         # Functors into finite G-sets, sited on their domain.
 

@@ -363,9 +363,6 @@ class FiniteOrderedSets(OwnedCategory):
             # Do not hash members: group/lattice elements may normalize expensively.
             return hash(int(self.cardinality()))
 
-        def __len__(self) -> int:
-            return int(self.cardinality())
-
         def _repr_(self) -> str:
             return "{" + ", ".join(repr(element) for element in self) + "}"
 
