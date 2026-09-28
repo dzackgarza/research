@@ -1,7 +1,6 @@
 # KSBA and semitoroidal compactifications of $\fentwo$
 
-::: {.Remark}
-### Orientation
+::: {.Remark title="Orientation"}
 
 This section records the degree-$2$ Enriques side of the KSBA--semitoroidal comparison: the compactification of $\fentwo$, the moduli space of degree-$2$ numerically polarized Enriques surfaces.
 Here the comparison is a theorem, obtained by reducing to the recognizable-divisor machinery of Alexeev--Engel ([the recognizable-divisor semitoroidal theorem](#thm:recognizable-semitoroidal), [the tower semitoroidal theorem](#thm:tower-semitoroidal)); the ambient degree-$2$ Enriques KSBA compactification is itself settled [@AEGS25; @CDL25].
@@ -11,8 +10,7 @@ This is the established counterpart of the polarized *Coble* comparison, which r
 
 ## The isomorphism theorem
 
-::: {.Theorem #thm:ksba_semitoroidal_En2}
-### Isomorphism between KSBA and semitoroidal compactifications of $\fentwo$
+::: {.Theorem #thm:ksba_semitoroidal_En2 title="Isomorphism between KSBA and semitoroidal compactifications of $\fentwo$"}
 
 Let $\fentwo$ be the moduli space of degree-$2$ numerically polarized Enriques surfaces, and let $\ksbacpt{\fentwo}$ be its KSBA compactification.
 There is an isomorphism
@@ -30,8 +28,7 @@ of semifans, one for each $0$-cusp of the Baily--Borel compactification $\bbcpt{
 
 :::
 
-::: {.Remark}
-### Fan versus strict-semifan bookkeeping
+::: {.Remark title="Fan versus strict-semifan bookkeeping"}
 
 The five cusps of $\bbcpt{\fentwo}$ match Sterk's five $0$-cusps of the Enriques period space [@Ste91], one semifan per cusp.
 Among the entries of $\semifans{F}$, the even-indexed entries $\torfan_2, \torfan_4$ are honest fans, while the odd-indexed entries $\semifan{F}_1, \semifan{F}_3, \semifan{F}_5$ are strict semifans (in the sense of [the generalized Coxeter-semifan definition](#def:generalized-coxeter-semifan), i.e.\ with infinite irrelevant subgroup, so not locally finite).
@@ -51,8 +48,7 @@ The source note states the reduction to Alexeev--Engel but does not carry out th
 
 :::
 
-::: {.Remark}
-### Role of the normalization
+::: {.Remark title="Role of the normalization"}
 
 The normalization $(-)^\nu$ is a technical condition standard in KSBA compactifications: taking a Zariski closure can introduce non-normal points where distinct degenerations are identified, producing a non-separated stack.
 Since the normalization morphism is finite, birational, and relatively smooth in codimension one, it confines the worst singularities to high-codimension sub-loci, which is what makes the isomorphism above an isomorphism of normal varieties.
@@ -61,8 +57,7 @@ Since the normalization morphism is finite, birational, and relatively smooth in
 
 ## Descent of semitoroidal data
 
-::: {.Conjecture #conj:descent_semitoroidal_data_En2}
-### Descent of semifans to $\normalize{B}$
+::: {.Conjecture #conj:descent_semitoroidal_data_En2 title="Descent of semifans to $\normalize{B}$"}
 
 The normalization $\normalize{B} \to B$ of the Noether--Lefschetz closure $B$ yields a normal projective variety.
 The semitoroidal structure on $\semifancpt{\fttz}{\semifan{F}_{\ram}}$ defined by the ramification semifan $\semifan{F}_{\ram}$ restricts to $\normalize{B}$.
@@ -70,8 +65,7 @@ Imposing the involution constraints on this restricted structure produces a coll
 
 :::
 
-::: {.Remark}
-### Folded semifans and the boundary stratification
+::: {.Remark title="Folded semifans and the boundary stratification"}
 
 The folded semifans $\semifan{F}_k$ determine the semitoroidal compactification $\semifancpt{\fentwo}{\semifans{F}}$ appearing in [the KSBA--semitoroidal isomorphism theorem](#thm:ksba_semitoroidal_En2), and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
 The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of [the Baily--Borel embedding lemma](#lem:locally_closed_embedding_BB); the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of [the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan).

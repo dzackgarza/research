@@ -1,7 +1,6 @@
 # The classifying map and the Enriques involution
 
-::: {.Remark}
-### Orientation
+::: {.Remark title="Orientation"}
 
 The results collected here are the intended culmination of the compactification program for $\fentwo$: the classifying morphism $\phi$ from the normalized Noether--Lefschetz closure $\normalize{B}$ to the KSBA compactification of the polarized moduli space should be shown to be an isomorphism, so that the geometric KSBA limits are identified with the explicitly constructible semitoroidal boundary.
 The three ingredients are a *global extension of the Enriques involution* over $B$, a *finiteness statement* for $\phi$, and the *application of Zariski's Main Theorem* that combines them.
@@ -19,8 +18,7 @@ The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limit
 
 ## Global extension of the Enriques involution
 
-::: {.Conjecture #conj:enriques_involution_extension}
-### Global extension of the Enriques involution
+::: {.Conjecture #conj:enriques_involution_extension title="Global extension of the Enriques involution"}
 
 Over the Noether--Lefschetz closure $B \containedin \ksbacpt{\fttz}$ of [the Enriques Noether--Lefschetz-locus definition](#def:nl-locus-enriques), there is a universal KSBA family $(\mathcal{X}_B, \varepsilon \mathcal{R}_B)$.
 The fixed-point-free Enriques involution $\ien$ on the smooth fibers is expected to extend uniquely to a global involution on the entire family $\mathcal{X}_B$.
@@ -29,8 +27,7 @@ This global involution should preserve the slc pair structure, preserve the rami
 The quotient $(\mathcal{X}_B, \varepsilon \mathcal{R}_B) / \ien$ would then form a flat family of stable Enriques pairs over $B$.
 :::
 
-::: {.Remark}
-### Intended mechanism
+::: {.Remark title="Intended mechanism"}
 
 The uniqueness of the extension is the expected consequence of the separatedness of KSBA stable limits: on the smooth locus the involution is the fixed-point-free deck transformation $\ien$ of the canonical cover, and a fiberwise automorphism of a family of stable pairs extends across the boundary by uniqueness of the limit [@AEGS25; @Kol23a].
 This is the same extension-by-uniqueness step invoked in the proposed KSBA-to-semitoroidal comparison ([the comparison conjecture](#conj:ksba_semitoroidal_comparison)), where the Enriques involution is extended over the stable limits and the ramification divisor descended.
@@ -39,8 +36,7 @@ The source note asserted the extension, the preservation of the slc structure an
 
 ## Finiteness of the classifying map
 
-::: {.Conjecture #conj:classifying_map_finite}
-### Finiteness of the classifying map
+::: {.Conjecture #conj:classifying_map_finite title="Finiteness of the classifying map"}
 
 The classifying morphism
 $$
@@ -49,8 +45,7 @@ $$
 from the normalization $B^\nu$ of the Noether--Lefschetz closure is finite.
 :::
 
-::: {.Remark}
-### Proposed combinatorial argument
+::: {.Remark title="Proposed combinatorial argument"}
 
 The source note proposes to establish finiteness by a combinatorial comparison of semifans.
 The normal KSBA compactification induces its own semifans $\semifan{G}_k$, which are coarsenings of the folded Coxeter semifans $\semifan{F}_k$.
@@ -61,20 +56,18 @@ The proposed input is the KSBA principle that the dual complex uniquely identifi
 
 This argument is presented as the program's intended route, not as a completed proof.
 
-::: {.Remark}
-### Which morphism is being made finite
+::: {.Remark title="Which morphism is being made finite"}
 
 The statement above is finiteness of $\phi\colon \normalize{B}\to\ksbacpt{\fentwo}$, a morphism of KSBA compactifications, and its proposed proof is the semifan comparison just described.
 It is a different statement from the finiteness of the period map $\fco\to \fen$ established in [the normalization theorem](#thm:normalization).
-The two share the criterion -- a proper morphism with finite fibres is finite [Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS) -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
+The two share the criterion -- a proper morphism with finite fibres is finite [@stacks-02LS] -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
 The no-coarsening statement is moreover the same phenomenon as [the no-moduli-loss conjecture](#conj:no_moduli_loss), which is itself open.
 :::
 :::
 
 ## Zariski's Main Theorem and the classifying isomorphism
 
-::: {.Theorem #thm:zariski_main_theorem}
-### Zariski's Main Theorem (classical)
+::: {.Theorem #thm:zariski_main_theorem title="Zariski's Main Theorem (classical)"}
 
 Let $f\colon X \to Y$ be a birational, finite morphism between normal varieties, with $Y$ proper.
 Then $f$ is an isomorphism.
@@ -86,8 +79,7 @@ Then $f$ is an isomorphism.
 It is invoked here only as an external tool; the content below -- that the classifying map $\phi$ satisfies its hypotheses -- is the program's own claim.
 :::
 
-::: {.Conjecture #conj:classifying_map_isomorphism}
-### The classifying map is an isomorphism
+::: {.Conjecture #conj:classifying_map_isomorphism title="The classifying map is an isomorphism"}
 
 For the Enriques compactification, the classifying map
 $$
@@ -106,8 +98,7 @@ is expected to satisfy the four hypotheses of [Zariski's Main Theorem](#thm:zari
 Granting these, Zariski's Main Theorem would give that $\phi$ is an isomorphism, identifying the geometric KSBA limits with the explicitly constructible semitoroidal boundary.
 :::
 
-::: {.Remark}
-### Status of the hypotheses
+::: {.Remark title="Status of the hypotheses"}
 
 Of the four inputs to [the classifying-map isomorphism conjecture](#conj:classifying_map_isomorphism), properness and normality are the ambient structural facts of the KSBA and Baily--Borel constructions, while birationality on the interior and finiteness are the load-bearing steps: finiteness is the still-open [finiteness conjecture](#conj:classifying_map_finite), and [the Enriques-involution extension conjecture](#conj:enriques_involution_extension) is what makes the universal quotient family -- and hence $\phi$ -- available over the boundary in the first place.
 The isomorphism statement therefore inherits the open status of [the finiteness conjecture](#conj:classifying_map_finite) and [the Enriques-involution extension conjecture](#conj:enriques_involution_extension), and is the compactification-side counterpart of [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison).

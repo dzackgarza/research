@@ -5,8 +5,7 @@ These describe the *ambient* degree-$2$ Enriques picture, into which the polariz
 
 ## The main theorem
 
-::: {.Theorem #thm:fen2_main}
-### Compactification of $\fentwo$
+::: {.Theorem #thm:fen2_main title="Compactification of $\fentwo$"}
 
 Let $\ksbacpt{\fentwo}$ denote the KSBA compactification of the moduli space $\fentwo$ of numerically polarized Enriques surfaces of degree $2$.
 Let $\semifans{F} = \ts{\semifan{F}_k}_{k=1}^5$ be the collection of folded semifans for the $0$-cusps.
@@ -18,8 +17,7 @@ Let $\semifans{F} = \ts{\semifan{F}_k}_{k=1}^5$ be the collection of folded semi
 3. The isomorphism is established via an intermediate normalization $\normalize{B}$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\ksbacpt{\fttz}$ [@AEGS25 Sec. 6].
 :::
 
-::: {.Notation #not:sterk-cusp-labels}
-### Two indexings of the boundary
+::: {.Notation #not:sterk-cusp-labels title="Two indexings of the boundary"}
 
 The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in [the five-cusp example](#ex:fen2_five_cusps).
 A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps
@@ -40,8 +38,7 @@ The proof runs through the K3 moduli space $\fttz$ of the degree-$(2,2,0)$ probl
 
 ## Normalization inside $F_{(2,2,0)}$
 
-::: {.Lemma #lem:fen2_normalization}
-### Normalization of $\fentwo$
+::: {.Lemma #lem:fen2_normalization title="Normalization of $\fentwo$"}
 
 There exists a closed subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
 :::
@@ -102,8 +99,7 @@ Enriques $1$-cusps are labelled as in [the Sterk cusp-label notation](#not:sterk
 
 ## The five $0$-cusps
 
-::: {.Example #ex:fen2_five_cusps}
-### The five $0$-cusps of $\ksbacpt{\fentwo}$
+::: {.Example #ex:fen2_five_cusps title="The five $0$-cusps of $\ksbacpt{\fentwo}$"}
 
 The boundary of the KSBA compactification $\ksbacpt{\fentwo}$ has $27$ divisors across five
 $0$-cusps: $6$ of Type II and $21$ of Type III [@AEGS25 Lem. 5.8].
@@ -149,8 +145,7 @@ The precise per-cusp ray counts and IAS involutions are migrated from the workin
 
 ## Folded Coxeter diagrams of the five cusps
 
-::: {.Remark #rmk:fen2_folded_coxeter}
-### Folded Coxeter diagrams of $\fentwo$
+::: {.Remark #rmk:fen2_folded_coxeter title="Folded Coxeter diagrams of $\fentwo$"}
 
 The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $\ten$, each realized as a folded image of a Coxeter diagram for $\fttz$ under the involution $I = -I_\En$ ([the root-folding criterion](#lem:root-folding-tdp), in the sense of [the folded-root definition](#def:folded-root)):
 
