@@ -1755,7 +1755,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     return presentation.quotient_by_relations(("x^2",))
 
                 class ParentMethods:
-                    def is_finitely_presented(self) -> bool:
+                    def is_finitely_presented_as_algebra(self) -> bool:
                         return True
 
             def _call_(self, module, multiplication, unit):
