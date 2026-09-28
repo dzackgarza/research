@@ -312,8 +312,6 @@ class AugmentedSimplexCategory(OwnedCategory):
                 case _:
                     return False
 
-        is_parent_of = __contains__
-
         def __call__(self, element):
             r"""Normalize a natural number to the point of this ordinal it names.
 
@@ -1379,6 +1377,10 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        def is_parent_of(self, element) -> bool:
+            r"""Whether the candidate belongs to this represented set."""
+            return element in self
+
         def _finiteness_decision(self):
             r"""Protected computation of finiteness when placement does not decide it."""
             return Unknown
@@ -1717,8 +1719,6 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def __contains__(self, point) -> bool:
         return point in self._points
-
-    is_parent_of = __contains__
 
     def _element_constructor_(self, point):
         if point not in self:
@@ -2675,8 +2675,6 @@ class _ConditionSet(Sets().ObjectType):
         universe = self.universe()
         return element in universe and bool(self.predicate()(universe(element)))
 
-    is_parent_of = __contains__
-
     def _element_constructor_(self, element):
         if element not in self:
             raise ValueError(f"{element!r} is not in {self}")
@@ -2806,8 +2804,6 @@ class _ImageSet(Sets().ObjectType):
                     f"cannot decide whether {element!r} lies in the image {self}: the source is infinite and no "
                     "inverse on the image was given"
                 )
-
-    is_parent_of = __contains__
 
     def _element_constructor_(self, element):
         if element not in self:
@@ -3318,8 +3314,6 @@ class CoproductsOfSets(OwnedCategory):
 
         def __contains__(self, element) -> bool:
             return element_parent(element) is self
-
-        is_parent_of = __contains__
 
         def _repr_(self) -> str:
             return f"Coproduct of the family over {self.index_set()}"

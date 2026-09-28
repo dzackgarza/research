@@ -336,8 +336,6 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         r"""A selection of this set is an element constructed in it."""
         return element_parent(candidate) is self
 
-    is_parent_of = __contains__
-
     def _element_constructor_(self, datum):
         if datum in self:
             return datum

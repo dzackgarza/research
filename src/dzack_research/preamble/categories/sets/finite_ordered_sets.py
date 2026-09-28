@@ -158,8 +158,6 @@ class OrderedEnumeratedSets(OwnedCategory):
                 return bool(self._contains_function(element))
             return self._index_of_function(element) is not None
 
-        is_parent_of = __contains__
-
         def __call__(self, element):
             return self._element_constructor_(element)
 
