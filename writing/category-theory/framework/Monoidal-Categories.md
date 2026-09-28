@@ -4,8 +4,7 @@ A tensor product on a category is chosen structure on it (@def-chosen-structure)
 
 ## Monoidal, braided, and symmetric structures {#sec-monoidal-categories}
 
-::: {#def-monoidal-category}
-## Monoidal categories
+::: {#def-monoidal-category title="Monoidal categories"}
 
 A *monoidal category* is a tuple $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$ consisting of a category $B$, a bifunctor $\otimes\colon B\times B\to B$, an object $e\in B$, and natural isomorphisms
 $$
@@ -25,8 +24,7 @@ commutes for all $a,c$, and $\lambda_e=\varrho_e$.
 The category is *strict* when $\otimes$ is associative and unital on the nose and $\alpha,\lambda,\varrho$ are identities [@Mac98, §VII.1].
 :::
 
-::: {#thm-coherence}
-## Coherence
+::: {#thm-coherence title="Coherence"}
 
 In a monoidal category, every diagram built from instances of $\alpha$, $\lambda$, $\varrho$, identities, and $\otimes$ commutes; equivalently, every monoidal category is monoidally equivalent to a strict one [@Mac98, §VII.2].
 :::
@@ -34,16 +32,14 @@ In a monoidal category, every diagram built from instances of $\alpha$, $\lambda
 Coherence is what licenses the notation $a_1\otimes\cdots\otimes a_n$ without parentheses.
 A construction that transports data along $\alpha$, $\lambda$, or $\varrho$ names the comparison it uses, in the sense of [Equivalences and witnesses](Identification.md#sec-canonical-identification).
 
-::: {#exm-cartesian-monoidal}
-## Cartesian and cocartesian structures
+::: {#exm-cartesian-monoidal title="Cartesian and cocartesian structures"}
 
 A category with finite products is monoidal with $a\otimes b$ a chosen product $a\times b$ and $e$ a terminal object, the three isomorphisms being the unique ones commuting with the projections; this is the *cartesian* monoidal structure.
 Dually, finite coproducts and an initial object give the *cocartesian* structure [@Mac98, §VII.1].
 For a commutative ring $R$, the tensor product and the direct sum give two different monoidal structures on $R\text{-}\mathbf{Mod}$, namely $(R\text{-}\mathbf{Mod},\otimes_R,R)$ and $(R\text{-}\mathbf{Mod},\oplus,0)$, and a statement about "the" monoidal structure names which one it uses.
 :::
 
-::: {#def-braided-symmetric}
-## Braided and symmetric structures
+::: {#def-braided-symmetric title="Braided and symmetric structures"}
 
 A *braiding* on a monoidal category is a natural isomorphism $\gamma_{a,b}\colon a\otimes b\cong b\otimes a$ satisfying the two hexagon conditions relating $\gamma$ to $\alpha$.
 A monoidal category is *symmetric* when it is equipped with a braiding satisfying
@@ -57,8 +53,7 @@ These conditions again imply that all diagrams built from $\alpha,\lambda,\varrh
 A cartesian or cocartesian monoidal structure is symmetric, with $\gamma$ the isomorphism commuting with the projections or injections.
 :::
 
-::: {#def-closed-monoidal}
-## Closed structure and internal hom
+::: {#def-closed-monoidal title="Closed structure and internal hom"}
 
 A monoidal category $V$ is *closed* when it is symmetric and each functor $-\otimes b\colon V\to V$ has a specified right adjoint $[b,-]\colon V\to V$,
 $$
@@ -78,8 +73,7 @@ The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the cano
 
 ## Internal algebraic objects {#sec-internal-objects}
 
-::: {#def-monoid-object}
-## Monoid objects
+::: {#def-monoid-object title="Monoid objects"}
 
 A *monoid in a monoidal category* $\langle B,\otimes,e\rangle$ is a triple $\langle c,\mu,\eta\rangle$ consisting of an object $c\in B$ and morphisms
 $$
@@ -102,8 +96,7 @@ commute.
 A morphism of monoids is a morphism of $B$ commuting with $\mu$ and $\eta$ [@Mac98, §VII.3].
 :::
 
-::: {#exm-monoid-object-instances}
-## Instances
+::: {#exm-monoid-object-instances title="Instances"}
 
 A monoid in $(\mathbf{Set},\times,1)$ is a monoid in the sense of @def-semigroup-monoid, the two unit laws for $\eta$ becoming the unit laws for the element $\eta(*)$.
 
@@ -111,8 +104,7 @@ For a commutative ring $R$, a monoid in $(R\text{-}\mathbf{Mod},\otimes_R,R)$ is
 A monoid in the strict monoidal category of endofunctors of a category, with $\otimes$ composition, is a monad [@Mac98, §VII.3 and §VI.1].
 :::
 
-::: {#def-group-object}
-## Group objects
+::: {#def-group-object title="Group objects"}
 
 Let $\mathcal C$ have finite products and a terminal object $1$.
 A *group object* of $\mathcal C$ is a monoid $\langle c,\mu,\eta\rangle$ for the cartesian structure together with a morphism $\zeta\colon c\to c$ such that
@@ -129,8 +121,7 @@ The inverse axiom uses the diagonal, which the cartesian structure supplies; gro
 
 ## The Grothendieck group of a monoidal structure {#sec-k0}
 
-::: {#def-k0-monoidal}
-## $K_0$ of a symmetric monoidal category
+::: {#def-k0-monoidal title="$K_0$ of a symmetric monoidal category"}
 
 Let $S$ be a symmetric monoidal category whose isomorphism classes of objects form a set $S^{\mathrm{iso}}=\pi_0(S^{\simeq})$.
 Then $\otimes$ makes $S^{\mathrm{iso}}$ an abelian monoid with identity $[e]$, and

@@ -10,8 +10,7 @@ For $R$ a Dedekind domain, the lattice category $\mathbf{Lat}_R$ of @def-lattice
 
 ## Injectivity {#sec-form-morphisms-injective}
 
-::: {#prp-form-morphism-injective}
-## Kernels of form-preserving maps
+::: {#prp-form-morphism-injective title="Kernels of form-preserving maps"}
 
 Let $f\colon(M,b_M)\to(N,b_N)$ be a morphism of $\mathcal B_{R,W}$.
 Then $\ker f\subseteq\ker b_M^{\sharp}$, with $b_M^{\sharp}$ the adjoint map of @def-polarization.
@@ -28,8 +27,7 @@ Nondegeneracy of $b_M$ is injectivity of $b_M^{\sharp}$, and the lattices of @de
 
 ## Pointwise sums {#sec-sums-of-form-morphisms}
 
-::: {#prp-sum-of-form-morphisms}
-## The pullback of a form along a sum
+::: {#prp-sum-of-form-morphisms title="The pullback of a form along a sum"}
 
 Let $f,g\colon(M,b_M)\to(N,b_N)$ be morphisms of $\mathcal B_{R,W}$ and let $f+g$ be their sum in $\operatorname{Hom}_R(M,N)$.
 Then
@@ -41,8 +39,7 @@ $$
 
 Expanding $b_N(f(x)+g(x),f(y)+g(y))$ by bilinearity gives four terms, of which $b_N(f(x),f(y))$ and $b_N(g(x),g(y))$ both equal $b_M(x,y)$.
 
-::: {#exm-identity-plus-identity}
-## A sum of two isometries
+::: {#exm-identity-plus-identity title="A sum of two isometries"}
 
 Let $R=W=\mathbb Z$ and let $(M,b_M)=(N,b_N)=(\mathbb Z,b)$ with $b(x,y)=xy$.
 Take $f=g=\operatorname{id}$.
@@ -55,8 +52,7 @@ so $f+g$ is not a morphism of $\mathcal B_{\mathbb Z,\mathbb Z}$.
 
 ## Initial and terminal objects {#sec-form-initial-terminal}
 
-::: {#prp-form-initial-object}
-## The zero form module is initial
+::: {#prp-form-initial-object title="The zero form module is initial"}
 
 The pair $(0,0)$, with $0$ the zero $R$-module and its unique bilinear form, is an initial object of $\mathcal B_{R,W}$.
 For an object $(M,b_M)$, the set $\operatorname{Hom}_{\mathcal B_{R,W}}\bigl((M,b_M),(0,0)\bigr)$ has one element if $b_M=0$ and is empty otherwise.
@@ -66,8 +62,7 @@ Let $j\colon 0\to M$ and $k\colon M\to0$ be the unique $R$-linear maps.
 Then $j^{*}b_M$ is the unique form on the zero module, so $j$ is a morphism $(0,0)\to(M,b_M)$, and it is the only one.
 And $k^{*}0=0$, which equals $b_M$ exactly when $b_M=0$.
 
-::: {#prp-summand-functor-no-right-adjoint}
-## Adjoints of orthogonal sum with a fixed object
+::: {#prp-summand-functor-no-right-adjoint title="Adjoints of orthogonal sum with a fixed object"}
 
 Let $M=(M,b_M)$ be an object of $\mathcal B_{R,W}$ with $b_M\neq0$ and let $F_M=-\perp M$ be the functor of @def-hyperbolic-stabilization.
 Then $F_M$ does not preserve the initial object, so $F_M$ is neither a left adjoint nor an equivalence.
@@ -80,8 +75,7 @@ An initial object admits a morphism to every object, so $M$ is not initial.
 A left adjoint preserves colimits, and an initial object is the colimit of the empty diagram; an equivalence preserves initial objects as well.
 For $S$ the hypothesis holds because $h_R\neq0$.
 
-::: {#thm-invertible-summand}
-## Invertible summands and the Witt class
+::: {#thm-invertible-summand title="Invertible summands and the Witt class"}
 
 Let $R$ be a Dedekind domain.
 The zero lattice lies in $\mathbf{Lat}_R$ and an orthogonal sum of $R$-lattices is an $R$-lattice, so the symmetric monoidal structure of @def-orthogonal-sum restricts to $(\mathbf{Lat}_R,\perp,0)$.
@@ -96,8 +90,7 @@ Consequently a unimodular $M$ with $[M]\neq0$ has $b_M\neq0$, so $F_M$ is not an
 For (1), an inverse of $M$ is a lattice $N$ with $M\perp N\cong0$; the underlying module of $M\perp N$ is $M\oplus N$, so $M=0$.
 For (2), if $b_M=0$ then $b_M^{\sharp}=0$, and a zero map that is an isomorphism has zero source, so $M=0$.
 
-::: {#thm-form-no-terminal}
-## Terminal objects
+::: {#thm-form-no-terminal title="Terminal objects"}
 
 Suppose $4\cdot1_R\neq0$ in $R$.
 Then $\mathcal B_{R,R}$ has no terminal object.
@@ -117,8 +110,7 @@ $$
 $$
 against the hypothesis.
 
-::: {#thm-form-not-additive}
-## Additivity of the form categories
+::: {#thm-form-not-additive title="Additivity of the form categories"}
 
 Suppose $4\cdot1_R\neq0$.
 Then $\mathcal B_{R,R}$ has no zero object, so it is not additive, and by @def-abelian-category it is not abelian.
@@ -137,8 +129,7 @@ The bar resolution is the augmented simplicial object of the comonad of an adjun
 The projective model structure is stated for bounded-below complexes in an abelian category with enough projectives (@thm-projective-model-structure).
 A stable $\infty$-category has a zero object (@def-stable-infinity-category), and a prespectrum object is a diagram whose off-diagonal values are zero objects (@def-prespectrum).
 
-::: {#thm-no-heart}
-## Hearts of $t$-structures
+::: {#thm-no-heart title="Hearts of $t$-structures"}
 
 Let $\mathcal C$ be a stable $\infty$-category with a $t$-structure and let $\mathcal C^{\heartsuit}$ be its heart.
 Then $\mathcal C^{\heartsuit}$ is equivalent to the nerve of its homotopy category, and that homotopy category is abelian [@Lur09, Def. 6.11 and Rmk. 6.12].

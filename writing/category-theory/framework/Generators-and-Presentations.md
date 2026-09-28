@@ -6,8 +6,7 @@ Whether a lift along a forgetful functor is a property or a chosen structure is 
 
 ## Generating frames {#sec-generating-frames}
 
-::: {#def-generating-frame}
-## Generating frames
+::: {#def-generating-frame title="Generating frames"}
 
 Fix a set $I$ and write $R^{(I)}$ for the free $R$-module on $I$.
 The comma category $\bigl(R^{(I)}\downarrow R\text{-}\mathbf{Mod}\bigr)$ has objects the pairs $(M,s)$ with $s\colon R^{(I)}\to M$ an $R$-linear map, and a morphism $(M,s)\to(N,t)$ is an $R$-linear map $f\colon M\to N$ satisfying $fs=t$.
@@ -19,8 +18,7 @@ be the full subcategory on the pairs with $s$ surjective.
 A *generating frame* on $M$ indexed by $I$ is an object $(M,s)$ of this category; the image $s(e_i)$ of the $i$th standard generator is the $i$th member of the generating family.
 :::
 
-::: {#prp-generating-frame-homsets}
-## Hom-sets of $\operatorname{GenFrame}_I(R)$
+::: {#prp-generating-frame-homsets title="Hom-sets of $\operatorname{GenFrame}_I(R)$"}
 
 For objects $(M,s)$ and $(N,t)$ there is a morphism $(M,s)\to(N,t)$ exactly when $\ker s\subseteq\ker t$, and it is then the only one.
 So $\operatorname{GenFrame}_I(R)$ is a preorder, and its hom-sets are genuinely sometimes empty.
@@ -31,8 +29,7 @@ One exists exactly when $t$ factors through $s$, and since $s$ induces $R^{(I)}/
 For emptiness take $R=\mathbb Z$, $I=\{1,2\}$, $M=N=\mathbb Z$, $s(a,b)=a$ and $t(a,b)=b$: both are surjective, $\ker s=0\oplus\mathbb Z$ and $\ker t=\mathbb Z\oplus0$, and neither contains the other, so both hom-sets between $(M,s)$ and $(N,t)$ are empty. $\square$
 :::
 
-::: {#prp-generating-frame-is-structure}
-## A generating frame is chosen structure
+::: {#prp-generating-frame-is-structure title="A generating frame is chosen structure"}
 
 Write $U_I\colon\operatorname{GenFrame}_I(R)\to R\text{-}\mathbf{Mod}$ for the comma-category projection $(M,s)\mapsto M$.
 Then $U_I$ is faithful and is not full, and its fibre over $M$ is the discrete category on the set of surjections $R^{(I)}\twoheadrightarrow M$.
@@ -44,8 +41,7 @@ It is not full: for $I$ a one-element set, $M=N=R$ and $s=t=\operatorname{id}_R$
 A morphism $(M,s)\to(M,s')$ over $\operatorname{id}_M$ is the identity of $M$ together with the requirement $s=s'$, so the fibre has no morphisms other than identities. $\square$
 :::
 
-::: {#def-coordinatized-module}
-## The two morphism conventions
+::: {#def-coordinatized-module title="The two morphism conventions"}
 
 Let $\operatorname{Coord}_I(R)$ be the category with the same objects as $\operatorname{GenFrame}_I(R)$ in which a morphism $(M,s)\to(N,t)$ is an arbitrary $R$-linear map $M\to N$.
 Its projection to $R\text{-}\mathbf{Mod}$ is fully faithful, so it is an equivalence onto the replete full subcategory of modules admitting an $I$-indexed generating frame, and by @def-property-structure-stuff it describes a property.
@@ -60,16 +56,14 @@ The coordinatized one is the setting for matrix calculus: a morphism there has a
 The basis case of the pair is @def-based-module and @prp-basis-is-structure.
 :::
 
-::: {#def-cyclic-module}
-## Cyclic and finitely generated modules
+::: {#def-cyclic-module title="Cyclic and finitely generated modules"}
 
 An $R$-module $M$ is *cyclic* if it admits a generating frame indexed by a one-element set, and *finitely generated* if it admits one indexed by a finite set.
 A cyclic module is isomorphic to $R/\operatorname{Ann}_R(x)$ for the image $x$ of the standard generator, and the cyclic modules form a replete full subcategory of the finitely generated ones.
 Finite generation is the property recorded in @def-module-subcategories: it asserts that the set of finite generating frames on $M$ is nonempty, and it retains none of the data of a chosen frame.
 :::
 
-::: {#def-finite-module}
-## Finiteness of the underlying set
+::: {#def-finite-module title="Finiteness of the underlying set"}
 
 Finiteness of the underlying set is a property of objects of $\mathbf{Set}$; the modules with finite underlying set are its pullback along the underlying-set functor $R\text{-}\mathbf{Mod}\to\mathbf{Set}$ in the sense of @def-axiom-through-functor.
 This property and finite generation are independent.
@@ -78,8 +72,7 @@ Over $R=\mathbb Z$: the module $\mathbb Z$ is finitely generated and has infinit
 
 ## Presentations {#sec-presentations}
 
-::: {#def-finite-presentation}
-## Finite presentations
+::: {#def-finite-presentation title="Finite presentations"}
 
 A *finite presentation* of an $R$-module $M$ is an exact sequence
 $$
@@ -90,8 +83,7 @@ It consists of a finite generating frame $q_M$ together with a finite generating
 The module $M$ is *finitely presented* if it admits a finite presentation.
 :::
 
-::: {#def-presentation-category}
-## The category of finite presentations
+::: {#def-presentation-category title="The category of finite presentations"}
 
 Let $\operatorname{FinPres}(R)$ be the category whose objects are the finite presentations of @def-finite-presentation and whose morphisms are the commutative diagrams
 
@@ -115,8 +107,7 @@ Relative to the standard bases, $A_1$ and $A_0$ are matrices over $R$, and $f$ i
 The projection $\operatorname{FinPres}(R)\to R\text{-}\mathbf{Mod}$ sends the diagram to $f$.
 :::
 
-::: {#prp-presentation-lift}
-## Lifting a morphism to presentations
+::: {#prp-presentation-lift title="Lifting a morphism to presentations"}
 
 Let finite presentations of $M$ and $N$ be given.
 Every $R$-linear map $f\colon M\to N$ is the image of a morphism of $\operatorname{FinPres}(R)$.
@@ -132,8 +123,7 @@ Forgetting $A_1$ and $A_0$ gives the category on the same objects whose morphism
 That is the distinction of @def-coordinatized-module one level up: the lifted morphisms carry the matrices, the abstract ones carry only the module map they present.
 :::
 
-::: {#def-fp-n}
-## Modules of type $FP_n$
+::: {#def-fp-n title="Modules of type $FP_n$"}
 
 For $n\ge0$, an $R$-module $M$ is of *type $FP_n$* if it admits a projective resolution (@def-resolution)
 $$
@@ -148,8 +138,7 @@ A chosen partial resolution finitely generated through degree $n$ is structure o
 
 The endomorphism monoid $\operatorname{Hom}_{\mathcal C}(X,X)$ and the automorphism group $\operatorname{Aut}_{\mathcal C}(X)$ of an object are defined at @def-endomorphism-monoid; for a lattice $L$ the instance $O(L)=\operatorname{Aut}(L)$ is in @sec-isometry-groups.
 
-::: {#prp-automorphisms-act-on-frames}
-## The action on the fibre
+::: {#prp-automorphisms-act-on-frames title="The action on the fibre"}
 
 Let $I$ be a set and let $M$ be an $R$-module.
 Precomposition, $(M,s)\cdot u=(M,su)$ for $u\in\operatorname{Aut}_R\bigl(R^{(I)}\bigr)$, is a right action of $\operatorname{Aut}_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prp-generating-frame-is-structure, and the action is free.
@@ -163,8 +152,7 @@ For $s,s'$ isomorphisms, $s^{-1}s'$ is an automorphism of $R^{(I)}$ with $s(s^{-
 
 ## The free module functor {#sec-free-module-functor}
 
-::: {#def-free-module-functor}
-## Free modules on a set
+::: {#def-free-module-functor title="Free modules on a set"}
 
 Sending a set $I$ to $R^{(I)}$ and a function $\varphi\colon I\to J$ to the $R$-linear map $e_i\mapsto e_{\varphi(i)}$ defines a functor $R^{(-)}\colon\mathbf{Set}\to R\text{-}\mathbf{Mod}$, left adjoint to the underlying-set functor $U$:
 $$

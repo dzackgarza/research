@@ -33,8 +33,7 @@ A construction that uses an embedding names a particular monomorphism.
 
 ## Fibers of a morphism {#sec-fibers}
 
-::: {#def-fiber-over-point}
-## The fiber over a point
+::: {#def-fiber-over-point title="The fiber over a point"}
 
 Let $C$ have a terminal object $1$ and the relevant pullbacks, let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
 The *fiber of $f$ over $y$* is the apex of the cartesian square
