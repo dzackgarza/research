@@ -6,13 +6,11 @@ The results collected here are the intended culmination of the compactification 
 The three ingredients are a *global extension of the Enriques involution* over $B$, a *finiteness statement* for $\phi$, and the *application of Zariski's Main Theorem* that combines them.
 
 These are the program's own in-progress steps rather than settled theorems.
-They are stated conjecturally throughout, and they are exactly parallel to the open comparison of [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison).
-The period-domain counterpart of the finiteness step is [the normalization theorem](#thm:normalization), which is proved; what is open here is the KSBA-side statement for $\phi$.
+They are stated conjecturally throughout, and they are exactly parallel to the open comparison of [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison). The period-domain counterpart of the finiteness step is [the normalization theorem](#thm:normalization), which is proved; what is open here is the KSBA-side statement for $\phi$.
 Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
 
 ::: {.Remark}
-The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are
-[@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
+The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
 :::
 :::
 
@@ -29,8 +27,7 @@ The quotient $(\mathcal{X}_B, \varepsilon \mathcal{R}_B) / \ien$ would then form
 
 ::: {.Remark title="Intended mechanism"}
 
-The uniqueness of the extension is the expected consequence of the separatedness of KSBA stable limits: on the smooth locus the involution is the fixed-point-free deck transformation $\ien$ of the canonical cover, and a fiberwise automorphism of a family of stable pairs extends across the boundary by uniqueness of the limit [@AEGS25; @Kol23a].
-This is the same extension-by-uniqueness step invoked in the proposed KSBA-to-semitoroidal comparison ([the comparison conjecture](#conj:ksba_semitoroidal_comparison)), where the Enriques involution is extended over the stable limits and the ramification divisor descended.
+The uniqueness of the extension is the expected consequence of the separatedness of KSBA stable limits: on the smooth locus the involution is the fixed-point-free deck transformation $\ien$ of the canonical cover, and a fiberwise automorphism of a family of stable pairs extends across the boundary by uniqueness of the limit [@AEGS25; @Kol23a]. This is the same extension-by-uniqueness step invoked in the proposed KSBA-to-semitoroidal comparison ([the comparison conjecture](#conj:ksba_semitoroidal_comparison)), where the Enriques involution is extended over the stable limits and the ramification divisor descended.
 The source note asserted the extension, the preservation of the slc structure and of $\mathcal{R}_B$, the commutation with $\idp$, and the flatness of the quotient family, without proof; each remains an obligation of the program.
 :::
 
@@ -101,6 +98,5 @@ Granting these, Zariski's Main Theorem would give that $\phi$ is an isomorphism,
 ::: {.Remark title="Status of the hypotheses"}
 
 Of the four inputs to [the classifying-map isomorphism conjecture](#conj:classifying_map_isomorphism), properness and normality are the ambient structural facts of the KSBA and Baily--Borel constructions, while birationality on the interior and finiteness are the load-bearing steps: finiteness is the still-open [finiteness conjecture](#conj:classifying_map_finite), and [the Enriques-involution extension conjecture](#conj:enriques_involution_extension) is what makes the universal quotient family -- and hence $\phi$ -- available over the boundary in the first place.
-The isomorphism statement therefore inherits the open status of [the finiteness conjecture](#conj:classifying_map_finite) and [the Enriques-involution extension conjecture](#conj:enriques_involution_extension), and is the compactification-side counterpart of [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison).
-The same three-step shape -- stabilizer, finite fibres, properness -- is what carries [the normalization theorem](#thm:normalization) on the period side; the open part here is that the semifan comparison replacing the fibre count is not yet established.
+The isomorphism statement therefore inherits the open status of [the finiteness conjecture](#conj:classifying_map_finite) and [the Enriques-involution extension conjecture](#conj:enriques_involution_extension), and is the compactification-side counterpart of [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison). The same three-step shape -- stabilizer, finite fibres, properness -- is what carries [the normalization theorem](#thm:normalization) on the period side; the open part here is that the semifan comparison replacing the fibre count is not yet established.
 :::
