@@ -2204,24 +2204,6 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
                 lambda source: source.Mor(self)(generator_morphism),
             )
 
-        def algebra_base_ring(self):
-            r"""``R`` for ``End_R(F)``: the base ring of the Mor module this algebra is."""
-            return self.base_ring()
-
-        def is_commutative(self) -> bool:
-            r"""``M_n(R)`` commutes exactly when ``n <= 1``.
-
-            This category is over a commutative ring, so the only obstruction
-            is the size of the matrices.  Rank one gives ``R`` itself and rank
-            zero the zero ring; from rank two the matrix units ``e_{12}`` and
-            ``e_{21}`` fail to commute.
-            """
-            return self.base_ring().one() == self.base_ring().zero() or self.nrows() <= 1
-
-        def one(self):
-            r"""The unit of ``End_R(F)``: the identity, the unit of composition."""
-            return self.identity()
-
 def _require_matrix_algebra(mor):
     r"""Return a square matrix Mor after requiring constructor-time algebra placement."""
 
