@@ -14,6 +14,32 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### The subgroup collection is represented only as a finite enumeration
+
+For every group `G`, the subgroups of `G` form a mathematically defined
+collection whose points are subgroups equipped with their inclusions into `G`.
+Finiteness or effective enumeration is additional computational structure, not
+part of that definition.
+
+Observed during `placement-audit` on 2026-09-28:
+`OwnedGroups.ParentMethods.subgroups()` is correctly placed on the general group
+owner, but its documented/public result is an owned finite ordered set and its
+only branch constructs that set from GAP `AllSubgroups()` when `G` is finite.
+The general branch only asserts that subgroup enumeration is unavailable.  Thus
+the operation's placement says the general mathematics while its codomain still
+encodes the finite algorithm.
+
+**Dependency path:** group `G` -> subgroups with inclusions into `G` -> owned
+collection/set of those subgroup objects -> optional finite enumeration for
+computable finite representations.
+**Consumers:** `OwnedGroups.subgroups()` and any later construction quantifying
+over or mapping the subgroup collection without a finiteness hypothesis.
+**Coverage boundary:** the general group owner, transported subgroup constructor,
+predicate subgroup owners, and finite GAP enumeration route were inspected. No
+claim is made here about a preferred representation of a non-enumerable subgroup
+collection beyond requiring that it not be identified with the finite algorithm.
+Repair: `subgroup-collection-owner` in [TODO.md](TODO.md).
+
 ### Backing-core constructor narrowing and colimit lifting block integration specimens
 
 The backing core must preserve the constructor of a fixed-endpoint Mor under
