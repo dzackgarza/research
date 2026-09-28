@@ -9,7 +9,7 @@ is no separate "paper" tree and no separate "notes" tree.
 The vault is the Coble part of the Quarto site rooted at `writing/`. Pages are listed as
 chapters in `writing/.book/_quarto.yml`; a new page is not published until it is added there.
 
-```
+```text
 <topic>/            One directory per topic, kebab-case, one page per file
 index.md            The part landing page
 papers/             Extracted third-party sources, one directory per citation key
