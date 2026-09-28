@@ -173,15 +173,13 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
         def __contains__(self, vertex) -> bool:
             return vertex in self.vertices()
 
-        is_parent_of = __contains__
-
         def _element_constructor_(self, vertex):
             return self.vertices()(vertex)
 
         def __iter__(self):
             return iter(self.vertices())
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             return self._vertices.cardinality()
 
         def is_directed(self) -> bool:
@@ -449,8 +447,6 @@ class VinbergInvariantMatrices(OwnedCategory):
         def __contains__(self, mirror) -> bool:
             return mirror in self.index_set()
 
-        is_parent_of = __contains__
-
         def _element_constructor_(self, mirror):
             return self.index_set()(mirror)
 
@@ -487,7 +483,7 @@ class VinbergInvariantMatrices(OwnedCategory):
                 )
             return self.vinberg_invariant(left, right)
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             return self._index_set.cardinality()
 
         def projective_line(self):

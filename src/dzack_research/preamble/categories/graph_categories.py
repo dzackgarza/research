@@ -56,15 +56,13 @@ class _FiniteDigraphEngine:
     def __contains__(self, vertex) -> bool:
         return vertex in self.vertices()
 
-    is_parent_of = __contains__
-
     def _element_constructor_(self, vertex):
         return self.vertices()(vertex)
 
     def __iter__(self):
         return iter(self.vertices())
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         return self.vertices().cardinality()
 
     def has_edge(self, left, right) -> bool:
@@ -238,7 +236,7 @@ class Digraphs(OwnedCategory):
             return super().Mor(codomain, category=category)
 
     def super_categories(self):
-        return [Sets()]
+        return [Sets().Finite()]
 
     @classmethod
     def _repr_object_names(cls):
