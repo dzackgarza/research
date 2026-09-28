@@ -11,7 +11,7 @@ Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\cap\HH^n_L$
 
 ## The Tits cone
 
-::: {.Definition #def:tits-cone}
+::: {.Definition #def:tits-cone title="The Tits cone"}
 
 Let $(W,S)$ be a Coxeter system with Gram form $G$ on $V \da \RR^S$ and simple roots $\ts{\alpha_s}_{s\in S}$, and let $W$ act on the dual space $V^*$ by the contragredient of its action on $V$.
 The **closed fundamental chamber** is
@@ -95,7 +95,7 @@ The intersection $\Intersect_{s\in I}\overline{H_s}$ is the image of $A_I^\perp$
 Since $\eta$ is isotropic and $L$ has signature $(1,n)$, the form induced on $\eta^{\perp}/\eta$ is negative definite of rank $n-1$; and $A_I\containedin\eta^{\perp}$, with $A_I/\RR\eta$ of dimension $n-1$, so $W_I$ acts on $\eta^{\perp}/\eta$ as the reflection group of $\Sigma_I$, which is euclidean by \longref{def:coxeter-system-type}.
 :::
 
-::: {.Corollary #cor:ideal-vertices-are-parabolic}
+::: {.Corollary #cor:ideal-vertices-are-parabolic title="Ideal vertices correspond to maximal parabolic subdiagrams"}
 
 Sending an ideal vertex $[\eta]$ of $P$ to the set $I$ of all walls of $P$ through $[\eta]$ is a bijection from the ideal vertices of $P$ onto a set of parabolic subdiagrams of $\Sigma$ of rank $n-1$, and each such $\Sigma_I$ is maximal among the parabolic subdiagrams of $\Sigma$, in the sense of \longref{def:parabolic-subdiagram}.
 :::
@@ -116,7 +116,7 @@ Reading the same construction one level up, at a $0$-cusp $[I]$ of a Baily--Bore
 
 ## Covolume, compactness, and finite volume
 
-::: {.Definition #def:covolume}
+::: {.Definition #def:covolume title="Covolume of a hyperbolic reflection group"}
 
 Let $\Gamma\leq\Isom(\HH^n_L)$ be a discrete subgroup.
 Its **covolume** is the hyperbolic volume $\vol(\HH^n_L/\Gamma)$ of the quotient orbifold.

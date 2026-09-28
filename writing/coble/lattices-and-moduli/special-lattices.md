@@ -37,7 +37,7 @@ $$
 $$
 :::
 
-::: {.Proposition #prop:orthogonal-group-U}
+::: {.Proposition #prop:orthogonal-group-U title="The integral orthogonal group of the hyperbolic plane"}
 
 The orthogonal group of $U$ is a Klein four-group,
 $$
@@ -74,7 +74,7 @@ $(b\inv f)(be) = fe = 1$, so $j_b\in\Orth(U_\QQ)$.
 
 ## The scaled hyperbolic plane $U(2)$
 
-::: {.Proposition #prop:U2-discriminant}
+::: {.Proposition #prop:U2-discriminant title="Dual and discriminant group of $U(2)$"}
 
 The scaled lattice $U(2)$ has Gram matrix
 $$
@@ -110,7 +110,7 @@ $\tfrac{1}{2}e$ and $\tfrac{1}{2}f$.
 
 ## The lattice $E_8(2)$
 
-::: {.Proposition #prop:E8-2-discriminant}
+::: {.Proposition #prop:E8-2-discriminant title="Dual and discriminant group of $E_8(2)$"}
 
 The scaled root lattice $E_8(2)$, with $E_8$ the negative-definite $E_8$ lattice
 of [the $E_n$ lattice definition](root-systems.md#def:lattice-En), satisfies

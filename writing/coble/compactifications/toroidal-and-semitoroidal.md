@@ -9,7 +9,7 @@ The Coble-specific application of these constructions -- the KSBA stable pair, t
 
 ## Toroidal compactifications
 
-::: {.Definition #def:toroidal-compactification}
+::: {.Definition #def:toroidal-compactification title="Toroidal compactifications from cusp fans"}
 
 A **toroidal compactification** $\torcpt{\FG}$ refines the singular cusps of the Baily--Borel compactification by choosing an admissible rational polyhedral fan $\torfan_I$ for each cusp $I$.
 
@@ -23,7 +23,7 @@ There is a proper $\Gamma$-equivariant morphism $\torcpt{\FG} \to \bbcpt{\FG}$.
 
 ## Semitoroidal compactifications
 
-::: {.Definition #def:semitoroidal-compactification}
+::: {.Definition #def:semitoroidal-compactification title="Semitoroidal compactifications from semifans"}
 
 Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
 
@@ -40,7 +40,7 @@ $$
 They are critical for modeling KSBA boundaries where fans may be infinitely generated or accumulate.
 :::
 
-::: {.Theorem #thm:tower-semitoroidal}
+::: {.Theorem #thm:tower-semitoroidal title="The toroidal--semitoroidal--Baily--Borel tower characterizes semitoroidal compactifications"}
 
 Any normal compactification admitting a tower
 $$
@@ -60,7 +60,7 @@ This is the semitoroidal side of the Coble comparison problem, recorded here as 
 
 ## Generalized Coxeter semifans
 
-::: {.Definition #def:generalized-coxeter-semifan}
+::: {.Definition #def:generalized-coxeter-semifan title="Generalized Coxeter semifans from relevant walls"}
 
 The main geometric application of folded Coxeter--Vinberg diagrams is the construction of semitoroidal compactifications of moduli spaces $\FG$ via **generalized Coxeter semifans**.
 
@@ -91,7 +91,7 @@ Under the proposed restriction, a Coble wall is irrelevant precisely when every 
 
 ## KSBA compactifications
 
-::: {.Definition #def:ksba-compactification}
+::: {.Definition #def:ksba-compactification title="KSBA compactifications by stable slc pairs"}
 
 The **KSBA compactification** generalizes the Deligne--Mumford compactification of curves to higher dimensions.
 It compactifies moduli of varieties of log general type by considering **stable slc pairs** $(X, D)$ [@KS88; @Ale96].
@@ -118,7 +118,7 @@ The resulting comparison target between the KSBA and semitoroidal compactificati
 
 ## Looijenga compactifications
 
-::: {.Definition #def:looijenga-compactification}
+::: {.Definition #def:looijenga-compactification title="Looijenga compactifications of arrangement complements"}
 
 Let $\cH$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period
 domain $D$.
@@ -157,12 +157,12 @@ in its own right, recorded among the open problems.
 
 ## Recognizable divisors
 
-::: {.Definition #def:recognizable-divisor}
+::: {.Definition #def:recognizable-divisor title="Recognizable divisors"}
 
 A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if, for any quasipolarized Kulikov degeneration $\mathcal{X} \to \Delta$, the divisor $R$ extends unambiguously to a flat limit $R_0 \subset \mathcal{X}_0$, unique up to $\operatorname{Aut}^0(\tilde{\mathcal{X}}_0)$ in any other smoothing.
 :::
 
-::: {.Theorem #thm:recognizable-semitoroidal}
+::: {.Theorem #thm:recognizable-semitoroidal title="Recognizable divisors produce semitoroidal KSBA normalizations"}
 
 If $R$ is recognizable, then the normalization of the KSBA compactification $\overline{F}^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mathcal{F}_R}$, defined by a specific semifan $\mathcal{F}_R$ [@AE23].
 :::

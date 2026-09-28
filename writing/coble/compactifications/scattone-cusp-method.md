@@ -43,7 +43,7 @@ For $d = 1$ the classification uses primitive embeddings into the $24$ Niemeier 
 The two invariants that separate isotropic orbits are the divisibility of a primitive vector and its image in the discriminant group.
 Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of $v\in L$ is the positive generator of the ideal $\beta_L(v, L)\containedin\ZZ$, and that $v^* \da v/\div_L(v)$.
 
-::: {.Proposition #prop:coble-divisibility-discriminant}
+::: {.Proposition #prop:coble-divisibility-discriminant title="Divisibility is the order of the discriminant class"}
 
 Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily isotropic) vector.
 Then $v^* \da v/\div_L(v)\in L\dual$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da L\dual/L$ has order $\div_L(v)$.
