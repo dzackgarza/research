@@ -62,7 +62,7 @@ $$
 K_Y^2 = (-2\ell_1 - 2\ell_2)^2 = 4(\ell_1^2 + 2(\ell_1 \cdot \ell_2) + \ell_2^2 ) = 4 (0 + 2 \cdot 1 + 0 ) = 8.
 $$
 We thus recover the well-known fact that $Y$ is a del Pezzo surface of degree $8$.
-It is also well-known that  $Y$ is a toric, and the polytope for the projective toric pair $(Y, \OO_Y(a, b))$ is the rectangle $Q_{a,b} \da [0, a] \times [0, b] \containedin \ZZ^2$.
+It is also well-known that $Y$ is toric, and the polytope for the projective toric pair $(Y, \OO_Y(a, b))$ is the rectangle $Q_{a,b} \da [0, a] \times [0, b] \containedin \ZZ^2$.
 In particular, for $\OO_Y(4, 4)$, the polytope is the square $Q\da Q_{4,4} = [0, 4]^2 \containedin M_Y \da \ZZ^2$ with sides of lattice length 4.
 
 ##### Involutions in Coordinates

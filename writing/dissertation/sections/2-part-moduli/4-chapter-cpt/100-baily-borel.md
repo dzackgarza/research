@@ -150,7 +150,7 @@ A_k(\Gamma) \da  H^0(D, \mcl^{\tensor k})^\Gamma,
 \qquad
 R_\Gamma \da \bigoplus_{k \geq 0} A_k(\Gamma)
 .$$
-@BB66 shows that that $R_\Gamma$ is a finitely generated $\CC$-algebra, and there is an identification $\bbcpt{\FG} \cong \Proj(R_\Gamma)$.
+@BB66 shows that $R_\Gamma$ is a finitely generated $\CC$-algebra, and there is an identification $\bbcpt{\FG} \cong \Proj(R_\Gamma)$.
 Moreover, $\mcl$ descends to an ample line bundle on $\bbcpt{\FG}$ and the sections of $\mcl^{\tensor k}$ satisfy the analytic growth conditions at cusps of $\FG$ in analogy to classical modular forms for $\SL_{2}(\ZZ)$.
 This construction is canonical and functorial: any $(\Gamma_1, \Gamma_2)$-equivariant morphism $F_{\Gamma_1} \to F_{\Gamma_2}$ compatible with $\mcl_1$ and $\mcl_2$ extends uniquely to a morphism between their Baily–Borel compactifications. However, this typically introduces singularities on $\bd\bbcpt{\FG}$, motivating further refinements, e.g., semitoroidal or KSBA compactifications.
 

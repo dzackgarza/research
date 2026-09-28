@@ -312,7 +312,7 @@ Let $\bar{X}$ be a reduced, finite-type, possibly reducible variety arising as t
 
 - **Vertices:** Each irreducible component $\bar{V}_i$ of $\bar{X}$ corresponds to a vertex.
 
-- **$k$-Simplices:** For every connected component of the intersection of $k+1$ distinct irre0ducible components $\bar{V}_{i_0} \cap \bar{V}_{i_1} \cap \cdots \cap \bar{V}_{i_k}$ (with nonempty intersection), include a $k$-simplex whose vertices correspond to the involved components.
+- **$k$-Simplices:** For every connected component of the intersection of $k+1$ distinct irreducible components $\bar{V}_{i_0} \cap \bar{V}_{i_1} \cap \cdots \cap \bar{V}_{i_k}$ (with nonempty intersection), include a $k$-simplex whose vertices correspond to the involved components.
 
 - **Faces and Gluing:** The simplices are glued according to inclusions of the corresponding strata.
 
@@ -344,10 +344,10 @@ The stack $\mcm\uksba_{d, \vec{a},v}$ is separated and proper, and its coarse mo
 Varieties with $K_X\sim 0$ numerically trivial, such as $K3$ and Enriques surfaces, are said to be **$K$-trivial**.
 They require special treatment in the theory of KSBA stable pairs and compactifications because the stability condition (ampleness of $K_X + R$) can not hold when $R=0$.
 So one must *always* choose a nontrivial divisor $R$ for such varieties, and the positivity must be entirely supplied by $R$ in order to achieve any kind of stability.
-We are thus lead, as a first approximation, to consider pairs $(X, R)$.
+We are thus led, as a first approximation, to consider pairs $(X, R)$.
 However, the MMP and KSBA compactification require pairs $(X, D)$ where each component $D_i$ of $D$ appears with coefficient $a_i < 1$, noting that this must be a *strict* inequality.
 This ensures that limits have only slc singularities and that stability is preserved in families, and avoids the complications that arise in the $a_i = 1$ case -- infinite stabilizers leading to Artin stacks instead of Deligne-Mumford stacks, more severe non-slc singularities in degenerations, a potential loss of separatedness, and so on.
-Thus, in the $K$-trivial setting, one "perturbs" the canonical class by achieve the necessary positivity, by considering pairs $(X, \eps R)$ with a small rational coefficient $0 < \eps \ll 1$. For sufficiently small $\eps$, the sum $K_X + \eps R$ becomes ample and thus $(X, \eps R)$ is KSBA stable.
+Thus, in the $K$-trivial setting, one "perturbs" the canonical class to achieve the necessary positivity by considering pairs $(X, \eps R)$ with a small rational coefficient $0 < \eps \ll 1$. For sufficiently small $\eps$, the sum $K_X + \eps R$ becomes ample and thus $(X, \eps R)$ is KSBA stable.
 With this setup, the moduli of stable $K$-trivial pairs is realized as a special locus in the general KSBA moduli stack described above, and all the foundational results (properness, separatedness, projectivity, etc.) apply directly.
 
 :::{.definition title="Stable $K$-Trivial Pair"}
@@ -391,7 +391,7 @@ $$
 are canonically isomorphic; that is, passing to small boundary does not affect the structure of the moduli problem or its compactification.
 :::
 
-Thus $\mcm_e\uktriv(\eps)$ is a locus in a general KSBA moduli stack cut out by the condition $K_X \cong \OO_X$ and a the specification of a single boundary divisor $R$ of degree $e$ with small coefficient $\eps$.
+Thus $\mcm_e\uktriv(\eps)$ is a locus in a general KSBA moduli stack cut out by the condition $K_X \cong \OO_X$ and the specification of a single boundary divisor $R$ of degree $e$ with small coefficient $\eps$.
 
 
 #### Boundaries of KSBA compactifications
@@ -401,7 +401,7 @@ For moduli spaces such as $F_S$ of $S$-polarized K3 surfaces, and thus for space
 :::
 
 :::{.definition title="Boundary Strata and Combinatorial Types" #boundary-stratum}
-A **boundary stratum** in a KSBA compactification $\cpt{X}$ of $X$ is a locally closed subset parameterizing stable pairs $(X, R)$ that are not smoot, i.e., those lying in the boundary $\bd\cpt{X} \da \cpt{X} \setminus X$, where $X$ is the locus of smooth KSBA stable pairs.
+A **boundary stratum** in a KSBA compactification $\cpt{X}$ of $X$ is a locally closed subset parameterizing stable pairs $(X, R)$ that are not smooth, i.e., those lying in the boundary $\bd\cpt{X} \da \cpt{X} \setminus X$, where $X$ is the locus of smooth KSBA stable pairs.
 The **slc combinatorial type** of a stable KSBA limit $(\cpt{X}, \eps \cpt{R})$ is the discrete data given by the simplicial complex $\Gamma(\cpt{X})$, along with the deformation type of the quasi-polarized minimal resolution $(V_i, D_i, L_i)$ of each irreducible component $\cpt{V}_i$ of $\cpt{X}$, where $L_i = \OO_{V_i}(R_i)$ is the line bundle associated to the pullback $R_i$ of the boundary divisor to the resolution.
 An **slc stratum** is a boundary stratum of $\cpt{X}$ consisting of all stable pairs $(X, R)$ with the same slc combinatorial type.
 :::
@@ -409,7 +409,7 @@ An **slc stratum** is a boundary stratum of $\cpt{X}$ consisting of all stable p
 
 Given a nonzero vector $\lambda$ in a lattice $T$, its **projective class** is $[\lambda] \da \ts{ a\lambda \st a\in \RR_{>0}}$, i.e. the ray it generates in $T_\RR$.
 Letting $T$ be the polarization lattice for a polarized moduli problem $\FG$ of K3 surfaces, we consider degenerations at a cusp $I$ in $\bd\bbcpt{\FG}$.
-The logarithmic mondromy $N$ at $I$ determines, up to the monodromy group and scaling, elements $\eta\in T$ and $\lambda\in \eta^{\perp T}$ by the explicit formula
+The logarithmic monodromy $N$ at $I$ determines, up to the monodromy group and scaling, elements $\eta\in T$ and $\lambda\in \eta^{\perp T}$ by the explicit formula
 $$
 N(\gamma) = (\gamma \cdot \eta)\lambda - (\gamma \cdot \lambda)\eta,
 \,\,
@@ -421,7 +421,7 @@ t = 0 & \text{if $I$ is a type $\II$ $1$-cusp }
 \end{cases}
 ,$$
 where $t$ is the number of triple points in $\mcx_0$ in the type $\III$ case.
-Arcs in $\bbcpt{\FG}$ approaching a 0-cusp $\eta$ are asymptotic to translates of co-characters determined by the class of $\lambda \in \bdlattice{T}{\eta} = \eta^{\perp T}/\eta$, and thus $\lambda$ called the "monodromy invariant" of the degeneration.
+Arcs in $\bbcpt{\FG}$ approaching a 0-cusp $\eta$ are asymptotic to translates of co-characters determined by the class of $\lambda \in \bdlattice{T}{\eta} = \eta^{\perp T}/\eta$, and thus $\lambda$ is called the "monodromy invariant" of the degeneration.
 We finally arrive at the key results that make our combinatorial analysis of $\fent$ possible:
 
 :::{.theorem
@@ -452,17 +452,17 @@ For each cusp $I\in \bbcpt{F_S}$, writing $\bdlattice{T}{I}$ for the correspondi
 .\end{align*}
 
 and let $D$ be the polyhedral decomposition of $\thecone{C}_S^{\BB}$ induced by the level sets of $\SS$, i.e. whose tiles are the loci of all monodromy invariants $\lambda$ on which $\SS(\lambda)$ is constant.
-Then the *maximal* cones of $D$ and $\semifan{F}_R$ are in bijection, and $\Psi_R$ sends each stratumm in $\bd \cpt{F}_S^{\semifan{F}_R}$ to the corresponding slc stratum of $\bd \cpt{F}_S^R$.
+Then the *maximal* cones of $D$ and $\semifan{F}_R$ are in bijection, and $\Psi_R$ sends each stratum in $\bd \cpt{F}_S^{\semifan{F}_R}$ to the corresponding slc stratum of $\bd \cpt{F}_S^R$.
 :::
 
 
 #### Conclusion
 
-The main takeaway of this section is that the boundary of the KSBA compactifications of moduli spaces such as $F_S$ of $S$-polarized K3 surfaces and related spaces like $\fttz$ and $\fent$ admit a precise, combinatorial description:
+The main takeaway of this section is that the boundary of the KSBA compactifications of moduli spaces such as $F_S$ of $S$-polarized K3 surfaces and related spaces like $\fttz$ and $\fent$ admits a precise, combinatorial description:
 
-- The boundary $\cpt{F}_S^R$ is stratified according by slc combinatorial type, which encodes both the deformation type of the minimal resolution (with its corresponding divisor) of a stable pair $(X, R)$ and its simplicial dual complex,
+- The boundary $\cpt{F}_S^R$ is stratified according to slc combinatorial type, which encodes both the deformation type of the minimal resolution (with its corresponding divisor) of a stable pair $(X, R)$ and its simplicial dual complex,
 
-- Each stratum corresponds to degenerations sharing the same monodromy data up to scaling, which is captured by the projective classes $[\lambda]$ of monodromy invariants in the stable boundary lattices $\bdlattice{T}{I}$ . There is thus a well-defined stratum function $\SS$ assigning to every monodromy class $\lambda$ the associated slc boundary stratum in $\cpt{F}_S$.
+- Each stratum corresponds to degenerations sharing the same monodromy data up to scaling, which is captured by the projective classes $[\lambda]$ of monodromy invariants in the stable boundary lattices $\bdlattice{T}{I}$. There is thus a well-defined stratum function $\SS$ assigning to every monodromy class $\lambda$ the associated slc boundary stratum in $\cpt{F}_S$.
 
 The stratification of $\cpt{F}_S^R$ is thus canonically organized by combinatorial data: dual complexes, semifans, and monodromy invariants. In geometric terms:
 
@@ -477,15 +477,15 @@ Thus the boundary of $\cpt{F}_S^R$ (and similar KSBA compactifications) is contr
 The KSBA approach has a range of pros and cons. On the one hand, it yields a proper, separated, and projective moduli space and captures all stable degenerations (slc pairs). It is compatible with the MMP, and the corresponding coarse moduli space structure is always available. However, the approach is often abstract: explicit descriptions of the boundary and singularities are rare, and few algorithmic tools exist. The geometry of the boundary strata can be highly complicated, non-smoothable components and pathologies are generic in higher dimensions, and there is virtually no uniform combinatorial structure in those settings.
 
 KSBA compactifications extend to surfaces of general type ($\kappa=2$), but for $\kappa = 0$ surfaces in full generality, i.e. K3, Enriques, abelian, and bielliptic surfaces, as well as for $\kappa=-\infty$ (ruled and rational surfaces), these require significant modification.
-Moving to higher dimensions, compactifications for general $K$-trivial varieties like Calabi–Yau threefolds remains a major open problem. While the KSBA theory guarantees the existence of a good compact moduli space for varieties of log general type, the construction of projective and separated moduli spaces for $K$-trivial threefolds or Calabi–Yau varieties remains largely conjectural. The core technical obstacles here include the lack smoothability results, the failure of Torelli-type theorems, and much more complex limiting varieties which may be non-reduced or have infinite automorphism groups.
+Moving to higher dimensions, compactifications for general $K$-trivial varieties like Calabi–Yau threefolds remain a major open problem. While the KSBA theory guarantees the existence of a good compact moduli space for varieties of log general type, the construction of projective and separated moduli spaces for $K$-trivial threefolds or Calabi–Yau varieties remains largely conjectural. The core technical obstacles here include the lack of smoothability results, the failure of Torelli-type theorems, and much more complex limiting varieties which may be non-reduced or have infinite automorphism groups.
 For varieties $X$ of general type with $\dim(X) \geq 3$, many results for surfaces generalize via the MMP -- however, explicit combinatorial classifications of the boundary are almost entirely missing.
 
 Several parts of the KSBA theory have broad applicability. Universally valid points include the projectivity and properness of the moduli functor for slc varieties of (log) general type, yielding finite automorphism groups for stable pairs and thus a separated proper Deligne-Mumford stack.
 However, in higher dimensions, these stacks are generally expected to be non-irreducible and highly singular, and even the deformation spaces of smooth objects can possess arbitrarily bad singularities -- a phenomenon encapsulated in Vakil’s "Murphy’s law." Unlike curves, where every stable limit is smoothable, smoothability fails in general: not every slc variety arises as a limit of smooth varieties. Combinatorial invariants such as dual complexes rapidly become complicated and lose the inductive or graph-like simplicity seen in the curve or surface cases as the dimension increases.
 For K3 and Enriques surfaces, the boundary components of $\cpt{F}_S$ reflect geometric degenerations that align with period domain descriptions and semitoroidal constructions.
 
-There is also an increasing interest in the relationship between $K$-stability and KSBA stability, particularly in the Fano and $K$-trivial settings. Heuristically, $K$-stability is a the link between GIT and KSBA stability -- for instance, any (GIT) $K$-semistable polarized variety has slc singularities, and any slc variety polarized by an ample canonical divisor is $K$-stable. Similarly, $K$-trivial, slc polarized pairs are $K$-semistable. In the Fano and Calabi-Yau cases, $K$-stability is necessary for establishing moduli that carry the expected differential-geometric invariants, namely, Kähler–Einstein metrics.
-However, $K$-stability is not an open or constructible condition in general, and so explicit construction of moduli stacks via $K$-stability remains conjectural for many classes. Recent work by Xu, Li, Wang, and others have constructed projective moduli spaces for Fano varieties using the $K$-stability criterion.
+There is also an increasing interest in the relationship between $K$-stability and KSBA stability, particularly in the Fano and $K$-trivial settings. Heuristically, $K$-stability is the link between GIT and KSBA stability -- for instance, any (GIT) $K$-semistable polarized variety has slc singularities, and any slc variety polarized by an ample canonical divisor is $K$-stable. Similarly, $K$-trivial, slc polarized pairs are $K$-semistable. In the Fano and Calabi-Yau cases, $K$-stability is necessary for establishing moduli that carry the expected differential-geometric invariants, namely, Kähler–Einstein metrics.
+However, $K$-stability is not an open or constructible condition in general, and so explicit construction of moduli stacks via $K$-stability remains conjectural for many classes. Recent work by Xu, Li, Wang, and others has constructed projective moduli spaces for Fano varieties using the $K$-stability criterion.
 
 Some key open directions for future research include:
 

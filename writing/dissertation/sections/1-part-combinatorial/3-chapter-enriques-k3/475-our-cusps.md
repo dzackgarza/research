@@ -387,7 +387,7 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 
 1. A counter-clockwise rotation by $\pi$,
 2. A left-to-right reflection about the center,
-3. A reflection about the line $y=x$, supposing the bottom-left node is at $(0, 0)$ in the plane,composed with a reflection in a single root,
+3. A reflection about the line $y=x$, supposing the bottom-left node is at $(0, 0)$ in the plane, composed with a reflection in a single root,
 4. A top-to-bottom reflection about the center, and
 5. A composition of commuting reflections in 8 simple roots.
 

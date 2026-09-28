@@ -263,10 +263,10 @@ This follows from a standard lattice-theoretic argument involving discriminant g
 let $S = \ten = U \oplus U(2) \oplus E_8(2)$ and $T = \sen = U(2) \oplus E_8(2) = S^{\perp L}$ where $L = \lkt$.
 We note that
 $$
-A_S = A_{U(2)} \oplus A_{E_8(@)} = C_2^2 \oplus C_2^{8} \cong C_2^{10} \cong A_T
+A_S = A_{U(2)} \oplus A_{E_8(2)} = C_2^2 \oplus C_2^{8} \cong C_2^{10} \cong A_T
 ,$$
 and that $S$ and $T$ are both even indefinite 2-elementary lattices.
-By [@Nik79, Thm. 3.6.3], the restrictions $\Orth(S)\to\Orth(A_S)$ and $\Orth(T) \to\Orth(A_T)$ are surjective, and thus of $f\in \Orth(S)$, using the fact that $A_S\cong A_T$, the restricted isometry $f_{A_S}$ induces an isometry $f_{A_T}$ on $A_T$, which can be be lifted to an isometry $f_T$ on $T$.
+By [@Nik79, Thm. 3.6.3], the restrictions $\Orth(S)\to\Orth(A_S)$ and $\Orth(T) \to\Orth(A_T)$ are surjective, and thus for $f\in \Orth(S)$, using the fact that $A_S\cong A_T$, the restricted isometry $f_{A_S}$ induces an isometry $f_{A_T}$ on $A_T$, which can be lifted to an isometry $f_T$ on $T$.
 By construction, $f_{T}$ and $f_{S}$ act identically on $A_S$ and $A_T$, and so lift to an isometry $f\in \Orth(L)$ preserving both $S$ and $T$.
 :::
 

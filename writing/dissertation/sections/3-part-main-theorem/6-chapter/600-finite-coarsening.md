@@ -88,7 +88,7 @@ A Type III Kulikov model is one where all components are rational and the dual c
  -->
 
 <!--
-We now prove a crucial structural property of the classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized3 stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier. =
+We now prove a crucial structural property of the classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier.
 
 :::{.theorem
     title="{Finiteness of the Classifying Map}"
@@ -250,4 +250,3 @@ By the previous lemma, the boundary stratifications, as encoded by semifans, agr
 :::{.proof}
 It remains to ensure that no positive-dimensional fibers exist away from the boundary and that the map is proper. Since both $\normalize{B}$ and $\cpt{\fent}$ are normal, proper algebraic spaces (by the properness of the moduli of stable pairs), and semifan agreement guarantees finite fibers at the boundary, the only possible source of positive-dimensional fibers would be in the interior. However, in the open moduli, the period map is finite (by Torelli for K3s, and the specific construction of $\halfpd{\ten}$). Hence the morphism is quasi-finite and proper, and by Zariski's Main Theorem, $\phi$ is finite.
 :::
-
