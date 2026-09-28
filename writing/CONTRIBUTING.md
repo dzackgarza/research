@@ -677,7 +677,7 @@ $\gamma_{a,b}\colon a\otimes b\cong b\otimes a$ satisfying the two hexagon
 conditions relating $\gamma$ to $\alpha$." No diagrams, no citation.
 
 **Preferred:** draw the hexagon diagrams in the definition, or write
-"[@MacLane, Chapter VII, (2.1) and (2.2)]" citing the exact diagrams. The
+"[@Mac98, Chapter VII, (2.1) and (2.2)]" citing the exact diagrams. The
 reader follows the citation and finds the axioms; or the reader reads the
 diagrams in the text. Either way the definition is evaluable.
 
@@ -1104,7 +1104,7 @@ distributes over the first makes $K(S)$ an $\mathbb{E}_\infty$-ring
 spectrum; in particular $K_0(S)$ is a commutative ring and $K_n(S)$ are
 modules over it." The ring spectrum is constructed from the multiplicative
 monoidal structure via an $\mathbb{E}_\infty$-operad action
-[@EKMM07, @HA]; for $\operatorname{Proj}(R)$ with $\oplus$ and
+[@EKMM07]; for $\operatorname{Proj}(R)$ with $\oplus$ and
 $\otimes$, $K(R)$ is an $\mathbb{E}_\infty$-ring spectrum whose $\pi_0$
 is the classical $K_0(R)$ [@Wei13, §II.2]. State the ring spectrum;
 derive the ring on $\pi_0$ from it.
@@ -1180,7 +1180,7 @@ classical case is "simpler" or "more familiar", when the field's standard
 presentation is derived or $\infty$-categorical.
 
 **Preferred:** survey the modern courses and literature (e.g. Lurie's
-*Higher Topos Theory* [@Lur09HTT] and *Higher Algebra* [@HA], Gaitsgory–
+*Higher Topos Theory* [@Lur09a] and Lurie's *Higher Algebra*, Gaitsgory–
 Rozenblyum, Scholze's courses and the Berkeley lectures, Haynes Miller's
 spectral sequences courses) and match their level of abstraction and
 presentation.
@@ -1650,10 +1650,14 @@ Torsion and torsion-free as stated below are defined only over an
 integral domain $R$ (classical, i.e. $R=\pi_0 HR$ discrete): $M$ is
 torsion if $\forall m\in M\,\exists\,0\neq r\in R$ with $r\cdot m=0$,
 torsion-free if $\forall\,0\neq r\in R$, $r\cdot\colon M\to M$ is
-injective. Over a general $\mathbb{E}_1$-ring spectrum a torsion
-subcategory is not a property but a torsion theory — a hereditary torsion
-pair, a $t$-structure — and is used only after that extra structure has
-been specified (DEF-20).
+injective. Over a general discrete ring $R$, this book uses *torsion
+subcategory* only for the torsion class $\mathcal T$ of a specified
+hereditary torsion pair $(\mathcal T,\mathcal F)$ on
+$R\text{-}\mathbf{Mod}$ (see @def-torsion-pair). For an
+$\mathbb E_1$-ring spectrum, name the stable structure being used — for
+example a $t$-structure or a localizing subcategory together with its
+torsion functor — rather than transporting the classical adjective without
+the required data (DEF-20).
 
 **Banned:** "::: {#def-module-subcategories} The following
 isomorphism-invariant properties define replete full subcategories of
@@ -1724,24 +1728,27 @@ torsion-free are properties of $M\in\mathbf{LMod}_R$: $M$ is torsion if
 $\forall m\,\exists\,0\neq r$ with $r\cdot m=0$, equivalently
 $\operatorname{Ann}_R(m)\neq0$ for every $m$ (see MA-15); $M$ is
 torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$. Over a general
-associative ($\mathbb{E}_1$) ring spectrum $R$, a "torsion subcategory"
-is not a property of $M$ but extra structure: a hereditary torsion pair
-$(\mathcal{T},\mathcal{F})$, a $t$-structure, or a localizing
-subcategory with its torsion functor — not "a torsion theory," which has
-no referent (TERM-4). The last sentence of {#def-module-subcategories}
-is a prose usage rule with no construction. State the precise structure
-and cite its definition; put the usage rule in a Remark, not in the
-definition of finitely generated projective modules.
+discrete ring $R$, a "torsion subcategory" is not a property of $M$ but
+the torsion class $\mathcal T$ of chosen structure: a hereditary torsion
+pair $(\mathcal T,\mathcal F)$ on $R\text{-}\mathbf{Mod}$ as in
+@def-torsion-pair. For an associative ($\mathbb E_1$) ring spectrum,
+name the stable structure actually being used, such as a $t$-structure or
+a localizing subcategory together with its torsion functor. The bare phrase
+"a torsion theory has been specified" does not bind any of these data
+(TERM-4). The last sentence of {#def-module-subcategories} is a prose usage
+rule with no construction. State the precise structure and cite its
+definition; put the usage rule in a Remark, not in the definition of
+finitely generated projective modules.
 
 **Banned:** the last sentence of {#def-module-subcategories} as part of
 the definition of $R\text{-}\mathbf{Mod}$ subcategories, and "a torsion
 theory has been specified" with no definition of "torsion theory."
 
-**Preferred:** "::: {.Remark} Over a general $\mathbb{E}_1$-ring spectrum
-$R$, a torsion subcategory means a hereditary torsion pair
-$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-pair)
-or the corresponding $t$-structure, and is used only after that pair has
-been specified. :::"
+**Preferred:** "::: {.Remark} Over a general ring $R$, a torsion
+subcategory means the torsion class $\mathcal T$ of a specified hereditary
+torsion pair $(\mathcal T,\mathcal F)$ on $R\text{-}\mathbf{Mod}$ (see
+@def-torsion-pair), and is used only after that pair has been specified.
+:::"
 
 ### `SEC-8`: Specialization of a general construction with no new claim
 
@@ -1773,23 +1780,24 @@ $\operatorname{Tor}_1^{\mathbb Z}(L,\mathbb Z_p)=0$ iff … :::" — a
 Proposition/Example with a precise claim, not a restatement of the
 general definiens.
 
-### `TERM-4`: "Torsion theory" with no referent
+### `TERM-4`: "Torsion theory" without its defining data
 
-"Torsion theory" is not a mathematical object. There are hereditary
-torsion pairs, $t$-structures, and localizing subcategories with torsion
-functors — each with a definition. A passage that writes "a torsion
-theory has been specified" invents a term with no definition, no
-citation, and no construction, and uses it as if it were standard.
-Name the precise structure.
+"Torsion theory" is standard terminology, but the bare phrase does not
+specify which torsion data are meant. In this book, for an abelian category
+the data are written as a torsion pair $(\mathcal T,\mathcal F)$ and
+defined in @def-torsion-pair; in a stable $\infty$-category, the actual
+stable structure being used is named explicitly. A passage that writes only
+"a torsion theory has been specified" without binding any such data leaves
+the referent undetermined.
 
 **Banned:** "Over a general ring, a torsion subcategory is used only
 after a torsion theory has been specified."
 
-**Preferred:** "Over a general $\mathbb{E}_1$-ring spectrum $R$, a
-torsion subcategory is used only after a hereditary torsion pair
-$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-pair)
-has been specified" or "after a $t$-structure
-$(\mathbf{LMod}_R^{\ge0},\mathbf{LMod}_R^{\le0})$ has been specified."
+**Preferred:** "Over a general ring $R$, a torsion subcategory is used
+only after a hereditary torsion pair $(\mathcal T,\mathcal F)$ on
+$R\text{-}\mathbf{Mod}$ (see @def-torsion-pair) has been specified"; for
+an $\mathbb E_1$-ring spectrum, name the chosen $t$-structure or
+localizing subcategory and its torsion functor explicitly.
 
 ### `DEF-21`: Compound term defined by "both conditions hold"
 
@@ -1909,7 +1917,7 @@ not a logical unit that belongs to this book.
 ### `SEC-1`: A section with no fenced logical unit has no content
 
 A $\S$ that contains only prose paragraphs — "Preservation, reflection,
-and creation of limits are defined in @def-...," "A monadic functor
+and creation of limits are defined in `@def-...`," "A monadic functor
 creates any limits [@Rie16]," "Hence a limit in $R\text{-}\mathbf{Mod}$
 is computed on underlying sets," "The kernel … is a limit — the equalizer
 … — so it is the set-theoretic kernel …," "Creation is a statement about
@@ -2300,9 +2308,9 @@ exists for the precise object.
 A term is used as if its meaning were obvious when it is not defined
 anywhere in this book and is not obvious to an undergraduate. Colloquial
 terms — "apex" for the vertex of a cone, "carries," "transports,"
-"identifies conventions," "value module" — and confabulated terms that
-sound technical but have no referent — "torsion theory," "apex" as a
-standalone noun for a terminal cone — hide necessary details. "Apex"
+"identifies conventions," "value module" — and unbound technical phrases
+such as "a torsion theory" without a specified pair, or "apex" as a
+standalone noun for a terminal cone, hide necessary details. "Apex"
 alone names no cone and no universal property; its standard counterpart
 is the (terminal) cone $(P\to X, P\to Z)$ over $X\to Y\leftarrow Z$ that
 is terminal among cones, introduced once in the definition of pullbacks.
@@ -2348,7 +2356,7 @@ A professional mathematics text extremely rarely is self-referential,
 describes its own structure, notation, or what its theorems do or do not
 do. If ever such things are included, they are at best very small
 footnotes, but should be avoided altogether. Prose that talks about the
-text — "is defined in @def-…; it is …" (where the definition lives),
+text — "is defined in `@def-…`; it is …" (where the definition lives),
 "This theorem does not redefine $F$ or $D_P$" (what the theorem does not
 do), "Their mere existence supplies no order relation" (what existence
 does not do), "is what licenses the notation $a_1\otimes\cdots\otimes a_n$"
@@ -2582,7 +2590,7 @@ isomorphism."
 ### `DEF-24`: Property versus structure versus existence for a basis
 
 "Being a basis" is used without stating whether it is a property of a
-family ($ (m_i)_{i\in I}$ is a basis iff the induced map is an iso), a
+family ($(m_i)_{i\in I}$ is a basis iff the induced map is an iso), a
 chosen structure (a specific isomorphism $e\colon F(I)\xrightarrow{\sim}M$),
 or an existence statement ($I$ is a basis of $M$ if there exists an
 isomorphism $F(I)\xrightarrow{\sim}M$). The same English — "a basis indexed
@@ -2661,7 +2669,7 @@ recovers $L$ from the collection plus gluing.
 
 Concrete standards (state one, then apply it):
 
-* **fpqc descent for $\mathbf{LMod}$** [@Stacks-023N, Tag 023N; Lurie
+* **fpqc descent for $\mathbf{LMod}$** [@stacks-023N; Lurie
   DAG, descent for $\mathbf{LMod}_R$]: for faithfully flat
   $R\to S$, $\mathbf{LMod}_R \xrightarrow{\sim}
   \lim\bigl(\mathbf{LMod}_S \rightrightarrows \mathbf{LMod}_{S\otimes_R
@@ -2840,7 +2848,7 @@ $M=\bigoplus_{\mathbb N}\mathbb Z$,
 $M\otimes\mathbb Z_p=\bigoplus_{\mathbb N}\mathbb Z_p$ (finite support)
 while $\widehat M_p$ strictly contains it; for $M=\mathbb Q$,
 $\mathbb Q\otimes_{\mathbb Z}\mathbb Z_p\simeq\mathbb Q_p$ while
-$\widehat{\mathbb Q}_p\simeq0$ [@Stacks-0A05, Tag 0A05; Lurie DAG, formal
+$\widehat{\mathbb Q}_p\simeq0$ [@stacks-0A05; Lurie DAG, formal
 completion]." Name the functors, the map, and the quantified
 equivalence; do not say the definitions are distinct.
 
@@ -3094,7 +3102,7 @@ there is nothing to say at the point of use:
   $\mathbf{Mod}_R$ (resp. stably $\mathbf{LMod}_R$ for
   $\mathbb E_\infty$ $R$) is closed symmetric monoidal and self-enriched.
   In particular $\operatorname{Hom}_R(M,N)\in\mathbf{Mod}_R$ is the
-  internal hom. :::" [@Stacks-0B8A; Lurie HA 4.2.1]
+  internal hom. :::" [@stacks-0B8A; Lurie HA 4.2.1]
 
 * **At the point of use:** no clause needed:
   "::: {#def-bil} **Definition.** Let $R$ be commutative and
@@ -3160,7 +3168,7 @@ tensor to encode bilinearity from then on:
   $M\times N\to M\otimes_R N$, i.e.
   $\operatorname{Hom}_R(M\otimes_R N,W)\cong R\text{-Bil}(M\times N,W)$
   naturally in $W\in\mathbf{Mod}_R$. :::"
-  [@Stacks-0B8A; Lurie HA 4.2.1]
+  [@stacks-0B8A; Lurie HA 4.2.1]
 
 * **From then on, no "bilinear maps" prose:** a $W$-valued bilinear
   form on $M$ is a morphism $b\colon M\otimes_R M\to W$; its $R$-module
@@ -3199,7 +3207,7 @@ Concrete standards:
 
 * **Presheaf:** $\operatorname{PSh}(\mathcal C):=
   \operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathbf{Set})$, stably
-  $\operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathcal S)$ [@Stacks-00VG;
+  $\operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathcal S)$ [@stacks-00VG;
   Lurie HTT 0.6.5].
 
 * **$R$-module-valued:** a functor $\mathbf{Mod}_R^{\mathrm{op}}\to
@@ -4538,8 +4546,9 @@ state the explicit generalization scope most definitions should be at:
 > for $R$ a Dedekind domain (in particular $\mathbb Z$, $\mathcal O_K$,
 > $\mathbb Z_p$) and $W\in\mathbf{Mod}_R$ invertible, with
 > $M\in\mathbf{Mod}_R$ arbitrary; signature $(p,q,r)$ is the
-> $\mathbb R$-fiber $L\mapsto(L\otimes_RF_\sigma,b_{F_\sigma})_{\sigma
-> \text{ real}}$ for $F=\operatorname{Frac}(R)$ ordered at $\sigma$,
+> $\mathbb R$-fiber
+> $L\mapsto(L\otimes_RF_\sigma,b_{F_\sigma})_{\sigma\text{ real}}$ for
+> $F=\operatorname{Frac}(R)$ ordered at $\sigma$,
 > $p_\sigma:=\sup\dim_{F_\sigma}U$ on $\mathrm{Gr}(L_{F_\sigma})$, and is
 > not defined for $F=\mathbb C$, $\mathbb F_q$, $\mathbb Q_p$."
 
@@ -4874,7 +4883,7 @@ $M\mapsto\operatorname{Bil}_{R,W}(M)$ with
 $(f\colon M\to N)\mapsto (f\otimes f)^*$. The element formula is the
 unwrapping of that $(f\otimes f)^*$, not its definition.
 
-Concrete standards [@Stacks-04E9, Tag 04E9; Lurie HTT 6.1] — state the
+Concrete standards [@stacks-04E9; Lurie HTT 6.1] — state the
 functor data explicitly, with types, domains, codomains, and referents:
 
 **Banned:** "Pullback along $f\colon M\to N$ sends $b$ to
@@ -4985,7 +4994,8 @@ The skeleton — fenced units with proofs — must be complete after deleting
 glue; remarks are secondary pedagogy.
 
 **5. Terminological slippage and characterization as definition.** Coinage
-with no referent — "value module," "torsion theory," "homomorphism" for
+or unbound terminology with no referent — "value module," "a torsion
+theory" with no specified pair, "homomorphism" for
 "morphism/map in $\mathbf{CAlg}$," "carries," "data," "identifies
 conventions" (TERM-2–4, EV-6, PR-20); compound terms by bullet order
 ("finitely generated projective: both conditions hold," DEF-21); "some
