@@ -3,7 +3,7 @@
 Let $R$ be a Dedekind domain with fraction field $K$.
 The main case is $R=\mathbb Z$ and $K=\mathbb Q$.
 
-::: {#def-lattice title="Lattices"}
+::: {#def-lattice .def title="Lattices"}
 
 An $R$-*lattice* is a finitely generated projective $R$-module $L$ equipped with a symmetric bilinear form $b\colon L\times L\to R$ whose adjoint map
 $$
@@ -16,7 +16,7 @@ The category $\mathbf{Lat}_R$ is the replete full subcategory of $\mathcal B_{R,
 Freeness holds over a principal ideal domain; a basis is chosen data.
 :::
 
-::: {#exm-subobject-base-change}
+::: {#exm-subobject-base-change .ex}
 **Example.** Let $L$ be an integral lattice and let $0\ne v\in L$.
 The inclusion $\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying $\mathbb Z$-module.
 Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars from @def-module-base-change gives the monomorphism
@@ -26,13 +26,13 @@ $$
 The two monomorphisms represent subobjects in different module categories.
 :::
 
-::: {#def-unimodular title="Unimodular lattices"}
+::: {#def-unimodular .def title="Unimodular lattices"}
 
 A lattice is *unimodular* if $b^\sharp$ is an isomorphism.
 The unimodular lattices form a replete full subcategory $\mathbf{Unimod}_R\subseteq\mathbf{Lat}_R$.
 :::
 
-::: {#def-even-lattice title="Even lattices"}
+::: {#def-even-lattice .def title="Even lattices"}
 
 A $\mathbb Z$-lattice is *even* if $b(x,x)\in2\mathbb Z$ for every $x\in L$.
 The even lattices form a replete full subcategory $\mathbf{EvenLat}_{\mathbb Z}\subseteq\mathbf{Lat}_{\mathbb Z}$.
@@ -40,7 +40,7 @@ The even lattices form a replete full subcategory $\mathbf{EvenLat}_{\mathbb Z}\
 
 ## Classification by signature {#sec-lattice-signature}
 
-::: {#def-signature-subcategories title="Signature subcategories"}
+::: {#def-signature-subcategories .def title="Signature subcategories"}
 
 Fix an embedding $\sigma\colon R\hookrightarrow\mathbb R$; for $R=\mathbb Z$ it is the unique one.
 Each definiteness condition of @def-definiteness is invariant under isometry, so each cuts out a replete full subcategory of $\mathbf{Lat}_R$:
@@ -58,7 +58,7 @@ The twist of @def-form-twist by $-1$ sends $\mathbf{Def}^{+}_R$ to $\mathbf{Def}
 Under the sign convention of @def-definiteness the root lattices lie in $\mathbf{Def}^{-}_{\mathbb Z}$.
 :::
 
-::: {#exm-parabolic-objects}
+::: {#exm-parabolic-objects .ex}
 **Example.** A parabolic form has signature $(0,n-1,1)$, so its radical is nonzero and it is an object of $\mathcal B_{R,R}$ lying outside $\mathbf{Lat}_R$.
 Take the forms on $\mathbb Z^{2}$ and $\mathbb Z^{3}$ with Gram matrices
 $$
@@ -78,7 +78,7 @@ $$
 the second complement being the root lattice $A_2$ in the sign convention of @def-definiteness.
 :::
 
-::: {#def-metric-dual title="Dual lattice"}
+::: {#def-metric-dual .def title="Dual lattice"}
 
 Extend $b$ to $b_K$ on $L_K=L\otimes_RK$.
 The dual lattice is
@@ -88,7 +88,7 @@ $$
 Nondegeneracy identifies $L^\#$ with the dual module $L^*$ through $x\mapsto b_K(x,-)|_L$, and $L\subseteq L^\#$.
 :::
 
-::: {#def-discriminant title="The discriminant module and form"}
+::: {#def-discriminant .def title="The discriminant module and form"}
 
 The *discriminant module* is
 $$
@@ -109,7 +109,7 @@ $$
 The evenness hypothesis makes this formula independent of the representative [@Nik80].
 :::
 
-::: {#def-dual-inclusion title="The canonical map to the dual lattice"}
+::: {#def-dual-inclusion .def title="The canonical map to the dual lattice"}
 
 $L^{\#}$ is a finitely generated projective $R$-module equipped with the restriction of $b_K$, whose values lie in $K$; it is an object of $\mathcal B_{R,K}$, and the value module of its form is $K$.
 Pushing the form of $L$ along $R\hookrightarrow K$ places $L$ in the same category, and the *canonical map to the dual lattice* is the morphism
@@ -129,12 +129,12 @@ The morphism $\iota_L$ is injective, so it is an isomorphism exactly when $A_L=0
 In that case $\iota_L$ is an isometry from $L$ onto $L^{\#}$, so $L$ and $L^{\#}$ are isometric objects of $\mathcal B_{R,K}$ with distinct underlying modules.
 :::
 
-::: {#def-discbil title="Discriminant bilinear forms"}
+::: {#def-discbil .def title="Discriminant bilinear forms"}
 
 Let $\mathbf{DiscBil}_{\mathbb Z}$ be the replete full subcategory of $\mathcal B_{\mathbb Z,\mathbb Q/\mathbb Z}$ on finite abelian groups equipped with nondegenerate symmetric bilinear forms.
 :::
 
-::: {#def-discquad title="Discriminant quadratic forms"}
+::: {#def-discquad .def title="Discriminant quadratic forms"}
 
 Let $\mathbf{DiscQuad}_{\mathbb Z}$ be the category of finite abelian groups with $\mathbb Q/2\mathbb Z$-valued quadratic forms whose bilinearizations lie in $\mathbf{DiscBil}_{\mathbb Z}$.
 Its morphisms are group homomorphisms that preserve the quadratic forms.
@@ -151,7 +151,7 @@ $$
 
 ## Elementary lattices {#sec-elementary-lattices}
 
-::: {#def-p-elementary title="$p$-elementary lattices"}
+::: {#def-p-elementary .def title="$p$-elementary lattices"}
 
 Let $p$ be a prime.
 A $\mathbb Z$-lattice $S$ is *$p$-elementary* if $A_S\cong(\mathbb Z/p\mathbb Z)^{a}$ for some $a\geq0$, so that $|{\operatorname{disc}}\,S|=p^{a}$; for $p=2$ this is Nikulin's definition of a *2-elementary* lattice [@Nik80, §3.6.1].
@@ -163,7 +163,7 @@ Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$ in the sense of @def-signature
 The genus of an even 2-elementary lattice is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and if $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine its isometry class [@Nik80, Thm. 3.6.2].
 :::
 
-::: {#exm-a3-not-two-elementary}
+::: {#exm-a3-not-two-elementary .ex}
 **Example.** Membership is a condition on the group $A_S$, which the order $|{\operatorname{disc}}\,S|$ alone leaves open.
 In the sign convention of @def-definiteness the root lattice $A_3$ has Gram matrix
 $$
@@ -179,7 +179,7 @@ So $A_3$ is not 2-elementary although $|{\operatorname{disc}}\,A_3|=2^{2}$.
 
 ## Radical and unimodularity {#sec-radical-unimodularity}
 
-::: {#def-two-witnesses}
+::: {#def-two-witnesses .def}
 For any symmetric bilinear form on a finitely generated projective module, define
 $$
 \operatorname{rad}(L)=\ker(b^\sharp),
@@ -196,7 +196,7 @@ $$
 For a lattice, $\operatorname{disc}(L)=A_L$.
 :::
 
-::: {#thm-radical-splits title="The radical splits off"}
+::: {#thm-radical-splits .theorem title="The radical splits off"}
 
 Let $R$ be a Dedekind domain, let $M$ be a finitely generated projective $R$-module, and let $b$ be a symmetric bilinear form on $M$ with values in $R$.
 Then there is a submodule $N\subseteq M$ with
@@ -222,7 +222,7 @@ So a degenerate form over a Dedekind domain is the orthogonal sum of a zero form
 
 ## Localization and comparison {#sec-discriminant}
 
-::: {#thm-localization-les}
+::: {#thm-localization-les .theorem}
 For an $R$-module $M$, tensoring $0\to R\to K\to K/R\to0$ begins the exact sequence
 $$
 0\longrightarrow\operatorname{Tor}_1^R(M,K/R)\longrightarrow M
@@ -241,7 +241,7 @@ $$
 The second sequence is exact because $L$ is projective.
 :::
 
-::: {#thm-double-complex}
+::: {#thm-double-complex .theorem}
 For nondegenerate $L$, the extension $b_K^\sharp$ is an isomorphism and the form gives the commutative diagram
 
 ```{.tikz}
