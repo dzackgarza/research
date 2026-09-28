@@ -196,4 +196,4 @@ At the level of [Fulon Ch.1,2,3,4]
 
    - Computing divisor class groups and Picard groups
 
-# References
+## References
