@@ -104,6 +104,6 @@ For non-normal varieties one has the following notions.
 Being slc is the condition required for limits in KSBA moduli spaces.
 :::
 
-::: {.Warning}
+::: {.Warning title="The migrated note does not define dlt singularities"}
 The migrated note lists "dlt" among its aliases but its body gives no definition of dlt (divisorial log terminal); definition omitted here rather than invented.
 :::
