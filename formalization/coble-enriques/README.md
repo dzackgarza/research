@@ -1,11 +1,13 @@
 # Lean sources from the Coble corpus
 
 Migrated 2026-08-20 from `~/gitclones/lattice-research/lean/CobleResearchLean/`.
-Two files, kept as native Lean source. They are not built here: this repository
-has no Coble Lean project, and its only Lean tree
-(`computations/experiments/lean_category_dsl_spike/`) is about the category DSL.
+On 2026-09-28 `NodeCriteria.lean` moved to `dzackgarza/lean-categories` (commit `46aa669`) as
+`LeanCategories/AlgebraicGeometry/HessianSingular.lean` and was deleted here; the statement
+below is the instance `σ = Fin 3` of the general theorem there
+(`hessianAt_rank_le_of_pderiv_eq_zero`: rank at most `|σ| - 1`, needing only the vanishing of
+the first partials). `IsotropicPlanes.lean` stays here, unbuilt, as a record.
 
-## `NodeCriteria.lean` — proved, no `sorry`
+## `NodeCriteria.lean` — proved, no `sorry` (now in `lean-categories`)
 
 The node-detection criterion for the 10-nodal plane sextic, and the one fully
 formalized result in the corpus.

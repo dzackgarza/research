@@ -17,7 +17,8 @@ computation in Sterk carried by a figure; **X** external, cited to another
 source; **M** requires substrate absent from Mathlib at the pinned revision;
 **LC** a known implementation route through `lean-categories`, pending its
 publication to Prove2Me (see *Implementation routes* below); **R** *realized
-locally* — a definition for it is written in `lean/Atoms.lean` beside this file.
+locally* — a definition for it was written in `lean/Atoms.lean` beside this file, and now
+lives in `lean-categories` (see *What `lean/Atoms.lean` is* below).
 
 **`R` is not a supplier.**  It says this project has written the statement down,
 in its own repository, unpublished, unreviewed and in no corpus the registry
@@ -1050,8 +1051,8 @@ route pending publication is still the route.
 
 ### Realized in this repository, and in no corpus
 
-Sixteen nodes carry `R`: a definition for them is written in `lean/Atoms.lean`,
-beside this file, against the pinned Mathlib.  Fourteen are definitions; Lo10 is
+Sixteen nodes carry `R`: a definition for them was written in `lean/Atoms.lean`,
+beside this file, against the pinned Mathlib, and is now in `lean-categories`.  Fourteen are definitions; Lo10 is
 proved entire; F1.16 has its object — the Gauss sum of a discriminant form — and
 the **modulus** half of Milgram, $|G(q)|^2 = |A|$, with the argument half absent
 because it is a statement about a lattice's signature and belongs with F3.2.
@@ -1619,6 +1620,19 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
 ### What `lean/Atoms.lean` is, and what it is not
+
+**Migrated.**  On 2026-09-28 the file moved to `dzackgarza/lean-categories` (commit `46aa669`)
+and was deleted here.  Each declaration went to its general owner there, or was retired in
+favour of an existing one; the table below keeps the original `Sterk.*` names, and
+`archive/research/README.md` in `lean-categories` maps each to its new declaration.  In short:
+F1.13, F2.14, F1.14, E14 and E15 were already owned there (`BilinModuleCat.OrthogonalGroup`,
+the quadratic `OrthogonalGroup`, `Lattices.Valued.divisibility`, `Topology.deckGroup`,
+`Schemes.WeilDivisor`); F1.15/F1.16 are `Algebra/QuadraticGaussSum.lean`, with the modulus
+theorem for any finite abelian group and circle character; V1 is
+`Algebra/MatrixIndecomposable.lean`, now with decomposable ⇔ support graph not preconnected;
+Pa1 is `IsometryClass.finiteFreeClasses` over any ring; Lo10 is `Topology/LorentzCone.lean` and
+AF10–AF19 are `Analytic/LocalModel.lean`.  The terminality verdicts below are unchanged by the
+move.
 
 `lean/Atoms.lean` sits beside this file and holds a definition for each of the
 sixteen `R` nodes, written against the pinned Mathlib with no `sorry` and no
