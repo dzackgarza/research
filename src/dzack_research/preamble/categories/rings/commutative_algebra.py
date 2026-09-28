@@ -1011,7 +1011,7 @@ class QuotientRings(OwnedCategory):
             r"""Return the normalized irreducible components with their maps."""
             return self._affine_normalization_data().components
 
-        def is_reduced(self) -> bool:
+        def _reducedness_decision(self) -> bool:
             defining = _engine_ideal(self.quotient_source(), self.defining_ideal())
             return defining.radical() == defining
 

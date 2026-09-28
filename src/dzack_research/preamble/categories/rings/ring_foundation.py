@@ -1998,10 +1998,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 r"""Return the nilradical ``sqrt((0))`` of this commutative ring."""
                 return self.ideal(self.zero()).radical()
 
-            def is_reduced(self) -> bool:
+            def _reducedness_decision(self) -> bool:
                 r"""Return whether this commutative ring has zero nilradical."""
                 zero_ideal = self.ideal(self.zero())
                 return self.nilradical() == zero_ideal
+
+            def is_reduced(self) -> bool:
+                return self._reducedness_decision()
 
             @cached_method
             def square_class_group(self):
