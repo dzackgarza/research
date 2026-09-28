@@ -175,7 +175,7 @@ By @thm-stabilization-not-unimodular, $A_{S^{n}(L)}\cong\mathbb Z/2\mathbb Z$ fo
 
 ## Witt classes {#sec-witt-classes}
 
-::: {#exm-rank-one-forms .ex title="Rank-one forms"}
+::: {#ex:rank-one-forms .ex title="Rank-one forms"}
 
 For $a\in R$ write $\langle a\rangle$ for the object $(R,b_a)$ of $\mathcal B_{R,R}$ with $b_a(x,y)=axy$.
 Under the isomorphism $R^{*}\cong R$, $f\mapsto f(1)$, the adjoint map of @def-polarization is multiplication by $a$.
@@ -236,7 +236,7 @@ $$
 \qquad
 \sigma\bigl[\langle1\rangle\bigr]=1,
 $$
-with $\langle1\rangle$ as in @exm-rank-one-forms; see [@MH73, Ch. II §4].
+with $\langle1\rangle$ as in @ex:rank-one-forms; see [@MH73, Ch. II §4].
 :::
 
 ::: {#exm-witt-classes-over-z .ex title="Witt classes over $\mathbb Z$"}
