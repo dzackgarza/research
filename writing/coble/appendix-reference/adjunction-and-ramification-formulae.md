@@ -1,6 +1,6 @@
 # Formulae
 
-::: {.Remark}
+::: {.Remark title="Canonical divisor under blowup"}
 
 Let $f: Y = \Bl_V X \birational X$ be the blowup of $X$ along a subvariety $V$.
 Then one has the adjunction formula
@@ -13,7 +13,7 @@ $$
 Note that if $X$ is a surface and $V$ is a point, this recovers $$K_Y = f^* K_X + E.$$
 :::
 
-::: {.Remark}
+::: {.Remark title="Canonical divisor under a branched cover"}
 
 Let $f: Y\to X$ be a branched cover with branch locus $B$ and ramification locus $R$.
 Then

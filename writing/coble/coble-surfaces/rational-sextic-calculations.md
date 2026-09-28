@@ -102,7 +102,7 @@ Imposing this at ten points gives $30$ linear conditions on a space of projectiv
 dimension $27$, so the general such linear system has empty intersection.
 :::
 
-::: {.Remark}
+::: {.Remark title="Coble point sets encode the dependence among the thirty node conditions"}
 
 The dependence forced by \longref{prop:sextic-node-conditions} is what the term
 *Coble point set* names: a configuration $\Sigma$ of ten points special enough to
@@ -165,7 +165,7 @@ Since $p\neq 0$ the kernel of $H(F)(p)$ is nonzero, so by rank-nullity in
 dimension $3$ the rank is at most $2$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Rank two of the Hessian distinguishes an ordinary node"}
 
 \longref{prop:hessian-rank-at-singular-point} is the vanishing half of the node test
 for the sextic $C$: at a singular point the Hessian is automatically degenerate,
