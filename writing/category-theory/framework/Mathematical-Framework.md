@@ -70,7 +70,7 @@ A commutative ring also satisfies $xy=yx$.
 
 ## Forgetful functors
 
-::: {#def-tower .def}
+::: {#def-tower .def title="Forgetful towers"}
 The standard definitions give the composable forgetful functors
 $$
 \mathbf{Grp}\longrightarrow\mathbf{Mon}\longrightarrow

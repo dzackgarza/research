@@ -149,7 +149,7 @@ L\da S_{H} & \leftarrow H
 
 We apply this to the following:
 
-:::{.proposition}
+:::{.proposition title="Discriminants of primitive orthogonal complements"}
 Let $L$ be a unimodular lattice and $\iota: S \injects L$ be a primitively embedded sublattice. Then $|\disc(S)|=|\disc(T)|$, and if $S$ is unimodular, then $L \cong$ $S \oplus T$.
 :::
 
@@ -213,7 +213,7 @@ We observe several useful facts:
 
 The following is proved as [@AEGS25, Lem. 2.4]:
 
-:::{.proposition}
+:::{.proposition title="Uniqueness of the period-domain embedding sequence"}
 The following sequence of primitive embeddings is unique up to isometry:
 \begin{align*}
 \tilde \Psi: \ten \injects \tdp \injects \lkt
@@ -250,7 +250,7 @@ This follows from Nikulin's version of Witt's @thm:nik79-1-14-4:
 We conclude by the observations above.
 :::
 
-:::{.proposition}
+:::{.proposition title="Descent of the period-domain map to arithmetic quotients"}
 The map $\tilde \Psi$ descends to a well-defined algebraic morphism on arithmetic quotients:
 $$
 \Psi: \fent = \halfpd{\ten}/\gent \to \fttz = \halfpd{\tdp}/\Orth(\tdp)

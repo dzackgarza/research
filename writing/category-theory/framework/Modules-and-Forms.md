@@ -39,7 +39,7 @@ $b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
 
 ## Module properties {#sec-module-properties}
 
-::: {#def-module-subcategories .def}
+::: {#def-module-subcategories .def title="Standard module subcategories"}
 The following isomorphism-invariant properties define replete full subcategories of $R\text{-}\mathbf{Mod}$:
 
 - finitely generated: some $R^n\twoheadrightarrow M$ is surjective;

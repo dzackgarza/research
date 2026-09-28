@@ -38,7 +38,7 @@ For $T \da \ten$, the appropriate arithmetic group $\gent$ has exactly 5 orbits 
 We are thus interested in classifying orbits of primitive isotropic vectors.
 For lattices containing a double hyperbolic plane $U^2$, we recount the following useful theorems:
 
-:::{.theorem    #thm:eichler-siegel-transformations}
+:::{.theorem title="Eichler--Siegel transformations on the double hyperbolic plane" #thm:eichler-siegel-transformations}
 
 There is an isometry
 $$

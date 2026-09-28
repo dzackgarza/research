@@ -179,7 +179,7 @@ So $A_3$ is not 2-elementary although $|{\operatorname{disc}}\,A_3|=2^{2}$.
 
 ## Radical and unimodularity {#sec-radical-unimodularity}
 
-::: {#def-two-witnesses .def}
+::: {#def-two-witnesses .def title="Radical and discriminant as kernel and cokernel"}
 For any symmetric bilinear form on a finitely generated projective module, define
 $$
 \operatorname{rad}(L)=\ker(b^\sharp),
@@ -222,7 +222,7 @@ So a degenerate form over a Dedekind domain is the orthogonal sum of a zero form
 
 ## Localization and comparison {#sec-discriminant}
 
-::: {#thm-localization-les .theorem}
+::: {#thm-localization-les .theorem title="Localization exact sequences"}
 For an $R$-module $M$, tensoring $0\to R\to K\to K/R\to0$ begins the exact sequence
 $$
 0\longrightarrow\operatorname{Tor}_1^R(M,K/R)\longrightarrow M
@@ -241,7 +241,7 @@ $$
 The second sequence is exact because $L$ is projective.
 :::
 
-::: {#thm-double-complex .theorem}
+::: {#thm-double-complex .theorem title="The discriminant comparison diagram"}
 For nondegenerate $L$, the extension $b_K^\sharp$ is an isomorphism and the form gives the commutative diagram
 
 ```{.tikz}

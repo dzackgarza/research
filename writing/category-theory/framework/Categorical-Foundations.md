@@ -208,7 +208,7 @@ are fully faithful: natural transformations between represented functors corresp
 
 A representation is therefore determined by its universal element, and two representations of the same functor are related by a unique isomorphism compatible with the universal elements.
 
-::: {#def-el-convention .def}
+::: {#def-el-convention .def title="The category-of-elements convention"}
 ## The $\int_C F$ convention {#sec-el}
 
 For every presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, use the category of elements and discrete-fibration convention of @def-category-of-elements.

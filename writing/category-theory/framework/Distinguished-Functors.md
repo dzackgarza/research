@@ -2,7 +2,7 @@
 
 ## Specified factorizations {#sec-specified-factorizations}
 
-::: {#def-distinguished-factorization .def}
+::: {#def-distinguished-factorization .def title="Distinguished factorizations"}
 A factorization of $F\colon C\to E$ through $D$ consists of functors $H\colon C\to D$ and $G\colon D\to E$ together with an equality $F=G\circ H$ or a specified natural isomorphism $F\Rightarrow G\circ H$.
 The source, target, and comparison are part of the factorization.
 

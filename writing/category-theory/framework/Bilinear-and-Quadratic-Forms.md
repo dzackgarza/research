@@ -39,7 +39,7 @@ The quadratic category uses the same convention.
 
 ## Properties of bilinear forms {#sec-form-properties}
 
-::: {#def-form-axioms .def}
+::: {#def-form-axioms .def title="Axioms for bilinear forms"}
 For $b\colon M\times M\to W$:
 
 - $b$ is *symmetric* if $b(x,y)=b(y,x)$;
@@ -368,7 +368,7 @@ The Witt index of @def-witt-index is a third quantity, equal to $\min(p,q)$ over
 
 ## Diagonal and polarization {#sec-polarization-functors}
 
-::: {#def-polarization-functors .def}
+::: {#def-polarization-functors .def title="Diagonal and polarization functors"}
 Diagonal and polarization define natural transformations
 $$
 \operatorname{diag}\colon\operatorname{SymBil}_{R,W}

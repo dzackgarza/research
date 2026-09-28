@@ -164,7 +164,7 @@ The reflections in the roots of a root lattice, which have $q(v)=-2$ in the sign
 
 ## Matrix realizations
 
-::: {#prp-matrix-realizations .prop}
+::: {#prp-matrix-realizations .prop title="Matrix realizations of automorphism groups"}
 If $L$ is free and a basis has been chosen, its Gram matrix $B$ identifies
 $$
 O(L)=\{g\in\operatorname{GL}_n(R)\mid g^{\mathsf T}Bg=B\}.
@@ -205,7 +205,7 @@ and the subgroup fixing $\operatorname{rad}(M)$ pointwise is the preimage of $\{
 
 ## Index
 
-::: {#def-index .def}
+::: {#def-index .def title="Index of a subgroup"}
 For a subgroup $H\le G$, the *index* $[G:H]$ is the cardinality of the set of left cosets $G/H$.
 If $G$ is finite, $[G:H]=|G|/|H|$.
 In an abelian category, the analogous cardinality of a cokernel is used only after the relevant monomorphism and finiteness hypotheses have been stated.
@@ -213,7 +213,7 @@ In an abelian category, the analogous cardinality of a cokernel is used only aft
 
 ## The Miranda--Morrison sequence
 
-::: {#thm-miranda-morrison .theorem}
+::: {#thm-miranda-morrison .theorem title="The Miranda--Morrison exact sequence"}
 For an even indefinite lattice $L$ of rank at least $3$, the discriminant representation fits into the Miranda--Morrison exact sequence
 $$
 1\to\widetilde O(L)\to O(L)\to O(A_L,q_L)
@@ -225,7 +225,7 @@ with the notation and local factors of [@MM09, Thm. V.5.1]. The last group measu
 It is distinct from $\operatorname{SO}(L)=\ker(\det)$.
 :::
 
-::: {#def-genus .def}
+::: {#def-genus .def title="Genus of a lattice"}
 ## Genus {#sec-genus-sec}
 
 Two integral lattices lie in the same genus if they are isometric over $\mathbb R$ and over $\mathbb Z_p$ for every prime $p$.

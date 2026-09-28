@@ -85,7 +85,7 @@ Algebra generators give expressions for the two elements of $A$ on which $B$ is 
 
 ## Associative bilinear forms {#sec-associative-forms}
 
-::: {#def-associative-bilinear-form .def}
+::: {#def-associative-bilinear-form .def title="Associative bilinear forms"}
 Let $B$ be a module bilinear form on $U(A)$.
 The form $B$ is *associative* if
 $$
@@ -116,7 +116,7 @@ Given (2), $B(xy,z)=\varepsilon((xy)z)=\varepsilon(x(yz))=B(x,yz)$.
 
 The identification $\varepsilon(x)=B(x,1_A)$ uses the unit of $A$.
 
-::: {#def-frobenius-form .def}
+::: {#def-frobenius-form .def title="Frobenius forms"}
 A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def-polarization: both adjoint maps $A\to\operatorname{Hom}_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 
@@ -146,7 +146,7 @@ If $B$ is associative, @thm-associative-is-trace gives $B(x,y)=\varepsilon(xy)$.
 The values of $B$ on $\operatorname{Span}_R\{1,x\}$ determine $\varepsilon$ on $\{1,x,x^2\}$, and leave $\varepsilon(x^n)$ for $n\ge 3$ free, so $B(x^2,x^2)=\varepsilon(x^4)$ is not determined by those values.
 :::
 
-::: {#prp-generators-insufficient .prop}
+::: {#prp-generators-insufficient .prop title="Algebra generators do not determine a module bilinear form"}
 The restriction of a module bilinear form on $U(A)$ to a finitely generated $R$-submodule does not determine the form on $U(A)$, unless $U(A)$ itself is finitely generated.
 The values of $B$ on pairs drawn from a finite algebra generating set therefore do not determine $B$.
 :::
@@ -206,7 +206,7 @@ These characters are distinct: $\chi_L(x)=0$ and $\chi_R(x)=1$.
 Each is determined by the image of the algebra generator $x$.
 :::
 
-::: {#prp-character-gram .prop}
+::: {#prp-character-gram .prop title="Gram matrices of character forms"}
 If $A$ is free on $E$, the Gram matrix of the module bilinear form $U(\phi)$ is $G_{ij}=\chi_L(e_i)\chi_R(e_j)$.
 If $A$ is generated as a unital $R$-algebra by a finite set $S$, each of $\chi_L$ and $\chi_R$ is determined by its values on $S$, subject to the relations of $A$.
 :::
