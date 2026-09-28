@@ -62,7 +62,7 @@ class _PowerAlgebra:
             case _:
                 return super()._element_constructor_(value)
 
-    def is_commutative(self):
+    def _commutativity_decision(self):
         match self.flavor():
             case "divided":
                 return True

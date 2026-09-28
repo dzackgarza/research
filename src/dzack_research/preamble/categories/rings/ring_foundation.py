@@ -1528,7 +1528,7 @@ class _PredicateSubringParent(Parent):
         _algebra_from_native_ring(self, lambda left, right: self(left * right), self._one,
             lambda scalar, element: self(self(scalar) * self(element)))
 
-    def is_commutative(self):
+    def _commutativity_decision(self):
         if self._preamble_is_commutative:
             return True
         from sage.misc.unknown import Unknown
@@ -2006,9 +2006,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return [OwnedRings().Noetherian()]
 
         class ParentMethods:
-            def is_commutative(self):
-                return True
-
             def nilradical(self):
                 r"""Return the nilradical ``sqrt((0))`` of this commutative ring."""
                 return self.ideal(self.zero()).radical()
@@ -3745,7 +3742,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_field(self, *args, **kwargs):
         return self._engine.is_field(*args, **kwargs)
 
-    def is_commutative(self):
+    def _commutativity_decision(self):
         return self._engine.is_commutative()
 
     def is_integral_domain(self, *args, **kwargs):

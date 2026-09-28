@@ -3815,7 +3815,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
         def zero(self):
             return self(lambda element: self._identity_value())
 
-        def is_commutative(self):
+        def _commutativity_decision(self):
             r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
             if not self._group.has_selected_group_resolution():
                 return Unknown
