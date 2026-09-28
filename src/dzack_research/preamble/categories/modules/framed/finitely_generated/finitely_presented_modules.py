@@ -1146,7 +1146,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
-        def is_torsion(self):
+        def _torsion_decision(self):
             r"""Read torsion off the invariant factors over a PID, else take the generic fibre."""
             if self.base_ring() not in PrincipalIdealDomains():
                 return super().is_torsion()

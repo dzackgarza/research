@@ -1576,6 +1576,16 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _:
                     return self._projectivity_decision()
 
+        def _torsion_decision(self):
+            return Unknown
+
+        def is_torsion(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).Torsion():
+                    return True
+                case _:
+                    return self._torsion_decision()
+
         def is_framed_module(self) -> bool:
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
             return self.has_selected_module_resolution()
@@ -2117,7 +2127,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     )
                 return self.fiber_dimension(ring.spectrum().generic_point())
 
-            def is_torsion(self) -> bool:
+            def _torsion_decision(self) -> bool:
                 r"""Return whether ``K tensor_R M = 0`` over an integral domain.
 
                 The generic fibre is a vector space over ``K``, so it vanishes
@@ -2233,9 +2243,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
 
             class ParentMethods:
-                def is_torsion(self) -> bool:
-                    return True
-
                 def invariants(self):
                     r"""Return the invariant factors of this finite presented torsion module."""
                     return self.invariant_factors()
@@ -2437,11 +2444,6 @@ class Modules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.lattices import Lattices
 
             return Lattices(self.base_ring())("U").discriminant_group()
-
-        class ParentMethods:
-            def is_torsion(self) -> bool:
-                return True
-
 
 FinitelyGeneratedModules = Modules.FinitelyGenerated
 FinitelyPresentedModules = Modules.FinitelyPresented
