@@ -390,7 +390,7 @@ class _AbsoluteGaloisGroupEngine:
 
     cardinality = order
 
-    def is_finitely_generated(self):
+    def _finite_generation_decision(self):
         r"""Return whether this absolute Galois group is algebraically finitely generated.
 
         Finite-field absolute Galois groups are procyclic but not algebraically

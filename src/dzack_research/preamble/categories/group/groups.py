@@ -2893,17 +2893,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return Unknown
 
         def is_finitely_generated(self):
-            from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
-                AbsoluteGaloisGroupsOfFiniteFields,
-            )
-
             match self:
                 case _ if self in OwnedGroups().FinitelyGeneratedAsMagma():
                     return True
-                case _ if self in AbsoluteGaloisGroupsOfFiniteFields():
-                    return False
                 case _:
-                    return Unknown
+                    return self._finite_generation_decision()
+
+        def _finite_generation_decision(self):
+            return Unknown
 
         def is_finitely_presented(self):
             match self.is_finitely_generated():
