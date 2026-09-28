@@ -1,6 +1,6 @@
 # Embeddings, overlattices, and gluing {#sec:embeddings-overlattices}
 
-::: {.Remark}
+::: {.Remark title="Primitive embeddings, gluing, and unimodular classification"}
 
 The basic vocabulary of lattices, primitive embeddings, orthogonal
 complements, discriminant groups, and the unimodular lattices
@@ -134,7 +134,7 @@ The set of equivalence classes of primitive embeddings of $S$ into a fixed
 lattice $L$ is denoted $\operatorname{Emb}(S, L)$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Primitive embedding classes are orthogonal-group orbits of marked sublattices"}
 
 Since an equivalence identifies $\iota_1(S)$ with $\iota_2(S)$ as sublattices of
 $L$, describing $\operatorname{Emb}(S, L)$ amounts to classifying the
@@ -165,7 +165,7 @@ the action of $\Orth(S)$: the classes of the second kind are the orbits of the
 classes of the first kind under $\Orth(S)$ acting by precomposition.
 :::
 
-::: {.Remark}
+::: {.Remark title="Embedding equivalence is finer than sublattice equivalence"}
 
 The distinction matters whenever $\Orth(S)$ is large, and it is the source of two
 different answers to the question of how many primitive embeddings $S\injects L$
@@ -500,7 +500,7 @@ Then either
 2.  $L$ is even and $L\cong U$ or $L\cong U^{\oplus 2}$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Sources and rigidity for small unimodular lattices"}
 
 The indefinite classification is Serre's theorem on integral quadratic forms
 [@Ser73 Ch.\ V]; the uniqueness statement for definite unimodular lattices of
@@ -609,7 +609,7 @@ $$
 $$
 :::
 
-::: {.Remark}
+::: {.Remark title="The discriminant-form cokernel is the obstruction to lifting isometries"}
 
 The cokernel $\Orth^*(q_L)$ measures the obstruction to lifting an automorphism
 of the discriminant form $q_L$ to an isometry of $L$.
