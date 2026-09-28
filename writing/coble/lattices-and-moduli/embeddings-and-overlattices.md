@@ -274,7 +274,7 @@ $A_T$ equipped with the negated form; see [the embedding-finiteness proposition]
 The construction and these formulas are due to Nikulin [@Nik80 §1.4--1.5].
 The gluing subgroup $H$ is also what decides whether a pair of isometries of $S$
 and of $T$ assembles into an isometry of $L$; that question is settled in
-[the automorphism-lifting criterion](#thm:automorphism-lifting-criterion).
+[the automorphism-lifting criterion](automorphism-lifting-through-a-gluing.md#thm:automorphism-lifting-criterion).
 :::
 
 ## Splitting of unimodular sublattices
@@ -544,10 +544,10 @@ The discriminant groups $A_S$ and $A_T$ are finite abelian groups, so the set
 $\operatorname{Isom}(A_S, A_T(-1))$ of discriminant-form isometries and the
 group $\Orth(q_T)$ are finite.
 The isometry class of $T$ is constrained to a fixed genus in the sense of
-[the genus definition](#def:genus) (its signature is $\sign L - \sign S$
+[the genus definition](discriminant-forms-and-genus.md#def:coble-genus) (its signature is $\sign L - \sign S$
 and its discriminant form is $-q_S$), and a genus of lattices contains only
 finitely many isometry classes; equivalently, the class group
-$\operatorname{cl}(T)$ from [the genus definition](#def:genus) is finite.
+$\operatorname{cl}(T)$ from [the genus definition](discriminant-forms-and-genus.md#def:coble-genus) is finite.
 A finite union of finite sets of $\Orth(q_T)$-orbits is finite, so
 $\operatorname{Emb}(S, L)$ is finite.
 :::
@@ -618,10 +618,10 @@ $\Orth^*(q_L) = 0$, whenever $L$ is indefinite and
 $$
 \ell(A_L) + 2 \le \rank L,
 $$
-where $\ell(A_L)$ is the length from [the discriminant-form definition](#def:discriminant-forms), i.e. the
+where $\ell(A_L)$ is the length from [the discriminant-form definition](discriminant-forms-and-genus.md#def:coble-discriminant-forms), i.e. the
 minimal number of generators of $A_L$ [@Nik80 Cor.\ 1.5.2, Thm.\ 1.14.2].
 For a unimodular lattice such as $U$ or $E_8$ the discriminant group is trivial,
 so $\Orth(q_L) = 0$ and $\tilde\Orth(L) = \Orth(L)$; the same triviality
 underlies the surjectivity statement invoked for $\lkt$ in
-[the embedding-sequence lemma](#lem:sequence_of_embeddings).
+[the embedding-sequence lemma](lattices.md#lem:sequence_of_embeddings).
 :::

@@ -3,7 +3,7 @@
 ::: {.Remark}
 
 We record the lattice-theoretic constructions attached to a group of isometries of a lattice, and specialize them to the case of an involution.
-This apparatus underpins the lattice theory of the K3-cover / Enriques-cover picture used throughout: the $2$-elementary lattices $S_\Co$ and $T_\Co$ arise as the invariant and coinvariant lattices of the nonsymplectic involution on the K3 cover of a Coble surface, and it is these lattices that enter the chain of primitive embeddings of [the embedding-sequence lemma](#lem:sequence_of_embeddings).
+This apparatus underpins the lattice theory of the K3-cover / Enriques-cover picture used throughout: the $2$-elementary lattices $S_\Co$ and $T_\Co$ arise as the invariant and coinvariant lattices of the nonsymplectic involution on the K3 cover of a Coble surface, and it is these lattices that enter the chain of primitive embeddings of [the embedding-sequence lemma](lattices.md#lem:sequence_of_embeddings).
 :::
 
 ::: {.Definition #def:invariant_coinvariant_lattices}

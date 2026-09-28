@@ -354,7 +354,7 @@ The Jordan invariants at every prime are exactly the data compared in
 isometric Jordan decompositions at every prime and the same signature.
 For a $2$-elementary lattice only the primes $2$ and the archimedean place carry
 information, and the Jordan decomposition at $2$ is assembled from the rank-two
-$2$-adic lattices $V_k$ and $U_k$ from [Nikulin's $V_k,U_k$ definition](#def:nikulin-Vk-Uk) together with
+$2$-adic lattices $V_k$ and $U_k$ from [Nikulin's $V_k,U_k$ definition](special-lattices.md#def:nikulin-Vk-Uk) together with
 rank-one summands.
 :::
 
@@ -471,7 +471,7 @@ the genus determines the isometry class.
 
 If $S\containedin\Lambda$ is primitive in an even unimodular $\Lambda$ with
 complement $T = S^{\perp\Lambda}$, then $q_T\cong -q_S$ by
-[the embedding-gluing description](#rmk:embedding-gluing-data), and applying [Milgram's formula](#thm:milgram) to both sides
+[the embedding-gluing description](embeddings-and-overlattices.md#rmk:embedding-gluing-data), and applying [Milgram's formula](#thm:milgram) to both sides
 gives the congruence
 $$
 \sign(S) + \sign(T)\equiv 0 \pmod 8
@@ -510,7 +510,7 @@ it guarantees that the $0$-cusps and $1$-cusps of a Baily--Borel compactificatio
 are finite in number before any of them is exhibited, and that an orbit
 computation can terminate.
 Under the hypothesis $U^{\oplus 2}\containedin L$ the Eichler criterion
-([the Eichler criterion](#thm:eichler-criterion)) makes it effective, bounding the number of
+([the Eichler criterion](special-lattices.md#thm:eichler-criterion)) makes it effective, bounding the number of
 $\widetilde{\SO}^+(L)$-orbits in $S_n$ by $\abs{A_L}$; without that hypothesis
 finiteness still holds but a bound has to come from elsewhere.
 :::

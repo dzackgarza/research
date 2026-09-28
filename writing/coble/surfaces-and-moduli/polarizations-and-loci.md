@@ -20,7 +20,7 @@ so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical
 divisor classes $\Num(Z)$.
 Under the intersection pairing this free part is the even unimodular lattice of
 signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of
-[the Enriques-lattice definition](#def:enriques-lattice) [@CDL25]; the numerical polarization $[h]$ is thus
+[the Enriques-lattice definition](../lattices-and-moduli/special-lattices.md#def:enriques-lattice) [@CDL25]; the numerical polarization $[h]$ is thus
 an ample class in $\Num(Z)\iso E_{10}$.
 :::
 
@@ -62,7 +62,7 @@ $$
 ,
 $$
 the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$
-(see [the Enriques-lattice definition](#def:enriques-lattice) and the Special Lattices section).
+(see [the Enriques-lattice definition](../lattices-and-moduli/special-lattices.md#def:enriques-lattice) and the Special Lattices section).
 The appearance of these extra invariant classes in $\NS$ is what cuts out the
 locus.
 :::
@@ -104,7 +104,7 @@ $$
 K_S^{\perp} \cong E_{10} = U\oplus E_8
 ,
 $$
-the Enriques lattice of [the Enriques-lattice definition](#def:enriques-lattice).
+the Enriques lattice of [the Enriques-lattice definition](../lattices-and-moduli/special-lattices.md#def:enriques-lattice).
 The Coble boundary curve has class
 $$
 C = 6H - 2\Sum_{i=1}^{10} E_i = -2K_S
@@ -118,7 +118,7 @@ The expression for $K_S$ is the blowup formula, and
 $D\cdot K_S = -3a - \Sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \Sum_i b_i$ up to
 sign, giving the stated condition.
 Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\gens{K_S}\cong\gens{-1}$ is
-unimodular, so by [the unimodular-splitting proposition](#prop:unimodular-splits) it splits $\Pic(S)$ and its
+unimodular, so by [the unimodular-splitting proposition](../lattices-and-moduli/embeddings-and-overlattices.md#prop:unimodular-splits) it splits $\Pic(S)$ and its
 complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
 That complement is even: for $D = aH - \Sum_i b_iE_i$ with $\Sum_i b_i = 3a$,
 $$
@@ -128,7 +128,7 @@ D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv
 $$
 using $b^2\equiv b\bmod 2$.
 An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by
-[the indefinite unimodular classification](#thm:indefinite-unimodular-classification).
+[the indefinite unimodular classification](../lattices-and-moduli/embeddings-and-overlattices.md#thm:indefinite-unimodular-classification).
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
@@ -138,7 +138,7 @@ The two classes to be distinguished are:
 
 1.  the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its
     K3 pullback $e_0\da f^{*}H\in S_\Co$ has $e_0^2 = 2$ by
-    [the K3 double-cover proposition](#prop:double-cover-is-k3);
+    [the K3 double-cover proposition](../coble-surfaces/k3-covers-of-coble-surfaces.md#prop:double-cover-is-k3);
 
 2.  the **degree-$2$ Coble polarization**
     $h_\Co\in K_S^{\perp}\containedin\Pic(S)$, of Enriques type: in the
@@ -160,7 +160,7 @@ $\tilde h_\Co^2 = 4$.
 The analogue of the Enriques degree-$2$ polarization is $h_\Co$:
 polarization: for a degree-$2$ Enriques surface the numerical polarization has
 $h^2 = 2$ in $\Num(Z)\cong E_{10}$ while the K3-side vector
-$h = e + f\in U(2)$ has $h^2 = 4$ ([the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing)), exactly the
+$h = e + f\in U(2)$ has $h^2 = 4$ ([the discriminant description of $\Gamma_{\En,2}$](../lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#prop:gamma-en-two-gluing)), exactly the
 pattern of $h_\Co$ and $\tilde h_\Co$.
 Any comparison of Coble and Enriques polarized moduli, and any pairing of a
 polarization class against roots of a Coxeter diagram, must first record which of

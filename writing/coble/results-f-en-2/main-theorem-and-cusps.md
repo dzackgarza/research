@@ -2,7 +2,7 @@
 
 Here we collect the principal structural results for the KSBA compactification $\ksbacpt{\fentwo}$ of the moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces: the identification of the normalized compactification with a semitoroidal model, the realization of $\fentwo$ as a normalization inside the degree-$(2,2,0)$ K3 moduli space, and the enumeration of the five $0$-cusps together with their folded Coxeter data.
 These describe the *ambient* degree-$2$ Enriques picture, into which the polarized Coble locus is later cut by an admissible root (cf.
-[the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan)).
+[the restricted-ramification-semifan conjecture](../stable-limits/ksba.md#conj:restricted_ramification_semifan)).
 
 ## The main theorem
 
@@ -122,14 +122,14 @@ The Type III counts $0,7,7,7,0$ sum to the $21$ distinct Type III divisors; the 
 ::: {.Remark}
 
 This enumeration is the boundary data underlying the folded semifans $\semifans{F}$ of [the compactification theorem](#thm:fen2_main): each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
-The precise per-cusp ray counts and IAS involutions are migrated from the working notes and, as with the cusp tables discussed in [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison), should be regarded as provisional pending an independent cusp computation.
+The precise per-cusp ray counts and IAS involutions are migrated from the working notes and, as with the cusp tables discussed in [the KSBA--semitoroidal comparison conjecture](../stable-limits/ksba.md#conj:ksba_semitoroidal_comparison), should be regarded as provisional pending an independent cusp computation.
 :::
 
 ## Folded Coxeter diagrams of the five cusps
 
 ::: {.Remark #rmk:fen2_folded_coxeter title="Folded Coxeter diagrams of $\fentwo$"}
 
-The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $\ten$, each realized as a folded image of a Coxeter diagram for $\fttz$ under the involution $I = -I_\En$ ([the root-folding criterion](#lem:root-folding-tdp), in the sense of [the folded-root definition](#def:folded-root)):
+The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $\ten$, each realized as a folded image of a Coxeter diagram for $\fttz$ under the involution $I = -I_\En$ ([the root-folding criterion](../compactifications/dynkin-foldings.md#lem:root-folding-tdp), in the sense of [the folded-root definition](../compactifications/dynkin-foldings.md#def:folded-root)):
 
 1. **$\eta_1$**: Divisibility $1$, derived from $\tilde\eta_1$ via $180^\circ$ rotation.
    (Boundary lattice: $U(2) \oplus E_8(2)$.)
@@ -150,8 +150,8 @@ The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbi
 ::: {.Remark}
 
 The folded chamber $\mathfrak{C}^I = \mathfrak{C} \intersect \overline{T}_{\eta, \mathbf{R}}^{I = 1}$ has walls defined by the roots descending from the covering domain (cf.
-[the classical-foldings example](#ex:classical-foldings)).
+[the classical-foldings example](../compactifications/dynkin-foldings.md#ex:classical-foldings)).
 
 The polarized Coble boundary problem uses this folded Enriques data only as ambient input.
-The extra marked-root refinement -- the admissibility test for Coble roots at a cusp and the restriction of the ramification semifan to the polarized Coble locus -- is recorded separately in [the Coble cusp-admissibility question](#que:coble_cusp_admissibility) and [the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan).
+The extra marked-root refinement -- the admissibility test for Coble roots at a cusp and the restriction of the ramification semifan to the polarized Coble locus -- is recorded separately in [the Coble cusp-admissibility question](../stable-limits/ksba.md#que:coble_cusp_admissibility) and [the restricted-ramification-semifan conjecture](../stable-limits/ksba.md#conj:restricted_ramification_semifan).
 :::

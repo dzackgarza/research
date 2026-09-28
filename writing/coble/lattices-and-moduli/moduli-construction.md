@@ -22,7 +22,7 @@ F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
-where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](#lem:primitive_embedding_eta).
+where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta).
 
 ::: {.Question}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
@@ -247,7 +247,7 @@ For a general member of $\cV_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
 ::: {.Proposition #prop:coble-is-the-ten-nodal-sextic-type title="The Coble lattices are the lattices of the type $10A_1$"}
 
 Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by
-[the ten-nodal-sextic lemma](#lem:rational_sextic_ten_nodes), and $X$ is the K3 cover of the Coble
+[the ten-nodal-sextic lemma](../coble-surfaces/rational-sextic-calculations.md#lem:rational_sextic_ten_nodes), and $X$ is the K3 cover of the Coble
 surface $S = X/\iota$.
 Then
 $$
@@ -267,7 +267,7 @@ $(\ZZ/2)^{l'-1}$, where $l'$ is the number of irreducible components of $Z$
 $P = \gens H\oplus L$.
 With $H^2 = 2$ and $L = A_1^{\oplus 10} = \gens{-2}^{\oplus 10}$ this is
 $\gens 2\oplus\gens{-2}^{\oplus 10} = \latI_{1,10}(2)$, which is $S_\Co$ by
-[the Coble invariant-lattice proposition](#prop:coble-invariant-lattice).
+[the Coble invariant-lattice proposition](../coble-surfaces/k3-covers-of-coble-surfaces.md#prop:coble-invariant-lattice).
 Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and
 [the polarized-K3 dimension corollary](#cor:m-polarized-k3-dimension) gives the dimension.
 :::
@@ -282,7 +282,7 @@ fixes $L$ pointwise and no folding occurs; the sublattice of $H^2(S;\ZZ)$ spanne
 by the exceptional classes of $S\to\PP^2$ then becomes $L$ after scaling by $2$
 [@YZZ25 §5.3].
 That is the same twist by $2$ recorded geometrically in
-[the K3-cover twist remark](#rmk:k3-cover-twist): the Coble Picard lattice is the blowup lattice
+[the K3-cover twist remark](../coble-surfaces/k3-covers-of-coble-surfaces.md#rmk:k3-cover-twist): the Coble Picard lattice is the blowup lattice
 $\latI_{1,10}$ scaled by $2$, with no folding correction.
 :::
 
@@ -328,7 +328,7 @@ $$
 \wh{\cM}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\cH^{*}_T}
 $$
 between the GIT compactification of $\cM_T$ and the Looijenga compactification
-([the Looijenga-compactification definition](#def:looijenga-compactification)) of
+([the Looijenga-compactification definition](../compactifications/toroidal-and-semitoroidal.md#def:looijenga-compactification)) of
 $\Gamma_T\backslash(D(Q) - \cH^{*}_T)$, compatibly with the corresponding
 statement of Shah and Looijenga for the whole space of sextics,
 $\overline{\cM}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\cH_\infty}$
@@ -394,7 +394,7 @@ this section does not settle.
 
 ::: {.Remark}
 
-By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB), there are morphisms
+By [the Baily--Borel extension lemma](lattices.md#lem:locally_closed_embedding_BB), there are morphisms
 $\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and
 $\overline{\fco}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
 correspondences between the boundary cusps.

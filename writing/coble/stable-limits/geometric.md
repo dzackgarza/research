@@ -41,7 +41,7 @@ degenerations of K3 surfaces with a nonsymplectic involution.
 A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a
 Type II component by an affine diagram $\widetilde{A}_n$, $\widetilde{D}_n$ or
 $\widetilde{E}_n$, matching the elliptic and parabolic subdiagrams of the Coxeter
-diagram ([the elliptic-subdiagram definition](#def:elliptic-subdiagram)).
+diagram ([the elliptic-subdiagram definition](../compactifications/reflection-groups-and-vinberg.md#def:elliptic-subdiagram)).
 Each ADE surface $(X, D + \varepsilon R)$ comes with a double cover
 $\pi\colon X\to Y$ onto a del Pezzo ADE surface
 $\bigl(Y,\ C + \tfrac{1+\varepsilon}{2}B\bigr)$ of index $2$

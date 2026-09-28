@@ -2,7 +2,7 @@
 
 This section records the general machinery of the K3 double cover of a rational surface, the distinguished geometric involutions it carries, and the lattice involutions they induce on $H^2$ together with their invariant and coinvariant sublattices.
 The Coble-specific instance of the double-cover construction — where the base is a terminal Coble surface and the branch locus is the anticanonical curve — is treated in the section on K3 covers of Coble surfaces; here we develop the construction for a general base and the involution-theoretic apparatus common to the del Pezzo, Enriques, and Nikulin quotients.
-The general invariant/coinvariant lattice formalism $L^G$, $L_G$ is developed in [the invariant/coinvariant-lattice definition](#def:invariant_coinvariant_lattices) and [the involution-eigenspace proposition](#prop:involution_eigenspaces); we cross-reference it rather than restating it.
+The general invariant/coinvariant lattice formalism $L^G$, $L_G$ is developed in [the invariant/coinvariant-lattice definition](../lattices-and-moduli/invariant-and-coinvariant-lattices.md#def:invariant_coinvariant_lattices) and [the involution-eigenspace proposition](../lattices-and-moduli/invariant-and-coinvariant-lattices.md#prop:involution_eigenspaces); we cross-reference it rather than restating it.
 
 ## The double cover construction
 
@@ -75,13 +75,13 @@ The lattice involutions satisfy the following.
 
 - The group $\gens{\Idp, \Ien, \Inik}$ is isomorphic to $\ZZ_2^2$; in particular these involutions mutually commute, and $\Ien\circ \Idp = \Inik$.
 
-- For each involution $I_\star$, the **invariant sublattice** is denoted $S_\star \da \lkt^{I_\star = 1}$ and the **coinvariant sublattice** is $T_\star \da \lkt^{I_\star = -1}$, in the sense of [the invariant/coinvariant-lattice definition](#def:invariant_coinvariant_lattices): $S_\star$ is the $+1$-eigenlattice and $T_\star$ the $-1$-eigenlattice of $I_\star$, and by [the involution-eigenspace proposition](#prop:involution_eigenspaces) these are orthogonal and rationally span $\lkt_\QQ$.
+- For each involution $I_\star$, the **invariant sublattice** is denoted $S_\star \da \lkt^{I_\star = 1}$ and the **coinvariant sublattice** is $T_\star \da \lkt^{I_\star = -1}$, in the sense of [the invariant/coinvariant-lattice definition](../lattices-and-moduli/invariant-and-coinvariant-lattices.md#def:invariant_coinvariant_lattices): $S_\star$ is the $+1$-eigenlattice and $T_\star$ the $-1$-eigenlattice of $I_\star$, and by [the involution-eigenspace proposition](../lattices-and-moduli/invariant-and-coinvariant-lattices.md#prop:involution_eigenspaces) these are orthogonal and rationally span $\lkt_\QQ$.
 
 - The transcendental lattices $T_Z$ of the Enriques surfaces $Z$ primitively embed into these invariant sublattices.
 :::
 
-The isometry classes of the invariant and coinvariant sublattices of the three involutions, together with their $2$-elementary invariants $(r,a,\delta)_n$ (where $n = n_+$ is the number of positive eigenvalues) and discriminant groups $A_L$, are collected in @tbl-k3-cover-coinvariant-lattices. For the del Pezzo and Enriques involutions these lattices also appear in [Period domain embeddings and normalization](../lattices-and-moduli/lattices.md) alongside [the sequence of primitive embeddings](#lem:sequence_of_embeddings). The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($\sen = E_{10}(2)$, $\ten = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $\sdp = U(2)$, $\tdp = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
-The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of [the coinvariant $2$-elementarity proposition](#prop:coinvariant_involution_2elementary), and their classification is Nikulin's [@Nik80].
+The isometry classes of the invariant and coinvariant sublattices of the three involutions, together with their $2$-elementary invariants $(r,a,\delta)_n$ (where $n = n_+$ is the number of positive eigenvalues) and discriminant groups $A_L$, are collected in @tbl-k3-cover-coinvariant-lattices. For the del Pezzo and Enriques involutions these lattices also appear in [Period domain embeddings and normalization](../lattices-and-moduli/lattices.md) alongside [the sequence of primitive embeddings](../lattices-and-moduli/lattices.md#lem:sequence_of_embeddings). The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($\sen = E_{10}(2)$, $\ten = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $\sdp = U(2)$, $\tdp = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
+The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of [the coinvariant $2$-elementarity proposition](../lattices-and-moduli/invariant-and-coinvariant-lattices.md#prop:coinvariant_involution_2elementary), and their classification is Nikulin's [@Nik80].
 
 | $L$ | Isometry class | $\rank_\ZZ(L)$ | $\operatorname{sig}(L)$ | $(r,a,\delta)_n$ | $A_L$ |
 | --- | --- | --- | --- | --- | --- |

@@ -81,11 +81,11 @@ $$
 
 This embedding is unique because $E_{10} = U \oplus E_8$ is unimodular.
 A primitively embedded unimodular sublattice splits its ambient lattice
-([the unimodular-splitting proposition](#prop:unimodular-splits)), so the codomain of any primitive embedding of
+([the unimodular-splitting proposition](embeddings-and-overlattices.md#prop:unimodular-splits)), so the codomain of any primitive embedding of
 $E_{10}$ is $E_{10}\oplus E_{10}^{\perp}$.
 The gluing datum of such an embedding is the graph of an isometry between a
 subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$
-([the embedding-gluing description](#rmk:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is
+([the embedding-gluing description](embeddings-and-overlattices.md#rmk:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is
 trivial and the embedding is determined by the isometry class of the complement.
 Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
@@ -134,7 +134,7 @@ $T_\Co\oplus K$ has gluing group
 $$
 H = \gens{\bigl(h/2,\; k/2\bigr)}\ \leq\ A_{T_\Co}\oplus A_K
 $$
-in the sense of [the gluing-datum definition](#def:gluing-datum-of-a-pair).
+in the sense of [the gluing-datum definition](automorphism-lifting-through-a-gluing.md#def:gluing-datum-of-a-pair).
 It has order $2$ and is isotropic, since
 $q_{T_\Co}(h/2)+q_K(k/2) = \frac12-\frac12 = 0$.
 
@@ -150,7 +150,7 @@ $\Gamma_\Co$.
 Let $g\in\Gamma_\En$ satisfy $g(T_\Co) = T_\Co$.
 Then $g$ preserves $K = T_\Co^{\perp}$ as well, so $g = \varphi\oplus\varepsilon$
 with $\varphi\da\ro{g}{T_\Co}\in\Orth(T_\Co)$ and $\varepsilon = \pm 1$ on $K$.
-By [the automorphism-lifting criterion](#thm:automorphism-lifting-criterion), $g$ preserves $T_\En$ only if
+By [the automorphism-lifting criterion](automorphism-lifting-through-a-gluing.md#thm:automorphism-lifting-criterion), $g$ preserves $T_\En$ only if
 $(\bar\varphi\oplus\bar\varepsilon)(H) = H$.
 The group $A_K$ has order $2$, so $\bar\varepsilon = \id$, and the condition on
 the generator of $H$ reads $\bigl(\bar\varphi(h/2),\,k/2\bigr)\in H$.
@@ -161,7 +161,7 @@ $$
 $$
 Next let $x\in A_{E_{10}(2)}$.
 Then $(x,0)\in H^{\perp}$, because $x$ is orthogonal to $h/2$.
-By [Nikulin's gluing theorem](#thm:nikulin-gluing) the discriminant group of $T_\En$ is
+By [Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing) the discriminant group of $T_\En$ is
 $H^{\perp}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that
 quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
 Every nonzero element of $H$ has second coordinate $k/2\neq 0$, so
@@ -175,7 +175,7 @@ Therefore $\varphi\in\Gamma_\Co$.
 
 Conversely let $\varphi\in\Gamma_\Co$ and put $g\da\varphi\oplus\id_K$.
 Both $\bar\varphi$ and $\bar{\id}_K$ are the identity, so $g$ preserves $H$ and
-extends to $T_\En$ by [the automorphism-lifting criterion](#thm:automorphism-lifting-criterion).
+extends to $T_\En$ by [the automorphism-lifting criterion](automorphism-lifting-through-a-gluing.md#thm:automorphism-lifting-criterion).
 The extension acts trivially on $H^{\perp}/H = A_{T_\En}$ and preserves
 $\bD(T_\En)$, so it lies in $\Gamma_\En$; it stabilizes $T_\Co$ and restricts to
 $\varphi$ there.
