@@ -24,16 +24,16 @@ fibre of the displayed map on isometry classes over the image of a lattice class
 
 A category, functor or map shown here refers to its mathematical definition in the
 chapters above; the GraphViz identifier is only its implementation label. The editable
-source is [`category-graph.dot`](category-graph.dot), and `just graph` re-renders the
+source is [`lean/category-graph.dot`](lean/category-graph.dot), and `just graph` re-renders the
 interactive view from it.
 
 ```{=html}
-<iframe src="category-graph.html" title="Interactive category and functor diagram"
+<iframe src="lean/category-graph.html" title="Interactive category and functor diagram"
         style="width:100%;height:78vh;border:1px solid var(--bs-border-color,#e5e7eb);border-radius:8px"
         loading="lazy"></iframe>
 ```
 
-[Open the diagram fullscreen](category-graph.html). Scroll to zoom and drag to pan.
+[Open the diagram fullscreen](lean/category-graph.html). Scroll to zoom and drag to pan.
 
 The exhaustive Sage runtime hierarchy is recorded separately in the
 [SageMath category framework reference](https://github.com/dzackgarza/research/blob/main/docs/sage-inventory/Sage-Category-Framework-Inventory.md),
