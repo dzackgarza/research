@@ -1534,16 +1534,6 @@ class Sets(OwnedCategory):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
 
-        def counting_well_order(self):
-            r"""Return the standard finite or countable well-order indexing this enumeration."""
-            size = cardinal(self.cardinality())
-            if size.is_finite():
-                return finite_ordinal_set(size.finite_value())
-            assert size.is_countably_infinite(), (
-                f"{self} has cardinality {size}, which is not countable, so no ordinal here counts it"
-            )
-            return NN
-
         def Mor(
             self,
             codomain: Parent,
@@ -1671,6 +1661,17 @@ class Sets(OwnedCategory):
         def an_object(self) -> ObjectOfCategory:
             r"""The natural numbers."""
             return NN
+
+        class ParentMethods:
+            def counting_well_order(self):
+                r"""Return the standard finite or countable well-order of this set's cardinality."""
+                size = cardinal(self.cardinality())
+                if size.is_finite():
+                    return finite_ordinal_set(size.finite_value())
+                assert size.is_countably_infinite(), (
+                    f"{self} is countable but has cardinality {size}, which is neither finite nor countably infinite"
+                )
+                return NN
 
         class Infinite(CategoryWithAxiom):
             r"""Sets whose cardinality is \(\aleph_0\)."""
