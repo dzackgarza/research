@@ -1878,7 +1878,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
-        class ParentMethods:
     class Artinian(CategoryWithAxiom):
         r"""Artinian rings: the descending chain condition on ideals."""
 
@@ -1894,7 +1893,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Hopkins–Levitzki: an artinian ring is noetherian."""
             return [OwnedRings().Noetherian()]
 
-        class ParentMethods:
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
 
