@@ -1836,7 +1836,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 raise TypeError(f"{images!r} cannot define a homomorphism {self.domain()} -> {self.codomain()}: give the images of the free basis {indices} as a map, a function, or a dictionary")
         return self.element_class(self, generator_morphism)
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         r"""A homomorphism from F(S) is exactly a function S -> H."""
         return cardinal(self.codomain().cardinality()) ** cardinal(self.domain().free_basis().cardinality())
 
@@ -2131,7 +2131,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         )
 
     @cached_method
-    def cardinality(self):
+    def _cardinality_decision(self):
         r"""Return the cardinality of the represented homomorphism object."""
         domain = self.domain()
         codomain = self.codomain()
@@ -2143,10 +2143,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 )
                 return cardinal(int(homomorphisms.Length()))
             case _:
-                assert False, (
-                    f"the cardinality of Mor({domain}, {codomain}) is defined as a set cardinality, but the current "
-                    "preamble computes it only when both groups are finite represented groups"
-                )
+                return Unknown
 
     def _repr_(self):
         return f"Mor({self.domain()}, {self.codomain()})"
@@ -2231,7 +2228,7 @@ class GroupAutomorphismGroups(OwnedCategory):
         def supergroup(self):
             return self
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""``|Aut(G)|``: from GAP for finite ``G``, from the rank for a free ``G``.
 
             ``Aut(F_0)`` is trivial, ``Aut(F_1) = C_2``, and ``Aut(F_n)`` for
@@ -2249,7 +2246,7 @@ class GroupAutomorphismGroups(OwnedCategory):
                         return cardinal(2)
                     case _:
                         return aleph(0)
-            return super().cardinality()
+            return super()._cardinality_decision()
 
         def _repr_(self):
             return f"Aut({self.domain()})"
@@ -2974,7 +2971,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             r"""Whether this represented group carries compatible topology data."""
             return self in TopologicalGroups()
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             from dzack_research.preamble.categories.group.cyclic_subgroups import (
                 CyclicGroups,
             )
@@ -3000,11 +2997,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return continuum
             if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
                 return aleph(0)
-            assert False, (
-                f"the cardinality of {self} is not computed here: it is computed only for finite groups, free groups, "
-                f"and infinite finitely generated groups, and {self} is not known to be any of these; "
-                f"{self} is in {self.category()}"
-            )
+            return Unknown
 
         def order(self):
             r"""The set cardinality, read as an integer when finite."""

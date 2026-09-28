@@ -1369,6 +1369,10 @@ class Sets(OwnedCategory):
             r"""Protected computation of finiteness when placement does not decide it."""
             return Unknown
 
+        def _cardinality_decision(self):
+            r"""Protected exact cardinality supplied by a construction-specific realization."""
+            return Unknown
+
         def is_finite(self):
             r"""Return whether the underlying set has finite cardinality."""
             match self:
@@ -1404,11 +1408,11 @@ class Sets(OwnedCategory):
             - any other finite set is counted through its points, and any
               other countably infinite set has cardinality ``aleph_0``.
 
-            An engine realizing sets whose construction determines a
-            cardinality these cases do not reach -- the image of an injective
-            map, the ``k``-selections from a set -- states that theorem with
-            its own ``cardinality``.  A represented set outside all of these
-            has a cardinality that no exact computation here reaches, and the
+            A realization whose construction determines a cardinality these
+            standard set cases do not reach supplies that theorem through the
+            protected ``_cardinality_decision`` hook.  The public operation
+            remains here.  A represented set outside all of these routes has a
+            cardinality that no exact computation here reaches, and the
             assertion says so.
             """
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -1479,14 +1483,22 @@ class Sets(OwnedCategory):
                                         f"(it is in {self.category()})"
                                     )
                                     return _aleph0()
-                case _ if self in Sets().Finite():
-                    return cardinal(sum(1 for _point in self))
                 case _:
-                    assert self in Sets().Countable() and self in Sets().Infinite(), (
-                        f"cannot compute the cardinality of {self}: it is not known to be finite or countably "
-                        f"infinite, and no formula for it applies (it is in {self.category()})"
-                    )
-                    return _aleph0()
+                    construction_cardinality = self._cardinality_decision()
+                    match construction_cardinality is Unknown:
+                        case False:
+                            return cardinal(construction_cardinality)
+                        case True:
+                            pass
+                    match self:
+                        case _ if self in Sets().Finite():
+                            return cardinal(sum(1 for _point in self))
+                        case _:
+                            assert self in Sets().Countable() and self in Sets().Infinite(), (
+                                f"cannot compute the cardinality of {self}: it is not known to be finite or countably "
+                                f"infinite, and no formula for it applies (it is in {self.category()})"
+                            )
+                            return _aleph0()
 
         def finite_words(self):
             r"""All finite words in this alphabet, including the empty word."""

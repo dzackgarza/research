@@ -353,7 +353,7 @@ class _FiniteFieldAutomorphismEngine:
             ZZ(int(self.automorphisms().cardinality())),
         )
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         return cardinal(self.order())
 
     def compose(self, left, right):

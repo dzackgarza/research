@@ -112,7 +112,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 return False
             return Unknown
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""``|H|``: from the retained character data, else by counting a finite supergroup.
 
             With complete finite-character data ``H`` is the preimage of a
@@ -358,13 +358,13 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def kernel_morphism(self):
             return self._kernel_morphism
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
             if self.supergroup().is_finite() is True:
                 return _finite_group_morphism_kernel_cardinality(
                     self.kernel_morphism()
                 )
-            return super().cardinality()
+            return super()._cardinality_decision()
 
         def _abelianity_decision(self):
             r"""Decide abelianity from the represented exact kernel when finite."""
