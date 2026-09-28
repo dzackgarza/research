@@ -464,10 +464,12 @@ These principles are more important than any current list of prohibited code sha
 
 ### Collaborative, agent-driven research with visible evidence
 
-This repository is built for collaborative research in which AI agents do much of the writing. A
-result typically passes through three stages. An agent drafts it informally; the draft becomes
-pseudo-formal Sage; humans and agents then edit, review and audit that Sage until the result
-carries evidence strong enough to be used in a paper.
+This repository is built for collaborative research between humans and AI agents. A result
+typically passes through three stages. A human states the mathematics informally, in natural
+language. An agent pseudo-formalizes that draft in Sage, inside a relatively rigid ecosystem of
+owned categories, constructions and contracts that gives the translation a definite place to land.
+Humans and agents then edit, review and audit that Sage until the result carries evidence strong
+enough to be used in a paper.
 
 Sage is not a proof checker, and this process does not make it one. Confidence in a computed
 result is fundamentally probabilistic and subjective. The aim is to build as many objective
