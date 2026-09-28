@@ -33,11 +33,28 @@ b_B\colon(B\otimes_AM)\times(B\otimes_AM)\longrightarrow B\otimes_AW,
 b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y),
 $$
 whose value module is $B\otimes_AW$.
-For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as
-$b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
+For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as $b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
 :::
 
 ## Module properties {#sec-module-properties}
+
+::: {#def-torsion-pair .def title="Hereditary torsion pairs"}
+Let $\mathcal A$ be an abelian category.
+A *torsion pair* on $\mathcal A$ is a pair $(\mathcal T,\mathcal F)$ of replete full subcategories such that
+$$
+\operatorname{Hom}_{\mathcal A}(T,F)=0
+\qquad
+(T\in\mathcal T,\ F\in\mathcal F),
+$$
+and every $X\in\mathcal A$ fits into a short exact sequence
+$$
+0\longrightarrow T_X\longrightarrow X\longrightarrow F_X\longrightarrow0
+$$
+with $T_X\in\mathcal T$ and $F_X\in\mathcal F$.
+The torsion pair is *hereditary* if $\mathcal T$ is closed under subobjects.
+For every ring $R$, the category $R\text{-}\mathbf{Mod}$ is abelian [@stacks-0AZ5].
+In this text, a *torsion subcategory* of $R\text{-}\mathbf{Mod}$ means the torsion class $\mathcal T$ of a specified hereditary torsion pair unless another structure is named explicitly.
+:::
 
 ::: {#def-module-subcategories .def title="Standard module subcategories"}
 The following isomorphism-invariant properties define replete full subcategories of $R\text{-}\mathbf{Mod}$:
@@ -51,7 +68,7 @@ The following isomorphism-invariant properties define replete full subcategories
 - finitely generated projective: both of the first two conditions hold.
 
 If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated by a nonzero element of $R$, and *torsion-free* when multiplication by every nonzero element of $R$ is injective.
-Over a general ring, a torsion subcategory is used only after a torsion theory has been specified.
+Over a general ring, no torsion subcategory is implicit in $R$ alone; it is used only after the data of @def-torsion-pair or another explicitly named localization structure have been specified.
 :::
 
 ::: {#def-based-module .def title="Bases"}
