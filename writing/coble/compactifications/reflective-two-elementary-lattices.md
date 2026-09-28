@@ -33,7 +33,7 @@ Write $\Gamma_2$ and $\Gamma_r$ for the Coxeter--Vinberg diagrams
 $\Gamma_4\containedin\Gamma_r$ for the subdiagram spanned by the long roots.
 :::
 
-::: {.Remark}
+::: {.Remark title="Reflectivity is detected by Vinberg termination"}
 
 Vinberg's algorithm (\longref{thm:vinberg-algorithm}) terminates on $S$ for the
 group $W_r(S)$ exactly when $S$ is reflective, and for $W_2(S)$ exactly when $S$
@@ -121,7 +121,7 @@ $$
 This is [@Ale22 §2].
 :::
 
-::: {.Remark}
+::: {.Remark title="The elementary-summand classification excludes $D_{2m+1}$ and $E_6$"}
 
 \longref{thm:two-elementary-hyperbolic-decomposition} is the exhaustive form of the
 building-block statement of \longref{thm:2elementary-building-blocks}: in the
@@ -188,7 +188,7 @@ where $G$ is the graph in question.
 This is [@Ale22 Thm. 1.4].
 :::
 
-::: {.Remark}
+::: {.Remark title="Coble Picard diagrams on $K_n^{(2)}$ inherit the boundary permutation group"}
 
 The lattices $(10+n, 12-n, 1)$ of
 \longref{thm:coxeter-built-on-complete-graphs} are precisely the rows $n$ of the
@@ -210,7 +210,7 @@ Every other even $2$-elementary lattice on the line $r + a = 22$ is reflective.
 This is [@Ale22 Thm. 1.1].
 :::
 
-::: {.Remark}
+::: {.Remark title="The non-reflective Coble rows are exactly $n=7,8,9$"}
 
 The three non-reflective lattices are the Picard lattices of the rows
 $n = 7, 8, 9$ of the Coble table: $(17,5,1)$ at $n = 7$, $(18,4,1)$ at $n = 8$,
@@ -243,7 +243,7 @@ of type $A_n(2), D_n(2), E_n(2)$ when every vertex is a long root.
 This is [@Ale22 §1, §2].
 :::
 
-::: {.Remark}
+::: {.Remark title="Maximal parabolics classify both elliptic fibrations and adjacent one-cusps"}
 
 Under the two interpretations of an even hyperbolic lattice, this correspondence
 reads twice.
@@ -402,7 +402,7 @@ tree with three legs of lengths $p$, $q$, $r$.
 This is [@Ale22 Table 1].
 :::
 
-::: {.Remark}
+::: {.Remark title="The Coble K3 cover has the infinite Coxeter factor $W(T_{2,3,7})$"}
 
 For $S_\Co = (11,11,1)$ the long-root subdiagram is the three-legged tree
 $T_{2,3,7}$, and $\Sym\Gamma_r$ is trivial, so
@@ -441,7 +441,7 @@ that is, one chamber of the complement of the mirrors of the roots inside the
 positive cone, in the sense of \longref{def:weyl-chamber}.
 :::
 
-::: {.Remark}
+::: {.Remark title="The ample cone is a fundamental chamber for the short-root Weyl group"}
 
 The ample cone is a fundamental domain for $W_2(S_X)$ acting on the positive cone,
 which is why the Torelli theorem presents $\Aut(X)$ through the quotient
