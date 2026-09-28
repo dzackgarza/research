@@ -427,7 +427,7 @@ Thus the expected moduli dimension is $12-1-2=9$.
 
 The finite symmetry group permutes the four fixed points.
 
-::: {.Problem #prob-projective-coverage}
+::: {.Problem #prob-projective-coverage title="Projective coverage and intrinsic reconstruction"}
 **Required theorem (projective coverage and intrinsic reconstruction).**  The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer of $\tau$ is the complete direct moduli stack of generic degree-$2$ Coble data.
 Equivalently, the projective diagram can be reconstructed intrinsically from the Coble pair, and the resulting period map has image the full relevant period-domain component.
 :::
@@ -548,7 +548,7 @@ where
 
 - the product $I_{\mathrm{Co}}I_{\mathrm{dP}}$ has the required symplectic character.
 
-::: {.Problem #prob-coble-rigidity}
+::: {.Problem #prob-coble-rigidity title="Labeled Coble rigidity"}
 **Required theorem (labeled Coble rigidity).**  Any two tuples $\mathfrak L_{\mathrm{Co},2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
 :::
 
@@ -782,7 +782,7 @@ such that each geometric fiber has the following properties.
 6. The canonical index-one cover is a K3 surface with one $A_1$ singularity.
 :::
 
-::: {.Problem #prob-cover-singular-equivalence}
+::: {.Problem #prob-cover-singular-equivalence title="Equivalence of the two open Coble moduli problems"}
 **Required theorem (equivalence of the two open moduli problems).**  After accounting for the Weyl ambiguity of the exceptional root, contraction, canonical cover, and quotient define inverse equivalences between the direct resolved-cover stack and the direct singular-pair stack.
 The equivalence is compatible with base change and automorphisms.
 :::
@@ -850,7 +850,7 @@ Using the characteristic class $\eta/2$ to identify the remaining finite quadrat
  :=\rho_{T_{\mathrm{Co}}}^{-1}(P).
 \]
 
-::: {.Problem #prob-group-identification}
+::: {.Problem #prob-group-identification title="Arithmetic and monodromy identification"}
 **Required theorem (arithmetic and monodromy identification).**  Prove
 
 \[
@@ -960,7 +960,7 @@ A diagram of rational domains is not automatically a diagram of arithmetic quoti
 To construct each arrow, one must prove that the relevant group acts through a compatible subgroup of a common $O(L_{K3})$, and one must identify the image group.
 The direct arrow to $\mathcal F_{(2,2,0)}$ must later be shown to factor through the Enriques Heegner component.
 
-::: {.Problem #prob-period-diagram}
+::: {.Problem #prob-period-diagram title="The commuting period diagram"}
 **Required theorem (commuting period diagram).**  The direct and Heegner arithmetic groups are compatible with the common labeled embedding chain; all arrows in the displayed diagram are well defined on quotients; and the direct Coble construction factors through the normalized $(-2)$-Heegner divisor in $\mathcal F_{\mathrm{En},2}$.
 :::
 
@@ -1067,7 +1067,7 @@ A later enhanced calculation decorated a finite plane by one of eight ``stars'' 
 For a prescribed $S_7$ subgroup it produced seven enhanced plane orbits and thirteen enhanced flag orbits.
 This remains a computational record only: the required identification of that $S_7$ with the image of the integral plane stabilizer has not been proved.
 
-::: {.Problem #prob-cusp-lifting}
+::: {.Problem #prob-cusp-lifting title="Integral cusp lifting"}
 **Required theorem (integral cusp lifting).**  Determine the exact images of the integral isotropic-line and isotropic-plane stabilizers in the finite orthogonal group and use them to classify
 
 \[
@@ -1250,7 +1250,7 @@ The raw numbers of maximal parabolic faces in the four sliced arrangements were 
 These counts are diagnostic data only.
 They disagree with some finite-shadow orbit counts, which indicates that chamber completeness, arithmetic diagram automorphisms, and the calibration of finite orbits must all be resolved before boundary strata are enumerated.
 
-::: {.Problem #prob-coxeter-completeness}
+::: {.Problem #prob-coxeter-completeness title="Coble Vinberg theory and root completeness"}
 **Required theorem (Coble Vinberg and root completeness).**  For every polarized Coble $0$-cusp:
 
 1. determine the arithmetic cusp lattice and the image of its stabilizer;
@@ -1336,7 +1336,7 @@ It cannot be used to prove that a candidate wall slice is the full Coxeter chamb
 
 ## Required realization theorem {#sec-affine-realization}
 
-::: {.Problem #prob-affine-realization}
+::: {.Problem #prob-affine-realization title="Direct integral-affine realization"}
 **Required theorem (direct integral-affine realization).**  For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mathcal X,\mathcal R,\mathcal E)\longrightarrow(C,0)$ whose dual complex is the prescribed Coble integral-affine package.
 Conversely, show that every direct Coble degeneration admits such a model after finite base change and allowed dlt modification.
 :::
@@ -1349,7 +1349,7 @@ An affine symmetry is not automatically an algebraic involution.
 AEGS use limiting-period conditions and invariant component/gluing parameters to extend their involution over a general divisor model.
 The Coble version must also retain the exceptional root.
 
-::: {.Problem #prob-algebraic-extension}
+::: {.Problem #prob-algebraic-extension title="Algebraic extension of the Coble package"}
 **Required theorem (algebraic extension of the Coble package).**  A general divisor model with direct Coble monodromy admits commuting regular involutions $\iota_{\mathrm{Co}}$ and $\iota_{\mathrm{dP}}$ such that
 
 \[
@@ -1380,7 +1380,7 @@ The natural crepant pair is
 \right).
 \]
 
-::: {.Problem #prob-dlt-quotient}
+::: {.Problem #prob-dlt-quotient title="The direct dlt quotient"}
 **Required theorem (direct dlt quotient).**  After the prescribed dlt modification, the above pair is dlt over the base; its fibers are slc; the boundary contains no prohibited log canonical center; and
 
 \[
@@ -1415,7 +1415,7 @@ H^0\!\left(
 
 After contracting $\mathcal C$ to the singular Coble family, this is expected to agree with the relative Proj for a sufficiently divisible multiple of $\mathcal R^\sharp$.
 
-::: {.Problem #prob-stable-proj}
+::: {.Problem #prob-stable-proj title="Stable contraction by relative Proj"}
 **Required theorem (stable contraction).**  Determine exactly which curves, components, and conductor strata are contracted by the above relative Proj, and prove that the resulting family is the KSBA stable family of pairs $(V^\sharp,\epsilon R^\sharp)$.
 :::
 
@@ -1431,7 +1431,7 @@ D+\frac{1+\epsilon}{2}C+\epsilon R
 \right).
 \]
 
-::: {.Problem #prob-component-classification}
+::: {.Problem #prob-component-classification title="Classification of Coble boundary components"}
 **Required theorem (Coble component classification).**  Classify all finite Type III and affine Type II component pairs arising in direct Coble stable limits.
 Give explicit equations or toric models, involutions, quotient singularities, branch allocation, decorations, and stable contractions; prove that every component occurs in the list and every listed type occurs.
 :::
@@ -1492,7 +1492,7 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 
 5. the isomorphism class of the relative Proj.
 
-::: {.Problem #prob-direct-semifan}
+::: {.Problem #prob-direct-semifan title="The direct Coble semifan"}
 **Required theorem (direct Coble semifan).**  The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the verified direct Coble Coxeter diagram and the intrinsic relevance marking.
 :::
 
@@ -1528,7 +1528,7 @@ To apply the subtorus lemma to the Coble Heegner locus, one must prove all of th
 
 7. No additional coarsening occurs after passing to Coble stable pairs.
 
-::: {.Problem #prob-restricted-semifan}
+::: {.Problem #prob-restricted-semifan title="Semitoroidal restriction to the Coble locus"}
 **Required theorem (semitoroidal restriction).**  After passage to a common toroidal refinement, the normalization of the Heegner closure is obtained by saturated intersection with the Coble cusp subspaces, and the induced semitoroidal contractions coincide with combinatorial constancy for the Coble stable-pair family.
 :::
 
