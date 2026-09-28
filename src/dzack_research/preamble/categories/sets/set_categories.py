@@ -154,6 +154,22 @@ class EnumeratedSets(OwnedCategory):
             is not an object of the ordinal category ``Ord``.
             """
 
+        def __iter__(self):
+            r"""Iterate in the order selected by this set's ranking map."""
+            ranking = self.ranking_map()
+            point_at = ranking.inverse()
+            counting_order = ranking.codomain()
+            match counting_order in FiniteSets():
+                case True:
+                    positions = range(int(cardinal(counting_order.cardinality()).finite_value()))
+                case False:
+                    assert counting_order in CountablyInfiniteSets(), (
+                        f"the ranking map of {self} has codomain {counting_order}, not a finite or countably infinite "
+                        "standard well-order"
+                    )
+                    positions = count()
+            return (point_at(position) for position in positions)
+
         def __getitem__(self, position):
             r"""Return the point at ``position``, the ranking map run backwards."""
             return self.ranking_map().inverse()(position)
@@ -3401,14 +3417,6 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def __iter__(self):
-            finite_size = self._known_finite_size()
-            positions = range(finite_size) if finite_size is not None else count()
-            point_at = self.ranking_map().inverse()
-            return (point_at(position) for position in positions)
-
-
-
 DisjointUnionsOfSets = CoproductsOfSets
 
 
@@ -3706,12 +3714,6 @@ class NaturalNumberSets(OwnedCategory):
                     return integer_index(value) >= 0
                 case _:
                     return False
-
-        def __iter__(self):
-            index = 0
-            while True:
-                yield self(index)
-                index += 1
 
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
