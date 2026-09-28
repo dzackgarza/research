@@ -36,7 +36,7 @@ Among the entries of $\semifans{F}$, the even-indexed entries $\torfan_2, \torfa
 The proof reduces to the recognizable-divisor theorem of Alexeev--Engel [@AE23]: for a recognizable divisor $R$, the normalization of the KSBA compactification of stable K3 pairs $(X, \varepsilon R)$ is isomorphic to a semitoroidal compactification ([the recognizable-divisor semitoroidal theorem](../compactifications/toroidal-and-semitoroidal.md#thm:recognizable-semitoroidal), and the more general tower criterion of [the tower semitoroidal theorem](../compactifications/toroidal-and-semitoroidal.md#thm:tower-semitoroidal)). The relevant polarizing divisor here is the ramification divisor $R_\iota$ of the nonsymplectic Enriques involution, which is recognizable ([the recognizable-divisor example](../compactifications/toroidal-and-semitoroidal.md#ex:recognizable-divisors)). Applying the theorem produces a semitoroidal compactification on the normalization of $\ksbacpt{\fentwo}$, and identifying the resulting semifan cusp-by-cusp gives the explicit collection $\semifans{F}$, one semifan per $0$-cusp.
 The passage from the ambient K3 picture to the Enriques space is [the semitoroidal-data descent conjecture](#conj:descent_semitoroidal_data_En2), which supplies the folded semifans $\mathcal{F}_k$ and their boundary stratification.
 
-::: {.Warning}
+::: {.Warning title="The cuspwise semifan identification and descent are not proved in the source note"}
 The source note states the reduction to Alexeev--Engel but does not carry out the cusp-by-cusp identification of $\semifans{F}$ nor the descent of the semifan; these are recorded here (the descent as [the semitoroidal-data descent conjecture](#conj:descent_semitoroidal_data_En2)) rather than proved in full.
 :::
 ::::
@@ -61,7 +61,7 @@ Imposing the involution constraints on this restricted structure produces a coll
 The folded semifans $\semifan{F}_k$ determine the semitoroidal compactification $\semifancpt{\fentwo}{\semifans{F}}$ appearing in [the KSBA--semitoroidal isomorphism theorem](#thm:ksba_semitoroidal_En2), and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
 The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of [the Baily--Borel embedding lemma](../lattices-and-moduli/lattices.md#lem:locally_closed_embedding_BB); the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of [the restricted-ramification-semifan conjecture](../stable-limits/ksba.md#conj:restricted_ramification_semifan).
 
-::: {.Warning}
+::: {.Warning title="The semifan restriction-and-folding argument still needs proof or citation"}
 The source note is tagged as a proposition but reproduces no proof or proof reference for the descent/restriction itself (that $\semifan{F}_{\ram}$ restricts to $\normalize{B}$ and folds to the $\semifan{F}_k$); it is recorded here as a conjecture pending that argument.
 Within the settled degree-$2$ Enriques package [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.
 :::
@@ -69,7 +69,7 @@ Within the settled degree-$2$ Enriques package [@AEGS25] this descent is expecte
 
 ## The polarized Coble analogue
 
-::: {.Remark}
+::: {.Remark title="The polarized Coble analogue adds root data, semifan restriction, and no-moduli-loss"}
 
 The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan ([the Coble KSBA--semitoroidal comparison conjecture](../stable-limits/ksba.md#conj:ksba_semitoroidal_comparison), [the restricted-ramification-semifan conjecture](../stable-limits/ksba.md#conj:restricted_ramification_semifan)). Its extra difficulties are exactly the ones absent from the Enriques theorem above: branchwise root data, the ramification-semifan restriction identity, and [the no-moduli-loss conjecture](../stable-limits/ksba.md#conj:no_moduli_loss).
 :::

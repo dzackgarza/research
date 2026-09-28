@@ -9,7 +9,7 @@ These are the program's own in-progress steps rather than settled theorems.
 They are stated conjecturally throughout, and they are exactly parallel to the open comparison of [the KSBA--semitoroidal comparison conjecture](../stable-limits/ksba.md#conj:ksba_semitoroidal_comparison). The period-domain counterpart of the finiteness step is [the normalization theorem](../lattices-and-moduli/lattices.md#thm:normalization), which is proved; what is open here is the KSBA-side statement for $\phi$.
 Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
 
-::: {.Remark}
+::: {.Remark title="Sources for KSBA separatedness and Zariski's Main Theorem"}
 The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
 :::
 ::::
@@ -70,7 +70,7 @@ Let $f\colon X \to Y$ be a birational, finite morphism between normal varieties,
 Then $f$ is an isomorphism.
 :::
 
-::: {.Remark}
+::: {.Remark title="Zariski's Main Theorem is external; verifying its hypotheses is the open step"}
 
 [Zariski's Main Theorem](#thm:zariski_main_theorem) is a classical theorem [@Har10a]; a finite birational morphism onto a normal variety is an isomorphism.
 It is invoked here only as an external tool; the content below -- that the classifying map $\phi$ satisfies its hypotheses -- is the program's own claim.
