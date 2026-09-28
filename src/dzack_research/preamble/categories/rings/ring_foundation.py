@@ -2442,14 +2442,46 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return self(value)
 
         def is_central(self, element):
-            r"""Return whether ``element`` is central in the foundational ring regimes."""
-            if element not in self:
-                return False
-            assert self in OwnedRings().Commutative(), (
-                f"cannot decide whether {element} is central in {self}: centrality is computed here only in "
-                "a commutative ring"
-            )
-            return True
+            r"""Return whether ``element`` commutes with every element of this ring.
+
+            In a framed algebra it is enough to commute with the selected
+            algebra generators: scalar coefficients are central and the
+            commuting relation is preserved by sums and products.  In an
+            endomorphism algebra a represented scalar map ``r id`` is central
+            because every linear ``h`` satisfies ``h(r x) = r h(x)``.
+            """
+            match element in self:
+                case False:
+                    return False
+                case True:
+                    element = self(element)
+
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            match self:
+                case _ if self in OwnedRings().Commutative():
+                    return True
+                case _ if self in Algebras(self.base_ring()) and self.is_framed_algebra():
+                    return all(
+                        element * self.algebra_generator(label)
+                        == self.algebra_generator(label) * element
+                        for label in self.algebra_generating_set()
+                    )
+                case _:
+                    from dzack_research.preamble.categories.group.additive_mors import (
+                        AdditiveEndomorphismRings,
+                        _scalar_identity_coefficient,
+                    )
+
+                    match self:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()) and _scalar_identity_coefficient(element) is not None:
+                            return True
+                        case _:
+                            assert False, (
+                                f"centrality is defined for every element of {self}, but the current preamble "
+                                "computes it only for commutative rings, framed algebras, and represented scalar "
+                                "endomorphisms"
+                            )
 
         @cached_method
         def ring_center(self):

@@ -1178,7 +1178,23 @@ class Algebras(OwnedCategoryOverBaseRing):
             native = self._native_module_presentation()
             if native is not None:
                 return native.module()
-            return self._preamble_unformed_module
+            retained = vars(self).get("_preamble_unformed_module")
+            match retained:
+                case _ if retained is not None:
+                    return retained
+                case _:
+                    from dzack_research.preamble.categories.group.additive_mors import (
+                        AdditiveEndomorphismRings,
+                    )
+
+                    match self:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()):
+                            return self
+                        case _:
+                            assert False, (
+                                f"{self} was constructed as an algebra without retaining the module its "
+                                "multiplication is defined on"
+                            )
 
         def _element_of_unformed_module(self, element):
             r"""The element of :meth:`unformed_module` on the data of ``element``.
@@ -1372,17 +1388,6 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def product_on_algebra_generators(self, left, right):
             return self.algebra_generator(left) * self.algebra_generator(right)
-
-        def is_central(self, element):
-            match element in self:
-                case False:
-                    return False
-                case True:
-                    return all(
-                        element * self.algebra_generator(label)
-                        == self.algebra_generator(label) * element
-                        for label in self.algebra_generating_set()
-                    )
 
         def is_commutative(self):
             r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
@@ -1923,7 +1928,23 @@ class Algebras(OwnedCategoryOverBaseRing):
             @cached_method
             def one(self):
                 r"""The unit, read on this algebra by coercion from the unit of ``M``."""
-                return self(self._preamble_algebra_unit)
+                unit = vars(self).get("_preamble_algebra_unit")
+                match unit:
+                    case _ if unit is not None:
+                        return self(unit)
+                    case _:
+                        from dzack_research.preamble.categories.group.additive_mors import (
+                            AdditiveEndomorphismRings,
+                        )
+
+                        match self:
+                            case _ if self in AdditiveEndomorphismRings(self.base_ring()):
+                                return self.identity()
+                            case _:
+                                assert False, (
+                                    f"{self} is a unital algebra but its construction supplied neither a "
+                                    "unit element nor a represented endomorphism identity"
+                                )
 
             @cached_method
             def unit_morphism(self):
