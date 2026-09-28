@@ -12,7 +12,7 @@ A chain complex is therefore the same datum as a family of morphisms $(d_n)_{n\i
 An additive functor $F\colon\mathcal A\to\mathcal B$ induces $\mathbf{Ch}(F)\colon\mathbf{Ch}(\mathcal A)\to\mathbf{Ch}(\mathcal B)$ with $\mathbf{Ch}(F)(C)_n=F(C_n)$ and differentials $F(d^C_n)$, and this assignment respects composition of additive functors.
 The hypotheses this construction places on $\mathcal A$ are collected in @sec-additive-hypotheses.
 
-::: {#thm-chain-complexes-abelian title="Complexes over an abelian category"}
+::: {#thm-chain-complexes-abelian .theorem title="Complexes over an abelian category"}
 
 If $\mathcal A$ is abelian, then $\mathbf{Ch}(\mathcal A)$ is abelian, and a sequence $0\to A\to B\to C\to0$ in $\mathbf{Ch}(\mathcal A)$ is exact if and only if $0\to A_n\to B_n\to C_n\to0$ is exact in $\mathcal A$ for every $n$ [@Wei94, Thm. 1.2.3, Ex. 1.2.4].
 :::
@@ -21,7 +21,7 @@ If $\mathcal A$ is abelian, then $\mathbf{Ch}(\mathcal A)$ is abelian, and a seq
 
 Assume $\mathcal A$ abelian for the remainder of the chapter.
 
-::: {#def-homology title="Cycles, boundaries, and homology"}
+::: {#def-homology .def title="Cycles, boundaries, and homology"}
 
 The *$n$-cycles* and *$n$-boundaries* of $C\in\mathbf{Ch}(\mathcal A)$ are
 $$
@@ -37,7 +37,7 @@ $$
 [@Wei94, Def. 1.1.1]; a chain map sends cycles to cycles and boundaries to boundaries, which is what makes $H_n$ a functor [@Wei94, Ex. 1.1.2].
 :::
 
-::: {#def-exact-complex title="Exactness"}
+::: {#def-exact-complex .def title="Exactness"}
 
 A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree.
 Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mathcal A)$ and therefore define replete full subcategories (@def-subcategory), the second being the intersection over $n\in\mathbb Z$ of the first.
@@ -45,12 +45,12 @@ Exactness at $n$ and exactness are isomorphism-invariant properties of objects o
 A short exact sequence $0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0$ is the complex concentrated in degrees $2,1,0$ with $d_2=i$ and $d_1=p$, together with the assertion that this complex is exact: exactness at $2$ says $i$ is monic, exactness at $1$ says $\operatorname{im}i$ and $\ker p$ are the same subobject of $B$, and exactness at $0$ says $p$ is epic.
 :::
 
-::: {#def-quasi-isomorphism title="Quasi-isomorphisms"}
+::: {#def-quasi-isomorphism .def title="Quasi-isomorphisms"}
 
 A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2]. These are the weak equivalences of the model structure of @thm-projective-model-structure.
 :::
 
-::: {#thm-homology-les title="The long exact homology sequence"}
+::: {#thm-homology-les .theorem title="The long exact homology sequence"}
 
 Let $0\to A\xrightarrow{\,f\,}B\xrightarrow{\,g\,}C\to0$ be a short exact sequence in $\mathbf{Ch}(\mathcal A)$.
 There are natural connecting morphisms $\partial\colon H_n(C)\to H_{n-1}(A)$ for which
@@ -63,7 +63,7 @@ is exact [@Wei94, Thm. 1.3.1].
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}
 
-::: {#def-translation title="Translation"}
+::: {#def-translation .def title="Translation"}
 
 For $p\in\mathbb Z$ the *$p$th translate* $C[p]$ of $C$ has $C[p]_n=C_{n+p}$ with differential $(-1)^pd^C$.
 Setting $f[p]_n=f_{n+p}$ on chain maps makes $[p]$ an isomorphism of categories $\mathbf{Ch}(\mathcal A)\to\mathbf{Ch}(\mathcal A)$ with inverse $[-p]$, and
@@ -73,7 +73,7 @@ $$
 [@Wei94, 1.2.8].
 :::
 
-::: {#def-good-truncation title="Good truncation"}
+::: {#def-good-truncation .def title="Good truncation"}
 
 For $n\in\mathbb Z$ let $\tau_{\ge n}C$ be the subcomplex of $C$ with
 $$
@@ -88,7 +88,7 @@ and let $\tau_{<n}C=C/\tau_{\ge n}C$.
 Then $H_i(\tau_{\ge n}C)=H_i(C)$ for $i\ge n$ and vanishes for $i<n$, while $H_i(\tau_{<n}C)=H_i(C)$ for $i<n$ and vanishes for $i\ge n$ [@Wei94, 1.2.7].
 :::
 
-::: {#def-mapping-cone title="The mapping cone"}
+::: {#def-mapping-cone .def title="The mapping cone"}
 
 Let $f\colon B\to C$ be a chain map.
 The *mapping cone* of $f$ is the complex with
@@ -110,7 +110,7 @@ Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A $W$-valued bilinear form on an $R$-module $M$ is an element of $\operatorname{Hom}_R(M\otimes_RM,W)$ (@def-module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def-form-categories are the categories of elements of the presheaves so obtained.
 At the level of complexes the tensor square is the tensor product complex and the value module is placed in a chosen degree.
 
-::: {#def-complex-tensor-product title="The tensor product of complexes"}
+::: {#def-complex-tensor-product .def title="The tensor product of complexes"}
 
 For $C,D\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ the *tensor product complex* $C\otimes_RD$ has
 $$
@@ -129,12 +129,12 @@ $$
 commutes with the two differentials and is an isomorphism of complexes; it is the symmetry of @def-braided-symmetric for this tensor product.
 :::
 
-::: {#def-value-complex title="Value complexes"}
+::: {#def-value-complex .def title="Value complexes"}
 
 For $n\in\mathbb Z$ write $W[n]$ for the complex with $W$ in degree $n$, the zero module in every other degree, and zero differentials.
 :::
 
-::: {#def-complex-form title="Bilinear forms on a complex"}
+::: {#def-complex-form .def title="Bilinear forms on a complex"}
 
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A *$W$-valued bilinear form of degree $n$ on $C$* is a chain map
@@ -161,7 +161,7 @@ $$
 $$
 :::
 
-::: {#prp-complex-form-adjoint title="The adjoint chain map and the $n$-dual"}
+::: {#prp-complex-form-adjoint .prop title="The adjoint chain map and the $n$-dual"}
 
 Let $W=R$ with the identity involution, and let $C^{n-*}$ be the $n$-dual complex of @def-n-dual-complex, so that $(C^{n-*})_r=\operatorname{Hom}_R(C_{n-r},R)$ with differential $(-1)^r(d^C)^{*}$.
 For a bilinear form $\beta$ of degree $n$ on $C$ set
@@ -186,7 +186,7 @@ $\square$
 The condition that $\beta^{\sharp}$ be a chain equivalence is the Poincaré condition of @def-poincare-complex.
 :::
 
-::: {#prp-form-on-homology title="The induced pairing on homology"}
+::: {#prp-form-on-homology .prop title="The induced pairing on homology"}
 
 Let $\beta$ be a $W$-valued bilinear form of degree $n$ on $C$ and let $p+q=n$.
 The assignment
@@ -206,7 +206,7 @@ If $\beta_n=\gamma d_{n+1}$ and $x,y$ are cycles, then $d(x\otimes y)=0$ and $\b
 $\square$
 :::
 
-::: {#prp-degreewise-isometry title="Degreewise isometries"}
+::: {#prp-degreewise-isometry .prop title="Degreewise isometries"}
 
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ and let $b_p\colon C_p\times C_p\to W$ be $R$-bilinear for every $p\in\mathbb Z$.
 Suppose every differential of $C$ preserves these forms:
@@ -232,7 +232,7 @@ so that pairing is symmetric for even $m$ and skew-symmetric for odd $m$ (@def-f
 
 ## Resolutions {#sec-resolutions}
 
-::: {#def-resolution title="Augmented complexes and resolutions"}
+::: {#def-resolution .def title="Augmented complexes and resolutions"}
 
 Let $M$ be an object of $\mathcal A$.
 A *left resolution* of $M$ is a complex $P$ with $P_i=0$ for $i<0$ together with a morphism $\epsilon\colon P_0\to M$ for which the augmented complex
@@ -244,13 +244,13 @@ is exact.
 It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4]. Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5]. A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm-projective-model-structure, and the bar construction of @def-comonad-resolution produces one from the free-module adjunction.
 :::
 
-::: {#thm-resolution-comparison title="Comparison of resolutions"}
+::: {#thm-resolution-comparison .theorem title="Comparison of resolutions"}
 
 Let $\epsilon\colon P\to M$ be a projective resolution and let $\eta\colon Q\to N$ be a resolution.
 Every morphism $f'\colon M\to N$ lifts to a chain map $f\colon P\to Q$ with $\eta f_0=f'\epsilon$, and any two such lifts are chain homotopic [@Wei94, Thm. 2.2.6].
 :::
 
-::: {#def-syzygy title="Syzygies"}
+::: {#def-syzygy .def title="Syzygies"}
 
 Let
 $$
@@ -262,13 +262,13 @@ The *$i$th syzygy module* of $M$ is $\operatorname{im}\varphi_i$ [@Eis95, §1.10
 A surjection $F_0\twoheadrightarrow M$ determines its kernel; a free module surjecting onto that kernel is a further choice, and the resolution records the whole sequence of such choices together with the chosen generating family of each syzygy module.
 :::
 
-::: {#thm-hilbert-syzygy title="The Hilbert syzygy theorem"}
+::: {#thm-hilbert-syzygy .theorem title="The Hilbert syzygy theorem"}
 
 Let $k$ be a field and $R=k[x_1,\dots,x_r]$.
 Every finitely generated graded $R$-module has a graded free resolution of length at most $r$ by finitely generated free modules [@Eis95, Thm. 1.13].
 :::
 
-::: {#def-minimal-resolution title="Minimal free resolutions"}
+::: {#def-minimal-resolution .def title="Minimal free resolutions"}
 
 Let $(R,\mathfrak m)$ be a local ring.
 A free resolution $F$ of $M$ is *minimal* if $\operatorname{im}\varphi_n\subseteq\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\otimes_RR/\mathfrak m$ is zero [@Eis95, Ch. 20]. For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Ch. 20].
@@ -276,7 +276,7 @@ A free resolution $F$ of $M$ is *minimal* if $\operatorname{im}\varphi_n\subsete
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}
 
-::: {#def-derived-functor title="Left and right derived functors"}
+::: {#def-derived-functor .def title="Left and right derived functors"}
 
 Let $F\colon\mathcal A\to\mathcal B$ be a right exact functor of abelian categories and let $\mathcal A$ have enough projectives.
 For $A\in\mathcal A$ choose a projective resolution $P\to A$ and set
@@ -286,7 +286,7 @@ $$
 A second projective resolution gives a canonically isomorphic object, and the lift of @thm-resolution-comparison makes each $L_iF$ a functor $\mathcal A\to\mathcal B$ [@Wei94, §2.4, Lem. 2.4.1, Lem. 2.4.4]. For a left exact $F$ and an $\mathcal A$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
 :::
 
-::: {#def-ext-tor title="Ext and Tor"}
+::: {#def-ext-tor .def title="Ext and Tor"}
 
 For $R$-modules $A$ and $B$,
 $$
