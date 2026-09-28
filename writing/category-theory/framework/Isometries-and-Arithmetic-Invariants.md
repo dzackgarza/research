@@ -225,7 +225,7 @@ with the notation and local factors of [@MM09, Thm. V.5.1]. The last group measu
 It is distinct from $\operatorname{SO}(L)=\ker(\det)$.
 :::
 
-::: {#def-genus .def title="Genus of a lattice"}
+::: {#def-framework-genus .def title="Genus of a lattice"}
 ## Genus {#sec-genus-sec}
 
 Two integral lattices lie in the same genus if they are isometric over $\mathbb R$ and over $\mathbb Z_p$ for every prime $p$.

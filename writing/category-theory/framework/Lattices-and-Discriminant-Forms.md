@@ -3,7 +3,7 @@
 Let $R$ be a Dedekind domain with fraction field $K$.
 The main case is $R=\mathbb Z$ and $K=\mathbb Q$.
 
-::: {#def-lattice .def title="Lattices"}
+::: {#def-framework-lattice .def title="Lattices"}
 
 An $R$-*lattice* is a finitely generated projective $R$-module $L$ equipped with a symmetric bilinear form $b\colon L\times L\to R$ whose adjoint map
 $$

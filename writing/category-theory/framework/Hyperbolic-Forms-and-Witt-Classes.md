@@ -40,7 +40,7 @@ Indeed $\operatorname{can}_{R^{n}}$ is an isomorphism, and $\operatorname{can}_{
 ::: {#prp-hyperbolic-lattice .prop title="Hyperbolic lattices"}
 
 Let $R$ be a Dedekind domain and let $M$ be a finitely generated projective $R$-module.
-Then $H(M)$ is a unimodular $R$-lattice in the sense of @def-lattice and @def-unimodular, and its discriminant module (@def-discriminant) is $A_{H(M)}=0$.
+Then $H(M)$ is a unimodular $R$-lattice in the sense of @def-framework-lattice and @def-unimodular, and its discriminant module (@def-discriminant) is $A_{H(M)}=0$.
 :::
 
 ::: {#exm-hyperbolic-plane .ex title="The hyperbolic plane"}
