@@ -20,7 +20,7 @@ More recently, similar compactifications have been constructed for moduli spaces
 
 In [@AEGS25], we built upon these ideas to describe the stable pair compactification of \( F_{\operatorname{En}, 2} \), the moduli space of degree 2 numerically polarized Enriques surfaces, leveraging the theory of ADE surfaces developed in [@AT17]. In my current project, I extend these ideas to \( F_{\Co} \), the moduli space of Coble surfaces, regarded as a divisor in \( F_{\operatorname{En}} \), the moduli space of unpolarized Enriques surfaces.
 
-# Compactifications
+## Compactifications
 
 My work builds on the theory of compactifications of K3 surfaces.
 In compactification problems, one allows smooth surfaces to degenerate into surfaces with controllable and well-understood singularities.
@@ -58,9 +58,9 @@ between the normalization of the KSBA compactification of \( F_{\operatorname{En
 The semifan data \( {\mathcal{F}} \) can be combinatorially described in terms of tilings of hyperbolic spaces by polytopes, Coxeter diagrams, and integral affine spheres with involutions. There is a complete classification of KSBA stable limits of such Enriques surfaces in terms of ADE+BC surfaces. Furthermore, the structure of \( \partial \overline{F_{\mathrm{En}, 2}} \) can be read off of Coxeter diagrams in a straightforward manner.
 :::
 
-# Past Work
+## Past Work
 
-## Compact moduli spaces of Enriques surfaces
+### Compact moduli spaces of Enriques surfaces
 
 An **Enriques surface** is a non-rational minimal algebraic surface \( Y \) of Kodaira dimension \( \kappa(Y) = 0 \) for which \( h^1({\mathcal{O}}_Y) = h^2({\mathcal{O}}_Y) = 0 \) and \( K_Y \) is nontrivial 2-torsion.
 [@Enr07] originally constructed such surfaces, motivated by relating the rationality of a surface to its irregularity \( q_Y \coloneqq h^1({\mathcal{O}}_Y) \). There has been a resurgence of interest in moduli spaces of Enriques surfaces, c.f. [@Vie95; @Lie13; @GH15; @CDGK18; @Knu20; @CDL25; @For20].
@@ -72,9 +72,9 @@ Fixing a numerical polarization of degree \( 2d \) yields a quasiprojective, non
 Every Enriques surface can be obtained as a quotient \( X/\iota \) of a K3 surface \( X \) by a nonsymplectic fixed-point-free involution \( \iota \). Thus the moduli space of Enriques surfaces can be related to moduli of K3 surfaces with nonsymplectic involutions, allowing us to leverage the theory of [@AE22] to describe compactifications \( \overline{F_{\operatorname{En}}} \) and \( \overline{F_{\operatorname{En}, 2}} \) and arrive at @thm:aegs-normalization-comparison-morphism. A key insight in this paper is that the Coxeter diagrams for \( F_{\operatorname{En}, 2} \) can be obtained as quotients by involutions of the diagrams for K3 surfaces.
 Leveraging and extending the theory of ADE surfaces in [@AT17] to Dynkin diagrams of types \( B \) and \( C \), we arrive at a description of the irreducible components of KSBA degenerations which is largely in terms of explicit toric varieties.
 
-# Current Work
+## Current Work
 
-## Compact moduli spaces of Coble surfaces
+### Compact moduli spaces of Coble surfaces
 
 ::: {.remark title="Coble surfaces and their moduli"}
 A Coble surface is a smooth projective rational surface \( S \) with \( {\left\lvert {-K_S} \right\rvert} = \emptyset \) but \( {\left\lvert {-2K_X} \right\rvert}\neq \emptyset \). Such surfaces arise from the work of [@Cob19] and [@Cob29] on Cremona transformations of \( {\mathbf{P}}^2 \) preserving an irreducible rational sextic \( C \) with ten nodal singularities. The blowup \( S \) of these nodes yields a Coble surface. Coble surfaces occur as degenerations of Enriques surfaces and were ultimately classified in [@DZ99]. As such, they are closely tied to the theory of algebraic K3 surfaces with nonsymplectic involutions, which were classified by [@Nik79]. For a reduced sextic \( C \), the double cover of \( S \) branched along the proper transform of \( C \) is a K3 surface \( X \) which can be realized as a degeneration of the universal double cover of an Enriques surface, where \( X \) is allowed to acquire an \( A_1 \) singularity fixed by the Enriques involution.
@@ -152,9 +152,9 @@ The boundary cusp diagram of $F_{\operatorname{En}, 2}$, the moduli space of deg
 :::
 :::
 
-# Future Work
+## Future Work
 
-## Coble surfaces with \( 1\leq n\leq 10 \) boundary components {#coble-surfaces-with-1leq-nleq-10-boundary-components}
+### Coble surfaces with \( 1\leq n\leq 10 \) boundary components {#coble-surfaces-with-1leq-nleq-10-boundary-components}
 
 ::: {.remark title="Lattice-polarized K3 covers of Coble surfaces"}
 For \( S \) a Coble surface of *K3 type*, one can write \( {\left\lvert {-2K_S} \right\rvert} = \left\{{C}\right\} \) where \( C = C_1 + \cdots + C_n \), with each \( C_i \) an irreducible curve on \( S \). The \( C_i \) are referred to as *boundary components*, and it is known that \( 1\leq n \leq 10 \). The moduli spaces \( F_{\Co, n} \) for \( n\geq 2 \) have not yet appeared in the literature, but are amenable to a similar study as the \( n=1 \) case. Let \( \Sigma \) be a general *Coble set* of points in \( {\mathbf{P}}^2 \), so that the blowup \( S \) of \( {\mathbf{P}}^2 \) along the points of \( \Sigma \) is a Coble surface double covered by a K3 surface \( X \) branched along \( C \). Following a similar construction as that described in @rmk:divisors-for-coble-compactification yields a collection of primitively embedded sublattices \( L_1,\cdots, L_{10} \) in \( \operatorname{Pic}(X) \). These are 2-elementary lattices with invariants \( (r=10+n, a=12-n,\delta) \), described in [@CDL25, Table 5.1, p. 553] and reproduced in @fig:coble-boundary-components-table.
@@ -188,7 +188,7 @@ The ramification locus of the K3 cover of \( S \) is described in [@CDL25, Eqn. 
 Moreover, from this data one can extract a classification of dlt models for KSBA stable limits of such surfaces, giving a first description of \( \partial \overline{F_{\Co, n}} \), as our previous paper [@AEGS25] did for numerically polarized Enriques surfaces. Finally, by [@CDL25, Prop. 5.4.6], for each lattice of rank \( 10+n \) in @fig:coble-boundary-components-table, there is an embedding \( F_{\Co, n}\hookrightarrow F_{\operatorname{En}} \) the moduli space of Enriques surfaces as constructed from \( E_{10}(2) \)-polarized K3 surfaces. Thus the data of integral affine structures, and hence dlt and stable models, can be understood by studying restrictions of the K3 boundary data described in [@AE22].
 :::
 
-## Nodal Enriques surfaces
+### Nodal Enriques surfaces
 
 An Enriques surface \( Y \) is called **nodal** if \( Y \) contains a rational \( (-2) \)-curve, and **unnodal** otherwise.
 Let \( F_{\operatorname{En}, \Nod} \) be the moduli space of nodal Enriques surfaces.
@@ -226,7 +226,7 @@ In particular, I conjecture that orbits under \( {\operatorname{O}}(T_{\Nod}) \)
 I similarly conjecture that the work in [@AEGS25] can be used to construct dlt models and integral affine structures that classify KSBA stable limits of nodal Enriques surfaces.
 However, new techniques will have to be developed, since \( T_{\Nod} \) is not a 2-elementary lattice.
 
-## Halphen and rational elliptic surfaces
+### Halphen and rational elliptic surfaces
 
 Following [@MZ21], a **rational elliptic surface** is a smooth, projective, rational surface \( Y \) which admits a relatively minimal fibration \( \pi: Y\to {\mathbf{P}}^1 \) where the generic fiber is a smooth elliptic curve.
 Given a rational elliptic surface, the **index** of \( Y \) is the minimal \( m \) such that \( \pi \) corresponds to the anti-pluricanonical linear system \( {\left\lvert {-mK_Y} \right\rvert} \). A **Halphen pencil of index \( m \)** is a pencil of curves of degree \( 3m \) in \( {\mathbf{P}}^2 \) with 9 basepoints.
