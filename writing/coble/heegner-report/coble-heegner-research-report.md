@@ -1546,7 +1546,7 @@ Choosing a divisor separately on each fiber does not define a moduli problem.
 
 ## Autonomous target theorem {#sec-autonomous-target}
 
-::: {.Problem #conj-autonomous-theorem}
+::: {.Problem #conj-autonomous-theorem title="Autonomous Coble compactification"}
 **Target theorem A (autonomous Coble compactification).**  The direct open period map identifies
 
 \[
@@ -1568,7 +1568,7 @@ It requires direct analogues of the entire AEGS proof architecture.
 
 Let $\Delta_\alpha$ be the $(-2)$-Heegner divisor in the degree-$2$ Enriques period quotient, defined using a fixed embedded root.
 
-::: {.Problem #conj-comparison-theorem}
+::: {.Problem #conj-comparison-theorem title="Comparison with the Enriques Heegner divisor"}
 **Target theorem B (comparison with the Enriques Heegner divisor).**  The direct Coble period quotient is canonically isomorphic to the normalization of $\Delta_\alpha$.
 Under this isomorphism:
 
@@ -1615,37 +1615,37 @@ The strategy is to identify $H_\alpha$ with the normalization of the Coble KSBA 
 
 The strategy requires the following sequence.
 
-::: {.Problem #req-A1}
+::: {.Problem #req-A1 title="Root orbits and embedded Heegner components"}
 **A1. Root-orbit and embedded-component lemma.**  The relevant roots form one orbit under the actual degree-$2$ Enriques group, or the chosen component is otherwise specified intrinsically.
 The stabilizer image on $T_{\mathrm{Co}}$ is computed.
 :::
 
-::: {.Problem #req-A2}
+::: {.Problem #req-A2 title="The root-marked universal family"}
 **A2. Root-marked universal-family lemma.**  Over the stack-theoretic normalization of the Heegner component, there is a universal family in which the fixed $A_1$ point, its simultaneous resolution after the required Weyl cover, the exceptional root, and the ambient ramification divisor are compatible with base change.
 :::
 
-::: {.Problem #req-A3}
+::: {.Problem #req-A3 title="Identification of the generic Coble pair"}
 **A3. Coble-pair identification lemma.**  The restriction of the AEGS stable pair to the generic Heegner point is precisely $(V^\sharp,\epsilon R^\sharp)$ of @sec-canonical-contraction, with the same universal divisor.
 :::
 
-::: {.Problem #req-A4}
+::: {.Problem #req-A4 title="Generic reconstruction from a stable Coble pair"}
 **A4. Generic reconstruction lemma.**  A general stable Coble pair recovers its canonical K3 cover, the distinguished $A_1$ point, the degree-$4$ class, the del Pezzo involution, and the Heegner period point.
 Consequently the restricted finite map is generically injective.
 :::
 
-::: {.Problem #req-A5}
+::: {.Problem #req-A5 title="Arithmetic lifting and classification of Coble cusps"}
 **A5. Arithmetic cusp-lifting theorem.**  The Coble cusp orbits, stabilizers, and maps to Enriques cusps are computed integrally.
 :::
 
-::: {.Problem #req-A6}
+::: {.Problem #req-A6 title="Local toroidal normalization of the Heegner closure"}
 **A6. Local toroidal normalization theorem.**  In every cusp chart, the normalized Heegner closure is the saturated toric subvariety associated with the actual Coble unipotent-center lattice and the induced arithmetic action.
 :::
 
-::: {.Problem #req-A7}
+::: {.Problem #req-A7 title="Compatibility of local normalizations with semitoroidal contraction"}
 **A7. Semitoroidal compatibility theorem.**  The local normalized toric closures glue along the Type II boundary and are compatible with the AEGS semitoroidal contractions.
 :::
 
-::: {.Problem #req-A8}
+::: {.Problem #req-A8 title="No further coarsening of the Coble semifan"}
 **A8. No-further-coarsening theorem.**  Every wall retained by the induced Coble semifan changes the Coble stable pair; equivalently, the classifying map from the normalized Heegner closure to the Coble KSBA closure is finite and has no positive-dimensional fibers.
 :::
 
@@ -1695,94 +1695,94 @@ Only after the autonomous compactification theorem is proved does one compare it
 
 The following results are required in order.
 
-::: {.Problem #req-B21}
+::: {.Problem #req-B21 title="The direct projective model"}
 **B2.1. Direct projective-model theorem.**  The nodal invariant $(4,4)$ construction defines the complete generic direct Coble family and its universal divisors.
 :::
 
-::: {.Problem #req-B22}
+::: {.Problem #req-B22 title="Intrinsic reconstruction of the projective model"}
 **B2.2. Intrinsic reconstruction theorem.**  The singular Coble pair recovers the quartic del Pezzo quotient, the two double-cover algebras, the nodal K3 cover, both involutions, and the degree-$4$ class.
 :::
 
-::: {.Problem #req-B23}
+::: {.Problem #req-B23 title="Classification of the labeled Klein-four lattice data"}
 **B2.3. Labeled lattice classification theorem.**  Compute the simultaneous eigenspaces of the Klein-four action, their primitive closures and discriminant forms, and prove the labeled rigidity theorem of @sec-labeled-lattice-data.
 :::
 
-::: {.Problem #req-B24}
+::: {.Problem #req-B24 title="Direct global Torelli for Coble data"}
 **B2.4. Direct global Torelli theorem.**  The marked direct Coble moduli stack is an explicit arrangement complement $\mathbb D_{\mathrm{Co}}^\circ$, with the ample/nef chamber and exceptional root correctly encoded.
 :::
 
-::: {.Problem #req-B25}
+::: {.Problem #req-B25 title="Direct Coble monodromy"}
 **B2.5. Direct monodromy theorem.**  The deck group of the marking cover and the geometric monodromy group equal the labeled centralizer group $\Gamma_{\mathrm{Co},2}^{\mathrm{dir}}$.
 :::
 
-::: {.Problem #req-B26}
+::: {.Problem #req-B26 title="The universal direct stable pair"}
 **B2.6. Direct stable-pair theorem.**  The universal divisor $R^\sharp$ is flat, uniformly $\mathbb Q$-Cartier and ample, and the pairs $(V^\sharp,\epsilon R^\sharp)$ define a separated bounded KSBA moduli problem for $0<\epsilon\ll1$.
 :::
 
 ### Section 3 analogue: cusps and reflection chambers {#sec-strategy-B-section3}
 
-::: {.Problem #req-B31}
+::: {.Problem #req-B31 title="Integral Baily--Borel classification"}
 **B3.1. Integral Baily--Borel classification.**  Classify all primitive isotropic lines, planes, and flags under $\Gamma_{\mathrm{Co},2}^{\mathrm{dir}}$, with explicit representatives and stabilizers.
 :::
 
-::: {.Problem #req-B32}
+::: {.Problem #req-B32 title="Vinberg theory at each zero-cusp"}
 **B3.2. Vinberg theorem at each $0$-cusp.**  Run Vinberg's algorithm for each actual cusp lattice and arithmetic reflection group.
 Prove termination, completeness of the simple roots, and compute the chamber automorphism group.
 :::
 
-::: {.Problem #req-B33}
+::: {.Problem #req-B33 title="Full-lattice lifting of cusp involutions"}
 **B3.3. Full-lattice lift theorem.**  Lift every cusp-lattice involution or reflection-twist description through the discriminant gluing to the labeled K3 lattice datum.
 :::
 
-::: {.Problem #req-B34}
+::: {.Problem #req-B34 title="Exhaustion of parabolic and elliptic subdiagrams"}
 **B3.4. Parabolic and elliptic exhaustion theorem.**  Enumerate all maximal parabolic and relevant elliptic subdiagrams modulo the arithmetic chamber automorphism group and verify agreement with the independently computed isotropic-plane orbits.
 :::
 
 ### Section 4 analogue: integral-affine and dlt models {#sec-strategy-B-section4}
 
-::: {.Problem #req-B41}
+::: {.Problem #req-B41 title="Mirror anticanonical pairs and moment polygons"}
 **B4.1. Mirror and polygon theorem.**  Construct, for every direct Coble cusp, the mirror anticanonical pair, moment polygons, Symington surgeries, and root-coordinate formulas.
 :::
 
-::: {.Problem #req-B42}
+::: {.Problem #req-B42 title="Integral-affine realization of direct Coble chambers"}
 **B4.2. Integral-affine realization theorem.**  Realize every sufficiently divisible chamber point by a divisor model carrying the full Coble affine package.
 :::
 
-::: {.Problem #req-B43}
+::: {.Problem #req-B43 title="Characterization by affine symmetries"}
 **B4.3. Affine-symmetry characterization theorem.**  Characterize the direct Coble period locus exactly by the presence of the prescribed affine involutions and exceptional-root data.
 :::
 
-::: {.Problem #req-B44}
+::: {.Problem #req-B44 title="Algebraic realization of the Coble involutions"}
 **B4.4. Algebraic involution theorem.**  Promote the affine symmetries to commuting regular involutions on general divisor models and control the birational-to-regular modification for special models.
 :::
 
-::: {.Problem #req-B45}
+::: {.Problem #req-B45 title="The dlt quotient and relative-Proj contraction"}
 **B4.5. dlt quotient and relative-Proj theorem.**  Prove the dlt and slc properties, canonical bundle formula, positivity, and exact stable contractions.
 :::
 
 ### Sections 5--7 analogues: semifans and boundary classification {#sec-strategy-B-section5}
 
-::: {.Problem #req-B51}
+::: {.Problem #req-B51 title="Recognizability of the direct Coble divisor package"}
 **B5.1. Coble recognizability theorem.**  Prove that the direct divisor package is recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
 :::
 
-::: {.Problem #req-B52}
+::: {.Problem #req-B52 title="Geometric relevance of direct Coxeter walls"}
 **B5.2. Geometric relevance theorem.**  Determine exactly which direct Coxeter walls change the stable pair and hence which roots are relevant.
 :::
 
-::: {.Problem #req-B53}
+::: {.Problem #req-B53 title="Generalized Coxeter semifans for direct Coble chambers"}
 **B5.3. Generalized Coxeter semifan theorem.**  Prove that the direct regions of combinatorial constancy are the generalized Coxeter semifans of the verified direct chambers.
 :::
 
-::: {.Problem #req-B54}
+::: {.Problem #req-B54 title="Normalization of the direct Coble KSBA compactification"}
 **B5.4. Direct KSBA normalization theorem.**  Construct the classifying map, prove properness, finiteness, generic injectivity, and absence of further coarsening.
 :::
 
-::: {.Problem #req-B61}
+::: {.Problem #req-B61 title="Classification of Coble boundary components"}
 **B6.1. Coble component classification.**  Classify all finite and affine component pairs, including equations, quotient involutions, branch curves, ramification divisors, and contractions.
 :::
 
-::: {.Problem #req-B71}
+::: {.Problem #req-B71 title="The complete Coble boundary"}
 **B7.1. Complete boundary theorem.**  List every Type II and Type III stable Coble surface and prove compatibility with the Baily--Borel and semitoroidal incidence diagrams.
 :::
 
@@ -1808,23 +1808,23 @@ At a cusp, the candidate operation is $J_{\mathrm{Co}}=w_{\bar\alpha}J_{\mathrm{
 
 ### Required chain {#sec-strategy-C-chain}
 
-::: {.Problem #req-C1}
+::: {.Problem #req-C1 title="Classification of admissible ambient involutions"}
 **C1. Classification of admissible ambient actions.**  Classify involutions of the two reflective K3 cusp lattices whose fixed lattices have the Coble cusp types and whose full-lattice lifts preserve the labeled direct Coble data.
 :::
 
-::: {.Problem #req-C2}
+::: {.Problem #req-C2 title="Direct folding of ambient roots"}
 **C2. Direct root-folding theorem.**  Classify all ambient root orbits under the direct Coble involution and prove that every negative folded vector is a Coble root and every Coble root arises in this way.
 :::
 
-::: {.Problem #req-C3}
+::: {.Problem #req-C3 title="Ambient chamber intersection"}
 **C3. Chamber-intersection theorem.**  Prove that intersection of an ambient K3 chamber with the direct Coble fixed subspace is a fundamental chamber for the direct Coble reflection group.
 :::
 
-::: {.Problem #req-C4}
+::: {.Problem #req-C4 title="Full-lattice lifting and geometric realization"}
 **C4. Full-lattice and geometric realization theorem.**  Lift the cusp action to $L_{K3}$ and identify it with the geometric pair of involutions on divisor models.
 :::
 
-::: {.Problem #req-C5}
+::: {.Problem #req-C5 title="Comparison with the wall-link construction"}
 **C5. Comparison with the wall-link construction.**  Prove that the direct folded chamber agrees with the orthogonal link of the corresponding Enriques root wall after the comparison of labeled embeddings.
 :::
 
