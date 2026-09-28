@@ -1,4 +1,4 @@
-### KSBA Compactifications {#setion-5-3}
+### KSBA Compactifications {#sec:ksba-compactifications}
 
 #### Introduction
 

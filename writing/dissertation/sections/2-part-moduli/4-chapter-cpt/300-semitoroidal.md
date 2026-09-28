@@ -1,5 +1,5 @@
 
-### Semitoroidal Compactifications {#setion-5-3}
+### Semitoroidal Compactifications {#sec:semitoroidal-compactifications}
 
 Throughout this section, let $T$ be an even lattice of signature $(2, n)$, $\bdlattice{T}{\eta} \da  \bdlattice{T}{\eta} = \eta^{\perp T} / \langle \eta \rangle$ be the boundary lattice of signature $(1, n-1)$ at a $0$-cusp $\eta \in T$, and let $\Gamma\leq \Orth(T)$ be a neat arithmetic subgroup, and let $\eta \in T$ denote a primitive isotropic line in $T$ and $I\subseteq T$ a primitive isotropic plane, corresponding to a 0-cusp of $\bbcpt{\FG}$ and a 1-cusp respectively.
 Let $W \da  W(\Gamma_\eta)$ denote the stable reflection group acting on $\bdlattice{T}{\eta}$. Let $\thecone{C} = \thecone{C}(\Gamma_\eta)$ be a fixed fundamental chamber for $W$ defined by the inequalities $(v, \alpha) \ge 0$ for all $\alpha \in \Phi(\Gamma\eta)$. Let $G(\Gamma_\eta)$ be the associated Coxeter diagram and $\Phi(\Gamma_\eta)$ be the set of simple roots for $W(\Gamma_\eta)$.
@@ -183,4 +183,3 @@ The Coxeter semitoroidal subposet $\theposet{P}_\Gamma$ parameterizes those comp
 The product $\theposet{P}_\Gamma$ thus parameterizes exactly the semitoroidal compactifications of $\FG$ arising from generalized Coxeter semifans, distinguished in the full semitoroidal poset $\theposet{S}_\Gamma$.
 Note that the latter may contain other compactifications, and the author is not aware of any choices of $\FG$ for which $\Psi$ is known to be surjective or bijective.
 :::
-
