@@ -42,7 +42,7 @@ Let $(W,S)$, $\overline C$ and $U$ be as in \longref{def:tits-cone}, and for $f\
 These are theorems of Tits, recorded in [@Bou08; @Hum90].
 :::
 
-::: {.Remark}
+::: {.Remark title="The Tits cone distinguishes finite and affine stabilizers"}
 
 For a spherical Coxeter system $U = V^*$.
 For an irreducible euclidean one, with $\ker G = \RR\delta$ as in \longref{prop:euclidean-radical}, $U$ is the open half-space $\ts{f \mid f(\delta) > 0}$ together with the origin, and the affine reflection group of \longref{thm:coxeter-type-and-geometry}(2) is its action on the hyperplane $f(\delta) = 1$.
@@ -52,7 +52,7 @@ For a hyperbolic Coxeter system, part (3) says which points of the chamber have 
 
 ## Vertices of a Coxeter polytope
 
-::: {.Notation}
+::: {.Notation title="Wall spans and subdiagram Gram matrices"}
 
 Let $P\containedin\HH^n_L$ be a Coxeter polytope (\longref{def:coxeter-polytope}) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$.
 For $I\containedin S$ write
@@ -137,7 +137,7 @@ Let $P\containedin\HH^n_L$ be a Coxeter polytope with finitely many walls and Co
 These are Vinberg's criteria [@Vin67; @Vin85].
 :::
 
-::: {.Remark}
+::: {.Remark title="Vinberg termination is the finite-volume vertex criterion"}
 
 Criterion (1) is the condition Vinberg's algorithm tests at each stage (\longref{thm:vinberg-algorithm}, step 4), and \longref{prop:polytope-vertex-subdiagram} converts it into a statement about the subdiagrams of $\Sigma$: the algorithm terminates when every vertex of the cone bounded by the accepted roots is accounted for by an elliptic subdiagram of rank $n$ or a parabolic subdiagram of rank $n-1$.
 :::
