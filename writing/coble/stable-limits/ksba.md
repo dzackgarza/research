@@ -2,7 +2,7 @@
 
 ## How a stable limit is obtained
 
-::: {.Remark}
+::: {.Remark title="Stable limits descend from stable K3 pairs"}
 
 A KSBA stable limit here is never constructed directly. The pair is
 $(Z, \varepsilon R_Z)$ for an Enriques or Coble surface $Z$ and $0 < \varepsilon \ll 1$,
@@ -13,7 +13,7 @@ their dual complexes are available ([the singular-IAS definition](ias.md#def:sin
 is read off by descending along $\iota_\En$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Coxeter subdiagrams determine Type II and Type III limits"}
 
 Which limit one obtains is determined by combinatorics rather than by geometry. Over a
 $0$-cusp the semifan is a generalized Coxeter fan, and its cones are indexed by
@@ -32,7 +32,7 @@ is why the compactification is toroidal over some cusps and strictly semitoroida
 the rest.
 :::
 
-::: {.Remark}
+::: {.Remark title="The Coble locus restricts the Enriques semifan along a Heegner hyperplane"}
 
 For the Coble locus one further restriction applies, and it is the content of the rest of
 this chapter. A polarized Coble surface is an Enriques surface whose period lies on the
@@ -66,7 +66,7 @@ two copies of the same $\widetilde{D}_8$ involution pair glued along the ellipti
 $E \in \abs{-K_{\widetilde{V}_1}}$ with a twist by $2$-torsion.
 :::
 
-::: {.Warning}
+::: {.Warning title="The Type II ray at cusp 41 violates the equator-subcomplex hypothesis"}
 The Enriques involution *flips* this segment. So the Enriques equator is not a
 subcomplex of $\Gamma(\cX_0)$, which is what the equivariant-triangulation machinery
 usually assumes: this ray is one of the cases where that hypothesis has to be dropped
@@ -76,14 +76,14 @@ usually assumes: this ray is one of the cases where that hypothesis has to be dr
 
 ## The polarized Coble locus and its branches
 
-::: {.Remark}
+::: {.Remark title="The polarized Coble locus is branchwise until root-orbit uniqueness is proved"}
 
 The stable limits below compactify the polarized Coble locus, which we realize inside the moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces: one takes the Coble Heegner divisor cut out inside $\fentwo$ and normalizes it.
 Because the polarized arithmetic group $\gent$ has finite index in the full Enriques group $\Gamma_\En$, a single unpolarized root orbit can split into several polarized orbits.
 Until root-orbit uniqueness is established for $\gent$, the polarized Coble locus is therefore described as a union of *branchwise* quotients, one attached to each orbit of admissible Coble roots, rather than as a single global quotient.
 :::
 
-:::: {.Remark}
+:::: {.Remark title="Each polarized Coble branch has a stabilizer-image arithmetic group"}
 
 Each branch carries its own arithmetic group.
 Fixing an admissible Coble root $\delta$ -- a primitive $(-2)$-vector in the polarized Enriques period lattice -- the group governing the corresponding branch is the image in $\Orth(\delta^\perp)$ of the stabilizer of $\bZ\delta$ inside $\gent$; this is the minimal group making the period-domain inclusion
@@ -119,7 +119,7 @@ domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
 Is the orbit of admissible Coble roots under $\gent$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
 
-::: {.Warning}
+::: {.Warning title="Namikawa's root-orbit theorem is unpolarized"}
 The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full
 Enriques group $\Gamma_\En$. It does not settle the corresponding question for the
 finite-index subgroup $\Gamma_{\En,2}$, which is what the polarized problem needs.
@@ -128,13 +128,13 @@ finite-index subgroup $\Gamma_{\En,2}$, which is what the polarized problem need
 
 ## The KSBA stable pair
 
-::: {.Remark}
+::: {.Remark title="The ambient Enriques KSBA pair and its Coble descent"}
 
 The ambient degree-$2$ Enriques picture is settled.
 For a degree-$2$ numerically polarized Enriques surface $(Z, [\mathcal L_Z])$, the ramification divisor $R_Z$ of the associated double cover of a quartic del Pezzo surface is ample, $\QQ$-Cartier, and lies in the polarizing system, so the pair $(Z, \varepsilon R_Z)$ is log canonical for $0 < \varepsilon \ll 1$ and $\fentwo$ admits a KSBA compactification $\ksbacpt{\fentwo}$ [@CDL25; @AEGS25]. The Coble stable pair is the descent of this picture along the quotient by the Enriques involution $\ien$, which for Coble surfaces is *not* fixed-point free.
 :::
 
-::: {.Remark}
+::: {.Remark title="Open stability obligations for the Coble quotient pair"}
 
 The intended KSBA boundary object is a pair
 $$
@@ -158,7 +158,7 @@ On the stable quotient $\bar S$, an $A_1$-node of the K3 cover fixed by $\iota_\
 In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@Hor77], the local input producing the $A_1$-node on the double cover is a $\tau$-invariant $(4,4)$-curve passing through a $\tau$-fixed point with nondegenerate quadratic term.
 :::
 
-::: {.Remark}
+::: {.Remark title="The quarter-singularity package remains an open local input"}
 
 The local singularity package of [the quarter-singularity conjecture](#conj:coble_quarter_singularity) is central to the program, but it is currently a migrated research claim rather than a proven statement; it is precisely the input awaited by the slc and ampleness verifications above.
 :::
@@ -171,14 +171,14 @@ The semitoroidal model of the polarized Coble locus is obtained by restricting t
 Under this restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant.
 :::
 
-::: {.Remark}
+::: {.Remark title="What must be proved for the restricted ramification semifan"}
 
 Proving that this restriction defines the semitoroidal fan requires showing that no extra roots appear after restriction, that no essential Enriques wall collapses or restricts trivially, and that running Vinberg's algorithm on the restricted lattice is not conflated with a proof of the fan itself.
 :::
 
 ## Comparison with the KSBA compactification
 
-::: {.Remark}
+::: {.Remark title="Restricting the universal K3 stable-pair family to the Coble locus"}
 
 The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via [the Baily--Borel embedding lemma](../lattices-and-moduli/lattices.md#lem:locally_closed_embedding_BB). The proposed comparison proceeds by restricting the universal K3 stable-pair family over $F_{(2,2,0)}$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against [the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan).
 :::
@@ -195,13 +195,13 @@ Geometrically, this memory is carried by the $\frac{1}{4}(1,1)$ singularity of [
 Without this memory the restricted semifan would be too fine for the actual KSBA boundary, and [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison) would fail.
 :::
 
-::: {.Remark}
+::: {.Remark title="Four unresolved inputs to the KSBA--semitoroidal comparison"}
 
 [The KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison) remains open on four counts: root-orbit uniqueness ([the root-orbit uniqueness question](#que:coble_root_orbit_uniqueness)), the ramification-semifan restriction identity ([the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan)), [the no-moduli-loss conjecture](#conj:no_moduli_loss), and the exact cusp enumeration.
 The boundary dictionaries and cusp tables appearing in preliminary work remain unverified pending the restriction theorem and an explicit cusp computation.
 :::
 
-::: {.Remark}
+::: {.Remark title="The unpolarized GIT semifan is independent of the stable-pair semifan"}
 
 A second semitoroidal model of the *unpolarized* Coble period domain is available
 and is not an input to any of the four: the GIT compactification of the moduli of
@@ -215,7 +215,7 @@ so neither determines the other.
 
 ## Boundary cusp data
 
-::: {.Remark}
+::: {.Remark title="Coble boundary cusps are isotropic data marked by an admissible root"}
 
 The boundary is organized by cusp pairs marked with a Coble root.
 A $0$-cusp is modeled by an orbit of a pair $(I, r)$ consisting of an isotropic line $I$ and a compatible Coble root $r$, and a $1$-cusp by an orbit of a pair $(J, r)$ consisting of an isotropic plane $J$ and the same root, with incidence recorded by the containment $I \subset J$ preserving $r$.
@@ -228,7 +228,7 @@ What is the precise admissibility test for Coble roots at a cusp, formulated aga
 Sterk cusps $3$ and $5$ are the delicate cases where additional reflection data may intervene.
 :::
 
-::: {.Remark}
+::: {.Remark title="Cusp enumeration requires integral lattice-orbit calculations"}
 
 Any actual cusp count must reduce to explicit lattice-orbit work -- through Sterk's representatives (five $0$-cusps and nine $1$-cusps for the Enriques space [@Ste91]) together with their stabilizers, or direct period-domain enumeration -- and discriminant-form shortcuts suggest candidates but do not by themselves prove the cusp diagram.
 One durable exclusion is nonetheless available: since primitive isotropic vectors of $T_\Co$ pair evenly in the ambient Enriques lattice, they have divisibility $2$ ([the divisibility lemma](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#lem:divisibilityAlwaysTwoTco)), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only the divisibility-two Sterk cusps $2$--$5$ are in play.
