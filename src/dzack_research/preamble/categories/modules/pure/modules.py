@@ -1546,8 +1546,15 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _:
                     return self._freeness_decision()
 
-        def is_finitely_generated(self) -> bool:
-            return False
+        def _finite_generation_decision(self):
+            return Unknown
+
+        def is_finitely_generated(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).FinitelyGenerated():
+                    return True
+                case _:
+                    return self._finite_generation_decision()
 
         def is_framed_module(self) -> bool:
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
@@ -2003,9 +2010,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         class ParentMethods:
-            def is_finitely_generated(self) -> bool:
-                return True
-
             @cached_method
             def fiber(self, point):
                 r"""Return ``M(p)=M tensor_R kappa(p)`` at ``p in Spec(R)``."""
