@@ -3,7 +3,7 @@
 
 #### Degenerations
 
-Let $\pi\colon \mcx \to C$ be a flat, proper morphism, with $C$ a germ of a smooth complex curve (typically taken as a disk $\Delta = \{ t \in \CC \colon |t| < \epsilon\}$). The **$\mcx_0$** $\mcx_0 = \pi^{-1}(0)$ encodes the limiting geometry of the family as $t \to 0$. For $t \neq 0$, the fibers $\mcx_t$ are assumed smooth, often K3 or Enriques surfaces. The **punctured disk** $\Delta^* = \Delta \setminus \{0\}$ and the corresponding smooth locus $\mcx^* = \pi^{-1}(\Delta^*)$ are natural analytic settings for studying the variation of Hodge structures in the family. 
+Let $\pi\colon \mcx \to C$ be a flat, proper morphism, with $C$ a germ of a smooth complex curve (typically taken as a disk $\Delta = \{ t \in \CC \colon |t| < \epsilon\}$). The **$\mcx_0$** $\mcx_0 = \pi^{-1}(0)$ encodes the limiting geometry of the family as $t \to 0$. For $t \neq 0$, the fibers $\mcx_t$ are assumed smooth, often K3 or Enriques surfaces. The **punctured disk** $\Delta^* = \Delta \setminus \{0\}$ and the corresponding smooth locus $\mcx^* = \pi^{-1}(\Delta^*)$ are natural analytic settings for studying the variation of Hodge structures in the family.
 Over $\Delta^*$, the fibers $\mcx_t$ are smooth and give rise to a variation of Hodge structure on the local system $R^2 \pi_* \ZZ$. The behavior of $\mcx_0$ reflects the limiting geometry and possible singularities, providing key topological and moduli-theoretic invariants that determine both the topological degeneration type and the locus in the compactified moduli space.
 
 ###### Dual Complexes
@@ -73,7 +73,7 @@ These types are naturally stratified by the rank of isotropic subspaces in the b
 
 :::{.definition title="Picard–Lefschetz Transformation" #def:picard-lefschetz-transformation}
 Let $p\colon \mcx \to \Delta$ be a Kulikov model (or a semistable degeneration) with $\mcx_0$ $\mcx_0$. The sheaf $\RR^2 p_*\underline{\ZZ}_{\Delta}$ restricts to a locally constant system over the punctured disk $\Delta^*$, whose fiber over $t \in \Delta^*$ is $H^2(\mcx_t; \ZZ)$.
-After trivializing the pullback of this local system to the universal cover $\widetilde{\Delta^*}$, the fundamental group $\pi_1(\Delta^*, t)$ acts via monodromy 
+After trivializing the pullback of this local system to the universal cover $\widetilde{\Delta^*}$, the fundamental group $\pi_1(\Delta^*, t)$ acts via monodromy
 $\pi_1(\Delta^*, t) \longrightarrow \operatorname{Aut}(H^2(\mcx_t; \ZZ)).$
 The image of a simple closed loop $\gamma$ generating $\pi_1(\Delta^*, t)$ is the **Picard–Lefschetz transformation**:
 $$
@@ -97,13 +97,13 @@ $T = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}.$
 This affine monodromy encodes the classical Picard–Lefschetz transformation for such degenerations [@KS06], [@Sym03].
 :::
 
-:::{.remark 
+:::{.remark
   title="Monodromy Invariant as Structural Parameter" #rem:monodromy-invariant-parameter}
 For a Type $\III$ Kulikov degeneration with $\mcx_0$ $\mcx_0$, the **monodromy invariant** $\lambda \in \bar{T}_\eta = \eta^\perp / \eta$ determines:
 
 1. The number of triple points of $\mcx_0$, with $\lambda^2 = \#\{\text{triple points}\}$;
 
-2. The *barycentric coordinates* $\lambda = (\ell_i)$,which  determine $B(\lambda)$, an explicit $\IAS^2$. 
+2. The *barycentric coordinates* $\lambda = (\ell_i)$,which  determine $B(\lambda)$, an explicit $\IAS^2$.
 
 For more details, see [@AEGS25; @GHK15; @Eng18].
 :::

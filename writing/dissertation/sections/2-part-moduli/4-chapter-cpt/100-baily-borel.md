@@ -9,18 +9,18 @@ Let $G$ be a connected, simple linear algebraic group defined over $\QQ$ and fix
 ,
 .\end{align*}
 
-where $\liep$ is the orthogonal complement to $\liek$ for an invariant symmetric bilinear form $\beta$ on $\lieg$. 
+where $\liep$ is the orthogonal complement to $\liek$ for an invariant symmetric bilinear form $\beta$ on $\lieg$.
 These spaces frequently arise in moduli problems: for an arithmetic subgroup $\Gamma \subset G(\QQ)$ acting properly discontinuously on $D \da G/K$, the quotient $\dmodgamma{ D }{ \Gamma }$ is a locally symmetric space.
 It can be expressed as the double coset space
 $$
 \FG \da \dmodgamma{ D }{ \Gamma } \cong \Gamma \backslash G / K
-= \ts{ \Gamma g K \st g \in G } 
+= \ts{ \Gamma g K \st g \in G }
 ,$$
 which is a typically a non-proper, quasi-projective complex variety parameterizing representation-theoretic data such as Hodge structures of a fixed type.
 Such symmetric spaces $(G,K)$ are classified by the restriction of $\beta$:
 
 - **Euclidean type**: $\left.\beta\right|_{\liep} = 0$,
-  
+
 - **Compact type**: $\left.\beta\right|_{\liep} < 0$ (negative definite),
 
 - **Non-compact type**: $\left.\beta\right|_{\liep} > 0$ (positive definite).
@@ -55,7 +55,7 @@ where $\Im(\tau)$ is the imaginary part of $\tau$.
 The action of $\SL_2(\ZZ)$ (or congruence subgroups $\Gamma\leq \SL_2(\ZZ)$ thereof) on $\HH$ via Möbius transformations
 
 \begin{align*}
-\gamma \cdot \tau = \frac{a\tau + b}{c\tau + d},\quad \gamma = 
+\gamma \cdot \tau = \frac{a\tau + b}{c\tau + d},\quad \gamma =
 \matt abcd \in \Gamma
 .\end{align*}
 
@@ -66,7 +66,7 @@ gives rise to the **modular curves** $Y_\Gamma = \Gamma \backslash \HH$, which a
 Type $\III$ domains take the form $D_g^{\III} = \Sp_g(\CC)/\U_g$ and consist of $g\times g$ symmetric complex matrices $Z$ whose imaginary part is positive definite -- otherwise known as the **Siegel upper half space**,
 $$
 \HH_g = \ts{ Z \in M_{g\times g}(\CC)\st  Z^t = Z,\, \Im(Z) > 0 }
-,$$ 
+,$$
 where $\Im(Z)$ denotes the imaginary part of the matrix $Z$.
 The group $\Sp_{2g}(\ZZ)$ acts by
 
@@ -118,7 +118,7 @@ D^* \da  D \cup \bd D \da D\cup \Disjoint_{F \in B(D)} F
 The arithmetic group $\Gamma$ acts naturally on $D^*$ with only finitely many orbits of boundary strata. The compactification is the quotient space, which can also be expressed as the quotient of $D$ with its boundary adjoined:
 
 \begin{align*}
-\bbcpt{\FG} \da \dmodgamma{D^*}{ \Gamma } 
+\bbcpt{\FG} \da \dmodgamma{D^*}{ \Gamma }
 = \dmodgamma{(D \cup \bd D)}{ \Gamma }
 .
 .\end{align*}
@@ -187,5 +187,5 @@ After projectivization, $\PP(\thecone{C}_\eta) \cong \thecone{C}_\eta / \RR_{>0}
 
 One must choose a $\Gamma_\eta$-invariant rational polyhedral fan $\Sigma(\eta)$ supported on $\thecone{C}_{\eta, \QQ}$. A particularly canonical choice, when $W(\Gamma_\eta)$ is sufficiently large enough and defines a locally finite arrangement, is the **Coxeter fan**: the rational polyhedral decomposition of $\thecone{C}_{\eta, \QQ}$ whose cones are in bijection with the $W(\Gamma_\eta)$-translates of $\thecone{C}(\Gamma_\eta)$.
 This yields a tiling of $\HH^{n-1}$ by Coxeter polytopes, where each chamber is in bijection with a fan in $\thecone{C}_{\eta, \QQ}$ and their gluing data is determined by the combinatorics of $W(\Gamma_\eta)$.
-In general, other $\Gamma_\eta$-invariant fans $\Sigma(\eta)$ may be chosen; however, when the Coxeter fan is well-defined and locally finite, it provides a natural, symmetric choice . 
+In general, other $\Gamma_\eta$-invariant fans $\Sigma(\eta)$ may be chosen; however, when the Coxeter fan is well-defined and locally finite, it provides a natural, symmetric choice .
 Globally, the collection of all such fans $\{\Sigma(\eta)\}$ ranging over all $k$-cusps $\eta$ produces a **toroidal compactification** $\torcpt{\FG}$. Locally, analytic neighborhoods of cusps $\eta$ are described via open subsets in the respective toric varieties $X_{\Sigma(\eta)}$, which assemble to form a normal, complex algebraic space $\torcpt{\FG}$ that naturally maps to $\bbcpt{\FG}$.

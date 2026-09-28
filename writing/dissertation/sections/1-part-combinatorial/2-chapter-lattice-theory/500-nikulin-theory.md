@@ -11,7 +11,7 @@ v &\mapsto (v, v)
 
 #### Scattone's Methods
 
-:::{.remark 
+:::{.remark
     title="Scattone's Method: Enumerating Boundary Components via Niemeier Lattices"
     #rem:scattone-method-niemeier
 }
@@ -58,8 +58,8 @@ Let $S$ be an even lattice and $L$ an even unimodular lattice. Then
 :::
 
 We note that this is not how @Nik79 originally states the theorem, but rather extracts the case that is more commonly used in applications for clarity.
-The generic case is both necessary and sufficient for the existence and uniqueness of a primitive embedding, 
-The weak case, which uses the global invariant $\ell(A_S)$ is easier to check in practice, but only gives a sufficient condition and is thus strictly weaker than the generic case. This is because if $A$ is any finite abelian group, one can consider the primary decomposition $A = \bigoplus_p A_p$, 
+The generic case is both necessary and sufficient for the existence and uniqueness of a primitive embedding,
+The weak case, which uses the global invariant $\ell(A_S)$ is easier to check in practice, but only gives a sufficient condition and is thus strictly weaker than the generic case. This is because if $A$ is any finite abelian group, one can consider the primary decomposition $A = \bigoplus_p A_p$,
 and there is an inequality
 $\max_p \ell(A_p) \leq \ell(A) \leq \Sum_p \ell(A_p)$.
 Thus, using $\ell(A_S)$ in place of $\max_{p \neq 2} \ell(A_{S_p})$ can exclude embeddings that the generic case would allow.
@@ -125,7 +125,7 @@ Let $S$ be a primitive non-degenerate sublattice of a unimodular lattice $L$, an
 #### Gluing and Overlattices
 
 Throughout this section, for a discriminant group $(G, q)$, we write $G(n)$ for the group $G$ with quadratic form $\tilde q \da n q$.
-In particular, $G_1\iso G_2(-1)$ are isometric by a map $f$ if and only if $G_1\cong G_2$ as groups and $q_1(v) = -q_2(f(v))$ for all $v\in G_1$. 
+In particular, $G_1\iso G_2(-1)$ are isometric by a map $f$ if and only if $G_1\cong G_2$ as groups and $q_1(v) = -q_2(f(v))$ for all $v\in G_1$.
 Let $L$ be as above; a primitive embedding $S \injects L$ with $T\da S^{\perp L}$ is uniquely determined by the choice of
 
 1. A subgroup $H \leq A_{L}$, the *embedding subgroup*, and
@@ -134,7 +134,7 @@ Let $L$ be as above; a primitive embedding $S \injects L$ with $T\da S^{\perp L}
 
 Letting $\Gamma$ be the graph of $\gamma$ in $A_{L} \oplus A_{S}(-1)$, one has $A_{T}=\Gamma^{\perp} / \Gamma$ and we note that there is a discriminant formula
 $$
-|\disc T|=\frac{|\disc L| \cdot|\disc S|}{(\sharp H)^{2}} 
+|\disc T|=\frac{|\disc L| \cdot|\disc S|}{(\sharp H)^{2}}
 .$$
 Now let $\iota: S \injects L$ be an embedding of even lattices where $L$ is unimodular, and define $H_{L}\da L / \iota(S)$. Using the chain of embeddings $S \injects L \injects L^{\vee} \injects S^{\vee}$ to produce embeddings $H_{L} \injects L^{\vee} / S \injects A_{S}$, one can regard $H_L$ as a subgroup of $A_S$.
 Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\da \eta\inv(H) \containedin S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
@@ -172,7 +172,7 @@ To see some of this theory applied to the moduli problem at hand, we take a smal
 The strategy is as follows:
 
 1. Identify a morphism $\Psi: \fent \to \fttz$ arising from a lattice embedding $\tilde \Psi: \ten \injects \tdp$.
-  
+
 2. Establish a rigidity theorem at the level of lattice embeddings to assert that $\Psi$ is well-defined and canonically determined.
 
 3. Restrict $\Psi$ to its scheme-theoretic image, i.e. the smallest closed subscheme of $\fttz$ through which $\Psi$ factors, to obtain $\Psi: \fent \to X$
@@ -190,7 +190,7 @@ This follows from defining an embedding of lattices by
 (u_1, u_2, v) &\mapsto (u_1, u_2, v, v)
 \end{align*}
 which in block form is $(\id, \id, \delta)$ where $\delta$ is the canonical doubling embedding.
-To see that this induces a well-defined morphism after passing from lattices to period domains, note that its construction is functorial: 
+To see that this induces a well-defined morphism after passing from lattices to period domains, note that its construction is functorial:
 it involves tensoring to $\CC$, projectivizing, restricting to a quadric, and then further restricting to a semialgebraic subset in both the source and the target, cut out by precisely the same conditions.
 The map $\tilde \Psi$ is holomorphic because it is the restriction of a linear map to an open set, and algebraic (and hence a morphism) because both varieties are quasiprojective and $\tilde \Psi$ is linear.
 
@@ -216,7 +216,7 @@ The following is proved as [@AEGS25, Lem. 2.4]:
 :::{.proposition}
 The following sequence of primitive embeddings is unique up to isometry:
 \begin{align*}
-\tilde \Psi: \ten \injects \tdp \injects \lkt 
+\tilde \Psi: \ten \injects \tdp \injects \lkt
 .\end{align*}
 :::
 
@@ -224,20 +224,20 @@ The following sequence of primitive embeddings is unique up to isometry:
 :::{.proof}
 Passing to orthogonal complements in $\lkt$ yields the sequence
 $$
-\qty{ 
+\qty{
   \sen \injects \sdp \injects L
-} = 
+} =
 \qty{
   U(2) \injects U(2) \oplus E_8(2) \injects L
 }
 .$$
 We first claim $U(2) \injects U(2) \oplus E_8(2)$ is unique.
 By untwisting, it suffices to show that $U\injects U\oplus E_8$ is unique.
-Write $U = S = \II_{1,1}$ and $U \oplus E_8 = L = \II_{1, 9}$, noting that both are the unique even unimodular lattices with those signatures. 
+Write $U = S = \II_{1,1}$ and $U \oplus E_8 = L = \II_{1, 9}$, noting that both are the unique even unimodular lattices with those signatures.
 The existence of an embedding $S\injects L$, is clear, since one can simply take $x\mapsto (x, 0)$ and check that the cokernel is isometric to $E_8$ and thus free.
 For uniqueness, let $T\da S^{\perp L}$: then $T$ is an even unimodular lattice of signature $(0, 8)$, and thus isometric to $E_8 = \II_{0, 8}$, which is unique up to isometry.
-So if $j_i: S_i \injects L$ are any two primitive embeddings, there are decompositions $L \cong S_1 \oplus T_1$ and $L\cong S_2 \oplus T_2$ where $S_1\cong S_2 \cong \II_{1,1}$ and $T_1\cong T_2 \cong \II_{0, 8}$ are both unique up to isometry. 
-So there exist isometries $\phi_S: S_1\to S_2$ and $\phi_T: T_1\to T_2$, and thus an isometry $\phi_S \oplus \phi_T: S_1\oplus T_1\to S_2\oplus T_2$. 
+So if $j_i: S_i \injects L$ are any two primitive embeddings, there are decompositions $L \cong S_1 \oplus T_1$ and $L\cong S_2 \oplus T_2$ where $S_1\cong S_2 \cong \II_{1,1}$ and $T_1\cong T_2 \cong \II_{0, 8}$ are both unique up to isometry.
+So there exist isometries $\phi_S: S_1\to S_2$ and $\phi_T: T_1\to T_2$, and thus an isometry $\phi_S \oplus \phi_T: S_1\oplus T_1\to S_2\oplus T_2$.
 Since $S_i, T_i$ are unimodular, $\phi_S$ and $\phi_T$ trivially act identically on the discriminant groups, and thus lift to an isometry $\phi\in \Orth(L)$.
 So $j_1$ is equivalent to $j_2$ as an embedding.
 
@@ -261,7 +261,7 @@ $$
 It suffices to show that every isometry of $\ten$ extends to an isometry of $\tdp$ preserving $\ten$.
 This follows from a standard lattice-theoretic argument involving discriminant groups:
 let $S = \ten = U \oplus U(2) \oplus E_8(2)$ and $T = \sen = U(2) \oplus E_8(2) = S^{\perp L}$ where $L = \lkt$.
-We note that 
+We note that
 $$
 A_S = A_{U(2)} \oplus A_{E_8(@)} = C_2^2 \oplus C_2^{8} \cong C_2^{10} \cong A_T
 ,$$
@@ -272,7 +272,7 @@ By construction, $f_{T}$ and $f_{S}$ act identically on $A_S$ and $A_T$, and so 
 
 
 
-:::{.lemma 
+:::{.lemma
   title="[@AEGS25, Lemma 2.8]"
   #lem:fent-to-fttz-closed-immersion
 }
@@ -280,7 +280,7 @@ There exists a closed subscheme $X \subset \fttz$ such that $\fent$ is canonical
 :::
 
 :::{.proof}
-The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fent$ and $\fttz$ are normal since they are complex analytic manifolds, following @BB66. The closed subscheme $X$ inherits normality as a subscheme of a normal variety. 
+The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fent$ and $\fttz$ are normal since they are complex analytic manifolds, following @BB66. The closed subscheme $X$ inherits normality as a subscheme of a normal variety.
 
 By Zariski's Main Theorem, a finite birational morphism from a normal variety to an integral variety identifies the source with the normalization of the target. Therefore, $\Psi\colon \fent \to X$ exhibits $\fent$ as the normalization of $X$.
 :::

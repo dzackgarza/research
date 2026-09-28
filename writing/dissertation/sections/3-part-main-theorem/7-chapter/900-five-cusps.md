@@ -192,7 +192,7 @@ We conclude with the following summary:
     - $\iota_{\En, \IA} \actson B(\lambda):$
         - Flip both the hemisphere $P$ and its opposite $P^{\opop}$ across the vertical line bisecting the bottom and top edges.
     - $\iota_{\En, 0} \actson \Gamma(\mcz_0)$:
-      - ? 
+      - ?
 
 #### # Cusp 3
 
@@ -282,6 +282,6 @@ We conclude with the following summary:
 \todo{Example
 No explicit worked example of a Type III degeneration and its associated $\IAS^2$ is provided. Including at least one fully annotated example (e.g., standard toric, or a non-toric case) would clarify constructions.
 }
- 
+
 
 -->

@@ -8,15 +8,15 @@ Given a Cartier divisor $\mcr \subset \mcx$ disjoint from the singular strata of
 
 - To each vertex $v_i$ (component $V_i$) one assigns a line bundle $L_i \in \Pic(V_i)$ so that, for any edge $v_{ij}$, $\deg(L_i|_{D_{ij}}) = n_{ij}$. The weighting must be compatible on edges and satisfy global compatibility conditions.
 
-These weights obey a **balancing condition** at every vertex $v_i$. For a toric vertex, resp. a non-toric vertex arising from an internal blowup in the direction $\vec{e}$, we have 
+These weights obey a **balancing condition** at every vertex $v_i$. For a toric vertex, resp. a non-toric vertex arising from an internal blowup in the direction $\vec{e}$, we have
 
 
 \begin{align*}
-\sum_j n_{ij} \vec{e}_{ij} = 0, \qquad 
+\sum_j n_{ij} \vec{e}_{ij} = 0, \qquad
 \sum_j n_{ij} \vec{e}_{ij} \in \ZZ\,\vec{e}
 .\end{align*}
 
-where $\vec{e}_{ij}$ is the primitive integral direction associated to the corresponding edge. 
+where $\vec{e}_{ij}$ is the primitive integral direction associated to the corresponding edge.
 These constraints ensure that the line bundles patch together along double curves and that the data collectively define a global Cartier divisor structure in the smoothing.
 
 :::{.definition title="{Divisor Model}" #def:divisor-model}
@@ -61,7 +61,7 @@ These models realize degenerations of Enriques pairs as quotients of K3 divisor 
 Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $\fent$ as constructed above. Then the following properties hold:
 
 - The fibers of $\mcz$ have semi-log canonical (slc) singularities.
-  
+
 - The divisor $K_{\mcz} + \epsilon \mcr_{\mcz}$ is relatively big and nef over $C$.
 
 - The divisor $\mcr_{\mcz}$ contains no log canonical centers.

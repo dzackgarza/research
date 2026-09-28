@@ -2,18 +2,18 @@
 
 
 
-The boundary lattices at 0-cusps $\eta$ have the form $\bdlattice{T}{\eta} = \eta^\perp/\gens{\eta}$ for each primitive isotropic vector $\eta$. 
+The boundary lattices at 0-cusps $\eta$ have the form $\bdlattice{T}{\eta} = \eta^\perp/\gens{\eta}$ for each primitive isotropic vector $\eta$.
 The typical situation is two have some number $n$ of possible isometry classes for boundary lattices, and some number $m\geq n$ of *actual* boundary lattices, where $m$ depends on $\Gamma$, reflecting isometry classes splitting into further possibilities.
 For $\fttz$, there are two isometry classes, each containing one sub-type of lattice, so the two cusps can be labeled
 $$
-\tilde\eta_1 \da (18, 2, 0)_1, \qquad 
+\tilde\eta_1 \da (18, 2, 0)_1, \qquad
 \tilde \eta_2 \da (18, 0, 0)_1
 .$$
 For $\fent$, there are two isometry classes, one which does not split into further subclass corresponding to orbits of divisibility one vectors in $\ten$, the other splitting into four sub-classes, reflecting an $\Orth(\ten)$ orbit of divisibility two vectors that splits into 4 separate orbits.
 We label the cusps $\eta_1,\cdots, \eta_5$, and note that the two isometry classes are given by
 $$
 \div_{\ten}(\eta) = 1\colon \EnriquesInvariants_1,
-\qquad 
+\qquad
 \div_{\ten}(\eta) = 2\colon (10, 8, 0)_1
 $$
 
@@ -69,7 +69,7 @@ $$
 0 & 0 & 0 & 0 & 1 \\
 0 & 0 & 0 & 1 & 0
 \end{pmatrix},
-\quad 
+\quad
 \Inik:
 \begin{pmatrix}
 1 & 0 & 0 & 0 & 0 \\
@@ -92,8 +92,8 @@ Fixing a primitive isotropic vector $\eta \in \ten$, we write $\bdlattice{\ten}{
 Under the primitive embedding $\ten\injects \tdp$, we can construct two distinct boundary lattices associated to $\eta$,
 
 \begin{align*}
-\bdlattice{\ten}{\eta} \da \eta^{\perp \ten}/\gens{\eta}, 
-\qquad 
+\bdlattice{\ten}{\eta} \da \eta^{\perp \ten}/\gens{\eta},
+\qquad
 \bdlattice{\tdp}{\eta} \da \eta^{\perp \tdp}/\gens{\eta}
 ,
 .\end{align*}
@@ -101,17 +101,17 @@ Under the primitive embedding $\ten\injects \tdp$, we can construct two distinct
 where we carefully identify $\eta$ with its image in $\tdp$ under the embedding.
 There are two possible isometry classes possible for $\bdlattice{\tdp}{\eta}$:
 $$
-\bdlattice{\tdp}{\eta}:\quad 
+\bdlattice{\tdp}{\eta}:\quad
 (18, 2, 0)_1 = U(2) \oplus E_8^2
-,\quad\textor\quad 
+,\quad\textor\quad
 (18,0,0)_1 = U \oplus E_8^2
 ,$$
-corresponding to the two 0-cusps of the Baily-Borel compactification $\bbcpt{\fttz}$, and distinguished by the divisibility $\div_{\tdp}(\eta)$ of $\eta$ in $\tdp$. 
+corresponding to the two 0-cusps of the Baily-Borel compactification $\bbcpt{\fttz}$, and distinguished by the divisibility $\div_{\tdp}(\eta)$ of $\eta$ in $\tdp$.
 From a similar analysis of $\bbcpt{\fen}$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities
 $$
 \bdlattice{\ten}{\eta}: \quad
 \EnriquesInvariants_1 = U(2) \oplus E_8(2)
-,\quad\textor\quad 
+,\quad\textor\quad
 (10,8,0)_1 = U \oplus E_8(2)
 .$$
 Both possibilities for $\bdlattice{\tdp}{\eta}$ are hyperbolic, 2-elementary lattices with induced involutions $\bar{I}_{\En}$ and $\bar{I}_{\dP}$, and if we write $J\da -\bar{I}_{\En}$ then we recover $\bdlattice{\tdp}{\eta}^J = \bdlattice{\ten}{\eta}$ as the invariant sublattice.
@@ -123,7 +123,7 @@ h = e + f \in \sdp \iso U(2) \injects \sen \iso U(2) \oplus E_8(2) = \EnriquesIn
 ,$$
 and writing $\Psi: \Orth(\lkt) \to \Orth(\ten)$ for the restriction map,
 $$
-\Gamma_{\En, 2} \da \Psi\qty{\ts{ 
+\Gamma_{\En, 2} \da \Psi\qty{\ts{
 g\in \Orth(\lkt) \st g\circ \Ien = \Ien\circ g, \, g(h) = h
 }},\,\,\, \Gamma_{\dP} \da \Orth(\tdp)
 ,$$
@@ -133,7 +133,7 @@ For any lattice $T$ of signature $(2, n)$, we define its period domain as
 $$
 \halfpd{T} \da\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }\interior
 ,$$
-where $(\wait)\interior$ denotes taking one connected component. 
+where $(\wait)\interior$ denotes taking one connected component.
 We then define the two moduli spaces
 $$
 \fent \da \dmodgamma{ \halfpd{T} }{ \Gamma }_{\En, 2},
@@ -153,7 +153,7 @@ Let $\eta_1,\ldots,\eta_5$ denote the five distinguished $0$-cusps with the inva
 $$
 \begin{aligned}
 &\text{Transcendental lattice:} && (18,2,0)_1, \qquad U(2)\oplus E_8^2 \\
-&\text{Automorphism: rotation by } 180^\circ: && 
+&\text{Automorphism: rotation by } 180^\circ: &&
 \begin{cases}
 \alpha_i \leftrightarrow \alpha_{8+i}, & i=0,\ldots,7 \\
 \alpha_{16} \leftrightarrow \alpha_{18} \\
@@ -168,7 +168,7 @@ $$
 $$
 \begin{aligned}
 &\text{Transcendental lattice:} && (18,0,0)_1, \qquad U\oplus E_8^2 \\
-&\text{Automorphism: vertical reflection:} && 
+&\text{Automorphism: vertical reflection:} &&
 \alpha_i \leftrightarrow \alpha_{20-i}, \quad i=1,\ldots,9 \\
 &\text{Invariants:} && (10,8,0)_1, \qquad U\oplus E_8(2)
 \end{aligned}
@@ -179,7 +179,7 @@ $$
 $$
 \begin{aligned}
 &\text{Transcendental lattice:} && (18,2,0)_1, \qquad U(2)\oplus E_8^2 \\
-&\text{Automorphism: diagonal reflection:} && 
+&\text{Automorphism: diagonal reflection:} &&
 \begin{cases}
 \alpha_i \leftrightarrow \alpha_{16-i}, & i=1,\ldots,7 \\
 \alpha_{17} \leftrightarrow \alpha_{19} \\
@@ -194,7 +194,7 @@ $$
 $$
 \begin{aligned}
 &\text{Transcendental lattice:} && (18,2,0)_1, \qquad U(2)\oplus E_8^2 \\
-&\text{Automorphism: horizontal reflection:} && 
+&\text{Automorphism: horizontal reflection:} &&
 \begin{cases}
 \alpha_{14+i} \leftrightarrow \alpha_{14-i} \bmod 16 \\
 \alpha_{19} \leftrightarrow \alpha_{16} \\
@@ -218,7 +218,7 @@ $$
 #### The main cusp correspondence
 
 
-In this section, we record the cusp diagrams of the main moduli spaces of interest: $\fttz$ and $\fent$. 
+In this section, we record the cusp diagrams of the main moduli spaces of interest: $\fttz$ and $\fent$.
 The cusp diagram for $\fttz$ is shown below, which can be found in @AE22 or reconstructed using the mirror move algorithm.
 The boundary lattices for $\fttz$ at its two 0-cusps are $(18,0,0)_1$ and $(18,2,0)_1$.
 The cusps, their Coxeter diagrams, and the KSBA compactification $\ksbacpt{\fttz}$ were analyzed in detail in [@AE22, §10].
@@ -262,8 +262,8 @@ Mappings of boundary cusps under $\fen \from \fent \to \fttz$.
 We briefly describe the methods that go into finding these cusps, due to @Ste91.
 The following result generalizes the Eichler transvection method:
 
-:::{.theorem 
-  title="Orbit Classification in $T = U \oplus \bdlattice{T}{\eta}$ [@Ste91, Cor. 3.3]" 
+:::{.theorem
+  title="Orbit Classification in $T = U \oplus \bdlattice{T}{\eta}$ [@Ste91, Cor. 3.3]"
   #thm:orbit-classification-sterk
   }
 
@@ -279,7 +279,7 @@ Let $\eta_1,\;\eta_2\;\in T$ be primitive isotropic vectors satisfying
 Then there exists an isometry $\phi \in \OStab(T)$ such that $\phi(\eta_1) = \eta_2$. In particular, $\eta_1$ and $\eta_2$ lie in the same $\OStab(T)$-orbit.
 :::
 
-:::{.proof title="Sketch"} 
+:::{.proof title="Sketch"}
 The idea is to let $\eta_i = a_i e + b_i e + c_i$ where $c_i\in \bdlattice{T}{\eta}$, and then put both $\eta_i$ into normal form.
 Sterk shows that you can arrange for $\eta_1\cdot e = p$, so $a_1 = 0, b_1 = p$ by some $g\in \OStab(T)$, and that you can arrange for $\eta_2\cdot e =p$ simultaneously, so $a_2=0,v_2=p$.
 Thus
@@ -287,15 +287,15 @@ $$
 \eta_1 = pe + c_1, \eta_2 = pe + c_2, \qquad \eta_1 f = \eta_2 f = p
 .$$
 One then checks that
-$$\eta_1 \equiv_{p T}\eta_2 \implies \eta_1 - \eta_2 \in pT \implies c_1 - c_2 = pc \in p\bdlattice{T}{\eta}$$ 
-by canceling the now-identical $pf$ components, and writes 
+$$\eta_1 \equiv_{p T}\eta_2 \implies \eta_1 - \eta_2 \in pT \implies c_1 - c_2 = pc \in p\bdlattice{T}{\eta}$$
+by canceling the now-identical $pf$ components, and writes
 $$\eta_1 - \eta_2 = pc \implies \eta_1 = \eta_2 + pc, \qquad c\in \bdlattice{T}{\eta}.$$
 Constructing the Siegel-Eichler transvection
 $$E_{f, c}(x) = x - (x, f)c + \left( (x, c) - {1\over 2}c^2 (x, f)\right)f,$$
 one finds that
 
 \begin{align*}
-E_{f, c}(\eta_1) 
+E_{f, c}(\eta_1)
 &\equiv_{\ZZ f} \eta_1 - (\eta_1, f)c  \\
 &\equiv_{\ZZ f} (pe+ c_1) - pc  \\
 &\equiv_{\ZZ f} (pe+ c_1) - (c_1 - c_2)  \\
@@ -337,7 +337,7 @@ If $q(g) = 0\pmod{2\ZZ}$, there are exactly two possibilities:
 1. $q_A(a) = q_B(b) = 0$, or
 2. $q_A(a) = q_B(b) = 1$.
 
-In the first case, one checks that the possibilities are 
+In the first case, one checks that the possibilities are
 $$a = 0, \quad {1\over 2}e', \quad {1\over 2}f', \qquad b = 0, \quad {1\over 2}\alpha, \quad \alpha\in E_8(2), \,\,\alpha^2 = -8,$$
 using explicit computations for $U(2)$ and known facts about $E_8(2)$, and one can immediately rule out ${1\over 2}f'$ up to stable isometries.
 In the second case, one has
@@ -371,7 +371,7 @@ Recall there are two $\Orth(\tdp)$-orbits of primitive isotropic vectors in $\td
 The fundamental fact is that the set of simple roots defining the faces of the Coxeter chamber are determined by @lem:which-roots-descend
 The *folded chamber* for the reflection group in $\ten$ is the intersection
 $$
-\thecone{C}^I = \thecone{C} \intersect 
+\thecone{C}^I = \thecone{C} \intersect
 \bdlattice{T}{\eta, \RR}^{I = 1}
 $$
 where $\thecone{C}$ is the Coxeter chamber for $\tdp$, yielding a fundamental chamber for the reflection group in $\ten$ whose faces correspond to the roots described above.
@@ -382,7 +382,7 @@ Maximal *parabolic subdiagrams* of the K3 diagrams invariant under $I$ (i.e., un
 
 To summarize, the five Coxeter diagrams for the five 0-cusps of $\fent$ are obtained by explicit folding of the diagrams $G(18,2,0)$ and $G(18,0,0)$ of $\fttz$ under $I$.
 This process precisely matches Sterk's list: each 0-cusp boundary lattice in $\ten$ is the fixed lattice under $I$ of the appropriate K3 boundary lattice for $\tdp$, and the combinatorics of simple roots and walls are gotten by descending them from $\tdp$ under the involution.
-Moreover, each Coxeter diagram for each 0-cusp of $\fent$ arises from an explicit involution on a Coxeter diagram for $\fttz$, which we list below. In each diagram, a folding symmetry is defined by a combination of blue arrows and crossed out red nodes. 
+Moreover, each Coxeter diagram for each 0-cusp of $\fent$ arises from an explicit involution on a Coxeter diagram for $\fttz$, which we list below. In each diagram, a folding symmetry is defined by a combination of blue arrows and crossed out red nodes.
 Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ for an appropriate lattice $T$, which decmoposes as the semidirect product of a reflection group and a subgroup of diagram symmetries, as described above. We can thus specify *some* isometries of $\Phi(T)$ by combining elements from each factor. In these diagrams, the blue decorations indicate isometries taken from the group of diagram symmetries, while red crossed-out nodes indicate elements taken from the Weyl group. Explicitly, in each case we have:
 
 1. A counter-clockwise rotation by $\pi$,

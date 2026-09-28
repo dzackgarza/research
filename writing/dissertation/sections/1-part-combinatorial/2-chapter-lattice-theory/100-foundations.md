@@ -55,7 +55,7 @@ A lattice $(L,\beta)$ is **even** if $\beta(v,v) \in 2\ZZ$ for all $v \in L$, an
 Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \da (\beta(e_i, e_j))_{i,j} \in \Mat_{n \times n}(\QQ)$. For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
 Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.
 We define the **discriminant** $\disc(L)$ of $L$ as $\det(G_\beta)$ in any choice of basis.
-We note that for any sublattice $S \leq L$, we have the formula 
+We note that for any sublattice $S \leq L$, we have the formula
 $$
 \disc(S) = [L:S]^2 \disc(L)
 ,$$
@@ -66,16 +66,16 @@ The Gram matrix reflects properties of the form: $\beta$ is symmetric $\iff G_\b
 
 :::{.proposition title="{Primitive Isotropic Vectors, Divisibility, and Hyperbolic Splittings}" #prop:divisibility-properties-revised}
 Let $S$ be any unimodular lattice admitting a primitive embedding into a nondegenerate lattice $L$.
-Then $L \cong S \oplus T$ where 
+Then $L \cong S \oplus T$ where
 $$
 T\da S^{\perp} = \ts{v\in L \st \beta(v, S) = 0}
-$$ 
+$$
 is the **orthogonal complement** of $S$ in $L$.
 Moreover, if $S$ is unimodular, then so is $T$.
 :::
 
 :::{.proof}
-This follows from [@PS24, Lem. 1.3.1]: we can write $\disc(S) = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$. 
+This follows from [@PS24, Lem. 1.3.1]: we can write $\disc(S) = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$.
 By unimodularity, $\disc(S) = \pm 1$ forces $c_S = \pm 1$ and $[S\oplus T: L] = 1$, yielding the first claim.
 For the second, we note that $\disc(S\oplus T) = \disc(S) \cdot \disc(T)$ by standard properties of determinants, forcing $\disc(T) = \pm 1$.
 :::
@@ -111,8 +111,8 @@ For any lattice $(L,\beta)$ and positive integer $m$, the **scaled lattice** $L(
 
 :::{.example title="{Diagonal and Hyperbolic Lattices}"}
 The **diagonal lattice** $\gens{a_1, \ldots, a_n}$ is $\ZZ^n$ with the bilinear form $\beta(x,y) = \Sum a_i x_i y_i$ and diagonal Gram matrix $\diag(a_1, \ldots, a_n)$.
-In the special case $a_1,\cdots, a_{p} = 1$ and $a_{m+1}, \cdots, a_n = -1$, we write this lattice as $\I_{p, q}$, due to its distinguished nature as the unique nondegenerate odd unimodular lattice of signature $p, q$. 
-The **hyperbolic lattice** $U$ is the free $\ZZ$-module $\ZZ^2$ with basis $e,f$ such that $\beta(e,e) = \beta(f,f) = 0$ and $\beta(e,f) = 1$. It is an even, integral, rank 2 lattice with Gram matrix 
+In the special case $a_1,\cdots, a_{p} = 1$ and $a_{m+1}, \cdots, a_n = -1$, we write this lattice as $\I_{p, q}$, due to its distinguished nature as the unique nondegenerate odd unimodular lattice of signature $p, q$.
+The **hyperbolic lattice** $U$ is the free $\ZZ$-module $\ZZ^2$ with basis $e,f$ such that $\beta(e,e) = \beta(f,f) = 0$ and $\beta(e,f) = 1$. It is an even, integral, rank 2 lattice with Gram matrix
 $$
 G_U = \matt 0110
 .$$
@@ -152,8 +152,8 @@ For a sublattice $S \containedin L$, the following are equivalent:
 :::
 
 
-:::{.definition 
-    title="{Equivalence of Embeddings}" 
+:::{.definition
+    title="{Equivalence of Embeddings}"
     #def:embedding-equivalence
 }
 Two primitive embeddings $\iota_1\colon S \injects L_1$ and $\iota_2\colon S \injects L_2$ are **equivalent** if there exists an isometry $f \in \Isom(L_1, L_2)$ such that $f \circ \iota_1 = \iota_2$, so the following diagram commutes

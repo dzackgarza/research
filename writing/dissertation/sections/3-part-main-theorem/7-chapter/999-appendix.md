@@ -13,7 +13,7 @@ $$
 \alpha_3= e_3 - e_4 \\
 \alpha_4= e_4 - e_5
 \end{cases}
-\qquad 
+\qquad
 G_{A_4(-1)} =
 \begin{pmatrix}
 -2 & 1 & 0 & 0 \\
@@ -63,7 +63,7 @@ $$
 By convention, we thus take $B_n$ to mean $B_n(-2)$, and identify the following Coxeter diagram:
 
 \begin{align*}
-B_4: \quad 
+B_4: \quad
 \dynkin[arrows=false,scale=3]{B}{***o}
 .\end{align*}
 
@@ -116,14 +116,14 @@ G_{D_4(-1)} =
 \end{pmatrix}
 $$
 We take $D_n$ to mean $D_n(-1)$, and identify the Coxeter diagram as:
- 
+
 \begin{align*}
 D_4:\quad \dynkin[mark=o,scale=3]{D}{4}
 .\end{align*}
 
 ##### $E_6$
 
-Roots live in $\EE_{E_6} = \{ x \in \RR^8 : x_1+\cdots+x_8=0 \}$ with 
+Roots live in $\EE_{E_6} = \{ x \in \RR^8 : x_1+\cdots+x_8=0 \}$ with
 $$
 \Phi(E_6)\colon\,\,
 \begin{cases}
@@ -165,7 +165,7 @@ We take the simple roots
 
 with the standard Gram matrix
 $$
-G_{F_4} = 
+G_{F_4} =
 \begin{pmatrix}
 2 & -1 & 0 & 0 \\
 -1 & 2 & -1 & 0 \\
@@ -188,7 +188,7 @@ G_{F_4(-2)} =
 and thus take $F_4$ to mean $F_4(-2)$, with Coxeter diagram
 
 \begin{align*}
-F_4: \quad 
+F_4: \quad
 \dynkin[arrows=false,scale=3]{F}{ooo*}
 .\end{align*}
 
@@ -212,7 +212,7 @@ G_{G_2(-1)} =
 We thus take $G_2$ to mean $G_2(-1)$, and identify the Coxeter diagram as
 
 \begin{align*}
-G_2:\quad 
+G_2:\quad
 \dynkin[arrows=false,label,labels={,-6},scale=4,text style/.style={scale=1.2}]{G}{o*}
 .\end{align*}
 
@@ -288,7 +288,7 @@ G_{B_n} &=
 \cdot & \cdot & \cdots & \ddots & 2 & -1 \\
 \cdot & \cdot & \cdots & \cdot & -1 & 1
 \end{pmatrix} \\
-& \hspace{-8em} 
+& \hspace{-8em}
 \raisebox{0.75em}{$B_n(2)$:\,\,}\dynkin[arrows=false, labels={\alpha_1,\alpha_2,\alpha_{n-1}, \alpha_n}, label directions={above,above,above, above}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] B{**.*o} \\[1em]
 C_n:\,\,
 \begin{cases}
@@ -308,7 +308,7 @@ G_{C_n} &=
 \cdot & \cdot & \cdots & -1 & 2 & -2 \\
 \cdot & \cdot & \cdots & \cdot & -2 & 4
 \end{pmatrix} \\
-& \hspace{-8em} 
+& \hspace{-8em}
 \raisebox{0.75em}{$C_n$:\,\,}\dynkin[arrows=false, labels={\alpha_1,\alpha_2,\alpha_{n-1}, \alpha_n}, label directions={above,above,above, above}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] C{oo.o*} \\[1em]
 \end{align*}
 
@@ -419,7 +419,7 @@ G_{E_8} &=
 \end{pmatrix} \\
 & \hspace{-16em}
 \raisebox{0.75em}{$E_8$:\,\,}
-\dynkin[mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6,\alpha_7,\alpha_8}, label directions={below,above,below,below,below,below,below,below}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] E8 
+\dynkin[mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6,\alpha_7,\alpha_8}, label directions={below,above,below,below,below,below,below,below}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] E8
 \end{align*}
 
 #### Types $F_4$ and $G_2$

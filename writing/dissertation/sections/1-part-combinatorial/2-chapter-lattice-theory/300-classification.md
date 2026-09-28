@@ -5,7 +5,7 @@
     #def:genus
 }
 Two lattices $L_1, L_2$ belong to the same **genus** if $L_{1, \ZZpadic} \cong L_{2, \ZZpadic}$ for all primes $p$, where $\ZZpadic$ denotes the $p$-adic integers, and $L_{1, \RR} \cong L_{2, \RR}$.
-Lattices in the same genus have the same rank, signature, and determinant, but may not be isometric over $\ZZ$. 
+Lattices in the same genus have the same rank, signature, and determinant, but may not be isometric over $\ZZ$.
 We define the **class group** $\cl(L)$ to be the set of isometry classes within a genus, and the **class number** as the size of $\cl(L)$.
 We note that for indefinite even lattices $L$, one typically expects the class number of $L$ to be one. For definite lattices, the situation is reversed, and having class number one is somewhat rare. By [@Sca87, §3.4], if $\rank(L)>16+\ell(L)$, then $\cl(L) \geq 2$.
 :::
@@ -32,11 +32,11 @@ The following lattices are particularly important to the classification of 2-ele
 | $U(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 0 & 2 \\ 2 & 0 \end{bmatrix} \right)$ | $u \cong \lieu(2) \cong \left( C_2^2, \begin{bmatrix} 0 & \tfrac{1}{2} \\ \tfrac{1}{2} & 0 \end{bmatrix} \right)$ | Co-even |
 | $V(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 4 & 2 \\ 2 & 4 \end{bmatrix} \right)$ | $v \cong \liev(2) \cong \left( C_2 \times C_6, \begin{bmatrix} 1 & \tfrac{1}{2} \\ \tfrac{1}{2} & \tfrac{1}{3} \end{bmatrix} \right)$ | Co-even |
 
-Let $L$ be an even, indefinite, 2-elementary lattice with $\rank(L) \geq 4$. The classification of such lattices is determined by three invariants: 
+Let $L$ be an even, indefinite, 2-elementary lattice with $\rank(L) \geq 4$. The classification of such lattices is determined by three invariants:
 
-1. the rank $r = \rank_{\ZZ}(L)$, 
+1. the rank $r = \rank_{\ZZ}(L)$,
 
-2. the 2-rank $a = \dim_{\FF_2}(A_L)$, or equivalently $\ell(L)$, and 
+2. the 2-rank $a = \dim_{\FF_2}(A_L)$, or equivalently $\ell(L)$, and
 
 3. the coparity $\delta \in \{0,1\}$ as defined above.
 

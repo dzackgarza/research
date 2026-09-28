@@ -1,6 +1,6 @@
 ### Finiteness by Kulikov Models and a Coarsening Argument {#section-7-6}
 
-<!-- 
+<!--
 Background Definitions
 
 ### 1. Semifan Structures and Boundary Stratification
@@ -39,7 +39,7 @@ A Type III Kulikov model is one where all components are rational and the dual c
 - Lemma “Semifan Comparison” and the implication “ϕ is finite iff all semifans agree.”
 
 **Problem:**
-- This equivalence is asserted, not explained. There is no argument showing why the *combinatorial data of semifans alone* suffices for finiteness of the global morphism ϕ. 
+- This equivalence is asserted, not explained. There is no argument showing why the *combinatorial data of semifans alone* suffices for finiteness of the global morphism ϕ.
 - It's entirely possible for local (boundary) combinatorics to match while the global map fails to be quasi-finite or proper due to phenomena away from the boundary.
 
 **What to do:**
@@ -56,7 +56,7 @@ A Type III Kulikov model is one where all components are rational and the dual c
 - Corollary stating “with semifans agreeing, the morphism ϕ is proper, quasi-finite, and hence finite by Zariski's Main Theorem.”
 
 **Problem:**
-- **Properness and quasi-finiteness are not established**. The passage merely asserts that semifan agreement implies these properties—without bridging the gap. 
+- **Properness and quasi-finiteness are not established**. The passage merely asserts that semifan agreement implies these properties—without bridging the gap.
 - Zariski's Main Theorem only applies once properness and quasi-finiteness are shown.
 
 **What to do:**
@@ -87,7 +87,7 @@ A Type III Kulikov model is one where all components are rational and the dual c
 
  -->
 
-<!-- 
+<!--
 We now prove a crucial structural property of the classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized3 stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier. =
 
 :::{.theorem
@@ -131,7 +131,7 @@ Let $(X_0, \epsilon R_0)$ be a degeneration of K3 pairs with a fixed-point-free 
 :::
 
 :::{.proof}
-The first two claims follow from the behavior of the quotient map: irreducible components and double curves of $X_0$ are grouped into orbits by $\ien$ and descend to components and double curves of $Z_0$ respectively. 
+The first two claims follow from the behavior of the quotient map: irreducible components and double curves of $X_0$ are grouped into orbits by $\ien$ and descend to components and double curves of $Z_0$ respectively.
 
 [@AEGS25, Prop. 4.8] shows that if $(\mcz, \mcr_\mcz) \to (C, 0)$ is a half-divisor model for $\fent$, then we have the following possibilities:
 
@@ -142,7 +142,7 @@ The first two claims follow from the behavior of the quotient map: irreducible c
     - $\Gamma(\mcx_0) = \DD^2$, and if $V_i$ is covered by two irreducible components, then it is isomorphic up to normalization to either of them.
     Otherwise, if it is covered by one component of  $\tilde V_0 \subset \mcx_0$, then $\ienzero\actson V_i$ with 4 fixed points, two pairs on particular double curves $\tilde D_{ij}, \tilde D_{ik}$ in $\tilde V_i$.
 - Type $\II$:
-  - $\Gamma(\mcx_0) = \DD^1$, and 
+  - $\Gamma(\mcx_0) = \DD^1$, and
     - For the cusps mapping to $\fen$, $\ienzero$ acts by $x\mapsto -x$ on $\DD^1$ and fixed-point-freely on $\mcx_0$,
     - For the remaining cusps, assuming $\mcx_0$ contains a double curve $E$ preserved by $\ienzero$, it acts by nontrivial 2-torsion. It preserves each component of $\mcx_0$, and on double curves $D_{ij}$, the action is an elliptic involution with 4 fixed points.
 

@@ -39,7 +39,7 @@ Let $\Stab_{\Gamma}(I) \leq \Gamma$ denote the stabilizer of $I$ in $\Gamma$. Th
 
 - **(v) Compatibility under projection:** For every inclusion of primitive isotropic sublattices $I \subset J \subset T$, let $W \coloneqq (J^\perp/J) \otimes_\ZZ \RR$ and denote by $\pi_{IJ}\colon T_{\RR} \to W$ the canonical projection. Then the fan at $J$ is given by
 $$
-\Sigma_J = \ts{ 
+\Sigma_J = \ts{
   \pi_{IJ}(\sigma) \st \sigma \in \Sigma_I,\ \pi_{IJ}(\sigma)\ \text{is a cone of positive dimension}
 }
 $$
@@ -47,14 +47,14 @@ that is, $\Sigma_J$ is the image of $\Sigma_I$ under the projection $\pi_{IJ}$, 
 
 A **compatible system of $\Gamma$-admissible fans** is a family $\{\Sigma_I\}$, indexed by all primitive isotropic sublattices $I \subset T$, such that for every inclusion $I \subset J$, the compatibility condition above (v) is satisfied.
 
-Given such a system, the local model of the toroidal compactification at the cusp associated to $I$ is the toric variety $X_{\Sigma_I}$ determined by $\Sigma_I$, and $\torcpt{\FG}$ is then constructed by gluing these toric varieties to neighborhoods of the cusps in $\bbcpt{\FG}$ according to the configuration of cones $\Sigma_\bullet \da \ts{ \Sigma_I}$. 
+Given such a system, the local model of the toroidal compactification at the cusp associated to $I$ is the toric variety $X_{\Sigma_I}$ determined by $\Sigma_I$, and $\torcpt{\FG}$ is then constructed by gluing these toric varieties to neighborhoods of the cusps in $\bbcpt{\FG}$ according to the configuration of cones $\Sigma_\bullet \da \ts{ \Sigma_I}$.
 If $\{\Sigma_I\}$ is sufficiently fine and regular, $\bd \torcpt{\FG}$ is divisorial and locally a union of snc toric varieties.
-It is a normal, projective algebraic variety containing $\FG$ as a dense open subset and is equipped with a proper morphism $\torcpt{\FG} \to \bbcpt{\FG}$ extending the identity on $\FG$ and resolving the singularities at the boundary of the Baily–Borel compactification. 
+It is a normal, projective algebraic variety containing $\FG$ as a dense open subset and is equipped with a proper morphism $\torcpt{\FG} \to \bbcpt{\FG}$ extending the identity on $\FG$ and resolving the singularities at the boundary of the Baily–Borel compactification.
 
 The compactification $\torcpt{\FG}$ is canonical up to the choice of admissible fan. For each $0$-cusp $\eta$ of the Baily–Borel compactification, corresponding to a primitive isotropic sublattice $I \subset T$, the local structure of the toroidal compactification near $\eta$ is modeled on a toroidal embedding; that is, a formal (or analytic) neighborhood is locally isomorphic to an open subset of a finite quotient of a toric variety $X(\Sigma_\eta)$, where $\Sigma_\eta$ is a $\Gamma_\eta$-invariant rational polyhedral fan as above. For higher-dimensional boundary strata, the local model is a finite quotient of a toric fibration over the corresponding stratum of $\bbcpt{\FG}$.
 
 Globally, there is a proper, $\Gamma$-equivariant morphism $\sigma\colon \torcpt{\FG} \to \bbcpt{\FG}$
-which is an isomorphism over $\FG$. 
+which is an isomorphism over $\FG$.
 Over a $0$-cusp $\eta$, the preimage $\sigma^{-1}(\eta)$ is a finite quotient of the union of toric boundary strata in $X(\Sigma_\eta)$. For higher-dimensional boundary strata $S$, the preimage $\sigma^{-1}(S)$ is locally a finite quotient of a toric fibration over $S$, whose fibers are unions of toric strata as above.
 The contraction induced by $\sigma$ contracts each such fiber to the corresponding cusp, and is an isomorphism on the interior $\FG$.
 Since the entire construction is compatible with $\Gamma$, the resulting space is generally a normal, proper algebraic variety when $\Gamma$ is neat.
@@ -62,7 +62,7 @@ Since the entire construction is compatible with $\Gamma$, the resulting space i
 #### Example: $\Ag$ and Voronoi Fans
 
 The Siegel modular variety $\Ag = \Sp_{2g}(\ZZ) \backslash \HH_g$ parameterizes principally polarized abelian varieties (PPAVs) of dimension $g$, where $\HH_g$ is the Siegel upper half-space of $g \times g$ complex symmetric matrices with $\Im(\tau) > 0$.
-A toroidal compactification $\torcpt{\Ag}$ is specified by a collection of admissible, rational polyhedral fans $\Sigma_I$ in the cone $C_g$ of real, symmetric, positive-definite $g \times g$ matrices at each cusp, invariant under a finite index subgroup of $\Stab_\Gamma(I)$. Each cone $\sigma \in \Sigma$ determines a boundary stratum $D_\sigma$, and locally the boundary is modeled by toric varieties $U_\sigma/\Gamma_\sigma$ glued along shared faces, as described above. 
+A toroidal compactification $\torcpt{\Ag}$ is specified by a collection of admissible, rational polyhedral fans $\Sigma_I$ in the cone $C_g$ of real, symmetric, positive-definite $g \times g$ matrices at each cusp, invariant under a finite index subgroup of $\Stab_\Gamma(I)$. Each cone $\sigma \in \Sigma$ determines a boundary stratum $D_\sigma$, and locally the boundary is modeled by toric varieties $U_\sigma/\Gamma_\sigma$ glued along shared faces, as described above.
 For $Q \in C_g$ and
 $$
 M(Q) \da \ts{ v \in \ZZ^g \setminus \{0\} \st Q[v] = \min_{w \neq 0} Q[w] }
@@ -83,7 +83,7 @@ For each $\sigma \in \Sigma$, neighborhoods of $D_\sigma$ are modeled analytical
 #### Toward semitoroidal compactifications
 
 
-The theory of toroidal compactifications guarantees that local models around boundary cusps have at worst finite quotient singularities if $\Gamma$ is not neat, and that the resulting compactification $\torcpt{\FG}$ is a normal, projective algebraic space. 
+The theory of toroidal compactifications guarantees that local models around boundary cusps have at worst finite quotient singularities if $\Gamma$ is not neat, and that the resulting compactification $\torcpt{\FG}$ is a normal, projective algebraic space.
 However, in many cases, the requirement that $\Sigma_I$ is globally polyhedral and locally finite at every cusp is too restrictive, making $\bbcpt{\FG}$ too coarse and singular for many applications.
 To address this, semitoroidal compactifications allow, at each cusp, the use of a semifan: a collection of convex rational cones which need not be polyhedral or locally finite, which may thus contain infinitely generated cones or infinitely many cones accumulating at the boundary. The combinatorial data $\semifans{F} = {\semifan{F}_I}$ indexed by cusps $I$ is still required to be $\Gamma$-admissible, i.e. invariant with only finitely many orbits under the stabilizer, and satisfy similar compatibility conditions.
 While the local boundary models in semitoroidal compactifications $\semitorcpt{\FG}$ are no longer strictly toric varieties, the resulting compactification still admits a proper, $\Gamma$-equivariant morphism $\semitorcpt{\FG} \to \bbcpt{\FG}$ and contains $\FG$ as a dense open subset.

@@ -55,7 +55,7 @@ For the specific case $d=1$, @Sca87 finds exactly four possible isometry classes
 The cusps in $\bbcpt{F_2}$ are obtained by classifying primitive isotropic sublattices of the lattice  
 $$
 T_{2} \da \gens{-2}\oplus U^{\oplus2}\oplus E_{8}^{\oplus2}
-$$ 
+$$
 using discriminant–form methods, from which Scattone shows:
 
 -  There is a single $\Gamma_{2}$-orbit of primitive isotropic lines $\eta$ in $T_2$, giving one 0-cusp (Type $\III$);  
@@ -82,7 +82,7 @@ For general $d$, cusp enumeration becomes a number-theoretic problem, since stru
 For further details and the explicit Coxeter diagrams, see [@Sca87, §6.2] and [@AET23, Fig. 2].
 
 
-<!-- 
+<!--
 # Separating Scattone's Methods: F₂d Paper vs. Type $\III$ Degenerations Paper
 
 Based on my research, I can now provide a clear separation between what Scattone accomplished in his two main papers: the 1987 memoir on F₂d compactifications and the 1986 collaboration with Friedman on Type $\III$ degenerations.
@@ -161,7 +161,7 @@ The text appears to conflate methods from both papers, presenting them as if the
 
 #### $\fell$: Elliptic Surfaces
 
-The moduli space $\fell$ parametrizes elliptic K3 surfaces with a chosen section, a condition that fixes a primitive embedding of a hyperbolic plane $U_1 \subset \lkt$. The relevant period map is thus defined on the orthogonal complement $\tell \da  U_1^{\perp_{\lkt}} \cong U^2 \oplus E_8^2$, and the moduli space is the 18-dimensional arithmetic quotient $\fell$. 
+The moduli space $\fell$ parametrizes elliptic K3 surfaces with a chosen section, a condition that fixes a primitive embedding of a hyperbolic plane $U_1 \subset \lkt$. The relevant period map is thus defined on the orthogonal complement $\tell \da  U_1^{\perp_{\lkt}} \cong U^2 \oplus E_8^2$, and the moduli space is the 18-dimensional arithmetic quotient $\fell$.
 A geometric description of the compactifications of $\fell$ is given in @ABE22, who construct KSBA compactifications and prove their isomorphism to specific semitoroidal compactifications. There a unique $\fell$-orbit of 0-cusps in $\tell$, repsented by $\eta = e$, and the analysis falls on $\bar{(\tell)}_\eta \cong \II_{1, 17}$
 Semitoroidal compactifications are defined by fans constructed in the rational closure $\thecone{C}_{\eta, \QQ}$ of the positive cone in $\II_{1, 17}$.
 Two separate KSBA compactifications are constructed:
@@ -229,7 +229,7 @@ The move replaces $T$ with $\bdlattice{T}{\eta}$, computing the new invariants i
 1. **Start at the node $(r_0, a_0, \delta_0)$** in Nikulin’s pyramid associated to $T$.
 
 2. **For every admissible mirror move,** check for outgoing arrows (*mirror moves*) from this node, corresponding to possible splittings of boundary lattices $T_{\eta_a}$ for isotropic vectors $\eta_a$. Each outgoing arrow from $(r_0, a_0, \delta_0)$ will be of one of the following types:
-   
+
 | Type of $\eta_a \in T$ | Destination $(r_1, a_1, \delta_1)$ | Splitting of $\bdlattice{T}{\eta_a}$ |
 |---|---|---|
 | Odd/simple | $(r_0-2,\, a_0,\, 1)$ | $U \oplus K$ |

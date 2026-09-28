@@ -17,7 +17,7 @@ Suppose $(Y, C)$ is as above and admits additional data consisting of an effecti
 $$
 K_X + D + R = \pi^*\left(K_Y + C + \tfrac{1}{2}B\right)
 ,$$
-When $B$ is effective, Cartier, and disjoint from $C$, this gives a semi-log canonical surface pair of index two in the sense of classification theory [@AT17, §4, Lemma 4.1]. 
+When $B$ is effective, Cartier, and disjoint from $C$, this gives a semi-log canonical surface pair of index two in the sense of classification theory [@AT17, §4, Lemma 4.1].
 
 The conditions on $Y$, $C$, and $B$ are: The pair $(Y, C)$ must be log canonical, with $B$ an effective, reduced Cartier divisor whose support does not contain any component of $C$, and all singularities of $Y$ lying along $B$ must be Du Val singularities (rational double points). This determines the singularities of $X$ and the positivity of canonical bundles.
 

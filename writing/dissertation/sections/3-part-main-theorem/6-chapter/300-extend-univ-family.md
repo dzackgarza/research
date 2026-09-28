@@ -31,7 +31,7 @@ Let $B \subset \cpt{\fttz}$ be the Zariski closure of the Noether–Lefschetz lo
 \pi_B: (\mcx_B, \epsilon \mcr_B) \to B
 .\end{align*}
 
-where $\mcx_B = \mcx \times_{\cpt{\fttz}} B$ and $\mcr_B = \mcr|_{\mcx_B}$. 
+where $\mcx_B = \mcx \times_{\cpt{\fttz}} B$ and $\mcr_B = \mcr|_{\mcx_B}$.
 This family retains the following structure:
 
 - Each geometric point $b \in B$ parametrizes a (possibly degenerate) K3 surface equipped with a degree-4 polarization and a prescribed involution $(\idp)_b$.

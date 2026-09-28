@@ -17,12 +17,12 @@ where $\mcz = \mcx_B / \ien$ is the coarse space of the quotient stack $[\mcx_B 
 
 - $\rho$ is a morphism of degree $2$ in the category of pairs over $B$,
 - The following square is Cartesian:
-  
+
   \begin{tikzcd}
   (\mcx_B, \eps \mcr_B) \arrow[r, "\rho"] \arrow[d] & (\mcz, \eps \mcr_Z) \arrow[d] \\
   B \arrow[r, equal] & B
   \end{tikzcd}
-  
+
 - The construction is well-defined: $\ien$ acts biregularly, freely in codimension $1$, and preserves both the boundary divisor and the property of being a KSBA stable pair.
 :::
 
@@ -37,10 +37,10 @@ The quotient $\mcz$ is constructed as the stack quotient $[\mcx_B/\langle \ien\r
 Let $b \in B$ be a geometric point and $\mcx_b$, $\mcz_b$ the corresponding fibers.
 
 1. If $b \in B^\circ$ (open locus), $\mcx_b$ is a smooth K3 surface, $\ien$ has no fixed points, and $\rho_b: \mcx_b \to \mcz_b$ is étale outside codimension at least $2$.
-   
+
    - The quotient $\mcz_b$ is a smooth Enriques surface.
    - The canonical bundle $K_{\mcz_b}$ is numerically trivial up to $2$-torsion: $2K_{\mcz_b} \sim 0$.
-   
+
 2. If $b \in B \setminus B^\circ$ is in the degenerate locus, $\mcx_b$ is a K3 surface with slc singularities and $\ien$ may have isolated fixed points in codimension $\geq 2$.
 
    - The quotient $\mcz_b$ is again semi-log-canonical, as is the pair $(\mcz_b, \eps \mcr_{Z,b})$.

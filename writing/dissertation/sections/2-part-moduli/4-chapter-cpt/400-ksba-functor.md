@@ -109,7 +109,7 @@ The **double locus** of $X$ is the support of the conductor subscheme on $X$. Eq
 :::
 
 For algebraic surfaces, the double locus is a (possibly reducible) disjoint union of curves (i.e., it is of pure codimension one). In higher dimensions, the conductor always has pure codimension one in $X$. The preimage of the conductor divisor in $\widetilde{X}$ records the precise locations where the gluing occurs in the normalization, thus encoding the identification data required to reconstruct $X$ from its normalization.
-Normalization replaces a reduced scheme $X$ with a normal scheme $\normalize{X}$ up to birational equivalence, and the fibers of $\normalize{X}\to X$ encode the branching behavior of the singularity at that point. 
+Normalization replaces a reduced scheme $X$ with a normal scheme $\normalize{X}$ up to birational equivalence, and the fibers of $\normalize{X}\to X$ encode the branching behavior of the singularity at that point.
 Its practical implications by dimension are as follows:
 
 - $\dim(X) = 1:$ The normalization of a reduced curve $C$ is a smooth curve $\widetilde{C}$.
@@ -196,7 +196,7 @@ Let $X$ be a demi-normal scheme and $R = \sum r_i R_i$ an effective $\QQ$-diviso
 1. $K_X + R$ is $\QQ$-Cartier.
 
 2. $(\normalize{X}, R^\nu)$ is log canonical, where $\nu\colon \normalize{X} \to X$ is the normalization of $X$ and
-   
+
 \begin{align*}
 R^\nu \da  D + \sum r_i\, \nu^*(R_i).
 \end{align*}
@@ -408,13 +408,13 @@ An **slc stratum** is a boundary stratum of $\cpt{X}$ consisting of all stable p
 
 
 Given a nonzero vector $\lambda$ in a lattice $T$, its **projective class** is $[\lambda] \da \ts{ a\lambda \st a\in \RR_{>0}}$, i.e. the ray it generates in $T_\RR$.
-Letting $T$ be the polarization lattice for a polarized moduli problem $\FG$ of K3 surfaces, we consider degenerations at a cusp $I$ in $\bd\bbcpt{\FG}$. 
+Letting $T$ be the polarization lattice for a polarized moduli problem $\FG$ of K3 surfaces, we consider degenerations at a cusp $I$ in $\bd\bbcpt{\FG}$.
 The logarithmic mondromy $N$ at $I$ determines, up to the monodromy group and scaling, elements $\eta\in T$ and $\lambda\in \eta^{\perp T}$ by the explicit formula
 $$
-N(\gamma) = (\gamma \cdot \eta)\lambda - (\gamma \cdot \lambda)\eta, 
+N(\gamma) = (\gamma \cdot \eta)\lambda - (\gamma \cdot \lambda)\eta,
 \,\,
 \eta^2 = 0,\,\,
-\lambda^2 = 
+\lambda^2 =
 \begin{cases}
 t > 0 & \text{if $I$ is a type $\III$ $0$-cusp  } \\
 t = 0 & \text{if $I$ is a type $\II$ $1$-cusp }

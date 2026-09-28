@@ -11,12 +11,12 @@ Recall that a divisor $D$ on a normal variety $X$ has simple normal crossings (s
 A **KSBA-stable pair** is a pair $(X, D=\sum b_j D_j)$ where $X$ is a projective demi-normal variety (that is, $X$ satisfies Serre's condition $S_2$ and has normal crossing singularities in codimension $1$), the divisorial components $D_j$ are effective Weil divisors of $X$ not contained in the singular locus of $X$, and the coefficients $b_j$ are rational numbers with $0 < b_j < 1$, such that:
 
 1. The divisor $K_X + D$ is ample and $\QQ$-Cartier.
-2. The pair $(X, D)$ has semi log canonical (slc) singularities 
-  
+2. The pair $(X, D)$ has semi log canonical (slc) singularities
+
 <!-- see [Kollár, *Singularities of the Minimal Model Program*, Cambridge, 2013, Definition 5.10]). -->
 
 This notion generalizes the stability condition for curves: for $X$ a nodal curve and $D = \sum b_j p_j$ a divisor with $0 < b_j < 1$, the pair $(X, D)$ is KSBA stable if and only if $X$ is stable in the sense of Deligne–Mumford.
-The KSBA compactification provides a canonical and proper compactification of the moduli space of varieties and pairs of log general type by allowing stable pairs $(X, D)$ with semi log canonical singularities and ample $K_X + D$. As a consequence, these moduli spaces are proper and projective, and their construction is compatible with the minimal model program. 
+The KSBA compactification provides a canonical and proper compactification of the moduli space of varieties and pairs of log general type by allowing stable pairs $(X, D)$ with semi log canonical singularities and ample $K_X + D$. As a consequence, these moduli spaces are proper and projective, and their construction is compatible with the minimal model program.
 
 <!-- see [Kollár, *Moduli of varieties of general type*, in: *Handbook of Moduli*, vol. II (2013), 131–157, arXiv:1008.0621], [@Alexeev, *Comp. Math.* 112 (1998), 147–182], [Kollár–Shepherd-Barron, *J. Algebraic Geom.* 1 (1992), 429–479]. -->
 
@@ -40,7 +40,7 @@ The proof uses the Kontsevich moduli space of stable maps, Gromov-Witten invaria
 This follows a similar line of work: for $F_2$, see [@AET23], and for degree 2 elliptic K3 surfaces $\fell$, see [@ABE22]. These are $S$-polarized K3 surfaces for $S$ a 2-elementary lattice that primitively embeds in $\lkt$, of which there are exactly 75 by @Nik79a, and [@AE22, Thm. 9.10] handles the remaining cases, including $\fttz$ corresponding to $S = U(2) = (2,2,0)_1$, using the fact that such surfaces carry a nonsymplectic involution $\iota$ whose ramification divisor $R_\iota$ is recognizable.
 For $50$ of these cases, there is result similar to @thm:main-theorem: $\semitorcpt{F_S} \iso \ksbacpt{F_S}$ for a semifan associated to $R_\iota$ -- they are precisely the closures of irreducible components on which monodromy invariants $\lambda$ maintain a fixed *combinatorial type*, as defined in @AE23a.
 By passing to Kulikov models with nonsymplectic involutions, they show that stable limits can be constructed using the fact that the central fibers $\mcx_0 = \union_i V_i$ of Type $\II$ Kulikov models $\mcx$ of K3 surfaces admit dual complexes $\Gamma(\mcx_0)$ homeomorphic to $S^2$, which can naturally be equipped with integral affine structures, yielding an $\iota$-symmetric $\IAS^2$, where $\iota$ typically acts on $S^2$ by $(x,y,z)\mapsto (x,y,-z)$ in the standard coordinates on $\RR^3$.
-Thus one can reverse-engineer this procedure, starting with a model for a hemisphere of $S^2$ which is homeomorphic to $\DD^2$, and realizing $S^2 \cong \DD^2 \Disjoint_{\bd \DD^2} \DD^2$ as the pushout of two discs along their boundaries, naturally enforcing $\iota$-invariance. 
+Thus one can reverse-engineer this procedure, starting with a model for a hemisphere of $S^2$ which is homeomorphic to $\DD^2$, and realizing $S^2 \cong \DD^2 \Disjoint_{\bd \DD^2} \DD^2$ as the pushout of two discs along their boundaries, naturally enforcing $\iota$-invariance.
 The process starts from a *monodromy invariant* $\lambda$ encoding a degeneration, then constructs an integral-affine polygon $P(\lambda)$ in $\RR^2$ with singularities, performing Symington surgeries on $P(\lambda)$ that encode the degeneration. Passing to a complete triangulation and taking the pushout
 
 \begin{align*}

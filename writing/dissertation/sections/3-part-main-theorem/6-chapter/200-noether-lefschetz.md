@@ -28,7 +28,7 @@ where $\fent$ is the moduli of degree-2 polarized Enriques surfaces and $\fttz$ 
     title="{Noether–Lefschetz Locus $\mathrm{NL}_{\ten}$}"
     #def:noether-lefschetz-locus
 }
-Let $\Lambda = H^2(X, \ZZ) \cong \mathrm{II}_{3,19}$, and let $\ten = U(2) \oplus E_8(-2)$ denote the anti-invariant lattice under the Enriques involution, reflecting both the required polarization and involution structure. 
+Let $\Lambda = H^2(X, \ZZ) \cong \mathrm{II}_{3,19}$, and let $\ten = U(2) \oplus E_8(-2)$ denote the anti-invariant lattice under the Enriques involution, reflecting both the required polarization and involution structure.
 Define the **Noether–Lefschetz locus**
 
 \begin{align*}

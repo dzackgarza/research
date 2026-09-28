@@ -9,7 +9,7 @@ Let $\fent$ be the Deligne–Mumford stack over $\CC$ parameterizing isomorphism
 
 - $Z$ is a smooth Enriques surface,
 - $L \in \mathrm{Pic}(Z)$ is a nef and big divisor class satisfying
-  
+
 \begin{align*}
 L^2 = 2, \qquad L \cdot C > 0 \text{ for every } (-2)\text{-curve } C \subset Z.
 \end{align*}

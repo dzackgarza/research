@@ -42,15 +42,15 @@ The non-normality of the scheme-theoretic image of $\cpt{\fent} \to \cpt{\fttz}$
 
 :::{.proof}
 1. **Failure of injectivity over boundary divisors.**
-   
+
    Let $x \in D \subset \Delta$ be a point lying on a boundary divisor. Consider the local behavior of $\cpt{\fent}$ and the period map over a small analytic neighborhood $U$ of $x$. The period map may send distinct limit points in $\cpt{\fent}$ (corresponding to non-isomorphic degenerations with the same mixed Hodge structure or period data) to the same point in $\cpt{\fttz}$, particularly when the monodromy representation around $D$ is nontrivial. Formally, there exist $y_1, y_2 \in \cpt{\fent}$ with $\mathsf{P}(y_1) = \mathsf{P}(y_2) = x$ but which are not identified scheme-theoretically in $\cpt{\fent}$. The completed local ring $\widehat{\mathcal{O}}_{\cpt{\fent},y_1} \times \widehat{\mathcal{O}}_{\cpt{\fent},y_2}$ then maps finitely (and possibly not surjectively) into $\widehat{\mathcal{O}}_{\cpt{\fttz},x}$, so the scheme-theoretic image is not normal at $x$: it has multiple analytic branches glued via the period map, and integral closure introduces a normalization that separates these branches.
 
 2. **Non-transversality of boundary divisor intersections.**
-   
+
    Suppose $x \in D_1 \cap D_2$, where $D_1, D_2 \subset \Delta$ are distinct irreducible components and their intersection is non-transverse. Locally, the structure of $\cpt{\fttz}$ near $x$ is modeled as $\operatorname{Spec} \CC[[u,v]]/(uv)$ or, for higher codimension intersections, as the vanishing locus of a product of local coordinates. If $\cpt{\fent}$ maps into $\cpt{\fttz}$ so that the scheme-theoretic fiber above $x$ is reducible or singular, then the local ring at $x$ fails Serre's condition $(R_1)$ or $(S_2)$ for normality, as integral closure may add missing functions or resolve multiple components. The normalization then corresponds to separating these intersection branches, producing a cover ramified along $D_1 \cap D_2$.
 
 3. **Monodromy identifications and stack-theoretic quotients.**
-   
+
    The global monodromy group $\Gamma \leq \mathrm{O}(L)$ acts on the boundary components and may have nontrivial stabilizer orbits in the boundary. This manifests locally as a finite group action (coming from automorphisms in the degenerating family or stacky structure in the moduli) on the germ $U$ of $\cpt{\fttz}$: the scheme-theoretic image is modeled by the quotient $U/G$, where $G$ is a subgroup of $\Gamma$. The resulting singularities are quotient singularities, and the local ring of invariants is not integrally closed unless the action is free. Thus, normalization corresponds to passing to the cover $U$ before forming the quotient, and non-normality reflects the presence of ramification or fixed points for the group action.
 
 Each of these three mechanisms can be realized concretely in families of degenerating lattice-polarized K3 or Enriques surfaces (see [@AEGS25, §6], for explicit models). In each case, non-normality of the scheme-theoretic image of the period map along the boundary is a direct consequence of the existence of multiple branches, nontransverse intersections, or stacky (ramified) structure resulting from monodromy. The normalization resolves the non-normal behavior, yielding a finite (possibly ramified) cover of the image.
