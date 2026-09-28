@@ -2454,15 +2454,12 @@ class FixedCardinalitySubsetSets(OwnedCategory):
         def subset_cardinality(self) -> int:
             return self._subset_cardinality
 
-        def power_set(self) -> Sets().ObjectType:
-            return self.source().power_set()
-
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
             return self._element_constructor_(*args, **kwargs)
 
         def _element_constructor_(self, members):
-            subset = self.power_set()(members)
+            subset = self.source().power_set()(members)
             if subset.domain().cardinality() != cardinal(self.subset_cardinality()):
                 raise ValueError(
                     f"{subset.domain()} is not in {self}: it has cardinality {subset.domain().cardinality()}, "
@@ -2471,9 +2468,10 @@ class FixedCardinalitySubsetSets(OwnedCategory):
             return subset
 
         def __contains__(self, candidate) -> bool:
-            if candidate not in self.power_set():
+            ambient_power_set = self.source().power_set()
+            if candidate not in ambient_power_set:
                 return False
-            return self.power_set()(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
+            return ambient_power_set(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
 
         def __iter__(self):
             r"""Enumerate the ``k``-subsets of a finite enumerated source.
@@ -2524,23 +2522,21 @@ class FinitePowerSets(OwnedCategory):
         def source(self) -> Sets().ObjectType:
             return self._source
 
-        def power_set(self) -> Sets().ObjectType:
-            return self.source().power_set()
-
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
             return self._element_constructor_(*args, **kwargs)
 
         def _element_constructor_(self, members):
-            subset = self.power_set()(members)
+            subset = self.source().power_set()(members)
             if not subset.domain().cardinality().is_finite():
                 raise ValueError(f"{subset.domain()} is not in {self}: it is not finite")
             return subset
 
         def __contains__(self, candidate) -> bool:
-            if candidate not in self.power_set():
+            ambient_power_set = self.source().power_set()
+            if candidate not in ambient_power_set:
                 return False
-            return self.power_set()(candidate).domain().cardinality().is_finite()
+            return ambient_power_set(candidate).domain().cardinality().is_finite()
 
         def __iter__(self):
             r"""Enumerate the subsets of a finite enumerated source, through Sage's ``Subsets`` (`OWN-06`)."""
