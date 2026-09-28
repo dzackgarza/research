@@ -89,10 +89,10 @@ Given a degeneration $(\mcz^*, \epsilon \mcr_{\mcz}^*) \to C^*$, the KSBA-stable
 where the right-hand side is computed from the data of the half-divisor model $(\mcz, \mcr_{\mcz}) \to (C, 0)$.
 :::
 
-:::{.remark}
+:::{.remark title="Integral-affine structure on the quotient dual complex"}
 The quotient $\Gamma(\mcz_0) = \Gamma(\mcx_0) / \iota_{\En, \IA}$ always inherits a natural integral-affine structure, encoding both the combinatorics and divisor data of the degeneration[2, Prop. 4.5]. In Type $\III$, certain boundary components are the images of the "Enriques equator" and are characterized by four $A_1$ singularities.
 :::
 
-:::{.remark}
+:::{.remark title="DLT models beyond generic half-divisor models"}
 For general monodromy invariant $\lambda$, half-divisor models exist only generically: the involution $\ien$ may be only birational on $\mcx_0$s. After contracting exceptional loci to resolve indeterminacies, one obtains only a dlt pair. This supports the broader philosophy that dlt models, rather than strictly semistable ones, are the correct analogues of Kulikov models for $K$-trivial surface degenerations.
 :::

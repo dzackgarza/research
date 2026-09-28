@@ -22,7 +22,7 @@ Unlike a fan, $\mcf$ is not required to be locally finite, nor to cover all of $
 This generalization allows, for example, arrangements arising from infinite or non-polyhedral wall structures, as well as dual complexes of degenerations; it thus extends the toroidal theory to situations where the properties of being globally polyhedral or locally finite fail.
 :::
 
-:::{.remark}
+:::{.remark title="Hyperbolic tilings and coning directions"}
 Recall that the positive cone associated to a primitive isotropic sublattice and its rational closure define a real hyperbolic space by projectivization:
 $$
 \HH_I \da  \PP(\thecone{C}_{I}) \da \ts{
@@ -95,7 +95,7 @@ Let $R$ be a recognizable divisor in the moduli space of $S$-polarized K3 surfac
 The cones of $\mcf_R$ are precisely the maximal subsets in which the combinatorial type of slc stable pairs is constant as a function of the *monodromy invariant* $\lambda$.
 :::
 
-:::{.remark}
+:::{.remark title="Recognizable divisors and canonical semifans"}
 For any recognizable divisor $R$ on $F_S$, the normalization of the KSBA compactification $\cpt{F}^R$ is a semitoroidal compactification, with the associated semifan $\mcf_R$ determined by $R$.
 A fundamental example of a recognizable divisor is the **rational curves divisor** $R_{\rcop}$ for moduli of degree $2d$ K3 surfaces:
 
@@ -136,7 +136,7 @@ $$
 The corresponding **generalized Coxeter semifan** $\mcf_{\genop}$ is the semifan whose maximal cones are $g(\thecone{C}_{\genop} )$ for $g \in W$, with faces given by all intersections of maximal cones not contained in any wall $\alpha^\perp$ for $\alpha \in \Phi^{\relevant}$.
 :::
 
-:::{.remark}
+:::{.remark title="Irrelevant roots as omitted Coxeter walls"}
 Passing from the Coxeter fan to the generalized Coxeter semifan corresponds to deleting nodes of $G(\Gamma_\eta)$ representing the irrelevant roots: walls $\alpha^\perp$ for $\alpha \in \Phi^{\irrelevant}$ are omitted, so maximal cones become unions of Weyl chambers glued along these "inactive mirrors".
 If $\Phi^{\irrelevant} = \varnothing$, this recovers the Coxeter fan, while if $\Phi^{\relevant} = \varnothing$, there is a single chamber and this recovers the Baily–Borel fan.
 Moreover, if $|W^{\irrelevant}| = \infty$, the resulting semifan is not locally finite, and the compactification is strictly semitoroidal.
@@ -177,7 +177,7 @@ The minimal element, where all nodes are omitted at each cusp, corresponds to th
 Morphisms in $\theposet{P}_\Gamma$ corresponding to deleting more nodes correspond to coarsenings of the semifans and thus to proper birational morphisms between the corresponding semitoroidal compactifications.
 :::
 
-:::{.remark}
+:::{.remark title="Coxeter compactifications inside the semitoroidal poset"}
 The poset $\theposet{S}_\Gamma$ of semitoroidal compactifications organizes all normal compactifications arising from systems of $\Gamma$-admissible semifans over the boundary strata of $\FG$.
 The Coxeter semitoroidal subposet $\theposet{P}_\Gamma$ parameterizes those compactifications obtained as Coxeter-type (generalized Coxeter semifan) coarsenings of local reflection decompositions, and is canonically identified with the product of subdiagram posets at all $0$-cusps.
 The product $\theposet{P}_\Gamma$ thus parameterizes exactly the semitoroidal compactifications of $\FG$ arising from generalized Coxeter semifans, distinguished in the full semitoroidal poset $\theposet{S}_\Gamma$.

@@ -57,7 +57,6 @@ Let $\mcx \to \Delta$ be a Type $\III$ Kulikov degeneration of K3 surfaces, with
 This imposes the constraint that at most 24 of the components $V_i$ can be non-toric, as toric pairs contribute zero to the sum. This result provides a rigidity condition on the combinatorics of K3 degenerations [@FM83, Thm. 2.2], [@Fri15].
 :::
 
-:::{.remark}
+:::{.remark title="Charge conservation constrains degeneration type"}
 The conservation property constrains the possible combinatorial types of $\mcx_0$s and ensures that the total complexity of a degeneration, as measured by the charge, remains constant across the moduli space. This invariance establishes the relationship between the KSBA and Baily-Borel compactifications of the moduli space.
 :::
-
