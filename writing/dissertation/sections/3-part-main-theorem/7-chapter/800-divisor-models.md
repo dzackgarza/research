@@ -94,5 +94,5 @@ The quotient $\Gamma(\mcz_0) = \Gamma(\mcx_0) / \iota_{\En, \IA}$ always inherit
 :::
 
 :::{.remark}
-For general monodromy invariant $\lambda$, half-divisor models exist only generically: the involution $\ien$ may be only birational on $\mcx_0$s. After contracting exceptional loci to resolve indeterminacies, one obtains only a dlt pair. This supports the broader philosophy (see , ) that dlt models, rather than strictly semistable ones, are the correct analogues of Kulikov models for $K$-trivial surface degenerations.
+For general monodromy invariant $\lambda$, half-divisor models exist only generically: the involution $\ien$ may be only birational on $\mcx_0$s. After contracting exceptional loci to resolve indeterminacies, one obtains only a dlt pair. This supports the broader philosophy that dlt models, rather than strictly semistable ones, are the correct analogues of Kulikov models for $K$-trivial surface degenerations.
 :::

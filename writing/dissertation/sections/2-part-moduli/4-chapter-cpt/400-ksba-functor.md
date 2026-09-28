@@ -342,7 +342,7 @@ The stack $\mcm\uksba_{d, \vec{a},v}$ is separated and proper, and its coarse mo
 <!-- [AET19, Prop. 3.8] -->
 
 Varieties with $K_X\sim 0$ numerically trivial, such as $K3$ and Enriques surfaces, are said to be **$K$-trivial**.
-They require special treatment in the theory of KSBA stable pairs and compactifications because the stability condition (ampleness of $K_X + R$) can not hold when $R=0$.
+They require special treatment in the theory of KSBA stable pairs and compactifications because the stability condition (ampleness of $K_X + R$) cannot hold when $R=0$.
 So one must *always* choose a nontrivial divisor $R$ for such varieties, and the positivity must be entirely supplied by $R$ in order to achieve any kind of stability.
 We are thus led, as a first approximation, to consider pairs $(X, R)$.
 However, the MMP and KSBA compactification require pairs $(X, D)$ where each component $D_i$ of $D$ appears with coefficient $a_i < 1$, noting that this must be a *strict* inequality.
