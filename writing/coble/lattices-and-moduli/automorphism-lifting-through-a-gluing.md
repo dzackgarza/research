@@ -16,7 +16,6 @@ not about either lattice on its own.
 
 ::: {.Notation #not:discriminant-representation title="Notation for the discriminant representation"}
 
-
 For a lattice $L$ the induced homomorphism
 $$
 \rho_L\colon \Orth(L)\too \Orth(q_L)
@@ -42,7 +41,6 @@ section.
 
 ::: {.Definition #def:gluing-datum-of-a-pair title="The gluing datum of a pair of primitive inclusions"}
 
-
 Let $\iota_M\colon M\injects L$ and $\iota_N\colon N\injects L$ be primitive
 inclusions with $\iota_N(N) = \iota_M(M)^{\perp L}$, so that $L$ is an even
 overlattice of $M\oplus N$.
@@ -59,7 +57,6 @@ $(M\oplus N)\dual\to A_M\oplus A_N$.
 :::
 
 ::: {.Theorem #thm:automorphism-lifting-criterion title="When a pair of isometries lifts"}
-
 
 Let $L$, $M$, $N$ and $H$ be as in [the gluing-datum definition](#def:gluing-datum-of-a-pair), and let
 $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
@@ -92,7 +89,6 @@ $L$.
 
 ::: {.Corollary #cor:liftable-automorphisms title="The liftable subgroup"}
 
-
 With the notation of [the lifting criterion](#thm:automorphism-lifting-criterion), fix
 $\varphi_N = \id_N$ and let $\Gamma\leq\Orth(M)$ be any subgroup.
 The isometries of $M$ that extend over $L$ fixing $N$ pointwise form the subgroup
@@ -123,7 +119,6 @@ finite.
 
 ::: {.Remark title="The operation belongs to the arrow"}
 
-
 The datum consumed by [the lifting criterion](#thm:automorphism-lifting-criterion) is $H$,
 equivalently the pair of primitive inclusions of
 [the gluing-datum definition](#def:gluing-datum-of-a-pair).
@@ -143,7 +138,6 @@ itself does not state.
 ## The unimodular case and its two specimens
 
 ::: {.Corollary #cor:lifting-unimodular title="Lifting across a unimodular overlattice"}
-
 
 Suppose in addition that $L$ is unimodular.
 Then $H$ is the graph of an anti-isometry $\gamma\colon A_M\iso A_N$ defined on
@@ -165,7 +159,6 @@ displayed identity.
 :::
 
 ::: {.Remark title="Two computations in this book are instances"}
-
 
 [The unimodular lifting corollary](#cor:lifting-unimodular) is the mechanism behind two statements proved
 elsewhere in this part, both for the unimodular $\lkt$.

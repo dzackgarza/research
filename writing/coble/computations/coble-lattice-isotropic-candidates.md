@@ -15,7 +15,6 @@ tags:
 
 ::: {.Remark title="What open problem this addresses"}
 
-
 `content_pandoc/sections/Open_Problems/Open_Problems.md` records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\OStab(T)$-orbit exists in divisibility 2; the proof of `lem:divisibilityTcoOne` currently *assumes* that uniqueness.
 This note records the concrete candidate list and the machinery assembled to settle it.
 :::
@@ -48,7 +47,6 @@ Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` re
 
 ::: {.Construction title="Term-by-term transport along the embedding chain"}
 
-
 The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 
 - into $\ten = U \oplus U(2) \oplus E_8(2)$ by $h \mapsto e+f$;
@@ -60,7 +58,6 @@ This yields a parallel norm and divisibility table across all three lattices, wh
 
 ::: {.Remark title="Recorded gap: the numbers were not saved"}
 
-
 The notebook cells that evaluate norm and divisibility on these vectors, in all three lattices, have their outputs **cleared**. The vectors and the method survive; the resulting numbers do not.
 Re-running is the obvious first step, and is cheap: the lattices, the vectors and the helper are all in `init.sage`.
 :::
@@ -69,14 +66,12 @@ Re-running is the obvious first step, and is cheap: the lattices, the vectors an
 
 ::: {.Remark title="The GAP bridge to polyhedral_common"}
 
-
 The notebook drives GAP's `INDEF_FORM_GetOrbitRepresentative` from `polyhedral_common`, an orbit-representative solver for indefinite forms.
 This is the tool that would settle the open orbit count directly, rather than by hand.
 A raw trace of one such run on a rank-10 form with diagonal $(-4,-4,-4,-4,-2,-4,-4,-4,-4,-2)$ survives in `reports/logs.txt`, whose two input Gram matrices are worth keeping even though the remaining 8800 lines are per-iteration bookkeeping.
 :::
 
 ::: {.Definition title="The isotropic trichotomy used as a separating invariant"}
-
 
 `init.sage` provides `get_isotrop_type`, which classifies a primitive isotropic vector as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.
 This trichotomy is what the cusp correspondence sections of this project rely on.

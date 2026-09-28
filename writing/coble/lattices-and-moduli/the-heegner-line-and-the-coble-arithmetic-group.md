@@ -18,7 +18,6 @@ and the arithmetic groups those of [Constructions of the moduli space](moduli-co
 
 ::: {.Lemma #lem:coble-heegner-vector title="An explicit $(-2)$ vector with Coble complement"}
 
-
 Write $T_\En = U\oplus U(2)\oplus E_8(2)$ and let $U = \ZZ u\oplus\ZZ w$ be the
 unimodular hyperbolic summand, so $u^2 = w^2 = 0$ and $u\cdot w = 1$.
 Set
@@ -81,7 +80,6 @@ section, that $T_\Co\cong v^{\perp T_\En}$ for a vector $v$ with $v^2 = -2$
 
 ::: {.Theorem #thm:coble-heegner-line-unique title="The Coble Heegner line is unique up to $\Gamma_{\En, 2}$"}
 
-
 The line $\ZZ\delta\subset T_\En$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector) represents
 the unique $\Gamma_{\En,2}$-orbit of lines spanned by a $(-2)$ vector of $T_\En$.
 :::
@@ -142,7 +140,6 @@ which there are five, one for each $0$-cusp of $\fentwo$
 
 ::: {.Definition #def:gamma-co-en title="The induced Coble subgroup"}
 
-
 For the Heegner vector $\delta$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector), define
 $$
 \Gamma_\Co^\En(\delta)
@@ -161,7 +158,6 @@ of sign for $\delta$.
 :::
 
 ::: {.Proposition #prop:gamma-en-two-gluing title="Discriminant description of $\Gamma_{\En, 2}$"}
-
 
 Let $\sen = U(2)\oplus E_8(2)$ and $\ten$ be the invariant and coinvariant
 lattices of the Enriques involution on $\lkt$, and let
@@ -206,7 +202,6 @@ condition $g_S(h) = h$.
 
 ::: {.Proposition #prop:polarization-stabilizer-enriques title="The integral stabilizer of the degree-$2$ polarization"}
 
-
 Write $S_\En = C(2)$ with $C = U\oplus E_8$ even unimodular of signature
 $(1,9)$, and let $h\in S_\En$ be the polarization vector of
 [the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing), so that $h = u_0 + w_0$ for a basis
@@ -249,7 +244,6 @@ identity on $U/2U$ and by $x\mapsto -x\equiv x$ on $E_8/2E_8$.
 
 ::: {.Theorem #thm:coble-heegner-finite-orbits title="The finite image and its isotropic orbits"}
 
-
 With the notation of [the polarization-stabilizer proposition](#prop:polarization-stabilizer-enriques) and
 [the explicit Heegner-vector lemma](#lem:coble-heegner-vector):
 
@@ -279,7 +273,6 @@ With the notation of [the polarization-stabilizer proposition](#prop:polarizatio
 
 ::: {.Remark title="How the three orders are obtained"}
 
-
 The generators named in (1) are the two evident families of isometries of $C$
 fixing $h = u_0 + w_0$: the involution $u_0\leftrightarrow w_0$, and
 $W(E_8)$ acting on the second summand.
@@ -300,7 +293,6 @@ $q_{T_\Co} = 1$, and $496$ is the number of such classes by
 :::
 
 ::: {.Remark title="Reading the two orbit decompositions"}
-
 
 The two decompositions in [the finite-image orbit theorem](#thm:coble-heegner-finite-orbits) answer different
 questions, and their difference is the content of the theorem.
@@ -326,7 +318,6 @@ may have proper image in the finite one, so a finite orbit can split.
 ## The Coble folding involution
 
 ::: {.Proposition #prop:theta-co-exists title="The sign involution of the Coble primitive embedding"}
-
 
 Let $S_\Co\injects\lkt$ be the primitive embedding of
 [the Coble invariant-lattice proposition](#prop:coble-invariant-lattice), with complement

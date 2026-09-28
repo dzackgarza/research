@@ -2,7 +2,6 @@
 
 ::: {.Remark title="Coble moduli as a divisor in Enriques moduli"}
 
-
 For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$ boundary components.
 As noted, we will primarily be interested in the $n=1$ case.
 In this case, we have two distinct constructions of a moduli space of such Coble surfaces.
@@ -12,7 +11,6 @@ These are realized by allowing the K3 cover of an Enriques surface to acquire an
 :::
 
 :::: {.Remark title="Hodge/lattice theoretic moduli"}
-
 
 Separately, one can construct a Hodge-theoretic period domain directly using lattice theory.[^coble-note-2] Write $\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible components.
 By adjunction and the genus formula, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$.
@@ -26,7 +24,6 @@ The case of interest to us is $n=1$, and thus the lattice $M = (11, 11, 1) = A_1
 ::::
 
 ::: {.Remark title="On nonsymplectic involutions"}
-
 
 As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a degeneration of a K3 cover of an Enriques surface, which thus describes a family of K3s equipped with a nonsymplectic involution as studied in [@AE22] and a corresponding family of Enriques surfaces as studied in [@AEGS25]. It seems that these degenerations correspond to the (weakly projective) **flowerpot** degenerations of [@Mor81], and I conjecture that the corresponding Kulikov models correspond to integral-affine discs (as opposed to spheres or real projective spaces).
 :::

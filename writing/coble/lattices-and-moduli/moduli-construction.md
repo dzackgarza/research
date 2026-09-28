@@ -61,7 +61,6 @@ above: $\Gamma_{\Co,2}$ has no explicit description.
 
 ::: {.Remark title="GIT construction"}
 
-
 Following [@DK13], by varying the coefficients of $p_i$ in the planar blowup
 construction, one can construct $F_\Co$ as a locally closed subvariety of
 $(\PP^2)^{10}/\PGL_3$, which is of dimension
@@ -84,7 +83,6 @@ moduli spaces.
 ## The Horikawa model
 
 ::: {.Remark title="Horikawa's construction"}
-
 
 Alternatively, Horikawa [@Hor77] and more recently [@AEGS25] consider
 the following: let $Y\da \PP^1\times \PP^1$ and define an involution
@@ -124,7 +122,6 @@ $$
 
 ::: {.Proposition #prop:type-iv-dimension title="Dimension of a type IV domain"}
 
-
 Let $T$ be a lattice of rank $r$ and signature $(2, r-2)$.
 Then the type IV domain $D_T$ has complex dimension $r - 2$.
 :::
@@ -140,7 +137,6 @@ and $D_T$ is one of its connected components.
 :::
 
 ::: {.Corollary #cor:m-polarized-k3-dimension title="Dimension of $M$-polarized K3 moduli"}
-
 
 Let $M\injects\lkt$ be a primitive embedding of a lattice of signature
 $(1, \rank(M) - 1)$ with orthogonal complement
@@ -214,7 +210,6 @@ We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\C
 
 ::: {.Remark title="Orientation"}
 
-
 The constructions above start from the surface: from the Coble surface $S$ and
 its K3 cover, or from the Enriques period domain in which the Coble locus is a
 Heegner divisor.
@@ -230,7 +225,6 @@ terms.
 :::
 
 ::: {.Notation #not:sextic-singular-type title="Moduli of sextics of a fixed singular type"}
-
 
 For a singular type $T$ with root lattice $R$, write $\cV_T$ for the space of
 sextic curves $Z\subset\PP^2$ with singularities exactly of type $T$, and
@@ -251,7 +245,6 @@ For a general member of $\cV_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
 :::
 
 ::: {.Proposition #prop:coble-is-the-ten-nodal-sextic-type title="The Coble lattices are the lattices of the type $10A_1$"}
-
 
 Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by
 [the ten-nodal-sextic lemma](#lem:rational_sextic_ten_nodes), and $X$ is the K3 cover of the Coble
@@ -281,7 +274,6 @@ Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and
 
 ::: {.Remark title="The involution acts trivially on the root lattice"}
 
-
 For a general singular type the covering involution $\iota$ acts on $L$ by
 $-w_0(L)$, where $w_0$ is the longest element of $W(L)$ [@YZZ25 §5.2], and this
 action folds the root lattice.
@@ -295,7 +287,6 @@ $\latI_{1,10}$ scaled by $2$, with no folding correction.
 :::
 
 ::: {.Theorem #thm:occult-period-map-sextics title="The occult period map and its image"}
-
 
 Let $\Gamma_T$ be the image of
 $$
@@ -320,7 +311,6 @@ equisingular deformation theory of Urabe [@Ura88].
 :::
 
 ::: {.Theorem #thm:git-equals-looijenga title="The GIT compactification is a Looijenga compactification"}
-
 
 Let $\Lambda_1 \da H^{\perp\lkt}$, of signature $(2,19)$ with
 $A_{\Lambda_1}\cong\ZZ/2$, and let $\Gamma_1$ be the arithmetic group of the
@@ -348,7 +338,6 @@ normalizations onto their images [@YZZ25 §4.2].
 
 ::: {.Remark title="The arithmetic group as a normalizer"}
 
-
 $\Gamma_T$ admits a second description: it is the restriction to $Q$ of the
 normalizer of the Weyl group $W(L)$ inside $\Gamma_1$ [@YZZ25 §4.2].
 For $T = 10A_1$ this reads
@@ -370,7 +359,6 @@ centralizer inside $\Orth(T_\En)$ recorded in the Open Problems section.
 
 ::: {.Question #que:sextic-group-comparison title="Which quotient of $D(T_\Co)$ is $F_\Co$?"}
 
-
 $F_\Co$ is defined above as an open subset of $D(T_\Co)/\Orth^+(T_\Co)^*$, a
 quotient by the stable orthogonal group, whereas $\cM_{10A_1}$ is a quotient by
 $\Gamma_{10A_1}$, which contains $\Orth^+(T_\Co)^*$ and may be strictly larger.
@@ -388,7 +376,6 @@ the same space under two names.
 :::
 
 ::: {.Remark title="The other singular types"}
-
 
 The same theorems hold for every singular type of plane sextic with simple
 singularities, of which the root lattices have been classified by Urabe

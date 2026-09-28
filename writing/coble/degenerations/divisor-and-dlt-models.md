@@ -30,7 +30,6 @@ Here a *dlt model* refers to a relative divisorially-log-terminal model of the d
 
 ::: {.Definition #def:dlt-involution-pair title="dlt models and involution pairs"}
 
-
 For Enriques surface degenerations we study *stable involution pairs*
 $(X, D, \iota)$, where $X$ is the K3 cover limit, $D$ is the boundary, and
 $\iota$ is the involution.
@@ -52,7 +51,6 @@ where $R$ is the ramification divisor of $\pi$.
 
 ::: {.Remark title="Dual complex topology"}
 
-
 The topology of the dual complex of the central fiber $Y_0'$ distinguishes the
 degeneration types:
 
@@ -70,7 +68,6 @@ degeneration types:
 ## Divisor models
 
 ::: {.Definition #def:coble-divisor-model title="Divisor model"}
-
 
 A *divisor model* for a degeneration $\pi\colon \mathcal{X} \to C$ of K3 (or
 Enriques) surfaces is a degeneration of pairs
@@ -93,7 +90,6 @@ balancing condition at every vertex.
 
 ::: {.Definition #def:coble-half-divisor-model title="Half-divisor model"}
 
-
 A *half-divisor model* is a pair $(\mathcal{Z}, \mathcal{R}_{\mathcal{Z}})$ over
 a base curve $C$ that arises as the quotient of a divisor model
 $(\mathcal{X}, \mathcal{R}) \to C$ by a fixed-point-free involution $\tau$ under
@@ -113,7 +109,6 @@ singularities.
 :::
 
 ::: {.Remark title="Half-divisor models from the Enriques involution"}
-
 
 Equivalently, a half-divisor model arises when a divisor model
 $(\mathcal{X}, \mathcal{R})$ admits an Enriques involution $\iota_\En$

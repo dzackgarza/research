@@ -20,7 +20,6 @@ This page records the same object as a polyhedral cone in $L_\RR$, in the coordi
 
 ::: {.Construction #cons:chamber-cone title="The chamber of a root set"}
 
-
 Let $L$ be a hyperbolic lattice with bilinear form $\beta_L$ and Gram matrix $G$ in a chosen basis, and let $R = \ts{r_1,\dots,r_k}\subset L$ be a set of roots.
 The cone they bound is
 $$
@@ -33,14 +32,12 @@ In coordinates the linear functional $\beta_L(r,-)$ is the row $r^{\mathsf T}G$,
 
 ::: {.Remark title="The cone has apex the origin"}
 
-
 Every hyperplane $\beta_L(r_i,-) = 0$ passes through $0$, so $C$ is a cone with apex the origin.
 When $C$ is pointed its vertex set as a polyhedron is $\ts{0}$, a point of the light cone and not of $\HH^n_L$, and it says nothing about $P$.
 The vertices of $P$ that \longref{prop:polytope-vertex-subdiagram} describes appear in the cone as its extremal rays, and a criterion applied to $C$ must be stated in terms of those rays and of its lineality space.
 :::
 
 ::: {.Proposition #prop:chamber-cone-criterion title="The volume criterion on the cone"}
-
 
 Let $L$ have signature $(1,n)$, let $C_L^+$ be the chosen component of the positive cone, and let $C$ be as in \longref{cons:chamber-cone}.
 Then $\vol(C\intersect\HH^n_L) < \infty$ if and only if
@@ -57,7 +54,6 @@ The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ th
 
 ::: {.Remark title="Why each hypothesis is separate"}
 
-
 A cone containing a line meets both components of the positive cone, so (3) does not follow from (1).
 A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2).
 Applied to the recorded runs, \longref{prop:chamber-cone-criterion} is what identifies the count reported as *vertices at infinity* in [the CoxIter results](coxiter-results-for-cusp-lattices.md) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
@@ -66,7 +62,6 @@ Applied to the recorded runs, \longref{prop:chamber-cone-criterion} is what iden
 ## Integral data of the chamber
 
 ::: {.Construction #cons:chamber-integral-data title="Rays, facets, and integral points"}
-
 
 From the presentation of \longref{cons:chamber-cone} one reads off:
 
@@ -81,7 +76,6 @@ The last two are the data of the chamber as a subset of $L$, and are what a comp
 
 ::: {.Remark title="The recorded specimen"}
 
-
 These cells were run over the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md)) and over their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
 The chamber there is full-dimensional, closed and non-compact, with the ray and integral-point data extracted through a Normaliz backend, and containment was checked by sampling $x\in C$ and testing $\beta_L(r_i,x)\geq 0$ for every root.
 :::
@@ -89,7 +83,6 @@ The chamber there is full-dimensional, closed and non-compact, with the ray and 
 ## An exact invariant for a pair of walls
 
 ::: {.Definition #def:bond-invariant title="The bond invariant of two roots"}
-
 
 For roots $v,w$ of an integral lattice $L$ with $v^2, w^2 \neq 0$, set
 $$
@@ -107,7 +100,6 @@ and $t > 4$ is the ultraparallel case, with $t = 4\cosh^2 d$ for $d$ the distanc
 
 ::: {.Remark title="The bond invariant is exact and independent of the norms"}
 
-
 For simple roots normalized to $\alpha_s^2 = -2$ the normalized pairing is already the halved Gram entry, $g_{st} = G(M)_{st}/2$.
 The diagrams of this monograph mix norms $-2$ and $-4$ (\longref{def:2elementary-roots}), where $g_{vw}$ involves $\sqrt{v^2w^2}$ and is irrational already for $\beta_L(v,w) = \pm1$.
 Its square $t(v,w)$ requires no square root: $\beta_L(v,w)$, $v^2$ and $w^2$ are integers, so $t\in\QQ$, and every bond of a Coxeter--Vinberg diagram of an integral lattice is decided by exact rational arithmetic.
@@ -116,7 +108,6 @@ The value $t = 4\cos^2(\pi/5) = (3+\sqrt5)/2$ is irrational, so a bond of expone
 
 ::: {.Warning title="Squares and isotropy are integer questions"}
 
-
 The form on $L$ takes integer values, so equality of vectors, vanishing of $\beta_L(v,w)$, the value of $v^2$ and the isotropy of a ray generator are decided exactly.
 A numerical tolerance applied to any of them can only lose information.
 :::
@@ -124,7 +115,6 @@ A numerical tolerance applied to any of them can only lose information.
 ## A simple system is not a root orbit
 
 ::: {.Remark title="What closure under reflections produces"}
-
 
 Closing a set of roots under the reflections in the roots it already holds produces the $W(L)$-orbit of the seed, hence a subset of the root system of $L$.
 A simple system (\longref{def:weyl-chamber}) is a set of roots whose mirrors are the walls of a single chamber, and the two coincide only when $W(L)$ is finite.

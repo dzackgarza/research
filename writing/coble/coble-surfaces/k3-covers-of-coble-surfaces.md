@@ -2,7 +2,6 @@
 
 ::: {.Remark #rmk:k3-cover-invariants title="On relation to K3s"}
 
-
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$.
 By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
 Let $\sigma$ be the involution generating the deck transformations of this cover.
@@ -34,7 +33,6 @@ The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoret
 :::
 
 ::: {.Proposition #prop:double-cover-is-k3 title="The branched double cover is a K3 surface"}
-
 
 Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let
 $s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.

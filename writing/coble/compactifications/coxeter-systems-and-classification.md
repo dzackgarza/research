@@ -27,7 +27,6 @@ Its **Coxeter diagram** $\Sigma(M)$ is the graph on the vertex set $S$ with an e
 
 ::: {.Definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix"}
 
-
 Let $M$ be a Coxeter matrix on $S$.
 The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\ts{\alpha_s}_{s\in S}$ determined by
 $$
@@ -39,7 +38,6 @@ Each $\alpha_s$ has norm $-2$ and is therefore a short root in the sense of \lon
 :::
 
 ::: {.Remark title="Normalized pairings"}
-
 
 Dividing by the norms recovers the quantity that labels the edges of a Coxeter--Vinberg diagram: with $\alpha_s^2 = \alpha_t^2 = -2$,
 $$
@@ -54,7 +52,6 @@ A Coxeter matrix produces only the values $g_{st}\leq 1$; Vinberg's diagrams adm
 
 ::: {.Remark #rmk:coxeter-form-values title="The values at small orders"}
 
-
 $$
 \begin{array}{c|cccccc}
 m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
@@ -64,7 +61,6 @@ $$
 :::
 
 ::: {.Remark #rmk:gram-versus-cartan title="Gram and Cartan matrices"}
-
 
 Let $\ts{\alpha_s}_{s\in S}$ be simple roots in a lattice $L$.
 Two matrices are attached to them.
@@ -88,7 +84,6 @@ When two root lengths occur the two matrices record different data: for $\alpha_
 :::
 
 ::: {.Remark #rmk:schlafli-sign title="The opposite normalization"}
-
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
 Then $C = -G(M)$, and every definiteness statement below is read with the opposite sign: a spherical system has $C$ positive definite.
@@ -120,7 +115,6 @@ The three conditions of \longref{def:coxeter-system-type} are therefore properti
 :::
 
 ::: {.Theorem #thm:coxeter-type-and-geometry title="The geometry of the three types"}
-
 
 Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
 
@@ -157,14 +151,12 @@ is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Co
 
 ::: {.Remark title="Parabolic subgroups and parabolic subdiagrams"}
 
-
 The two uses of *parabolic* are independent.
 The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\containedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (\longref{def:elliptic-subdiagram}), and then $(W_I, I)$ is a product of irreducible euclidean Coxeter systems, one for each component.
 :::
 
 ::: {.Proposition #prop:signature-under-restriction title="Restriction cannot increase the positive index"}
-
 
 Let $\beta$ be a symmetric bilinear form on a finite-dimensional real vector space $V$, write $n_\pm(\beta)$ for its numbers of positive and negative squares, and let $V'\leq V$ be a subspace of codimension $c$.
 Then
@@ -206,7 +198,6 @@ Part (1) is what makes an enumeration of the elliptic subdiagrams of a Coxeter--
 
 ::: {.Theorem #thm:spherical-classification title="Classification of spherical Coxeter systems"}
 
-
 An irreducible Coxeter system is spherical if and only if its Coxeter diagram is one of
 $$
 A_n\ (n\geq 1),\quad
@@ -230,7 +221,6 @@ The root systems $B_n$ and $C_n$ of \longref{def:root-system-Bn-Cn} have the sam
 
 ::: {.Theorem #thm:euclidean-classification title="Classification of euclidean Coxeter systems"}
 
-
 An irreducible Coxeter system is euclidean if and only if its Coxeter diagram is one of
 $$
 \tilde A_1,\quad
@@ -248,7 +238,6 @@ The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty
 :::
 
 ::: {.Proposition #prop:euclidean-radical title="The radical of a euclidean diagram"}
-
 
 Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\ts{\alpha_s}_{s\in I}$.
 Then $\ker G[I,I]$ is spanned by a vector
@@ -279,7 +268,6 @@ A Coxeter matrix $M$ is crystallographic if and only if the group $W(M)$ preserv
 :::
 
 ::: {.Example #ex:crystallographic-rescaling title="Rescaling to an integral form"}
-
 
 The equal-norm normalization $\alpha_s^2 = -2$ of \longref{def:coxeter-gram-form} does not itself make the form integral, and a crystallographic $M$ becomes integral only after the simple roots are rescaled.
 For $m_{st} = 4$ one has $\beta(\alpha_s,\alpha_t) = 2\cos(\pi/4) = \sqrt2$; replacing $\alpha_t$ by $\alpha_t' \da \sqrt2\,\alpha_t$ gives
@@ -319,7 +307,6 @@ In particular $K(M) = \QQ$ exactly when $m_{st}\in\ts{2,3,\infty}$ for all $s\ne
 
 ::: {.Proposition #prop:gram-form-integrality title="When the Gram form is integral"}
 
-
 $G(M)$ has all its entries in $\ZZ$ if and only if $m_{st}\in\ts{2,3,\infty}$ for every $s\neq t$.
 Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the simply-laced ones.
 :::
@@ -331,7 +318,6 @@ The remaining orders therefore give irrational entries, and the three admissible
 :::
 
 ::: {.Example #ex:noncrystallographic-base-rings title="The non-crystallographic spherical types"}
-
 
 Of the spherical types of \longref{thm:spherical-classification}, those that are not crystallographic are $H_3$, $H_4$, and $I_2(p)$ for $p\notin\ts{2,3,4,6}$.
 
@@ -348,7 +334,6 @@ For $m = 8$ the base field is $\QQ(\sqrt{2+\sqrt2})$, of degree $4$ over $\QQ$ b
 
 ::: {.Remark #rmk:galois-conjugate-gram-form title="Galois conjugates of a Gram form"}
 
-
 Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
 Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ of the same rank, with the same diagonal $-2$.
 Its signature is not determined by that of $G(M)$: the signature of a symmetric form over a totally real field is not a Galois invariant, as the rank-one forms $\gens{1-\sqrt2}$ and $\gens{1+\sqrt2}$ over $\QQ(\sqrt2)$ show.
@@ -358,7 +343,6 @@ Whether every nontrivial conjugate of a hyperbolic Gram form is negative definit
 ## Origins
 
 ::: {.Remark title="Attribution"}
-
 
 Coxeter introduced the matrices and diagrams now named after him and classified the finite reflection groups, obtaining the list of \longref{thm:spherical-classification} with its two non-crystallographic exceptional types $H_3$ and $H_4$; the euclidean classification of \longref{thm:euclidean-classification} grew out of Weyl's theory of root systems and the affine reflection groups.
 Both are given in Bourbaki [@Bou08] and in Humphreys [@Hum90], and the geometric and topological theory of general Coxeter groups in Davis [@Dav08].

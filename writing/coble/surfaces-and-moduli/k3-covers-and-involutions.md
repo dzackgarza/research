@@ -8,7 +8,6 @@ The general invariant/coinvariant lattice formalism $L^G$, $L_G$ is developed in
 
 ::: {.Remark #rmk:k3-double-cover-construction title="The K3 double cover construction"}
 
-
 A standard method to produce Calabi-Yau varieties involves taking a double cover $\pi: X \to Y$ branched over a reduced divisor $B$.
 If $B \in \abs{-2K_Y}$, one takes $\cL = -K_Y$.
 The cover $X$ is defined via the $\OO_Y$-algebra
@@ -42,7 +41,6 @@ The specialization of [the K3 double-cover construction](#rmk:k3-double-cover-co
 
 ::: {.Remark #rmk:geometric-involutions title="Geometric involutions on the K3 double cover"}
 
-
 For the K3 double cover $X \to Y = \PP^1\times\PP^1$, there are three distinguished involutions acting on the coordinates $(x,y,z)$:
 
 - $\idp(x,y,z) = (x,y,-z)$: the **del Pezzo** (deck) involution, the generator of the deck transformations of the double cover.
@@ -60,7 +58,6 @@ The del Pezzo and Enriques involutions act on the holomorphic $2$-form by $-1$ (
 
 ::: {.Definition #def:lattice-involutions-k3 title="Lattice involutions for K3 covers"}
 
-
 Fix a basis of the K3 lattice $\lkt$ corresponding to the decomposition $U^3 \oplus E_8^2$, and write a general vector as $(u_1, u_2, u_3, \alpha_1, \alpha_2)$ with $u_i \in U$ and $\alpha_j \in E_8$.
 The three geometric involutions $\idp$, $\ien$, and $\inik$ of [the geometric-involutions remark](#rmk:geometric-involutions) induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
 $$
@@ -73,7 +70,6 @@ $$
 :::
 
 ::: {.Remark title="Properties of the lattice involutions"}
-
 
 The lattice involutions satisfy the following.
 

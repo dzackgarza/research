@@ -41,7 +41,6 @@ $\ell(L)$ is the minimal number of generators of the discriminant group $A_L$.
 
 ::: {.Remark title="The row that matters here"}
 
-
 $A_{E_{10}(2)} = C_2^{10}$ with $\ell = 10$ is the datum behind $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \gens{2}\oplus E_{10}(2)$ contributes one further $C_2$.
 This is the only place the corpus records that value explicitly.
 :::
@@ -123,7 +122,6 @@ The rows of $G_{E_8}^{-1}$ are the highest-root expansions used in the folded St
 
 ::: {.Remark title="Not carried over"}
 
-
 The source file also holds a Niemeier lattice table, a mass formula table, and a table of unimodular lattices by dimension.
 These are standard and available in Conway-Sloane; they are noted here rather than reproduced.
 The source file is internally corrupted in that region: rows $n = 6\ldots9$ of the mass-formula table are orphaned after the following section, and the label A.1.3 is used twice.
@@ -153,7 +151,6 @@ $$
 The covering $F_{\En,2}\to F_{K3,\En}$ is recorded as finite of degree $2^7\cdot17\cdot31$.
 
 ::: {.Remark title="Why these belong in this project"}
-
 
 $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \gens{2}\oplus E_{10}(2)$ adds one $C_2$ to $A_{E_{10}(2)} = C_2^{10}$.
 The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [[cusp-correspondence-morphism-chain]]. The group orders bound the index computations in that reduction.

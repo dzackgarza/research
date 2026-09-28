@@ -39,7 +39,6 @@ The following is [@CD12 Prop. 3.1]:
 
 ::: {.Lemma #lem:coble_halphen_blowdown title="Cobles to Halphens"}
 
-
 Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of
 a (-1)-curve E.
 Then

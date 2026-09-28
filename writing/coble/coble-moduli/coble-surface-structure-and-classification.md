@@ -21,7 +21,6 @@ Each was checked absent from `content_pandoc` and `knowledge` before being writt
 
 ::: {.Proposition title="Norms of smooth rational negative curves"}
 
-
 Let $S$ be a Coble surface with anti-bicanonical divisor $D$.
 Every smooth rational negative curve $E \containedin S$ satisfies
 $$
@@ -37,7 +36,6 @@ It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that gover
 
 ::: {.Theorem title="Coble's theorem, lattice form"}
 
-
 Write $M_S \da K_S^{\perp\, \Pic(S)}$.
 Then $\Aut(S)$ is isomorphic to a finite-index subgroup $H \leq \Orth(M_S)$, and
 $$
@@ -50,7 +48,6 @@ The project's introduction records $\Aut(S)\cong W(E_{10})$ for general $C$; the
 
 ::: {.Remark title="Finiteness of negative curves modulo automorphisms"}
 
-
 Let $A_1(S)^{\mathrm{sm,rat},<0}$ denote the smooth rational curves of negative self-intersection.
 Then $A_1(S)^{\mathrm{sm,rat},<0}/\Aut(S)$ is **finite**: up to automorphism a Coble surface carries only finitely many smooth rational negative curves.
 Classifying all surfaces with this property is an open question recorded in the source.
@@ -59,7 +56,6 @@ Classifying all surfaces with this property is an open question recorded in the 
 ## The Coble-Mukai lattice
 
 ::: {.Definition title="Coble-Mukai lattice"}
-
 
 With $B_1,\ldots,B_n$ the boundary components, set
 $$
@@ -77,7 +73,6 @@ Whether $\mathrm{CM}(S)$ relates to $S_{\Co}$, and whether it is the more natura
 
 ::: {.Definition title="Elliptic and rational types"}
 
-
 A Coble surface is of **elliptic type** when there is $S \birational Y$ with $|-K_Y|$ a singleton and the mobile part of $|-2K_Y|$ generically a smooth elliptic curve.
 Elliptic type splits further:
 
@@ -91,7 +86,6 @@ These are blowups of minimal rational surfaces.
 
 ::: {.Theorem title="K3 type criterion, Dolgachev-Zhang Thm. 6.5"}
 
-
 Let $X$ be a Coble surface with $M^2 = 0$.
 
 - If $X$ is of Halphen type, obtained from a minimal Halphen surface $Y_m$ of index 2 by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type **if and only if** $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
@@ -100,7 +94,6 @@ Let $X$ be a Coble surface with $M^2 = 0$.
 :::
 
 ::: {.Lemma title="Dolgachev-Zhang Lem. 6.2"}
-
 
 For a Coble surface $X$ the following are equivalent:
 
@@ -111,7 +104,6 @@ For a Coble surface $X$ the following are equivalent:
 
 ::: {.Remark title="Why this matters for the Halphen program"}
 
-
 The project's `Degenerations/Halphen_Surfaces.md` records the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [[halphen-index-2-moduli-program]]. The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
 The Jacobian branch has no counterpart anywhere in the project.
 :::
@@ -120,12 +112,10 @@ The Jacobian branch has no counterpart anywhere in the project.
 
 ::: {.Definition title="Rational log Enriques surface of index 2"}
 
-
 A normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$.
 :::
 
 ::: {.Theorem title="Terminal Cobles are resolutions of these"}
-
 
 A terminal Coble surface is the minimal resolution of a **maximum** rational log Enriques surface of index 2. Conversely, the minimal resolution $X$ of a rational log Enriques surface $\bar X$ of index 2 is a Coble surface with $h^0(-2K_X) = 1$, whose unique member $D \in |-2K_X|$ is reduced and each of whose connected components is either a single $(-4)$-curve or a linear chain with a prescribed dual graph.
 :::
@@ -139,7 +129,6 @@ The project's `Stable_Limits/Geometric.md` records the map $\phi_{ij}$ onto a qu
 The following incidence data accompanying it is absent.
 
 ::: {.Remark title="The branch geometry"}
-
 
 Take $h = [F_1 + F_2] \in \Pic(S)$ of degree 2, so $|h|$ defines $\phi_{|h|}: S \to \PP^4$ with image $D$ a 4-nodal quartic del Pezzo surface.
 Let $\sigma$ be the deck transformation.
@@ -157,7 +146,6 @@ A Coble surface arises as a degeneration of an Enriques surface exactly when the
 :::
 
 ::: {.Remark title="The rationality correspondence in its explicit form"}
-
 
 Dolgachev-Kondo prove $\fco$ rational by comparison with $\cM_{\mathrm{cusp}} = U/\PGL_3$, the moduli of cuspidal plane quintics.
 They show $\cM_{\mathrm{cusp}} \birational \cM_{\En}$, which is 10-dimensional, and that a distinguished codimension one locus $\cM'_{\mathrm{cusp}} \cong \cM_{\Co}$.

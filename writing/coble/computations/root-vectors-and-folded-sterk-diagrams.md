@@ -16,7 +16,6 @@ Absent from the dissertation, which states only the generic fact that roots have
 
 ::: {.Remark title="Why this is the highest-value computational note for this project"}
 
-
 `content_pandoc/sections/Open_Problems/Open_Problems.md` poses, as an open conjecture, the horizontal folding involution $\theta$ with $\lkt^\theta \cong T_{\Co}$ and $\lkt^{-\theta}\cong S_{\Co}$, and explicitly demands the $22\times22$ matrix of $\theta$ and the horizontal folding of the $(18,0,0)_1$ diagram.
 Those are stated in exactly the coordinates tabulated below.
 :::
@@ -70,18 +69,15 @@ Folding is performed by summing a root with its image under the relevant involut
 
 ::: {.Construction title="Sterk 1: 12 nodes, all of norm -4"}
 
-
 $s^1_k = v_k + v_{k+8}$, together with $s^1_{10} = v_{21}$ and $s^1_{11} = v_{22}$.
 :::
 
 ::: {.Construction title="Sterk 2: 10 nodes, norms $(-4^{\times 8}, -2, -4)$"}
 
-
 $s^2_k = w_k + w_{18-k}$, together with $s^2_9 = w_9$ and $s^2_{10} = w_{18}+w_{19}$.
 :::
 
 ::: {.Construction title="Sterk 3: 12 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4,-4)$"}
-
 
 This case is reflection-twisted rather than a plain permutation.
 Set
@@ -95,19 +91,16 @@ so that $s^3_{11} = I(v_{20})$ and $s^3_{12} = I(v_{18})$.
 
 ::: {.Construction title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$"}
 
-
 The notebook records a genuine subtlety here: $s^4_{12} = v_{22}+v_{21}$ is invariant under the involution but **is not a root**, and is therefore dropped.
 This is why Sterk 4 has 11 nodes rather than 12.
 :::
 
 ::: {.Construction title="Sterk 5: 14 nodes, norms $(-4^{\times 8}, -2,-2,-2,-2, -4,-4)$"}
 
-
 $s^5_k = v_{2k-2} + 2 v_{2k-1} + v_{2k}$.
 :::
 
 ::: {.Remark title="Independent verification against Sterk's published basis"}
-
 
 Each folded diagram is cross-checked against Sterk's own published root basis (in terms of $\alpha'_i, e, f, e', f', w'_i$), producing the same norm multisets in permuted order.
 This is an independent confirmation that the folding construction reproduces Sterk's diagrams, and is the strongest surviving validation in the corpus.
@@ -140,7 +133,6 @@ with $\infty$-labelled edges handled as $\sqrt{v_i^2 v_j^2}$.
 
 ::: {.Question title="Do Scattone and AET19 give the same diagram?"}
 
-
 Scattone's Figure 6.3.1 is the Coxeter diagram of the full reflection group of $\gens{-4}\oplus U \oplus E_8^{\oplus2}$, reached through his $F_4$ boundary computation.
 AET19 gives a Coxeter diagram for the lattice with invariants $(18,2,0)$.
 These should be the same diagram, and the author recorded that they are not, without resolving how they differ or which is right.
@@ -151,7 +143,6 @@ Anything derived from $\Phi_{(18,2,0)}$, including the folded Sterk diagrams and
 Settling it is a prerequisite, not a footnote.
 
 ::: {.Remark title="A related contradiction, resolved"}
-
 
 Two blocks of the same archived outline disagree about which 0-cusps of $\fentwo$ carry toroidal rather than strictly semitoroidal compactifications: one says cusps 2 and 4, the other says cusps 2 and 3. The dissertation settles it as **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35, citing AEGS Thm.
 5.9. This matters here because the Coble 0-cusp is claimed to be Sterk cusp 2, which is toroidal under either reading; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).

@@ -21,7 +21,6 @@ Treat everything here as a claim to re-derive, not as a result.
 
 ::: {.Remark title="The four-term chain"}
 
-
 The claimed chain is
 $$
 \fco \too \fen \too \fent \longleftarrow F_{(2,2,0)} ,
@@ -30,7 +29,6 @@ where $F_{(2,2,0)}$ is the moduli space of quartic hyperelliptic K3 surfaces use
 :::
 
 ::: {.Construction title="The embedding and its two extensions"}
-
 
 An embedding $\fco \injects \fen$ into unpolarized Enriques moduli is claimed, together with two extensions to Baily-Borel compactifications:
 $$
@@ -46,12 +44,10 @@ The boundary correspondence induced by $\eta$ is claimed to be determined by the
 
 ::: {.Conjecture title="Coble cusps under the extension to F_(2,2,0)"}
 
-
 Under $\tilde\eta$, the Coble cusps correspond to $U \oplus E_8^{\oplus 2}$, the lattice with invariants $(18,0,0)_1$.
 :::
 
 ::: {.Conjecture title="The Coble 0-cusp is Sterk cusp 2"}
-
 
 The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo$.
 The Sterk cusp diagram was first given by Sterk (1991).
@@ -62,7 +58,6 @@ It is a directly checkable cross-project claim and should be reconciled with the
 
 ::: {.Remark title="A cheap consistency check on the whole correspondence"}
 
-
 The dissertation proves that Sterk cusp 1 gives an $\RP^2$ integral-affine structure and that cusps 2 through 5 give $\DD^2$.
 The author independently claims, from the divisibility computation, that **Coble degenerations are $\DD^2$-type rather than $\RP^2$-type**, which is the ingredient needed to build the correct dlt models.
 Combined with the conjecture above, "Coble sits at Sterk cusp 2" *implies* $\DD^2$-type.
@@ -72,7 +67,6 @@ The two claims were derived by different routes, so their agreement is a real, a
 ## The lattice-theoretic method
 
 ::: {.Remark title="Reduction to the discriminant group, and Eichler transformations"}
-
 
 The stated method for the $\Gamma_{\Co}$-orbit classification, where $\Gamma_{\Co} \leq \Orth(T_{\Co})$ is the relevant subgroup and $D_{\Co}/\Gamma_{\Co}$ the relevant period domain:
 
@@ -88,7 +82,6 @@ Eichler transvections are not named as a tool in the current `Open_Problems.md`,
 
 ::: {.Remark title="The GIT birational model"}
 
-
 \fco \da D_{T_{\Co}}/\Orth(T_{\Co})$ is claimed birational to the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$.
 This gives an independent handle on the dimension 9 already asserted in the project, and an avenue for comparing GIT and KSBA compactifications.
 :::
@@ -96,7 +89,6 @@ This gives an independent handle on the dimension 9 already asserted in the proj
 ## Terminal Coble surfaces
 
 ::: {.Definition title="Terminal"}
-
 
 A Coble surface is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.

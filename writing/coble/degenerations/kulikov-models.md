@@ -9,7 +9,6 @@ We collect the local structure theory attached to a one-parameter degeneration o
 
 ::: {.Definition #def:kulikov-model title="Kulikov models"}
 
-
 A *Kulikov model* is a degeneration $\cX \to \Delta$ of K3 surfaces where:
 
 1. The total space $\cX$ is regular (smooth as a threefold).
@@ -23,12 +22,10 @@ Such a model is *semistable* by conditions (1) and (2) and *$K$-trivial* by cond
 
 ::: {.Remark title="Existence and attribution"}
 
-
 The Kulikov model is the semistable, $K$-trivial representative constructed for degenerations of K3 (and Enriques) surfaces in [@Kul77], with the $K$-trivialization of the semistable reduction supplied for surfaces of trivial canonical bundle by [@PP81].
 :::
 
 ::: {.Definition #def:kulikov-types title="Type I, II, III Kulikov degenerations"}
-
 
 Let $T$ be the unipotent Picard--Lefschetz monodromy of a Kulikov model and let $N = \log T$ be the associated *log monodromy* operator, a nilpotent endomorphism.
 Depending on the nilpotency index of $N$, Kulikov models are classified into three types:
@@ -44,14 +41,12 @@ Depending on the nilpotency index of $N$, Kulikov models are classified into thr
 
 ::: {.Remark title="The Type III dual complex"}
 
-
 The identification of the Type $\mathrm{III}$ central fiber as a union of rational surfaces whose dual complex triangulates a sphere is the subject of [@FS86].
 :::
 
 ## The monodromy weight filtration
 
 ::: {.Remark title="The weight filtration by type"}
-
 
 The **weight filtration** $W_\bullet$ on $H^2(\cX_t; \CC)$ (weight $2$, centered at $n = 2$) reflects the three types, by the nilpotency of $N$.
 For Type $\latI$ ($N = 0$), only $\Gr^W_2$ is non-trivial: a pure weight-$2$ Hodge structure.
@@ -60,7 +55,6 @@ For Type $\mathrm{III}$ ($N^2 \neq 0$, $N^3 = 0$), the non-trivial graded pieces
 :::
 
 ::: {.Theorem #thm:lmhs title="Limiting mixed Hodge structure and degenerations"}
-
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
 
@@ -76,12 +70,10 @@ The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index
 
 ::: {.Remark title="Attribution of the weight filtration"}
 
-
 The canonical monodromy weight filtration attached to the nilpotent operator $N = \log T$ is that of [@Sch73].
 :::
 
 ::: {.Remark title="Indexing of the weight filtration"}
-
 
 The apparent discrepancy between the two accounts above is not a matter of indexing convention but a distinction between Kulikov types.
 For Type $\latII$ the non-trivial graded pieces sit at weights $1, 2, 3$, with $\Gr^W_0 = 0$, matching the $3$-step chain $W_0 \subset W_1 \subset W_2 \subset W_3$ of [the limiting mixed-Hodge theorem](#thm:lmhs).
@@ -89,7 +81,6 @@ The even-weight pieces at $0, 2, 4$ occur instead for Type $\mathrm{III}$, which
 :::
 
 ::: {.Remark title="Source notes carried no citations"}
-
 
 ::: {.Warning}
 The two migrated research notes (Kulikov Models; Limiting Mixed Hodge Structure and Degenerations) contained no inline citations.

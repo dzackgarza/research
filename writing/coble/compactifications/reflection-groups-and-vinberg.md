@@ -2,7 +2,6 @@
 
 ::: {.Remark title="Orientation and sign convention"}
 
-
 The Baily--Borel and semitoroidal compactifications of the period domains attached to Coble and Enriques surfaces are governed by the action of arithmetic reflection groups on hyperbolic space.
 This section collects the reflection-group and hyperbolic-polytope combinatorics used elsewhere in the monograph, culminating in Vinberg's algorithm for a fundamental chamber and the Coxeter--Vinberg diagram that encodes it.
 
@@ -77,7 +76,6 @@ For a norm $-4$ vector, integrality requires $\beta_L(v,L)\containedin 2\ZZ$, wh
 :::
 
 ::: {.Theorem #thm:2elementary-roots-characterization title="The two root types exhaust the roots"}
-
 
 Let $L$ be an even $2$-elementary lattice and let $v\in L$ satisfy $v^2 < 0$.
 Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and
@@ -252,7 +250,6 @@ The bijection is the vertex correspondence of \longref{prop:polytope-vertex-subd
 
 ::: {.Theorem #thm:vinberg-algorithm title="Vinberg's algorithm for a fundamental chamber"}
 
-
 Let $\Gamma\containedin\Orth(L)$ be an arithmetic reflection subgroup of a hyperbolic lattice $L$.
 Vinberg's algorithm constructs a fundamental chamber $P\containedin\HH^n$ for $\Gamma$ as follows [@Vin75].
 
@@ -282,7 +279,6 @@ The source note states step 3 as "discard those roots whose hyperplanes do not i
 
 ::: {.Definition #def:lanner-subgraph title="Lannér subgraph"}
 
-
 A **Lannér subgraph** of a Coxeter--Vinberg diagram is a minimal non-parabolic
 subdiagram whose Coxeter group acts on hyperbolic space with a fundamental
 polyhedron of finite volume; equivalently, a diagram all of whose proper
@@ -290,7 +286,6 @@ subdiagrams are elliptic but which is not itself elliptic or parabolic.
 :::
 
 ::: {.Theorem #thm:vinberg-completeness-criterion title="A sufficient criterion for completeness"}
-
 
 Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a
 run of \longref{thm:vinberg-algorithm}.
@@ -320,7 +315,6 @@ diagrams.
 ## Root-system conventions and tables
 
 ::: {.Remark title="Bourbaki conventions and twists"}
-
 
 The classical root systems are taken with the Bourbaki labeling, in the negative-definite twists appropriate to the algebraic-geometry convention:
 $$

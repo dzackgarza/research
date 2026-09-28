@@ -30,7 +30,6 @@ Every run reports dimension 9, **non-cocompact with finite covolume**, and Euler
 
 ::: {.Remark title="Growth rate of Sterk 1"}
 
-
 The Sterk 1 growth rate is
 $$
 2.6246613781819533651112379994955986218 ,
@@ -39,7 +38,6 @@ classified by CoxIter as **Perron, not Pisot, not Salem**. Each output also list
 :::
 
 ::: {.Remark title="Consistency with the dissertation"}
-
 
 The dissertation records for these cusps only the ray counts of the semifans (Cusp 1: 4 Type II + 4 Type III; Cusp 2: 2 + 8; Cusp 3: 3 + 15), which is a different quantity from any entry above.
 Nothing in the dissertation contradicts these numbers, and nothing in it reproduces them.
@@ -55,14 +53,12 @@ Nothing in the dissertation contradicts these numbers, and nothing in it reprodu
 
 ::: {.Remark title="Why (9,9,1) matters here"}
 
-
 $(9,9,1)$ is the **Coble 0-cusp lattice** named in this project's own text, alongside the 1-cusp $(7,7,1)$.
 $(10,10,0)$ and $(10,8,0)$ are the two Enriques 0-cusps to which the Coble cusps are claimed to map.
 So this table is direct computational evidence bearing on the cusp correspondence; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
 :::
 
 ::: {.Remark title="Benchmarks, not results"}
-
 
 The same directory holds CoxIter runs on $E_6$, $F_4$ and $F_2$ (the last: 24 vertices, dimension 19, $\chi = -219323026921/45201995813229523107840000$). These are standard reference diagrams used to check the tool, not lattices of either project.
 :::
@@ -84,7 +80,6 @@ Types appearing are the twisted mixed-norm systems $A_n(2)$, $B_n(2)$, $D_n(2)$,
 Sterk 1 for instance carries $A_8(2)\times4$, $E_8(2)\times4$, $D_8(2)\times8$ at rank 8.
 
 ::: {.Remark title="These are not orbit representatives"}
-
 
 The lists are the **full** sets of elliptic subdiagrams, before quotienting by diagram symmetry.
 The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [the computational toolchain and recipe](computational-toolchain-and-recipe.md).
