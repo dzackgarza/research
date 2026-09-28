@@ -108,7 +108,7 @@ For subdiagrams, \longref{def:elliptic-subdiagram} names the corresponding condi
 An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel of rank $c$, hence rank $k-c$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Coxeter type is basis-independent"}
 
 By Sylvester's law of inertia, invoked in the Lattice Theory section to define the signature, the numbers $n_+$ and $n_-$ of positive and negative squares in a diagonalization of $G$ over $\RR$, and the rank of $\ker G$, are independent of the basis.
 The three conditions of \longref{def:coxeter-system-type} are therefore properties of the form $G$ rather than of the matrix representing it: spherical is $(n_+,n_-) = (0,n)$, euclidean is $(0,n-1)$ with a one-dimensional kernel, and hyperbolic is $(1,n-1)$.
@@ -130,7 +130,7 @@ Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
    of \longref{def:coxeter-polytope} [@Vin67; @Vin85].
 :::
 
-::: {.Remark}
+::: {.Remark title="Hyperbolic type alone does not imply finite covolume"}
 
 Statement (3) asserts nothing about the volume of $P$: the finite-volume and compact cases are separated by the criterion of \longref{thm:coxeter-polytope-volume}.
 :::
@@ -189,7 +189,7 @@ For (1), the restriction of a negative definite form to a subspace is negative d
 For (2), apply the upper bound of \longref{prop:signature-under-restriction} with $n_+(G) = 1$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Elliptic subdiagrams form an order ideal"}
 
 Part (1) is what makes an enumeration of the elliptic subdiagrams of a Coxeter--Vinberg diagram tractable: a subset that fails to be elliptic can be discarded together with all subsets containing it, so the search runs over the order ideal of elliptic subsets rather than over all of $2^{S}$.
 :::
@@ -213,7 +213,7 @@ $$
 and diagrams from distinct entries of this list are not isomorphic [@Bou08; @Hum90].
 :::
 
-::: {.Remark}
+::: {.Remark title="$B_n$ and $C_n$ define the same Coxeter system"}
 
 Here $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_2$, $I_2(4)\cong B_2$ and $I_2(6)\cong G_2$; the list above records each isomorphism class once.
 The root systems $B_n$ and $C_n$ of \longref{def:root-system-Bn-Cn} have the same Coxeter matrix and so contribute a single entry, the two being distinguished by their root lengths rather than by their Coxeter system.
@@ -249,7 +249,7 @@ $$
 unique up to scalar, and $\delta^2 = 0$ [@Bou08; @Hum90].
 :::
 
-::: {.Remark}
+::: {.Remark title="Positive radical coefficients locate the affine boundary point"}
 
 The positivity of the coefficients $n_s$ is what places $\delta$ in the closure of a cone rather than merely in the kernel of a form, and is the reason a parabolic subdiagram of a hyperbolic Coxeter polytope determines an ideal point of the boundary rather than an arbitrary isotropic line; see \longref{prop:polytope-vertex-subdiagram}.
 For $\tilde E_8$ the coefficients are the marks $(1,2,3,4,6,5,4,3,2)$ of the highest root of $E_8$.
