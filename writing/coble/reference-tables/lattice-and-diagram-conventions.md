@@ -82,7 +82,7 @@ This project's `content_pandoc/sections/Compactifications/Reflection_Groups_and_
 $$
 \langle v_i, v_j\rangle = \sqrt{v_i^2 v_j^2}\,\cos\!\left(\frac{\pi}{m_{ij}+2}\right)
 $$
-of [[root-vectors-and-folded-sterk-diagrams]] depends on.
+of [the folded Sterk-diagram computation](../computations/root-vectors-and-folded-sterk-diagrams.md) depends on.
 
 ## Cusp type classification
 
@@ -153,7 +153,7 @@ The covering $F_{\En,2}\to F_{K3,\En}$ is recorded as finite of degree $2^7\cdot
 ::: {.Remark title="Why these belong in this project"}
 
 $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \gens{2}\oplus E_{10}(2)$ adds one $C_2$ to $A_{E_{10}(2)} = C_2^{10}$.
-The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [[cusp-correspondence-morphism-chain]]. The group orders bound the index computations in that reduction.
+The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [the Coble cusp correspondence](../coble-moduli/cusp-correspondence-morphism-chain.md). The group orders bound the index computations in that reduction.
 :::
 
-Related: [[root-vectors-and-folded-sterk-diagrams]], [[coxiter-results-for-cusp-lattices]], [[coble-lattice-isotropic-candidates]].
+Related: [folded Sterk diagrams](../computations/root-vectors-and-folded-sterk-diagrams.md), [CoxIter results](../computations/coxiter-results-for-cusp-lattices.md), [candidate isotropic vectors](../computations/coble-lattice-isotropic-candidates.md).

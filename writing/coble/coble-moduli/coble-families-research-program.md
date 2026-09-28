@@ -27,7 +27,7 @@ Applying the period domain construction to these lattices yields ten moduli spac
 
 ::: {.Remark title="Position in Nikulin's triangle"}
 
-This collection of ten lattices **coincides precisely with the $g=0$ line** of Nikulin's triangular table of 2-elementary lattices (AE22, Fig. 1). That identification is the organizing observation behind the whole program, and is also what ties the Coble families to the index 2 Halphen families; see [[halphen-index-2-moduli-program]].
+This collection of ten lattices **coincides precisely with the $g=0$ line** of Nikulin's triangular table of 2-elementary lattices (AE22, Fig. 1). That identification is the organizing observation behind the whole program, and is also what ties the Coble families to the index 2 Halphen families; see [the Halphen index-2 moduli program](../adjacent-programs/halphen-index-2-moduli-program.md).
 :::
 
 The moduli spaces $F_{\Co,n}$ for $n \geq 2$ have not appeared in the literature.
@@ -71,4 +71,4 @@ into the moduli space of Enriques surfaces, constructed from $E_{10}(2)$-polariz
 Consequently the integral-affine structures, and hence the dlt and stable models, can be obtained by restricting the K3 boundary data of AE22. This is the mechanism that makes the whole family tractable at once, rather than one $n$ at a time.
 :::
 
-Related: [[cusp-correspondence-morphism-chain]], [[halphen-index-2-moduli-program]], [[nodal-enriques-moduli-program]].
+Related: [Coble cusp correspondence](cusp-correspondence-morphism-chain.md), [Halphen index-2 moduli program](../adjacent-programs/halphen-index-2-moduli-program.md), [nodal Enriques moduli program](../adjacent-programs/nodal-enriques-moduli-program.md).

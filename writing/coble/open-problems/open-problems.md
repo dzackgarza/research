@@ -11,7 +11,7 @@ None of the statements below is claimed to be settled; several cross-reference p
 
 ::: {.Remark title="Open problem: isometry class and genus of the Coble lattices"}
 
-The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\operatorname{diag}(2,-2,\dots,-2)$, equivalently $\gens{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in [the Coble lattice table](coble-lattice-table.md), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
+The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\operatorname{diag}(2,-2,\dots,-2)$, equivalently $\gens{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in [the Coble lattice table](../lattices-and-moduli/coble-lattice-table.md), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
 What is not yet formally established is the *isometry-class verification* and the *genus decomposition*: whether the genus of $T_\Co$ contains a unique isometry class.
 Concretely:
 
@@ -120,7 +120,7 @@ Sterk's published fundamental domains for the five cusps of $F_{\En,2}$ have $12
 The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams.
 The open work is to identify, for each $j$, the reflection subgroup $W_j\leq W(\eta_j^{\perp}/\eta_j)$ for which the published diagram bounds a fundamental domain, to exhibit that domain as a union of chambers of the full group, and to determine the index $[W(\eta_j^{\perp}/\eta_j) : W_j]$ as a covolume ratio.
 Cusp $2$, to which the Coble $0$-cusp is claimed to correspond, is the case in which the two computations agree.
-The data and the derivation are in [[sterk-root-counts-and-computed-chambers]].
+The data and the derivation are in [the Sterk root-count computation](../computations/sterk-root-counts-and-computed-chambers.md).
 :::
 
 ::: {.Remark title="Open problem: hyperbolic-quotient derivation of the cusp correspondence"}

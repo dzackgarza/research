@@ -94,4 +94,4 @@ A Coble surface is **terminal** when it is not the image of any birational but n
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.
 :::
 
-Related: [[coble-families-research-program]], [[coble-lattice-isotropic-candidates]], [[halphen-index-2-moduli-program]].
+Related: [Coble families research program](coble-families-research-program.md), [candidate isotropic vectors](../computations/coble-lattice-isotropic-candidates.md), [Halphen index-2 moduli program](../adjacent-programs/halphen-index-2-moduli-program.md).

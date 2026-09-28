@@ -96,7 +96,7 @@ Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], th
 ::: {.Remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
 
 The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the
-stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](moduli-construction.md)
+stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](../lattices-and-moduli/moduli-construction.md)
 defines it as $\Stab_{\Orth(\ten)}(T_\Co)$. These agree,
 and the bridge is $T_\Co \cong \delta^{\perp \ten}$ above.
 

@@ -15,7 +15,7 @@ tags:
 
 Every lattice this project computes with is indefinite: the period lattices have signature $(2,n)$, and the cusp lattices $\eta^{\perp}/\eta$ are hyperbolic.
 Most named lattice algorithms are stated for definite forms.
-This page records where the two disagree, because that boundary is what leaves several of the entries in [[open-problems]] open.
+This page records where the two disagree, because that boundary is what leaves several of the entries in [the open-problems list](../open-problems/open-problems.md) open.
 
 ## The definite and indefinite cases
 
@@ -23,7 +23,7 @@ This page records where the two disagree, because that boundary is what leaves s
 
 For a definite lattice $L$ and $c\in\ZZ$ the level set $\ts{v\in L : v^2 = c}$ is finite, and enumerating it is the basic primitive from which short-vector, closest-vector and automorphism computations are built.
 For an indefinite lattice it can be infinite: in $U$ with $\beta_U(v,w) = x_1y_2+x_2y_1$ the isotropic vectors are $\ts{(x,0)}\union\ts{(0,y)}$, so the level set at $c = 0$ is infinite.
-An algorithm whose output is a list of the vectors of a given square is therefore available only in the definite case, and its indefinite counterpart returns orbit representatives together with generators for the acting group ([[isotropic-orbits-and-tits-buildings]]).
+An algorithm whose output is a list of the vectors of a given square is therefore available only in the definite case, and its indefinite counterpart returns orbit representatives together with generators for the acting group ([isotropic orbits and Tits buildings](isotropic-orbits-and-tits-buildings.md)).
 :::
 
 ::: {.Remark title="Theta series"}
@@ -51,7 +51,7 @@ For indefinite $L$ it is in general infinite and is presented by generators; the
 
 ::: {.Remark title="Where this leaves the open problems"}
 
-The entries of [[open-problems]] that ask for orbit counts, for explicit primitive-embedding matrices, and for generators of $\Gamma_\Co$ are all in the right-hand column.
+The entries of [the open-problems list](../open-problems/open-problems.md) that ask for orbit counts, for explicit primitive-embedding matrices, and for generators of $\Gamma_\Co$ are all in the right-hand column.
 None of them is a search that has not been run; each requires the genus-theoretic or reflection-group input that replaces the search.
 :::
 
@@ -65,9 +65,9 @@ For a subdiagram of a diagram of an integral lattice, $G[I,I]$ is an integer mat
 
 ::: {.Remark title="Consequence for the enumeration"}
 
-\longref{cor:subdiagram-inheritance}(1) prunes the search over the $2^{\lvert S\rvert}$ subsets in step 5 of [[computational-toolchain-and-recipe]]: once a subset fails to be elliptic, every superset of it is excluded without a further definiteness test.
+\longref{cor:subdiagram-inheritance}(1) prunes the search over the $2^{\lvert S\rvert}$ subsets in step 5 of [the computational toolchain](computational-toolchain-and-recipe.md): once a subset fails to be elliptic, every superset of it is excluded without a further definiteness test.
 The elliptic subdiagrams form a downward-closed family in the subset poset, whose maximal elements are the maximal elliptic subdiagrams the recipe asks for.
-The elliptic subdiagram counts $121, 65, 67, 78, 119$ for the five Sterk cusps in [[coxiter-results-for-cusp-lattices]] are the cardinalities of those families before the diagram automorphism group is quotiented out.
+The elliptic subdiagram counts $121, 65, 67, 78, 119$ for the five Sterk cusps in [the CoxIter results](coxiter-results-for-cusp-lattices.md) are the cardinalities of those families before the diagram automorphism group is quotiented out.
 :::
 
 ## Recognizing a lattice as a sum of standard blocks
@@ -92,7 +92,7 @@ The even unimodular lattices are indexed by the signatures with $p\equiv q \bmod
 ::: {.Remark title="The step the search defers to"}
 
 Step 4 is an isometry test between indefinite lattices, which is the entry in the right-hand column of the table above.
-The search reduces recognition to that test and does not replace it; in a Sage session the route through `genus().representatives()` calls out to Magma, so it is unavailable where Magma is not installed, and the genus-symbol comparison of [[discriminant-forms-and-genus]] is the available substitute for a two-elementary lattice.
+The search reduces recognition to that test and does not replace it; in a Sage session the route through `genus().representatives()` calls out to Magma, so it is unavailable where Magma is not installed, and the genus-symbol comparison of [discriminant forms and the genus](../lattices-and-moduli/discriminant-forms-and-genus.md) is the available substitute for a two-elementary lattice.
 :::
 
-Related: [[computational-toolchain-and-recipe]], [[isotropic-orbits-and-tits-buildings]], [[coxiter-results-for-cusp-lattices]], [[open-problems]].
+Related: [computational toolchain](computational-toolchain-and-recipe.md), [isotropic orbits and Tits buildings](isotropic-orbits-and-tits-buildings.md), [CoxIter results](coxiter-results-for-cusp-lattices.md), [open problems](../open-problems/open-problems.md).

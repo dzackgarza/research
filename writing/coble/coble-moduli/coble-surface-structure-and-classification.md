@@ -30,7 +30,7 @@ and if $E^2 = -4$ then $E$ is a component of $D$.
 :::
 
 This is the fact that makes the $(-4)$-curves intrinsic: they cannot occur away from the boundary.
-It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that governs the Coxeter diagrams in [[root-vectors-and-folded-sterk-diagrams]].
+It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that governs the Coxeter diagrams in [the folded Sterk-diagram computation](../computations/root-vectors-and-folded-sterk-diagrams.md).
 
 ## Automorphisms
 
@@ -104,7 +104,7 @@ For a Coble surface $X$ the following are equivalent:
 
 ::: {.Remark title="Why this matters for the Halphen program"}
 
-The project's `Degenerations/Halphen_Surfaces.md` records the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [[halphen-index-2-moduli-program]]. The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
+The project's `Degenerations/Halphen_Surfaces.md` records the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [the Halphen index-2 moduli program](../adjacent-programs/halphen-index-2-moduli-program.md). The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
 The Jacobian branch has no counterpart anywhere in the project.
 :::
 
@@ -155,4 +155,4 @@ The project states only that $\fco$ is rational "by relating it to a codimension
 The tangency condition above is what cuts out that subvariety.
 :::
 
-Related: [[coble-families-research-program]], [[halphen-index-2-moduli-program]], [[cusp-correspondence-morphism-chain]].
+Related: [Coble families research program](coble-families-research-program.md), [Halphen index-2 moduli program](../adjacent-programs/halphen-index-2-moduli-program.md), [Coble cusp correspondence](cusp-correspondence-morphism-chain.md).
