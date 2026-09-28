@@ -366,7 +366,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                 )
             return super().cardinality()
 
-        def is_abelian(self):
+        def _abelianity_decision(self):
             r"""Decide abelianity from the represented exact kernel when finite."""
             if self.supergroup().is_finite() is True:
                 return _finite_group_morphism_kernel_is_abelian(

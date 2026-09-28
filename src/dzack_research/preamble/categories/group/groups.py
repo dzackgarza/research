@@ -988,10 +988,8 @@ class _GroupEngine:
             case _:
                 return r"\mathrm{Group}"
 
-    def is_abelian(self):
+    def _abelianity_decision(self):
         match self:
-            case _ if self in OwnedAbelianGroups():
-                return True
             case _ if self in OwnedFiniteGroups():
                 return bool(_gap_model(self).IsAbelian())
             case _:
@@ -2884,6 +2882,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             match self:
                 case _ if self in OwnedAbelianGroups():
                     return True
+                case _:
+                    return self._abelianity_decision()
+
+        def _abelianity_decision(self):
+            match self:
                 case _ if self in OwnedFiniteGroups():
                     return all(left * right == right * left for left in self for right in self)
                 case _:
