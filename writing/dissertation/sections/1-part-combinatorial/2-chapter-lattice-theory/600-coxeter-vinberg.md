@@ -10,7 +10,7 @@ The rational boundary components (or **cusps**) of $\bd\bbcpt{\FG}$ are indexed 
 Let $X$ be a complex analytic space equipped with a stratification $\partial X = \Disjoint_{i \geq 0} \partial_i X$ by boundary strata indexed by codimension. The **cusp diagram** of $X$ is the directed graph whose vertices index the irreducible components of $\partial_i X$, with a directed edge $e_{i \to j}$ corresponding to components $V_i$ and $V_j$ whenever $V_j$ lies in the Zariski closure of $V_i$.
 :::
 
-For a given $0$-cusp defined by $I$, the orthogonal complement modulo $I$, which we refer to as the *boundary lattice*  $\bdlattice{T}{I} \da  I^\perp / I$, is an even lattice of signature $(1, n{-}1)$ and admits the structure of a hyperbolic lattice. By studying reflective subgroups of $\Orth(T)$, one can determine $1$-cusps adjacent $[I]$ using the Coxeter diagram associated to $W(M)$.
+For a given $0$-cusp defined by $I$, the orthogonal complement modulo $I$, which we refer to as the *boundary lattice* $\bdlattice{T}{I} \da  I^\perp / I$, is an even lattice of signature $(1, n{-}1)$ and admits the structure of a hyperbolic lattice. By studying reflective subgroups of $\Orth(T)$, one can determine $1$-cusps adjacent to $[I]$ using the Coxeter diagram associated to $W(M)$.
 As explained in e.g. @Sca87 and @Ste91, the 1-cusps adjacent to a given $0$-cusp $[I]$ in the Baily–Borel compactification correspond bijectively to $\Gamma$-orbits of isotropic planes $J$ such that $I \subset J$, or equivalently, to the set of **maximal parabolic subdiagrams** of the Coxeter diagram associated to the reflection group of the hyperbolic lattice $M \da  I^\perp / I$. Each such subdiagram determines a codimension-one face of the Coxeter polytope in $\HH_M$, and hence a distinct $\Gamma_I$ orbit of a $1$-cusp, where $\Gamma_I$ is the stabilizer of $[I]$ in $\Gamma$.
 We use this description in @AEGS25 to determine the boundary stratification of $\cpt{\fent}$ using semitoroidal data, which in turn comes from Coxeter-theoretic data ranging over the $0$-cusps of $\bbcpt{\fent}$. We then reduce the analysis of $\bd\cpt{\fent}$ to a combinatorial study of the poset of elliptic and parabolic subdiagrams of Coxeter diagrams that are "folded" from those of $\fttz$. This yields integral affine structures and ultimately dlt models of stable degenerations of Enriques surfaces.
 
@@ -20,7 +20,7 @@ We use this description in @AEGS25 to determine the boundary stratification of $
     title="{Root System and k-Roots}"
     #def:root-system-k-roots
 }
-Let $L$ be a nondegenerate integranl lattice and let $v\in L$ be a primitive vector.
+Let $L$ be a nondegenerate integral lattice and let $v\in L$ be a primitive vector.
 We recall that the reflection in $v$ is defined by the formula
 $$
 s_v(x) \da x - 2{x\cdot v \over v^2}v, \qquad s_v \in \Orth(L_\QQ)
@@ -48,7 +48,7 @@ The **discriminant locus** is the union of all mirrors,
 $$
 \Delta(L) \da  \Union_{v \in \Phi_2(L)} v^{\perp L}
 .$$
-When $L \injects \lkt$ is a primitively embedded  lattice corresponding to a polarization $h$ on a K3 surface $X$, this locus corresponds to points in the corresponding period domain $\halfpd{T}$ where $X$ acquires extra algebraic cycles -- if one identifies the holomorphic 2-form $\omega$ on $X$ with its period point in $\halfpd{L}$, the condition that $\omega$ on a mirror $H_\alpha$ is precisely that $\omega\cdot\alpha = 0$, so $\alpha \in \omega^{\perp H^2(X; \CC)}$ and thus $\omega\in H^{1,1,}(X)$, which by the Lefschetz $(1,1)$-theorem for $(-2)$-curves on K3 surfaces makes $\alpha$ a Hodge class.
+When $L \injects \lkt$ is a primitively embedded lattice corresponding to a polarization $h$ on a K3 surface $X$, this locus corresponds to points in the corresponding period domain $\halfpd{T}$ where $X$ acquires extra algebraic cycles -- if one identifies the holomorphic 2-form $\omega$ on $X$ with its period point in $\halfpd{L}$, the condition that $\omega$ lies on a mirror $H_\alpha$ is precisely that $\omega\cdot\alpha = 0$, so $\alpha \in \omega^{\perp H^2(X; \CC)}$ and thus $\omega\in H^{1,1}(X)$, which by the Lefschetz $(1,1)$-theorem for $(-2)$-curves on K3 surfaces makes $\alpha$ a Hodge class.
 The **Weyl chambers** are the connected components of $\thecone{C}_L\interior \da  \thecone{C}_L \sm \Delta(L)$ where $\thecone{C}_L$ is the cone of positive-norm vectors in $L$. A **simple system** is a set of roots $v$ such that the mirrors $H_v$ form the bounding hyperplanes for a fundamental domain for the action of $W(L)$ on $L$.
 :::
 

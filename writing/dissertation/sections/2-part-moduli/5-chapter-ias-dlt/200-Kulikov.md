@@ -72,7 +72,7 @@ These types are naturally stratified by the rank of isotropic subspaces in the b
 ###### Picard–Lefschetz Transformations
 
 :::{.definition title="Picard–Lefschetz Transformation" #def:picard-lefschetz-transformation}
-Let $p\colon \mcx \to \Delta$ be a Kulikov model (or a semistable degeneration) with $\mcx_0$ $\mcx_0$. The sheaf $\RR^2 p_*\underline{\ZZ}_{\Delta}$ restricts to a locally constant system over the punctured disk $\Delta^*$, whose fiber over $t \in \Delta^*$ is $H^2(\mcx_t; \ZZ)$.
+Let $p\colon \mcx \to \Delta$ be a Kulikov model (or a semistable degeneration) with central fiber $\mcx_0$. The sheaf $\RR^2 p_*\underline{\ZZ}_{\Delta}$ restricts to a locally constant system over the punctured disk $\Delta^*$, whose fiber over $t \in \Delta^*$ is $H^2(\mcx_t; \ZZ)$.
 After trivializing the pullback of this local system to the universal cover $\widetilde{\Delta^*}$, the fundamental group $\pi_1(\Delta^*, t)$ acts via monodromy
 $\pi_1(\Delta^*, t) \longrightarrow \operatorname{Aut}(H^2(\mcx_t; \ZZ)).$
 The image of a simple closed loop $\gamma$ generating $\pi_1(\Delta^*, t)$ is the **Picard–Lefschetz transformation**:
@@ -99,11 +99,11 @@ This affine monodromy encodes the classical Picard–Lefschetz transformation fo
 
 :::{.remark
   title="Monodromy Invariant as Structural Parameter" #rem:monodromy-invariant-parameter}
-For a Type $\III$ Kulikov degeneration with $\mcx_0$ $\mcx_0$, the **monodromy invariant** $\lambda \in \bar{T}_\eta = \eta^\perp / \eta$ determines:
+For a Type $\III$ Kulikov degeneration with central fiber $\mcx_0$, the **monodromy invariant** $\lambda \in \bar{T}_\eta = \eta^\perp / \eta$ determines:
 
 1. The number of triple points of $\mcx_0$, with $\lambda^2 = \#\{\text{triple points}\}$;
 
-2. The *barycentric coordinates* $\lambda = (\ell_i)$,which  determine $B(\lambda)$, an explicit $\IAS^2$.
+2. The *barycentric coordinates* $\lambda = (\ell_i)$, which determine $B(\lambda)$, an explicit $\IAS^2$.
 
 For more details, see [@AEGS25; @GHK15; @Eng18].
 :::
@@ -157,4 +157,3 @@ $$
 Here, $\mcx_0$ denotes the central fiber of the degeneration, and $\mcz_0$ is its quotient by the specialized involution.
 The dual complex $\Gamma(\mcz_0)$ of the central fiber $\mcz_0$ is topologically determined by the action of $\ienzero$ on the dual complex $\Gamma(\mcx_0)$ of the original Kulikov fiber. Specifically, if $\Gamma(\mcx_0)$ is a triangulated $2$-sphere, then if $\ienzero$ is free on $\Gamma(\mcx_0)$, the quotient dual complex $\Gamma(\mcz_0)$ is homeomorphic to the real projective plane $\RP^2$, as occurs when the involution acts antipodally on the sphere.
 If $\ienzero$ has fixed points on $\Gamma(\mcx_0)$ or preserves a region, then the quotient dual complex $\Gamma(\mcz_0)$ is a disk $\DD^2$, corresponding to a boundary stratum where the involution admits fixed locus or acts with boundary preserves.
-

@@ -1,7 +1,7 @@
 ### DLT Models
 
 This section gives a precise structural and combinatorial description of divisor models (for degenerations of K3 pairs) and half-divisor models (for Enriques quotients), connecting KSBA limits explicitly to integral-affine data on dual complexes.
-Let $\pi: \mcx \to C$ be a degeneration of complex surfaces with $\mcx_0$ $\mcx_0$. The **dual complex** $\Gamma(\mcx_0)$ encodes the topology of $\mcx_0$: each vertex of $\Gamma(\mcx_0)$ corresponds to an irreducible component $V_i$, each edge to a double curve $D_{ij} = V_i \cap V_j$. When $\mcx_0$ has normal crossings, $\Gamma(\mcx_0)$ is a finite graph.
+Let $\pi: \mcx \to C$ be a degeneration of complex surfaces with central fiber $\mcx_0$. The **dual complex** $\Gamma(\mcx_0)$ encodes the topology of $\mcx_0$: each vertex of $\Gamma(\mcx_0)$ corresponds to an irreducible component $V_i$, each edge to a double curve $D_{ij} = V_i \cap V_j$. When $\mcx_0$ has normal crossings, $\Gamma(\mcx_0)$ is a finite graph.
 Given a Cartier divisor $\mcr \subset \mcx$ disjoint from the singular strata of $\mcx_0$ (i.e., $\mcr$ does not meet points where two or more components meet), the combinatorial geometry of $(\mcx_0, \mcr_0)$ is encoded by an **integral-affine divisor** $R_{\IA} \subset \Gamma(\mcx_0)$. This means:
 
 - Each edge of $\Gamma(\mcx_0)$ (corresponding to a double curve $D_{ij}$) is assigned an integer weight $n_{ij}$, expressing the degree of intersection of $\mcr_0$ with $D_{ij}$.

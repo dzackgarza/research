@@ -4,7 +4,7 @@ Let $\FG \da \dmodgamma{ D }{ \Gamma }$ be a Hermitian symmetric domain of Type 
 We make an additional technical assumption that $\Gamma$ is *neat*, which ensures that $\FG$ is smooth.
 The Baily–Borel compactification $\bbcpt{\FG}$ is projective but is typically highly singular along its cusps.
 To obtain a compactification with better local and algebro-geometric properties, one constructs a **toroidal compactification**.
-This requires, for each cusp $\eta$ of $\bbcpt{\FG}$, the choice of a $\Gamma$-admissible rational polyhedral decomposition $\Sigma_\eta$ of the rational closure of the positive cone, i.e. a fan . Locally, a neighborhood of $\eta$ is described by a toric variety $X_{\Sigma(\eta)}$ associated to these fans. The global compactification $\torcpt{\FG}$ is patched from these local models and contains $\FG$ as a dense open subset, with a proper, $\Gamma$-equivariant morphism $\torcpt{\FG} \longrightarrow \bbcpt{\FG}$.
+This requires, for each cusp $\eta$ of $\bbcpt{\FG}$, the choice of a $\Gamma$-admissible rational polyhedral decomposition $\Sigma_\eta$ of the rational closure of the positive cone, i.e. a fan. Locally, a neighborhood of $\eta$ is described by a toric variety $X_{\Sigma(\eta)}$ associated to these fans. The global compactification $\torcpt{\FG}$ is patched from these local models and contains $\FG$ as a dense open subset, with a proper, $\Gamma$-equivariant morphism $\torcpt{\FG} \longrightarrow \bbcpt{\FG}$.
 Unlike the Baily–Borel compactification, $\bd \torcpt{\FG}$ can be made smooth for suitable choices of fans.
 We now describe the construction in more detail.
 

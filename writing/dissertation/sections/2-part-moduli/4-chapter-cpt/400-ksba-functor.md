@@ -266,7 +266,7 @@ Let $\mcx^* \to \Delta^*$ be a family of varieties over a punctured disk and let
 - $\mcx \to \Delta$ is a flat family extending $\mcx^* \to \Delta^*$,
 - $\mcr$ is an effective divisor on $\mcx$ restricting to $\mcr^*$ on $\mcx^*$,
 - $\mcr$ is relatively nef over $\Delta$,
-- The $\mcx_0$ $\mcr_0$ does **not contain any stratum** of the $\mcx_0$ $\mcx_0$; that is, $\mcr_0$ does not contain any irreducible component or singular locus (double curves, triple points, etc.) of $\mcx_0$.
+- The $\mcr_0$ does **not contain any stratum** of $\mcx_0$; that is, $\mcr_0$ does not contain any irreducible component or singular locus (double curves, triple points, etc.) of $\mcx_0$.
 :::
 
 :::{.proposition title="Existence and Uniqueness of Stable Limits via Divisor Models" #hdm-exuniq-prop}
@@ -494,4 +494,3 @@ Some key open directions for future research include:
 - Exploiting deeper connections with period maps and Hodge theory to construct and better understand compactification in higher dimensions;
 
 - Clarifying the exact relationships between KSBA and $K$-stability, and developing effective, algorithmic, or combinatorial tools for KSBA (or related) compactifications beyond the few well-understood special cases.
-
