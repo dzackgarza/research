@@ -230,7 +230,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which the bilinear form vanishes."""
-            return self.subgroups().filtered(
+            return self.subgroups().condition_set(
                 lambda subgroup: self.form_vanishes_on(subgroup.embedded_elements()),
             )
 
@@ -250,13 +250,13 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                     for larger in isotropic
                 )
 
-            return isotropic.filtered(is_maximal)
+            return isotropic.condition_set(is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return totally isotropic ``H`` with ``|H|^2=|A|``."""
             order = int(self.cardinality())
-            return self.isotropic_subgroups().filtered(
+            return self.isotropic_subgroups().condition_set(
                 lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
             )
 
@@ -482,7 +482,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             r"""Return all subgroups on which ``q`` vanishes identically."""
 
             zero = self.quadratic_value_module().zero()
-            return self.subgroups().filtered(
+            return self.subgroups().condition_set(
                 lambda subgroup: all(
                     self.q(element) == zero
                     for element in subgroup.embedded_elements()
@@ -505,14 +505,14 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                     for larger in isotropic
                 )
 
-            return isotropic.filtered(is_maximal)
+            return isotropic.condition_set(is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return isotropic ``H`` with ``|H|^2=|A|``."""
 
             order = int(self.cardinality())
-            return self.isotropic_subgroups().filtered(
+            return self.isotropic_subgroups().condition_set(
                 lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
             )
 

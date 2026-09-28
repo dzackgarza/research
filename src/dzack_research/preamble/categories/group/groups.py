@@ -1217,6 +1217,59 @@ def _engine_subgroup(group, generators):
     )
 
 
+class _SubgroupCollection(Sets().ObjectType):
+    r"""The set of represented subgroups of one owned group.
+
+    A point is an object of ``Subgroups(G)``, hence retains its inclusion into
+    ``G``.  This set is defined for every represented group.  When ``G`` is
+    placed among finite groups, GAP supplies an exact enumeration; that
+    enumeration is computational structure on the same set, not its definition.
+    """
+
+    def __init__(self, group) -> None:
+        assert group in OwnedGroups(), (
+            f"the subgroup collection is defined for a group, but {group} is not an owned group"
+        )
+        self._group = group
+        match group:
+            case _ if group in OwnedFiniteGroups():
+                placement = FiniteSets()
+            case _:
+                placement = Sets()
+        super().__init__(category=placement, facade=True)
+
+    def __contains__(self, candidate) -> bool:
+        r"""Whether ``candidate`` is a represented subgroup of the ambient group."""
+        return candidate in Subgroups(self._group)
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                f"{candidate!r} is not a represented subgroup of {self._group}"
+            )
+        return candidate
+
+    def __iter__(self):
+        r"""Enumerate this set when the ambient represented group is finite."""
+        group = self._group
+        match group:
+            case _ if group in OwnedFiniteGroups():
+                return (
+                    _subgroup_from_gap(group, subgroup)
+                    for subgroup in _gap_model(group).AllSubgroups()
+                )
+            case _:
+                assert False, (
+                    f"cannot list all subgroups of {group}: its subgroup collection is defined as a set, "
+                    "but exact enumeration is installed only for finite represented groups"
+                )
+
+    def _repr_(self) -> str:
+        return f"Subgroups of {self._group}"
+
+
 # --------------------------------------------------------------------------
 # Constructor catalogue.
 # --------------------------------------------------------------------------
@@ -3194,27 +3247,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def subgroups(self):
-            r"""Return the represented subgroups as an owned finite ordered set.
+            r"""Return the set of represented subgroups of this group.
 
-            GAP owns exact subgroup enumeration for finite groups whose elements
-            are represented by its group model.  Each enumerated subgroup is
-            raised through the existing transported-subgroup constructor, so the
-            ambient group and canonical inclusion remain the same owned data used
-            by ``subgroup(...)`` and the subgroup categories.
+            Its points are objects of ``Subgroups(self)``, so every point
+            retains its inclusion into this group.  Finite represented groups
+            additionally enumerate this same set exactly through GAP.
             """
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return finite_ordered_set(
-                        tuple(
-                            _subgroup_from_gap(self, subgroup)
-                            for subgroup in _gap_model(self).AllSubgroups()
-                        )
-                    )
-                case _:
-                    assert False, (
-                        f"the subgroup collection of {self} is defined, but the current preamble enumerates all "
-                        "subgroups only for finite represented groups"
-                    )
+            return _SubgroupCollection(self)
 
         def supergroup(self):
             r"""The group this one was constructed as a subgroup of; a group that is not is its own.

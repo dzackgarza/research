@@ -67,8 +67,10 @@ def test_finite_group_subgroups_are_owned_and_keep_the_ambient_group() -> None:
     cyclic = Groups.C(6)
     subgroups = cyclic.subgroups()
 
+    assert subgroups in FiniteSets()
     assert subgroups.cardinality() == 4
-    assert tuple(subgroup.cardinality() for subgroup in subgroups) == (1, 2, 3, 6)
+    assert {int(subgroup.cardinality()) for subgroup in subgroups} == {1, 2, 3, 6}
+    assert all(subgroup in Subgroups(cyclic) for subgroup in subgroups)
     assert all(subgroup.supergroup() is cyclic for subgroup in subgroups)
     assert all(subgroup.inclusion().codomain() is cyclic for subgroup in subgroups)
     assert all(subgroup.group_generators().cardinality().is_finite() for subgroup in subgroups)
