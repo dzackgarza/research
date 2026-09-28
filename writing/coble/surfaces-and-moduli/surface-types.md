@@ -121,7 +121,7 @@ Geometrically, the surface is replaced by a quotient $Y/\tau$: boundary componen
 Passing to the canonical double cover branched over the half-integral loci restores the integral $ADE$ boundary.
 :::
 
-::: {.Remark}
+::: {.Remark title="Folding conventions and the $B/C$ duality issue"}
 
 The precise relationship between these foldings, the fixed-point subalgebras, and the orbit-sum construction (which can introduce a $B/C$ Langlands duality) is discussed in [the folded-root definition](../compactifications/dynkin-foldings.md#def:folded-root) and the Foldings section.
 :::

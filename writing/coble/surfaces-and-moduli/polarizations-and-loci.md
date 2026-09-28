@@ -43,7 +43,7 @@ fixed-point-free **Enriques involution** $\ien$ (the deck transformation
 of the canonical cover) and the **del Pezzo involution** $\idp$
 [@AEGS25].
 
-::: {.Remark}
+::: {.Remark title="Sources for the polarized Enriques Noether--Lefschetz construction"}
 The numerical polarization and the $\Num$ marking are those of [@CDL25]; the canonical
 cover with its two involutions, the map $j\colon \fentwo\to \fttz$, the locus
 $\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AEGS25].
@@ -80,7 +80,7 @@ divisor intersections.
 
 ## Two polarization classes on a Coble surface
 
-::: {.Remark}
+::: {.Remark title="Three divisor classes on the Coble K3 cover must be distinguished"}
 
 On the K3 cover of a Coble surface with $n = 1$ there are two distinct divisor classes of square $2$, and
 the K3 cover, and a third class of square $4$; keeping them apart is what makes

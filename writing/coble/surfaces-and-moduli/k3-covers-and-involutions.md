@@ -32,7 +32,7 @@ Its fixed locus is the four torus-fixed points, those with $x, y\in\ts{0, \infty
 By taking $B \subset Y$ to be a smooth $\tau$-invariant curve in $\abs{-2K_Y} = \abs{\OO_Y(4,4)}$, we obtain a $10$-dimensional family of K3 surfaces, after quotienting by the toric automorphisms $D_4 \semidirect (\CC^\times)^2$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Specialization of the double-cover construction to terminal Coble surfaces"}
 
 The specialization of [the K3 double-cover construction](#rmk:k3-double-cover-construction) to a terminal Coble surface of K3 type is carried out in the section on K3 covers of Coble surfaces: there one takes $\cL = \OO_S(-K_S)$ for $S$ the (rational) base and a section $s \in H^0(\cL^{\tensor 2})$ cutting out the anticanonical curve $C$, and the resulting double cover $f: X \to S$ is a smooth K3 surface with $\Pic(X)$ a $2$-elementary lattice of invariants $(r,a,\delta)_1 = (10+n, 12-n, \delta)_1$ [@DK25 Prop. 9.1.1; @CDL25 Def. 5.4.3].
 :::
