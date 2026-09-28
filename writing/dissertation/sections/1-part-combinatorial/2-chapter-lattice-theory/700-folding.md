@@ -440,7 +440,7 @@ and thus if $v\perp I(v)$ then the norm is doubled, and if $v$ is a $(-2)$-root 
 The remaining cases are when
 
 1. $I(v)\neq v$ but $v^2=-4$, or
-2. when $v^2 = -2$ but $v$ is not orthogonal to $I(v)
+2. when $v^2 = -2$ but $v$ is not orthogonal to $I(v)$
 
 The first case can be immediately dispensed with, since folding doubles the norm.
 Suppose that $v \notin \ten$, so $v_I = v + I(v)$. Write $v \in \tdp$ in the block form as in Definition 2.3. Then one can write
@@ -520,4 +520,3 @@ Finally, the converse follows from [Nam85, 2.13 and 2.15], since $\ten[k]/\Orth(
 Thus for every 0-cusp $\tilde \eta_i\in \tdp$ for $\fttz$, we have an explicit understanding of how roots $\alpha$ in boundary lattices $\bdlattice{\tdp}{\tilde\eta_i}$ ($i=1,2$) descend or combine when passing to the $I$-invariant sublattices, which correspond to $\bdlattice{\ten}{\eta_j}$ ($j=1,\cdots,5$).
 The Coxeter diagrams $G( \gdp_{\tilde \eta_i} )$ at 0-cusps $\eta_i$ in $\fttz$ determine, via their maximal parabolic subdiagrams, the type $\II$ curves adjacent to $\eta_i$ in $\bd\bbcpt{\fttz}$.
 Under the folding involution $I$, only those maximal parabolic subdiagrams that are $I$-invariant and whose images remain maximal parabolic correspond to maximal parabolic subdiagrams in the folded diagram $G( G( \gdp_{\tilde \eta_i} ) )^I$, which in turn correspond to maximal parabolic subdiagrams in $G( \gent_{\eta_j} )$ and thus boundary curves in $\bd\bbcpt\fent$. The incidences between 0-cusps and 1-cusps is preserved only for these cases, and thus under this correspondence, we can determine the cusp diagram of $\fent$ entirely by studying folded diagrams.
-
