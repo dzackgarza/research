@@ -3,7 +3,7 @@
 Fix a commutative ring $R$ and an $R$-module $W$, the *value module* of the forms below.
 The category $R\text{-}\mathbf{Mod}$ and extension of scalars are defined in @sec-module-categories.
 
-::: {#def-form-presheaves title="Bilinear and quadratic form presheaves"}
+::: {#def-form-presheaves .def title="Bilinear and quadratic form presheaves"}
 
 Let $\operatorname{Bil}_{R,W}(M)$ be the $R$-module of $R$-bilinear maps $M\times M\to W$, with pointwise operations.
 Pullback along $f\colon M\to N$ sends $b$ to
@@ -22,7 +22,7 @@ Pullback defines the presheaf $\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{
 \to R\text{-}\mathbf{Mod}$.
 :::
 
-::: {#def-form-categories title="Form categories"}
+::: {#def-form-categories .def title="Form categories"}
 
 Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor.
 Define
@@ -39,7 +39,7 @@ The quadratic category uses the same convention.
 
 ## Properties of bilinear forms {#sec-form-properties}
 
-::: {#def-form-axioms}
+::: {#def-form-axioms .def}
 For $b\colon M\times M\to W$:
 
 - $b$ is *symmetric* if $b(x,y)=b(y,x)$;
@@ -55,7 +55,7 @@ The converse holds when multiplication by $2$ is injective on $W$.
 When $2W=W$, every bilinear form satisfies the evenness condition; quadratic refinements retain additional information in the discriminant setting.
 :::
 
-::: {#def-polarization title="The adjoint maps and the radicals"}
+::: {#def-polarization .def title="The adjoint maps and the radicals"}
 
 The bilinear form $b$ determines two $R$-linear maps to $\operatorname{Hom}_R(M,W)$,
 $$
@@ -79,12 +79,12 @@ In both cases the two radicals coincide, are written $\operatorname{rad}(M)$, an
 In [@MH73] a module equipped with a perfect form is called an *inner product space*.
 :::
 
-::: {#exm-two-radicals}
+::: {#exm-two-radicals .ex}
 **Example.** Let $b$ be the form on $R^{2}$ with Gram matrix $\left(\begin{smallmatrix}1&2\\3&4\end{smallmatrix}\right)$ in the basis $e_1,e_2$.
 Then $b(e_1,w)=w_1+2w_2$ while $b(w,e_1)=w_1+3w_2$, so the two conditions $b(e_1,w)=0$ and $b(w,e_1)=0$ cut out different submodules of $R^{2}$.
 :::
 
-::: {#def-orthogonal-sum title="Orthogonal sum"}
+::: {#def-orthogonal-sum .def title="Orthogonal sum"}
 
 The orthogonal sum of $(M,b_M)$ and $(N,b_N)$ is
 $$
@@ -99,7 +99,7 @@ The quadratic form category has the analogous orthogonal sum.
 
 ## Orthogonality {#sec-orthogonality}
 
-::: {#def-orthogonal-complement title="Orthogonal complements and isotropy"}
+::: {#def-orthogonal-complement .def title="Orthogonal complements and isotropy"}
 
 For a submodule $N\subseteq M$ set
 $$
@@ -118,7 +118,7 @@ $$
 so $N$ is totally isotropic exactly when $\operatorname{rad}(N)=N$ and the restriction $b|_{N\times N}$ is nondegenerate exactly when $N\cap N^{\perp}=0$.
 :::
 
-::: {#thm-orthogonal-decomposition title="Orthogonal decomposition"}
+::: {#thm-orthogonal-decomposition .theorem title="Orthogonal decomposition"}
 
 Let $b$ be symmetric or skew-symmetric on $M$ and let $N\subseteq M$ be a submodule on which $b$ restricts to a perfect form.
 Then $M=N\oplus N^{\perp}$ and the sum is orthogonal, so
@@ -129,7 +129,7 @@ in the sense of @def-orthogonal-sum; see [@MH73, I §3.1].
 If $x_1,\dots,x_k\in M$ have invertible Gram matrix $\bigl(b(x_i,x_j)\bigr)$, then they are linearly independent and this applies to the free submodule they span [@MH73, I §3.2].
 :::
 
-::: {#prp-quotient-form title="Forms on quotients"}
+::: {#prp-quotient-form .prop title="Forms on quotients"}
 
 Let $b$ be symmetric on $M$ and let $N\subseteq M$ be a submodule.
 
@@ -146,7 +146,7 @@ Taking $N=\operatorname{rad}(M)$ gives the *radical quotient* $M/\operatorname{r
 
 ## Gram matrices and the determinant {#sec-gram-determinant}
 
-::: {#prp-gram-matrix-free-module title="Gram matrix"}
+::: {#prp-gram-matrix-free-module .prop title="Gram matrix"}
 
 Let $M$ be free as an $R$-module on $E=\{e_i\}_{i\in I}$, and let $b$ be a bilinear form on $M$ with values in $R$.
 The *Gram matrix* of $b$ with respect to $E$ is the family $G_{ij}=b(e_i,e_j)$ indexed by $I\times I$.
@@ -158,7 +158,7 @@ a finite sum by finite support of the coordinates.
 Every family $(G_{ij})_{i,j\in I}$ in $R$ arises uniquely in this way.
 :::
 
-::: {#prp-gram-congruence title="Congruence"}
+::: {#prp-gram-congruence .prop title="Congruence"}
 
 Let $M$ be free with basis $e_1,\dots,e_n$ and Gram matrix $G=\bigl(b(e_i,e_j)\bigr)$ as in @prp-gram-matrix-free-module.
 Let $e'_1,\dots,e'_n$ be a second basis and let $P$ be the invertible matrix whose $j$-th column holds the coordinates of $e'_j$ in the basis $e$.
@@ -169,7 +169,7 @@ $$
 and two Gram matrices present isomorphic forms exactly when they are congruent in this sense [@MH73, I §2.3].
 :::
 
-::: {#def-cartan-matrix title="The Cartan matrix"}
+::: {#def-cartan-matrix .def title="The Cartan matrix"}
 
 Let $b$ be a symmetric bilinear form on $M$ with values in $R$, and let $\alpha_1,\dots,\alpha_\ell$ be an ordered family in $M$ with each $b(\alpha_j,\alpha_j)$ invertible in $R$.
 The *Cartan matrix* of the family is
@@ -202,7 +202,7 @@ $$
 Here $d_2A_{12}=(-2)(-1)=2=G_{12}$, whereas $d_1A_{12}=(-1)(-1)=1$, so only the second index recovers $G$ from $A$.
 :::
 
-::: {#def-determinant-class title="The determinant"}
+::: {#def-determinant-class .def title="The determinant"}
 
 Write $R^{\bullet}$ for the group of units of $R$ and $(R^{\bullet})^{2}$ for the subgroup of squares of units.
 By @prp-gram-congruence the determinant of a Gram matrix changes by the square of a unit under change of basis, so a perfect form on a free module has a well-defined
@@ -213,7 +213,7 @@ and a general form on a free module has a well-defined class in the quotient mon
 Under orthogonal sum the rank adds and the determinant multiplies [@MH73, I §3].
 :::
 
-::: {#prp-alternating-gram title="Alternating forms in a basis"}
+::: {#prp-alternating-gram .prop title="Alternating forms in a basis"}
 
 Let $b$ be skew-symmetric on a free module with basis $e_1,\dots,e_n$.
 Then $b$ is alternating if and only if $b(e_i,e_i)=0$ for every $i$.
@@ -228,7 +228,7 @@ and skew-symmetry kills the second sum.
 
 ## Tensor product and twisting {#sec-form-tensor}
 
-::: {#def-form-tensor title="Tensor product of forms"}
+::: {#def-form-tensor .def title="Tensor product of forms"}
 
 Let $b_M$ have value module $W_M$ and $b_N$ have value module $W_N$.
 There is exactly one bilinear map
@@ -247,7 +247,7 @@ The tensor product of an $\varepsilon$-symmetric and an $\varepsilon'$-symmetric
 If both forms are perfect and both modules are finitely generated projective, the tensor product is perfect [@MH73, I §5.3].
 :::
 
-::: {#prp-tensor-gram title="Gram matrix and determinant of a tensor product"}
+::: {#prp-tensor-gram .prop title="Gram matrix and determinant of a tensor product"}
 
 If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\otimes b_N$ in the product basis is the Kronecker product $G_M\otimes G_N$, and
 $$
@@ -255,7 +255,7 @@ $$
 $$
 :::
 
-::: {#def-form-twist title="Twisting"}
+::: {#def-form-twist .def title="Twisting"}
 
 For $\lambda\in R$ the *twist* $b(\lambda)$ of $(M,b)$ is the form $\lambda b$ on the same module, written $M(\lambda)$.
 Its Gram matrix in a basis is $\lambda G$, its adjoint maps are $\lambda\,b^{\sharp}$ and $\lambda\,{}^{\sharp}b$, and on a free module of rank $n$
@@ -269,7 +269,7 @@ For $\lambda$ a unit it is an isomorphism of categories with inverse $(-)(\lambd
 
 ## Signature at a real place {#sec-signature}
 
-::: {#def-signature title="Signature"}
+::: {#def-signature .def title="Signature"}
 
 Let $F$ be an ordered field and let $b$ be a symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
 Write $p$ for the greatest dimension of a subspace on which $b$ is positive definite, $q$ for the greatest dimension of a subspace on which $b$ is negative definite, and $r=\dim\operatorname{rad}(V)$.
@@ -281,7 +281,7 @@ For $R=\mathbb Z$ there is one such embedding and the qualifier is omitted.
 For a nondegenerate form $r=0$, and the signature is then written as the pair $(p,q)$.
 :::
 
-::: {#thm-sylvester title="Sylvester's law of inertia"}
+::: {#thm-sylvester .theorem title="Sylvester's law of inertia"}
 
 Let $F$ be an ordered field and let $b$ be a perfect symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
 Then $V\cong V^{+}\perp V^{-}$ with $b$ positive definite on $V^{+}$ and negative definite on $V^{-}$, and the two dimensions depend only on the isomorphism class of $(V,b)$: $\dim V^{+}$ is the greatest dimension of a positive definite subspace of $V$ [@MH73, III §2.5].
@@ -292,7 +292,7 @@ Every pairing involving $\operatorname{rad}(V)$ vanishes, so $V\cong\operatornam
 Applying the above to $N$ gives $V\cong V^{+}\perp V^{-}\perp\operatorname{rad}(V)$, so $p+q+r=\dim V$ in every case.
 :::
 
-::: {#def-definiteness title="Definiteness"}
+::: {#def-definiteness .def title="Definiteness"}
 
 Let $b$ be a symmetric bilinear form of signature $(p,q,r)$ and set $n=p+q+r$.
 Then $b$ is
@@ -314,7 +314,7 @@ Then $b$ is
 
 ## Isotropy and Witt decomposition {#sec-witt}
 
-::: {#def-hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms"}
+::: {#def-hyperbolic-plane .def title="Rank one forms, the hyperbolic plane, and split forms"}
 
 For a unit $u\in R^{\bullet}$ write $\langle u\rangle$ for the free module of rank $1$ on a generator $e$ with $b(e,e)=u$.
 Then $\langle u\rangle\cong\langle u'\rangle$ if and only if $u'=\alpha^{2}u$ for some $\alpha\in R^{\bullet}$ [@MH73, I §2.4].
@@ -329,7 +329,7 @@ A perfect symmetric form on $M$ is *split* if $M$ has a direct summand $N$ with 
 Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes [@MH73, I §6.3]; this applies to a field of characteristic other than $2$.
 :::
 
-::: {#def-witt-index title="Witt index"}
+::: {#def-witt-index .def title="Witt index"}
 
 The *Witt index* $i(V)$ of a perfect symmetric form on a finite-dimensional vector space $V$ over a field is the greatest dimension of a totally isotropic subspace.
 It satisfies
@@ -339,7 +339,7 @@ $$
 with $i(V)=0$ exactly when the form is anisotropic and $i(V)=\tfrac12\dim V$ exactly when the form is split [@MH73, III §1.2].
 :::
 
-::: {#thm-witt-decomposition title="Witt decomposition"}
+::: {#thm-witt-decomposition .theorem title="Witt decomposition"}
 
 Every perfect symmetric form on a finite-dimensional vector space $V$ over a field $F$ decomposes as
 $$
@@ -349,7 +349,7 @@ with $S$ split and $A$ anisotropic [@MH73, III §1.1], and $A$ is determined up 
 Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
 :::
 
-::: {#exm-witt-index-over-Q title="Witt index and signature"}
+::: {#exm-witt-index-over-Q .ex title="Witt index and signature"}
 
 Over a real closed field every positive element is a square, so by @thm-sylvester a perfect symmetric form of signature $(p,q,0)$ is $p\langle1\rangle\perp q\langle-1\rangle$.
 Each summand $\langle1\rangle\perp\langle-1\rangle$ is split [@MH73, I §6.1], so the Witt index is $\min(p,q)$.
@@ -368,7 +368,7 @@ The Witt index of @def-witt-index is a third quantity, equal to $\min(p,q)$ over
 
 ## Diagonal and polarization {#sec-polarization-functors}
 
-::: {#def-polarization-functors}
+::: {#def-polarization-functors .def}
 Diagonal and polarization define natural transformations
 $$
 \operatorname{diag}\colon\operatorname{SymBil}_{R,W}
