@@ -15,8 +15,8 @@ and the invariant triple $(r, a, \delta)$ of the Lattice Theory section.
 
 ## The Coble lattice as a twist
 
-::: {.Proposition #prop:tco-as-twist}
-### $T_\Co$ is a twisted odd unimodular lattice
+::: {.Proposition #prop:tco-as-twist title="$T_\Co$ is a twisted odd unimodular lattice"}
+
 
 Set
 $$
@@ -69,8 +69,8 @@ in which the Witt index $2$ and the negative-definite rank-$7$ complement of a
 maximal isotropic subspace are visible in the presentation itself.
 :::
 
-::: {.Proposition #prop:tco-split-maximal}
-### $T_\Co$ is the twist of a split maximal lattice
+::: {.Proposition #prop:tco-split-maximal title="$T_\Co$ is the twist of a split maximal lattice"}
+
 
 The lattice $B\cong\latI_{2,9}$ of [the twist proposition](#prop:tco-as-twist) is maximal in the
 sense of [the maximal-lattice definition](#def:maximal-lattice) and split in the sense of
@@ -123,8 +123,8 @@ rank $7$, consistent with Witt index $2$ in signature $(2,9)$: $11 - 2\cdot 2 = 
 
 ## The discriminant form of a twisted unimodular lattice
 
-::: {.Proposition #prop:twisted-unimodular-discriminant}
-### Discriminant form of $M(2)$ for $M$ unimodular
+::: {.Proposition #prop:twisted-unimodular-discriminant title="Discriminant form of $M(2)$ for $M$ unimodular"}
+
 
 Let $M$ be a unimodular lattice of rank $r$ and let $L\da M(2)$.
 Then
@@ -167,8 +167,8 @@ $$
 and this vanishes in $\QQ/2\ZZ$ precisely when $\beta_M(x,x)\in 4\ZZ$.
 :::
 
-::: {.Definition #def:coble-mod-four-form}
-### The mod-$4$ norm on $B/2B$
+::: {.Definition #def:coble-mod-four-form title="The mod-$4$ norm on $B/2B$"}
+
 
 For $B = \gens{1}\oplus E_{10}$ as in [the twist proposition](#prop:tco-as-twist), define
 $$
@@ -187,8 +187,8 @@ $\Orth(A_{T_\Co}, q_{T_\Co})$ is the stabilizer in $\GL(B/2B)$ of the four fiber
 of $Q$.
 :::
 
-::: {.Proposition #prop:coble-q-fibers}
-### The fibers of $Q$
+::: {.Proposition #prop:coble-q-fibers title="The fibers of $Q$"}
+
 
 The four fibers of $Q$ on the $2^{11} = 2048$ classes of $B/2B$ have cardinalities
 $$
@@ -255,8 +255,8 @@ This is the invariant $\delta = 1$ of $T_\Co$ read off from a distinguished clas
 
 ## The isometry group of the discriminant form
 
-::: {.Proposition #prop:coble-discriminant-group}
-### $\Orth(q_{T_\Co})$ is the discriminant group of $E_{10}(2)$
+::: {.Proposition #prop:coble-discriminant-group title="$\Orth(q_{T_\Co})$ is the discriminant group of $E_{10}(2)$"}
+
 
 Restriction to the subgroup
 $$
@@ -302,8 +302,8 @@ The order of $\Orth(A_{E_{10}(2)}, q_{E_{10}(2)})$ is the one recorded in the
 reference tables.
 :::
 
-::: {.Theorem #thm:coble-isotropic-class-orbits}
-### Two orbits of isotropic classes
+::: {.Theorem #thm:coble-isotropic-class-orbits title="Two orbits of isotropic classes"}
+
 
 The group $\Orth(A_{T_\Co}, q_{T_\Co})$ has exactly two orbits on the $528$
 isotropic classes of $A_{T_\Co}$: the zero class, and the set of all $527$ nonzero
@@ -327,8 +327,8 @@ $528 - 1 = 527$ nonzero singular vectors.
 
 ## From discriminant classes to lattice vectors
 
-::: {.Proposition #prop:coble-primitive-isotropic-classes}
-### Primitive isotropic vectors and their discriminant classes
+::: {.Proposition #prop:coble-primitive-isotropic-classes title="Primitive isotropic vectors and their discriminant classes"}
+
 
 Every primitive isotropic $v\in T_\Co$ has $\di_{T_\Co}(v) = 2$, and its
 associated class
@@ -352,8 +352,8 @@ The final assertion is [the isotropic-class orbit theorem](#thm:coble-isotropic-
 orbit of nonzero isotropic classes.
 :::
 
-::: {.Remark}
-### What the finite orbit count does and does not determine
+::: {.Remark title="What the finite orbit count does and does not determine"}
+
 
 For the full orthogonal group the lattice-level statement is stronger than the
 finite one: $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors and on
@@ -377,8 +377,8 @@ decomposition to primitive isotropic vectors of $T_\Co$ is open.
 
 ## The Eichler criterion and its hypothesis
 
-::: {.Remark}
-### Why the Eichler criterion is unavailable for $T_\Co$
+::: {.Remark title="Why the Eichler criterion is unavailable for $T_\Co$"}
+
 
 The Eichler criterion ([the Eichler criterion](#thm:eichler-criterion)) reduces
 $\widetilde{\SO}^+(L)$-equivalence of primitive vectors to the pair

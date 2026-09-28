@@ -1,7 +1,7 @@
 # Toroidal and semitoroidal compactifications
 
-::: {.Remark}
-### Orientation
+::: {.Remark title="Orientation"}
+
 
 This section collects the general definitions of the compactification types used throughout the monograph -- toroidal, semitoroidal, KSBA, and Looijenga compactifications, together with generalized Coxeter semifans and recognizable divisors.
 The material here is background and vocabulary: it fixes the constructions in their natural generality.
@@ -52,8 +52,8 @@ $$
 as in \longref{def:semitoroidal-compactification} is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
 :::
 
-::: {.Remark}
-### Polarized Coble trace restriction
+::: {.Remark title="Polarized Coble trace restriction"}
+
 
 The polarized Coble compactification program does not build a new semifan from scratch; it uses a Coble-specific restriction of the Enriques ramification semifan.
 Concretely, one takes the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
@@ -75,8 +75,8 @@ For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots
 The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
 :::
 
-::: {.Remark}
-### Toroidal versus strictly semitoroidal
+::: {.Remark title="Toroidal versus strictly semitoroidal"}
+
 
 Unlike classical toroidal compactifications, where all walls of the Weyl chamber are preserved, semitoroidal compactifications allow certain irrelevant roots to be removed.
 The distinction between toroidal and strictly semitoroidal behavior depends on the order of the irrelevant root subgroup $W^{\irrelevant}$:
@@ -86,8 +86,8 @@ The distinction between toroidal and strictly semitoroidal behavior depends on t
 - **Strictly semitoroidal**: $|W^{\irrelevant}| = \infty$ (infinite irrelevant subgroups, so the semifan is not locally finite).
 :::
 
-::: {.Remark}
-### Polarized Coble trace picture
+::: {.Remark title="Polarized Coble trace picture"}
+
 
 For the polarized Coble program, the generalized Coxeter semifan of the Enriques cusp is restricted to a Coble hyperplane: one asks for the trace of the Enriques ramification semifan on that hyperplane, together with an admissibility condition determining which restricted walls survive.
 Under the proposed restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant; see \longref{conj:restricted_ramification_semifan}.
@@ -114,8 +114,8 @@ For K-trivial varieties (like K3 or Enriques surfaces), one uses pairs $(X, \var
 The KSBA moduli space $\overline{F}_\Gamma$ provides a modular, proper, algebraic compactification where boundary divisors correspond to geometric stable degenerations [@AET23; @AEGS25].
 :::
 
-::: {.Remark}
-### Polarized Coble application
+::: {.Remark title="Polarized Coble application"}
+
 
 The Coble-specific stable-pair package extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
 The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see \longref{conj:ksba_semitoroidal_comparison}.
@@ -137,8 +137,8 @@ the traces of the hyperplanes of $\cH$ on the boundary of that cusp.
 When $\cH$ is empty the construction returns the Baily--Borel compactification.
 :::
 
-::: {.Remark}
-### Three semifans, independently determined
+::: {.Remark title="Three semifans, independently determined"}
+
 
 Three semifans are in play for a single period domain, and they are produced by
 three unrelated inputs:

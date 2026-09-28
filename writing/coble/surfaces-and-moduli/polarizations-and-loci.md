@@ -2,16 +2,16 @@
 
 ## Numerical polarizations
 
-::: {.Definition #def:numerical-polarization}
-### Numerical polarization
+::: {.Definition #def:numerical-polarization title="Numerical polarization"}
+
 
 A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance
 an Enriques surface --- is the numerical class of $h \da c_1(\cL)$ for an ample
 line bundle $\cL\in\Pic(Z)$, often written $[\cL]$.
 :::
 
-::: {.Remark}
-### Numerical classes on an Enriques surface
+::: {.Remark title="Numerical classes on an Enriques surface"}
+
 
 For an Enriques surface $Z$ the first Chern class induces an isomorphism
 $$
@@ -26,8 +26,8 @@ signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of
 an ample class in $\Num(Z)\iso E_{10}$.
 :::
 
-::: {.Remark}
-### Degree of a numerical polarization
+::: {.Remark title="Degree of a numerical polarization"}
+
 
 The **degree** of a numerical polarization $[h]$ is its self-intersection $h^2$
 computed in $\Num(Z)$.
@@ -38,8 +38,8 @@ is the space $\fentwo$ appearing below.
 
 ## The Noether–Lefschetz locus for Enriques surfaces
 
-::: {.Remark}
-### The canonical cover and its involutions
+::: {.Remark title="The canonical cover and its involutions"}
+
 
 The canonical double cover $\pi\colon X\to Z$ of a degree-$2$ polarized Enriques
 surface yields a K3 surface $X$ carrying two commuting involutions: the
@@ -54,8 +54,8 @@ $\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AE
 :::
 :::
 
-::: {.Definition #def:nl-locus-enriques}
-### Noether–Lefschetz locus $\mathrm{NL}_{S_{\mathrm{En}}}$
+::: {.Definition #def:nl-locus-enriques title="Noether–Lefschetz locus $\mathrm{NL}_{S_{\mathrm{En}}}$"}
+
 
 The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques
 surfaces embeds into the K3 moduli space $\fttz$ via a canonical map $j$.
@@ -72,8 +72,8 @@ The appearance of these extra invariant classes in $\NS$ is what cuts out the
 locus.
 :::
 
-::: {.Remark}
-### KSBA limits and non-normality
+::: {.Remark title="KSBA limits and non-normality"}
+
 
 The Zariski closure
 $$
@@ -97,8 +97,8 @@ $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and
 $f\colon X\to S$ is the K3 double cover.
 :::
 
-::: {.Proposition #prop:canonical-perp-is-e10}
-### The canonical complement is the Enriques lattice
+::: {.Proposition #prop:canonical-perp-is-e10 title="The canonical complement is the Enriques lattice"}
+
 
 In $\Pic(S)\cong\latI_{1,10}$ one has $K_S = -3H + \Sum_{i=1}^{10} E_i$, and a
 divisor $D = aH - \Sum_i b_i E_i$ lies in $K_S^{\perp}$ if and only if
@@ -139,8 +139,8 @@ An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
-::: {.Definition #def:coble-polarization-classes}
-### The plane class and the degree-$2$ Coble polarization
+::: {.Definition #def:coble-polarization-classes title="The plane class and the degree-$2$ Coble polarization"}
+
 
 The two classes to be distinguished are:
 
@@ -156,8 +156,8 @@ The two classes to be distinguished are:
     has $\tilde h_\Co^2 = 4$.
 :::
 
-::: {.Remark}
-### Why the two must not be identified
+::: {.Remark title="Why the two must not be identified"}
+
 
 Both $H$ and $h_\Co$ have square $2$ after pullback and square $2$ downstairs
 respectively, so the numerical coincidence is easy to mistake for an identity.

@@ -25,8 +25,8 @@ The pair $(W(M), S)$ is a **Coxeter system** of **rank** $\abs{S}$.
 Its **Coxeter diagram** $\Sigma(M)$ is the graph on the vertex set $S$ with an edge $\ts{s,t}$ whenever $m_{st}\geq 3$, labelled by $m_{st}$ when $m_{st}\geq 4$.
 :::
 
-::: {.Definition #def:coxeter-gram-form}
-### The Gram form of a Coxeter matrix
+::: {.Definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix"}
+
 
 Let $M$ be a Coxeter matrix on $S$.
 The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\ts{\alpha_s}_{s\in S}$ determined by
@@ -38,8 +38,8 @@ read on the diagonal as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when
 Each $\alpha_s$ has norm $-2$ and is therefore a short root in the sense of \longref{def:2elementary-roots}; the reflections $s_{\alpha_s}$ of \longref{def:reflection} preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism $W(M)\to \Orth(\RR^S, G(M))$ [@Bou08; @Hum90].
 :::
 
-::: {.Remark}
-### Normalized pairings
+::: {.Remark title="Normalized pairings"}
+
 
 Dividing by the norms recovers the quantity that labels the edges of a Coxeter--Vinberg diagram: with $\alpha_s^2 = \alpha_t^2 = -2$,
 $$
@@ -52,8 +52,8 @@ which is the normalization of \longref{def:coxeter-vinberg-diagram}.
 A Coxeter matrix produces only the values $g_{st}\leq 1$; Vinberg's diagrams admit in addition the ultraparallel case $g_{st} > 1$, which corresponds to no finite $m_{st}$ and is drawn dotted.
 :::
 
-::: {.Remark #rmk:coxeter-form-values}
-### The values at small orders
+::: {.Remark #rmk:coxeter-form-values title="The values at small orders"}
+
 
 $$
 \begin{array}{c|cccccc}
@@ -63,8 +63,8 @@ m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
 $$
 :::
 
-::: {.Remark #rmk:gram-versus-cartan}
-### Gram and Cartan matrices
+::: {.Remark #rmk:gram-versus-cartan title="Gram and Cartan matrices"}
+
 
 Let $\ts{\alpha_s}_{s\in S}$ be simple roots in a lattice $L$.
 Two matrices are attached to them.
@@ -87,8 +87,8 @@ In the simply-laced case, where every $\alpha_s^2 = -2$, one has $A = -G$.
 When two root lengths occur the two matrices record different data: for $\alpha_s^2 = -2$ and $\alpha_t^2 = -4$ with $\beta_L(\alpha_s,\alpha_t) = 2$, the Cartan entries are $A_{st} = 1$ and $A_{ts} = 2$.
 :::
 
-::: {.Remark #rmk:schlafli-sign}
-### The opposite normalization
+::: {.Remark #rmk:schlafli-sign title="The opposite normalization"}
+
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
 Then $C = -G(M)$, and every definiteness statement below is read with the opposite sign: a spherical system has $C$ positive definite.
@@ -119,8 +119,8 @@ By Sylvester's law of inertia, invoked in the Lattice Theory section to define t
 The three conditions of \longref{def:coxeter-system-type} are therefore properties of the form $G$ rather than of the matrix representing it: spherical is $(n_+,n_-) = (0,n)$, euclidean is $(0,n-1)$ with a one-dimensional kernel, and hyperbolic is $(1,n-1)$.
 :::
 
-::: {.Theorem #thm:coxeter-type-and-geometry}
-### The geometry of the three types
+::: {.Theorem #thm:coxeter-type-and-geometry title="The geometry of the three types"}
+
 
 Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
 
@@ -155,16 +155,16 @@ $$
 is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Coxeter system with Coxeter matrix $M[I,I]$ [@Bou08].
 :::
 
-::: {.Remark}
-### Parabolic subgroups and parabolic subdiagrams
+::: {.Remark title="Parabolic subgroups and parabolic subdiagrams"}
+
 
 The two uses of *parabolic* are independent.
 The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\containedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (\longref{def:elliptic-subdiagram}), and then $(W_I, I)$ is a product of irreducible euclidean Coxeter systems, one for each component.
 :::
 
-::: {.Proposition #prop:signature-under-restriction}
-### Restriction cannot increase the positive index
+::: {.Proposition #prop:signature-under-restriction title="Restriction cannot increase the positive index"}
+
 
 Let $\beta$ be a symmetric bilinear form on a finite-dimensional real vector space $V$, write $n_\pm(\beta)$ for its numbers of positive and negative squares, and let $V'\leq V$ be a subspace of codimension $c$.
 Then
@@ -204,8 +204,8 @@ Part (1) is what makes an enumeration of the elliptic subdiagrams of a Coxeter--
 
 ## The spherical and euclidean classifications
 
-::: {.Theorem #thm:spherical-classification}
-### Classification of spherical Coxeter systems
+::: {.Theorem #thm:spherical-classification title="Classification of spherical Coxeter systems"}
+
 
 An irreducible Coxeter system is spherical if and only if its Coxeter diagram is one of
 $$
@@ -228,8 +228,8 @@ Here $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\co
 The root systems $B_n$ and $C_n$ of \longref{def:root-system-Bn-Cn} have the same Coxeter matrix and so contribute a single entry, the two being distinguished by their root lengths rather than by their Coxeter system.
 :::
 
-::: {.Theorem #thm:euclidean-classification}
-### Classification of euclidean Coxeter systems
+::: {.Theorem #thm:euclidean-classification title="Classification of euclidean Coxeter systems"}
+
 
 An irreducible Coxeter system is euclidean if and only if its Coxeter diagram is one of
 $$
@@ -247,8 +247,8 @@ each of rank $n+1$ and drawn in the diagram table of the Diagrams appendix [@Bou
 The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty$, and $\tilde A_n$ for $n\geq 2$ is the cycle on $n+1$ vertices with all bonds $m_{ij} = 3$.
 :::
 
-::: {.Proposition #prop:euclidean-radical}
-### The radical of a euclidean diagram
+::: {.Proposition #prop:euclidean-radical title="The radical of a euclidean diagram"}
+
 
 Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\ts{\alpha_s}_{s\in I}$.
 Then $\ker G[I,I]$ is spanned by a vector
@@ -278,8 +278,8 @@ A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\ts{2,3,4,6,\in
 A Coxeter matrix $M$ is crystallographic if and only if the group $W(M)$ preserves a lattice of full rank in $\RR^S$ [@Bou08; @Hum90].
 :::
 
-::: {.Example #ex:crystallographic-rescaling}
-### Rescaling to an integral form
+::: {.Example #ex:crystallographic-rescaling title="Rescaling to an integral form"}
+
 
 The equal-norm normalization $\alpha_s^2 = -2$ of \longref{def:coxeter-gram-form} does not itself make the form integral, and a crystallographic $M$ becomes integral only after the simple roots are rescaled.
 For $m_{st} = 4$ one has $\beta(\alpha_s,\alpha_t) = 2\cos(\pi/4) = \sqrt2$; replacing $\alpha_t$ by $\alpha_t' \da \sqrt2\,\alpha_t$ gives
@@ -317,8 +317,8 @@ $$
 In particular $K(M) = \QQ$ exactly when $m_{st}\in\ts{2,3,\infty}$ for all $s\neq t$.
 :::
 
-::: {.Proposition #prop:gram-form-integrality}
-### When the Gram form is integral
+::: {.Proposition #prop:gram-form-integrality title="When the Gram form is integral"}
+
 
 $G(M)$ has all its entries in $\ZZ$ if and only if $m_{st}\in\ts{2,3,\infty}$ for every $s\neq t$.
 Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the simply-laced ones.
@@ -330,8 +330,8 @@ By \longref{prop:coxeter-base-field-degree} the degree of $\QQ(2\cos(\pi/m))$ ov
 The remaining orders therefore give irrational entries, and the three admissible orders give $0$, $1$ and $2$.
 :::
 
-::: {.Example #ex:noncrystallographic-base-rings}
-### The non-crystallographic spherical types
+::: {.Example #ex:noncrystallographic-base-rings title="The non-crystallographic spherical types"}
+
 
 Of the spherical types of \longref{thm:spherical-classification}, those that are not crystallographic are $H_3$, $H_4$, and $I_2(p)$ for $p\notin\ts{2,3,4,6}$.
 
@@ -346,8 +346,8 @@ so $H_3$ and $H_4$ both have base field $K = \QQ(\sqrt5)$, and their Gram forms 
 For $m = 8$ the base field is $\QQ(\sqrt{2+\sqrt2})$, of degree $4$ over $\QQ$ by \longref{prop:coxeter-base-field-degree}.
 :::
 
-::: {.Remark #rmk:galois-conjugate-gram-form}
-### Galois conjugates of a Gram form
+::: {.Remark #rmk:galois-conjugate-gram-form title="Galois conjugates of a Gram form"}
+
 
 Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
 Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ of the same rank, with the same diagonal $-2$.
@@ -357,8 +357,8 @@ Whether every nontrivial conjugate of a hyperbolic Gram form is negative definit
 
 ## Origins
 
-::: {.Remark}
-### Attribution
+::: {.Remark title="Attribution"}
+
 
 Coxeter introduced the matrices and diagrams now named after him and classified the finite reflection groups, obtaining the list of \longref{thm:spherical-classification} with its two non-crystallographic exceptional types $H_3$ and $H_4$; the euclidean classification of \longref{thm:euclidean-classification} grew out of Weyl's theory of root systems and the affine reflection groups.
 Both are given in Bourbaki [@Bou08] and in Humphreys [@Hum90], and the geometric and topological theory of general Coxeter groups in Davis [@Dav08].

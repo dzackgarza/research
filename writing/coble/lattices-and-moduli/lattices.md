@@ -242,8 +242,8 @@ A finite birational morphism from a normal variety onto a reduced irreducible
 variety is its normalization, so $F_\Co$ is the normalization of $Z$.
 :::
 
-::: {.Remark #rmk:normalization-enriques-analogue}
-### The same statement one level up
+::: {.Remark #rmk:normalization-enriques-analogue title="The same statement one level up"}
+
 
 [The normalization theorem](#thm:normalization) is the Coble analogue of [@AEGS25 Lem. 2.8], which
 asserts that $\fentwo$ is the normalization of a closed subvariety of
@@ -258,8 +258,8 @@ The proof above replaces that detour by the direct gluing computation, which is
 available here because $T_\Co^{\perp T_\En}\cong\gens{-2}$ is of rank one.
 :::
 
-::: {.Remark #rmk:descent-of-an-equivariant-inclusion}
-### What the stabilizer statement has to supply
+::: {.Remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
+
 
 The stabilizer step of [the normalization theorem](#thm:normalization) is one instance of a general
 criterion for descending a map to a pair of quotients.

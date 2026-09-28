@@ -14,8 +14,8 @@ tags:
 **Provenance.** Originally `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/sage-scripts/` and `.../notebooks/`, a tree that has since been trashed.
 Nothing of this appears in the dissertation.
 
-::: {.Remark}
-## Where the code now lives
+::: {.Remark title="Where the code now lives"}
+
 
 The scripts and notebooks survived the deletion.
 A content-hash comparison of the whole source tree against `~/research` found 564 of its 587 files already byte-identical there: the reusable modules live under `computations/scripts/` in a newer form than the archived copies, and the notebooks under `archives/notebooks/`. The Coxeter input data was fully covered.
@@ -25,8 +25,8 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
 
 ## The recipe
 
-::: {.Construction}
-### Seven steps, from a lattice to its cusps and integral-affine data
+::: {.Construction title="Seven steps, from a lattice to its cusps and integral-affine data"}
+
 
 1. **Build the lattice** from $U$, $U(2)$, $E_8$, $E_8(2)$, $\gens{\pm2}$ blocks.
    Confirm 2-elementarity and read off $(r,a,\delta)$, computing $\delta$ by the diagonal test on the discriminant quadratic form.
@@ -60,8 +60,8 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
 
 ## Known defects in the corpus
 
-::: {.Remark}
-### Recorded so they are not rediscovered
+::: {.Remark title="Recorded so they are not rediscovered"}
+
 
 - The **Vinberg implementations are missing**: `viberg-algorithm/` holds three empty directories (`vinal`, `AlVin`, `VinbergsAlgorithmNF`), and `init.sage` hard-codes an absolute path to a `vinal` checkout.
   Step 2 of the recipe cannot run as shipped.

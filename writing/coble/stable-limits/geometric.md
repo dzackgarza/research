@@ -34,8 +34,8 @@ The ramification divisor $R_Z = \rho\inv(B)$ is ample, $\QQ$-Cartier, and lies i
 
 ## The components of a stable degeneration
 
-::: {.Definition #def:ade-surfaces}
-### ADE surfaces
+::: {.Definition #def:ade-surfaces title="ADE surfaces"}
+
 
 The **ADE surfaces** are the irreducible components of the KSBA stable
 degenerations of K3 surfaces with a nonsymplectic involution.
@@ -49,8 +49,8 @@ $\bigl(Y,\ C + \tfrac{1+\varepsilon}{2}B\bigr)$ of index $2$
 [@AEGS25 §6].
 :::
 
-::: {.Definition #def:bcde-surfaces}
-### BCDE surfaces and the folding labels
+::: {.Definition #def:bcde-surfaces title="BCDE surfaces and the folding labels"}
+
 
 The **BCDE surfaces** are the quotients of ADE surfaces by involutions, and they
 correspond to the foldings of the ADE Dynkin diagrams.

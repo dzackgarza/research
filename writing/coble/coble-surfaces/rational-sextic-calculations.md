@@ -20,8 +20,8 @@ Noting that $d=6$, we obtain the geometric genus $g = 10 - k$, where $k$ is the 
 Thus $g = 0$ if and only if $k = 10$.
 :::
 
-::: {.Remark #rmk:severi-sextics}
-### Severi varieties and degenerate sextics
+::: {.Remark #rmk:severi-sextics title="Severi varieties and degenerate sextics"}
+
 
 We note that an arbitrary rational irreducible sextic need not have exactly ten singularities, nor must its singularities be $A_1$ singularities.
 The condition $g=0$ merely requires that the sum of the $\delta$-invariants of its singularities equals 10. The locus of rational $A_1$-singular sextics forms a Severi variety $V_{6,10}$ [@BHO+12] whose generic element has precisely ten $A_1$ singularities.
@@ -30,8 +30,8 @@ For instance, there exist rational $A_2$-singular sextics lacking ten $A_1$ sing
 The classical unnodal Coble surface construction specifically requires a sextic from the generic, 10-$A_1$ locus.
 :::
 
-::: {.Remark}
-### Canonical class of Cobles
+::: {.Remark title="Canonical class of Cobles"}
+
 
 Let $W\subset \PP^2$ be a generic irreducible rational sextic with ten $A_1$ singularities.
 The classical Coble surfaces $S$ were first constructed in [@Cob19] in a study of Cremona transformations of $\PP^2$ that preserve such a rational sextic $W$.
@@ -61,8 +61,8 @@ $$
 yielding $C\sim -2K_S$.
 :::
 
-::: {.Remark}
-### Invariants of antibicanonical curves
+::: {.Remark title="Invariants of antibicanonical curves"}
+
 
 By [@CD12 §3.1], if $S$ is a Coble surface of K3 type with $n=1$ boundary component and $C \in \abs{-2K_S}$ is an irreducible curve, then
 
@@ -76,8 +76,8 @@ This forces $C$ to be a smooth rational curve with $C^2 = 4K_S^2 = -4$.
 
 ## The configuration constraint on the ten nodes
 
-::: {.Proposition #prop:sextic-node-conditions}
-### Ten nodes impose more conditions than the linear system has
+::: {.Proposition #prop:sextic-node-conditions title="Ten nodes impose more conditions than the linear system has"}
+
 
 The space of plane sextics is
 $$
@@ -117,8 +117,8 @@ $12$ and the Coble locus is cut out by three conditions, leaving the
 $9$-dimensional moduli of \longref{cor:m-polarized-k3-dimension}.
 :::
 
-::: {.Remark}
-### How many of the thirty conditions are independent
+::: {.Remark title="How many of the thirty conditions are independent"}
+
 
 \longref{prop:sextic-node-conditions} says the thirty conditions must be
 dependent but not by how much.
@@ -138,8 +138,8 @@ Quotienting by the $8$-dimensional group $\PGL_3$ leaves the nine moduli again.
 
 ## A criterion for a node of a plane curve
 
-::: {.Proposition #prop:hessian-rank-at-singular-point}
-### Hessian rank at a singular point
+::: {.Proposition #prop:hessian-rank-at-singular-point title="Hessian rank at a singular point"}
+
 
 Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree $n$, and
 let $p\in k^3$ be nonzero with

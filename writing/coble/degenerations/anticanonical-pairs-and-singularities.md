@@ -1,7 +1,7 @@
 # Anticanonical pairs, charge, and MMP singularities
 
-::: {.Remark}
-### Orientation
+::: {.Remark title="Orientation"}
+
 
 The components of a Type III degeneration are anticanonical pairs, and the combinatorics of such degenerations is controlled by a single additive invariant, the *charge*. We collect the definitions here, together with the singularity classes of the minimal model program that govern which limits are admissible in KSBA moduli.
 :::
@@ -33,8 +33,8 @@ Q(V, \partial V) = 0
 $$
 :::
 
-::: {.Proposition #prop:charge-under-blowup}
-### Charge under blowup
+::: {.Proposition #prop:charge-under-blowup title="Charge under blowup"}
+
 
 The charge behaves as follows under blowups of an anticanonical pair:
 
@@ -45,8 +45,8 @@ The charge behaves as follows under blowups of an anticanonical pair:
 This is [@Fri15 Lem. 2.2(iii)]; the charge itself is [@Fri15 Def. 1.1].
 :::
 
-::: {.Theorem #thm:friedman-miranda-charge}
-### Friedman--Miranda charge theorem
+::: {.Theorem #thm:friedman-miranda-charge title="Friedman--Miranda charge theorem"}
+
 
 Let $\cX \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
 $$

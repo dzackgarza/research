@@ -19,8 +19,8 @@ This note records the moduli-theoretic program built on that observation, which 
 
 ## Definitions and known moduli
 
-::: {.Definition}
-### Index, Halphen pencil, Halphen surface
+::: {.Definition title="Index, Halphen pencil, Halphen surface"}
+
 
 A **rational elliptic surface** is a smooth projective rational surface $Y$ with a relatively minimal fibration $\pi: Y\to\PP^1$ whose generic fiber is a smooth elliptic curve.
 Its **index** is the minimal $m$ with $\pi$ given by $|-mK_Y|$.
@@ -28,8 +28,8 @@ A **Halphen pencil of index $m$** is a pencil of degree $3m$ curves in $\PP^2$ w
 Every relatively minimal rational elliptic surface is Halphen of some index.
 :::
 
-::: {.Remark}
-### What is already constructed in the literature
+::: {.Remark title="What is already constructed in the literature"}
+
 
 - $M_{H,1}$ is an open subset of the Grassmannian $\Gr_2(10)$ of pencils of plane cubics, irreducible of dimension 8.
 
@@ -44,8 +44,8 @@ Every relatively minimal rational elliptic surface is Halphen of some index.
 
 ## The lattice matching
 
-::: {.Remark}
-### Where the Coble lattices reappear
+::: {.Remark title="Where the Coble lattices reappear"}
+
 
 In AE22, the case $S = (10,10,1)$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \da X/\iota$ is an index 2 Halphen pencil.
 More generally, by AE22 section 4C, the lattices $S = (10+n,\, 12-n,\, \delta)$ for $1\leq n\leq 9$ give index 2 Halphen K3 surfaces $X$ with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber yields index 2 Halphen pencils with an $I_k$ fiber.
@@ -56,15 +56,15 @@ The lattice coincidence is the whole content of the conjecture: two geometricall
 
 ## The program
 
-::: {.Conjecture}
-### Period domains and KSBA compactifications for M_(H,2,k)
+::: {.Conjecture title="Period domains and KSBA compactifications for M_(H,2,k)"}
+
 
 These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
 The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications of the corresponding period domains, for a suitably canonical divisor $R$.
 :::
 
-::: {.Conjecture}
-### The multiple fiber as the recognizable divisor
+::: {.Conjecture title="The multiple fiber as the recognizable divisor"}
+
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
 That fiber can be used to construct a recognizable divisor $R$.
@@ -91,8 +91,8 @@ The Coxeter diagram for $S \da (10,10,1)$ is well known and the K3 moduli theory
 
 Steps 3 through 5 are exactly the recipe recorded in [the computational toolchain and recipe](../computations/computational-toolchain-and-recipe.md), applied to a new lattice.
 
-::: {.Remark}
-### Why the program is stated as worth doing
+::: {.Remark title="Why the program is stated as worth doing"}
+
 
 It opens a comparison between GIT and KSBA compactifications, since $M_{H,1}$ and $M_{H,2}$ already have GIT compactifications in the literature while their KSBA compactifications do not exist.
 Generalizing to $\overline{M_{H,m}}^R$ for $m>2$ would give new moduli spaces of general rational elliptic surfaces with no restriction on fiber type.

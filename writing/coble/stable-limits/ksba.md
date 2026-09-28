@@ -45,8 +45,8 @@ type, which is [the quarter-singularity conjecture](#conj:coble_quarter_singular
 
 ## A worked integral affine structure
 
-::: {.Example #ex:type-ii-ias-41}
-### The Type II ray at the $1$-cusp $41$
+::: {.Example #ex:type-ii-ias-41 title="The Type II ray at the $1$-cusp $41$"}
+
 
 Take the monodromy invariant with barycentric coordinates
 $$
@@ -94,8 +94,8 @@ $$
 equivariant.
 Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], this refines the arithmetic group $\Gamma_{\Co, 2}$ of the moduli summary, and the two descriptions agree exactly when the polarized root orbit is unique.
 
-::: {.Remark #rmk:gamma-co-2-two-definitions}
-### The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors
+::: {.Remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
+
 
 The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the
 stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](moduli-construction.md)
