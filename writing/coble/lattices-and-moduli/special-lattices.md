@@ -1,6 +1,6 @@
 # Special lattices and transformations {#sec:special-lattices}
 
-::: {.Remark}
+::: {.Remark title="The recurring lattices and transvections of Coble--Enriques moduli"}
 
 The lattice-theoretic study of moduli of Coble and Enriques surfaces is carried
 out on a small stock of recurring lattices and on the group-theoretic
@@ -203,7 +203,7 @@ The distinguished case $m = 2$ gives a lattice of signature $(2, 19)$, which we
 call the **degree $2d$ K3 lattice**.
 :::
 
-::: {.Remark}
+::: {.Remark title="The degree-$2d$ K3 period lattice is the polarization complement"}
 
 The K3 lattice is $\lkt = U^3\oplus E_8^2 = \latII_{3, 19}$, of signature
 $(3, 19)$.
@@ -242,7 +242,7 @@ We abbreviate $V \da V_1$.
 Each of $V_k$ and $U_k$ is even, nondegenerate, and of $2$-adic rank $2$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Nikulin's $2$-adic blocks $U_k$ and $V_k$"}
 
 The lattice $U_k$ is the $2$-adic hyperbolic plane scaled by $2^k$: one has
 $U_0\cong U\tensor_\ZZ\ZZ_2$ and $U_1\cong U(2)\tensor_\ZZ\ZZ_2$.
@@ -345,7 +345,7 @@ $$
 $$
 :::
 
-::: {.Remark}
+::: {.Remark title="$U\oplus U$ realizes the exceptional orthogonal--linear isogeny"}
 
 The quadratic form $q(X) = \det X$ on $\Mat_{2\times 2}(\ZZ)$ is
 integer-valued, so the lattice is even, and its associated bilinear form is
@@ -383,7 +383,7 @@ rank-two forms on $(\ZZ/2\ZZ)^2$, realized as the discriminant forms of $U(2)$
 and of $V = V_1$ respectively.
 :::
 
-::: {.Remark}
+::: {.Remark title="Relations among the four elementary $2$-adic discriminant forms"}
 
 The relations record the coincidences among finite $2$-adic quadratic forms
 established by Nikulin [@Nik80]: for instance $u^{\oplus 2} = v^{\oplus 2}$
@@ -407,7 +407,7 @@ $$
 This standard building-block list is not asserted to be exhaustive.
 :::
 
-::: {.Remark}
+::: {.Remark title="The Coble lattice table is a census of the K3-embeddable building blocks"}
 
 This building-block list is drawn from Nikulin's study of the even
 $2$-elementary hyperbolic lattices embedding into $\lkt$ [@Nik80], the same
