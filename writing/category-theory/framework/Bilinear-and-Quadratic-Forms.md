@@ -10,16 +10,14 @@ Pullback along $f\colon M\to N$ sends $b$ to
 $$
 f^*b(x,y)=b(fx,fy),
 $$
-and defines a presheaf $\operatorname{Bil}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\mathrm{op}}
-\to R\text{-}\mathbf{Mod}$.
+and defines a presheaf $\operatorname{Bil}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\mathrm{op}} \to R\text{-}\mathbf{Mod}$.
 
 Let $\operatorname{Quad}_{R,W}(M)$ be the $R$-module, under pointwise operations, of maps $q\colon M\to W$ for which $q(rx)=r^2q(x)$ and
 $$
 b_q(x,y)=q(x+y)-q(x)-q(y)
 $$
 is $R$-bilinear.
-Pullback defines the presheaf $\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\mathrm{op}}
-\to R\text{-}\mathbf{Mod}$.
+Pullback defines the presheaf $\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\mathrm{op}} \to R\text{-}\mathbf{Mod}$.
 :::
 
 ::: {.definition #def:form-categories title="Form categories"}

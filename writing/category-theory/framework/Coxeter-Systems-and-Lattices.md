@@ -75,9 +75,11 @@ $$
 
 Two conditions on $(W,S)$ are used below, and they cut out different classes.
 
-- **The signature condition.** The form $b$ is hyperbolic, equivalently of Lorentzian signature, when its signature is $(1,n-1,0)$; this is @def:definiteness, and it is the condition under which a lattice is called hyperbolic. The term *Lorentzian* for a form with exactly one positive square is the usage of [@CS10, Ch. 27].
+- **The signature condition.** The form $b$ is hyperbolic, equivalently of Lorentzian signature, when its signature is $(1,n-1,0)$; this is @def:definiteness, and it is the condition under which a lattice is called hyperbolic.
+  The term *Lorentzian* for a form with exactly one positive square is the usage of [@CS10, Ch. 27].
 
-- **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$. Equivalently: $b$ is nondegenerate and not negative definite, and for each $s\in S$ the Coxeter graph obtained by deleting $s$ has negative semidefinite form.
+- **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$.
+  Equivalently: $b$ is nondegenerate and not negative definite, and for each $s\in S$ the Coxeter graph obtained by deleting $s$ has negative semidefinite form.
 
 The system is *compact hyperbolic* when $b$ is nondegenerate and not negative definite and for each $s$ the graph obtained by deleting $s$ has negative definite form; these are the systems classified by Lannér [@Hum90, §6.8].
 

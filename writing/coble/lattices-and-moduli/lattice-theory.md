@@ -153,7 +153,8 @@ We say that a primitive isotropic vector $e\in L$ is
 
 3. **even characteristic** if $\operatorname{div}_L(e) = 2$ and $e^*$ is characteristic.
 
-The 2-elementary hyperbolic lattices admitting a primitive embedding into $\lkt$ were classified by Nikulin in [@Nik80 §3.6.2]. An indefinite **even** 2-elementary lattice is determined up to isometry by its signature together with a triple of invariants $(r,a,\delta)$.
+The 2-elementary hyperbolic lattices admitting a primitive embedding into $\lkt$ were classified by Nikulin in [@Nik80 §3.6.2].
+An indefinite **even** 2-elementary lattice is determined up to isometry by its signature together with a triple of invariants $(r,a,\delta)$.
 Here, $r\da \rank_\ZZ(L)$ is the rank, $a = \rank_{\bF_2}A_L$ is the exponent appearing in $A_L = (\ZZ/2\ZZ)^a$, and $\delta \in \ts{0, 1}$ is the **coparity**: we set $\delta = 0$ if $q_L(A_L) \containedin \ZZ$, so $q_L(x) \equiv 0 \mod \ZZ$ for all $x\in A_L$, and $\delta=1$ otherwise.
 The evenness and indefiniteness hypotheses are both needed: the theorem is Nikulin's classification of even 2-elementary lattices, and it rests on the general uniqueness criterion for even indefinite lattices [@Nik80 Thm. 1.14.2].
 We accordingly specify such lattices using the notation $(r,a,\delta)_{n_+}$.

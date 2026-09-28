@@ -3,8 +3,10 @@
 ::: {.remark}
 ### On defining Cobles
 
-For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along with [@DM20; @DZ99; @DK13; @CD85; @CD12; @Dol17]. Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
-Such surfaces were first studied in [@Cob19], [@Cob29], and were ultimately classified in [@DZ99]. We say $S$ is **terminal of K3 type** if $\abs{-2K_S}$ contains a smooth[^1] divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus $C_i C_j = -4\delta_{ij}$.
+For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along with [@DM20; @DZ99; @DK13; @CD85; @CD12; @Dol17].
+Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
+Such surfaces were first studied in [@Cob19], [@Cob29], and were ultimately classified in [@DZ99].
+We say $S$ is **terminal of K3 type** if $\abs{-2K_S}$ contains a smooth[^1] divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus $C_i C_j = -4\delta_{ij}$.
 We refer to $C$ as the *anti-bicanonical curve* of $S$, and note that $K_S\cdot C_i = -2$.
 The $C_i$ are referred to as the *boundary components* of $S$.
 One can show $n = -K_S^2$ and $n\leq 10$, c.f. [@DK25 Cor. 9.1.5].

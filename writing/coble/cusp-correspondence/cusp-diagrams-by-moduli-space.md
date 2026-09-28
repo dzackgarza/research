@@ -53,7 +53,8 @@ Applying the same mirror moves, we obtain the cusp diagram for $\fco$, the modul
 Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.
 :::
 
-The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in @fig-coble-coxeter-diagrams. Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in @fig-coble-cusp-9-9-1-parabolics.
+The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in @fig-coble-coxeter-diagrams.
+Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in @fig-coble-cusp-9-9-1-parabolics.
 
 ::: {#fig-coble-coxeter-diagrams .figure}
 \begin{tikzpicture}
@@ -89,13 +90,13 @@ Sterk's cusp diagram for $\fent$.
 
 We have the following divisibilities in various lattices:
 
-| Sterk Cusp | Vector                           | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
+| Sterk Cusp | Vector | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
 | :--------- | :------------------------------- | :--------------------- | :------------------------------- |
-| 1          | $e$                              | 1                      | 1                                |
-| 2          | $e'$                             | 2                      | 2                                |
-| 3          | $e' + f' + \overline{\alpha}_8$  | 2                      | 1                                |
-| 4          | $2e' + f' + \overline{\alpha}_1$ | 2                      | 1                                |
-| 5          | $2e + 2f + \overline{\alpha}_1$  | 2                      | 1                                |
+| 1 | $e$ | 1 | 1 |
+| 2 | $e'$ | 2 | 2 |
+| 3 | $e' + f' + \overline{\alpha}_8$ | 2 | 1 |
+| 4 | $2e' + f' + \overline{\alpha}_1$ | 2 | 1 |
+| 5 | $2e + 2f + \overline{\alpha}_1$ | 2 | 1 |
 
 : Isotropic vectors in $\fent$ and their divisibilities.
 :::

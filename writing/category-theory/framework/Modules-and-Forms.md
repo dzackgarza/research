@@ -33,8 +33,7 @@ b_B\colon(B\otimes_AM)\times(B\otimes_AM)\longrightarrow B\otimes_AW,
 b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y),
 $$
 whose value module is $B\otimes_AW$.
-For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as
-$b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
+For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as $b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
 :::
 
 ## Module properties {#sec-module-properties}
@@ -99,4 +98,3 @@ Fix a subgroup of units $U\le R^\times$.
 An *orientation modulo $U$* is an orbit of such isomorphisms under the action of $U$ by scalar multiplication.
 Two ordered bases $(e_1,\dots,e_n)$ and $(f_1,\dots,f_n)$ of $M$ determine the same orientation modulo $U$ if and only if the change-of-basis matrix $A\in\operatorname{GL}_n(R)$, defined by $f_j=\sum_{i=1}^n A_{ij}e_i$, satisfies $\det(A)\in U$.
 :::
-

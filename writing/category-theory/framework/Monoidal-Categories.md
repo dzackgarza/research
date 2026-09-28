@@ -66,8 +66,7 @@ $$
 \operatorname{Hom}_V(a\otimes b,\,c)\;\cong\;\operatorname{Hom}_V(a,\,[b,c]),
 $$
 natural in $a$ and $c$.
-The value $[b,c]$ is the *internal hom*.
-For a commutative ring $R$, $(R\text{-}\mathbf{Mod},\otimes_R,R)$ is closed with $[B,A]=\operatorname{Hom}_R(B,A)$, and $\mathbf{Set}$ and $\mathbf{Cat}$ are closed for their cartesian structures [@Mac98, §VII.7].
+The value $[b,c]$ is the *internal hom*. For a commutative ring $R$, $(R\text{-}\mathbf{Mod},\otimes_R,R)$ is closed with $[B,A]=\operatorname{Hom}_R(B,A)$, and $\mathbf{Set}$ and $\mathbf{Cat}$ are closed for their cartesian structures [@Mac98, §VII.7].
 The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the canonical morphism $a\to[[a,e],e]$ is an isomorphism is a hypothesis on $a$, stated where it is used.
 :::
 

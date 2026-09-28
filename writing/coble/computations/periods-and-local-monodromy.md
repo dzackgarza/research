@@ -26,8 +26,7 @@ Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) f
 Fix a reference fiber $X = X_{t_0} = \pi\inv(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.
 For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\dR}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
 
-1. **The general period matrix and period map:**
-   The *period matrix* of the fiber $X_t$ with respect to the chosen bases is the $p \times k$ matrix of period integrals
+1. **The general period matrix and period map:** The *period matrix* of the fiber $X_t$ with respect to the chosen bases is the $p \times k$ matrix of period integrals
    $$
    \Pi(t) \;\coloneqq\; \begin{pmatrix}
    \ds\int_{\Sigma_0(t)} \omega_1(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_1(t) \\
@@ -42,8 +41,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
    $$
 
-2. **Specialization to the one-form case ($p = 1$, Calabi–Yau varieties):**
-   When $X$ is a smooth $m$-dimensional Calabi–Yau variety (such as an elliptic curve with $m=1$, a K3 surface with $m=2$, or a Calabi–Yau threefold with $m=3$), the space of holomorphic top forms is one-dimensional: $h^{m,0}(X) = 1$.
+2. **Specialization to the one-form case ($p = 1$, Calabi–Yau varieties):** When $X$ is a smooth $m$-dimensional Calabi–Yau variety (such as an elliptic curve with $m=1$, a K3 surface with $m=2$, or a Calabi–Yau threefold with $m=3$), the space of holomorphic top forms is one-dimensional: $h^{m,0}(X) = 1$.
    There is therefore a unique (up to scaling) non-vanishing holomorphic $m$-form $\Omega \in H^{m,0}(X)$.
    In this setting, there is exactly one form to integrate ($p = 1$), and the general period matrix specializes to a single row vector of $k = b_m$ period integrals $\omega_0, \dots, \omega_{k-1}$, given by
    $$
@@ -202,8 +200,7 @@ The limiting mixed Hodge structure of an arbitrary degeneration, the nearby- and
 ::: {.remark}
 ### The K3 cover as a double cover
 
-The K3 cover of a Coble surface is the double cover of $\PP^2$ branched along the rational sextic $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$ ([[open-problems]]).
-Double covers of $\PP^2$ branched along a sextic are one of the classes @cons:lefschetz-periods handles directly, so a worked instance of $F$ is the entire input its periods and monodromy require, and the open problem asking for such an instance is what stands between this program and a period computation for its own surfaces.
+The K3 cover of a Coble surface is the double cover of $\PP^2$ branched along the rational sextic $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$ ([[open-problems]]). Double covers of $\PP^2$ branched along a sextic are one of the classes @cons:lefschetz-periods handles directly, so a worked instance of $F$ is the entire input its periods and monodromy require, and the open problem asking for such an instance is what stands between this program and a period computation for its own surfaces.
 :::
 
 ::: {.remark}

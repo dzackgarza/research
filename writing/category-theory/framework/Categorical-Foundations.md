@@ -12,17 +12,20 @@ The projection
 $$
 p_F\colon\int_C F\longrightarrow C,\qquad(c,x)\longmapsto c,
 $$
-is a discrete fibration [@nlab:category_of_elements; @Rie16, §2.4]. For a covariant functor $C\to\mathbf{Set}$ the corresponding projection is a discrete opfibration.
+is a discrete fibration [@nlab:category_of_elements; @Rie16, §2.4].
+For a covariant functor $C\to\mathbf{Set}$ the corresponding projection is a discrete opfibration.
 :::
 
 ## Grothendieck construction
 
 For a pseudofunctor $F\colon C^{\mathrm{op}}\to\mathbf{Cat}$, the Grothendieck construction $\int_C F\to C$ is a fibration.
-The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothendieck_construction]. A general forgetful functor need not arise from a category of elements; later chapters specify each forgetful functor directly.
+The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothendieck_construction].
+A general forgetful functor need not arise from a category of elements; later chapters specify each forgetful functor directly.
 
 ::: {.definition #def:subcategory title="Subobjects, full and replete subcategories"}
 
-A *subobject* of $Y\in\mathcal C$ is a monomorphism $m:X\to Y$ in $\mathcal C$; the datum is the arrow $m$, not merely the domain $X$ [@Lur18c, Tag 04VD]. Equivalently, $m$ is a subterminal object of the slice $\mathcal C_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
+A *subobject* of $Y\in\mathcal C$ is a monomorphism $m:X\to Y$ in $\mathcal C$; the datum is the arrow $m$, not merely the domain $X$ [@Lur18c, Tag 04VD].
+Equivalently, $m$ is a subterminal object of the slice $\mathcal C_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
 
 For ordinary $\mathbf{Cat}$, a functor $F:\mathcal A\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism over $\mathcal B$.
 In $\operatorname{Cat}_{\infty,\infty}$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_{\infty,\infty}$.
@@ -109,7 +112,8 @@ An *abelian category* is an additive category in which every morphism has a kern
 $$
 \operatorname{Coim}(f)\longrightarrow\operatorname{Im}(f)
 $$
-is an isomorphism [@The25, Tag 0109]. In an abelian category, a morphism is monic exactly when its kernel is zero and epic exactly when its cokernel is zero.
+is an isomorphism [@The25, Tag 0109].
+In an abelian category, a morphism is monic exactly when its kernel is zero and epic exactly when its cokernel is zero.
 
 An equivalent axiomatization asks for a zero object, binary biproducts, kernels and cokernels of every morphism, and that every monomorphism be a kernel and every epimorphism a cokernel [@Mac98, §VIII.3].
 Kernels and cokernels then supply the remaining finite limits and colimits: the equalizer of $f,g$ is the kernel of $f-g$, and biproducts are the finite products, so an abelian category is finitely complete and finitely cocomplete [@Mac98, §VIII.3].
@@ -159,7 +163,8 @@ Given functors $F\colon A\to C$ and $G\colon B\to C$, their pseudo-pullback has 
 It is the 2-categorical pullback up to equivalence [@nlab:2-pullback].
 
 If one leg is an isofibration, its strict pullback presents the pseudo-pullback up to equivalence.
-A replete full inclusion is an isofibration [@nlab:isofibration]. Thus strict pullbacks suffice for replete full subcategories, while forgetful functors from chosen structures generally require pseudo-pullbacks.
+A replete full inclusion is an isofibration [@nlab:isofibration].
+Thus strict pullbacks suffice for replete full subcategories, while forgetful functors from chosen structures generally require pseudo-pullbacks.
 
 ## Connected components and fibers {#sec-pi0-fiber}
 
@@ -170,7 +175,8 @@ $$
 \pi_1(B,b)\longrightarrow\pi_0(F)\longrightarrow\pi_0(E)
 \longrightarrow\pi_0(B).
 $$
-Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99]. A set-valued invariant formed from this sequence must specify whether it uses the fiber after $\pi_0$ or the components of the homotopy fiber.
+Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99].
+A set-valued invariant formed from this sequence must specify whether it uses the fiber after $\pi_0$ or the components of the homotopy fiber.
 
 ::: {.definition #def:generalized-element title="Generalized elements"}
 
@@ -217,7 +223,8 @@ Thus the projection $\int_C F\to C$ is a discrete fibration; no additional oppos
 
 ::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces"}
 
-Let $\mathsf{LRS}_{\mathbb{R}}$ denote the category of locally $\mathbb{R}$-ringed spaces: topological spaces equipped with a sheaf of $\mathbb{R}$-algebras whose stalks are local rings [@nlab:locally_ringed_space]. The standard local model of dimension $n$ is
+Let $\mathsf{LRS}_{\mathbb{R}}$ denote the category of locally $\mathbb{R}$-ringed spaces: topological spaces equipped with a sheaf of $\mathbb{R}$-algebras whose stalks are local rings [@nlab:locally_ringed_space].
+The standard local model of dimension $n$ is
 $$
 M_n := (\mathbb{R}^n,\, C^\infty_{\mathbb{R}^n}),
 $$
@@ -229,9 +236,7 @@ A *smooth atlas* for an object $X \in \mathsf{LRS}_{\mathbb{R}}$ is a morphism $
 
 2. For every component inclusion $\iota_i\colon M_{n_i} \hookrightarrow U$, the composite $p \circ \iota_i\colon M_{n_i} \to X$ is an open immersion.
 
-3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair
-$$
-U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
+3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair $$ U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
 $$
 
 A *smooth manifold* is an object $X \in \mathsf{LRS}_{\mathbb{R}}$ that admits a smooth atlas [@nlab:effective_epimorphism; @nlab:smooth_manifold].
@@ -258,9 +263,7 @@ A *Zariski atlas* for an object $X \in \mathsf{LRS}$ is a morphism $p\colon U \t
 
 2. For every component inclusion $\iota_i\colon M_{A_i} \hookrightarrow U$, the composite $p \circ \iota_i\colon M_{A_i} \to X$ is an open immersion.
 
-3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair
-$$
-U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
+3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair $$ U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
 $$
 
 A *scheme* is an object $X \in \mathsf{LRS}$ that admits a Zariski atlas.

@@ -72,7 +72,8 @@ For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots
 
 - **Relevant roots** ($\Phi^{\relevant}$): the active walls where combinatorial types of stable models change.
 
-The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
+The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16].
+Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
 :::
 
 ::: {.remark}
@@ -125,40 +126,25 @@ The resulting comparison target between the KSBA and semitoroidal compactificati
 
 ::: {.definition #def:looijenga-compactification}
 
-Let $\cH$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period
-domain $D$.
-The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\cH}$ is the
-compactification of the arrangement complement $\Gamma\backslash(D - \cH)$
-determined by $\cH$ [@Loo02].
-It is a semitoroidal compactification in the sense of
-@def:semitoroidal-compactification, so it sits in the same tower over the
-Baily--Borel compactification; the semifan it defines at a $0$-cusp is read off
-the traces of the hyperplanes of $\cH$ on the boundary of that cusp.
+Let $\cH$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period domain $D$.
+The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\cH}$ is the compactification of the arrangement complement $\Gamma\backslash(D - \cH)$ determined by $\cH$ [@Loo02].
+It is a semitoroidal compactification in the sense of @def:semitoroidal-compactification, so it sits in the same tower over the Baily--Borel compactification; the semifan it defines at a $0$-cusp is read off the traces of the hyperplanes of $\cH$ on the boundary of that cusp.
 When $\cH$ is empty the construction returns the Baily--Borel compactification.
 :::
 
 ::: {.remark}
 ### Three semifans, independently determined
 
-Three semifans are in play for a single period domain, and they are produced by
-three unrelated inputs:
+Three semifans are in play for a single period domain, and they are produced by three unrelated inputs:
 
-- the **Coxeter semifan** of a $0$-cusp, cut out by the walls of a fundamental
-  chamber of the reflection group of the cusp lattice
-  (@def:generalized-coxeter-semifan);
+- the **Coxeter semifan** of a $0$-cusp, cut out by the walls of a fundamental chamber of the reflection group of the cusp lattice (@def:generalized-coxeter-semifan);
 
-- the **KSBA semifan**, determined by which degenerations of stable pairs occur
-  (@def:ksba-compactification), and in the cases treated here a
-  coarsening of the Coxeter semifan obtained by deleting irrelevant walls;
+- the **KSBA semifan**, determined by which degenerations of stable pairs occur (@def:ksba-compactification), and in the cases treated here a coarsening of the Coxeter semifan obtained by deleting irrelevant walls;
 
-- the **Looijenga semifan** of an arrangement $\cH$, determined by the arithmetic
-  of $\cH$ alone.
+- the **Looijenga semifan** of an arrangement $\cH$, determined by the arithmetic of $\cH$ alone.
 
-The identification of a GIT compactification with a Looijenga compactification
-therefore carries no information about the KSBA semifan: the two are computed from
-different data, and knowing one does not constrain the other.
-Where the three sit relative to one another in the refinement order is a question
-in its own right, recorded among the open problems.
+The identification of a GIT compactification with a Looijenga compactification therefore carries no information about the KSBA semifan: the two are computed from different data, and knowing one does not constrain the other.
+Where the three sit relative to one another in the refinement order is a question in its own right, recorded among the open problems.
 :::
 
 ## Recognizable divisors

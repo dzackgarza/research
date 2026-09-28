@@ -47,7 +47,8 @@ A short exact sequence $0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0$ is t
 
 ::: {.definition #def:quasi-isomorphism title="Quasi-isomorphisms"}
 
-A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2]. These are the weak equivalences of the model structure of @thm:projective-model-structure.
+A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2].
+These are the weak equivalences of the model structure of @thm:projective-model-structure.
 :::
 
 ::: {.theorem #thm:homology-les title="The long exact homology sequence"}
@@ -97,7 +98,8 @@ $$
 \qquad
 d(b,c)=\bigl(-d^Bb,\;d^Cc-f(b)\bigr)
 $$
-[@Wei94, 1.5.1]. The inclusion of $C$ and the projection onto $B[-1]$ form a short exact sequence
+[@Wei94, 1.5.1].
+The inclusion of $C$ and the projection onto $B[-1]$ form a short exact sequence
 $$
 0\longrightarrow C\longrightarrow\operatorname{cone}(f)\longrightarrow B[-1]\longrightarrow0,
 $$
@@ -241,7 +243,9 @@ $$
 \xrightarrow{\ \epsilon\ }M\longrightarrow0
 $$
 is exact.
-It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4]. Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5]. A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm:projective-model-structure, and the bar construction of @def:comonad-resolution produces one from the free-module adjunction.
+It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4].
+Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5].
+A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm:projective-model-structure, and the bar construction of @def:comonad-resolution produces one from the free-module adjunction.
 :::
 
 ::: {.theorem #thm:resolution-comparison title="Comparison of resolutions"}
@@ -271,7 +275,8 @@ Every finitely generated graded $R$-module has a graded free resolution of lengt
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions"}
 
 Let $(R,\mathfrak m)$ be a local ring.
-A free resolution $F$ of $M$ is *minimal* if $\operatorname{im}\varphi_n\subseteq\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\otimes_RR/\mathfrak m$ is zero [@Eis95, Ch. 20]. For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Ch. 20].
+A free resolution $F$ of $M$ is *minimal* if $\operatorname{im}\varphi_n\subseteq\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\otimes_RR/\mathfrak m$ is zero [@Eis95, Ch. 20].
+For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Ch. 20].
 :::
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}
@@ -283,7 +288,8 @@ For $A\in\mathcal A$ choose a projective resolution $P\to A$ and set
 $$
 L_iF(A)=H_i\bigl(F(P)\bigr).
 $$
-A second projective resolution gives a canonically isomorphic object, and the lift of @thm:resolution-comparison makes each $L_iF$ a functor $\mathcal A\to\mathcal B$ [@Wei94, §2.4, Lem. 2.4.1, Lem. 2.4.4]. For a left exact $F$ and an $\mathcal A$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
+A second projective resolution gives a canonically isomorphic object, and the lift of @thm:resolution-comparison makes each $L_iF$ a functor $\mathcal A\to\mathcal B$ [@Wei94, §2.4, Lem. 2.4.1, Lem. 2.4.4].
+For a left exact $F$ and an $\mathcal A$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
 :::
 
 ::: {.definition #def:ext-tor title="Ext and Tor"}
@@ -294,11 +300,14 @@ $$
 \qquad
 \operatorname{Tor}^R_n(A,B)=L_n(-\otimes_RB)(A)
 $$
-[@Wei94, Def. 2.5.2, Def. 2.6.4]. Then $\operatorname{Ext}^0_R(A,B)=\operatorname{Hom}_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6]. Resolving either variable gives the same result:
+[@Wei94, Def. 2.5.2, Def. 2.6.4].
+Then $\operatorname{Ext}^0_R(A,B)=\operatorname{Hom}_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6].
+Resolving either variable gives the same result:
 $$
 L_*(A\otimes_R-)(B)\cong L_*(-\otimes_RB)(A)
 $$
-[@Wei94, §2.7]. For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
+[@Wei94, §2.7].
+For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
 These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\operatorname{Hom}_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
 :::

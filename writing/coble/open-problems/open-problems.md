@@ -4,7 +4,8 @@
 ### Orientation
 
 This section records the known open problems and computational obstacles of the Coble moduli program.
-Each entry is a genuine gap between the results established elsewhere in this document and the fully rigorous, coordinate-explicit statements one would want for parity with the Enriques degree-$2$ program of [@AEGS25]. The problems are grouped by theme: lattice-theoretic verifications, the enumeration of isotropic orbits and cusps together with the reflection-group combinatorics, the *dlt* and KSBA stable models, and the foundational equations and computational checks.
+Each entry is a genuine gap between the results established elsewhere in this document and the fully rigorous, coordinate-explicit statements one would want for parity with the Enriques degree-$2$ program of [@AEGS25].
+The problems are grouped by theme: lattice-theoretic verifications, the enumeration of isotropic orbits and cusps together with the reflection-group combinatorics, the *dlt* and KSBA stable models, and the foundational equations and computational checks.
 None of the statements below is claimed to be settled; several cross-reference partial results already in the text, and in each case the *residue* that remains open is stated explicitly.
 :::
 
@@ -43,10 +44,8 @@ $$
 \qquad
 \lkt^{-\theta} \cong S_\Co,
 $$
-and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf.
-[the folded-root definition](#def:folded-root), [the root-folding lemma](#lem:root-folding-tdp), and [the invariant/coinvariant-lattice definition](#def:invariant_coinvariant_lattices)). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
-Existence and the eigenlattice description are settled: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices ([the folding-involution proposition](#prop:theta-co-exists)).
-The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
+and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf. [the folded-root definition](#def:folded-root), [the root-folding lemma](#lem:root-folding-tdp), and [the invariant/coinvariant-lattice definition](#def:invariant_coinvariant_lattices)). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
+Existence and the eigenlattice description are settled: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices ([the folding-involution proposition](#prop:theta-co-exists)). The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
 :::
 
 ## Isotropic orbits, cusps, and reflection groups
@@ -56,9 +55,7 @@ The open technical content is to *write down the $22\times 22$ matrix of $\theta
 
 How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\operatorname{div}(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\operatorname{div}(v),\, \bar v \in A_T,\, v^2 = 0)$.
-The finite half of this is settled: $A_{T_\Co}$ has $528$ isotropic classes, on which $\Orth(q_{T_\Co})$ acts with two orbits, of sizes $1$ and $527$ ([the Coble $Q$-fiber proposition](#prop:coble-q-fibers), [the isotropic-class orbit theorem](#thm:coble-isotropic-class-orbits)), and every primitive isotropic vector of $T_\Co$ lands in the nonzero one ([the primitive-isotropic-class proposition](#prop:coble-primitive-isotropic-classes)).
-Under the degree-$2$ Enriques group the same $528$ classes split as $[1, 2, 120, 135, 270]$ ([the finite-image orbit theorem](#thm:coble-heegner-finite-orbits)).
-The open work is the passage from these finite decompositions back to the lattice:
+The finite half of this is settled: $A_{T_\Co}$ has $528$ isotropic classes, on which $\Orth(q_{T_\Co})$ acts with two orbits, of sizes $1$ and $527$ ([the Coble $Q$-fiber proposition](#prop:coble-q-fibers), [the isotropic-class orbit theorem](#thm:coble-isotropic-class-orbits)), and every primitive isotropic vector of $T_\Co$ lands in the nonzero one ([the primitive-isotropic-class proposition](#prop:coble-primitive-isotropic-classes)). Under the degree-$2$ Enriques group the same $528$ classes split as $[1, 2, 120, 135, 270]$ ([the finite-image orbit theorem](#thm:coble-heegner-finite-orbits)). The open work is the passage from these finite decompositions back to the lattice:
 
 - lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$, the Eichler criterion being unavailable because $T_\Co$ contains no copy of $U$ ([the Eichler criterion](#thm:eichler-criterion) and the remark following it);
 
@@ -82,12 +79,9 @@ A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by th
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:
 
-- compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$).
-  The involution $\theta$ itself exists as a lattice isometry without any coordinate description ([the folding-involution proposition](#prop:theta-co-exists)), and the image of the resulting group in $\Orth(q_{T_\Co})$ is already known ([the finite-image orbit theorem](#thm:coble-heegner-finite-orbits)); what a generating set adds is the lattice group above that finite image;
+- compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$). The involution $\theta$ itself exists as a lattice isometry without any coordinate description ([the folding-involution proposition](#prop:theta-co-exists)), and the image of the resulting group in $\Orth(q_{T_\Co})$ is already known ([the finite-image orbit theorem](#thm:coble-heegner-finite-orbits)); what a generating set adds is the lattice group above that finite image;
 
-- verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*.
-  For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ ([the unpolarized-cusp theorem](#theorem-unpolarized-cusps), with the split maximal hypothesis supplied by [the split-maximal proposition](#prop:tco-split-maximal)).
-  The residue is the subgroup statement, which does not follow from the full-group one.
+- verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*. For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ ([the unpolarized-cusp theorem](#theorem-unpolarized-cusps), with the split maximal hypothesis supplied by [the split-maximal proposition](#prop:tco-split-maximal)). The residue is the subgroup statement, which does not follow from the full-group one.
 
 This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in [the $1$-cusp correspondence lemma](#lem:1_cusp_correspondence).
 :::
@@ -95,30 +89,13 @@ This refines, at the level of orbits and generators, the $1$-cusp correspondence
 ::: {.remark}
 ### The maximal parabolic subdiagrams of $S_\Co$, and what they count
 
-The Coxeter diagram $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots, trivial
-automorphism group, and **two** maximal parabolic subdiagrams,
-$\widetilde{E}_8(2)\widetilde{A}_1$ and $\widetilde{B}_9(2)$, both of even
-ordinary type ([the Coble Picard parabolic theorem](#thm:coble-picard-parabolics)).
-By [the parabolic/isotropic correspondence theorem](#thm:parabolic-isotropic-correspondence) these correspond to the two
-$\Orth^+(S_\Co)$-orbits of primitive isotropic vectors in $S_\Co$, and by
-[the isotropic-trichotomy theorem](#thm:isotropic-trichotomy) both associated quotients $v^{\perp}/v$ have
-invariants $(9,9,1)$, so the two orbits are not separated by the invariants of the
-boundary lattice.
+The Coxeter diagram $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots, trivial automorphism group, and **two** maximal parabolic subdiagrams, $\widetilde{E}_8(2)\widetilde{A}_1$ and $\widetilde{B}_9(2)$, both of even ordinary type ([the Coble Picard parabolic theorem](#thm:coble-picard-parabolics)). By [the parabolic/isotropic correspondence theorem](#thm:parabolic-isotropic-correspondence) these correspond to the two $\Orth^+(S_\Co)$-orbits of primitive isotropic vectors in $S_\Co$, and by [the isotropic-trichotomy theorem](#thm:isotropic-trichotomy) both associated quotients $v^{\perp}/v$ have invariants $(9,9,1)$, so the two orbits are not separated by the invariants of the boundary lattice.
 
-These orbits are elliptic fibrations of the K3 cover
-([the elliptic-fibration/isotropic theorem](#thm:elliptic-fibrations-isotropic)); they are not the $0$-cusps of the
-Coble period space, which are the orbits of primitive isotropic vectors in the
-transcendental lattice $T_\Co$ of signature $(2,9)$.
-Of the latter there is exactly one under the full orthogonal group
-([the unpolarized-cusp theorem](#theorem-unpolarized-cusps)), by the split maximal argument of
-[the split-maximal proposition](#prop:tco-split-maximal).
-The two lattices share the invariant triple $(11,11,1)$ but not the signature, and
-a count taken in one is not a count in the other.
+These orbits are elliptic fibrations of the K3 cover ([the elliptic-fibration/isotropic theorem](#thm:elliptic-fibrations-isotropic)); they are not the $0$-cusps of the Coble period space, which are the orbits of primitive isotropic vectors in the transcendental lattice $T_\Co$ of signature $(2,9)$.
+Of the latter there is exactly one under the full orthogonal group ([the unpolarized-cusp theorem](#theorem-unpolarized-cusps)), by the split maximal argument of [the split-maximal proposition](#prop:tco-split-maximal).
+The two lattices share the invariant triple $(11,11,1)$ but not the signature, and a count taken in one is not a count in the other.
 
-What remains open is the geometric identification: which of the two elliptic
-fibration classes of the K3 cover is distinguished by the Coble structure, and how
-the pair of maximal parabolic subdiagrams matches the boundary data of the
-degree-$2$ polarized moduli space.
+What remains open is the geometric identification: which of the two elliptic fibration classes of the K3 cover is distinguished by the Coble structure, and how the pair of maximal parabolic subdiagrams matches the boundary data of the degree-$2$ polarized moduli space.
 :::
 
 ::: {.question}
@@ -188,8 +165,7 @@ The recorded data for this monograph is the count of vertices at infinity in the
 
 Which finite-covolume hyperbolic Coxeter groups are arithmetic?
 
-The datum available from the diagram is the Gram form over its base field $K$ ([the Coxeter-base-field definition](#def:coxeter-base-field)) together with its Galois conjugates ([the Galois-conjugate Gram-form remark](#rmk:galois-conjugate-gram-form)).
-The open work is to decide arithmeticity from that datum, and to determine how the property interacts with the maximal parabolic structure of the diagram.
+The datum available from the diagram is the Gram form over its base field $K$ ([the Coxeter-base-field definition](#def:coxeter-base-field)) together with its Galois conjugates ([the Galois-conjugate Gram-form remark](#rmk:galois-conjugate-gram-form)). The open work is to decide arithmeticity from that datum, and to determine how the property interacts with the maximal parabolic structure of the diagram.
 The reflection groups appearing in this monograph act on lattices defined over $\ZZ$, so they are arithmetic; the question governs whether the techniques used here extend to [the non-crystallographic base-ring examples](#ex:noncrystallographic-base-rings).
 :::
 
@@ -222,57 +198,33 @@ The open work is to define a regularized theta series for the hyperbolic lattice
 ::: {.question #qst:coble-arrangement-empty}
 ### Open problem: is the Coble arrangement $\cH^{*}_{10A_1}$ empty?
 
-The GIT compactification of the moduli of ten-nodal sextics is the Looijenga
-compactification of $\Gamma_{10A_1}\backslash(D(T_\Co) - \cH^{*}_{10A_1})$, for
-the arrangement
+The GIT compactification of the moduli of ten-nodal sextics is the Looijenga compactification of $\Gamma_{10A_1}\backslash(D(T_\Co) - \cH^{*}_{10A_1})$, for the arrangement
 $$
 \cH^{*}_{10A_1} = \cH_\infty \cap D(T_\Co)
 $$
-cut out by the divisibility-two roots of $\Lambda_1 = H^{\perp\lkt}$
-([the GIT--Looijenga theorem](#thm:git-equals-looijenga)).
-Whether that arrangement is empty decides the shape of the compactification:
+cut out by the divisibility-two roots of $\Lambda_1 = H^{\perp\lkt}$ ([the GIT--Looijenga theorem](#thm:git-equals-looijenga)). Whether that arrangement is empty decides the shape of the compactification:
 
-- if $\cH^{*}_{10A_1} = \varnothing$, the Looijenga construction returns the
-  Baily--Borel compactification ([the Looijenga-compactification definition](#def:looijenga-compactification)), so the
-  GIT boundary of the ten-nodal sextics consists of the $0$-cusp point and the
-  $1$-cusp curve and nothing else;
+- if $\cH^{*}_{10A_1} = \varnothing$, the Looijenga construction returns the Baily--Borel compactification ([the Looijenga-compactification definition](#def:looijenga-compactification)), so the GIT boundary of the ten-nodal sextics consists of the $0$-cusp point and the $1$-cusp curve and nothing else;
 
-- if $\cH^{*}_{10A_1} \neq \varnothing$, the GIT compactification carries a
-  boundary divisor for each $\Gamma_{10A_1}$-orbit in the arrangement, and is a
-  proper semitoroidal model strictly between Baily--Borel and toroidal.
+- if $\cH^{*}_{10A_1} \neq \varnothing$, the GIT compactification carries a boundary divisor for each $\Gamma_{10A_1}$-orbit in the arrangement, and is a proper semitoroidal model strictly between Baily--Borel and toroidal.
 
-The question is a lattice computation in $\Lambda_1$: is there a divisibility-two
-root of $\Lambda_1$ whose orthogonal hyperplane meets $D(T_\Co)$ in a proper
-hyperplane section?
-It is *not* answered by [the divisibility lemma](#lem:divisibilityAlwaysTwoTco), which computes
-divisibility inside $T_\Co$ and says nothing about divisibility inside the larger
-lattice $\Lambda_1$.
-One reduction is available: every root of the root lattice $L$ has divisibility
-$1$ in $\Lambda_1$ [@YZZ25 §4.2], so no root arising from a node of the sextic
-contributes, which is why $\cH^{*}_{10A_1}$ is contained in the larger
-arrangement $\cH_{10A_1}$ of [the occult-period-map theorem](#thm:occult-period-map-sextics).
+The question is a lattice computation in $\Lambda_1$: is there a divisibility-two root of $\Lambda_1$ whose orthogonal hyperplane meets $D(T_\Co)$ in a proper hyperplane section?
+It is *not* answered by [the divisibility lemma](#lem:divisibilityAlwaysTwoTco), which computes divisibility inside $T_\Co$ and says nothing about divisibility inside the larger lattice $\Lambda_1$.
+One reduction is available: every root of the root lattice $L$ has divisibility $1$ in $\Lambda_1$ [@YZZ25 §4.2], so no root arising from a node of the sextic contributes, which is why $\cH^{*}_{10A_1}$ is contained in the larger arrangement $\cH_{10A_1}$ of [the occult-period-map theorem](#thm:occult-period-map-sextics).
 :::
 
 ::: {.question #qst:semifan-poset-position}
 ### Open problem: the position of the three semifans
 
-The Coxeter, KSBA, and Looijenga semifans of the Coble period domain are
-determined by three unrelated inputs, and no one of them constrains another
-([the Looijenga-compactification definition](#def:looijenga-compactification) and the remark following it).
+The Coxeter, KSBA, and Looijenga semifans of the Coble period domain are determined by three unrelated inputs, and no one of them constrains another ([the Looijenga-compactification definition](#def:looijenga-compactification) and the remark following it).
 Once $\cH^{*}_{10A_1}$ is computed, three questions remain:
 
-- is the resulting Looijenga semifan the Coxeter semifan of a reflection group,
-  as it would be if the traces of $\cH^{*}_{10A_1}$ on a cusp boundary were the
-  walls of a chamber?
+- is the resulting Looijenga semifan the Coxeter semifan of a reflection group, as it would be if the traces of $\cH^{*}_{10A_1}$ on a cusp boundary were the walls of a chamber?
 
-- does the Looijenga semifan refine the KSBA semifan, coarsen it, or is it
-  incomparable?
+- does the Looijenga semifan refine the KSBA semifan, coarsen it, or is it incomparable?
 
 - which sextic degenerations lie over which cusp?
-  Shah's classification of the semistable sextics is explicit [@Sha80], and the
-  cusp correspondence of [the cusp-correspondence theorem](#thm:cusp_correspondence) is known, so tracing a
-  named degeneration such as a double cubic to the $0$-cusp $(9,9,1)_1$ or the
-  $1$-cusp $(7,7,1)_0$ is a finite computation rather than a new theory.
+  Shah's classification of the semistable sextics is explicit [@Sha80], and the cusp correspondence of [the cusp-correspondence theorem](#thm:cusp_correspondence) is known, so tracing a named degeneration such as a double cubic to the $0$-cusp $(9,9,1)_1$ or the $1$-cusp $(7,7,1)_0$ is a finite computation rather than a new theory.
 :::
 
 ## dlt and KSBA stable models
@@ -284,8 +236,7 @@ The degree-$2$ Enriques program modernizes Morrison's flowerpots [@Mor81] into *
 The open geometric content is:
 
 - **Coble pot geometry.** Define the explicit stable pair $(\mathcal V, \mathcal D)$ whose "Pot" component is a rational Coble surface, carrying a $\tfrac14(1,1)$ cyclic quotient singularity corresponding to the nodes of the rational sextic $C$.
-  This is the local singularity package already conjectured for the stable quotient in [the quarter-singularity conjecture](#conj:coble_quarter_singularity), seen here on the *dlt* model (cf.
-  [the dlt-involution-pair definition](#def:dlt-involution-pair), [the divisor-model definition](#def:divisor-model)).
+  This is the local singularity package already conjectured for the stable quotient in [the quarter-singularity conjecture](#conj:coble_quarter_singularity), seen here on the *dlt* model (cf. [the dlt-involution-pair definition](#def:dlt-involution-pair), [the divisor-model definition](#def:divisor-model)).
 
 - **Stalk assembly.** Describe the transition of the stalk assembly and the integral-affine configuration as the Enriques surface log-collapses onto the discriminant divisor $\Delta$, where the K3 cover becomes nodal.
 :::
@@ -293,7 +244,8 @@ The open geometric content is:
 ::: {.remark}
 ### Open problem: monodromy invariants and stable models $B(\lambda)$
 
-Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\cH}$ (surgery sizes) through the construction $B(\lambda)$ of [@AEGS25]. The open work is to:
+Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\cH}$ (surgery sizes) through the construction $B(\lambda)$ of [@AEGS25].
+The open work is to:
 
 - determine the map from the Coble polarization to the discretization $\ell$ on the dual complex.
   The surgery sizes are the pairings $\ell_i = h\cdot\alpha_i$ against the roots $\alpha_i$ of the relevant Coxeter diagram, so the first step is to record which polarization class is meant and in which lattice the pairing is taken: the downstairs class $h_\Co\in K_S^{\perp}$ or its K3 pullback $\tilde h_\Co\in S_\Co$ ([the Coble-polarization definition](#def:coble-polarization-classes)), the roots living in the lattice of the chosen cusp.
@@ -315,8 +267,7 @@ C = \ts{ F(x,y,z) = 0 },
 \qquad
 F(x,y,z) = \sum_{i+j+k=6} a_{ijk}\, x^i y^j z^k,
 $$
-subject to the nodal conditions $F(p_m) = \partial_x F(p_m) = \partial_y F(p_m) = \partial_z F(p_m) = 0$ at the ten special positions $p_1,\dots,p_{10} \in \PP^2$; the moduli space of such sextics is $9$-dimensional, and explicit models may be sought from the Steiner sextic or from index-$2$ Halphen pencils (cf.
-[the Coble--Halphen blowdown lemma](#lem:coble_halphen_blowdown), [the ten-nodal-sextic lemma](#lem:rational_sextic_ten_nodes)). The K3 cover is the double cover $X \xrightarrow{2:1} S$ of $\PP^2$ branched along $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$, whose ten $A_1$ nodes lie above the positions $p_m$ (at $w = 0$, $[x:y:z] = p_m$). What is missing is a *worked instance*: derive an explicit equation $F(x,y,z) = 0$ for a rational sextic with ten nodes together with the corresponding cover $w^2 = F$, realizing $C$ as the image of $\PP^1$ under a degree-$6$ map $(s:t) \mapsto [f_0 : f_1 : f_2]$.
+subject to the nodal conditions $F(p_m) = \partial_x F(p_m) = \partial_y F(p_m) = \partial_z F(p_m) = 0$ at the ten special positions $p_1,\dots,p_{10} \in \PP^2$; the moduli space of such sextics is $9$-dimensional, and explicit models may be sought from the Steiner sextic or from index-$2$ Halphen pencils (cf. [the Coble--Halphen blowdown lemma](#lem:coble_halphen_blowdown), [the ten-nodal-sextic lemma](#lem:rational_sextic_ten_nodes)). The K3 cover is the double cover $X \xrightarrow{2:1} S$ of $\PP^2$ branched along $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$, whose ten $A_1$ nodes lie above the positions $p_m$ (at $w = 0$, $[x:y:z] = p_m$). What is missing is a *worked instance*: derive an explicit equation $F(x,y,z) = 0$ for a rational sextic with ten nodes together with the corresponding cover $w^2 = F$, realizing $C$ as the image of $\PP^1$ under a degree-$6$ map $(s:t) \mapsto [f_0 : f_1 : f_2]$.
 Such an instance would anchor the coordinate derivations demanded by the lattice-embedding and involution problems above.
 :::
 

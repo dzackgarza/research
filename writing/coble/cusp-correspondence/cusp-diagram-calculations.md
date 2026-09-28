@@ -71,20 +71,20 @@ Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two mo
 
 We note the divisibilities of the $v_i$ under various lattice embeddings:
 
-| Coble Vector | Representative             | $\mathrm{div}_{T_{\Co}}$ | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{\tdp}$ |
+| Coble Vector | Representative | $\mathrm{div}_{T_{\Co}}$ | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{\tdp}$ |
 | :----------- | :------------------------- | :----------------------- | :----------------------- | :----------------------- |
-| $v_0$        | $e'$                       | 2                        | 2                        | 2                        |
-| $v_1$        | $2h + \alpha_1 + \alpha_2$ | 2                        | 2                        | 1                        |
+| $v_0$ | $e'$ | 2 | 2 | 2 |
+| $v_1$ | $2h + \alpha_1 + \alpha_2$ | 2 | 2 | 1 |
 
 : Divisibilities of the isotropic vectors $v_0, v_1$ under the embeddings of $T_{\Co}$. {#tbl-coble-vector-divisibilities}
 
 More concisely:
 
-| Lattice   | Image of $v_0$ | Image of $v_1$                                                     | Divisibility |
+| Lattice | Image of $v_0$ | Image of $v_1$ | Divisibility |
 | :-------- | :------------- | :----------------------------------------------------------------- | :----------- |
-| $T_{\Co}$ | $e'$           | $2h + \alpha_1 + \alpha_2$                                         | $(2, 2)$     |
-| $\ten$ | $e'$           | $2e + 2f + \alpha_1 + \alpha_2$                                    | $(2, 2)$     |
-| $\tdp$ | $e'$           | $2e + 2f + \alpha_1 + \tilde\alpha_1 + \alpha_2 + \tilde \alpha_2$ | $(2, 1)$     |
+| $T_{\Co}$ | $e'$ | $2h + \alpha_1 + \alpha_2$ | $(2, 2)$ |
+| $\ten$ | $e'$ | $2e + 2f + \alpha_1 + \alpha_2$ | $(2, 2)$ |
+| $\tdp$ | $e'$ | $2e + 2f + \alpha_1 + \tilde\alpha_1 + \alpha_2 + \tilde \alpha_2$ | $(2, 1)$ |
 
 : Images of the isotropic vectors of $T_{\Co}$ and their divisibilities. {#tbl-coble-cusp-divisibilities}
 

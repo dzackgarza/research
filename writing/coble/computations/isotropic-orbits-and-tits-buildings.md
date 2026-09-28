@@ -140,8 +140,7 @@ $$
 M \;=\; U\oplus U(2)\oplus E_8^{\oplus 2},
 $$
 with $E_8$ negative definite, since no other assignment of the shorthand to scalings and multiplicities of $U$ and $E_8$ has rank $20$.
-This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in which the root configuration $\Phi_{(18,2,0)}$ and the folded Sterk diagrams are written ([root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md)), and in which the embedding chain $T_\Co\injects \ten\injects \tdp$ terminates ([Coble lattice isotropic candidates](coble-lattice-isotropic-candidates.md)).
-The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
+This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in which the root configuration $\Phi_{(18,2,0)}$ and the folded Sterk diagrams are written ([root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md)), and in which the embedding chain $T_\Co\injects \ten\injects \tdp$ terminates ([Coble lattice isotropic candidates](coble-lattice-isotropic-candidates.md)). The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
 :::
 
 ::: {.remark}
@@ -154,8 +153,7 @@ The resulting orbit counts are not part of the record.
 ::: {.remark}
 ### The implementation named in the recipe
 
-Step 6 of the recipe in [the computational toolchain and recipe](computational-toolchain-and-recipe.md) invokes `INDEF_FORM_GetOrbitRepresentative` from the C++ library `polyhedral_common` of the same authors, through GAP.
-That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the two-elementary registry, are the invariants under which the orbit representatives it returns are recognized.
+Step 6 of the recipe in [the computational toolchain and recipe](computational-toolchain-and-recipe.md) invokes `INDEF_FORM_GetOrbitRepresentative` from the C++ library `polyhedral_common` of the same authors, through GAP. That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the two-elementary registry, are the invariants under which the orbit representatives it returns are recognized.
 :::
 
 ## What remains for the Coble lattices

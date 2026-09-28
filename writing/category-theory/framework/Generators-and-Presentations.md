@@ -23,10 +23,10 @@ A *generating frame* on $M$ indexed by $I$ is an object $(M,s)$ of this category
 For objects $(M,s)$ and $(N,t)$ there is a morphism $(M,s)\to(N,t)$ exactly when $\ker s\subseteq\ker t$, and it is then the only one.
 So $\operatorname{GenFrame}_I(R)$ is a preorder, and its hom-sets are genuinely sometimes empty.
 
-*Proof.*
-An $f$ with $fs=t$ is unique because $s$ is epic.
+*Proof.* An $f$ with $fs=t$ is unique because $s$ is epic.
 One exists exactly when $t$ factors through $s$, and since $s$ induces $R^{(I)}/\ker s\xrightarrow{\ \sim\ }M$ that happens exactly when $\ker s\subseteq\ker t$.
-For emptiness take $R=\mathbb Z$, $I=\{1,2\}$, $M=N=\mathbb Z$, $s(a,b)=a$ and $t(a,b)=b$: both are surjective, $\ker s=0\oplus\mathbb Z$ and $\ker t=\mathbb Z\oplus0$, and neither contains the other, so both hom-sets between $(M,s)$ and $(N,t)$ are empty. $\square$
+For emptiness take $R=\mathbb Z$, $I=\{1,2\}$, $M=N=\mathbb Z$, $s(a,b)=a$ and $t(a,b)=b$: both are surjective, $\ker s=0\oplus\mathbb Z$ and $\ker t=\mathbb Z\oplus0$, and neither contains the other, so both hom-sets between $(M,s)$ and $(N,t)$ are empty.
+$\square$
 :::
 
 ::: {.proposition #prop:generating-frame-is-structure title="A generating frame is chosen structure"}
@@ -35,10 +35,10 @@ Write $U_I\colon\operatorname{GenFrame}_I(R)\to R\text{-}\mathbf{Mod}$ for the c
 Then $U_I$ is faithful and is not full, and its fibre over $M$ is the discrete category on the set of surjections $R^{(I)}\twoheadrightarrow M$.
 Hence a generating frame is a chosen object of a fibre of $U_I$, and $M$ admits one exactly when that set is nonempty.
 
-*Proof.*
-A morphism of $\operatorname{GenFrame}_I(R)$ is an $R$-linear map subject to a condition, so $U_I$ is injective on morphisms and faithful.
+*Proof.* A morphism of $\operatorname{GenFrame}_I(R)$ is an $R$-linear map subject to a condition, so $U_I$ is injective on morphisms and faithful.
 It is not full: for $I$ a one-element set, $M=N=R$ and $s=t=\operatorname{id}_R$, multiplication by $r\in R$ is a morphism $(R,s)\to(R,t)$ only when $r=1$.
-A morphism $(M,s)\to(M,s')$ over $\operatorname{id}_M$ is the identity of $M$ together with the requirement $s=s'$, so the fibre has no morphisms other than identities. $\square$
+A morphism $(M,s)\to(M,s')$ over $\operatorname{id}_M$ is the identity of $M$ together with the requirement $s=s'$, so the fibre has no morphisms other than identities.
+$\square$
 :::
 
 ::: {.definition #def:coordinatized-module title="The two morphism conventions"}
@@ -112,9 +112,9 @@ The projection $\operatorname{FinPres}(R)\to R\text{-}\mathbf{Mod}$ sends the di
 Let finite presentations of $M$ and $N$ be given.
 Every $R$-linear map $f\colon M\to N$ is the image of a morphism of $\operatorname{FinPres}(R)$.
 
-*Proof.*
-Since $R^{n}$ is projective and $q_N$ is surjective, $fq_M\colon R^{n}\to N$ factors as $q_NA_0$ for some $A_0\colon R^{n}\to R^{n'}$.
-Then $q_NA_0d_M=fq_Md_M=0$, so $A_0d_M$ lands in $\ker q_N=\operatorname{im}d_N$; since $R^{m}$ is projective and $R^{m'}\to\operatorname{im}d_N$ is surjective, $A_0d_M$ factors as $d_NA_1$ for some $A_1\colon R^{m}\to R^{m'}$. $\square$
+*Proof.* Since $R^{n}$ is projective and $q_N$ is surjective, $fq_M\colon R^{n}\to N$ factors as $q_NA_0$ for some $A_0\colon R^{n}\to R^{n'}$.
+Then $q_NA_0d_M=fq_Md_M=0$, so $A_0d_M$ lands in $\ker q_N=\operatorname{im}d_N$; since $R^{m}$ is projective and $R^{m'}\to\operatorname{im}d_N$ is surjective, $A_0d_M$ factors as $d_NA_1$ for some $A_1\colon R^{m}\to R^{m'}$.
+$\square$
 
 The pair $(A_1,A_0)$ produced by this argument is not determined by $f$.
 The relation identifying two lifts of one $R$-linear map is the chain homotopy of @thm:resolution-comparison, which is stated for resolutions rather than for two-term presentations.
@@ -144,10 +144,10 @@ Let $I$ be a set and let $M$ be an $R$-module.
 Precomposition, $(M,s)\cdot u=(M,su)$ for $u\in\operatorname{Aut}_R\bigl(R^{(I)}\bigr)$, is a right action of $\operatorname{Aut}_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prop:generating-frame-is-structure, and the action is free.
 If $s$ and $s'$ are both isomorphisms, then $u=s^{-1}s'$ is the unique element with $su=s'$.
 
-*Proof.*
-The assignment is a right action because composition is associative, and $su$ is surjective when $s$ is.
+*Proof.* The assignment is a right action because composition is associative, and $su$ is surjective when $s$ is.
 If $su=s$ then $u=\operatorname{id}$, because $s$ is epic; so the action is free.
-For $s,s'$ isomorphisms, $s^{-1}s'$ is an automorphism of $R^{(I)}$ with $s(s^{-1}s')=s'$, and it is unique by freeness. $\square$
+For $s,s'$ isomorphisms, $s^{-1}s'$ is an automorphism of $R^{(I)}$ with $s(s^{-1}s')=s'$, and it is unique by freeness.
+$\square$
 :::
 
 ## The free module functor {#sec-free-module-functor}

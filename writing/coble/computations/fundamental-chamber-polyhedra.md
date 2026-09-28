@@ -27,8 +27,7 @@ $$
 C \da \ts{\, x\in L_\RR \;:\; \beta_L(r_i, x)\geq 0 \ \textfor i = 1,\dots,k \,}
 \containedin L_\RR ,
 $$
-and $C\intersect\HH^n_L$ is the polytope $P$ of @thm:coxeter-type-and-geometry(3).
-In coordinates the linear functional $\beta_L(r,-)$ is the row $r^{\mathsf T}G$, so the inequality defining the wall of $r$ is given by that row and not by the coordinate row of $r$.
+and $C\intersect\HH^n_L$ is the polytope $P$ of @thm:coxeter-type-and-geometry(3). In coordinates the linear functional $\beta_L(r,-)$ is the row $r^{\mathsf T}G$, so the inequality defining the wall of $r$ is given by that row and not by the coordinate row of $r$.
 :::
 
 ::: {.remark}
@@ -58,9 +57,7 @@ The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ th
 ::: {.remark}
 ### Why each hypothesis is separate
 
-A cone containing a line meets both components of the positive cone, so (3) does not follow from (1).
-A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2).
-Applied to the recorded runs, @prop:chamber-cone-criterion is what identifies the count reported as *vertices at infinity* in [the CoxIter results](coxiter-results-for-cusp-lattices.md) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
+A cone containing a line meets both components of the positive cone, so (3) does not follow from (1). A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2). Applied to the recorded runs, @prop:chamber-cone-criterion is what identifies the count reported as *vertices at infinity* in [the CoxIter results](coxiter-results-for-cusp-lattices.md) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
 :::
 
 ## Integral data of the chamber

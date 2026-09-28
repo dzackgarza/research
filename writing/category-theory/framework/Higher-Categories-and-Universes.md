@@ -4,7 +4,7 @@
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$ with pullbacks and terminal object $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mathcal U$ internal to $\mathcal K$, and use its canonical self-enrichment.
-Fix a universe fibration 
+Fix a universe fibration
 $$
 p_{\mathcal U}\colon\widetilde{\mathcal U}\longrightarrow\mathcal U.
 $$
@@ -323,7 +323,8 @@ $$
 :=
 \int_*h_{[C,D]_{\mathbf{Cat}_{\infty,\infty}}}
 $$
-for the decoded functor higher category. Its points are functors $C\to D$.
+for the decoded functor higher category.
+Its points are functors $C\to D$.
 For higher categories $A,C,D$, closedness gives
 $$
 [A\times C,D]_{\mathbf{Cat}_{\infty,\infty}}
@@ -430,7 +431,6 @@ is the underlying homotopy type obtained by inverting every morphism.
 The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur18c, Tags 01DQ and 02F5].
 :::
 
-
 ::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions"}
 
 The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
@@ -518,7 +518,8 @@ For a higher category $A=\int_*h_A$, the bipointed higher category $B_{01}A$ has
 \end{tikzcd}
 
 Composition is given by the identity actions on $A$ and the unique morphisms from $\varnothing$.
-The suspension $\Sigma A$ is the pushout in @def:bicomplete-cat-infinity. The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
+The suspension $\Sigma A$ is the pushout in @def:bicomplete-cat-infinity.
+The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
 
 ::: {.definition #def:walking-arrow title="Walking arrows and ordinal categories"}
@@ -598,7 +599,8 @@ Let $C$ be a higher category.
 For an integer $n\geq-2$, an object $X\colon*\to C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to C$.
 The $(-2)$-truncated objects are the terminal objects.
 
-For an object $Y\colon*\to C$, write $C_{/Y}:=(\operatorname{id}_C\downarrow Y)$ for the slice. A morphism $f\colon X\to Y$ is *$n$-truncated* if it is an $n$-truncated object of $C_{/Y}$.
+For an object $Y\colon*\to C$, write $C_{/Y}:=(\operatorname{id}_C\downarrow Y)$ for the slice.
+A morphism $f\colon X\to Y$ is *$n$-truncated* if it is an $n$-truncated object of $C_{/Y}$.
 Equivalently, for every $Z\colon*\to C$ and every point of $\operatorname{Map}_C(Z,Y)$, the corresponding fiber of
 $$
 \operatorname{Map}_C(Z,X)
@@ -710,7 +712,6 @@ By @def:truncated the $(-2)$-truncated objects of $\mathbf{Cat}_{\infty,\infty}$
 Both $\varnothing$ and $*$ are $(-1)$-truncated: $\operatorname{Map}(Y,*)$ is contractible for every $Y$, and $\operatorname{Map}(Y,\varnothing)$ is empty unless $Y\simeq\varnothing$, in which case it is contractible.
 So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and the map $\mathbf{Cat}_{-2}\to\mathbf{Cat}_{-1}$ of the tower is the inclusion of $*$.
 :::
-
 
 ::: {.definition #def:ordinary-category-specialization title="Ordinary categories"}
 

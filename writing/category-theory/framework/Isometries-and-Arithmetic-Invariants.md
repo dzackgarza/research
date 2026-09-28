@@ -221,7 +221,8 @@ $$
 \Sigma(L)\big/\big((\Gamma_{\mathbb Q}\cap\Sigma(L))\Sigma^\#(L)\big)
 \to0
 $$
-with the notation and local factors of [@MM09, Thm. V.5.1]. The last group measures the failure of the discriminant representation to be surjective.
+with the notation and local factors of [@MM09, Thm. V.5.1].
+The last group measures the failure of the discriminant representation to be surjective.
 It is distinct from $\operatorname{SO}(L)=\ker(\det)$.
 :::
 

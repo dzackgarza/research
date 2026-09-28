@@ -20,8 +20,8 @@ By [@CDL25 Def. 5.4.3, Eqn. 5.3.1], the ramification divisor $R$ is explicitly o
 
 3. $R$ is the sum of a single rational curve and $n-1$ other disjoint $(-2)$-curves otherwise.
 
-It is also known that $\delta=1$ unless $n=8$, cf.
-[@CDL25 Table 5.1]. Thus if $S$ is a terminal Coble surface of K3 type with $n=1$, the ramification locus of the K3 cover is a single smooth rational curve, and we obtain a lattice with invariants
+It is also known that $\delta=1$ unless $n=8$, cf. [@CDL25 Table 5.1].
+Thus if $S$ is a terminal Coble surface of K3 type with $n=1$, the ramification locus of the K3 cover is a single smooth rational curve, and we obtain a lattice with invariants
 $$
 S_{\Co} \da (11, 11, 1)_1 \cong \gens{-2} \oplus E_{10}(2)
 $$
@@ -36,8 +36,7 @@ The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoret
 ::: {.proposition #prop:double-cover-is-k3}
 ### The branched double cover is a K3 surface
 
-Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let
-$s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
+Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let $s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
 Let
 $$
 \pi\colon X \da \Spec_S\bigl(\OO_S\oplus\cL\inv\bigr)\to S
@@ -52,34 +51,28 @@ $$
 
 ::: {.proof}
 
-The canonical bundle formula for a cyclic double cover branched along
-$B\in\abs{\cL^{\tensor 2}}$ gives
+The canonical bundle formula for a cyclic double cover branched along $B\in\abs{\cL^{\tensor 2}}$ gives
 $$
 K_X = \pi^{*}(K_S + \cL) = \pi^{*}(K_S - K_S) = 0
 ,
 $$
 so $\omega_X\cong\OO_X$.
-Pushing forward, $\pi_*\OO_X = \OO_S\oplus\cL\inv = \OO_S\oplus\OO_S(K_S)$, and
-$\pi$ is finite, so
+Pushing forward, $\pi_*\OO_X = \OO_S\oplus\cL\inv = \OO_S\oplus\OO_S(K_S)$, and $\pi$ is finite, so
 $$
 H^i(X, \OO_X) = H^i(S, \OO_S)\oplus H^i(S, K_S)
 \qquad\text{for all } i
 .
 $$
-Since $S$ is rational, $h^1(\OO_S) = 0$, and Serre duality on the surface $S$
-gives $h^1(K_S) = h^1(\OO_S) = 0$; hence $h^1(\OO_X) = 0$.
+Since $S$ is rational, $h^1(\OO_S) = 0$, and Serre duality on the surface $S$ gives $h^1(K_S) = h^1(\OO_S) = 0$; hence $h^1(\OO_X) = 0$.
 Again by Serre duality $\chi(K_S) = \chi(\OO_S) = 1$, so
 $$
 \chi(\OO_X) = \chi(\OO_S) + \chi(K_S) = 2
 ,
 $$
-and combining $\chi(\OO_X) = 1 - h^1(\OO_X) + h^2(\OO_X)$ with $h^1(\OO_X) = 0$
-gives $p_g(X) = h^2(\OO_X) = 1$.
-A smooth projective surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a
-K3 surface, which is the first claim.
+and combining $\chi(\OO_X) = 1 - h^1(\OO_X) + h^2(\OO_X)$ with $h^1(\OO_X) = 0$ gives $p_g(X) = h^2(\OO_X) = 1$.
+A smooth projective surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
 
-For the intersection numbers, $\pi$ is finite of degree $2$, so
-$\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
+For the intersection numbers, $\pi$ is finite of degree $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
 $$
 \pi^{*}D\cdot\pi^{*}D' = D\cdot\pi_*\pi^{*}D' = D\cdot 2D' = 2(D\cdot D')
 .
@@ -88,11 +81,7 @@ $$
 
 ::: {.remark}
 
-Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational
-curve of $\abs{-2K_S}$ recorded in @lem:rational_sextic_ten_nodes and the
-surrounding discussion, @prop:double-cover-is-k3 is the assertion cited from
-[@DK25 Prop. 9.1.1] in @rmk:k3-cover-invariants, and its intersection-number
-statement is the twist by $2$ used in @prop:coble-invariant-lattice.
+Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational curve of $\abs{-2K_S}$ recorded in @lem:rational_sextic_ten_nodes and the surrounding discussion, @prop:double-cover-is-k3 is the assertion cited from [@DK25 Prop. 9.1.1] in @rmk:k3-cover-invariants, and its intersection-number statement is the twist by $2$ used in @prop:coble-invariant-lattice.
 :::
 
 ::: {.proposition #prop:coble-invariant-lattice}
@@ -129,8 +118,7 @@ $$
 .
 $$
 Since $\chi(R) = 2$, we obtain $\trace(\sigma^* \mid H^2(X, \bZ)) = 0$.
-As $H^2(X, \bZ)$ has rank $22$ and $\sigma^*$ is an involution, the invariant lattice has rank $\tfrac{1}{2}(22 + 0) = 11$ and the coinvariant lattice rank $\tfrac{1}{2}(22 - 0) = 11$, so that $11 + 11 = 22$; cf.
-@prop:involution_eigenspaces. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
+As $H^2(X, \bZ)$ has rank $22$ and $\sigma^*$ is an involution, the invariant lattice has rank $\tfrac{1}{2}(22 + 0) = 11$ and the coinvariant lattice rank $\tfrac{1}{2}(22 - 0) = 11$, so that $11 + 11 = 22$; cf. @prop:involution_eigenspaces. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
 
 **The Nikulin invariants and equality.** The lattice $S_\Co \cong \gens{2}\oplus\gens{-2}^{10}$ has
 $$
@@ -145,7 +133,8 @@ so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$ [@CDL25 Def. 5.4.3, Eqn. 5.3.1], so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
 Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @prop:invariant_coinvariant_primitive the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
-That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in @rmk:k3-cover-invariants.
+That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80].
+This derivation makes explicit the invariants stated by citation in @rmk:k3-cover-invariants.
 :::
 
 ::: {.remark #rmk:k3-cover-twist}

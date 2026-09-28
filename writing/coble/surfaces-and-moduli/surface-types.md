@@ -124,7 +124,8 @@ Allowed primings are restricted so as to preserve log canonicity and toricity [@
 ::: {.definition #def:folding-bc}
 ### Folding
 
-A **folding** passes from a simply-laced $ADE$ diagram to a non-simply-laced $BC$ diagram by taking the quotient by a diagram automorphism $\tau$ [@AT17; @AET23]. For instance $A_{2n-1}$ folds to $C_n$.
+A **folding** passes from a simply-laced $ADE$ diagram to a non-simply-laced $BC$ diagram by taking the quotient by a diagram automorphism $\tau$ [@AT17; @AET23].
+For instance $A_{2n-1}$ folds to $C_n$.
 
 Folding identifies symmetric nodes, producing double bonds and merged nodes in the diagram.
 Geometrically, the surface is replaced by a quotient $Y/\tau$: boundary components may become non-reduced, acquire multiplicities, or exhibit half-integral coefficients (half-divisors).

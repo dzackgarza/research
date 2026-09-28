@@ -72,7 +72,8 @@ For a $2$-elementary lattice $L$, the roots are precisely the vectors $v\in L$ o
 
 ::: {.remark #rmk:root-integrality}
 
-The two root types of @def:2elementary-roots are exactly the primitive vectors of norm $-2$ or $-4$ satisfying the integrality condition of @def:k-root. For a short root, $2\beta_L(v,L)\containedin 2\ZZ = v^2\ZZ$ holds automatically, and $s_v(x) = x + \beta_L(v,x)\,v$.
+The two root types of @def:2elementary-roots are exactly the primitive vectors of norm $-2$ or $-4$ satisfying the integrality condition of @def:k-root.
+For a short root, $2\beta_L(v,L)\containedin 2\ZZ = v^2\ZZ$ holds automatically, and $s_v(x) = x + \beta_L(v,x)\,v$.
 For a norm $-4$ vector, integrality requires $\beta_L(v,L)\containedin 2\ZZ$, which is precisely the condition $\div_L(v) = 2$; then $s_v(x) = x + \tfrac12\beta_L(v,x)\,v$ lies in $\Orth(L)$.
 :::
 
@@ -80,20 +81,14 @@ For a norm $-4$ vector, integrality requires $\beta_L(v,L)\containedin 2\ZZ$, wh
 ### The two root types exhaust the roots
 
 Let $L$ be an even $2$-elementary lattice and let $v\in L$ satisfy $v^2 < 0$.
-Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and
-$\div_L(v) = 2$.
-The list of @def:2elementary-roots is therefore exhaustive, not merely a
-selection of two convenient cases.
+Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and $\div_L(v) = 2$.
+The list of @def:2elementary-roots is therefore exhaustive, not merely a selection of two convenient cases.
 :::
 
 ::: {.proof}
 
-This is [@Ale22 §2]; that the two conditions are sufficient is
-@rmk:root-integrality, and the content of the theorem is that no other norm
-occurs.
-For $L$ $2$-elementary one has $\div_L(v)\in\ts{1, 2}$, so the integrality
-condition $2\div_L(v)/v^2\in\ZZ$ of @def:k-root restricts $v^2$ to
-$\ts{-2, -4}$, with $\div_L(v) = 2$ forced in the second case.
+This is [@Ale22 §2]; that the two conditions are sufficient is @rmk:root-integrality, and the content of the theorem is that no other norm occurs.
+For $L$ $2$-elementary one has $\div_L(v)\in\ts{1, 2}$, so the integrality condition $2\div_L(v)/v^2\in\ZZ$ of @def:k-root restricts $v^2$ to $\ts{-2, -4}$, with $\div_L(v) = 2$ forced in the second case.
 :::
 
 ## Coroots and the weight space
@@ -283,38 +278,25 @@ The source note states step 3 as "discard those roots whose hyperplanes do not i
 ::: {.definition #def:lanner-subgraph}
 ### Lannér subgraph
 
-A **Lannér subgraph** of a Coxeter--Vinberg diagram is a minimal non-parabolic
-subdiagram whose Coxeter group acts on hyperbolic space with a fundamental
-polyhedron of finite volume; equivalently, a diagram all of whose proper
-subdiagrams are elliptic but which is not itself elliptic or parabolic.
+A **Lannér subgraph** of a Coxeter--Vinberg diagram is a minimal non-parabolic subdiagram whose Coxeter group acts on hyperbolic space with a fundamental polyhedron of finite volume; equivalently, a diagram all of whose proper subdiagrams are elliptic but which is not itself elliptic or parabolic.
 :::
 
 ::: {.theorem #thm:vinberg-completeness-criterion}
 ### A sufficient criterion for completeness
 
-Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a
-run of @thm:vinberg-algorithm.
-If $\Gamma$ contains no Lannér subgraph, and every connected parabolic subdiagram
-of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then
-$\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the
-algorithm may be stopped.
+Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a run of @thm:vinberg-algorithm.
+If $\Gamma$ contains no Lannér subgraph, and every connected parabolic subdiagram of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then $\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the algorithm may be stopped.
 :::
 
 ::: {.proof}
 
-This is the sufficient condition of [@Vin75], in the form used in
-[@Ale22 §3].
+This is the sufficient condition of [@Vin75], in the form used in [@Ale22 §3].
 :::
 
 ::: {.remark}
 
-The criterion is what makes a run of Vinberg's algorithm into a proof rather than
-a computation that has not yet terminated: without it, the algorithm has produced
-a chamber that *might* still acquire further walls at greater height.
-It applies only in the absence of dotted edges, that is when no two walls of the
-chamber are ultra-parallel; for the diagrams on the line $r + a = 22$ this is the
-case, and @thm:coxeter-built-on-complete-graphs records the resulting
-diagrams.
+The criterion is what makes a run of Vinberg's algorithm into a proof rather than a computation that has not yet terminated: without it, the algorithm has produced a chamber that *might* still acquire further walls at greater height.
+It applies only in the absence of dotted edges, that is when no two walls of the chamber are ultra-parallel; for the diagrams on the line $r + a = 22$ this is the case, and @thm:coxeter-built-on-complete-graphs records the resulting diagrams.
 :::
 
 ## Root-system conventions and tables

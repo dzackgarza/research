@@ -109,8 +109,7 @@ Say that $(W,S)$, or $M$, is
 
 A Gram form of signature $(p,q)$ with $p\geq 2$ falls under none of the three.
 
-For subdiagrams, @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic**, and **hyperbolic**.
-An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel of rank $c$, hence rank $k-c$.
+For subdiagrams, @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic**, and **hyperbolic**. An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel of rank $c$, hence rank $k-c$.
 :::
 
 ::: {.remark}

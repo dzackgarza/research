@@ -130,7 +130,8 @@ Then there exists an isometry $\phi\in\OStab(T)$ with $\phi(\eta_1) = \eta_2$ [@
 ::: {.remark #rmk:niemeier-enumeration}
 ### Niemeier embeddings for $d = 1$
 
-For the degree-two case $d = 1$, Scattone [@Sca87] realizes the boundary data through the $24$ **Niemeier lattices** --- the even, negative-definite, unimodular lattices of rank $24$ [@CS10]. The reduction expresses the enumeration of the relevant boundary components as a count of orbits of primitive embeddings into each Niemeier lattice, up to the orthogonal group of that lattice, with the orthogonal complement recording the boundary lattice $\overline{T}_J$.
+For the degree-two case $d = 1$, Scattone [@Sca87] realizes the boundary data through the $24$ **Niemeier lattices** --- the even, negative-definite, unimodular lattices of rank $24$ [@CS10].
+The reduction expresses the enumeration of the relevant boundary components as a count of orbits of primitive embeddings into each Niemeier lattice, up to the orthogonal group of that lattice, with the orthogonal complement recording the boundary lattice $\overline{T}_J$.
 
 Scattone realizes the Type II boundary data through the $24$ Niemeier lattices as follows: each Type II boundary lattice $\overline{T}_J = J^{\perp}/J$ is an even negative-definite lattice of rank $17$ (for $d = 1$), which by Nikulin's embedding theory [@Nik80] admits a primitive embedding into an even unimodular lattice of rank $24$; the boundary components are enumerated by classifying these embeddings up to the orthogonal group of the Niemeier lattice.
 Scattone does *not* embed the hyperbolic plane $U$ into a Niemeier lattice --- impossible, since $U$ is indefinite --- and no even unimodular negative-definite lattice of rank $22$ occurs.
