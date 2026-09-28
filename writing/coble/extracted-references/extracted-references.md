@@ -6,7 +6,7 @@ The `Papers Index` navigation note is not imported.
 
 ## ABE22 — Valery Alexeev, Adrian Brunyate, Philip Engel (2022): Compactifications of moduli of elliptic K3 surfaces
 
-Bibkey: `ABE22` (imported from note `AB21`; remapped `AB21` → `ABE22`). Cited as [@ABE22].
+Bibkey: `ABE22` (imported from note `AB21`; remapped `AB21` to `ABE22`). Cited as [@ABE22].
 
 *Abstract.* KSBA and toroidal compactifications for elliptic K3 surfaces, used in the paper as background for stable-pair compactification techniques.
 
@@ -16,7 +16,7 @@ Bibkey: `ABE22` (imported from note `AB21`; remapped `AB21` → `ABE22`). Cited 
 
 ## AEGS25 — Valery Alexeev, Philip Engel, D. Zack Garza, Luca Schaffler (2023): Compact Moduli of Enriques Surfaces with a Numerical Polarization of Degree 2
 
-Bibkey: `AEGS25` (imported from note `AEGS23`; remapped `AEGS23` → `AEGS25`). Cited as [@AEGS25].
+Bibkey: `AEGS25` (imported from note `AEGS23`; remapped `AEGS23` to `AEGS25`). Cited as [@AEGS25].
 
 *Abstract.* We describe a geometric, stable pair compactification of the moduli space of Enriques surfaces with a numerical polarization of degree 2, and identify it with a semitoroidal compactification of the period space.
 
@@ -81,12 +81,12 @@ Cited as [@AS15].
 
 ## BHO+12 — Blekherman, Hauenstein, Ottem, Ranestad, Sturmfels (2012): Algebraic boundaries of Hilbert's SOS cones
 
-Bibkey: `BHO+12` (imported from note `BHO+11`; remapped `BHO+11` → `BHO+12` per the audit's year-drift resolution, arXiv 2011 → Compositio Math.
+Bibkey: `BHO+12` (imported from note `BHO+11`; remapped `BHO+11` to `BHO+12` per the audit's year-drift resolution, arXiv 2011 to Compositio Math.
 148 (2012), Zotero `GJZ44LJI`. Note: the original note frontmatter carried only the placeholder title "BHO+11"; the author/title/year shown here are supplied from the audit's resolution of the work.
 The audit is internally inconsistent about this work — the "RESOLVED" block pins it to `BHO+12`, while a later verification line states it is "not in Zotero, still unresolved"; the resolved key is used here).
 Cited as [@BHO+12].
 
-*Abstract.* Appendix reference for the Severi variety V_{6,10} of rational plane sextics with ten nodes.
+*Abstract.* Appendix reference for the Severi variety $V_{6,10}$ of rational plane sextics with ten nodes.
 
 - **Used here for:** the statement that the nodal rational sextics relevant to the classical Coble construction form a Severi variety $V_{6,10}$ whose generic point has ten $A_1$-singularities.
 
@@ -104,7 +104,7 @@ Bibkey: `CD12` (unchanged; audit confirms `CD12` = Cantat–Dolgachev, live Zote
 
 ## CDL25 — Francois Cossec, Igor Dolgachev, Christian Liedtke (2024): Enriques surfaces I
 
-Bibkey: `CDL25` (imported from note `CDL24`; remapped `CDL24` → `CDL25`). Cited as [@CDL25].
+Bibkey: `CDL25` (imported from note `CDL24`; remapped `CDL24` to `CDL25`). Cited as [@CDL25].
 
 *Abstract.* Draft reference on Enriques and Coble surfaces used throughout the paper for 2-elementary lattice tables, fixed loci, and Coble/Halphen geometry.
 
@@ -136,7 +136,7 @@ Cited as [@Cob29].
 
 ## DK25 — Igor Dolgachev, Shigeyuki Kondo (2024): Enriques surfaces II
 
-Bibkey: `DK25` (imported from note `DK24`; remapped `DK24` → `DK25`). Cited as [@DK25].
+Bibkey: `DK25` (imported from note `DK24`; remapped `DK24` to `DK25`). Cited as [@DK25].
 
 *Abstract.* Draft reference used for terminal Coble surfaces of K3 type, K3 double covers, basic rational surface structure, and Halphen constructions.
 
@@ -146,7 +146,7 @@ Bibkey: `DK25` (imported from note `DK24`; remapped `DK24` → `DK25`). Cited as
 
 ## DM20 — Igor Dolgachev, Dimitri Markushevich (2020): Lagrangian tens of planes, Enriques surfaces and holomorphic symplectic fourfolds
 
-Bibkey: `DM20` (imported from note `DM19`; remapped `DM19` → `DM20`). Cited as [@DM20].
+Bibkey: `DM20` (imported from note `DM19`; remapped `DM19` to `DM20`). Cited as [@DM20].
 
 *Abstract.* Source used for the definition of Coble surfaces and related Enriques-surface geometry.
 
@@ -201,7 +201,7 @@ Cited as [@GK20].
 
 ## Hor77 — Eiji Horikawa (1978): On the periods of Enriques surfaces. II
 
-Bibkey: `Hor77` (imported from note `Hor78`; remapped `Hor78` → `Hor77`, the global key for "Periods II"). Cited as [@Hor77].
+Bibkey: `Hor77` (imported from note `Hor78`; remapped `Hor78` to `Hor77`, the global key for "Periods II"). Cited as [@Hor77].
 
 *Abstract.* Classical period-domain source behind the Horikawa model for Enriques and Coble surfaces.
 
@@ -233,7 +233,7 @@ Cited as [@Mor81].
 
 ## Nik80 — V. V. Nikulin (1979): Integer symmetric bilinear forms and some of their geometric applications
 
-Bibkey: `Nik80` (imported from note `Nik79`; remapped `Nik79` → `Nik80`, the global key for the Integer Symmetric Bilinear Forms paper).
+Bibkey: `Nik80` (imported from note `Nik79`; remapped `Nik79` to `Nik80`, the global key for the Integer Symmetric Bilinear Forms paper).
 Cited as [@Nik80].
 
 *Abstract.* Fundamental reference for 2-elementary lattices, discriminant forms, primitive embeddings, and orthogonal-group surjectivity.
@@ -244,7 +244,7 @@ Cited as [@Nik80].
 
 ## Nue15 — Howard Nuer (2016): Unirationality of moduli spaces of special cubic fourfolds and K3 surfaces
 
-Bibkey: `Nue15` (unchanged; the audit maps `Nue16` → `Nue15` as the single global entry).
+Bibkey: `Nue15` (unchanged; the audit maps `Nue16` to `Nue15` as the single global entry).
 Cited as [@Nue15].
 
 *Abstract.* Reference used for the statement that the nodal quotient appearing on the Enriques boundary is a Coble surface.
@@ -277,7 +277,7 @@ Cited as [@PS71].
 
 ## Sha81a — Jayant Shah (1981): Projective degenerations of Enriques' surfaces
 
-Bibkey: `Sha81a` (imported from note `Sha81`; remapped `Sha81` → `Sha81a`, distinguishing Shah's Enriques paper from the global `Sha81`). Cited as [@Sha81a].
+Bibkey: `Sha81a` (imported from note `Sha81`; remapped `Sha81` to `Sha81a`, distinguishing Shah's Enriques paper from the global `Sha81`). Cited as [@Sha81a].
 
 *Abstract.* Projective-degeneration source for Enriques surfaces, cited alongside Morrison in the discussion of flowerpot degenerations.
 
@@ -287,7 +287,7 @@ Bibkey: `Sha81a` (imported from note `Sha81`; remapped `Sha81` → `Sha81a`, dis
 
 ## Ste91 — Hans Sterk (1991): Sterk 1991 note
 
-Bibkey: `Ste91` (imported from note `Ste91-note`; remapped the note's `Ste91-note` filename key → the work's citation key `Ste91`, which the audit confirms exists in the global bib).
+Bibkey: `Ste91` (imported from note `Ste91-note`; remapped the note's `Ste91-note` filename key to the work's citation key `Ste91`, which the audit confirms exists in the global bib).
 Cited as [@Ste91].
 
 *Abstract.* Supplemental note linking the existing Ste91 extraction to its role in the Coble paper.
