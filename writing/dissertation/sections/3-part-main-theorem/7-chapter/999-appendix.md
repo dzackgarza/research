@@ -1,8 +1,8 @@
 ## Appendix: Root Systems
 
-#### Examples of Specific Root Systems {#sec:root-lattice-conventions}
+### Examples of Specific Root Systems {#sec:root-lattice-conventions}
 
-##### $A_4$
+#### $A_4$
 
 The relevant Euclidean space is $\EE_{A_4} = \{ x \in \RR^5 : x_1+x_2+x_3+x_4+x_5=0 \}$ with
 $$
@@ -30,7 +30,7 @@ A_4:\quad \dynkin[mark=o,scale=3]{A}{4}
 .\end{align*}
 
 
-##### $B_4$
+#### $B_4$
 
 Roots live in $\EE_{B_4} = \RR^4$, and
 $$
@@ -68,7 +68,7 @@ B_4: \quad
 .\end{align*}
 
 
-##### $C_4$
+#### $C_4$
 
 Set $\EE_{C_4} = \RR^4$, then
 $$
@@ -95,7 +95,7 @@ C_4:\quad \dynkin[arrows=false,scale=3]{C}{ooo*}
 .\end{align*}
 
 
-##### $D_4$
+#### $D_4$
 
 Roots live in $\EE_{D_4} = \RR^4$ and
 $$
@@ -121,7 +121,7 @@ We take $D_n$ to mean $D_n(-1)$, and identify the Coxeter diagram as:
 D_4:\quad \dynkin[mark=o,scale=3]{D}{4}
 .\end{align*}
 
-##### $E_6$
+#### $E_6$
 
 Roots live in $\EE_{E_6} = \{ x \in \RR^8 : x_1+\cdots+x_8=0 \}$ with
 $$
@@ -150,7 +150,7 @@ E_6: \dynkin[mark=o,scale=2.5]{E}{6}
 .\end{align*}
 
 
-##### $F_4$
+#### $F_4$
 
 We take the simple roots
 
@@ -193,7 +193,7 @@ F_4: \quad
 .\end{align*}
 
 
-##### $G_2$
+#### $G_2$
 
 Roots live in $\EE_{G_2} = \{ x \in \RR^3 \st x_1 + x_2 + x_3 = 0 \}$ with simple roots and Gram matrix
 $$
@@ -218,7 +218,7 @@ G_2:\quad
 
 
 
-#### Root Lattice Conventions {#section-root-lattice-conventions}
+### Root Lattice Conventions {#section-root-lattice-conventions}
 
 To fix conventions, we record here Bourbaki's conventions for these Dynkin diagrams and the corresponding simple roots.
 The Euclidean embeddings can be used to compute the following invariants in all types, which we show below.
@@ -248,7 +248,7 @@ Note that for $D_n$, $A_L = \ZZ_{2^2}$ when $n$ is odd, and $A_L = (\ZZ_2)^2$ wh
 
 We now record explicit representatives for the simple roots of each lattice, their Gram matrix, and the associated Coxeter diagrams:
 
-#### Types A,B,C, D
+### Types A,B,C, D
 
 
 \begin{align*}
@@ -366,7 +366,7 @@ G_{E_6} =
   \dynkin[mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6}, label directions={below,above,below,below,below,below}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] E6  \hspace{12em} \\[1em]
 \end{align*}
 
-#### Type E
+### Type E
 
 \begin{align*}
 E_7:\,\,
@@ -422,7 +422,7 @@ G_{E_8} &=
 \dynkin[mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6,\alpha_7,\alpha_8}, label directions={below,above,below,below,below,below,below,below}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] E8
 \end{align*}
 
-#### Types $F_4$ and $G_2$
+### Types $F_4$ and $G_2$
 
 \begin{align*}
 F_4:\,\,
