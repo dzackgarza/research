@@ -1,6 +1,6 @@
 # Discriminant orbits of the Coble lattice {#sec:discriminant-orbits}
 
-::: {.Remark}
+::: {.Remark title="Twisting an odd unimodular lattice controls the Coble discriminant problem"}
 
 The Coble period lattice $T_\Co = \gens{2}\oplus E_{10}(2)$ is the twist by $2$ of
 an odd unimodular lattice, and this single fact controls both its isometry group
@@ -51,7 +51,7 @@ The same scaling shows $\beta_{T_\Co}(v,v) = 2\beta_B(v,v)$ vanishes exactly whe
 $\beta_B(v,v)$ does, and primitivity is a property of the module alone.
 :::
 
-::: {.Remark}
+::: {.Remark title="Two split presentations of $T_\Co$ expose its cusp lattices"}
 
 The presentation $T_\Co\cong\latI_{2,9}(2)$ is the one recorded in
 [the K3-cover invariants remark](../coble-surfaces/k3-covers-of-coble-surfaces.md#rmk:k3-cover-invariants), and it is the form in which the divisibility
@@ -107,7 +107,7 @@ signature $(1,8)$ and $\latI_{0,7}(2) = \gens{-2}^{\oplus 7} = (7,7,1)$ of
 signature $(0,7)$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Split-maximal transitivity explains the unpolarized Coble cusp count"}
 
 Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are
 unchanged by the twist, [the split-maximal proposition](#prop:tco-split-maximal) places $T_\Co$ under
@@ -235,7 +235,7 @@ in agreement with the two summand counts $3\cdot 136 + 1\cdot 120 = 528$.
 The remaining fiber sizes are $2^{10} - 528 = 496$.
 :::
 
-::: {.Remark}
+::: {.Remark title="The reference-table counts are the four mod-$4$ norm fibers"}
 
 The counts $\#A_{E_{10}(2)} = 1024$, $\#I^0 = 528$ and $\#I^1 = 496$ tabulated in
 the reference tables are exactly the numbers $2^{10}$, $N_0$ and $2^{10} - N_0$
