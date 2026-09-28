@@ -1036,12 +1036,12 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the cardinality of the module carrying this algebra."""
             module = self.unformed_module()
             match module is self:
                 case True:
-                    return super().cardinality()
+                    return super()._cardinality_decision()
                 case False:
                     return module.cardinality()
 
