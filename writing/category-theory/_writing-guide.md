@@ -208,7 +208,7 @@ artifact itself, not a summary, together with:
 
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) and the [mathematical authoring
   conventions](contributing/Mathematical-Language-Style-Guide.md), read in full;
-- the approved chapter → section → subsection slice, including the mathematical purpose
+- the approved chapter/section/subsection slice, including the mathematical purpose
   and prerequisites of each node;
 - the exact source files and passages whose mathematical content must be preserved;
 - the anchors that own definitions used by the slice, and the facts the writer may move
