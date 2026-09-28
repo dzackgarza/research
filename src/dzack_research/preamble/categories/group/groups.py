@@ -73,10 +73,12 @@ from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
     Monoids,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphismMethods,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleMorphism,
-    ModuleMorphismMethods,
     _engine_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
