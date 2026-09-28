@@ -903,7 +903,7 @@ class QuotientRings(OwnedCategory):
                 f"{self.quotient_source()} modulo {self.defining_ideal()}"
             )
 
-        def is_field(self):
+        def _field_decision(self):
             r"""Return whether R/I is a field, equivalently whether I is maximal."""
             return bool(self.defining_ideal().is_maximal())
 
@@ -1606,7 +1606,7 @@ class PrimeLocalizations(OwnedCategory):
                 )
             return prime
 
-        def is_field(self):
+        def _field_decision(self):
             r"""Return whether the maximal ideal ``p R_p`` vanishes."""
             return all(
                 self(generator) == self.zero()

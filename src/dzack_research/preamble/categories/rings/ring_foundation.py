@@ -2197,6 +2197,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def is_local(self):
             return True if self in OwnedRings().Commutative().Local() else Unknown
 
+        def _field_decision(self):
+            return Unknown
+
+        def is_field(self):
+            match self:
+                case _ if self in OwnedRings().Division().Commutative():
+                    return True
+                case _:
+                    return self._field_decision()
+
         def _selected_local_ring_construction(self):
             r"""Return an installed local-ring datum, or ``None``.
 
@@ -3746,8 +3756,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_exact(self):
         return self._engine.is_exact()
 
-    def is_field(self, *args, **kwargs):
-        return self._engine.is_field(*args, **kwargs)
+    def _field_decision(self):
+        return self._engine.is_field()
 
     def _commutativity_decision(self):
         return self._engine.is_commutative()
