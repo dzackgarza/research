@@ -462,6 +462,21 @@ Keep the category declaration, constructor signature, and executable contract as
 
 These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, ownership, locality, and dependency-direction model to new code even when no existing example names the exact violation.
 
+### Built for AI agents and verifiability
+
+The most consequential design choice is that AI agents are primary users of the system and
+collaborators in building it. The Sage.js project states the same aim: a system "intended to give
+computational agents the best possible foundation for doing serious mathematical research". Here
+that aim shows up in three ways.
+
+- **Verifiable progress.** A live dashboard keeps three questions separate: whether a capability
+  exists, how broad it is, and how strongly its behavior has been certified.
+- **Independent oracles.** Results are validated against independent systems such as PARI/GP,
+  Magma and OSCAR, not against a single reference implementation, so that mathematical truth is
+  never established circularly.
+- **Agent-readable code.** Algorithms, interfaces and documentation are structured so that humans
+  and AI agents alike can find gaps, understand contracts, and implement verified solutions.
+
 ## Preamble architecture specification
 
 This section is the authoritative specification of construction ownership,
