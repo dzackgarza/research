@@ -1623,8 +1623,7 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 
 **Migrated.**  On 2026-09-28 the file moved to `dzackgarza/lean-categories` (commit `46aa669`)
 and was deleted here.  Each declaration went to its general owner there, or was retired in
-favour of an existing one; the table below keeps the original `Sterk.*` names, and
-`archive/research/README.md` in `lean-categories` maps each to its new declaration.  In short:
+favour of an existing one; the table below keeps the original `Sterk.*` names.  In short:
 F1.13, F2.14, F1.14, E14 and E15 were already owned there (`BilinModuleCat.OrthogonalGroup`,
 the quadratic `OrthogonalGroup`, `Lattices.Valued.divisibility`, `Topology.deckGroup`,
 `Schemes.WeilDivisor`); F1.15/F1.16 are `Algebra/QuadraticGaussSum.lean`, with the modulus

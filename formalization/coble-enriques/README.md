@@ -5,7 +5,8 @@ On 2026-09-28 `NodeCriteria.lean` moved to `dzackgarza/lean-categories` (commit 
 `LeanCategories/AlgebraicGeometry/HessianSingular.lean` and was deleted here; the statement
 below is the instance `σ = Fin 3` of the general theorem there
 (`hessianAt_rank_le_of_pderiv_eq_zero`: rank at most `|σ| - 1`, needing only the vanishing of
-the first partials). `IsotropicPlanes.lean` stays here, unbuilt, as a record.
+the first partials). `IsotropicPlanes.lean` stated two false theorems with `sorry` proofs and was discarded; the
+corrected mathematics is in `notes/topics/isotropic-vector-orbits/tco-isotropic-plane-orbit-claim.md`.
 
 ## `NodeCriteria.lean` — proved, no `sorry` (now in `lean-categories`)
 
@@ -30,13 +31,3 @@ dimension $3$ the rank is at most $2$. $\square$
 The formalization states this over a `CommRing` for the vanishing lemma
 (`hessian_mulVec_singular`) and over a `Field` for the rank bound, and uses
 Mathlib's `MvPolynomial.IsHomogeneous.sum_X_mul_pderiv` for Euler's identity.
-
-## `IsotropicPlanes.lean` — every proof `sorry`
-
-Statements only, and both of them are wrong as written: the file models
-$T_{\mathrm{Co}}$ by a diagonal form that is a different lattice, and its proof
-sketch classifies orbits by the Arf invariant, which does not classify integral
-lattices. The corrected mathematics, the claim's open status, and the owned
-surface on which it can be decided are in
-`notes/topics/isotropic-vector-orbits/tco-isotropic-plane-orbit-claim.md`.
-The file is kept only as the record of what was attempted.
