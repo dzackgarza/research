@@ -2902,7 +2902,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def _finite_generation_decision(self):
             return Unknown
 
-        def is_finitely_presented(self):
+        def is_finitely_presented_as_group(self):
             match self.is_finitely_generated():
                 case False:
                     return False
