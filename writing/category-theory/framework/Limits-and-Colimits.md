@@ -6,7 +6,7 @@ The higher-categorical constructions of the same names are in [Higher categories
 
 ## Diagrams and cones {#sec-diagrams-cones}
 
-::: {#def-diagram title="Diagrams and the diagonal functor"}
+::: {.definition #def:diagram title="Diagrams and the diagonal functor"}
 
 A *diagram of shape $J$* in $\mathcal C$ is a functor $D\colon J\to\mathcal C$.
 For an object $c\in\mathcal C$, the *constant functor* $\Delta c\colon J\to\mathcal C$ sends every object of $J$ to $c$ and every morphism of $J$ to $\operatorname{id}_c$.
@@ -17,7 +17,7 @@ $$
 [@Rie16, Definition 3.1.1].
 :::
 
-::: {#def-cone title="Cones and cocones"}
+::: {.definition #def:cone title="Cones and cocones"}
 
 A *cone over $D$ with apex $c$* is a natural transformation $\lambda\colon\Delta c\Rightarrow D$.
 Its components $\lambda_j\colon c\to D(j)$ are its *legs*, and naturality says that
@@ -32,14 +32,14 @@ $$
 \operatorname{Cone}(-,D)\colon\mathcal C^{\mathrm{op}}\longrightarrow\mathbf{Set},
 $$
 and dually the cocones under $D$ into a covariant functor $\operatorname{Cone}(D,-)$.
-The category of elements $\int_{\mathcal C}\operatorname{Cone}(-,D)$ of @def-category-of-elements is the *category of cones over $D$*: its objects are the cones, and a morphism from $\lambda$ with apex $c$ to $\lambda'$ with apex $c'$ is a morphism $h\colon c\to c'$ with $\lambda'_j\circ h=\lambda_j$ for every $j$.
+The category of elements $\int_{\mathcal C}\operatorname{Cone}(-,D)$ of @def:category-of-elements is the *category of cones over $D$*: its objects are the cones, and a morphism from $\lambda$ with apex $c$ to $\lambda'$ with apex $c'$ is a morphism $h\colon c\to c'$ with $\lambda'_j\circ h=\lambda_j$ for every $j$.
 :::
 
 ## Limits {#sec-limits}
 
-::: {#def-limit title="Limits and colimits"}
+::: {.definition #def:limit title="Limits and colimits"}
 
-A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def-representable-presheaf): an object $\lim D$ together with a cone $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism
+A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def:representable-presheaf): an object $\lim D$ together with a cone $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism
 $$
 \operatorname{Hom}_{\mathcal C}(-,\lim D)\;\cong\;\operatorname{Cone}(-,D).
 $$
@@ -51,7 +51,7 @@ Limits of $D$ are unique up to a unique isomorphism compatible with the limit co
 :::
 
 **Remark.** The universal property is the natural isomorphism: it names the morphism that factors a given cone, and its naturality identifies the factorization of a cone with the factorization of any cone obtained from it by composing with a morphism of apexes.
-The same standard governs classifying objects in @def-classifying-object.
+The same standard governs classifying objects in @def:classifying-object.
 
 ## Named shapes {#sec-named-shapes}
 
@@ -70,7 +70,7 @@ Each standard construction is the limit or colimit of a diagram of a specific sh
 A cone over the empty diagram is an object with no further data, so the category of such cones is $\mathcal C$ itself and the limit is a terminal object of $\mathcal C$ [@Mac98, §III.4].
 A cone over a parallel pair $f,g\colon A\to B$ is determined by a single morphism $a\colon C\to A$ with $fa=ga$, its leg at $B$ being the common composite [@Rie16, Definition 3.1.13].
 
-::: {#def-pullback-square title="Pullbacks"}
+::: {.definition #def:pullback-square title="Pullbacks"}
 
 For morphisms $f\colon X\to Z$ and $g\colon Y\to Z$, the limit of the diagram they form has apex written $X\times_ZY$ and legs $p,q$, displayed by the cartesian square
 
@@ -113,7 +113,7 @@ The equality $fh=gk$ is part of the datum of the cone with apex $W$.
 
 ## Shape categories {#sec-shape-categories}
 
-::: {#def-preorder-category title="Preorders and thin categories"}
+::: {.definition #def:preorder-category title="Preorders and thin categories"}
 
 A *preorder* is a category $P$ with at most one morphism $p\to p'$ for each pair of objects.
 Writing $p\leq p'$ when such a morphism exists gives a reflexive transitive relation on the objects, and every reflexive transitive relation arises this way from a unique preorder.
@@ -123,7 +123,7 @@ A preorder is a *poset* when the relation is antisymmetric, so that $p\leq p'$ a
 The shapes for products, pullbacks, pushouts, and towers are posets.
 The parallel pair is not a preorder, since it has two distinct morphisms between the same pair of objects; it is obtained instead by the following construction.
 
-::: {#def-free-category title="Free categories on graphs"}
+::: {.definition #def:free-category title="Free categories on graphs"}
 
 A *directed graph* $G$ consists of a set $O$ of vertices, a set $A$ of edges, and functions $\partial_0,\partial_1\colon A\to O$ assigning to each edge its source and target; a morphism of graphs is a pair of functions commuting with $\partial_0$ and $\partial_1$.
 Every category $\mathcal C$ has an underlying graph $U\mathcal C$ with the same objects and morphisms, and this defines $U\colon\mathbf{Cat}\to\mathbf{Grph}$.
@@ -137,26 +137,26 @@ $$
 [@Mac98, §II.7].
 :::
 
-::: {#def-presented-category title="Presented categories"}
+::: {.definition #def:presented-category title="Presented categories"}
 
 Let $G$ be a graph and let $R$ be a set of pairs of parallel paths of $G$.
 The category presented by $(G,R)$ is the quotient of $F(G)$ by the congruence generated by $R$: its morphisms are the classes of paths under the smallest equivalence relation containing $R$ and compatible with composition [@Mac98, §II.8].
 A functor out of the presented category is a graph morphism $G\to U\mathcal C$ whose extension identifies the two sides of each pair in $R$.
 :::
 
-In $\mathbf{Cat}$ the walking arrow $[1]$ is the free category on the graph with two vertices and one edge, and the ordinal category $[n]$ of @def-walking-arrow is the free category on the linear graph with $n$ edges; the walking isomorphism is presented by two edges $f,g$ in opposite directions with the relations $gf=\operatorname{id}$ and $fg=\operatorname{id}$.
+In $\mathbf{Cat}$ the walking arrow $[1]$ is the free category on the graph with two vertices and one edge, and the ordinal category $[n]$ of @def:walking-arrow is the free category on the linear graph with $n$ edges; the walking isomorphism is presented by two edges $f,g$ in opposite directions with the relations $gf=\operatorname{id}$ and $fg=\operatorname{id}$.
 Each of these represents a functor on $\mathbf{Cat}$: $[0]$ represents the object functor, $[1]$ the morphism functor, and $[n]$ the functor sending a small category to its set of paths of $n$ composable morphisms [@Rie16, Example 2.1.5].
 A commutative square is presented by the four-edge square graph with the relation identifying its two paths; the free category on that graph, without the relation, has two distinct morphisms between the opposite corners.
 
 ## Existence {#sec-completeness}
 
-::: {#def-complete title="Complete and cocomplete categories"}
+::: {.definition #def:complete title="Complete and cocomplete categories"}
 
 $\mathcal C$ is *complete* when every diagram of small shape has a limit, *cocomplete* when every such diagram has a colimit, and *bicomplete* when both hold.
 It is *finitely complete* when every diagram of finite shape has a limit, and *finitely cocomplete* dually.
 :::
 
-::: {#thm-limits-from-products-equalizers title="Limits from products and equalizers"}
+::: {.theorem #thm:limits-from-products-equalizers title="Limits from products and equalizers"}
 
 Let $\mathcal C$ have equalizers of all parallel pairs and products indexed by $\operatorname{ob}J$ and $\operatorname{ar}J$.
 Then every diagram $D\colon J\to\mathcal C$ has a limit, namely the equalizer of the two morphisms
@@ -176,7 +176,7 @@ Completeness is a stronger hypothesis than finite completeness, and a small cate
 
 ## Preservation, reflection, and creation {#sec-preservation}
 
-::: {#def-preserve-reflect-create title="Preservation, reflection, and creation of limits"}
+::: {.definition #def:preserve-reflect-create title="Preservation, reflection, and creation of limits"}
 
 Let $F\colon\mathcal C\to\mathcal D$ and fix a class of diagrams in $\mathcal C$.
 $F$ *preserves* those limits when the image of a limit cone over $K$ is a limit cone over $FK$.
@@ -191,7 +191,7 @@ Which forgetful functors create which limits is recorded in [Distinguished funct
 
 ## Kan extensions {#sec-kan}
 
-::: {#def-kan-extension title="Right and left Kan extensions"}
+::: {.definition #def:kan-extension title="Right and left Kan extensions"}
 
 Let $K\colon M\to\mathcal C$ and $T\colon M\to\mathcal A$ be functors, and let $\mathcal A^{K}\colon\mathcal A^{\mathcal C}\to\mathcal A^{M}$ be the functor given by precomposition with $K$.
 A *right Kan extension of $T$ along $K$* is a pair
@@ -214,10 +214,10 @@ When the relevant limits exist, the right Kan extension is computed pointwise as
 $$
 (\operatorname{Ran}_KT)(c)\;=\;\lim\bigl((c\downarrow K)\longrightarrow M\xrightarrow{\;T\;}\mathcal A\bigr),
 $$
-the limit over the comma category $(c\downarrow K)$ of @def-comma-category, and dually $(\operatorname{Lan}_KT)(c)$ is the colimit over $(K\downarrow c)$ [@Mac98, §X.3, Theorem 1 and §X.5].
+the limit over the comma category $(c\downarrow K)$ of @def:comma-category, and dually $(\operatorname{Lan}_KT)(c)$ is the colimit over $(K\downarrow c)$ [@Mac98, §X.3, Theorem 1 and §X.5].
 :::
 
-::: {#thm-limits-as-kan title="Limits as Kan extensions"}
+::: {.theorem #thm:limits-as-kan title="Limits as Kan extensions"}
 
 Let $!\colon J\to\mathbf 1$ be the unique functor to the terminal category.
 A functor $\mathbf 1\to\mathcal A$ is an object of $\mathcal A$, and a natural transformation $T\Rightarrow S\circ{!}$ is a cocone under $T$ with nadir the object $S$.

@@ -1,11 +1,11 @@
 # Properties, structures, and classifying constructions {#sec-truncation}
 
-Work in the 2-category $\mathbf{Cat}_{\mathcal U}$ fixed in @def-infinity-category-universe.
+Work in the 2-category $\mathbf{Cat}_{\mathcal U}$ fixed in @def:infinity-category-universe.
 Each category of structured objects comes with a specified forgetful functor.
 
 ## Properties and structures {#sec-property-structure}
 
-::: {#def-property-structure-stuff}
+::: {.definition #def:property-structure-stuff}
 Let $U\colon\mathcal S\to\mathcal C$ be a forgetful functor.
 
 - If $U$ is fully faithful, it describes at most a property of objects of $\mathcal C$.
@@ -20,11 +20,11 @@ An isomorphism-invariant property $P$ of objects of $\mathcal C$ defines the rep
 :::
 
 For higher categories, the same classification can be read from the homotopy fibers of $U$: empty or contractible fibers give property, discrete fibers give structure, and general fibers retain stuff.
-The definitions of truncated spaces and morphisms are in @def-truncated.
+The definitions of truncated spaces and morphisms are in @def:truncated.
 
 ## Chosen structure
 
-::: {#def-chosen-structure}
+::: {.definition #def:chosen-structure}
 A structure on $X\in\mathcal C$ is a chosen object of the homotopy fiber of $U\colon\mathcal S\to\mathcal C$ over $X$.
 Several nonisomorphic choices may lie over the same $X$.
 A morphism in $\mathcal S$ must preserve the chosen structure.
@@ -39,7 +39,7 @@ Hence $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full.
 Let $U\colon\mathcal S\to\mathcal C$ and $F\colon\mathcal D\to\mathcal C$ be specified functors.
 The structured objects of $\mathcal D$ obtained from $U$ are given by the pseudo-pullback $\mathcal P$ in the square
 
-::: {#def-axiom-through-functor}
+::: {.definition #def:axiom-through-functor}
 ```{.tikz}
 %%| filename: structured-object-pullback
 %%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
@@ -58,7 +58,7 @@ Its objects are exactly the $D\in\mathcal D$ for which $F(D)$ satisfies the stat
 
 ## Classifying objects and families {#sec-axiom-classifiers-general}
 
-::: {#def-classifying-object}
+::: {.definition #def:classifying-object}
 A functor $H\colon\mathcal C^{\mathrm{op}}\to\mathcal S$ is *represented* by $B\in\mathcal C$ when there is a natural equivalence
 $$
 \eta\colon H(-)\simeq\operatorname{Map}_{\mathcal C}(-,B).

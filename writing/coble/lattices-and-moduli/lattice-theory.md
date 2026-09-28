@@ -1,6 +1,6 @@
 # Lattice Theory {#sec:lattice-theory}
 
-::: {.Remark}
+::: {.remark}
 
 We refer to:
 
@@ -11,12 +11,12 @@ We refer to:
 
 ## Basic Theory
 
-::: {.Remark}
+::: {.remark}
 
 The study of semitoroidal compactifications of moduli spaces of Coble surfaces largely reduces to lattice theory, of which we will now recall the essential notions.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Basic invariants
 
 By a **lattice**, we mean a free $\ZZ$-module $L$ of finite rank equipped with a nondegenerate[^lt1] symmetric integral bilinear form $\beta_L: L \tensor_\ZZ L \to \ZZ$.
@@ -37,7 +37,7 @@ An indefinite lattice of signature $(1, r-1)$ is said to be **hyperbolic**. Fixi
 The discriminant is independent of the choice of generating set.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Finiteness in the definite and indefinite cases
 
 Write $L[k] \da \ts{v\in L \mid v^2 = k}$ for the set of vectors of norm $k$.
@@ -59,7 +59,7 @@ with $M$ of infinite order, so $\Orth(L)$ is infinite.
 Enumerating a level set or an orthogonal group is therefore not by itself an available operation for the hyperbolic lattices of this monograph, and the reflection groups of the Compactifications sections are described instead by a fundamental chamber with finitely many walls.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Discriminant forms
 
 The **dual lattice** to $L$ is denoted $L\dual \da \Hom_\ZZ(L, \ZZ)$, and there is an morphism
@@ -94,7 +94,7 @@ We write $\Orth(L)$ for the group of lattice automorphisms of $L$, denoted the *
 There is a natural group homomorphism $\Orth(L)\to\Orth(q_L)$, the kernel is denoted $\tilde \Orth(L)$, equivalently written $\Orth(L)^*$; we call it the **stable orthogonal group**. When $L$ has signature $(2, n)$, the associated period domain $\Omega_L$ has two connected components interchanged by complex conjugation, and we write $\Orth^+(L)$ for the index-two subgroup of $\Orth(L)$ preserving each component (equivalently, preserving the orientation of the positive-definite part, i.e. those isometries of real spinor norm $+1$). We write $\Orth^+(L)^* \da \Orth^+(L)\intersect \tilde\Orth(L)$ for the intersection, which is the arithmetic group acting on a single component $D_L$.
 :::
 
-::: {.Definition #def:spinor-norm}
+::: {.definition #def:spinor-norm}
 ### The spinor norm and the special orthogonal group
 
 Every $g\in\Orth(L_\RR)$ is a product of reflections $g = s_{w_1}\cdots s_{w_m}$ in anisotropic vectors $w_i$, where $s_w(x) = x - 2\tfrac{\beta(x, w)}{\beta(w,w)}w$.
@@ -114,7 +114,7 @@ $$
 and we write $\SO^+(L)\da\Orth^+(L)\intersect\SO(L)$ and $\widetilde{\SO}^+(L)\da\Orth^+(L)\intersect\tilde\Orth(L)\intersect\SO(L)$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Orthogonal complements
 
 Given two lattices $L_1, L_2$ we write $L_1\oplus L_2$ for the **orthogonal direct sum**, which is the direct sum of the underlying modules with bilinear form defined by
@@ -137,7 +137,7 @@ A_{L_1 \oplus \cdots \oplus L_n} = A_{L_1} \oplus \cdots \oplus A_{L_n}
 $$
 :::
 
-::: {.Remark}
+::: {.remark}
 ### 2-elementary lattices
 
 Let $L$ be a 2-elementary lattice.
@@ -159,7 +159,7 @@ The evenness and indefiniteness hypotheses are both needed: the theorem is Nikul
 We accordingly specify such lattices using the notation $(r,a,\delta)_{n_+}$.
 :::
 
-::: {.Theorem #thm:isotropic-trichotomy}
+::: {.theorem #thm:isotropic-trichotomy}
 ### Classification of primitive isotropic vectors by type
 
 Let $S$ be an even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$, let $v\in S$ be a primitive isotropic vector, and write $\oS\da v^{\perp S}/v$.
@@ -180,13 +180,13 @@ Classifying the primitive isotropic vectors of $S$ up to isometry is therefore e
 This is [@AE22 Prop. 5.5].
 :::
 
-::: {.Remark}
+::: {.remark}
 
 [The isotropic-trichotomy theorem](#thm:isotropic-trichotomy) is the tool by which a $0$-cusp of a type IV quotient is identified from a single numerical invariant of its isotropic vector: the divisibility, together with the characteristic-or-ordinary dichotomy, determines the invariants of the boundary lattice $\overline{S}$, and for indefinite $\overline{S}$ those invariants determine its isometry class.
 It is used in this form throughout the cusp correspondence.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Twists of a lattice
 
 If $L$ is a lattice with bilinear form $\beta_L$, define $L(n)$ to be the twist of $L$ by $n$, which has the same underlying $\ZZ$-module but is equipped with the scaled bilinear form
@@ -195,14 +195,14 @@ $$
 $$
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The lattice $\gens{n}$
 
 The lattice $\gens{n}$ is defined as the rank 1 lattice $\ZZ$ with one generator $v$ satisfying $\beta_{\gens{n}}(v,v) = n$.
 The Gram matrix is the $1\times 1$ matrix $G_{\gens n} = [n]$, and the associated quadratic form is $q_{\gens{n}}(x) = nx^2$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The hyperbolic lattice
 
 In rank 2, there are two unimodular hyperbolic lattices: the odd $\latI_{1, 1} \da \gens{1} \oplus \gens{-1}$, and the even $U\da \latII_{1, 1}$.
@@ -213,7 +213,7 @@ G_U = \begin{bmatrix}0&1\\1&0\end{bmatrix}
 $$
 :::
 
-::: {.Remark}
+::: {.remark}
 ### ADE lattices
 
 Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root lattice of the respective type.
@@ -229,7 +229,7 @@ The Dynkin diagram $E_{8}$.
 :::
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The lattice $\latI_{p, q}$
 
 For any pair of non-negative integers $(p, q)$, there exists an odd indefinite unimodular lattice determined up to isomorphism by its rank and signature:
@@ -239,7 +239,7 @@ $$
 $$
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The lattice $\latII_{p, q}$
 
 Let $L$ be an even indefinite unimodular lattice of signature $(p, q)$.

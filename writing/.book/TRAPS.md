@@ -106,7 +106,8 @@ damage was caught before it was committed.
 
 ## The numbered-block registry is one file, and the render must run twice
 
-`custom-numbered-blocks` resolves `\ref` and `\longref` through a registry it writes
+`custom-numbered-blocks` resolves `\ref` and `\longref` (which `amsthm-refs` emits for
+`@thm:x` and `[-@thm:x]`) through a registry it writes
 to disk as `._htmlbook_xref.json`. The filename is a bare relative name hard-coded in
 `cnb-1-init-chapters.lua`, so it lands in pandoc's working directory — which is the
 directory of the input **as the project lists it**, not the realpath of what a symlink
@@ -172,3 +173,18 @@ a list -- the `Cite` followed by a separate bracketed `Link` -- so the tag link
 sits beside the citation rather than inside it.
 
 Any filter that wants a hyperlink attached to a citation has to do the same.
+
+## A `.remark` div with a colon ID crashes Quarto's crossref stage
+
+Quarto treats the classes `proof`, `remark` and `solution` as its own proof
+types (`proof_types` in `quarto_cli/share/filters/main.lua`). In the normalize
+stage, `parse_proof_div` turns such a div into a Proof node. The crossref stage
+then derives the reference type from the ID, which it expects in the form
+`type-key`. A colon ID such as `#rmk:key` gives no type, and the render stops
+with `table index is nil` in `add_crossref`.
+
+A user filter without `at:` runs at pre-quarto, after normalize, so it cannot
+intervene. The `amsthm-divs` extension hides each reserved class that
+`custom-numbered-blocks` also numbers: it renames the class at pre-ast and
+restores it at pre-quarto. Today that is only `remark`. `.proof` divs take no
+ID, and Quarto still renders them.

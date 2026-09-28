@@ -24,7 +24,7 @@ $$
 
 where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](#lem:primitive_embedding_eta).
 
-::: {.Question}
+::: {.question}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
 :::
 
@@ -59,7 +59,7 @@ above: $\Gamma_{\Co,2}$ has no explicit description.
 
 ## The GIT construction
 
-::: {.Remark}
+::: {.remark}
 ### GIT construction
 
 Following [@DK13], by varying the coefficients of $p_i$ in the planar blowup
@@ -83,7 +83,7 @@ moduli spaces.
 
 ## The Horikawa model
 
-::: {.Remark}
+::: {.remark}
 ### Horikawa's construction
 
 Alternatively, Horikawa [@Hor77] and more recently [@AEGS25] consider
@@ -122,7 +122,7 @@ $$
 .
 $$
 
-::: {.Proposition #prop:type-iv-dimension}
+::: {.proposition #prop:type-iv-dimension}
 ### Dimension of a type IV domain
 
 Let $T$ be a lattice of rank $r$ and signature $(2, r-2)$.
@@ -139,7 +139,7 @@ The condition $v\bar v > 0$ is open, so it selects an open subset of that quadri
 and $D_T$ is one of its connected components.
 :::
 
-::: {.Corollary #cor:m-polarized-k3-dimension}
+::: {.corollary #cor:m-polarized-k3-dimension}
 ### Dimension of $M$-polarized K3 moduli
 
 Let $M\injects\lkt$ be a primitive embedding of a lattice of signature
@@ -212,7 +212,7 @@ We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\C
 
 ## The sextic moduli construction
 
-::: {.Remark}
+::: {.remark}
 ### Orientation
 
 The constructions above start from the surface: from the Coble surface $S$ and
@@ -229,7 +229,7 @@ quotient, together with an identification of that compactification in arithmetic
 terms.
 :::
 
-::: {.Notation #not:sextic-singular-type}
+::: {.notation #not:sextic-singular-type}
 ### Moduli of sextics of a fixed singular type
 
 For a singular type $T$ with root lattice $R$, write $\cV_T$ for the space of
@@ -250,7 +250,7 @@ $Q \da P^{\perp}$, of signatures $(1,\rank R)$ and $(2, 19 - \rank R)$
 For a general member of $\cV_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
 :::
 
-::: {.Proposition #prop:coble-is-the-ten-nodal-sextic-type}
+::: {.proposition #prop:coble-is-the-ten-nodal-sextic-type}
 ### The Coble lattices are the lattices of the type $10A_1$
 
 Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by
@@ -279,7 +279,7 @@ Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and
 [the polarized-K3 dimension corollary](#cor:m-polarized-k3-dimension) gives the dimension.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The involution acts trivially on the root lattice
 
 For a general singular type the covering involution $\iota$ acts on $L$ by
@@ -294,7 +294,7 @@ That is the same twist by $2$ recorded geometrically in
 $\latI_{1,10}$ scaled by $2$, with no folding correction.
 :::
 
-::: {.Theorem #thm:occult-period-map-sextics}
+::: {.theorem #thm:occult-period-map-sextics}
 ### The occult period map and its image
 
 Let $\Gamma_T$ be the image of
@@ -319,7 +319,7 @@ The description of the image restates, at the level of moduli spaces, the
 equisingular deformation theory of Urabe [@Ura88].
 :::
 
-::: {.Theorem #thm:git-equals-looijenga}
+::: {.theorem #thm:git-equals-looijenga}
 ### The GIT compactification is a Looijenga compactification
 
 Let $\Lambda_1 \da H^{\perp\lkt}$, of signature $(2,19)$ with
@@ -346,7 +346,7 @@ $\overline{\cM}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\cH_\infty}$
 normalizations onto their images [@YZZ25 §4.2].
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The arithmetic group as a normalizer
 
 $\Gamma_T$ admits a second description: it is the restriction to $Q$ of the
@@ -368,7 +368,7 @@ therefore independent of the description of $\Gamma_\Co$ as a stabilizer and
 centralizer inside $\Orth(T_\En)$ recorded in the Open Problems section.
 :::
 
-::: {.Question #que:sextic-group-comparison}
+::: {.question #qst:sextic-group-comparison}
 ### Which quotient of $D(T_\Co)$ is $F_\Co$?
 
 $F_\Co$ is defined above as an open subset of $D(T_\Co)/\Orth^+(T_\Co)^*$, a
@@ -387,7 +387,7 @@ two arithmetic quotients of the same period domain by two different groups, not
 the same space under two names.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The other singular types
 
 The same theorems hold for every singular type of plane sextic with simple
@@ -405,7 +405,7 @@ this section does not settle.
 
 ## KSBA spaces
 
-::: {.Remark}
+::: {.remark}
 
 By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB), there are morphisms
 $\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and
@@ -413,7 +413,7 @@ $\overline{\fco}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
 correspondences between the boundary cusps.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly
 using the ramification divisor of the K3 involution (which is in this case not

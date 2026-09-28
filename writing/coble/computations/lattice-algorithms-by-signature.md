@@ -19,7 +19,7 @@ This page records where the two disagree, because that boundary is what leaves s
 
 ## The definite and indefinite cases
 
-::: {.Remark}
+::: {.remark}
 ### Level sets
 
 For a definite lattice $L$ and $c\in\ZZ$ the level set $\ts{v\in L : v^2 = c}$ is finite, and enumerating it is the basic primitive from which short-vector, closest-vector and automorphism computations are built.
@@ -27,7 +27,7 @@ For an indefinite lattice it can be infinite: in $U$ with $\beta_U(v,w) = x_1y_2
 An algorithm whose output is a list of the vectors of a given square is therefore available only in the definite case, and its indefinite counterpart returns orbit representatives together with generators for the acting group ([[isotropic-orbits-and-tits-buildings]]).
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Theta series
 
 The theta series $\Sum_{v\in L} q^{v^2}$ has, as the coefficient of $q^c$, the cardinality of the level set at $c$.
@@ -35,11 +35,11 @@ For definite $L$ every coefficient is finite and the series converges for $\lver
 For $U$ the coefficient of $q^0$ is already infinite, so the series is undefined, and any convergent replacement is a regularization.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Automorphism groups
 
 $\Orth(L)$ is finite for definite $L$, and is computed by its action on a level set.
-For indefinite $L$ it is in general infinite and is presented by generators; the reflection subgroup $W(L)$ of \longref{def:reflection} is presented by the simple roots that Vinberg's algorithm returns, which is the one indefinite case this project computes in full.
+For indefinite $L$ it is in general infinite and is presented by generators; the reflection subgroup $W(L)$ of @def:reflection is presented by the simple roots that Vinberg's algorithm returns, which is the one indefinite case this project computes in full.
 :::
 
 | Question | Definite $L$ | Indefinite $L$ |
@@ -52,7 +52,7 @@ For indefinite $L$ it is in general infinite and is presented by generators; the
 | Primitive embedding $L_1\injects L_2$ | finite search | genus criteria [@Nik80] |
 | Finite covolume of $W(L)$ | vacuous | CoxIter certificate [@Gug15] |
 
-::: {.Remark}
+::: {.remark}
 ### Where this leaves the open problems
 
 The entries of [[open-problems]] that ask for orbit counts, for explicit primitive-embedding matrices, and for generators of $\Gamma_\Co$ are all in the right-hand column.
@@ -61,24 +61,24 @@ None of them is a search that has not been run; each requires the genus-theoreti
 
 ## Deciding the type of a subdiagram
 
-::: {.Remark}
+::: {.remark}
 ### The tests are exact integer computations
 
-\longref{def:coxeter-system-type} classifies a subdiagram $\Sigma_I$ by the signature of the Gram form $G[I,I]$: elliptic when it is negative definite, parabolic when it is negative semidefinite with a one-dimensional kernel on each component, hyperbolic when it is nondegenerate of signature $(1,\lvert I\rvert - 1)$.
+@def:coxeter-system-type classifies a subdiagram $\Sigma_I$ by the signature of the Gram form $G[I,I]$: elliptic when it is negative definite, parabolic when it is negative semidefinite with a one-dimensional kernel on each component, hyperbolic when it is nondegenerate of signature $(1,\lvert I\rvert - 1)$.
 For a subdiagram of a diagram of an integral lattice, $G[I,I]$ is an integer matrix, so each of the three conditions is a definiteness test decided exactly, by the leading principal minors or by an exact symmetric decomposition, with no eigenvalue approximation.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Consequence for the enumeration
 
-\longref{cor:subdiagram-inheritance}(1) prunes the search over the $2^{\lvert S\rvert}$ subsets in step 5 of [[computational-toolchain-and-recipe]]: once a subset fails to be elliptic, every superset of it is excluded without a further definiteness test.
+@cor:subdiagram-inheritance(1) prunes the search over the $2^{\lvert S\rvert}$ subsets in step 5 of [[computational-toolchain-and-recipe]]: once a subset fails to be elliptic, every superset of it is excluded without a further definiteness test.
 The elliptic subdiagrams form a downward-closed family in the subset poset, whose maximal elements are the maximal elliptic subdiagrams the recipe asks for.
 The elliptic subdiagram counts $121, 65, 67, 78, 119$ for the five Sterk cusps in [[coxiter-results-for-cusp-lattices]] are the cardinalities of those families before the diagram automorphism group is quotiented out.
 :::
 
 ## Recognizing a lattice as a sum of standard blocks
 
-::: {.Construction #cons:decomposition-search}
+::: {.construction #cons:decomposition-search}
 ### Search over signature-additive multisets
 
 Signature is additive over orthogonal direct sums, so a decomposition $L\cong\bigoplus_i L_i$ satisfies $\Sum_i (p_i,q_i) = (p,q)$ where $(p,q)$ is the signature of $L$.
@@ -96,7 +96,7 @@ The catalogue used here is $A_n$, $D_n$ and $E_n$ up to rank $20$, the odd and e
 The even unimodular lattices are indexed by the signatures with $p\equiv q \bmod 8$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The step the search defers to
 
 Step 4 is an isometry test between indefinite lattices, which is the entry in the right-hand column of the table above.

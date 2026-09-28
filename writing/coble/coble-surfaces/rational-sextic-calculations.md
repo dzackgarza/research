@@ -1,6 +1,6 @@
 # Rational Sextic Calculations
 
-::: {.Lemma #lem:rational_sextic_ten_nodes}
+::: {.lemma #lem:rational_sextic_ten_nodes}
 
 Let $C \subset \PP^2$ be an irreducible sextic curve with at worst $A_1$ singularities.
 Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singularities.
@@ -20,7 +20,7 @@ Noting that $d=6$, we obtain the geometric genus $g = 10 - k$, where $k$ is the 
 Thus $g = 0$ if and only if $k = 10$.
 :::
 
-::: {.Remark #rmk:severi-sextics}
+::: {.remark #rmk:severi-sextics}
 ### Severi varieties and degenerate sextics
 
 We note that an arbitrary rational irreducible sextic need not have exactly ten singularities, nor must its singularities be $A_1$ singularities.
@@ -30,7 +30,7 @@ For instance, there exist rational $A_2$-singular sextics lacking ten $A_1$ sing
 The classical unnodal Coble surface construction specifically requires a sextic from the generic, 10-$A_1$ locus.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Canonical class of Cobles
 
 Let $W\subset \PP^2$ be a generic irreducible rational sextic with ten $A_1$ singularities.
@@ -61,7 +61,7 @@ $$
 yielding $C\sim -2K_S$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Invariants of antibicanonical curves
 
 By [@CD12 §3.1], if $S$ is a Coble surface of K3 type with $n=1$ boundary component and $C \in \abs{-2K_S}$ is an irreducible curve, then
@@ -76,7 +76,7 @@ This forces $C$ to be a smooth rational curve with $C^2 = 4K_S^2 = -4$.
 
 ## The configuration constraint on the ten nodes
 
-::: {.Proposition #prop:sextic-node-conditions}
+::: {.proposition #prop:sextic-node-conditions}
 ### Ten nodes impose more conditions than the linear system has
 
 The space of plane sextics is
@@ -106,21 +106,21 @@ Imposing this at ten points gives $30$ linear conditions on a space of projectiv
 dimension $27$, so the general such linear system has empty intersection.
 :::
 
-::: {.Remark}
+::: {.remark}
 
-The dependence forced by \longref{prop:sextic-node-conditions} is what the term
+The dependence forced by @prop:sextic-node-conditions is what the term
 *Coble point set* names: a configuration $\Sigma$ of ten points special enough to
 support a nodal sextic.
 The count is consistent with the moduli count in the GIT discussion of the Moduli
 Spaces section, where the configuration space $(\PP^2)^{10}/\PGL_3$ has dimension
 $12$ and the Coble locus is cut out by three conditions, leaving the
-$9$-dimensional moduli of \longref{cor:m-polarized-k3-dimension}.
+$9$-dimensional moduli of @cor:m-polarized-k3-dimension.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### How many of the thirty conditions are independent
 
-\longref{prop:sextic-node-conditions} says the thirty conditions must be
+@prop:sextic-node-conditions says the thirty conditions must be
 dependent but not by how much.
 The count is settled by the equisingular deformation theory of plane curves: for a
 curve of degree $d$ with singularities whose root lattices are $R_i$, the space of
@@ -131,14 +131,14 @@ $$
 $$
 and for sextics this expected dimension is attained [@YZZ25 §2.1].
 For ten nodes, $\Sum_i\rank(R_i) = 10$, so the Severi variety $V_{6,10}$ of
-\longref{rmk:severi-sextics} has dimension $27 - 10 = 17$: exactly ten of the
+@rmk:severi-sextics has dimension $27 - 10 = 17$: exactly ten of the
 thirty conditions are independent, one per node.
 Quotienting by the $8$-dimensional group $\PGL_3$ leaves the nine moduli again.
 :::
 
 ## A criterion for a node of a plane curve
 
-::: {.Proposition #prop:hessian-rank-at-singular-point}
+::: {.proposition #prop:hessian-rank-at-singular-point}
 ### Hessian rank at a singular point
 
 Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree $n$, and
@@ -171,9 +171,9 @@ Since $p\neq 0$ the kernel of $H(F)(p)$ is nonzero, so by rank-nullity in
 dimension $3$ the rank is at most $2$.
 :::
 
-::: {.Remark}
+::: {.remark}
 
-\longref{prop:hessian-rank-at-singular-point} is the vanishing half of the node test
+@prop:hessian-rank-at-singular-point is the vanishing half of the node test
 for the sextic $C$: at a singular point the Hessian is automatically degenerate,
 so the discriminating condition for an $A_1$ singularity as opposed to a worse one
 is that the rank is exactly $2$, the quadratic term of the local equation being

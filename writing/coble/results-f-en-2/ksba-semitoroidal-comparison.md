@@ -1,6 +1,6 @@
 # KSBA and semitoroidal compactifications of $\fentwo$
 
-::: {.Remark}
+::: {.remark}
 ### Orientation
 
 This section records the degree-$2$ Enriques side of the KSBA--semitoroidal comparison: the compactification of $\fentwo$, the moduli space of degree-$2$ numerically polarized Enriques surfaces.
@@ -11,7 +11,7 @@ This is the established counterpart of the polarized *Coble* comparison, which r
 
 ## The isomorphism theorem
 
-::: {.Theorem #thm:ksba_semitoroidal_En2}
+::: {.theorem #thm:ksba_semitoroidal_En2}
 ### Isomorphism between KSBA and semitoroidal compactifications of $\fentwo$
 
 Let $\fentwo$ be the moduli space of degree-$2$ numerically polarized Enriques surfaces, and let $\ksbacpt{\fentwo}$ be its KSBA compactification.
@@ -30,7 +30,7 @@ of semifans, one for each $0$-cusp of the Baily--Borel compactification $\bbcpt{
 
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Fan versus strict-semifan bookkeeping
 
 The five cusps of $\bbcpt{\fentwo}$ match Sterk's five $0$-cusps of the Enriques period space [@Ste91], one semifan per cusp.
@@ -45,13 +45,13 @@ The relevant polarizing divisor here is the ramification divisor $R_\iota$ of th
 Applying the theorem produces a semitoroidal compactification on the normalization of $\ksbacpt{\fentwo}$, and identifying the resulting semifan cusp-by-cusp gives the explicit collection $\semifans{F}$, one semifan per $0$-cusp.
 The passage from the ambient K3 picture to the Enriques space is [the semitoroidal-data descent conjecture](#conj:descent_semitoroidal_data_En2), which supplies the folded semifans $\mathcal{F}_k$ and their boundary stratification.
 
-::: {.Warning}
+::: {.warning}
 The source note states the reduction to Alexeev--Engel but does not carry out the cusp-by-cusp identification of $\semifans{F}$ nor the descent of the semifan; these are recorded here (the descent as [the semitoroidal-data descent conjecture](#conj:descent_semitoroidal_data_En2)) rather than proved in full.
 :::
 
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Role of the normalization
 
 The normalization $(-)^\nu$ is a technical condition standard in KSBA compactifications: taking a Zariski closure can introduce non-normal points where distinct degenerations are identified, producing a non-separated stack.
@@ -61,7 +61,7 @@ Since the normalization morphism is finite, birational, and relatively smooth in
 
 ## Descent of semitoroidal data
 
-::: {.Conjecture #conj:descent_semitoroidal_data_En2}
+::: {.conjecture #conj:descent_semitoroidal_data_En2}
 ### Descent of semifans to $\normalize{B}$
 
 The normalization $\normalize{B} \to B$ of the Noether--Lefschetz closure $B$ yields a normal projective variety.
@@ -70,13 +70,13 @@ Imposing the involution constraints on this restricted structure produces a coll
 
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Folded semifans and the boundary stratification
 
 The folded semifans $\semifan{F}_k$ determine the semitoroidal compactification $\semifancpt{\fentwo}{\semifans{F}}$ appearing in [the KSBA--semitoroidal isomorphism theorem](#thm:ksba_semitoroidal_En2), and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
 The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of [the Baily--Borel embedding lemma](#lem:locally_closed_embedding_BB); the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of [the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan).
 
-::: {.Warning}
+::: {.warning}
 The source note is tagged as a proposition but reproduces no proof or proof reference for the descent/restriction itself (that $\semifan{F}_{\ram}$ restricts to $\normalize{B}$ and folds to the $\semifan{F}_k$); it is recorded here as a conjecture pending that argument. Within the settled degree-$2$ Enriques package [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.
 :::
 
@@ -84,7 +84,7 @@ The source note is tagged as a proposition but reproduces no proof or proof refe
 
 ## The polarized Coble analogue
 
-::: {.Remark}
+::: {.remark}
 
 The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan ([the Coble KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison), [the restricted-ramification-semifan conjecture](#conj:restricted_ramification_semifan)).
 Its extra difficulties are exactly the ones absent from the Enriques theorem above: branchwise root data, the ramification-semifan restriction identity, and [the no-moduli-loss conjecture](#conj:no_moduli_loss).

@@ -1,6 +1,6 @@
 # K3 covers
 
-::: {.Remark #rmk:k3-cover-invariants}
+::: {.remark #rmk:k3-cover-invariants}
 ### On relation to K3s
 
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$.
@@ -33,7 +33,7 @@ $$
 The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
 :::
 
-::: {.Proposition #prop:double-cover-is-k3}
+::: {.proposition #prop:double-cover-is-k3}
 ### The branched double cover is a K3 surface
 
 Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let
@@ -86,16 +86,16 @@ $$
 $$
 :::
 
-::: {.Remark}
+::: {.remark}
 
 Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational
-curve of $\abs{-2K_S}$ recorded in \longref{lem:rational_sextic_ten_nodes} and the
-surrounding discussion, \longref{prop:double-cover-is-k3} is the assertion cited from
-[@DK25 Prop. 9.1.1] in \longref{rmk:k3-cover-invariants}, and its intersection-number
-statement is the twist by $2$ used in \longref{prop:coble-invariant-lattice}.
+curve of $\abs{-2K_S}$ recorded in @lem:rational_sextic_ten_nodes and the
+surrounding discussion, @prop:double-cover-is-k3 is the assertion cited from
+[@DK25 Prop. 9.1.1] in @rmk:k3-cover-invariants, and its intersection-number
+statement is the twist by $2$ used in @prop:coble-invariant-lattice.
 :::
 
-::: {.Proposition #prop:coble-invariant-lattice}
+::: {.proposition #prop:coble-invariant-lattice}
 
 Let $f: X\to S$ be the K3 double cover of a terminal Coble surface of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
 Write $\Pic(S) = \gens{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
@@ -119,7 +119,7 @@ $$
 .
 $$
 Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\diag(2, -2, \ldots, -2)$, so that $S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
-This recovers, by the projection formula, the twist-by-$2$ described geometrically in \longref{rmk:k3-cover-twist}.
+This recovers, by the projection formula, the twist-by-$2$ described geometrically in @rmk:k3-cover-twist.
 
 **Rank of the invariant lattice via Lefschetz.** The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\containedin H^2(X, \bZ)^\sigma$.
 The fixed locus $\Fix(\sigma) = R$ is a single smooth rational curve (the case $n = 1$), so $\chi(R) = 2$.
@@ -130,7 +130,7 @@ $$
 $$
 Since $\chi(R) = 2$, we obtain $\trace(\sigma^* \mid H^2(X, \bZ)) = 0$.
 As $H^2(X, \bZ)$ has rank $22$ and $\sigma^*$ is an involution, the invariant lattice has rank $\tfrac{1}{2}(22 + 0) = 11$ and the coinvariant lattice rank $\tfrac{1}{2}(22 - 0) = 11$, so that $11 + 11 = 22$; cf.
-\longref{prop:involution_eigenspaces}. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
+@prop:involution_eigenspaces. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
 
 **The Nikulin invariants and equality.** The lattice $S_\Co \cong \gens{2}\oplus\gens{-2}^{10}$ has
 $$
@@ -144,11 +144,11 @@ $$
 so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$ [@CDL25 Def. 5.4.3, Eqn. 5.3.1], so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
-Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by \longref{prop:invariant_coinvariant_primitive} the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
-That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in \longref{rmk:k3-cover-invariants}.
+Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @prop:invariant_coinvariant_primitive the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
+That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in @rmk:k3-cover-invariants.
 :::
 
-::: {.Remark #rmk:k3-cover-twist}
+::: {.remark #rmk:k3-cover-twist}
 
 Following [@CD12], we note that this computation is a special case of a general construction.
 Let $S$ be any basic rational surface and write $S$ as the blowup of $\PP^2$ at $N$ points $p_1,\cdots, p_N$ with $N\geq 9$.

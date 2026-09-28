@@ -2,7 +2,7 @@
 
 ## Specified factorizations {#sec-specified-factorizations}
 
-::: {#def-distinguished-factorization}
+::: {.definition #def:distinguished-factorization}
 A factorization of $F\colon C\to E$ through $D$ consists of functors $H\colon C\to D$ and $G\colon D\to E$ together with an equality $F=G\circ H$ or a specified natural isomorphism $F\Rightarrow G\circ H$.
 The source, target, and comparison are part of the factorization.
 
@@ -16,12 +16,12 @@ An alternative forgetful functor is accompanied by its comparison with this comp
 
 ## Creation of limits {#sec-creation}
 
-Preservation, reflection, and creation of limits by a functor are defined in @def-preserve-reflect-create.
+Preservation, reflection, and creation of limits by a functor are defined in @def:preserve-reflect-create.
 A monadic functor $U\colon\mathcal A\to\mathcal C$ creates any limits that $\mathcal C$ has, and creates those colimits that $\mathcal C$ has and that the monad and its square preserve [@Rie16, Theorem 5.6.5].
 The forgetful functors to $\mathbf{Set}$ from $\mathbf{Monoid}$, $\mathbf{Grp}$, $\mathbf{Ab}$, $\mathbf{Ring}$, $R\text{-}\mathbf{Mod}$, and $\mathbf{Vect}_k$ are monadic [@Rie16, Corollary 5.5.3].
 
 Hence a limit in $R\text{-}\mathbf{Mod}$ is computed on underlying sets, and the module structure on the limit is the unique one lifting the limit cone.
-The kernel of a module homomorphism is a limit — the equalizer of $f$ and $0$ (@def-kernel-cokernel) — so it is the set-theoretic kernel with its unique compatible module structure, and the same computation serves for the underlying abelian group.
+The kernel of a module homomorphism is a limit — the equalizer of $f$ and $0$ (@def:kernel-cokernel) — so it is the set-theoretic kernel with its unique compatible module structure, and the same computation serves for the underlying abelian group.
 
 Creation is a statement about limit cones: a subgroup of the underlying abelian group of an $R$-module need not be a submodule, while the underlying set of a kernel admits exactly one module structure making it the kernel in $R\text{-}\mathbf{Mod}$.
 A construction whose value happens to agree on underlying sets across two categories names the functor along which it is created, since agreement of underlying data is not by itself a factorization (@sec-statements-vs-constructions).

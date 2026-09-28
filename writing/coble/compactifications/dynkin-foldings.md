@@ -1,15 +1,15 @@
 # Foldings of Dynkin diagrams
 
-::: {.Remark}
+::: {.remark}
 ### Orientation
 
 This section collects the folding constructions that produce non-simply-laced root systems from simply-laced ones by summing the roots in each orbit of a diagram automorphism, together with the specific root-folding criterion governing the involution $I = -I_\En$ on $T_\dP$ and the *mirror moves* used to navigate the pyramid of $2$-elementary lattices.
-As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see \longref{def:root-lattice}).
+As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see @def:root-lattice).
 :::
 
 ## Foldings of simply-laced diagrams
 
-::: {.Remark #rmk:classical-foldings}
+::: {.remark #rmk:classical-foldings}
 ### Classical foldings of Dynkin diagrams
 
 The process of folding by nontrivial diagram automorphisms produces non-simply-laced root systems from simply-laced diagrams.
@@ -26,12 +26,12 @@ Classical examples of foldings of simply-laced Dynkin diagrams include:
 - $E_6 \to F_4$ via $S_2$ (horizontal reflection).
 
 These arise as the fixed-point subalgebras $\mathfrak{g}^\sigma$.
-The orbit-sum construction of \longref{def:folded-root} instead produces the **Langlands-dual** root system in types $B$/$C$; accordingly the explicit foldings computed below yield $B_n$ from $A_{2n-1}$ and $C_n$ from $D_{n+1}$ (types $F_4$ and $G_2$ are self-dual and unaffected).
+The orbit-sum construction of @def:folded-root instead produces the **Langlands-dual** root system in types $B$/$C$; accordingly the explicit foldings computed below yield $B_n$ from $A_{2n-1}$ and $C_n$ from $D_{n+1}$ (types $F_4$ and $G_2$ are self-dual and unaffected).
 :::
 
 ## Folded roots and folded root systems
 
-::: {.Definition #def:folded-root}
+::: {.definition #def:folded-root}
 ### Folded root systems
 
 Let $L$ be a lattice containing a root system $\Phi$ and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
@@ -51,11 +51,11 @@ For an involution $I$, $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i) \in L^G$.
 
 ## Examples
 
-::: {.Example #ex:classical-foldings}
+::: {.example #ex:classical-foldings}
 ### Examples of classical foldings
 
 Folding produces scaled root systems in the invariant lattice $L^G$.
-Explicit examples computed via \longref{def:folded-root}:
+Explicit examples computed via @def:folded-root:
 
 - **$A_5 \to B_3(2)$**: under horizontal reflection ($G = S_2$), $\Phi(A_5^G)$ has Gram matrix $G_{B_3(2)} = 2 \cdot G_{B_3} = \begin{pmatrix} 4 & -2 & 0 \\ -2 & 4 & -2 \\ 0 & -2 & 2 \end{pmatrix}$ (norms $4, 4, 2$: two long, one short).
 
@@ -66,14 +66,14 @@ Explicit examples computed via \longref{def:folded-root}:
 - **$E_6 \to F_4(2)$**: under horizontal reflection ($G = S_2$), $\Phi(E_6^G)$ has Gram matrix equal to $G_{F_4(2)}$.
 
 Here the scaling notation $B_3(2)$ and $F_4(2)$ records that the invariant-lattice Gram matrix equals the corresponding root-system Gram matrix rescaled by $2$.
-(These Gram matrices are written in the standard positive-definite normalization; negate for the AG convention of \longref{def:root-lattice}.)
+(These Gram matrices are written in the standard positive-definite normalization; negate for the AG convention of @def:root-lattice.)
 :::
 
 ## The root-folding criterion for $T_\dP$
 
 The criterion below is stated in terms of the short and long roots of $T_\dP$: $\Phi^2$ denotes the **short roots** (norm $-2$) and $\Phi^4$ the **long roots** (norm $-4$ with divisor $2$), in the $k$-root sense of the root systems material.
 
-::: {.Lemma #lem:root-folding-tdp}
+::: {.lemma #lem:root-folding-tdp}
 ### Root folding criterion
 
 Let $\Phi(T_\dP)$ be the root system of $T_\dP$ and $I = -I_\En$ the induced involution on $T_\dP$ whose fixed lattice is $\ten$.
@@ -91,7 +91,7 @@ This criterion governs how roots in the boundary lattices at the $0$-cusps of $F
 
 ## Mirror moves
 
-::: {.Definition #def:mirror-move}
+::: {.definition #def:mirror-move}
 ### Mirror moves
 
 A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting:

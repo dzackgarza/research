@@ -42,5 +42,5 @@ For a functor $F\colon C\to D$, an isomorphism or equivalence $X\to Y$ induces o
 A weaker comparison obtained only after applying $F$ is written as a claim in $D$, for example $F(X)\cong F(Y)$.
 Genus, stable equivalence, and isospectrality use different functors and therefore define different relations.
 
-Literal equality, isomorphism, and equivalence retain the meanings fixed in @def-equality-of-objects.
+Literal equality, isomorphism, and equivalence retain the meanings fixed in @def:equality-of-objects.
 No additional equality predicate is introduced.

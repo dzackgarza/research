@@ -13,7 +13,7 @@ tags:
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/notebooks/Coble Lattice Invariants.ipynb` and `.../sage-scripts/init.sage`. Absent from the dissertation, which contains no Coble lattice at all.
 
-::: {.Remark}
+::: {.remark}
 ## What open problem this addresses
 
 `content_pandoc/sections/Open_Problems/Open_Problems.md` records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\OStab(T)$-orbit exists in divisibility 2; the proof of `lem:divisibilityTcoOne` currently *assumes* that uniqueness.
@@ -46,7 +46,7 @@ Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` re
 
 ## The three-way parallel transport
 
-::: {.Construction}
+::: {.construction}
 ### Term-by-term transport along the embedding chain
 
 The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
@@ -58,7 +58,7 @@ The same 18 vectors are transported term-by-term along the embedding chain $T_{\
 This yields a parallel norm and divisibility table across all three lattices, which is exactly the vector-by-vector form in which the Enriques-to-Coble cusp correspondence becomes checkable.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Recorded gap: the numbers were not saved
 
 The notebook cells that evaluate norm and divisibility on these vectors, in all three lattices, have their outputs **cleared**. The vectors and the method survive; the resulting numbers do not.
@@ -67,7 +67,7 @@ Re-running is the obvious first step, and is cheap: the lattices, the vectors an
 
 ## Orbit machinery available
 
-::: {.Remark}
+::: {.remark}
 ### The GAP bridge to polyhedral_common
 
 The notebook drives GAP's `INDEF_FORM_GetOrbitRepresentative` from `polyhedral_common`, an orbit-representative solver for indefinite forms.
@@ -75,7 +75,7 @@ This is the tool that would settle the open orbit count directly, rather than by
 A raw trace of one such run on a rank-10 form with diagonal $(-4,-4,-4,-4,-2,-4,-4,-4,-4,-2)$ survives in `reports/logs.txt`, whose two input Gram matrices are worth keeping even though the remaining 8800 lines are per-iteration bookkeeping.
 :::
 
-::: {.Definition}
+::: {.definition}
 ### The isotropic trichotomy used as a separating invariant
 
 `init.sage` provides `get_isotrop_type`, which classifies a primitive isotropic vector as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.

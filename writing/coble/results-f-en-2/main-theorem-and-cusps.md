@@ -5,7 +5,7 @@ These describe the *ambient* degree-$2$ Enriques picture, into which the polariz
 
 ## The main theorem
 
-::: {.Theorem #thm:fen2_main}
+::: {.theorem #thm:fen2_main}
 ### Compactification of $\fentwo$
 
 Let $\ksbacpt{\fentwo}$ denote the KSBA compactification of the moduli space $\fentwo$ of numerically polarized Enriques surfaces of degree $2$.
@@ -18,7 +18,7 @@ Let $\semifans{F} = \ts{\semifan{F}_k}_{k=1}^5$ be the collection of folded semi
 3. The isomorphism is established via an intermediate normalization $\normalize{B}$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\ksbacpt{\fttz}$ [@AEGS25 Sec. 6].
 :::
 
-::: {.Notation #not:sterk-cusp-labels}
+::: {.notation #not:sterk-cusp-labels}
 ### Two indexings of the boundary
 
 The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in [the five-cusp example](#ex:fen2_five_cusps).
@@ -32,7 +32,7 @@ not the pair of $0$-cusps: part 2 is [@AEGS25 Lem. 5.7] verbatim, and the $0$-cu
 and $5$ are strictly semitoroidal, as [the five-cusp example](#ex:fen2_five_cusps) records.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 This theorem records the settled ambient degree-$2$ Enriques picture: the normalized KSBA compactification of $\fentwo$ coincides with an explicit semitoroidal model built from five folded semifans, one per $0$-cusp.
 The proof runs through the K3 moduli space $\fttz$ of the degree-$(2,2,0)$ problem, identifying $\normksbacpt{\fentwo}$ with a normalization of the closure of the relevant Noether--Lefschetz locus; see [the normalization lemma](#lem:fen2_normalization) for the corresponding period-domain statement.
@@ -40,7 +40,7 @@ The proof runs through the K3 moduli space $\fttz$ of the degree-$(2,2,0)$ probl
 
 ## Normalization inside $F_{(2,2,0)}$
 
-::: {.Lemma #lem:fen2_normalization}
+::: {.lemma #lem:fen2_normalization}
 ### Normalization of $\fentwo$
 
 There exists a closed subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
@@ -102,7 +102,7 @@ Enriques $1$-cusps are labelled as in [the Sterk cusp-label notation](#not:sterk
 
 ## The five $0$-cusps
 
-::: {.Example #ex:fen2_five_cusps}
+::: {.example #ex:fen2_five_cusps}
 ### The five $0$-cusps of $\ksbacpt{\fentwo}$
 
 The boundary of the KSBA compactification $\ksbacpt{\fentwo}$ has $27$ divisors across five
@@ -132,7 +132,7 @@ For each $0$-cusp we record the topological type of the reduced dual complex $\G
    $3$ Type II rays, $0$ Type III. IAS involution: flip hemispheres.
 :::
 
-::: {.Remark}
+::: {.remark}
 The per-cusp counts above are exactly the ones of [@AEGS25 Lem. 5.8], obtained there from
 the Coxeter-fan counts $4+4,\ 2+8,\ 3+15,\ 4+12,\ 5+17$ of [@AEGS25 Lem. 5.2] by
 discarding the subgraphs with a connected component of irrelevant vertices. The Type III
@@ -141,7 +141,7 @@ $2,2,2,4,3$ sum to $13$ rays carried by $6$ distinct Type II divisors, each of w
 curve through several $0$-cusps.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 This enumeration is the boundary data underlying the folded semifans $\semifans{F}$ of [the compactification theorem](#thm:fen2_main): each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
 The precise per-cusp ray counts and IAS involutions are migrated from the working notes and, as with the cusp tables discussed in [the KSBA--semitoroidal comparison conjecture](#conj:ksba_semitoroidal_comparison), should be regarded as provisional pending an independent cusp computation.
@@ -149,7 +149,7 @@ The precise per-cusp ray counts and IAS involutions are migrated from the workin
 
 ## Folded Coxeter diagrams of the five cusps
 
-::: {.Remark #rmk:fen2_folded_coxeter}
+::: {.remark #rmk:fen2_folded_coxeter}
 ### Folded Coxeter diagrams of $\fentwo$
 
 The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $\ten$, each realized as a folded image of a Coxeter diagram for $\fttz$ under the involution $I = -I_\En$ ([the root-folding criterion](#lem:root-folding-tdp), in the sense of [the folded-root definition](#def:folded-root)):
@@ -170,7 +170,7 @@ The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbi
    (Boundary lattice: $U \oplus E_8(2)$.)
 :::
 
-::: {.Remark}
+::: {.remark}
 
 The folded chamber $\mathfrak{C}^I = \mathfrak{C} \intersect \overline{T}_{\eta, \mathbf{R}}^{I = 1}$ has walls defined by the roots descending from the covering domain (cf. [the classical-foldings example](#ex:classical-foldings)).
 

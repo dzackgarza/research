@@ -16,7 +16,7 @@ The lattices themselves are **already recorded** in this project at `content_pan
 
 ## Setting
 
-::: {.Definition}
+::: {.definition}
 ### Nodal and unnodal
 
 An Enriques surface $Y$ is **nodal** if it contains a rational $(-2)$-curve, and **unnodal** otherwise.
@@ -31,7 +31,7 @@ $$
 the generic Picard lattice of the K3 cover $X$ and its transcendental lattice.
 $F_{\Nod}$ is realized as the divisor $\cH_{-4}/\Orth(T_{\En})$, a 9-dimensional irreducible quasiprojective variety.
 
-::: {.Remark}
+::: {.remark}
 ### Discrepancy to reconcile: two forms of the embedding
 
 This project's `Nodal_Enriques_Lattices.md` records the primitive embedding $S_{\En}\injects S_{\Nod}$ as
@@ -51,13 +51,13 @@ Reconciling them, or identifying which is correct, is a small and worthwhile tas
 
 ## The program
 
-::: {.Conjecture}
+::: {.conjecture}
 ### Baily-Borel boundary by the same techniques
 
 Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified, yielding a boundary incidence diagram; and the lattice embedding above allows AEGS23 to be leveraged to construct the KSBA compactification, its dlt models, and the integral-affine structures classifying KSBA stable limits of nodal Enriques surfaces.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Why this needs genuinely new machinery
 
 $T_{\Nod}$ is **not 2-elementary**. The entire Sterk-Nikulin apparatus that both this project and the dissertation rely on assumes 2-elementarity, so the classification of boundary components requires developing orbit techniques for non-2-elementary discriminant forms.

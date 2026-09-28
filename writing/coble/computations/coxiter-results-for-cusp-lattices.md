@@ -28,7 +28,7 @@ Every run reports dimension 9, **non-cocompact with finite covolume**, and Euler
 | Sterk 4 | 11 | $\QQ[\sqrt2]$ | 5 | $9,1,1$ | $(26,125,300,450,460,330,165,55,11,1)$ |
 | Sterk 5 | 14 | $\QQ[\sqrt2]$ | 13 | $9,1,4$ | $(115,600,1352,1768,1508,875,346,90,14,1)$ |
 
-::: {.Remark}
+::: {.remark}
 ### Growth rate of Sterk 1
 
 The Sterk 1 growth rate is
@@ -38,7 +38,7 @@ $$
 classified by CoxIter as **Perron, not Pisot, not Salem**. Each output also lists every connected spherical subgraph by rank with its vertex set, and every spherical *product* with multiplicity $N$ and Weyl group order; for example Sterk 1 at rank 9 records $A_1 \oplus E_8$ with $N = 4$ and order $1393459200$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Consistency with the dissertation
 
 The dissertation records for these cusps only the ray counts of the semifans (Cusp 1: 4 Type II + 4 Type III; Cusp 2: 2 + 8; Cusp 3: 3 + 15), which is a different quantity from any entry above.
@@ -53,7 +53,7 @@ Nothing in the dissertation contradicts these numbers, and nothing in it reprodu
 | $(10,8,0)_1$ | rank-10 chain, one label-4 edge | $\QQ[\sqrt2]$ | 9 | 2 | $(10,45,120,210,252,210,120,45,10,1)$ | $0$ |
 | $(10,10,0)_1$ | rank-10, all edges label 3, $\tilde E_{10}$-shaped | $\QQ$ | 9 | 1 | $(10,45,120,210,252,210,120,45,10,1)$ | $0$ |
 
-::: {.Remark}
+::: {.remark}
 ### Why (9,9,1) matters here
 
 $(9,9,1)$ is the **Coble 0-cusp lattice** named in this project's own text, alongside the 1-cusp $(7,7,1)$.
@@ -61,7 +61,7 @@ $(10,10,0)$ and $(10,8,0)$ are the two Enriques 0-cusps to which the Coble cusps
 So this table is direct computational evidence bearing on the cusp correspondence; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Benchmarks, not results
 
 The same directory holds CoxIter runs on $E_6$, $F_4$ and $F_2$ (the last: 24 vertices, dimension 19, $\chi = -219323026921/45201995813229523107840000$). These are standard reference diagrams used to check the tool, not lattices of either project.
@@ -83,7 +83,7 @@ The counts are:
 Types appearing are the twisted mixed-norm systems $A_n(2)$, $B_n(2)$, $D_n(2)$, $E_n(2)$, $G_2$, consistent with the $-2$ / $-4$ mixed-norm root systems of the folded diagrams.
 Sterk 1 for instance carries $A_8(2)\times4$, $E_8(2)\times4$, $D_8(2)\times8$ at rank 8.
 
-::: {.Remark}
+::: {.remark}
 ### These are not orbit representatives
 
 The lists are the **full** sets of elliptic subdiagrams, before quotienting by diagram symmetry.

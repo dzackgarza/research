@@ -1,13 +1,13 @@
 # Kulikov models and limiting mixed Hodge structures
 
-::: {.Remark}
+::: {.remark}
 
 We collect the local structure theory attached to a one-parameter degeneration of K3 surfaces: the Kulikov models that provide a well-behaved semistable representative of a degeneration, the trichotomy of such models by the nilpotency of the log monodromy operator, and the limiting mixed Hodge structure whose monodromy weight filtration records the same trichotomy on the Baily--Borel boundary.
 :::
 
 ## Kulikov degenerations
 
-::: {.Definition #def:kulikov-model}
+::: {.definition #def:kulikov-model}
 ### Kulikov models
 
 A *Kulikov model* is a degeneration $\cX \to \Delta$ of K3 surfaces where:
@@ -21,13 +21,13 @@ A *Kulikov model* is a degeneration $\cX \to \Delta$ of K3 surfaces where:
 Such a model is *semistable* by conditions (1) and (2) and *$K$-trivial* by condition (3).
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Existence and attribution
 
 The Kulikov model is the semistable, $K$-trivial representative constructed for degenerations of K3 (and Enriques) surfaces in [@Kul77], with the $K$-trivialization of the semistable reduction supplied for surfaces of trivial canonical bundle by [@PP81].
 :::
 
-::: {.Definition #def:kulikov-types}
+::: {.definition #def:kulikov-types}
 ### Type I, II, III Kulikov degenerations
 
 Let $T$ be the unipotent Picard--Lefschetz monodromy of a Kulikov model and let $N = \log T$ be the associated *log monodromy* operator, a nilpotent endomorphism.
@@ -42,7 +42,7 @@ Depending on the nilpotency index of $N$, Kulikov models are classified into thr
   The dual complex is a sphere $\ias$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The Type III dual complex
 
 The identification of the Type $\mathrm{III}$ central fiber as a union of rational surfaces whose dual complex triangulates a sphere is the subject of [@FS86].
@@ -50,7 +50,7 @@ The identification of the Type $\mathrm{III}$ central fiber as a union of ration
 
 ## The monodromy weight filtration
 
-::: {.Remark}
+::: {.remark}
 ### The weight filtration by type
 
 The **weight filtration** $W_\bullet$ on $H^2(\cX_t; \CC)$ (weight $2$, centered at $n = 2$) reflects the three types, by the nilpotency of $N$.
@@ -59,7 +59,7 @@ For Type $\latII$ ($N \neq 0$, $N^2 = 0$), the non-trivial graded pieces are $\G
 For Type $\mathrm{III}$ ($N^2 \neq 0$, $N^3 = 0$), the non-trivial graded pieces are $\Gr^W_0, \Gr^W_2, \Gr^W_4$ (weights $0, 2, 4$), of Hodge--Tate type.
 :::
 
-::: {.Theorem #thm:lmhs}
+::: {.theorem #thm:lmhs}
 ### Limiting mixed Hodge structure and degenerations
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
@@ -74,13 +74,13 @@ The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index
   These correspond to normal crossing varieties whose dual complex is a triangulation of $S^2$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Attribution of the weight filtration
 
 The canonical monodromy weight filtration attached to the nilpotent operator $N = \log T$ is that of [@Sch73].
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Indexing of the weight filtration
 
 The apparent discrepancy between the two accounts above is not a matter of indexing convention but a distinction between Kulikov types.
@@ -88,10 +88,10 @@ For Type $\latII$ the non-trivial graded pieces sit at weights $1, 2, 3$, with $
 The even-weight pieces at $0, 2, 4$ occur instead for Type $\mathrm{III}$, which is of Hodge--Tate type.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Source notes carried no citations
 
-::: {.Warning}
+::: {.warning}
 The two migrated research notes (Kulikov Models; Limiting Mixed Hodge Structure and Degenerations) contained no inline citations.
 The attributions above (Kul77, PP81, Sch73, FS86) were supplied from verified bibliography keys as standard attributions of the concepts the notes name; the author should confirm the intended primary sources.
 The notes contained no Clemens--Schmid statement, no explicit semistable-reduction theorem, and no $N^k$ nilpotent-orbit computation beyond the trichotomy reproduced above.

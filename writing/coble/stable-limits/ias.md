@@ -1,6 +1,6 @@
 # Integral affine structures
 
-::: {.Remark}
+::: {.remark}
 
 Following [@AEGS25], a **Kulikov model** is a $K$-trivial semistable model
 $\cX \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$.
@@ -21,7 +21,7 @@ $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\ien$ where $\cX \to (C, 0)$ and
 $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
 :::
 
-::: {.Definition #def:singular_ias}
+::: {.definition #def:singular_ias}
 
 The dual complex $\Gamma(\cX_0)$ of a Type III Kulikov model carries a canonical
 *singular integral affine structure*: away from a finite singular set its charts
@@ -32,7 +32,7 @@ The total charge is $24$, which constrains the number and type of singularities;
 for instance one may have $24$ singularities of type $I_1$.
 :::
 
-::: {.Definition #def:symington_polytope}
+::: {.definition #def:symington_polytope}
 
 Given a monodromy invariant $\lambda$ with barycentric coordinates
 $\ell_i = \lambda \cdot \alpha_i$, the *Symington polytope* $P(\lambda)$ is the
@@ -52,7 +52,7 @@ polarization $R_{\mathrm{IA}}$ [@AE23].
 A one-parameter family $\cX \to C$ of surfaces over a curve $C \containedin \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 The following is a representation of a Type II degeneration -- it is a chain of
 surfaces whose dual complex is an interval $\bD^1$, where the ends $V_1$ and
@@ -76,7 +76,7 @@ A triangulated integral affine sphere.
 :::
 :::
 
-::: {.Remark}
+::: {.remark}
 
 The following is a combinatorial representation of the Kulikov model of $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
 
@@ -91,7 +91,7 @@ A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
 
 ## The integral affine structure $B_3(\ell)$ at Sterk cusp 3
 
-::: {.Warning}
+::: {.warning}
 The figures below were drawn for this construction but their accompanying text has not been written; they are collected here so that the artwork is not orphaned. Each caption states only what the picture shows.
 :::
 
@@ -135,14 +135,14 @@ The same polytope after Symington surgeries, marked in red along the boundary.
 The $16$-gon with its boundary lines $\ell_1, \ell_{16}, \dots, \ell_{21}$ labelled.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @ABE22].
 :::
 
 ## Marked-root structures for the Coble locus
 
-::: {.Remark}
+::: {.remark}
 
 For Enriques and Coble surfaces the integral affine data is built on the K3 cover
 first and only then folded downstairs.
@@ -157,7 +157,7 @@ is what distinguishes the Coble integral affine structure from an ordinary Enriq
 boundary structure.
 :::
 
-::: {.Question #que:equivariant_triangulation}
+::: {.question #qst:equivariant_triangulation}
 
 Does there exist an equivariant triangulation of the integral affine sphere
 compatible with the marked root $r$?
@@ -165,7 +165,7 @@ Absent such a triangulation, the marked-root prescription remains a construction
 principle rather than a finished combinatorial model.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 Under the cusp correspondence, the Coble $0$-cusp corresponds to Sterk cusp $2$,
 realized as the folding of the cusp $(18,0,0)_1$ by the horizontal symmetry of its

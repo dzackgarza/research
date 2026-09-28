@@ -1,12 +1,12 @@
 # Morrison's degenerations
 
-::: {.Remark}
+::: {.remark}
 ### On Morrison's degenerations
 
 As explained in [@Mor81] and the appendix of [@Sha81a], a **flower** is a pair $(\PP^2, C)$ where $C^2 = 4$ is a conic, while a **pot** is a pair $(V, D)$ where $V$ is a rational surface and $D = \Sum C_i$ is a sum of rational curves satisfying $C_i\cdot C_j = -4\delta_{ij}$.
 A **stalk** is a pair $(\Sigma_4, s_0 + s_\infty)$ where $\Sigma_4$ is a rational ruled surface with sections $s_0, s_\infty$ satisfying $s_0^2 = 4$ and $s_\infty^2 = -4$. A **stalk assembly** is a flower glued to some number of stalks along boundary double curves, and a **flower pot** is a pot glued to stalk assemblies along double curves.
 
-::: {.Question}
+::: {.question}
 Check that this is the Hirzebruch surface $F_4$ with only part of its toric boundary.
 :::
 

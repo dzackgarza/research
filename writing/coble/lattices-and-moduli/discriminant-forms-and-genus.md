@@ -1,6 +1,6 @@
 # Discriminant forms and the genus
 
-::: {.Remark}
+::: {.remark}
 
 The Lattice Theory section introduced the dual lattice $L\dual$, the
 discriminant group $A_L \da L\dual/L$, and the discriminant quadratic form
@@ -16,7 +16,7 @@ extension of $\beta_L$.
 
 ## Quadratic forms and the polarization identity
 
-::: {.Definition #def:coble-quadratic-form}
+::: {.definition #def:coble-quadratic-form}
 
 A **quadratic form** on a $\ZZ$-module $L$ is a map of sets $q: L \to \QQ$ such
 that $q(\lambda v) = \lambda^2 q(v)$ for all $v\in L$ and all $\lambda\in\ZZ$,
@@ -32,7 +32,7 @@ We say $q$ is **integral** if $q(L) \containedin \ZZ$, and we call the pair
 $(L, q)$ a **quadratic $\ZZ$-module**.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 Setting $w = v$ in the polar form and using homogeneity gives
 $$
@@ -47,7 +47,7 @@ This identity is the source of the bijection recorded below.
 
 ## The correspondence between bilinear and quadratic forms
 
-::: {.Lemma #lem:coble-bilinear-quadratic-correspondence}
+::: {.lemma #lem:coble-bilinear-quadratic-correspondence}
 
 Every $\QQ$-valued symmetric bilinear module $(L, \beta)$ determines a
 $\QQ$-valued quadratic module $(L, q_\beta)$ by
@@ -60,7 +60,7 @@ Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric
 bilinear module $(L, \beta_q)$ via its polar form from [the quadratic-form definition](#def:coble-quadratic-form).
 :::
 
-::: {.Lemma #lem:coble-even-lattice-bijection}
+::: {.lemma #lem:coble-even-lattice-bijection}
 
 There is a bijection between even symmetric integral bilinear forms on $L$ and
 integral quadratic forms on $L$:
@@ -104,7 +104,7 @@ The two assignments are mutually inverse.
 
 ## Torsion bilinear and quadratic forms
 
-::: {.Definition #def:coble-torsion-forms}
+::: {.definition #def:coble-torsion-forms}
 
 A **torsion bilinear form** is a pair $(G, \beta)$ where $G$ is a finitely
 generated torsion $\ZZ$-module and
@@ -118,7 +118,7 @@ i.e. $q(\lambda x) = \lambda^2 q(x)$ for all $x\in G$ and $\lambda\in\ZZ$, whose
 polar form is a torsion bilinear form.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 The discriminant group $A_L$ of the Lattice Theory section is a finite, hence
 finitely generated torsion, $\ZZ$-module, so its associated forms are instances
@@ -136,7 +136,7 @@ multiplication-by-$2$ isomorphism.
 
 ## The discriminant bilinear and quadratic forms
 
-::: {.Definition #def:coble-discriminant-forms}
+::: {.definition #def:coble-discriminant-forms}
 
 Let $(L, \beta_L)$ be a nondegenerate even lattice with discriminant group
 $A_L = L\dual/L$, and let $\beta$ also denote the $\QQ$-valued extension of the
@@ -166,7 +166,7 @@ The **length** $\ell(L)$ of $L$ is the minimal number of generators of the
 abelian group $A_L$.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with
 $m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined
@@ -176,7 +176,7 @@ since $\beta(L\dual, L)\containedin\ZZ$ and $L$ is even.
 These forms are Nikulin's discriminant forms [@Nik80].
 :::
 
-::: {.Proposition #prop:discriminant-nondegenerate}
+::: {.proposition #prop:discriminant-nondegenerate}
 
 The discriminant forms $b_L$ and $q_L$ of a nondegenerate lattice $L$ are
 themselves nondegenerate, meaning that $b_L(\bar x, \,\cdot\,) = 0$ in
@@ -206,7 +206,7 @@ lifts.
 
 ## Properties of the dual lattice
 
-::: {.Proposition #prop:dual-properties}
+::: {.proposition #prop:dual-properties}
 
 Let $L$ and $M$ be nondegenerate lattices.
 The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
@@ -225,7 +225,7 @@ The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
     twist of $L$ by $m$ from the Lattice Theory section.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 Property (2) is the source of (3), since
 $\operatorname{disc}(L\dual) = \det(G_\beta\inv) = 1/\det(G_\beta)
@@ -237,7 +237,7 @@ Theory section.
 
 ## Geometric identification of the dual lattice
 
-::: {.Theorem #thm:dual-geometric-identification}
+::: {.theorem #thm:dual-geometric-identification}
 
 For a nondegenerate integral lattice $(L, \beta_L)$, the dual lattice is
 identified with a $\ZZ$-submodule of $L_\QQ = L\tensor_\ZZ\QQ$ via
@@ -270,7 +270,7 @@ values.
 
 ## The genus, class group, and class number
 
-::: {.Definition #def:coble-genus}
+::: {.definition #def:coble-genus}
 
 Two lattices $L_1, L_2$ belong to the same **genus** if
 $L_{1, \ZZ_p} \cong L_{2, \ZZ_p}$ for every prime $p$, where
@@ -282,7 +282,7 @@ lattices in the genus of $L$, and the **class number** is the cardinality
 $\abs{\operatorname{cl}(L)}$.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 For indefinite even lattices $L$ of rank $\geq 3$ the class number is $1$, so
 that the genus determines the isometry class; this is Eichler's theorem on the
@@ -291,7 +291,7 @@ For definite lattices the situation is reversed: class number $1$ is
 comparatively rare.
 :::
 
-::: {.Proposition #prop:scattone-bound}
+::: {.proposition #prop:scattone-bound}
 
 If $\rank(L) > 16 + \ell(L)$, where $\ell(L)$ is the length of
 [the discriminant-form definition](#def:coble-discriminant-forms), then the class number satisfies
@@ -305,7 +305,7 @@ This is the bound of [@Sca87].
 
 ## Local invariants and the Jordan decomposition
 
-::: {.Definition #def:scale-norm-volume}
+::: {.definition #def:scale-norm-volume}
 ### Scale, norm, and volume
 
 Let $(L, \beta_L)$ be a lattice.
@@ -327,7 +327,7 @@ $\mathfrak{n}(L(m)) = m\,\mathfrak{n}(L)$ and
 $\mathfrak{v}(L(m)) = m^{r}\,\mathfrak{v}(L)$ for $r = \rank(L)$.
 :::
 
-::: {.Definition #def:modular-lattice}
+::: {.definition #def:modular-lattice}
 ### Modular lattices
 
 A lattice $L$ is **$m$-modular** if $m L\dual = L$; equivalently, $L$ is similar
@@ -336,7 +336,7 @@ A unimodular lattice is the case $m = 1$, and $L(m)$ is $m$-modular whenever $L$
 is unimodular.
 :::
 
-::: {.Theorem #thm:jordan-decomposition}
+::: {.theorem #thm:jordan-decomposition}
 ### Jordan decomposition
 
 Let $L$ be a nondegenerate lattice and $p$ a prime.
@@ -350,7 +350,7 @@ Such a decomposition exists and is unique up to isometry, and the scales
 $p^{s_i}$ and the ranks $\rank(L_i)$ are invariants of $L$ at $p$.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 The Jordan invariants at every prime are exactly the data compared in
 [the genus definition](#def:coble-genus): two lattices lie in the same genus precisely when they have
@@ -363,7 +363,7 @@ rank-one summands.
 
 ## The mass formula as a class-number criterion
 
-::: {.Definition #def:mass}
+::: {.definition #def:mass}
 ### The mass of a genus
 
 Let $L$ be a positive definite lattice and let $L^{(1)}, \ldots, L^{(h)}$ be
@@ -376,7 +376,7 @@ m(L) \da \Sum_{i=1}^{h} \frac{1}{\abs{\Orth(L^{(i)})}}
 $$
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The Smith--Minkowski--Siegel formula and its use
 
 The mass is computable from local data alone: the Smith--Minkowski--Siegel mass
@@ -399,7 +399,7 @@ is the definite counterpart of the indefinite criterion recorded above.
 
 ## Surjectivity onto the discriminant group
 
-::: {.Theorem #thm:two-elementary-surjectivity}
+::: {.theorem #thm:two-elementary-surjectivity}
 ### $\Orth(H)\to\Orth(A_H, q_H)$ is surjective for indefinite $2$-elementary $H$
 
 Let $H$ be an indefinite even $2$-elementary lattice.
@@ -415,7 +415,7 @@ onto the isometry group of the discriminant form is surjective.
 This is [@Nik80]; see [@Ale22 §4] for the statement in this form.
 :::
 
-::: {.Remark}
+::: {.remark}
 
 Surjectivity is what makes the finite quadratic space $A_H$ a faithful shadow of
 $\Orth(H)$, and it enters at three separate points below: it lifts an isometry of
@@ -428,7 +428,7 @@ indefinite even $2$-elementary.
 
 ## Invariants that do not classify
 
-::: {.Theorem #thm:milgram}
+::: {.theorem #thm:milgram}
 ### Milgram's formula
 
 Let $L$ be a nondegenerate even lattice with discriminant form
@@ -450,7 +450,7 @@ In particular the discriminant form determines the index $n_+ - n_-$ modulo $8$.
 This is the Gauss-sum formula of [@MH73 Appendix 4].
 :::
 
-::: {.Remark}
+::: {.remark}
 ### What each invariant determines
 
 Milgram's formula is a constraint linking the two halves of the classifying data
@@ -475,7 +475,7 @@ together with the discriminant form $(A_L, q_L)$, which determine the genus
 the genus determines the isometry class.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The consequence for complementary lattices
 
 If $S\containedin\Lambda$ is primitive in an even unimodular $\Lambda$ with
@@ -494,7 +494,7 @@ shadow of that comparison.
 
 ## Finiteness of orbits of vectors of fixed norm
 
-::: {.Theorem #thm:finiteness-fixed-norm-orbits}
+::: {.theorem #thm:finiteness-fixed-norm-orbits}
 ### Finitely many orbits in each norm
 
 Let $L$ be an integral lattice and $n\in\ZZ$.
@@ -505,7 +505,7 @@ $$
 of representations of $n$ by $L$ decomposes into finitely many $\Orth(L)$-orbits.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Why the statement is needed and where it comes from
 
 For a definite lattice the statement is trivial, $S_n$ itself being finite.

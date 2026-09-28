@@ -19,7 +19,7 @@ This note records the moduli-theoretic program built on that observation, which 
 
 ## Definitions and known moduli
 
-::: {.Definition}
+::: {.definition}
 ### Index, Halphen pencil, Halphen surface
 
 A **rational elliptic surface** is a smooth projective rational surface $Y$ with a relatively minimal fibration $\pi: Y\to\PP^1$ whose generic fiber is a smooth elliptic curve.
@@ -28,7 +28,7 @@ A **Halphen pencil of index $m$** is a pencil of degree $3m$ curves in $\PP^2$ w
 Every relatively minimal rational elliptic surface is Halphen of some index.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### What is already constructed in the literature
 
 - $M_{H,1}$ is an open subset of the Grassmannian $\Gr_2(10)$ of pencils of plane cubics, irreducible of dimension 8.
@@ -44,7 +44,7 @@ Every relatively minimal rational elliptic surface is Halphen of some index.
 
 ## The lattice matching
 
-::: {.Remark}
+::: {.remark}
 ### Where the Coble lattices reappear
 
 In AE22, the case $S = (10,10,1)$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \da X/\iota$ is an index 2 Halphen pencil.
@@ -56,14 +56,14 @@ The lattice coincidence is the whole content of the conjecture: two geometricall
 
 ## The program
 
-::: {.Conjecture}
+::: {.conjecture}
 ### Period domains and KSBA compactifications for M_(H,2,k)
 
 These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
 The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications of the corresponding period domains, for a suitably canonical divisor $R$.
 :::
 
-::: {.Conjecture}
+::: {.conjecture}
 ### The multiple fiber as the recognizable divisor
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
@@ -91,7 +91,7 @@ The Coxeter diagram for $S \da (10,10,1)$ is well known and the K3 moduli theory
 
 Steps 3 through 5 are exactly the recipe recorded in [the computational toolchain and recipe](../computations/computational-toolchain-and-recipe.md), applied to a new lattice.
 
-::: {.Remark}
+::: {.remark}
 ### Why the program is stated as worth doing
 
 It opens a comparison between GIT and KSBA compactifications, since $M_{H,1}$ and $M_{H,2}$ already have GIT compactifications in the literature while their KSBA compactifications do not exist.

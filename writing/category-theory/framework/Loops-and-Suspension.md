@@ -2,7 +2,7 @@
 
 Let $\mathcal C$ be a pointed $\infty$-category, with zero object $*$, and suppose that it has the finite limits and colimits required below.
 
-::: {#def-fiber-cofiber title="Fibers and cofibers"}
+::: {.definition #def:fiber-cofiber title="Fibers and cofibers"}
 []{#sec-cobase-changes}
 
 For $f\colon X\to Y$, its fiber over the canonical basepoint $0\colon *\to Y$ is defined by the cartesian square
@@ -46,7 +46,7 @@ $$
 These definitions specialize in pointed spaces to the usual homotopy fiber and homotopy cofiber.
 :::
 
-::: {#def-loops-suspension title="Loops and suspension"}
+::: {.definition #def:loops-suspension title="Loops and suspension"}
 
 For an object $X$ of $\mathcal C$, loops are defined by the pullback square
 
@@ -110,7 +110,7 @@ $$
 \operatorname{Map}_*(X,\Omega Y).
 $$
 
-::: {#def-fiber-sequence title="Fiber sequences"}
+::: {.definition #def:fiber-sequence title="Fiber sequences"}
 
 A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
 Applying homotopy groups gives the long exact sequence.
@@ -119,7 +119,7 @@ Its component-level portion is the pointed-set sequence recorded in @sec-pi0-fib
 
 ## Extending the sequences {#sec-extended-sequences}
 
-For $f\colon X\to Y$ the fiber square of @def-fiber-cofiber may be extended to the left, since the fiber of $\operatorname{Fib}(f)\to X$ is computed by a pasted pullback square and is $\Omega Y$:
+For $f\colon X\to Y$ the fiber square of @def:fiber-cofiber may be extended to the left, since the fiber of $\operatorname{Fib}(f)\to X$ is computed by a pasted pullback square and is $\Omega Y$:
 $$
 \cdots\longrightarrow
 \Omega X\longrightarrow
@@ -136,7 +136,7 @@ X\xrightarrow{\;f\;}Y\longrightarrow
 $$
 each stage being the fiber or cofiber of the preceding morphism [@nlab:fiber_sequence].
 
-::: {#def-homotopy-groups title="Homotopy groups of a pointed space"}
+::: {.definition #def:homotopy-groups title="Homotopy groups of a pointed space"}
 
 Let $\mathcal S_*$ be the $\infty$-category of pointed spaces.
 For $(X,x)\in\mathcal S_*$ and $n\geq0$, set
@@ -145,5 +145,5 @@ $$
 $$
 where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object taken at the basepoint supplied by the previous stage.
 For $n\geq1$ the composition of loops makes $\pi_n(X,x)$ a group, and for $n\geq2$ an abelian group.
-These are the groups appearing in the truncation conditions of @def-truncated and in the long exact sequence of a fiber sequence.
+These are the groups appearing in the truncation conditions of @def:truncated and in the long exact sequence of a fiber sequence.
 :::

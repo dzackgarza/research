@@ -15,7 +15,7 @@ $$
 \end{aligned}
 $$
 
-::: {.Lemma #lem:primitive_embedding_eta}
+::: {.lemma #lem:primitive_embedding_eta}
 
 Writing
 
@@ -40,7 +40,7 @@ the identity on the $E_{10}(2)$ summand.
 Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 :::
 
-::: {.Lemma #lem:sequence_of_embeddings}
+::: {.lemma #lem:sequence_of_embeddings}
 
 There is a sequence of primitive embeddings
 
@@ -91,7 +91,7 @@ Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
 :::
 
-::: {.Lemma #lem:locally_closed_embedding_BB}
+::: {.lemma #lem:locally_closed_embedding_BB}
 
 The embeddings of lattices
 $\eta: T_\Co\injects T_\En$ (resp.
@@ -106,7 +106,7 @@ Baily--Borel compactifications.
 This follows from [@KK72 §5, Thm.2].
 :::
 
-::: {.Theorem #thm:normalization}
+::: {.theorem #thm:normalization}
 
 $\fco$ is the normalization of a closed subvariety of $\fen$.
 :::
@@ -242,7 +242,7 @@ A finite birational morphism from a normal variety onto a reduced irreducible
 variety is its normalization, so $F_\Co$ is the normalization of $Z$.
 :::
 
-::: {.Remark #rmk:normalization-enriques-analogue}
+::: {.remark #rmk:normalization-enriques-analogue}
 ### The same statement one level up
 
 [The normalization theorem](#thm:normalization) is the Coble analogue of [@AEGS25 Lem. 2.8], which
@@ -258,7 +258,7 @@ The proof above replaces that detour by the direct gluing computation, which is
 available here because $T_\Co^{\perp T_\En}\cong\gens{-2}$ is of rank one.
 :::
 
-::: {.Remark #rmk:descent-of-an-equivariant-inclusion}
+::: {.remark #rmk:descent-of-an-equivariant-inclusion}
 ### What the stabilizer statement has to supply
 
 The stabilizer step of [the normalization theorem](#thm:normalization) is one instance of a general

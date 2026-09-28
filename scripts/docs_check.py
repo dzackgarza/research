@@ -117,7 +117,7 @@ if missing:
 for html in sorted(SITE.rglob("*.html")):
     hits = html.read_text(encoding="utf-8", errors="replace").count("quarto-unresolved-ref")
     if hits:
-        refs = sorted(set(re.findall(r'quarto-unresolved-ref[^>]*>\?([\w-]+)',
+        refs = sorted(set(re.findall(r'quarto-unresolved-ref[^>]*>\?([\w:-]+)',
                                      html.read_text(encoding="utf-8", errors="replace"))))
         failures.append(f"{html.name}: {hits} unresolved cross-ref(s): {', '.join(refs)}")
 
@@ -169,18 +169,30 @@ for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", REFS_WEB.read_text(encoding="
     elif "ncatlab.org" not in body:
         failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
 
-# 7. cross-references the book's resolver does not implement — checked in the source,
-# because the rendered page shows nothing at all. cnb-3-crossref.lua matches only
-# `\ref{` and `\longref{`; `\cref{x}` contains neither, and pandoc drops the raw
-# LaTeX inline rather than printing it, so the reference silently disappears from the
-# sentence. Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref
-# marker, and a dropped \cref never became a Quarto crossref.
-for md in SITE_MD:
-    for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-        for m in re.finditer(r"\\[cC]ref\{([^}]*)\}", line):
-            failures.append(f"{md.name}:{i}: {m.group(0)} renders as nothing — "
-                            f"the resolver implements \\ref and \\longref only; "
-                            f"write \\longref{{{m.group(1)}}}")
+# 7. theorem-family references — checked in the source, because the rendered page
+# shows nothing at all. The book writes them as the pandoc papers do: `@thm:key` and
+# `[-@thm:key]`, which the amsthm-refs filter hands to custom-numbered-blocks. cnb
+# drops a reference whose id it never registered, and pandoc drops raw LaTeX such as
+# `\cref{x}` in HTML, so either defect silently deletes words from the sentence.
+# Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref marker.
+AMSTHM_REFS = BOOK / "_extensions/local/amsthm-refs/amsthm-refs.lua"
+lua_table = re.search(r"local ref_prefixes = \{(.*?)\}", AMSTHM_REFS.read_text(), re.S)
+if lua_table is None:
+    sys.exit(f"docs-check: read no ref_prefixes table out of {AMSTHM_REFS}")
+THEOREM_PREFIXES = re.findall(r'(\w+)"?\]?\s*=\s*true', lua_table.group(1))
+sources = {md: md.read_text(encoding="utf-8", errors="replace") for md in SITE_MD}
+defined = {m.group(1) for text in sources.values()
+           for m in re.finditer(r"^:{3,}\s*\{[^}\n]*#([\w:.-]+)", text, re.M)}
+THEOREM_REF = re.compile(r"(?<![\w@])@((?:" + "|".join(THEOREM_PREFIXES) + r"):[\w:.-]*[\w-])")
+for md, text in sources.items():
+    for i, line in enumerate(text.splitlines(), 1):
+        for m in THEOREM_REF.finditer(line):
+            if m.group(1) not in defined:
+                failures.append(f"{md.name}:{i}: @{m.group(1)} names no block in the book — "
+                                "the reference renders as nothing")
+        for m in re.finditer(r"\\(?:[cC]ref|longref|ref)\{([^}]*)\}", line):
+            failures.append(f"{md.name}:{i}: {m.group(0)} is raw LaTeX — "
+                            f"write @{m.group(1)} or [-@{m.group(1)}]")
 
 # 8. external links must resolve — a cited resource that 404s can't be verified to exist
 import urllib.request

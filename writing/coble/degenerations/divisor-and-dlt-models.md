@@ -1,6 +1,6 @@
 # Divisor models and dlt degenerations
 
-::: {.Remark}
+::: {.remark}
 
 This section collects three models used to describe degenerations of K3 and
 Enriques surfaces and their KSBA stable limits: the *dlt* (divisorially log
@@ -11,13 +11,13 @@ The three are related: a half-divisor model is the quotient of a divisor model
 by an involution, and the dlt models supply the birational models on whose
 strata the associated combinatorial data live.
 
-::: {.Question}
+::: {.question}
 The source notes describe the relationship of these models to the KSBA
 program (below); they do not discuss the relationship to Kulikov models
 explicitly. If a Kulikov comparison is intended here, supply it.
 :::
 
-::: {.Remark}
+::: {.remark}
 The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--Garza--Schaffler
 degree-$2$ Enriques program [@AEGS25], used in the Morrison degenerations section in the
 same form.
@@ -28,7 +28,7 @@ same form.
 
 Here a *dlt model* refers to a relative divisorially-log-terminal model of the degeneration supplying these boundary strata; the definition below is of the associated *stable involution pair* $(X, D, \iota)$.
 
-::: {.Definition #def:dlt-involution-pair}
+::: {.definition #def:dlt-involution-pair}
 ### dlt models and involution pairs
 
 For Enriques surface degenerations we study *stable involution pairs*
@@ -50,7 +50,7 @@ $$
 where $R$ is the ramification divisor of $\pi$.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Dual complex topology
 
 The topology of the dual complex of the central fiber $Y_0'$ distinguishes the
@@ -69,7 +69,7 @@ degeneration types:
 
 ## Divisor models
 
-::: {.Definition #def:coble-divisor-model}
+::: {.definition #def:coble-divisor-model}
 ### Divisor model
 
 A *divisor model* for a degeneration $\pi\colon \mathcal{X} \to C$ of K3 (or
@@ -91,7 +91,7 @@ balancing condition at every vertex.
 
 ## Half-divisor models
 
-::: {.Definition #def:coble-half-divisor-model}
+::: {.definition #def:coble-half-divisor-model}
 ### Half-divisor model
 
 A *half-divisor model* is a pair $(\mathcal{Z}, \mathcal{R}_{\mathcal{Z}})$ over
@@ -112,7 +112,7 @@ $K_{\mathcal{Z}_0} + \tfrac{1}{2}\mathcal{R}_{\mathcal{Z}_0}$ ample and slc
 singularities.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Half-divisor models from the Enriques involution
 
 Equivalently, a half-divisor model arises when a divisor model

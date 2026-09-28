@@ -14,7 +14,7 @@ tags:
 **Provenance.** Originally `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/sage-scripts/` and `.../notebooks/`, a tree that has since been trashed.
 Nothing of this appears in the dissertation.
 
-::: {.Remark}
+::: {.remark}
 ## Where the code now lives
 
 The scripts and notebooks survived the deletion.
@@ -25,7 +25,7 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
 
 ## The recipe
 
-::: {.Construction}
+::: {.construction}
 ### Seven steps, from a lattice to its cusps and integral-affine data
 
 1. **Build the lattice** from $U$, $U(2)$, $E_8$, $E_8(2)$, $\gens{\pm2}$ blocks.
@@ -60,7 +60,7 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
 
 ## Known defects in the corpus
 
-::: {.Remark}
+::: {.remark}
 ### Recorded so they are not rediscovered
 
 - The **Vinberg implementations are missing**: `viberg-algorithm/` holds three empty directories (`vinal`, `AlVin`, `VinbergsAlgorithmNF`), and `init.sage` hard-codes an absolute path to a `vinal` checkout.

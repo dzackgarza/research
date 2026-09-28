@@ -1,20 +1,20 @@
 # Automorphism lifting through a gluing {#sec:automorphism-lifting}
 
-::: {.Remark}
+::: {.remark}
 
 Let $L$ be an even overlattice of $M\oplus N$ in which $M$ and $N$ are primitive,
 and let $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
 The pair acts on $M\oplus N$, hence on $L\tensor\QQ$, but need not preserve $L$.
 This section decides when it does.
 The answer is a stabilizer condition on the isotropic subgroup that
-\longref{thm:nikulin-gluing} attaches to the overlattice, so it is a statement
+@thm:nikulin-gluing attaches to the overlattice, so it is a statement
 about the gluing datum, equivalently about the pair of primitive inclusions, and
 not about either lattice on its own.
 :::
 
 ## The discriminant representation
 
-::: {.Notation #not:discriminant-representation}
+::: {.notation #not:discriminant-representation}
 ### Notation for the discriminant representation
 
 For a lattice $L$ the induced homomorphism
@@ -30,7 +30,7 @@ isomorphism of $L\dual$ and so descends to $A_L = L\dual/L$
 [@Nik80 §1.4].
 :::
 
-::: {.Remark}
+::: {.remark}
 
 For an orthogonal direct sum, $A_{M\oplus N} = A_M\oplus A_N$ and
 $\rho_{M\oplus N}(\varphi_M\oplus\varphi_N) = \bar\varphi_M\oplus\bar\varphi_N$,
@@ -40,7 +40,7 @@ section.
 
 ## The lifting criterion
 
-::: {.Definition #def:gluing-datum-of-a-pair}
+::: {.definition #def:gluing-datum-of-a-pair}
 ### The gluing datum of a pair of primitive inclusions
 
 Let $\iota_M\colon M\injects L$ and $\iota_N\colon N\injects L$ be primitive
@@ -50,15 +50,15 @@ The **gluing datum** of the pair is the isotropic subgroup
 $$
 H \da L/(M\oplus N) \ \leq\ A_M\oplus A_N
 $$
-attached to $L$ by \longref{thm:nikulin-gluing}, together with the two
+attached to $L$ by @thm:nikulin-gluing, together with the two
 inclusions themselves.
-By \longref{rmk:embedding-gluing-data} the subgroup $H$ is the graph of an
+By @rmk:embedding-gluing-data the subgroup $H$ is the graph of an
 anti-isometry $\gamma\colon H_M\iso H_N$ between subgroups $H_M\leq A_M$ and
 $H_N\leq A_N$, and $L$ is recovered as the preimage of $H$ under the quotient map
 $(M\oplus N)\dual\to A_M\oplus A_N$.
 :::
 
-::: {.Theorem #thm:automorphism-lifting-criterion}
+::: {.theorem #thm:automorphism-lifting-criterion}
 ### When a pair of isometries lifts
 
 Let $L$, $M$, $N$ and $H$ be as in [the gluing-datum definition](#def:gluing-datum-of-a-pair), and let
@@ -79,7 +79,7 @@ An isometry of $M\oplus N$ extends uniquely to a $\ZZ$-module isometry $\psi\dua
 of $(M\oplus N)\dual$ inside $(M\oplus N)\tensor\QQ$, so the only candidate
 extension to $L$ is $\ro{\psi\dual}{L}$, and uniqueness follows.
 Since $M\oplus N\containedin L\containedin(M\oplus N)\dual$ by
-\longref{def:overlattice}, the candidate maps $L$ into
+@def:overlattice, the candidate maps $L$ into
 $(M\oplus N)\dual$ always, and preserves $L$ exactly when it preserves the image
 of $L$ in the quotient $A_{M\oplus N} = A_M\oplus A_N$.
 That image is $H$, and the induced action of $\psi\dual$ on
@@ -90,7 +90,7 @@ preserving the form inherited from $(M\oplus N)\tensor\QQ$, hence an isometry of
 $L$.
 :::
 
-::: {.Corollary #cor:liftable-automorphisms}
+::: {.corollary #cor:liftable-automorphisms}
 ### The liftable subgroup
 
 With the notation of [the lifting criterion](#thm:automorphism-lifting-criterion), fix
@@ -121,7 +121,7 @@ Finiteness of the index follows because $\Orth(q_M)$ is finite, $A_M$ being
 finite.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### The operation belongs to the arrow
 
 The datum consumed by [the lifting criterion](#thm:automorphism-lifting-criterion) is $H$,
@@ -134,7 +134,7 @@ Liftability is therefore a property of the inclusions, and the subgroup of
 
 The hypotheses are morphism-level for the same reason.
 An inclusion is primitive when its cokernel is torsion-free
-(\longref{prop:primitive-characterization}), and saturation and index are
+(@prop:primitive-characterization), and saturation and index are
 properties of the inclusion; a determinant or a greatest common divisor of
 matrix entries recognizes primitivity only under hypotheses that the definition
 itself does not state.
@@ -142,7 +142,7 @@ itself does not state.
 
 ## The unimodular case and its two specimens
 
-::: {.Corollary #cor:lifting-unimodular}
+::: {.corollary #cor:lifting-unimodular}
 ### Lifting across a unimodular overlattice
 
 Suppose in addition that $L$ is unimodular.
@@ -157,28 +157,28 @@ $$
 ::: {.proof}
 
 Unimodularity of $L$ forces $H_M = A_M$ and $H_N = A_N$ in
-\longref{rmk:embedding-gluing-data}, so $H$ is the graph
+@rmk:embedding-gluing-data, so $H$ is the graph
 $\ts{(x, \gamma x) \mid x\in A_M}$ of an anti-isometry defined on all of $A_M$.
 A pair preserves that graph exactly when
 $\bar\varphi_N(\gamma x) = \gamma(\bar\varphi_M x)$ for every $x$, which is the
 displayed identity.
 :::
 
-::: {.Remark}
+::: {.remark}
 ### Two computations in this book are instances
 
 [The unimodular lifting corollary](#cor:lifting-unimodular) is the mechanism behind two statements proved
 elsewhere in this part, both for the unimodular $\lkt$.
 
 The discriminant description of the degree-$2$ Enriques group
-(\longref{prop:gamma-en-two-gluing}) is the liftable-subgroup computation of
+(@prop:gamma-en-two-gluing) is the liftable-subgroup computation of
 [the liftable-subgroup corollary](#cor:liftable-automorphisms) for the gluing
 $\sen\oplus \ten\containedin\lkt$, with the extra condition $g_S(h) = h$ cutting
 $\Gamma\leq\Orth(\sen)$ down to the stabilizer of the polarization; the
 commutation identity $\bar g_T\circ\gamma = \gamma\circ\bar g_S$ appearing there
 is exactly the criterion above.
 
-The Coble folding involution (\longref{prop:theta-co-exists}) is the same
+The Coble folding involution (@prop:theta-co-exists) is the same
 criterion applied to the pair $(-\id_{S_\Co}, \id_{T_\Co})$ for the gluing
 $S_\Co\oplus T_\Co\containedin\lkt$: because both discriminant groups are
 $2$-elementary, $\overline{-\id} = \overline{\id}$ on each, and the identity

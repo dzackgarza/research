@@ -44,7 +44,7 @@ general lattice run whose results they depend on.
 
 Three checks, each cheap, each catching a different defect:
 
-- **Dependency.** For each `\ref`/`\longref` in the new page, find the page that
+- **Dependency.** For each `@thm:key` reference in the new page, find the page that
   defines the target. Every one should be earlier. A handful of forward references is
   normal in a book; a page whose targets are mostly later is in the wrong place.
 - **Subject.** Say what the part is about in one clause, then check the new page is
@@ -96,72 +96,67 @@ tag against the tag page before using it, since a wrong tag still renders.
 
 ## Writing conventions
 
-Numbered environments go through the `custom-numbered-blocks` filter:
+Numbered environments use the same syntax as the pandoc papers, which the amsenv filter
+(`~/.pandoc/filters/convert_amsthm_envs.lua`) turns into amsthm environments and
+cleveref references for LaTeX:
 
 ```markdown
-::: {.Theorem #thm:coble-cusps title="Cusps of the Coble moduli space"}
+::: {.theorem #thm:coble-cusps title="Cusps of the Coble moduli space"}
 
 ...
 :::
 ```
 
-Reference it as `\ref{thm:coble-cusps}`, or `\longref{thm:coble-cusps}` for
-"Theorem 2.9". Labels use colon separators. Do not start a label with a Quarto-reserved
-prefix (`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`, `fig-`, `tbl-`,
-`eq-`, `sec-`, `lst-`); Quarto hijacks those for its own crossrefs and the render fails.
+The class is the full lowercase environment name (`.definition`, `.proposition`,
+`.theorem`). The id is a family prefix, a colon, and a key. Reference the block as
+`@thm:coble-cusps` for "Theorem 2.9", or `[-@thm:coble-cusps]` for the bare "2.9".
+A bracketed cluster keeps its text: `[see @thm:a, (ii); @lem:b]`.
+
+The family prefixes are `ass clm conj cons conv cor def ex exr lem not obs prob prop
+qst rmk thm warn`. The registry is `THEOREM_FAMILY_METADATA` in the zettlr-pandoc
+fork; the amsenv filter and `writing/.book/_extensions/local/amsthm-refs` mirror it.
+The colon keeps these ids apart from Quarto's reserved hyphen prefixes (`def-`,
+`thm-`, `fig-`, `sec-`, ...), which Quarto takes for its own crossrefs.
 
 ## What a cross-reference can reach
 
-`\ref` and `\longref` are the only two commands that resolve here. The resolver is
-`writing/.book/_extensions/ute/custom-numbered-blocks/cnb-3-crossref.lua`, and it
-matches those two literal strings and nothing else.
+The `amsthm-refs` filter rewrites every theorem-family citation into the `\ref` and
+`\longref` commands that `custom-numbered-blocks` resolves
+(`writing/.book/_extensions/ute/custom-numbered-blocks/cnb-3-crossref.lua`). A cluster
+that holds any other key, such as a bibliography key, goes to citeproc unchanged.
 
-**A `\cref` or `\Cref` renders as nothing.** It never matches, and pandoc then drops the
-unmatched macro rather than printing it, so the reference does not appear as visible
-broken text — it disappears, and the sentence around it is left dangling: "the 3-step
-chain $W_0 \subset W_1 \subset W_2 \subset W_3$ of ." That is how 390 of them
-accumulated unnoticed. `docs-check` now scans the sources for them, because there is
-nothing in the rendered HTML to find.
+**A reference to an id that no block declares renders as nothing.** cnb drops it, and
+the sentence around it is left dangling: "the meanings fixed in ." Raw LaTeX such as
+`\cref{x}` disappears the same way. `docs-check` scans the sources for both, because
+there is nothing in the rendered HTML to find.
 
-**`\longref` reaches any numbered block in the book**, in any chapter, in either
-direction. That holds because every chapter is symlinked flat into `writing/.book`,
-which gives the resolver one registry instead of one per topic directory, and because
-the gate renders twice, which is what lets a reference reach a block declared later.
-Both are load-bearing: `writing/.book/TRAPS.md` records what breaks without them.
+**A reference reaches any numbered block in the book**, in any chapter and in either
+part, in either direction. That holds because every chapter is symlinked flat into
+`writing/.book`, which gives the resolver one registry instead of one per topic
+directory, and because the gate renders twice, which is what lets a reference reach a
+block declared later. Both are load-bearing: `writing/.book/TRAPS.md` records what
+breaks without them. Ids must therefore be unique across the whole book.
 
-A target that is not a numbered block still resolves to nothing however it is written:
+A target that is not a numbered block does not resolve through this filter:
 
-- sections, `\longref{sec:lattice-theory}` — link to the section instead, the way the
-  category-theory part does: `[Lattice Theory](lattice-theory.md#sec:lattice-theory)`;
-- tables, `\label{tbl:x}` — a table carries no number here; link to the page that
-  holds it;
-- more than one target, `\longref{a,b}` — the resolver matches a single id.
+- sections — anchor the heading `{#sec-x}` and reference it `@sec-x`, or link to it;
+- tables — a table carries no number here; link to the page that holds it.
 
 **Figures use Quarto's own numbering, not this filter.** Anchor a figure `{#fig-x}`,
 with a hyphen, and reference it `@fig-x`. Quarto then numbers it within its chapter
-(Figure 65.1) and resolves the reference across the book. The reserved-prefix warning
-above is about numbered blocks: for a figure the prefix is what makes it work. The
-image itself lives in the shared pandoc-config repo and is staged into the book by
+(Figure 65.1) and resolves the reference across the book. The image itself lives in
+the shared pandoc-config repo and is staged into the book by
 `scripts/docs_figures.py`; citing a figure that is not there fails the build rather
 than rendering a broken image.
-
-## The two parts cannot reference each other
-
-The Coble part uses the numbered-block filter above. The category-theory part uses
-Quarto's own crossrefs, `::: {#def-x}` referenced as `@def-x`. Neither resolver sees the
-other's registry, and there is no cross-part reference anywhere in the book, so a
-reference written from one part to a label in the other resolves to nothing.
-
-A notion both parts need is therefore stated in both, and the two statements must agree.
-The canonical form of a Coxeter system is stated twice for this reason.
 
 ## What is not part of this book
 
 `writing/.book` links in `category-theory`, `coble`, `data` and `index.md`. Everything
 else under `writing/` — the dissertation, the research statement, the talks, the exams —
-builds through `~/.pandoc`, whose template loads **cleveref**. There `\cref` is the
-correct command and `\longref` does not exist. Never sweep a reference fix across
-`writing/` as a whole; the boundary is what `writing/.book` links in, not a path list.
+builds through `~/.pandoc`. The theorem syntax is the same there, so a block moves
+between the book and a paper unchanged. The book's own mechanics (the flat chapter
+links, the two renders, the declared block classes) stop at what `writing/.book` links
+in, not at a path list.
 
 Do not number headings by hand. Sections auto-number and are referenced by `@sec-`.
 
