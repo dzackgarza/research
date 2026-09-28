@@ -134,14 +134,20 @@ def _finite_set_quotient_by_generated_relation(target, relation_pairs):
 
 
 class EnumeratedSets(OwnedCategory):
-    r"""Sets equipped with a represented ranking/enumeration."""
+    r"""Sets equipped with a represented ranking/enumeration.
+
+    The ranking is an isomorphism onto the standard finite or countable
+    well-order.  Pulling that order back along the ranking therefore makes
+    every object here a well-ordered set; ``order_type`` is the order type of
+    that standard target.
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""The ordinal 2, ranked by its own order."""
         return finite_ordinal_set(2)
 
     def super_categories(self):
-        return [Sets().Countable()]
+        return [Sets().Countable(), WellOrderedSets()]
 
     class ParentMethods:
         @abstract_method
@@ -178,6 +184,10 @@ class EnumeratedSets(OwnedCategory):
             r"""The order the enumeration transports from its ordinal: ``x <= y`` when ``x`` is ranked no later."""
             ranking = self.ranking_map()
             return ranking(left) <= ranking(right)
+
+        def order_type(self):
+            r"""Return the ordinal order type transported by the ranking map."""
+            return self.ranking_map().codomain().order_type()
 
         def _ranking_isomorphism(self, position_of, point_at):
             r"""Build the represented enumeration from its mutually inverse directions."""
@@ -3565,7 +3575,6 @@ class NaturalNumberSets(OwnedCategory):
         return [
             EnumeratedSets(),
             Sets().Infinite(),
-            WellOrderedSets(),
             OwnedSemirings(),
         ]
 
@@ -3597,22 +3606,6 @@ class NaturalNumberSets(OwnedCategory):
 
         def __ne__(self, other):
             return not self == other
-
-        def __lt__(self, other):
-            other = self.parent()(other)
-            return self._value < other._value
-
-        def __le__(self, other):
-            other = self.parent()(other)
-            return self._value <= other._value
-
-        def __gt__(self, other):
-            other = self.parent()(other)
-            return self._value > other._value
-
-        def __ge__(self, other):
-            other = self.parent()(other)
-            return self._value >= other._value
 
         def _semiring_operand(self, other):
             r"""Read another natural here, or defer to a larger semiring.
@@ -3756,7 +3749,12 @@ class Mors(OwnedCategory):
 
 
 class PartiallyOrderedSets(OwnedCategory):
-    r"""Sets equipped with a partial order."""
+    r"""Sets equipped with a partial order.
+
+    The relation ``le`` is the defining operation supplied by each represented
+    partial order.  The four element comparisons are derived from that one
+    relation, rather than reimplemented by particular ordered sets.
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers under their usual order."""
@@ -3764,6 +3762,26 @@ class PartiallyOrderedSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    class ParentMethods:
+        @abstract_method
+        def le(self, left, right) -> bool:
+            r"""Return whether ``left <= right`` in the selected partial order."""
+
+    class ElementMethods:
+        def __le__(self, other):
+            return self.parent().le(self, other)
+
+        def __lt__(self, other):
+            parent = self.parent()
+            return parent.le(self, other) and not parent.le(other, self)
+
+        def __ge__(self, other):
+            return self.parent().le(other, self)
+
+        def __gt__(self, other):
+            parent = self.parent()
+            return parent.le(other, self) and not parent.le(self, other)
 
 
 class TotallyOrderedSets(OwnedCategory):

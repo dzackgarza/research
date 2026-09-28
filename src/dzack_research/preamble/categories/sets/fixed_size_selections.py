@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
-    TotallyOrderedSets,
 )
 
 PointT = TypeVar("PointT")
@@ -264,7 +263,7 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
             case _:
                 size_placement = ()
         super().__init__(
-            category=Cat().meet([EnumeratedSets(), TotallyOrderedSets(), *size_placement]),
+            category=Cat().meet([EnumeratedSets(), *size_placement]),
             facade=False,
         )
 
