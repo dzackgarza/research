@@ -87,6 +87,23 @@ class Magmas(OwnedCategory):
 
         return [Sets()]
 
+    class ParentMethods:
+        def _commutativity_decision(self):
+            r"""Protected decision procedure for the magma commutativity predicate."""
+            return NotImplemented
+
+        def is_commutative(self):
+            r"""Return whether the magma law satisfies ``xy = yx`` for all elements."""
+            match self in Magmas().Commutative():
+                case True:
+                    return True
+                case False:
+                    decision = self._commutativity_decision()
+                    assert decision is not NotImplemented, (
+                        f"commutativity is defined for every magma, but no decision procedure is available for {self}"
+                    )
+                    return decision
+
     class SubcategoryMethods:
         def Subobjects(self, base_object):
             r"""Return represented structured subobjects of ``base_object``.
@@ -137,6 +154,18 @@ class Monoids(OwnedCategory):
         return [Semigroups()]
 
     class ElementMethods:
+        def _unit_decision(self):
+            r"""Protected decision procedure for invertibility in the ambient monoid."""
+            return NotImplemented
+
+        def is_unit(self):
+            r"""Return whether this element has a two-sided inverse in its monoid."""
+            decision = self._unit_decision()
+            assert decision is not NotImplemented, (
+                f"invertibility is defined for every monoid element, but no decision procedure is available for {self}"
+            )
+            return decision
+
         def _pow_int(self, exponent):
             r"""Integer powers by repeated squaring, from the monoid law."""
             from sage.arith.power import generic_power

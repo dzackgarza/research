@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _two_factors_of,
 )
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups, Magmas
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
@@ -478,9 +478,6 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
 
 
 class _CommutativeUnitalAlgebraParentMethods:
-    def is_commutative(self) -> bool:
-        return True
-
     def kahler_differentials(self):
         r"""Return ``Omega^1_{A/R}`` for this commutative ``R``-algebra."""
         from dzack_research.preamble.categories.algebras.kahler_differentials import (
@@ -909,7 +906,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        return [Modules(self.base_ring())]
+        return [Modules(self.base_ring()), Magmas()]
 
     def _declared_parameter_subcategory_relation(self, source_category, target_category):
         r"""Compare algebra categories through the selected scalar-restriction tower.
@@ -1389,7 +1386,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         def product_on_algebra_generators(self, left, right):
             return self.algebra_generator(left) * self.algebra_generator(right)
 
-        def is_commutative(self):
+        def _commutativity_decision(self):
             r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
 
             Commutativity is a property of the multiplication before it is a
@@ -1983,11 +1980,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                 placement=(self,),
                 law_decisions={"commutativity": commutativity},
             )
-
-        class ParentMethods:
-            def is_commutative(self) -> bool:
-                return True
-
 
 # ``Lie`` is an owned algebra axiom not known to Sage's global axiom registry.
 # Register the nested refinement explicitly so ``Algebras(R).Lie()`` is a

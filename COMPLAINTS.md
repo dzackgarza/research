@@ -252,6 +252,42 @@ Magma's documented real-reflection/reflection-subgroup APIs were inspected.
 No exact backend was found for either missing construction. Repair requires
 the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
+### Matrix endomorphism objects over a noncommutative base have no declared morphism owner
+
+For a finite free module whose represented endomorphisms form a matrix ring,
+the endomorphism object has ring multiplication by composition.  When the
+selected coefficient ring `R` is commutative, the same object is an
+associative unital `R`-algebra and algebra morphisms give the corresponding
+fixed-Mor theory.  For noncommutative `R`, that `R`-algebra structure is not
+available merely from the endomorphism-ring construction; the category must
+instead state the morphisms preserving the structures it actually declares.
+
+Observed during `placement-audit` on 2026-09-28:
+`MatrixEndomorphismSpaces(R)` unconditionally selected
+`AssociativeAlgebraMorCategoryConstruction`, while its former
+`super_categories()` also unconditionally selected
+`AdditiveEndomorphismRings(R)`.  The latter category explicitly requires
+`R in OwnedRings().Commutative()` and asserts otherwise.  The current source
+repair makes the object graph conditional: over a commutative base it retains
+the additive-endomorphism algebra owner, while over a noncommutative base it
+uses `OwnedRings()` for the multiplicative structure.  The fixed Mor owner is
+still unconditional.  Source search found separate ring, module and
+associative-algebra Mor constructions, but no declared fixed-Mor construction
+for this noncommutative-base matrix-endomorphism intersection.  This is source
+evidence; execution remains deferred by `DEV-58`.
+
+**Dependency path:** finite free module -> represented matrix endomorphism
+object -> composition ring -> intersection with the represented matrix/module
+structure -> fixed Mor preserving that declared structure.
+**Consumers:** `MatrixEndomorphismSpaces(R)`, matrix-ring category membership,
+and any functor or construction asking for morphisms between such objects over
+a noncommutative `R`.
+**Coverage boundary:** the matrix-endomorphism declaration and the repository's
+ring, module and associative-algebra Mor constructors were inspected.  No
+claim is made that a more general structured-Mor intersection mechanism is
+absent outside those searched owners.  The finding arose inside
+`placement-audit`; no separate repair node is currently selected.
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.

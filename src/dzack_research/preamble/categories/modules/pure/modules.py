@@ -4884,17 +4884,21 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             AdditiveEndomorphismRings,
         )
 
-        # MatrixSpaces states only the linear half.  The multiplication of
-        # End_R(F) is the same composition owned by AdditiveEndomorphismRings;
-        # the matrix realization specializes that object rather than carrying
-        # a parallel generic algebra datum.
-        return [
-            MatrixSpaces(self.base_ring()),
-            AdditiveEndomorphismRings(self.base_ring()),
-        ]
+        # MatrixSpaces states the entrywise/module half.  Composition always
+        # makes End_R(F) a ring; when R is commutative the same object is the
+        # additive-endomorphism R-algebra, while a noncommutative R does not
+        # supply that algebra structure.
+        ring = self.base_ring()
+        match ring in OwnedRings().Commutative():
+            case True:
+                multiplicative_owner = AdditiveEndomorphismRings(ring)
+            case False:
+                multiplicative_owner = OwnedRings()
+        return [MatrixSpaces(ring), multiplicative_owner]
 
-    # The two above state two different morphisms, so this names which of
-    # them End_R(F) means: the one that preserves everything it is.
+    # The commutative-base branch has the associative-algebra Mor owner below.
+    # The noncommutative ring/module intersection still lacks its own fixed-Mor
+    # declaration; that source finding is recorded in COMPLAINTS.md.
     _MorCategory = AssociativeAlgebraMorCategoryConstruction
 
     class ParentMethods:
@@ -4906,7 +4910,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             r"""Scale matrix endomorphisms as linear maps, not merely additive maps."""
             return self._module_scalar_multiple(scalar, morphism)
 
-        def is_commutative(self):
+        def _commutativity_decision(self):
             r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R)\) commutes.
 
             The base is not assumed commutative here, so the answer depends on
@@ -4953,7 +4957,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
-        def is_unit(self) -> bool:
+        def _unit_decision(self) -> bool:
             r"""Return whether this endomorphism is invertible in \(\operatorname{End}_R(M)\).
 
             A unit of a ring is an element with a two-sided inverse in it, and
