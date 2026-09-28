@@ -1,6 +1,6 @@
 # Higher categories and universes {#sec-higher-categories-universes}
 
-::: {#def-universe title="Universe and decoded objects"}
+::: {#def-universe .def title="Universe and decoded objects"}
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$ with pullbacks and terminal object $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mathcal U$ internal to $\mathcal K$, and use its canonical self-enrichment.
@@ -84,7 +84,7 @@ Its external decoding, denoted $[x,y]_{\mathcal U}$, is defined by the cartesian
 The size convention, the universe fibration, and the decoding functor are interpreted in the fixed external category $\mathcal K$.
 :::
 
-::: {#def-family-classifier title="Families and classifiers"}
+::: {#def-family-classifier .def title="Families and classifiers"}
 
 For points $b,c\colon *\to\mathcal U$, a *family over $b$* is a $1$-cell
 $$
@@ -131,7 +131,7 @@ b_{\mathcal M}.
 The representing equivalence includes arrows and all higher cells between families, not only the existence of $F$.
 :::
 
-::: {#def-higher-category title="The category of higher categories"}
+::: {#def-higher-category .def title="The category of higher categories"}
 
 Let $\mathcal M_{\mathrm{cocart}}$ be the replete base-change-stable class of $1$-cells $G$ in $\mathcal U$ for which $\operatorname{Dec}_{\mathcal U}(G)$ is a $\mathcal U$-small cocartesian fibration in $\mathcal K$.
 Assume that it has a classifier
@@ -229,7 +229,7 @@ When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying po
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
-::: {#def-grothendieck-construction title="Categorical families and categories of elements"}
+::: {#def-grothendieck-construction .def title="Categorical families and categories of elements"}
 
 Let $G\colon c\to b$ be a family in $\mathcal U$, and write
 $$
@@ -277,7 +277,7 @@ $$
 For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def-higher-category [@nlab:grothendieck_construction].
 :::
 
-::: {#def-internal-hom title="Local hom-objects"}
+::: {#def-internal-hom .def title="Local hom-objects"}
 
 For every decoded higher category $C$ and points $x,y\colon *\to C$, fix a classifying point
 $$
@@ -332,7 +332,7 @@ $$
 $$
 :::
 
-::: {#def-cells title="Higher cells"}
+::: {#def-cells .def title="Higher cells"}
 
 A $0$-cell of $C$ is a point $x\colon *\to C$.
 For $0$-cells $x,y$, a $1$-cell is a point
@@ -356,14 +356,14 @@ $$
 Iterating the same point and local hom-object constructions defines all higher cells.
 :::
 
-::: {#prp-iterated-hom-cells title="Cells of an iterated hom-object"}
+::: {#prp-iterated-hom-cells .prop title="Cells of an iterated hom-object"}
 
 Write $[x,y]^{(1)}_C:=[x,y]_C$ and, for a choice of parallel $k$-cells $u,v$ of $C$, write $[u,v]^{(k+1)}_C$ for the local hom-object formed at the $k$-th stage of @def-cells.
 By construction the $n$-cells of $[u,v]^{(k)}_C$ are the $(n+k)$-cells of $C$ that are parallel over the chosen $u,v$; in particular its $0$-cells are the $k$-cells of $C$ between them.
 Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint direction is $B_{01}\dashv\Omega_{01}$ (@def-B01-construction).
 :::
 
-::: {#def-globular-boundary title="Sources and targets"}
+::: {#def-globular-boundary .def title="Sources and targets"}
 
 A $1$-cell $f\colon *\to[x,y]_C$ has *source* $x$ and *target* $y$; an $(n+1)$-cell, being a $1$-cell of an iterated hom-object $[u,v]^{(n)}_C$, has source $u$ and target $v$.
 Source and target are defined for cells of positive dimension only, and $0$-cells have neither.
@@ -376,7 +376,7 @@ $$
 since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
 :::
 
-::: {#def-equivalence-of-categories title="Equivalences"}
+::: {#def-equivalence-of-categories .def title="Equivalences"}
 
 A *structure of reversibility* is a family $\mathscr R$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
@@ -411,7 +411,7 @@ $$
 Write $C\simeq D$ when such an equivalence has been chosen.
 :::
 
-::: {#def-core title="Underlying homotopy type and core"}
+::: {#def-core .def title="Underlying homotopy type and core"}
 
 Let $\mathcal S=\mathbf{Types}$ and let
 $$
@@ -431,7 +431,7 @@ The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every ob
 :::
 
 
-::: {#def-bicomplete-cat-infinity title="Limits, loops, and suspensions"}
+::: {#def-bicomplete-cat-infinity .def title="Limits, loops, and suspensions"}
 
 The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
 For a pointed higher category $(X,x)$, where $x\colon *\to X$, define
@@ -458,7 +458,7 @@ A
 The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
 :::
 
-::: {#def-spheres title="Spheres"}
+::: {#def-spheres .def title="Spheres"}
 
 Define
 $$
@@ -469,7 +469,7 @@ $$
 Since the pushout of $*\leftarrow\varnothing\to*$ is the coproduct, $S^{0}=*\amalg*$, the bipointed object indexing the comma category of @def-B01-construction.
 :::
 
-::: {#exm-initial-terminal-cat title="The initial and terminal higher categories"}
+::: {#exm-initial-terminal-cat .ex title="The initial and terminal higher categories"}
 
 Closedness makes $-\times C$ a left adjoint (@def-internal-hom), so it preserves colimits and in particular the initial object:
 $$
@@ -483,7 +483,7 @@ For hom-objects, $[\varnothing,C]\simeq*$ for every $C$, since $\varnothing$ is 
 The coproduct $*\amalg*$ is neither initial nor terminal, so $\mathbf{Cat}_{\infty,\infty}$ has no zero object.
 :::
 
-::: {#def-B01-construction title="The $B_{01}$ construction"}
+::: {#def-B01-construction .def title="The $B_{01}$ construction"}
 
 The higher category of bipointed higher categories is the comma category
 $$
@@ -521,7 +521,7 @@ Composition is given by the identity actions on $A$ and the unique morphisms fro
 The suspension $\Sigma A$ is the pushout in @def-bicomplete-cat-infinity. The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
 
-::: {#def-walking-arrow title="Walking arrows and ordinal categories"}
+::: {#def-walking-arrow .def title="Walking arrows and ordinal categories"}
 
 Define
 $$
@@ -543,7 +543,7 @@ $$
 is the higher category of functors $[n]\to C$ and their higher cells.
 :::
 
-::: {#def-mapping-spaces title="Walking-arrow presentation and mapping types"}
+::: {#def-mapping-spaces .def title="Walking-arrow presentation and mapping types"}
 
 Precomposition with $s$ and $t$ gives
 $$
@@ -585,14 +585,14 @@ $$
 $$
 :::
 
-::: {#def-initial-terminal title="Initial, terminal, and contractible objects"}
+::: {#def-initial-terminal .def title="Initial, terminal, and contractible objects"}
 
 An object $t\colon*\to C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
 An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to C$.
 A higher category is *contractible* when it is equivalent to $*$.
 :::
 
-::: {#def-truncated title="Truncated objects and morphisms"}
+::: {#def-truncated .def title="Truncated objects and morphisms"}
 
 Let $C$ be a higher category.
 For an integer $n\geq-2$, an object $X\colon*\to C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to C$.
@@ -621,7 +621,7 @@ A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or con
 When the inclusion of $n$-truncated objects of $C$ is reflective, write its reflector as $\tau_{\leq n}^C$.
 :::
 
-::: {#def-infinity-category-universe title="The truncation tower"}
+::: {#def-infinity-category-universe .def title="The truncation tower"}
 
 For each integer $n\geq-2$, assume an idempotent truncation endomorphism
 $$
@@ -704,7 +704,7 @@ to be the full replete subcategory on the $n$-truncated objects of $[C,D]_{\math
 These objects are the $n$-truncated morphisms $C\to D$ internal to the mapping higher category.
 :::
 
-::: {#exm-low-levels title="The bottom of the tower"}
+::: {#exm-low-levels .ex title="The bottom of the tower"}
 
 By @def-truncated the $(-2)$-truncated objects of $\mathbf{Cat}_{\infty,\infty}$ are its terminal objects, so $\mathbf{Cat}_{-2}$ is spanned by $*$ and is contractible.
 Both $\varnothing$ and $*$ are $(-1)$-truncated: $\operatorname{Map}(Y,*)$ is contractible for every $Y$, and $\operatorname{Map}(Y,\varnothing)$ is empty unless $Y\simeq\varnothing$, in which case it is contractible.
@@ -712,7 +712,7 @@ So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and 
 :::
 
 
-::: {#def-ordinary-category-specialization title="Ordinary categories"}
+::: {#def-ordinary-category-specialization .def title="Ordinary categories"}
 
 An *ordinary-category structure* on a higher category $C=\int_*h_C$ is a $1$-category structure on $C$: a point
 $$
@@ -722,7 +722,7 @@ together with a specified equivalence $\iota_1\circ\widetilde h_C\simeq h_C$.
 An ordinary category may be presented by the point $\widetilde h_C$; its underlying higher category is decoded from $\iota_1\circ\widetilde h_C$.
 :::
 
-::: {#def-equality-of-objects title="Equality, isomorphism, and equivalence"}
+::: {#def-equality-of-objects .def title="Equality, isomorphism, and equivalence"}
 
 Definitional equality is judgmental equality in the chosen formal language.
 An isomorphism in an ordinary category is a morphism with a two-sided inverse.
