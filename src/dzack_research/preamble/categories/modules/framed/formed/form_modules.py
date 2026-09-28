@@ -802,6 +802,10 @@ class PairingObjects(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "pairing-bearing module objects"
 
+    def super_categories(self):
+        r"""Paired modules are slice objects and formed modules are modules; both are sets."""
+        return [OwnedSets()]
+
     def an_object(self):
         return PairedModules(self.base_ring()).an_object()
 

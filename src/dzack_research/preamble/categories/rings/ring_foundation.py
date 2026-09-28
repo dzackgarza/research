@@ -118,6 +118,20 @@ class RingMorphism:
         self._preamble_is_identity = False
         super().__init__(parent, function)
 
+    # Ring morphisms compare by their determining data (``_richcmp_`` below).
+    # The pointwise ``OwnedSetMorphism.__eq__`` comes earlier in the MRO than
+    # Sage's ``Element.__eq__``, which dispatches to ``_richcmp_``, and it is
+    # ``Unknown`` on every infinite ring; so equality is stated here.  The hash
+    # stays the owned set-map hash of the parent, which equal maps share.
+    def __eq__(self, other):
+        return self._richcmp_(other, op_EQ)
+
+    def __ne__(self, other):
+        return self._richcmp_(other, op_NE)
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
     def _engine_morphism_crossing(self):
         r"""Return the private engine realization when one was selected.
 

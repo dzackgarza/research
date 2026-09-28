@@ -389,6 +389,7 @@ class Cat(CategoryPacketMethods, Category):
         """
 
         _mor_endpoint = CategoryPacketMethods._mor_endpoint
+        _mor_endpoints_in_supercategory = CategoryPacketMethods._mor_endpoints_in_supercategory
         ArrowCategory = CategoryPacketMethods.ArrowCategory
         Core = CategoryPacketMethods.Core
         category_packet = CategoryPacketMethods.category_packet

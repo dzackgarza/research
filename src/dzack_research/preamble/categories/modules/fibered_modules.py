@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     CommutativeRings,
+    OwnedRings,
 )
 
 
@@ -222,7 +223,7 @@ class SemilinearModuleMorphism:
             )
         morphism = Modules(source.base_ring()).Mor(source, target)(morphism)
         mor = ModulesOverCommutativeRings().Mor(source, target)
-        scalar_map = source.base_ring().Mor(source.base_ring()).identity()
+        scalar_map = source.base_ring().Mor(source.base_ring(), category=OwnedRings()).identity()
         restricted = mor.restricted_codomain(scalar_map)
         compatible = _DerivedRestrictedSemilinearMorphism(
             Modules(source.base_ring()).Mor(source, restricted),

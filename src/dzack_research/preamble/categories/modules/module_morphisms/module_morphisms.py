@@ -208,7 +208,10 @@ class ModuleMorphismMethods:
         ring = domain.base_ring()
         match ring.is_commutative():
             case True:
-                scalar_map = ring.Mor(ring).identity()
+                # The scalar map is a ring homomorphism, so its identity lives in
+                # ``Mor_Ring``.  The strongest Mor of ``ring`` can have arrows that
+                # build module maps again (algebra maps of ``QQ``), which regresses.
+                scalar_map = ring.Mor(ring, category=OwnedRings()).identity()
                 super().__init__(
                     parent,
                     scalar_map,
