@@ -442,7 +442,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return self.module_generating_set().cardinality()
 
-        def is_torsion_free(self) -> bool:
+        def _torsion_freeness_decision(self) -> bool:
             r"""A free module over a domain is torsion-free.
 
             A basis element is killed only by a scalar killing its coefficient,

@@ -1629,6 +1629,12 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _:
                     return self._torsion_decision()
 
+        def _torsion_freeness_decision(self):
+            return Unknown
+
+        def is_torsion_free(self):
+            return self._torsion_freeness_decision()
+
         def is_framed_module(self) -> bool:
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
             return self.has_selected_module_resolution()
@@ -1981,7 +1987,7 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             return self.generic_fibre_map().kernel()
 
-        def is_torsion_free(self) -> bool:
+        def _torsion_freeness_decision(self) -> bool:
             r"""Return whether ``Tor(M)=0``, that is whether ``M -> K tensor_R M`` is injective."""
             return self.generic_fibre_map().is_injective()
 

@@ -2347,7 +2347,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             scalar_kernel = defining_ideal.elimination_ideal(algebra_variables)
             return bool(scalar_kernel.is_zero())
 
-        def is_torsion_free(self) -> bool:
+        def _torsion_freeness_decision(self) -> bool:
             r"""Decide torsion-freeness in the supported integral PID-algebra regime.
 
             If ``R`` and ``A`` are domains, then the ``R``-module ``A`` is

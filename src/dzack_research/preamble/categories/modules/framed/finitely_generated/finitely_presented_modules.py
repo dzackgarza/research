@@ -1152,7 +1152,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return super().is_torsion()
             return self.module_rank() == 0
 
-        def is_torsion_free(self):
+        def _torsion_freeness_decision(self):
             r"""Over a PID ``M`` is torsion-free exactly when no invariant factor is a nonzero non-unit."""
             ring = self.base_ring()
             if ring in OwnedFields():
