@@ -14,7 +14,7 @@ White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 0
 :::
 :::
 
-### Mirror moves {#sec:mirror-moves}
+## Mirror moves {#sec:mirror-moves}
 
 Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can apply the mirror move algorithm of [@AE22 Thm. 5.10] to determine the 0-cusps and 1-cusps of $F_\Co$.
 The outcome of the algorithm is summarized by the following tree:
