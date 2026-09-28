@@ -1,6 +1,6 @@
 # Discriminant forms and the genus
 
-::: {.Remark}
+::: {.Remark title="From lattice duality to genus classification"}
 
 The Lattice Theory section introduced the dual lattice $L\dual$, the
 discriminant group $A_L \da L\dual/L$, and the discriminant quadratic form
@@ -32,7 +32,7 @@ We say $q$ is **integral** if $q(L) \containedin \ZZ$, and we call the pair
 $(L, q)$ a **quadratic $\ZZ$-module**.
 :::
 
-::: {.Remark}
+::: {.Remark title="Polarization recovers an integral quadratic form from an even bilinear form"}
 
 Setting $w = v$ in the polar form and using homogeneity gives
 $$
@@ -118,7 +118,7 @@ i.e. $q(\lambda x) = \lambda^2 q(x)$ for all $x\in G$ and $\lambda\in\ZZ$, whose
 polar form is a torsion bilinear form.
 :::
 
-::: {.Remark}
+::: {.Remark title="Discriminant forms as torsion forms"}
 
 The discriminant group $A_L$ of the Lattice Theory section is a finite, hence
 finitely generated torsion, $\ZZ$-module, so its associated forms are instances
@@ -166,7 +166,7 @@ The **length** $\ell(L)$ of $L$ is the minimal number of generators of the
 abelian group $A_L$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Well-definedness of the discriminant forms"}
 
 Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with
 $m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined
@@ -225,7 +225,7 @@ The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
     twist of $L$ by $m$ from the Lattice Theory section.
 :::
 
-::: {.Remark}
+::: {.Remark title="Duality and discriminants"}
 
 Property (2) is the source of (3), since
 $\operatorname{disc}(L\dual) = \det(G_\beta\inv) = 1/\det(G_\beta)
@@ -282,7 +282,7 @@ lattices in the genus of $L$, and the **class number** is the cardinality
 $\abs{\operatorname{cl}(L)}$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Genus versus isometry class"}
 
 For indefinite even lattices $L$ of rank $\geq 3$ the class number is $1$, so
 that the genus determines the isometry class; this is Eichler's theorem on the
@@ -347,7 +347,7 @@ Such a decomposition exists and is unique up to isometry, and the scales
 $p^{s_i}$ and the ranks $\rank(L_i)$ are invariants of $L$ at $p$.
 :::
 
-::: {.Remark}
+::: {.Remark title="Jordan invariants determine the local genus data"}
 
 The Jordan invariants at every prime are exactly the data compared in
 [the genus definition](#def:coble-genus): two lattices lie in the same genus precisely when they have
@@ -409,7 +409,7 @@ onto the isometry group of the discriminant form is surjective.
 This is [@Nik80]; see [@Ale22 §4] for the statement in this form.
 :::
 
-::: {.Remark}
+::: {.Remark title="Surjectivity makes the discriminant group an effective finite shadow"}
 
 Surjectivity is what makes the finite quadratic space $A_H$ a faithful shadow of
 $\Orth(H)$, and it enters at three separate points below: it lifts an isometry of
