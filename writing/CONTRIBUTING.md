@@ -457,8 +457,7 @@ defining occurrence and repair its dependents. Do not shadow it locally.
 ### `DEF-4`: Numbered block syntax
 
 ```markdown
-::: {#def-universe}
-## Universe and decoded objects
+::: {#def-universe title="Universe and decoded objects"}
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$
 with pullbacks and terminal object $*$.
