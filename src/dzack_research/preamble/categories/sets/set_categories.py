@@ -2763,11 +2763,10 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
         factors = tuple(family(index) for index in index_set)
+        if all(factor in EnumeratedSets() for factor in factors):
+            placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
         if all(factor in FiniteSets() for factor in factors):
-            if all(factor in EnumeratedSets() for factor in factors):
-                placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
-            else:
-                placements.append(FiniteSets())
+            placements.append(FiniteSets())
         elif all(factor in CountableSets() for factor in factors):
             # A finite product of countable sets is countable.  Do not demand
             # exact cardinalities merely to construct the product: some owned
@@ -2973,10 +2972,6 @@ class CartesianProductsOfSets(OwnedCategory):
                 positional_components=positional,
             )
 
-        @cached_method
-        def ranking_map(self) -> CategoricalIsomorphism:
-            return _cartesian_product_ranking_map(self)
-
         def projection(self, index: IndexT) -> SetMorphism:
             normalized = self.index_set()(index)
             return Sets().Mor(self, self.factor(normalized))(lambda element: element.component(normalized))
@@ -2988,81 +2983,6 @@ class CartesianProductsOfSets(OwnedCategory):
         ) -> SetMorphism:
             r"""Return the unique map into the product with the stated components."""
             return Sets().Mor(source, self)(lambda element: self(lambda index: maps(index)(element)))
-
-        def __iter__(self):
-            assert self.has_finite_index_set(), (
-                f"cannot list the elements of {self}: its index set {self.index_set()} is infinite"
-            )
-
-            ranking = self.index_set().ranking_map()
-            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-            factors = tuple(
-                self.factor(ranking.inverse()(position))
-                for position in range(index_count)
-            )
-            factor_cardinalities = tuple(
-                cardinal(factor.cardinality()) for factor in factors
-            )
-
-            if all(size.is_finite() for size in factor_cardinalities):
-                def sections(position, assignment):
-                    if position == index_count:
-                        positional = tuple(assignment[offset] for offset in range(index_count))
-                        yield self.element_class(
-                            self,
-                            lambda index, positional=positional: positional[int(ranking(index))],
-                            positional_components=positional,
-                        )
-                        return
-                    for value in factors[position]:
-                        assignment[position] = value
-                        yield from sections(position + 1, assignment)
-                    assignment.pop(position, None)
-
-                return sections(0, {})
-
-            assert all(
-                factor in EnumeratedSets() and size.is_countable()
-                for factor, size in zip(factors, factor_cardinalities, strict=True)
-            ), (
-                f"cannot list the elements of {self}: the product is enumerated here only when every factor "
-                "is enumerated and countable"
-            )
-
-            bounds = tuple(
-                int(size.finite_value()) if size.is_finite() else None
-                for size in factor_cardinalities
-            )
-
-            def weak_compositions(total, parts):
-                if parts == 0:
-                    if total == 0:
-                        yield ()
-                    return
-                if parts == 1:
-                    yield (total,)
-                    return
-                for first in range(total + 1):
-                    for rest in weak_compositions(total - first, parts - 1):
-                        yield (first, *rest)
-
-            def countable_sections():
-                for total in count():
-                    for positions in weak_compositions(total, index_count):
-                        if any(
-                            bound is not None and position >= bound
-                            for position, bound in zip(positions, bounds, strict=True)
-                        ):
-                            continue
-                        values = tuple(
-                            factor.ranking_map().inverse()(position)
-                            for factor, position in zip(factors, positions, strict=True)
-                        )
-                        yield self(
-                            lambda index, values=values: values[int(ranking(index))]
-                        )
-
-            return countable_sections()
 
         def _repr_(self) -> str:
             return f"Product of the family over {self.index_set()}"
@@ -3104,67 +3024,106 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
 
 
 def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
-    r"""Return the mixed-radix enumeration of a finite enumerated product.
+    r"""Return the enumeration of a finite-index product of enumerated sets.
 
     This is the enumeration datum that justifies placing the product in
-    :class:`EnumeratedSets`.  Keeping it outside either category's method MRO
-    lets the specialized placement expose the concrete map without duplicating
-    the product algorithm.
+    :class:`EnumeratedSets`.  Finite factors use mixed radix; otherwise the
+    finitely many countable rankings are diagonalized by total rank.
     """
     assert product.has_finite_index_set(), (
-        f"the mixed-radix enumeration of {product} needs a finite index set, but "
+        f"the enumeration of {product} needs a finite index set, but "
         f"{product.index_set()} is not known to be finite"
     )
     assert product.index_set() in EnumeratedSets(), (
-        f"the mixed-radix enumeration of {product} needs an enumerated index set, but "
+        f"the enumeration of {product} needs an enumerated index set, but "
         f"{product.index_set()} is not enumerated"
     )
     index_count = int(cardinal(product.index_set().cardinality()).finite_value())
     index_ranking = product.index_set().ranking_map()
     index_at = index_ranking.inverse()
-    for index in product.index_set():
-        factor = product.factor(index)
+    factors = tuple(product.factor(index_at(offset)) for offset in range(index_count))
+    for offset, factor in enumerate(factors):
         assert factor in EnumeratedSets(), (
-            f"the mixed-radix enumeration of {product} needs every factor enumerated, but the factor "
-            f"{factor} at {index} is not"
+            f"the enumeration of {product} needs every factor enumerated, but the factor "
+            f"{factor} at {index_at(offset)} is not"
         )
-        assert cardinal(factor.cardinality()).is_finite(), (
-            f"the mixed-radix enumeration of {product} needs every factor finite, but the factor "
-            f"{factor} at {index} is infinite"
-        )
-    total_size = int(cardinal(product.cardinality()).finite_value())
+    factor_cardinalities = tuple(cardinal(factor.cardinality()) for factor in factors)
+    finite_factors = all(size.is_finite() for size in factor_cardinalities)
+    product_size = cardinal(product.cardinality())
+
+    def weak_compositions(total, parts):
+        if parts == 0:
+            if total == 0:
+                yield ()
+            return
+        if parts == 1:
+            yield (total,)
+            return
+        for first in range(total + 1):
+            for rest in weak_compositions(total - first, parts - 1):
+                yield (first, *rest)
+
+    bounds = tuple(
+        int(size.finite_value()) if size.is_finite() else None
+        for size in factor_cardinalities
+    )
+
+    def rank_vectors():
+        for total in count():
+            for positions in weak_compositions(total, index_count):
+                if any(
+                    bound is not None and position >= bound
+                    for position, bound in zip(positions, bounds, strict=True)
+                ):
+                    continue
+                yield positions
 
     def point_at(position):
         position = int(position)
-        if position < 0 or position >= total_size:
+        if position < 0 or (product_size.is_finite() and position >= int(product_size.finite_value())):
             raise IndexError(
-                f"position {position} is out of range for {product}, which has {total_size} elements"
+                f"position {position} is out of range for {product}, which has cardinality {product_size}"
             )
-        assignment = {}
-        quotient = position
-        for offset in range(index_count - 1, -1, -1):
-            index = index_at(offset)
-            factor = product.factor(index)
-            radix = int(cardinal(factor.cardinality()).finite_value())
-            quotient, digit = divmod(quotient, radix)
-            assignment[offset] = factor.ranking_map().inverse()(digit)
-        return product(tuple(assignment[offset] for offset in range(index_count)))
+        if finite_factors:
+            assignment = {}
+            quotient = position
+            for offset in range(index_count - 1, -1, -1):
+                factor = factors[offset]
+                radix = int(factor_cardinalities[offset].finite_value())
+                quotient, digit = divmod(quotient, radix)
+                assignment[offset] = factor.ranking_map().inverse()(digit)
+            return product(tuple(assignment[offset] for offset in range(index_count)))
+        for reached, positions in enumerate(rank_vectors()):
+            if reached == position:
+                return product(
+                    tuple(
+                        factor.ranking_map().inverse()(rank)
+                        for factor, rank in zip(factors, positions, strict=True)
+                    )
+                )
+        raise IndexError(f"position {position} is out of range for {product}")
 
     def position_of(section):
         section = product(section)
-        position = 0
-        for index in product.index_set():
-            factor = product.factor(index)
-            radix = int(cardinal(factor.cardinality()).finite_value())
-            digit = int(factor.ranking_map()(section.component(index)))
-            position = position * radix + digit
-        return position
+        digits = tuple(
+            int(factor.ranking_map()(section.component(index_at(offset))))
+            for offset, factor in enumerate(factors)
+        )
+        if finite_factors:
+            position = 0
+            for digit, size in zip(digits, factor_cardinalities, strict=True):
+                position = position * int(size.finite_value()) + digit
+            return position
+        for position, ranks in enumerate(rank_vectors()):
+            if ranks == digits:
+                return position
+        raise ValueError(f"{section!r} is not an element of {product}")
 
     return product._ranking_isomorphism(position_of, point_at)
 
 
 class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
-    r"""Finite dependent products carrying their mixed-radix enumeration."""
+    r"""Products over a finite enumerated index with enumerated factors."""
 
     def an_object(self):
         return CartesianProductsOfSets().an_object()
@@ -3173,7 +3132,6 @@ class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
         return [
             CartesianProductsOfSets(),
             EnumeratedSets(),
-            FiniteSets(),
         ]
 
     class ParentMethods:
