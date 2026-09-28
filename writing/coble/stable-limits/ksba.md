@@ -114,7 +114,7 @@ domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
 :::
 ::::
 
-:::: {.Question #que:coble_root_orbit_uniqueness}
+:::: {.Question #que:coble_root_orbit_uniqueness title="Uniqueness of the polarized Coble-root orbit"}
 
 Is the orbit of admissible Coble roots under $\gent$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
@@ -222,7 +222,7 @@ A $0$-cusp is modeled by an orbit of a pair $(I, r)$ consisting of an isotropic 
 A root $r$ is *admissible* at a cusp when it lifts to a primitive $(-2)$-root of the ambient Enriques lattice lying in the designated Coble orbit; this is the datum that promotes plain Enriques cusp data to polarized Coble cusp data, and it must be preserved along the incidence $I \subset J$.
 :::
 
-::: {.Question #que:coble_cusp_admissibility}
+::: {.Question #que:coble_cusp_admissibility title="Admissibility of Coble roots at boundary cusps"}
 
 What is the precise admissibility test for Coble roots at a cusp, formulated against the folded K3-to-Enriques Coxeter data?
 Sterk cusps $3$ and $5$ are the delicate cases where additional reflection data may intervene.

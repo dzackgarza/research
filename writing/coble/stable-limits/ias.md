@@ -157,7 +157,7 @@ is what distinguishes the Coble integral affine structure from an ordinary Enriq
 boundary structure.
 :::
 
-::: {.Question #que:equivariant_triangulation}
+::: {.Question #que:equivariant_triangulation title="Existence of a marked-root equivariant triangulation"}
 
 Does there exist an equivariant triangulation of the integral affine sphere
 compatible with the marked root $r$?

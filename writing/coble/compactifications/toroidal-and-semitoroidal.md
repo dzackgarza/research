@@ -167,7 +167,7 @@ A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if,
 If $R$ is recognizable, then the normalization of the KSBA compactification $\overline{F}^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mathcal{F}_R}$, defined by a specific semifan $\mathcal{F}_R$ [@AE23].
 :::
 
-::: {.Example #ex:recognizable-divisors}
+::: {.Example #ex:recognizable-divisors title="Basic recognizable divisors"}
 
 Two basic examples of recognizable divisors:
 

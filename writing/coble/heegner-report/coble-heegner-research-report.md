@@ -1097,7 +1097,7 @@ Hence a Type II Enriques cusp whose negative quotient is $E_8(2)$ cannot contain
 Reading the border types in AEGS Figure 4, the double-rectangle cusps $12,\ 13,\ 14,\ 15,\ 245$ map to the segment-flipping $E_8(2)$ cusp and are excluded.
 The only possible Enriques $1$-cusp images are therefore $34,\ 35,\ 45,\ 55$.
 
-::: {.Remark #remark-cusp-images}
+::: {.Remark #remark-cusp-images title="Cusp-image restrictions are necessary, not classificatory"}
 **Remark.**  This is a necessary-condition argument, not an integral orbit classification.
 It does not determine how many Coble cusps lie above any of the four possible image cusps.
 :::
@@ -1329,7 +1329,7 @@ If $\alpha$ is represented by a visible path in the chosen integral-affine model
 The corresponding pair of parallel $I_1$ singularities coalesces to an $I_2$ singularity.
 This is the same local operation used by AEGS for crossed nodes, but in the Coble problem it records the persistent $A_1$ singularity of the K3 cover.
 
-::: {.Remark #remark-affine-local}
+::: {.Remark #remark-affine-local title="The local affine collision does not prove chamber completeness"}
 **Remark.**  The local collision picture is reliable once the relevant root has been identified in the genuine cusp lattice.
 It cannot be used to prove that a candidate wall slice is the full Coxeter chamber.
 :::

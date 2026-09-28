@@ -249,7 +249,7 @@ map $\Orth(S)\to\Orth(q_S)$, carrying the overlattice attached to $H$ to the one
 attached to its image.
 :::
 
-::: {.Remark #rmk:embedding-gluing-data}
+::: {.Remark #rmk:embedding-gluing-data title="Primitive embeddings as discriminant gluing data"}
 
 The correspondence of [Nikulin's gluing theorem](#thm:nikulin-gluing) is the engine behind the
 classification of primitive embeddings.
