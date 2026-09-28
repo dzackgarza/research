@@ -51,8 +51,8 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 2
 
 \begin{tikzpicture}
-\pic (A) [maximal parabolic=E8] at (0,0) {object=coxeter/vinberg-10-8-0};
-\pic (B) [maximal parabolic=B8] at (0,-2.5) {object=coxeter/vinberg-10-8-0};
+\pic (A) [subdiagram={1,2,3,4,5,6,7,8,9}] at (0,0) {object=coxeter/vinberg-10-8-0};
+\pic (B) [subdiagram={2,3,4,5,6,7,8,9,10}] at (0,-2.5) {object=coxeter/vinberg-10-8-0};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$ of $\fen$; $\Gamma(\mcz_0) = \DD^2$.
