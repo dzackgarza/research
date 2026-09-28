@@ -4,7 +4,7 @@
 
 The basic vocabulary of lattices, primitive embeddings, orthogonal complements, discriminant groups, and the unimodular lattices $\latI_{p, q}$ and $\latII_{p, q}$ was fixed in [Lattice Theory](lattice-theory.md#sec:lattice-theory).
 We now develop the finer theory that underlies the lattice computations of this monograph: the several equivalent characterizations of a primitive sublattice, the classification of primitive embeddings up to isometry, Nikulin's correspondence between overlattices and isotropic subgroups of the discriminant form, the splitting of a unimodular sublattice off its ambient lattice, the classification of unimodular lattices, the finiteness of the set of primitive embeddings into an even unimodular lattice, and the behaviour of the discriminant group under scaling.
-Throughout, $S$, $T$, and $L$ denote nondegenerate lattices in the sense of [Lattice Theory](lattice-theory.md#sec:lattice-theory), $\beta$ denotes the ambient bilinear form when no confusion can arise, and $A_L \da L\dual/L$ is the discriminant group with its quadratic form $q_L$.
+Throughout, $S$, $T$, and $L$ denote nondegenerate lattices in the sense of [Lattice Theory](lattice-theory.md#sec:lattice-theory), $\beta$ denotes the ambient bilinear form when no confusion can arise, and $A_L \da \dualof{L}/L$ is the discriminant group with its quadratic form $q_L$.
 :::
 
 ## Primitive and saturated sublattices
@@ -119,7 +119,7 @@ Nikulin's classification of primitive embeddings [@Nik80 Prop. 1.15.1] is stated
 ### Overlattice
 
 An **overlattice** of a lattice $S$ is a lattice $L$ containing $S$ as a finite-index sublattice, with $\ro{\beta_L}{S} = \beta_S$.
-Equivalently, $L$ is a lattice with $S\containedin L\containedin S\dual$, where the inclusions use the canonical map $S\injects S\dual$ of [Lattice Theory](lattice-theory.md#sec:lattice-theory) and its dual; the finite quotient $L/S$ is then a subgroup of $A_S = S\dual/S$.
+Equivalently, $L$ is a lattice with $S\containedin L\containedin \dualof{S}$, where the inclusions use the canonical map $S\injects \dualof{S}$ of [Lattice Theory](lattice-theory.md#sec:lattice-theory) and its dual; the finite quotient $L/S$ is then a subgroup of $A_S = \dualof{S}/S$.
 :::
 
 ::: {.theorem #thm:nikulin-gluing}
@@ -137,10 +137,10 @@ The bijection sends an overlattice to the isotropic subgroup it cuts out, and an
 $$
 \begin{aligned}
 L &\longmapsto H_L \da L/S \containedin A_S, \\
-H &\longmapsto \eta\inv(H)\containedin S\dual,
+H &\longmapsto \inverseof{\eta}(H)\containedin \dualof{S},
 \end{aligned}
 $$
-where $\eta\colon S\dual\to A_S$ is the quotient map.
+where $\eta\colon \dualof{S}\to A_S$ is the quotient map.
 Under this correspondence,
 $$
 [L : S] = \abs{H}, \qquad
@@ -153,14 +153,14 @@ Two even overlattices $L$, $L'$ of $S$ are isometric by an isometry restricting 
 
 ::: {.proof}
 
-Any lattice $L$ intermediate between $S$ and $S\dual$ contains $S$ with finite index, and the pairing $\beta_S$ extends to $L$ with integer values precisely when the image $H_L = L/S\containedin A_S$ is isotropic for $q_S$: for $x + S, y + S\in H_L$ one has $\beta_{S_\QQ}(x, y)\in\ZZ$ if and only if the associated bilinear form on $A_S$ vanishes on $H_L$, and evenness of $L$ requires in addition $q_S(x + S) = 0$ for all $x + S\in H_L$.
-Conversely, given an isotropic $H\le A_S$, the preimage $\eta\inv(H)\containedin S\dual$ is an even overlattice of $S$ with $\eta\inv(H)/S = H$; the two constructions are mutually inverse.
+Any lattice $L$ intermediate between $S$ and $\dualof{S}$ contains $S$ with finite index, and the pairing $\beta_S$ extends to $L$ with integer values precisely when the image $H_L = L/S\containedin A_S$ is isotropic for $q_S$: for $x + S, y + S\in H_L$ one has $\beta_{S_\QQ}(x, y)\in\ZZ$ if and only if the associated bilinear form on $A_S$ vanishes on $H_L$, and evenness of $L$ requires in addition $q_S(x + S) = 0$ for all $x + S\in H_L$.
+Conversely, given an isotropic $H\le A_S$, the preimage $\inverseof{\eta}(H)\containedin \dualof{S}$ is an even overlattice of $S$ with $\inverseof{\eta}(H)/S = H$; the two constructions are mutually inverse.
 
 For the numerical statements, $[L:S] = \abs{L/S} = \abs{H}$.
 Since $\operatorname{disc}$ scales by the square of the index under passage to a finite-index sublattice, $\operatorname{disc} S = [L:S]^2\operatorname{disc} L = \abs{H}^2\operatorname{disc} L$, giving the displayed formula.
-Finally, the discriminant form of $L$ is computed on $L\dual/L$; one has $L\dual = \eta\inv(H^{\perp})$ inside $S_\QQ$, whence $A_L = L\dual/L \cong H^{\perp}/H$.
+Finally, the discriminant form of $L$ is computed on $\dualof{L}/L$; one has $\dualof{L} = \inverseof{\eta}(H^{\perp})$ inside $S_\QQ$, whence $A_L = \dualof{L}/L \cong H^{\perp}/H$.
 
-The orbit statement is immediate from the definitions: an isometry of $S$ extends to an isometry of $S\dual$ and hence acts on $A_S$ through the natural map $\Orth(S)\to\Orth(q_S)$, carrying the overlattice attached to $H$ to the one attached to its image.
+The orbit statement is immediate from the definitions: an isometry of $S$ extends to an isometry of $\dualof{S}$ and hence acts on $A_S$ through the natural map $\Orth(S)\to\Orth(q_S)$, carrying the overlattice attached to $H$ to the one attached to its image.
 :::
 
 ::: {.remark #rmk:embedding-gluing-data}
@@ -206,7 +206,7 @@ Thus the sum $S + T$ inside $L$ is direct, giving an inclusion $S\oplus T\contai
 
 We show this inclusion is an equality.
 Let $x\in L$ be arbitrary and consider the functional $\ro{\beta_L(x,\,\cdot\,)}{S}\colon S\to\ZZ$.
-Since $S$ is unimodular, the canonical map $S\to S\dual$ is an isomorphism, so there exists $s\in S$ with $\beta_L(x, y) = \beta_S(s, y)$ for all $y\in S$; that is, $\beta_L(x - s, S) = 0$, so $x - s\in T$.
+Since $S$ is unimodular, the canonical map $S\to \dualof{S}$ is an isomorphism, so there exists $s\in S$ with $\beta_L(x, y) = \beta_S(s, y)$ for all $y\in S$; that is, $\beta_L(x - s, S) = 0$, so $x - s\in T$.
 Hence $x = s + (x - s)\in S\oplus T$, and $L = S\oplus T$, which is the first claim.
 
 For the second claim, $L = S\oplus T$ gives $\operatorname{disc} L = \operatorname{disc} S\cdot\operatorname{disc} T$.
@@ -223,7 +223,7 @@ In particular $\operatorname{div}_L(v) = 1$ for every primitive vector $v\in L$.
 
 ::: {.proof}
 
-Since $L$ is unimodular, the canonical map $L\to L\dual$ is an isomorphism, so every functional in $L\dual = \Hom_\ZZ(L, \ZZ)$ has the form $\beta_L(u,\,\cdot\,)$ for a unique $u\in L$.
+Since $L$ is unimodular, the canonical map $L\to \dualof{L}$ is an isomorphism, so every functional in $\dualof{L} = \Hom_\ZZ(L, \ZZ)$ has the form $\beta_L(u,\,\cdot\,)$ for a unique $u\in L$.
 Because $v$ is primitive, by [the primitive-sublattice characterization](#prop:primitive-characterization) it extends to a $\ZZ$-basis $e_1 = v, e_2,\ldots,e_n$ of $L$.
 Let $\varphi\colon L\to\ZZ$ be the dual-basis functional with $\varphi(v) = 1$ and $\varphi(e_j) = 0$ for $j > 1$.
 Writing $\varphi = \beta_L(w,\,\cdot\,)$ for the corresponding $w\in L$ and using symmetry gives $\beta_L(v, w) = \beta_L(w, v) = \varphi(v) = 1$.
@@ -392,16 +392,16 @@ In particular, if $L$ is unimodular then $A_L = 0$ and $A_{L(m)}\cong L/mL\cong(
 ::: {.proof}
 
 The underlying module of $L(m)$ is $L$, with form $\beta_{L(m)} = m\beta_L$.
-Consequently the canonical map $\iota_{L(m)}\colon L(m)\to L(m)\dual$ is $m$ times the canonical map $\iota_L\colon L\to L\dual$ after the identification $L(m)\dual\cong L\dual$ of underlying modules.
-Thus $L(m)\dual\cong L\dual$ and the image of $L(m)$ inside $L(m)\dual$ is $m\iota_L(L)$.
+Consequently the canonical map $\iota_{L(m)}\colon L(m)\to \dualof{L(m)}$ is $m$ times the canonical map $\iota_L\colon L\to \dualof{L}$ after the identification $\dualof{L(m)}\cong \dualof{L}$ of underlying modules.
+Thus $\dualof{L(m)}\cong \dualof{L}$ and the image of $L(m)$ inside $\dualof{L(m)}$ is $m\iota_L(L)$.
 The discriminant group is
 $$
-A_{L(m)} = L(m)\dual/L(m) \cong L\dual/mL
+A_{L(m)} = \dualof{L(m)}/L(m) \cong \dualof{L}/mL
 .
 $$
-The inclusion $mL\containedin L\containedin L\dual$ then yields the short exact sequence
+The inclusion $mL\containedin L\containedin \dualof{L}$ then yields the short exact sequence
 $$
-0 \to L/mL \to L\dual/mL \to L\dual/L \to 0,
+0 \to L/mL \to \dualof{L}/mL \to \dualof{L}/L \to 0,
 $$
 which is the claimed sequence $0\to L/mL\to A_{L(m)}\to A_L\to 0$.
 If $L$ is unimodular then $\iota_L$ is an isomorphism, so $A_L = 0$ and $A_{L(m)}\cong L/mL\cong(\ZZ/m\ZZ)^{\rank L}$.
@@ -411,7 +411,7 @@ If $L$ is unimodular then $\iota_L$ is an isomorphism, so $A_L = 0$ and $A_{L(m)
 ### The orthogonal group exact sequence
 
 Let $L$ be a lattice.
-Every isometry $f\in\Orth(L)$ extends by functoriality to an isometry of $L\dual$ and hence induces an automorphism of the discriminant form $A_L$, defining a group homomorphism
+Every isometry $f\in\Orth(L)$ extends by functoriality to an isometry of $\dualof{L}$ and hence induces an automorphism of the discriminant form $A_L$, defining a group homomorphism
 $$
 \psi\colon\Orth(L)\to\Orth(q_L)
 .

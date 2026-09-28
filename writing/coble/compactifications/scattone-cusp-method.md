@@ -49,7 +49,7 @@ Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of 
 ::: {.proposition #prop:coble-divisibility-discriminant}
 
 Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily isotropic) vector.
-Then $v^* \da v/\div_L(v)\in L\dual$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da L\dual/L$ has order $\div_L(v)$.
+Then $v^* \da v/\div_L(v)\in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da \dualof{L}/L$ has order $\div_L(v)$.
 
 In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc(L)}$.
 :::

@@ -90,8 +90,8 @@ where $L$ is a lattice of signature $(2,n)$ and $(\cdot,\cdot)$ denotes the comp
 
 #### Cusps Parabolic Subgroups
 
-To compactify $\FG$, one must analyze the boundary of $D$. This is achieved via the **Borel embedding**, a $G(\RR)$-equivariant holomorphic open immersion $D \injects D\dual$, where $D\dual$ is the **compact dual**. $D\dual$ can be realized as $\widetilde{G}/K$, where $\widetilde{G}$ is the simply connected complex Lie group with Lie algebra $\widetilde{\lieg} \da  \liek + i\liep \subset \lieg \tensor_{\RR} \CC$.
-The boundary of the closure of $D$ in $D\dual$, denoted $\bd D$, decomposes as a disjoint union of maximal connected complex-analytic subsets, known as **boundary components** or **cusps**, $\bd D = \Disjoint F_i$.
+To compactify $\FG$, one must analyze the boundary of $D$. This is achieved via the **Borel embedding**, a $G(\RR)$-equivariant holomorphic open immersion $D \injects \dualof{D}$, where $\dualof{D}$ is the **compact dual**. $\dualof{D}$ can be realized as $\widetilde{G}/K$, where $\widetilde{G}$ is the simply connected complex Lie group with Lie algebra $\widetilde{\lieg} \da  \liek + i\liep \subset \lieg \tensor_{\RR} \CC$.
+The boundary of the closure of $D$ in $\dualof{D}$, denoted $\bd D$, decomposes as a disjoint union of maximal connected complex-analytic subsets, known as **boundary components** or **cusps**, $\bd D = \Disjoint F_i$.
 For each such component $F$, its stabilizer in $G(\RR)$ is the parabolic subgroup
 $$
 N_F \da  \ts{ g \in G(\RR) \st  g F = F }

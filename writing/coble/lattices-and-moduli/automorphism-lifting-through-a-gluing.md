@@ -19,7 +19,7 @@ $$
 $$
 of the Lattice Theory section, sending an isometry to its action on the discriminant form, is the **discriminant representation** of $L$.
 Its kernel is the stable orthogonal group $\tilde\Orth(L)$, and we write $\bar\varphi\da\rho_L(\varphi)$.
-The homomorphism exists because an isometry of $L$ extends to a $\ZZ$-module isomorphism of $L\dual$ and so descends to $A_L = L\dual/L$ [@Nik80 §1.4].
+The homomorphism exists because an isometry of $L$ extends to a $\ZZ$-module isomorphism of $\dualof{L}$ and so descends to $A_L = \dualof{L}/L$ [@Nik80 §1.4].
 :::
 
 ::: {.remark}
@@ -38,7 +38,7 @@ $$
 H \da L/(M\oplus N) \ \leq\ A_M\oplus A_N
 $$
 attached to $L$ by @thm:nikulin-gluing, together with the two inclusions themselves.
-By @rmk:embedding-gluing-data the subgroup $H$ is the graph of an anti-isometry $\gamma\colon H_M\iso H_N$ between subgroups $H_M\leq A_M$ and $H_N\leq A_N$, and $L$ is recovered as the preimage of $H$ under the quotient map $(M\oplus N)\dual\to A_M\oplus A_N$.
+By @rmk:embedding-gluing-data the subgroup $H$ is the graph of an anti-isometry $\gamma\colon H_M\iso H_N$ between subgroups $H_M\leq A_M$ and $H_N\leq A_N$, and $L$ is recovered as the preimage of $H$ under the quotient map $\dualof{(M\oplus N)}\to A_M\oplus A_N$.
 :::
 
 ::: {.theorem #thm:automorphism-lifting-criterion}
@@ -56,10 +56,10 @@ The extension is then unique, and it restricts to $\varphi_M$ on $M$ and to $\va
 ::: {.proof}
 
 Write $\psi\da\varphi_M\oplus\varphi_N\in\Orth(M\oplus N)$.
-An isometry of $M\oplus N$ extends uniquely to a $\ZZ$-module isometry $\psi\dual$ of $(M\oplus N)\dual$ inside $(M\oplus N)\tensor\QQ$, so the only candidate extension to $L$ is $\ro{\psi\dual}{L}$, and uniqueness follows.
-Since $M\oplus N\containedin L\containedin(M\oplus N)\dual$ by @def:overlattice, the candidate maps $L$ into $(M\oplus N)\dual$ always, and preserves $L$ exactly when it preserves the image of $L$ in the quotient $A_{M\oplus N} = A_M\oplus A_N$.
-That image is $H$, and the induced action of $\psi\dual$ on $A_{M\oplus N}$ is $\bar\varphi_M\oplus\bar\varphi_N$, giving the stated condition.
-Conversely, if the condition holds then $\ro{\psi\dual}{L}$ is a bijection of $L$ preserving the form inherited from $(M\oplus N)\tensor\QQ$, hence an isometry of $L$.
+An isometry of $M\oplus N$ extends uniquely to a $\ZZ$-module isometry $\dualof{\psi}$ of $\dualof{(M\oplus N)}$ inside $(M\oplus N)\tensor\QQ$, so the only candidate extension to $L$ is $\ro{\dualof{\psi}}{L}$, and uniqueness follows.
+Since $M\oplus N\containedin L\dualof{\containedin(M\oplus N)}$ by @def:overlattice, the candidate maps $L$ into $\dualof{(M\oplus N)}$ always, and preserves $L$ exactly when it preserves the image of $L$ in the quotient $A_{M\oplus N} = A_M\oplus A_N$.
+That image is $H$, and the induced action of $\dualof{\psi}$ on $A_{M\oplus N}$ is $\bar\varphi_M\oplus\bar\varphi_N$, giving the stated condition.
+Conversely, if the condition holds then $\ro{\dualof{\psi}}{L}$ is a bijection of $L$ preserving the form inherited from $(M\oplus N)\tensor\QQ$, hence an isometry of $L$.
 :::
 
 ::: {.corollary #cor:liftable-automorphisms}
@@ -68,7 +68,7 @@ Conversely, if the condition holds then $\ro{\psi\dual}{L}$ is a bijection of $L
 With the notation of [the lifting criterion](#thm:automorphism-lifting-criterion), fix $\varphi_N = \id_N$ and let $\Gamma\leq\Orth(M)$ be any subgroup.
 The isometries of $M$ that extend over $L$ fixing $N$ pointwise form the subgroup
 $$
-\rho_M\inv\Bigl(\Stab_{\Orth(q_M)}(H)\Bigr)\ \intersect\ \Gamma
+\inverseof{\rho_M}\Bigl(\Stab_{\Orth(q_M)}(H)\Bigr)\ \intersect\ \Gamma
 \ \leq\ \Gamma
 ,
 $$

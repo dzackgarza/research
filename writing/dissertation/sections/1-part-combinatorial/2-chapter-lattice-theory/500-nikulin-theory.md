@@ -137,7 +137,7 @@ $$
 |\disc T|=\frac{|\disc L| \cdot|\disc S|}{(\sharp H)^{2}} 
 .$$
 Now let $\iota: S \injects L$ be an embedding of even lattices where $L$ is unimodular, and define $H_{L}\da L / \iota(S)$. Using the chain of embeddings $S \injects L \injects L^{\vee} \injects S^{\vee}$ to produce embeddings $H_{L} \injects L^{\vee} / S \injects A_{S}$, one can regard $H_L$ as a subgroup of $A_S$.
-Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\da \eta\inv(H) \containedin S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
+Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\da \inverseof{\eta}(H) \containedin S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
 
 These constructions are mutually inverse and define a bijection:
 \begin{align*}

@@ -15,7 +15,7 @@ We note that for indefinite even lattices $L$, one typically expects the class n
 A lattice $(L,\beta)$ is **$p$-elementary** if its discriminant group $A_L$ is a $p$-elementary abelian group, i.e., $A_L \cong (\zpz)^a$ for some integer $a \geq 0$.
 We will be particularly concerned with the case $p=2$.
 We call the exponent $a = \rank_{\FF_2} A_L$ the **2-rank** of the discriminant group.
-For a 2-elementary lattice $L$, let $L^{\adjoint} \da L\dual(2)$. We say $L$ is **co-even** if $L^{\adjoint}$ is even and define the invariant $\delta = 0$, and **co-odd** otherwise and set $\delta = 1$.
+For a 2-elementary lattice $L$, let $L^{\adjoint} \da \dualof{L}(2)$. We say $L$ is **co-even** if $L^{\adjoint}$ is even and define the invariant $\delta = 0$, and **co-odd** otherwise and set $\delta = 1$.
 Equivalently,
 \begin{align}
 \delta(L) \da  \begin{cases}

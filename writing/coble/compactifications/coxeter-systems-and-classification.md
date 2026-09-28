@@ -308,9 +308,9 @@ the smallest field over which the Gram form $G(M)$ is defined.
 
 ::: {.proposition #prop:coxeter-base-field-degree}
 
-For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \zeta_{2m}\inv$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
+For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \inverseof{\zeta_{2m}}$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
 $$
-\left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#(\ZZ/2m\ZZ)\units
+\left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#\unitsof{(\ZZ/2m\ZZ)}
 .
 $$
 In particular $K(M) = \QQ$ exactly when $m_{st}\in\ts{2,3,\infty}$ for all $s\neq t$.

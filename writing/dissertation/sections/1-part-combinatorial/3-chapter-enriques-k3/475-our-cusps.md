@@ -131,9 +131,9 @@ where we form $\Gamma_{\En, 2}$ by taking the intersection of the commutator of 
 This is the correct monodromy group for $\fent$; the full details can be found e.g. in [@Ste91].
 For any lattice $T$ of signature $(2, n)$, we define its period domain as
 $$
-\halfpd{T} \da\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }\interior
+\halfpd{T} \da\interiorof{\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }}
 ,$$
-where $(\wait)\interior$ denotes taking one connected component. 
+where $\interiorof{(\wait)}$ denotes taking one connected component. 
 We then define the two moduli spaces
 $$
 \fent \da \dmodgamma{ \halfpd{T} }{ \Gamma }_{\En, 2},
@@ -330,7 +330,7 @@ we have $v \sim_{\Orth^{*}\left(\ten\right)} e$ and thus $v \sim_{\gent} e$.
 The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$:
 [@Ste91, §4.2.2] first uses the fact that there is a decomposition
 $$A_{\ten} = A\oplus B \da {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$
-and if $\div_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \ten\dual$ induces a nontrivial class in $A_{\ten}$.
+and if $\div_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \dualof{\ten}$ induces a nontrivial class in $A_{\ten}$.
 Any such class can be written as $g = a + b$ with $a\in A, b\in B$ and $q(g) = q_A(a) + q_B(b)$.
 If $q(g) = 0\pmod{2\ZZ}$, there are exactly two possibilities:
 

@@ -49,7 +49,7 @@ $$
 \Delta(L) \da  \Union_{v \in \Phi_2(L)} v^{\perp L}
 .$$
 When $L \injects \lkt$ is a primitively embedded  lattice corresponding to a polarization $h$ on a K3 surface $X$, this locus corresponds to points in the corresponding period domain $\halfpd{T}$ where $X$ acquires extra algebraic cycles -- if one identifies the holomorphic 2-form $\omega$ on $X$ with its period point in $\halfpd{L}$, the condition that $\omega$ on a mirror $H_\alpha$ is precisely that $\omega\cdot\alpha = 0$, so $\alpha \in \omega^{\perp H^2(X; \CC)}$ and thus $\omega\in H^{1,1,}(X)$, which by the Lefschetz $(1,1)$-theorem for $(-2)$-curves on K3 surfaces makes $\alpha$ a Hodge class.
-The **Weyl chambers** are the connected components of $\thecone{C}_L\interior \da  \thecone{C}_L \sm \Delta(L)$ where $\thecone{C}_L$ is the cone of positive-norm vectors in $L$. A **simple system** is a set of roots $v$ such that the mirrors $H_v$ form the bounding hyperplanes for a fundamental domain for the action of $W(L)$ on $L$.
+The **Weyl chambers** are the connected components of $\interiorof{\thecone{C}_L} \da  \thecone{C}_L \sm \Delta(L)$ where $\thecone{C}_L$ is the cone of positive-norm vectors in $L$. A **simple system** is a set of roots $v$ such that the mirrors $H_v$ form the bounding hyperplanes for a fundamental domain for the action of $W(L)$ on $L$.
 :::
 
 #### Coxeter Groups and Polytopes
@@ -115,7 +115,7 @@ Let $v \in L$ be a simple root, the the reflection $s_v$ is in $\Orth(L)$ precis
 Thus if $L$ is 2-elementary, the roots of $L$ are primitive vectors $v \in L$ such that either $v^2 = -2$, or $v^2 = -4$ and $\div_L(v) = 2$.
 The mirrors $H_v \da  v^\perp \subset L_\RR$ for $v \in \Phi(L)$ define a hyperplane arrangement. The intersection of the positive cone $\thecone{C}_L^+$ with the complement of all mirrors,
 $$
-\thecone{C}_L\interior \da  \thecone{C}_L^+ \sm \Union_{v \in \Phi(L)} H_v,
+\interiorof{\thecone{C}_L} \da  \thecone{C}_L^+ \sm \Union_{v \in \Phi(L)} H_v,
 $$
 decomposes into connected components called **Weyl chambers**, each of which is a fundamental domain $P$ for the action of the Weyl group $W(L)$ on $\thecone{C}_L^+$. This is a hyperbolic Coxeter polytope, and thus the Gram matrix corresponding to its walls encodes a Coxeter diagram.
 Let $P$ by a hyperbolic Coxeter polytope arising from a root system in $L$ as above. Its **Coxeter diagram** is the colored undirected graph whose vertices correspond to simple roots $r_i$ with $r_i^2 < 0$ and whose edges $e_{i,j}$ encode the angle $\angle(H_i, H_j)$ between $H_i \da r_i^{\perp}$ and $H_j \da r_j^{\perp}$ by the formula

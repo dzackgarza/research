@@ -35,7 +35,7 @@ Every $\QQ$-valued bilinear module $(L,\beta)$ determines a $\QQ$-valued quadrat
 
 There is a bijection between even symmetric integral forms and integral quadratic forms:
 $$\begin{aligned}
-\{\beta \in \Sym_{\ZZ}^2(L\dual) \st \beta \text{ is even}\} &\mapstofrom \Quad_{\ZZ}(L) \\
+\{\beta \in \Sym_{\ZZ}^2(\dualof{L}) \st \beta \text{ is even}\} &\mapstofrom \Quad_{\ZZ}(L) \\
 \beta &\mapsto q(v) \da {1\over 2}\beta(v,v) \\
 \beta_q &\mapsfrom q
 \end{aligned}$$
@@ -181,11 +181,11 @@ Let $L$ be a lattice with form $\beta$, and let $v \in L$. The **divisibility** 
 :::
 
 :::{.proposition title="{Divisibility and Discriminant for Primitive Vectors}" #prop:divisibility-discriminant}
-Let $L$ be a nondegenerate lattice, and $v \in L$ an arbitrary (not necessarily isotropic) vector. The element $v^* \da v/\div_L(v) \in L\dual$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da L\dual/L$ has order $\div_L(v)$. In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc(L)|$.
+Let $L$ be a nondegenerate lattice, and $v \in L$ an arbitrary (not necessarily isotropic) vector. The element $v^* \da v/\div_L(v) \in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da \dualof{L}/L$ has order $\div_L(v)$. In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc(L)|$.
 :::
 
 :::{.proof}
-Since the divisibility $\div_L(v) = d$ is by definition the positive generator of the ideal $\{(v, w)\st w \in L\}$, one has $v/d \in L\dual$ and this vector is primitive in $L\dual$. Indeed, if $v/d = m y$ for some $m \in \ZZ$, $y \in L\dual$, then $v = d m y \in L$, and primitivity of $v$ in $L$ implies $m = \pm 1$.
+Since the divisibility $\div_L(v) = d$ is by definition the positive generator of the ideal $\{(v, w)\st w \in L\}$, one has $v/d \in \dualof{L}$ and this vector is primitive in $\dualof{L}$. Indeed, if $v/d = m y$ for some $m \in \ZZ$, $y \in \dualof{L}$, then $v = d m y \in L$, and primitivity of $v$ in $L$ implies $m = \pm 1$.
 The order of $v^*$ in $A_L$ is the minimal positive $n$ such that $n v^* \in L$. This occurs precisely when $n$ is divisible by $d$, so the order is $d = \div_L(v)$. Since $A_L$ is finite of order $|\disc(L)|$, it follows in particular that $\div_L(v)$ divides $|\disc(L)|$.
 :::
 
@@ -195,39 +195,39 @@ In particular, $\div_L(v) = 1$ for all $v\in L$.
 :::
 
 :::{.proof}
-Since $L$ is unimodular, $L \iso L\dual$. The linear form $x \mapsto (v, x)$ is a nonzero element of $\Hom(L, \ZZ )$, and is surjective because $v$ is primitive and $L$ is unimodular. Hence there exists $w \in L$ with $(v, w) = 1$.
+Since $L$ is unimodular, $L \iso \dualof{L}$. The linear form $x \mapsto (v, x)$ is a nonzero element of $\Hom(L, \ZZ )$, and is surjective because $v$ is primitive and $L$ is unimodular. Hence there exists $w \in L$ with $(v, w) = 1$.
 :::
 
 #### Dual Lattices and Discriminant Forms
 
 :::{.definition title="{Dual Lattice}" #def:dual-lattice-construction}
-For an integral lattice $(L,\beta)$, the **dual lattice** is the $\ZZ$-module of linear functionals $L\dual \da \Hom_{\ZZ}(L, \ZZ)$.
+For an integral lattice $(L,\beta)$, the **dual lattice** is the $\ZZ$-module of linear functionals $\dualof{L} \da \Hom_{\ZZ}(L, \ZZ)$.
 :::
 
 :::{.theorem title="{Geometric Identification of the Dual Lattice}" #thm:geometric-identification-dual}
 For a nondegenerate integral lattice $(L,\beta)$, the dual lattice can be identified with a sublattice of $L_{\QQ} \da L \tensor_{\ZZ} \QQ$ via the bijection:
 \begin{align*}
-L\dual \cong \{ v \in L_{\QQ} \st \beta_{\QQ}(v,L) \containedin \ZZ\}
+\dualof{L} \cong \{ v \in L_{\QQ} \st \beta_{\QQ}(v,L) \containedin \ZZ\}
 \end{align*}
-where a functional $\phi \in L\dual$ corresponds to the unique vector $v_\phi \in L_\QQ$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. Under this identification, we have the inclusions $L \containedin L\dual \containedin L_{\QQ}$.
+where a functional $\phi \in \dualof{L}$ corresponds to the unique vector $v_\phi \in L_\QQ$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. Under this identification, we have the inclusions $L \containedin \dualof{L} \containedin L_{\QQ}$.
 :::
 
 :::{.remark title="{Properties of Dual Lattices}" #rem:dual-lattice-properties}
 We summarize some standard properties of dual lattices
 
-- Duality commutes with direct sums, $(L \oplus M)^\vee = L\dual \oplus M^\vee$.
-- If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis satisfies $B_{L\dual} = (B_L^t)\inv$, and the Gram matrix of the dual form is $G_{\beta^\vee} = G_\beta\inv$.
-- The discriminant of the dual satisfies $\disc(L\dual) = 1/\disc(L)$, and the dual of a scaled lattice is $(L(m))^\vee = L\dual(1/m)$.
+- Duality commutes with direct sums, $(L \oplus M)^\vee = \dualof{L} \oplus M^\vee$.
+- If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis satisfies $B_{\dualof{L}} = \inverseof{(B_L^t)}$, and the Gram matrix of the dual form is $G_{\beta^\vee} = \inverseof{G_\beta}$.
+- The discriminant of the dual satisfies $\disc(\dualof{L}) = 1/\disc(L)$, and the dual of a scaled lattice is $(L(m))^\vee = \dualof{L}(1/m)$.
 :::
 
 :::{.definition title="{Discriminant Group and Discriminant}" #def:discriminant-group}
 
-For a nondegenerate lattice $(L,\beta)$, the **discriminant group** is the finite abelian group $A_L \da L\dual / L$.
-The order of the discriminant group equals the absolute value of the discriminant, i.e. $|A_L| = |\disc(L)| = [L\dual\colon L]$, so $L$ is unimodular if and only if $A_L$ is trivial.
+For a nondegenerate lattice $(L,\beta)$, the **discriminant group** is the finite abelian group $A_L \da \dualof{L} / L$.
+The order of the discriminant group equals the absolute value of the discriminant, i.e. $|A_L| = |\disc(L)| = [\dualof{L}\colon L]$, so $L$ is unimodular if and only if $A_L$ is trivial.
 :::
 
 :::{.definition title="Discriminant Forms, [@PS24, Def. 1.6.5]" #def:discriminant-forms}
-For a nondegenerate *even* lattice $(L,\beta)$, the **discriminant bilinear form** is $\beta_{A_L}: A_L \times A_L \to \QQ/\ZZ$, given by $\beta_{A_L}(\bar{x}, \bar{y}) = \beta(x,y) \bmod \ZZ$ for any lifts $x,y \in L\dual$ and $\beta$ the induced form on $L\dual$.
+For a nondegenerate *even* lattice $(L,\beta)$, the **discriminant bilinear form** is $\beta_{A_L}: A_L \times A_L \to \QQ/\ZZ$, given by $\beta_{A_L}(\bar{x}, \bar{y}) = \beta(x,y) \bmod \ZZ$ for any lifts $x,y \in \dualof{L}$ and $\beta$ the induced form on $\dualof{L}$.
 It admits an associated quadratic form $q_{A_L}(\bar x) = \beta(x,x)\pmod{\ZZ} \in \QQ/\ZZ$ for any lift $x$.
 We note that there are two conventions in the literature, where one sometimes defines $q_{A_L}(\bar x) \da \beta(x,x)\pmod{2\ZZ}\in \QQ/2\ZZ$; these agree by the isomorphism $\QQ/\ZZ \iso \QQ/2\ZZ$ induced by multiplication by $2$.
 We define its **orthogonal group** $\Orth(A_L)$ as the automorphisms that preserve $q_{A_L}$.
@@ -244,7 +244,7 @@ $$
 0 \to L/mL \injects A_{L(m)} \to A_L \to 0
 $$
 If $L$ is unimodular, this implies $A_{L(m)} \cong L/mL$.
-Similarly, by functoriality, any isometry $f \in \Orth(L)$ lifts to an isometry of $L\dual$ and thus induces an isometry on the discriminant group $A_L$. This defines a group homomorphism $\psi: \Orth(L) \to \Orth(A_L)$, which fits into an exact sequence:
+Similarly, by functoriality, any isometry $f \in \Orth(L)$ lifts to an isometry of $\dualof{L}$ and thus induces an isometry on the discriminant group $A_L$. This defines a group homomorphism $\psi: \Orth(L) \to \Orth(A_L)$, which fits into an exact sequence:
 $$
 0 \to \OStab(L) \to \Orth(L) \xrightarrow{\psi} \Orth(A_L) \to \OStab(A_L) \to 0
 $$

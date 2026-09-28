@@ -62,20 +62,20 @@ Enumerating a level set or an orthogonal group is therefore not by itself an ava
 ::: {.remark}
 ### Discriminant forms
 
-The **dual lattice** to $L$ is denoted $L\dual \da \Hom_\ZZ(L, \ZZ)$, and there is an morphism
+The **dual lattice** to $L$ is denoted $\dualof{L} \da \Hom_\ZZ(L, \ZZ)$, and there is an morphism
 $$
 \begin{aligned}
-\iota: L &\injects L\dual \\
+\iota: L &\injects \dualof{L} \\
 x &\mapsto \beta_L(x, \cdot)
 \end{aligned}
 $$
 which, if $L$ is nondegenerate, is an injection with finite index image.
-The **discriminant group** is $A_L \da \coker \iota \cong L\dual/L$; this is a finite order group of order $\abs{\operatorname{disc} L}$.
+The **discriminant group** is $A_L \da \coker \iota \cong \dualof{L}/L$; this is a finite order group of order $\abs{\operatorname{disc} L}$.
 We say $L$ is **unimodular** if any of the following equivalent conditions hold:
 
 1. $A_L$ is the trivial group,
 
-2. $\iota$ is an isomorphism and $L\cong L\dual$,
+2. $\iota$ is an isomorphism and $L\cong \dualof{L}$,
 
 3. $\abs{ \operatorname{disc} L} = 1$.
 
@@ -101,7 +101,7 @@ Every $g\in\Orth(L_\RR)$ is a product of reflections $g = s_{w_1}\cdots s_{w_m}$
 The **real spinor norm** of $g$ is
 $$
 \spinornorm_\RR(g) \da \prod_{i=1}^{m} \frac{-\beta(w_i, w_i)}{2}
-\ \in\ \RR\units/(\RR\units)^2
+\ \in\ \unitsof{\RR}/(\unitsof{\RR})^2
 ,
 $$
 which is independent of the chosen decomposition.

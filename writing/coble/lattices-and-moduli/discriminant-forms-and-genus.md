@@ -2,7 +2,7 @@
 
 ::: {.remark}
 
-The Lattice Theory section introduced the dual lattice $L\dual$, the discriminant group $A_L \da L\dual/L$, and the discriminant quadratic form $q_L: A_L \to \QQ/2\ZZ$ of an even lattice.
+The Lattice Theory section introduced the dual lattice $\dualof{L}$, the discriminant group $A_L \da \dualof{L}/L$, and the discriminant quadratic form $q_L: A_L \to \QQ/2\ZZ$ of an even lattice.
 We now develop the theory these constructions specialize: the general correspondence between symmetric bilinear forms and quadratic forms, its torsion-valued counterpart, the resulting structure on $A_L$, the properties of the dual lattice, and the classification of lattices up to genus.
 Throughout, $(L, \beta_L)$ denotes a lattice in the sense of the Lattice Theory section, with $L_\QQ \da L\tensor_\ZZ \QQ$ and $\beta_{L_\QQ}$ the $\QQ$-linear extension of $\beta_L$.
 :::
@@ -51,7 +51,7 @@ Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric 
 
 There is a bijection between even symmetric integral bilinear forms on $L$ and integral quadratic forms on $L$:
 $$
-\ts{ \beta\in \Sym^2_\ZZ(L\dual) \mid \beta \text{ is even} }
+\ts{ \beta\in \Sym^2_\ZZ(\dualof{L}) \mid \beta \text{ is even} }
 \quad\longleftrightarrow\quad
 \Quad_\ZZ(L)
 ,
@@ -99,7 +99,7 @@ These share the numerator $\beta(\tilde x,\tilde y)$ read modulo different latti
 
 ::: {.definition #def:coble-discriminant-forms}
 
-Let $(L, \beta_L)$ be a nondegenerate even lattice with discriminant group $A_L = L\dual/L$, and let $\beta$ also denote the $\QQ$-valued extension of the form to $L\dual$.
+Let $(L, \beta_L)$ be a nondegenerate even lattice with discriminant group $A_L = \dualof{L}/L$, and let $\beta$ also denote the $\QQ$-valued extension of the form to $\dualof{L}$.
 The **discriminant bilinear form** of $L$ is the torsion bilinear form
 $$
 \begin{aligned}
@@ -108,7 +108,7 @@ b_L: A_L \times A_L &\to \QQ/\ZZ \\
 ,
 \end{aligned}
 $$
-computed on any lifts $x, y\in L\dual$ of $\bar x, \bar y$.
+computed on any lifts $x, y\in \dualof{L}$ of $\bar x, \bar y$.
 Its associated **discriminant quadratic form** is
 $$
 q_L(\bar x) \da \beta(x, x) \bmod 2\ZZ \in \QQ/2\ZZ
@@ -122,7 +122,7 @@ The **length** $\ell(L)$ of $L$ is the minimal number of generators of the abeli
 
 ::: {.remark}
 
-Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with $m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined modulo $\ZZ$) and changes $\beta(x, x)$ by $\beta(2x, m) + \beta(m, m)\in 2\ZZ$ (so $q_L$ is well defined modulo $2\ZZ$), since $\beta(L\dual, L)\containedin\ZZ$ and $L$ is even.
+Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with $m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined modulo $\ZZ$) and changes $\beta(x, x)$ by $\beta(2x, m) + \beta(m, m)\in 2\ZZ$ (so $q_L$ is well defined modulo $2\ZZ$), since $\beta(\dualof{L}, L)\containedin\ZZ$ and $L$ is even.
 These forms are Nikulin's discriminant forms [@Nik80].
 :::
 
@@ -140,7 +140,7 @@ where the bracketed difference lies in $\QQ/2\ZZ$ and equals $2\beta(\tilde x, \
 
 ::: {.proof}
 
-Nondegeneracy is the statement that the induced map $A_L \to \Hom(A_L, \QQ/\ZZ)$ is an isomorphism; this holds because $A_L$ is finite and the pairing $b_L$ is the pairing induced by the perfect pairing $L\dual/L \times L\dual/L \to \QQ/\ZZ$ coming from a nondegenerate $\beta_L$.
+Nondegeneracy is the statement that the induced map $A_L \to \Hom(A_L, \QQ/\ZZ)$ is an isomorphism; this holds because $A_L$ is finite and the pairing $b_L$ is the pairing induced by the perfect pairing $\dualof{L}/L \times \dualof{L}/L \to \QQ/\ZZ$ coming from a nondegenerate $\beta_L$.
 The polarization identity is the reduction modulo $\ZZ$ of the identity $\beta(x, y) = \tfrac{1}{2}(\beta(x + y, x + y) - \beta(x, x) - \beta(y, y))$ on lifts.
 :::
 
@@ -149,20 +149,20 @@ The polarization identity is the reduction modulo $\ZZ$ of the identity $\beta(x
 ::: {.proposition #prop:dual-properties}
 
 Let $L$ and $M$ be nondegenerate lattices.
-The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
+The dual lattice $\dualof{L} = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
 
-1. Duality commutes with orthogonal direct sums: $(L\oplus M)\dual = L\dual \oplus M\dual$.
+1. Duality commutes with orthogonal direct sums: $\dualof{(L\oplus M)} = \dualof{L} \oplus \dualof{M}$.
 
-2. If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis is $B_{L\dual} = (B_L^t)\inv$, and the Gram matrix of the dual form is $G_{\beta\dual} = G_\beta\inv$.
+2. If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis is $B_{\dualof{L}} = \inverseof{(B_L^t)}$, and the Gram matrix of the dual form is $G_{\dualof{\beta}} = \inverseof{G_\beta}$.
 
-3. The discriminant of the dual satisfies $\operatorname{disc}(L\dual) = 1/\operatorname{disc}(L)$.
+3. The discriminant of the dual satisfies $\operatorname{disc}(\dualof{L}) = 1/\operatorname{disc}(L)$.
 
-4. The dual of a twist is $(L(m))\dual = L\dual(1/m)$, where $L(m)$ is the twist of $L$ by $m$ from the Lattice Theory section.
+4. The dual of a twist is $\dualof{(L(m))} = \dualof{L}(1/m)$, where $L(m)$ is the twist of $L$ by $m$ from the Lattice Theory section.
 :::
 
 ::: {.remark}
 
-Property (2) is the source of (3), since $\operatorname{disc}(L\dual) = \det(G_\beta\inv) = 1/\det(G_\beta) = 1/\operatorname{disc}(L)$.
+Property (2) is the source of (3), since $\operatorname{disc}(\dualof{L}) = \det(\inverseof{G_\beta}) = 1/\det(G_\beta) = 1/\operatorname{disc}(L)$.
 Property (1) is compatible with the direct-sum decomposition $A_{L\oplus M} = A_L\oplus A_M$ of discriminant groups recalled in the Lattice Theory section.
 :::
 
@@ -172,22 +172,22 @@ Property (1) is compatible with the direct-sum decomposition $A_{L\oplus M} = A_
 
 For a nondegenerate integral lattice $(L, \beta_L)$, the dual lattice is identified with a $\ZZ$-submodule of $L_\QQ = L\tensor_\ZZ\QQ$ via
 $$
-L\dual \;\cong\; \ts{ v\in L_\QQ \mid \beta_{L_\QQ}(v, L) \containedin \ZZ }
+\dualof{L} \;\cong\; \ts{ v\in L_\QQ \mid \beta_{L_\QQ}(v, L) \containedin \ZZ }
 ,
 $$
-where a functional $\varphi\in L\dual$ corresponds to the unique vector $v_\varphi\in L_\QQ$ such that $\varphi(w) = \beta_{L_\QQ}(v_\varphi, w)$ for all $w\in L$.
+where a functional $\varphi\in \dualof{L}$ corresponds to the unique vector $v_\varphi\in L_\QQ$ such that $\varphi(w) = \beta_{L_\QQ}(v_\varphi, w)$ for all $w\in L$.
 Under this identification one has the chain of inclusions
 $$
-L \containedin L\dual \containedin L_\QQ
+L \containedin \dualof{L} \containedin L_\QQ
 .
 $$
 :::
 
 ::: {.proof}
 
-Nondegeneracy of $\beta_L$ makes the $\QQ$-linear extension $L_\QQ \to \Hom_\QQ(L_\QQ, \QQ)$, $v\mapsto \beta_{L_\QQ}(v, \cdot)$, an isomorphism, so each $\varphi\in L\dual \containedin \Hom_\QQ(L_\QQ, \QQ)$ has a unique preimage $v_\varphi\in L_\QQ$.
+Nondegeneracy of $\beta_L$ makes the $\QQ$-linear extension $L_\QQ \to \Hom_\QQ(L_\QQ, \QQ)$, $v\mapsto \beta_{L_\QQ}(v, \cdot)$, an isomorphism, so each $\varphi\in \dualof{L} \containedin \Hom_\QQ(L_\QQ, \QQ)$ has a unique preimage $v_\varphi\in L_\QQ$.
 The condition $\varphi(L)\containedin\ZZ$ translates to $\beta_{L_\QQ}(v_\varphi, L)\containedin\ZZ$, giving the stated image.
-The inclusion $L\containedin L\dual$ is the map $\iota$ of the Lattice Theory section, and $L\dual\containedin L_\QQ$ holds because the pairing takes rational values.
+The inclusion $L\containedin \dualof{L}$ is the map $\iota$ of the Lattice Theory section, and $\dualof{L}\containedin L_\QQ$ holds because the pairing takes rational values.
 :::
 
 ## The genus, class group, and class number
@@ -236,7 +236,7 @@ Under the twist of the Lattice Theory section, $\mathfrak{s}(L(m)) = m\,\mathfra
 ::: {.definition #def:modular-lattice}
 ### Modular lattices
 
-A lattice $L$ is **$m$-modular** if $m L\dual = L$; equivalently, $L$ is similar to its dual.
+A lattice $L$ is **$m$-modular** if $m \dualof{L} = L$; equivalently, $L$ is similar to its dual.
 A unimodular lattice is the case $m = 1$, and $L(m)$ is $m$-modular whenever $L$ is unimodular.
 :::
 

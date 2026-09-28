@@ -148,17 +148,17 @@ In particular the containment required by [the descent criterion](#rmk:descent-o
 For a primitive sublattice $M\leq T_\En$ of signature $(2,\ast)$ one has $x\in\bD(M)$ if and only if $T(x)\containedin M$.
 
 Fix $y\in F_\En$ and a lift $\tilde y\in\bD(T_\En)$.
-A point of $f\inv(y)$ is a $\Gamma_\Co$-orbit of a point $x = g\tilde y$ with $g\in\Gamma_\En$ and $x\in\bD(T_\Co)$.
-Writing $M'\da g\inv(T_\Co)$, that last condition says $T(\tilde y)\containedin M'$.
-Now $M'^{\perp} = g\inv(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
+A point of $\inverseof{f}(y)$ is a $\Gamma_\Co$-orbit of a point $x = g\tilde y$ with $g\in\Gamma_\En$ and $x\in\bD(T_\Co)$.
+Writing $M'\da \inverseof{g}(T_\Co)$, that last condition says $T(\tilde y)\containedin M'$.
+Now $M'^{\perp} = \inverseof{g}(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
 The space $T(\tilde y)\tensor\RR$ contains a positive definite plane and $T_\En$ has signature $(2,10)$, so $T_\En\intersect T(\tilde y)^{\perp}$ is negative definite and contains only finitely many vectors of square $-2$.
 Each such $v$ determines $M' = v^{\perp}$, so only finitely many $M'$ occur.
-For a fixed $M'$ the elements $g$ with $g\inv(T_\Co) = M'$ form one coset of $\Stab_{\Gamma_\En}(T_\Co)$, whose restrictions to $T_\Co$ all lie in $\Gamma_\Co$ by the previous step; the corresponding points $x$ therefore form a single $\Gamma_\Co$-orbit.
-Hence $f\inv(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T_\En\intersect T(\tilde y)^{\perp}$.
+For a fixed $M'$ the elements $g$ with $\inverseof{g}(T_\Co) = M'$ form one coset of $\Stab_{\Gamma_\En}(T_\Co)$, whose restrictions to $T_\Co$ all lie in $\Gamma_\Co$ by the previous step; the corresponding points $x$ therefore form a single $\Gamma_\Co$-orbit.
+Hence $\inverseof{f}(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T_\En\intersect T(\tilde y)^{\perp}$.
 
 **Properness and finiteness.** By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB) the map $f$ extends to a morphism $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
 A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
-So $\bar f$ carries boundary to boundary, giving $\bar f\inv(\fen) = \fco$, and $f$ is proper because properness is stable under base change.
+So $\bar f$ carries boundary to boundary, giving $\inverseof{\bar f}(\fen) = \fco$, and $f$ is proper because properness is stable under base change.
 A proper morphism with finite fibres is finite [Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS), so $f$ is finite.
 Let $Z\da f(\fco)$, which is closed in $\fen$ because a finite morphism is closed.
 
@@ -199,6 +199,6 @@ $$
 For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and $B = \bD(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, so what is needed is that every isometry of $T_\Co$ in $G_A$ extends to an isometry of $T_\En$ preserving $T_\Co$.
 The criterion is a containment, not an equality: for a general pair of groups the stabilizer of $f(A)$ in $G_B$ may restrict to a group strictly larger than the image of $G_A$ without obstructing the descent.
 What a strictly larger restriction costs is injectivity, since two $G_A$-orbits may then be identified in $G_B\backslash B$.
-The gluing computation in the proof above rules that out here: the restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $\Orth^+(T_\Co)^*$, so the containment is an equality and the only source of non-injectivity left is a point of $\bD(T_\Co)$ lying on a second translate $g\inv(T_\Co)$.
+The gluing computation in the proof above rules that out here: the restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $\Orth^+(T_\Co)^*$, so the containment is an equality and the only source of non-injectivity left is a point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$.
 That is what the fibre count controls.
 :::

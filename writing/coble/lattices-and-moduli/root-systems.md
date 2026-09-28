@@ -145,7 +145,7 @@ There are $8$ simple roots comprising $\Phi(E_8)$, and the Weyl group $W(E_8)$ a
 ::: {.theorem #thm:E8-characterization}
 
 $E_8$ is the unique even, unimodular, positive-definite lattice of rank $8$.
-In particular it is self-dual, $E_8 \cong E_8\dual$.
+In particular it is self-dual, $E_8 \cong \dualof{E_8}$.
 :::
 
 ::: {.remark}

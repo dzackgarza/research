@@ -87,7 +87,7 @@ The $1$-cusp lattice $\latI_{0,7}(2)\cong A_1^{\oplus 7}$ is negative definite o
 Let $M$ be a unimodular lattice of rank $r$ and let $L\da M(2)$.
 Then
 $$
-L\dual = \tfrac{1}{2}M,
+\dualof{L} = \tfrac{1}{2}M,
 \qquad
 A_L = \tfrac{1}{2}M/M \cong M/2M \cong (\ZZ/2\ZZ)^r
 ,
@@ -107,8 +107,8 @@ $$
 
 ::: {.proof}
 
-Under the geometric identification of the dual lattice ([the geometric dual-lattice identification](#thm:dual-geometric-identification)), $L\dual$ is the set of $v\in M_\QQ$ with $2\beta_M(v, M)\containedin\ZZ$, that is $\beta_M(v, M)\containedin\tfrac12\ZZ$.
-Since $M$ is unimodular the map $M\to M\dual$ is an isomorphism, so this set is exactly $\tfrac12 M$.
+Under the geometric identification of the dual lattice ([the geometric dual-lattice identification](#thm:dual-geometric-identification)), $\dualof{L}$ is the set of $v\in M_\QQ$ with $2\beta_M(v, M)\containedin\ZZ$, that is $\beta_M(v, M)\containedin\tfrac12\ZZ$.
+Since $M$ is unimodular the map $M\to \dualof{M}$ is an isomorphism, so this set is exactly $\tfrac12 M$.
 The quotient $\tfrac12 M/M$ is carried isomorphically to $M/2M$ by multiplication by $2$, giving $A_L\cong(\ZZ/2\ZZ)^r$ and $a = r$.
 For the form, $\beta_L = 2\beta_M$ gives
 $$
@@ -141,10 +141,10 @@ Under the identification $A_{T_\Co}\cong B/2B$ of [the twisted-unimodular discri
 
 The four fibers of $Q$ on the $2^{11} = 2048$ classes of $B/2B$ have cardinalities
 $$
-\abs{Q\inv(0)} = 528,\quad
-\abs{Q\inv(1)} = 528,\quad
-\abs{Q\inv(2)} = 496,\quad
-\abs{Q\inv(3)} = 496
+\abs{\inverseof{Q}(0)} = 528,\quad
+\abs{\inverseof{Q}(1)} = 528,\quad
+\abs{\inverseof{Q}(2)} = 496,\quad
+\abs{\inverseof{Q}(3)} = 496
 .
 $$
 In particular $A_{T_\Co}$ contains exactly $528$ isotropic classes, of which $527$ are nonzero.
@@ -162,7 +162,7 @@ $$
 The four fibers then have sizes $N_0,\ N_0,\ 2^{10} - N_0,\ 2^{10} - N_0$ in the order listed.
 
 To compute $N_0$, observe that $\bar q(y)\da\tfrac12\beta_{E_{10}}(y,y)\bmod 2$ is a quadratic form $E_{10}/2E_{10}\to\bF_2$ whose polar form is the reduction of $\beta_{E_{10}}$ modulo $2$; the latter is nondegenerate because $E_{10}$ is unimodular.
-Thus $\bar q$ is a nondegenerate quadratic form on a $10$-dimensional $\bF_2$-vector space, and $N_0 = \#\bar q\inv(0)$.
+Thus $\bar q$ is a nondegenerate quadratic form on a $10$-dimensional $\bF_2$-vector space, and $N_0 = \#\inverseof{\bar q}(0)$.
 The decomposition $E_{10} = U\oplus E_8$ splits $\bar q$ orthogonally.
 On $U/2U$ the form is $\bar q(ae + bf) = ab$, which is the hyperbolic plane over $\bF_2$ and has $3$ zeros; on $E_8/2E_8$ the form is the reduction of the $E_8$ form and has $136$ zeros.
 Both are of plus type, hence so is their sum, and a nondegenerate plus-type form in dimension $2n$ over $\bF_2$ has $2^{2n-1} + 2^{n-1}$ zeros.

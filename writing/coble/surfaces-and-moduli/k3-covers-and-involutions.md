@@ -13,7 +13,7 @@ A standard method to produce Calabi-Yau varieties involves taking a double cover
 If $B \in \abs{-2K_Y}$, one takes $\cL = -K_Y$.
 The cover $X$ is defined via the $\OO_Y$-algebra
 $$
-\cA = \OO_Y \oplus \cL\inv
+\cA = \OO_Y \oplus \inverseof{\cL}
 .
 $$
 

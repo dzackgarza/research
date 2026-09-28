@@ -23,7 +23,7 @@ This page records how $T$ and $N$ are computed for an explicit one-parameter fam
 ### Period matrix and period map
 
 Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
-Fix a reference fiber $X = X_{t_0} = \pi\inv(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.
+Fix a reference fiber $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.
 For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\dR}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
 
 1. **The general period matrix and period map:** The *period matrix* of the fiber $X_t$ with respect to the chosen bases is the $p \times k$ matrix of period integrals
@@ -47,11 +47,11 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    $$
    \omega_i \;=\; \int_{\Sigma_i} \Omega \qquad (i = 0, \dots, k-1).
    $$
-   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \CC\units$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space $\PP^{k-1}(\CC)$:
+   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \unitsof{\CC}$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space $\PP^{k-1}(\CC)$:
    $$
    P_X \;=\; [\omega_0 : \dots : \omega_{k-1}] \;\in\; \PP^{k-1}.
    $$
-   When $X = X_t = \pi\inv(t)$ varies in a family $\pi \colon \mathcal{X} \to M$, with $\pi$ determining a locally topologically trivial fibration over a complex quasi-projective variety $M$ and $t \in M$, the association $t \mapsto P_{X_t}$ extends to a holomorphic map
+   When $X = X_t = \inverseof{\pi}(t)$ varies in a family $\pi \colon \mathcal{X} \to M$, with $\pi$ determining a locally topologically trivial fibration over a complex quasi-projective variety $M$ and $t \in M$, the association $t \mapsto P_{X_t}$ extends to a holomorphic map
    $$
    \omega \colon M \too \PP^{k-1}, \qquad t \longmapsto P_{X_t} = [\omega_0(t) : \dots : \omega_{k-1}(t)],
    $$

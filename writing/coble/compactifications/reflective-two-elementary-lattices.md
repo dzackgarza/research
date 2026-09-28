@@ -30,7 +30,7 @@ Reflectivity is a strong restriction: $a\leq r$ always, and a reflective lattice
 ::: {.definition #def:coeven-coodd}
 ### Coeven and coodd lattices
 
-For a $2$-elementary lattice $S$, the **doubled dual** is $S^{\dagger}\da S\dual(2)$, the dual lattice of @thm:dual-geometric-identification with its form scaled by $2$.
+For a $2$-elementary lattice $S$, the **doubled dual** is $S^{\dagger}\da \dualof{S}(2)$, the dual lattice of @thm:dual-geometric-identification with its form scaled by $2$.
 The lattice $S$ is **coeven** if $S^{\dagger}$ is even and **coodd** if $S^{\dagger}$ is odd; these are the cases $\delta = 0$ and $\delta = 1$ of the coparity invariant of the Lattice Theory section.
 A direct sum of $2$-elementary lattices is coeven if and only if every summand is.
 :::
@@ -38,7 +38,7 @@ A direct sum of $2$-elementary lattices is coeven if and only if every summand i
 ::: {.theorem #thm:coeven-duality}
 ### Duality for coeven lattices
 
-If $S$ is even hyperbolic $2$-elementary and coeven with invariants $(r, a, 0)$, then $S^{\dagger} = S\dual(2)$ is again even hyperbolic and coeven, with invariants $(r, r - a, 0)$.
+If $S$ is even hyperbolic $2$-elementary and coeven with invariants $(r, a, 0)$, then $S^{\dagger} = \dualof{S}(2)$ is again even hyperbolic and coeven, with invariants $(r, r - a, 0)$.
 The Coxeter diagrams $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ are dual, in that the short and long roots are interchanged, and this duality induces a bijection between the maximal parabolic subdiagrams of the two, interchanging the odd and even ordinary types of @thm:isotropic-trichotomy.
 :::
 

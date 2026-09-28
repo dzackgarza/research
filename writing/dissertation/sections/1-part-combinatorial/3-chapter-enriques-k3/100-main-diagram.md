@@ -105,17 +105,17 @@ Thus $Q$ and $W$ share the same polytope, but for the two distinct lattices $M_Y
 We briefly recall the standard construction of a double cover of smooth projective surface $Y$ branched over a reduced divisor $B$ as a method of producing (families of) Calabi-Yau varieties (see e.g. [@Par91]).
 Select a line bundle $L$ such that $L^{\tensor 2} \cong \OO_Y(B)$ -- for example, if $B \in |-2K_Y|$, one can take $L = -K_Y$.
 We can write $B$ as the zero divisor of zeros of a section $f \in H^0(Y, L^{\tensor 2})$, and
-define a coherent $\OO_Y$-algebra $\mca = \OO_Y \oplus L\inv,$ where the algebra structure is locally determined by
+define a coherent $\OO_Y$-algebra $\mca = \OO_Y \oplus \inverseof{L},$ where the algebra structure is locally determined by
 
 \begin{align*}
 (o_1 \oplus \ell_1) \cdot (o_2\oplus \ell_2) = (o_1o_2 + \ro{f}{U} \cdot \ell_1\ell_2) \oplus (o_1\ell_2 + o_2\ell_1)z,
 \\
-\qquad o_i \in \OO_Y(U),\, \ell_i \in L\inv(U)
+\qquad o_i \in \OO_Y(U),\, \ell_i \in \inverseof{L}(U)
 \end{align*}
 
-where $z\in H^0(L\inv)$ is a generator of $L\inv$ satisfying $z^2 = f$.
+where $z\in H^0(\inverseof{L})$ is a generator of $\inverseof{L}$ satisfying $z^2 = f$.
 The double cover $\pi: X\to Y$ is then constructed as $X = \Spec_Y(\mca)$; $\pi$ is a finite morphism, it is etale away from $B$, and is ramified to order 2 precisely over $B$.
-The relation $z^2 + f = 0$ is imposed for an $\OO_Y$-module generator $z$ of $L\inv$, and the algebra structure above ensures that global functions on $X$ over an open $U \containedin Y$ are of the form $s_1 + z s_2$ with $s_i \in \OO_Y(U)$ and $z^2 = f|_U$, and the covering involution is locally modeled by $z\mapsto -z$.
+The relation $z^2 + f = 0$ is imposed for an $\OO_Y$-module generator $z$ of $\inverseof{L}$, and the algebra structure above ensures that global functions on $X$ over an open $U \containedin Y$ are of the form $s_1 + z s_2$ with $s_i \in \OO_Y(U)$ and $z^2 = f|_U$, and the covering involution is locally modeled by $z\mapsto -z$.
 By the adjunction formula, one has $K_X = \pi^*\left(K_Y + L\right)$, and so for $L = -K_Y$, and $B \in |-2K_Y|$, we have $K_X = \pi^* (K_Y - K_Y) = \OO_X$ and $X$ is Calabi-Yau.
 
 ##### The main family of K3 surfaces

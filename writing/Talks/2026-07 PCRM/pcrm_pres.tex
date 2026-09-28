@@ -205,9 +205,9 @@ Where
 \rho_T: \Orth(T) \to \Orth(A_T), \qquad h \da e + f \in S_{\En} = U(2) \oplus E_8(2)
 ,\]
 \[
-\Gamma_{T, h} = \rho_T\inv\qty{ \rho_S(\Stab_{\Orth(S)}(h) ) },
+\Gamma_{T, h} = \inverseof{\rho_T}\qty{ \rho_S(\Stab_{\Orth(S)}(h) ) },
 \qquad
-\tilde{\Orth}(T) \da  \rho_T\inv(0)
+\tilde{\Orth}(T) \da  \inverseof{\rho_T}(0)
 .\]
 
 {\tiny
@@ -295,7 +295,7 @@ A \textbf{Coble surface} \cite{Cob19, Oda85, DZ99, DM20} is a smooth, projective
 \[
 h^0(\omega_Y^{-1}) = 0, \,\, h^0(\omega_Y^{-2})\neq 0\qquad \qty{\iff \abs{-K_Y} = \emptyset,\,\, \abs{-2K_Y}\neq \emptyset }
 .\] 
-It is \textit{terminal of K3 type} if $\abs{-2K_Y} \ni C = \sum_{i=1}^n C_i$ with $C_i\cong \PP^1$ and $C_iC_j = -4\delta_{i=j}$. Write $F_{\Co} \da \ts{\text{Coble surfaces } Y}\modiso$.
+It is \textit{terminal of K3 type} if $\abs{-2K_Y} \ni C = \sum_{i=1}^n C_i$ with $C_i\cong \PP^1$ and $C_iC_j = -4\delta_{i=j}$. Write $F_{\Co} \da \isoclasses{\ts{\text{Coble surfaces } Y}}$.
 \end{definition}
 \begin{fact}
 Every Coble is a basic rational surface: $\rho: Y\to \PP^2$ decomposes as a sequence of blowups at $N = 9+n$ points, and 

@@ -6,8 +6,8 @@
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$.
 By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
 Let $\sigma$ be the involution generating the deck transformations of this cover.
-Then the fixed locus $\Fix(\sigma)$ is a union of $n$ smooth rational curves which are precisely the reduced preimages $(f\inv(C_i))_{\mathrm{red}}$, where $C_i$ are the irreducible components of $C$ in $S$.
-By [@CDL25 Def. 5.4.3], the preimages $f\inv(C_i)$ are disjoint $(-2)$-curves and $\Pic(S)$ is a 2-elementary lattice with invariants of the form
+Then the fixed locus $\Fix(\sigma)$ is a union of $n$ smooth rational curves which are precisely the reduced preimages $(\inverseof{f}(C_i))_{\mathrm{red}}$, where $C_i$ are the irreducible components of $C$ in $S$.
+By [@CDL25 Def. 5.4.3], the preimages $\inverseof{f}(C_i)$ are disjoint $(-2)$-curves and $\Pic(S)$ is a 2-elementary lattice with invariants of the form
 $$
 (r,a,\delta)_1 = (10+n, 12-n, \delta)_1
 .
@@ -39,7 +39,7 @@ The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoret
 Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let $s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
 Let
 $$
-\pi\colon X \da \Spec_S\bigl(\OO_S\oplus\cL\inv\bigr)\to S
+\pi\colon X \da \Spec_S\bigl(\OO_S\oplus\inverseof{\cL}\bigr)\to S
 $$
 be the double cover determined by $s$, branched along $B$.
 Then $X$ is a K3 surface, and for divisors $D, D'$ on $S$,
@@ -57,7 +57,7 @@ K_X = \pi^{*}(K_S + \cL) = \pi^{*}(K_S - K_S) = 0
 ,
 $$
 so $\omega_X\cong\OO_X$.
-Pushing forward, $\pi_*\OO_X = \OO_S\oplus\cL\inv = \OO_S\oplus\OO_S(K_S)$, and $\pi$ is finite, so
+Pushing forward, $\pi_*\OO_X = \OO_S\oplus\inverseof{\cL} = \OO_S\oplus\OO_S(K_S)$, and $\pi$ is finite, so
 $$
 H^i(X, \OO_X) = H^i(S, \OO_S)\oplus H^i(S, K_S)
 \qquad\text{for all } i
