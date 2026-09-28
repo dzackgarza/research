@@ -79,7 +79,7 @@ In both cases the two radicals coincide, are written $\operatorname{rad}(M)$, an
 In [@MH73] a module equipped with a perfect form is called an *inner product space*.
 :::
 
-::: {#exm-two-radicals .ex}
+::: {#exm-two-radicals .ex title="Left and right radicals need not agree"}
 **Example.** Let $b$ be the form on $R^{2}$ with Gram matrix $\left(\begin{smallmatrix}1&2\\3&4\end{smallmatrix}\right)$ in the basis $e_1,e_2$.
 Then $b(e_1,w)=w_1+2w_2$ while $b(w,e_1)=w_1+3w_2$, so the two conditions $b(e_1,w)=0$ and $b(w,e_1)=0$ cut out different submodules of $R^{2}$.
 :::

@@ -55,7 +55,7 @@ Its left term is isomorphic to $\operatorname{coker}(f)$ because $g$ is injectiv
 So the primitive embeddings form a subcategory of $\mathbf{Lat}_R$ with the same objects.
 :::
 
-::: {#exm-primitive-and-scaled .ex}
+::: {#exm-primitive-and-scaled .ex title="Primitive versus nonprimitive embeddings"}
 **Example.** Let $U$ be the hyperbolic plane of @def-hyperbolic-plane on $e,f$, let $\langle1\rangle$ be the rank one lattice on $w$ with $b(w,w)=1$, and let $M=U\perp\langle1\rangle$.
 The morphism $e\mapsto e$, $f\mapsto f$ has cokernel $\mathbb Zw$, which is torsion-free, so it is a primitive embedding.
 The map $e\mapsto2e$, $f\mapsto2f$ multiplies pairings by $4$, so it is a morphism $U(4)\to M$ for the twist $U(4)$ of @def-form-twist.

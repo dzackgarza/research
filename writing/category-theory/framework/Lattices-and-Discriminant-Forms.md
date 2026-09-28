@@ -16,7 +16,7 @@ The category $\mathbf{Lat}_R$ is the replete full subcategory of $\mathcal B_{R,
 Freeness holds over a principal ideal domain; a basis is chosen data.
 :::
 
-::: {#exm-subobject-base-change .ex}
+::: {#exm-subobject-base-change .ex title="Base change of a subobject"}
 **Example.** Let $L$ be an integral lattice and let $0\ne v\in L$.
 The inclusion $\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying $\mathbb Z$-module.
 Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars from @def-module-base-change gives the monomorphism
@@ -58,7 +58,7 @@ The twist of @def-form-twist by $-1$ sends $\mathbf{Def}^{+}_R$ to $\mathbf{Def}
 Under the sign convention of @def-definiteness the root lattices lie in $\mathbf{Def}^{-}_{\mathbb Z}$.
 :::
 
-::: {#exm-parabolic-objects .ex}
+::: {#exm-parabolic-objects .ex title="Parabolic forms lie outside the lattice category"}
 **Example.** A parabolic form has signature $(0,n-1,1)$, so its radical is nonzero and it is an object of $\mathcal B_{R,R}$ lying outside $\mathbf{Lat}_R$.
 Take the forms on $\mathbb Z^{2}$ and $\mathbb Z^{3}$ with Gram matrices
 $$
@@ -163,7 +163,7 @@ Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$ in the sense of @def-signature
 The genus of an even 2-elementary lattice is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and if $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine its isometry class [@Nik80, Thm. 3.6.2].
 :::
 
-::: {#exm-a3-not-two-elementary .ex}
+::: {#exm-a3-not-two-elementary .ex title="$A_3$ is not 2-elementary"}
 **Example.** Membership is a condition on the group $A_S$, which the order $|{\operatorname{disc}}\,S|$ alone leaves open.
 In the sign convention of @def-definiteness the root lattice $A_3$ has Gram matrix
 $$
