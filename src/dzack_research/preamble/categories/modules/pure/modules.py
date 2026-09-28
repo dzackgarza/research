@@ -1536,8 +1536,15 @@ class Modules(OwnedCategoryOverBaseRing):
         def is_module(self) -> bool:
             return True
 
-        def is_free(self) -> bool:
-            return False
+        def _freeness_decision(self):
+            return Unknown
+
+        def is_free(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).Free():
+                    return True
+                case _:
+                    return self._freeness_decision()
 
         def is_finitely_generated(self) -> bool:
             return False
@@ -2359,10 +2366,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def extra_super_categories(self):
             return [Modules(self.base_ring()).Projective()]
-
-        class ParentMethods:
-            def is_free(self) -> bool:
-                return True
 
     class Projective(CategoryWithAxiom):
         r"""Direct summands of free modules."""

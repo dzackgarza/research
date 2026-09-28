@@ -1161,7 +1161,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return super().is_torsion_free()
             return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
 
-        def is_free(self) -> bool:
+        def _freeness_decision(self) -> bool:
             r"""Over a PID a finitely generated module is free exactly when it is torsion-free.
 
             This is the structure theorem: the decomposition has no cyclic
