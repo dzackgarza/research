@@ -145,14 +145,6 @@ class OrderedEnumeratedSets(OwnedCategory):
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def __iter__(self):
-            return (self._element_at_function(index) for index in self.index_set())
-
-        def __getitem__(self, position):
-            r"""Return the point at ``position`` directly from the chosen enumeration."""
-            index = self.index_set().ranking_map().inverse()(position)
-            return self._element_at_function(index)
-
         def __contains__(self, element) -> bool:
             if self._contains_function is not None:
                 return bool(self._contains_function(element))

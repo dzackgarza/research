@@ -1468,6 +1468,9 @@ class Sets(OwnedCategory):
                         lambda index: cardinal(self.factor(index).cardinality()),
                     )
                 case _ if self in CoproductsOfSets():
+                    construction_cardinality = self._cardinality_decision()
+                    if construction_cardinality is not Unknown:
+                        return cardinal(construction_cardinality)
                     return _cardinalities().indexed_sum(
                         self.index_set(),
                         lambda index: cardinal(self.cofactor(index).cardinality()),
@@ -2756,7 +2759,7 @@ class _ImageSet(Sets().ObjectType):
             case _:
                 return Unknown
 
-    def cardinality(self) -> Cardinalities.ObjectType:
+    def _cardinality_decision(self) -> Cardinalities.ObjectType | UnknownClass:
         r"""The cardinality of \(f(A)\).
 
         An inverse on the image makes \(f\) a bijection \(A\to f(A)\), so
@@ -2766,12 +2769,8 @@ class _ImageSet(Sets().ObjectType):
         match self.source_set():
             case source if self._image_inverse is not None:
                 return cardinal(source.cardinality())
-            case source:
-                assert source in FiniteSets(), (
-                    f"cannot compute the cardinality of the image {self}: its source {source} is not known to be "
-                    "finite and no inverse on the image was given"
-                )
-                return super().cardinality()
+            case _:
+                return Unknown
 
     @cached_method
     def _distinct_values(self):
@@ -3477,7 +3476,7 @@ class _FiniteWordSet:
                     return Sets().product(indexed_family(positions, lambda _: alphabet))
         super().__init__(family=indexed_family(NN, degree_set), **rest)
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         match self._alphabet.cardinality() == 0:
             case True:
                 return cardinal(1)
