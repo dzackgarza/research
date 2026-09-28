@@ -2215,6 +2215,10 @@ def _initialize_module_mor_parent(
                 selected_presentation_data,
             )
 
+    # Hom_R(M, N) is a module over the center of R.  ``Modules.ParentMethods``
+    # reads that scalar ring from ``_preamble_base_ring``; the Sage Homset
+    # base stays unset.
+    parent._preamble_base_ring = ring.ring_center()
     CategoricalMor.__init__(
         parent,
         mor_family,
@@ -2230,6 +2234,14 @@ class _ModuleMorCommonMethods:
     distinct categories and use this class only to share ordinary module-Mor
     operations.
     """
+
+    def base_ring(self):
+        r"""The center of ``R``, stored by ``_initialize_module_mor_parent``.
+
+        Admission into the placement asks for it before ``Modules`` supplies
+        its own reader of the same datum.
+        """
+        return self._preamble_base_ring
 
     def _element_constructor_(self, images):
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
