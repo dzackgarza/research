@@ -186,7 +186,15 @@ class EnumeratedSets(OwnedCategory):
 
         def order_type(self):
             r"""Return the ordinal order type transported by the ranking map."""
-            return self.ranking_map().codomain().order_type()
+            size = cardinal(self.ranking_map().codomain().cardinality())
+            if size.is_finite():
+                return ordinal(size.finite_value())
+            assert size.is_countably_infinite(), (
+                f"the standard counting order of {self} has cardinality {size}, not finite or countably infinite"
+            )
+            from dzack_research.preamble.categories.sets.cardinals import omega
+
+            return omega(0)
 
         def _ranking_isomorphism(self, position_of, point_at):
             r"""Build the represented enumeration from its mutually inverse directions."""
@@ -268,25 +276,9 @@ class AugmentedSimplexCategory(OwnedCategory):
                 **rest,
             )
 
-        def order_type(self) -> Ordinal:
-            r"""The ordinal order type ``n`` of this standard well-order.
-
-            The finite ordinal ``{0, ..., n-1}`` is the von Neumann ordinal
-            ``n``, so its order type is the datum it was built from.
-            """
-            return ordinal(self._size)
-
-        def __iter__(self):
-            return (NN(index) for index in range(self._size))
-
-        def __getitem__(self, position):
-            r"""Return the point at ``position`` without enumerating preceding points."""
-            position = int(position)
-            if position < 0 or position >= self._size:
-                raise IndexError(
-                    f"position {position} is out of range for {self}, which has {self._size} points"
-                )
-            return NN(position)
+        def _cardinality_decision(self):
+            r"""The represented finite ordinal has exactly ``size`` points."""
+            return cardinal(self._size)
 
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
@@ -1448,8 +1440,6 @@ class Sets(OwnedCategory):
             )
 
             match self:
-                case _ if self in AugmentedSimplexCategory():
-                    return self.order_type().cardinality()
                 case _ if self in OrderedEnumeratedSets():
                     return cardinal(self.index_set().cardinality())
                 case _ if self in PowerSets():
@@ -3750,12 +3740,6 @@ class NaturalNumberSets(OwnedCategory):
         def ranking_map(self) -> CategoricalIsomorphism:
             r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
             return self._ranking_isomorphism(lambda value: int(self(value)), self)
-
-        def order_type(self):
-            r"""The order type of the natural numbers, namely ``omega``."""
-            from dzack_research.preamble.categories.sets.cardinals import omega
-
-            return omega(0)
 
         def zero(self) -> NN.ElementType:
             return self(0)
