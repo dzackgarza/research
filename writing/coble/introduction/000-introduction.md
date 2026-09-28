@@ -1,6 +1,6 @@
 # Overview
 
-::: {.Remark}
+::: {.Remark title="Coble surfaces, their K3 covers, and the compactification problem"}
 
 A Coble surface is a smooth projective rational surface $S$ with
 $\abs{-K_S} = \emptyset$ but $\abs{-2K_S}\neq \emptyset$.
@@ -43,7 +43,7 @@ Toward this end, we turn to the stable pair compactifications of Kollár,
 Shepherd-Barron, and Alexeev [@KS88; @Ale96; @Kol23a].
 :::
 
-::: {.Remark}
+::: {.Remark title="KSBA and semitoroidal compactifications provide complementary boundary descriptions"}
 
 The search for modular compactifications of moduli spaces is a central problem
 in algebraic geometry.
@@ -116,7 +116,7 @@ To this end, we prove the following:
 Schematic of a Baily--Borel compactification: the shaded arithmetic quotient together with the boundary strata adjoined at its cusps.
 :::
 
-::: {.Warning}
+::: {.Warning title="The Baily--Borel schematic still needs its intended geometric labels confirmed"}
 This schematic is carried over from the earlier draft, where it was drawn but never captioned; the caption above describes only what is drawn. Confirm what the two components and the interior lens are intended to denote.
 :::
 
@@ -139,7 +139,7 @@ in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of
 surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
 :::
 
-::: {.Remark}
+::: {.Remark title="The comparison uses folding, integral-affine geometry, and recognizable divisors"}
 
 This result is made possible by recent advances in [@AE22; @AEH24] on
 compactifications of K3 surfaces with nonsymplectic automorphisms, along with

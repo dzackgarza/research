@@ -84,7 +84,7 @@ $$
 $$
 :::
 
-::: {.Remark}
+::: {.Remark title="The general double-cover calculation recovers the Coble K3 cover"}
 
 Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational
 curve of $\abs{-2K_S}$ recorded in \longref{lem:rational_sextic_ten_nodes} and the
