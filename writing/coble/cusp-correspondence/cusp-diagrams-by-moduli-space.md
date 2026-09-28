@@ -75,7 +75,7 @@ This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_
 
 ## Sterk's moduli space and the K3 cusps
 
-::: {.Remark}
+:::: {.Remark}
 
 We recall Sterk's cusp diagram for $\fent$:
 
@@ -98,9 +98,9 @@ We have the following divisibilities in various lattices:
 | 5          | $2e + 2f + \overline{\alpha}_1$  | 2                      | 1                                |
 
 : Isotropic vectors in $\fent$ and their divisibilities.
-:::
+::::
 
-::: {.Remark}
+:::: {.Remark}
 
 We recall the cusp diagram for $F_{(2,2,0)}$:
 
@@ -111,4 +111,4 @@ We recall the cusp diagram for $F_{(2,2,0)}$:
 
 Cusp diagram for $F_{(2,2,0)}$.
 :::
-:::
+::::

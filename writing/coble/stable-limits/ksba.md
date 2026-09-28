@@ -83,7 +83,7 @@ Because the polarized arithmetic group $\gent$ has finite index in the full Enri
 Until root-orbit uniqueness is established for $\gent$, the polarized Coble locus is therefore described as a union of *branchwise* quotients, one attached to each orbit of admissible Coble roots, rather than as a single global quotient.
 :::
 
-::: {.Remark}
+:::: {.Remark}
 
 Each branch carries its own arithmetic group.
 Fixing an admissible Coble root $\delta$ -- a primitive $(-2)$-vector in the polarized Enriques period lattice -- the group governing the corresponding branch is the image in $\Orth(\delta^\perp)$ of the stabilizer of $\bZ\delta$ inside $\gent$; this is the minimal group making the period-domain inclusion
@@ -112,9 +112,9 @@ with index at most $2$, the two differing exactly by whether $-1$ on $\gens{\del
 admitted. The stabilizer of the *line* is the right object: it is what acts on the period
 domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
 :::
-:::
+::::
 
-::: {.Question #que:coble_root_orbit_uniqueness}
+:::: {.Question #que:coble_root_orbit_uniqueness}
 
 Is the orbit of admissible Coble roots under $\gent$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
@@ -124,7 +124,7 @@ The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the
 Enriques group $\Gamma_\En$. It does not settle the corresponding question for the
 finite-index subgroup $\Gamma_{\En,2}$, which is what the polarized problem needs.
 :::
-:::
+::::
 
 ## The KSBA stable pair
 

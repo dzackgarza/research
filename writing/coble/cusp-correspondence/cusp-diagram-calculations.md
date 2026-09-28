@@ -1,6 +1,6 @@
 # Cusp Diagrams
 
-::: {.Remark}
+:::: {.Remark}
 
 We recall the mirror move algorithm from [@AE22].
 We have Nikulin's 2-elementary diagram:
@@ -12,7 +12,7 @@ We have Nikulin's 2-elementary diagram:
 
 White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 0,1$.
 :::
-:::
+::::
 
 ## Mirror moves {#sec:mirror-moves}
 

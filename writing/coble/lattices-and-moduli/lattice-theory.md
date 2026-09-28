@@ -203,7 +203,7 @@ G_U = \begin{bmatrix}0&1\\1&0\end{bmatrix}
 $$
 :::
 
-::: {.Remark title="ADE lattices"}
+:::: {.Remark title="ADE lattices"}
 
 Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root lattice of the respective type.
 By convention, we take the negative definite twists of these lattices.
@@ -216,7 +216,7 @@ Of particular importance to us is the $E_8$ lattice associated to the following 
 
 The Dynkin diagram $E_{8}$.
 :::
-:::
+::::
 
 ::: {.Remark title="The lattice $\latI_{p, q}$"}
 

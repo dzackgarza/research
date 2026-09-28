@@ -35,7 +35,7 @@ is the space $\fentwo$ appearing below.
 
 ## The Noether–Lefschetz locus for Enriques surfaces
 
-::: {.Remark title="The canonical cover and its involutions"}
+:::: {.Remark title="The canonical cover and its involutions"}
 
 The canonical double cover $\pi\colon X\to Z$ of a degree-$2$ polarized Enriques
 surface yields a K3 surface $X$ carrying two commuting involutions: the
@@ -48,7 +48,7 @@ The numerical polarization and the $\Num$ marking are those of [@CDL25]; the can
 cover with its two involutions, the map $j\colon \fentwo\to \fttz$, the locus
 $\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AEGS25].
 :::
-:::
+::::
 
 ::: {.Definition #def:nl-locus-enriques title="Noether–Lefschetz locus $\mathrm{NL}_{S_{\mathrm{En}}}$"}
 

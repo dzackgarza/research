@@ -1,6 +1,6 @@
 # The classifying map and the Enriques involution
 
-::: {.Remark title="Orientation"}
+:::: {.Remark title="Orientation"}
 
 The results collected here are the intended culmination of the compactification program for $\fentwo$: the classifying morphism $\phi$ from the normalized Noether--Lefschetz closure $\normalize{B}$ to the KSBA compactification of the polarized moduli space should be shown to be an isomorphism, so that the geometric KSBA limits are identified with the explicitly constructible semitoroidal boundary.
 The three ingredients are a *global extension of the Enriques involution* over $B$, a *finiteness statement* for $\phi$, and the *application of Zariski's Main Theorem* that combines them.
@@ -12,7 +12,7 @@ Zariski's Main Theorem itself is a classical, proven theorem; only its applicati
 ::: {.Remark}
 The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
 :::
-:::
+::::
 
 ## Global extension of the Enriques involution
 
@@ -42,7 +42,7 @@ $$
 from the normalization $B^\nu$ of the Noether--Lefschetz closure is finite.
 :::
 
-::: {.Remark title="Proposed combinatorial argument"}
+:::: {.Remark title="Proposed combinatorial argument"}
 
 The source note proposes to establish finiteness by a combinatorial comparison of semifans.
 The normal KSBA compactification induces its own semifans $\semifan{G}_k$, which are coarsenings of the folded Coxeter semifans $\semifan{F}_k$.
@@ -60,7 +60,7 @@ It is a different statement from the finiteness of the period map $\fco\to \fen$
 The two share the criterion -- a proper morphism with finite fibres is finite [@stacks-02LS] -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
 The no-coarsening statement is moreover the same phenomenon as [the no-moduli-loss conjecture](../stable-limits/ksba.md#conj:no_moduli_loss), which is itself open.
 :::
-:::
+::::
 
 ## Zariski's Main Theorem and the classifying isomorphism
 
