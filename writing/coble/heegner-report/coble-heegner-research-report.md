@@ -138,12 +138,12 @@ An Enriques surface is a smooth projective surface $Z$ with $2K_Z\sim0$, $K_Z\no
 The word **Coble surface** is used in two closely related senses in the literature.
 To remove ambiguity, this report uses the following notation.
 
-::: {.Definition #definition-singular-coble}
+::: {.Definition #definition-singular-coble title="Singular Coble quotients"}
 **Definition (singular Coble quotient).**  A *singular Coble quotient* is a normal rational surface $V^\sharp$ obtained as the quotient of a K3 surface $X^\sharp$ with one $A_1$-singularity by a nonsymplectic involution that fixes the singular point and is otherwise free in codimension one.
 The quotient has one singularity of type $\frac{1}{4}(1,1)$.
 :::
 
-::: {.Definition #definition-resolved-coble}
+::: {.Definition #definition-resolved-coble title="Resolved Coble surfaces"}
 **Definition (resolved Coble surface).**  The *resolved Coble surface* $\widetilde V$ is the minimal resolution of $V^\sharp$.
 It is a smooth rational surface satisfying
 
@@ -262,7 +262,7 @@ T_{\mathrm{En}}\cong U\oplus U(2)\oplus E_8(2).
 
 The degree-$4$ K3 polarization is a vector $H\in S_{\mathrm{dP}}\subset S_{\mathrm{En}}$ with $H^2=4$.
 
-::: {.Theorem #theorem-aegs-rigidity}
+::: {.Theorem #theorem-aegs-rigidity title="AEGS rigidity of the Enriques--del Pezzo embedding chain"}
 **Theorem (AEGS embedding rigidity).**  The primitive embedding chain
 
 \[
@@ -342,7 +342,7 @@ f(x,y)
 
 There are no linear terms.
 
-::: {.Lemma #lemma-node-condition}
+::: {.Lemma #lemma-node-condition title="The invariant local equation has a node exactly when its quadratic part is nondegenerate"}
 **Lemma (node condition).**  The curve $B=(f=0)$ has an ordinary node at $p$ if and only if $a_{00}=0$ and $a_{11}^2-4a_{20}a_{02}\ne0$.
 :::
 
@@ -389,7 +389,7 @@ commute.
 The first is the del Pezzo deck involution.
 The second fixes the $A_1$-point.
 
-::: {.Proposition #prop-local-quarter}
+::: {.Proposition #prop-local-quarter title="The local Coble quotient is a $\frac14(1,1)$ singularity"}
 **Proposition (local Coble quotient).**  The quotient $X^\sharp/\iota_{\mathrm{Co}}$ has a singularity of type $\frac{1}{4}(1,1)$ at the image of the node.
 :::
 
@@ -412,7 +412,7 @@ For $a_{00}\ne0$, the branch curve avoids the fixed point $p$, the K3 cover is s
 If the branch curve avoids all four $\tau$-fixed points, then the same fixed-point calculation shows that $\iota_{\mathrm{Co}}$ is fixed-point free.
 Its quotient is an Enriques surface.
 
-::: {.Proposition #prop-explicit-smoothing}
+::: {.Proposition #prop-explicit-smoothing title="Varying the constant term smooths the Coble quotient to Enriques quotients"}
 **Proposition (explicit Coble-to-Enriques smoothing).**  The invariant $(4,4)$ family obtained by varying $a_{00}$ gives an explicit equivariant smoothing of the singular Coble quotient to Enriques quotients.
 :::
 
@@ -447,7 +447,7 @@ Then $\alpha^2=-2$, $\eta^2=2$, and $(\alpha,\eta)=0$.
 
 The notation $\eta$ is deliberately used here: the letter $H$ is reserved for the degree-$4$ K3 polarization in the AEGS construction.
 
-::: {.Proposition #prop-coble-transcendental}
+::: {.Proposition #prop-coble-transcendental title="The Coble anti-invariant lattice"}
 **Proposition (Coble anti-invariant lattice).**  The orthogonal complement of $\alpha$ in $T_{\mathrm{En}}$ is
 
 \[
@@ -469,7 +469,7 @@ The stated invariants follow directly.
 Let $I_{\mathrm{En}}$ be the Enriques involution on the K3 lattice, acting as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$.
 Let $w_\alpha$ be the reflection in the root $\alpha$.
 
-::: {.Construction #construction-reflection-twist}
+::: {.Construction #construction-reflection-twist title="The Coble involution as a reflection twist"}
 **Construction (reflection twist).**  Define
 
 \[
@@ -479,7 +479,7 @@ I_{\mathrm{Co}}:=w_\alpha I_{\mathrm{En}}.
 
 Since $I_{\mathrm{En}}(\alpha)=-\alpha$, the two factors commute.
 
-::: {.Proposition #prop-coble-eigenspaces}
+::: {.Proposition #prop-coble-eigenspaces title="Eigenspaces of the Coble reflection twist"}
 **Proposition (eigenspaces of the reflection twist).**  One has
 
 \[
@@ -584,7 +584,7 @@ The class $H$ satisfies $H^2=4$ and $H\cdot E=0$.
 
 With the natural descent linearization, there is a class $L\in\operatorname{Pic}(\widetilde V)$ such that $\psi^*L=H$.
 
-::: {.Proposition #prop-quasipolarization}
+::: {.Proposition #prop-quasipolarization title="The descended degree-two class is a quasipolarization"}
 **Proposition (degree-$2$ quasipolarization).**  The class $L$ satisfies $L^2=2$ and $L\cdot C=0$.
 
 Hence $L$ is not ample on $\widetilde V$.
@@ -607,7 +607,7 @@ Since $K_{\widetilde X}\sim0$ and $\widetilde V$ is rational, $C\sim-2K_{\wideti
 
 Moreover, $2C^2=(2E)^2=-8$ and $C^2=-4$.
 
-::: {.Proposition #prop-antibicanonical-system}
+::: {.Proposition #prop-antibicanonical-system title="The anti-bicanonical system on the one-node Coble locus"}
 **Proposition (anti-bicanonical system on the one-node locus).**  For the resolved one-node Coble surface,
 
 \[
@@ -634,7 +634,7 @@ At the node, the total ramification divisor contains the exceptional curve with 
 Let $R_{\widetilde V}$ be the quotient divisor on $\widetilde V$.
 Then $\psi^*R_{\widetilde V}=\widetilde R$.
 
-::: {.Proposition #prop-ramification-numerics}
+::: {.Proposition #prop-ramification-numerics title="Class and numerical invariants of the descended ramification divisor"}
 **Proposition (ramification class and numerical invariants).**  One has
 
 \[
@@ -687,7 +687,7 @@ It follows that $(R^\sharp)^2=8$.
 Locally, $R^\sharp$ is the image of the union of the coordinate axes $(uv=0)$ in the quotient singularity $\frac{1}{4}(1,1)$.
 Its local class is $2$ in $\operatorname{Cl}(\frac{1}{4}(1,1))\cong\mathbb Z/4$, so it is $\mathbb Q$-Cartier of index $2$.
 
-::: {.Definition #definition-open-stable-coble-pair}
+::: {.Definition #definition-open-stable-coble-pair title="Open degree-two stable Coble pairs"}
 **Definition (open stable Coble pair).**  An open degree-$2$ stable Coble pair is
 
 \[
@@ -724,7 +724,7 @@ Pulling back further to $\mathbb A^2$ is useful for local log calculations, but 
 The autonomous strategy should begin with a stack of labeled K3-cover data.
 The following definition is a mathematical specification; representability and equivalence with the singular pair moduli are required theorems.
 
-::: {.Definition #definition-direct-cover-datum}
+::: {.Definition #definition-direct-cover-datum title="Direct resolved Coble cover data"}
 **Definition (direct resolved Coble cover datum).**  Over a scheme $S$, a direct resolved degree-$2$ Coble cover datum consists of
 
 \[
@@ -757,7 +757,7 @@ The chamber and the effective root are part of the data because an abstract latt
 
 ## The singular-pair moduli problem {#sec-singular-moduli}
 
-::: {.Definition #definition-direct-singular-datum}
+::: {.Definition #definition-direct-singular-datum title="Direct singular Coble data"}
 **Definition (direct singular Coble datum).**  Over $S$, a direct singular Coble datum consists of
 
 \[
@@ -794,7 +794,7 @@ This theorem is the direct replacement for silently identifying a Heegner period
 Fix an embedded root $\alpha\in T_{\mathrm{En}}$ and put $T_{\mathrm{Co}}=\alpha^\perp$.
 There are at least four natural groups.
 
-::: {.Definition #definition-unpolarized-direct-group}
+::: {.Definition #definition-unpolarized-direct-group title="The direct unpolarized Coble group"}
 **Definition (direct unpolarized Coble group).**  Dropping the degree-$4$ polarization and the del Pezzo involution from the labeled datum gives the candidate direct unpolarized group
 
 \[
@@ -809,7 +809,7 @@ The corresponding geometric monodromy group is defined from the direct unpolariz
 The expected equality $\Gamma_{\mathrm{Co}}^{\mathrm{dir}}=O^+(T_{\mathrm{Co}})$ is compatible with the full stabilizer lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
 :::
 
-::: {.Definition #definition-hodge-group}
+::: {.Definition #definition-hodge-group title="The Hodge-theoretic Heegner group"}
 **Definition (Hodge-theoretic Heegner group).**
 
 \[
@@ -823,7 +823,7 @@ The expected equality $\Gamma_{\mathrm{Co}}^{\mathrm{dir}}=O^+(T_{\mathrm{Co}})$
 
 This group is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
 
-::: {.Definition #definition-direct-group}
+::: {.Definition #definition-direct-group title="The direct labeled centralizer group"}
 **Definition (direct labeled centralizer group).**
 
 \[
@@ -837,7 +837,7 @@ This group is the natural group of a fixed normalized Heegner component once the
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
 
-::: {.Definition #definition-geometric-monodromy}
+::: {.Definition #definition-geometric-monodromy title="The geometric monodromy group"}
 **Definition (geometric monodromy group).** $\Gamma_{\mathrm{Co},2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation of the connected direct moduli stack of polarized Coble data on the local system $T_{\mathrm{Co}}$.
 :::
 
@@ -879,7 +879,7 @@ The gluing subgroup in $A_{\mathbb Z\alpha}\oplus A_{T_{\mathrm{Co}}}$ is genera
 
 The class $\eta/2$ is the characteristic element of the discriminant form of $T_{\mathrm{Co}}\cong I_{2,9}(2)$ and is fixed by every isometry.
 
-::: {.Lemma #lemma-full-stabilizer}
+::: {.Lemma #lemma-full-stabilizer title="The full orthogonal stabilizer of the Coble root"}
 **Lemma (full orthogonal stabilizer).**  Restriction gives an exact sequence
 
 \[
@@ -993,7 +993,7 @@ Since scaling a form does not change its integral orthogonal group, $O(T_{\mathr
 
 Standard transitivity results for indefinite odd unimodular forms imply the following [@Wall62; @DK13].
 
-::: {.Theorem #theorem-unpolarized-cusps}
+::: {.Theorem #theorem-unpolarized-cusps title="The unpolarized Coble quotient has one zero-cusp and one one-cusp"}
 **Theorem (unpolarized Coble cusps).**  The quotient $O^+(T_{\mathrm{Co}})\backslash\mathbb D_{\mathrm{Co}}$ has one orbit of primitive isotropic lines and one orbit of primitive isotropic planes.
 For representatives $e$ and $J$,
 
@@ -1139,7 +1139,7 @@ r_0^2=\cdots=r_7^2=-4,
 r_8^2=-2.
 \]
 
-::: {.Theorem #theorem-unpolarized-coxeter}
+::: {.Theorem #theorem-unpolarized-coxeter title="The fundamental Coxeter chamber of $I_{1,8}(2)$"}
 **Theorem (unpolarized Coble Coxeter chamber).**  A fundamental chamber for the reflection group of $I_{1,8}(2)$ is defined, for
 
 \[
@@ -1188,7 +1188,7 @@ The rank-$8$ elliptic subdiagrams are listed in @tbl-unpolarized-elliptic.
 Let $a$ be a $(-2)$ root in a hyperbolic lattice $M$, and let $b$ be another negative wall normal.
 The normal inside $a^\perp$ to the intersection $b^\perp\cap a^\perp$ is the primitive vector proportional to the orthogonal projection of $b$ to $a^\perp$.
 
-::: {.Construction #construction-wall-link}
+::: {.Construction #construction-wall-link title="Orthogonal wall links"}
 **Construction (orthogonal wall link).**  Define
 
 \[
@@ -1295,7 +1295,7 @@ The direct Coble theory should preserve this dictionary but must add the data of
 
 ## The Coble integral-affine package {#sec-coble-affine-package}
 
-::: {.Definition #definition-coble-affine-package}
+::: {.Definition #definition-coble-affine-package title="Polarized Coble integral-affine packages"}
 **Definition (candidate polarized Coble integral-affine package).**  A Coble integral-affine package is a tuple
 
 \[
@@ -1502,7 +1502,7 @@ The theorem must determine cusp by cusp whether the irrelevant reflection group 
 
 The Heegner-restriction strategy uses the following standard toric fact.
 
-::: {.Lemma #lemma-subtorus-normalization}
+::: {.Lemma #lemma-subtorus-normalization title="Normalization of a subtorus closure by the induced fan"}
 **Lemma (normalization of a subtorus closure).**  Let $N\subset M$ be a saturated sublattice of cocharacter lattices, let $T_N\subset T_M$ be the corresponding subtorus, and let $X_\Sigma$ be a toric variety for a fan $\Sigma\subset M_\mathbb R$.
 The normalization of the closure of $T_N$ in $X_\Sigma$ is the toric variety associated with the induced fan $\Sigma|_{N_\mathbb R} =\{\sigma\cap N_\mathbb R:\sigma\in\Sigma\}$, with the induced lattices saturated.
 :::
