@@ -995,7 +995,7 @@ class _GroupEngine:
             case _:
                 return _engine_abelianity(self._engine)
 
-    def is_arithmetic_group(self):
+    def _arithmeticity_decision(self):
         return True if _is_arithmetic_witness(self._engine) else Unknown
 
 
@@ -2912,6 +2912,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return Unknown
 
         def is_arithmetic_group(self):
+            return self._arithmeticity_decision()
+
+        def _arithmeticity_decision(self):
             return Unknown
 
         def is_topological_group(self) -> bool:
