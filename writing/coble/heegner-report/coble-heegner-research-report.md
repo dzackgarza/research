@@ -712,7 +712,7 @@ For a general member, $C+R_{\widetilde V}$ is simple normal crossing and the coe
 Thus the resolved pair is klt, and so is the singular pair.
 If the descent of $L$ is ample, then $K_{V^\sharp}+\epsilon R^\sharp$ is ample.
 
-::: {.Warning #warning-index-one-cover}
+::: {.Warning #warning-index-one-cover title="The canonical index-one cover is the $A_1$ cover"}
 **Warning (index-one cover).**  The canonical index-one cover of the local surface singularity $\frac{1}{4}(1,1)$ is the $A_1$ singularity.
 Pulling back further to $\mathbb A^2$ is useful for local log calculations, but it is not the index-one cover.
 :::
@@ -1024,7 +1024,7 @@ Thus reduction modulo the lattice gives maps
 
 and analogous maps for isotropic planes and incident flags.
 
-::: {.Warning #warning-finite-shadow}
+::: {.Warning #warning-finite-shadow title="Finite discriminant orbits do not classify integral cusps"}
 **Warning (finite shadow versus integral cusp).**  These maps need not be bijective.
 The integral parabolic stabilizer can have a proper image in the finite stabilizer of the reduced flag.
 Consequently, an orbit calculation in $O(A_{T_{\mathrm{Co}}})$ does not classify Baily--Borel cusps without a separate integral lifting theorem.
@@ -1201,7 +1201,7 @@ The formula is integral and defines the correct hyperplane in $a^\perp$.
 It is a linear-algebra statement.
 It does not imply that $b_{\operatorname{link}}$ is a root of the orthogonal lattice.
 
-::: {.Warning #warning-wall-root}
+::: {.Warning #warning-wall-root title="Restricted walls require an integral root theorem"}
 **Warning (restricted wall versus reflection wall).**  A hyperplane obtained by slicing an ambient Coxeter chamber can fail to be the mirror of an integral reflection in the sublattice.
 Conversely, the orthogonal sublattice can have reflective roots whose mirrors are invisible in the ambient root system.
 :::
@@ -1472,7 +1472,7 @@ C_{\mathrm{gen}}
 Its $W$-translates form the generalized Coxeter semifan.
 Geometrically, a root is relevant only if crossing its wall changes the stable pair after the relative Proj.
 
-::: {.Warning #warning-relevance}
+::: {.Warning #warning-relevance title="Coble wall relevance is geometric"}
 **Warning (relevance is geometric).**  In the autonomous Coble theory, a root cannot be declared relevant merely because it lies on the boundary of an ambient Enriques or K3 diagram.
 Relevance must be characterized by the Coble package $(R_{\mathrm{IA}},E_{\mathrm{IA}})$ and the resulting stable contraction.
 :::
@@ -1901,146 +1901,146 @@ The following warnings are stated in self-contained form and cross-reference the
 
 ## Surface-theoretic warnings {#sec-surface-footguns}
 
-::: {.Warning #warn-coble-enriques}
+::: {.Warning #warn-coble-enriques title="A Coble resolution is not an Enriques surface"}
 **Warning (Coble is not Enriques).**  The smooth resolution $\widetilde V$ is rational and has non-torsion canonical class.
 The singular surface $V^\sharp$ is $\mathbb Q$-Calabi--Yau only after contracting the anti-bicanonical $(-4)$-curve.
 Arguments using $K_Z$ torsion on an Enriques surface cannot be transferred to $\widetilde V$.
 :::
 
-::: {.Warning #warn-singularity-index}
+::: {.Warning #warn-singularity-index title="Quotient order and canonical index differ"}
 **Warning (order versus canonical index).**  The notation $\frac{1}{4}(1,1)$ records a quotient group of order $4$.
 The Cartier index of the canonical class is $2$.
 :::
 
-::: {.Warning #warn-normality}
+::: {.Warning #warn-normality title="Generic Coble quotients are normal"}
 **Warning (normality versus boundary nonnormality).**  The generic $\frac{1}{4}(1,1)$ Coble quotient is normal.
 Irreducible nonnormal stable surfaces can occur only through conductor self-identifications or other boundary phenomena.
 :::
 
-::: {.Warning #warn-anticanonical-ramification}
+::: {.Warning #warn-anticanonical-ramification title="The anti-bicanonical branch curve is not the stable divisor"}
 **Warning (anti-bicanonical curve versus stable divisor).**  The divisor $C\in|-2K_{\widetilde V}|$ is the branch curve of the Coble cover on the resolution.
 The stable divisor is $R^\sharp$, the descended del Pezzo ramification divisor.
 The two are related by the crepant formula in @sec-canonical-contraction but are not equal.
 :::
 
-::: {.Warning #warn-quasi-ample}
+::: {.Warning #warn-quasi-ample title="The natural degree-two class is only a quasipolarization before contraction"}
 **Warning (quasipolarization versus polarization).**  The natural degree-$2$ class on $\widetilde V$ is orthogonal to $C$ and is not ample.
 It becomes ample only after contracting the complete null locus.
 Any moduli group that purports to remember an ample class on $\widetilde V$ is using the wrong object.
 :::
 
-::: {.Warning #warn-special-null}
+::: {.Warning #warn-special-null title="Special Heegner intersections can enlarge the null locus"}
 **Warning (special Heegner intersections).**  On the generic one-node locus, $C$ is the only null curve.
 On higher Heegner intersections additional curves may be null and must also be contracted before the singular degree-$2$ polarization becomes ample.
 :::
 
-::: {.Warning #warn-two-heegner}
+::: {.Warning #warn-two-heegner title="Coble and unigonal Heegner divisors are distinct"}
 **Warning (Coble versus unigonal Heegner divisors).**  The Coble locus is the $(-2)$-Heegner arrangement associated with a fixed node and a $\frac{1}{4}(1,1)$ quotient.
 The unigonal locus is a distinct $(-4)$-Heegner divisor whose projective model uses $\mathbb P(1,1,2)$.
 The two constructions must not be interchanged.
 :::
 
-::: {.Warning #warn-ramification-source}
+::: {.Warning #warn-ramification-source title="The del Pezzo involution defines the stable divisor"}
 **Warning (which involution defines the stable divisor).**  In AEGS and in the proposed Coble theory, the stable divisor is the divisorial fixed locus of the del Pezzo involution.
 The Enriques involution is fixed-point free on the generic Enriques K3 cover, and the Coble involution fixes the exceptional curve only on the resolution.
 Neither of these is the source of $R^\sharp$.
 :::
 
-::: {.Warning #warn-quarter-not-ade}
+::: {.Warning #warn-quarter-not-ade title="The Coble quotient singularity is not ADE"}
 **Warning (the Coble singularity is not ADE).**  The singularity $\frac{1}{4}(1,1)$ is a non-Gorenstein cyclic quotient singularity.
 ADE arguments apply only after passing to the canonical $A_1$ cover or to the resolution, and the boundary coefficients must be tracked through that passage.
 :::
 
 ## Group and period warnings {#sec-group-footguns}
 
-::: {.Warning #warn-group-fiat}
+::: {.Warning #warn-group-fiat title="The four Coble arithmetic groups require comparison theorems"}
 **Warning (group by fiat).**  The Hodge stabilizer image, centralizer image, congruence inverse image, and geometric monodromy group are distinct definitions; see @sec-four-groups.
 Equality must be proved.
 Choosing one definition because it makes the desired compactification statement true is circular.
 :::
 
-::: {.Warning #warn-isometry-rigidity}
+::: {.Warning #warn-isometry-rigidity title="Abstract lattice isometry does not imply labeled rigidity"}
 **Warning (abstract isometry is not labeled rigidity).**  An isomorphism $T_{\mathrm{Co}}\cong I_{2,9}(2)$ does not determine the embedding into $L_{K3}$, the degree-$4$ class, the exceptional root, the second involution, or the chamber.
 Strategy B requires the labeled rigidity theorem of @sec-labeled-lattice-data.
 :::
 
-::: {.Warning #warn-domain-quotient}
+::: {.Warning #warn-domain-quotient title="Domain inclusions do not automatically descend to arithmetic quotients"}
 **Warning (domain inclusion versus quotient morphism).**  An inclusion of type-IV domains does not by itself descend to arithmetic quotients.
 The groups must arise from compatible subgroups of a common orthogonal group.
 This issue controls the diagram in @sec-period-diagram.
 :::
 
-::: {.Warning #warn-direct-factorization}
+::: {.Warning #warn-direct-factorization title="A direct Coble construction does not by itself prove the Heegner comparison"}
 **Warning (direct construction versus Heegner theorem).**  A direct Coble period quotient inside the K3 involution space is a separate theorem until its group, labeled embedding, and universal family are shown to factor through the Enriques Heegner construction.
 Strategy B must be followed by Target theorem B.
 :::
 
-::: {.Warning #warn-cover-smoothing}
+::: {.Warning #warn-cover-smoothing title="Smoothing the K3 cover need not preserve the quotient involution"}
 **Warning (smoothing the cover versus smoothing the quotient).**  An arbitrary smoothing of the nodal K3 cover need not carry the node-fixing involution.
 The explicit invariant $(4,4)$ family of @sec-equivariant-smoothing does give an equivariant smoothing; no general conclusion should be drawn without a family-level extension theorem.
 :::
 
 ## Cusp and Coxeter warnings {#sec-cusp-footguns}
 
-::: {.Warning #warn-orbit-groups}
+::: {.Warning #warn-orbit-groups title="Coble orbit problems depend on the acting group"}
 **Warning (four orbit problems).**  Orbits under $O(T_{\mathrm{Co}})$, $O^+(T_{\mathrm{Co}})$, $\Gamma_{\mathrm{Co},2}$, and $O(A_{T_{\mathrm{Co}}})$ can all differ.
 A claim about one group cannot be transferred to another without an exact sequence, a stabilizer-image calculation, or an integral transitivity theorem.
 :::
 
-::: {.Warning #warn-cusp-map}
+::: {.Warning #warn-cusp-map title="Cusp maps require common embedded isotropic representatives"}
 **Warning (cusp maps require embedded representatives).**  A permutation of cusp labels is not a proof of a Baily--Borel map.
 One must exhibit an isotropic line or plane inside the common embedded lattice chain and compute its divisibility and arithmetic orbit in both groups.
 :::
 
-::: {.Warning #warn-rectangles}
+::: {.Warning #warn-rectangles title="Double-rectangle Enriques cusps cannot carry the Coble root"}
 **Warning (AEGS Figure 4 border types).**  The double-rectangle Enriques $1$-cusps are $12,13,14,15,245$; the single-rectangle cusps are $34,35,45,55$.
 The former map to the segment-flipping quotient lattice $E_8(2)$ and cannot contain a $(-2)$ Coble root in the negative quotient.
 Earlier assignments that treated $245$ as a Coble image are incompatible with this lattice obstruction.
 :::
 
-::: {.Warning #warn-wall-slice}
+::: {.Warning #warn-wall-slice title="A wall slice is not yet a Coxeter diagram"}
 **Warning (wall slice is not Coxeter diagram).**  The construction in @sec-orthogonal-link gives an arrangement of restricted hyperplanes.
 It becomes a Coxeter chamber only after root integrality, simplicity, completeness, and arithmetic-index statements are proved.
 :::
 
-::: {.Warning #warn-parabolic-exhaustion}
+::: {.Warning #warn-parabolic-exhaustion title="Visible parabolic subdiagrams do not prove exhaustion"}
 **Warning (parabolic inspection is not exhaustion).**  Type II rays are arithmetic orbits of maximal parabolic subdiagrams of the complete chamber.
 Listing visually apparent affine subdiagrams is insufficient unless a Vinberg computation or classification proves that no others occur.
 :::
 
-::: {.Warning #warn-gram}
+::: {.Warning #warn-gram title="The square-diagram thick edge has Gram entry four"}
 **Warning (square-diagram Gram entry).**  The black nodes $\alpha_{20}$ and $\alpha_{21}$ are joined by a thick edge and have inner product $4$, not $2$.
 Any computation based on the latter value has the wrong rank.
 :::
 
-::: {.Warning #warn-correct-ambient}
+::: {.Warning #warn-correct-ambient title="The reflective diagrams live in the hyperelliptic degree-four K3 space"}
 **Warning (the correct reflective ambient space).**  The reflective cusp diagrams used by AEGS belong to the hyperelliptic degree-$4$ K3 involution space $\mathcal F_{(2,2,0)}$, not to the full quartic K3 moduli space $\mathcal F_4$.
 Any direct folding strategy must explain its relation to $\mathcal F_{(2,2,0)}$ before using the ambient diagrams.
 :::
 
 ## Integral-affine and stable-pair warnings {#sec-affine-footguns}
 
-::: {.Warning #warn-affine-algebraic}
+::: {.Warning #warn-affine-algebraic title="Affine symmetry does not imply an algebraic involution"}
 **Warning (affine symmetry versus algebraic involution).**  An involution of a dual complex predicts but does not prove an involution of the degeneration.
 One must impose the correct limiting-period condition and choose invariant component and gluing moduli; see @sec-algebraic-extension.
 :::
 
-::: {.Warning #warn-crossed-node}
+::: {.Warning #warn-crossed-node title="A crossed node encodes reflection and affine collision data"}
 **Warning (crossed node).**  A crossed Coxeter node is not merely a diagram symmetry.
 It includes a root reflection, forces the corresponding root coordinate to vanish, and is realized by an $I_1$--$I_1$ collision to an $I_2$ affine singularity.
 :::
 
-::: {.Warning #warn-fixed-edge}
+::: {.Warning #warn-fixed-edge title="A fixed affine edge need not support ramification"}
 **Warning (fixed affine edge need not support ramification).**  In the non-simple AEGS cusp, a fixed bottom edge has no support in the ramification polarization.
 Coble relevance must likewise be read from the divisor package, not from fixed loci alone.
 :::
 
-::: {.Warning #warn-dlt-stable}
+::: {.Warning #warn-dlt-stable title="The dlt quotient is not yet the KSBA stable model"}
 **Warning (dlt model versus stable model).**  The quotient dlt model can contain $R^\sharp$-trivial curves, components, and conductor strata.
 The KSBA model is obtained only after the relative Proj of @sec-relative-proj.
 :::
 
-::: {.Warning #warn-restrict-semifan}
+::: {.Warning #warn-restrict-semifan title="Restricting a semifan does not automatically compactify the restricted locus"}
 **Warning (restriction versus compactification of the restriction).**  The intersection of an ambient semifan with a Heegner subspace is not automatically the semitoroidal normalization of the Heegner closure.
 The arithmetic, normalization, gluing, and no-further-coarsening statements of @sec-restriction-not-formal are indispensable.
 :::
