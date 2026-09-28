@@ -1,6 +1,6 @@
 # The Heegner line and the Coble arithmetic group {#sec:heegner-line}
 
-::: {.Remark}
+::: {.Remark title="Fixing the Coble Heegner vector and its induced arithmetic subgroup"}
 
 The Coble locus is the $(-2)$ Heegner divisor $\cH_{-2}$ inside the Enriques
 period domain, and the Coble period lattice is the orthogonal complement of a
@@ -62,7 +62,7 @@ $\tfrac12\delta$ to $\tfrac12\zeta$, whose component in $A_{\delta^{\perp}}$ is
 the stated class.
 :::
 
-::: {.Remark}
+::: {.Remark title="The standard Coble embedding is the explicit Heegner complement"}
 
 The primitive embedding $T_\Co\injects T_\En$ of
 [the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta) sends the generator $h$ of $\gens{2}$ to
@@ -121,7 +121,7 @@ The double coset set controlling the split of the full $\Orth(T_\En)$-orbit by
 the preimage subgroup is therefore a singleton, and the orbit does not split.
 :::
 
-::: {.Remark}
+::: {.Remark title="Heegner-line uniqueness is distinct from isotropic cusp enumeration"}
 
 The $(-2)$ divisor $\cH_{-2}$ is the discriminant divisor of the Enriques period
 space, whose points parameterize quotients of nodal K3 surfaces by an involution
@@ -356,7 +356,7 @@ $T_\Co$ and $S_\Co$; conversely an isometry preserving both eigenlattices
 commutes with $\theta_\Co$ on each of them and hence on $\lkt$.
 :::
 
-::: {.Remark}
+::: {.Remark title="The folding involution is determined by the primitive gluing"}
 
 [The folding-involution proposition](#prop:theta-co-exists) settles the existence of the folding involution
 $\theta$ as a lattice isometry, and does so before any $22\times 22$ matrix is
