@@ -1556,6 +1556,16 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _:
                     return self._finite_generation_decision()
 
+        def _finite_presentation_decision(self):
+            return Unknown
+
+        def is_finitely_presented(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).FinitelyPresented():
+                    return True
+                case _:
+                    return self._finite_presentation_decision()
+
         def is_framed_module(self) -> bool:
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
             return self.has_selected_module_resolution()
@@ -2147,9 +2157,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return _cokernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
-            def is_finitely_presented(self) -> bool:
-                return True
-
             def tor(self, other, degree=0):
                 r"""Return ``Tor_degree(self, other)`` from the selected free resolution."""
                 from dzack_research.preamble.categories.modules.derived_functors import _tor
