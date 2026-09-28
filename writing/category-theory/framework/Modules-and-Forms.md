@@ -2,8 +2,7 @@
 
 Fix a commutative ring $R$.
 
-::: {#def-modules-over-ring}
-## Modules over a ring
+::: {#def-modules-over-ring title="Modules over a ring"}
 
 For a ring $A$, write $A\text{-}\mathbf{Mod}$ for the category of left $A$-modules.
 A right $A$-module is a left $A^{\mathrm{op}}$-module.
@@ -17,8 +16,7 @@ When $A$ is commutative, the identity $A=A^{\mathrm{op}}$ identifies left and ri
 For a general ring, an equivalence between left and right module categories is additional data; it does not follow merely from notation.
 :::
 
-::: {#def-module-base-change}
-## Base change
+::: {#def-module-base-change title="Base change"}
 
 Let $\varphi\colon A\to B$ be a homomorphism of commutative rings.
 Extension and restriction of scalars define an adjunction
@@ -56,8 +54,7 @@ If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated
 Over a general ring, a torsion subcategory is used only after a torsion theory has been specified.
 :::
 
-::: {#def-based-module}
-## Bases
+::: {#def-based-module title="Bases"}
 
 Fix a set $I$.
 A *basis* of an $R$-module $M$ indexed by $I$ is an isomorphism $e\colon R^{(I)}\xrightarrow{\ \sim\ }M$, and a *based* module is a pair $(M,e)$.
@@ -76,8 +73,7 @@ is faithful.
 It is not full: the hom-set from $(R,\operatorname{id})$ to itself is $\{\operatorname{id}\}$, while $\operatorname{Hom}_R(R,R)=R$.
 :::
 
-::: {#prp-basis-is-structure}
-## A basis is structure
+::: {#prp-basis-is-structure title="A basis is structure"}
 
 The fibre of $U_{\mathrm{bas}}$ over $M$ is the discrete category on $\operatorname{Bas}_I(M)$.
 
@@ -91,8 +87,7 @@ Dropping the requirement that $e$ be an isomorphism and asking only that it be s
 A basis is the case of a generating frame whose structure map is an isomorphism.
 :::
 
-::: {#def-free-module-orientation}
-## Orientation of a free module
+::: {#def-free-module-orientation title="Orientation of a free module"}
 
 Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.
 The top exterior power $\det(M)\coloneqq\bigwedge^n M$ is a free $R$-module of rank $1$.

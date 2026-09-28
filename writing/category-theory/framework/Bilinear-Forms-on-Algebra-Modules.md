@@ -6,8 +6,7 @@ The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear map
 
 ## Associative unital $R$-algebras {#sec-r-algebras}
 
-::: {#def-r-algebra}
-## Associative unital $R$-algebras
+::: {#def-r-algebra title="Associative unital $R$-algebras"}
 
 An *associative unital $R$-algebra* is a monoid in $(R\text{-}\mathbf{Mod},\otimes_R,R)$: an $R$-module $A$ together with $R$-linear maps
 $$
@@ -29,8 +28,7 @@ The algebra $A$ is already an $R$-module; $U$ names that functor.
 
 ## Module bilinear forms and algebra bilinear forms {#sec-two-homs}
 
-::: {#def-module-bilinear-form}
-## Module bilinear forms
+::: {#def-module-bilinear-form title="Module bilinear forms"}
 
 A *module bilinear form* on an $R$-module $M$, with values in $R$, is an element of
 $$
@@ -40,8 +38,7 @@ The tensor product is the tensor product of $R$-modules.
 By the tensor-hom adjunction this Hom-module is $\operatorname{Bil}_{R,R}(M)$ (@def-form-presheaves).
 :::
 
-::: {#def-algebra-bilinear-form}
-## Algebra bilinear forms
+::: {#def-algebra-bilinear-form title="Algebra bilinear forms"}
 
 Let $A$ be an associative unital $R$-algebra.
 The tensor product $A\otimes_R A$ in $R\text{-}\mathbf{Alg}$ is the monoid in $R\text{-}\mathbf{Mod}$ whose underlying module is $U(A)\otimes_R U(A)$ and whose multiplication is
@@ -57,8 +54,7 @@ The tensor product in this Hom is the tensor product of $R$-algebras.
 
 The forgetful functor $U$ sends an algebra bilinear form $\phi$ to a module bilinear form $U(\phi)$ on $U(A)$, using $U(A\otimes_R A)\cong U(A)\otimes_R U(A)$.
 
-::: {#def-algebra-generating-set}
-## Algebra generating sets and module bases
+::: {#def-algebra-generating-set title="Algebra generating sets and module bases"}
 
 Let $A$ be an associative unital $R$-algebra.
 The free unital associative $R$-algebra $R\langle S\rangle$ on a set $S$ represents $A\mapsto\mathbf{Set}(S,A)$: a function $S\to A$ of underlying sets extends uniquely to a homomorphism $R\langle S\rangle\to A$ in $R\text{-}\mathbf{Alg}$.
@@ -77,8 +73,7 @@ The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and 
 The Gram matrix of a module bilinear form on a free module is @prp-gram-matrix-free-module, and its change under a change of basis is @prp-gram-congruence.
 For an algebra $A$ free as an $R$-module on $E$, both apply to $U(A)$ with the module basis $E$.
 
-::: {#prp-eval-via-algebra-map}
-## Evaluation through algebra generators
+::: {#prp-eval-via-algebra-map title="Evaluation through algebra generators"}
 
 Let $S$ generate $A$ as a unital $R$-algebra, and let $v,w\in A$.
 Choose elements $f_v,f_w\in R\langle S\rangle$ with images $v,w$ under $R\langle S\rangle\to A$.
@@ -103,8 +98,7 @@ $$
 equivalently $B(xy,z)=B(x,yz)$ for all $x,y,z\in A$.
 :::
 
-::: {#thm-associative-is-trace}
-## Associative forms and multiplication
+::: {#thm-associative-is-trace title="Associative forms and multiplication"}
 
 Let $A$ be an associative unital $R$-algebra and $B$ a module bilinear form on $U(A)$.
 The following are equivalent:
@@ -126,8 +120,7 @@ The identification $\varepsilon(x)=B(x,1_A)$ uses the unit of $A$.
 A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def-polarization: both adjoint maps $A\to\operatorname{Hom}_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 
-::: {#prp-structure-constants}
-## Structure constants
+::: {#prp-structure-constants title="Structure constants"}
 
 Suppose $A$ is free on $E=\{e_i\}_{i\in I}$, and write $e_j e_k=\sum_i\mu^i_{jk}e_i$ with finite support in $i$.
 Associativity of $B$ is equivalent to
@@ -143,8 +136,7 @@ The linear form $\varepsilon$ is determined by the family $(\varepsilon(e_i))_{i
 
 ## Restriction to algebra generators {#sec-generators-do-not-determine}
 
-::: {#exm-polynomial-forms}
-## Forms on $R[x]$
+::: {#exm-polynomial-forms title="Forms on $R[x]$"}
 
 Let $A=R[x]$, generated as a unital $R$-algebra by $\{x\}$ and free as an $R$-module on $\{x^n:n\ge 0\}$.
 Let $B_1$ be the zero module bilinear form, and let $B_2$ be the module bilinear form with $B_2(x^i,x^j)=5$ if $(i,j)=(2,2)$ and $B_2(x^i,x^j)=0$ otherwise.
@@ -161,8 +153,7 @@ The values of $B$ on pairs drawn from a finite algebra generating set therefore 
 
 ## Algebra bilinear forms {#sec-algebra-morphisms-tensor}
 
-::: {#prp-characters-pair}
-## Classification
+::: {#prp-characters-pair title="Classification"}
 
 Let $A$ be an object of $R\text{-}\mathbf{CAlg}$.
 The tensor product $A\otimes_R A$ of @def-algebra-bilinear-form is the coproduct of $A$ with itself in $R\text{-}\mathbf{CAlg}$, with inclusions $a\mapsto a\otimes 1_A$ and $b\mapsto 1_A\otimes b$.
@@ -206,8 +197,7 @@ $$
 
 **Remark.** If $\phi\circ\tau=\phi$ for the flip $\tau(a\otimes b)=b\otimes a$, then $\chi_L=\chi_R$.
 
-::: {#exm-two-characters-polynomials}
-## Evaluation at two points
+::: {#exm-two-characters-polynomials title="Evaluation at two points"}
 
 Let $A=R[x]$ and define $\phi(f\otimes g)=f(0)\,g(1)$.
 Multiplicativity is $\phi(fh\otimes gk)=f(0)h(0)\,g(1)k(1)=\phi(f\otimes g)\phi(h\otimes k)$, so $\phi$ is an algebra bilinear form on $A$.

@@ -7,8 +7,7 @@ A $\Sigma$-algebra in $\mathbf{Set}$ is a set $X$ together with one function $X^
 A homomorphism is a function preserving every operation.
 Equations between $\Sigma$-terms define a full subcategory of $\Sigma$-algebras.
 
-::: {#def-operation-categories}
-## Magmas
+::: {#def-operation-categories title="Magmas"}
 
 A *magma* is a set $X$ with a binary operation $\mu\colon X\times X\to X$.
 A magma homomorphism $f\colon X\to Y$ satisfies
@@ -19,8 +18,7 @@ The resulting category is denoted $\mathbf{Mag}$.
 The forgetful functor $\mathbf{Mag}\to\mathbf{Set}$ is faithful and is not full.
 :::
 
-::: {#def-operation-axioms}
-## Associativity and commutativity
+::: {#def-operation-axioms title="Associativity and commutativity"}
 
 A magma is *associative* if
 $$
@@ -32,8 +30,7 @@ It is *commutative* if $\mu=\mu\circ\tau$, where $\tau(x,y)=(y,x)$.
 These are isomorphism-invariant properties of magmas and define replete full subcategories of $\mathbf{Mag}$.
 :::
 
-::: {#def-semigroup-monoid}
-## Semigroups and monoids
+::: {#def-semigroup-monoid title="Semigroups and monoids"}
 
 A *semigroup* is an associative magma.
 A *monoid* is a tuple $(X,\mu,e)$ consisting of a semigroup and a chosen element $e\in X$ such that
@@ -47,8 +44,7 @@ The functor $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full: a sem
 Thus the unit is chosen structure, while the unit laws are properties of the pointed semigroup.
 :::
 
-::: {#def-group}
-## Groups
+::: {#def-group title="Groups"}
 
 A *group* is a monoid $(G,\mu,e)$ for which every $g\in G$ has an inverse.
 The inverse is unique and is preserved by every monoid homomorphism.
@@ -61,8 +57,7 @@ Commutative semigroups, commutative monoids, and abelian groups are obtained by 
 Their inclusions are replete and full.
 The category of abelian groups is equivalent to $\mathbb Z\text{-}\mathbf{Mod}$.
 
-::: {#exm-ring}
-## Rings
+::: {#exm-ring title="Rings"}
 
 A ring is a tuple
 $$
@@ -95,8 +90,7 @@ Combining two object properties uses the intersection described in [Joins, meets
 
 ## Free algebras {#sec-free-algebras}
 
-::: {#def-free-algebra}
-## The free algebra on a set
+::: {#def-free-algebra title="The free algebra on a set"}
 
 Let $\Sigma$ be a one-sorted algebraic signature, let $E$ be a set of equations between $\Sigma$-terms, and write $\Sigma\text{-}\mathbf{Alg}_E$ for the full subcategory of $\Sigma$-algebras satisfying $E$, with forgetful functor $U\colon\Sigma\text{-}\mathbf{Alg}_E\to\mathbf{Set}$.
 

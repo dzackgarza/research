@@ -46,8 +46,7 @@ $$
 These definitions specialize in pointed spaces to the usual homotopy fiber and homotopy cofiber.
 :::
 
-::: {#def-loops-suspension}
-## Loops and suspension
+::: {#def-loops-suspension title="Loops and suspension"}
 
 For an object $X$ of $\mathcal C$, loops are defined by the pullback square
 
@@ -111,8 +110,7 @@ $$
 \operatorname{Map}_*(X,\Omega Y).
 $$
 
-::: {#def-fiber-sequence}
-## Fiber sequences
+::: {#def-fiber-sequence title="Fiber sequences"}
 
 A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
 Applying homotopy groups gives the long exact sequence.
@@ -138,8 +136,7 @@ X\xrightarrow{\;f\;}Y\longrightarrow
 $$
 each stage being the fiber or cofiber of the preceding morphism [@nlab:fiber_sequence].
 
-::: {#def-homotopy-groups}
-## Homotopy groups of a pointed space
+::: {#def-homotopy-groups title="Homotopy groups of a pointed space"}
 
 Let $\mathcal S_*$ be the $\infty$-category of pointed spaces.
 For $(X,x)\in\mathcal S_*$ and $n\geq0$, set
