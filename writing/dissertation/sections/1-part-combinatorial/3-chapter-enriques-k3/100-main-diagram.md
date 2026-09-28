@@ -246,7 +246,7 @@ Here,
 
 - $\psi': X \to Z'\da  X/\inik$ is the quotient by the Nikulin involution $\inik$, where $Z'$ is a singular K3 surface with (at least) $8A_1$ singularities.
 
-This diagram has been well-studied in the literature, see e.g. [@Cos83; @CD89; @Hor78a; @Enr07].
+This diagram has been well-studied in the literature; see e.g. [@Cos83; @CD89; @Hor78a; @Enr07].
 The GIT quotient
 $$
 \gitcpt{ \mcm_{\En, 2} } \da \PP^{12} \gitquot D_4 \ltimes (\CCstar)^2,

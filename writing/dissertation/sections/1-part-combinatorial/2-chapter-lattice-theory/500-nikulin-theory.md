@@ -92,7 +92,7 @@ If $S$ and $L$ are even lattices and $L$ is unimodular, then $\Emb(S, L)$ is a f
 :::
 
 :::{.proof}
-By [@Nik79a, Prop. 1.6.1], such a primitive embedding $\iota: S \injects L$ is determined by an isometry $\gamma: A_{S} \iso A_{T}(-1)$, two such primitive embeddings are equivalent if and only if $\gamma_{1}$ is conjugate to $\gamma_{2}$ under $\Orth\left(A_{T}\right)$, and $\iota_{1}\left(S_{1}\right) \iso \iota_{2}\left(S_{2}\right)$ are equivalent primitive sublattices if $\exists(\phi, \psi) \in \Orth(S) \oplus \Orth(T)$ such that $\left.\gamma_{1} \circ \phi\right|_{A_{S}}=\left.\psi\right|_{A_{T}} \circ \gamma_{2}$.
+By [@Nik79a, Prop. 1.6.1], such a primitive embedding $\iota: S \injects L$ is determined by an isometry $\gamma: A_{S} \iso A_{T}(-1)$. Two such primitive embeddings are equivalent if and only if $\gamma_{1}$ is conjugate to $\gamma_{2}$ under $\Orth\left(A_{T}\right)$, and $\iota_{1}\left(S_{1}\right) \iso \iota_{2}\left(S_{2}\right)$ are equivalent primitive sublattices if $\exists(\phi, \psi) \in \Orth(S) \oplus \Orth(T)$ such that $\left.\gamma_{1} \circ \phi\right|_{A_{S}}=\left.\psi\right|_{A_{T}} \circ \gamma_{2}$.
 Since $A_{S}, A_{T}$ are finite abelian groups, $\Isom\left(A_{S}, A_{T}\right)$ is a finite set, as is $\Orth\left(A_{T}\right)$. Moreover, noting that if $S_{1} \iso S_{2}$ then $A_{S_{1}} \iso A_{S_{2}}$ and thus $\Emb\left(S_{1}, L\right) \cong \Emb\left(S_{2}, L\right)$, so $\Emb(S, L)$ only depends on the isometry class of $S$. Since gen $(S)$ is a finite set, there are only finitely many isometry classes of $S$, so the class group $\cl(S)$ is finite and thus $\Emb(S, L)$ a finite set.
 :::
 
@@ -234,7 +234,7 @@ $$
 We first claim $U(2) \injects U(2) \oplus E_8(2)$ is unique.
 By untwisting, it suffices to show that $U\injects U\oplus E_8$ is unique.
 Write $U = S = \II_{1,1}$ and $U \oplus E_8 = L = \II_{1, 9}$, noting that both are the unique even unimodular lattices with those signatures.
-The existence of an embedding $S\injects L$, is clear, since one can simply take $x\mapsto (x, 0)$ and check that the cokernel is isometric to $E_8$ and thus free.
+The existence of an embedding $S\injects L$ is clear, since one can simply take $x\mapsto (x, 0)$ and check that the cokernel is isometric to $E_8$ and thus free.
 For uniqueness, let $T\da S^{\perp L}$: then $T$ is an even unimodular lattice of signature $(0, 8)$, and thus isometric to $E_8 = \II_{0, 8}$, which is unique up to isometry.
 So if $j_i: S_i \injects L$ are any two primitive embeddings, there are decompositions $L \cong S_1 \oplus T_1$ and $L\cong S_2 \oplus T_2$ where $S_1\cong S_2 \cong \II_{1,1}$ and $T_1\cong T_2 \cong \II_{0, 8}$ are both unique up to isometry.
 So there exist isometries $\phi_S: S_1\to S_2$ and $\phi_T: T_1\to T_2$, and thus an isometry $\phi_S \oplus \phi_T: S_1\oplus T_1\to S_2\oplus T_2$.

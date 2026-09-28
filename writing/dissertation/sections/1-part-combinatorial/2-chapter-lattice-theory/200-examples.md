@@ -14,7 +14,7 @@ We have $\disc(U) = -1$, and thus $U \cong U\dual$, hence $U$ is unimodular and 
 This can also be computed directly: if $v\in U\dual$, then $v = ae + bf$ where $a,b\in \QQ$.
 We then must have $vw\in \ZZ$ for all $w\in U$, and in particular this must hold for $w=e$ and $w=f$.
 We compute $ev = b$ and $fv = a$, so $a,b\in \ZZ$.
-Both $e$ and $f$ are primitive -- for examples, the embedding $\gen{e}\injects U$ is primitive, since $U/\gens{e} \iso \gens{f}$ is free.
+Both $e$ and $f$ are primitive -- for example, the embedding $\gen{e}\injects U$ is primitive, since $U/\gens{e} \iso \gens{f}$ is free.
 The full set of primitive isotropic vectors is $\ts{\pm e, \pm f}$.
 To see this, let $v=ae + bf$ and compute $v^2 = (a e + b f)^2 = 2ab$.
 Thus, $v$ is isotropic if and only if $ab = 0$, implying $v = a e$ or $v = b f$ for some $a,b \in \ZZ$. For $v$ to additionally be primitive, we must have $a = \pm 1$ or $b = \pm 1$.
@@ -216,7 +216,6 @@ By the classification theorem of such lattices, if $L$ is any odd indefinite uni
 For $p, q \in \ZZ_{\geq 0}$, define
 $$
 \II_{p, q} =
-\II_{p, q} =
 \begin{cases}
   E_{8}^{\frac{p-q}{8}} \oplus U^{q}, & p-q \geq 0 \textand 8|(p-q) \\
   E_{8}^{\frac{q-p}{8}} \oplus U^{p}, & p-q < 0 \textand 8|(q-p)
@@ -257,7 +256,7 @@ $$
 \da
 \gens{-2 d} \oplus U^{2} \oplus E_{8}^{ m}, \qquad \lkttd \da \lkttd^{(2)}
 ,$$
-the degree 2d K3 lattices that appear in the study the moduli spaces $\ftd$ of K3 surfaces with a polarization of degree $2d$ and similar moduli problems. The lattice $\lkttd$, corresponding to the $m=2$ case, models the orthogonal complement in $\lkt$ of a polarization $h$ of degree $2d$.
+the degree 2d K3 lattices that appear in the study of the moduli spaces $\ftd$ of K3 surfaces with a polarization of degree $2d$ and similar moduli problems. The lattice $\lkttd$, corresponding to the $m=2$ case, models the orthogonal complement in $\lkt$ of a polarization $h$ of degree $2d$.
 We also recall that the Enriques lattice is defined as
 
 \begin{align*}
