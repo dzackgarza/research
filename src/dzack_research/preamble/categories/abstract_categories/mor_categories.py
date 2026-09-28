@@ -534,6 +534,10 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     def mor_family(self) -> _MorCategoryOf:
         return self._family
 
+    def is_endomorphism_set(self) -> bool:
+        r"""Expose the MorCategories operation across the enriched-Mor runtime boundary."""
+        return MorCategories.ParentMethods.is_endomorphism_set(self)
+
     @property
     def _MorCategory(self) -> type[_MorCategoryOf]:
         # The Mor objects and their family are mutually recursive types.
@@ -1301,6 +1305,11 @@ class MorCategories(OwnedCategoryBase):
 
         witness = Sets().an_object()
         return Sets().Mor(witness, witness)
+
+    class ParentMethods:
+        def is_endomorphism_set(self) -> bool:
+            r"""Whether this fixed Mor is End_C(A) = Hom_C(A,A)."""
+            return self.domain_object() is self.codomain_object()
 
     def __contains__(self, candidate: Any) -> bool:
         r"""Whether ``candidate`` is a fixed Mor category.

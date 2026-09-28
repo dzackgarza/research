@@ -3767,10 +3767,6 @@ class Mors(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
-    class ParentMethods:
-        def is_endomorphism_set(self) -> bool:
-            return self.domain() is self.codomain()
-
 
 class PartiallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a partial order.

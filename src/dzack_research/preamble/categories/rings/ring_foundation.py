@@ -385,9 +385,6 @@ class RngMor(CategoricalMor):
     def __call__(self, datum):
         return self._element_constructor_(datum)
 
-    def is_endomorphism_set(self):
-        return self.domain() is self.codomain()
-
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RngMorphism)
 
@@ -522,9 +519,6 @@ class RingMor(CategoricalMor):
 
     def __call__(self, datum):
         return self._element_constructor_(datum)
-
-    def is_endomorphism_set(self):
-        return self.domain() is self.codomain()
 
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RingMorphism)
