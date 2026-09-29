@@ -1,7 +1,7 @@
 # Generating families, presentations, and finiteness {#sec-generators-presentations}
 
 Fix a commutative ring $R$.
-The isomorphism-invariant properties of $R$-modules used below are @def-module-subcategories.
+The isomorphism-invariant properties of $R$-modules used below are @def:module-subcategories.
 Whether a lift along a forgetful functor is a property or a chosen structure is decided by @def-property-structure-stuff.
 
 ## Generating frames {#sec-generating-frames}
@@ -53,14 +53,14 @@ $$
 The two categories answer different questions.
 The frame-preserving one classifies a chosen frame as structure, by @prp-generating-frame-is-structure.
 The coordinatized one is the setting for matrix calculus: a morphism there has a matrix relative to the two chosen frames, and change of frame acts by the congruence of @prp-gram-congruence.
-The basis case of the pair is @def-based-module and @prp-basis-is-structure.
+The basis case of the pair is @def:based-module and @prop:basis-is-structure.
 :::
 
 ::: {#def-cyclic-module .def title="Cyclic and finitely generated modules"}
 
 An $R$-module $M$ is *cyclic* if it admits a generating frame indexed by a one-element set, and *finitely generated* if it admits one indexed by a finite set.
 A cyclic module is isomorphic to $R/\operatorname{Ann}_R(x)$ for the image $x$ of the standard generator, and the cyclic modules form a replete full subcategory of the finitely generated ones.
-Finite generation is the property recorded in @def-module-subcategories: it asserts that the set of finite generating frames on $M$ is nonempty, and it retains none of the data of a chosen frame.
+Finite generation is the property recorded in @def:module-subcategories: it asserts that the set of finite generating frames on $M$ is nonempty, and it retains none of the data of a chosen frame.
 :::
 
 ::: {#def-finite-module .def title="Finiteness of the underlying set"}

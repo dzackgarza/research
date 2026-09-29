@@ -273,7 +273,7 @@ Let $F$ be an ordered field and let $b$ be a symmetric bilinear form on a finite
 Write $p$ for the greatest dimension of a subspace on which $b$ is positive definite, $q$ for the greatest dimension of a subspace on which $b$ is negative definite, and $r=\dim\operatorname{rad}(V)$.
 The triple $(p,q,r)$ is the *signature* of $b$.
 
-For an $R$-module with form and a ring embedding $\sigma\colon R\hookrightarrow\mathbb R$, the signature of $(M,b)$ at $\sigma$ is the signature of the base change along $\sigma$ of @def-module-base-change.
+For an $R$-module with form and a ring embedding $\sigma\colon R\hookrightarrow\mathbb R$, the signature of $(M,b)$ at $\sigma$ is the signature of the base change along $\sigma$ of @def:module-base-change.
 For $R=\mathbb Z$ there is one such embedding and the qualifier is omitted.
 
 For a nondegenerate form $r=0$, and the signature is then written as the pair $(p,q)$.

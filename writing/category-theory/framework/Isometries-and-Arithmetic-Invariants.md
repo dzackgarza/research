@@ -131,7 +131,7 @@ s_v\colon L_K\longrightarrow L_K,
 \qquad
 s_v(x)=x-\frac{2\,b_K(x,v)}{q(v)}\,v,
 $$
-on the base change $L_K$ of @def-module-base-change.
+on the base change $L_K$ of @def:module-base-change.
 
 It sends $v$ to $-v$, fixes $v^{\perp}$ pointwise, and squares to the identity.
 It preserves $b_K$: writing $c=2b_K(x,v)/q(v)$ and $d=2b_K(y,v)/q(v)$,

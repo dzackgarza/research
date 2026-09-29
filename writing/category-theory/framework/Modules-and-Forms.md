@@ -2,7 +2,7 @@
 
 Fix a commutative ring $R$.
 
-::: {#def-modules-over-ring .def title="Modules over a ring"}
+::: {.definition #def:modules-over-ring title="Modules over a ring"}
 
 For a ring $A$, write $A\text{-}\mathbf{Mod}$ for the category of left $A$-modules.
 A right $A$-module is a left $A^{\mathrm{op}}$-module.
@@ -16,7 +16,7 @@ When $A$ is commutative, the identity $A=A^{\mathrm{op}}$ identifies left and ri
 For a general ring, an equivalence between left and right module categories is additional data; it does not follow merely from notation.
 :::
 
-::: {#def-module-base-change .def title="Base change"}
+::: {.definition #def:module-base-change title="Base change"}
 
 Let $\varphi\colon A\to B$ be a homomorphism of commutative rings.
 Extension and restriction of scalars define an adjunction
@@ -38,7 +38,7 @@ For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as $b_B(c\otimes x,
 
 ## Module properties {#sec-module-properties}
 
-::: {#def-torsion-pair .def title="Hereditary torsion pairs"}
+::: {.definition #def:torsion-pair title="Hereditary torsion pairs"}
 Let $\mathcal A$ be an abelian category.
 A *torsion pair* on $\mathcal A$ is a pair $(\mathcal T,\mathcal F)$ of replete full subcategories such that
 $$
@@ -56,7 +56,7 @@ For every ring $R$, the category $R\text{-}\mathbf{Mod}$ is abelian [@stacks-0AZ
 In this text, a *torsion subcategory* of $R\text{-}\mathbf{Mod}$ means the torsion class $\mathcal T$ of a specified hereditary torsion pair unless another structure is named explicitly.
 :::
 
-::: {#def-module-subcategories .def title="Standard module subcategories"}
+::: {.definition #def:module-subcategories title="Standard module subcategories"}
 The following isomorphism-invariant properties define replete full subcategories of $R\text{-}\mathbf{Mod}$:
 
 - finitely generated: some $R^n\twoheadrightarrow M$ is surjective;
@@ -68,10 +68,10 @@ The following isomorphism-invariant properties define replete full subcategories
 - finitely generated projective: both of the first two conditions hold.
 
 If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated by a nonzero element of $R$, and *torsion-free* when multiplication by every nonzero element of $R$ is injective.
-Over a general ring, no torsion subcategory is implicit in $R$ alone; it is used only after the data of @def-torsion-pair or another explicitly named localization structure have been specified.
+Over a general ring, no torsion subcategory is implicit in $R$ alone; it is used only after the data of @def:torsion-pair or another explicitly named localization structure have been specified.
 :::
 
-::: {#def-based-module .def title="Bases"}
+::: {.definition #def:based-module title="Bases"}
 
 Fix a set $I$.
 A *basis* of an $R$-module $M$ indexed by $I$ is an isomorphism $e\colon R^{(I)}\xrightarrow{\ \sim\ }M$, and a *based* module is a pair $(M,e)$.
@@ -90,21 +90,21 @@ is faithful.
 It is not full: the hom-set from $(R,\operatorname{id})$ to itself is $\{\operatorname{id}\}$, while $\operatorname{Hom}_R(R,R)=R$.
 :::
 
-::: {#prp-basis-is-structure .prop title="A basis is structure"}
+::: {.proposition #prop:basis-is-structure title="A basis is structure"}
 
 The fibre of $U_{\mathrm{bas}}$ over $M$ is the discrete category on $\operatorname{Bas}_I(M)$.
 
 An object of that fibre is a pair $\bigl((N,f),\varphi\bigr)$ with $\varphi\colon N\xrightarrow{\ \sim\ }M$, and a morphism to $\bigl((N',f'),\varphi'\bigr)$ is a morphism $u$ of $R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I$ with $\varphi'u=\varphi$.
 Sending $\bigl((N,f),\varphi\bigr)$ to the basis $\varphi f\in\operatorname{Bas}_I(M)$ identifies the objects of the fibre with $\operatorname{Bas}_I(M)$, and the condition $\varphi'u=\varphi$ together with $u=f'f^{-1}$ reads $\varphi'f'=\varphi f$, so a morphism of the fibre exists exactly between objects with equal associated basis, and is then unique.
 
-By @def-property-structure-stuff a faithful functor with discrete fibres presents structure: a basis is a chosen object of the fibre, while freeness of @def-module-subcategories is the property that the fibre be nonempty for some $I$.
+By @def-property-structure-stuff a faithful functor with discrete fibres presents structure: a basis is a chosen object of the fibre, while freeness of @def:module-subcategories is the property that the fibre be nonempty for some $I$.
 The simply transitive $\operatorname{Aut}_R(R^{(I)})$-action above is the action on that fibre, and a construction defined on a based module is stated together with its transformation rule under that action.
 
 Dropping the requirement that $e$ be an isomorphism and asking only that it be surjective gives the generating frames of @def-generating-frame, for which the same argument runs and reaches the same conclusion by @prp-generating-frame-is-structure.
 A basis is the case of a generating frame whose structure map is an isomorphism.
 :::
 
-::: {#def-free-module-orientation .def title="Orientation of a free module"}
+::: {.definition #def:free-module-orientation title="Orientation of a free module"}
 
 Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.
 The top exterior power $\det(M)\coloneqq\bigwedge^n M$ is a free $R$-module of rank $1$.

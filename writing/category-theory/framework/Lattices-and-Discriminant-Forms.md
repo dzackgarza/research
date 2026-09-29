@@ -19,7 +19,7 @@ Freeness holds over a principal ideal domain; a basis is chosen data.
 ::: {#exm-subobject-base-change .ex title="Base change of a subobject"}
 **Example.** Let $L$ be an integral lattice and let $0\ne v\in L$.
 The inclusion $\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying $\mathbb Z$-module.
-Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars from @def-module-base-change gives the monomorphism
+Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars from @def:module-base-change gives the monomorphism
 $$
 \mathbb Rv\hookrightarrow L\otimes_{\mathbb Z}\mathbb R.
 $$

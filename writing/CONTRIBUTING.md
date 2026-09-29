@@ -1653,7 +1653,7 @@ torsion-free if $\forall\,0\neq r\in R$, $r\cdot\colon M\to M$ is
 injective. Over a general discrete ring $R$, this book uses *torsion
 subcategory* only for the torsion class $\mathcal T$ of a specified
 hereditary torsion pair $(\mathcal T,\mathcal F)$ on
-$R\text{-}\mathbf{Mod}$ (see @def-torsion-pair). For an
+$R\text{-}\mathbf{Mod}$ (see @def:torsion-pair). For an
 $\mathbb E_1$-ring spectrum, name the stable structure being used — for
 example a $t$-structure or a localizing subcategory together with its
 torsion functor — rather than transporting the classical adjective without
@@ -1731,7 +1731,7 @@ torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$. Over a general
 discrete ring $R$, a "torsion subcategory" is not a property of $M$ but
 the torsion class $\mathcal T$ of chosen structure: a hereditary torsion
 pair $(\mathcal T,\mathcal F)$ on $R\text{-}\mathbf{Mod}$ as in
-@def-torsion-pair. For an associative ($\mathbb E_1$) ring spectrum,
+@def:torsion-pair. For an associative ($\mathbb E_1$) ring spectrum,
 name the stable structure actually being used, such as a $t$-structure or
 a localizing subcategory together with its torsion functor. The bare phrase
 "a torsion theory has been specified" does not bind any of these data
@@ -1747,7 +1747,7 @@ theory has been specified" with no definition of "torsion theory."
 **Preferred:** "::: {.Remark} Over a general ring $R$, a torsion
 subcategory means the torsion class $\mathcal T$ of a specified hereditary
 torsion pair $(\mathcal T,\mathcal F)$ on $R\text{-}\mathbf{Mod}$ (see
-@def-torsion-pair), and is used only after that pair has been specified.
+@def:torsion-pair), and is used only after that pair has been specified.
 :::"
 
 ### `SEC-8`: Specialization of a general construction with no new claim
@@ -1785,7 +1785,7 @@ general definiens.
 "Torsion theory" is standard terminology, but the bare phrase does not
 specify which torsion data are meant. In this book, for an abelian category
 the data are written as a torsion pair $(\mathcal T,\mathcal F)$ and
-defined in @def-torsion-pair; in a stable $\infty$-category, the actual
+defined in @def:torsion-pair; in a stable $\infty$-category, the actual
 stable structure being used is named explicitly. A passage that writes only
 "a torsion theory has been specified" without binding any such data leaves
 the referent undetermined.
@@ -1795,7 +1795,7 @@ after a torsion theory has been specified."
 
 **Preferred:** "Over a general ring $R$, a torsion subcategory is used
 only after a hereditary torsion pair $(\mathcal T,\mathcal F)$ on
-$R\text{-}\mathbf{Mod}$ (see @def-torsion-pair) has been specified"; for
+$R\text{-}\mathbf{Mod}$ (see @def:torsion-pair) has been specified"; for
 an $\mathbb E_1$-ring spectrum, name the chosen $t$-structure or
 localizing subcategory and its torsion functor explicitly.
 

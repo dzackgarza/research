@@ -1,7 +1,7 @@
 # Bilinear forms on the underlying module of an algebra {#sec-algebra-module-forms}
 
 Fix a commutative ring $R$.
-Free modules $M\cong R^{(I)}$ are defined in @def-module-subcategories.
+Free modules $M\cong R^{(I)}$ are defined in @def:module-subcategories.
 The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear maps $M\times M\to R$ with $R$-module homomorphisms $M\otimes_R M\to R$ [@MM12]; the former are $\operatorname{Bil}_{R,R}(M)$ in @def-form-presheaves.
 
 ## Associative unital $R$-algebras {#sec-r-algebras}
