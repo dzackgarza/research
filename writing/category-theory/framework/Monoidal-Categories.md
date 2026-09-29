@@ -98,7 +98,7 @@ A morphism of monoids is a morphism of $B$ commuting with $\mu$ and $\eta$ [@Mac
 
 ::: {#exm-monoid-object-instances .ex title="Instances"}
 
-A monoid in $(\mathbf{Set},\times,1)$ is a monoid in the sense of @def-semigroup-monoid, the two unit laws for $\eta$ becoming the unit laws for the element $\eta(*)$.
+A monoid in $(\mathbf{Set},\times,1)$ is a monoid in the sense of @def:semigroup-monoid, the two unit laws for $\eta$ becoming the unit laws for the element $\eta(*)$.
 
 For a commutative ring $R$, a monoid in $(R\text{-}\mathbf{Mod},\otimes_R,R)$ is an associative unital $R$-algebra.
 A monoid in the strict monoidal category of endofunctors of a category, with $\otimes$ composition, is a monad [@Mac98, §VII.3 and §VI.1].
