@@ -1,7 +1,7 @@
 ### Classification Results {#section-2-3}
 
 :::{.definition
-    title="{Genus of a Lattice}"
+    title="Genus of a Lattice"
     #def:genus
 }
 Two lattices $L_1, L_2$ belong to the same **genus** if $L_{1, \ZZpadic} \cong L_{2, \ZZpadic}$ for all primes $p$, where $\ZZpadic$ denotes the $p$-adic integers, and $L_{1, \RR} \cong L_{2, \RR}$.
