@@ -72,7 +72,7 @@ Equivalently, $\langle r,u\rangle$ is an initial object of the comma category $(
 Dually, a morphism $v\colon Sr\to c$ is couniversal when $\langle r,v\rangle$ is terminal in $(S\downarrow c)$.
 :::
 
-Free constructions are of this form: the insertion of a graph into the underlying graph of the free category on it is universal from the graph to the forgetful functor $U\colon\mathbf{Cat}\to\mathbf{Grph}$ (@def-free-category).
+Free constructions are of this form: the insertion of a graph into the underlying graph of the free category on it is universal from the graph to the forgetful functor $U\colon\mathbf{Cat}\to\mathbf{Grph}$ (@def:free-category).
 The corepresenting objects listed in @def:element-functor are the values of the corresponding free constructions on a one-element set, and the universal arrow is the choice of that element.
 
 ## Additive and abelian categories {#sec-abelian}

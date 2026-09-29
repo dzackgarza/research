@@ -59,7 +59,7 @@ Equality thus means: there is an essentially unique $\operatorname{Aut}(C)$–$\
 
 ## Presentation by the walking equivalence {#sec-walking-equivalence}
 
-Let $\mathcal E$ be the walking adjoint equivalence: the category presented (@def-presented-category) by two objects $0,1$, morphisms $u\colon 0\to 1$ and $v\colon 1\to 0$, and the relations making $(u,v)$ an adjoint equivalence.
+Let $\mathcal E$ be the walking adjoint equivalence: the category presented (@def:presented-category) by two objects $0,1$, morphisms $u\colon 0\to 1$ and $v\colon 1\to 0$, and the relations making $(u,v)$ an adjoint equivalence.
 Evaluation at the two objects gives
 $$
 \operatorname{ev}_{0,1}\colon

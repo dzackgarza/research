@@ -1928,7 +1928,7 @@ introduces at least one fenced unit of its own; a $\S$ that only cites
 and paraphrases is not a $\S$.
 
 **Banned:** "## Creation of limits {#sec-creation}" followed by five
-paragraphs, none fenced, that cite @def-preserve-reflect-create,
+paragraphs, none fenced, that cite @def:preserve-reflect-create,
 [@Rie16, Theorem 5.6.5], [@Rie16, Corollary 5.5.3], then "Hence …" and
 "The kernel … so it is …" in prose.
 

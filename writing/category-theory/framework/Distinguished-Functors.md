@@ -16,7 +16,7 @@ An alternative forgetful functor is accompanied by its comparison with this comp
 
 ## Creation of limits {#sec-creation}
 
-Preservation, reflection, and creation of limits by a functor are defined in @def-preserve-reflect-create.
+Preservation, reflection, and creation of limits by a functor are defined in @def:preserve-reflect-create.
 A monadic functor $U\colon\mathcal A\to\mathcal C$ creates any limits that $\mathcal C$ has, and creates those colimits that $\mathcal C$ has and that the monad and its square preserve [@Rie16, Theorem 5.6.5].
 The forgetful functors to $\mathbf{Set}$ from $\mathbf{Monoid}$, $\mathbf{Grp}$, $\mathbf{Ab}$, $\mathbf{Ring}$, $R\text{-}\mathbf{Mod}$, and $\mathbf{Vect}_k$ are monadic [@Rie16, Corollary 5.5.3].
 
