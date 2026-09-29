@@ -1,6 +1,6 @@
 # Special lattices and transformations {#sec:special-lattices}
 
-::: {.Remark title="The recurring lattices and transvections of Coble--Enriques moduli"}
+::: {.remark title="The recurring lattices and transvections of Coble--Enriques moduli"}
 
 The lattice-theoretic study of moduli of Coble and Enriques surfaces is carried
 out on a small stock of recurring lattices and on the group-theoretic
@@ -19,7 +19,7 @@ for scaled lattices, [the scaled-discriminant exact sequence](embeddings-and-ove
 
 ## The hyperbolic plane and its orthogonal group
 
-::: {.Remark title="The hyperbolic plane"}
+::: {.remark title="The hyperbolic plane"}
 
 Recall that the **hyperbolic plane** $U = \latII_{1, 1}$ is the unique even
 unimodular lattice of signature $(1, 1)$, realized as $U = \ZZ e\oplus \ZZ f$
@@ -37,7 +37,7 @@ $$
 $$
 :::
 
-::: {.Proposition #prop:orthogonal-group-U title="The integral orthogonal group of the hyperbolic plane"}
+::: {.proposition #prop:orthogonal-group-U title="The integral orthogonal group of the hyperbolic plane"}
 
 The orthogonal group of $U$ is a Klein four-group,
 $$
@@ -74,7 +74,7 @@ $(b\inv f)(be) = fe = 1$, so $j_b\in\Orth(U_\QQ)$.
 
 ## The scaled hyperbolic plane $U(2)$
 
-::: {.Proposition #prop:U2-discriminant title="Dual and discriminant group of $U(2)$"}
+::: {.proposition #prop:U2-discriminant title="Dual and discriminant group of $U(2)$"}
 
 The scaled lattice $U(2)$ has Gram matrix
 $$
@@ -110,7 +110,7 @@ $\tfrac{1}{2}e$ and $\tfrac{1}{2}f$.
 
 ## The lattice $E_8(2)$
 
-::: {.Proposition #prop:E8-2-discriminant title="Dual and discriminant group of $E_8(2)$"}
+::: {.proposition #prop:E8-2-discriminant title="Dual and discriminant group of $E_8(2)$"}
 
 The scaled root lattice $E_8(2)$, with $E_8$ the negative-definite $E_8$ lattice
 of [the $E_n$ lattice definition](root-systems.md#def:lattice-En), satisfies
@@ -141,7 +141,7 @@ $A_{E_8(2)}\cong E_8/2E_8\cong(\ZZ/2\ZZ)^8$.
 
 ## The Enriques lattice $E_{10}$ and its twist
 
-::: {.Definition #def:enriques-lattice title="The Enriques lattice"}
+::: {.definition #def:enriques-lattice title="The Enriques lattice"}
 
 The **Enriques lattice** is
 $$
@@ -154,7 +154,7 @@ It is even, unimodular, of signature $(1, 9)$, and is the unique even unimodular
 lattice of that signature up to isometry.
 :::
 
-::: {.Remark title="Role in Enriques moduli"}
+::: {.remark title="Role in Enriques moduli"}
 
 For an Enriques surface $Z$ the second integral cohomology carries a torsion
 summand,
@@ -170,7 +170,7 @@ The lattice $E_{10}$ is thus the numerical incarnation of the Enriques surface,
 while its twist governs the period map.
 :::
 
-::: {.Remark title="The twisted Enriques lattice"}
+::: {.remark title="The twisted Enriques lattice"}
 
 The relevant period lattice is the twist
 $$
@@ -190,7 +190,7 @@ alongside $U(2)$ and the root lattices; compare [the Coble lattice table](coble-
 
 ## Degree $2d$ K3 lattices
 
-::: {.Definition #def:degree-2d-k3-lattice title="Degree $2d$ K3 lattices"}
+::: {.definition #def:degree-2d-k3-lattice title="Degree $2d$ K3 lattices"}
 
 For a positive integer $d$ and an integer $m\geq 0$, define the lattices
 $$
@@ -203,7 +203,7 @@ The distinguished case $m = 2$ gives a lattice of signature $(2, 19)$, which we
 call the **degree $2d$ K3 lattice**.
 :::
 
-::: {.Remark title="The degree-$2d$ K3 period lattice is the polarization complement"}
+::: {.remark title="The degree-$2d$ K3 period lattice is the polarization complement"}
 
 The K3 lattice is $\lkt = U^3\oplus E_8^2 = \latII_{3, 19}$, of signature
 $(3, 19)$.
@@ -228,7 +228,7 @@ arise when the number of $E_8$ summands is varied.
 
 ## Nikulin's $2$-adic lattices $V_k$ and $U_k$
 
-::: {.Definition #def:nikulin-Vk-Uk title="Nikulin's lattices $V_k$ and $U_k$"}
+::: {.definition #def:nikulin-Vk-Uk title="Nikulin's lattices $V_k$ and $U_k$"}
 
 Let $\ZZ_2$ denote the ring of $2$-adic integers.
 For an integer $k\geq 0$ define the rank-two $\ZZ_2$-lattices
@@ -242,7 +242,7 @@ We abbreviate $V \da V_1$.
 Each of $V_k$ and $U_k$ is even, nondegenerate, and of $2$-adic rank $2$.
 :::
 
-::: {.Remark title="Nikulin's $2$-adic blocks $U_k$ and $V_k$"}
+::: {.remark title="Nikulin's $2$-adic blocks $U_k$ and $V_k$"}
 
 The lattice $U_k$ is the $2$-adic hyperbolic plane scaled by $2^k$: one has
 $U_0\cong U\tensor_\ZZ\ZZ_2$ and $U_1\cong U(2)\tensor_\ZZ\ZZ_2$.
@@ -259,7 +259,7 @@ the decomposition below.
 
 ## Eichler--Siegel transvections
 
-::: {.Definition #def:eichler-siegel title="Eichler--Siegel transvection"}
+::: {.definition #def:eichler-siegel title="Eichler--Siegel transvection"}
 
 Let $L$ be a lattice, let $e\in L_\QQ$ be an isotropic vector, and let
 $a\in \gens{e}^{\perp L_\QQ}$ be a vector orthogonal to $e$, i.e. $ae = 0$.
@@ -277,7 +277,7 @@ $$
 The construction is due to Eichler [@Eic74].
 :::
 
-::: {.Definition #def:eichler-group title="The Eichler transvection group"}
+::: {.definition #def:eichler-group title="The Eichler transvection group"}
 
 The **Eichler transvection group** $E(L)\leq\Orth(L)$ is generated by all
 transvections $E_{e, a}$ for which $e\in L$ is a primitive isotropic vector of
@@ -287,7 +287,7 @@ primitive vectors of fixed norm and divisibility, and coincides with the stable
 orthogonal group up to finite index; see [@GHS08].
 :::
 
-::: {.Theorem #thm:eichler-criterion title="The Eichler criterion"}
+::: {.theorem #thm:eichler-criterion title="The Eichler criterion"}
 
 Let $L$ be a lattice containing an orthogonal direct summand isometric to
 $U^{\oplus 2}$, and let $v_1, v_2\in L$ be primitive vectors.
@@ -310,7 +310,7 @@ here, where the transvections of [the Eichler transvection-group definition](#de
 hyperbolic planes are what move a primitive vector into normal form.
 :::
 
-::: {.Remark title="The hypothesis is genuine"}
+::: {.remark title="The hypothesis is genuine"}
 
 The hypothesis $U^{\oplus 2}\containedin L$ cannot be dropped.
 A lattice all of whose pairings are even contains no copy of $U$ at all, since
@@ -325,7 +325,7 @@ lattices and the algorithms of [@Daw22] for a subgroup prescribed by its image i
 $\Orth(q_L)$.
 :::
 
-::: {.Theorem #thm:eichler-U-U title="Eichler transvections on $U\oplus U$"}
+::: {.theorem #thm:eichler-U-U title="Eichler transvections on $U\oplus U$"}
 
 There is an isometry
 $$
@@ -344,7 +344,7 @@ $$
 $$
 :::
 
-::: {.Remark title="$U\oplus U$ realizes the exceptional orthogonal--linear isogeny"}
+::: {.remark title="$U\oplus U$ realizes the exceptional orthogonal--linear isogeny"}
 
 The quadratic form $q(X) = \det X$ on $\Mat_{2\times 2}(\ZZ)$ is
 integer-valued, so the lattice is even, and its associated bilinear form is
@@ -359,7 +359,7 @@ $\SL_2(\ZZ)\times\SL_2(\ZZ)$; a proof is given in [@GHS08].
 
 ## Decomposability of even $2$-elementary lattices
 
-::: {.Theorem #thm:2elementary-decomposition title="Decomposition of $2$-elementary discriminant forms"}
+::: {.theorem #thm:2elementary-decomposition title="Decomposition of $2$-elementary discriminant forms"}
 
 Let $L$ be an even $2$-elementary lattice.
 Then the discriminant quadratic form on $A_L$ is an orthogonal direct sum of the
@@ -382,7 +382,7 @@ rank-two forms on $(\ZZ/2\ZZ)^2$, realized as the discriminant forms of $U(2)$
 and of $V = V_1$ respectively.
 :::
 
-::: {.Remark title="Relations among the four elementary $2$-adic discriminant forms"}
+::: {.remark title="Relations among the four elementary $2$-adic discriminant forms"}
 
 The relations record the coincidences among finite $2$-adic quadratic forms
 established by Nikulin [@Nik80]: for instance $u^{\oplus 2} = v^{\oplus 2}$
@@ -394,7 +394,7 @@ orthogonal sum, so that every $A_L$ has a normal form in the generators
 $p, q, u, v$.
 :::
 
-::: {.Theorem #thm:2elementary-building-blocks title="Building blocks of K3-embeddable $2$-elementary lattices"}
+::: {.theorem #thm:2elementary-building-blocks title="Building blocks of K3-embeddable $2$-elementary lattices"}
 
 The even $2$-elementary lattices admitting a primitive embedding into the K3
 lattice $\lkt$ decompose as orthogonal direct sums of basic lattices, such as
@@ -406,7 +406,7 @@ $$
 This standard building-block list is not asserted to be exhaustive.
 :::
 
-::: {.Remark title="The Coble lattice table is a census of the K3-embeddable building blocks"}
+::: {.remark title="The Coble lattice table is a census of the K3-embeddable building blocks"}
 
 This building-block list is drawn from Nikulin's study of the even
 $2$-elementary hyperbolic lattices embedding into $\lkt$ [@Nik80], the same
