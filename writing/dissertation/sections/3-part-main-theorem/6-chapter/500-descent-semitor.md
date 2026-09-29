@@ -33,7 +33,7 @@ The pulled-back family
 satisfies:
 
 - Every fiber is a KSBA-stable Enriques pair of degree two,
-- The family is universal among stable families over normal bases mapping to $\cpt{\fent}$,
+- It extends the universal family on the open moduli space $\fent$,
 - There exists a canonical classifying morphism $\phi: \normalize{B} \to \cpt{\fent}$ compatible with the moduli functor.
 :::
 
