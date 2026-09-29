@@ -17,7 +17,7 @@ Then $f$ is an isomorphism.
 :::
 
 :::{.lemma
-    title="{Verification of Hypotheses for the Classifying Map}"
+    title="Verification of Hypotheses for the Classifying Map"
     #lem:verification-hypotheses
 }
 The morphism $\phi: \normalize{B} \to \cpt{\fent}$ constructed above satisfies all hypotheses of Zariski's Main Theorem:
@@ -31,7 +31,7 @@ The morphism $\phi: \normalize{B} \to \cpt{\fent}$ constructed above satisfies a
 We are thus led to the following:
 
 :::{.theorem
-    title="{Main Isomorphism: KSBA and Semitoroidal Compactifications}"
+    title="Main Isomorphism: KSBA and Semitoroidal Compactifications"
     #thm:main-isomorphism
 }
 The classifying morphism induces canonical isomorphisms:
@@ -54,7 +54,7 @@ We know that $\phi$ is an isomorphism of normal proper spaces. Surjectivity onto
 :::
 
 :::{.remark
-    title="{Toroidal vs. Semitoroidal Structure}"
+    title="Toroidal vs. Semitoroidal Structure"
     #rem:toroidal-vs-semitoroidal
 }
 We finally remark that the resulting compactification exhibits hybrid toroidal/semitoroidal structures:
