@@ -106,6 +106,6 @@ More generally, if $G \injects \Orth(L)$ is a faithful representation of a finit
 
 #### Applications
 
-:::{.definition title="{Overlattices and Gluing Theory}" #def:overlattices-gluing}
+:::{.definition title="Overlattices and Gluing Theory" #def:overlattices-gluing}
 An **overlattice** $L$ of a lattice $S$ is a lattice containing $S$ as a finite-index sublattice. Nikulin's theory provides a classification of even overlattices of $S$ in terms of isotropic subgroups of $A_S$ up to $\Orth(S)$.
 :::
