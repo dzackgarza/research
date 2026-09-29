@@ -273,7 +273,7 @@ By construction, $f_{T}$ and $f_{S}$ act identically on $A_S$ and $A_T$, and so 
 
 
 :::{.lemma
-  title="[@AEGS25, Lemma 2.8]"
+  title="The Enriques locus is the normalization of a closed subscheme [@AEGS25, Lemma 2.8]"
   #lem:fent-to-fttz-closed-immersion
 }
 There exists a closed subscheme $X \subset \fttz$ such that $\fent$ is canonically isomorphic to the normalization of $X$.

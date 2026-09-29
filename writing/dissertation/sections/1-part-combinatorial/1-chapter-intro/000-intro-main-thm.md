@@ -17,7 +17,7 @@ Our goal is to prove the following:
 
 
 :::{.theorem
-    title="[@AEGS25, Thm. 1.1]"
+    title="KSBA--semitoroidal comparison for degree-two Enriques surfaces [@AEGS25, Thm. 1.1]"
     #thm:intro-main-theorem
 }
 Let $\fent$ be the moduli space of numerically polarized degree 2 Enriques surfaces, and let $\cpt{\fent}$ be its KSBA compactification.
