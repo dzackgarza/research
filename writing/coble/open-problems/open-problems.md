@@ -1,6 +1,6 @@
 # Open problems and technical gaps
 
-::: {.Remark title="Orientation"}
+::: {.remark title="Orientation"}
 
 This section records the known open problems and computational obstacles of the Coble moduli program.
 Each entry is a genuine gap between the results established elsewhere in this document and the fully rigorous, coordinate-explicit statements one would want for parity with the Enriques degree-$2$ program of [@AEGS25]. The problems are grouped by theme: lattice-theoretic verifications, the enumeration of isotropic orbits and cusps together with the reflection-group combinatorics, the *dlt* and KSBA stable models, and the foundational equations and computational checks.
@@ -9,7 +9,7 @@ None of the statements below is claimed to be settled; several cross-reference p
 
 ## Lattice-theoretic gaps
 
-::: {.Remark title="Open problem: isometry class and genus of the Coble lattices"}
+::: {.remark title="Open problem: isometry class and genus of the Coble lattices"}
 
 The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\operatorname{diag}(2,-2,\dots,-2)$, equivalently $\gens{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in [the Coble lattice table](../lattices-and-moduli/coble-lattice-table.md), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
 What is not yet formally established is the *isometry-class verification* and the *genus decomposition*: whether the genus of $T_\Co$ contains a unique isometry class.
@@ -20,7 +20,7 @@ Concretely:
 - confirm that $r > a$ forces a unique class in the genus, so that the reduction of isotropic-orbit questions to the discriminant form $q_{T_\Co}$ ([the Sterk-orbit theorem](../compactifications/scattone-cusp-method.md#thm:sterk-orbit)) is justified.
 :::
 
-::: {.Remark title="Open problem: explicit primitive embedding matrices"}
+::: {.remark title="Open problem: explicit primitive embedding matrices"}
 
 The chain of primitive embeddings
 $$
@@ -31,7 +31,7 @@ What remains is to *exhibit the embedding matrices in coordinate bases*: derive 
 The same coordinate deficit affects the derivation of the explicit equations for $C$ and $X$ (below): the invariants are listed, but the primitivity of the lattice embeddings lacks a rigorous derivation in terms of coordinate bases.
 :::
 
-::: {.Conjecture #conj:horizontal-folding-eigenlattices title="Open problem: the horizontal folding involution and its eigenspaces"}
+::: {.conjecture #conj:horizontal-folding-eigenlattices title="Open problem: the horizontal folding involution and its eigenspaces"}
 
 There is an orthogonal involution $\theta$ on the K3 lattice $\lkt \cong U^{3}\oplus E_8^{2}$ whose invariant and coinvariant sublattices are
 $$
@@ -47,7 +47,7 @@ The open technical content is to *write down the $22\times 22$ matrix of $\theta
 
 ## Isotropic orbits, cusps, and reflection groups
 
-::: {.Question #qst:sterk-isotropic-orbits-tco title="Open problem: enumeration of isotropic orbits by Sterk's technique"}
+::: {.question #qst:sterk-isotropic-orbits-tco title="Open problem: enumeration of isotropic orbits by Sterk's technique"}
 
 How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\operatorname{div}(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\operatorname{div}(v),\, \bar v \in A_T,\, v^2 = 0)$.
@@ -64,7 +64,7 @@ The open work is the passage from these finite decompositions back to the lattic
 That every primitive isotropic $v \in T_\Co$ has $\operatorname{div}_{T_\Co}(v) = 2$ is already known ([the divisibility lemma](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#lem:divisibilityAlwaysTwoTco)), which fixes the divisibility datum but not the orbit count.
 :::
 
-::: {.Remark title="Open problem: explicit generators of $\Gamma_\Co$ and uniqueness of the 1-cusp"}
+::: {.remark title="Open problem: explicit generators of $\Gamma_\Co$ and uniqueness of the 1-cusp"}
 
 The arithmetic group governing the Coble locus is the stabilizer of the polarization $h_\Co$ inside $\Orth(T_\En)$, cut further by the horizontal folding involution $\theta$,
 $$
@@ -86,7 +86,7 @@ The open work is to:
 This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in [the $1$-cusp correspondence lemma](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#lem:1_cusp_correspondence).
 :::
 
-::: {.Remark title="The maximal parabolic subdiagrams of $S_\Co$, and what they count"}
+::: {.remark title="The maximal parabolic subdiagrams of $S_\Co$, and what they count"}
 
 The Coxeter diagram $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots, trivial
 automorphism group, and **two** maximal parabolic subdiagrams,
@@ -114,7 +114,7 @@ the pair of maximal parabolic subdiagrams matches the boundary data of the
 degree-$2$ polarized moduli space.
 :::
 
-::: {.Question #qst:sterk-reflection-subgroups title="Open problem: the reflection group of each Sterk fundamental domain"}
+::: {.question #qst:sterk-reflection-subgroups title="Open problem: the reflection group of each Sterk fundamental domain"}
 
 Sterk's published fundamental domains for the five cusps of $F_{\En,2}$ have $12, 10, 12, 11, 14$ walls [@Ste91], while Vinberg's algorithm applied to the corresponding hyperbolic quotients $\eta_j^{\perp}/\eta_j$ returns ten walls in each case.
 The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams.
@@ -123,7 +123,7 @@ Cusp $2$, to which the Coble $0$-cusp is claimed to correspond, is the case in w
 The data and the derivation are in [the Sterk root-count computation](../computations/sterk-root-counts-and-computed-chambers.md).
 :::
 
-::: {.Remark title="Open problem: hyperbolic-quotient derivation of the cusp correspondence"}
+::: {.remark title="Open problem: hyperbolic-quotient derivation of the cusp correspondence"}
 
 The cusp correspondence between the Coble cusps $(9,9,1)$, $(7,7,1)$ and their Enriques predecessors is established in [the cusp-correspondence theorem](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#thm:cusp_correspondence) (via the divisibility computations of [the $w_1^\perp$ calculation](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#lem:w1_perp_calculation) and [the $1$-cusp correspondence lemma](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#lem:1_cusp_correspondence)). The migrated notes propose an independent *hyperbolic-quotient* derivation that would place the correspondence on a self-contained lattice footing rather than resting on the alignment of invariants:
 
@@ -139,7 +139,7 @@ The residue that is genuinely open is the *orbit-uniqueness input*: the proof of
 The entries above ask for specific subdiagram and orbit computations in the Coble and Enriques lattices.
 The following are the corresponding questions asked of hyperbolic Coxeter diagrams in general; each is open, and each bears on how far the specific computations can be pushed.
 
-::: {.Question #qst:maximal-parabolic-complexity title="Open problem: the cost of enumerating maximal parabolic subdiagrams"}
+::: {.question #qst:maximal-parabolic-complexity title="Open problem: the cost of enumerating maximal parabolic subdiagrams"}
 
 Given a Coxeter--Vinberg diagram $\Sigma$ on $n$ vertices, what is the cost of determining its maximal parabolic subdiagrams, equivalently the ideal vertices of the chamber ([the ideal-vertices/parabolic corollary](../compactifications/hyperbolic-coxeter-polytopes.md#cor:ideal-vertices-are-parabolic))?
 
@@ -153,7 +153,7 @@ No lower bound is known, and no polynomial-time algorithm is known even for the 
 The concrete instance in this monograph is the uniqueness of $\widetilde{B}_7(2)$ as a maximal parabolic subdiagram of the ten-node diagram $G_{S_\Co}$, stated above; the general question is whether such uniqueness claims admit an argument short of the subdiagram search.
 :::
 
-::: {.Conjecture #cnj:galois-invariance-parabolics title="Open problem: Galois invariance of the maximal parabolic count"}
+::: {.conjecture #cnj:galois-invariance-parabolics title="Open problem: Galois invariance of the maximal parabolic count"}
 
 Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form is defined over a totally real number field $K$, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
 The conjecture is that $\Sigma$ and its conjugate $\sigma(\Sigma)$ have the same number of maximal parabolic subdiagrams.
@@ -163,7 +163,7 @@ The open work is to determine the action of $\operatorname{Gal}(K/\QQ)$ on the s
 The diagrams of this monograph have Gram field $\QQ$ or $\QQ(\sqrt2)$, the latter arising from the $m_{ij} = 4$ bonds of the $B$-type diagrams, so the smallest instance is the nontrivial automorphism of $\QQ(\sqrt2)$ acting on the folded Sterk diagrams.
 :::
 
-::: {.Question #qst:parabolic-count-growth title="Open problem: growth of the maximal parabolic count with the rank"}
+::: {.question #qst:parabolic-count-growth title="Open problem: growth of the maximal parabolic count with the rank"}
 
 How does the number of maximal parabolic subdiagrams of a hyperbolic Coxeter diagram grow with its rank $n$?
 
@@ -171,7 +171,7 @@ Is there a bound, exponential or otherwise, valid for all diagrams of rank $n$, 
 The recorded data for this monograph is the count of vertices at infinity in the CoxIter runs on the five folded Sterk diagrams and the three $0$-cusp lattices, all of rank $9$ or $10$; a family of increasing rank is needed before a growth statement can be made.
 :::
 
-::: {.Question #qst:arithmeticity title="Open problem: which finite-covolume reflection groups are arithmetic"}
+::: {.question #qst:arithmeticity title="Open problem: which finite-covolume reflection groups are arithmetic"}
 
 Which finite-covolume hyperbolic Coxeter groups are arithmetic?
 
@@ -180,7 +180,7 @@ The open work is to decide arithmeticity from that datum, and to determine how t
 The reflection groups appearing in this monograph act on lattices defined over $\ZZ$, so they are arithmetic; the question governs whether the techniques used here extend to [the non-crystallographic base-ring examples](../compactifications/coxeter-systems-and-classification.md#ex:noncrystallographic-base-rings).
 :::
 
-::: {.Question #qst:exact-covolume title="Open problem: exact covolumes of hyperbolic Coxeter polytopes"}
+::: {.question #qst:exact-covolume title="Open problem: exact covolumes of hyperbolic Coxeter polytopes"}
 
 Compute $\vol(P)$ exactly for a hyperbolic Coxeter polytope $P$ given by its diagram ([the covolume definition](../compactifications/hyperbolic-coxeter-polytopes.md#def:covolume)).
 
@@ -194,7 +194,7 @@ The open work is:
 - a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup, which is the quantity that would settle the discrepancy between Sterk's published fundamental domains and the computed Vinberg chambers.
 :::
 
-::: {.Question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}
+::: {.question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}
 
 For a positive-definite lattice the theta series $\theta_L(q) = \sum_{v\in L} q^{v^2/2}$ converges and is a modular form.
 For an indefinite lattice each level set $L[k]$ can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.
@@ -204,7 +204,7 @@ The open work is to define a regularized theta series for the hyperbolic lattice
 
 ## The GIT and Looijenga models of the Coble moduli space
 
-::: {.Question #que:coble-arrangement-empty title="Open problem: is the Coble arrangement $\cH^{*}_{10A_1}$ empty?"}
+::: {.question #que:coble-arrangement-empty title="Open problem: is the Coble arrangement $\cH^{*}_{10A_1}$ empty?"}
 
 The GIT compactification of the moduli of ten-nodal sextics is the Looijenga
 compactification of $\Gamma_{10A_1}\backslash(D(T_\Co) - \cH^{*}_{10A_1})$, for
@@ -237,7 +237,7 @@ contributes, which is why $\cH^{*}_{10A_1}$ is contained in the larger
 arrangement $\cH_{10A_1}$ of [the occult-period-map theorem](../lattices-and-moduli/moduli-construction.md#thm:occult-period-map-sextics).
 :::
 
-::: {.Question #que:semifan-poset-position title="Open problem: the position of the three semifans"}
+::: {.question #que:semifan-poset-position title="Open problem: the position of the three semifans"}
 
 The Coxeter, KSBA, and Looijenga semifans of the Coble period domain are
 determined by three unrelated inputs, and no one of them constrains another
@@ -260,7 +260,7 @@ Once $\cH^{*}_{10A_1}$ is computed, three questions remain:
 
 ## dlt and KSBA stable models
 
-::: {.Remark title="Open problem: Coble-specific dlt models and pot geometry"}
+::: {.remark title="Open problem: Coble-specific dlt models and pot geometry"}
 
 The degree-$2$ Enriques program modernizes Morrison's flowerpots [@Mor81] into *dlt* stable pairs, but the *Coble-specific dlt models* are not yet detailed.
 The open geometric content is:
@@ -272,7 +272,7 @@ The open geometric content is:
 - **Stalk assembly.** Describe the transition of the stalk assembly and the integral-affine configuration as the Enriques surface log-collapses onto the discriminant divisor $\Delta$, where the K3 cover becomes nodal.
 :::
 
-::: {.Remark title="Open problem: monodromy invariants and stable models $B(\lambda)$"}
+::: {.remark title="Open problem: monodromy invariants and stable models $B(\lambda)$"}
 
 Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\cH}$ (surgery sizes) through the construction $B(\lambda)$ of [@AEGS25]. The open work is to:
 
@@ -287,7 +287,7 @@ This is the discrete-datum side of the KSBA program whose stability obligations 
 
 ## Foundational equations and computational verification
 
-::: {.Remark title="Open problem: explicit equations for the Coble curve and its K3 cover"}
+::: {.remark title="Open problem: explicit equations for the Coble curve and its K3 cover"}
 
 A Coble surface $S$ is the blowup of $\PP^2$ at the ten $A_1$ nodes of an irreducible rational plane sextic
 $$
@@ -300,7 +300,7 @@ subject to the nodal conditions $F(p_m) = \partial_x F(p_m) = \partial_y F(p_m) 
 Such an instance would anchor the coordinate derivations demanded by the lattice-embedding and involution problems above.
 :::
 
-::: {.Remark title="Lattice and orbit anchors for the computations"}
+::: {.remark title="Lattice and orbit anchors for the computations"}
 
 The problems above share a small set of concrete starting data, recorded here for reference:
 
