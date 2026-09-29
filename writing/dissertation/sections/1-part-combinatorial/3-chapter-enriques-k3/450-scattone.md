@@ -3,9 +3,10 @@
 As a starting point to any compactification procedure of lattice polarized K3 surfaces $F_S$, we must first find the cusps of $\bbcpt{F}_S$.
 We give an overview here of various methods in the literature for similar moduli spaces, and how their cusps can be found and studied.
 
-#### $\ftd$: Degree 2d Polarized K3 Surfaces (Scattone's Description)
+#### $\ftd$: Degree 2d Polarized K3 Surfaces
 
-\todo{Separate the Hodge-theoretic work}
+We first recall Scattone's arithmetic description of the Baily--Borel boundary in terms of primitive isotropic sublattices [@Sca87].
+The complementary degeneration-theoretic interpretation by monodromy and limiting mixed Hodge structures is logically separate and is recalled afterward from [@FS86; @Sch73].
 
 Let $\lkt$ denote the K3 lattice, and let $h \in \lkt$ be a primitive vector of square $2d > 0$. The lattice orthogonal to the polarization is defined as
 $$
@@ -21,7 +22,9 @@ $$
 $$
 is the coarse moduli space parametrizing degree $2d$ polarized K3 surfaces.
 
-The Baily–Borel compactification $\bbcpt{\ftd}$ is projective, and its boundary strata correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic sublattices of $T_{2d}$ of ranks $1$ and $2$. More precisely, $0$-cusps are in correspondence with orbits of primitive isotropic planes up to the action of $\Gamma_{2d}$. The incidence relations between cusps are set by lattice inclusions: any $0$-cusp (an isotropic line) is contained in the closure of all $1$-cusps (isotropic planes) in which it lies.
+The Baily–Borel compactification $\bbcpt{\ftd}$ is projective, and its boundary strata correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic sublattices of $T_{2d}$ of ranks $1$ and $2$ [@Sca87].
+The $0$-cusps correspond to primitive isotropic lines, while the $1$-cusps correspond to primitive isotropic planes.
+The incidence relations are induced by inclusion: the $0$-cusp represented by an isotropic line lies in the closure of each $1$-cusp represented by an isotropic plane containing that line.
 
 As a concrete and illustrative case, set $d = 1$. Then $h^2 = 2$ and
 $$
@@ -29,24 +32,23 @@ T_2 = \gens{-2} \oplus U^{\oplus 2} \oplus E_8^{\oplus 2}.
 $$
 Scattone shows that for squarefree $d$ (in particular, $d = 1$), there is exactly one $\Gamma_{2d}$-orbit of primitive isotropic lines in $T_{2d}$, so the Baily–Borel boundary of $F_2$ has a unique $0$-cusp.
 
-The 1-cusps are determined by the negative-definite lattices $\bdlattice{T}{2d, I} \da  I^{\perp T}/I$, for $I \subset T$ a primitive isotropic plane. Scattone showed that, up to isomorphism and the action of the arithmetic group, there are exactly four possible such lattices, each of rank $18$ and discriminant $2$, characterized by their root sublattices:
+The 1-cusps are determined by the negative-definite lattices $\bdlattice{T}{2d, I} \da  I^{\perp T}/I$, for $I \subset T$ a primitive isotropic plane. Scattone showed that, up to isomorphism and the action of the arithmetic group, there are exactly four possible such lattices, each of rank $17$ and discriminant $2$, characterized by their root sublattices:
 $$
 A_1 \oplus E_8^{\oplus 2}, \qquad E_7 \oplus D_{10}, \qquad A_1 \oplus D_{16}, \qquad A_{17}.
 $$ {#eq:ft-four-lattices}
 These emerge as orthogonal complements to embeddings of $E_7$ into the four Niemeier lattices $U$ of rank $24$ that admit such sublattices. Each of these possibilities labels a modular curve in the boundary of $\bbcpt{F_2}$, and the closure of each of these modular curves contains the unique $0$-cusp as every isotropic line is contained in some isotropic plane.
 
-The structure of $\bd \bbcpt{\ftd}$ can be studied through the asymptotic behavior of the period map, governed by limiting mixed Hodge structures and their associated monodromy operators, following the work of @FS86. For a one-parameter degeneration $\mcx \to \Delta$ of polarized degree $2d$ K3 surfaces over a punctured disk $\Delta^*$, the unipotent monodromy operator $T \in O(T_{2d})$ determines the degeneration structure. Its nilpotent logarithm $N = \log T \in \Endo(T_{2d, \QQ })$ induces the canonical monodromy weight filtration $\incfiltration{W}$ on $T_{2d, \QQ}$, uniquely characterized by the properties $N(W_k) \containedin W_{k-2}$ for all $k$, and that for each $j > 0$, the maps $N^j: \Gr^W_{k+j} \to \Gr^W_{k-j}$ are isomorphisms.
-Schmid's Nilpotent Orbit Theorem establishes that the period map asymptotically approaches a nilpotent orbit, defining a limiting Hodge filtration $\decfiltration{F^{\lim}}$ on $T_{2d, \CC}$ which, together with $\incfiltration{W}$, constitutes the limiting mixed Hodge structure (LMHS). This framework provides the connection between geometric degenerations and arithmetic lattice structures.
+##### Degeneration-theoretic interpretation
 
-The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index of $N$. The Type $\II$ boundary components (1-cusps) correspond to degenerations where $N \neq 0$ but $N^2 = 0$. For such degenerations, associated with a primitive isotropic plane $I \subset T_{2d}$, is a three-step monodromy weight filtration:
+The preceding cusp enumeration is lattice-theoretic. A complementary description comes from Kulikov degenerations and limiting mixed Hodge structures [@FS86; @Sch73]. For a one-parameter degeneration $\mcx \to \Delta$ of polarized degree $2d$ K3 surfaces, after passing to unipotent monodromy, let $T$ denote the monodromy operator and $N = \log T$. The nilpotent operator $N$ determines the monodromy weight filtration, while the nilpotent-orbit theorem supplies the limiting Hodge filtration.
+
+For a Type $\II$ degeneration, $N \neq 0$ and $N^2 = 0$. Its limiting period lies on a $1$-dimensional Baily--Borel boundary component, hence on the cusp associated with a primitive isotropic plane $I \subset T_{2d}$. The monodromy weight filtration has the form
 $$
 0 = W_0 \subset W_1 = I_{\QQ} \subset W_2 = I^{\perp T_{2d}}_{\QQ} \subset W_3 = T_{2d, \QQ}
 .$$
-The LMHS induces a pure polarized Hodge structure of weight 2 on the graded piece $\Gr_2^W = I^{\perp}/I$, which is precisely the boundary lattice $\bdlattice{T}{I}$ arising in Scattone's combinatorial classification. This identification reveals that $\bdlattice{T}{I}$ is not merely a lattice-theoretic invariant, but rather the natural target of the weight-2 component of the limiting mixed Hodge structure.
+The quotient $\Gr_2^W = I^{\perp}/I$ is exactly the negative-definite boundary lattice attached to that $1$-cusp.
 
-For Type $\III$ degenerations (0-cusps), where $N^2 \neq 0$ but $N^3 = 0$, the weight filtration is of maximal length. The classifying space of such Hodge structures on $\bdlattice{T}{I}$ is itself a Type $\IV$ Hermitian symmetric domain $\halfpd{\bdlattice{T}{I}}$ and the boundary component itself is a modular variety $F_{\Gamma_I}$ for an appropriate arithmetic subgroup $\Gamma_I \leq \Orth^+(\bdlattice{T}{I})$. These degenerations correspond to normal crossing varieties whose dual complex is a triangulation of $S^2$.
-The computational accessibility of these mixed Hodge structures relies on several key tools developed in the work starting in @FS86: the Clemens-Schmid exact sequence relating the cohomology of central and $\mcx_t$s, and the Steenbrink weight spectral sequence, which for K3 surfaces degenerates integrally at the $E_2$-page. This integral degeneration is a special property of K3 surface degenerations that enables explicit computation of the limiting mixed Hodge structure components.
-The vanishing cycle analysis developed by Friedman and Scattone provides detailed control over how cohomology classes behave under degeneration. Through Mayer-Vietoris techniques and careful analysis of the dual complex structure, they established the precise relationship between the geometric combinatorics of singular fibers and the arithmetic invariants encoded in LMHS. The stratification $\bbcpt{\ftd}$ is thus realized by the asymptotic behavior of the period map at the various boundary cusps.
+For a Type $\III$ degeneration, $N^2 \neq 0$ and $N^3 = 0$. Its limiting period lies at a $0$-dimensional Baily--Borel cusp, corresponding to a primitive isotropic line. Friedman--Scattone analyze these degenerations through their normal-crossings central fibers, monodromy, and limiting mixed Hodge structures; in a Kulikov Type $\III$ model the dual complex is a triangulation of $S^2$ [@FS86].
 
 #### $F_2$: Scattone's Description
 
@@ -60,7 +62,7 @@ using discriminant–form methods, from which Scattone shows:
 
 -  There is a single $\Gamma_{2}$-orbit of primitive isotropic lines $\eta$ in $T_2$, giving one 0-cusp (Type $\III$);  
 
--  There are four $\Gamma_{2}$-orbits of primitive isotropic planes $I$ in $T_2$, whose corresponding boundary lattices $\bdlattice{T}{I}$ are the rank-18, negative-definite lattices given in @eq:ft-four-lattices, yielding four Type $\II$ boundary curves;  
+-  There are four $\Gamma_{2}$-orbits of primitive isotropic planes $I$ in $T_2$, whose corresponding boundary lattices $\bdlattice{T}{I}$ are the rank-17, negative-definite lattices given in @eq:ft-four-lattices, yielding four Type $\II$ boundary curves;
 
 -  These four curves meet transversely at the unique Type $\III$ point.
 
@@ -77,7 +79,7 @@ The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, w
 
 The general enumeration of $\bd\bbcpt{ F_{2d} }$ reduces to finite problems in the discriminant group $A_{T_{2d}}$: cusps can be classified by studying isotropic subgroups of the finite discriminant group $A_{T_{2d}} \da  (T_{2d})^*/T_{2d}$, and applying Nikulin's theorem that the genus of an even lattice is determined by its signature and the isomorphism class of its discriminant form [Nikulin 1980].
 The classification proceeds by associating to a primitive isotropic sublattice $I \subset T_{2d}$ an isotropic subgroup of $A_{T_{2d}}$. The problem of classifying orbits of such sublattices under the infinite group $\Gamma_{2d}$ is thereby reduced to classifying orbits of isotropic subgroups of the finite group $A_{T_{2d}}$ under the action of a subgroup of $\OStab( A_{T_{2d}} )$.
-For the case $d=1$, the four isomorphism classes of the rank-18 lattice $\bdlattice{T}{I}$ are constructed by leveraging the classification of the 24 Niemeier lattices: each isometry class of $\bdlattice{T}{I}$ is realized as the orthogonal complement $E_7^\perp \subset M$, where $M$ is one of the Niemeier lattices that admit a primitive embedding of the $E_7$ root lattice [Scattone 1987]. This reduces the classification to a relatively well-known, finite set of possibilities.
+For the case $d=1$, the four isomorphism classes of the rank-17 lattice $\bdlattice{T}{I}$ are constructed by leveraging the classification of the 24 Niemeier lattices: each isometry class of $\bdlattice{T}{I}$ is realized as the orthogonal complement $E_7^\perp \subset M$, where $M$ is one of the Niemeier lattices that admit a primitive embedding of the $E_7$ root lattice [Scattone 1987]. This reduces the classification to a relatively well-known, finite set of possibilities.
 For general $d$, cusp enumeration becomes a number-theoretic problem, since the structure of $A_{T_{2d}}$ is highly dependent on the arithmetic properties of $d$ itself, including the numbers of solutions to congruences and the prime factorization of $d$. @Sca87 uses these techniques to explicitly describe cusp diagrams for certain (sparse) families of values of $d$.
 For further details and the explicit Coxeter diagrams, see [@Sca87, §6.2] and [@AET23, Fig. 2].
 
@@ -99,7 +101,7 @@ Based on my research, I can now provide a clear separation between what Scattone
 **Specific Technical Methods**:
 1. **Eichler Criterion Application**: Used to classify primitive isotropic vectors and their orbits under arithmetic group action
 2. **Discriminant Group Computations**: Exploited the finite discriminant group A_{T₂d} = (T₂d)*/T₂d to reduce infinite classification problems to finite ones
-3. **Niemeier Lattice Connections**: For degree 2 case, used embeddings into the 24 Niemeier lattices to classify the four types of rank-18 lattices
+3. **Niemeier Lattice Connections**: For degree 2 case, used embeddings into the 24 Niemeier lattices to classify the four types of rank-17 lattices
 
 **Key Results for F₂d**:
 - Complete classification of boundary components for general degree 2d
