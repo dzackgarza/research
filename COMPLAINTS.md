@@ -362,6 +362,39 @@ affine covers.
 were inspected.  No claim is made here about other same-class parameterized
 relations.
 
+### Module-subobject joins and meets do not transport canonical ideal structure
+
+The placement audit found that `CommutativeIdeals(R)` is a strict subcategory
+of `ModuleSubobjects(R)`, but it reimplements both `sum` and `intersection`
+with raw ideal-engine operations.  Mathematically these are the same join and
+meet of the two submodules of the regular module `R`: the sum of ideals is the
+module sum and the intersection of ideals is the module-subobject pullback.
+
+The general owner already implements both constructions in
+`categories/modules/pure/modules.py::ModuleSubobjects.ParentMethods`, but its
+results are constructed only as module subobjects.  Simply deleting the ideal
+overrides would therefore discard the canonical fact that the result is again
+an ideal, together with the selected ideal-generator/engine data required by
+the current `CommutativeIdeals` representation.  The ideal overrides in
+`categories/rings/commutative_ideals.py` preserve that structure only by
+maintaining a second computation path.
+
+**Expected behavior:** the module-subobject sum/meet construction has one
+authority and transports any structural category whose closure under the
+selected construction is part of its declared contract.  In particular,
+intersections and sums of commutative ideals return `CommutativeIdeals(R)`
+without a second public `sum`/`intersection` implementation at the ideal leaf.
+**Dependency path:** selected module subobjects and their inclusions -> general
+subobject join/pullback -> structure-preservation datum for commutative ideals
+-> one result carrying both `ModuleSubobjects(R)` and `CommutativeIdeals(R)`.
+**Consumers:** `CommutativeIdeals.sum`, `CommutativeIdeals.intersection`, and
+all callers that subsequently require ideal operations on those results.
+**Coverage boundary:** the live module-subobject implementations at
+`modules/pure/modules.py` and the two ideal implementations at
+`rings/commutative_ideals.py` were inspected during `placement-audit`.  No
+claim is made here about preservation of arbitrary additional subobject
+categories; each such closure law requires its own mathematical justification.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
