@@ -43,6 +43,6 @@ Nothing is concluded from an undischarged decomposition.
 ## Localization {#sec-localization}
 
 A hypothesis is membership; there is no assumption form to localize.
-Passage to a local setting is application of the named base-change functor, and the local invariants live on the local object: one does not "work $p$-adically" with $L$, one works with $L \otimes \mathbb Z_p$, an object of its own category reached by a distinguished 1-cell (Distinguished Functors @sec-distinguished-functors), and statements proved there are statements about $L \otimes \mathbb Z_p$.
+Passage to a local setting is application of the named base-change functor, and the local invariants live on the local object: one does not "work $p$-adically" with $L$, one works with $L \otimes_{\mathbb Z} \mathbb Z_p$, an object of its own category reached by a distinguished 1-cell (Distinguished Functors @sec-distinguished-functors), and statements proved there are statements about $L \otimes_{\mathbb Z} \mathbb Z_p$.
 Transferring a local statement back along the base change is a descent claim, stated and discharged as one — never an effect of closing a scope.
 The genus construction is the worked instance: local profiles are read off the base changes, and the global-to-local comparison is the $\pi_0$ fiber-sequence machinery of Categorical Foundations @sec-pi0-fiber.

@@ -10,7 +10,7 @@ Given a one-parameter degeneration of K3 or Enriques surfaces, a **Kulikov model
 
   - $V_0$ and $V_k$ are rational and $V_1,\cdots, V_{k-1}$ are birational to $E\times \PP^1$ and thus elliptically ruled,
 
-  - The chain consists of components $V_0,\ldots,V_k$ glued along elliptic curves $E_i = V_{i-1} \cap V_i$ $(1 \leq i \leq k)$, all isomorphic to the same elliptic curve $E$, satisfying a compatibility condition on normal bundles, $\mcn_{E/V_i} \otimes \mcn_{E/V_{i+1}} \cong \OO_E$
+  - The chain consists of components $V_0,\ldots,V_k$ glued along elliptic curves $E_i = V_{i-1} \cap V_i$ $(1 \leq i \leq k)$, all isomorphic to the same elliptic curve $E$, satisfying a compatibility condition on normal bundles, $\mcn_{E/V_i} \otimes_{\OO_E} \mcn_{E/V_{i+1}} \cong \OO_E$
 
   - The dual complex $\Gamma(\mcx_0)$ is a simplicial $\DD^1$, corresponding to a partition of the closed unit interval $[0, 1]$.
 

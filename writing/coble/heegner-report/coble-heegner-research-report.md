@@ -175,7 +175,7 @@ For a lattice $T$ of signature $(2,n)$, a connected type-IV domain is
 \[
 \mathbb D(T)
  =\left\{
- [\omega]\in\mathbb P(T\otimes\mathbb C)
+ [\omega]\in\mathbb P(T\otimes_{\mathbb Z}\mathbb C)
  : (\omega,\omega)=0,
    (\omega,\overline\omega)>0
  \right\}^{+}.
@@ -1286,7 +1286,7 @@ AEGS relate five forms of degeneration data:
 \text{KSBA stable pair}.
 \]
 
-For a primitive isotropic line $e$, a Type III monodromy invariant is a vector $\lambda\in\overline{T}_e\otimes\mathbb R$ in the closure of a positive chamber.
+For a primitive isotropic line $e$, a Type III monodromy invariant is a vector $\lambda\in\overline{T}_e\otimes_{\mathbb Z}\mathbb R$ in the closure of a positive chamber.
 If $\{r_i\}$ is a simple-root system, the root coordinates are $\ell_i=(\lambda,r_i)\ge0$.
 
 They become edge lengths, internal blowup parameters, and nodal-surgery sizes in a moment or Symington polygon.

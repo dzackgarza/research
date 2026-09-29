@@ -43,7 +43,7 @@ By the tensor-hom adjunction this Hom-module is $\operatorname{Bil}_{R,R}(M)$ (@
 Let $A$ be an associative unital $R$-algebra.
 The tensor product $A\otimes_R A$ in $R\text{-}\mathbf{Alg}$ is the monoid in $R\text{-}\mathbf{Mod}$ whose underlying module is $U(A)\otimes_R U(A)$ and whose multiplication is
 $$
-(a\otimes b)(c\otimes d)=ac\otimes bd
+(a\otimes_R b)(c\otimes_R d)=ac\otimes_R bd
 $$
 [@nlab:associative_algebra]. An *algebra bilinear form* on $A$, with values in $R$, is an element of
 $$
@@ -89,9 +89,9 @@ Algebra generators give expressions for the two elements of $A$ on which $B$ is 
 Let $B$ be a module bilinear form on $U(A)$.
 The form $B$ is *associative* if
 $$
-B\circ(\mu\otimes\operatorname{id}_A)
+B\circ(\mu\otimes_R\operatorname{id}_A)
 =
-B\circ(\operatorname{id}_A\otimes\mu)
+B\circ(\operatorname{id}_A\otimes_R\mu)
 \colon
 A\otimes_R A\otimes_R A\longrightarrow R,
 $$
@@ -156,7 +156,7 @@ The values of $B$ on pairs drawn from a finite algebra generating set therefore 
 ::: {.proposition #prop:characters-pair title="Classification"}
 
 Let $A$ be an object of $R\text{-}\mathbf{CAlg}$.
-The tensor product $A\otimes_R A$ of @def:algebra-bilinear-form is the coproduct of $A$ with itself in $R\text{-}\mathbf{CAlg}$, with inclusions $a\mapsto a\otimes 1_A$ and $b\mapsto 1_A\otimes b$.
+The tensor product $A\otimes_R A$ of @def:algebra-bilinear-form is the coproduct of $A$ with itself in $R\text{-}\mathbf{CAlg}$, with inclusions $a\mapsto a\otimes_R 1_A$ and $b\mapsto 1_A\otimes_R b$.
 The coproduct universal property is
 $$
 \operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A\otimes_R A,R)
@@ -165,15 +165,15 @@ $$
 \times
 \operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A,R).
 $$
-An algebra bilinear form $\phi\colon A\otimes_R A\to R$ is therefore $\phi(a\otimes b)=\chi_L(a)\chi_R(b)$ for the pair of $R$-algebra homomorphisms $\chi_L,\chi_R\colon A\to R$ given by $\chi_L(a)=\phi(a\otimes 1_A)$ and $\chi_R(b)=\phi(1_A\otimes b)$.
+An algebra bilinear form $\phi\colon A\otimes_R A\to R$ is therefore $\phi(a\otimes_R b)=\chi_L(a)\chi_R(b)$ for the pair of $R$-algebra homomorphisms $\chi_L,\chi_R\colon A\to R$ given by $\chi_L(a)=\phi(a\otimes_R 1_A)$ and $\chi_R(b)=\phi(1_A\otimes_R b)$.
 
 The same formulae classify algebra bilinear forms when $A$ is an object of $R\text{-}\mathbf{Alg}$.
 The tensor product is the monoidal tensor of @def:algebra-bilinear-form, and
 $$
-\phi(a\otimes b)=\phi\bigl((a\otimes 1_A)(1_A\otimes b)\bigr)=\phi(a\otimes 1_A)\phi(1_A\otimes b),
+\phi(a\otimes_R b)=\phi\bigl((a\otimes_R 1_A)(1_A\otimes_R b)\bigr)=\phi(a\otimes_R 1_A)\phi(1_A\otimes_R b),
 $$
 $$
-\chi_L(ab)=\phi(ab\otimes 1_A)=\phi\bigl((a\otimes 1_A)(b\otimes 1_A)\bigr)=\chi_L(a)\chi_L(b),
+\chi_L(ab)=\phi(ab\otimes_R 1_A)=\phi\bigl((a\otimes_R 1_A)(b\otimes_R 1_A)\bigr)=\chi_L(a)\chi_L(b),
 $$
 with $\chi_L(1_A)=1_R$, and likewise for $\chi_R$.
 The codomain $R$ is commutative.
@@ -200,13 +200,13 @@ $$
 
 ::: {.remark #rmk:symmetric-character-form title="Symmetry identifies the two characters"}
 
-If $\phi\circ\tau=\phi$ for the flip $\tau(a\otimes b)=b\otimes a$, then $\chi_L=\chi_R$.
+If $\phi\circ\tau=\phi$ for the flip $\tau(a\otimes_R b)=b\otimes_R a$, then $\chi_L=\chi_R$.
 :::
 
 ::: {.example #ex:two-characters-polynomials title="Evaluation at two points"}
 
-Let $A=R[x]$ and define $\phi(f\otimes g)=f(0)\,g(1)$.
-Multiplicativity is $\phi(fh\otimes gk)=f(0)h(0)\,g(1)k(1)=\phi(f\otimes g)\phi(h\otimes k)$, so $\phi$ is an algebra bilinear form on $A$.
+Let $A=R[x]$ and define $\phi(f\otimes_R g)=f(0)\,g(1)$.
+Multiplicativity is $\phi(fh\otimes_R gk)=f(0)h(0)\,g(1)k(1)=\phi(f\otimes_R g)\phi(h\otimes_R k)$, so $\phi$ is an algebra bilinear form on $A$.
 Here $\chi_L(f)=f(0)$ and $\chi_R(g)=g(1)$.
 These characters are distinct: $\chi_L(x)=0$ and $\chi_R(x)=1$.
 Each is determined by the image of the algebra generator $x$.

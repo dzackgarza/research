@@ -30,10 +30,10 @@ Its base change is the $B$-bilinear map
 $$
 b_B\colon(B\otimes_AM)\times(B\otimes_AM)\longrightarrow B\otimes_AW,
 \qquad
-b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y),
+b_B(c\otimes_A x,d\otimes_A y)=cd\otimes_A b(x,y),
 $$
 whose value module is $B\otimes_AW$.
-For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as $b_B(c\otimes x,d\otimes y)=cd\,\varphi(b(x,y))$.
+For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as $b_B(c\otimes_A x,d\otimes_A y)=cd\,\varphi(b(x,y))$.
 :::
 
 ## Module properties {#sec-module-properties}

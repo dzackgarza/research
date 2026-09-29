@@ -62,7 +62,7 @@ for some $k \leq n$, i.e., $X$ locally looks like $k$ coordinate hyperplanes.
 
 :::{.definition title="Gorenstein and $\QQ$-Gorenstein Varieties" #sing-gor-qgor}
 A scheme $X$ of pure dimension is **Gorenstein** if it is Cohen–Macaulay and its dualizing sheaf $\omega_X$ is invertible.
-$X$ is **$\QQ$-Gorenstein** if $\omega_X$ is $\QQ$-Cartier, i.e., some positive tensor power $\omega_X^{\otimes m}$ is invertible for $m > 0$.
+$X$ is **$\QQ$-Gorenstein** if $\omega_X$ is $\QQ$-Cartier, i.e., some positive tensor power $\omega_X^{\otimes_{\OO_X} m}$ is invertible for $m > 0$.
 :::
 
 :::{.definition title="ADE Singularities (Du Val, Rational Double Points)" #pairs-ade}

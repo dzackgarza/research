@@ -231,13 +231,13 @@ and skew-symmetry kills the second sum.
 Let $b_M$ have value module $W_M$ and $b_N$ have value module $W_N$.
 There is exactly one bilinear map
 $$
-b_M\otimes b_N\colon (M\otimes_RN)\times(M\otimes_RN)\longrightarrow W_M\otimes_RW_N
+b_M\otimes_R b_N\colon (M\otimes_RN)\times(M\otimes_RN)\longrightarrow W_M\otimes_RW_N
 $$
 with
 $$
-(b_M\otimes b_N)(x\otimes u,\;y\otimes v)=b_M(x,y)\otimes b_N(u,v),
+(b_M\otimes_R b_N)(x\otimes_R u,\;y\otimes_R v)=b_M(x,y)\otimes_R b_N(u,v),
 $$
-obtained by factoring the four-linear map $(x,u,y,v)\mapsto b_M(x,y)\otimes b_N(u,v)$ through the tensor products [@MH73, I §5.1].
+obtained by factoring the four-linear map $(x,u,y,v)\mapsto b_M(x,y)\otimes_R b_N(u,v)$ through the tensor products [@MH73, I §5.1].
 For $W_M=W_N=R$ the value module is $R$.
 
 Call a form $\varepsilon$-symmetric when $b(x,y)=\varepsilon\,b(y,x)$, so that $1$-symmetric means symmetric and $(-1)$-symmetric means skew-symmetric.
@@ -247,9 +247,9 @@ If both forms are perfect and both modules are finitely generated projective, th
 
 ::: {.proposition #prop:tensor-gram title="Gram matrix and determinant of a tensor product"}
 
-If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\otimes b_N$ in the product basis is the Kronecker product $G_M\otimes G_N$, and
+If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\otimes_R b_N$ in the product basis is the Kronecker product of $G_M$ and $G_N$, whose $((i,k),(j,\ell))$-entry is $(G_M)_{ij}(G_N)_{k\ell}$, and
 $$
-\det(b_M\otimes b_N)=\det(b_M)^{\,n}\det(b_N)^{\,m}.
+\det(b_M\otimes_R b_N)=\det(b_M)^{\,n}\det(b_N)^{\,m}.
 $$
 :::
 

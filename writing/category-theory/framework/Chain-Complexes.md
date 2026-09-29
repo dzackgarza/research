@@ -116,7 +116,7 @@ For $C,D\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ the *tensor product complex* $C\o
 $$
 (C\otimes_RD)_n=\bigoplus_{p+q=n}C_p\otimes_RD_q,
 \qquad
-d(x\otimes y)=d^Cx\otimes y+(-1)^p\,x\otimes d^Dy
+d(x\otimes_R y)=d^Cx\otimes_R y+(-1)^p\,x\otimes_R d^Dy
 $$
 for $x\in C_p$ and $y\in D_q$ [@Wei94, 2.7.1, Thm. 3.6.3].
 
@@ -124,7 +124,7 @@ The transposition
 $$
 \tau\colon C\otimes_RD\longrightarrow D\otimes_RC,
 \qquad
-\tau(x\otimes y)=(-1)^{pq}\,y\otimes x,
+\tau(x\otimes_R y)=(-1)^{pq}\,y\otimes_R x,
 $$
 commutes with the two differentials and is an isomorphism of complexes; it is the symmetry of @def:braided-symmetric for this tensor product.
 :::
@@ -198,11 +198,11 @@ is a well-defined $R$-bilinear map $H_p(C)\times H_q(C)\to W$.
 If $\beta_n=\gamma\circ d_{n+1}$ for some $R$-linear $\gamma\colon(C\otimes_RC)_{n+1}\to W$, then $\bar\beta_{p,q}=0$.
 
 *Proof.* Let $x\in Z_p(C)$ and $y\in C_{q+1}$.
-In $(C\otimes_RC)_{n+1}$ one has $d(x\otimes y)=d^Cx\otimes y+(-1)^px\otimes d^Cy=(-1)^px\otimes d^Cy$, so $0=\beta_n\bigl(d(x\otimes y)\bigr)=(-1)^p\beta_{p,q}(x,d^Cy)$ and hence $\beta_{p,q}(x,d^Cy)=0$.
+In $(C\otimes_RC)_{n+1}$ one has $d(x\otimes_R y)=d^Cx\otimes_R y+(-1)^px\otimes_R d^Cy=(-1)^px\otimes_R d^Cy$, so $0=\beta_n\bigl(d(x\otimes_R y)\bigr)=(-1)^p\beta_{p,q}(x,d^Cy)$ and hence $\beta_{p,q}(x,d^Cy)=0$.
 Let $x'\in C_{p+1}$ and $y\in Z_q(C)$.
-Then $d(x'\otimes y)=d^Cx'\otimes y$, so $\beta_{p,q}(d^Cx',y)=0$.
+Then $d(x'\otimes_R y)=d^Cx'\otimes_R y$, so $\beta_{p,q}(d^Cx',y)=0$.
 Thus $\beta_{p,q}$ annihilates $Z_p(C)\times B_q(C)$ and $B_p(C)\times Z_q(C)$, and descends to the subquotients.
-If $\beta_n=\gamma d_{n+1}$ and $x,y$ are cycles, then $d(x\otimes y)=0$ and $\beta_{p,q}(x,y)=\gamma\bigl(d(x\otimes y)\bigr)=0$.
+If $\beta_n=\gamma d_{n+1}$ and $x,y$ are cycles, then $d(x\otimes_R y)=0$ and $\beta_{p,q}(x,y)=\gamma\bigl(d(x\otimes_R y)\bigr)=0$.
 $\square$
 :::
 

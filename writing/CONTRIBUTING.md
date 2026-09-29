@@ -1706,6 +1706,41 @@ $\infty$-categorical convention once and use it uniformly; note when
 passage to $\pi_0$ recovers the classical $R\text{-}\mathbf{Mod}$ or
 $R^{(I)}$.
 
+### `SYM-14`: Tensor product written without its base
+
+Outside a scope that explicitly binds $\otimes$ as the monoidal
+bifunctor of a named monoidal category
+$(\mathcal C,\otimes,\mathbf 1,\ldots)$, every ordinary tensor product
+states its base on every occurrence.  For modules, algebras, complexes,
+and sheaves this includes the tensor-product object, pure tensors,
+tensor products of morphisms, and tensor powers.  Thus write
+$M\otimes_RN$, $x\otimes_Ry$, $f\otimes_Rg$,
+$L\otimes_{\mathbb Z}\mathbb Z_p$, and
+$\mathcal F\otimes_{\mathcal O_X}\mathcal G$ rather than suppressing
+the balancing ring or structure sheaf.  Likewise a tensor power of an
+$\mathcal O_X$-module is written
+$\mathcal F^{\otimes_{\mathcal O_X}m}$.
+
+The exception is categorical notation whose symbol has itself been
+declared as structure: after
+$\otimes\colon\mathcal C\times\mathcal C\to\mathcal C$ has been
+bound, $a\otimes b$ uses that named bifunctor and no ring subscript is
+missing.  Merely saying that $\mathcal C$ is monoidal does not bind the
+symbol $\otimes$ (SYM-1).
+
+**Banned:** "$L\otimes\mathbb Z_p$" for scalar extension of a
+$\mathbb Z$-module; "$x\otimes y$" for a pure tensor in
+$M\otimes_RN$; "$\mu\otimes\operatorname{id}_A$" for the tensor of
+$R$-linear maps; "$\omega_X^{\otimes m}$" for an
+$\mathcal O_X$-module tensor power.
+
+**Preferred:** "$L\otimes_{\mathbb Z}\mathbb Z_p$,"
+"$x\otimes_Ry$," "$\mu\otimes_R\operatorname{id}_A$," and
+"$\omega_X^{\otimes_{\mathcal O_X}m}$."  The Stacks Project defines
+the tensor product of $R$-modules as $M\otimes_RN$ (Tag 00CV); this
+book keeps that base visible on each occurrence of the ordinary
+balanced tensor product.
+
 ### `PR-21`: Definition missing "is … if …" and quantifier, redundant qualifier
 
 A property is defined as "finitely generated: some $R^n\twoheadrightarrow

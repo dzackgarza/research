@@ -26,23 +26,23 @@ The category is *strict* when $\otimes$ is associative and unital on the nose an
 
 ::: {.theorem #thm:coherence title="Coherence"}
 
-In a monoidal category, every diagram built from instances of $\alpha$, $\lambda$, $\varrho$, identities, and $\otimes$ commutes; equivalently, every monoidal category is monoidally equivalent to a strict one [@Mac98, §VII.2].
+For a monoidal category $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$, every diagram built from instances of $\alpha$, $\lambda$, $\varrho$, identities, and $\otimes$ commutes; equivalently, every monoidal category is monoidally equivalent to a strict one [@Mac98, §VII.2].
 :::
 
-Coherence is what licenses the notation $a_1\otimes\cdots\otimes a_n$ without parentheses.
+For $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$ as in @def:monoidal-category, coherence is what licenses the notation $a_1\otimes\cdots\otimes a_n$ without parentheses.
 A construction that transports data along $\alpha$, $\lambda$, or $\varrho$ names the comparison it uses, in the sense of Equivalences and witnesses @sec-canonical-identification.
 
 ::: {.example #ex:cartesian-monoidal title="Cartesian and cocartesian structures"}
 
-A category with finite products is monoidal with $a\otimes b$ a chosen product $a\times b$ and $e$ a terminal object, the three isomorphisms being the unique ones commuting with the projections; this is the *cartesian* monoidal structure.
+Let $\mathcal C$ have finite products and a terminal object $e$. Then $(\mathcal C,\times,e)$ is a monoidal category, with associator and unitors the canonical isomorphisms supplied by the universal property of the product; this is the *cartesian* monoidal structure.
 Dually, finite coproducts and an initial object give the *cocartesian* structure [@Mac98, §VII.1].
 For a commutative ring $R$, the tensor product and the direct sum give two different monoidal structures on $R\text{-}\mathbf{Mod}$, namely $(R\text{-}\mathbf{Mod},\otimes_R,R)$ and $(R\text{-}\mathbf{Mod},\oplus,0)$, and a statement about "the" monoidal structure names which one it uses.
 :::
 
 ::: {.definition #def:braided-symmetric title="Braided and symmetric structures"}
 
-A *braiding* on a monoidal category is a natural isomorphism $\gamma_{a,b}\colon a\otimes b\cong b\otimes a$ satisfying the two hexagon conditions relating $\gamma$ to $\alpha$.
-A monoidal category is *symmetric* when it is equipped with a braiding satisfying
+For a monoidal category $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$, a *braiding* is a natural isomorphism $\gamma_{a,b}\colon a\otimes b\cong b\otimes a$ satisfying the two hexagon conditions relating $\gamma$ to $\alpha$.
+The tuple $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$ is *symmetric* when it is equipped with a braiding satisfying
 $$
 \gamma_{a,b}\circ\gamma_{b,a}=1,
 \qquad
@@ -55,7 +55,7 @@ A cartesian or cocartesian monoidal structure is symmetric, with $\gamma$ the is
 
 ::: {.definition #def:closed-monoidal title="Closed structure and internal hom"}
 
-A monoidal category $V$ is *closed* when it is symmetric and each functor $-\otimes b\colon V\to V$ has a specified right adjoint $[b,-]\colon V\to V$,
+A monoidal category $\langle V,\otimes,e,\alpha,\lambda,\varrho\rangle$ is *closed* when it is symmetric and each functor $-\otimes b\colon V\to V$ has a specified right adjoint $[b,-]\colon V\to V$,
 $$
 \adj{V}{V}{-\otimes b}{[b,-]},
 \qquad
@@ -75,7 +75,7 @@ The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the cano
 
 ::: {.definition #def:monoid-object title="Monoid objects"}
 
-A *monoid in a monoidal category* $\langle B,\otimes,e\rangle$ is a triple $\langle c,\mu,\eta\rangle$ consisting of an object $c\in B$ and morphisms
+A *monoid in a monoidal category* $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$ is a triple $\langle c,\mu,\eta\rangle$ consisting of an object $c\in B$ and morphisms
 $$
 \mu\colon c\otimes c\longrightarrow c,
 \qquad
@@ -101,7 +101,7 @@ A morphism of monoids is a morphism of $B$ commuting with $\mu$ and $\eta$ [@Mac
 A monoid in $(\mathbf{Set},\times,1)$ is a monoid in the sense of @def:semigroup-monoid, the two unit laws for $\eta$ becoming the unit laws for the element $\eta(*)$.
 
 For a commutative ring $R$, a monoid in $(R\text{-}\mathbf{Mod},\otimes_R,R)$ is an associative unital $R$-algebra.
-A monoid in the strict monoidal category of endofunctors of a category, with $\otimes$ composition, is a monad [@Mac98, §VII.3 and §VI.1].
+For a category $\mathcal C$, a monoid in the strict monoidal category $(\operatorname{End}(\mathcal C),\circ,\operatorname{id}_{\mathcal C})$ is a monad [@Mac98, §VII.3 and §VI.1].
 :::
 
 ::: {.definition #def:group-object title="Group objects"}
@@ -123,7 +123,7 @@ The inverse axiom uses the diagonal, which the cartesian structure supplies; gro
 
 ::: {.definition #def:k0-monoidal title="$K_0$ of a symmetric monoidal category"}
 
-Let $S$ be a symmetric monoidal category whose isomorphism classes of objects form a set $S^{\mathrm{iso}}=\pi_0(S^{\simeq})$.
+Let $(S,\otimes,e,\alpha,\lambda,\varrho,\gamma)$ be a symmetric monoidal category whose isomorphism classes of objects form a set $S^{\mathrm{iso}}=\pi_0(S^{\simeq})$.
 Then $\otimes$ makes $S^{\mathrm{iso}}$ an abelian monoid with identity $[e]$, and
 $$
 K_0^{\otimes}(S)
