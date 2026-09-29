@@ -19,19 +19,19 @@ Two published algorithm families answer that question for indefinite lattices; t
 
 ## Why the orbit count is the cusp count
 
-::: {.Remark title="The correspondence and the invariants that separate orbits"}
+::: {.remark title="The correspondence and the invariants that separate orbits"}
 
 [The Scattone cusp method](../compactifications/scattone-cusp-method.md) records the correspondence and its separating invariants: for $T$ of signature $(2,n)$ and an arithmetic $\Gamma\leq\Orth(T)$, the $0$-cusps of the Baily--Borel compactification are the $\Gamma$-orbits of primitive isotropic lines of $T$ and the $1$-cusps are the $\Gamma$-orbits of primitive isotropic planes, and the pair $\bigl(\div_T(v), [v^*]\bigr)$ of \longref{prop:coble-divisibility-discriminant} separates those orbits under the hypotheses of \longref{thm:eichler-criterion} and \longref{thm:sterk-orbit}.
 :::
 
-::: {.Remark title="The building of a lattice of signature $(2,n)$"}
+::: {.remark title="The building of a lattice of signature $(2,n)$"}
 
 For $T$ of signature $(2,n)$ a totally isotropic subspace has dimension at most $2$, so the Tits building of $\Orth(T)$ has rank $2$: its vertices are the isotropic lines and the isotropic planes, its edges are the containments $I\subset J$, and it is a bipartite graph.
 The $\Gamma$-quotient is the incidence graph of the boundary of $\bbcpt{F}$, the $1$-cusps adjacent to a $0$-cusp $[I]$ being the isotropic planes containing $I$; these are the maximal parabolic subdiagrams of the Coxeter--Vinberg diagram at $[I]$ (\longref{def:parabolic-subdiagram}), equivalently the ideal vertices of the chamber there (\longref{cor:ideal-vertices-are-parabolic}).
 Counting the cusps and computing the building are one computation at two levels of detail.
 :::
 
-::: {.Remark title="The complement of a vector and what its computation produces"}
+::: {.remark title="The complement of a vector and what its computation produces"}
 
 For a primitive $v$ in a nondegenerate lattice $L$ of rank $n$ with Gram matrix $G$, the pairing $\beta_L(v,-)\colon L\to\ZZ$ has matrix the row $v^{\mathsf T}G$.
 Its invariant factor decomposition produces two things: the single invariant factor of that map, which is $\div_L(v)$, so that the image is $\div_L(v)\ZZ$; and an explicit basis of the kernel $v^{\perp L}$, a free module of rank $n-1$, whose Gram matrix is the restricted form.
@@ -41,7 +41,7 @@ Every algorithm below descends through this step, and the invariants it compares
 
 ## Deciding orbit equivalence of two vectors
 
-::: {.Proposition #prop:orbit-necessary-conditions title="Conditions necessary for equivalence"}
+::: {.proposition #prop:orbit-necessary-conditions title="Conditions necessary for equivalence"}
 
 Let $L$ be a nondegenerate lattice, $\Gamma\leq\Orth(L)$, and $v_1, v_2\in L$ primitive with $\phi(v_1) = v_2$ for some $\phi\in\Gamma$.
 Then
@@ -55,14 +55,14 @@ Then
 Each holds a fortiori for any subgroup of $\Orth(L)$, so a failure of any one of them refutes equivalence under every group considered here.
 :::
 
-::: {.Remark title="The definite case"}
+::: {.remark title="The definite case"}
 
 Algorithm 2.1 of [@Daw22] decides $\Gamma$-equivalence of $v_1, v_2$ with $v_1^2 = v_2^2 \neq 0$ under the hypothesis that $v_1^{\perp L}$ is definite.
 That hypothesis is what makes the decision terminate: the isometry group of a definite lattice is finite, so the isometries $v_1^{\perp L}\to v_2^{\perp L}$ form a finite set which can be enumerated, and each is tested for extension to an element of $\Gamma$ compatible with $v_1\mapsto v_2$.
 The complement and its form come from the invariant factor decomposition above.
 :::
 
-::: {.Remark title="The indefinite case"}
+::: {.remark title="The indefinite case"}
 
 Algorithm 2.3 of [@Daw22] treats $v_1^{\perp L}$ indefinite, where the isometry group is infinite and the enumeration of the definite case is unavailable.
 The decision is made on the discriminant form instead, under the hypothesis that
@@ -74,7 +74,7 @@ This is the same surjectivity that Nikulin's criteria supply for a $2$-elementar
 Without it the discriminant data does not determine the orbit, and the algorithm decides nothing.
 :::
 
-::: {.Example #ex:dawes-u-a3 title="Two specimens in $U\oplus A_3$"}
+::: {.example #ex:dawes-u-a3 title="Two specimens in $U\oplus A_3$"}
 
 Both specimens are stated in $L = U\oplus A_3$ with the Gram matrices
 $$
@@ -91,7 +91,7 @@ For Example 2.6, $v_1 = (1,-1,0,0,0)$ and $v_2 = (1,0,1,0,0)$, and both have $v^
 The paper's conclusion is $v_1\sim v_2$ under the group it denotes $\wh{S\Orth}^+(L)$, and the in-tree computation reproduces it.
 :::
 
-::: {.Question #qst:dawes-example-22 title="An unreconciled outcome on the first specimen"}
+::: {.question #qst:dawes-example-22 title="An unreconciled outcome on the first specimen"}
 
 Run on Example 2.2 of \longref{ex:dawes-u-a3}, the in-tree computation returns $v_1\not\sim v_2$, on the ground that $v_1^{\perp L}$ and $v_2^{\perp L}$ have different discriminants.
 The record attributes the disagreement to a simplified isometry test, but a discriminant is an isometry invariant, so by \longref{prop:orbit-necessary-conditions}(3) unequal discriminants refute equivalence under $\Orth(L)$ and under every subgroup of it, whatever isometry test is used downstream.
@@ -99,7 +99,7 @@ The disagreement therefore lies in one of three places: the conclusion of [@Daw2
 The squares recorded in \longref{ex:dawes-u-a3} are consistent with the stated Gram matrices, which settles the transcription of the vectors; recomputing the two complements and their discriminants settles the rest.
 :::
 
-::: {.Remark title="Buildings by descent along a subgroup"}
+::: {.remark title="Buildings by descent along a subgroup"}
 
 [@Daw22] also computes the building $B(G_1)$ of a subgroup $G_1\subset G_2$ from $B(G_2)$, and specializes this to split maximal lattices of signature $(2,n)$, where the building is described directly by its isotropic lines and planes.
 Descent along a subgroup is the shape the Coble problem takes: $\Gamma_\Co$ is cut out of $\Orth(T_\En)$ as a stabilizer intersected with a centralizer ([open problems](../open-problems/open-problems.md)), so its building is a refinement of one already computed for a larger group.
@@ -108,7 +108,7 @@ The paper's stated applications are the configuration of boundary components of 
 
 ## The polarized Enriques computation and its lattice
 
-::: {.Remark title="Three algorithms for indefinite forms"}
+::: {.remark title="Three algorithms for indefinite forms"}
 
 [@SH23] carries out the corresponding computation for moduli of polarized Enriques surfaces, using three algorithms for indefinite quadratic forms:
 
@@ -121,7 +121,7 @@ The paper's stated applications are the configuration of boundary components of 
 The results reported there are that the arithmetic groups arising from polarized Enriques moduli fall into exactly $87$ conjugacy classes, that every such moduli space is dominated by the one of polarization degree $1240$, and that the Tits buildings of those groups are computed.
 :::
 
-::: {.Observation #obs:enriques-orbit-lattice-is-tdp title="The lattice of that computation is $\tdp$"}
+::: {.observation #obs:enriques-orbit-lattice-is-tdp title="The lattice of that computation is $\tdp$"}
 
 The specification records the target lattice by the shorthand $U\oplus 2U\oplus 2E_8(-1)$, in which the prefix $2$ has two different meanings, and by two unambiguous invariants: rank $20$ and signature $(2,18)$.
 Those invariants force the reading
@@ -133,13 +133,13 @@ This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in whi
 The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
 :::
 
-::: {.Remark title="Scope of the exercised cases"}
+::: {.remark title="Scope of the exercised cases"}
 
 The orbit algorithm was exercised on the family $U\oplus U(2)\oplus X$ with $X$ successively $0$, $A_2$, $A_3$, $A_2^{\oplus 2}$ and $E_8^{\oplus 2}$, and on $U^{\oplus 2}\oplus E_7$, at target norm $0$; the last of the first family is $M$ itself.
 The resulting orbit counts are not part of the record.
 :::
 
-::: {.Remark title="The implementation named in the recipe"}
+::: {.remark title="The implementation named in the recipe"}
 
 Step 6 of the recipe in [the computational toolchain and recipe](computational-toolchain-and-recipe.md) invokes `INDEF_FORM_GetOrbitRepresentative` from the C++ library `polyhedral_common` of the same authors, through GAP.
 That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the two-elementary registry, are the invariants under which the orbit representatives it returns are recognized.
@@ -147,7 +147,7 @@ That is the second algorithm above, and the separating invariants the recipe pai
 
 ## What remains for the Coble lattices
 
-::: {.Remark title="The residue"}
+::: {.remark title="The residue"}
 
 The algorithms above decide orbit equivalence for a fixed indefinite form and a fixed group.
 For $T_\Co = \gens{2}\oplus E_{10}(2)$ the remaining inputs are the group and the lift: the orbits are wanted for $\Orth(T_\Co)$, for $\OStab(T_\Co)$ and for $\Gamma_\Co$, which differ, and the reduction to $A_{T_\Co}\cong(\ZZ/2\ZZ)^{11}$ requires the surjectivity hypothesis above together with the lifting statement of \longref{thm:sterk-orbit}.
