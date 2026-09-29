@@ -189,9 +189,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         def bilinear_value_module(self):
             return self._preamble_bilinear_value_module
 
-        def value_module(self):
-            return self.bilinear_value_module()
-
         def b(self, left, right):
             if left not in self or right not in self:
                 raise TypeError(
@@ -451,19 +448,9 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def quadratic_value_module(self):
             return self._preamble_quadratic_value_module
 
-        def value_module(self):
-            return self.quadratic_value_module()
-
         def twist(self, scalar):
             r"""Return the same discriminant module equipped with ``scalar*q``."""
             return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
-
-        def q(self, element):
-            if element not in self:
-                raise TypeError(
-                    f"the discriminant quadratic form on {self} is defined on its elements, but {element} is not in {self}"
-                )
-            return self.quadratic_value_module()(self.dual_lattice().norm(self.dual_lattice_lift(element)))
 
         @cached_method
         def isotropic_elements(self):
