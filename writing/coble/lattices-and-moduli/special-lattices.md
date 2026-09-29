@@ -306,7 +306,7 @@ orbits becomes a finite computation in the discriminant group.
 ::: {.proof}
 
 The criterion is due to Eichler [@Eic74]; see [@GHS08] for the formulation used
-here, where the transvections of [the Eichler transvection-group definition](#def:eichler-group) supplied by the two
+here, where the transvections of @def:eichler-group supplied by the two
 hyperbolic planes are what move a primitive vector into normal form.
 :::
 

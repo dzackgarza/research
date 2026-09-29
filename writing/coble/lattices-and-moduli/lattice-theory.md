@@ -175,7 +175,7 @@ This is [@AE22 Prop. 5.5].
 
 ::: {.remark title="Isotropic type determines the boundary lattice invariants"}
 
-[The isotropic-trichotomy theorem](#thm:isotropic-trichotomy) is the tool by which a $0$-cusp of a type IV quotient is identified from a single numerical invariant of its isotropic vector: the divisibility, together with the characteristic-or-ordinary dichotomy, determines the invariants of the boundary lattice $\overline{S}$, and for indefinite $\overline{S}$ those invariants determine its isometry class.
+@thm:isotropic-trichotomy is the tool by which a $0$-cusp of a type IV quotient is identified from a single numerical invariant of its isotropic vector: the divisibility, together with the characteristic-or-ordinary dichotomy, determines the invariants of the boundary lattice $\overline{S}$, and for indefinite $\overline{S}$ those invariants determine its isometry class.
 It is used in this form throughout the cusp correspondence.
 :::
 

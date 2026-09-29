@@ -70,7 +70,7 @@ h^1(\OO_Z) = h^2(\OO_Z) = 0
 $$
 and the canonical class $K_Z$ is a nontrivial $2$-torsion element of $\Pic(Z)$.
 
-Equivalently, Enriques surfaces are the quotients $Z = X/\iota$ of $K3$ surfaces $X$ ([the K3-surface definition](#def:k3-surface)) by fixed-point-free involutions $\iota$ --- called **Enriques involutions** --- and satisfy $2K_Z \sim 0$ and $q(Z) = 0$.
+Equivalently, Enriques surfaces are the quotients $Z = X/\iota$ of $K3$ surfaces $X$ (@def:k3-surface) by fixed-point-free involutions $\iota$ --- called **Enriques involutions** --- and satisfy $2K_Z \sim 0$ and $q(Z) = 0$.
 :::
 
 ::: {.remark title="Basic properties"}

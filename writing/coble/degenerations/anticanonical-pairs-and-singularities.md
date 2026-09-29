@@ -79,7 +79,7 @@ $$
 
 ::: {.definition #def:mmp-singularities title="Terminal, canonical, klt, and log canonical singularities"}
 
-With discrepancies as in [the discrepancy definition](#def:discrepancy), the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
+With discrepancies as in @def:discrepancy, the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
 
 - **Terminal**: $a(E, X, D) > 0$.
 
