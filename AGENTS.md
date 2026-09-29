@@ -39,6 +39,31 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+# Role in the programme: no ontology here (always-on)
+
+[`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md)
+owns the separation of concerns among `lean-categories` (all mathematics), `lean-cas-dsl` (the
+language derived from it) and realization leaves. This repository's part:
+
+* **Research owns no ontology.** It is for experiments, notebooks, writing, formalization requests,
+  and possibly realization leaves. It owns no mathematical runtime authority, no semantic
+  registry and no parity denominator.
+* **Missing mathematics blocks upstream.** When an experiment needs a category, operation,
+  predicate or construction that `lean-categories` does not formalize, open or advance the
+  formalization request there and block on it. Never coin a local substitute, such as a
+  temporary `MyVerySpecialLattices` in the preamble, a notebook or a script, to reconcile later.
+* **The preamble's public mathematics is legacy.** Its existing classes and constructions are
+  provenance for formalization and for realizations, not semantics. New mathematical vocabulary is
+  not added to it. The `OWN-*` rules below govern how existing preamble code is maintained, not
+  where new mathematics goes.
+* **Realizations are welcome.** Once the mathematics is released and `lean-cas-dsl` has consumed
+  it, research code may realize an operation as a leaf. That leaf registers realizations of
+  registered operations on presentations, and nothing else: no category, method, placement,
+  forwarding or narrowed domain. Its internals can be as ugly as the computation needs.
+* **Tests flow one way.** The permanent acceptance assertions of `lean-cas-dsl` are never edited
+  to fit research code. A disagreement means the realization is wrong, unless an upstream
+  correction to the mathematics says otherwise.
+
 ## Owner resume — 2026-09-17
 
 The repository owner resumed this workstream on 2026-09-17. The initial
