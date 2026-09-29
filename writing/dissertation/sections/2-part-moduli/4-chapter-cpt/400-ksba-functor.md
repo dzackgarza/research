@@ -111,27 +111,15 @@ For algebraic surfaces, the double locus is a (possibly reducible) disjoint unio
 Normalization replaces a reduced scheme $X$ with a normal scheme $\normalize{X}$ up to birational equivalence, and the fibers of $\normalize{X}\to X$ encode the branching behavior of the singularity at that point.
 Its practical implications by dimension are as follows:
 
-- $\dim(X) = 1:$ The normalization of a reduced curve $C$ is a smooth curve $\widetilde{C}$.
+- $\dim(X) = 1:$ The normalization of a reduced curve over $\CC$ is a normal curve, hence regular and therefore smooth.
 
-- $\dim(X) = 2:$ Normalization resolves all non-normal singularities, such as double curves and cusps, and more generally all 1-dimensional singularities, leaving only singularities at isolated points (which are typically ADE or quotient singularities).
+- $\dim(X) = 2:$ The normalized surface is normal and therefore regular in codimension one. Hence its singular locus has codimension at least two, so it consists of isolated points. Normality alone imposes no ADE or quotient classification on those isolated singularities.
 
-- $\dim(X) \geq 3:$ The singular locus of $\normalize{X}$ is of codimension at least 2, and consists of *normal singularities* -- these can generally be complicated.
+- $\dim(X) \geq 3:$ Again, normality implies regularity in codimension one, so the singular locus of $\normalize{X}$ has codimension at least two [@stacks-033P].
 
 
-:::{.theorem title="Zariski's Main Theorem (Recognition Theorem for Normalizations)" #thm-normalization-recognition}
-Let $X$ be a reduced, separated, Noetherian scheme, and let $f \colon Y \to X$ be a morphism. Then $f$ is (up to unique isomorphism) the normalization of $X$ if and only if:
-
-1. $Y$ is normal,
-2. $f$ is finite and birational,
-3. $f$ restricts to an isomorphism over the open subset of $X$ where $X$ is normal (i.e., over the normal locus of $X$).
-
-In other words, any morphism with these three properties realizes $Y$ as the normalization of $X$.
-In particular, if $X$ is an irreducible, reduced, separated variety over $\CC$ such that
-
-1. $Y$ is normal and irreducible, and
-2. $f$ is finite and birational,
-
-then $Y$ is the normalization of $X$ and $f$ is the normalization morphism. In this case, $f$ is an isomorphism over the smooth locus of $X$.
+:::{.theorem title="Recognition Criterion for Normalization" #thm-normalization-recognition}
+Let $X$ be an integral Noetherian scheme and let $f\colon Y\to X$ be a finite birational morphism with $Y$ integral and normal. Then $Y$ is canonically isomorphic over $X$ to the normalization $X^\nu$. In particular, if $X$ is already normal, then $f$ is an isomorphism [@stacks-035E].
 :::
 
 #### Pairs
