@@ -4,7 +4,7 @@
 
 The moduli theory of Coble surfaces is governed by the geometry of a small stock of ambient surfaces --- $K3$ surfaces, Enriques surfaces, the log del Pezzo $ADE$ and $BC$ surfaces, the quadric $\PP^1\times\PP^1$ and its toric quotient $W$ --- together with the moduli space of elliptic $K3$ surfaces.
 This section collects their definitions and basic invariants for reference.
-The associated lattices ($K3$ lattice, Enriques lattice, root lattices) are treated in the Lattice Theory sections; where a root lattice appears we use the algebraic-geometry sign convention, so that $A_n, D_n, E_n$ are negative definite with roots of norm $-2$ (see [the root-lattice definition](../lattices-and-moduli/root-systems.md#def:root-lattice) and [the $E_n$ lattice definition](../lattices-and-moduli/root-systems.md#def:lattice-En)). All surfaces are taken over $k = \CC$.
+The associated lattices ($K3$ lattice, Enriques lattice, root lattices) are treated in the Lattice Theory sections; where a root lattice appears we use the algebraic-geometry sign convention, so that $A_n, D_n, E_n$ are negative definite with roots of norm $-2$ (see @def:root-lattice and @def:lattice-En). All surfaces are taken over $k = \CC$.
 :::
 
 ## $K3$ surfaces
@@ -30,7 +30,7 @@ $$
 \lkt = U^3 \oplus E_8^{2} = \latII_{3, 19}
 ,
 $$
-the orthogonal direct sum of three hyperbolic planes and two copies of the negative-definite $E_8$ lattice of [the $E_n$ lattice definition](../lattices-and-moduli/root-systems.md#def:lattice-En); it is even, unimodular, of signature $(3, 19)$.
+the orthogonal direct sum of three hyperbolic planes and two copies of the negative-definite $E_8$ lattice of @def:lattice-En; it is even, unimodular, of signature $(3, 19)$.
 In the positive-definite (Euclidean) normalization for $E_8$ this is written $U^3 \oplus E_8(-1)^2$, the two descriptions denoting the same lattice.
 A **marked $K3$ surface** is one equipped with an isometry
 $$
@@ -96,7 +96,7 @@ $$
 \NS(Z) \cong H^2(Z; \ZZ) \cong \ZZ^{10}\oplus \ZZ/2\ZZ
 ,
 $$
-and its free part is modeled by the **Enriques lattice** $E_{10} = U\oplus E_8 \iso \latII_{1, 9}$, even unimodular of signature $(1, 9)$ ([the Enriques-lattice definition](../lattices-and-moduli/special-lattices.md#def:enriques-lattice)). Its $2$-twist $E_{10}(2) = U(2)\oplus E_8(2)$ arises as the invariant lattice of the covering involution on the K3 cover; the Enriques period domain is governed instead by the transcendental lattice $U\oplus U(2)\oplus E_8(2)$ of signature $(2, 10)$.
+and its free part is modeled by the **Enriques lattice** $E_{10} = U\oplus E_8 \iso \latII_{1, 9}$, even unimodular of signature $(1, 9)$ (@def:enriques-lattice). Its $2$-twist $E_{10}(2) = U(2)\oplus E_8(2)$ arises as the invariant lattice of the covering involution on the K3 cover; the Enriques period domain is governed instead by the transcendental lattice $U\oplus U(2)\oplus E_8(2)$ of signature $(2, 10)$.
 :::
 
 ## $ADE$ and $BC$ surfaces
@@ -123,7 +123,7 @@ Passing to the canonical double cover branched over the half-integral loci resto
 
 ::: {.remark title="Folding conventions and the $B/C$ duality issue"}
 
-The precise relationship between these foldings, the fixed-point subalgebras, and the orbit-sum construction (which can introduce a $B/C$ Langlands duality) is discussed in [the folded-root definition](../compactifications/dynkin-foldings.md#def:folded-root) and the Foldings section.
+The precise relationship between these foldings, the fixed-point subalgebras, and the orbit-sum construction (which can introduce a $B/C$ Langlands duality) is discussed in @def:folded-root and the Foldings section.
 :::
 
 ## The base surface $\PP^1\times\PP^1$
@@ -200,5 +200,5 @@ Alexeev--Brunyate--Engel construct two KSBA (stable pair) compactifications of $
    The polarization is $R = s + m\Sum_{i=1}^{24} f_i$.
    The associated fan is a refinement of the Coxeter fan.
 
-Geometric models for the boundary strata are constructed using **integral-affine spheres with $24$ singularities** ($\ias$); see [the singular-IAS definition](../stable-limits/ias.md#def:singular_ias). The Baily--Borel boundary contains a unique $0$-cusp $\eta$ and two $1$-cusps, yielding the boundary lattices $E_8^{2}$ and $D_{16}^{+}$.
+Geometric models for the boundary strata are constructed using **integral-affine spheres with $24$ singularities** ($\ias$); see @def:singular_ias. The Baily--Borel boundary contains a unique $0$-cusp $\eta$ and two $1$-cusps, yielding the boundary lattices $E_8^{2}$ and $D_{16}^{+}$.
 :::

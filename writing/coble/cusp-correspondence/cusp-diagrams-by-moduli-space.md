@@ -1,6 +1,6 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces
 
-The mirror move algorithm of [Cusp Diagrams](cusp-diagram-calculations.md#sec:mirror-moves) is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fent$.
+The mirror move algorithm of Cusp Diagrams @sec:mirror-moves is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fent$.
 Each section records the cusp diagram, the Coxeter diagrams of its 0-cusps, and the maximal parabolic subdiagrams that determine the adjacent 1-cusps.
 
 ## The Enriques moduli space
