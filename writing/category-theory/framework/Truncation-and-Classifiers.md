@@ -1,6 +1,6 @@
 # Properties, structures, and classifying constructions {#sec-truncation}
 
-Work in the 2-category $\mathbf{Cat}_{\mathcal U}$ fixed in @def-infinity-category-universe.
+Work in the 2-category $\mathbf{Cat}_{\mathcal U}$ fixed in @def:infinity-category-universe.
 Each category of structured objects comes with a specified forgetful functor.
 
 ## Properties and structures {#sec-property-structure}
@@ -20,7 +20,7 @@ An isomorphism-invariant property $P$ of objects of $\mathcal C$ defines the rep
 :::
 
 For higher categories, the same classification can be read from the homotopy fibers of $U$: empty or contractible fibers give property, discrete fibers give structure, and general fibers retain stuff.
-The definitions of truncated spaces and morphisms are in @def-truncated.
+The definitions of truncated spaces and morphisms are in @def:truncated.
 
 ## Chosen structure
 

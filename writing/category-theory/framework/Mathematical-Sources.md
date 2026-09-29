@@ -2,7 +2,7 @@
 
 ## Higher categories
 
-The category tower, internal hom, and adjunctions in @def-infinity-category-universe, @def-internal-hom, and @def-core are axioms of the framework.
+The category tower, internal hom, and adjunctions in @def:infinity-category-universe, @def:internal-hom, and @def:core are axioms of the framework.
 Kerodon [@Lur18c] supplies model-specific comparison results for quasicategories, cores, groupoid completion, equivalences, and truncated objects.
 The ordinary categorical specialization uses [@MM12].
 

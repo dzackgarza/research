@@ -20,14 +20,14 @@ $$
 \mathbf{Cat}_{\infty,\infty}
 $$
 
-is defined in @def-internal-hom.
+is defined in @def:internal-hom.
 Let
 $$
 \operatorname{Eq}(C, D)
 \hookrightarrow
 [C,D]_{\mathbf{Cat}_{\infty,\infty}}
 $$
-be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D$ (@def-equality-of-objects).
+be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D$ (@def:equality-of-objects).
 It retains every higher natural transformation between such functors — it is neither the core nor a truncation.
 Inside it,
 $$
@@ -98,7 +98,7 @@ Such an equivalence lifts $\operatorname{id}_W$.
 
 ## The reduction to Lean {#sec-equality-reduction}
 
-Type theory is a shadow of higher-category theory: the homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_{\infty,\infty} \to \mathcal S = \mathbf{Types}$ (@def-core) strictly loses data.
+Type theory is a shadow of higher-category theory: the homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_{\infty,\infty} \to \mathcal S = \mathbf{Types}$ (@def:core) strictly loses data.
 The framework is therefore developed synthetically — in $\infty$-categories, not committed to a model such as simplicial sets and Kan complexes — and the encodable notions are recovered by applying that functor.
-The equality above is then *relaxed*: for the $1$-categorical work that is almost all of the program (sets, rings, modules, algebras, lattices — all of SageCat), it truncates to Lean's propositional or definitional equality (@def-equality-of-objects), so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
+The equality above is then *relaxed*: for the $1$-categorical work that is almost all of the program (sets, rings, modules, algebras, lattices — all of SageCat), it truncates to Lean's propositional or definitional equality (@def:equality-of-objects), so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
 The full notion is recorded here so that its truncation is a deliberate concession rather than an accident; where it will bite is the identification of points carrying nontrivial automorphisms — inertia or stabilizers on a stack.

@@ -147,7 +147,7 @@ The category presented by $(G,R)$ is the quotient of $F(G)$ by the congruence ge
 A functor out of the presented category is a graph morphism $G\to U\mathcal C$ whose extension identifies the two sides of each pair in $R$.
 :::
 
-In $\mathbf{Cat}$ the walking arrow $[1]$ is the free category on the graph with two vertices and one edge, and the ordinal category $[n]$ of @def-walking-arrow is the free category on the linear graph with $n$ edges; the walking isomorphism is presented by two edges $f,g$ in opposite directions with the relations $gf=\operatorname{id}$ and $fg=\operatorname{id}$.
+In $\mathbf{Cat}$ the walking arrow $[1]$ is the free category on the graph with two vertices and one edge, and the ordinal category $[n]$ of @def:walking-arrow is the free category on the linear graph with $n$ edges; the walking isomorphism is presented by two edges $f,g$ in opposite directions with the relations $gf=\operatorname{id}$ and $fg=\operatorname{id}$.
 Each of these represents a functor on $\mathbf{Cat}$: $[0]$ represents the object functor, $[1]$ the morphism functor, and $[n]$ the functor sending a small category to its set of paths of $n$ composable morphisms [@Rie16, Example 2.1.5].
 A commutative square is presented by the four-edge square graph with the relation identifying its two paths; the free category on that graph, without the relation, has two distinct morphisms between the opposite corners.
 

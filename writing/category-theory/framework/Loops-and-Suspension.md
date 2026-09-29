@@ -146,5 +146,5 @@ $$
 $$
 where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object taken at the basepoint supplied by the previous stage.
 For $n\geq1$ the composition of loops makes $\pi_n(X,x)$ a group, and for $n\geq2$ an abelian group.
-These are the groups appearing in the truncation conditions of @def-truncated and in the long exact sequence of a fiber sequence.
+These are the groups appearing in the truncation conditions of @def:truncated and in the long exact sequence of a fiber sequence.
 :::

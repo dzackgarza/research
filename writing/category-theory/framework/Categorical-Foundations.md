@@ -1,7 +1,7 @@
 # Categorical constructions {#sec-constructions}
 
 Fix the variance and universal properties of the categorical constructions used by the algebraic and lattice chapters.
-Core and groupoid completion are defined in @def-core.
+Core and groupoid completion are defined in @def:core.
 
 ::: {.definition #def:category-of-elements title="Category of elements"}
 
@@ -62,7 +62,7 @@ Taking $T$ or $S$ to be a functor $\mathbf 1\to\mathcal C$, that is an object of
 :::
 
 For an ordinary category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
-Local hom-objects and walking-arrow categories in $\mathbf{Cat}_{\infty,\infty}$ are defined in @def-internal-hom and @def-mapping-spaces.
+Local hom-objects and walking-arrow categories in $\mathbf{Cat}_{\infty,\infty}$ are defined in @def:internal-hom and @def:mapping-spaces.
 
 ::: {.definition #def:universal-arrow title="Universal arrows"}
 

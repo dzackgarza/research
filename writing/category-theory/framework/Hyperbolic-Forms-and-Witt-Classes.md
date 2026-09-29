@@ -74,7 +74,7 @@ The assignment defines a functor
 $$
 H\colon(R\text{-}\mathbf{Mod})^{\simeq}\longrightarrow(\mathcal B_{R,R})^{\simeq}
 $$
-between the cores of @def-core.
+between the cores of @def:core.
 :::
 
 ::: {#def-lagrangian .def title="Lagrangians and metabolic forms"}

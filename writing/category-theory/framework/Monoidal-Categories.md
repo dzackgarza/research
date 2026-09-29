@@ -134,4 +134,4 @@ When $S$ has a second symmetric monoidal product that distributes over the first
 For a commutative ring $R$ and the category of finitely generated projective $R$-modules under $\oplus$, the tensor product makes $K_0(R)$ a commutative ring with unit $[R]$ [@Wei13, §II.2].
 :::
 
-The set $S^{\mathrm{iso}}$ is $\pi_0$ of the core $S^{\simeq}$ (@def-core), so $K_0^{\otimes}$ is an invariant of isomorphism classes and is functorial for symmetric monoidal functors.
+The set $S^{\mathrm{iso}}$ is $\pi_0$ of the core $S^{\simeq}$ (@def:core), so $K_0^{\otimes}$ is an invariant of isomorphism classes and is functorial for symmetric monoidal functors.
