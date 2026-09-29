@@ -17,12 +17,27 @@ $$
 \begin{aligned}
 \Gamma_{\En, 2} &= \Orth(T_\En) \intersect \Orth(\tdp) \containedin \Orth(\lkt) \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \containedin \Orth(T_\En) \\
-F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
-F_{\Nod, 2} &= ???
+F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^*
 \end{aligned}
 $$
 
 where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta).
+
+For the degree-two polarized nodal locus, choose a nodal $(-4)$-vector $\beta\in T_\En$ with $\beta^\perp\cong T_\Nod$ as in [@AEGS25, §2.3], and set
+$$
+\Gamma_{\Nod,2}(\beta)
+\da
+\operatorname{im}\left(
+\operatorname{Stab}_{\Gamma_{\En,2}}(\beta^\perp)
+\longrightarrow
+\Orth(\beta^\perp)
+\right),
+\qquad
+F_{\Nod,2}(\beta)
+\da
+\bD(\beta^\perp)/\Gamma_{\Nod,2}(\beta).
+$$
+The polarized nodal locus in $F_{\En,2}$ is the union of these quotients over the $\Gamma_{\En,2}$-orbits of nodal $(-4)$-vectors. Determining that orbit decomposition is a separate arithmetic problem; one should not write a single quotient $F_{\Nod,2}$ until it is known whether the unpolarized nodal orbit remains one orbit after passing from $\Gamma_\En$ to $\Gamma_{\En,2}$.
 
 ::: {.Question #qst:polarized-coble-arithmetic-group title="An explicit description of the polarized Coble arithmetic group"}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
