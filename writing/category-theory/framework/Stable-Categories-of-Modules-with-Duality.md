@@ -50,7 +50,7 @@ In both formulas the dual $\chi^{*}\colon M^{**}\to M^{*}$ of a morphism $M\to M
 :::
 
 Take $A=R$ commutative with the identity involution and $\epsilon=1$.
-Then a $1$-symmetric form on $M$ is the adjoint map $b^{\sharp}$ of a symmetric $R$-bilinear form $b\colon M\times M\to R$ (@def-form-axioms, @def-polarization), and nonsingularity is the perfectness of @def-polarization.
+Then a $1$-symmetric form on $M$ is the adjoint map $b^{\sharp}$ of a symmetric $R$-bilinear form $b\colon M\times M\to R$ (@def:form-axioms, @def:polarization), and nonsingularity is the perfectness of @def:polarization.
 For $M$ finitely generated projective, the hyperbolic form of @def-hyperbolic-form is a nonsingular $1$-symmetric form by @prp-hyperbolic-adjoint, and $0\oplus M^{*}$ is a lagrangian in the sense of @def-lagrangian by @prp-hyperbolic-metabolic.
 
 ## Complexes, duality, and $L$-groups {#sec-poincare-complexes}
@@ -222,7 +222,7 @@ The three statements below are not proved in this book.
 **Question.** Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def-hyperbolic-stabilization).
 Is there a pointed $\infty$-category $\mathcal C$, a functor $\iota\colon\mathbf{Lat}_R^{\simeq}\to\mathcal C^{\simeq}$, and an equivalence $\iota\circ S\simeq\Sigma\circ\iota$ with $\Sigma$ the suspension of @def:loops-suspension?
 
-**Question.** Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def-orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?
+**Question.** Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def:orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?
 @thm:invertible-summand answers this for $(\mathbf{Lat}_R,\perp,0)$ itself.
 
 **Question.** Does the discriminant construction of @sec-lattices-discriminant factor through the $\epsilon$-quadratic Poincaré complexes of @def:poincare-complex over $\mathbb Z$, and through which functor?

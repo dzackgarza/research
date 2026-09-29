@@ -1,6 +1,6 @@
 # Morphisms of form modules {#sec-form-morphisms}
 
-Fix a commutative ring $R$ and an $R$-module $W$, and use the form category $\mathcal B_{R,W}$ of @def-form-categories.
+Fix a commutative ring $R$ and an $R$-module $W$, and use the form category $\mathcal B_{R,W}$ of @def:form-categories.
 A morphism $f\colon(M,b_M)\to(N,b_N)$ of $\mathcal B_{R,W}$ is an $R$-linear map with $f^{*}b_N=b_M$, that is,
 $$
 b_N\bigl(f(x),f(y)\bigr)=b_M(x,y)
@@ -13,7 +13,7 @@ For $R$ a Dedekind domain, the lattice category $\mathbf{Lat}_R$ of @def-framewo
 ::: {.proposition #prop:form-morphism-injective title="Kernels of form-preserving maps"}
 
 Let $f\colon(M,b_M)\to(N,b_N)$ be a morphism of $\mathcal B_{R,W}$.
-Then $\ker f\subseteq\ker b_M^{\sharp}$, with $b_M^{\sharp}$ the adjoint map of @def-polarization.
+Then $\ker f\subseteq\ker b_M^{\sharp}$, with $b_M^{\sharp}$ the adjoint map of @def:polarization.
 If $b_M$ is nondegenerate then $f$ is injective.
 In particular every morphism of $\mathbf{Lat}_R$ is injective, hence a monomorphism.
 :::
@@ -78,7 +78,7 @@ For $S$ the hypothesis holds because $h_R\neq0$.
 ::: {.theorem #thm:invertible-summand title="Invertible summands and the Witt class"}
 
 Let $R$ be a Dedekind domain.
-The zero lattice lies in $\mathbf{Lat}_R$ and an orthogonal sum of $R$-lattices is an $R$-lattice, so the symmetric monoidal structure of @def-orthogonal-sum restricts to $(\mathbf{Lat}_R,\perp,0)$.
+The zero lattice lies in $\mathbf{Lat}_R$ and an orthogonal sum of $R$-lattices is an $R$-lattice, so the symmetric monoidal structure of @def:orthogonal-sum restricts to $(\mathbf{Lat}_R,\perp,0)$.
 
 1. The only invertible object of $(\mathbf{Lat}_R,\perp,0)$ is the unit, and $[0]=0$ in $W(R)$.
 

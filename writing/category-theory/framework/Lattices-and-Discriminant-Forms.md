@@ -43,7 +43,7 @@ The even lattices form a replete full subcategory $\mathbf{EvenLat}_{\mathbb Z}\
 ::: {#def-signature-subcategories .def title="Signature subcategories"}
 
 Fix an embedding $\sigma\colon R\hookrightarrow\mathbb R$; for $R=\mathbb Z$ it is the unique one.
-Each definiteness condition of @def-definiteness is invariant under isometry, so each cuts out a replete full subcategory of $\mathbf{Lat}_R$:
+Each definiteness condition of @def:definiteness is invariant under isometry, so each cuts out a replete full subcategory of $\mathbf{Lat}_R$:
 $$
 \mathbf{Def}_R,\quad
 \mathbf{Def}^{+}_R,\quad
@@ -54,8 +54,8 @@ $$
 Here $\mathbf{Hyp}_R$ consists of the lattices of signature $(1,n-1,0)$.
 The definite lattices are the disjoint union of $\mathbf{Def}^{+}_R$ and $\mathbf{Def}^{-}_R$, and $\mathbf{Def}_R$ and $\mathbf{Indef}_R$ partition $\mathbf{Lat}_R$.
 
-The twist of @def-form-twist by $-1$ sends $\mathbf{Def}^{+}_R$ to $\mathbf{Def}^{-}_R$ and is an isomorphism of categories, so a statement about positive definite lattices transports to negative definite lattices.
-Under the sign convention of @def-definiteness the root lattices lie in $\mathbf{Def}^{-}_{\mathbb Z}$.
+The twist of @def:form-twist by $-1$ sends $\mathbf{Def}^{+}_R$ to $\mathbf{Def}^{-}_R$ and is an isomorphism of categories, so a statement about positive definite lattices transports to negative definite lattices.
+Under the sign convention of @def:definiteness the root lattices lie in $\mathbf{Def}^{-}_{\mathbb Z}$.
 :::
 
 ::: {#exm-parabolic-objects .ex title="Parabolic forms lie outside the lattice category"}
@@ -75,7 +75,7 @@ G_2\ \text{splits as}\ \operatorname{rad}\perp\langle-2\rangle,
 \qquad
 G_3\ \text{splits as}\ \operatorname{rad}\perp\begin{pmatrix}-2&1\\1&-2\end{pmatrix},
 $$
-the second complement being the root lattice $A_2$ in the sign convention of @def-definiteness.
+the second complement being the root lattice $A_2$ in the sign convention of @def:definiteness.
 :::
 
 ::: {#def-metric-dual .def title="Dual lattice"}
@@ -159,13 +159,13 @@ The integer $a$ is the minimal number of generators of $A_S$.
 Each condition is invariant under isometry, so the $p$-elementary lattices form a replete full subcategory of $\mathbf{Lat}_{\mathbb Z}$.
 
 For an even 2-elementary lattice $S$ put $\delta_S=0$ when $q_S$ is an orthogonal direct sum of discriminant forms of the types $u^{(2)}_{+}(2)$ and $v^{(2)}_{+}(2)$, and $\delta_S=1$ otherwise [@Nik80, §3.6].
-Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$ in the sense of @def-signature.
+Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$ in the sense of @def:signature.
 The genus of an even 2-elementary lattice is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and if $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine its isometry class [@Nik80, Thm. 3.6.2].
 :::
 
 ::: {#exm-a3-not-two-elementary .ex title="$A_3$ is not 2-elementary"}
 **Example.** Membership is a condition on the group $A_S$, which the order $|{\operatorname{disc}}\,S|$ alone leaves open.
-In the sign convention of @def-definiteness the root lattice $A_3$ has Gram matrix
+In the sign convention of @def:definiteness the root lattice $A_3$ has Gram matrix
 $$
 G=\begin{pmatrix}-2&1&0\\1&-2&1\\0&1&-2\end{pmatrix},
 \qquad
@@ -207,7 +207,7 @@ b|_{\operatorname{rad}(M)}=0,
 \qquad
 b|_{N}\ \text{nondegenerate},
 $$
-and the projection $N\to M/\operatorname{rad}(M)$ is an isometry onto the radical quotient of @prp-quotient-form.
+and the projection $N\to M/\operatorname{rad}(M)$ is an isometry onto the radical quotient of @prop:quotient-form.
 
 The adjoint $b^{\sharp}$ induces an injection $M/\operatorname{rad}(M)\hookrightarrow\operatorname{Hom}_R(M,R)$, whose target is finitely generated projective and therefore torsion-free; so $M/\operatorname{rad}(M)$ is finitely generated and torsion-free, hence projective over the Dedekind domain $R$, and
 $$

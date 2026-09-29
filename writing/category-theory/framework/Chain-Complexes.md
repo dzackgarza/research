@@ -107,7 +107,7 @@ and $f$ is a quasi-isomorphism if and only if $\operatorname{cone}(f)$ is exact 
 ## Forms on a chain complex {#sec-complex-forms}
 
 Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
-A $W$-valued bilinear form on an $R$-module $M$ is an element of $\operatorname{Hom}_R(M\otimes_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def-form-categories are the categories of elements of the presheaves so obtained.
+A $W$-valued bilinear form on an $R$-module $M$ is an element of $\operatorname{Hom}_R(M\otimes_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def:form-categories are the categories of elements of the presheaves so obtained.
 At the level of complexes the tensor square is the tensor product complex and the value module is placed in a chosen degree.
 
 ::: {.definition #def:complex-tensor-product title="The tensor product of complexes"}
@@ -225,12 +225,12 @@ $$
 ::: {.remark #rmk:concentrated-complex-form title="Forms on a complex concentrated in one degree"}
 
 Let $C$ be concentrated in degree $m$ and let $n=2m$.
-Then $(C\otimes_RC)_n=C_m\otimes_RC_m$, the compatibility condition of @def:complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def-form-presheaves.
+Then $(C\otimes_RC)_n=C_m\otimes_RC_m$, the compatibility condition of @def:complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def:form-presheaves.
 For a general $C$ and $n=2m$, a symmetric form of degree $n$ induces on $H_m(C)$ a pairing satisfying
 $$
 \bar\beta_{m,m}(\eta,\xi)=(-1)^m\,\bar\beta_{m,m}(\xi,\eta),
 $$
-so that pairing is symmetric for even $m$ and skew-symmetric for odd $m$ (@def-form-axioms).
+so that pairing is symmetric for even $m$ and skew-symmetric for odd $m$ (@def:form-axioms).
 :::
 
 ## Resolutions {#sec-resolutions}

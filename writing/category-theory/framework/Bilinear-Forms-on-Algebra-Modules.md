@@ -2,7 +2,7 @@
 
 Fix a commutative ring $R$.
 Free modules $M\cong R^{(I)}$ are defined in @def:module-subcategories.
-The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear maps $M\times M\to R$ with $R$-module homomorphisms $M\otimes_R M\to R$ [@MM12]; the former are $\operatorname{Bil}_{R,R}(M)$ in @def-form-presheaves.
+The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear maps $M\times M\to R$ with $R$-module homomorphisms $M\otimes_R M\to R$ [@MM12]; the former are $\operatorname{Bil}_{R,R}(M)$ in @def:form-presheaves.
 
 ## Associative unital $R$-algebras {#sec-r-algebras}
 
@@ -35,7 +35,7 @@ $$
 \operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R).
 $$
 The tensor product is the tensor product of $R$-modules.
-By the tensor-hom adjunction this Hom-module is $\operatorname{Bil}_{R,R}(M)$ (@def-form-presheaves).
+By the tensor-hom adjunction this Hom-module is $\operatorname{Bil}_{R,R}(M)$ (@def:form-presheaves).
 :::
 
 ::: {.definition #def:algebra-bilinear-form title="Algebra bilinear forms"}
@@ -70,7 +70,7 @@ The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and 
 
 ## Gram matrices {#sec-gram-on-algebras}
 
-The Gram matrix of a module bilinear form on a free module is @prp-gram-matrix-free-module, and its change under a change of basis is @prp-gram-congruence.
+The Gram matrix of a module bilinear form on a free module is @prop:gram-matrix-free-module, and its change under a change of basis is @prop:gram-congruence.
 For an algebra $A$ free as an $R$-module on $E$, both apply to $U(A)$ with the module basis $E$.
 
 ::: {.proposition #prop:eval-via-algebra-map title="Evaluation through algebra generators"}
@@ -78,7 +78,7 @@ For an algebra $A$ free as an $R$-module on $E$, both apply to $U(A)$ with the m
 Let $S$ generate $A$ as a unital $R$-algebra, and let $v,w\in A$.
 Choose elements $f_v,f_w\in R\langle S\rangle$ with images $v,w$ under $R\langle S\rangle\to A$.
 Then $B(v,w)$ is the value of $B$ on those images.
-If $A$ is free on a module basis $E$, expand the images in $E$ and apply @prp-gram-matrix-free-module.
+If $A$ is free on a module basis $E$, expand the images in $E$ and apply @prop:gram-matrix-free-module.
 The Gram matrix remains indexed by the module basis $E$.
 Algebra generators give expressions for the two elements of $A$ on which $B$ is evaluated.
 :::
@@ -117,7 +117,7 @@ Given (2), $B(xy,z)=\varepsilon((xy)z)=\varepsilon(x(yz))=B(x,yz)$.
 The identification $\varepsilon(x)=B(x,1_A)$ uses the unit of $A$.
 
 ::: {.definition #def:frobenius-form title="Frobenius forms"}
-A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def-polarization: both adjoint maps $A\to\operatorname{Hom}_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
+A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def:polarization: both adjoint maps $A\to\operatorname{Hom}_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 
 ::: {.proposition #prop:structure-constants title="Structure constants"}

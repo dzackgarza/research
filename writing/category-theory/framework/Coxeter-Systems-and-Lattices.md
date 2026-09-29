@@ -1,7 +1,7 @@
 # Coxeter systems and lattices {#sec-coxeter-systems}
 
 Let $(W,S)$ be a Coxeter system with $S$ finite, presented by the orders $m(s,t)$ of the products $st$, and let $V$ be the real vector space with basis $\{\alpha_s\}_{s\in S}$.
-Lattices, the signature of a form and the radical of a form are defined in @def-framework-lattice, @def-signature and @def-polarization.
+Lattices, the signature of a form and the radical of a form are defined in @def-framework-lattice, @def:signature and @def:polarization.
 
 ## The canonical form {#sec-coxeter-form}
 
@@ -15,7 +15,7 @@ read as $-2$ when $s=t$ and as $2$ when $m(s,t)=\infty$.
 Its Gram matrix in the basis $\{\alpha_s\}$ is $G$ with $G_{st}=2\cos(\pi/m(s,t))$, so the diagonal entries are $-2$ and the off-diagonal entries are nonnegative.
 
 The source [@Hum90, §5.3] uses $B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$ and $b=-2B$.
-Every definiteness statement quoted from that source is therefore read here with the sign reversed, in the convention of @def-definiteness.
+Every definiteness statement quoted from that source is therefore read here with the sign reversed, in the convention of @def:definiteness.
 
 The data are those of a *Coxeter graph*: a finite undirected graph on $S$ whose edges are labelled by integers at least $3$ or by $\infty$, with $m(s,t)=2$ for distinct vertices joined by no edge and $m(s,s)=1$ [@Hum90, §2.3].
 
@@ -28,7 +28,7 @@ has order $2$, fixes the hyperplane $b$-orthogonal to $\alpha_s$, sends $\alpha_
 
 ::: {.proposition #prop:canonical-form-cartan-matrix title="The canonical form and the Cartan matrix"}
 
-The canonical form of @def:coxeter-form has $b(\alpha_s,\alpha_s)=-2$ for every $s$, so in the notation of @def-cartan-matrix every $d_j$ equals $-1$ and
+The canonical form of @def:coxeter-form has $b(\alpha_s,\alpha_s)=-2$ for every $s$, so in the notation of @def:cartan-matrix every $d_j$ equals $-1$ and
 $$
 A=-G
 $$
@@ -36,8 +36,8 @@ unconditionally, with $A$ symmetric.
 
 The canonical form records the angles between the simple roots and gives them all the same length.
 A root system with roots of two lengths has $d_i\neq d_j$ and a Cartan matrix that is not symmetric, so its Cartan matrix arises from no canonical form; the diagrams $B_n$, $C_n$, $F_4$ and $G_2$ are of this kind.
-The specimen in @def-cartan-matrix is the $m(s,t)=4$ case, where the two roots have squares $-2$ and $-4$.
-What connects the two matrices in general is the symmetrization $G_{ij}=d_jA_{ij}$ of @def-cartan-matrix.
+The specimen in @def:cartan-matrix is the $m(s,t)=4$ case, where the two roots have squares $-2$ and $-4$.
+What connects the two matrices in general is the symmetrization $G_{ij}=d_jA_{ij}$ of @def:cartan-matrix.
 :::
 
 ::: {.theorem #thm:coxeter-signature-type title="Signature type of a connected diagram"}
@@ -47,7 +47,7 @@ Let $(W,S)$ be irreducible, so that its Coxeter graph is connected, and write $n
 $W$ is finite if and only if $b$ is negative definite, and in that case $W$ is a finite reflection group [@Hum90, §6.4].
 Call such a system *elliptic*.
 
-If $b$ is negative semidefinite and degenerate, its radical has rank exactly $1$ [@Hum90, §2.6], so the signature is $(0,n-1,1)$ and $b$ is parabolic in the sense of @def-definiteness.
+If $b$ is negative semidefinite and degenerate, its radical has rank exactly $1$ [@Hum90, §2.6], so the signature is $(0,n-1,1)$ and $b$ is parabolic in the sense of @def:definiteness.
 Call such a system *parabolic*, or euclidean.
 
 Otherwise $b$ takes both signs.
@@ -75,14 +75,14 @@ $$
 
 Two conditions on $(W,S)$ are used below, and they cut out different classes.
 
-- **The signature condition.** The form $b$ is hyperbolic, equivalently of Lorentzian signature, when its signature is $(1,n-1,0)$; this is @def-definiteness, and it is the condition under which a lattice is called hyperbolic. The term *Lorentzian* for a form with exactly one positive square is the usage of [@CS10, Ch. 27].
+- **The signature condition.** The form $b$ is hyperbolic, equivalently of Lorentzian signature, when its signature is $(1,n-1,0)$; this is @def:definiteness, and it is the condition under which a lattice is called hyperbolic. The term *Lorentzian* for a form with exactly one positive square is the usage of [@CS10, Ch. 27].
 
 - **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$. Equivalently: $b$ is nondegenerate and not negative definite, and for each $s\in S$ the Coxeter graph obtained by deleting $s$ has negative semidefinite form.
 
 The system is *compact hyperbolic* when $b$ is nondegenerate and not negative definite and for each $s$ the graph obtained by deleting $s$ has negative definite form; these are the systems classified by Lannér [@Hum90, §6.8].
 
 A hyperbolic Coxeter system satisfies the signature condition, by the first clause of its definition.
-The condition on $C$ is a further restriction, and the two classes differ: hyperbolic Coxeter systems occur only in ranks $3$ to $10$, and only finitely many in each of the ranks $4$ to $10$ [@Hum90, §6.9], whereas the signature condition is satisfiable at every rank $n\geq2$, by the orthogonal sum of the hyperbolic plane $U$ of @def-hyperbolic-plane with $n-2$ copies of $\langle-1\rangle$.
+The condition on $C$ is a further restriction, and the two classes differ: hyperbolic Coxeter systems occur only in ranks $3$ to $10$, and only finitely many in each of the ranks $4$ to $10$ [@Hum90, §6.9], whereas the signature condition is satisfiable at every rank $n\geq2$, by the orthogonal sum of the hyperbolic plane $U$ of @def:hyperbolic-plane with $n-2$ copies of $\langle-1\rangle$.
 :::
 
 ::: {.proposition #prop:hyperbolic-covolume title="Covolume"}
@@ -139,5 +139,5 @@ $$
 by @prop:embedding-index, and equals $1$ exactly when $\iota$ is an isometry.
 
 For an object $(\Phi,L,\iota)$ of $\mathbf{Cox}_{\mathbb Z}$ the index is therefore $1$ whenever the ranks agree: the cokernel of $\iota$ is torsion-free by primitivity and of rank $0$ by equality of ranks, so it vanishes.
-The invariant that survives on $\mathbf{Cox}_{\mathbb Z}$ is the orthogonal complement $\iota(\langle\Phi\rangle)^{\perp}\subseteq L$ of @def-orthogonal-complement together with its induced form.
+The invariant that survives on $\mathbf{Cox}_{\mathbb Z}$ is the orthogonal complement $\iota(\langle\Phi\rangle)^{\perp}\subseteq L$ of @def:orthogonal-complement together with its induced form.
 :::

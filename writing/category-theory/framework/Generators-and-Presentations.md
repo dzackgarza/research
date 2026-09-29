@@ -52,7 +52,7 @@ $$
 
 The two categories answer different questions.
 The frame-preserving one classifies a chosen frame as structure, by @prop:generating-frame-is-structure.
-The coordinatized one is the setting for matrix calculus: a morphism there has a matrix relative to the two chosen frames, and change of frame acts by the congruence of @prp-gram-congruence.
+The coordinatized one is the setting for matrix calculus: a morphism there has a matrix relative to the two chosen frames, and change of frame acts by the congruence of @prop:gram-congruence.
 The basis case of the pair is @def:based-module and @prop:basis-is-structure.
 :::
 

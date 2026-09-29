@@ -56,9 +56,9 @@ So the primitive embeddings form a subcategory of $\mathbf{Lat}_R$ with the same
 :::
 
 ::: {.example #ex:primitive-and-scaled title="Primitive versus nonprimitive embeddings"}
-**Example.** Let $U$ be the hyperbolic plane of @def-hyperbolic-plane on $e,f$, let $\langle1\rangle$ be the rank one lattice on $w$ with $b(w,w)=1$, and let $M=U\perp\langle1\rangle$.
+**Example.** Let $U$ be the hyperbolic plane of @def:hyperbolic-plane on $e,f$, let $\langle1\rangle$ be the rank one lattice on $w$ with $b(w,w)=1$, and let $M=U\perp\langle1\rangle$.
 The morphism $e\mapsto e$, $f\mapsto f$ has cokernel $\mathbb Zw$, which is torsion-free, so it is a primitive embedding.
-The map $e\mapsto2e$, $f\mapsto2f$ multiplies pairings by $4$, so it is a morphism $U(4)\to M$ for the twist $U(4)$ of @def-form-twist.
+The map $e\mapsto2e$, $f\mapsto2f$ multiplies pairings by $4$, so it is a morphism $U(4)\to M$ for the twist $U(4)$ of @def:form-twist.
 Its image is $2U$ and its cokernel is $\mathbb Zw\oplus(\mathbb Z/2\mathbb Z)^{2}$, which has torsion, so it fails primitivity.
 :::
 
@@ -82,7 +82,7 @@ Nondegeneracy alone does not give existence, since $b_M^{\sharp}$ need not be su
 
 ::: {.proposition #prop:adjoint-matrix title="The adjoint in coordinates"}
 
-Let $M$ and $N$ be free with chosen bases, let $G_M$ and $G_N$ be the Gram matrices of @prp-gram-matrix-free-module, and let $A$ be the matrix of $f$ on column vectors.
+Let $M$ and $N$ be free with chosen bases, let $G_M$ and $G_N$ be the Gram matrices of @prop:gram-matrix-free-module, and let $A$ be the matrix of $f$ on column vectors.
 If $G_M$ is invertible then
 $$
 f^{*}\ \text{has matrix}\ G_M^{-1}A^{\mathsf T}G_N .
@@ -101,7 +101,7 @@ A *similarity of scale* $\lambda\in R$ from $(M,b_M)$ to $(N,b_N)$ is an $R$-lin
 $$
 b_N(fx,fy)=\lambda\,b_M(x,y),
 $$
-that is, a morphism $(M,b_M(\lambda))\to(N,b_N)$ of @def-form-categories for the twist $b_M(\lambda)$ of @def-form-twist.
+that is, a morphism $(M,b_M(\lambda))\to(N,b_N)$ of @def:form-categories for the twist $b_M(\lambda)$ of @def:form-twist.
 The isometries are the similarities of scale $1$.
 In bases this reads $A^{\mathsf T}G_NA=\lambda G_M$, so for modules of equal rank $n$,
 $$
@@ -159,7 +159,7 @@ Base change along $R\hookrightarrow K$ gives an injective homomorphism $O(L)\to 
 When the condition fails, $s_v$ is an automorphism of $L_K$ in $\mathbf{Lat}_K$ and has no preimage in $\operatorname{Aut}(L)$: the two automorphism groups belong to lattices over different rings.
 
 For $R=\mathbb Z$ and $L$ integral the condition holds whenever $q(v)\in\{1,-1,2,-2\}$, since then $2b(x,v)/q(v)$ is $\pm2b(x,v)$ or $\pm b(x,v)$.
-The reflections in the roots of a root lattice, which have $q(v)=-2$ in the sign convention of @def-definiteness, are therefore isometries of the lattice itself.
+The reflections in the roots of a root lattice, which have $q(v)=-2$ in the sign convention of @def:definiteness, are therefore isometries of the lattice itself.
 :::
 
 ## Matrix realizations

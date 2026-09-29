@@ -1,6 +1,6 @@
 # Hyperbolic forms and Witt classes {#sec-hyperbolic-witt}
 
-Fix a commutative ring $R$ and take the value module $W=R$, so that the form category of @def-form-categories is $\mathcal B_{R,R}$ and its objects are pairs $(M,b)$ with $b\colon M\times M\to R$ bilinear.
+Fix a commutative ring $R$ and take the value module $W=R$, so that the form category of @def:form-categories is $\mathcal B_{R,R}$ and its objects are pairs $(M,b)$ with $b\colon M\times M\to R$ bilinear.
 Lattices, unimodularity, dual lattices, and discriminant modules are those of @sec-lattices-discriminant.
 
 ## The hyperbolic form on a module and its dual {#sec-hyperbolic-form}
@@ -22,7 +22,7 @@ is an object of $\mathcal B_{R,R}$.
 ::: {#prp-hyperbolic-adjoint .prop title="The adjoint map of a hyperbolic form"}
 
 Let $\operatorname{can}_M\colon M\to M^{**}$ be the evaluation map, $\operatorname{can}_M(x)(\psi)=\psi(x)$.
-Under the canonical isomorphism $(M\oplus M^{*})^{*}\cong M^{*}\oplus M^{**}$, the adjoint map of @def-polarization is
+Under the canonical isomorphism $(M\oplus M^{*})^{*}\cong M^{*}\oplus M^{**}$, the adjoint map of @def:polarization is
 $$
 h_M^{\sharp}\colon M\oplus M^{*}\longrightarrow M^{*}\oplus M^{**},
 \qquad
@@ -107,7 +107,7 @@ Injectivity of $\operatorname{can}_M$ gives $x=0$, so $(0\oplus M^{*})^{\perp}=0
 
 ::: {#def-hyperbolic-stabilization .def title="Orthogonal sum with a fixed object"}
 
-With the orthogonal sum of @def-orthogonal-sum, an object $M$ of $\mathcal B_{R,R}$ defines
+With the orthogonal sum of @def:orthogonal-sum, an object $M$ of $\mathcal B_{R,R}$ defines
 $$
 F_M\colon\mathcal B_{R,R}\longrightarrow\mathcal B_{R,R},
 \qquad
@@ -178,7 +178,7 @@ By @thm-stabilization-not-unimodular, $A_{S^{n}(L)}\cong\mathbb Z/2\mathbb Z$ fo
 ::: {#ex:rank-one-forms .ex title="Rank-one forms"}
 
 For $a\in R$ write $\langle a\rangle$ for the object $(R,b_a)$ of $\mathcal B_{R,R}$ with $b_a(x,y)=axy$.
-Under the isomorphism $R^{*}\cong R$, $f\mapsto f(1)$, the adjoint map of @def-polarization is multiplication by $a$.
+Under the isomorphism $R^{*}\cong R$, $f\mapsto f(1)$, the adjoint map of @def:polarization is multiplication by $a$.
 So $\langle a\rangle$ is nondegenerate exactly when $a$ is not a zero divisor, and unimodular exactly when $a$ is a unit.
 In particular $\langle1\rangle$ is unimodular over every commutative ring.
 Over $R=\mathbb Z/4\mathbb Z$ the form $\langle2\rangle$ has $\ker b_2^{\sharp}=2\mathbb Z/4\mathbb Z$, so it is degenerate.
