@@ -1,4 +1,4 @@
-w# Diagrams
+# Diagrams
 
 Conventions:
 

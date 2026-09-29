@@ -28,6 +28,8 @@ header-includes:
     \newtheorem{warning}[theorem]{Warning}
 ---
 
+# Degree-2 Coble Surfaces and the Coble Heegner Divisor
+
 ## Introduction and logical status {#sec-introduction}
 
 ### Purpose {#sec-purpose}
