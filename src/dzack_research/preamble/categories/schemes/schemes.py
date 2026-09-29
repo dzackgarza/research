@@ -2970,6 +2970,10 @@ class Schemes(OwnedCategoryOverBaseRing):
                     inclusion_datum=localized.localization_map(),
                 )
 
+            def basic_open(self, element):
+                r"""Archived spelling for the distinguished open ``D(element)``."""
+                return self.distinguished_open(element)
+
             def distinguished_open_cover(self, *elements):
                 r"""Return the finite cover by ``D(f_i)`` when the ``f_i`` generate the unit ideal."""
                 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -3816,10 +3820,6 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
             return ClassGroups().trivial(self)
-
-        def basic_open(self, element):
-            r"""Archived spelling for the distinguished open ``D(element)``."""
-            return self.distinguished_open(element)
 
         def zeta_function(self):
             r"""Return ``Z(A^d/F_q, T) = 1/(1 - q^d T)``."""
