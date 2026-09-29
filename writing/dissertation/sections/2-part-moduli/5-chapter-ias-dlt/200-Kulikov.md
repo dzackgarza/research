@@ -140,7 +140,7 @@ This filtration packages the mixed Hodge structure obtained from the Clemens–S
 
 Degenerations with unipotent monodromy give rise to *monodromy invariants*, which we now describe.
 
-:::{.definition title="Monodromy Invariant and Barycentric Coordinates"}
+:::{.definition title="Monodromy Invariant and Barycentric Coordinates" #def:monodromy-invariant-barycentric-coordinates}
 Let $\lambda \in \bar{T}_\eta \da \eta^\perp / \eta$ denote the monodromy invariant associated to a degenerating family of K3 surfaces. Let $\{ \alpha_i \} \subset L$ be a set of simple roots defining a rational polyhedral chamber $\thecone{C} \subset L_{\RR}$, with wall hyperplanes $\alpha_i^\perp$.
 We define the **barycentric coordinates** of $\lambda$ by:
 $$

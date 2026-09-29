@@ -18,7 +18,7 @@ Any rational polyhedral fan $\Sigma(\eta)$ supported on the rational closure $\t
 
 #### Boundary Models: Stable Involution Pairs and Quotients
 
-::: {.definition title="$(K+D)$-Trivial Polarized Involution Pairs"}
+::: {.definition title="$(K+D)$-Trivial Polarized Involution Pairs" #def:k-d-trivial-polarized-involution-pairs}
 A $(K+D)$-trivial polarized involution pair is a triple $(X, D, \iota)$, where $X$ is a normal surface, $D \subset X$ a reduced effective divisor, and $\iota: X \to X$ is an involution satisfying $\iota(D) = D$.
 The canonical class and divisor are related by $K_X + D \sim 0$, and the fixed locus of $\iota$ consists of an ample Cartier divisor $R$, possibly with isolated fixed points.
 For all $0 < \eps \ll 1$, the pair $(X, D + \eps R)$ is log canonical.
@@ -34,7 +34,7 @@ $$
 This induces a bijection between $(K+D)$-trivial involution pairs and such log del Pezzo pairs with branch data.
 For instance, in the boundary analysis of $\fent$, the image pairs $(Y, C)$ arising in this way include the rational log del Pezzo surfaces of type $A_n$, $D_n$, $E_n$, and their foldings, as classified by the corresponding diagrams in @AEGS25.
 
-::: {.example title="The integral-affine polygon at the third Enriques cusp"}
+::: {.example title="The integral-affine polygon at the third Enriques cusp" #ex:third-enriques-cusp-integral-affine-polygon}
 The following is an example corresponding to the third cusp $\eta_3$ in $\fent$.
 A monodromy vector $\lambda$ satisfying
 $$
