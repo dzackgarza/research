@@ -302,6 +302,34 @@ video blocks using `id="3IjAy0gHRyY"` and `id="zRPa-VAvl6Q"`.
 locator source, and these three site video-component uses were inspected.  No
 claim is made about other key-value `id=` consumers.
 
+### Flowmark Unicode-math lint scans inert comments and literal code
+
+Running Flowmark's `math/unicode-symbol` rule on authored Markdown should
+inspect mathematical prose, not text Pandoc treats as inert or literal.  The
+rule currently reports Unicode-math warnings inside both HTML comments and
+inline code spans.
+
+Observed on 2026-09-29 with minimal stdin specimens: a comment containing
+`F\u2082d` and `\u0393\u2082d` reports warnings for those Unicode math code
+points, while an inline code span containing `AltBil\u2286SkewBil` and
+`\u03b3` reports the same rule.  The same first
+failure accounts for the remaining `math/unicode-symbol` diagnostics in
+commented archival notes in
+`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md`
+and
+`writing/dissertation/sections/3-part-main-theorem/6-chapter/600-finite-coarsening.md`;
+the inline-code failure appears in literal bad/good authoring examples in
+`writing/CONTRIBUTING.md`.
+
+**Expected behavior:** HTML comments and code spans are excluded from
+`math/unicode-symbol`; Unicode mathematical notation in rendered prose remains
+diagnosed.
+**Owning boundary:** Flowmark's Markdown token scoping for the
+`math/unicode-symbol` rule, not the dissertation comments or literal examples.
+**Coverage boundary:** the two minimal stdin specimens and the current
+repository occurrences above were reproduced.  No claim is made about other
+math lint rules or other Markdown literal-node kinds.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
