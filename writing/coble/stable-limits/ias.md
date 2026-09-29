@@ -107,11 +107,7 @@ The integral affine disc $\bD^2$.
 A triangulated integral affine polytope with its charge distribution, in the directions $(2,2)$ and $(3,-3)$.
 :::
 
-::: {#fig-symington-16gon .figure}
-\input{tikz/ias_eta3_polygon.tex}
-
-The same polytope after Symington surgeries, marked in red along the boundary.
-:::
+![The same polytope after Symington surgeries, marked in red along the boundary.](rendered/fig_symington_16gon.svg){#fig-symington-16gon width=52%}
 
 ::: {#fig-16gon-full .figure}
 \begin{tikzpicture}[scale=0.8]
