@@ -112,4 +112,4 @@ so a homomorphism out of $F(X)$ is an assignment of a value in $A$ to each varia
 
 Each category of @def-tower is a category of $\Sigma$-algebras satisfying equations, so each of its forgetful functors to $\mathbf{Set}$ has such a left adjoint: the free magma, free semigroup, free monoid, free group, free abelian group, and free ring on a set.
 The free abelian group on $X$ is $\mathbb Z^{(X)}$ and the free commutative ring on $X$ is the polynomial ring $\mathbb Z[X]$.
-Their values on a one-element set, $\mathbb Z$ and $\mathbb Z[x]$, are the corepresenting objects named in @def-element-functor.
+Their values on a one-element set, $\mathbb Z$ and $\mathbb Z[x]$, are the corepresenting objects named in @def:element-functor.

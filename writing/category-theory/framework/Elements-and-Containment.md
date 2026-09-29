@@ -5,7 +5,7 @@
 A generalized element with domain $T$ is defined in @def-generalized-element; it is a morphism $T\to X$.
 If $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def-category-of-elements.
 
-::: {#def-element-functor .def title="Elements represented by morphisms"}
+::: {.definition #def:element-functor title="Elements represented by morphisms"}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
 $$
 U\cong\operatorname{Hom}_C(P,-)
@@ -15,12 +15,12 @@ The corepresenting objects are a singleton for $\mathbf{Set}$, $\mathbb Z$ for $
 :::
 
 An isomorphism-invariant property $P$ defines the replete full subcategory $C_P$ of objects satisfying $P$.
-A disjunction $P\lor Q$ defines the join of $C_P$ and $C_Q$ in the inclusion preorder (@def-join-diagram).
+A disjunction $P\lor Q$ defines the join of $C_P$ and $C_Q$ in the inclusion preorder (@def:join-diagram).
 Categories of objects with chosen structure are instead described by their forgetful functors.
 
 ## Subobjects {#sec-containment}
 
-::: {#def-subobject-relation .def title="Subobjects and their representatives"}
+::: {.definition #def:subobject-relation title="Subobjects and their representatives"}
 A *subobject* of $M\in C$ is an isomorphism class of monomorphisms $i\colon N\hookrightarrow M$.
 A representative of the subobject is a specific monomorphism.
 Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\xrightarrow{\sim}N'$ with $i=i'\circ u$ [@MM12, I.5].
@@ -33,7 +33,7 @@ A construction that uses an embedding names a particular monomorphism.
 
 ## Fibers of a morphism {#sec-fibers}
 
-::: {#def-fiber-over-point .def title="The fiber over a point"}
+::: {.definition #def:fiber-over-point title="The fiber over a point"}
 
 Let $C$ have a terminal object $1$ and the relevant pullbacks, let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
 The *fiber of $f$ over $y$* is the apex of the cartesian square
@@ -51,7 +51,7 @@ X \arrow[d,"f"]\\
 \end{tikzcd}
 ```
 
-In a concrete category whose underlying-set functor is corepresented as in @def-element-functor, its points are the elements of $X$ sent by $f$ to $y$.
+In a concrete category whose underlying-set functor is corepresented as in @def:element-functor, its points are the elements of $X$ sent by $f$ to $y$.
 When $C$ is pointed and $y$ is the zero point, this is the fiber of @def-fiber-cofiber.
 :::
 
@@ -72,7 +72,7 @@ A relation or morphism involving the images is formed in $E$ and does not identi
 
 ## Solution functors {#sec-solution-functors}
 
-::: {#def-solution-presheaf .def title="The presheaf of solutions"}
+::: {.definition #def:solution-presheaf title="The presheaf of solutions"}
 Let $A,B\colon C^{\mathrm{op}}\to\mathbf{Set}$ be presheaves and let $\alpha,\beta\colon A\Rightarrow B$ be natural transformations.
 Their equalizer
 $$

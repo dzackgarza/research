@@ -44,7 +44,7 @@ $$
 ::: {#def-primitive-embedding .def title="Primitive embeddings"}
 
 A morphism $f\colon L\to M$ of $\mathbf{Lat}_R$ is a *primitive embedding* if $\operatorname{coker}(f)$ is torsion-free.
-Primitivity is a property of the morphism, and $\operatorname{PrimEmb}(L,M)$ is the subset of $\operatorname{Hom}_{\mathbf{Lat}_R}(L,M)$ it cuts out; a subobject of $M$ (@def-subobject-relation) is called primitive when a representing monomorphism has this property.
+Primitivity is a property of the morphism, and $\operatorname{PrimEmb}(L,M)$ is the subset of $\operatorname{Hom}_{\mathbf{Lat}_R}(L,M)$ it cuts out; a subobject of $M$ (@def:subobject-relation) is called primitive when a representing monomorphism has this property.
 
 Identities are primitive, and primitivity is closed under composition.
 For primitive $f\colon L\to M$ and $g\colon M\to P$ the inclusions $gf(L)\subseteq g(M)\subseteq P$ give the exact sequence

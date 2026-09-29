@@ -43,7 +43,7 @@ Any further underlying-set construction is stated as a factorization through thi
 :::
 
 For a concrete category, a morphism whose underlying function is injective is monic, and one whose underlying function is surjective is epic; each converse is a separate claim about $U$.
-When $U$ is corepresented by an object $P$ as in @def-element-functor, $U(f)=\operatorname{Hom}_C(P,f)$ and $f$ is monic exactly when $U(f)$ is injective: one direction applies the definition of a monomorphism to $P$, the other uses faithfulness.
+When $U$ is corepresented by an object $P$ as in @def:element-functor, $U(f)=\operatorname{Hom}_C(P,f)$ and $f$ is monic exactly when $U(f)$ is injective: one direction applies the definition of a monomorphism to $P$, the other uses faithfulness.
 The corresponding claim for epimorphisms fails: the inclusion $\mathbb Z\hookrightarrow\mathbb Q$ is monic and epic in $\mathbf{Ring}$, and it is neither surjective nor invertible [@Rie16, Example 1.2.10].
 Invertibility is asked of the morphism, by exhibiting a two-sided inverse in $C$.
 
@@ -73,7 +73,7 @@ Dually, a morphism $v\colon Sr\to c$ is couniversal when $\langle r,v\rangle$ is
 :::
 
 Free constructions are of this form: the insertion of a graph into the underlying graph of the free category on it is universal from the graph to the forgetful functor $U\colon\mathbf{Cat}\to\mathbf{Grph}$ (@def-free-category).
-The corepresenting objects listed in @def-element-functor are the values of the corresponding free constructions on a one-element set, and the universal arrow is the choice of that element.
+The corepresenting objects listed in @def:element-functor are the values of the corresponding free constructions on a one-element set, and the universal arrow is the choice of that element.
 
 ## Additive and abelian categories {#sec-abelian}
 
@@ -140,7 +140,7 @@ exact (snake lemma).
 In a commutative diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
 :::
 
-Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c$ with $gf=0$ is exact at $b$ when the monomorphism $\operatorname{Im}(f)\to b$ and the kernel of $g$ represent the same subobject of $b$ (@def-subobject-relation).
+Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c$ with $gf=0$ is exact at $b$ when the monomorphism $\operatorname{Im}(f)\to b$ and the kernel of $g$ represent the same subobject of $b$ (@def:subobject-relation).
 
 ## Endomorphisms and automorphisms {#sec-endomorphisms}
 
