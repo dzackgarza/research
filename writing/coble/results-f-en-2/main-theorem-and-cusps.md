@@ -20,17 +20,17 @@ Let $\semifans{F} = \ts{\semifan{F}_k}_{k=1}^5$ be the collection of folded semi
 
 ::: {.notation #not:sterk-cusp-labels title="Two indexings of the boundary"}
 
-The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in [the five-cusp example](#ex:fen2_five_cusps). A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps $i_1,\dots,i_k$ [@AEGS25 Not. 3.1]; there are nine of them,
+The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in @ex:fen2_five_cusps. A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps $i_1,\dots,i_k$ [@AEGS25 Not. 3.1]; there are nine of them,
 $$
 12,\quad 13,\quad 14,\quad 15,\quad 245,\quad 34,\quad 35,\quad 45,\quad 55 .
 $$
-So "cusp $35$" in part 2 is the $1$-cusp whose closure contains the $0$-cusps $3$ and $5$, not the pair of $0$-cusps: part 2 is [@AEGS25 Lem. 5.7] verbatim, and the $0$-cusps $3$ and $5$ are strictly semitoroidal, as [the five-cusp example](#ex:fen2_five_cusps) records.
+So "cusp $35$" in part 2 is the $1$-cusp whose closure contains the $0$-cusps $3$ and $5$, not the pair of $0$-cusps: part 2 is [@AEGS25 Lem. 5.7] verbatim, and the $0$-cusps $3$ and $5$ are strictly semitoroidal, as @ex:fen2_five_cusps records.
 :::
 
 ::: {.remark title="The settled degree-two Enriques compactification is semitoroidal"}
 
 This theorem records the settled ambient degree-$2$ Enriques picture: the normalized KSBA compactification of $\fentwo$ coincides with an explicit semitoroidal model built from five folded semifans, one per $0$-cusp.
-The proof runs through the K3 moduli space $\fttz$ of the degree-$(2,2,0)$ problem, identifying $\normksbacpt{\fentwo}$ with a normalization of the closure of the relevant Noether--Lefschetz locus; see [the normalization lemma](#lem:fen2_normalization) for the corresponding period-domain statement.
+The proof runs through the K3 moduli space $\fttz$ of the degree-$(2,2,0)$ problem, identifying $\normksbacpt{\fentwo}$ with a normalization of the closure of the relevant Noether--Lefschetz locus; see @lem:fen2_normalization for the corresponding period-domain statement.
 :::
 
 ## Normalization inside $F_{(2,2,0)}$
@@ -84,7 +84,7 @@ Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational
 \end{tikzpicture}
 ```
 
-The correspondence of Baily--Borel boundaries under $\Psi\colon \fentwo\to \fttz$: the $0$-cusps of $\bbcpt{\fentwo}$ (top) map to the $0$-cusps of $\bbcpt{\fttz}$ (bottom), and the $1$-cusps to $1$-cusps, by [@AEGS25 Lem. 3.2]. The $0$-cusps of $\fttz$ are distinguished by the divisibility $\mathrm{div}(e)\in\ts{1,2}$ of the isotropic vector, and the map is read off from the divisibilities of Sterk's $e_1,\dots,e_5$ taken in $\ten$ and in $\tdp$ separately; the Enriques $1$-cusps are labelled as in [the Sterk cusp-label notation](#not:sterk-cusp-labels).
+The correspondence of Baily--Borel boundaries under $\Psi\colon \fentwo\to \fttz$: the $0$-cusps of $\bbcpt{\fentwo}$ (top) map to the $0$-cusps of $\bbcpt{\fttz}$ (bottom), and the $1$-cusps to $1$-cusps, by [@AEGS25 Lem. 3.2]. The $0$-cusps of $\fttz$ are distinguished by the divisibility $\mathrm{div}(e)\in\ts{1,2}$ of the isotropic vector, and the map is read off from the divisibilities of Sterk's $e_1,\dots,e_5$ taken in $\ten$ and in $\tdp$ separately; the Enriques $1$-cusps are labelled as in @not:sterk-cusp-labels.
 
 ## The five $0$-cusps
 
@@ -121,7 +121,7 @@ The Type III counts $0,7,7,7,0$ sum to the $21$ distinct Type III divisors; the 
 
 ::: {.remark title="The cusp table is the boundary data of the five folded semifans"}
 
-This enumeration is the boundary data underlying the folded semifans $\semifans{F}$ of [the compactification theorem](#thm:fen2_main): each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
+This enumeration is the boundary data underlying the folded semifans $\semifans{F}$ of @thm:fen2_main: each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
 The precise per-cusp ray counts and IAS involutions are migrated from the working notes and, as with the cusp tables discussed in [the KSBA--semitoroidal comparison conjecture](../stable-limits/ksba.md#conj:ksba_semitoroidal_comparison), should be regarded as provisional pending an independent cusp computation.
 :::
 
