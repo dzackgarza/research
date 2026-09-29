@@ -66,7 +66,7 @@ The image is an open subset of a closed irreducible subset of $\cH_{-2}/\Gamma_\
 By [@CDL25 Thm. 5.8.2], the coarse space of $\fco$ is a rational variety, and since $\fen$ is quasiprojective, so too is $\fco$.
 Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\cH_{-2}$ contains the modular curve $X$.
 
-::: {.Remark title="Divisibility of the Coble cusp vectors under the ambient embeddings"}
+::: {.remark title="Divisibility of the Coble cusp vectors under the ambient embeddings"}
 
 We note the divisibilities of the $v_i$ under various lattice embeddings:
 
@@ -90,7 +90,7 @@ More concisely:
 The divisibilities in $\tdp$ can be seen as follows: the image of $v_0$ in $\tdp$ is $e'\in U(2)$ and $e'f' = 2$, while $\div_{\tdp}(v_1) = 1$ follows from the fact that $v_1\alpha_3 = 1$.
 :::
 
-::: {.Remark title="The unique maximal parabolic verifies the Coble cusp incidence"}
+::: {.remark title="The unique maximal parabolic verifies the Coble cusp incidence"}
 
 As further proof that the cusp diagram of $\fco$ is correct, we can use the theory of Coxeter diagrams.
 Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice $e^{\perp L}/\gens{e}$ is a hyperbolic lattice equipped with a root system $R_e$ with a Coxeter diagram $G_e$.
