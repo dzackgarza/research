@@ -144,7 +144,7 @@ We conclude with the following summary:
 
 <!-- CUSP DATA
 
-#### # Cusp 1
+#### Cusp 1
 
 - Coxeter diagram @fig:fen2-coxeter-1
 - Relation to $\fen$: maps to cusp $(10,10, 0)_1$ in $\fen$
@@ -171,7 +171,7 @@ We conclude with the following summary:
   - $\iota_{\En, 0} \actson \Gamma(\mcz_0)$:
       - ?
 
-#### # Cusp 2
+#### Cusp 2
 
 - Coxeter diagram @fig:fen2-coxeter-2
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
@@ -194,7 +194,7 @@ We conclude with the following summary:
     - $\iota_{\En, 0} \actson \Gamma(\mcz_0)$:
       - ?
 
-#### # Cusp 3
+#### Cusp 3
 
 - Coxeter diagram @fig:fen2-coxeter-3
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
@@ -223,7 +223,7 @@ We conclude with the following summary:
     - ?
 
 
-#### # Cusp 4
+#### Cusp 4
 
 - Coxeter diagram @fig:fen2-coxeter-4
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
@@ -247,7 +247,7 @@ We conclude with the following summary:
 - $\iota_{\En, 0} \actson \Gamma(\mcz_0)$:
     - ?
 
-#### # Cusp 5
+#### Cusp 5
 
 - Coxeter diagram @fig:fen2-coxeter-5
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
@@ -271,7 +271,7 @@ We conclude with the following summary:
 - $\iota_{\En, 0} \actson \Gamma(\mcz_0)$:
     - ?
 
-#### # Conclusion
+#### Conclusion
 
 - Semifan data:
     - 6 Type $\II$ rays,
