@@ -43,7 +43,7 @@ fixed-point-free **Enriques involution** $\ien$ (the deck transformation
 of the canonical cover) and the **del Pezzo involution** $\idp$
 [@AEGS25].
 
-:::
+::::
 
 ::: {.Remark title="Sources for the polarized Enriques Noether--Lefschetz construction"}
 The numerical polarization and the $\Num$ marking are those of [@CDL25]; the canonical
