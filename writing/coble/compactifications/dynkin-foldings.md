@@ -1,6 +1,6 @@
 # Foldings of Dynkin diagrams
 
-::: {.Remark title="Orientation"}
+::: {.remark title="Orientation"}
 
 This section collects the folding constructions that produce non-simply-laced root systems from simply-laced ones by summing the roots in each orbit of a diagram automorphism, together with the specific root-folding criterion governing the involution $I = -I_\En$ on $T_\dP$ and the *mirror moves* used to navigate the pyramid of $2$-elementary lattices.
 As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see \longref{def:root-lattice}).
@@ -8,7 +8,7 @@ As in the root systems material we work in the algebraic-geometry sign conventio
 
 ## Foldings of simply-laced diagrams
 
-::: {.Remark #rmk:classical-foldings title="Classical foldings of Dynkin diagrams"}
+::: {.remark #rmk:classical-foldings title="Classical foldings of Dynkin diagrams"}
 
 The process of folding by nontrivial diagram automorphisms produces non-simply-laced root systems from simply-laced diagrams.
 The roots in the same orbit under the folding group must be orthogonal.
@@ -29,7 +29,7 @@ The orbit-sum construction of \longref{def:folded-root} instead produces the **L
 
 ## Folded roots and folded root systems
 
-::: {.Definition #def:folded-root title="Folded root systems"}
+::: {.definition #def:folded-root title="Folded root systems"}
 
 Let $L$ be a lattice containing a root system $\Phi$ and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
 Given a simple root $\alpha_i \in \Phi$, let $[\alpha_i] \subset \Phi$ denote its $G$-orbit.
@@ -48,7 +48,7 @@ For an involution $I$, $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i) \in L^G$.
 
 ## Examples
 
-::: {.Example #ex:classical-foldings title="Examples of classical foldings"}
+::: {.example #ex:classical-foldings title="Examples of classical foldings"}
 
 Folding produces scaled root systems in the invariant lattice $L^G$.
 Explicit examples computed via \longref{def:folded-root}:
@@ -69,7 +69,7 @@ Here the scaling notation $B_3(2)$ and $F_4(2)$ records that the invariant-latti
 
 The criterion below is stated in terms of the short and long roots of $T_\dP$: $\Phi^2$ denotes the **short roots** (norm $-2$) and $\Phi^4$ the **long roots** (norm $-4$ with divisor $2$), in the $k$-root sense of the root systems material.
 
-::: {.Lemma #lem:root-folding-tdp title="Root folding criterion"}
+::: {.lemma #lem:root-folding-tdp title="Root folding criterion"}
 
 Let $\Phi(T_\dP)$ be the root system of $T_\dP$ and $I = -I_\En$ the induced involution on $T_\dP$ whose fixed lattice is $\ten$.
 
@@ -86,7 +86,7 @@ This criterion governs how roots in the boundary lattices at the $0$-cusps of $F
 
 ## Mirror moves
 
-::: {.Definition #def:mirror-move title="Mirror moves"}
+::: {.definition #def:mirror-move title="Mirror moves"}
 
 A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting:
 
