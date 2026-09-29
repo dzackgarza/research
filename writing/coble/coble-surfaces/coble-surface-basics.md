@@ -1,6 +1,6 @@
 # Basics of Coble surfaces
 
-::: {.Remark title="On defining Cobles"}
+::: {.remark title="On defining Cobles"}
 
 For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along with [@DM20; @DZ99; @DK13; @CD85; @CD12; @Dol17]. Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
 Such surfaces were first studied in [@Cob19], [@Cob29], and were ultimately classified in [@DZ99]. We say $S$ is **terminal of K3 type** if $\abs{-2K_S}$ contains a smooth[^1] divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus $C_i C_j = -4\delta_{ij}$.
@@ -9,7 +9,7 @@ The $C_i$ are referred to as the *boundary components* of $S$.
 One can show $n = -K_S^2$ and $n\leq 10$, c.f. [@DK25 Cor. 9.1.5].
 :::
 
-::: {.Remark title="Cobles as blowups"}
+::: {.remark title="Cobles as blowups"}
 
 Such a Coble surface $S$ can be shown to be a *basic rational surface* [@Dol17 §5.1], i.e. it admits a birational morphism to $\pi: S\to \PP^2$ which decomposes as blowups of $N$ points.[^3] The number of points $N$ depends on $n$; more precisely, one can show $N = 9+n$.
 The image of $C$ is a divisor in $\abs{-2K_{\PP^2}} = \abs{\OO_{\PP^2}(6)}$ and is thus always a sextic curve, generically a nodal plane sextic where the images of the $C_i$ are its irreducible components.
@@ -23,7 +23,7 @@ Note that conversely, starting with such a plane sextic $\tilde C$, one can show
 Blowing up the singularities of $C$ yields a Coble surface with *smooth* anti-bicanonical divisor; such Coble surfaces are not the image of any birational but not biregular morphism from another Coble surface and are said to be **terminal**. We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface.
 :::
 
-::: {.Remark title="On the importance of Cobles"}
+::: {.remark title="On the importance of Cobles"}
 
 Following [@CD12 §1.4], a point set $\mathcal{P}=\ts{p_{1}, \ldots, p_{n}}$ of $\PP^{2}$ is called **Cremona special** if $n \geq 9$ and if the surface $S$ obtained by blowing up $\mathcal{P}$ is such that $\Aut^*(S)$, the image of $\Aut(S)$ in $\Orth(\Pic(S))$, has finite index in the infinite Weyl group $W_{S}$.
 The surface $S$ is then also called Cremona special.

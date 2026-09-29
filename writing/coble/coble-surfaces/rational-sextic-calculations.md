@@ -1,6 +1,6 @@
 # Rational Sextic Calculations
 
-::: {.Lemma #lem:rational_sextic_ten_nodes title="A nodal sextic is rational exactly with ten nodes"}
+::: {.lemma #lem:rational_sextic_ten_nodes title="A nodal sextic is rational exactly with ten nodes"}
 
 Let $C \subset \PP^2$ be an irreducible sextic curve with at worst $A_1$ singularities.
 Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singularities.
@@ -20,7 +20,7 @@ Noting that $d=6$, we obtain the geometric genus $g = 10 - k$, where $k$ is the 
 Thus $g = 0$ if and only if $k = 10$.
 :::
 
-::: {.Remark #rmk:severi-sextics title="Severi varieties and degenerate sextics"}
+::: {.remark #rmk:severi-sextics title="Severi varieties and degenerate sextics"}
 
 We note that an arbitrary rational irreducible sextic need not have exactly ten singularities, nor must its singularities be $A_1$ singularities.
 The condition $g=0$ merely requires that the sum of the $\delta$-invariants of its singularities equals 10. The locus of rational $A_1$-singular sextics forms a Severi variety $V_{6,10}$ [@BHO+12] whose generic element has precisely ten $A_1$ singularities.
@@ -29,7 +29,7 @@ For instance, there exist rational $A_2$-singular sextics lacking ten $A_1$ sing
 The classical unnodal Coble surface construction specifically requires a sextic from the generic, 10-$A_1$ locus.
 :::
 
-::: {.Remark title="Canonical class of Cobles"}
+::: {.remark title="Canonical class of Cobles"}
 
 Let $W\subset \PP^2$ be a generic irreducible rational sextic with ten $A_1$ singularities.
 The classical Coble surfaces $S$ were first constructed in [@Cob19] in a study of Cremona transformations of $\PP^2$ that preserve such a rational sextic $W$.
@@ -59,7 +59,7 @@ $$
 yielding $C\sim -2K_S$.
 :::
 
-::: {.Remark title="Invariants of antibicanonical curves"}
+::: {.remark title="Invariants of antibicanonical curves"}
 
 By [@CD12 §3.1], if $S$ is a Coble surface of K3 type with $n=1$ boundary component and $C \in \abs{-2K_S}$ is an irreducible curve, then
 
@@ -73,7 +73,7 @@ This forces $C$ to be a smooth rational curve with $C^2 = 4K_S^2 = -4$.
 
 ## The configuration constraint on the ten nodes
 
-::: {.Proposition #prop:sextic-node-conditions title="Ten nodes impose more conditions than the linear system has"}
+::: {.proposition #prop:sextic-node-conditions title="Ten nodes impose more conditions than the linear system has"}
 
 The space of plane sextics is
 $$
@@ -102,7 +102,7 @@ Imposing this at ten points gives $30$ linear conditions on a space of projectiv
 dimension $27$, so the general such linear system has empty intersection.
 :::
 
-::: {.Remark title="Coble point sets encode the dependence among the thirty node conditions"}
+::: {.remark title="Coble point sets encode the dependence among the thirty node conditions"}
 
 The dependence forced by \longref{prop:sextic-node-conditions} is what the term
 *Coble point set* names: a configuration $\Sigma$ of ten points special enough to
@@ -113,7 +113,7 @@ $12$ and the Coble locus is cut out by three conditions, leaving the
 $9$-dimensional moduli of \longref{cor:m-polarized-k3-dimension}.
 :::
 
-::: {.Remark title="How many of the thirty conditions are independent"}
+::: {.remark title="How many of the thirty conditions are independent"}
 
 \longref{prop:sextic-node-conditions} says the thirty conditions must be
 dependent but not by how much.
@@ -133,7 +133,7 @@ Quotienting by the $8$-dimensional group $\PGL_3$ leaves the nine moduli again.
 
 ## A criterion for a node of a plane curve
 
-::: {.Proposition #prop:hessian-rank-at-singular-point title="Hessian rank at a singular point"}
+::: {.proposition #prop:hessian-rank-at-singular-point title="Hessian rank at a singular point"}
 
 Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree $n$, and
 let $p\in k^3$ be nonzero with
@@ -165,7 +165,7 @@ Since $p\neq 0$ the kernel of $H(F)(p)$ is nonzero, so by rank-nullity in
 dimension $3$ the rank is at most $2$.
 :::
 
-::: {.Remark title="Rank two of the Hessian distinguishes an ordinary node"}
+::: {.remark title="Rank two of the Hessian distinguishes an ordinary node"}
 
 \longref{prop:hessian-rank-at-singular-point} is the vanishing half of the node test
 for the sextic $C$: at a singular point the Hessian is automatically degenerate,

@@ -1,6 +1,6 @@
 # K3 covers
 
-::: {.Remark #rmk:k3-cover-invariants title="On relation to K3s"}
+::: {.remark #rmk:k3-cover-invariants title="On relation to K3s"}
 
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$.
 By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
@@ -32,7 +32,7 @@ $$
 The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
 :::
 
-::: {.Proposition #prop:double-cover-is-k3 title="The branched double cover is a K3 surface"}
+::: {.proposition #prop:double-cover-is-k3 title="The branched double cover is a K3 surface"}
 
 Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let
 $s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
@@ -84,7 +84,7 @@ $$
 $$
 :::
 
-::: {.Remark title="The general double-cover calculation recovers the Coble K3 cover"}
+::: {.remark title="The general double-cover calculation recovers the Coble K3 cover"}
 
 Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational
 curve of $\abs{-2K_S}$ recorded in \longref{lem:rational_sextic_ten_nodes} and the
@@ -93,7 +93,7 @@ surrounding discussion, \longref{prop:double-cover-is-k3} is the assertion cited
 statement is the twist by $2$ used in \longref{prop:coble-invariant-lattice}.
 :::
 
-::: {.Proposition #prop:coble-invariant-lattice title="The invariant lattice of the Coble K3 cover"}
+::: {.proposition #prop:coble-invariant-lattice title="The invariant lattice of the Coble K3 cover"}
 
 Let $f: X\to S$ be the K3 double cover of a terminal Coble surface of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
 Write $\Pic(S) = \gens{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
@@ -146,7 +146,7 @@ Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal abs
 That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in \longref{rmk:k3-cover-invariants}.
 :::
 
-::: {.Remark #rmk:k3-cover-twist title="The K3 double cover twists the Coble lattice by two"}
+::: {.remark #rmk:k3-cover-twist title="The K3 double cover twists the Coble lattice by two"}
 
 Following [@CD12], we note that this computation is a special case of a general construction.
 Let $S$ be any basic rational surface and write $S$ as the blowup of $\PP^2$ at $N$ points $p_1,\cdots, p_N$ with $N\geq 9$.
