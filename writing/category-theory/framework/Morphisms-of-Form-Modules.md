@@ -123,11 +123,11 @@ An abelian category is additive by @def-abelian-category.
 ## Hypotheses of the homological constructions {#sec-additive-hypotheses}
 
 The constructions of @sec-stable-duality each state a hypothesis on their base category.
-A chain complex is a family $C_n$ with $d_{n-1}d_n=0$, an equation naming the zero morphism; the category $\mathbf{Ch}(\mathcal A)$ and its homology functors are built for $\mathcal A$ additive (@def-chain-complexes).
-Normalization is an intersection of kernels and the Dold–Kan correspondence is stated for $\mathcal A$ abelian (@thm-dold-kan).
-The bar resolution is the augmented simplicial object of the comonad of an adjunction, taken in an abelian category with enough projectives (@def-comonad-resolution).
-The projective model structure is stated for bounded-below complexes in an abelian category with enough projectives (@thm-projective-model-structure).
-A stable $\infty$-category has a zero object (@def-stable-infinity-category), and a prespectrum object is a diagram whose off-diagonal values are zero objects (@def-prespectrum).
+A chain complex is a family $C_n$ with $d_{n-1}d_n=0$, an equation naming the zero morphism; the category $\mathbf{Ch}(\mathcal A)$ and its homology functors are built for $\mathcal A$ additive (@def:chain-complexes).
+Normalization is an intersection of kernels and the Dold–Kan correspondence is stated for $\mathcal A$ abelian (@thm:dold-kan).
+The bar resolution is the augmented simplicial object of the comonad of an adjunction, taken in an abelian category with enough projectives (@def:comonad-resolution).
+The projective model structure is stated for bounded-below complexes in an abelian category with enough projectives (@thm:projective-model-structure).
+A stable $\infty$-category has a zero object (@def:stable-infinity-category), and a prespectrum object is a diagram whose off-diagonal values are zero objects (@def:prespectrum).
 
 ::: {.theorem #thm:no-heart title="Hearts of $t$-structures"}
 

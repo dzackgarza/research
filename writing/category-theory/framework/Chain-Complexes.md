@@ -1,7 +1,7 @@
 # Chain complexes, forms, and derived functors {#sec-chain-complexes}
 
 Let $\mathcal A$ be an additive category, let $R$ be a commutative ring, and let $W$ be an $R$-module.
-Chain complexes in $\mathcal A$, chain maps, and the additive category $\mathbf{Ch}(\mathcal A)$ are @def-chain-complexes; abelian categories are @def-abelian-category.
+Chain complexes in $\mathcal A$, chain maps, and the additive category $\mathbf{Ch}(\mathcal A)$ are @def:chain-complexes; abelian categories are @def-abelian-category.
 Write $d^C_n\colon C_n\to C_{n-1}$ for the differentials of $C$.
 
 ## The category of chain complexes {#sec-chain-complex-category}
@@ -30,7 +30,7 @@ Z_n(C)=\ker d^C_n,
 B_n(C)=\operatorname{im}d^C_{n+1},
 $$
 and $d^C_nd^C_{n+1}=0$ gives $B_n(C)\subseteq Z_n(C)\subseteq C_n$.
-The homology functor of @def-chain-complexes takes the value
+The homology functor of @def:chain-complexes takes the value
 $$
 H_n(C)=Z_n(C)/B_n(C)
 $$
@@ -47,7 +47,7 @@ A short exact sequence $0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0$ is t
 
 ::: {#def-quasi-isomorphism .def title="Quasi-isomorphisms"}
 
-A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2]. These are the weak equivalences of the model structure of @thm-projective-model-structure.
+A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2]. These are the weak equivalences of the model structure of @thm:projective-model-structure.
 :::
 
 ::: {#thm-homology-les .theorem title="The long exact homology sequence"}
@@ -163,7 +163,7 @@ $$
 
 ::: {#prp-complex-form-adjoint .prop title="The adjoint chain map and the $n$-dual"}
 
-Let $W=R$ with the identity involution, and let $C^{n-*}$ be the $n$-dual complex of @def-n-dual-complex, so that $(C^{n-*})_r=\operatorname{Hom}_R(C_{n-r},R)$ with differential $(-1)^r(d^C)^{*}$.
+Let $W=R$ with the identity involution, and let $C^{n-*}$ be the $n$-dual complex of @def:n-dual-complex, so that $(C^{n-*})_r=\operatorname{Hom}_R(C_{n-r},R)$ with differential $(-1)^r(d^C)^{*}$.
 For a bilinear form $\beta$ of degree $n$ on $C$ set
 $$
 \beta^{\sharp}_r\colon C_r\longrightarrow(C^{n-*})_r,
@@ -183,7 +183,7 @@ $$
 so $\beta^{\sharp}$ commutes with the differentials exactly when $\beta_{r-1,n-r+1}(d^Cx,y)+(-1)^{r}\beta_{r,n-r}(x,d^Cy)=0$ for all $r$, which is the condition of @def-complex-form with $p=r$ and $q=n+1-r$.
 $\square$
 
-The condition that $\beta^{\sharp}$ be a chain equivalence is the Poincaré condition of @def-poincare-complex.
+The condition that $\beta^{\sharp}$ be a chain equivalence is the Poincaré condition of @def:poincare-complex.
 :::
 
 ::: {#prp-form-on-homology .prop title="The induced pairing on homology"}
@@ -244,7 +244,7 @@ $$
 \xrightarrow{\ \epsilon\ }M\longrightarrow0
 $$
 is exact.
-It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4]. Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5]. A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm-projective-model-structure, and the bar construction of @def-comonad-resolution produces one from the free-module adjunction.
+It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4]. Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5]. A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm:projective-model-structure, and the bar construction of @def:comonad-resolution produces one from the free-module adjunction.
 :::
 
 ::: {#thm-resolution-comparison .theorem title="Comparison of resolutions"}
