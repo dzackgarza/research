@@ -9,7 +9,7 @@ The three are related: a half-divisor model is the quotient of a divisor model
 by an involution, and the dlt models supply the birational models on whose
 strata the associated combinatorial data live.
 
-::: {.Question title="Comparison of dlt and divisor models with Kulikov models"}
+::: {.Question #qst:dlt-divisor-kulikov-comparison title="Comparison of dlt and divisor models with Kulikov models"}
 The source notes describe the relationship of these models to the KSBA
 program (below); they do not discuss the relationship to Kulikov models
 explicitly. If a Kulikov comparison is intended here, supply it.

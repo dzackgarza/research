@@ -52,7 +52,7 @@ For a hyperbolic Coxeter system, part (3) says which points of the chamber have 
 
 ## Vertices of a Coxeter polytope
 
-::: {.Notation title="Wall spans and subdiagram Gram matrices"}
+::: {.Notation #not:wall-spans-subdiagram-gram title="Wall spans and subdiagram Gram matrices"}
 
 Let $P\containedin\HH^n_L$ be a Coxeter polytope (\longref{def:coxeter-polytope}) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$.
 For $I\containedin S$ write

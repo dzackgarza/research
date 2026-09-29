@@ -67,17 +67,17 @@ $(18,0,0)_1 = U\oplus E_8^{\oplus2}$ is the lattice to which the Coble cusps are
 
 Folding is performed by summing a root with its image under the relevant involution, $s = v + \sigma(v)$.
 
-::: {.Construction title="Sterk 1: 12 nodes, all of norm -4"}
+::: {.Construction #cons:sterk-1-root-vectors title="Sterk 1: 12 nodes, all of norm -4"}
 
 $s^1_k = v_k + v_{k+8}$, together with $s^1_{10} = v_{21}$ and $s^1_{11} = v_{22}$.
 :::
 
-::: {.Construction title="Sterk 2: 10 nodes, norms $(-4^{\times 8}, -2, -4)$"}
+::: {.Construction #cons:sterk-2-root-vectors title="Sterk 2: 10 nodes, norms $(-4^{\times 8}, -2, -4)$"}
 
 $s^2_k = w_k + w_{18-k}$, together with $s^2_9 = w_9$ and $s^2_{10} = w_{18}+w_{19}$.
 :::
 
-::: {.Construction title="Sterk 3: 12 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4,-4)$"}
+::: {.Construction #cons:sterk-3-root-vectors title="Sterk 3: 12 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4,-4)$"}
 
 This case is reflection-twisted rather than a plain permutation.
 Set
@@ -89,13 +89,13 @@ $$
 so that $s^3_{11} = I(v_{20})$ and $s^3_{12} = I(v_{18})$.
 :::
 
-::: {.Construction title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$"}
+::: {.Construction #cons:sterk-4-root-vectors title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$"}
 
 The notebook records a genuine subtlety here: $s^4_{12} = v_{22}+v_{21}$ is invariant under the involution but **is not a root**, and is therefore dropped.
 This is why Sterk 4 has 11 nodes rather than 12.
 :::
 
-::: {.Construction title="Sterk 5: 14 nodes, norms $(-4^{\times 8}, -2,-2,-2,-2, -4,-4)$"}
+::: {.Construction #cons:sterk-5-root-vectors title="Sterk 5: 14 nodes, norms $(-4^{\times 8}, -2,-2,-2,-2, -4,-4)$"}
 
 $s^5_k = v_{2k-2} + 2 v_{2k-1} + v_{2k}$.
 :::
@@ -131,7 +131,7 @@ with $\infty$-labelled edges handled as $\sqrt{v_i^2 v_j^2}$.
 
 > Note: this is slightly different to $(18,2,0)$ in AET19, very mysterious!
 
-::: {.Question title="Do Scattone and AET19 give the same diagram?"}
+::: {.Question #qst:scattone-aet19-same-diagram title="Do Scattone and AET19 give the same diagram?"}
 
 Scattone's Figure 6.3.1 is the Coxeter diagram of the full reflection group of $\gens{-4}\oplus U \oplus E_8^{\oplus2}$, reached through his $F_4$ boundary computation.
 AET19 gives a Coxeter diagram for the lattice with invariants $(18,2,0)$.

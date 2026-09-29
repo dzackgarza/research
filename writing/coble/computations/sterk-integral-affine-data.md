@@ -41,7 +41,7 @@ Whoever resumes this work should treat the rank-10 expectation itself as the thi
 
 ## The plotting procedure
 
-::: {.Construction title="From directions to a polygon with symmetry"}
+::: {.Construction #cons:directions-to-symmetric-polygon title="From directions to a polygon with symmetry"}
 
 1. Fix the ordered primitive boundary directions $v_i \in \ZZ^2$.
 

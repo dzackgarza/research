@@ -45,7 +45,7 @@ Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` re
 
 ## The three-way parallel transport
 
-::: {.Construction title="Term-by-term transport along the embedding chain"}
+::: {.Construction #cons:transport-isotropic-candidates-embedding-chain title="Term-by-term transport along the embedding chain"}
 
 The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 
@@ -71,7 +71,7 @@ This is the tool that would settle the open orbit count directly, rather than by
 A raw trace of one such run on a rank-10 form with diagonal $(-4,-4,-4,-4,-2,-4,-4,-4,-4,-2)$ survives in `reports/logs.txt`, whose two input Gram matrices are worth keeping even though the remaining 8800 lines are per-iteration bookkeeping.
 :::
 
-::: {.Definition title="The isotropic trichotomy used as a separating invariant"}
+::: {.Definition #def:isotropic-trichotomy title="The isotropic trichotomy used as a separating invariant"}
 
 `init.sage` provides `get_isotrop_type`, which classifies a primitive isotropic vector as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.
 This trichotomy is what the cusp correspondence sections of this project rely on.
