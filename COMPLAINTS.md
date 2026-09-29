@@ -272,6 +272,36 @@ computability boundary when no maintained route applies.
 finite cyclic groups, but membership must not depend on that enumeration.
 **Repair:** `engine-wiring-audit` in [TODO.md](TODO.md).
 
+### Zettlr all-workspace lint conflates component `id=` properties with Pandoc `#` identifiers
+
+Running the Zettlr linter across the configured writing and site workspaces
+should lint valid component attribute blocks without aborting.  The site
+component contract uses key-value attributes such as
+`{.component type="video" provider="youtube" id="E_Ly2NWX1g8"}`; the same
+form is used by multiple site documents.
+
+Observed on 2026-09-29: all-workspace lint aborts with
+`Inconsistent attribute block: id "E_Ly2NWX1g8" not found ...`.
+`extract-references.ts::locateAttribute` in the Zettlr/Pandoc integration
+calls `parsePandocAttributes`, sees `attributes.id`, and then requires that
+value to occur as an authored `#<id>` token.  A component's ordinary
+key-value `id=...` property therefore reaches the identifier-token branch and
+throws even though the authored attribute block is valid for the component
+renderer.  Linting the `/research/writing` workspace alone is clean through
+warning severity; adding the site workspace exposes the failure.
+
+**Expected behavior:** a generic key-value `id=...` property remains component
+data and is not treated as a Pandoc reference identifier unless an authored
+`#...` identifier token is present.  Explicit `#...` reference identifiers
+must continue to be located with their exact source range.
+**Owning boundary:** Zettlr/Pandoc attribute parsing and reference extraction,
+not the research documents or the site component syntax.
+**Examples:** the Benson Farb video block above, together with established site
+video blocks using `id="3IjAy0gHRyY"` and `id="zRPa-VAvl6Q"`.
+**Coverage boundary:** the concrete all-workspace failure, the identifier
+locator source, and these three site video-component uses were inspected.  No
+claim is made about other key-value `id=` consumers.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
