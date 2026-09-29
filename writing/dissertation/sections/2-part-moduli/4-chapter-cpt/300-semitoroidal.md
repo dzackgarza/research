@@ -61,7 +61,7 @@ Then there exists a normal compactification $\semitorcpt{\FG}$ containing $\FG$ 
 2. If $\sigma \subset \mcf_\eta$ is a cone with $\eta$ an isotropic line corresponding to a Type $\III$ cusp, let $L_{\eta, \sigma} = \eta^{\perp T}/\gens{\eta, \sigma}$.
 Then the corresponding stratum is a finite quotient of $L_{\eta, \sigma, \CCstar}$.
 
-3. If $\sigma \subset \mcf_I$ with $I$ an isotropic plane corresponding to a a Type $\II$ cusp, there is a subspace $H_I$  depending on $\sigma$ and an algebraic group $\mce$ defined in @Loo03. Let $L_{I, \sigma} \da I^{\perp}/\gens{I, H_I}$, then the corresponding stratum is a finite quotient of $L_{I, \sigma, \mce}$.
+3. If $\sigma \subset \mcf_I$ with $I$ an isotropic plane corresponding to a Type $\II$ cusp, there is a subspace $H_I$  depending on $\sigma$ and an algebraic group $\mce$ defined in @Loo03. Let $L_{I, \sigma} \da I^{\perp}/\gens{I, H_I}$, then the corresponding stratum is a finite quotient of $L_{I, \sigma, \mce}$.
 
 4. For any compatible system of semifans $\semifans{G}$ refining $\semifans{F}$, there is a natural morphism $\semifancpt{\FG}{\semifans{G}} \to \semifancpt{\FG}{\semifans{F}}$ which maps strata to strata according to inclusion of cones: for $\tau \subset \sigma$, the stratum indexed by $(I,\tau)$ maps to the stratum indexed by $(I,\sigma)$.
 
