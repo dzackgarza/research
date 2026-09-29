@@ -190,7 +190,7 @@ The dual conditions define preservation, reflection, and creation of colimits [@
 If $F$ creates limits of a class of diagrams and $\mathcal D$ has those limits, then $\mathcal C$ has them and $F$ preserves them [@Rie16, Proposition 3.3.3].
 :::
 
-Which forgetful functors create which limits is recorded in [Distinguished functors and comparison](Distinguished-Functors.md#sec-creation).
+Which forgetful functors create which limits is recorded in Distinguished functors and comparison @sec-creation.
 
 ## Kan extensions {#sec-kan}
 

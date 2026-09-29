@@ -28,21 +28,21 @@ A computed statement may hold under hypotheses — nonvanishing, convergence, fi
 $$
 \text{statement} \quad \text{provided} \quad C_1, \ldots, C_n.
 $$
-This is an ordinary implication whose hypotheses are formal propositions: discharged when they follow from memberships in scope ([Elements](Elements-and-Containment.md#sec-elements-containment)), carried on the statement when not.
+This is an ordinary implication whose hypotheses are formal propositions: discharged when they follow from memberships in scope (Elements @sec-elements-containment), carried on the statement when not.
 Hypotheses are part of the statement, not commentary attached to it, and a statement is never displayed stripped of undischarged hypotheses.
 
 A relational hypothesis among already-named objects — $g \circ f = \mathrm{id}$, an equation between named elements — is a formal proposition and may be carried as such.
-When the relation is to be *consumed as data* rather than asserted — when later constructions depend on the retraction, not merely on its existence — the named objects are re-sited as a single object of the category of such diagrams (the retraction pair $(f, g, \, g \circ f = \mathrm{id})$ as an object of the category of retraction data), following the principle that a proposition becomes a morphism one level up. The two forms are the hypothesis-level instance of the existence/data distinction of [Elements and Containment](Elements-and-Containment.md#sec-containment).
+When the relation is to be *consumed as data* rather than asserted — when later constructions depend on the retraction, not merely on its existence — the named objects are re-sited as a single object of the category of such diagrams (the retraction pair $(f, g, \, g \circ f = \mathrm{id})$ as an object of the category of retraction data), following the principle that a proposition becomes a morphism one level up. The two forms are the hypothesis-level instance of the existence/data distinction of Elements and Containment @sec-containment.
 
 ## Case decomposition {#sec-case-decomposition}
 
-There is no categorical union of classifiers ([Joins, meets, and closure](Joins-Meets-and-Closure.md#sec-join-meet)), so "the $A$ case or the $B$ case" is not a membership statement about one object.
+There is no categorical union of classifiers (Joins, meets, and closure @sec-join-meet), so "the $A$ case or the $B$ case" is not a membership statement about one object.
 Case analysis is a family of implications: a stated decomposition of a classifier (the prime $2$ and the odd primes; a stratification by rank), one conditional statement per case (@sec-hypotheses), and the exhaustiveness of the decomposition as a proposition of its own — discharged or carried like any other hypothesis.
 Nothing is concluded from an undischarged decomposition.
 
 ## Localization {#sec-localization}
 
 A hypothesis is membership; there is no assumption form to localize.
-Passage to a local setting is application of the named base-change functor, and the local invariants live on the local object: one does not "work $p$-adically" with $L$, one works with $L \otimes \mathbb Z_p$, an object of its own category reached by a distinguished 1-cell ([Distinguished Functors](Distinguished-Functors.md#sec-distinguished-functors)), and statements proved there are statements about $L \otimes \mathbb Z_p$.
+Passage to a local setting is application of the named base-change functor, and the local invariants live on the local object: one does not "work $p$-adically" with $L$, one works with $L \otimes \mathbb Z_p$, an object of its own category reached by a distinguished 1-cell (Distinguished Functors @sec-distinguished-functors), and statements proved there are statements about $L \otimes \mathbb Z_p$.
 Transferring a local statement back along the base change is a descent claim, stated and discharged as one — never an effect of closing a scope.
-The genus construction is the worked instance: local profiles are read off the base changes, and the global-to-local comparison is the $\pi_0$ fiber-sequence machinery of [Categorical Foundations](Categorical-Foundations.md#sec-pi0-fiber).
+The genus construction is the worked instance: local profiles are read off the base changes, and the global-to-local comparison is the $\pi_0$ fiber-sequence machinery of Categorical Foundations @sec-pi0-fiber.
