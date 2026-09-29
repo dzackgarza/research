@@ -395,6 +395,35 @@ all callers that subsequently require ideal operations on those results.
 claim is made here about preservation of arbitrary additional subobject
 categories; each such closure law requires its own mathematical justification.
 
+### Toric scalar base change drops the toric construction data
+
+Scalar base change of a toric scheme should retain the fan that defines the
+toric variety.  On 2026-09-29 the construction-chain review for projective
+surface method placement found that `_SchemeBaseChangeFunctor._apply_object`
+routes every scheme presented by a finite affine gluing through
+`_glued_object` before inspecting any toric specialization.  `ToricSchemes`
+are built by exactly such a gluing.  `_glued_object` then reconstructs only a
+generic glued scheme in `FiberProductSchemes(R')`; it does not retain
+`ToricSchemes(R')`, the fan, or the optional polarizing polytope.
+
+**Expected behavior:** for a scalar map `R -> R'`, the base change of
+`X_Sigma` remains the toric scheme `X_Sigma` over `R'`, carrying the same fan
+and any selected polarization together with the fibre-product projections.
+Properties determined by the fan, such as smoothness and (for complete toric
+surfaces over a field) projective-surface placement, are then inherited from
+that same retained datum rather than re-guessed after gluing.
+**Dependency path:** `ToricSchemes(R)` and its defining fan -> affine-atlas
+gluing -> scheme scalar base change -> fibre-product gluing over `R'` ->
+retained toric construction data and category placement.
+**Owning boundary:** the scheme base-change constructor together with the
+toric-scheme constructor, not the individual toric operations that disappear
+after the base change.
+**Coverage boundary:** `_SchemeBaseChangeFunctor._apply_object` and
+`_glued_object`, and the toric construction in `_toric_variety`, were inspected
+as source.  No runtime execution was performed under the current M1 execution
+suspension, and no claim is made here about other specialized affine-gluing
+families that may also need structure-preserving base change.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
