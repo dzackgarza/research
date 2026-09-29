@@ -1,6 +1,6 @@
 # Embeddings, overlattices, and gluing {#sec:embeddings-overlattices}
 
-::: {.Remark title="Primitive embeddings, gluing, and unimodular classification"}
+::: {.remark title="Primitive embeddings, gluing, and unimodular classification"}
 
 The basic vocabulary of lattices, primitive embeddings, orthogonal
 complements, discriminant groups, and the unimodular lattices
@@ -21,7 +21,7 @@ quadratic form $q_L$.
 
 ## Primitive and saturated sublattices
 
-::: {.Definition #def:saturation title="Saturation"}
+::: {.definition #def:saturation title="Saturation"}
 
 Let $S\containedin L$ be a sublattice.
 The **saturation** of $S$ in $L$ is the sublattice
@@ -34,7 +34,7 @@ $S_\QQ \da S\tensor_\ZZ\QQ$ is regarded inside $L_\QQ$.
 We say $S$ is **saturated** in $L$ if $S = \Sat_L(S)$.
 :::
 
-::: {.Proposition #prop:primitive-characterization title="Characterization of primitive sublattices"}
+::: {.proposition #prop:primitive-characterization title="Characterization of primitive sublattices"}
 
 Let $S\containedin L$ be a sublattice.
 The following conditions are equivalent.
@@ -122,7 +122,7 @@ $(3)$ this is condition $(2)$.
 
 ## Equivalence of embeddings
 
-::: {.Definition #def:coble-embedding-equivalence title="Equivalence of primitive embeddings"}
+::: {.definition #def:coble-embedding-equivalence title="Equivalence of primitive embeddings"}
 
 Two primitive embeddings $\iota_1\colon S\injects L_1$ and
 $\iota_2\colon S\injects L_2$ are **equivalent** if there is an isometry
@@ -134,7 +134,7 @@ The set of equivalence classes of primitive embeddings of $S$ into a fixed
 lattice $L$ is denoted $\operatorname{Emb}(S, L)$.
 :::
 
-::: {.Remark title="Primitive embedding classes are orthogonal-group orbits of marked sublattices"}
+::: {.remark title="Primitive embedding classes are orthogonal-group orbits of marked sublattices"}
 
 Since an equivalence identifies $\iota_1(S)$ with $\iota_2(S)$ as sublattices of
 $L$, describing $\operatorname{Emb}(S, L)$ amounts to classifying the
@@ -145,7 +145,7 @@ made finite, in the even unimodular case, by
 [the embedding-finiteness proposition](#prop:embedding-finiteness).
 :::
 
-::: {.Definition #def:embedding-vs-sublattice-equivalence title="Isomorphic embeddings versus isomorphic primitive sublattices"}
+::: {.definition #def:embedding-vs-sublattice-equivalence title="Isomorphic embeddings versus isomorphic primitive sublattices"}
 
 Two primitive embeddings $\iota_1\colon S\injects M_1$ and
 $\iota_2\colon S\injects M_2$ can be compared in two inequivalent ways.
@@ -165,7 +165,7 @@ the action of $\Orth(S)$: the classes of the second kind are the orbits of the
 classes of the first kind under $\Orth(S)$ acting by precomposition.
 :::
 
-::: {.Remark title="Embedding equivalence is finer than sublattice equivalence"}
+::: {.remark title="Embedding equivalence is finer than sublattice equivalence"}
 
 The distinction matters whenever $\Orth(S)$ is large, and it is the source of two
 different answers to the question of how many primitive embeddings $S\injects L$
@@ -180,7 +180,7 @@ extra quotient appearing in the uniqueness statement of
 
 ## Overlattices and gluing
 
-::: {.Definition #def:overlattice title="Overlattice"}
+::: {.definition #def:overlattice title="Overlattice"}
 
 An **overlattice** of a lattice $S$ is a lattice $L$ containing $S$ as a
 finite-index sublattice, with $\ro{\beta_L}{S} = \beta_S$.
@@ -190,7 +190,7 @@ and its dual; the finite quotient $L/S$ is then a subgroup of
 $A_S = S\dual/S$.
 :::
 
-::: {.Theorem #thm:nikulin-gluing title="Nikulin's gluing correspondence"}
+::: {.theorem #thm:nikulin-gluing title="Nikulin's gluing correspondence"}
 
 Let $S$ be an even lattice.
 There is a bijection
@@ -247,7 +247,7 @@ map $\Orth(S)\to\Orth(q_S)$, carrying the overlattice attached to $H$ to the one
 attached to its image.
 :::
 
-::: {.Remark #rmk:embedding-gluing-data title="Primitive embeddings as discriminant gluing data"}
+::: {.remark #rmk:embedding-gluing-data title="Primitive embeddings as discriminant gluing data"}
 
 The correspondence of [Nikulin's gluing theorem](#thm:nikulin-gluing) is the engine behind the
 classification of primitive embeddings.
@@ -277,7 +277,7 @@ and of $T$ assembles into an isometry of $L$; that question is settled in
 
 ## Splitting of unimodular sublattices
 
-::: {.Definition #def:lattice-split title="Splitting"}
+::: {.definition #def:lattice-split title="Splitting"}
 
 Let $S\injects L$ be a primitive embedding with orthogonal complement
 $T\da S^{\perp L}$.
@@ -286,7 +286,7 @@ trivial index-$1$ overlattice of $S\oplus T$, i.e. the isotropic subgroup
 $H_L\le A_{S\oplus T}$ from [Nikulin's gluing theorem](#thm:nikulin-gluing) is the zero group.
 :::
 
-::: {.Proposition #prop:unimodular-splits title="Unimodular sublattices split"}
+::: {.proposition #prop:unimodular-splits title="Unimodular sublattices split"}
 
 Let $S$ be a unimodular lattice admitting a primitive embedding into a
 nondegenerate lattice $L$, and let $T\da S^{\perp L}$ be its orthogonal
@@ -322,7 +322,7 @@ unimodular with $\operatorname{disc} S = \pm 1$ we obtain
 $\operatorname{disc} T = \pm 1$, so $T$ is unimodular.
 :::
 
-::: {.Lemma #lem:unimodular-divisibility title="Divisibility of isotropic vectors in unimodular lattices"}
+::: {.lemma #lem:unimodular-divisibility title="Divisibility of isotropic vectors in unimodular lattices"}
 
 Let $L$ be a nondegenerate unimodular lattice and let $v\in L$ be a primitive
 isotropic vector.
@@ -345,7 +345,7 @@ For the divisibility statement, the image $\beta_L(v, L) = \operatorname{div}_L(
 contains $\beta_L(v, w) = 1$, so $\operatorname{div}_L(v) = 1$.
 :::
 
-::: {.Corollary #cor:hyperbolic-splitting title="Hyperbolic splitting of unimodular lattices"}
+::: {.corollary #cor:hyperbolic-splitting title="Hyperbolic splitting of unimodular lattices"}
 
 Let $L$ be a nondegenerate unimodular lattice containing a primitive isotropic
 vector.
@@ -399,7 +399,7 @@ $L\cong P\oplus P^{\perp L}$.
 
 ## Maximal and split maximal lattices
 
-::: {.Definition #def:maximal-lattice title="Maximal lattices"}
+::: {.definition #def:maximal-lattice title="Maximal lattices"}
 
 An even lattice $L'$ is **maximal** if its discriminant group contains no nonzero
 isotropic subgroup, that is if $q_{L'}$ vanishes on no nonzero subgroup of
@@ -408,7 +408,7 @@ An inclusion $L\containedin L'$ with $L'$ maximal and $L'$ an overlattice of $L$
 the sense of [the overlattice definition](#def:overlattice) is a **maximal overlattice** of $L$.
 :::
 
-::: {.Lemma #lem:maximal-overlattice-exists title="Existence of maximal even overlattices"}
+::: {.lemma #lem:maximal-overlattice-exists title="Existence of maximal even overlattices"}
 
 Every even lattice admits a maximal overlattice.
 A unimodular lattice is maximal.
@@ -426,7 +426,7 @@ maximal.
 A unimodular lattice has $A_L = 0$, so the condition is vacuous.
 :::
 
-::: {.Definition #def:split-maximal title="Split maximal lattices"}
+::: {.definition #def:split-maximal title="Split maximal lattices"}
 
 A maximal lattice $L'$ of signature $(2, n)$ is **split** if it decomposes as
 $$
@@ -439,7 +439,7 @@ for some lattice $L_0$; equivalently, if $L'$ contains $U^{\oplus 2}$ as an
 orthogonal direct summand.
 :::
 
-::: {.Theorem #thm:maximal-splits-for-large-n title="Maximal lattices of signature $(2, n)$ split for $n\geq 5$"}
+::: {.theorem #thm:maximal-splits-for-large-n title="Maximal lattices of signature $(2, n)$ split for $n\geq 5$"}
 
 Every maximal lattice of signature $(2, n)$ with $n\geq 5$ is split.
 :::
@@ -451,7 +451,7 @@ maximal lattices are also common for $n < 5$, by the criterion of
 [@Nik80 Cor. 1.13.5].
 :::
 
-::: {.Theorem #thm:split-maximal-isotropic-transitivity title="Transitivity on isotropic sublattices of a split maximal lattice"}
+::: {.theorem #thm:split-maximal-isotropic-transitivity title="Transitivity on isotropic sublattices of a split maximal lattice"}
 
 Let $L'$ be a split maximal lattice of signature $(2, n)$.
 
@@ -475,7 +475,7 @@ isotropic sublattice of a maximal lattice determines.
 
 ## Classification of unimodular lattices
 
-::: {.Theorem #thm:indefinite-unimodular-classification title="Classification of indefinite unimodular lattices"}
+::: {.theorem #thm:indefinite-unimodular-classification title="Classification of indefinite unimodular lattices"}
 
 Any indefinite unimodular lattice is determined up to isometry by its rank,
 index, and parity.
@@ -486,7 +486,7 @@ The same uniqueness by rank, index, and parity holds for definite unimodular
 lattices of rank at most $8$.
 :::
 
-::: {.Theorem #thm:small-unimodular-classification title="Classification of small unimodular lattices"}
+::: {.theorem #thm:small-unimodular-classification title="Classification of small unimodular lattices"}
 
 Let $L$ be any unimodular lattice, definite or indefinite, with
 $\rank_\ZZ L\le 4$.
@@ -497,7 +497,7 @@ Then either
 2.  $L$ is even and $L\cong U$ or $L\cong U^{\oplus 2}$.
 :::
 
-::: {.Remark title="Sources and rigidity for small unimodular lattices"}
+::: {.remark title="Sources and rigidity for small unimodular lattices"}
 
 The indefinite classification is Serre's theorem on integral quadratic forms
 [@Ser73 Ch.\ V]; the uniqueness statement for definite unimodular lattices of
@@ -514,7 +514,7 @@ the signature of an even unimodular lattice is divisible by $8$.
 
 ## Finiteness of embeddings
 
-::: {.Proposition #prop:embedding-finiteness title="Finiteness of embeddings into even unimodular lattices"}
+::: {.proposition #prop:embedding-finiteness title="Finiteness of embeddings into even unimodular lattices"}
 
 If $S$ and $L$ are even lattices and $L$ is unimodular, then
 $\operatorname{Emb}(S, L)$ is a finite set.
@@ -551,7 +551,7 @@ $\operatorname{Emb}(S, L)$ is finite.
 
 ## The exact sequence for scaled lattices
 
-::: {.Proposition #prop:scaled-discriminant-ses title="Discriminant group of a scaled lattice"}
+::: {.proposition #prop:scaled-discriminant-ses title="Discriminant group of a scaled lattice"}
 
 Let $L$ be a lattice and $m$ a positive integer, and let $L(m)$ be the twist of
 $L$ by $m$ ([Lattice Theory](lattice-theory.md#sec:lattice-theory)).
@@ -587,7 +587,7 @@ If $L$ is unimodular then $\iota_L$ is an isomorphism, so $A_L = 0$ and
 $A_{L(m)}\cong L/mL\cong(\ZZ/m\ZZ)^{\rank L}$.
 :::
 
-::: {.Proposition #prop:orthogonal-group-ses title="The orthogonal group exact sequence"}
+::: {.proposition #prop:orthogonal-group-ses title="The orthogonal group exact sequence"}
 
 Let $L$ be a lattice.
 Every isometry $f\in\Orth(L)$ extends by functoriality to an isometry of
@@ -606,7 +606,7 @@ $$
 $$
 :::
 
-::: {.Remark title="The discriminant-form cokernel is the obstruction to lifting isometries"}
+::: {.remark title="The discriminant-form cokernel is the obstruction to lifting isometries"}
 
 The cokernel $\Orth^*(q_L)$ measures the obstruction to lifting an automorphism
 of the discriminant form $q_L$ to an isometry of $L$.
