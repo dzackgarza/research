@@ -57,8 +57,10 @@ language derived from it) and realization leaves. This repository's part:
   not added to it. The `OWN-*` rules below govern how existing preamble code is maintained, not
   where new mathematics goes.
 * **Realizations are welcome.** Once the mathematics is released and `lean-cas-dsl` has consumed
-  it, research code may realize an operation as a leaf, in the Lake package `leaves/`
-  (`ResearchLeaves.*`, pinned to `lean-cas-dsl`). That leaf registers realizations of
+  it, research code may realize an operation as a leaf. A leaf depends only on `lean-cas-dsl`'s
+  intake contract (the leaf API and the pinned catalogue). It never imports, runs or sees the
+  acceptance suite; the suite is run over installed leaves by `lean-cas-dsl`'s harness. Leaves are
+  long-tail work, not written in lockstep with the language. That leaf registers realizations of
   registered operations on presentations, and nothing else: no category, method, placement,
   forwarding or narrowed domain. Its internals can be as ugly as the computation needs.
 * **Tests flow one way.** The permanent acceptance assertions of `lean-cas-dsl` are never edited
