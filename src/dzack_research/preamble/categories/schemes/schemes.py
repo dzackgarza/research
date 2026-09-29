@@ -2755,6 +2755,37 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_smooth(self):
                 return True
 
+            @cached_method
+            def canonical_line_bundle(self):
+                r"""Return the relative canonical line bundle ``omega_{X/R}`` in a represented smooth case.
+
+                For a smooth morphism of constant relative dimension ``d`` the
+                mathematical owner is this category: ``omega_{X/R} =
+                det(Omega^1_{X/R})``.  Descendant categories supply private
+                computational specializations; other smooth schemes retain the
+                operation at its owner and state the missing determinant
+                algorithm rather than losing the operation by lower placement.
+                """
+                return self._canonical_line_bundle()
+
+            def _canonical_line_bundle(self):
+                raise AssertionError(
+                    f"the canonical line bundle of the smooth scheme {self} is "
+                    "det(Omega^1), but a represented determinant of its relative "
+                    "cotangent sheaf is not computed here"
+                )
+
+            def canonical_bundle(self, *args, **kwargs):
+                return self.canonical_line_bundle(*args, **kwargs)
+
+            @cached_method
+            def anticanonical_line_bundle(self):
+                r"""Return ``omega_{X/R}^{-1}`` in every represented canonical-bundle case."""
+                return self.canonical_line_bundle().dual_sheaf()
+
+            def anticanonical_bundle(self, *args, **kwargs):
+                return self.anticanonical_line_bundle(*args, **kwargs)
+
         def an_object(self):
             r"""The affine line, which is smooth over the base ring."""
             return AffineSpaces(self.base_ring())(1)
@@ -3798,8 +3829,12 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         @cached_method
-        def picard_group(self):
+        def _picard_group(self, base_picard_group=None):
             r"""Return ``Pic(A^n_k) = 0`` over a field."""
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "the affine-space computation has no projective-bundle base datum"
+            )
             base = self.scheme_base_ring()
             assert base in OwnedFields(), (
                 f"cannot compute the Picard group of {self}: Pic(A^n) = 0 is used here only over a field, "
@@ -3957,7 +3992,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     )
                     return _projective_space_picard_to_class_group_morphism(self, *supplied)
 
-        def picard_group(self, base_picard_group=None):
+        def _picard_group(self, base_picard_group=None):
             r"""Return the represented Picard group of this projective space.
 
             With no supplied base Picard group, use the field-base divisor-class
@@ -4112,20 +4147,9 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _coordinate_imposed_multiplicity_linear_system(self, degree, coordinate_index, vanishing_order)
 
         @cached_method
-        def canonical_line_bundle(self):
-            r"""Return ``omega_{P^n_R} = O(-n-1)`` in the standard smooth projective regime."""
+        def _canonical_line_bundle(self):
+            r"""Compute ``omega_{P^n_R} = O(-n-1)`` for the smooth-owner operation."""
             return self.O(-int(self.relative_dimension()) - 1)
-
-        def canonical_bundle(self, *args, **kwargs):
-            return self.canonical_line_bundle(*args, **kwargs)
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            r"""Return ``omega_{P^n_R}^{-1} = O(n+1)``."""
-            return self.O(int(self.relative_dimension()) + 1)
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def standard_affine_atlas(self):
@@ -4541,18 +4565,8 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _product_projective_o(self, _family_ingress(degrees))
 
         @cached_method
-        def canonical_line_bundle(self):
+        def _canonical_line_bundle(self):
             return self.O(*(-int(factor.relative_dimension()) - 1 for factor in self.factors()))
-
-        def canonical_bundle(self, *args, **kwargs):
-            return self.canonical_line_bundle(*args, **kwargs)
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            return self.O(*(int(factor.relative_dimension()) + 1 for factor in self.factors()))
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
 
 
 def _scheme_product_cache_key(factors):

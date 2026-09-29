@@ -930,7 +930,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return True
 
         @cached_method
-        def picard_group(self):
+        def _picard_group(self, base_picard_group=None):
             r"""``Pic(X) = CDiv_T(X)/M`` (CLS Thm. 4.2.1).
 
             On a smooth fan every torus-invariant Weil divisor is Cartier (CLS
@@ -941,6 +941,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             free divisor group into a finitely presented cokernel, and the
             module layer represents kernels only between free modules.
             """
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "the toric divisor presentation has no projective-bundle base datum"
+            )
             assert self.fan().is_smooth(), (
                 f"the Picard group of {self} is computed only for a smooth fan, where every Weil "
                 "divisor is Cartier; its fan is not smooth, so test the divisors in question "

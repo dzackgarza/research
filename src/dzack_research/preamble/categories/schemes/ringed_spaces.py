@@ -1672,6 +1672,33 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             return _structure_sheaf(self)
 
         @cached_method
+        def picard_group(self, base_picard_group=None):
+            r"""Return the Picard group of this ringed space when a represented algorithm applies.
+
+            Mathematically ``Pic(X)`` is the abelian group of isomorphism
+            classes of invertible ``O_X``-modules under tensor product, so the
+            operation belongs to ringed spaces.  Descendant categories supply
+            private computational specializations; an optional base Picard
+            group is retained as input to the existing projective-bundle
+            algorithm.
+            """
+            return self._picard_group(base_picard_group=base_picard_group)
+
+        def _picard_group(self, base_picard_group=None):
+            match base_picard_group:
+                case None:
+                    raise AssertionError(
+                        f"the Picard group of the ringed space {self} is the group of isomorphism classes of "
+                        "invertible structure-sheaf modules under tensor product, but no represented algorithm "
+                        "for that group applies to this object"
+                    )
+                case _:
+                    raise AssertionError(
+                        f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                        "that datum is consumed only by a represented projective-bundle specialization"
+                    )
+
+        @cached_method
         def cartier_divisor_sheaf(self):
             r"""Return the quotient sheaf ``K_X^*/O_X^*``.
 

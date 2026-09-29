@@ -176,7 +176,11 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return _integers()(multiplicity)
 
         @cached_method
-        def picard_group(self):
+        def _picard_group(self, base_picard_group=None):
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "this point-blowup presentation computes its Picard group directly"
+            )
             module = _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
             )
@@ -274,17 +278,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
             return canonical.canonical_isomorphism_to(target)
 
-        def canonical_line_bundle(self):
+        def _canonical_line_bundle(self):
             return self.canonical_comparison().domain()
-
-        canonical_bundle = canonical_line_bundle
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            return self.canonical_line_bundle().dual_sheaf()
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
 
         def is_del_pezzo(self) -> bool:
             return bool(self.anticanonical_line_bundle().is_ample())
