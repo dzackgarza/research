@@ -33,11 +33,9 @@ $$
 assigns to $S$ the set of isomorphism classes of flat families $(\mcx, \mcb) \to S$ of KSBA stable pairs with these invariants. This functor is represented by a proper, separated Deligne–Mumford stack $\mcm$, whose coarse moduli space $M$ is a projective scheme [@KS88, Thm. 1.1]. The closure of the locus of smooth pairs in $\mcm$ provides a geometrically meaningful compactification by stable pairs.
 
 For K3 or Enriques surfaces, $K_X \equiv 0$ is numerically trivial, so to ensure ampleness one considers **pairs** $(X, \eps R)$ for $0 < \eps \ll 1$, $R$ ample divisor, and studies the stable pair locus for these data. The divisor $R$ is typically chosen to be the ramification divisor of an automorphism, and the compactification is independent of $\eps$ for $\eps$ sufficiently small ([@KS88, §5], [@Ale96a, §6], [@Kol23, Lemma VI.1.1], [@AET23]).
-For $K3$ surfaces with polarization of degree $2d$, a **divisor model** refers to the representation of a $K3$ surface $X$ together with an ample Cartier divisor $L$ of degree $2d$ -- concretely, for $d = 1$, this is a double cover of $\PP^2$ branched along a sextic.
-The stability condition requires $(X, L)$ to be log canonical with $K_X + L$ ample.
-The KSBA compactification $\ksbacpt{F}_{2d}$ for such pairs compactifies the moduli space of smooth pairs $(X, L)$ by adding K3 surface pairs with at worst ADE/slc singularities.
-These are parameterized by **integral affine spheres** $\IAS^2$ with 24 singularities.
-For Enriques surfaces the boundary of the KSBA compactification naturally includes **half-divisor models**: pairs $(Z, \Delta)$, where $Z$ is an Enriques surface and $\Delta$ is an effective Weil divisor determined by the universal K3 cover $X\to Z$, often defined only up to numerical equivalence or descent $X$. These are in turn parametrized by $\IAS^2$ with involutions.
+For degenerations of polarized K3 surfaces, a **divisor model** is a Kulikov or quasipolarized nef model together with a relatively big and nef divisor extending the chosen divisor on the general fiber and containing no stratum of any fiber; see @def:divisor-model and [@AEGS25, §4.2]. This is a degeneration-theoretic construction, not another name for a smooth polarized K3 surface.
+For Type $\III$ divisor models, the central-fiber dual complex is a polarized integral-affine sphere $\IAS^2$; the integral-affine polarization records the flat-limit divisor data [@AEGS25, Thm. 4.4].
+For Enriques degenerations, when the Enriques involution is regular on the divisor model and preserves its divisor, the quotient is the **half-divisor model** of @def:half-divisor-model [@AEGS25, Def. 4.7]. Its central fiber is generally an slc degeneration, not a smooth Enriques surface.
 
 
 #### Singularities

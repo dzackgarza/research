@@ -107,7 +107,7 @@ R_{\rcop} \da  \sum_{i=1}^{n_d} R_i \in |n_d L|
 where $R_i$ runs over all irreducible rational curves in the linear system $|L|$ of the polarization and $n_d$ is given by the Yau–Zaslow formula ([@AE23, Thm. 10.2]). In @AE23, $R_{\rcop}$ is shown to be recognizable for all $d$, so there exists a canonical semifan $\mcf^{\rcop}$ with
 
 \begin{align*}
-\semitorcpt{F_{2d}} \cong \ksbacpt{F_{2d}}
+\semitorcpt{F_{2d}} \cong \normksbacpt{F_{2d}}
 .
 .\end{align*}
 

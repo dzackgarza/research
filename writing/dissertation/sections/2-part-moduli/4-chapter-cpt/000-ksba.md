@@ -34,12 +34,12 @@ R_\rcop \da  \sum_{i=1}^{n_d} R_i \in |n_d L|
 .\end{align*}
 
 where each $R_i$ is an irreducible rational curve and $n_d$ is given by the *Yau–Zaslow* formula, see e.g. [@AE23, Thm. 10.2].
-In loc.cit., this divisor is shown to be recognizable for all $d$, and thus there are semifans such that $\semitorcpt{F_{2d}} \cong \ksbacpt{F_{2d}}$.
+In loc.cit., this divisor is shown to be recognizable for all $d$, and thus there are semifans such that $\semitorcpt{F_{2d}} \cong \normksbacpt{F_{2d}}$.
 The proof uses the Kontsevich moduli space of stable maps, Gromov-Witten invariants, and properties of rational stable maps to surfaces with K-trivial degenerations.
 
 This follows a similar line of work: for $F_2$, see [@AET23], and for degree 2 elliptic K3 surfaces $\fell$, see [@ABE22]. These are $S$-polarized K3 surfaces for $S$ a 2-elementary lattice that primitively embeds in $\lkt$, of which there are exactly 75 by @Nik79a, and [@AE22, Thm. 9.10] handles the remaining cases, including $\fttz$ corresponding to $S = U(2) = (2,2,0)_1$, using the fact that such surfaces carry a nonsymplectic involution $\iota$ whose ramification divisor $R_\iota$ is recognizable.
-For $50$ of these cases, there is a result similar to @thm:main-theorem: $\semitorcpt{F_S} \iso \ksbacpt{F_S}$ for a semifan associated to $R_\iota$ -- they are precisely the closures of irreducible components on which monodromy invariants $\lambda$ maintain a fixed *combinatorial type*, as defined in @AE23a.
-By passing to Kulikov models with nonsymplectic involutions, they show that stable limits can be constructed using the fact that the central fibers $\mcx_0 = \union_i V_i$ of Type $\II$ Kulikov models $\mcx$ of K3 surfaces admit dual complexes $\Gamma(\mcx_0)$ homeomorphic to $S^2$, which can naturally be equipped with integral affine structures, yielding an $\iota$-symmetric $\IAS^2$, where $\iota$ typically acts on $S^2$ by $(x,y,z)\mapsto (x,y,-z)$ in the standard coordinates on $\RR^3$.
+For $50$ of these cases, there is a result similar to @thm:main-theorem: the normalization of the KSBA compactification is a semitoroidal compactification for a semifan associated to $R_\iota$ [@AE22].
+By passing to Kulikov models with nonsymplectic involutions, they show that stable limits can be constructed using Type $\III$ Kulikov models $\mcx$ of K3 surfaces, whose central fibers $\mcx_0 = \union_i V_i$ have dual complexes $\Gamma(\mcx_0)$ homeomorphic to $S^2$. These carry natural integral-affine structures and, in the involution setting, yield an $\iota$-symmetric $\IAS^2$.
 Thus one can reverse-engineer this procedure, starting with a model for a hemisphere of $S^2$ which is homeomorphic to $\DD^2$, and realizing $S^2 \cong \DD^2 \Disjoint_{\bd \DD^2} \DD^2$ as the pushout of two discs along their boundaries, naturally enforcing $\iota$-invariance.
 The process starts from a *monodromy invariant* $\lambda$ encoding a degeneration, then constructs an integral-affine polygon $P(\lambda)$ in $\RR^2$ with singularities, performing Symington surgeries on $P(\lambda)$ that encode the degeneration. Passing to a complete triangulation and taking the pushout
 
@@ -50,7 +50,7 @@ B(\lambda) \da  P(\lambda) \Disjoint_{\partial P(\lambda)} (-P(\lambda))
 where $-P(\lambda)$ denotes reversing the orientation, yields an $\IAS^2$.
 
 From this, one can construct a *$d$-semistable Kulikov surface* such that $B(\lambda) \cong \Gamma(\mcx_0(\lambda) )$, which by @Fri83a smooths to a K3 surface $\mcx_t \da \mcx_t(\lambda)$ and thus specifies a family $\mcx \da \mcx(\lambda)$.
-One extends the induced involution $\iota$ on $mcx_0$ to $\mcx$, passes to a carefully chosen divisorial component of the ramification divisor $R_\iota$ on $\mcx$ and performs modifications to obtain a pair $(X,\eps R) \da (X(\lambda), \eps R(\lambda))$.
+One extends the induced involution $\iota$ on $\mcx_0$ to $\mcx$, passes to a carefully chosen divisorial component of the ramification divisor $R_\iota$ on $\mcx$ and performs modifications to obtain a pair $(X,\eps R) \da (X(\lambda), \eps R(\lambda))$.
 One then shows that the limit of $R_\iota$ is big and nef and thus defines a contraction $\pi: (X, \eps R) \to (\bar X, \eps \bar R)$ to a KSBA stable pair
 There is a decomposition $X = \union_i ( V_i, D_i)$ into irreducible components indexed by the lattice points in $B(\lambda)$, each of which forms an anticanonical pair, and so we can write $(X, \eps R) = \union_i ((V_i, D_i), \eps R_i)$, which contracts under $\pi$ to a decomposition $(\bar X, \eps \bar R) = \union_i ( (\bar V_i, \bar D_i ), \eps \bar R_i )$ of the stable model.
 Tracing this construction backwards, we thus access the irreducible components of the stable model by understanding how the contraction $\pi$ combinatorially acts at the level of $B(\lambda) = \Gamma(\mcx_0)$, and in particular how the contraction acts on individual anticanonical pairs $(V_i, D_i)$.
