@@ -71,7 +71,10 @@ Naturality identifies pullback of $p$ along $f\colon X\to B$ with the family cor
 Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property.
 :::
 
-**Remark.** A property, equation, or forgetful functor acquires classifying terminology only from such a represented functor or universal property.
+::: {#rmk-classifying-terminology .Remark title="Classifying terminology requires representability"}
+
+A property, equation, or forgetful functor acquires classifying terminology only from such a represented functor or universal property.
+:::
 
 ## Operations and endomorphism operads {#sec-operations}
 

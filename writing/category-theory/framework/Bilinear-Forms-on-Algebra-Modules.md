@@ -179,7 +179,9 @@ with $\chi_L(1_A)=1_R$, and likewise for $\chi_R$.
 The codomain $R$ is commutative.
 :::
 
-**Remark.** For objects $A,B,C$ of $R\text{-}\mathbf{CAlg}$, the product $A\times B$ and the coproduct $A\otimes_R B$ give
+::: {#rmk-calg-product-coproduct .Remark title="Products and coproducts in $R\text{-}\mathbf{CAlg}$"}
+
+For objects $A,B,C$ of $R\text{-}\mathbf{CAlg}$, the product $A\times B$ and the coproduct $A\otimes_R B$ give
 $$
 \operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(C,A\times B)
 \cong
@@ -194,8 +196,12 @@ $$
 \times
 \operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(B,C).
 $$
+:::
 
-**Remark.** If $\phi\circ\tau=\phi$ for the flip $\tau(a\otimes b)=b\otimes a$, then $\chi_L=\chi_R$.
+::: {#rmk-symmetric-character-form .Remark title="Symmetry identifies the two characters"}
+
+If $\phi\circ\tau=\phi$ for the flip $\tau(a\otimes b)=b\otimes a$, then $\chi_L=\chi_R$.
+:::
 
 ::: {#exm-two-characters-polynomials .ex title="Evaluation at two points"}
 

@@ -222,13 +222,16 @@ b_p(x,y)=b_{p-1}(d^Cx,d^Cy)=b_{p-2}\bigl((d^C)^2x,(d^C)^2y\bigr)=b_{p-2}(0,0)=0.
 $$
 :::
 
-**Remark.** Let $C$ be concentrated in degree $m$ and let $n=2m$.
+::: {#rmk-concentrated-complex-form .Remark title="Forms on a complex concentrated in one degree"}
+
+Let $C$ be concentrated in degree $m$ and let $n=2m$.
 Then $(C\otimes_RC)_n=C_m\otimes_RC_m$, the compatibility condition of @def-complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def-form-presheaves.
 For a general $C$ and $n=2m$, a symmetric form of degree $n$ induces on $H_m(C)$ a pairing satisfying
 $$
 \bar\beta_{m,m}(\eta,\xi)=(-1)^m\,\bar\beta_{m,m}(\xi,\eta),
 $$
 so that pairing is symmetric for even $m$ and skew-symmetric for odd $m$ (@def-form-axioms).
+:::
 
 ## Resolutions {#sec-resolutions}
 
