@@ -59,7 +59,7 @@ We then have $\di_{T_\En}(w_1) = 2$.
 ::: {.proof}
 
 By [the divisibility lemma](#lem:divisibilityAlwaysTwoTco), we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
-The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them ([the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps), the split maximal hypothesis being [the split-maximal proposition](../lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md#prop:tco-split-maximal)), so $v_1$ represents the unique full-group $0$-cusp of $F_\Co$ and
+The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them (@thm:unpolarized-cusps, the split maximal hypothesis being @prop:tco-split-maximal), so $v_1$ represents the unique full-group $0$-cusp of $F_\Co$ and
 $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \gens{2} \oplus E_8(2).$$
 Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
 
@@ -115,7 +115,7 @@ The 1-cusp $(7,7,1)_0$ in $F_\Co$ maps to the 1-cusp $(8, 6, 0)_0$ in $F_\En$.
 
 ::: {.proof}
 
-The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$ ([the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps) and [the split-maximal proposition](../lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md#prop:tco-split-maximal)).
+The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$ (@thm:unpolarized-cusps and @prop:tco-split-maximal).
 It remains to identify the isomorphism type of the image $\tilde J^{\perp T_\En}/\tilde J$ in $T_\En$.
 One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $T_\En$ respectively.
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show

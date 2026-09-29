@@ -80,7 +80,7 @@ The open work is to:
   The involution $\theta$ itself exists as a lattice isometry without any coordinate description ([the folding-involution proposition](../lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#prop:theta-co-exists)), and the image of the resulting group in $\Orth(q_{T_\Co})$ is already known ([the finite-image orbit theorem](../lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#thm:coble-heegner-finite-orbits)); what a generating set adds is the lattice group above that finite image;
 
 - verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*.
-  For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ ([the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps), with the split maximal hypothesis supplied by [the split-maximal proposition](../lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md#prop:tco-split-maximal)).
+  For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ (@thm:unpolarized-cusps, with the split maximal hypothesis supplied by @prop:tco-split-maximal).
   The residue is the subgroup statement, which does not follow from the full-group one.
 
 This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in [the $1$-cusp correspondence lemma](../cusp-correspondence/enriques-to-coble-cusp-correspondence.md#lem:1_cusp_correspondence).
@@ -103,8 +103,7 @@ These orbits are elliptic fibrations of the K3 cover
 Coble period space, which are the orbits of primitive isotropic vectors in the
 transcendental lattice $T_\Co$ of signature $(2,9)$.
 Of the latter there is exactly one under the full orthogonal group
-([the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps)), by the split maximal argument of
-[the split-maximal proposition](../lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md#prop:tco-split-maximal).
+(@thm:unpolarized-cusps), by the split maximal argument of @prop:tco-split-maximal.
 The two lattices share the invariant triple $(11,11,1)$ but not the signature, and
 a count taken in one is not a count in the other.
 

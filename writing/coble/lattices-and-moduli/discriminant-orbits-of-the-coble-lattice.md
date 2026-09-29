@@ -109,9 +109,9 @@ signature $(0,7)$.
 ::: {.remark title="Split-maximal transitivity explains the unpolarized Coble cusp count"}
 
 Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are
-unchanged by the twist, [the split-maximal proposition](#prop:tco-split-maximal) places $T_\Co$ under
+unchanged by the twist, @prop:tco-split-maximal places $T_\Co$ under
 [the split-maximal isotropic transitivity theorem](embeddings-and-overlattices.md#thm:split-maximal-isotropic-transitivity): this is the mechanism behind
-[the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps), and the computation above identifies the two
+@thm:unpolarized-cusps, and the computation above identifies the two
 boundary lattices there with the Coble cusp invariants $(9,9,1)_1$ and
 $(7,7,1)_0$ used in the cusp correspondence.
 The $1$-cusp lattice $\latI_{0,7}(2)\cong A_1^{\oplus 7}$ is negative definite of
@@ -348,7 +348,7 @@ For the full orthogonal group the lattice-level statement is stronger than the
 finite one: $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors and on
 primitive isotropic planes, with the quotients $e^{\perp}/e\cong\latI_{1,8}(2)$
 and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$
-([the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps)), and
+(@thm:unpolarized-cusps), and
 [the primitive-isotropic-class proposition](#prop:coble-primitive-isotropic-classes) then places every primitive
 isotropic vector in the single nonzero orbit of
 [the isotropic-class orbit theorem](#thm:coble-isotropic-class-orbits).
@@ -377,7 +377,7 @@ contains no copy of $U$ at all, let alone two; the remark following
 [the Eichler criterion](special-lattices.md#thm:eichler-criterion) records the same obstruction for $S_\Co$ and
 $S_\En$.
 An orbit statement for $T_\Co$ therefore needs a different mechanism.
-Two are available: the transitivity of [the unpolarized-cusp theorem](../heegner-report/coble-heegner-research-report.md#theorem-unpolarized-cusps) for the
-full orthogonal group, resting on [the split-maximal proposition](#prop:tco-split-maximal), and the
+Two are available: the transitivity of @thm:unpolarized-cusps for the
+full orthogonal group, resting on @prop:tco-split-maximal, and the
 algorithms of [@Daw22] for a subgroup specified by its image in $\Orth(q)$.
 :::
