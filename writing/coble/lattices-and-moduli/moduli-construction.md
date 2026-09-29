@@ -169,7 +169,7 @@ $\dim_\CC D_{T_\Co} = 9$.
 
 The K3 lattice has rank $22$, so $\rank(T) = 22 - \rank(M)$,
 and $T$ has signature $(2, 20 - \rank(M))$; apply
-[the type-IV dimension proposition](#prop:type-iv-dimension).
+@prop:type-iv-dimension.
 :::
 
 Letting $E_{10} \da U \oplus E_8$, one can similarly consider the Enriques lattices $S_\En := E_{10}(2)$ with $T_\En = U \oplus E_{10}(2)$.
@@ -284,7 +284,7 @@ With $H^2 = 2$ and $L = A_1^{\oplus 10} = \gens{-2}^{\oplus 10}$ this is
 $\gens 2\oplus\gens{-2}^{\oplus 10} = \latI_{1,10}(2)$, which is $S_\Co$ by
 [the Coble invariant-lattice proposition](../coble-surfaces/k3-covers-of-coble-surfaces.md#prop:coble-invariant-lattice).
 Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and
-[the polarized-K3 dimension corollary](#cor:m-polarized-k3-dimension) gives the dimension.
+@cor:m-polarized-k3-dimension gives the dimension.
 :::
 
 ::: {.remark title="The involution acts trivially on the root lattice"}

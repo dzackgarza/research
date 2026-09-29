@@ -65,7 +65,7 @@ $$
 
 ::: {.proof}
 
-Orthogonality and primitivity are the case $G = \gens{I}$ of [the primitivity proposition](#prop:invariant_coinvariant_primitive), and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
+Orthogonality and primitivity are the case $G = \gens{I}$ of @prop:invariant_coinvariant_primitive, and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
 For the decomposition, fix $v\in L$ and set $v_+ \da v + I(v)$ and $v_- \da v - I(v)$, both of which lie in $L$.
 Applying $I$ and using $I^2 = \id$,
 $$
@@ -74,7 +74,7 @@ I(v_+) = I(v) + I^2(v) = I(v) + v = v_+,
 I(v_-) = I(v) - v = -v_-
 ,
 $$
-so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by [the eigenspace proposition](#prop:involution_eigenspaces), in $(L_G)_\QQ\intersect L = L_G$.
+so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by @prop:involution_eigenspaces, in $(L_G)_\QQ\intersect L = L_G$.
 Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogonal since $v_+\in L^G$ and $v_-\in L_G = (L^G)^{\perp L}$.
 :::
 
