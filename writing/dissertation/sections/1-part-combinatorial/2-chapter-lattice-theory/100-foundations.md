@@ -109,7 +109,7 @@ audited: false
 For any lattice $(L,\beta)$ and positive integer $m$, the **scaled lattice** $L(m)$ is the same $\ZZ$-module $L$ equipped with the bilinear form $\beta_m(v,w) = m \cdot \beta(v,w)$. The signature of $L(m)$ is the same as $L$, but the discriminant scales as $\disc(L(m)) = m^{\rank(L)} \cdot \disc(L)$. If $L$ is unimodular and $m>1$, $L(m)$ is not unimodular.
 :::
 
-:::{.example title="Diagonal and Hyperbolic Lattices"}
+:::{.example title="Diagonal and Hyperbolic Lattices" #ex:diagonal-hyperbolic-lattices}
 The **diagonal lattice** $\gens{a_1, \ldots, a_n}$ is $\ZZ^n$ with the bilinear form $\beta(x,y) = \Sum a_i x_i y_i$ and diagonal Gram matrix $\diag(a_1, \ldots, a_n)$.
 In the special case $a_1,\cdots, a_{p} = 1$ and $a_{m+1}, \cdots, a_n = -1$, we write this lattice as $\I_{p, q}$, due to its distinguished nature as the unique nondegenerate odd unimodular lattice of signature $p, q$.
 The **hyperbolic lattice** $U$ is the free $\ZZ$-module $\ZZ^2$ with basis $e,f$ such that $\beta(e,e) = \beta(f,f) = 0$ and $\beta(e,f) = 1$. It is an even, integral, rank 2 lattice with Gram matrix

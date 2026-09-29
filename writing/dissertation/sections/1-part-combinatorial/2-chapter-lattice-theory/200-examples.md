@@ -228,11 +228,11 @@ The following can be found in [@Mil58; @Ser73]: if $L$ is an even indefinite uni
 
 We conclude with the major classification theorems:
 
-:::{.theorem title="Classification of indefinite unimodular lattices"}
+:::{.theorem title="Classification of indefinite unimodular lattices" #thm:unimodular-classification-indefinite}
 Any indefinite unimodular lattice is determined up to isometry by its rank, index, and parity. The same is true for *definite* unimodular lattices $L$ with $\rank L \leq 8$.
 :::
 
-:::{.theorem title="Classification of small unimodular lattices"}
+:::{.theorem title="Classification of small unimodular lattices" #thm:unimodular-classification-rank-four}
 Let $L$ be *any* unimodular integral lattice, definite or indefinite, with $\rank_{\ZZ} L \leq 4$. Then either
 
 - $L$ is odd and $L \iso I_{p, q}$ for some $p, q$, or

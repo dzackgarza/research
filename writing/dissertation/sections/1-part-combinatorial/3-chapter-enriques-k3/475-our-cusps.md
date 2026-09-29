@@ -313,6 +313,7 @@ We then find that all divisibility one vectors are in the same orbit:
 
 :::{.proposition
   title="Uniqueness of the divisibility-one cusp [@Ste91, Lem. 4.2.1]"
+  #prop:divisibility-one-cusp-unique
 }
 If $\div_{\ten}(v)=1$, then $v \sim_{\gent } v_{1} \da e \in U$.
 :::
