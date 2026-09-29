@@ -46,11 +46,7 @@ equator along which the two copies are glued supports the integral affine
 polarization $R_{\mathrm{IA}}$ [@AE23].
 :::
 
-::: {#fig-moduli-degeneration .figure}
-\input{tikz/moduli_space_degeneration.tikz}
-
-A one-parameter family $\cX \to C$ of surfaces over a curve $C \containedin \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.
-:::
+![A one-parameter family $\cX \to C$ of surfaces over a curve $C \containedin \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.](rendered/moduli_space_degeneration.svg){#fig-moduli-degeneration width=48%}
 
 ## Type II and Type III Kulikov dual complexes
 
@@ -60,20 +56,12 @@ $V_n$ are rational and the remaining $V_i$ are isomorphic to $E\times \PP^1$
 for a fixed elliptic curve $E$.
 The intersections $V_i \intersect V_{i+1}$ are double curves isomorphic to $E$.
 
-::: {#fig-typeiikdg .figure}
-\input{tikz/type_ii_kulikov_degeneration.tikz}
-
-A Type II Kulikov degeneration.
-:::
+![A Type II Kulikov degeneration.](rendered/type_ii_kulikov_degeneration.svg){#fig-typeiikdg}
 
 A Type III degeneration can be represented by a triangulation of $S^2$ with
 singularities, depicted as follows:
 
-::: {#fig-triangulated-sphere-fan .figure}
-\input{tikz/triangulated_sphere_fan.tikz}
-
-A triangulated integral affine sphere.
-:::
+![A triangulated integral affine sphere.](rendered/triangulated_sphere_fan.svg){#fig-triangulated-sphere-fan}
 
 ## The Sterk cusp-three Kulikov model
 
