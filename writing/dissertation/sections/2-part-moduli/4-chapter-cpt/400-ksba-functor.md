@@ -27,8 +27,9 @@ For curves, setting $d=1$ and $B$ the be the sum of markings, this recovers the 
 However, unlike the case of curves, where all stable curves are smoothable, not every stable variety is a limit of smooth ones.
 Thus, boundary components can include non-smoothable varieties, yielding compactifications that potentially have multiple irreducible components.
 Fixing discrete invariants -- the dimension $d$, a Hilbert polynomial $h$, boundary coefficients $\{b_i\}$, and the **volume** $(K_X + B)^d$ --, the **KSBA moduli functor**
-$\cpt{\mcm}_{d, \vec{b}, v}:
-\Sch^{\opop} \to \Set$
+$$
+\cpt{\mcm}_{d, \vec{b}, v}\colon \Sch^{\opop} \to \Set
+$$
 assigns to $S$ the set of isomorphism classes of flat families $(\mcx, \mcb) \to S$ of KSBA stable pairs with these invariants. This functor is represented by a proper, separated Deligne–Mumford stack $\mcm$, whose coarse moduli space $M$ is a projective scheme [@KS88, Thm. 1.1]. The closure of the locus of smooth pairs in $\mcm$ provides a geometrically meaningful compactification by stable pairs.
 
 For K3 or Enriques surfaces, $K_X \equiv 0$ is numerically trivial, so to ensure ampleness one considers **pairs** $(X, \eps R)$ for $0 < \eps \ll 1$, $R$ ample divisor, and studies the stable pair locus for these data. The divisor $R$ is typically chosen to be the ramification divisor of an automorphism, and the compactification is independent of $\eps$ for $\eps$ sufficiently small ([@KS88, §5], [@Ale96a, §6], [@Kol23, Lemma VI.1.1], [@AET23]).

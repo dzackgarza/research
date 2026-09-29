@@ -228,8 +228,7 @@ The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
 ::: {.Remark title="Duality and discriminants"}
 
 Property (2) is the source of (3), since
-$\operatorname{disc}(L\dual) = \det(G_\beta\inv) = 1/\det(G_\beta)
-= 1/\operatorname{disc}(L)$.
+$\operatorname{disc}(L\dual) = \det(G_\beta\inv) = 1/\det(G_\beta) = 1/\operatorname{disc}(L)$.
 Property (1) is compatible with the direct-sum decomposition
 $A_{L\oplus M} = A_L\oplus A_M$ of discriminant groups recalled in the Lattice
 Theory section.

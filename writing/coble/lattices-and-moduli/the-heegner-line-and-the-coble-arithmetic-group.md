@@ -91,8 +91,7 @@ There is a single $\Orth(T_\En)$-orbit of $(-2)$ vectors in $T_\En$
 subgroup $\Gamma_{\En,2}\leq\Orth(T_\En)$.
 
 Write $\mathcal A\da\im\bigl(\gent\to\Orth(A_{\ten}, q_{\ten})\bigr)$,
-so that $\gent\containedin\Orth_{\mathcal A}(\ten)\da
-\ts{\, g\in\Orth(T_\En) \mid \bar g\in\mathcal A \,}$.
+so that $\gent\containedin\Orth_{\mathcal A}(\ten)\da\ts{\, g\in\Orth(T_\En) \mid \bar g\in\mathcal A \,}$.
 Algorithm 2.2 of [@Daw22] decides $\Orth_{\mathcal A}(L)$-equivalence of
 non-isotropic vectors under three hypotheses: the vector is non-isotropic, its
 orthogonal complement is indefinite, and $\Orth(L)\to\Orth(q_L)$ is surjective.

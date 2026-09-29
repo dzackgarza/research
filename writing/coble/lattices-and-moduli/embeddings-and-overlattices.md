@@ -231,14 +231,12 @@ when the image $H_L = L/S\containedin A_S$ is isotropic for $q_S$: for
 $x + S, y + S\in H_L$ one has $\beta_{S_\QQ}(x, y)\in\ZZ$ if and only if the
 associated bilinear form on $A_S$ vanishes on $H_L$, and evenness of $L$
 requires in addition $q_S(x + S) = 0$ for all $x + S\in H_L$.
-Conversely, given an isotropic $H\le A_S$, the preimage $\eta\inv(H)\containedin
-S\dual$ is an even overlattice of $S$ with $\eta\inv(H)/S = H$; the two
+Conversely, given an isotropic $H\le A_S$, the preimage $\eta\inv(H)\containedin S\dual$ is an even overlattice of $S$ with $\eta\inv(H)/S = H$; the two
 constructions are mutually inverse.
 
 For the numerical statements, $[L:S] = \abs{L/S} = \abs{H}$.
 Since $\operatorname{disc}$ scales by the square of the index under passage to a
-finite-index sublattice, $\operatorname{disc} S = [L:S]^2\operatorname{disc} L =
-\abs{H}^2\operatorname{disc} L$, giving the displayed formula.
+finite-index sublattice, $\operatorname{disc} S = [L:S]^2\operatorname{disc} L = \abs{H}^2\operatorname{disc} L$, giving the displayed formula.
 Finally, the discriminant form of $L$ is computed on
 $L\dual/L$; one has $L\dual = \eta\inv(H^{\perp})$ inside $S_\QQ$, whence
 $A_L = L\dual/L \cong H^{\perp}/H$.
@@ -494,8 +492,7 @@ Let $L$ be any unimodular lattice, definite or indefinite, with
 $\rank_\ZZ L\le 4$.
 Then either
 
-1.  $L$ is odd and $L\cong\latI_{p, q}$ for some $(p, q)$ with $p + q =
-    \rank_\ZZ L$, or
+1.  $L$ is odd and $L\cong\latI_{p, q}$ for some $(p, q)$ with $p + q = \rank_\ZZ L$, or
 
 2.  $L$ is even and $L\cong U$ or $L\cong U^{\oplus 2}$.
 :::

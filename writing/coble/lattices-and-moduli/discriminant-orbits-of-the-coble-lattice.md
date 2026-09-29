@@ -97,8 +97,7 @@ odd, because $\latI_{0,7}$ is, so it is isometric to $\latI_{2,9}\cong B$ by
 required by [the split-maximal definition](embeddings-and-overlattices.md#def:split-maximal), as [the maximal-splitting theorem](embeddings-and-overlattices.md#thm:maximal-splits-for-large-n)
 also predicts for $n = 9\geq 5$.
 For the quotients, take $e$ to be an isotropic generator of the first hyperbolic
-summand of $B\cong U\oplus U\oplus\latI_{0,7}$; then $e^{\perp B} = \ZZ e\oplus
-U\oplus\latI_{0,7}$ and $e^{\perp}/e\cong U\oplus\latI_{0,7}\cong\latI_{1,8}$,
+summand of $B\cong U\oplus U\oplus\latI_{0,7}$; then $e^{\perp B} = \ZZ e\oplus U\oplus\latI_{0,7}$ and $e^{\perp}/e\cong U\oplus\latI_{0,7}\cong\latI_{1,8}$,
 which is odd unimodular of signature $(1,8)$.
 Taking $J$ to be spanned by isotropic generators of the two hyperbolic summands
 gives $J^{\perp B} = J\oplus\latI_{0,7}$ and $J^{\perp}/J\cong\latI_{0,7}$.
@@ -174,8 +173,7 @@ x + 2B &\mapsto \beta_B(x, x) \bmod 4
 .
 \end{aligned}
 $$
-This is well defined, since $\beta_B(x + 2z, x + 2z) = \beta_B(x,x) + 4\beta_B(x,z)
-+ 4\beta_B(z,z)$.
+This is well defined, since $\beta_B(x + 2z, x + 2z) = \beta_B(x,x) + 4\beta_B(x,z) + 4\beta_B(z,z)$.
 Under the identification $A_{T_\Co}\cong B/2B$ of
 [the twisted-unimodular discriminant proposition](#prop:twisted-unimodular-discriminant) one has $q_{T_\Co} = \tfrac12 Q$, so
 $Q$ and $q_{T_\Co}$ have the same fibers and

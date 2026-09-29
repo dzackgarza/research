@@ -210,8 +210,7 @@ $(-2)$-vectors of $T_\En\intersect T(\tilde y)^{\perp}$.
 
 **Properness and finiteness.**
 By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB) the map $f$ extends to a morphism
-$\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to
-\overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore
+$\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to\overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore
 proper.
 A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a
 primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the
