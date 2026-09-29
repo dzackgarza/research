@@ -58,7 +58,7 @@ $(M\oplus N)\dual\to A_M\oplus A_N$.
 
 ::: {.theorem #thm:automorphism-lifting-criterion title="When a pair of isometries lifts"}
 
-Let $L$, $M$, $N$ and $H$ be as in [the gluing-datum definition](#def:gluing-datum-of-a-pair), and let
+Let $L$, $M$, $N$ and $H$ be as in @def:gluing-datum-of-a-pair, and let
 $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
 Then $\varphi_M\oplus\varphi_N$ extends to an isometry of $L$ if and only if
 $$
@@ -89,7 +89,7 @@ $L$.
 
 ::: {.corollary #cor:liftable-automorphisms title="The liftable subgroup"}
 
-With the notation of [the lifting criterion](#thm:automorphism-lifting-criterion), fix
+With the notation of @thm:automorphism-lifting-criterion, fix
 $\varphi_N = \id_N$ and let $\Gamma\leq\Orth(M)$ be any subgroup.
 The isometries of $M$ that extend over $L$ fixing $N$ pointwise form the subgroup
 $$
@@ -106,26 +106,26 @@ $\rho_M(\Gamma)$ is finite.
 
 ::: {.proof}
 
-Apply [the lifting criterion](#thm:automorphism-lifting-criterion) with
+Apply @thm:automorphism-lifting-criterion with
 $\bar\varphi_N = \id$, so that the condition reads
 $(\bar\varphi_M\oplus\id)(H) = H$; the set of $\bar\varphi_M$ satisfying it is by
 definition the stabilizer, which is a subgroup of $\Orth(q_M)$, and its preimage
 under the homomorphism $\rho_M$ is a subgroup of $\Orth(M)$.
 The stable orthogonal group is the kernel of $\rho_M$
-([the discriminant-representation notation](#not:discriminant-representation)) and so acts trivially on $H$.
+(@not:discriminant-representation) and so acts trivially on $H$.
 Finiteness of the index follows because $\Orth(q_M)$ is finite, $A_M$ being
 finite.
 :::
 
 ::: {.remark title="The operation belongs to the arrow"}
 
-The datum consumed by [the lifting criterion](#thm:automorphism-lifting-criterion) is $H$,
+The datum consumed by @thm:automorphism-lifting-criterion is $H$,
 equivalently the pair of primitive inclusions of
-[the gluing-datum definition](#def:gluing-datum-of-a-pair).
+@def:gluing-datum-of-a-pair.
 Neither $M$ nor $N$ determines it: the same lattice $M$ occurs in many gluings,
 and each one imposes its own condition.
 Liftability is therefore a property of the inclusions, and the subgroup of
-[the liftable-subgroup corollary](#cor:liftable-automorphisms) is attached to them.
+@cor:liftable-automorphisms is attached to them.
 
 The hypotheses are morphism-level for the same reason.
 An inclusion is primitive when its cokernel is torsion-free
@@ -160,12 +160,12 @@ displayed identity.
 
 ::: {.remark title="Two computations in this book are instances"}
 
-[The unimodular lifting corollary](#cor:lifting-unimodular) is the mechanism behind two statements proved
+@cor:lifting-unimodular is the mechanism behind two statements proved
 elsewhere in this part, both for the unimodular $\lkt$.
 
 The discriminant description of the degree-$2$ Enriques group
 (\longref{prop:gamma-en-two-gluing}) is the liftable-subgroup computation of
-[the liftable-subgroup corollary](#cor:liftable-automorphisms) for the gluing
+@cor:liftable-automorphisms for the gluing
 $\sen\oplus \ten\containedin\lkt$, with the extra condition $g_S(h) = h$ cutting
 $\Gamma\leq\Orth(\sen)$ down to the stabilizer of the polarization; the
 commutation identity $\bar g_T\circ\gamma = \gamma\circ\bar g_S$ appearing there
