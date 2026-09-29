@@ -40,7 +40,7 @@ Indeed $\operatorname{can}_{R^{n}}$ is an isomorphism, and $\operatorname{can}_{
 ::: {.proposition #prop:hyperbolic-lattice title="Hyperbolic lattices"}
 
 Let $R$ be a Dedekind domain and let $M$ be a finitely generated projective $R$-module.
-Then $H(M)$ is a unimodular $R$-lattice in the sense of @def-framework-lattice and @def-unimodular, and its discriminant module (@def-discriminant) is $A_{H(M)}=0$.
+Then $H(M)$ is a unimodular $R$-lattice in the sense of @def:framework-lattice and @def:unimodular, and its discriminant module (@def:discriminant) is $A_{H(M)}=0$.
 :::
 
 ::: {.example #ex:hyperbolic-plane title="The hyperbolic plane"}
@@ -54,7 +54,7 @@ so $H(R)$ has Gram matrix
 $$
 \begin{pmatrix}0&1\\1&0\end{pmatrix}.
 $$
-For $R=\mathbb Z$ the lattice $H(\mathbb Z)$ is even (@def-even-lattice), unimodular, and of signature $(1,1)$.
+For $R=\mathbb Z$ the lattice $H(\mathbb Z)$ is even (@def:even-lattice), unimodular, and of signature $(1,1)$.
 :::
 
 ::: {.definition #def:hyperbolic-functor title="The hyperbolic functor"}
@@ -137,7 +137,7 @@ $$
 b_{S(L)}^{\sharp}=b_L^{\sharp}\oplus h_R^{\sharp},
 $$
 and $h_R^{\sharp}$ is an isomorphism by @prop:hyperbolic-lattice.
-Taking cokernels in @def-two-witnesses gives
+Taking cokernels in @def:two-witnesses gives
 $$
 A_{S(L)}\;\cong\;A_L .
 $$
@@ -147,8 +147,8 @@ S(L)^{\#}=L^{\#}\oplus H(R),
 \qquad
 S(L)^{\#}/S(L)=L^{\#}/L,
 $$
-and the mixed terms of the form on an orthogonal sum vanish, so the isomorphism respects the $K/R$-valued forms of @def-discriminant.
-For $R=\mathbb Z$ it is an isomorphism in $\mathbf{DiscBil}_{\mathbb Z}$ (@def-discbil), and for $L$ even it is an isomorphism in $\mathbf{DiscQuad}_{\mathbb Z}$ (@def-discquad).
+and the mixed terms of the form on an orthogonal sum vanish, so the isomorphism respects the $K/R$-valued forms of @def:discriminant.
+For $R=\mathbb Z$ it is an isomorphism in $\mathbf{DiscBil}_{\mathbb Z}$ (@def:discbil), and for $L$ even it is an isomorphism in $\mathbf{DiscQuad}_{\mathbb Z}$ (@def:discquad).
 :::
 
 ::: {.theorem #thm:stabilization-not-unimodular title="The discriminant along the stabilization tower"}
@@ -159,7 +159,7 @@ Consequently $S^{n}(L)$ is not unimodular, and $S^{n}(L)$ is not isometric to $H
 :::
 
 Iterating @prop:stabilization-discriminant gives the isomorphism.
-A unimodular lattice has vanishing discriminant module by @def-unimodular and @def-two-witnesses, and $H(P)$ is unimodular by @prop:hyperbolic-lattice.
+A unimodular lattice has vanishing discriminant module by @def:unimodular and @def:two-witnesses, and $H(P)$ is unimodular by @prop:hyperbolic-lattice.
 The discriminant module is an invariant of the isomorphism class, by the functors on cores recorded in @sec-lattices-discriminant.
 
 ::: {.example #ex:stabilizing-rank-one title="Stabilizing a rank-one lattice"}

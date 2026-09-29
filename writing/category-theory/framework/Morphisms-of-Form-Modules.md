@@ -6,7 +6,7 @@ $$
 b_N\bigl(f(x),f(y)\bigr)=b_M(x,y)
 \qquad(x,y\in M).
 $$
-For $R$ a Dedekind domain, the lattice category $\mathbf{Lat}_R$ of @def-framework-lattice is a replete full subcategory of $\mathcal B_{R,R}$, so its morphisms are these maps.
+For $R$ a Dedekind domain, the lattice category $\mathbf{Lat}_R$ of @def:framework-lattice is a replete full subcategory of $\mathcal B_{R,R}$, so its morphisms are these maps.
 
 ## Injectivity {#sec-form-morphisms-injective}
 
@@ -23,7 +23,7 @@ $$
 b_M(x,y)=b_N\bigl(f(x),f(y)\bigr)=b_N\bigl(0,f(y)\bigr)=0,
 $$
 so $b_M^{\sharp}(x)=0$.
-Nondegeneracy of $b_M$ is injectivity of $b_M^{\sharp}$, and the lattices of @def-framework-lattice are nondegenerate by definition.
+Nondegeneracy of $b_M$ is injectivity of $b_M^{\sharp}$, and the lattices of @def:framework-lattice are nondegenerate by definition.
 
 ## Pointwise sums {#sec-sums-of-form-morphisms}
 

@@ -185,7 +185,7 @@ $$
 
 Let $R$ be a Dedekind domain and let $b$ be a symmetric bilinear form with values in $R$ on a finitely generated projective $R$-module $M$.
 Every isometry of $(M,b)$ maps $\operatorname{rad}(M)$ onto itself, so it acts on the radical and on the radical quotient.
-Fix a splitting $M=\operatorname{rad}(M)\oplus N$ as in @thm-radical-splits.
+Fix a splitting $M=\operatorname{rad}(M)\oplus N$ as in @thm:radical-splits.
 In block form with respect to that splitting an isometry is
 $$
 \begin{pmatrix}a&\varphi\\0&d\end{pmatrix},

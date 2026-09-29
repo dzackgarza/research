@@ -1,7 +1,7 @@
 # Coxeter systems and lattices {#sec-coxeter-systems}
 
 Let $(W,S)$ be a Coxeter system with $S$ finite, presented by the orders $m(s,t)$ of the products $st$, and let $V$ be the real vector space with basis $\{\alpha_s\}_{s\in S}$.
-Lattices, the signature of a form and the radical of a form are defined in @def-framework-lattice, @def:signature and @def:polarization.
+Lattices, the signature of a form and the radical of a form are defined in @def:framework-lattice, @def:signature and @def:polarization.
 
 ## The canonical form {#sec-coxeter-form}
 

@@ -303,5 +303,5 @@ L_*(A\otimes_R-)(B)\cong L_*(-\otimes_RB)(A)
 $$
 [@Wei94, §2.7]. For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
-These vanishings are the hypotheses used in @thm-localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\operatorname{Hom}_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
+These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\operatorname{Hom}_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
 :::
