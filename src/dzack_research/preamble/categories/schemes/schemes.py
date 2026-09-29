@@ -2260,9 +2260,9 @@ class Schemes(OwnedCategoryOverBaseRing):
             The input maps are open immersions ``U_i -> X``.  Joint coverage is
             exact in the regimes represented by the scheme construction itself:
             an identity member, the selected affine-gluing atlas, and a family of
-            distinguished opens of an affine scheme.  More specialized scheme
-            categories add their own theorem-backed regimes (for example the
-            standard projective atlas) before delegating here.
+            distinguished opens of an affine scheme.  Projective and product-
+            projective standard atlases are additional theorem-backed cases of
+            this same scheme-level coverage operation.
 
             This is the admission decision used by the represented Zariski
             coverage; an unrepresented cover is rejected rather than silently
@@ -2297,6 +2297,36 @@ class Schemes(OwnedCategoryOverBaseRing):
                     pass
 
             base = self.scheme_base_ring()
+            match self:
+                case _ if self in ProjectiveSpaces(base):
+                    standard = finite_family(
+                        tuple(
+                            self.standard_affine_chart_embedding(index)
+                            for index in range(int(self.relative_dimension()) + 1)
+                        ),
+                        name="Standard projective affine cover embeddings",
+                    )
+                    match all(
+                        any(embedding == standard_embedding for embedding in family)
+                        for standard_embedding in standard
+                    ):
+                        case True:
+                            return True
+                        case False:
+                            pass
+                case _ if self in ProductProjectiveSpaces(base):
+                    _choices, _charts, standard_embeddings = self._standard_affine_cover_charts_and_embeddings()
+                    match all(
+                        any(embedding == standard_embedding for embedding in family)
+                        for standard_embedding in standard_embeddings.values()
+                    ):
+                        case True:
+                            return True
+                        case False:
+                            pass
+                case _:
+                    pass
+
             match self in Schemes(base).Affine():
                 case True:
                     match all(
@@ -2323,8 +2353,8 @@ class Schemes(OwnedCategoryOverBaseRing):
 
             raise ValueError(
                 f"cannot decide whether the open immersions {family} cover {self}: the family is not the "
-                f"identity, does not contain the affine charts {self} was glued from, and is not a family "
-                "of distinguished open subschemes of an affine scheme"
+                f"identity, does not contain the affine charts {self} was glued from or its selected standard "
+                "projective charts, and is not a family of distinguished open subschemes of an affine scheme"
             )
 
         def chartwise_closed_subscheme(
@@ -4257,28 +4287,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 tuple(self.standard_affine_chart_embedding(index) for index in indices),
             )
 
-        def is_covered_by_open_immersions(self, embeddings) -> bool:
-            r"""Recognize the standard projective cover before the general scheme cases."""
-            family = finite_family(
-                tuple(embeddings),
-                name="Open immersions proposed as a projective Zariski cover",
-            )
-            standard = finite_family(
-                tuple(
-                    self.standard_affine_chart_embedding(index)
-                    for index in range(int(self.relative_dimension()) + 1)
-                ),
-                name="Standard projective affine cover embeddings",
-            )
-            match all(
-                any(embedding == standard_embedding for embedding in family)
-                for standard_embedding in standard
-            ):
-                case True:
-                    return True
-                case False:
-                    return super().is_covered_by_open_immersions(family)
-
         def glued_from_standard_charts(self):
             r"""``P^n_R`` presented as the gluing of its standard affine charts.
 
@@ -4573,22 +4581,6 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                 )
 
             return choices, charts, embeddings
-
-        def is_covered_by_open_immersions(self, embeddings) -> bool:
-            r"""Recognize the standard product-projective cover before general cases."""
-            family = finite_family(
-                tuple(embeddings),
-                name="Open immersions proposed as a multiprojective Zariski cover",
-            )
-            _choices, _charts, standard_embeddings = self._standard_affine_cover_charts_and_embeddings()
-            match all(
-                any(embedding == standard_embedding for embedding in family)
-                for standard_embedding in standard_embeddings.values()
-            ):
-                case True:
-                    return True
-                case False:
-                    return super().is_covered_by_open_immersions(family)
 
         @cached_method
         def standard_affine_atlas(self):
