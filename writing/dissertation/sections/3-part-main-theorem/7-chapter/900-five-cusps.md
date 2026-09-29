@@ -240,9 +240,8 @@ We conclude with the following summary:
     - 11 total rays.
 - IAS data
 - $\lambda \in \thecone{C}^J \iff$
-    - $\lambda \in \thecone{C}^J$ if and only if
-    - Each hemisphere of $B(\ell)$ is symmetric under a flip along the horizontal line bisecting the edges $\ell_6(0,1)$ and $\ell_{14}(0,-1)$.
-    - TODO MAKE PRECISE
+    - Each hemisphere of $B(\ell)$ is symmetric under reflection across the horizontal line bisecting the edges $\ell_6(0,1)$ and $\ell_{14}(0,-1)$.
+    - Equivalently, if $r_h$ denotes this reflection and $e$ is any boundary edge of either hemisphere, then the boundary-length function satisfies $\ell(e)=\ell(r_h(e))$.
 - $\iota_{\En, \IA} \actson B(\lambda):$
     - The involution is reflection across this horizontal axis of the hemisphere.
 - $\iota_{\En, 0} \actson \Gamma(\mcz_0)$:
