@@ -69,7 +69,7 @@ Note that unlike for fans, strata corresponding to Type $\III$ cones of a semifa
 :::
 
 :::{.definition
-    title="{ Semitoroidal compactifications}"
+    title="Semitoroidal compactifications"
 }
 Given a compatible system $\semifans{F}$ of $\Gamma$-admissible semifans, the local model of the semitoroidal compactification near the cusp associated to $I$ is a toroidal embedding constructed from $\mcf_I$, typically a finite quotient of a toric embedding $X(\semifans{F})$ associated with the semifan.
 For $0$-cusps, the local neighborhood is modeled on such a quotient of a torus fibration, and the boundary strata correspond to cones of $\semifans{F}$. For higher rank cusps ($\rank(I) > 1$), the local model is, locally in the analytic or formal topology, a toric fibration over the boundary stratum corresponding to $I$, whose fibers are toroidal embeddings associated to semifans.
@@ -147,19 +147,19 @@ Crossing a relevant wall $\alpha^\perp$ corresponds to a birational transformati
 
 We thus obtain a natural, purely combinatorial way to interpolate between the maximal and minimal compactifications of $\FG$, which can be encoded in a single combinatorial object that we now describe.
 
-:::{.definition #def:semifanposet title="{The semifan poset of a cone}"}
+:::{.definition #def:semifanposet title="The semifan poset of a cone"}
 Let $V$ be a real finite-dimensional vector space and $\thecone{C} \subset V$ an open convex cone.
 The **semifan poset** $\mathrm{SFan}(\thecone{C})$ is the set of all semifans in $\thecone{C}$, partially ordered by refinement: $\mcf \leq \mcf'$ if every cone of $\mcf$ is contained in a cone of $\mcf'$. The maximal (finest) and minimal (coarsest) elements correspond to the finest locally polyhedral subdivision and the single full cone, respectively.
 :::
 
-:::{.definition #def:semitoroidalposet title="{The semitoroidal compactification poset}"}
+:::{.definition #def:semitoroidalposet title="The semitoroidal compactification poset"}
 The **semitoroidal compactification poset** $\theposet{S}_\Gamma$ of $\FG$ is the set of isomorphism classes of semitoroidal compactifications $\semitorcpt{\FG, \semifans{F}}$ constructed from compatible systems of $\Gamma$-admissible semifans $\semifans{F}$ ranging over the cusps $I$ of $\bbcpt{\FG}$.
 $\theposet{S}_\Gamma$ is partially ordered: $\semifancpt{\FG}{ \semifans{F} } \leq \semifancpt{\FG}{ \semifans{G} }$ if $\semifan{F}_I$ refines $\semifan{G}_I$ for all $I$.
 This order is reversed under induced morphisms, i.e., coarser semifans yield "smaller" compactifications.
 The maximal element corresponds to the maximal toroidal compactification; the minimal to the Baily–Borel compactification.
 :::
 
-:::{.definition #def:coxetersemiposet title="{The Coxeter semitoroidal compactification poset}"}
+:::{.definition #def:coxetersemiposet title="The Coxeter semitoroidal compactification poset"}
 For each $0$-cusp $\eta$ of $\bbcpt{\FG}$, let $G(\Gamma_\eta)$ be the stable Coxeter diagram, and $\theposet{P}_{G(\Gamma_\eta)}$ the poset of subdiagrams under inclusion.
 Define the **Coxeter semitoroidal compactification poset** of $\FG$ as the coproduct poset
 $$
@@ -168,7 +168,7 @@ $$
 An element $(D_\eta) \in \theposet{P}_\Gamma$ specifies, for each $0$-cusp, a subdiagram $D_\eta \subset G(\Gamma_\eta)$ and thus a set of irrelevant roots at each cusp.
 :::
 
-:::{.proposition #prop:coxsemiposetmap title="{Coxeter semifan system and main identification}"}
+:::{.proposition #prop:coxsemiposetmap title="Coxeter semifan system and main identification"}
 There is a canonical poset morphism
 $\Psi\colon \theposet{P}_\Gamma \longrightarrow \theposet{S}_\Gamma$
 which sends a tuple $(D_\eta)$ of subdiagrams, one for each $0$-cusp $\eta$, to the induced semitoroidal compactification, constructed by gluing together maximal cones of generalized Coxeter semifans (as in @def:coxetersemiposet) along all omitted walls, corresponding to the nodes omitted in $D_\eta$.
