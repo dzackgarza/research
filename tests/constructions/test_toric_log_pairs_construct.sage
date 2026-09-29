@@ -9,6 +9,7 @@ def test_full_toric_boundary_is_log_calabi_yau() -> None:
     pair = plane.log_pair()
 
     assert pair in ToricLogPairs(QQ)
+    assert pair.toric_scheme() is plane
     assert pair.is_toric_boundary()
     assert pair.fan() == plane.fan()
     assert pair.is_log_calabi_yau()

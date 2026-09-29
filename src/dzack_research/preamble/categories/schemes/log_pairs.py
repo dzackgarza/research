@@ -67,6 +67,10 @@ class LogPairs(OwnedCategoryOverBaseRing):
             r"""The variety ``X`` of the pair."""
             return self._log_scheme
 
+        def scheme(self):
+            r"""Return the underlying scheme ``X`` of this log pair."""
+            return self.log_scheme()
+
         def boundary_divisor(self):
             r"""The boundary ``Delta``."""
             return self._boundary_divisor
@@ -140,6 +144,10 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
         def fan(self):
             r"""The fan of the variety of the pair."""
             return self.log_scheme().fan()
+
+        def toric_scheme(self):
+            r"""Return the underlying toric scheme of this toric log pair."""
+            return self.log_scheme()
 
         def is_toric_boundary(self) -> bool:
             r"""Whether ``Delta`` is the full toric boundary ``sum_rho D_rho``."""
