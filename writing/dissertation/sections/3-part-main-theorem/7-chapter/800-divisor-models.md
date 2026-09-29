@@ -1,60 +1,38 @@
 ### DLT Models
 
-This section gives a precise structural and combinatorial description of divisor models (for degenerations of K3 pairs) and half-divisor models (for Enriques quotients), connecting KSBA limits explicitly to integral-affine data on dual complexes.
-Let $\pi: \mcx \to C$ be a degeneration of complex surfaces with central fiber $\mcx_0$. The **dual complex** $\Gamma(\mcx_0)$ encodes the topology of $\mcx_0$: each vertex of $\Gamma(\mcx_0)$ corresponds to an irreducible component $V_i$, each edge to a double curve $D_{ij} = V_i \cap V_j$. When $\mcx_0$ has normal crossings, $\Gamma(\mcx_0)$ is a finite graph.
-Given a Cartier divisor $\mcr \subset \mcx$ disjoint from the singular strata of $\mcx_0$ (i.e., $\mcr$ does not meet points where two or more components meet), the combinatorial geometry of $(\mcx_0, \mcr_0)$ is encoded by an **integral-affine divisor** $R_{\IA} \subset \Gamma(\mcx_0)$. This means:
+This section recalls divisor models for degenerations of K3 pairs and half-divisor models for their Enriques quotients, and relates them to the integral-affine data used in @AEGS25.
+Let $\pi: \mcx \to C$ be a degeneration of complex surfaces with simple normal-crossings central fiber $\mcx_0$. The **dual complex** $\Gamma(\mcx_0)$ has a vertex for each irreducible component, an edge for each double curve, and a $2$-simplex for each triple point; for a surface degeneration it is therefore in general a finite $2$-dimensional complex, not merely a graph.
 
-- Each edge of $\Gamma(\mcx_0)$ (corresponding to a double curve $D_{ij}$) is assigned an integer weight $n_{ij}$, expressing the degree of intersection of $\mcr_0$ with $D_{ij}$.
-
-- To each vertex $v_i$ (component $V_i$) one assigns a line bundle $L_i \in \Pic(V_i)$ so that, for any edge $v_{ij}$, $\deg(L_i|_{D_{ij}}) = n_{ij}$. The weighting must be compatible on edges and satisfy global compatibility conditions.
-
-These weights obey a **balancing condition** at every vertex $v_i$. For a toric vertex, resp. a non-toric vertex arising from an internal blowup in the direction $\vec{e}$, we have
-
-
-\begin{align*}
-\sum_j n_{ij} \vec{e}_{ij} = 0, \qquad
-\sum_j n_{ij} \vec{e}_{ij} \in \ZZ\,\vec{e}
-.\end{align*}
-
-where $\vec{e}_{ij}$ is the primitive integral direction associated to the corresponding edge.
-These constraints ensure that the line bundles patch together along double curves and that the data collectively define a global Cartier divisor structure in the smoothing.
+For a divisor model $(\mcx,\mcr)\to(C,0)$, the flat-limit divisor $\mcr_0$ is encoded on the dual complex by the **integral-affine polarization** $R_{\IA}=\Gamma(\mcr_0)$, a weighted balanced graph which encodes the line bundle $\OO_{\mcx_0}(\mcr_0)$ [@AEGS25, §4.2]. The condition on a divisor model is that $\mcr$ **contains no stratum** of the fibers; it is not required to be disjoint from the double locus. Indeed, the integral-affine polarization may meet edges of $\Gamma(\mcx_0)$ and records the corresponding divisor data.
 
 :::{.definition title="Divisor Model" #def:divisor-model}
-A **divisor model** for a degeneration $\pi: \mcx \to C$ of K3 (or Enriques) surfaces is a degeneration of pairs $(\mcx, \mcr) \to C$ such that:
-
-- $\mcr$ is a Cartier divisor, with $\mcr_t = \mcr \cap \mcx_t$ effective for all $t \in C$,
-- For $t \neq 0$, $\mcr_t$ is semiample,
-- $\mcr$ does not meet the singular strata of $\mcx_0$ (i.e., is disjoint from double/triple intersections).
+A **divisor model** for a degeneration of polarized K3 surfaces is a Kulikov or quasipolarized nef model $(\mcx,\mcl)\to(C,0)$ together with a relatively big and nef effective divisor $\mcr\in|\mcl|$ extending the divisor on the general fiber, such that $\mcr$ contains no stratum of any fiber [@AEGS25, §4.2].
 :::
 
-Given a divisor model, the isomorphism class of $\OO_{\mcx_0}(\mcr_0)$ is encoded by its corresponding integral-affine divisor $R_{\IA}$ on $\Gamma(\mcx_0)$. The dual complex, together with $R_{\IA}$, captures all line bundle glueing data and allows for explicit calculation of limit objects.
-
-:::{.proposition title="Classification via Integral-Affine Data" #prop:classification-ia-data}
-Given a fixed Picard–Lefschetz monodromy invariant $\lambda$, the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$—that is, the dual complex with its weighted, balanced subgraph—uniquely determines the KSBA stable limit $(\overline{\mcx}_0, \epsilon \overline{\mcr}_0)$. Furthermore, this combinatorial type is locally constant in families with fixed Picard–Lefschetz form.
-:::
+Given a divisor model, the integral-affine polarization records the line bundle on the central fiber. It does not, by itself, assert that the isomorphism class of the algebraic stable pair is determined solely by the combinatorial dual complex; the KSBA model is obtained from the divisor model by the relative Proj construction below.
 
 :::{.proposition title="Semitoroidal Compactification via Recognizable Divisors" #prop:semitoroidal-recognizable}
-If $R$ is a recognizable divisor (such as the fixed locus of a nonsymplectic involution), then there exists a unique semifan $\semifan{F}_R$ whose semitoroidal compactification normalizes the KSBA compactification of the relevant moduli space $\fent$[6, Sec. 5C].
+If $R$ is a recognizable divisor on a moduli space $F_S$ of lattice-polarized K3 surfaces, then the normalization of the associated KSBA compactification is a semitoroidal compactification for the uniquely determined semifan $\semifan{F}_R$ [@AE23, Thm. 9.1].
 :::
 
-:::{.theorem title="Explicit Construction and Type Determination" #thm:explicit-construction}
-Given a polarized integral-affine structure $(B(\ell), R_{\IA})$ (with $\ell = (\lambda \cdot \alpha_i)_{i \in G}$), and an appropriate triangulation, one obtains
+:::{.theorem title="Polarized IAS data and divisor models [@AEGS25, Thm. 4.4]" #thm:explicit-construction}
+Let $(B(\ell), R_{\IA})$ be one of the polarized integral-affine spheres constructed from $\ell = (\lambda \cdot \alpha_i)_{i \in G}$. Upon triangulating it into lattice simplices, one obtains
 
 \begin{align*}
 (B(\ell), R_{\IA}) = (\Gamma(\mcx_0), \Gamma(\mcr_0))
 .\end{align*}
 
-as the dual complex of the $\mcx_0$ of a divisor model with monodromy invariant $\lambda$.
+as the dual complex of the central fiber of a divisor model $(\mcx,\mcr)\to(C,0)$ with monodromy invariant $\lambda$ [@AEGS25, Thm. 4.4].
 :::
 
 :::{.definition title="Half-Divisor Model" #def:half-divisor-model}
-Suppose $(\mcx, \mcr) \to (C,0)$ is a divisor model for a family of K3 surfaces admitting an involution $\ien$ that preserves $\mcr$. The **half-divisor model** is the quotient
+Suppose $(\mcx, \mcr) \to (C,0)$ is a divisor model of Enriques K3 surfaces for which the Enriques involution $\ien$ is regular on $\mcx$ and preserves $\mcr$. The **half-divisor model** is the quotient
 
 \begin{align*}
 (\mcz, \mcr_\mcz) := (\mcx, \mcr)/\ien
 .\end{align*}
 
-These models realize degenerations of Enriques pairs as quotients of K3 divisor models, and in generic settings, the quotient inherits slc singularities, and the divisor structure matches the normalization of the image of $\mcr$ [2, Prop. 4.5].
+as in [@AEGS25, Def. 4.7].
 :::
 
 :::{.proposition title="Geometric Types and Boundary Strata" #prop:geometric-types}
@@ -72,11 +50,11 @@ More precisely:
 
 - For Type $\III$ degenerations at cusps $2$–$5$, the dual complex $\Gamma(\mcz_0)$ is homeomorphic to $\DD^2$. If a component $V_i$ lifts to two distinct components of $\mcx_0$, the normalized copies are isomorphic; if it arises from a single irreducible component, the involution $\ienzero$ acts on $V_i$ with precisely four fixed points.
 
-- In the case of Type $\mathrm{II}$ degenerations, $\Gamma(\mcz_0)$ is a segment, and the quotient is described by the action of $\ienzero$ as detailed in [2, Proposition 4.5].
+- In the case of Type $\mathrm{II}$ degenerations, $\Gamma(\mcz_0)$ is a segment, and the action of $\ienzero$ on the components and double curves is as described in [@AEGS25, Prop. 4.8].
 :::
 
 :::{.proof}
-See detailed analyses in [@AEGS25, Prop. 4.5], which classify Enriques degenerations by their dual complex and describe the induced slc structure and divisor support in every case.
+This is [@AEGS25, Prop. 4.8]. Proposition 4.5 supplies the folding symmetry on the polarized integral-affine sphere; Proposition 4.8 analyzes the resulting half-divisor models and their quotients.
 :::
 
 :::{.corollary title="Computability of the KSBA Stable Limit" #cor:ksba-stable-limit}
@@ -86,13 +64,13 @@ Given a degeneration $(\mcz^*, \epsilon \mcr_{\mcz}^*) \to C^*$, the KSBA-stable
 \Proj_C \bigoplus_{n \geq 0} H^0(\mcz, n \mcr_{\mcz}),
 .\end{align*}
 
-where the right-hand side is computed from the data of the half-divisor model $(\mcz, \mcr_{\mcz}) \to (C, 0)$.
+where the right-hand side is computed from the data of the half-divisor model $(\mcz, \mcr_{\mcz}) \to (C, 0)$. This is [@AEGS25, Cor. 4.9].
 :::
 
 :::{.remark title="Integral-affine structure on the quotient dual complex"}
-The quotient $\Gamma(\mcz_0) = \Gamma(\mcx_0) / \iota_{\En, \IA}$ always inherits a natural integral-affine structure, encoding both the combinatorics and divisor data of the degeneration[2, Prop. 4.5]. In Type $\III$, certain boundary components are the images of the "Enriques equator" and are characterized by four $A_1$ singularities.
+The quotient $\Gamma(\mcz_0) = \Gamma(\mcx_0) / \iota_{\En, \IA}$ inherits a natural integral-affine structure, with boundary in the $\DD^2$ case [@AEGS25, Rem. 4.10]. In that case the boundary components are exactly the images of the Enriques equator; they are the singular components of $\mcz_0$, each carrying four $A_1$ singularities.
 :::
 
 :::{.remark title="DLT models beyond generic half-divisor models"}
-For general monodromy invariant $\lambda$, half-divisor models exist only generically: the involution $\ien$ may be only birational on $\mcx_0$s. After contracting exceptional loci to resolve indeterminacies, one obtains only a dlt pair. This supports the broader philosophy that dlt models, rather than strictly semistable ones, are the correct analogues of Kulikov models for $K$-trivial surface degenerations.
+For a fixed Picard--Lefschetz transform $\lambda$, the construction above proves existence of a half-divisor model only for generic degenerations: in general the Enriques involution on the divisor model may be birational. Contracting the ADE configurations in the components which form its indeterminacy locus makes the involution regular, but the quotient pair is then only dlt. This is precisely the issue recorded in [@AEGS25, Rem. 4.11].
 :::
