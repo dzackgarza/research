@@ -58,7 +58,7 @@ We then have $\di_{T_\En}(w_1) = 2$.
 
 ::: {.proof}
 
-By [the divisibility lemma](#lem:divisibilityAlwaysTwoTco), we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
+By @lem:divisibilityAlwaysTwoTco, we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
 The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them (@thm:unpolarized-cusps, the split maximal hypothesis being @prop:tco-split-maximal), so $v_1$ represents the unique full-group $0$-cusp of $F_\Co$ and
 $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \gens{2} \oplus E_8(2).$$
 Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
@@ -104,7 +104,7 @@ $$
 } \cong U \oplus E_{8}(2) \cong (10,8,0)_1.
 $$
 
-Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$; by [the divisibility calculation](#lem:divisibilityTcoOne) $\mathrm{div}_{\ten}(w_1) = 2$.
+Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$; by @lem:divisibilityTcoOne, $\mathrm{div}_{\ten}(w_1) = 2$.
 Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0)_1$ is also 2 and the two Enriques 0-cusps are distinguished by divisibility, the correspondence follows.
 :::
 
@@ -125,7 +125,7 @@ $$
 ,
 $$
 
-since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined by the isomorphism type of $w_2^{\perp T_\En}/w_2$ in $w_1^{\perp T_\En}/w_1$, which is in turn uniquely determined by the characterization of $w_2$ as odd, even ordinary, or even characteristic in $w_1^{\perp T_\En}/w_1$, which by [the $w_1^\perp$ calculation](#lem:w1_perp_calculation) is isomorphic to $U \oplus E_8(2)$.
+since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined by the isomorphism type of $w_2^{\perp T_\En}/w_2$ in $w_1^{\perp T_\En}/w_1$, which is in turn uniquely determined by the characterization of $w_2$ as odd, even ordinary, or even characteristic in $w_1^{\perp T_\En}/w_1$, which by @lem:w1_perp_calculation is isomorphic to $U \oplus E_8(2)$.
 One checks directly in coordinates: let $x+y\in U \oplus E_8(2)$ and consider its pairing with $w_2$:
 
 $$
@@ -157,12 +157,12 @@ On the other hand, cusp $(8,8,0)$ does not satisfy this property -- the vector $
 
 The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $\fen$ are isomorphic to the modular curves $X_0(2)$ and $X \da \overline{\bH / \SL_2(\bZ)}$ respectively, and by [@CDL25 Cor. 5.9.10] the 1-cusp $(7,7,1)$ in $\fco$ is isomorphic to $X$.
 This can additionally be verified by [@AE22 Prop. 5.13]: the 1-cusp $(7,7,1)$ in $T_\Co$ is incident to exactly one 0-cusp, as is the 1-cusp $(8,6,0)$ in $\ten$, and thus the corresponding modular curves are both isomorphic to $X$.
-We conjecture that general correspondences on 1-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of [the one-cusp correspondence lemma](#lem:1_cusp_correspondence).
+We conjecture that general correspondences on 1-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of @lem:1_cusp_correspondence.
 :::
 
 ::: {.lemma #lem:cusp_map_dP title="Coble cusps under the degree-two K3 period embedding"}
 
-Let $\tilde w_i$ be the images of $v_i$ in $\tdp$ under the embedding described in [the sequence-of-embeddings lemma](../lattices-and-moduli/lattices.md#lem:sequence_of_embeddings). Then
+Let $\tilde w_i$ be the images of $v_i$ in $\tdp$ under the embedding described in @lem:sequence_of_embeddings. Then
 
 $$
 \begin{aligned}
@@ -206,7 +206,7 @@ Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
 
 ::: {.proposition #prop:rank_16_cusp_D16 title="The rank-sixteen cusp lattice is $D_{16}^+$"}
 
-The negative-definite lattice $\tilde w_2^{\perp T_\dP}/\tilde w_2 \cong (16,0,0)_0$ of [the del Pezzo cusp-map lemma](#lem:cusp_map_dP) is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
+The negative-definite lattice $\tilde w_2^{\perp T_\dP}/\tilde w_2 \cong (16,0,0)_0$ of @lem:cusp_map_dP is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
 :::
 
 ::: {.proof}

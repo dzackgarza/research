@@ -81,11 +81,11 @@ $$
 
 This embedding is unique because $E_{10} = U \oplus E_8$ is unimodular.
 A primitively embedded unimodular sublattice splits its ambient lattice
-([the unimodular-splitting proposition](embeddings-and-overlattices.md#prop:unimodular-splits)), so the codomain of any primitive embedding of
+(@prop:unimodular-splits), so the codomain of any primitive embedding of
 $E_{10}$ is $E_{10}\oplus E_{10}^{\perp}$.
 The gluing datum of such an embedding is the graph of an isometry between a
 subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$
-([the embedding-gluing description](embeddings-and-overlattices.md#rmk:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is
+(@rmk:embedding-gluing-data), and $A_{E_{10}} = 0$, so that datum is
 trivial and the embedding is determined by the isometry class of the complement.
 Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
@@ -118,7 +118,7 @@ $$
 f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En = \fen
 $$
 be the map induced by the embedding $\eta$ of
-[the primitive-embedding lemma](#lem:primitive_embedding_eta).
+@lem:primitive_embedding_eta.
 The argument has four steps: a gluing computation that identifies the stabilizer
 of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
 
@@ -134,7 +134,7 @@ $T_\Co\oplus K$ has gluing group
 $$
 H = \gens{\bigl(h/2,\; k/2\bigr)}\ \leq\ A_{T_\Co}\oplus A_K
 $$
-in the sense of [the gluing-datum definition](automorphism-lifting-through-a-gluing.md#def:gluing-datum-of-a-pair).
+in the sense of @def:gluing-datum-of-a-pair.
 It has order $2$ and is isotropic, since
 $q_{T_\Co}(h/2)+q_K(k/2) = \frac12-\frac12 = 0$.
 
@@ -150,7 +150,7 @@ $\Gamma_\Co$.
 Let $g\in\Gamma_\En$ satisfy $g(T_\Co) = T_\Co$.
 Then $g$ preserves $K = T_\Co^{\perp}$ as well, so $g = \varphi\oplus\varepsilon$
 with $\varphi\da\ro{g}{T_\Co}\in\Orth(T_\Co)$ and $\varepsilon = \pm 1$ on $K$.
-By [the automorphism-lifting criterion](automorphism-lifting-through-a-gluing.md#thm:automorphism-lifting-criterion), $g$ preserves $T_\En$ only if
+By @thm:automorphism-lifting-criterion, $g$ preserves $T_\En$ only if
 $(\bar\varphi\oplus\bar\varepsilon)(H) = H$.
 The group $A_K$ has order $2$, so $\bar\varepsilon = \id$, and the condition on
 the generator of $H$ reads $\bigl(\bar\varphi(h/2),\,k/2\bigr)\in H$.
@@ -161,7 +161,7 @@ $$
 $$
 Next let $x\in A_{E_{10}(2)}$.
 Then $(x,0)\in H^{\perp}$, because $x$ is orthogonal to $h/2$.
-By [Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing) the discriminant group of $T_\En$ is
+By @thm:nikulin-gluing the discriminant group of $T_\En$ is
 $H^{\perp}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that
 quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
 Every nonzero element of $H$ has second coordinate $k/2\neq 0$, so
@@ -175,13 +175,13 @@ Therefore $\varphi\in\Gamma_\Co$.
 
 Conversely let $\varphi\in\Gamma_\Co$ and put $g\da\varphi\oplus\id_K$.
 Both $\bar\varphi$ and $\bar{\id}_K$ are the identity, so $g$ preserves $H$ and
-extends to $T_\En$ by [the automorphism-lifting criterion](automorphism-lifting-through-a-gluing.md#thm:automorphism-lifting-criterion).
+extends to $T_\En$ by @thm:automorphism-lifting-criterion.
 The extension acts trivially on $H^{\perp}/H = A_{T_\En}$ and preserves
 $\bD(T_\En)$, so it lies in $\Gamma_\En$; it stabilizes $T_\Co$ and restricts to
 $\varphi$ there.
 
 In particular the containment required by
-[the descent criterion](#rmk:descent-of-an-equivariant-inclusion) holds, with equality, so $f$ is
+@rmk:descent-of-an-equivariant-inclusion holds, with equality, so $f$ is
 defined.
 
 **Fibres.**
@@ -209,7 +209,7 @@ Hence $f\inv(y)$ is finite, of cardinality at most half the number of
 $(-2)$-vectors of $T_\En\intersect T(\tilde y)^{\perp}$.
 
 **Properness and finiteness.**
-By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB) the map $f$ extends to a morphism
+By @lem:locally_closed_embedding_BB the map $f$ extends to a morphism
 $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to\overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore
 proper.
 A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a
@@ -243,7 +243,7 @@ variety is its normalization, so $F_\Co$ is the normalization of $Z$.
 
 ::: {.remark #rmk:normalization-enriques-analogue title="The same statement one level up"}
 
-[The normalization theorem](#thm:normalization) is the Coble analogue of [@AEGS25 Lem. 2.8], which
+@thm:normalization is the Coble analogue of [@AEGS25 Lem. 2.8], which
 asserts that $\fentwo$ is the normalization of a closed subvariety of
 $F_{(2,2,0)}$.
 There the stabilizer step is run through $T_\dP$: the isometry group
@@ -258,7 +258,7 @@ available here because $T_\Co^{\perp T_\En}\cong\gens{-2}$ is of rank one.
 
 ::: {.remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
 
-The stabilizer step of [the normalization theorem](#thm:normalization) is one instance of a general
+The stabilizer step of @thm:normalization is one instance of a general
 criterion for descending a map to a pair of quotients.
 Let $f\colon A\injects B$ be an inclusion of sets, and let $G_A$ and $G_B$ be
 groups acting on $A$ and on $B$.
