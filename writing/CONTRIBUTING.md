@@ -492,7 +492,7 @@ fails.
 ### `XREF-4`: Sections and figures
 
 Sections auto-number. Reference a section by link:
-`[Lattice Theory](lattice-theory.md#sec:lattice-theory)`.
+`[Lattice Theory](coble/lattices-and-moduli/lattice-theory.md#sec:lattice-theory)`.
 
 Figures use Quarto's own numbering. Anchor a figure `{#fig-x}`, with a hyphen,
 and reference it `@fig-x`.
