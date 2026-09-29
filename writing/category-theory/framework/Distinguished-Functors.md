@@ -21,7 +21,7 @@ A monadic functor $U\colon\mathcal A\to\mathcal C$ creates any limits that $\mat
 The forgetful functors to $\mathbf{Set}$ from $\mathbf{Monoid}$, $\mathbf{Grp}$, $\mathbf{Ab}$, $\mathbf{Ring}$, $R\text{-}\mathbf{Mod}$, and $\mathbf{Vect}_k$ are monadic [@Rie16, Corollary 5.5.3].
 
 Hence a limit in $R\text{-}\mathbf{Mod}$ is computed on underlying sets, and the module structure on the limit is the unique one lifting the limit cone.
-The kernel of a module homomorphism is a limit — the equalizer of $f$ and $0$ (@def-kernel-cokernel) — so it is the set-theoretic kernel with its unique compatible module structure, and the same computation serves for the underlying abelian group.
+The kernel of a module homomorphism is a limit — the equalizer of $f$ and $0$ (@def:kernel-cokernel) — so it is the set-theoretic kernel with its unique compatible module structure, and the same computation serves for the underlying abelian group.
 
 Creation is a statement about limit cones: a subgroup of the underlying abelian group of an $R$-module need not be a submodule, while the underlying set of a kernel admits exactly one module structure making it the kernel in $R\text{-}\mathbf{Mod}$.
 A construction whose value happens to agree on underlying sets across two categories names the functor along which it is created, since agreement of underlying data is not by itself a factorization (@sec-statements-vs-constructions).

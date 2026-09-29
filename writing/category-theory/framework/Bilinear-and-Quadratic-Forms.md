@@ -31,7 +31,7 @@ $$
 $$
 An object of $\mathcal B_{R,W}$ is a pair $(M,b)$.
 A morphism $(M,b_M)\to(N,b_N)$ is an $R$-linear map $f\colon M\to N$ satisfying $f^*b_N=b_M$.
-The projection to $R\text{-}\mathbf{Mod}$ is the discrete fibration of @def-category-of-elements.
+The projection to $R\text{-}\mathbf{Mod}$ is the discrete fibration of @def:category-of-elements.
 The quadratic category uses the same convention.
 :::
 

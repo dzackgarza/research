@@ -1,7 +1,7 @@
 # Chain complexes, forms, and derived functors {#sec-chain-complexes}
 
 Let $\mathcal A$ be an additive category, let $R$ be a commutative ring, and let $W$ be an $R$-module.
-Chain complexes in $\mathcal A$, chain maps, and the additive category $\mathbf{Ch}(\mathcal A)$ are @def:chain-complexes; abelian categories are @def-abelian-category.
+Chain complexes in $\mathcal A$, chain maps, and the additive category $\mathbf{Ch}(\mathcal A)$ are @def:chain-complexes; abelian categories are @def:abelian-category.
 Write $d^C_n\colon C_n\to C_{n-1}$ for the differentials of $C$.
 
 ## The category of chain complexes {#sec-chain-complex-category}
@@ -40,7 +40,7 @@ $$
 ::: {.definition #def:exact-complex title="Exactness"}
 
 A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree.
-Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mathcal A)$ and therefore define replete full subcategories (@def-subcategory), the second being the intersection over $n\in\mathbb Z$ of the first.
+Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mathcal A)$ and therefore define replete full subcategories (@def:subcategory), the second being the intersection over $n\in\mathbb Z$ of the first.
 
 A short exact sequence $0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0$ is the complex concentrated in degrees $2,1,0$ with $d_2=i$ and $d_1=p$, together with the assertion that this complex is exact: exactness at $2$ says $i$ is monic, exactness at $1$ says $\operatorname{im}i$ and $\ker p$ are the same subobject of $B$, and exactness at $0$ says $p$ is epic.
 :::

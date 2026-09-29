@@ -8,9 +8,9 @@ The ordinary categorical specialization uses [@MM12].
 
 ## Categories of elements
 
-The variance convention and the discrete-fibration projection in @def-category-of-elements follow [@Rie16, §2.4] and [@nlab:category_of_elements]. The Grothendieck construction is described in [@nlab:grothendieck_construction].
+The variance convention and the discrete-fibration projection in @def:category-of-elements follow [@Rie16, §2.4] and [@nlab:category_of_elements]. The Grothendieck construction is described in [@nlab:grothendieck_construction].
 
-The definition of an abelian category in @def-abelian-category and its kernel and cokernel criteria follow [@The25, Tag 0109].
+The definition of an abelian category in @def:abelian-category and its kernel and cokernel criteria follow [@The25, Tag 0109].
 
 ## Properties and chosen structure
 

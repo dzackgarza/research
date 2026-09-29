@@ -2171,19 +2171,19 @@ its fenced defining occurrence.
 
 A defined term whose defining occurrence is elsewhere is referred back to
 as "A generalized element with domain $T$ is defined in
-@def-generalized-element; it is a morphism $T\to X$" — two clauses, the
+@def:generalized-element; it is a morphism $T\to X$" — two clauses, the
 first meta-commentary about where the definition lives, the second
 restating the definiens. The standard rhetorical device in papers and
 textbooks for a non-defining use that reminds the reader is "Recall."
 
 **Banned:** "A generalized element with domain $T$ is defined in
-@def-generalized-element; it is a morphism $T\to X$." — wordy, two
+@def:generalized-element; it is a morphism $T\to X$." — wordy, two
 clauses where one does the work, with a semicolon joining meta-commentary
 to definiens; $T$ unbound.
 
 **Preferred:** "Recall that a generalized element with domain $T$
 (\ref{def-generalized-element}) is a morphism $T\to X$" or "Recall
-(@def-generalized-element) that a generalized element of $X$ with domain
+(@def:generalized-element) that a generalized element of $X$ with domain
 $T$ is a morphism $T\to X$." One clause, "Recall" signals this is not the
 defining occurrence but a reminder that cites it, and the parenthetical
 `\ref` is the link.

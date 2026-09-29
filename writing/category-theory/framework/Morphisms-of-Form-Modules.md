@@ -113,12 +113,12 @@ against the hypothesis.
 ::: {.theorem #thm:form-not-additive title="Additivity of the form categories"}
 
 Suppose $4\cdot1_R\neq0$.
-Then $\mathcal B_{R,R}$ has no zero object, so it is not additive, and by @def-abelian-category it is not abelian.
+Then $\mathcal B_{R,R}$ has no zero object, so it is not additive, and by @def:abelian-category it is not abelian.
 For $R$ a Dedekind domain with $4\cdot1_R\neq0$ the same conclusions hold for $\mathbf{Lat}_R$.
 :::
 
 An additive category is an $\mathbf{Ab}$-category with a zero object and finite products [@Wei94, §A.4], and a zero object is terminal, which @thm:form-no-terminal excludes.
-An abelian category is additive by @def-abelian-category.
+An abelian category is additive by @def:abelian-category.
 
 ## Hypotheses of the homological constructions {#sec-additive-hypotheses}
 

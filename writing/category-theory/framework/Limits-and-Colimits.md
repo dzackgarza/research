@@ -32,14 +32,14 @@ $$
 \operatorname{Cone}(-,D)\colon\mathcal C^{\mathrm{op}}\longrightarrow\mathbf{Set},
 $$
 and dually the cocones under $D$ into a covariant functor $\operatorname{Cone}(D,-)$.
-The category of elements $\int_{\mathcal C}\operatorname{Cone}(-,D)$ of @def-category-of-elements is the *category of cones over $D$*: its objects are the cones, and a morphism from $\lambda$ with apex $c$ to $\lambda'$ with apex $c'$ is a morphism $h\colon c\to c'$ with $\lambda'_j\circ h=\lambda_j$ for every $j$.
+The category of elements $\int_{\mathcal C}\operatorname{Cone}(-,D)$ of @def:category-of-elements is the *category of cones over $D$*: its objects are the cones, and a morphism from $\lambda$ with apex $c$ to $\lambda'$ with apex $c'$ is a morphism $h\colon c\to c'$ with $\lambda'_j\circ h=\lambda_j$ for every $j$.
 :::
 
 ## Limits {#sec-limits}
 
 ::: {.definition #def:limit title="Limits and colimits"}
 
-A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def-representable-presheaf): an object $\lim D$ together with a cone $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism
+A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def:representable-presheaf): an object $\lim D$ together with a cone $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism
 $$
 \operatorname{Hom}_{\mathcal C}(-,\lim D)\;\cong\;\operatorname{Cone}(-,D).
 $$
@@ -217,7 +217,7 @@ When the relevant limits exist, the right Kan extension is computed pointwise as
 $$
 (\operatorname{Ran}_KT)(c)\;=\;\lim\bigl((c\downarrow K)\longrightarrow M\xrightarrow{\;T\;}\mathcal A\bigr),
 $$
-the limit over the comma category $(c\downarrow K)$ of @def-comma-category, and dually $(\operatorname{Lan}_KT)(c)$ is the colimit over $(K\downarrow c)$ [@Mac98, §X.3, Theorem 1 and §X.5].
+the limit over the comma category $(c\downarrow K)$ of @def:comma-category, and dually $(\operatorname{Lan}_KT)(c)$ is the colimit over $(K\downarrow c)$ [@Mac98, §X.3, Theorem 1 and §X.5].
 :::
 
 ::: {.theorem #thm:limits-as-kan title="Limits as Kan extensions"}

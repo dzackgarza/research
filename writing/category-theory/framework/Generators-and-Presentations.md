@@ -136,7 +136,7 @@ A chosen partial resolution finitely generated through degree $n$ is structure o
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}
 
-The endomorphism monoid $\operatorname{Hom}_{\mathcal C}(X,X)$ and the automorphism group $\operatorname{Aut}_{\mathcal C}(X)$ of an object are defined at @def-endomorphism-monoid; for a lattice $L$ the instance $O(L)=\operatorname{Aut}(L)$ is in @sec-isometry-groups.
+The endomorphism monoid $\operatorname{Hom}_{\mathcal C}(X,X)$ and the automorphism group $\operatorname{Aut}_{\mathcal C}(X)$ of an object are defined at @def:endomorphism-monoid; for a lattice $L$ the instance $O(L)=\operatorname{Aut}(L)$ is in @sec-isometry-groups.
 
 ::: {.proposition #prop:automorphisms-act-on-frames title="The action on the fibre"}
 

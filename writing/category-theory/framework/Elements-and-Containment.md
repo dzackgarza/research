@@ -2,8 +2,8 @@
 
 ## Elements {#sec-elements}
 
-A generalized element with domain $T$ is defined in @def-generalized-element; it is a morphism $T\to X$.
-If $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def-category-of-elements.
+A generalized element with domain $T$ is defined in @def:generalized-element; it is a morphism $T\to X$.
+If $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def:category-of-elements.
 
 ::: {.definition #def:element-functor title="Elements represented by morphisms"}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
