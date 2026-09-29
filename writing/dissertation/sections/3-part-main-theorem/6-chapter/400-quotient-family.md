@@ -3,7 +3,7 @@
 This section constructs, analyzes, and establishes the modular properties of the family of stable Enriques pairs obtained as the quotient of the universal KSBA-stable family of K3 pairs by the global Enriques involution, particularly over the Noether–Lefschetz locus $B$.
 
 :::{.proposition
-    title="{Existence and Finiteness of the Quotient Family}"
+    title="Existence and Finiteness of the Quotient Family"
     #prop:existence-finiteness-quotient
 }
 Let $\ien: \mcx_B \to \mcx_B$ denote the globally defined Enriques involution acting fiberwise on the universal KSBA family $(\mcx_B, \eps \mcr_B) \to B$. Define the quotient:
@@ -31,7 +31,7 @@ The quotient $\mcz$ is constructed as the stack quotient $[\mcx_B/\langle \ien\r
 :::
 
 :::{.proposition
-    title="{Fiberwise Analysis of the Quotient}"
+    title="Fiberwise Analysis of the Quotient"
     #prop:fiberwise-analysis-quotient
 }
 Let $b \in B$ be a geometric point and $\mcx_b$, $\mcz_b$ the corresponding fibers.
@@ -52,7 +52,7 @@ In the smooth case, this is the standard construction of Enriques surfaces as fi
 :::
 
 :::{.proposition
-    title="{Preservation of KSBA Stability and Ample Boundary}"
+    title="Preservation of KSBA Stability and Ample Boundary"
     #prop:preservation-ksba-stability
 }
 For every $b \in B$, consider the pair $(\mcz_b, \eps \mcr_{Z,b})$. Then:
@@ -66,7 +66,7 @@ Since $(\mcx_b, \eps \mcr_b)$ is KSBA-stable by construction, we use that amplen
 :::
 
 :::{.corollary
-    title="{Degenerations, Flatness, Dual Complex, and Monodromy}"
+    title="Degenerations, Flatness, Dual Complex, and Monodromy"
     #cor:degenerations-flatness-dual-complex
 }
 Let $\Delta$ be a smooth curve with generic point $\eta$ and special point $0$, and $f: \Delta \to B$ a morphism. The base-changed family $\mcx_\Delta = \mcx_B \times_B \Delta$ carries a fiberwise involution $\ien$ and forms a family of KSBA-stable K3 pairs. The quotient family $\mcz_\Delta = \mcx_\Delta / \ien$ satisfies:
@@ -84,7 +84,7 @@ Flatness follows from the finiteness and flatness properties of group quotients 
 :::
 
 :::{.remark
-    title="{Summary and Structural Consequences}"
+    title="Summary and Structural Consequences"
 }
 The quotient family $(\mcz, \eps \mcr_Z) \to B$ constructed thus provides a complete, modular KSBA-stable compactification for the moduli space of degree-2 polarized stable Enriques surfaces as quotients of K3 pairs, with all necessary boundary, polarization, and singularity structures explicitly accounted for.
 :::
