@@ -3,28 +3,6 @@
 Things noticed while moving the dissertation from LaTeX back to Markdown that need the author's judgment.
 None of them blocks the build, which compiles with no LaTeX errors.
 
-## Unfinished text
-
-- `sections/3-part-main-theorem/7-chapter/999-appendix.md`, the $D_n$ entry: the sentence stops mid-word, at "We take $D_n$ to mean $D_n(-1)$, and identify th".
-  Every neighbouring type ends with its Coxeter diagram; this one has none.
-  The break is in the July 2025 draft and in the submitted LaTeX, so it is unfinished writing rather than damage from the move.
-
-- Three `\todo` markers remain, in the lattice classification section, the Scattone section, and the five-cusps section.
-
-- Five `\Cref` targets name results that exist under no label anywhere in the
-  text, so they print as bold question marks. Each needs either the statement
-  it points at, or a pointer to the statement that replaced it:
-
-  | target | referenced from |
-  | --- | --- |
-  | `def:hyperbolic-plane` | intro, the K3 and Enriques lattices |
-  | `ex:root-lattices` | intro, the K3 and Enriques lattices |
-  | `thm:complete-classification-0-cusps-fen2` | part III, main theorem statement |
-  | `lem:fent-semitoroidal-semifans-at-cusps` | part III, main theorem statement |
-  | `thm:five-semifans` | chapter 7, five cusps |
-
-  The first two were referenced by the LaTeX too, so they predate the move.
-
 ## Possibly missing content
 
 - `sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md` carries
