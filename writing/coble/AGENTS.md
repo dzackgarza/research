@@ -132,7 +132,7 @@ Both are load-bearing: `writing/.book/TRAPS.md` records what breaks without them
 A target that is not a numbered block still resolves to nothing however it is written:
 
 - sections, `\longref{sec:lattice-theory}` — link to the section instead, the way the
-  category-theory part does: `[Lattice Theory](lattice-theory.md#sec:lattice-theory)`;
+  category-theory part does: `[Lattice Theory](lattices-and-moduli/lattice-theory.md#sec:lattice-theory)`;
 - tables, `\label{tbl:x}` — a table carries no number here; link to the page that
   holds it;
 - more than one target, `\longref{a,b}` — the resolver matches a single id.
