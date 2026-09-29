@@ -105,6 +105,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     LocallyRingedMorCategoryConstruction,
+    QuasiCoherentSheaves,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
@@ -5282,8 +5283,14 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         return base_object.closed_subscheme(first)
 
     class ParentMethods:
-        def __init__(self, defining_equations=None, **rest) -> None:
+        def __init__(
+            self,
+            defining_equations=None,
+            closed_embedding_ideal_sheaf=None,
+            **rest,
+        ) -> None:
             self._defining_equations = defining_equations
+            self._closed_embedding_ideal_sheaf = closed_embedding_ideal_sheaf
             super().__init__(**rest)
 
         def defining_equations(self):
@@ -5519,7 +5526,17 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             return point.local_length(meeting)
 
         def ideal_sheaf(self):
-            r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""
+            r"""Return the quasi-coherent ideal sheaf ``I_Z`` of this closed subscheme.
+
+            Constructions that already represent ``I_Z`` retain that exact sheaf
+            as defining data.  Otherwise the affine presentation realizes it as
+            ``I~`` from the defining ideal when asked for.
+            """
+            match self._closed_embedding_ideal_sheaf:
+                case None:
+                    pass
+                case ideal_sheaf:
+                    return ideal_sheaf
             codomain = self.inclusion().codomain()
             assert codomain in Schemes(codomain.scheme_base_ring()).Affine(), (
                 f"cannot form the ideal sheaf of {self}: this requires a closed subscheme of an affine "
@@ -5607,6 +5624,7 @@ class EffectiveCartierDivisors(_SchemeSubobjectsOf):
                 return ambient.closed_subscheme(
                     ambient.coordinate_algebra().one(),
                     placements=(self,),
+                    effective_cartier_ideal_sheaf=ambient.structure_sheaf(),
                 )
             case _:
                 raise AssertionError(
@@ -5615,15 +5633,29 @@ class EffectiveCartierDivisors(_SchemeSubobjectsOf):
                 )
 
     class ParentMethods:
-        def __init__(self, effective_cartier_picard_class=None, **rest) -> None:
+        def __init__(
+            self,
+            effective_cartier_ideal_sheaf,
+            effective_cartier_picard_class=None,
+            **rest,
+        ) -> None:
             self._effective_cartier_picard_class = effective_cartier_picard_class
-            super().__init__(**rest)
+            super().__init__(
+                closed_embedding_ideal_sheaf=effective_cartier_ideal_sheaf,
+                **rest,
+            )
+            ambient = self.inclusion().codomain()
+            assert self.ideal_sheaf() in QuasiCoherentSheaves(ambient).Invertible(), (
+                f"the defining ideal sheaf of the effective Cartier divisor {self} on {ambient} must be "
+                f"an invertible O_X-module on {ambient}, but {self.ideal_sheaf()} is an object of "
+                f"{self.ideal_sheaf().category()}"
+            )
 
         def is_effective_cartier_divisor(self) -> bool:
             return True
 
         def picard_class(self):
-            r"""Return the represented class ``[O_X(D)]`` in ``Pic(X)``."""
+            r"""Return the represented class ``[O_X(D)] = [I_D^vee]`` in ``Pic(X)``."""
             match self._effective_cartier_picard_class:
                 case None:
                     raise AssertionError(

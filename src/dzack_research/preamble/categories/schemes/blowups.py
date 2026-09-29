@@ -271,6 +271,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return self.closed_subscheme(
                 self.center_equations_in_graph_ring(),
                 placements=(EffectiveCartierDivisors(self),),
+                effective_cartier_ideal_sheaf=self.exceptional_line_bundle().dual_sheaf(),
                 effective_cartier_picard_class=self._represented_exceptional_picard_class(),
             )
 

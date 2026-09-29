@@ -29,10 +29,14 @@ def test_exceptional_curve_has_self_intersection_minus_one_and_picard_rank_incre
     blowup = plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
 
     exceptional = blowup.exceptional_weil_divisor()
+    exceptional_subscheme = blowup.exceptional_divisor()
+    ideal_sheaf = exceptional_subscheme.ideal_sheaf()
 
-    assert blowup.exceptional_divisor() in EffectiveCartierDivisors(blowup)
-    assert blowup.exceptional_divisor().inclusion().codomain() is blowup
-    assert blowup.exceptional_divisor().picard_class() == blowup.exceptional_picard_class()
+    assert exceptional_subscheme in EffectiveCartierDivisors(blowup)
+    assert exceptional_subscheme.inclusion().codomain() is blowup
+    assert ideal_sheaf in QuasiCoherentSheaves(blowup).Invertible()
+    assert ideal_sheaf.associated_divisor() == -exceptional
+    assert exceptional_subscheme.picard_class() == blowup.exceptional_picard_class()
     assert blowup.exceptional_self_intersection() == -1
     assert blowup.weil_multiplicity(exceptional, blowup.exceptional_ray()) == 1
     assert int(blowup.picard_group().module_rank()) == int(plane.picard_group().module_rank()) + 1

@@ -87,10 +87,12 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             return self.torus_invariant_prime_divisor(self.exceptional_ray())
 
         def _exceptional_divisor(self):
+            exceptional = self.exceptional_weil_divisor()
             return self.torus_invariant_divisor_support_subscheme(
-                self.exceptional_weil_divisor(),
+                exceptional,
                 placements=(EffectiveCartierDivisors(self),),
                 construction_data={
+                    "effective_cartier_ideal_sheaf": self.invertible_sheaf_of_divisor(-exceptional),
                     "effective_cartier_picard_class": self._represented_exceptional_picard_class(),
                 },
             )
