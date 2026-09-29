@@ -19,7 +19,7 @@ These weights obey a **balancing condition** at every vertex $v_i$. For a toric 
 where $\vec{e}_{ij}$ is the primitive integral direction associated to the corresponding edge.
 These constraints ensure that the line bundles patch together along double curves and that the data collectively define a global Cartier divisor structure in the smoothing.
 
-:::{.definition title="{Divisor Model}" #def:divisor-model}
+:::{.definition title="Divisor Model" #def:divisor-model}
 A **divisor model** for a degeneration $\pi: \mcx \to C$ of K3 (or Enriques) surfaces is a degeneration of pairs $(\mcx, \mcr) \to C$ such that:
 
 - $\mcr$ is a Cartier divisor, with $\mcr_t = \mcr \cap \mcx_t$ effective for all $t \in C$,
@@ -29,15 +29,15 @@ A **divisor model** for a degeneration $\pi: \mcx \to C$ of K3 (or Enriques) sur
 
 Given a divisor model, the isomorphism class of $\OO_{\mcx_0}(\mcr_0)$ is encoded by its corresponding integral-affine divisor $R_{\IA}$ on $\Gamma(\mcx_0)$. The dual complex, together with $R_{\IA}$, captures all line bundle glueing data and allows for explicit calculation of limit objects.
 
-:::{.proposition title="{Classification via Integral-Affine Data}" #prop:classification-ia-data}
+:::{.proposition title="Classification via Integral-Affine Data" #prop:classification-ia-data}
 Given a fixed Picard–Lefschetz monodromy invariant $\lambda$, the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$—that is, the dual complex with its weighted, balanced subgraph—uniquely determines the KSBA stable limit $(\overline{\mcx}_0, \epsilon \overline{\mcr}_0)$. Furthermore, this combinatorial type is locally constant in families with fixed Picard–Lefschetz form.
 :::
 
-:::{.proposition title="{Semitoroidal Compactification via Recognizable Divisors}" #prop:semitoroidal-recognizable}
+:::{.proposition title="Semitoroidal Compactification via Recognizable Divisors" #prop:semitoroidal-recognizable}
 If $R$ is a recognizable divisor (such as the fixed locus of a nonsymplectic involution), then there exists a unique semifan $\semifan{F}_R$ whose semitoroidal compactification normalizes the KSBA compactification of the relevant moduli space $\fent$[6, Sec. 5C].
 :::
 
-:::{.theorem title="{Explicit Construction and Type Determination}" #thm:explicit-construction}
+:::{.theorem title="Explicit Construction and Type Determination" #thm:explicit-construction}
 Given a polarized integral-affine structure $(B(\ell), R_{\IA})$ (with $\ell = (\lambda \cdot \alpha_i)_{i \in G}$), and an appropriate triangulation, one obtains
 
 \begin{align*}
@@ -47,7 +47,7 @@ Given a polarized integral-affine structure $(B(\ell), R_{\IA})$ (with $\ell = (
 as the dual complex of the $\mcx_0$ of a divisor model with monodromy invariant $\lambda$.
 :::
 
-:::{.definition title="{Half-Divisor Model}" #def:half-divisor-model}
+:::{.definition title="Half-Divisor Model" #def:half-divisor-model}
 Suppose $(\mcx, \mcr) \to (C,0)$ is a divisor model for a family of K3 surfaces admitting an involution $\ien$ that preserves $\mcr$. The **half-divisor model** is the quotient
 
 \begin{align*}
@@ -57,7 +57,7 @@ Suppose $(\mcx, \mcr) \to (C,0)$ is a divisor model for a family of K3 surfaces 
 These models realize degenerations of Enriques pairs as quotients of K3 divisor models, and in generic settings, the quotient inherits slc singularities, and the divisor structure matches the normalization of the image of $\mcr$ [2, Prop. 4.5].
 :::
 
-:::{.proposition title="{Geometric Types and Boundary Strata}" #prop:geometric-types}
+:::{.proposition title="Geometric Types and Boundary Strata" #prop:geometric-types}
 Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $\fent$ as constructed above. Then the following properties hold:
 
 - The fibers of $\mcz$ have semi-log canonical (slc) singularities.
@@ -79,7 +79,7 @@ More precisely:
 See detailed analyses in [@AEGS25, Prop. 4.5], which classify Enriques degenerations by their dual complex and describe the induced slc structure and divisor support in every case.
 :::
 
-:::{.corollary title="{Computability of the KSBA Stable Limit}" #cor:ksba-stable-limit}
+:::{.corollary title="Computability of the KSBA Stable Limit" #cor:ksba-stable-limit}
 Given a degeneration $(\mcz^*, \epsilon \mcr_{\mcz}^*) \to C^*$, the KSBA-stable limit is
 
 \begin{align*}
