@@ -33,7 +33,7 @@ Sterk 4 and Sterk 5 were never plotted.
 
 $(18,0,0)$ is the lattice to which the Coble cusps are claimed to correspond, so this direction list is the natural starting point for the Coble integral-affine structure; see [the Coble cusp correspondence](../coble-moduli/cusp-correspondence-morphism-chain.md).
 
-::: {.Remark title="Recorded defect: a failing rank assertion"}
+::: {.remark title="Recorded defect: a failing rank assertion"}
 
 Four consecutive "project-up" cells fail as saved, on `assert all_As.rank() == 10` while the printed rank is 11. This is an unresolved discrepancy, not a transient error, and it blocks the Sterk 4 and Sterk 5 plots.
 Whoever resumes this work should treat the rank-10 expectation itself as the thing under test: the $+1$-eigenspace ranks recorded in [the folded Sterk-diagram computation](root-vectors-and-folded-sterk-diagrams.md) are 12, 12, 12, 14, and the passage from those to a rank-10 image is the step that is failing.
@@ -41,7 +41,7 @@ Whoever resumes this work should treat the rank-10 expectation itself as the thi
 
 ## The plotting procedure
 
-::: {.Construction #cons:directions-to-symmetric-polygon title="From directions to a polygon with symmetry"}
+::: {.construction #cons:directions-to-symmetric-polygon title="From directions to a polygon with symmetry"}
 
 1. Fix the ordered primitive boundary directions $v_i \in \ZZ^2$.
 
