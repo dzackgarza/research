@@ -28,7 +28,7 @@ The case of interest to us is $n=1$, and thus the lattice $M = (11, 11, 1) = A_1
 As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a degeneration of a K3 cover of an Enriques surface, which thus describes a family of K3s equipped with a nonsymplectic involution as studied in [@AE22] and a corresponding family of Enriques surfaces as studied in [@AEGS25]. It seems that these degenerations correspond to the (weakly projective) **flowerpot** degenerations of [@Mor81], and I conjecture that the corresponding Kulikov models correspond to integral-affine discs (as opposed to spheres or real projective spaces).
 :::
 
-::: {.Question title="Explain the nonsymplectic-involution machinery in the Coble introduction"}
+::: {.Question #qst:coble-nonsymplectic-introduction title="Explain the nonsymplectic-involution machinery in the Coble introduction"}
 For introduction, need to say more about how the nonsymplectic involution machinery is being used in this particular case?
 :::
 

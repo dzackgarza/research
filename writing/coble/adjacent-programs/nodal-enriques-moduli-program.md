@@ -16,7 +16,7 @@ The lattices themselves are **already recorded** in this project at `content_pan
 
 ## Setting
 
-::: {.Definition title="Nodal and unnodal"}
+::: {.Definition #def:nodal-unnodal-enriques title="Nodal and unnodal"}
 
 An Enriques surface $Y$ is **nodal** if it contains a rational $(-2)$-curve, and **unnodal** otherwise.
 A generic Enriques surface is unnodal, and $F_{\En,\mathrm{Nod}}$ is an irreducible hypersurface in $F_{\En}$.
@@ -49,7 +49,7 @@ Reconciling them, or identifying which is correct, is a small and worthwhile tas
 
 ## The program
 
-::: {.Conjecture title="Baily-Borel boundary by the same techniques"}
+::: {.Conjecture #conj:nodal-enriques-bb-boundary title="Baily-Borel boundary by the same techniques"}
 
 Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified, yielding a boundary incidence diagram; and the lattice embedding above allows AEGS23 to be leveraged to construct the KSBA compactification, its dlt models, and the integral-affine structures classifying KSBA stable limits of nodal Enriques surfaces.
 :::

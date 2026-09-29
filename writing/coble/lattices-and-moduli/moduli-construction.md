@@ -24,7 +24,7 @@ $$
 
 where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta).
 
-::: {.Question title="An explicit description of the polarized Coble arithmetic group"}
+::: {.Question #qst:polarized-coble-arithmetic-group title="An explicit description of the polarized Coble arithmetic group"}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
 :::
 

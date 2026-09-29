@@ -31,7 +31,7 @@ What remains is to *exhibit the embedding matrices in coordinate bases*: derive 
 The same coordinate deficit affects the derivation of the explicit equations for $C$ and $X$ (below): the invariants are listed, but the primitivity of the lattice embeddings lacks a rigorous derivation in terms of coordinate bases.
 :::
 
-::: {.Conjecture title="Open problem: the horizontal folding involution and its eigenspaces"}
+::: {.Conjecture #conj:horizontal-folding-eigenlattices title="Open problem: the horizontal folding involution and its eigenspaces"}
 
 There is an orthogonal involution $\theta$ on the K3 lattice $\lkt \cong U^{3}\oplus E_8^{2}$ whose invariant and coinvariant sublattices are
 $$
@@ -47,7 +47,7 @@ The open technical content is to *write down the $22\times 22$ matrix of $\theta
 
 ## Isotropic orbits, cusps, and reflection groups
 
-::: {.Question title="Open problem: enumeration of isotropic orbits by Sterk's technique"}
+::: {.Question #qst:sterk-isotropic-orbits-tco title="Open problem: enumeration of isotropic orbits by Sterk's technique"}
 
 How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\operatorname{div}(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\operatorname{div}(v),\, \bar v \in A_T,\, v^2 = 0)$.
@@ -114,7 +114,7 @@ the pair of maximal parabolic subdiagrams matches the boundary data of the
 degree-$2$ polarized moduli space.
 :::
 
-::: {.Question title="Open problem: the reflection group of each Sterk fundamental domain"}
+::: {.Question #qst:sterk-reflection-subgroups title="Open problem: the reflection group of each Sterk fundamental domain"}
 
 Sterk's published fundamental domains for the five cusps of $F_{\En,2}$ have $12, 10, 12, 11, 14$ walls [@Ste91], while Vinberg's algorithm applied to the corresponding hyperbolic quotients $\eta_j^{\perp}/\eta_j$ returns ten walls in each case.
 The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams.

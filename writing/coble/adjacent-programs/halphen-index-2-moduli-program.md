@@ -19,7 +19,7 @@ This note records the moduli-theoretic program built on that observation, which 
 
 ## Definitions and known moduli
 
-::: {.Definition title="Index, Halphen pencil, Halphen surface"}
+::: {.Definition #def:halphen-index-pencil-surface title="Index, Halphen pencil, Halphen surface"}
 
 A **rational elliptic surface** is a smooth projective rational surface $Y$ with a relatively minimal fibration $\pi: Y\to\PP^1$ whose generic fiber is a smooth elliptic curve.
 Its **index** is the minimal $m$ with $\pi$ given by $|-mK_Y|$.
@@ -53,13 +53,13 @@ The lattice coincidence is the whole content of the conjecture: two geometricall
 
 ## The program
 
-::: {.Conjecture title="Period domains and KSBA compactifications for M_(H,2,k)"}
+::: {.Conjecture #conj:halphen-period-ksba title="Period domains and KSBA compactifications for M_(H,2,k)"}
 
 These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
 The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications of the corresponding period domains, for a suitably canonical divisor $R$.
 :::
 
-::: {.Conjecture title="The multiple fiber as the recognizable divisor"}
+::: {.Conjecture #conj:halphen-multiple-fiber-recognizable title="The multiple fiber as the recognizable divisor"}
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
 That fiber can be used to construct a recognizable divisor $R$.
