@@ -1,6 +1,6 @@
 # The Heegner line and the Coble arithmetic group {#sec:heegner-line}
 
-::: {.Remark title="Fixing the Coble Heegner vector and its induced arithmetic subgroup"}
+::: {.remark title="Fixing the Coble Heegner vector and its induced arithmetic subgroup"}
 
 The Coble locus is the $(-2)$ Heegner divisor $\cH_{-2}$ inside the Enriques
 period domain, and the Coble period lattice is the orthogonal complement of a
@@ -16,7 +16,7 @@ and the arithmetic groups those of [Constructions of the moduli space](moduli-co
 
 ## The Heegner vector inside $T_\En$
 
-::: {.Lemma #lem:coble-heegner-vector title="An explicit $(-2)$ vector with Coble complement"}
+::: {.lemma #lem:coble-heegner-vector title="An explicit $(-2)$ vector with Coble complement"}
 
 Write $T_\En = U\oplus U(2)\oplus E_8(2)$ and let $U = \ZZ u\oplus\ZZ w$ be the
 unimodular hyperbolic summand, so $u^2 = w^2 = 0$ and $u\cdot w = 1$.
@@ -62,7 +62,7 @@ $\tfrac12\delta$ to $\tfrac12\zeta$, whose component in $A_{\delta^{\perp}}$ is
 the stated class.
 :::
 
-::: {.Remark title="The standard Coble embedding is the explicit Heegner complement"}
+::: {.remark title="The standard Coble embedding is the explicit Heegner complement"}
 
 The primitive embedding $T_\Co\injects T_\En$ of
 [the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta) sends the generator $h$ of $\gens{2}$ to
@@ -78,7 +78,7 @@ section, that $T_\Co\cong v^{\perp T_\En}$ for a vector $v$ with $v^2 = -2$
 
 ## Uniqueness of the Heegner line
 
-::: {.Theorem #thm:coble-heegner-line-unique title="The Coble Heegner line is unique up to $\Gamma_{\En, 2}$"}
+::: {.theorem #thm:coble-heegner-line-unique title="The Coble Heegner line is unique up to $\Gamma_{\En, 2}$"}
 
 The line $\ZZ\delta\subset T_\En$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector) represents
 the unique $\Gamma_{\En,2}$-orbit of lines spanned by a $(-2)$ vector of $T_\En$.
@@ -120,7 +120,7 @@ The double coset set controlling the split of the full $\Orth(T_\En)$-orbit by
 the preimage subgroup is therefore a singleton, and the orbit does not split.
 :::
 
-::: {.Remark title="Heegner-line uniqueness is distinct from isotropic cusp enumeration"}
+::: {.remark title="Heegner-line uniqueness is distinct from isotropic cusp enumeration"}
 
 The $(-2)$ divisor $\cH_{-2}$ is the discriminant divisor of the Enriques period
 space, whose points parameterize quotients of nodal K3 surfaces by an involution
@@ -137,7 +137,7 @@ which there are five, one for each $0$-cusp of $\fentwo$
 
 ## The Coble arithmetic group induced from the Enriques side
 
-::: {.Definition #def:gamma-co-en title="The induced Coble subgroup"}
+::: {.definition #def:gamma-co-en title="The induced Coble subgroup"}
 
 For the Heegner vector $\delta$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector), define
 $$
@@ -156,7 +156,7 @@ component of the Heegner divisor is determined by $\ZZ\delta$ and not by a choic
 of sign for $\delta$.
 :::
 
-::: {.Proposition #prop:gamma-en-two-gluing title="Discriminant description of $\Gamma_{\En, 2}$"}
+::: {.proposition #prop:gamma-en-two-gluing title="Discriminant description of $\Gamma_{\En, 2}$"}
 
 Let $\sen = U(2)\oplus E_8(2)$ and $\ten$ be the invariant and coinvariant
 lattices of the Enriques involution on $\lkt$, and let
@@ -199,7 +199,7 @@ The polarization $h$ lies in $S_\En$, so the condition $g(h) = h$ on $\lkt$ is t
 condition $g_S(h) = h$.
 :::
 
-::: {.Proposition #prop:polarization-stabilizer-enriques title="The integral stabilizer of the degree-$2$ polarization"}
+::: {.proposition #prop:polarization-stabilizer-enriques title="The integral stabilizer of the degree-$2$ polarization"}
 
 Write $S_\En = C(2)$ with $C = U\oplus E_8$ even unimodular of signature
 $(1,9)$, and let $h\in S_\En$ be the polarization vector of
@@ -241,7 +241,7 @@ $A_{S_\En}\cong C/2C$ ([the twisted-unimodular discriminant proposition](discrim
 identity on $U/2U$ and by $x\mapsto -x\equiv x$ on $E_8/2E_8$.
 :::
 
-::: {.Theorem #thm:coble-heegner-finite-orbits title="The finite image and its isotropic orbits"}
+::: {.theorem #thm:coble-heegner-finite-orbits title="The finite image and its isotropic orbits"}
 
 With the notation of [the polarization-stabilizer proposition](#prop:polarization-stabilizer-enriques) and
 [the explicit Heegner-vector lemma](#lem:coble-heegner-vector):
@@ -270,7 +270,7 @@ With the notation of [the polarization-stabilizer proposition](#prop:polarizatio
     $528$ isotropic classes with orbit lengths $[\,1,\ 255,\ 272\,]$.
 :::
 
-::: {.Remark title="How the three orders are obtained"}
+::: {.remark title="How the three orders are obtained"}
 
 The generators named in (1) are the two evident families of isometries of $C$
 fixing $h = u_0 + w_0$: the involution $u_0\leftrightarrow w_0$, and
@@ -291,7 +291,7 @@ $q_{T_\Co} = 1$, and $496$ is the number of such classes by
 [the Coble $Q$-fiber proposition](discriminant-orbits-of-the-coble-lattice.md#prop:coble-q-fibers).
 :::
 
-::: {.Remark title="Reading the two orbit decompositions"}
+::: {.remark title="Reading the two orbit decompositions"}
 
 The two decompositions in [the finite-image orbit theorem](#thm:coble-heegner-finite-orbits) answer different
 questions, and their difference is the content of the theorem.
@@ -316,7 +316,7 @@ may have proper image in the finite one, so a finite orbit can split.
 
 ## The Coble folding involution
 
-::: {.Proposition #prop:theta-co-exists title="The sign involution of the Coble primitive embedding"}
+::: {.proposition #prop:theta-co-exists title="The sign involution of the Coble primitive embedding"}
 
 Let $S_\Co\injects\lkt$ be the primitive embedding of
 [the Coble invariant-lattice proposition](../coble-surfaces/k3-covers-of-coble-surfaces.md#prop:coble-invariant-lattice), with complement
@@ -355,7 +355,7 @@ $T_\Co$ and $S_\Co$; conversely an isometry preserving both eigenlattices
 commutes with $\theta_\Co$ on each of them and hence on $\lkt$.
 :::
 
-::: {.Remark title="The folding involution is determined by the primitive gluing"}
+::: {.remark title="The folding involution is determined by the primitive gluing"}
 
 [The folding-involution proposition](#prop:theta-co-exists) settles the existence of the folding involution
 $\theta$ as a lattice isometry, and does so before any $22\times 22$ matrix is

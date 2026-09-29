@@ -1,6 +1,6 @@
 # Automorphism lifting through a gluing {#sec:automorphism-lifting}
 
-::: {.Remark title="Liftability is a stabilizer condition on the gluing datum"}
+::: {.remark title="Liftability is a stabilizer condition on the gluing datum"}
 
 Let $L$ be an even overlattice of $M\oplus N$ in which $M$ and $N$ are primitive,
 and let $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
@@ -14,7 +14,7 @@ not about either lattice on its own.
 
 ## The discriminant representation
 
-::: {.Notation #not:discriminant-representation title="Notation for the discriminant representation"}
+::: {.notation #not:discriminant-representation title="Notation for the discriminant representation"}
 
 For a lattice $L$ the induced homomorphism
 $$
@@ -29,7 +29,7 @@ isomorphism of $L\dual$ and so descends to $A_L = L\dual/L$
 [@Nik80 §1.4].
 :::
 
-::: {.Remark title="The discriminant representation is additive on orthogonal sums"}
+::: {.remark title="The discriminant representation is additive on orthogonal sums"}
 
 For an orthogonal direct sum, $A_{M\oplus N} = A_M\oplus A_N$ and
 $\rho_{M\oplus N}(\varphi_M\oplus\varphi_N) = \bar\varphi_M\oplus\bar\varphi_N$,
@@ -39,7 +39,7 @@ section.
 
 ## The lifting criterion
 
-::: {.Definition #def:gluing-datum-of-a-pair title="The gluing datum of a pair of primitive inclusions"}
+::: {.definition #def:gluing-datum-of-a-pair title="The gluing datum of a pair of primitive inclusions"}
 
 Let $\iota_M\colon M\injects L$ and $\iota_N\colon N\injects L$ be primitive
 inclusions with $\iota_N(N) = \iota_M(M)^{\perp L}$, so that $L$ is an even
@@ -56,7 +56,7 @@ $H_N\leq A_N$, and $L$ is recovered as the preimage of $H$ under the quotient ma
 $(M\oplus N)\dual\to A_M\oplus A_N$.
 :::
 
-::: {.Theorem #thm:automorphism-lifting-criterion title="When a pair of isometries lifts"}
+::: {.theorem #thm:automorphism-lifting-criterion title="When a pair of isometries lifts"}
 
 Let $L$, $M$, $N$ and $H$ be as in [the gluing-datum definition](#def:gluing-datum-of-a-pair), and let
 $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
@@ -87,7 +87,7 @@ preserving the form inherited from $(M\oplus N)\tensor\QQ$, hence an isometry of
 $L$.
 :::
 
-::: {.Corollary #cor:liftable-automorphisms title="The liftable subgroup"}
+::: {.corollary #cor:liftable-automorphisms title="The liftable subgroup"}
 
 With the notation of [the lifting criterion](#thm:automorphism-lifting-criterion), fix
 $\varphi_N = \id_N$ and let $\Gamma\leq\Orth(M)$ be any subgroup.
@@ -117,7 +117,7 @@ Finiteness of the index follows because $\Orth(q_M)$ is finite, $A_M$ being
 finite.
 :::
 
-::: {.Remark title="The operation belongs to the arrow"}
+::: {.remark title="The operation belongs to the arrow"}
 
 The datum consumed by [the lifting criterion](#thm:automorphism-lifting-criterion) is $H$,
 equivalently the pair of primitive inclusions of
@@ -137,7 +137,7 @@ itself does not state.
 
 ## The unimodular case and its two specimens
 
-::: {.Corollary #cor:lifting-unimodular title="Lifting across a unimodular overlattice"}
+::: {.corollary #cor:lifting-unimodular title="Lifting across a unimodular overlattice"}
 
 Suppose in addition that $L$ is unimodular.
 Then $H$ is the graph of an anti-isometry $\gamma\colon A_M\iso A_N$ defined on
@@ -158,7 +158,7 @@ $\bar\varphi_N(\gamma x) = \gamma(\bar\varphi_M x)$ for every $x$, which is the
 displayed identity.
 :::
 
-::: {.Remark title="Two computations in this book are instances"}
+::: {.remark title="Two computations in this book are instances"}
 
 [The unimodular lifting corollary](#cor:lifting-unimodular) is the mechanism behind two statements proved
 elsewhere in this part, both for the unimodular $\lkt$.
