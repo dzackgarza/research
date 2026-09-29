@@ -107,7 +107,7 @@ and $f$ is a quasi-isomorphism if and only if $\operatorname{cone}(f)$ is exact 
 ## Forms on a chain complex {#sec-complex-forms}
 
 Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
-A $W$-valued bilinear form on an $R$-module $M$ is an element of $\operatorname{Hom}_R(M\otimes_RM,W)$ (@def-module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def-form-categories are the categories of elements of the presheaves so obtained.
+A $W$-valued bilinear form on an $R$-module $M$ is an element of $\operatorname{Hom}_R(M\otimes_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def-form-categories are the categories of elements of the presheaves so obtained.
 At the level of complexes the tensor square is the tensor product complex and the value module is placed in a chosen degree.
 
 ::: {#def-complex-tensor-product .def title="The tensor product of complexes"}
