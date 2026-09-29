@@ -2718,6 +2718,30 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_finite_type(self):
                 return True
 
+            @cached_method
+            def zeta_function(self):
+                r"""Return the Hasse--Weil zeta function over a finite base field.
+
+                For a finite-type scheme ``X/F_q`` this is
+
+                ``Z(X,T) = exp(sum_{n >= 1} #X(F_{q^n}) T^n / n)``.
+
+                The operation belongs to finite-type schemes; represented
+                families supply computational cases through ``_zeta_function``.
+                """
+                base = self.scheme_base_ring()
+                assert base in OwnedFields() and base.cardinality().is_finite(), (
+                    f"the Hasse--Weil zeta function of {self} is represented here only over a finite field, "
+                    f"but its base ring is {base}"
+                )
+                return self._zeta_function()
+
+            def _zeta_function(self):
+                raise AssertionError(
+                    f"the Hasse--Weil zeta function of the finite-type scheme {self} is defined by its point "
+                    "counts over finite extensions, but this realization has no selected zeta-function algorithm"
+                )
+
         def an_object(self):
             r"""The affine line, of finite type over the base ring."""
             return AffineSpaces(self.base_ring())(1)
@@ -3881,12 +3905,9 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
             return ClassGroups().trivial(self)
 
-        def zeta_function(self):
+        def _zeta_function(self):
             r"""Return ``Z(A^d/F_q, T) = 1/(1 - q^d T)``."""
             base = self.scheme_base_ring()
-            assert base in OwnedFields() and base.cardinality().is_finite(), (
-                f"cannot compute the zeta function of {self}: its base ring {base} must be a finite field"
-            )
             rational_functions, T = _rational_functions_in_T()
             q = int(base.cardinality().finite_value())
             d = int(self.relative_dimension())
@@ -4272,12 +4293,9 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 tuple(self.standard_chart_transition(left, right) for left, right in combinations(indices, 2)),
             )
 
-        def zeta_function(self):
+        def _zeta_function(self):
             r"""Return ``Z(P^d/F_q, T) = prod_{i=0}^d (1 - q^i T)^{-1}``."""
             base = self.scheme_base_ring()
-            assert base in OwnedFields() and base.cardinality().is_finite(), (
-                f"cannot compute the zeta function of {self}: its base ring {base} must be a finite field"
-            )
             rational_functions, T = _rational_functions_in_T()
             q = int(base.cardinality().finite_value())
             d = int(self.relative_dimension())
