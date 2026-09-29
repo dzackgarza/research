@@ -1,6 +1,6 @@
 # Toroidal and semitoroidal compactifications
 
-::: {.Remark title="Orientation"}
+::: {.remark title="Orientation"}
 
 This section collects the general definitions of the compactification types used throughout the monograph -- toroidal, semitoroidal, KSBA, and Looijenga compactifications, together with generalized Coxeter semifans and recognizable divisors.
 The material here is background and vocabulary: it fixes the constructions in their natural generality.
@@ -9,7 +9,7 @@ The Coble-specific application of these constructions -- the KSBA stable pair, t
 
 ## Toroidal compactifications
 
-::: {.Definition #def:toroidal-compactification title="Toroidal compactifications from cusp fans"}
+::: {.definition #def:toroidal-compactification title="Toroidal compactifications from cusp fans"}
 
 A **toroidal compactification** $\torcpt{\FG}$ refines the singular cusps of the Baily--Borel compactification by choosing an admissible rational polyhedral fan $\torfan_I$ for each cusp $I$.
 
@@ -23,7 +23,7 @@ There is a proper $\Gamma$-equivariant morphism $\torcpt{\FG} \to \bbcpt{\FG}$.
 
 ## Semitoroidal compactifications
 
-::: {.Definition #def:semitoroidal-compactification title="Semitoroidal compactifications from semifans"}
+::: {.definition #def:semitoroidal-compactification title="Semitoroidal compactifications from semifans"}
 
 Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
 
@@ -40,7 +40,7 @@ $$
 They are critical for modeling KSBA boundaries where fans may be infinitely generated or accumulate.
 :::
 
-::: {.Theorem #thm:tower-semitoroidal title="The toroidal--semitoroidal--Baily--Borel tower characterizes semitoroidal compactifications"}
+::: {.theorem #thm:tower-semitoroidal title="The toroidal--semitoroidal--Baily--Borel tower characterizes semitoroidal compactifications"}
 
 Any normal compactification admitting a tower
 $$
@@ -51,7 +51,7 @@ $$
 as in \longref{def:semitoroidal-compactification} is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
 :::
 
-::: {.Remark title="Polarized Coble trace restriction"}
+::: {.remark title="Polarized Coble trace restriction"}
 
 The polarized Coble compactification program does not build a new semifan from scratch; it uses a Coble-specific restriction of the Enriques ramification semifan.
 Concretely, one takes the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
@@ -60,7 +60,7 @@ This is the semitoroidal side of the Coble comparison problem, recorded here as 
 
 ## Generalized Coxeter semifans
 
-::: {.Definition #def:generalized-coxeter-semifan title="Generalized Coxeter semifans from relevant walls"}
+::: {.definition #def:generalized-coxeter-semifan title="Generalized Coxeter semifans from relevant walls"}
 
 The main geometric application of folded Coxeter--Vinberg diagrams is the construction of semitoroidal compactifications of moduli spaces $\FG$ via **generalized Coxeter semifans**.
 
@@ -73,7 +73,7 @@ For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots
 The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
 :::
 
-::: {.Remark title="Toroidal versus strictly semitoroidal"}
+::: {.remark title="Toroidal versus strictly semitoroidal"}
 
 Unlike classical toroidal compactifications, where all walls of the Weyl chamber are preserved, semitoroidal compactifications allow certain irrelevant roots to be removed.
 The distinction between toroidal and strictly semitoroidal behavior depends on the order of the irrelevant root subgroup $W^{\irrelevant}$:
@@ -83,7 +83,7 @@ The distinction between toroidal and strictly semitoroidal behavior depends on t
 - **Strictly semitoroidal**: $|W^{\irrelevant}| = \infty$ (infinite irrelevant subgroups, so the semifan is not locally finite).
 :::
 
-::: {.Remark title="Polarized Coble trace picture"}
+::: {.remark title="Polarized Coble trace picture"}
 
 For the polarized Coble program, the generalized Coxeter semifan of the Enriques cusp is restricted to a Coble hyperplane: one asks for the trace of the Enriques ramification semifan on that hyperplane, together with an admissibility condition determining which restricted walls survive.
 Under the proposed restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant; see \longref{conj:restricted_ramification_semifan}.
@@ -91,7 +91,7 @@ Under the proposed restriction, a Coble wall is irrelevant precisely when every 
 
 ## KSBA compactifications
 
-::: {.Definition #def:ksba-compactification title="KSBA compactifications by stable slc pairs"}
+::: {.definition #def:ksba-compactification title="KSBA compactifications by stable slc pairs"}
 
 The **KSBA compactification** generalizes the Deligne--Mumford compactification of curves to higher dimensions.
 It compactifies moduli of varieties of log general type by considering **stable slc pairs** $(X, D)$ [@KS88; @Ale96].
@@ -110,7 +110,7 @@ For K-trivial varieties (like K3 or Enriques surfaces), one uses pairs $(X, \var
 The KSBA moduli space $\overline{F}_\Gamma$ provides a modular, proper, algebraic compactification where boundary divisors correspond to geometric stable degenerations [@AET23; @AEGS25].
 :::
 
-::: {.Remark title="Polarized Coble application"}
+::: {.remark title="Polarized Coble application"}
 
 The Coble-specific stable-pair package extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
 The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see \longref{conj:ksba_semitoroidal_comparison}.
@@ -118,7 +118,7 @@ The resulting comparison target between the KSBA and semitoroidal compactificati
 
 ## Looijenga compactifications
 
-::: {.Definition #def:looijenga-compactification title="Looijenga compactifications of arrangement complements"}
+::: {.definition #def:looijenga-compactification title="Looijenga compactifications of arrangement complements"}
 
 Let $\cH$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period
 domain $D$.
@@ -132,7 +132,7 @@ the traces of the hyperplanes of $\cH$ on the boundary of that cusp.
 When $\cH$ is empty the construction returns the Baily--Borel compactification.
 :::
 
-::: {.Remark title="Three semifans, independently determined"}
+::: {.remark title="Three semifans, independently determined"}
 
 Three semifans are in play for a single period domain, and they are produced by
 three unrelated inputs:
@@ -157,17 +157,17 @@ in its own right, recorded among the open problems.
 
 ## Recognizable divisors
 
-::: {.Definition #def:recognizable-divisor title="Recognizable divisors"}
+::: {.definition #def:recognizable-divisor title="Recognizable divisors"}
 
 A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if, for any quasipolarized Kulikov degeneration $\mathcal{X} \to \Delta$, the divisor $R$ extends unambiguously to a flat limit $R_0 \subset \mathcal{X}_0$, unique up to $\operatorname{Aut}^0(\tilde{\mathcal{X}}_0)$ in any other smoothing.
 :::
 
-::: {.Theorem #thm:recognizable-semitoroidal title="Recognizable divisors produce semitoroidal KSBA normalizations"}
+::: {.theorem #thm:recognizable-semitoroidal title="Recognizable divisors produce semitoroidal KSBA normalizations"}
 
 If $R$ is recognizable, then the normalization of the KSBA compactification $\overline{F}^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mathcal{F}_R}$, defined by a specific semifan $\mathcal{F}_R$ [@AE23].
 :::
 
-::: {.Example #ex:recognizable-divisors title="Basic recognizable divisors"}
+::: {.example #ex:recognizable-divisors title="Basic recognizable divisors"}
 
 Two basic examples of recognizable divisors:
 
