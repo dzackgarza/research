@@ -852,7 +852,7 @@ Using the characteristic class $\eta/2$ to identify the remaining finite quadrat
  :=\rho_{T_{\mathrm{Co}}}^{-1}(P).
 \]
 
-::: {.problem #prob-group-identification title="Arithmetic and monodromy identification"}
+::: {.problem #prob:group-identification title="Arithmetic and monodromy identification"}
 **Required theorem (arithmetic and monodromy identification).**  Prove
 
 \[
@@ -1252,7 +1252,7 @@ The raw numbers of maximal parabolic faces in the four sliced arrangements were 
 These counts are diagnostic data only.
 They disagree with some finite-shadow orbit counts, which indicates that chamber completeness, arithmetic diagram automorphisms, and the calibration of finite orbits must all be resolved before boundary strata are enumerated.
 
-::: {.problem #prob-coxeter-completeness title="Coble Vinberg theory and root completeness"}
+::: {.problem #prob:coxeter-completeness title="Coble Vinberg theory and root completeness"}
 **Required theorem (Coble Vinberg and root completeness).**  For every polarized Coble $0$-cusp:
 
 1. determine the arithmetic cusp lattice and the image of its stabilizer;
@@ -1909,7 +1909,7 @@ The singular surface $V^\sharp$ is $\mathbb Q$-Calabi--Yau only after contractin
 Arguments using $K_Z$ torsion on an Enriques surface cannot be transferred to $\widetilde V$.
 :::
 
-::: {.warning #warn-singularity-index title="Quotient order and canonical index differ"}
+::: {.warning #warn:singularity-index title="Quotient order and canonical index differ"}
 **Warning (order versus canonical index).**  The notation $\frac{1}{4}(1,1)$ records a quotient group of order $4$.
 The Cartier index of the canonical class is $2$.
 :::
@@ -1919,7 +1919,7 @@ The Cartier index of the canonical class is $2$.
 Irreducible nonnormal stable surfaces can occur only through conductor self-identifications or other boundary phenomena.
 :::
 
-::: {.warning #warn-anticanonical-ramification title="The anti-bicanonical branch curve is not the stable divisor"}
+::: {.warning #warn:anticanonical-ramification title="The anti-bicanonical branch curve is not the stable divisor"}
 **Warning (anti-bicanonical curve versus stable divisor).**  The divisor $C\in|-2K_{\widetilde V}|$ is the branch curve of the Coble cover on the resolution.
 The stable divisor is $R^\sharp$, the descended del Pezzo ramification divisor.
 The two are related by the crepant formula in @sec-canonical-contraction but are not equal.
@@ -1961,12 +1961,12 @@ Equality must be proved.
 Choosing one definition because it makes the desired compactification statement true is circular.
 :::
 
-::: {.warning #warn-isometry-rigidity title="Abstract lattice isometry does not imply labeled rigidity"}
+::: {.warning #warn:isometry-rigidity title="Abstract lattice isometry does not imply labeled rigidity"}
 **Warning (abstract isometry is not labeled rigidity).**  An isomorphism $T_{\mathrm{Co}}\cong I_{2,9}(2)$ does not determine the embedding into $L_{K3}$, the degree-$4$ class, the exceptional root, the second involution, or the chamber.
 Strategy B requires the labeled rigidity theorem of @sec-labeled-lattice-data.
 :::
 
-::: {.warning #warn-domain-quotient title="Domain inclusions do not automatically descend to arithmetic quotients"}
+::: {.warning #warn:domain-quotient title="Domain inclusions do not automatically descend to arithmetic quotients"}
 **Warning (domain inclusion versus quotient morphism).**  An inclusion of type-IV domains does not by itself descend to arithmetic quotients.
 The groups must arise from compatible subgroups of a common orthogonal group.
 This issue controls the diagram in @sec-period-diagram.
@@ -1994,18 +1994,18 @@ A claim about one group cannot be transferred to another without an exact sequen
 One must exhibit an isotropic line or plane inside the common embedded lattice chain and compute its divisibility and arithmetic orbit in both groups.
 :::
 
-::: {.warning #warn-rectangles title="Double-rectangle Enriques cusps cannot carry the Coble root"}
+::: {.warning #warn:rectangles title="Double-rectangle Enriques cusps cannot carry the Coble root"}
 **Warning (AEGS Figure 4 border types).**  The double-rectangle Enriques $1$-cusps are $12,13,14,15,245$; the single-rectangle cusps are $34,35,45,55$.
 The former map to the segment-flipping quotient lattice $E_8(2)$ and cannot contain a $(-2)$ Coble root in the negative quotient.
 Earlier assignments that treated $245$ as a Coble image are incompatible with this lattice obstruction.
 :::
 
-::: {.warning #warn-wall-slice title="A wall slice is not yet a Coxeter diagram"}
+::: {.warning #warn:wall-slice title="A wall slice is not yet a Coxeter diagram"}
 **Warning (wall slice is not Coxeter diagram).**  The construction in @sec-orthogonal-link gives an arrangement of restricted hyperplanes.
 It becomes a Coxeter chamber only after root integrality, simplicity, completeness, and arithmetic-index statements are proved.
 :::
 
-::: {.warning #warn-parabolic-exhaustion title="Visible parabolic subdiagrams do not prove exhaustion"}
+::: {.warning #warn:parabolic-exhaustion title="Visible parabolic subdiagrams do not prove exhaustion"}
 **Warning (parabolic inspection is not exhaustion).**  Type II rays are arithmetic orbits of maximal parabolic subdiagrams of the complete chamber.
 Listing visually apparent affine subdiagrams is insufficient unless a Vinberg computation or classification proves that no others occur.
 :::
@@ -2037,7 +2037,7 @@ It includes a root reflection, forces the corresponding root coordinate to vanis
 Coble relevance must likewise be read from the divisor package, not from fixed loci alone.
 :::
 
-::: {.warning #warn-dlt-stable title="The dlt quotient is not yet the KSBA stable model"}
+::: {.warning #warn:dlt-stable title="The dlt quotient is not yet the KSBA stable model"}
 **Warning (dlt model versus stable model).**  The quotient dlt model can contain $R^\sharp$-trivial curves, components, and conductor strata.
 The KSBA model is obtained only after the relative Proj of @sec-relative-proj.
 :::
@@ -2322,22 +2322,22 @@ The purpose of this appendix is not to add new mathematics, but to make explicit
 | :--- | :--- |
 | Are the ambient Enriques and del Pezzo lattices stated with all summands? | Yes; see @sec-aegs-lattices. |
 | Is the Coble surface distinguished from its smooth rational resolution? | Yes; see Definitions in @sec-surface-classes. |
-| Is $\frac{1}{4}(1,1)$ treated as a normal non-Gorenstein quotient with canonical index $2$? | Yes; see @sec-surface-terminology and [the warning on order versus canonical index](#warn-singularity-index). |
+| Is $\frac{1}{4}(1,1)$ treated as a normal non-Gorenstein quotient with canonical index $2$? | Yes; see @sec-surface-terminology and @warn:singularity-index. |
 | Is the canonical index-one cover correctly identified as $A_1$? | Yes; see @warn:index-one-cover. |
-| Is the stable divisor distinguished from the anti-bicanonical curve? | Yes; see @sec-ramification-divisor and [the warning distinguishing the stable divisor](#warn-anticanonical-ramification). |
+| Is the stable divisor distinguished from the anti-bicanonical curve? | Yes; see @sec-ramification-divisor and @warn:anticanonical-ramification. |
 | Is the degree-$2$ class identified as a quasipolarization before contraction? | Yes; see @sec-resolved-diagram. |
 | Are the Hodge stabilizer, direct centralizer, congruence group, and geometric monodromy separated? | Yes; see @sec-four-groups. |
-| Is equality of these groups stated as a theorem already proved? | No; it is the [required arithmetic and monodromy identification theorem](#prob-group-identification). |
-| Is abstract lattice isometry distinguished from labeled embedding rigidity? | Yes; see @sec-labeled-lattice-data and [the labeled-rigidity warning](#warn-isometry-rigidity). |
-| Are period-domain inclusions distinguished from maps of arithmetic quotients? | Yes; see @sec-period-diagram and [the domain/quotient warning](#warn-domain-quotient). |
+| Is equality of these groups stated as a theorem already proved? | No; it is @prob:group-identification. |
+| Is abstract lattice isometry distinguished from labeled embedding rigidity? | Yes; see @sec-labeled-lattice-data and @warn:isometry-rigidity. |
+| Are period-domain inclusions distinguished from maps of arithmetic quotients? | Yes; see @sec-period-diagram and @warn:domain-quotient. |
 | Is the direct K3 construction required to factor through the Enriques construction? | Yes; this is Target theorem B in @sec-heegner-target. |
 | Is an $O(A)$ orbit computation used as an integral cusp theorem? | No; see @sec-finite-shadow and @warn:finite-shadow. |
-| Are the possible Enriques Type II cusp images read with the correct single/double rectangle convention? | Yes; see @sec-possible-cusp-images and [the AEGS Figure 4 border-type warning](#warn-rectangles). |
-| Are wall slices called Coxeter diagrams? | No; see @sec-wall-slices and [the wall-slice warning](#warn-wall-slice). |
+| Are the possible Enriques Type II cusp images read with the correct single/double rectangle convention? | Yes; see @sec-possible-cusp-images and @warn:rectangles. |
+| Are wall slices called Coxeter diagrams? | No; see @sec-wall-slices and @warn:wall-slice. |
 | Is the corrected thick edge $\alpha_{20}$--$\alpha_{21}$ recorded? | Yes; see @sec-gram-correction. |
-| Are maximal parabolic lists required to be exhaustive? | Yes; see [the Coble Vinberg/root-completeness theorem](#prob-coxeter-completeness) and [the parabolic-exhaustion warning](#warn-parabolic-exhaustion). |
+| Are maximal parabolic lists required to be exhaustive? | Yes; see @prob:coxeter-completeness and @warn:parabolic-exhaustion. |
 | Is an affine involution treated as automatically algebraic? | No; see @sec-algebraic-extension. |
-| Is the dlt quotient identified with the stable model before relative Proj? | No; see @sec-relative-proj and [the dlt/stable-model warning](#warn-dlt-stable). |
+| Is the dlt quotient identified with the stable model before relative Proj? | No; see @sec-relative-proj and @warn:dlt-stable. |
 | Is restriction of an ambient semifan treated as formal? | No; see @sec-restriction-not-formal. |
 | Is the autonomous direct strategy presented as already proving the Heegner theorem? | No; the two target theorems are separated in @sec-ksba-targets. |
 | Are computational scripts assigned explicit mathematical limits? | Yes; see @sec-computational-record. |
