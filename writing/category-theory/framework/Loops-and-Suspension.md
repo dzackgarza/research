@@ -2,8 +2,9 @@
 
 Let $\mathcal C$ be a pointed $\infty$-category, with zero object $*$, and suppose that it has the finite limits and colimits required below.
 
-::: {#def-fiber-cofiber .def title="Fibers and cofibers"}
 ## Fibers and cofibers {#sec-cobase-changes}
+
+::: {#def-fiber-cofiber .def title="Fibers and cofibers"}
 
 For $f\colon X\to Y$, its fiber over the canonical basepoint $0\colon *\to Y$ is defined by the cartesian square
 
