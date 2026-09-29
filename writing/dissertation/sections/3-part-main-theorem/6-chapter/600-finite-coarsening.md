@@ -11,7 +11,7 @@ A *semifan* $\Sigma$ attached to a toroidal or semitoroidal compactification is 
 **Definition 1.2 (Coarsening of Semifans).**  
 A semifan $\semifan{G}_k$ is a *coarsening* of $\semifan{F}_k$ if every cone $\sigma$ of $\semifan{G}_k$ is a union of cones in $\semifan{F}_k$. In geometric terms, coarsening contracts certain boundary strata, potentially identifying distinct types of degenerations.
 
-:::{.lemma title="{Semifan Comparison}" #lem:semifan-comparison}
+:::{.lemma title="Semifan Comparison" #lem:semifan-comparison}
 Let $\semitorcpt{\fent}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^{5}$ associated with the KSBA compactification $\ksbacpt{\fent}$ such that:
 1. $\ksbacpt{\fent} = \semitorcpt{\fent}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for every $k$.
 2. Each $\semifan{G}_k$ is a coarsening of $\semifan{F}_k$.
@@ -91,7 +91,7 @@ A Type III Kulikov model is one where all components are rational and the dual c
 We now prove a crucial structural property of the classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier.
 
 :::{.theorem
-    title="{Finiteness of the Classifying Map}"
+    title="Finiteness of the Classifying Map"
     #thm:finiteness-classifying
 }
 The classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ is finite.
@@ -100,7 +100,7 @@ The classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ is finite.
 To establish this result, we compare the semitoroidal structures on source and target, using the combinatorial data provided by the corresponding semifans. The proof is based on the matching of boundary stratifications and the maximality of degenerations as detected in the geometry of Kulikov models.
 
 :::{.lemma
-    title="{Semifan Comparison}"
+    title="Semifan Comparison"
     #lem:semifan-comparison
 }
 Let $\semitorcpt{\fent}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in [@AEGS25, §5.2]. There exist semifans $\semifan{G} = \{ \semifan{G}_k \}_{k=1}^5$ such that:
@@ -114,14 +114,14 @@ By [@AE23, Theorem 7.18], the normalization of any KSBA compactification with re
 :::
 
 :::{.definition
-    title="{Maximality of Degenerations}"
+    title="Maximality of Degenerations"
     #def:maximality-degenerations
 }
 A degeneration $(X_0, \epsilon R_0)$ of K3 pairs is called **maximal** if the dual complex of $X_0$ has the largest number of vertices and edges among all degenerations with the same monodromy data. The analogous definition applies for Enriques degenerations $(Z_0, \epsilon R_{Z,0})$.
 :::
 
 :::{.proposition
-    title="{The Double Curve Constraint}"
+    title="The Double Curve Constraint"
     #prop:double-curve-constraint
 }
 Let $(X_0, \epsilon R_0)$ be a degeneration of K3 pairs with a fixed-point-free Enriques involution $\ien$; its quotient is $(Z_0, \epsilon R_{Z,0}) = (X_0, \epsilon R_0)/\ien$. Then:
@@ -152,7 +152,7 @@ Thus the dual complex and monodromy invariants classify the degeneration up to e
 :::
 
 :::{.theorem
-    title="{No Coarsening Occurs}"
+    title="No Coarsening Occurs"
     #thm:no-coarsening
 }
 For each $k \in \{1,2,3,4,5\}$, the boundary semifans satisfy $\semifan{G}_k = \semifan{F}_k$.
@@ -165,7 +165,7 @@ Consider points in $\normalize{B}$ mapping to $\sigma$ via the period map: these
 :::
 
 :::{.corollary
-    title="{Finiteness of the Classifying Map}"
+    title="Finiteness of the Classifying Map"
     #cor:finiteness-classifying-map
 }
 By the previous lemma, the boundary stratifications, as encoded by semifans, agree identically. Therefore, the morphism $\phi: \normalize{B} \to \cpt{\fent}$ is finite.
@@ -187,7 +187,7 @@ constructed in previous sections: namely, that $\phi$ is finite. This assertion 
 
 #### Semifan Comparison and Finiteness: Addressing the Critical Gap
 
-:::{.lemma title="{Semifan Comparison}" #lem:semifan-comparison}
+:::{.lemma title="Semifan Comparison" #lem:semifan-comparison}
 Let $\semitorcpt{\fent}$ be the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in @AEGS25. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^5$ associated with the normalization of the KSBA compactification $\ksbacpt{\fent}$ such that:
 
 1. $\ksbacpt{\fent} = \semitorcpt{\fent}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
@@ -205,11 +205,11 @@ The crux is that given any coarsening, there exists some codimension-one cone $\
 
 #### Maximality, Moduli, and Injectivity: Scheme-Theoretic Proof
 
-:::{.definition title="{Maximality of Degenerations}" #def:maximality-degenerations}
+:::{.definition title="Maximality of Degenerations" #def:maximality-degenerations}
 A degeneration $(X_0, \epsilon R_0)$ of K3 pairs is **maximal** if its dual complex realizes the largest possible number of vertices (components) and edges (double curves) among all degenerations with the same monodromy data. The analogous definition applies for Enriques degenerations $(Z_0, \epsilon R_{Z,0})$.
 :::
 
-:::{.proposition title="{The Double Curve Constraint}" #prop:double-curve-constraint}
+:::{.proposition title="The Double Curve Constraint" #prop:double-curve-constraint}
 Let $(X_0, \epsilon R_0)$ be a degeneration of K3 pairs with a fixed-point-free Enriques involution $\ien$, with quotient $(Z_0, \epsilon R_{Z,0})$. Then:
 
 - The number of irreducible components of $Z_0$ is the number of $\ien$-orbits of components of $X_0$;
@@ -231,7 +231,7 @@ By @AEGS25, the boundary degenerations (up to isomorphism of stable pairs) are f
 
 #### The Core Finiteness-Injectivity Argument
 
-:::{.theorem title="{No Coarsening Occurs}" #thm:no-coarsening}
+:::{.theorem title="No Coarsening Occurs" #thm:no-coarsening}
 For each $k \in \{1,2,3,4,5\}$, the boundary semifans satisfy $\semifan{G}_k = \semifan{F}_k$.
 :::
 
@@ -243,7 +243,7 @@ Therefore, identification of such cones in a coarsened semifan would force posit
 
 #### Properness, Quasi-finiteness, and Conclusion
 
-:::{.corollary title="{Finiteness of the Classifying Map}" #cor:finiteness-classifying-map}
+:::{.corollary title="Finiteness of the Classifying Map" #cor:finiteness-classifying-map}
 By the previous lemma, the boundary stratifications, as encoded by semifans, agree identically. Therefore, the morphism $\phi: \normalize{B} \to \cpt{\fent}$ is finite.
 :::
 
