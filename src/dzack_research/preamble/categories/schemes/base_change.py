@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.functors.algebra_scalar_change import (
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     _engine_element,
     _engine_ring,
     _owned_ring,
@@ -488,6 +489,16 @@ class _SchemeBaseChangeFunctor(Functor):
                 and _complete_intersection_base_supported(self._target_ring)
                 and _is_regular_sequence(engine)):
             placements.append(ProjectiveCompleteIntersections(self._target_ring))
+            match (
+                self._target_ring in OwnedFields(),
+                int(changed_ambient.relative_dimension()) - len(equations),
+            ):
+                case (True, 2) if bool(engine.defining_ideal().is_prime()):
+                    from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+
+                    placements.append(ProjectiveSurfaces(self._target_ring))
+                case _:
+                    pass
 
         def factor(to_source, to_base):
             # The source equations vanish after to_source; transporting their
