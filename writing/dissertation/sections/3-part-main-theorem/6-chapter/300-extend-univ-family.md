@@ -17,7 +17,7 @@ satisfying:
 - The pair structure is preserved globally, including at all singular fibers.
 
 :::{.proposition
-    title="{Existence and Uniqueness of the Universal Family with Involution}"
+    title="Existence and Uniqueness of the Universal Family with Involution"
     #prop:existence-uniqueness-universal-family
 }
 The existence, functoriality, and separatedness of the universal family $(\mcx, \epsilon\mcr)$, including a prescribed pair of commuting involutions, are standard consequences of the general theory of KSBA moduli of stable surface pairs with finite automorphism group action acting fiberwise and preserving the pair. Explicitly, the automorphism scheme is proper and separated, and such an involution preserving the pair extends uniquely to the stable limit in families.
@@ -42,7 +42,7 @@ For all $b \in \open{B}$, the involutions $(\idp)_b$ and $(\ien)_b$ commute and 
 We now globalize the involution $\ien$ over the entire family $(\mcx_B, \mcr_B)$, including all degenerate fibers.
 
 :::{.theorem
-    title="{Global Extension of the Enriques Involution}"
+    title="Global Extension of the Enriques Involution"
     #thm:global-extension-enriques-involution
 }
 There exists a unique global involution
