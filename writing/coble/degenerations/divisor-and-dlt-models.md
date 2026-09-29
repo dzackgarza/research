@@ -9,13 +9,13 @@ The three are related: a half-divisor model is the quotient of a divisor model
 by an involution, and the dlt models supply the birational models on whose
 strata the associated combinatorial data live.
 
-::: {.Question #qst:dlt-divisor-kulikov-comparison title="Comparison of dlt and divisor models with Kulikov models"}
+::: {.question #qst:dlt-divisor-kulikov-comparison title="Comparison of dlt and divisor models with Kulikov models"}
 The source notes describe the relationship of these models to the KSBA
 program (below); they do not discuss the relationship to Kulikov models
 explicitly. If a Kulikov comparison is intended here, supply it.
 :::
 
-::: {.Remark title="These degeneration models come from the degree-two Enriques program"}
+::: {.remark title="These degeneration models come from the degree-two Enriques program"}
 The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--Garza--Schaffler
 degree-$2$ Enriques program [@AEGS25], used in the Morrison degenerations section in the
 same form.
@@ -25,7 +25,7 @@ same form.
 
 Here a *dlt model* refers to a relative divisorially-log-terminal model of the degeneration supplying these boundary strata; the definition below is of the associated *stable involution pair* $(X, D, \iota)$.
 
-::: {.Definition #def:dlt-involution-pair title="dlt models and involution pairs"}
+::: {.definition #def:dlt-involution-pair title="dlt models and involution pairs"}
 
 For Enriques surface degenerations we study *stable involution pairs*
 $(X, D, \iota)$, where $X$ is the K3 cover limit, $D$ is the boundary, and
@@ -46,7 +46,7 @@ $$
 where $R$ is the ramification divisor of $\pi$.
 :::
 
-::: {.Remark title="Dual complex topology"}
+::: {.remark title="Dual complex topology"}
 
 The topology of the dual complex of the central fiber $Y_0'$ distinguishes the
 degeneration types:
@@ -64,7 +64,7 @@ degeneration types:
 
 ## Divisor models
 
-::: {.Definition #def:coble-divisor-model title="Divisor model"}
+::: {.definition #def:coble-divisor-model title="Divisor model"}
 
 A *divisor model* for a degeneration $\pi\colon \mathcal{X} \to C$ of K3 (or
 Enriques) surfaces is a degeneration of pairs
@@ -85,7 +85,7 @@ balancing condition at every vertex.
 
 ## Half-divisor models
 
-::: {.Definition #def:coble-half-divisor-model title="Half-divisor model"}
+::: {.definition #def:coble-half-divisor-model title="Half-divisor model"}
 
 A *half-divisor model* is a pair $(\mathcal{Z}, \mathcal{R}_{\mathcal{Z}})$ over
 a base curve $C$ that arises as the quotient of a divisor model
@@ -105,7 +105,7 @@ $K_{\mathcal{Z}_0} + \tfrac{1}{2}\mathcal{R}_{\mathcal{Z}_0}$ ample and slc
 singularities.
 :::
 
-::: {.Remark title="Half-divisor models from the Enriques involution"}
+::: {.remark title="Half-divisor models from the Enriques involution"}
 
 Equivalently, a half-divisor model arises when a divisor model
 $(\mathcal{X}, \mathcal{R})$ admits an Enriques involution $\iota_\En$
