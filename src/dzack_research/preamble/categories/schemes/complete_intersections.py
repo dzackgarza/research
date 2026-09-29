@@ -207,16 +207,6 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             )
             return self.left_projection()
 
-        def base_change(self, ring_map):
-            r"""Base change through the scheme owner; the new equations decide regularity.
-
-            A regular sequence need not stay regular under nonflat base
-            change.  The scheme owner always constructs the base-changed
-            closed subscheme, and keeps complete-intersection placement only
-            when the new homogeneous ideal satisfies the criterion.
-            """
-            return self.scheme_category().base_change_functor(ring_map)(self)
-
         def adjunction_twist_degree(self):
             r"""Return ``sum(d_i) - n - 1`` in ``K_X = O_X(sum d_i-n-1)``.
 
