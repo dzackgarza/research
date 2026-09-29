@@ -1,6 +1,6 @@
 # Hyperbolic Coxeter polytopes and finite covolume
 
-::: {.Remark title="Orientation"}
+::: {.remark title="Orientation"}
 
 Vinberg's algorithm (\longref{thm:vinberg-algorithm}) returns a set of simple roots and terminates when they bound a chamber of finite volume.
 The condition it tests is a condition on the vertices of that chamber, and those vertices are read off the Coxeter--Vinberg diagram.
@@ -11,7 +11,7 @@ Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\cap\HH^n_L$
 
 ## The Tits cone
 
-::: {.Definition #def:tits-cone title="The Tits cone"}
+::: {.definition #def:tits-cone title="The Tits cone"}
 
 Let $(W,S)$ be a Coxeter system with Gram form $G$ on $V \da \RR^S$ and simple roots $\ts{\alpha_s}_{s\in S}$, and let $W$ act on the dual space $V^*$ by the contragredient of its action on $V$.
 The **closed fundamental chamber** is
@@ -27,7 +27,7 @@ $$
 When $G$ is nondegenerate it identifies $V$ with $V^*$, and $\overline C$ becomes the cone $\ts{v\in V \mid \beta(v,\alpha_s)\geq 0}$ over the closure of a Weyl chamber in the sense of \longref{def:weyl-chamber}.
 :::
 
-::: {.Theorem #thm:tits-cone title="Properties of the Tits cone"}
+::: {.theorem #thm:tits-cone title="Properties of the Tits cone"}
 
 Let $(W,S)$, $\overline C$ and $U$ be as in \longref{def:tits-cone}, and for $f\in \overline C$ write $I(f) \da \ts{s\in S \mid f(\alpha_s) = 0}$.
 
@@ -42,7 +42,7 @@ Let $(W,S)$, $\overline C$ and $U$ be as in \longref{def:tits-cone}, and for $f\
 These are theorems of Tits, recorded in [@Bou08; @Hum90].
 :::
 
-::: {.Remark title="The Tits cone distinguishes finite and affine stabilizers"}
+::: {.remark title="The Tits cone distinguishes finite and affine stabilizers"}
 
 For a spherical Coxeter system $U = V^*$.
 For an irreducible euclidean one, with $\ker G = \RR\delta$ as in \longref{prop:euclidean-radical}, $U$ is the open half-space $\ts{f \mid f(\delta) > 0}$ together with the origin, and the affine reflection group of \longref{thm:coxeter-type-and-geometry}(2) is its action on the hyperplane $f(\delta) = 1$.
@@ -52,7 +52,7 @@ For a hyperbolic Coxeter system, part (3) says which points of the chamber have 
 
 ## Vertices of a Coxeter polytope
 
-::: {.Notation #not:wall-spans-subdiagram-gram title="Wall spans and subdiagram Gram matrices"}
+::: {.notation #not:wall-spans-subdiagram-gram title="Wall spans and subdiagram Gram matrices"}
 
 Let $P\containedin\HH^n_L$ be a Coxeter polytope (\longref{def:coxeter-polytope}) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$.
 For $I\containedin S$ write
@@ -63,7 +63,7 @@ $$
 The Gram matrix $G[I,I]$ is the Gram matrix of a spanning set of $A_I$, so its rank equals the rank of $\ro{\beta_L}{A_I}$; that common value is the rank of $\Sigma_I$ in the sense of \longref{def:coxeter-subdiagram}.
 :::
 
-::: {.Proposition #prop:polytope-vertex-subdiagram title="Vertices and subdiagrams"}
+::: {.proposition #prop:polytope-vertex-subdiagram title="Vertices and subdiagrams"}
 
 Let $I\containedin S$.
 
@@ -95,7 +95,7 @@ The intersection $\Intersect_{s\in I}\overline{H_s}$ is the image of $A_I^\perp$
 Since $\eta$ is isotropic and $L$ has signature $(1,n)$, the form induced on $\eta^{\perp}/\eta$ is negative definite of rank $n-1$; and $A_I\containedin\eta^{\perp}$, with $A_I/\RR\eta$ of dimension $n-1$, so $W_I$ acts on $\eta^{\perp}/\eta$ as the reflection group of $\Sigma_I$, which is euclidean by \longref{def:coxeter-system-type}.
 :::
 
-::: {.Corollary #cor:ideal-vertices-are-parabolic title="Ideal vertices correspond to maximal parabolic subdiagrams"}
+::: {.corollary #cor:ideal-vertices-are-parabolic title="Ideal vertices correspond to maximal parabolic subdiagrams"}
 
 Sending an ideal vertex $[\eta]$ of $P$ to the set $I$ of all walls of $P$ through $[\eta]$ is a bijection from the ideal vertices of $P$ onto a set of parabolic subdiagrams of $\Sigma$ of rank $n-1$, and each such $\Sigma_I$ is maximal among the parabolic subdiagrams of $\Sigma$, in the sense of \longref{def:parabolic-subdiagram}.
 :::
@@ -108,7 +108,7 @@ Hence $\dim A_J\leq n = \dim A_I$, so $A_J = A_I$ and every wall indexed by $J$ 
 By the choice of $I$ this gives $J = I$.
 :::
 
-::: {.Remark title="The boundary lattice of an ideal vertex"}
+::: {.remark title="The boundary lattice of an ideal vertex"}
 
 The lattice $\eta^{\perp L}/\eta$ produced at an ideal vertex by \longref{prop:polytope-vertex-subdiagram} is the quotient appearing in the mirror moves of \longref{def:mirror-move}, and its rank drops by two from that of $L$.
 Reading the same construction one level up, at a $0$-cusp $[I]$ of a Baily--Borel compactification, the hyperbolic lattice on which the reflection group acts is $\overline{T}_I = I^{\perp T}/I$, and the isotropic lines of $\overline T_I$ are the rank-two isotropic sublattices of $T$ containing $I$; \longref{def:parabolic-subdiagram} records these as the $1$-cusps adjacent to $[I]$.
@@ -116,14 +116,14 @@ Reading the same construction one level up, at a $0$-cusp $[I]$ of a Baily--Bore
 
 ## Covolume, compactness, and finite volume
 
-::: {.Definition #def:covolume title="Covolume of a hyperbolic reflection group"}
+::: {.definition #def:covolume title="Covolume of a hyperbolic reflection group"}
 
 Let $\Gamma\leq\Isom(\HH^n_L)$ be a discrete subgroup.
 Its **covolume** is the hyperbolic volume $\vol(\HH^n_L/\Gamma)$ of the quotient orbifold.
 If $\Gamma$ is generated by the reflections in the walls of a Coxeter polytope $P$, then $P$ is a strict fundamental domain and $\vol(\HH^n_L/\Gamma) = \vol(P)$.
 :::
 
-::: {.Theorem #thm:coxeter-polytope-volume title="Finite volume and compactness"}
+::: {.theorem #thm:coxeter-polytope-volume title="Finite volume and compactness"}
 
 Let $P\containedin\HH^n_L$ be a Coxeter polytope with finitely many walls and Coxeter--Vinberg diagram $\Sigma$.
 
@@ -137,12 +137,12 @@ Let $P\containedin\HH^n_L$ be a Coxeter polytope with finitely many walls and Co
 These are Vinberg's criteria [@Vin67; @Vin85].
 :::
 
-::: {.Remark title="Vinberg termination is the finite-volume vertex criterion"}
+::: {.remark title="Vinberg termination is the finite-volume vertex criterion"}
 
 Criterion (1) is the condition Vinberg's algorithm tests at each stage (\longref{thm:vinberg-algorithm}, step 4), and \longref{prop:polytope-vertex-subdiagram} converts it into a statement about the subdiagrams of $\Sigma$: the algorithm terminates when every vertex of the cone bounded by the accepted roots is accounted for by an elliptic subdiagram of rank $n$ or a parabolic subdiagram of rank $n-1$.
 :::
 
-::: {.Corollary #cor:coxeter-simplex-volume title="The simplex case"}
+::: {.corollary #cor:coxeter-simplex-volume title="The simplex case"}
 
 Suppose $\abs{S} = n+1$ and $P$ is a simplex, so that its $n+1$ vertices are cut out by the $n+1$ maximal proper subdiagrams $\Sigma_{S\sm\ts{s}}$, $s\in S$.
 Then
@@ -154,13 +154,13 @@ Then
 3. $\vol(P) = \infty$ if and only if some $\Sigma_{S\sm\ts{s}}$ is hyperbolic.
 :::
 
-::: {.Remark title="Lannér's classification"}
+::: {.remark title="Lannér's classification"}
 
 The compact hyperbolic Coxeter simplices of \longref{cor:coxeter-simplex-volume}(1) were classified by Lannér.
 In $\HH^2$ they are the triangles of \longref{ex:hyperbolic-triangle-groups} with $p,q,r$ all finite, of which there are infinitely many; in $\HH^3$ there are nine and in $\HH^4$ there are five.
 :::
 
-::: {.Example #ex:hyperbolic-triangle-groups title="Triangle groups"}
+::: {.example #ex:hyperbolic-triangle-groups title="Triangle groups"}
 
 Let $2\leq p\leq q\leq r\leq\infty$ and let $\Sigma$ be the rank-three diagram with $m_{12} = p$, $m_{13} = q$, $m_{23} = r$.
 A Coxeter polytope realizing $\Sigma$ is a triangle with angles $\pi/p$, $\pi/q$, $\pi/r$, an angle $0$ being read as an ideal vertex, and the type of $\Sigma$ is decided by the angle sum:
@@ -176,7 +176,7 @@ In the hyperbolic case the triangle has area $\pi\left(1 - \tfrac1p - \tfrac1q -
 The spherical solutions are $(2,2,r)$, $(2,3,3)$, $(2,3,4)$ and $(2,3,5)$, which are the rank-three entries $I_2(r)\times A_1$, $A_3$, $B_3$ and $H_3$ of \longref{thm:spherical-classification}; the euclidean solutions are $(2,3,6)$, $(2,4,4)$ and $(3,3,3)$, which are $\tilde G_2$, $\tilde C_2$ and $\tilde A_2$.
 :::
 
-::: {.Remark title="Dihedral angles and the angle sum"}
+::: {.remark title="Dihedral angles and the angle sum"}
 
 Every dihedral angle of a Coxeter polytope is $\pi/m$ with $m\geq 2$ by \longref{def:coxeter-polytope}, hence at most $\pi/2$, in each of the three geometries: a Coxeter polytope is acute-angled.
 What separates the three cases in \longref{ex:hyperbolic-triangle-groups} is the angle *sum* compared with the euclidean value $\pi$, and in higher rank the definiteness of the Gram form (\longref{def:coxeter-system-type}).
@@ -184,7 +184,7 @@ What separates the three cases in \longref{ex:hyperbolic-triangle-groups} is the
 
 ## The cusps of the quotient
 
-::: {.Remark title="Ends of the quotient orbifold"}
+::: {.remark title="Ends of the quotient orbifold"}
 
 Let $\Gamma$ be generated by the reflections in the walls of a finite-volume Coxeter polytope $P$.
 Since $P$ is a strict fundamental domain, the quotient orbifold $\HH^n_L/\Gamma$ is homeomorphic to $P$, and its ends --- its **cusps** --- are the ideal vertices of $P$.
@@ -192,7 +192,7 @@ By \longref{prop:polytope-vertex-subdiagram} the cross-section of the cusp at $[
 A vertex lying outside $\overline{\HH^n_L}$ contributes an end of infinite volume.
 :::
 
-::: {.Remark title="Invariants computed from the diagram"}
+::: {.remark title="Invariants computed from the diagram"}
 
 The data separating these cases --- the dimension, the number of vertices at infinity, the $f$-vector of the polytope, the covolume through the Euler characteristic in even dimension, and the growth series of the Coxeter system --- are computed from the Coxeter--Vinberg diagram alone by Guglielmetti's implementation of Vinberg's criteria [@Gug15].
 The runs recorded for the lattices of this monograph are collected in the Computations section.
