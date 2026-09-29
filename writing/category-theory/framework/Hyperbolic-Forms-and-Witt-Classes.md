@@ -5,7 +5,7 @@ Lattices, unimodularity, dual lattices, and discriminant modules are those of @s
 
 ## The hyperbolic form on a module and its dual {#sec-hyperbolic-form}
 
-::: {#def-hyperbolic-form .def title="Hyperbolic forms"}
+::: {.definition #def:hyperbolic-form title="Hyperbolic forms"}
 
 Let $M$ be an $R$-module and write $M^{*}=\operatorname{Hom}_R(M,R)$.
 The *hyperbolic form* on $M\oplus M^{*}$ is
@@ -19,7 +19,7 @@ $$
 is an object of $\mathcal B_{R,R}$.
 :::
 
-::: {#prp-hyperbolic-adjoint .prop title="The adjoint map of a hyperbolic form"}
+::: {.proposition #prop:hyperbolic-adjoint title="The adjoint map of a hyperbolic form"}
 
 Let $\operatorname{can}_M\colon M\to M^{**}$ be the evaluation map, $\operatorname{can}_M(x)(\psi)=\psi(x)$.
 Under the canonical isomorphism $(M\oplus M^{*})^{*}\cong M^{*}\oplus M^{**}$, the adjoint map of @def:polarization is
@@ -37,13 +37,13 @@ The two components of $h_M^{\sharp}$ are therefore $\varphi$ and $\operatorname{
 For a finitely generated projective $R$-module $M$ the map $\operatorname{can}_M$ is an isomorphism.
 Indeed $\operatorname{can}_{R^{n}}$ is an isomorphism, and $\operatorname{can}_{M\oplus M'}=\operatorname{can}_M\oplus\operatorname{can}_{M'}$, so both summands of a decomposition $M\oplus M'\cong R^{n}$ have $\operatorname{can}$ an isomorphism.
 
-::: {#prp-hyperbolic-lattice .prop title="Hyperbolic lattices"}
+::: {.proposition #prop:hyperbolic-lattice title="Hyperbolic lattices"}
 
 Let $R$ be a Dedekind domain and let $M$ be a finitely generated projective $R$-module.
 Then $H(M)$ is a unimodular $R$-lattice in the sense of @def-framework-lattice and @def-unimodular, and its discriminant module (@def-discriminant) is $A_{H(M)}=0$.
 :::
 
-::: {#exm-hyperbolic-plane .ex title="The hyperbolic plane"}
+::: {.example #ex:hyperbolic-plane title="The hyperbolic plane"}
 
 Take $M=R$ and the basis $e=(1,0)$, $f=(0,\operatorname{id}_R)$ of $R\oplus R^{*}$.
 Then
@@ -57,7 +57,7 @@ $$
 For $R=\mathbb Z$ the lattice $H(\mathbb Z)$ is even (@def-even-lattice), unimodular, and of signature $(1,1)$.
 :::
 
-::: {#def-hyperbolic-functor .def title="The hyperbolic functor"}
+::: {.definition #def:hyperbolic-functor title="The hyperbolic functor"}
 
 For an isomorphism $u\colon M\to N$ of $R$-modules set
 $$
@@ -77,7 +77,7 @@ $$
 between the cores of @def:core.
 :::
 
-::: {#def-lagrangian .def title="Lagrangians and metabolic forms"}
+::: {.definition #def:lagrangian title="Lagrangians and metabolic forms"}
 
 Let $(M,b)$ be an object of $\mathcal B_{R,R}$ and let $N\subseteq M$ be a submodule.
 Write
@@ -90,7 +90,7 @@ The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98,
 **Remark.** [@MH73] writes *split* for this condition and attributes the term *metabolic* to Knebusch.
 :::
 
-::: {#prp-hyperbolic-metabolic .prop title="Hyperbolic forms are metabolic"}
+::: {.proposition #prop:hyperbolic-metabolic title="Hyperbolic forms are metabolic"}
 
 Let $M$ be an $R$-module for which $\operatorname{can}_M$ is injective.
 Then $0\oplus M^{*}$ is a lagrangian of $H(M)$.
@@ -105,7 +105,7 @@ Injectivity of $\operatorname{can}_M$ gives $x=0$, so $(0\oplus M^{*})^{\perp}=0
 
 ## Hyperbolic stabilization {#sec-hyperbolic-stabilization}
 
-::: {#def-hyperbolic-stabilization .def title="Orthogonal sum with a fixed object"}
+::: {.definition #def:hyperbolic-stabilization title="Orthogonal sum with a fixed object"}
 
 With the orthogonal sum of @def:orthogonal-sum, an object $M$ of $\mathcal B_{R,R}$ defines
 $$
@@ -129,14 +129,14 @@ For $R$ a Dedekind domain and $M$ an $R$-lattice, $F_M$ restricts to an endofunc
 
 Since $b_{L\perp L'}^{\sharp}$ is identified with $b_L^{\sharp}\oplus b_{L'}^{\sharp}$ under $(L\oplus L')^{*}\cong L^{*}\oplus L'^{*}$, an orthogonal sum of nondegenerate forms is nondegenerate and an orthogonal sum of unimodular forms is unimodular.
 
-::: {#prp-stabilization-discriminant .prop title="Stabilization preserves the discriminant"}
+::: {.proposition #prop:stabilization-discriminant title="Stabilization preserves the discriminant"}
 
 Let $R$ be a Dedekind domain with fraction field $K$, and let $L$ be an $R$-lattice.
 The canonical isomorphism $(L\oplus H(R))^{*}\cong L^{*}\oplus H(R)^{*}$ identifies
 $$
 b_{S(L)}^{\sharp}=b_L^{\sharp}\oplus h_R^{\sharp},
 $$
-and $h_R^{\sharp}$ is an isomorphism by @prp-hyperbolic-lattice.
+and $h_R^{\sharp}$ is an isomorphism by @prop:hyperbolic-lattice.
 Taking cokernels in @def-two-witnesses gives
 $$
 A_{S(L)}\;\cong\;A_L .
@@ -151,18 +151,18 @@ and the mixed terms of the form on an orthogonal sum vanish, so the isomorphism 
 For $R=\mathbb Z$ it is an isomorphism in $\mathbf{DiscBil}_{\mathbb Z}$ (@def-discbil), and for $L$ even it is an isomorphism in $\mathbf{DiscQuad}_{\mathbb Z}$ (@def-discquad).
 :::
 
-::: {#thm-stabilization-not-unimodular .theorem title="The discriminant along the stabilization tower"}
+::: {.theorem #thm:stabilization-not-unimodular title="The discriminant along the stabilization tower"}
 
 Let $R$ be a Dedekind domain and let $L$ be an $R$-lattice with $A_L\neq0$.
 Then $A_{S^{n}(L)}\cong A_L$ for every $n\geq0$.
 Consequently $S^{n}(L)$ is not unimodular, and $S^{n}(L)$ is not isometric to $H(P)$ for any finitely generated projective $R$-module $P$ and any $n\geq0$.
 :::
 
-Iterating @prp-stabilization-discriminant gives the isomorphism.
-A unimodular lattice has vanishing discriminant module by @def-unimodular and @def-two-witnesses, and $H(P)$ is unimodular by @prp-hyperbolic-lattice.
+Iterating @prop:stabilization-discriminant gives the isomorphism.
+A unimodular lattice has vanishing discriminant module by @def-unimodular and @def-two-witnesses, and $H(P)$ is unimodular by @prop:hyperbolic-lattice.
 The discriminant module is an invariant of the isomorphism class, by the functors on cores recorded in @sec-lattices-discriminant.
 
-::: {#exm-stabilizing-rank-one .ex title="Stabilizing a rank-one lattice"}
+::: {.example #ex:stabilizing-rank-one title="Stabilizing a rank-one lattice"}
 
 Let $R=\mathbb Z$ and let $L=\mathbb Ze$ with $b(e,e)=2$.
 Then $b^{\sharp}\colon\mathbb Z\to\mathbb Z^{*}\cong\mathbb Z$ is multiplication by $2$, so $A_L\cong\mathbb Z/2\mathbb Z$, generated by the class of $e/2\in L^{\#}$, with
@@ -170,12 +170,12 @@ $$
 \bar b_L\bigl(\overline{e/2},\overline{e/2}\bigr)=\tfrac12+\mathbb Z .
 $$
 The lattice $L$ is even, and $q_L(\overline{e/2})=\tfrac12+2\mathbb Z$.
-By @thm-stabilization-not-unimodular, $A_{S^{n}(L)}\cong\mathbb Z/2\mathbb Z$ for every $n\geq0$.
+By @thm:stabilization-not-unimodular, $A_{S^{n}(L)}\cong\mathbb Z/2\mathbb Z$ for every $n\geq0$.
 :::
 
 ## Witt classes {#sec-witt-classes}
 
-::: {#ex:rank-one-forms .ex title="Rank-one forms"}
+::: {.example #ex:rank-one-forms title="Rank-one forms"}
 
 For $a\in R$ write $\langle a\rangle$ for the object $(R,b_a)$ of $\mathcal B_{R,R}$ with $b_a(x,y)=axy$.
 Under the isomorphism $R^{*}\cong R$, $f\mapsto f(1)$, the adjoint map of @def:polarization is multiplication by $a$.
@@ -184,7 +184,7 @@ In particular $\langle1\rangle$ is unimodular over every commutative ring.
 Over $R=\mathbb Z/4\mathbb Z$ the form $\langle2\rangle$ has $\ker b_2^{\sharp}=2\mathbb Z/4\mathbb Z$, so it is degenerate.
 :::
 
-::: {#def-witt-class .def title="Witt equivalence"}
+::: {.definition #def:witt-class title="Witt equivalence"}
 
 Let $R$ be a Dedekind domain.
 Two unimodular $R$-lattices $X$ and $X'$ have the same *Witt class*, written $X\sim X'$, if there are metabolic unimodular $R$-lattices $Y$ and $Y'$ with
@@ -195,12 +195,12 @@ $$
 This is an equivalence relation, and it is compatible with orthogonal sum and with tensor product [@MH73, Lem. I.7.2].
 :::
 
-::: {#thm-witt-ring .theorem title="The Witt ring"}
+::: {.theorem #thm:witt-ring title="The Witt ring"}
 
 The set $W(R)$ of Witt classes of unimodular $R$-lattices is a commutative ring with $1$, with orthogonal sum as addition and tensor product as multiplication [@MH73, Thm. I.7.3].
 :::
 
-::: {#prp-metabolic-witt-trivial .prop title="Metabolic lattices have Witt class zero"}
+::: {.proposition #prop:metabolic-witt-trivial title="Metabolic lattices have Witt class zero"}
 
 Let $X$ be a metabolic unimodular $R$-lattice.
 Then $[X]=0$ in $W(R)$.
@@ -208,13 +208,13 @@ In particular $[H(P)]=0$ for every finitely generated projective $R$-module $P$.
 :::
 
 The zero lattice is metabolic, with lagrangian $0$.
-Taking $Y=0$ and $Y'=X$ in @def-witt-class, the isometry $X\perp0\cong0\perp X$ gives $X\sim0$.
-The hyperbolic lattices are metabolic by @prp-hyperbolic-metabolic.
+Taking $Y=0$ and $Y'=X$ in @def:witt-class, the isometry $X\perp0\cong0\perp X$ gives $X\sim0$.
+The hyperbolic lattices are metabolic by @prop:hyperbolic-metabolic.
 
-::: {#thm-witt-shift-by-summand .theorem title="Which summand shifts the Witt class"}
+::: {.theorem #thm:witt-shift-by-summand title="Which summand shifts the Witt class"}
 
 Let $M$ be a unimodular $R$-lattice.
-On unimodular lattices, $F_M$ of @def-hyperbolic-stabilization acts on Witt classes by
+On unimodular lattices, $F_M$ of @def:hyperbolic-stabilization acts on Witt classes by
 $$
 \bigl[F_M(X)\bigr]=[X]+[M],
 $$
@@ -226,9 +226,9 @@ L\xrightarrow{\ \iota_L\ }S(L)\xrightarrow{\ \iota_{S(L)}\ }S^{2}(L)\longrightar
 $$
 :::
 
-The displayed identity is the compatibility of Witt equivalence with orthogonal sum (@def-witt-class), and the last statement combines it with @prp-metabolic-witt-trivial.
+The displayed identity is the compatibility of Witt equivalence with orthogonal sum (@def:witt-class), and the last statement combines it with @prop:metabolic-witt-trivial.
 
-::: {#thm-witt-group-of-z .theorem title="The Witt ring of $\mathbb Z$"}
+::: {.theorem #thm:witt-group-of-z title="The Witt ring of $\mathbb Z$"}
 
 The signature is a ring isomorphism
 $$
@@ -239,21 +239,21 @@ $$
 with $\langle1\rangle$ as in @ex:rank-one-forms; see [@MH73, Ch. II §4].
 :::
 
-::: {#exm-witt-classes-over-z .ex title="Witt classes over $\mathbb Z$"}
+::: {.example #ex:witt-classes-over-z title="Witt classes over $\mathbb Z$"}
 
-By @thm-witt-group-of-z the class $[\langle1\rangle]$ has infinite order in $W(\mathbb Z)$, and $\sigma[\langle-1\rangle]=-1$, so $[\langle-1\rangle]=-[\langle1\rangle]$.
-The lattice $H(\mathbb Z)$ has signature $(1,1)$, so $\sigma[H(\mathbb Z)]=0$, in agreement with @prp-metabolic-witt-trivial.
-By @thm-witt-shift-by-summand, $F_{\langle1\rangle}$ translates $W(\mathbb Z)$ by $1$ and $F_{H(\mathbb Z)}$ acts as the identity.
+By @thm:witt-group-of-z the class $[\langle1\rangle]$ has infinite order in $W(\mathbb Z)$, and $\sigma[\langle-1\rangle]=-1$, so $[\langle-1\rangle]=-[\langle1\rangle]$.
+The lattice $H(\mathbb Z)$ has signature $(1,1)$, so $\sigma[H(\mathbb Z)]=0$, in agreement with @prop:metabolic-witt-trivial.
+By @thm:witt-shift-by-summand, $F_{\langle1\rangle}$ translates $W(\mathbb Z)$ by $1$ and $F_{H(\mathbb Z)}$ acts as the identity.
 :::
 
-::: {#thm-metabolic-is-hyperbolic .theorem title="Metabolic forms when $2$ is a unit"}
+::: {.theorem #thm:metabolic-is-hyperbolic title="Metabolic forms when $2$ is a unit"}
 
 Let $R$ be a ring over which every finitely generated projective module is free and in which $2$ is a unit.
 Then every metabolic unimodular form over $R$ is isometric to an orthogonal sum of copies of $H(R)$ [@MH73, Lem. I.6.3].
-Conversely such an orthogonal sum is metabolic over any $R$, by @prp-hyperbolic-metabolic and the closure of metabolic forms under orthogonal sum [@MH73, Lem. I.6.2].
+Conversely such an orthogonal sum is metabolic over any $R$, by @prop:hyperbolic-metabolic and the closure of metabolic forms under orthogonal sum [@MH73, Lem. I.6.2].
 :::
 
-::: {#exm-metabolic-over-z .ex title="A metabolic lattice over $\mathbb Z$"}
+::: {.example #ex:metabolic-over-z title="A metabolic lattice over $\mathbb Z$"}
 
 Let $X=\langle1\rangle\perp\langle-1\rangle=\mathbb Ze_1\oplus\mathbb Ze_2$, so that
 $$
@@ -262,7 +262,7 @@ $$
 The submodule $N=\mathbb Z(e_1+e_2)$ is a direct summand, and $b(ae_1+be_2,e_1+e_2)=a-b$, so $N^{\perp}=N$ and $X$ is metabolic.
 Both $X$ and $H(\mathbb Z)$ are unimodular of signature $(1,1)$.
 Since $b(e_1,e_1)=1$, the lattice $X$ is odd, while $H(\mathbb Z)$ is even, so $X$ and $H(\mathbb Z)$ are not isometric.
-In $\mathbb Z$ the element $2$ is not a unit, and the hypothesis of @thm-metabolic-is-hyperbolic fails.
+In $\mathbb Z$ the element $2$ is not a unit, and the hypothesis of @thm:metabolic-is-hyperbolic fails.
 :::
 
 The Witt group of nonsingular $\epsilon$-symmetric forms over a ring with involution is the zero-dimensional $L$-group of that ring, and a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].

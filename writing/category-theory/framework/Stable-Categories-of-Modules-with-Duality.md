@@ -51,7 +51,7 @@ In both formulas the dual $\chi^{*}\colon M^{**}\to M^{*}$ of a morphism $M\to M
 
 Take $A=R$ commutative with the identity involution and $\epsilon=1$.
 Then a $1$-symmetric form on $M$ is the adjoint map $b^{\sharp}$ of a symmetric $R$-bilinear form $b\colon M\times M\to R$ (@def:form-axioms, @def:polarization), and nonsingularity is the perfectness of @def:polarization.
-For $M$ finitely generated projective, the hyperbolic form of @def-hyperbolic-form is a nonsingular $1$-symmetric form by @prp-hyperbolic-adjoint, and $0\oplus M^{*}$ is a lagrangian in the sense of @def-lagrangian by @prp-hyperbolic-metabolic.
+For $M$ finitely generated projective, the hyperbolic form of @def:hyperbolic-form is a nonsingular $1$-symmetric form by @prop:hyperbolic-adjoint, and $0\oplus M^{*}$ is a lagrangian in the sense of @def:lagrangian by @prop:hyperbolic-metabolic.
 
 ## Complexes, duality, and $L$-groups {#sec-poincare-complexes}
 
@@ -104,7 +104,7 @@ For a $*$-invariant subgroup $U\subseteq\widetilde K_0(A)$, the *$n$-dimensional
 $L^{0}_{U}(A,\epsilon)$ is the Witt group of nonsingular $\epsilon$-symmetric forms over $A$, and $L^{U}_{0}(A,\epsilon)$ the Witt group of nonsingular $\epsilon$-quadratic forms; a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].
 :::
 
-For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the group $L^{0}_{\widetilde K_0(R)}(R,1)$ is the additive group of the Witt ring $W(R)$ of @thm-witt-ring, and by @prp-hyperbolic-metabolic every hyperbolic form of @def-hyperbolic-form has the zero class in it.
+For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the group $L^{0}_{\widetilde K_0(R)}(R,1)$ is the additive group of the Witt ring $W(R)$ of @thm:witt-ring, and by @prop:hyperbolic-metabolic every hyperbolic form of @def:hyperbolic-form has the zero class in it.
 
 ## Model presentation {#sec-model-presentation}
 
@@ -215,11 +215,11 @@ Algebraic $K$-theory of a ring and of an exact category, and the groups $K_n(A)=
 
 ## Open statements {#sec-open-statements}
 
-A stabilization of $\mathbf{Lat}_R$ by an endofunctor $F_M$ of @def-hyperbolic-stabilization is asked to do two things at once: to become invertible, so that it presents a stable category, and to move the Witt class, so that it shifts an invariant.
+A stabilization of $\mathbf{Lat}_R$ by an endofunctor $F_M$ of @def:hyperbolic-stabilization is asked to do two things at once: to become invertible, so that it presents a stable category, and to move the Witt class, so that it shifts an invariant.
 @thm:invertible-summand shows that on $\mathbf{Lat}_R$ these two demands are incompatible: an $M$ with $[M]\neq0$ has $b_M\neq0$ and so $F_M$ is not an equivalence, while an $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$.
 The three statements below are not proved in this book.
 
-**Question.** Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def-hyperbolic-stabilization).
+**Question.** Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def:hyperbolic-stabilization).
 Is there a pointed $\infty$-category $\mathcal C$, a functor $\iota\colon\mathbf{Lat}_R^{\simeq}\to\mathcal C^{\simeq}$, and an equivalence $\iota\circ S\simeq\Sigma\circ\iota$ with $\Sigma$ the suspension of @def:loops-suspension?
 
 **Question.** Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def:orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?

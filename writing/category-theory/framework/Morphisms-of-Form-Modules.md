@@ -64,7 +64,7 @@ And $k^{*}0=0$, which equals $b_M$ exactly when $b_M=0$.
 
 ::: {.proposition #prop:summand-functor-no-right-adjoint title="Adjoints of orthogonal sum with a fixed object"}
 
-Let $M=(M,b_M)$ be an object of $\mathcal B_{R,W}$ with $b_M\neq0$ and let $F_M=-\perp M$ be the functor of @def-hyperbolic-stabilization.
+Let $M=(M,b_M)$ be an object of $\mathcal B_{R,W}$ with $b_M\neq0$ and let $F_M=-\perp M$ be the functor of @def:hyperbolic-stabilization.
 Then $F_M$ does not preserve the initial object, so $F_M$ is neither a left adjoint nor an equivalence.
 For $R$ a Dedekind domain and $M$ an $R$-lattice the same holds for $F_M$ on $\mathbf{Lat}_R$; in particular the hyperbolic stabilization $S=F_{H(R)}$ has no right adjoint.
 :::
@@ -84,7 +84,7 @@ The zero lattice lies in $\mathbf{Lat}_R$ and an orthogonal sum of $R$-lattices 
 
 2. If $M$ is a unimodular $R$-lattice with $b_M=0$, then $M=0$.
 
-Consequently a unimodular $M$ with $[M]\neq0$ has $b_M\neq0$, so $F_M$ is not an equivalence of $\mathbf{Lat}_R$ by @prop:summand-functor-no-right-adjoint, while a unimodular $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$ by @thm-witt-shift-by-summand.
+Consequently a unimodular $M$ with $[M]\neq0$ has $b_M\neq0$, so $F_M$ is not an equivalence of $\mathbf{Lat}_R$ by @prop:summand-functor-no-right-adjoint, while a unimodular $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$ by @thm:witt-shift-by-summand.
 :::
 
 For (1), an inverse of $M$ is a lattice $N$ with $M\perp N\cong0$; the underlying module of $M\perp N$ is $M\oplus N$, so $M=0$.
