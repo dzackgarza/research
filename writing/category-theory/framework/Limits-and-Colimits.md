@@ -53,7 +53,7 @@ Limits of $D$ are unique up to a unique isomorphism compatible with the limit co
 ::: {#rmk-limit-universal-naturality .Remark title="Naturality in the universal property of a limit"}
 
 The universal property is the natural isomorphism: it names the morphism that factors a given cone, and its naturality identifies the factorization of a cone with the factorization of any cone obtained from it by composing with a morphism of apexes.
-The same standard governs classifying objects in @def-classifying-object.
+The same standard governs classifying objects in @def:classifying-object.
 :::
 
 ## Named shapes {#sec-named-shapes}

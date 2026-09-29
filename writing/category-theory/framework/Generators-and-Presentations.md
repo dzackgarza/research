@@ -2,7 +2,7 @@
 
 Fix a commutative ring $R$.
 The isomorphism-invariant properties of $R$-modules used below are @def:module-subcategories.
-Whether a lift along a forgetful functor is a property or a chosen structure is decided by @def-property-structure-stuff.
+Whether a lift along a forgetful functor is a property or a chosen structure is decided by @def:property-structure-stuff.
 
 ## Generating frames {#sec-generating-frames}
 
@@ -44,7 +44,7 @@ A morphism $(M,s)\to(M,s')$ over $\operatorname{id}_M$ is the identity of $M$ to
 ::: {#def-coordinatized-module .def title="The two morphism conventions"}
 
 Let $\operatorname{Coord}_I(R)$ be the category with the same objects as $\operatorname{GenFrame}_I(R)$ in which a morphism $(M,s)\to(N,t)$ is an arbitrary $R$-linear map $M\to N$.
-Its projection to $R\text{-}\mathbf{Mod}$ is fully faithful, so it is an equivalence onto the replete full subcategory of modules admitting an $I$-indexed generating frame, and by @def-property-structure-stuff it describes a property.
+Its projection to $R\text{-}\mathbf{Mod}$ is fully faithful, so it is an equivalence onto the replete full subcategory of modules admitting an $I$-indexed generating frame, and by @def:property-structure-stuff it describes a property.
 The identity on objects and the inclusion on morphisms give a faithful functor
 $$
 \operatorname{GenFrame}_I(R)\longrightarrow\operatorname{Coord}_I(R).
@@ -65,7 +65,7 @@ Finite generation is the property recorded in @def:module-subcategories: it asse
 
 ::: {#def-finite-module .def title="Finiteness of the underlying set"}
 
-Finiteness of the underlying set is a property of objects of $\mathbf{Set}$; the modules with finite underlying set are its pullback along the underlying-set functor $R\text{-}\mathbf{Mod}\to\mathbf{Set}$ in the sense of @def-axiom-through-functor.
+Finiteness of the underlying set is a property of objects of $\mathbf{Set}$; the modules with finite underlying set are its pullback along the underlying-set functor $R\text{-}\mathbf{Mod}\to\mathbf{Set}$ in the sense of @def:axiom-through-functor.
 This property and finite generation are independent.
 Over $R=\mathbb Z$: the module $\mathbb Z$ is finitely generated and has infinite underlying set, $\mathbb Q/\mathbb Z$ has infinite underlying set and admits no finite generating frame, and $\mathbb Z/n\mathbb Z$ has both properties.
 :::

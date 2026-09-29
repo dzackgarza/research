@@ -130,14 +130,14 @@ The cofibrant replacement of an object of $\mathcal A$ concentrated in degree $0
 :::
 
 In a pointed model category the loop and suspension functors and the fibration and cofibration sequences are constructed on the homotopy category [@Qui67, Ch. I §§2–3].
-The corresponding $\infty$-categorical constructions are @def-loops-suspension, and their adjunction is @sec-adjunctions.
+The corresponding $\infty$-categorical constructions are @def:loops-suspension, and their adjunction is @sec-adjunctions.
 
 ## Stabilization {#sec-stabilization-of-modules}
 
 ::: {#def-stable-infinity-category .def title="Stable $\infty$-categories"}
 
 An $\infty$-category $\mathcal C$ is *stable* if it has a zero object, every morphism of $\mathcal C$ admits a kernel and a cokernel, and a triangle in $\mathcal C$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
-The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def-loops-suspension are mutually inverse equivalences [@Lur09, §2].
+The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §2].
 :::
 
 For a pointed $\infty$-category $\mathcal C$ admitting the relevant finite limits and colimits, @sec-adjunctions gives
@@ -167,7 +167,7 @@ E_n
 \end{tikzcd}
 ```
 
-By @def-loops-suspension the pushout of the span $0\leftarrow E_n\to0$ is $\Sigma E_n$, and the pullback of the cospan $0\to E_{n+1}\leftarrow0$ is $\Omega E_{n+1}$, so the square determines the *structure maps*
+By @def:loops-suspension the pushout of the span $0\leftarrow E_n\to0$ is $\Sigma E_n$, and the pullback of the cospan $0\to E_{n+1}\leftarrow0$ is $\Omega E_{n+1}$, so the square determines the *structure maps*
 $$
 \sigma_n\colon\Sigma E_n\longrightarrow E_{n+1},
 \qquad
@@ -216,13 +216,13 @@ Algebraic $K$-theory of a ring and of an exact category, and the groups $K_n(A)=
 ## Open statements {#sec-open-statements}
 
 A stabilization of $\mathbf{Lat}_R$ by an endofunctor $F_M$ of @def-hyperbolic-stabilization is asked to do two things at once: to become invertible, so that it presents a stable category, and to move the Witt class, so that it shifts an invariant.
-@thm-invertible-summand shows that on $\mathbf{Lat}_R$ these two demands are incompatible: an $M$ with $[M]\neq0$ has $b_M\neq0$ and so $F_M$ is not an equivalence, while an $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$.
+@thm:invertible-summand shows that on $\mathbf{Lat}_R$ these two demands are incompatible: an $M$ with $[M]\neq0$ has $b_M\neq0$ and so $F_M$ is not an equivalence, while an $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$.
 The three statements below are not proved in this book.
 
 **Question.** Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def-hyperbolic-stabilization).
-Is there a pointed $\infty$-category $\mathcal C$, a functor $\iota\colon\mathbf{Lat}_R^{\simeq}\to\mathcal C^{\simeq}$, and an equivalence $\iota\circ S\simeq\Sigma\circ\iota$ with $\Sigma$ the suspension of @def-loops-suspension?
+Is there a pointed $\infty$-category $\mathcal C$, a functor $\iota\colon\mathbf{Lat}_R^{\simeq}\to\mathcal C^{\simeq}$, and an equivalence $\iota\circ S\simeq\Sigma\circ\iota$ with $\Sigma$ the suspension of @def:loops-suspension?
 
 **Question.** Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def-orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?
-@thm-invertible-summand answers this for $(\mathbf{Lat}_R,\perp,0)$ itself.
+@thm:invertible-summand answers this for $(\mathbf{Lat}_R,\perp,0)$ itself.
 
 **Question.** Does the discriminant construction of @sec-lattices-discriminant factor through the $\epsilon$-quadratic Poincaré complexes of @def-poincare-complex over $\mathbb Z$, and through which functor?

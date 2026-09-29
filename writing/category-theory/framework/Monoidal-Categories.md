@@ -1,6 +1,6 @@
 # Monoidal structure and internal algebraic objects {#sec-monoidal}
 
-A tensor product on a category is chosen structure on it (@def-chosen-structure), and the algebraic objects of the later chapters are defined inside a category equipped with such a structure.
+A tensor product on a category is chosen structure on it (@def:chosen-structure), and the algebraic objects of the later chapters are defined inside a category equipped with such a structure.
 
 ## Monoidal, braided, and symmetric structures {#sec-monoidal-categories}
 

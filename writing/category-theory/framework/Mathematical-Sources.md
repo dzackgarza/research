@@ -14,7 +14,7 @@ The definition of an abelian category in @def-abelian-category and its kernel an
 
 ## Properties and chosen structure
 
-The fullness-and-faithfulness classification in @def-property-structure-stuff follows [@BS07, §2]. Pseudo-pullbacks and their relation to strict pullbacks along isofibrations are treated in [@nlab:2-pullback; @nlab:isofibration].
+The fullness-and-faithfulness classification in @def:property-structure-stuff follows [@BS07, §2]. Pseudo-pullbacks and their relation to strict pullbacks along isofibrations are treated in [@nlab:2-pullback; @nlab:isofibration].
 
 ## Forms, lattices, and arithmetic invariants
 

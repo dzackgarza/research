@@ -52,7 +52,7 @@ X \arrow[d,"f"]\\
 ```
 
 In a concrete category whose underlying-set functor is corepresented as in @def:element-functor, its points are the elements of $X$ sent by $f$ to $y$.
-When $C$ is pointed and $y$ is the zero point, this is the fiber of @def-fiber-cofiber.
+When $C$ is pointed and $y$ is the zero point, this is the fiber of @def:fiber-cofiber.
 :::
 
 For $R$-modules the fiber over $y$ is empty unless $y$ lies in the image of $f$, and a point $x_0$ of it determines an isomorphism
