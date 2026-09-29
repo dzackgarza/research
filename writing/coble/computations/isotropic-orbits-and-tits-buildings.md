@@ -21,7 +21,7 @@ Two published algorithm families answer that question for indefinite lattices; t
 
 ::: {.Remark title="The correspondence and the invariants that separate orbits"}
 
-[The Scattone cusp method](../compactifications/scattone-cusp-method.md) records the correspondence and its separating invariants: for $T$ of signature $(2,n)$ and an arithmetic $\Gamma\leq\Orth(T)$, the $0$-cusps of the Baily--Borel compactification are the $\Gamma$-orbits of primitive isotropic lines of $T$ and the $1$-cusps are the $\Gamma$-orbits of primitive isotropic planes, and the pair $\bigl(\div_T(v), [v^*]\bigr)$ of \longref{prop:divisibility-discriminant} separates those orbits under the hypotheses of \longref{thm:eichler-criterion} and \longref{thm:sterk-orbit}.
+[The Scattone cusp method](../compactifications/scattone-cusp-method.md) records the correspondence and its separating invariants: for $T$ of signature $(2,n)$ and an arithmetic $\Gamma\leq\Orth(T)$, the $0$-cusps of the Baily--Borel compactification are the $\Gamma$-orbits of primitive isotropic lines of $T$ and the $1$-cusps are the $\Gamma$-orbits of primitive isotropic planes, and the pair $\bigl(\div_T(v), [v^*]\bigr)$ of \longref{prop:coble-divisibility-discriminant} separates those orbits under the hypotheses of \longref{thm:eichler-criterion} and \longref{thm:sterk-orbit}.
 :::
 
 ::: {.Remark title="The building of a lattice of signature $(2,n)$"}
