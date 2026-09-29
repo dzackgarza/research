@@ -330,6 +330,38 @@ diagnosed.
 repository occurrences above were reproduced.  No claim is made about other
 math lint rules or other Markdown literal-node kinds.
 
+### Source category-graph slices collapse parameterized fibres into self-edges
+
+The source-only category graph is an inspection tool for the M1 placement
+audit, so selecting a category must remain usable while execution is suspended.
+On 2026-09-29,
+`just category-graph slice --select PermutationGroups --direction up` aborted
+before producing the requested slice with
+`Self-declarations cannot define a strict category order:
+['DistinguishedAffineCovers']`.
+
+The triggering declaration is
+`DistinguishedAffineCovers(X).super_categories()`, whose parameterized fibre
+lists the unparameterized catalogue `DistinguishedAffineCovers()` together
+with `CoveringFamilies(AffSch_R/X)`.  The source graph records category classes
+but not this parameter distinction, so the fibre-to-catalogue inclusion is
+collapsed to an apparent class self-edge and blocks inspection of unrelated
+categories.
+
+**Expected behavior:** a source slice for an unrelated category does not abort
+because a parameterized category and its catalogue share one implementation
+class.  The graph either represents their parameters sufficiently to retain
+the strict relation or records that relation outside its class-level strict
+poset.
+**Owning boundary:** `dzack_research.utilities.category_graph`'s source model of
+parameterized category declarations, not the `PermutationGroups` placement
+pass and not, by this observation alone, the mathematics of distinguished
+affine covers.
+**Coverage boundary:** the failing slice command and the declaration at
+`categories/schemes/ringed_spaces.py::DistinguishedAffineCovers.super_categories`
+were inspected.  No claim is made here about other same-class parameterized
+relations.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
