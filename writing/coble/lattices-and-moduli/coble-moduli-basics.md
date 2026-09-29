@@ -1,6 +1,6 @@
 # Moduli
 
-::: {.Remark title="Coble moduli as a divisor in Enriques moduli"}
+::: {.remark title="Coble moduli as a divisor in Enriques moduli"}
 
 For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$ boundary components.
 As noted, we will primarily be interested in the $n=1$ case.
@@ -10,7 +10,7 @@ Thus they form a 9-dimensional moduli space.
 These are realized by allowing the K3 cover of an Enriques surface to acquire an $A_1$ singularity fixed by the Enriques involution; the resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $C$ satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
 :::
 
-:::: {.Remark title="Hodge/lattice theoretic moduli"}
+:::: {.remark title="Hodge/lattice theoretic moduli"}
 
 Separately, one can construct a Hodge-theoretic period domain directly using lattice theory.[^coble-note-2] Write $\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible components.
 By adjunction and the genus formula, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$.
@@ -23,12 +23,12 @@ See [the Coble lattice table](coble-lattice-table.md).
 The case of interest to us is $n=1$, and thus the lattice $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3 lattice will be used to construct a period domain quotiented by an appropriate arithmetic subgroup, producing the coarse moduli space of interest.
 ::::
 
-::: {.Remark title="On nonsymplectic involutions"}
+::: {.remark title="On nonsymplectic involutions"}
 
 As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a degeneration of a K3 cover of an Enriques surface, which thus describes a family of K3s equipped with a nonsymplectic involution as studied in [@AE22] and a corresponding family of Enriques surfaces as studied in [@AEGS25]. It seems that these degenerations correspond to the (weakly projective) **flowerpot** degenerations of [@Mor81], and I conjecture that the corresponding Kulikov models correspond to integral-affine discs (as opposed to spheres or real projective spaces).
 :::
 
-::: {.Question #qst:coble-nonsymplectic-introduction title="Explain the nonsymplectic-involution machinery in the Coble introduction"}
+::: {.question #qst:coble-nonsymplectic-introduction title="Explain the nonsymplectic-involution machinery in the Coble introduction"}
 For introduction, need to say more about how the nonsymplectic involution machinery is being used in this particular case?
 :::
 
