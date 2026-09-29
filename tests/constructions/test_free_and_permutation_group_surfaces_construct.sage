@@ -21,7 +21,15 @@ def test_symmetric_three_retains_natural_points_action_and_sign() -> None:
     points = group.natural_points()
     action = group.natural_g_set()
     transposition = group.group_generators()[0]
+    orbit = group.orbit(points[0])
+    stabilizer = group.stabilizer(points[0])
 
     assert points.cardinality() == cardinal(3)
     assert action.underlying_set() is points
     assert transposition.sign() in (ZZ(-1), ZZ(1))
+    assert orbit.cardinality() == cardinal(3)
+    assert orbit == action.orbits().orbit_of(points[0]).points()
+    assert stabilizer.order() == 2
+    assert group((2, 3)) in stabilizer
+    assert group((1, 2)) not in stabilizer
+    assert group.is_transitive()

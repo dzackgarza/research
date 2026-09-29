@@ -29,6 +29,8 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
     _engine_cosets,
+    _engine_group,
+    _engine_point,
     _integer_engine_point,
     _own_group,
     _owned_group,
@@ -550,12 +552,15 @@ class OrbitSets(OwnedCategory):
             image_group = permutation_group.subgroup(
                 tuple(representation(generator) for generator in action_generators)
             )
+            image_engine = _engine_group(image_group)
             orbit_rank_sets = sorted(
                 {
                     tuple(
                         sorted(
-                            int(point_ranking(image))
-                            for image in image_group.orbit(point)
+                            int(point_ranking(_owned_point(image)))
+                            for image in image_engine.orbit(
+                                _engine_point(image_engine, point)
+                            )
                         )
                     )
                     for point in point_set

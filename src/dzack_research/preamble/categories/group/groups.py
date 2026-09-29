@@ -3680,8 +3680,8 @@ class PermutationGroups(OwnedCategory):
 
         def orbit(self, point):
             r"""The orbit ``G . point`` of the natural action."""
-            engine = _engine_group(self)
-            return finite_ordered_set(tuple(_owned_point(image) for image in engine.orbit(_engine_point(engine, point))))
+            action = self.natural_g_set()
+            return action.orbits().orbit_of(point).points()
 
         def orbits(self, points=None):
             r"""The orbit set of the natural action on ``points`` (all natural points by default)."""
@@ -3689,17 +3689,12 @@ class PermutationGroups(OwnedCategory):
             return g_set.orbits()
 
         def stabilizer(self, point):
-            r"""The subgroup ``G_x`` fixing ``point``, computed by the permutation engine."""
-            engine = _engine_group(self)
-            engine_point = _engine_point(engine, point)
-            return _subgroup_from_gap(
-                self,
-                libgap.Stabilizer(_gap_model(self), libgap(engine_point), libgap.OnPoints),
-            )
+            r"""The subgroup ``G_x`` fixing ``point`` in the natural action."""
+            return self.natural_g_set().stabilizer(point)
 
         def is_transitive(self) -> bool:
             r"""Whether the natural action has one orbit."""
-            return bool(_engine_group(self).is_transitive())
+            return self.natural_g_set().is_transitive_action()
 
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):
