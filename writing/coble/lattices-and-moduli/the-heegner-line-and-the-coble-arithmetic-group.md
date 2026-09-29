@@ -49,14 +49,14 @@ $x\cdot\delta = a\,\bigl(u\cdot(u-w)\bigr) + b\,\bigl(w\cdot(u-w)\bigr) = -a + b
 so $x\in\delta^{\perp}$ if and only if $a = b$, that is
 $x\in\ZZ\zeta\oplus U(2)\oplus E_8(2)$.
 Since $\zeta^2 = 2$ this sublattice is $\gens{2}\oplus E_{10}(2) = T_\Co$ by
-[the Enriques-lattice definition](special-lattices.md#def:enriques-lattice).
+@def:enriques-lattice.
 
 For the index, $\delta$ and $\zeta$ have coordinate matrix
 $\begin{bmatrix}1 & -1\\ 1 & 1\end{bmatrix}$ of determinant $2$ in the basis
 $(u, w)$, so $\ZZ\delta\oplus\ZZ\zeta$ has index $2$ in $U$ and hence
 $\ZZ\delta\oplus\delta^{\perp}$ has index $2$ in $T_\En$; the class of
 $u = \tfrac12(\delta+\zeta)$ generates the quotient.
-By [Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing) the corresponding isotropic subgroup of
+By @thm:nikulin-gluing the corresponding isotropic subgroup of
 $A_{\ZZ\delta}\oplus A_{\delta^{\perp}}$ is the graph of the isometry sending
 $\tfrac12\delta$ to $\tfrac12\zeta$, whose component in $A_{\delta^{\perp}}$ is
 the stated class.
@@ -65,12 +65,12 @@ the stated class.
 ::: {.remark title="The standard Coble embedding is the explicit Heegner complement"}
 
 The primitive embedding $T_\Co\injects T_\En$ of
-[the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta) sends the generator $h$ of $\gens{2}$ to
+@lem:primitive_embedding_eta sends the generator $h$ of $\gens{2}$ to
 $\tilde e + \tilde f$, which in the notation above is $\zeta = u + w$;
-[the explicit Heegner-vector lemma](#lem:coble-heegner-vector) therefore identifies that embedding as the
+@lem:coble-heegner-vector therefore identifies that embedding as the
 inclusion of $\delta^{\perp T_\En}$ for the explicit Heegner vector
 $\delta = u - w$, and supplies the gluing datum which
-[the primitive-embedding lemma](lattices.md#lem:primitive_embedding_eta) leaves implicit.
+@lem:primitive_embedding_eta leaves implicit.
 This is the explicit form of the statement, recorded in the Period Domains
 section, that $T_\Co\cong v^{\perp T_\En}$ for a vector $v$ with $v^2 = -2$
 [@DK13].
@@ -80,7 +80,7 @@ section, that $T_\Co\cong v^{\perp T_\En}$ for a vector $v$ with $v^2 = -2$
 
 ::: {.theorem #thm:coble-heegner-line-unique title="The Coble Heegner line is unique up to $\Gamma_{\En, 2}$"}
 
-The line $\ZZ\delta\subset T_\En$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector) represents
+The line $\ZZ\delta\subset T_\En$ of @lem:coble-heegner-vector represents
 the unique $\Gamma_{\En,2}$-orbit of lines spanned by a $(-2)$ vector of $T_\En$.
 :::
 
@@ -99,16 +99,16 @@ All three hold here.
 Indeed $\delta^2 = -2\neq 0$; the complement $\delta^{\perp} = T_\Co$ has
 signature $(2,9)$; and $T_\En$ is an indefinite $2$-elementary lattice, so
 $\Orth(T_\En)\to\Orth(q_{T_\En})$ is surjective by
-[the two-elementary surjectivity theorem](discriminant-forms-and-genus.md#thm:two-elementary-surjectivity).
+@thm:two-elementary-surjectivity.
 The test the algorithm applies is the discriminant-gluing condition of
-[Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing) for the rank-one sublattice $\ZZ\delta$ and its
+@thm:nikulin-gluing for the rank-one sublattice $\ZZ\delta$ and its
 complement: an isometry of $\delta^{\perp}$ extends over the line $\ZZ\delta$
 exactly when it preserves the gluing class
-$\tfrac12\zeta\in A_{\delta^{\perp}}$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector).
+$\tfrac12\zeta\in A_{\delta^{\perp}}$ of @lem:coble-heegner-vector.
 
 That condition is vacuous here.
 The class $\tfrac12\zeta$ satisfies $q_{T_\Co}(\tfrac12\zeta) = \tfrac12$, and by
-the proof of [the Coble discriminant-group proposition](discriminant-orbits-of-the-coble-lattice.md#prop:coble-discriminant-group) every isometry of $q_{T_\Co}$
+the proof of @prop:coble-discriminant-group every isometry of $q_{T_\Co}$
 preserves the orthogonal decomposition
 $A_{T_\Co} = \ZZ\tfrac12\zeta\perp A^0$ and fixes $\tfrac12\zeta$, so
 $$
@@ -126,7 +126,7 @@ The $(-2)$ divisor $\cH_{-2}$ is the discriminant divisor of the Enriques period
 space, whose points parameterize quotients of nodal K3 surfaces by an involution
 fixing a node, that is Coble surfaces with a $\tfrac14(1,1)$ singularity
 [@AEGS25 §2].
-[The Heegner-line uniqueness theorem](#thm:coble-heegner-line-unique) says that this divisor stays irreducible
+@thm:coble-heegner-line-unique says that this divisor stays irreducible
 after passing from $\Gamma_\En = \Orth(T_\En)$ to the degree-$2$ group
 $\Gamma_{\En,2}$.
 It is a statement about the negative vector $\delta$, and is independent of the
@@ -139,7 +139,7 @@ which there are five, one for each $0$-cusp of $\fentwo$
 
 ::: {.definition #def:gamma-co-en title="The induced Coble subgroup"}
 
-For the Heegner vector $\delta$ of [the explicit Heegner-vector lemma](#lem:coble-heegner-vector), define
+For the Heegner vector $\delta$ of @lem:coble-heegner-vector, define
 $$
 \Gamma_\Co^\En(\delta)
 \da \im\Bigl(
@@ -165,7 +165,7 @@ $$
 \qquad
 q_{\ten}\circ\gamma = -q_{\sen}
 $$
-be the gluing anti-isometry supplied by [the embedding-gluing description](embeddings-and-overlattices.md#rmk:embedding-gluing-data) for the
+be the gluing anti-isometry supplied by @rmk:embedding-gluing-data for the
 primitive embedding $\sen\injects\lkt$ with complement $\ten$.
 Then
 $$
@@ -192,7 +192,7 @@ By definition $\Gamma_{\En,2}$ is the image in $\Orth(T_\En)$ of the isometries
 of $\lkt$ that commute with $I_\En$ and fix $h$ [@AEGS25 Def. 2.6].
 An isometry of $\lkt$ commuting with $I_\En$ is the same as a pair
 $(g_S, g_T)\in\Orth(S_\En)\times\Orth(T_\En)$ preserving the two eigenlattices,
-and by [Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing) such a pair extends over the overlattice $\lkt$
+and by @thm:nikulin-gluing such a pair extends over the overlattice $\lkt$
 of $S_\En\oplus T_\En$ exactly when it preserves the graph of $\gamma$, that is
 when $\bar g_T\circ\gamma = \gamma\circ\bar g_S$.
 The polarization $h$ lies in $S_\En$, so the condition $g(h) = h$ on $\lkt$ is the
@@ -203,7 +203,7 @@ condition $g_S(h) = h$.
 
 Write $S_\En = C(2)$ with $C = U\oplus E_8$ even unimodular of signature
 $(1,9)$, and let $h\in S_\En$ be the polarization vector of
-[the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing), so that $h = u_0 + w_0$ for a basis
+@prop:gamma-en-two-gluing, so that $h = u_0 + w_0$ for a basis
 $u_0, w_0$ of the $U$ summand of $C$ with $u_0\cdot w_0 = 1$.
 Then restriction to $h^{\perp}$ gives an isomorphism
 $$
@@ -230,21 +230,21 @@ which is injective because $C_\QQ = \QQ h\oplus h_\QQ^{\perp}$.
 It is surjective: $A_{h^{\perp}}\cong A_{\gens{-2}}\cong\ZZ/2\ZZ$ has trivial
 automorphism group, so every isometry of $h^{\perp}$ preserves the gluing class
 of the index-two overlattice $C$ of $\ZZ h\oplus h^{\perp}$ and extends over $C$
-fixing $h$, by [Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing).
+fixing $h$, by @thm:nikulin-gluing.
 The lattice $\gens{-2}\oplus E_8$ is negative definite and generated by its
 $(-2)$ vectors, whose root system is $A_1\oplus E_8$; no isometry mixes summands
 of different ranks, so its isometry group is
 $\Orth(\gens{-2})\times\Orth(E_8) = \ts{\pm1}\times W(E_8)$.
 
 For the last claim, $\id_U\oplus(-\id_{E_8})$ fixes $h\in U$ and acts on
-$A_{S_\En}\cong C/2C$ ([the twisted-unimodular discriminant proposition](discriminant-orbits-of-the-coble-lattice.md#prop:twisted-unimodular-discriminant)) by the
+$A_{S_\En}\cong C/2C$ (@prop:twisted-unimodular-discriminant) by the
 identity on $U/2U$ and by $x\mapsto -x\equiv x$ on $E_8/2E_8$.
 :::
 
 ::: {.theorem #thm:coble-heegner-finite-orbits title="The finite image and its isotropic orbits"}
 
-With the notation of [the polarization-stabilizer proposition](#prop:polarization-stabilizer-enriques) and
-[the explicit Heegner-vector lemma](#lem:coble-heegner-vector):
+With the notation of @prop:polarization-stabilizer-enriques and
+@lem:coble-heegner-vector:
 
 1.  the image of the integral stabilizer in the discriminant group,
     $$
@@ -275,25 +275,25 @@ With the notation of [the polarization-stabilizer proposition](#prop:polarizatio
 The generators named in (1) are the two evident families of isometries of $C$
 fixing $h = u_0 + w_0$: the involution $u_0\leftrightarrow w_0$, and
 $W(E_8)$ acting on the second summand.
-By [the polarization-stabilizer proposition](#prop:polarization-stabilizer-enriques) these generate a group of order
+By @prop:polarization-stabilizer-enriques these generate a group of order
 $2\abs{W(E_8)}$ whose reduction has $\id_U\oplus(-\id_{E_8})$ in its kernel, so
 the image has order at most $\abs{W(E_8)}$; the stated equality, and the two
 orbit decompositions of (2) and (3), are exact computations in the finite
 quadratic space $A_{T_\Co}\cong B/2B$ of
-[the Coble mod-four form definition](discriminant-orbits-of-the-coble-lattice.md#def:coble-mod-four-form), carried out by stabilizing the four fibers of $Q$
+@def:coble-mod-four-form, carried out by stabilizing the four fibers of $Q$
 inside $\GL(B/2B)$ and then computing orbits of the resulting finite group on the
 fiber $Q\inv(0)$.
 The index $136 = 94\,755\,225\,600 / 696\,729\,600$ in (3), and the relation
 $46\,998\,591\,897\,600 = 496\cdot 94\,755\,225\,600$ between the order of
-[the Coble discriminant-group proposition](discriminant-orbits-of-the-coble-lattice.md#prop:coble-discriminant-group) and that of the finite stabilizer, are
+@prop:coble-discriminant-group and that of the finite stabilizer, are
 consistency checks: $\tfrac12\tilde h_\Co$ is a class with
 $q_{T_\Co} = 1$, and $496$ is the number of such classes by
-[the Coble $Q$-fiber proposition](discriminant-orbits-of-the-coble-lattice.md#prop:coble-q-fibers).
+@prop:coble-q-fibers.
 :::
 
 ::: {.remark title="Reading the two orbit decompositions"}
 
-The two decompositions in [the finite-image orbit theorem](#thm:coble-heegner-finite-orbits) answer different
+The two decompositions in @thm:coble-heegner-finite-orbits answer different
 questions, and their difference is the content of the theorem.
 The coarser one, $[1, 255, 272]$, is the decomposition under the *whole* finite
 stabilizer of the polarization class, the largest group the discriminant form
@@ -304,13 +304,13 @@ Since the latter has index $136$ in the former, a calculation carried out purely
 in $\Orth(q_{T_\Co})$ overestimates how much of $A_{T_\Co}$ a degree-$2$ Coble
 period point can see.
 The four nonzero orbit lengths $2, 120, 135, 270$ sum to $527$, the number of
-nonzero isotropic classes of [the Coble $Q$-fiber proposition](discriminant-orbits-of-the-coble-lattice.md#prop:coble-q-fibers), so both decompositions
-refine the single nonzero orbit of [the isotropic-class orbit theorem](discriminant-orbits-of-the-coble-lattice.md#thm:coble-isotropic-class-orbits).
+nonzero isotropic classes of @prop:coble-q-fibers, so both decompositions
+refine the single nonzero orbit of @thm:coble-isotropic-class-orbits.
 
 Both are statements in the finite quadratic space $A_{T_\Co}$.
 Neither is yet a classification of $\Gamma_\Co^\En(\delta)$-orbits of primitive
 isotropic *vectors* of $T_\Co$, for the reason recorded in
-[the primitive-isotropic-class proposition](discriminant-orbits-of-the-coble-lattice.md#prop:coble-primitive-isotropic-classes): an integral parabolic stabilizer
+@prop:coble-primitive-isotropic-classes: an integral parabolic stabilizer
 may have proper image in the finite one, so a finite orbit can split.
 :::
 
@@ -319,7 +319,7 @@ may have proper image in the finite one, so a finite orbit can split.
 ::: {.proposition #prop:theta-co-exists title="The sign involution of the Coble primitive embedding"}
 
 Let $S_\Co\injects\lkt$ be the primitive embedding of
-[the Coble invariant-lattice proposition](../coble-surfaces/k3-covers-of-coble-surfaces.md#prop:coble-invariant-lattice), with complement
+@prop:coble-invariant-lattice, with complement
 $T_\Co = S_\Co^{\perp\lkt}$, and let
 $$
 \gamma_\Co\colon A_{S_\Co}\iso A_{T_\Co},
@@ -346,18 +346,18 @@ eigenlattices.
 
 Both $A_{S_\Co}$ and $A_{T_\Co}$ are $2$-elementary, so $-\id$ and $\id$ agree on
 each of them; the pair therefore acts as the identity on the graph of
-$\gamma_\Co$ and by [Nikulin's gluing theorem](embeddings-and-overlattices.md#thm:nikulin-gluing) extends over the overlattice $\lkt$
+$\gamma_\Co$ and by @thm:nikulin-gluing extends over the overlattice $\lkt$
 of $S_\Co\oplus T_\Co$.
 The eigenlattice description is the definition of the extension.
 For the last claim, an isometry commuting with an involution preserves its
-eigenspaces, which by [the involution-eigenspace proposition](invariant-and-coinvariant-lattices.md#prop:involution_eigenspaces) are the rational spans of
+eigenspaces, which by @prop:involution_eigenspaces are the rational spans of
 $T_\Co$ and $S_\Co$; conversely an isometry preserving both eigenlattices
 commutes with $\theta_\Co$ on each of them and hence on $\lkt$.
 :::
 
 ::: {.remark title="The folding involution is determined by the primitive gluing"}
 
-[The folding-involution proposition](#prop:theta-co-exists) settles the existence of the folding involution
+@prop:theta-co-exists settles the existence of the folding involution
 $\theta$ as a lattice isometry, and does so before any $22\times 22$ matrix is
 written: the involution is determined by the primitive embedding and the gluing
 anti-isometry.
@@ -365,18 +365,18 @@ What a matrix realization additionally supplies is a basis in which
 $\theta_\Co$, the polarization class, and the roots of the Coxeter diagram can be
 compared with one another.
 
-Combining [the folding-involution proposition](#prop:theta-co-exists) with [the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing) gives
+Combining @prop:theta-co-exists with @prop:gamma-en-two-gluing gives
 the Coble-side analogue of the discriminant description of $\Gamma_{\En,2}$: the
 restriction to $T_\Co$ of the centralizer of $\theta_\Co$ inside the stabilizer of
 a chosen polarization class $\tilde h_\Co\in S_\Co$ consists of those
 $g_T\in\Orth(T_\Co)$ for which some $g_S\in\Orth(S_\Co)$ satisfies
 $g_S(\tilde h_\Co) = \tilde h_\Co$ and
 $\bar g_T\circ\gamma_\Co = \gamma_\Co\circ\bar g_S$.
-Identifying that group with $\Gamma_\Co^\En(\delta)$ of [the induced Coble subgroup definition](#def:gamma-co-en)
+Identifying that group with $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en
 requires an isometry between the Coble primitive embedding and the Enriques
 Heegner complement carrying $\tilde h_\Co$ to the class $h = e+f$ of
-[the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing).
+@prop:gamma-en-two-gluing.
 The images of the two groups in $\Orth(q_{T_\Co})$ do agree, by
-[the finite-image orbit theorem](#thm:coble-heegner-finite-orbits), but agreement of finite images is weaker
+@thm:coble-heegner-finite-orbits, but agreement of finite images is weaker
 than an isomorphism of the lattice subgroups.
 :::
