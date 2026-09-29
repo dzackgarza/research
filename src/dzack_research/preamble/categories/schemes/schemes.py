@@ -2329,6 +2329,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             local_closed_subschemes,
             *,
             name="Chartwise closed subscheme",
+            placements=(),
             _engine=None,
             construction_data=None,
         ):
@@ -2339,6 +2340,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             return self._scheme_engine_realization.chartwise_closed_subscheme(
                 local_closed_subschemes,
                 name=name,
+                placements=placements,
                 _engine=_engine,
                 construction_data=construction_data,
             )
@@ -5578,6 +5580,61 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     )
 
 
+class EffectiveCartierDivisors(_SchemeSubobjectsOf):
+    r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
+
+    An effective Cartier divisor is a closed subscheme whose ideal sheaf is
+    invertible.  This is structure on the closed subobject, not on one
+    particular divisor realization.  A represented construction may retain a
+    Picard-class realization; the class itself is mathematically ``[O_X(D)]``.
+    """
+
+    immersion_name = "effective Cartier divisors"
+
+    def super_categories(self):
+        ambient = self.base_object()
+        return [
+            ClosedEmbeddings(ambient),
+            ClosedSubschemes(ambient.scheme_base_ring()),
+        ]
+
+    def an_object(self):
+        r"""Return the empty effective Cartier divisor in the represented affine case."""
+        ambient = self.base_object()
+        base = ambient.scheme_base_ring()
+        match ambient:
+            case _ if ambient in Schemes(base).Affine():
+                return ambient.closed_subscheme(
+                    ambient.coordinate_algebra().one(),
+                    placements=(self,),
+                )
+            case _:
+                raise AssertionError(
+                    f"the empty closed subscheme is an effective Cartier divisor on {ambient}, but this "
+                    "category currently constructs that specimen only from an affine presentation"
+                )
+
+    class ParentMethods:
+        def __init__(self, effective_cartier_picard_class=None, **rest) -> None:
+            self._effective_cartier_picard_class = effective_cartier_picard_class
+            super().__init__(**rest)
+
+        def is_effective_cartier_divisor(self) -> bool:
+            return True
+
+        def picard_class(self):
+            r"""Return the represented class ``[O_X(D)]`` in ``Pic(X)``."""
+            match self._effective_cartier_picard_class:
+                case None:
+                    raise AssertionError(
+                        f"{self} is an effective Cartier divisor on {self.inclusion().codomain()}, so it "
+                        "defines the Picard class [O(D)], but this closed-subscheme realization does not "
+                        "supply a represented class"
+                    )
+                case picard_class:
+                    return picard_class
+
+
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
     r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
 
@@ -5752,6 +5809,7 @@ __all__ = [
     "AffineSpaces",
     "ClosedEmbeddings",
     "ClosedSubschemes",
+    "EffectiveCartierDivisors",
     "FiberProductSchemes",
     "IntegralSchemes",
     "NormalSchemes",

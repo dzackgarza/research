@@ -54,3 +54,13 @@ def test_blowup_of_the_plane_at_a_point_is_a_del_pezzo_surface_of_degree_eight()
     assert canonical == -3 * hyperplane + exceptional
     assert blowup.intersection_number(canonical, canonical) == 8
     assert (-canonical).is_ample()
+
+
+def test_exceptional_curve_is_an_effective_cartier_divisor() -> None:
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
+    blowup = ProjectivePointBlowups(QQ)(plane.point_morphism((1, 1, 1)))
+    exceptional = blowup.exceptional_divisor()
+
+    assert exceptional in EffectiveCartierDivisors(blowup)
+    assert exceptional.inclusion().codomain() is blowup
+    assert exceptional.picard_class() == blowup.exceptional_picard_class()

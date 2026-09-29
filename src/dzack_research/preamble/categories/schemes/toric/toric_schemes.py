@@ -603,6 +603,42 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 int(self.dimension()) - int(orbit_dimension)
             )
 
+        def torus_fixed_point_subscheme(self, cone):
+            r"""Return the torus-fixed closed point indexed by a full-dimensional cone.
+
+            For a full-dimensional cone ``sigma``, the closed orbit in
+            ``U_sigma = Spec k[S_sigma]`` is cut out by all nonconstant
+            semigroup generators.  It is absent from every other maximal toric
+            chart.  Gluing those local closed subschemes gives the orbit closure
+            ``V(sigma)``, which is the fixed point used as a blowup center.
+            """
+            fan = self.fan()
+            assert cone in fan.maximal_cones(), (
+                f"the torus-fixed point of {self} must be indexed by a maximal cone of {fan}, "
+                f"but {cone} is not maximal"
+            )
+            assert int(cone.dimension()) == int(fan.dimension()), (
+                f"the orbit indexed by {cone} in {self} is not a fixed point: the cone has dimension "
+                f"{cone.dimension()} while the fan has dimension {fan.dimension()}"
+            )
+            local_closed = {}
+            for chart_cone in self.gluing_datum().chart_indices():
+                chart = self.affine_chart(chart_cone)
+                algebra = chart.coordinate_algebra()
+                match chart_cone == cone:
+                    case True:
+                        equations = tuple(
+                            algebra.algebra_generator(label)
+                            for label in algebra.algebra_generating_set()
+                        )
+                    case False:
+                        equations = (algebra.one(),)
+                local_closed[chart_cone] = chart.closed_subscheme(equations)
+            return self.chartwise_closed_subscheme(
+                local_closed,
+                name="Torus-fixed point",
+            )
+
         @cached_method
         def torus_invariant_divisor_group(self):
             r"""``Div_T(X) = ⊕_rho ZZ D_rho``, free on the rays (CLS §4.1).
@@ -670,7 +706,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""Return ``div(chi^m)`` as an element of the represented Weil group."""
             return self.character_divisor_morphism()(self.character_lattice()(character))
 
-        def torus_invariant_divisor_support_subscheme(self, divisor):
+        def torus_invariant_divisor_support_subscheme(
+            self,
+            divisor,
+            *,
+            placements=(),
+            construction_data=None,
+        ):
             r"""Return the reduced union of torus-invariant primes in an effective divisor.
 
             On ``U_sigma=Spec k[S_sigma]`` the invariant prime ``D_rho`` for
@@ -717,6 +759,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return self.chartwise_closed_subscheme(
                 local_closed,
                 name="Support of a torus-invariant divisor",
+                placements=placements,
+                construction_data=construction_data,
             )
 
         @cached_method

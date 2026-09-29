@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
     ClosedEmbeddings,
     ClosedSubschemes,
+    EffectiveCartierDivisors,
     SchemeMonomorphisms,
     FiberProductSchemes,
     IntegralSchemes,
@@ -62,7 +63,10 @@ from dzack_research.preamble.categories.schemes.group_schemes import (
 
 from dzack_research.preamble.categories.schemes.singularities import IsolatedHypersurfaceSingularity
 
-from dzack_research.preamble.categories.schemes.blowups import ProjectivePointBlowups
+from dzack_research.preamble.categories.schemes.blowups import (
+    Blowups,
+    ProjectivePointBlowups,
+)
 
 from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections
 
@@ -166,6 +170,8 @@ __all__ = [
     'LogPairs',
     'NormalSchemes',
     'OpenImmersions',
+    'Blowups',
+    'EffectiveCartierDivisors',
     'ProjectivePointBlowups',
     'ProjectiveCompleteIntersections',
     'ProjectiveSchemes',

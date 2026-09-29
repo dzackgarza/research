@@ -380,6 +380,8 @@ from dzack_research.preamble.schemes import (
     ProductSchemes,
     ProjectiveCompleteIntersections,
     ProjectiveGeneralLinearGroup2,
+    Blowups,
+    EffectiveCartierDivisors,
     ProjectivePointBlowups,
     ProjectiveSchemes,
     ProjectiveSpaces,
