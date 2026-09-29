@@ -3,7 +3,7 @@
 In order to construct a modular compactification of the moduli space of stable Enriques pairs -- with explicit control of the boundary -- it is necessary to analyze the singularities along the boundary of the Noether–Lefschetz locus $B \subset \cpt{\fttz}$ and to pass to the normalization. This normalization process allows the descent of the ramification semifans from $\fttz$ to $\fent$, which defines $\semitorcpt{\fen}$.
 
 :::{.proposition
-    title="{Normalization and Pullback Family}"
+    title="Normalization and Pullback Family"
     #prop:normalization-pullback-family
 }
 Let $\nu: \normalize{B} \to B$ be the normalization of $B$. Then:
@@ -20,7 +20,7 @@ By construction, $B$ is a closed subvariety of the projective stack $\cpt{\fttz}
 :::
 
 :::{.proposition
-    title="{Non-normality of the Noether–Lefschetz Locus}"
+    title="Non-normality of the Noether–Lefschetz Locus"
     #prop:non-normality-nl-locus
 }
 Let $B \subset \mcm$ be a Noether–Lefschetz locus with compactification $\cpt{B} \subset \cpt{\mcm}$, and let $\Delta = \cpt{\mcm} \setminus \mcm$ denote the boundary divisor. The failure of normality of $\cpt{B}$ along $\Delta$ arises through three mechanisms:
@@ -58,7 +58,7 @@ Each of these three mechanisms can be realized concretely in families of degener
 
 
 :::{.theorem
-    title="{Universal Family and Moduli Classification}"
+    title="Universal Family and Moduli Classification"
     #thm:universal-family-moduli
 }
 The pulled-back family
@@ -79,7 +79,7 @@ Stability is preserved by finite base change. The normalization $\normalize{B}$ 
 :::
 
 :::{.proposition
-    title="{Restriction of Semifans and Semitoroidal Compactification}"
+    title="Restriction of Semifans and Semitoroidal Compactification"
     #prop:restriction-semifans
 }
 The embedding $B \hookrightarrow \cpt{\fttz}$ induces on $\normalize{B}$ a semitoroidal structure as follows:
@@ -94,7 +94,7 @@ The restriction of the period domain reflects the imposition of involution-invar
 :::
 
 :::{.construction
-    title="{Folded Semifans and Complete Boundary Stratification}"
+    title="Folded Semifans and Complete Boundary Stratification"
     #const:folded-semifans
 }
 The classifying morphism $\phi: \normalize{B} \to \cpt{\fent}$ transports the combinatorial structure of $\semifan{F}_B$ to the boundary stratification on $\cpt{\fent}$.
@@ -109,7 +109,7 @@ For each $k$, the combinatorial structure is given by the following:
 :::
 
 :::{.proposition
-    title="{Properties of the Classifying Morphism}"
+    title="Properties of the Classifying Morphism"
     #prop:properties-classifying
 }
 The classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ has the following properties:
