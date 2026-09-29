@@ -23,14 +23,6 @@ None of them blocks the build, which compiles with no LaTeX errors.
   one for $(18,2,0)$ in AET. Whether the thesis wants the degree 4 case is a
   completeness decision, not a loss: the content is in Scattone.
 
-## Statements to check
-
-- `sections/2-part-moduli/4-chapter-cpt/200-toroidal.md`, the boundary lattice paragraph: it gives $\signature(I)$ and $\rank(I)$ for the isotropic sublattice $I$, but the values quoted are those of the boundary lattice $\bar T_I$.
-  Reads as a naming slip rather than a wrong computation.
-
-- `sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`: the definition of $V_k$ is over the 2-adic integers $\ZZ_{\hat 2}$, and the neighbouring $U_k$ over $\ZZ_2$.
-  The two displays sit together and should probably agree.
-
 ## Structure
 
 - Part II carries only its part heading; Parts I and III each open with framing prose.

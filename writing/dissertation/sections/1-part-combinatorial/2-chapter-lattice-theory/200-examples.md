@@ -276,7 +276,7 @@ V_{k}\da \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
 2^{k} & 2^{k+1}
 \end{array}\right]\right)
 $$
-For $k=1$, we write $V \da V_1$. This is an even, nondegenerate lattice of 2-adic rank $2$ and signature $(2, 0)$ that we write as $V$.
+For $k=1$, we write $V \da V_1$. This is an even, nondegenerate lattice of 2-adic rank $2$; its associated real form is positive definite of signature $(2, 0)$.
 Similarly, we define
 $$
 U_{k}\da \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
@@ -284,5 +284,5 @@ U_{k}\da \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
 2^{k} & 0
 \end{array}\right]\right)
 $$
-over the 2 -adic integers and write $U \da U_1$.
+Thus $U_k$ is the 2-adic hyperbolic plane scaled by $2^k$. We keep the subscript in this local notation, since $U$ denotes the integral hyperbolic plane throughout.
 These lattices contribute to the indecomposable factors of general 2-elementary lattices, which we discuss in the next section.
