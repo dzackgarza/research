@@ -1,13 +1,14 @@
 # Building the research report
 
-The source is `coble_heegner_research_report.md`.  It uses ordinary Pandoc Markdown, citation keys from `coble_references.bib`, fenced-div identifiers, and Pandoc-crossref section/table/equation labels.
+The source is `coble-heegner-research-report.md`.  It uses ordinary Pandoc Markdown, citation keys from `coble_references.bib`, fenced-div identifiers, and Pandoc-crossref section/table/equation labels.
 
 A typical PDF build is:
 
 ```sh
-pandoc coble_heegner_research_report.md \
+pandoc coble-heegner-research-report.md \
   --filter pandoc-crossref \
   --citeproc \
+  --bibliography=coble_references.bib \
   --pdf-engine=xelatex \
   --number-sections \
   --toc \
@@ -17,9 +18,10 @@ pandoc coble_heegner_research_report.md \
 A typical HTML build is:
 
 ```sh
-pandoc coble_heegner_research_report.md \
+pandoc coble-heegner-research-report.md \
   --filter pandoc-crossref \
   --citeproc \
+  --bibliography=coble_references.bib \
   --standalone \
   --number-sections \
   --toc \
