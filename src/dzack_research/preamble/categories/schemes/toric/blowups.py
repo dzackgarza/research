@@ -147,7 +147,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             principal-divisor relations vanish after pullback.
             """
             source = self.blowup_source()
-            source_picard = source.picard_group()
+            source_picard = self.source_picard_group()
             target_picard = self.picard_group()
             source_weil = source.weil_divisor_group()
 

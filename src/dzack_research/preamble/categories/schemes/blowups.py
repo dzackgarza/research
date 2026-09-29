@@ -97,6 +97,11 @@ class Blowups(OwnedCategoryOverBaseRing):
             return self._blowup_center
 
         @cached_method
+        def source_picard_group(self):
+            r"""Return ``Pic(X)`` for the source ``X`` of this blowup."""
+            return self.blowup_source().picard_group()
+
+        @cached_method
         def blowup_morphism(self):
             r"""Return the selected blowdown ``Bl_Z(X) -> X``."""
             return self._blowup_morphism()
@@ -336,13 +341,6 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
         def _represented_exceptional_picard_class(self):
             return self.picard_group().module_generator("E")
-
-        @cached_method
-        def source_picard_group(self):
-            source = self.blowup_source()
-            return source.picard_group(
-                PicardGroups().trivial(source.base_scheme())
-            )
 
         @cached_method
         def _picard_pullback_morphism(self):
