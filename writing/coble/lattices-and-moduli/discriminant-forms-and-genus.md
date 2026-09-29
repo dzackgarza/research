@@ -1,6 +1,6 @@
 # Discriminant forms and the genus
 
-::: {.Remark title="From lattice duality to genus classification"}
+::: {.remark title="From lattice duality to genus classification"}
 
 The Lattice Theory section introduced the dual lattice $L\dual$, the
 discriminant group $A_L \da L\dual/L$, and the discriminant quadratic form
@@ -16,7 +16,7 @@ extension of $\beta_L$.
 
 ## Quadratic forms and the polarization identity
 
-::: {.Definition #def:coble-quadratic-form title="Quadratic forms and their polar forms"}
+::: {.definition #def:coble-quadratic-form title="Quadratic forms and their polar forms"}
 
 A **quadratic form** on a $\ZZ$-module $L$ is a map of sets $q: L \to \QQ$ such
 that $q(\lambda v) = \lambda^2 q(v)$ for all $v\in L$ and all $\lambda\in\ZZ$,
@@ -32,7 +32,7 @@ We say $q$ is **integral** if $q(L) \containedin \ZZ$, and we call the pair
 $(L, q)$ a **quadratic $\ZZ$-module**.
 :::
 
-::: {.Remark title="Polarization recovers an integral quadratic form from an even bilinear form"}
+::: {.remark title="Polarization recovers an integral quadratic form from an even bilinear form"}
 
 Setting $w = v$ in the polar form and using homogeneity gives
 $$
@@ -47,7 +47,7 @@ This identity is the source of the bijection recorded below.
 
 ## The correspondence between bilinear and quadratic forms
 
-::: {.Lemma #lem:coble-bilinear-quadratic-correspondence title="Correspondence between symmetric bilinear and quadratic forms"}
+::: {.lemma #lem:coble-bilinear-quadratic-correspondence title="Correspondence between symmetric bilinear and quadratic forms"}
 
 Every $\QQ$-valued symmetric bilinear module $(L, \beta)$ determines a
 $\QQ$-valued quadratic module $(L, q_\beta)$ by
@@ -60,7 +60,7 @@ Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric
 bilinear module $(L, \beta_q)$ via its polar form from [the quadratic-form definition](#def:coble-quadratic-form).
 :::
 
-::: {.Lemma #lem:coble-even-lattice-bijection title="Even integral bilinear forms are equivalent to integral quadratic forms"}
+::: {.lemma #lem:coble-even-lattice-bijection title="Even integral bilinear forms are equivalent to integral quadratic forms"}
 
 There is a bijection between even symmetric integral bilinear forms on $L$ and
 integral quadratic forms on $L$:
@@ -104,7 +104,7 @@ The two assignments are mutually inverse.
 
 ## Torsion bilinear and quadratic forms
 
-::: {.Definition #def:coble-torsion-forms title="Torsion bilinear and quadratic forms"}
+::: {.definition #def:coble-torsion-forms title="Torsion bilinear and quadratic forms"}
 
 A **torsion bilinear form** is a pair $(G, \beta)$ where $G$ is a finitely
 generated torsion $\ZZ$-module and
@@ -118,7 +118,7 @@ i.e. $q(\lambda x) = \lambda^2 q(x)$ for all $x\in G$ and $\lambda\in\ZZ$, whose
 polar form is a torsion bilinear form.
 :::
 
-::: {.Remark title="Discriminant forms as torsion forms"}
+::: {.remark title="Discriminant forms as torsion forms"}
 
 The discriminant group $A_L$ of the Lattice Theory section is a finite, hence
 finitely generated torsion, $\ZZ$-module, so its associated forms are instances
@@ -136,7 +136,7 @@ multiplication-by-$2$ isomorphism.
 
 ## The discriminant bilinear and quadratic forms
 
-::: {.Definition #def:coble-discriminant-forms title="Discriminant bilinear and quadratic forms"}
+::: {.definition #def:coble-discriminant-forms title="Discriminant bilinear and quadratic forms"}
 
 Let $(L, \beta_L)$ be a nondegenerate even lattice with discriminant group
 $A_L = L\dual/L$, and let $\beta$ also denote the $\QQ$-valued extension of the
@@ -166,7 +166,7 @@ The **length** $\ell(L)$ of $L$ is the minimal number of generators of the
 abelian group $A_L$.
 :::
 
-::: {.Remark title="Well-definedness of the discriminant forms"}
+::: {.remark title="Well-definedness of the discriminant forms"}
 
 Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with
 $m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined
@@ -176,7 +176,7 @@ since $\beta(L\dual, L)\containedin\ZZ$ and $L$ is even.
 These forms are Nikulin's discriminant forms [@Nik80].
 :::
 
-::: {.Proposition #prop:discriminant-nondegenerate title="Nondegeneracy and polarization of discriminant forms"}
+::: {.proposition #prop:discriminant-nondegenerate title="Nondegeneracy and polarization of discriminant forms"}
 
 The discriminant forms $b_L$ and $q_L$ of a nondegenerate lattice $L$ are
 themselves nondegenerate, meaning that $b_L(\bar x, \,\cdot\,) = 0$ in
@@ -206,7 +206,7 @@ lifts.
 
 ## Properties of the dual lattice
 
-::: {.Proposition #prop:dual-properties title="Duality, Gram matrices, discriminants, and twists"}
+::: {.proposition #prop:dual-properties title="Duality, Gram matrices, discriminants, and twists"}
 
 Let $L$ and $M$ be nondegenerate lattices.
 The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
@@ -225,7 +225,7 @@ The dual lattice $L\dual = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
     twist of $L$ by $m$ from the Lattice Theory section.
 :::
 
-::: {.Remark title="Duality and discriminants"}
+::: {.remark title="Duality and discriminants"}
 
 Property (2) is the source of (3), since
 $\operatorname{disc}(L\dual) = \det(G_\beta\inv) = 1/\det(G_\beta) = 1/\operatorname{disc}(L)$.
@@ -236,7 +236,7 @@ Theory section.
 
 ## Geometric identification of the dual lattice
 
-::: {.Theorem #thm:dual-geometric-identification title="Geometric realization of the dual lattice"}
+::: {.theorem #thm:dual-geometric-identification title="Geometric realization of the dual lattice"}
 
 For a nondegenerate integral lattice $(L, \beta_L)$, the dual lattice is
 identified with a $\ZZ$-submodule of $L_\QQ = L\tensor_\ZZ\QQ$ via
@@ -269,7 +269,7 @@ values.
 
 ## The genus, class group, and class number
 
-::: {.Definition #def:coble-genus title="Genus, class group, and class number"}
+::: {.definition #def:coble-genus title="Genus, class group, and class number"}
 
 Two lattices $L_1, L_2$ belong to the same **genus** if
 $L_{1, \ZZ_p} \cong L_{2, \ZZ_p}$ for every prime $p$, where
@@ -281,7 +281,7 @@ lattices in the genus of $L$, and the **class number** is the cardinality
 $\abs{\operatorname{cl}(L)}$.
 :::
 
-::: {.Remark title="Genus versus isometry class"}
+::: {.remark title="Genus versus isometry class"}
 
 For indefinite even lattices $L$ of rank $\geq 3$ the class number is $1$, so
 that the genus determines the isometry class; this is Eichler's theorem on the
@@ -290,7 +290,7 @@ For definite lattices the situation is reversed: class number $1$ is
 comparatively rare.
 :::
 
-::: {.Proposition #prop:scattone-bound title="Scattone's lower bound for nontrivial class number"}
+::: {.proposition #prop:scattone-bound title="Scattone's lower bound for nontrivial class number"}
 
 If $\rank(L) > 16 + \ell(L)$, where $\ell(L)$ is the length of
 [the discriminant-form definition](#def:coble-discriminant-forms), then the class number satisfies
@@ -304,7 +304,7 @@ This is the bound of [@Sca87].
 
 ## Local invariants and the Jordan decomposition
 
-::: {.Definition #def:scale-norm-volume title="Scale, norm, and volume"}
+::: {.definition #def:scale-norm-volume title="Scale, norm, and volume"}
 
 Let $(L, \beta_L)$ be a lattice.
 Its **scale** is the ideal generated by all pairings and its **norm** the ideal
@@ -325,7 +325,7 @@ $\mathfrak{n}(L(m)) = m\,\mathfrak{n}(L)$ and
 $\mathfrak{v}(L(m)) = m^{r}\,\mathfrak{v}(L)$ for $r = \rank(L)$.
 :::
 
-::: {.Definition #def:modular-lattice title="Modular lattices"}
+::: {.definition #def:modular-lattice title="Modular lattices"}
 
 A lattice $L$ is **$m$-modular** if $m L\dual = L$; equivalently, $L$ is similar
 to its dual.
@@ -333,7 +333,7 @@ A unimodular lattice is the case $m = 1$, and $L(m)$ is $m$-modular whenever $L$
 is unimodular.
 :::
 
-::: {.Theorem #thm:jordan-decomposition title="Jordan decomposition"}
+::: {.theorem #thm:jordan-decomposition title="Jordan decomposition"}
 
 Let $L$ be a nondegenerate lattice and $p$ a prime.
 Then $L_{\ZZ_p} = L\tensor_\ZZ\ZZ_p$ admits an orthogonal decomposition
@@ -346,7 +346,7 @@ Such a decomposition exists and is unique up to isometry, and the scales
 $p^{s_i}$ and the ranks $\rank(L_i)$ are invariants of $L$ at $p$.
 :::
 
-::: {.Remark title="Jordan invariants determine the local genus data"}
+::: {.remark title="Jordan invariants determine the local genus data"}
 
 The Jordan invariants at every prime are exactly the data compared in
 [the genus definition](#def:coble-genus): two lattices lie in the same genus precisely when they have
@@ -359,7 +359,7 @@ rank-one summands.
 
 ## The mass formula as a class-number criterion
 
-::: {.Definition #def:mass title="The mass of a genus"}
+::: {.definition #def:mass title="The mass of a genus"}
 
 Let $L$ be a positive definite lattice and let $L^{(1)}, \ldots, L^{(h)}$ be
 representatives of the isometry classes in the genus of $L$, so that
@@ -371,7 +371,7 @@ m(L) \da \Sum_{i=1}^{h} \frac{1}{\abs{\Orth(L^{(i)})}}
 $$
 :::
 
-::: {.Remark title="The Smith--Minkowski--Siegel formula and its use"}
+::: {.remark title="The Smith--Minkowski--Siegel formula and its use"}
 
 The mass is computable from local data alone: the Smith--Minkowski--Siegel mass
 formula expresses $m(L)$ as a product of an archimedean factor and one $p$-adic
@@ -393,7 +393,7 @@ is the definite counterpart of the indefinite criterion recorded above.
 
 ## Surjectivity onto the discriminant group
 
-::: {.Theorem #thm:two-elementary-surjectivity title="$\Orth(H)\to\Orth(A_H, q_H)$ is surjective for indefinite $2$-elementary $H$"}
+::: {.theorem #thm:two-elementary-surjectivity title="$\Orth(H)\to\Orth(A_H, q_H)$ is surjective for indefinite $2$-elementary $H$"}
 
 Let $H$ be an indefinite even $2$-elementary lattice.
 Then the natural homomorphism
@@ -408,7 +408,7 @@ onto the isometry group of the discriminant form is surjective.
 This is [@Nik80]; see [@Ale22 §4] for the statement in this form.
 :::
 
-::: {.Remark title="Surjectivity makes the discriminant group an effective finite shadow"}
+::: {.remark title="Surjectivity makes the discriminant group an effective finite shadow"}
 
 Surjectivity is what makes the finite quadratic space $A_H$ a faithful shadow of
 $\Orth(H)$, and it enters at three separate points below: it lifts an isometry of
@@ -421,7 +421,7 @@ indefinite even $2$-elementary.
 
 ## Invariants that do not classify
 
-::: {.Theorem #thm:milgram title="Milgram's formula"}
+::: {.theorem #thm:milgram title="Milgram's formula"}
 
 Let $L$ be a nondegenerate even lattice with discriminant form
 $q_L\colon A_L\to\QQ/2\ZZ$ and signature $(n_+, n_-)$.
@@ -442,7 +442,7 @@ In particular the discriminant form determines the index $n_+ - n_-$ modulo $8$.
 This is the Gauss-sum formula of [@MH73 Appendix 4].
 :::
 
-::: {.Remark title="What each invariant determines"}
+::: {.remark title="What each invariant determines"}
 
 Milgram's formula is a constraint linking the two halves of the classifying data
 of [the genus definition](#def:coble-genus); it is an invariant of the discriminant form alone.
@@ -466,7 +466,7 @@ together with the discriminant form $(A_L, q_L)$, which determine the genus
 the genus determines the isometry class.
 :::
 
-::: {.Remark title="The consequence for complementary lattices"}
+::: {.remark title="The consequence for complementary lattices"}
 
 If $S\containedin\Lambda$ is primitive in an even unimodular $\Lambda$ with
 complement $T = S^{\perp\Lambda}$, then $q_T\cong -q_S$ by
@@ -484,7 +484,7 @@ shadow of that comparison.
 
 ## Finiteness of orbits of vectors of fixed norm
 
-::: {.Theorem #thm:finiteness-fixed-norm-orbits title="Finitely many orbits in each norm"}
+::: {.theorem #thm:finiteness-fixed-norm-orbits title="Finitely many orbits in each norm"}
 
 Let $L$ be an integral lattice and $n\in\ZZ$.
 The set
@@ -494,7 +494,7 @@ $$
 of representations of $n$ by $L$ decomposes into finitely many $\Orth(L)$-orbits.
 :::
 
-::: {.Remark title="Why the statement is needed and where it comes from"}
+::: {.remark title="Why the statement is needed and where it comes from"}
 
 For a definite lattice the statement is trivial, $S_n$ itself being finite.
 The content is the indefinite case, where $S_n$ is typically infinite: it is the
