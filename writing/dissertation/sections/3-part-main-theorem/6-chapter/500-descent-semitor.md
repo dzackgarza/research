@@ -36,7 +36,7 @@ It follows that normalization of $\cpt{B}$ corresponds to resolving the branchin
 
 Let $\mathsf{P}: \fent \to \fttz$ denote the period map between the moduli stack of lattice-polarized K3 (or Enriques) surfaces and its image in the period domain, extended to suitable toroidal or semi-toric compactifications $\cpt{\fent} \to \cpt{\fttz}$ as established in @AEGS25. Both source and target are Deligne–Mumford stacks, locally of finite type over $\CC$.
 
-:::{.proposition title="Boundary mechanisms for non-normality of the period-map image"}
+:::{.proposition title="Boundary mechanisms for non-normality of the period-map image" #prop:boundary-non-normality-mechanisms}
 The non-normality of the scheme-theoretic image of $\cpt{\fent} \to \cpt{\fttz}$ (and in particular for the closures of Noether–Lefschetz loci) along the boundary $\Delta = \cpt{\fttz} \setminus \fttz$ is a consequence of failures of separatedness and unramifiedness of the period map at points of $\Delta$, due to three mechanisms: (1) failure of injectivity of the period map at the boundary, (2) non-transversality of the intersection of irreducible components of $\Delta$, and (3) identifications arising from monodromy action.
 :::
 

@@ -10,7 +10,7 @@ $$
 .$$
 More precisely,
 
-:::{.definition title="Semifans"}
+:::{.definition title="Semifans" #def:semifans}
 let $V$ be a real finite-dimensional vector space, and let $C \subset V$ be an open, nondegenerate convex cone.
 A **semifan** $\mcf$ in $C$ is a collection of closed, convex, rational polyhedral cones $\sigma \subset \thecone{C}_{\QQ}$ such that:
 
@@ -34,7 +34,7 @@ If for every cone $\sigma \in \mcf_I$ there is a decomposition $\sigma = P \time
 :::
 
 
-:::{.definition title="$\Gamma$-admissible semifans"}
+:::{.definition title="$\Gamma$-admissible semifans" #def:gamma-admissible-semifans}
 Let $T$ be an even lattice of signature $(2, n)$ and $\Gamma \leq \Orth(T)$ a neat arithmetic group. Let $\FG$ be the arithmetic quotient, and $\bbcpt{\FG}$ its Baily–Borel compactification. Each cusp of $\bbcpt{\FG}$ corresponds to a primitive isotropic subspace $I \subset T$. Let $\bdlattice{T}{I} = I^\perp / I$ be the associated boundary lattice and $\thecone{C}_{I, \QQ}$ the rational closure of the positive cone in $\bdlattice{T}{I, \RR}$.
 A **$\Gamma$-admissible semifan at the cusp determined by $I$** is a semifan $\mcf_I$ in $\thecone{C}_{I, \QQ}$, invariant under $\Stab_\Gamma(I)$ with finitely many $\Stab_\Gamma(I)$-orbits of cones. The support of $\mcf_I$ need not cover all of $\thecone{C}_{I, \QQ}$ nor be locally finite.
 A **compatible system of $\Gamma$-admissible semifans** is a collection $\semifans{F}$, one for each cusp $I$, such that for every inclusion of cusps $I \subset J$ (that is, for inclusions of the underlying isotropic subspaces), the natural projection $\pi_{IJ} \colon \bdlattice{T}{I, \RR} \to \bdlattice{T}{J, \RR}$
@@ -52,7 +52,7 @@ Generalized Coxeter semifans, defined below, provide intermediate examples of st
 
 #### Construction
 
-:::{.theorem title="Existence of semitoroidal compactifications [@Loo03]"}
+:::{.theorem title="Existence of semitoroidal compactifications [@Loo03]" #thm:semitoroidal-existence}
 Let $T$ be an even lattice of signature $(2, n)$, $\Gamma \leq \OStab(T)$ a neat arithmetic group, and $\FG$ the associated locally symmetric modular variety. Let $\semifans{F}$ be a compatible system of $\Gamma$-admissible semifans ranging over Baily-Borel cusps $I$ of $\bd\bbcpt{\FG}$, as defined above.
 Then there exists a normal compactification $\semitorcpt{\FG}$ containing $\FG$ as an open dense subset, called the **semitoroidal compactification** associated to $\semifans{F}$, with the following properties:
 
@@ -70,6 +70,7 @@ Note that unlike for fans, strata corresponding to Type $\III$ cones of a semifa
 
 :::{.definition
     title="Semitoroidal compactifications"
+    #def:semitoroidal-local-models
 }
 Given a compatible system $\semifans{F}$ of $\Gamma$-admissible semifans, the local model of the semitoroidal compactification near the cusp associated to $I$ is a toroidal embedding constructed from $\mcf_I$, typically a finite quotient of a toric embedding $X(\semifans{F})$ associated with the semifan.
 For $0$-cusps, the local neighborhood is modeled on such a quotient of a torus fibration, and the boundary strata correspond to cones of $\semifans{F}$. For higher rank cusps ($\rank(I) > 1$), the local model is, locally in the analytic or formal topology, a toric fibration over the boundary stratum corresponding to $I$, whose fibers are toroidal embeddings associated to semifans.
@@ -77,7 +78,7 @@ The boundary of $\semitorcpt{\FG}$ is stratified by the cones and faces of all s
 This local-to-global structure enables interpolation between the $\bbcpt{\FG}$ and the maximal $\torcpt{\FG}$ by allowing the semifans to vary from trivial to polyhedral and locally finite.
 :::
 
-:::{.theorem title="Birational tower characterization [@AE23, Theorem 5.14]"}
+:::{.theorem title="Birational tower characterization [@AE23, Theorem 5.14]" #thm:semitoroidal-birational-tower}
 Let $\FG$ be a Type $\IV$ arithmetic quotient, and let $\cpt{\FG}$ be any normal compactification of $\FG$. The following are equivalent:
 
 1. There exist proper morphisms of normal compactifications
@@ -90,7 +91,7 @@ Let $\FG$ be a Type $\IV$ arithmetic quotient, and let $\cpt{\FG}$ be any normal
 
 :::
 
-:::{.theorem title="Recognition theorem for KSBA compactifications [@AE23, Theorem 9.1]"}
+:::{.theorem title="Recognition theorem for KSBA compactifications [@AE23, Theorem 9.1]" #thm:ksba-semitoroidal-recognition}
 Let $R$ be a recognizable divisor in the moduli space of $S$-polarized K3 surfaces (in the sense of [@AE23]) corresponding to the moduli space $F_{\Gamma}$, where $\Gamma$ is the appropriate arithmetic subgroup of $\Orth(T)$ and $T\da S^{\perp \lkt}$. Then there exists a unique semifan $\mcf_R$ such that the normalization morphism $\semifancpt{\FG}{\mcf_R} \to \ksbacpt{\FG}^R$ identifies $\semifancpt{F_M}{\mcf_R}$ as the normalization of the KSBA compactification $\ksbacpt{\FG}^R$ associated to $R$.
 The cones of $\mcf_R$ are precisely the maximal subsets in which the combinatorial type of slc stable pairs is constant as a function of the *monodromy invariant* $\lambda$.
 :::
@@ -127,7 +128,7 @@ A partition $\Phi = \Phi^{\relevant} \sqcup \Phi^{\irrelevant}$ into **relevant*
 
 :::
 
-:::{.definition title="Generalized Coxeter Semifan [@AET23, Def. 4.16]"}
+:::{.definition title="Generalized Coxeter Semifan [@AET23, Def. 4.16]" #def:generalized-coxeter-semifan-cpt}
 Fix a partition $\Phi = \Phi^{\irrelevant} \sqcup \Phi^{\relevant}$.
 Let $W^{\irrelevant} = \langle w_\alpha \st \alpha \in \Phi^{\irrelevant} \rangle \subset W$ denote the reflection subgroup generated by reflections in the irrelevant roots. The corresponding generalized chamber is
 $$

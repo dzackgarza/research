@@ -91,7 +91,7 @@ The **normalization** of $X$ is a finite birational morphism
 with $\normalize{X}$ normal, universal among morphisms from normal schemes to $X$.
 :::
 
-:::{.definition title="The Conductor Subscheme and Double Locus"}
+:::{.definition title="The Conductor Subscheme and Double Locus" #sing-conductor-double-locus}
 Let $X$ be a reduced scheme and let $\nu: \widetilde{X} \to X$ denote its normalization. The **conductor ideal sheaf** is defined as
 
 \begin{align*}
@@ -120,7 +120,7 @@ Its practical implications by dimension are as follows:
 - $\dim(X) \geq 3:$ The singular locus of $\normalize{X}$ is of codimension at least 2, and consists of *normal singularities* -- these can generally be complicated.
 
 
-:::{.theorem title="Zariski's Main Theorem (Recognition Theorem for Normalizations)"}
+:::{.theorem title="Zariski's Main Theorem (Recognition Theorem for Normalizations)" #thm-normalization-recognition}
 Let $X$ be a reduced, separated, Noetherian scheme, and let $f \colon Y \to X$ be a morphism. Then $f$ is (up to unique isomorphism) the normalization of $X$ if and only if:
 
 1. $Y$ is normal,
@@ -298,7 +298,7 @@ When the $\mcx_0$ degenerates ($(\mathcal{X}_0, \mcr_0)$), it may become reducib
 
 #### The KSBA Moduli Stack
 
-:::{.definition title="KSBA Stable Pair"}
+:::{.definition title="KSBA Stable Pair" #moduli-stable-pair}
 Let $X$ be a projective, demi-normal (in particular, $S_2$ and normal crossing in codimension one) variety over an algebraically closed field of characteristic $0$, and let $D = \sum_j a_j D_j$ be an effective $\QQ$-divisor with $0 < a_j < 1$ and each component $D_j$ a Weil divisor whose support does not contain any component of the double locus of $X$.
 The pair $(X, D)$ is called a **(KSBA) stable pair** if:
 
@@ -308,7 +308,7 @@ The pair $(X, D)$ is called a **(KSBA) stable pair** if:
 :::
 
 
-:::{.definition title="Dual Complex of a Stable Degeneration"}
+:::{.definition title="Dual Complex of a Stable Degeneration" #moduli-dual-complex}
 Let $\bar{X}$ be a reduced, finite-type, possibly reducible variety arising as the $\mcx_0$ of a degeneration of KSBA stable pairs. The **dual complex** $\Gamma(\bar{X})$ is the simplicial complex defined by:
 
 - **Vertices:** Each irreducible component $\bar{V}_i$ of $\bar{X}$ corresponds to a vertex.
@@ -351,7 +351,7 @@ This ensures that limits have only slc singularities and that stability is prese
 Thus, in the $K$-trivial setting, one "perturbs" the canonical class to achieve the necessary positivity by considering pairs $(X, \eps R)$ with a small rational coefficient $0 < \eps \ll 1$. For sufficiently small $\eps$, the sum $K_X + \eps R$ becomes ample and thus $(X, \eps R)$ is KSBA stable.
 With this setup, the moduli of stable $K$-trivial pairs is realized as a special locus in the general KSBA moduli stack described above, and all the foundational results (properness, separatedness, projectivity, etc.) apply directly.
 
-:::{.definition title="Stable $K$-Trivial Pair"}
+:::{.definition title="Stable $K$-Trivial Pair" #ktriv-stable-pair}
 Let $X$ be a projective, Gorenstein, connected, reduced variety with $K_X \cong \OO_X$ (that is, $K_X$ is trivial; for example, a $K3$ or Enriques surface). Fix a discrete invariant $e > 0$ (e.g., $e = R^2$ for surfaces), and let $0 < \eps \ll 1$ be a (sufficiently small) rational number.
 A **stable $K$-trivial pair of type $(e, \eps)$** is a KSBA stable pair $(X, \eps R)$ such that:
 
