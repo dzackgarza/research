@@ -1780,7 +1780,7 @@ Prove termination, completeness of the simple roots, and compute the chamber aut
 **B5.4. Direct KSBA normalization theorem.**  Construct the classifying map, prove properness, finiteness, generic injectivity, and absence of further coarsening.
 :::
 
-::: {.Problem #req-B61 title="Classification of Coble boundary components"}
+::: {.Problem #req-B61 title="Finite and affine Coble boundary component classification"}
 **B6.1. Coble component classification.**  Classify all finite and affine component pairs, including equations, quotient involutions, branch curves, ramification divisors, and contractions.
 :::
 
