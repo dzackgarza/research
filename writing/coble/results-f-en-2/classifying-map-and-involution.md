@@ -17,7 +17,7 @@ The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limit
 
 ## Global extension of the Enriques involution
 
-::: {.Conjecture #conj:enriques_involution_extension title="Global extension of the Enriques involution"}
+::: {.Conjecture #conj:enriques_involution_extension title="The Enriques involution extends over the boundary"}
 
 Over the Noether--Lefschetz closure $B \containedin \ksbacpt{\fttz}$ of [the Enriques Noether--Lefschetz-locus definition](../surfaces-and-moduli/polarizations-and-loci.md#def:nl-locus-enriques), there is a universal KSBA family $(\mathcal{X}_B, \varepsilon \mathcal{R}_B)$.
 The fixed-point-free Enriques involution $\ien$ on the smooth fibers is expected to extend uniquely to a global involution on the entire family $\mathcal{X}_B$.
@@ -34,7 +34,7 @@ The source note asserted the extension, the preservation of the slc structure an
 
 ## Finiteness of the classifying map
 
-::: {.Conjecture #conj:classifying_map_finite title="Finiteness of the classifying map"}
+::: {.Conjecture #conj:classifying_map_finite title="The classifying morphism is finite"}
 
 The classifying morphism
 $$
