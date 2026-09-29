@@ -178,7 +178,7 @@ The strategy is as follows:
 
 3. Restrict $\Psi$ to its scheme-theoretic image, i.e. the smallest closed subscheme of $\fttz$ through which $\Psi$ factors, to obtain $\Psi: \fent \to X$
 
-4. Since $\fent$ is known to be normal by the general theory of @BB66, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
+4. Since $\fent$ is normal by the Baily--Borel theory [@BB66], it remains to prove that $\Psi\colon \fent\to X$ is finite and birational. A finite birational morphism from a normal integral variety identifies its source with the normalization of the target [@stacks-035E].
 
 We first claim there is a holomorphic, algebraic morphism of period domains
 \begin{align*}
@@ -281,7 +281,7 @@ There exists a closed subscheme $X \subset \fttz$ such that $\fent$ is canonical
 :::
 
 :::{.proof}
-The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fent$ and $\fttz$ are normal since they are complex analytic manifolds, following @BB66. The closed subscheme $X$ inherits normality as a subscheme of a normal variety.
+The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. The arithmetic quotient $\fent$ is normal by Baily--Borel [@BB66].
 
-By Zariski's Main Theorem, a finite birational morphism from a normal variety to an integral variety identifies the source with the normalization of the target. Therefore, $\Psi\colon \fent \to X$ exhibits $\fent$ as the normalization of $X$.
+To identify $\Psi$ with the normalization morphism, work over an affine open $U=\Spec A\subset X$. Since $\Psi$ is finite, $\Psi^{-1}(U)=\Spec B$ for a finite integral $A$-algebra $B$, and birationality identifies the fraction fields of $A$ and $B$. Normality of $\fent$ says that $B$ is integrally closed in this common fraction field. Hence $B$ is exactly the integral closure of $A$: every element of $B$ is integral over $A$, while every element integral over $A$ is also integral over $B$ and therefore lies in $B$. Thus the affine pieces of $\fent$ are the integral closures of the corresponding affine pieces of $X$, so $\Psi\colon \fent\to X$ is the normalization morphism [@stacks-035E].
 :::
