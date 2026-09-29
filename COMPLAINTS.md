@@ -252,6 +252,37 @@ Magma's documented real-reflection/reflection-subgroup APIs were inspected.
 No exact backend was found for either missing construction. Repair requires
 the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
+### Locally Noetherian integral schemes have no common Weil-class owner
+
+The placement audit found three public `class_group()` implementations on
+`AffineSpaces`, `ProjectiveSpaces`, and `ToricSchemes`, while the general Weil
+divisor operation is public only on affine schemes. These placements reflect
+available computations rather than the mathematical domains of the operations.
+For a locally Noetherian integral scheme `X`, prime divisors, `Div(X)`, principal
+Weil divisors, and `Cl(X) = Div(X)/Prin(X)` are already defined before any
+normality, affine, projective, or toric hypothesis (Stacks, Tags 0BE2 and 0BE4).
+
+The scheme graph has `FiniteType`, `Integral`, and `Normal` properties but no
+locally Noetherian property, so it has no category at which these operations can
+be placed without either strengthening their hypotheses or duplicating them at
+computable descendants. Normality is needed by the current affine valuation
+algorithm and by additional comparison theorems, but not by the definition of
+the class group.
+
+**Expected behavior:** `Schemes(R).LocallyNoetherian().Integral()` owns the Weil
+divisor and class-group operations. Affine-normal, projective-space, and toric
+routes supply private computation cases; unsupported represented cases keep the
+same public operations and fail only at the computation frontier.
+**Dependency path:** locally Noetherian scheme property -> integral locally
+Noetherian scheme -> Weil divisors/principal divisors -> `Cl(X)` -> specialized
+affine/projective/toric algorithms.
+**Owning boundary:** the scheme property graph and general divisor construction,
+not the three specialized scheme families.
+**Coverage boundary:** `Schemes.Affine.full_weil_divisor_group`, the three live
+`class_group()` implementations, and `general_divisors.py` were inspected as
+source during `placement-audit`; runtime execution remains suspended by
+`DEV-58`.
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
