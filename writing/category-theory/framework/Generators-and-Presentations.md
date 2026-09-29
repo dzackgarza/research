@@ -117,7 +117,7 @@ Since $R^{n}$ is projective and $q_N$ is surjective, $fq_M\colon R^{n}\to N$ fac
 Then $q_NA_0d_M=fq_Md_M=0$, so $A_0d_M$ lands in $\ker q_N=\operatorname{im}d_N$; since $R^{m}$ is projective and $R^{m'}\to\operatorname{im}d_N$ is surjective, $A_0d_M$ factors as $d_NA_1$ for some $A_1\colon R^{m}\to R^{m'}$. $\square$
 
 The pair $(A_1,A_0)$ produced by this argument is not determined by $f$.
-The relation identifying two lifts of one $R$-linear map is the chain homotopy of @thm-resolution-comparison, which is stated for resolutions rather than for two-term presentations.
+The relation identifying two lifts of one $R$-linear map is the chain homotopy of @thm:resolution-comparison, which is stated for resolutions rather than for two-term presentations.
 
 Forgetting $A_1$ and $A_0$ gives the category on the same objects whose morphisms are the $R$-linear maps alone.
 That is the distinction of @def:coordinatized-module one level up: the lifted morphisms carry the matrices, the abstract ones carry only the module map they present.
@@ -125,7 +125,7 @@ That is the distinction of @def:coordinatized-module one level up: the lifted mo
 
 ::: {.definition #def:fp-n title="Modules of type $FP_n$"}
 
-For $n\ge0$, an $R$-module $M$ is of *type $FP_n$* if it admits a projective resolution (@def-resolution)
+For $n\ge0$, an $R$-module $M$ is of *type $FP_n$* if it admits a projective resolution (@def:resolution)
 $$
 \cdots\longrightarrow P_1\longrightarrow P_0\longrightarrow M\longrightarrow0
 $$
