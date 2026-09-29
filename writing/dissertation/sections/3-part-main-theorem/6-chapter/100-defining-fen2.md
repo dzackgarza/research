@@ -2,7 +2,7 @@
 
 
 :::{.definition
-    title="{Moduli Stack $\fent$ of Numerically Polarized Enriques Surfaces of Degree Two}"
+    title="Moduli Stack $\fent$ of Numerically Polarized Enriques Surfaces of Degree Two"
     #def:fent
 }
 Let $\fent$ be the Deligne–Mumford stack over $\CC$ parameterizing isomorphism classes of pairs $(Z, L)$, where
@@ -18,7 +18,7 @@ Two pairs $(Z, L)$ and $(Z', L')$ are isomorphic if there exists an isomorphism 
 :::
 
 :::{.definition
-    title="{KSBA Compactification $\cpt{\fent}$ of $\fent$}"
+    title="KSBA Compactification $\cpt{\fent}$ of $\fent$"
     #def:cpt-fent
 }
 Fix a rational $0 < \varepsilon \ll 1$. The KSBA compactification $\cpt{\fent}$ is defined as the Deligne–Mumford stack whose objects over $\CC$-schemes are isomorphism classes of pairs $(Z, \varepsilon R_Z)$, satisfying:
@@ -33,7 +33,7 @@ The open substack consisting of pairs with smooth $Z$ and $R_Z$ the branch divis
 
 
 :::{.theorem
-    title="{Basic Properties of $\cpt{\fent}$}"
+    title="Basic Properties of $\cpt{\fent}$"
     #thm:basic-fent
 }
 The stack $\cpt{\fent}$ is a proper, separated, normal Deligne–Mumford stack of finite type over $\CC$ . The inclusion $\fent \hookrightarrow \cpt{\fent}$ realizes $\fent$ as the maximal open substack whose geometric points correspond to smooth numerically polarized Enriques surfaces of degree two. Each one-parameter family in $\fent$ admits a unique extension, up to unique isomorphism, to $\cpt{\fent}$. That is, the KSBA compactification provides unique stable limits for degenerating families.
