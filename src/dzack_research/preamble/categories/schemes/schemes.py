@@ -2747,6 +2747,39 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_separated(self):
                 return True
 
+            def point_blowup(self, point):
+                r"""Return the blowup of ``self`` along the closed image of the ``R``-point ``point``.
+
+                A section ``Spec R -> X`` of a separated ``R``-scheme is a
+                closed immersion, so its image is a closed center and the
+                blowup is defined (Stacks, Tags 024T and 0806).  The current
+                represented computation is the projective-plane case; other
+                separated schemes retain the operation at this owner and state
+                the missing Rees-algebra computation explicitly.
+                """
+                base = self.scheme_base_ring()
+                assert point.domain() is self.base_scheme() and point.codomain() is self, (
+                    f"cannot blow up {self} at {point}: the center must be an {base}-point "
+                    f"Spec {base} -> {self}"
+                )
+                match self:
+                    case _ if (
+                        self in ProjectiveSpaces(base)
+                        and base in OwnedFields()
+                        and int(self.relative_dimension()) == 2
+                    ):
+                        from dzack_research.preamble.categories.schemes.blowups import (
+                            _projective_point_blowup,
+                        )
+
+                        return _projective_point_blowup(self, point)
+                    case _:
+                        raise AssertionError(
+                            f"the blowup of the separated scheme {self} at the closed point {point} is defined "
+                            "as the relative Proj of the Rees algebra of its point ideal, but this realization "
+                            "does not supply that Rees-algebra construction"
+                        )
+
         def an_object(self):
             r"""The affine line, separated because it is affine."""
             return AffineSpaces(self.base_ring())(1)
@@ -4135,14 +4168,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 
             lattice = _own_ring(SageZZ).free_module(int(self.relative_dimension()))
             return RationalPolyhedralFans(lattice).projective_space_fan()
-
-        def point_blowup(self, point):
-            r"""Blow up this represented projective plane at ``point``."""
-            from dzack_research.preamble.categories.schemes.blowups import (
-                _projective_point_blowup,
-            )
-
-            return _projective_point_blowup(self, point)
 
         @cached_method
         def _picard_to_class_group_morphism(
