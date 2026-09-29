@@ -103,6 +103,8 @@ In my current single-author project, I have studied the boundary \( \partial \ov
 \]
 on their Baily-Borel compactifications. To determine the stratification of \( \overline{ F_{\Co} }^{\operatorname{BB}} \), I apply the *mirror moves* of [@AE22], which are encoded in @fig:mirror-moves-coble-simplified-tikz.
 
+:::
+
 ::: {#fig:mirror-moves-coble-simplified-tikz .figure}
 \begin{tikzpicture}
 \pic {object=mirror-moves/coble};
@@ -125,15 +127,14 @@ The boundary of the Baily-Borel compactification of $F_{\Co}$. Rounded nodes ind
 The cusp correspondence $\eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{\operatorname{En}}  }^{\operatorname{BB}}$. Dotted arrows indicate the boundary correspondence under $\eta$.
 :::
 
-
-:::
-
 ::: {.remark title="From Coble cusps to polarized Enriques stable limits"}
 I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{(2,2,0)}  }^{\operatorname{BB}} \), a moduli space of quartic hyperelliptic K3 surfaces used in [@AEGS25]. I determined that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in @fig:220-cusps-diagram. Using our previous work in [@AEGS25], I am working on a correspondence between \( F_{\Co} \) and \( F_{\operatorname{En}, 2} \) in order to construct KSBA degenerations. The cusp diagram for \( F_{\operatorname{En}, 2} \) was first given by [@Ste91], and I have computed that the Coble 0-cusp corresponds with cusp 2 of @fig:sterk-cusp-diagram. This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\operatorname{O}}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
 
 Toward this end, I have been working on adapting the techniques of [@Ste91] and [@Sca87] to new lattices. This has involved a careful study of the discriminant groups \( A_{T_{\Co}} \) and \( A_{T_{\operatorname{En}}} \) of the Coble and Enriques lattices, and finding techniques to reduce classification of orbits of isotropic vectors in \( T_{\Co} \) to finite, computable problems in \( A_{T_{\Co}} \). This has also involved explicit constructions of *Eichler transformations* which prove that vectors satisfying certain numerical properties are in the same \( \Gamma_{\Co} \)-orbit. Conjecturally, this will suffice to produce a complete cusp diagram for \( D_{\Co}/\Gamma_{\Co} \), which I can then put in correspondence with the cusps of \( F_{\operatorname{En}, 2} \).
 
 Ultimately, this chain of correspondences will allow me to leverage [@AEGS25], [@AT17], and [@AE22] to construct integral affine structures and dlt models of KSBA-stable Coble surfaces in terms of those for K3 and Enriques surfaces. From these data, in an in-progress paper which will comprise the majority of my dissertation, I am working on constructing the KSBA stable limits of Coble surfaces as special cases of limits of Enriques surfaces satisfying a certain linear relation, yielding a geometrically meaningful, explicit, combinatorial description of the KSBA stable pair compactification \( \overline{F_{\Co}} \) and its boundary \( \partial \overline{F_{\Co}} \).
+
+:::
 
 ::: {#fig:220-cusps-diagram .figure}
 \begin{tikzpicture}
@@ -149,7 +150,6 @@ The boundary cusp diagram of $F_{(2,2,0)}$, the moduli space of quartic hyperell
 \end{tikzpicture}
  
 The boundary cusp diagram of $F_{\operatorname{En}, 2}$, the moduli space of degree 2 numerically polarized Enriques surfaces.
-:::
 :::
 
 ## Future Work

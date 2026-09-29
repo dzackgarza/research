@@ -9,10 +9,11 @@ These are the program's own in-progress steps rather than settled theorems.
 They are stated conjecturally throughout, and they are exactly parallel to the open comparison of [the KSBA--semitoroidal comparison conjecture](../stable-limits/ksba.md#conj:ksba_semitoroidal_comparison). The period-domain counterpart of the finiteness step is [the normalization theorem](../lattices-and-moduli/lattices.md#thm:normalization), which is proved; what is open here is the KSBA-side statement for $\phi$.
 Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
 
+::::
+
 ::: {.Remark title="Sources for KSBA separatedness and Zariski's Main Theorem"}
 The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
 :::
-::::
 
 ## Global extension of the Enriques involution
 
@@ -53,6 +54,8 @@ The proposed input is the KSBA principle that the dual complex uniquely identifi
 
 This argument is presented as the program's intended route, not as a completed proof.
 
+::::
+
 ::: {.Remark title="Which morphism is being made finite"}
 
 The statement above is finiteness of $\phi\colon \normalize{B}\to\ksbacpt{\fentwo}$, a morphism of KSBA compactifications, and its proposed proof is the semifan comparison just described.
@@ -60,7 +63,6 @@ It is a different statement from the finiteness of the period map $\fco\to \fen$
 The two share the criterion -- a proper morphism with finite fibres is finite [@stacks-02LS] -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
 The no-coarsening statement is moreover the same phenomenon as [the no-moduli-loss conjecture](../stable-limits/ksba.md#conj:no_moduli_loss), which is itself open.
 :::
-::::
 
 ## Zariski's Main Theorem and the classifying isomorphism
 

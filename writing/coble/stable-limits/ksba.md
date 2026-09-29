@@ -93,6 +93,8 @@ $$
 equivariant.
 Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], this refines the arithmetic group $\Gamma_{\Co, 2}$ of the moduli summary, and the two descriptions agree exactly when the polarized root orbit is unique.
 
+::::
+
 ::: {.Remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
 
 The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the
@@ -112,19 +114,19 @@ with index at most $2$, the two differing exactly by whether $-1$ on $\gens{\del
 admitted. The stabilizer of the *line* is the right object: it is what acts on the period
 domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
 :::
-::::
 
 :::: {.Question #que:coble_root_orbit_uniqueness title="Uniqueness of the polarized Coble-root orbit"}
 
 Is the orbit of admissible Coble roots under $\gent$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
 
+::::
+
 ::: {.Warning title="Namikawa's root-orbit theorem is unpolarized"}
 The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full
 Enriques group $\Gamma_\En$. It does not settle the corresponding question for the
 finite-index subgroup $\Gamma_{\En,2}$, which is what the polarized problem needs.
 :::
-::::
 
 ## The KSBA stable pair
 

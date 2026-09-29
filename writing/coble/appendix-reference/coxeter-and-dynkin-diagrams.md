@@ -6,7 +6,7 @@ Conventions:
 
 2. Black vertices: $v^2 = -4$.
 
-### Classical and affine Dynkin diagrams
+## Classical and affine Dynkin diagrams
 
 The table below lists the labelled classical and affine Dynkin diagrams.
 
@@ -14,7 +14,7 @@ The table below lists the labelled classical and affine Dynkin diagrams.
 coble/tables/dynkin-diagrams.md
 ```
 
-### Mirror move algorithm
+## Mirror move algorithm
 
 * * *
 

@@ -1,7 +1,5 @@
 # Divisor models and dlt degenerations
 
-:::: {.Remark title="dlt, divisor, and half-divisor models"}
-
 This section collects three models used to describe degenerations of K3 and
 Enriques surfaces and their KSBA stable limits: the *dlt* (divisorially log
 terminal) models of stable involution pairs, the *divisor models* of a
@@ -22,7 +20,6 @@ The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--G
 degree-$2$ Enriques program [@AEGS25], used in the Morrison degenerations section in the
 same form.
 :::
-::::
 
 ## dlt models and involution pairs
 

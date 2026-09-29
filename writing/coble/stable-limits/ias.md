@@ -52,7 +52,7 @@ polarization $R_{\mathrm{IA}}$ [@AE23].
 A one-parameter family $\cX \to C$ of surfaces over a curve $C \containedin \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.
 :::
 
-:::: {.Remark title="Type II and Type III Kulikov dual complexes"}
+## Type II and Type III Kulikov dual complexes
 
 The following is a representation of a Type II degeneration -- it is a chain of
 surfaces whose dual complex is an interval $\bD^1$, where the ends $V_1$ and
@@ -74,9 +74,8 @@ singularities, depicted as follows:
 
 A triangulated integral affine sphere.
 :::
-::::
 
-:::: {.Remark title="The Sterk cusp-three Kulikov model"}
+## The Sterk cusp-three Kulikov model
 
 The following is a combinatorial representation of the Kulikov model of $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
 
@@ -87,7 +86,6 @@ The following is a combinatorial representation of the Kulikov model of $B_3(\el
 
 A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
 :::
-::::
 
 ## The integral affine structure $B_3(\ell)$ at Sterk cusp 3
 
