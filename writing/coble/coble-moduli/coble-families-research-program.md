@@ -18,14 +18,14 @@ The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogona
 
 ## Setting
 
-::: {.Construction #cons:coble-family-lattices title="The lattices from a Coble set"}
+::: {.construction #cons:coble-family-lattices title="The lattices from a Coble set"}
 
 Let $\Sigma$ be a general **Coble set** of points in $\PP^2$, so that the blowup $S$ of $\PP^2$ along $\Sigma$ is a Coble surface double covered by a K3 surface $X$ branched along $C = C_1 + \cdots + C_n$.
 The construction used for $n=1$ (the divisors $e_0,\ldots,e_{10}$ in $X$, with $e_0$ the pullback of the hyperplane class and $e_i$ the preimages of the exceptional divisors over the nodes) yields, in general, a collection of primitively embedded 2-elementary sublattices $L_1,\ldots,L_{10} \containedin \Pic(X)$ with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
 Applying the period domain construction to these lattices yields ten moduli spaces $F_{\Co,n}$.
 :::
 
-::: {.Remark title="Position in Nikulin's triangle"}
+::: {.remark title="Position in Nikulin's triangle"}
 
 This collection of ten lattices **coincides precisely with the $g=0$ line** of Nikulin's triangular table of 2-elementary lattices (AE22, Fig. 1). That identification is the organizing observation behind the whole program, and is also what ties the Coble families to the index 2 Halphen families; see [the Halphen index-2 moduli program](../adjacent-programs/halphen-index-2-moduli-program.md).
 :::
@@ -35,14 +35,14 @@ The $n=1$ case is the subject of the current project.
 
 ## The conjectural program
 
-::: {.Conjecture #conj:coble-family-boundary-incidence title="Boundary incidence diagrams are computable for all n"}
+::: {.conjecture #conj:coble-family-boundary-incidence title="Boundary incidence diagrams are computable for all n"}
 
 The Baily-Borel boundaries of all ten families can be described by the techniques used for $n=1$.
 Several of the boundary incidence diagrams have already been computed by the author using the algorithms of AE22 (nonsymplectic involutions); the remaining ones are similarly computable.
 This would be the first explicit study of these boundaries in the literature.
 :::
 
-::: {.Conjecture #conj:coble-ramification-recognizable title="Recognizability of the ramification locus"}
+::: {.conjecture #conj:coble-ramification-recognizable title="Recognizability of the ramification locus"}
 
 The ramification locus of the K3 cover of $S$ is described in *Enriques Surfaces I*, Eqn.
 5.3.1. The conjecture has two parts:
@@ -55,12 +55,12 @@ Under part 2, AEH21 Thm.
 3.24 identifies the KSBA compactification with a semitoroidal compactification for a specific collection of semifans.
 :::
 
-::: {.Conjecture #conj:coble-semifans-vs-coxeter title="The semifans refine or coarsen the Coxeter fans"}
+::: {.conjecture #conj:coble-semifans-vs-coxeter title="The semifans refine or coarsen the Coxeter fans"}
 
 These semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and admit an explicit description via an extension of the theory of ADE surfaces (AT21). From that data one extracts a classification of dlt models for KSBA stable limits, hence a first description of $\partial\overline{F_{\Co,n}}$, as AEGS23 did for numerically polarized Enriques surfaces.
 :::
 
-::: {.Remark title="Each family embeds into unpolarized Enriques moduli"}
+::: {.remark title="Each family embeds into unpolarized Enriques moduli"}
 
 By *Enriques Surfaces I*, Prop.
 5.4.6, for each rank-$(10+n)$ lattice in `tbl:coble-lattices` there is an embedding
