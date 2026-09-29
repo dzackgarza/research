@@ -106,7 +106,8 @@ damage was caught before it was committed.
 
 ## The numbered-block registry is one file, and the render must run twice
 
-`custom-numbered-blocks` resolves `\ref` and `\longref` through a registry it writes
+`custom-numbered-blocks` resolves custom-block `@id` references (and legacy
+`\ref`/`\longref`) through a registry it writes
 to disk as `._htmlbook_xref.json`. The filename is a bare relative name hard-coded in
 `cnb-1-init-chapters.lua`, so it lands in pandoc's working directory — which is the
 directory of the input **as the project lists it**, not the realpath of what a symlink
@@ -117,7 +118,7 @@ Two consequences, and the layout depends on both.
 **Every chapter is symlinked flat into `writing/.book`.** The prose stays in its topic
 directory under `writing/`; the project root holds one link per chapter. That is what
 makes the registry a single book-wide file. When the chapters were listed at nested
-paths instead, each topic directory got its own registry, `\longref{thm:x}` resolved
+paths instead, each topic directory got its own registry, `@thm:x` resolved
 only within one directory, and 188 of 525 references in the Coble part rendered as
 nothing — invisibly, because pandoc drops an unmatched macro rather than printing it.
 Never add a chapter at a nested path; add the flat link.
@@ -129,9 +130,9 @@ each chapter, so a second pass resolves them all. `scripts/docs_check.py` theref
 runs `quarto render` twice — the same reason a LaTeX document is compiled twice — and
 CI calls that script, so a fresh clone gets both passes.
 
-`docs-check` cannot see a dropped reference directly: its check looks for Quarto's
-`quarto-unresolved-ref` marker in the rendered HTML, and a reference the block filter
-dropped never became a Quarto crossref. What it does check is that every chapter in
+`docs-check` cannot use Quarto's `quarto-unresolved-ref` marker to diagnose a custom
+block reference: the custom filter resolves those citations before Quarto's native
+crossref machinery. What it does check is that every chapter in
 `_quarto.yml` is a flat symlink, since a chapter that became a copy would render
 against the wrong registry and drift from the prose.
 

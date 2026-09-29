@@ -86,11 +86,10 @@ for stray in sorted(BOOK.glob("*.html")):
         print(f"docs-check: cleared {stray}, left by an interrupted render")
 
 # --- render twice, capturing warnings -------------------------------------------
-# custom-numbered-blocks resolves \ref and \longref against a registry it builds as
+# custom-numbered-blocks resolves custom-block @id references (and legacy
+# \ref/\longref) against a registry it builds as
 # the render proceeds, so a first pass can only reach blocks declared in chapters it
-# has already processed. A reference forward to a later chapter finds nothing, and
-# pandoc drops the unmatched macro rather than printing it, so the sentence closes
-# over the hole. The registry is written to disk (._htmlbook_xref.json at the project
+# has already processed. The registry is written to disk (._htmlbook_xref.json at the project
 # root) and read back at the start of each chapter, so a second pass over the same
 # tree resolves every reference the first pass registered. This is the same reason a
 # LaTeX document is compiled twice; the cost is one extra render.
@@ -169,18 +168,17 @@ for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", REFS_WEB.read_text(encoding="
     elif "ncatlab.org" not in body:
         failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
 
-# 7. cross-references the book's resolver does not implement — checked in the source,
-# because the rendered page shows nothing at all. cnb-3-crossref.lua matches only
-# `\ref{` and `\longref{`; `\cref{x}` contains neither, and pandoc drops the raw
-# LaTeX inline rather than printing it, so the reference silently disappears from the
+# 7. cross-reference commands the book does not implement — checked in the source,
+# because the rendered page shows nothing at all. New numbered references use @id;
+# `\cref{x}` is unsupported, and pandoc drops the raw LaTeX inline rather than printing it,
+# so the reference silently disappears from the
 # sentence. Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref
 # marker, and a dropped \cref never became a Quarto crossref.
 for md in SITE_MD:
     for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
         for m in re.finditer(r"\\[cC]ref\{([^}]*)\}", line):
             failures.append(f"{md.name}:{i}: {m.group(0)} renders as nothing — "
-                            f"the resolver implements \\ref and \\longref only; "
-                            f"write \\longref{{{m.group(1)}}}")
+                            f"write @{m.group(1)} for a numbered target")
 
 # 8. external links must resolve — a cited resource that 404s can't be verified to exist
 import urllib.request

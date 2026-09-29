@@ -457,7 +457,7 @@ defining occurrence and repair its dependents. Do not shadow it locally.
 ### `DEF-4`: Numbered block syntax
 
 ```markdown
-::: {#def-universe .def title="Universe and decoded objects"}
+::: {.definition #def:universe title="Universe and decoded objects"}
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$
 with pullbacks and terminal object $*$.
@@ -469,33 +469,37 @@ The declared block classes are listed at the bottom of
 
 ## Cross-references (`XREF-*`)
 
-### `XREF-1`: `\ref` and `\longref` only
+### `XREF-1`: Numbered targets use `@id`
 
-`\ref` and `\longref` are the only two commands that resolve numbered blocks.
-They reach any numbered block in the book, in any chapter, in either
-direction.
+Reference every numbered block, section, figure, table, equation, and listing with
+`@id`. Custom theorem-like blocks use colon-separated ids such as
+`@def:universe` and `@thm:coble-cusps`; Quarto-native numbered targets use their
+reserved-prefix ids such as `@sec-lattice-theory` and `@fig-x`.
 
 ### `XREF-2`: No `\cref` or `\Cref`
 
 **Banned:** `\cref`, `\Cref`. They do not match the resolver. Pandoc drops an
 unmatched macro silently, so the reference disappears and the sentence around
-it is left dangling.
+it is left dangling. Use `@id`.
 
 ### `XREF-3`: Label format
 
-Labels use colon separators: `def:universe`, `thm:coble-cusps`. Do not start a
-label with a Quarto-reserved prefix (`def-`, `thm-`, `lem-`, `cor-`, `prp-`,
-`cnj-`, `exm-`, `exr-`, `fig-`, `tbl-`, `eq-`, `sec-`, `lst-`); use a hyphen
-instead. Quarto hijacks those prefixes for its own crossrefs and the render
-fails.
+Custom numbered-block labels use colon separators: `def:universe`,
+`thm:coble-cusps`. Do not give a custom block a Quarto-reserved hyphen prefix
+(`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`,
+`fig-`, `tbl-`, `eq-`, `sec-`, `lst-`); Quarto hijacks those prefixes for its
+own crossrefs.
 
 ### `XREF-4`: Sections and figures
 
-Sections auto-number. Reference a section by link:
-`[Lattice Theory](coble/lattices-and-moduli/lattice-theory.md#sec:lattice-theory)`.
+Sections auto-number. Give a numbered section a Quarto section id such as
+`{#sec-lattice-theory}` and reference it as `@sec-lattice-theory`.
 
 Figures use Quarto's own numbering. Anchor a figure `{#fig-x}`, with a hyphen,
 and reference it `@fig-x`.
+
+A target that has no number takes a link naming its page, for example
+`[text](coble/lattices-and-moduli/lattice-theory.md#anchor)`.
 
 ## Citations (`CITE-*`)
 
@@ -1392,14 +1396,14 @@ a grab bag, not a definition. Each notion has one block with its type,
 data, and universal property; related notions have separate blocks that
 cite the first.
 
-**Banned:** "::: {#def-modules-over-ring} ## Modules over a ring — For a
+**Banned:** "::: {.definition #def:modules-over-ring title=\"Modules over a ring\"} For a
 ring $A$, $A\text{-}\mathbf{Mod}$ is … A right $A$-module is … An
 $(A,B)$-bimodule therefore has … When $A$ is commutative … For a general
 ring, an equivalence …"
 
-**Preferred:** "::: {#def-left-modules} ## Left modules — Let $A$ be an
+**Preferred:** "::: {.definition #def:left-modules title=\"Left modules\"} Let $A$ be an
 associative ($\mathbb{E}_1$) ring spectrum. $\mathbf{LMod}_A$ is … :::"
-and then separately "::: {#def-right-modules} ## Right modules —
+and then separately "::: {.definition #def:right-modules title=\"Right modules\"}
 $\mathbf{RMod}_A := \mathbf{LMod}_{A^{\mathrm{op}}}$ :::" and so on, each
 with its own defining occurrence.
 
@@ -1467,12 +1471,12 @@ not inside the definition's fenced div. A definition that contains its
 own counterexample or warning cannot be cited as the defining occurrence
 without dragging the warning along.
 
-**Banned:** a "::: {#def-modules-over-ring}" block whose last sentence is
+**Banned:** a "::: {.definition #def:modules-over-ring title=\"Modules over a ring\"}" block whose last sentence is
 "For a general ring, an equivalence between left and right module
 categories is additional data …"
 
 **Preferred:** close the definition after its defining sentences, then
-write "::: {.Remark}" or a plain paragraph for the warning. The
+write "::: {.remark}" or a plain paragraph for the warning. The
 definition is citable; the remark is separate.
 
 ### `DEF-17`: Reminder masquerading as a definition
@@ -1486,7 +1490,7 @@ universal property is given, no data are introduced. A definition
 defines: it states the objects, the structure, and the property that
 determines the notion. A reminder says "recall" and cites the defining
 occurrence where the notion was defined. If the notion is prerequisite,
-write "Recall (@def-left-modules) that …" and cite; if it is being
+write "Recall (@def:left-modules) that …" and cite; if it is being
 defined here, construct it. Do not summon a category into existence by
 naming its notation.
 
@@ -1498,7 +1502,7 @@ of the category, no objects or morphisms stated.
 **Preferred:** "Let $A$ be an associative ($\mathbb{E}_1$) ring spectrum.
 An $A$-module is … The $\infty$-category $\mathbf{LMod}_A$ has objects …
 morphisms are … with forgetful functor …" Or, if prerequisite:
-"Recall that $\mathbf{LMod}_A$ denotes … as in @def-left-modules, with
+"Recall that $\mathbf{LMod}_A$ denotes … as in @def:left-modules, with
 …"
 
 ### `SYM-11`: Structured object versus underlying set
@@ -1659,16 +1663,15 @@ example a $t$-structure or a localizing subcategory together with its
 torsion functor — rather than transporting the classical adjective without
 the required data (DEF-20).
 
-**Banned:** "::: {#def-module-subcategories} The following
+**Banned:** "::: {.definition #def:module-subcategories title=\"Module subcategories\"} The following
 isomorphism-invariant properties define replete full subcategories of
 $R\text{-}\mathbf{Mod}$: [four bullets] If $R$ is an integral domain, $M$
 is torsion when … Over a general ring, a torsion subcategory is used
 only after a torsion theory has been specified. :::"
 
-**Preferred:** separate blocks: "::: {#def-fg-modules} ## Finitely
-generated modules — Let $R$ be an $\mathbb{E}_1$-ring spectrum and
+**Preferred:** separate blocks: "::: {.definition #def:fg-modules title=\"Finitely generated modules\"} Let $R$ be an $\mathbb{E}_1$-ring spectrum and
 $M\in\mathbf{LMod}_R$. $M$ is finitely generated if … :::" and
-"::: {#def-torsion-modules} ## Torsion modules (integral domain) — Let
+"::: {.definition #def:torsion-modules title=\"Torsion modules (integral domain)\"} Let
 $R$ be an integral domain (discrete) and $M\in\mathbf{LMod}_R$. $M$ is
 torsion if … :::" and a separate Remark for the general $\mathbb{E}_1$
 usage rule.
@@ -1735,16 +1738,16 @@ pair $(\mathcal T,\mathcal F)$ on $R\text{-}\mathbf{Mod}$ as in
 name the stable structure actually being used, such as a $t$-structure or
 a localizing subcategory together with its torsion functor. The bare phrase
 "a torsion theory has been specified" does not bind any of these data
-(TERM-4). The last sentence of {#def-module-subcategories} is a prose usage
+(TERM-4). The last sentence of @def:module-subcategories is a prose usage
 rule with no construction. State the precise structure and cite its
 definition; put the usage rule in a Remark, not in the definition of
 finitely generated projective modules.
 
-**Banned:** the last sentence of {#def-module-subcategories} as part of
+**Banned:** the last sentence of @def:module-subcategories as part of
 the definition of $R\text{-}\mathbf{Mod}$ subcategories, and "a torsion
 theory has been specified" with no definition of "torsion theory."
 
-**Preferred:** "::: {.Remark} Over a general ring $R$, a torsion
+**Preferred:** "::: {.remark} Over a general ring $R$, a torsion
 subcategory means the torsion class $\mathcal T$ of a specified hereditary
 torsion pair $(\mathcal T,\mathcal F)$ on $R\text{-}\mathbf{Mod}$ (see
 @def:torsion-pair), and is used only after that pair has been specified.
@@ -1773,8 +1776,7 @@ standalone sentence.
 
 **Preferred:** define $B\otimes_A^L-$ once; then use
 $L\otimes_{\mathbb Z}\mathbb Z_p$ inline. If the specialization has a
-claim, make it a fenced unit: "::: {#exm-extension-Zp} ## Extension to
-$\mathbb Z_p$ — For $L\in\mathbf{LMod}_{\mathbb Z}$, $L\otimes_{\mathbb
+claim, make it a fenced unit: "::: {.example #ex:extension-Zp title=\"Extension to $\\mathbb Z_p$\"} For $L\in\mathbf{LMod}_{\mathbb Z}$, $L\otimes_{\mathbb
 Z}^L\mathbb Z_p$ is $p$-adic completion when $L$ is finitely generated;
 $\operatorname{Tor}_1^{\mathbb Z}(L,\mathbb Z_p)=0$ iff … :::" — a
 Proposition/Example with a precise claim, not a restatement of the
@@ -1907,17 +1909,17 @@ torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$."
 ## Section structure (`SEC-*`)
 
 A $\S$ is its fenced logical units. The book's logical units are fenced
-blocks — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
-#thm:...}`), Lemma, Proposition, Corollary, Example (`::: {#exm-...}`),
-Remark (`::: {.Remark}`) — each with an ID and a title, citable via
-`\ref`/`\longref` or `@`. Running prose that points at a definition
+blocks — Definition (`::: {.definition #def:... title=\"...\"}`), Theorem
+(`::: {.theorem #thm:... title=\"...\"}`), Lemma, Proposition, Corollary,
+Example (`::: {.example #ex:... title=\"...\"}`), Remark (`::: {.remark}`) —
+each with an ID and a title when appropriate, citable via `@id`. Running prose that points at a definition
 elsewhere, cites a theorem elsewhere, or paraphrases either in English is
 not a logical unit that belongs to this book.
 
 ### `SEC-1`: A section with no fenced logical unit has no content
 
 A $\S$ that contains only prose paragraphs — "Preservation, reflection,
-and creation of limits are defined in `@def-...`," "A monadic functor
+and creation of limits are defined in `@def:...`," "A monadic functor
 creates any limits [@Rie16]," "Hence a limit in $R\text{-}\mathbf{Mod}$
 is computed on underlying sets," "The kernel … is a limit — the equalizer
 … — so it is the set-theoretic kernel …," "Creation is a statement about
@@ -1932,8 +1934,8 @@ paragraphs, none fenced, that cite @def:preserve-reflect-create,
 [@Rie16, Theorem 5.6.5], [@Rie16, Corollary 5.5.3], then "Hence …" and
 "The kernel … so it is …" in prose.
 
-**Preferred:** "::: {#def-create} ## Creation of limits — … :::" or
-"::: {.Proposition #prp-limit-created} ### Limits in $R\text{-}\mathbf{Mod}$
+**Preferred:** "::: {.definition #def:create title=\"Creation of limits\"} … :::" or
+"::: {.proposition #prop:limit-created title=\"Limits in $R\\text{-}\\mathbf{Mod}$\"}
 — … :::" with proof that cites the monadicity theorem and explains how
 it applies. The $\S$'s content is the fenced unit; the paragraphs are the
 proof or the remarks that follow it, not the $\S$ itself.
@@ -1942,8 +1944,8 @@ proof or the remarks that follow it, not the $\S$ itself.
 
 "For example, the additive and multiplicative monoids of a ring define
 distinct functors $\mathbf{Ring}\to\mathbf{Mon}$" is an example without
-an `{#exm-...}` block. "If no comparison is specified, $F$ and $G$ remain
-distinct" is a remark about parallel functors without a `{.Remark}`. An
+an `@ex:...` block. "If no comparison is specified, $F$ and $G$ remain
+distinct" is a remark about parallel functors without a `{.remark}`. An
 example and a remark that belong to a $\S$ are fenced and typed, not
 "For example, …" or "If … remain distinct" in running prose. An
 extended remark that is fenced is fine to leave unlabeled as a Remark;
@@ -1952,8 +1954,8 @@ an unfenced paragraph is not a Remark.
 **Banned:** "For example, the additive and multiplicative monoids …" as a
 closing sentence of $\S$ Parallel functors.
 
-**Preferred:** "::: {#exm-add-vs-mult} ## Additive versus multiplicative
-— The functors $\mathbf{Ring}\to\mathbf{Mon}$ sending $R$ to
+**Preferred:** "::: {.example #ex:add-vs-mult title=\"Additive versus multiplicative\"}
+The functors $\mathbf{Ring}\to\mathbf{Mon}$ sending $R$ to
 $(|R|,+,0)$ and to $(|R|,\cdot,1)$ are distinct; no natural isomorphism
 is specified. :::"
 
@@ -2042,9 +2044,10 @@ Remark attached to the corollary, not as a standalone $\S$.
 ### `SEC-6`: The skeleton is the fenced logical units
 
 The underlying skeleton of a paper or book is the set of fenced logical
-units — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
-#thm:...}`), Lemma, Proposition, Corollary, and Example (`:::
-{#exm-...}`) — each with its ID, title, hypotheses, quantifiers, and
+units — Definition (`::: {.definition #def:... title=\"...\"}`), Theorem
+(`::: {.theorem #thm:... title=\"...\"}`), Lemma, Proposition, Corollary,
+and Example (`::: {.example #ex:... title=\"...\"}`) — each with its ID,
+title, hypotheses, quantifiers, and
 types. Their dependency graph is the work: every term used in a theorem
 is defined in a prior definition, every lemma used in a proof is proved
 earlier, every example instantiates a definition. The skeleton must be
@@ -2071,7 +2074,7 @@ mathematical text.
 
 ### `SEC-7`: Remarks are for pedagogy, not for primary claims
 
-A Remark (`::: {.Remark}`) is secondary to the skeleton: pedagogy,
+A Remark (`::: {.remark}`) is secondary to the skeleton: pedagogy,
 intuition, a warning that a subgroup of the underlying abelian group need
 not be a submodule, a note that two parallel functors are distinct unless
 a comparison is specified, an alternative viewpoint. A Remark does not
@@ -2113,7 +2116,7 @@ replete full subcategory $i\colon D_P\hookrightarrow D$ is a factorization
 $F=i\circ\bar F$" — uses "lands in" as if defined, with no fenced
 definition of "lands in" as factorization.
 
-**Preferred:** first define: "::: {#def-lands} ## Lands in — A functor
+**Preferred:** first define: "::: {.definition #def:lands title=\"Lands in\"} A functor
 $F\colon\mathcal{C}\to\mathcal{D}$ **lands in** a replete full
 subcategory $i\colon D_P\hookrightarrow\mathcal{D}$ if there exists a
 functor $\bar F\colon\mathcal{C}\to D_P$ and a specified natural
@@ -2127,9 +2130,9 @@ $\alpha$."
 A sentence in running prose that looks like a definition — "A
 factorization of $F$ through $D$ consists of functors $H$ and $G$
 together with …," "A theorem that $F$ lands is a factorization" — is not
-a definition. A definition is a fenced block `::: {#def-...} ## Title`
+a definition. A definition is a fenced block `::: {.definition #def:... title=\"Title\"}`
 with the definiendum bold at its first introduction, a single defining
-occurrence (DEF-1), and citable via `\ref`/`\longref`. Running prose
+occurrence (DEF-1), and citable via `@id`. Running prose
 cannot be cited, has no ID, and has no logical status. Colloquial
 "property," "structure," and "lands" definitions in prose are not
 definitions.
@@ -2137,11 +2140,11 @@ definitions.
 **Banned:** "## Landing statements and constructions {#sec-statements-vs-
 constructions} A theorem that $F\colon\mathcal{C}\to\mathcal{D}$ lands in
 $D_P$ is a factorization $F=i\circ\bar F$. This theorem does not redefine
-$F$ or $D_P$." — two sentences of prose, no fenced `{#def-lands}` or
-`{.Theorem}`, no bold term.
+$F$ or $D_P$." — two sentences of prose, no fenced `@def:lands` or
+`{.theorem}`, no bold term.
 
-**Preferred:** "::: {#def-lands} ## Lands in — … :::" as above, and
-"::: {.Proposition #prp-lands} ### Landing — … :::" with proof exhibiting
+**Preferred:** "::: {.definition #def:lands title=\"Lands in\"} … :::" as above, and
+"::: {.proposition #prop:lands title=\"Landing\"} … :::" with proof exhibiting
 $\bar F$ and $\alpha$. The prose between fenced units is glue, not the
 definition.
 
@@ -2150,7 +2153,7 @@ definition.
 Any use of a term that is defined within the book — "lands in,"
 "replete full subcategory," "factorization," "torsion," "basis,"
 "based module," "distinguished" — is linked to that definition via
-`\ref{def-...}`, `\longref{def-...}`, or `@def-...`. The link makes the
+`@def:...`. The link makes the
 defining occurrence citable and lets the reader navigate to the precise
 meaning (DEF-1); an unlinked use leaves the reader to guess which
 occurrence is defining and whether the term is being used in its defined
@@ -2158,13 +2161,13 @@ sense. This applies to every occurrence that relies on the defined
 meaning, not just the first.
 
 **Banned:** "A theorem that $F$ lands in $D_P$ is a factorization" with
-no link to `{#def-lands}`; "a torsion module" with no link to the
+no link to `@def:lands`; "a torsion module" with no link to the
 torsion definition; "a basis indexed by $I$" with no link to the basis
 definition.
 
-**Preferred:** "A theorem that $F$ **lands in** $D_P$ (\ref{def-lands})
-is a factorization"; "a **torsion** module (\ref{def-torsion})"; "a
-**basis** indexed by $I$ (\ref{def-basis})". Link the term at its use to
+**Preferred:** "A theorem that $F$ **lands in** $D_P$ (@def:lands)
+is a factorization"; "a **torsion** module (@def:torsion)"; "a
+**basis** indexed by $I$ (@def:basis)". Link the term at its use to
 its fenced defining occurrence.
 
 ### `XREF-6`: "Is defined in …; it is …" for recall
@@ -2182,11 +2185,11 @@ clauses where one does the work, with a semicolon joining meta-commentary
 to definiens; $T$ unbound.
 
 **Preferred:** "Recall that a generalized element with domain $T$
-(\ref{def-generalized-element}) is a morphism $T\to X$" or "Recall
+(@def:generalized-element) is a morphism $T\to X$" or "Recall
 (@def:generalized-element) that a generalized element of $X$ with domain
 $T$ is a morphism $T\to X$." One clause, "Recall" signals this is not the
 defining occurrence but a reminder that cites it, and the parenthetical
-`\ref` is the link.
+`@id` is the link.
 
 ### `DEF-30`: Circular definition via diagram label
 
@@ -2263,12 +2266,12 @@ introduce the general construction. Defining the special case without the
 general notion repeats the cone's universal property that belongs in the
 general definition and leaves the general notion undefined.
 
-Concrete standard: define pullbacks as limits of cospans (\ref{def-pullback}):
+Concrete standard: define pullbacks as limits of cospans (@def:pullback):
 for $f\colon X\to Y$ and $g\colon Z\to Y$ in an $\infty$-category with
 pullbacks, the **pullback** is the limit $X\times_Y Z$ with its cone
 $(X\times_Y Z\to X, X\times_Y Z\to Z)$ terminal among cones over the
 cospan. Then: "The **fiber** of $f$ over $y\colon1\to Y$ is the pullback
-$X\times_Y 1$ of $f$ along $y$ (\ref{def-pullback})." This pattern is
+$X\times_Y 1$ of $f$ along $y$ (@def:pullback)." This pattern is
 general: the free module functor $F\colon\mathbf{Sets}\to\mathbf{LMod}_R$,
 the notion of generating family, and freeness are defined before
 "basis" and "based module" (DEF-23).
@@ -2345,7 +2348,7 @@ been specified" (TERM-4); "$\mathbf{Sh}_\Sigma$ for a diagram category"
 (MA-3) without definition.
 
 **Preferred:** "the pullback square exhibiting $X\times_Y 1$" (with
-`{#def-pullback}` defined) or "the square exhibiting the pullback."
+`@def:pullback` defined) or "the square exhibiting the pullback."
 Reserve "cartesian fibration" for the fibration property and prove when a
 pullback square has that property. Define every non-undergraduate
 technical term in a fenced block before its first use.
@@ -2356,7 +2359,7 @@ A professional mathematics text extremely rarely is self-referential,
 describes its own structure, notation, or what its theorems do or do not
 do. If ever such things are included, they are at best very small
 footnotes, but should be avoided altogether. Prose that talks about the
-text — "is defined in `@def-…`; it is …" (where the definition lives),
+text — "is defined in `@def:…`; it is …" (where the definition lives),
 "This theorem does not redefine $F$ or $D_P$" (what the theorem does not
 do), "Their mere existence supplies no order relation" (what existence
 does not do), "is what licenses the notation $a_1\otimes\cdots\otimes a_n$"
@@ -2370,18 +2373,18 @@ it does not describe its own structure.
 
 Concrete standard: Hartshorne, EGA, Lurie *Higher Topos Theory* and
 *Higher Algebra*, Riehl *Category Theory in Context* state definitions,
-theorems, and examples with fenced units and parenthetical `\ref`s; they
+theorems, and examples with fenced units and cross-references; they
 do not narrate where a definition lives, what a theorem does not
 redefine, or what notation does not imply. Cross-references via
-`\ref`/`\longref`/`@` are not self-reference; they are citations.
+`@id` references are not self-reference; they are citations.
 
 **Banned:** all of the above meta-sentences as running prose inside
 mathematical $\S$'s.
 
-**Preferred:** state the mathematics — a fenced `::: {#def-...}` with the
+**Preferred:** state the mathematics — a fenced `::: {.definition #def:... title=\"...\"}` with the
 term bold, a Proposition with proof exhibiting the factorization, an
 Example, a Remark attached to its primary unit — and link with
-`(\ref{def-...})` or "Recall that … (\ref{def-...})". If a notational
+`(@def:...)` or "Recall that … (@def:...)". If a notational
 clarification is truly needed, put it in a footnote `[^1]` and keep it to
 one clause, but prefer to avoid it by stating the mathematics precisely.
 
@@ -2451,13 +2454,13 @@ between them.
 
 **Preferred:** choose one term and define it, or define both and state
 the identification: "A **monomorphism** ($f\colon A\rightarrowtail B$)
-is … (\ref{def-mono}). An **embedding** is … (\ref{def-embedding}). In
+is … (@def:mono). An **embedding** is … (@def:embedding). In
 $\mathbf{Sets}$, every monomorphism is an embedding; in general …" Link
 each use to its defining occurrence (XREF-5).
 
 ### `DEF-27`: Distinguished object introduced only in the title
 
-A block titled `{#def-distinguished-factorization}` defines "a
+A block `@def:distinguished-factorization` defines "a
 factorization of $F\colon\mathcal{C}\to\mathcal{E}$ through $\mathcal{D}$"
 but never defines what "distinguished" means. The title is not the
 definition. A distinguished, canonical, or standard object is a chosen
@@ -2478,22 +2481,22 @@ $$
 $$
 each $U$ with its left adjoint $F$ (free $R$-module, free abelian group,
 free group), and the factorization is distinguished among factorizations
-of $U_{\mathbf{LMod}_R/\mathbf{Sets}}$ (see @def-factorization).
+of $U_{\mathbf{LMod}_R/\mathbf{Sets}}$ (see @def:factorization).
 
-**Banned:** "::: {#def-distinguished-factorization} A factorization of
+**Banned:** "::: {.definition #def:distinguished-factorization title=\"Distinguished factorization\"} A factorization of
 $F\colon\mathcal{C}\to\mathcal{E}$ through $\mathcal{D}$ consists of …
 The underlying-set functor of an $R$-module is the composite
 $R\text{-}\mathbf{Mod}\to\mathbf{Ab}\to\mathbf{Grp}\to\mathbf{Set}$. :::"
 — the distinguished composite is asserted inside the general definition and
 never defined as the distinguished object.
 
-**Preferred:** separate blocks: "::: {#def-factorization} ## Factorization
-— A factorization of $F\colon\mathcal{C}\to\mathcal{E}$ through
+**Preferred:** separate blocks: "::: {.definition #def:factorization title=\"Factorization\"}
+A factorization of $F\colon\mathcal{C}\to\mathcal{E}$ through
 $\mathcal{D}$ is a tuple $(H,G,\alpha)$ with $H\colon\mathcal{C}\to
 \mathcal{D}$, $G\colon\mathcal{D}\to\mathcal{E}$, and a specified natural
-equivalence $\alpha\colon F\simeq G\circ H$. :::" and "::: 
-{#exm-distinguished-underlying-set} ## Distinguished underlying-set
-factorization — The distinguished factorization of
+equivalence $\alpha\colon F\simeq G\circ H$. :::" and ":::
+{.example #ex:distinguished-underlying-set title=\"Distinguished underlying-set factorization\"}
+The distinguished factorization of
 $U_{\mathbf{LMod}_R/\mathbf{Sets}}$ is
 $(U_{\mathbf{LMod}_R/\mathbf{Ab}},U_{\mathbf{Ab}/\mathbf{Grp}}\circ
 U_{\mathbf{Grp}/\mathbf{Sets}},\operatorname{id})$ as above. :::"
@@ -2541,18 +2544,18 @@ with $\alpha',\alpha$." Name the $2$-cell, its source, and its target.
 
 A general definition, its example (the underlying-set functor as the
 composite through $\mathbf{Ab}$ and $\mathbf{Grp}$), and a remark about
-alternative factorizations are in one fenced `{#def-...}`. Each has its
+alternative factorizations are in one fenced `@def:...`. Each has its
 own block: the general notion has a definition block, the composite has
 an example block that cites the definition, and the comparison of
 alternative factorizations has a remark.
 
-**Banned:** the quoted `{#def-distinguished-factorization}` block that
+**Banned:** the quoted `@def:distinguished-factorization` block that
 contains both the general factorization definition and the two paragraphs
 about $R\text{-}\mathbf{Mod}\to\mathbf{Ab}\to\mathbf{Grp}\to\mathbf{Set}$.
 
 **Preferred:** close the definition after the tuple
-$(H,G,\alpha)$, then "::: {.Example}" for the distinguished composite,
-then "::: {.Remark}" for alternative factorizations and their comparison
+$(H,G,\alpha)$, then "::: {.example}" for the distinguished composite,
+then "::: {.remark}" for alternative factorizations and their comparison
 $2$-cells.
 
 ### `DEF-23`: Specialized notion without scaffolding from general notions
@@ -2695,12 +2698,12 @@ Concrete standards (state one, then apply it):
 **Banned:** "A conclusion about $L$ from either image requires a stated
 descent or local-to-global theorem with its hypotheses."
 
-**Preferred:** "::: {#thm-descent} **Theorem (fpqc descent).** For
+**Preferred:** "::: {.theorem #thm:descent title=\"fpqc descent\"} For
 faithfully flat $R\to S$, $R\to S$ is of effective descent for
 $\mathbf{LMod}$: $M\mapsto S\otimes_R^L M$ induces
 $\mathbf{LMod}_R\simeq\lim \mathbf{LMod}_{S^{\otimes_R\bullet+1}}$. In
 particular, for finitely presented $M,N$, $M\simeq N$ iff the base
-changes are compatibly isomorphic. :::" Then: "::: {#cor-ZpQ} By
+changes are compatibly isomorphic. :::" Then: "::: {.corollary #cor:ZpQ title=\"Beauville--Laszlo patching\"} By
 Beauville–Laszlo, for finitely presented $M$,
 $M\simeq (M_p)\times_{M_{\mathbb Q_p}}(M_{\mathbb Q})$. Hence
 $L\simeq L'$ iff … :::" State which conclusion, which images, which
@@ -2724,7 +2727,7 @@ pullbacks" (DEF-31).
 faithfully flat $R\to S$, $M\simeq0$ iff $S\otimes_R^L M\simeq0$";
 "There exists a finite set $I$ and an effective epimorphism
 $\bigoplus_{i\in I}R\twoheadrightarrow M$"; "For the pullback squares
-exhibiting $X\times_Y 1$ in {#def-pullback}." Write $\forall$/$\exists$
+exhibiting $X\times_Y 1$ in @def:pullback." Write $\forall$/$\exists$
 and the hypothesis list; do not use "a"/"either"/"relevant"/"some"
 standing for them.
 
@@ -2767,7 +2770,7 @@ its hypotheses"; "holds with its hypotheses / under its hypotheses."
 
 **Preferred:** either list the hypotheses ("for faithfully flat $R\to S$
 and finitely presented $M$") or state the theorem that carries them
-({#thm-descent} above). Do not add a clause that is true of every
+(@thm:descent above). Do not add a clause that is true of every
 theorem and therefore says nothing. If no specific hypotheses are meant,
 delete the clause.
 
@@ -2800,8 +2803,8 @@ descent or local-to-global theorem with its hypotheses" in a
 mathematical section; any sentence that tells the reader that a theorem,
 proof, or hypothesis is required instead of giving it.
 
-**Preferred:** in the book, state the mathematics: "::: {#thm-descent}
-**Theorem.** … :::" then "By {#thm-descent}, for finitely presented $L$,
+**Preferred:** in the book, state the mathematics: "::: {.theorem #thm:descent title=\"fpqc descent\"}
+… :::" then "By @thm:descent, for finitely presented $L$,
 … holds because $R\to S$ is faithfully flat." In `CONTRIBUTING.md`,
 state the governance once: "Every local-to-global conclusion is a
 fenced Theorem with quantified hypotheses; do not draw it from one image
@@ -2837,7 +2840,7 @@ Do not state that the functors are distinct. State what $c_M$ does.
 **Banned:** "Without the finite-generation hypothesis, scalar extension
 and completion are distinct constructions."
 
-**Preferred:** "::: {#thm-complete-vs-basechange} **Theorem.** For
+**Preferred:** "::: {.theorem #thm:complete-vs-basechange title=\"Scalar extension and completion\"} For
 $M\in\mathbf{LMod}_{\mathbb Z}$ perfect (in particular, for discrete
 finitely generated $M$ over Noetherian $\mathbb Z$), $c_M\colon
 M\otimes_{\mathbb Z}^L\mathbb Z_p \xrightarrow{\sim}\widehat M_p$ is an
@@ -2923,7 +2926,7 @@ and completion are distinct constructions" alongside the definitions and
 
 **Preferred:** present the two functors with different definitions (hence
 distinct), then state one quantified theorem with the map:
-"::: {#thm-complete-vs-basechange} **Theorem.** … $c_M$ is an
+"::: {.theorem #thm:complete-vs-basechange title=\"Scalar extension and completion\"} … $c_M$ is an
 equivalence for $M$ perfect … :::" No additional sentence is needed to
 say they differ without $H$; the quantified theorem already obviates it.
 Give a counterexample only as an illustration of the boundary, not as a
@@ -2981,8 +2984,8 @@ map, proofs, then boundary examples/counterexamples at the quantified
 edge when they teach. Stacks Project, EGA, Serre, Hartshorne, Lurie
 HTT/HA, EKMM never write "without $H$, $A$ and $B$ are distinct" or
 "this requires a theorem with hypotheses"; they write
-"::: {#thm-descent} **Theorem (fpqc descent).** For faithfully flat
-$R\to S$, … :::" and "::: {#thm-complete-vs-basechange} **Theorem.**
+"::: {.theorem #thm:descent title=\"fpqc descent\"} For faithfully flat
+$R\to S$, … :::" and "::: {.theorem #thm:complete-vs-basechange title=\"Scalar extension and completion\"}
 $c_M$ is an equivalence for $M$ perfect … :::" and apply them.
 
 **Banned:** "Without the finite-generation hypothesis, scalar extension
@@ -3042,7 +3045,7 @@ the forms below; let $W$ be the value module."
 
 **Preferred:** quantify inside the fenced unit, with varying $W$:
 
-"::: {#def-bilinear} **Definition.** Let $R$ be a commutative ring (resp.
+"::: {.definition #def:bilinear title=\"Bilinear forms\"} Let $R$ be a commutative ring (resp.
 $\mathbb E_\infty$-ring spectrum) and let $W,M\in\mathbf{LMod}_R$. A
 **$W$-valued bilinear form** on $M$ is a morphism
 $b\colon M\otimes_R M\to W$ in $\mathbf{LMod}_R$. :::"
@@ -3050,9 +3053,9 @@ $b\colon M\otimes_R M\to W$ in $\mathbf{LMod}_R$. :::"
 Or, when a section works over one $R$, make the header the quantifier
 once and keep $W$ varying:
 
-"::: {.Remark} Throughout §2, $R$ denotes a fixed commutative ring;
+"::: {.remark} Throughout §2, $R$ denotes a fixed commutative ring;
 $W$ varies over $\mathbf{LMod}_R$ and all forms are $W$-valued as in
-{#def-bilinear}. :::"
+@def:bilinear. :::"
 
 Do not fix a single $W$ for "the forms below"; let $W$ be a parameter
 of the form. Do not forward-reference "below"; label the definitions
@@ -3098,14 +3101,14 @@ Concrete standard — state the closed structure once as scaffolding, then
 there is nothing to say at the point of use:
 
 * **Scaffolding (once, fenced, in the module-theory setup):**
-  "::: {#thm-mod-closed} **Theorem.** For commutative $R$,
+  "::: {.theorem #thm:mod-closed title=\"Closed symmetric monoidal module category\"} For commutative $R$,
   $\mathbf{Mod}_R$ (resp. stably $\mathbf{LMod}_R$ for
   $\mathbb E_\infty$ $R$) is closed symmetric monoidal and self-enriched.
   In particular $\operatorname{Hom}_R(M,N)\in\mathbf{Mod}_R$ is the
   internal hom. :::" [@stacks-0B8A; Lurie HA 4.2.1]
 
 * **At the point of use:** no clause needed:
-  "::: {#def-bil} **Definition.** Let $R$ be commutative and
+  "::: {.definition #def:bil title=\"Bilinear-form module\"} Let $R$ be commutative and
   $W,M\in\mathbf{Mod}_R$. Put
   $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$ as
   $R$-module. Its elements are the $R$-bilinear $M\times M\to W$. :::"
@@ -3113,7 +3116,7 @@ there is nothing to say at the point of use:
   pointwise operations" and no "structure via $W$."
 
 The missing one-time scaffolding is what forced the filler: without
-{#thm-mod-closed}, every Hom later needs a tautological qualifier to
+@thm:mod-closed, every Hom later needs a tautological qualifier to
 compensate. Put the enrichment once where it belongs and every later
 "with pointwise operations" / "with its $R$-module structure" is
 obviated.
@@ -3122,7 +3125,7 @@ obviated.
 $R$-bilinear maps $M\times M\to W$, with pointwise operations";
 "with its $R$-module structure via $W$ / induced by $W$."
 
-**Preferred:** state {#thm-mod-closed} once in the module-theory setup;
+**Preferred:** state @thm:mod-closed once in the module-theory setup;
 then "Let $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R
 M,W)$ be the $R$-module of $R$-bilinear maps $M\times M\to W$." No
 trailing clause. If the reader needs the formula,
@@ -3142,7 +3145,7 @@ $R$-bilinear maps $M\times M\to W$, with pointwise operations."
 \operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module" — or, if a name is
 unneeded, just $\operatorname{Hom}_R(M\otimes_R M,W)$. Domain
 ($M\otimes_RM$), codomain ($W$), linearity, and $R$-module structure via
-the self-enrichment ({#thm-mod-closed}) are already in the symbol; no
+the self-enrichment (@thm:mod-closed) are already in the symbol; no
 "$R$-bilinear," no "$M\times M\to W$," no "with pointwise operations"
 to add. Stably
 $\operatorname{Bil}_{R,W}(M):=\mathbf{RHom}_R(M\otimes^L_RM,W)$. This is
@@ -3163,7 +3166,7 @@ Concrete standards — state the scaffolding once, then use homs from the
 tensor to encode bilinearity from then on:
 
 * **Scaffolding (once, fenced, before any form):**
-  "::: {#def-tensor} **Definition/Theorem.** For $M,N\in\mathbf{Mod}_R$
+  "::: {.definition #def:tensor title=\"Tensor product\"} For $M,N\in\mathbf{Mod}_R$
   there is $M\otimes_R N\in\mathbf{Mod}_R$ with a universal $R$-bilinear
   $M\times N\to M\otimes_R N$, i.e.
   $\operatorname{Hom}_R(M\otimes_R N,W)\cong R\text{-Bil}(M\times N,W)$
@@ -3183,7 +3186,7 @@ $\mathbf{RHom}_R(M\otimes^L_RM,W)$ is the $R$-module of them.
 recurring definition; "$R$-bilinear maps $M\times M\to W$ with pointwise
 operations" (PR-38) on each use.
 
-**Preferred:** define $M\otimes_R M$ once via {#def-tensor}; then
+**Preferred:** define $M\otimes_R M$ once via @def:tensor; then
 "a $W$-valued bilinear form on $M$ is $b\colon M\otimes_R M\to W$"
 and "$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$."
 Never re-describe bilinearity in prose once the tensor classifies it.
@@ -3194,7 +3197,7 @@ A presheaf on $\mathcal C$ is a functor $\mathcal C^{\mathrm{op}}\to
 \mathbf{Set}$ (stably $\mathcal C^{\mathrm{op}}\to\mathcal S$). An
 $R$-module-valued functor $\mathcal C^{\mathrm{op}}\to\mathbf{Mod}_R$
 is an $\mathbf{Mod}_R$-valued presheaf, or an $\mathbf{Mod}_R$-enriched
-presheaf when the enrichment from {#thm-mod-closed} is meant — not a
+presheaf when the enrichment from @thm:mod-closed is meant — not a
 "presheaf" unqualified. Overloading the generic name hides which
 enrichment and which $\operatorname{Bil}$ is named (the $R$-module
 $\operatorname{Bil}_{R,W}(M)$ vs. the functor
@@ -3213,7 +3216,7 @@ Concrete standards:
 * **$R$-module-valued:** a functor $\mathbf{Mod}_R^{\mathrm{op}}\to
   \mathbf{Mod}_R$ is an $\mathbf{Mod}_R$-valued presheaf on
   $\mathbf{Mod}_R$, equivalently an $\mathbf{Mod}_R$-enriched presheaf via
-  the self-enrichment {#thm-mod-closed}. Name the enrichment when it
+  the self-enrichment @thm:mod-closed. Name the enrichment when it
   matters.
 
 * **At the point of use:** no "defines a presheaf" to name functoriality
@@ -3230,8 +3233,8 @@ by $(f\colon M\to N)\mapsto (f\otimes f)^*\colon
 \operatorname{Hom}_R(N\otimes_R N,W)\to\operatorname{Hom}_R(M\otimes_R
 M,W)$, $f^*b(x,y)=b(fx,fy)$ as the element formula for $(f\otimes f)^*b$."
 If the word is needed, "as an $\mathbf{Mod}_R$-valued presheaf on
-$\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via
-{#thm-mod-closed})"; otherwise just "as a functor
+  $\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via
+  @thm:mod-closed)"; otherwise just "as a functor
 $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$."
 
 ### `TERM-11`: Bare "maps $M\to W$" with no category — egregiously imprecise, and wrong for quadratics
@@ -3268,7 +3271,7 @@ Concrete standards — name the category, and use the classifier so no
   as $R$-module (stably
   $\mathbf{RHom}_R(\mathbf{\Gamma}^2_R(M),W)$). Its underlying set is the
   set of functions $U(M)\to U(W)$ satisfying the quadratic condition;
-  its $R$-module structure is the self-enrichment {#thm-mod-closed} on
+  its $R$-module structure is the self-enrichment @thm:mod-closed on
   that Hom, not "pointwise via $W$" on a set of maps whose category was
   never named. Similarly $\operatorname{Sym}_{R,W}(M):=
   \operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)$ for symmetric,
@@ -3317,8 +3320,8 @@ $U$ exists:
 
 * **Scaffolding (once, fenced):** $(\mathbf{Mod}_R,\otimes_R,R,\tau)$
   (stably $(\mathbf{LMod}_R,\otimes^L_R,R,\tau)$) symmetric monoidal
-  closed and self-enriched {#thm-mod-closed}, with $M\otimes_R M$
-  classifying bilinears {#def-tensor}. Let $\tau_{M,M}\colon M\otimes
+  closed and self-enriched @thm:mod-closed, with $M\otimes_R M$
+  classifying bilinears @def:tensor. Let $\tau_{M,M}\colon M\otimes
   M\to M\otimes M$ be the symmetry, $\Delta\colon M\to M\otimes M$ the
   diagonal for alternating, and $\Gamma^2_R(M)\xrightarrow{\gamma}
   \operatorname{Sym}^2_R(M)\to M\otimes M$ the divided-power classifier
@@ -3356,7 +3359,7 @@ on $x\otimes y\colon R\to M\otimes M$."
 
 $W$ was introduced as a *parameter* varying over $\mathbf{Mod}_R$ (stably
 $\mathbf{LMod}_R$) via $\operatorname{Hom}_R(M\otimes_RM,W)$ as
-$R$-module ({#thm-mod-closed}, {#def-tensor}) — no elements, no
+$R$-module (@thm:mod-closed, @def:tensor) — no elements, no
 "$\in$." "$b(x,x)\in2W$" immediately concretizes that $W$ to
 $U(W)$ with a subset $2W:=\operatorname{im}(2\colon W\to W)$, i.e. the
 $\mathbf{Set}$-shadow of a diagram, meaningless stably (for
@@ -3423,7 +3426,7 @@ categorical image, then evenness and all later uses are containments of
 $R$-submodules, not pointwise checks:
 
 * **Scaffolding (once, fenced):**
-  "::: {#def-val} **Definition.** Let $R$ be commutative and $b\colon
+  "::: {.definition #def:val title=\"Value submodule\"} Let $R$ be commutative and $b\colon
   M\otimes_RM\to W$ $W$-valued bilinear. Put
   $\operatorname{Val}(b):=\langle b(x,x)\mid x\in M\rangle_R\subseteq W$
   the $R$-submodule spanned by the diagonal — equivalently the image
@@ -3453,7 +3456,7 @@ Grothendieck.
 recurring definition and every later "check $b(x,x)\in2W$ for every $x$."
 
 **Preferred:** define $\operatorname{Val}(b)\subseteq W$ once via
-{#def-val}; then "$b$ is **even** if $\operatorname{Val}(b)\subseteq2W$."
+@def:val; then "$b$ is **even** if $\operatorname{Val}(b)\subseteq2W$."
 Never carry $b(x,x)\in2W$ on every use once $\operatorname{Val}(b)$ is
 available — use the submodule.
 
@@ -3522,7 +3525,7 @@ of $q$, not $q$ "refining" $b$ without the map.
 Concrete standard — name $\gamma^*$ and its fiber, then "refinement" is
 the fiber:
 
-"::: {#def-quad-polar} **Definition.** Put
+"::: {.definition #def:quad-polar title=\"Quadratic polar map\"} Put
 $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and
 $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$ as
 $R$-modules. The $R$-linear
@@ -3549,7 +3552,7 @@ declared vacuous? The precise content is the (non-)isomorphism between
 
 Concrete standard — state the (non-)isomorphism and its fiber:
 
-"::: {#prop-quad-vs-bil} **Proposition.** $\gamma^*$ is not an
+"::: {.proposition #prop:quad-vs-bil title=\"Quadratic versus bilinear forms\"} $\gamma^*$ is not an
 isomorphism in general; when $2\colon W\to W$ is invertible,
 $\operatorname{EvBil}_{R,W}(M)=\operatorname{Bil}_{R,W}(M)$ as element
 condition but $\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to
@@ -3582,14 +3585,14 @@ specialization that has not been introduced.
 Concrete standards:
 
 * **Object, not setting:**
-  "::: {#def-disc-cat} **Definition.** Let $\mathbf{TorBil}_{R,W}$ (resp.
+  "::: {.definition #def:disc-cat title=\"Torsion form categories\"} Let $\mathbf{TorBil}_{R,W}$ (resp.
   $\mathbf{TorQuad}_{R,W}$) be the category whose objects are pairs
   $(T,\bar b)$ with $T\in\mathbf{Mod}_R$ torsion of finite length and
   $\bar b\colon T\otimes_R T\to W/\operatorname{Val}$ nondegenerate
   $W$-valued torsion bilinear (resp. quadratic) form. :::"
 
 * **Discriminant as object of that category, defined later:**
-  "::: {#def-discriminant} For a lattice $L$ with $b\colon L\otimes L\to R$
+  "::: {.definition #def:discriminant title=\"Discriminant form\"} For a lattice $L$ with $b\colon L\otimes L\to R$
   nondegenerate, put $D_L:=L^\vee/L$ and let $\bar b$ / $\bar q\colon
   D_L\to\mathbb Q/\mathbb Z$ ($\to\mathbb Q/2\mathbb Z$ for quadratic) be
   the induced torsion form. :::"
@@ -3764,8 +3767,8 @@ shadow when $U$ exists:
 
 * **Scaffolding (once, fenced):** $(\mathbf{Mod}_R,\otimes_R,R,\tau)$
   (stably $(\mathbf{LMod}_R,\otimes^L_R,R,\tau)$) symmetric monoidal
-  closed and self-enriched {#thm-mod-closed}, with $M\otimes_RM$
-  classifying bilinears {#def-tensor} and $\tau_{M,M}$ the symmetry,
+  closed and self-enriched @thm:mod-closed, with $M\otimes_RM$
+  classifying bilinears @def:tensor and $\tau_{M,M}$ the symmetry,
   $\Delta$, $\Gamma^2_R$ as in PR-43. The same structure exists in
   $(\mathrm{QCoh}(X),\otimes_{\mathcal O_X},\mathcal O_X,\tau)$,
   $(\mathbf{Sp},\wedge,\mathbb S,\tau)$, etc. — no $U$ needed.
@@ -3815,7 +3818,7 @@ later theory is immediate:
 * **Scaffolding (once, fenced):**
   $\operatorname{Hom}_R(M\otimes_RM,W)\cong\operatorname{Hom}_R(M,
   \underline{\operatorname{Hom}}_R(M,W))$ via the closed structure
-  {#thm-mod-closed} / {#def-tensor}. For $b\colon M\otimes_RM\to W$ put
+  @thm:mod-closed / @def:tensor. For $b\colon M\otimes_RM\to W$ put
   $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$,
   $x\mapsto b(x,-)$ and $x\mapsto b(-,x)$, the two adjoints. When $b$
   symmetric they agree and are written $b^{\sharp}$.
@@ -3887,7 +3890,7 @@ Foresight is stating the scaffolding and the governing object once, diagrammatic
 
 Concrete scaffolding that was owed once, fenced, before any $b(x,y)$ or $N^{\perp}$:
 
-* $(\mathbf{Mod}_R,\otimes_R,R,\tau)$ symmetric monoidal closed and self-enriched, $M\otimes_RM$ classifying $R$-bilinears, $\underline{\operatorname{Hom}}_R(M,W)\in\mathbf{Mod}_R$ as internal hom {#thm-mod-closed}/{#def-tensor}; $\operatorname{Hom}_R(M\otimes M,W)\cong\operatorname{Hom}_R(M,\underline{\operatorname{Hom}}_R(M,W))$ giving $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$.
+* $(\mathbf{Mod}_R,\otimes_R,R,\tau)$ symmetric monoidal closed and self-enriched, $M\otimes_RM$ classifying $R$-bilinears, $\underline{\operatorname{Hom}}_R(M,W)\in\mathbf{Mod}_R$ as internal hom @thm:mod-closed/@def:tensor; $\operatorname{Hom}_R(M\otimes M,W)\cong\operatorname{Hom}_R(M,\underline{\operatorname{Hom}}_R(M,W))$ giving $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$.
 * $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ and its named $R$-submodules $\operatorname{SymBil}:=\ker(\tau^*-\mathrm{id})$, $\operatorname{SkewBil}:=\ker(\tau^*+\mathrm{id})$, $\operatorname{AltBil}:=\ker(\Delta^*)$, $\operatorname{EvBil}:=\operatorname{im}(\gamma^*)$ with $\Gamma^2_R\xrightarrow{\gamma}\operatorname{Sym}^2_R\to M\otimes M$; $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and $\gamma^*\colon\operatorname{Quad}\to\operatorname{Bil}$.
 * $\operatorname{Val}(b)\subseteq W$ as $R$-submodule $\langle b(x,x)\rangle$ i.e. image of $\gamma^*$; $N^{\perp}:=\ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))$; isotropic as $\ker(M\xrightarrow{\Delta}M\otimes M\xrightarrow{b}W)$, anisotropic as $\ker=0$; nondegenerate as $b^{\sharp}$ iso; $M^\vee:=\underline{\operatorname{Hom}}_R(M,R)$; $(M,b)\perp(N,c)$ as orthogonal sum in $\mathbf{Bil}_{R,W}$.
 
@@ -4167,7 +4170,7 @@ $L^2$-convergent, not finite.
 Concrete standard — make the canonical form and the operator form
 explicit, with hypotheses:
 
-"::: {#rmk-canonical} **Remark.** $F:=R^{(I)}$ carries the tautological
+"::: {.remark #rmk:canonical title=\"Canonical form and operator presentation\"} $F:=R^{(I)}$ carries the tautological
 $\langle v,w\rangle_0:=\sum_{i\in I}a_ic_i$ for $v=\sum a_ie_i$,
 $w=\sum c_ie_i$ with $a_i,c_i$ finitely supported; it is the
 $(0,2)$-tensor $\delta_{ij}$, well-defined only for $F$ algebraic free
@@ -4271,7 +4274,7 @@ hides the functoriality that is already in the type $b\colon M\otimes M\to W$.
 
 Concrete standard — name $\varphi$ and $\varphi_*$:
 
-"::: {#def-twist} **Definition.** For $\varphi\colon W\to W'$ in
+"::: {.definition #def:twist title=\"Twist of a form\"} For $\varphi\colon W\to W'$ in
 $\mathbf{Mod}_R$, put
 $\varphi_*\colon\mathbf{Bil}_{R,W}\to\mathbf{Bil}_{R,W'}$,
 $\varphi_*(M,b):=(M,\varphi\circ b)$. When $W'=W$, $\varphi_*$ is the
@@ -4355,7 +4358,7 @@ of which are the orthogonal diagonalization, not language.
 Concrete standard — state the equations, then $p,q,r$ are the normal
 form:
 
-"::: {#def-signature} **Definition.** Let $F$ be ordered, $V\in\mathbf{Vect}_F$
+"::: {.definition #def:signature title=\"Signature\"} Let $F$ be ordered, $V\in\mathbf{Vect}_F$
 finite-dimensional, $b\colon V\otimes V\to F$ symmetric. Put
 $\operatorname{rad}(V):=\ker(V\xrightarrow{b^{\sharp}}V^\vee)$,
 $r:=\dim_F\operatorname{rad}(V)$. By Sylvester there exists an orthogonal
@@ -4409,7 +4412,7 @@ $p$ is the greatest dimension …" as the *definition* of signature.
 
 **Preferred:** define $(p,q,r)$ via the suprema as above for arbitrary
 $V$ (fenced, with $\operatorname{rad}(V)$ via $b^{\sharp}$), then add:
-"::: {.Remark} When $\dim_FV=n<\infty$, the suprema are attained, $p$ and
+"::: {.remark} When $\dim_FV=n<\infty$, the suprema are attained, $p$ and
 $q$ are the greatest dimensions, $p+q+r=n$, and $G_e(b)\cong\operatorname{diag}
 (1^p,-1^q,0^r)$. :::" The finite case as specialization, not the
 definition.
@@ -4447,7 +4450,7 @@ Concrete check — on every new unit, ask explicitly:
 If the general $W$-valued $(0,2)$-tensor $b\colon M\otimes M\to W$ as
 $R$-module, or the sup $(p,q,r)\in\mathbf{Card}^3$ on $\mathrm{Gr}(V)$,
 is one line more and the proof is Sylvester with the same $b^{\sharp}$
-/ $\Gamma^2_R$, state the general and add "::: {.Remark} When
+/ $\Gamma^2_R$, state the general and add "::: {.remark} When
 $\dim_FV=n<\infty$, this gives $p=\max\ldots$, $p+q+r=n$, and
 $G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$. :::" — the special case
 desired is recovered without loss.
@@ -4694,19 +4697,19 @@ even") are separate fenced `Lemma` / `Proposition` / `Remark` blocks
 with quantified hypotheses and proofs, even when the material is "not
 hard to prove — but that does not give license to hand-wave it" (PR-48).
 
-**Banned:** `::: {#def-form-axioms} For b: … - b symmetric if …; …;
+**Banned:** `::: {.definition #def:form-axioms title="Form axioms"} For b: … - b symmetric if …; …;
 Alternating forms are skew-symmetric. The converse holds when 2 injective.
 When 2W=W, every b satisfies …; quadratic refinements retain … :::`
 — four definitions plus a Lemma plus a Proposition plus a Remark in one
 `Definition`.
 
-**Preferred:** `::: {#def-symmetric} b is symmetric if $b\circ\tau=b$ :::`
+**Preferred:** `::: {.definition #def:symmetric title="Symmetric forms"} b is symmetric if $b\circ\tau=b$ :::`
 (and similarly for skew / alternating / even, either as four fenced
 `Definition`s or as one fenced `Definition` that clearly enumerates the
 four related definitions), then separate
-`::: {#lem-alt-skew} Lemma. AltBil⊆SkewBil. Proof. … :::`,
+`::: {.lemma #lem:alt-skew title="Alternating forms are skew-symmetric"} AltBil⊆SkewBil. Proof. … :::`,
 `::: {#prop-skew-alt} Proposition. Skew=Alt iff 2:W↪W injective. … :::`,
-`::: {.Remark} When 2W=W the element condition is vacuous; the content
+`::: {.remark} When 2W=W the element condition is vacuous; the content
 is the fiber of γ^* … :::` — one status per block.
 
 ### `PR-65`: A free-floating "`**Remark.**` … $G_e(b)=\begin{pmatrix}0&1\\1&0\end{pmatrix}$ … $b(e_1+e_2,e_1+e_2)=2$" with no claim has almost no epistemic status and is not self-contained
@@ -4734,7 +4737,7 @@ $b\circ\Delta\neq0$ instead of "$b\notin\operatorname{AltBil}$."
 Concrete standard — fenced, labelled, with the quantified claim and its
 negated containment made explicit:
 
-"::: {#exm-U-not-alternating} **Example.** Vanishing on a basis does not
+"::: {.example #ex:U-not-alternating title=\"Vanishing on a basis does not imply alternating\"} Vanishing on a basis does not
 imply alternating. Let $e=(e_1,e_2)\colon\mathbb Z^2\xrightarrow{\sim}
 \mathbb Z^2$ be the standard ordered basis and put
 $G_e(b):=\begin{pmatrix}0&1\\1&0\end{pmatrix}=e^*b\in M_2(\mathbb Z)$ for
@@ -4767,7 +4770,7 @@ $W$" and "when $2W=W$ every $b$ is even; quadratic refinements retain
 …" are a more nuanced Proposition / Remark about the map induced by
 $2\colon W\to W$ and its obstruction to being iso — each warrants its
 own fenced block with quantified hypothesis and proof, not two sentences
-appended to `{#def-form-axioms}`.
+appended to @def:form-axioms.
 
 This is the general form of DEF-15/DEF-19 and SEC-6: one fenced block per
 notion with one logical status. A Definition block defines; implications
@@ -4792,7 +4795,7 @@ between named objects:
   via $b\mapsto b\circ\tau$, $b\mapsto b\circ\Delta$.
 
 * **Then, separate fenced units:**
-  "::: {#lem-alt-skew} **Lemma.** $\operatorname{AltBil}_{R,W}(M)
+  "::: {.lemma #lem:alt-skew title=\"Alternating forms are skew-symmetric\"} $\operatorname{AltBil}_{R,W}(M)
   \subseteq\operatorname{SkewBil}_{R,W}(M)$ as $R$-submodules. *Proof.*
   … :::"
   "::: {#prop-skew-alt} **Proposition.** The $R$-linear
@@ -4809,11 +4812,11 @@ between named objects:
   No Lemma/Proposition inside the Definition; no "Alternating forms are
   skew" as a comment.
 
-**Banned:** the three sentences appended to `{#def-form-axioms}` — neither
+**Banned:** the three sentences appended to @def:form-axioms — neither
 fenced nor proved, with no named $\operatorname{AltBil}$ /
 $\operatorname{SkewBil}$ / $\operatorname{EvBil}$ or $2_*$ to refer to.
 
-**Preferred:** keep `{#def-form-axioms}` to the four diagrammatic
+**Preferred:** keep @def:form-axioms to the four diagrammatic
 definitions $b\circ\tau=b$ / $b\circ\tau=-b$ / $b\circ\Delta=0$ / lift
 through $\Gamma^2$; then separate `Lemma` for
 $\operatorname{Alt}\subseteq\operatorname{Skew}$ and `Proposition/Remark`
@@ -4873,7 +4876,7 @@ pullback/formula "defines a presheaf."
   $\mathcal C^{\mathrm{op}}\to\mathbf{Set}$ (stably $\to\mathcal S$);
   $\mathcal C^{\mathrm{op}}\to\mathbf{Mod}_R$ is an
   $\mathbf{Mod}_R$-valued / $\mathbf{Mod}_R$-enriched presheaf via
-  {#thm-mod-closed} (TERM-10). A limit / slice functor cannot be a
+  @thm:mod-closed (TERM-10). A limit / slice functor cannot be a
   presheaf — types do not match — and a single
   $f^*b(x,y)=b(fx,fy)$ for one $f$ cannot be a functor
   $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Set}$ / $\to\mathbf{Mod}_R$.
@@ -4896,7 +4899,7 @@ R\text{-}\mathbf{Mod}$."
 in $\mathbf{Mod}_R$, put $f^*:=(f\otimes f)^*\colon
 \operatorname{Bil}_{R,W}(N)\to\operatorname{Bil}_{R,W}(M)$. As a
 functor $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$
-($\mathbf{Mod}_R$-valued presheaf via {#thm-mod-closed}) it satisfies
+($\mathbf{Mod}_R$-valued presheaf via @thm:mod-closed) it satisfies
 $\mathrm{id}^*=\mathrm{id}$ and $(g\circ f)^*=f^*\circ g^*$ by Hom. On
 elements, $(f^*b)(x,y)=b(f(x),f(y))$." Name on objects, on morphisms with
 domain/codomain, and the element unwrapping; do not say a pullback or a
@@ -4929,7 +4932,7 @@ assignments with types.
 "presheaf" for $\mathcal C^{\mathrm{op}}\to\mathbf{Set}$ ($\to\mathcal S$
 stably) and otherwise say "$\mathbf{Mod}_R$-valued presheaf" / "functor
 $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" with the enrichment
-from {#thm-mod-closed} named when needed.
+from @thm:mod-closed named when needed.
 
 ## Contributing to this document
 

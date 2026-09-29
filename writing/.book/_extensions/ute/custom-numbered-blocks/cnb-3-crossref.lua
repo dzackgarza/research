@@ -226,7 +226,21 @@ local childfilter = {
 }
 
 
-local function resolvelatexref(data)
+local function makereflink(data, foundid, longref)
+  local target = data[foundid]
+  if not target then return nil end
+
+  local linktext = target.refnumber
+  if longref then linktext = target.reflabel.." "..target.refnumber end
+
+  local href = '#'..foundid
+  if cnbx.ishtmlbook then
+    href = target.file .. '.html' .. href
+  end
+  return pandoc.Link(linktext, href)
+end
+
+local function resolverefs(data)
   return { 
     RawInline = function(el)
       local refid = el.text:match("\\ref{(.*)}")
@@ -234,24 +248,19 @@ local function resolvelatexref(data)
       local foundid = ifelse(refid, refid, ifelse(brefid,brefid, nil))
       
       if foundid then
-        if data[foundid] then
-          
-          local target = data[foundid]
-          local linktext = target.refnumber 
-          if brefid then linktext = target.reflabel.." "..target.refnumber end
-          local href = '#'..foundid
-            if cnbx.ishtmlbook then 
-              href = data[foundid].file .. '.html' .. href 
-            end  
-           -- print("found "..foundid.." href "..href.." linktext ".. linktext)  
-            return pandoc.Link(linktext, href)
-        -- else
-          -- leave untouched to allow for equation references
-          -- warning("unknown reference "..foundid.. " <=============  inserted ?? instead")
-         -- return pandoc.Inlines({pandoc.Strong(pandoc.Str("??")), pandoc.Str("->["..foundid.."]") }) --,"]<-",pandoc.Strong("??")})
-        end  
+        return makereflink(data, foundid, brefid ~= nil)
       end
-    end    
+    end,
+    -- Pandoc parses a bare @id as a Cite; resolve it only when the id belongs
+    -- to this numbered-block registry and otherwise leave bibliography cites alone.
+    Cite = function(el)
+      if #el.citations ~= 1 then return nil end
+
+      local citation = el.citations[1]
+      if #citation.prefix ~= 0 or #citation.suffix ~= 0 then return nil end
+
+      return makereflink(data, citation.id, true)
+    end
   }
 end
 
@@ -309,7 +318,7 @@ numberingfilter.Pandoc = function(doc)
   -- doc:walk {RawInline = resolveref}
   --dev.showtable(cnbx.xref, "xref")
   if cnbx.isbook then writexref(cnbx.xreffile) end
-  return doc:walk(resolvelatexref(cnbx.xref))
+  return doc:walk(resolverefs(cnbx.xref))
 end
 
 return( numberingfilter )

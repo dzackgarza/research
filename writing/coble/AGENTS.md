@@ -44,7 +44,7 @@ general lattice run whose results they depend on.
 
 Three checks, each cheap, each catching a different defect:
 
-- **Dependency.** For each `\ref`/`\longref` in the new page, find the page that
+- **Dependency.** For each numbered-block `@id` in the new page, find the page that
   defines the target. Every one should be earlier. A handful of forward references is
   normal in a book; a page whose targets are mostly later is in the wrong place.
 - **Subject.** Say what the part is about in one clause, then check the new page is
@@ -99,22 +99,24 @@ tag against the tag page before using it, since a wrong tag still renders.
 Numbered environments go through the `custom-numbered-blocks` filter:
 
 ```markdown
-::: {.Theorem #thm:coble-cusps title="Cusps of the Coble moduli space"}
+::: {.theorem #thm:coble-cusps title="Cusps of the Coble moduli space"}
 
 ...
 :::
 ```
 
-Reference it as `\ref{thm:coble-cusps}`, or `\longref{thm:coble-cusps}` for
-"Theorem 2.9". Labels use colon separators. Do not start a label with a Quarto-reserved
+Reference it as `@thm:coble-cusps`, which renders as "Theorem 2.9".
+Labels for custom numbered blocks use colon separators. Do not start one with a Quarto-reserved
 prefix (`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`, `fig-`, `tbl-`,
 `eq-`, `sec-`, `lst-`); Quarto hijacks those for its own crossrefs and the render fails.
 
 ## What a cross-reference can reach
 
-`\ref` and `\longref` are the only two commands that resolve here. The resolver is
-`writing/.book/_extensions/ute/custom-numbered-blocks/cnb-3-crossref.lua`, and it
-matches those two literal strings and nothing else.
+Use `@id` for every numbered target. For custom numbered blocks, the resolver is
+`writing/.book/_extensions/ute/custom-numbered-blocks/cnb-3-crossref.lua`; it recognizes
+a bare Pandoc citation whose id is in the shared numbered-block registry. Legacy
+`\ref{...}` and `\longref{...}` remain supported for old source, but do not introduce
+new uses.
 
 **A `\cref` or `\Cref` renders as nothing.** It never matches, and pandoc then drops the
 unmatched macro rather than printing it, so the reference does not appear as visible
@@ -123,19 +125,22 @@ chain $W_0 \subset W_1 \subset W_2 \subset W_3$ of ." That is how 390 of them
 accumulated unnoticed. `docs-check` now scans the sources for them, because there is
 nothing in the rendered HTML to find.
 
-**`\longref` reaches any numbered block in the book**, in any chapter, in either
-direction. That holds because every chapter is symlinked flat into `writing/.book`,
+**A custom-block `@id` reaches any custom numbered block in the book**, in any chapter,
+in either direction. That holds because every chapter is symlinked flat into `writing/.book`,
 which gives the resolver one registry instead of one per topic directory, and because
 the gate renders twice, which is what lets a reference reach a block declared later.
 Both are load-bearing: `writing/.book/TRAPS.md` records what breaks without them.
 
-A target that is not a numbered block still resolves to nothing however it is written:
+Numbered Quarto targets and unnumbered anchors are different:
 
-- sections, `\longref{sec:lattice-theory}` — link to the section instead, the way the
-  category-theory part does: `[Lattice Theory](lattices-and-moduli/lattice-theory.md#sec:lattice-theory)`;
-- tables, `\label{tbl:x}` — a table carries no number here; link to the page that
-  holds it;
-- more than one target, `\longref{a,b}` — the resolver matches a single id.
+- numbered sections, figures, tables, equations, and listings use Quarto's native
+  reserved-prefix ids and are referenced by `@id`, for example `@sec-lattice-theory`
+  and `@fig-x`;
+- a target with no number takes a page-qualified link such as
+  `[text](lattices-and-moduli/lattice-theory.md#anchor)`, never a fragment-only
+  `[text](#anchor)` when the target is on another chapter page;
+- one custom-block reference names one registry id; do not write a comma-separated id
+  list inside a legacy `\longref{...}`.
 
 **Figures use Quarto's own numbering, not this filter.** Anchor a figure `{#fig-x}`,
 with a hyphen, and reference it `@fig-x`. Quarto then numbers it within its chapter
@@ -145,15 +150,13 @@ image itself lives in the shared pandoc-config repo and is staged into the book 
 `scripts/docs_figures.py`; citing a figure that is not there fails the build rather
 than rendering a broken image.
 
-## The two parts cannot reference each other
+## The two parts share the numbered-block registry
 
-The Coble part uses the numbered-block filter above. The category-theory part uses
-Quarto's own crossrefs, `::: {#def-x}` referenced as `@def-x`. Neither resolver sees the
-other's registry, and there is no cross-part reference anywhere in the book, so a
-reference written from one part to a label in the other resolves to nothing.
-
-A notion both parts need is therefore stated in both, and the two statements must agree.
-The canonical form of a Coxeter system is stated twice for this reason.
+Both the Coble and category-theory parts use the same lowercase custom block classes
+declared in `writing/.book/_quarto.yml`, colon-separated custom ids, and `@id`
+references. The flat chapter symlinks give both parts the same registry, so a custom
+numbered block may be referenced across the part boundary when the mathematics calls
+for it.
 
 ## What is not part of this book
 
