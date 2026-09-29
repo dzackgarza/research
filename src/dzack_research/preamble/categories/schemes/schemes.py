@@ -82,6 +82,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
 )
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
     _commutative_algebra_with_structure,
@@ -122,6 +123,7 @@ for _scheme_axiom in (
     "Affine",
     "QuasiAffine",
     "Projective",
+    "Proper",
     "QuasiProjective",
     "Separated",
     "FiniteType",
@@ -2720,6 +2722,26 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""The affine line, of finite type over the base ring."""
             return AffineSpaces(self.base_ring())(1)
 
+    class Proper(CategoryWithAxiom):
+        r"""Schemes proper over the base.
+
+        Proper means separated, finite type and universally closed (Stacks
+        Project, Tag 01W1).  Projective schemes are proper (Tag 01WC), so the
+        projective property refines this one rather than duplicating it.
+        """
+
+        def extra_super_categories(self):
+            base = self.base_ring()
+            return [Schemes(base).Separated(), Schemes(base).FiniteType()]
+
+        class ParentMethods:
+            def is_proper(self):
+                return True
+
+        def an_object(self):
+            r"""The projective line, which is proper over the base."""
+            return ProjectiveSpaces(self.base_ring())(1)
+
     class Integral(CategoryWithAxiom):
         r"""Schemes that are reduced and irreducible."""
 
@@ -3093,7 +3115,7 @@ class Schemes(OwnedCategoryOverBaseRing):
         def extra_super_categories(self):
             return [
                 Schemes(self.base_ring()).QuasiProjective(),
-                Schemes(self.base_ring()).FiniteType(),
+                Schemes(self.base_ring()).Proper(),
             ]
 
         class ParentMethods:
@@ -3887,9 +3909,18 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
     The realization is Sage's projective space on the same names; the chosen
     coordinates are the data it is built from.
     """
-    engine = _SageProjectiveSpace(int(dimension), _engine_ring(base), names=_normalized_space_names(names))
+    dimension = int(dimension)
+    engine = _SageProjectiveSpace(dimension, _engine_ring(base), names=_normalized_space_names(names))
+    decided = list(_space_placements(base, dimension))
+    match (base in OwnedFields(), dimension):
+        case (True, 2):
+            from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+
+            decided.append(ProjectiveSurfaces(base))
+        case _:
+            pass
     return _object_of(
-        owned_category_join((ProjectiveSpaces(base), *_space_placements(base, dimension), *placements)),
+        owned_category_join((ProjectiveSpaces(base), *decided, *placements)),
         scheme_base_ring=base,
         scheme_engine=engine,
         **level_data,
@@ -4009,6 +4040,43 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 
                     return PicardGroups().projective_bundle(self, base_picard_group)
+
+        @cached_method
+        def _picard_intersection_pairing(self):
+            r"""The form ``[O(1)]^2 = 1`` on ``Pic(P^2)``."""
+            assert int(self.relative_dimension()) == 2, (
+                f"the projective-space surface pairing applies to P^2, but {self} has relative "
+                f"dimension {self.relative_dimension()}"
+            )
+            picard = self.picard_group()
+            labels = picard.module_generating_set()
+            assert int(labels.cardinality()) == 1, (
+                f"Pic(P^2) over a field should have one generator [O(1)], but {picard} has "
+                f"{labels.cardinality()} generators"
+            )
+            integers = _own_ring(SageZZ)
+            return BilinearMap(
+                picard,
+                picard,
+                integers.regular_module(),
+                lambda _left, _right: integers.one(),
+            )
+
+        def _del_pezzo_degree(self):
+            r"""``(-K_{P^2})^2 = (3H)^2 = 9``."""
+            assert int(self.relative_dimension()) == 2, (
+                f"the projective-space Del Pezzo degree applies to P^2, but {self} has relative "
+                f"dimension {self.relative_dimension()}"
+            )
+            return _own_ring(SageZZ)(9)
+
+        def _is_del_pezzo(self) -> bool:
+            r"""``P^2`` is Del Pezzo because ``-K = O(3)`` is ample."""
+            assert int(self.relative_dimension()) == 2, (
+                f"the projective-space Del Pezzo predicate applies to P^2, but {self} has relative "
+                f"dimension {self.relative_dimension()}"
+            )
+            return bool(self.anticanonical_line_bundle().is_ample())
 
         def class_group(self):
             return self.picard_to_class_group_morphism().codomain()

@@ -384,6 +384,8 @@ from dzack_research.preamble.schemes import (
     EffectiveCartierDivisors,
     ProjectivePointBlowups,
     ProjectiveSchemes,
+    ProjectiveSurfaces,
+    ProperSurfaces,
     ProjectiveSpaces,
     QuasiCoherentSheaves,
     RationalPolyhedralFans,

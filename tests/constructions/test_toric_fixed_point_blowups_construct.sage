@@ -13,6 +13,8 @@ def test_toric_fixed_point_blowup_of_projective_plane() -> None:
     blowup = plane.toric_fixed_point_blowup(cone)
 
     assert blowup in ToricFixedPointBlowups(QQ)
+    assert blowup in ProperSurfaces(QQ)
+    assert blowup in ProjectiveSurfaces(QQ)
     assert blowup.blowup_source() is plane
     assert blowup.blowup_center_cone() == cone
     assert blowup.blowup_morphism().codomain() is plane

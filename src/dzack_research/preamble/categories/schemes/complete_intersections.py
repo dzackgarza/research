@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_mor_category,
     _structure_morphism_rule,
 )
+from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 
 
@@ -89,8 +90,19 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
         f"the equations {family} do not form a regular sequence in the homogeneous coordinate "
         f"ring of {ambient}, so V_+ of them is not a complete intersection"
     )
+    decided = [ProjectiveCompleteIntersections(base)]
+    expected_dimension = int(ambient.relative_dimension()) - int(family.cardinality())
+    match base:
+        case _ if base in OwnedFields():
+            match expected_dimension:
+                case 2 if bool(engine.defining_ideal().is_prime()):
+                    decided.append(ProjectiveSurfaces(base))
+                case _:
+                    pass
+        case _:
+            pass
     return _projective_closed_subscheme(
-        ambient, family, placements=(ProjectiveCompleteIntersections(base), *placements),
+        ambient, family, placements=(*decided, *placements),
         _engine=engine, **level_data,
     )
 
@@ -306,23 +318,26 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         def anticanonical_bundle(self, *args, **kwargs):
             return self.anticanonical_line_bundle(*args, **kwargs)
 
-        def is_del_pezzo(self) -> bool:
-            r"""Decide the del Pezzo condition for a smooth complete-intersection surface.
+        def _is_del_pezzo(self) -> bool:
+            r"""Decide the normal-Gorenstein Del Pezzo condition for an integral CI surface.
 
             In this represented regime adjunction constructs ``-K_X`` as an
-            actual restricted projective line bundle.  Smoothness is decided
-            by Sage's exact projective-subscheme Jacobian calculation and the
-            ampleness question is delegated to that line-bundle object.
+            actual restricted projective line bundle.  A complete intersection
+            is Gorenstein; normality is the remaining singularity hypothesis,
+            and ampleness is delegated to the anticanonical line bundle.  This
+            includes the normal singular Gorenstein case rather than imposing
+            smoothness.
             """
-            assert self.scheme_base_ring() in OwnedFields(), (
-                f"whether {self} is a del Pezzo surface is decided here only over a field, but its "
-                f"base ring {self.scheme_base_ring()} is not a field"
+            base = self.scheme_base_ring()
+            assert self in ProjectiveSurfaces(base), (
+                f"the complete-intersection Del Pezzo algorithm applies only after {self} is known to "
+                f"be an integral projective surface, but it is in {self.category()}"
             )
-            if int(self.expected_dimension()) != 2:
-                return False
-            if not bool(self.is_smooth()):
-                return False
-            return bool(self.anticanonical_line_bundle().is_ample())
+            match bool(self.is_smooth()):
+                case True:
+                    return bool(self.anticanonical_line_bundle().is_ample())
+                case False:
+                    return bool(self.is_normal() and self.anticanonical_line_bundle().is_ample())
 
         @cached_method
         def integral_topology(self):
@@ -343,12 +358,8 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
             return _QuarticK3HodgeData(self)
 
-        def del_pezzo_degree(self):
+        def _del_pezzo_degree(self):
             r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""
-            assert self.is_del_pezzo(), (
-                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: it is not a "
-                "del Pezzo surface"
-            )
             coefficient = self.anticanonical_twist_degree()
             return coefficient**2 * self.projective_degree()
 

@@ -75,6 +75,7 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 )
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
+    ProjectiveSurfaces,
     Surfaces,
     Varieties,
 )
@@ -1664,7 +1665,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return _integers()(value)
 
         @cached_method
-        def picard_intersection_pairing(self):
+        def _picard_intersection_pairing(self):
             r"""Return the integral intersection pairing on ``Pic(X)`` for a smooth complete toric surface."""
             assert int(self.dimension()) == 2, (
                 f"the intersection pairing on Pic is computed for toric surfaces, but {self} has "
@@ -1688,6 +1689,19 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     weil.module_generator(right_label),
                 ),
             )
+
+        def _is_del_pezzo(self) -> bool:
+            r"""Decide Del Pezzo for a represented projective toric surface."""
+            assert int(self.dimension()) == 2 and self.fan().is_complete(), (
+                f"the toric Del Pezzo algorithm applies to complete toric surfaces, but {self} has "
+                f"dimension {self.dimension()} and complete fan: {self.fan().is_complete()}"
+            )
+            return bool(self.is_ample(-self.canonical_divisor()))
+
+        def _del_pezzo_degree(self):
+            r"""Return ``(-K_X)^2`` by toric divisor intersection."""
+            anticanonical = -self.canonical_divisor()
+            return self.divisor_intersection(anticanonical, anticanonical)
 
         @cached_method
         def chow_group(self, cycle_dimension):
@@ -1962,8 +1976,9 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     in ``ToricSchemes(R)`` with the fan and the polarizing polytope as that
     level's data, together with the placements the fan decides at
     construction (smooth exactly when the fan is, CLS Thm. 3.1.19; a curve or
-    a surface by the rank of ``N``) and the further ``placements`` a caller
-    constructs it in.  Over a field, Sage's ``ToricVariety`` of the same fan
+    a surface by the rank of ``N``; every complete toric surface is projective,
+    CLS Prop. 6.3.25) and the further ``placements`` a caller constructs it in.
+    Over a field, Sage's ``ToricVariety`` of the same fan
     is retained as a private realization; over a general base the owned affine
     gluing is the realization.
     """
@@ -1982,6 +1997,11 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
                 decided.append(Surfaces(base))
             case _:
                 pass
+    match (base in OwnedFields(), int(fan.dimension()), fan.is_complete()):
+        case (True, 2, True):
+            decided.append(ProjectiveSurfaces(base))
+        case _:
+            pass
     engine_base = _engine_ring(base)
     native = (
         _SageToricVariety(_engine_fan(fan), base_ring=engine_base)

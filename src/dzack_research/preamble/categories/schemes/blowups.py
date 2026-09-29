@@ -41,7 +41,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
 )
-from dzack_research.preamble.categories.schemes.varieties import Surfaces
+from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -199,7 +199,13 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         base = self.base_ring()
-        return [Blowups(base), Schemes(base).Projective().Smooth(), Surfaces(base)]
+        categories = [Blowups(base), Schemes(base).Smooth()]
+        match base in OwnedFields():
+            case True:
+                categories.append(ProjectiveSurfaces(base))
+            case False:
+                pass
+        return categories
 
     def an_object(self):
         plane = ProjectiveSpaces(self.base_ring())(2)
@@ -351,16 +357,18 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def picard_intersection_pairing(self):
+        def _picard_intersection_pairing(self):
             picard = self.picard_group()
             values = _integers().regular_module()
 
             def value(left, right):
-                if left == "H" and right == "H":
-                    return _integers().one()
-                if left == "E" and right == "E":
-                    return -_integers().one()
-                return _integers().zero()
+                match (left, right):
+                    case ("H", "H"):
+                        return _integers().one()
+                    case ("E", "E"):
+                        return -_integers().one()
+                    case _:
+                        return _integers().zero()
 
             return BilinearMap(picard, picard, values, value)
 
@@ -420,15 +428,11 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def _canonical_line_bundle(self):
             return self.canonical_comparison().domain()
 
-        def is_del_pezzo(self) -> bool:
+        def _is_del_pezzo(self) -> bool:
             return bool(self.anticanonical_line_bundle().is_ample())
 
-        def del_pezzo_degree(self):
+        def _del_pezzo_degree(self):
             r"""``(-K_B)^2 = (3H - E)^2``."""
-            assert self.is_del_pezzo(), (
-                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: its "
-                "anticanonical bundle is not ample"
-            )
             anticanonical = (
                 3 * self.hyperplane_picard_class()
                 - self.exceptional_picard_class()

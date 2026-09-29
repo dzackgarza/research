@@ -72,6 +72,8 @@ from dzack_research.preamble.categories.schemes.complete_intersections import Pr
 
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
+    ProjectiveSurfaces,
+    ProperSurfaces,
     Surfaces,
     Varieties,
 )
@@ -175,6 +177,8 @@ __all__ = [
     'ProjectivePointBlowups',
     'ProjectiveCompleteIntersections',
     'ProjectiveSchemes',
+    'ProjectiveSurfaces',
+    'ProperSurfaces',
     'ProjectiveSpaces',
     'ProductProjectiveSpaces',
     'ProductSchemes',

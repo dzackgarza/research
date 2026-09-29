@@ -10,6 +10,8 @@ def test_projective_plane_from_its_fan_is_toric() -> None:
     assert plane in ToricSchemes(QQ)
     assert plane in Varieties(QQ)
     assert plane in Surfaces(QQ)
+    assert plane in ProperSurfaces(QQ)
+    assert plane in ProjectiveSurfaces(QQ)
     assert plane in NormalSchemes(QQ)
     assert plane in SmoothSchemes(QQ)
     assert plane in IntegralSchemes(QQ)
@@ -17,6 +19,8 @@ def test_projective_plane_from_its_fan_is_toric() -> None:
     assert plane.is_complete()
     assert plane.is_smooth()
     assert plane.is_normal()
+    assert plane.is_del_pezzo()
+    assert plane.del_pezzo_degree() == 9
 
 
 def test_projective_plane_orbit_cone_correspondence() -> None:

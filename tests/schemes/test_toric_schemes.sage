@@ -56,6 +56,9 @@ def test_the_chart_of_a_smooth_cone_is_the_affine_plane() -> None:
     cone = variety.fan().maximal_cones()[0]
     chart = variety.affine_chart(cone)
 
+    assert variety in Surfaces(QQ)
+    assert variety not in ProperSurfaces(QQ)
+    assert variety not in ProjectiveSurfaces(QQ)
     assert chart in AffineSchemes(QQ)
     assert chart.coordinate_algebra().algebra_generating_set().cardinality() == 2
 
