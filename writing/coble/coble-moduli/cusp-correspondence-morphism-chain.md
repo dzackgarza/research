@@ -28,7 +28,7 @@ $$
 where $F_{(2,2,0)}$ is the moduli space of quartic hyperelliptic K3 surfaces used in AEGS. The purpose of the chain is to transport the KSBA/semitoroidal comparison proved for $\fentwo$ back to $\fco$.
 :::
 
-::: {.Construction title="The embedding and its two extensions"}
+::: {.Construction #cons:coble-period-embedding-extensions title="The embedding and its two extensions"}
 
 An embedding $\fco \injects \fen$ into unpolarized Enriques moduli is claimed, together with two extensions to Baily-Borel compactifications:
 $$
@@ -42,12 +42,12 @@ The boundary correspondence induced by $\eta$ is claimed to be determined by the
 
 ## The two cusp identifications
 
-::: {.Conjecture title="Coble cusps under the extension to F_(2,2,0)"}
+::: {.Conjecture #conj:coble-cusps-in-f220 title="Coble cusps under the extension to F_(2,2,0)"}
 
 Under $\tilde\eta$, the Coble cusps correspond to $U \oplus E_8^{\oplus 2}$, the lattice with invariants $(18,0,0)_1$.
 :::
 
-::: {.Conjecture title="The Coble 0-cusp is Sterk cusp 2"}
+::: {.Conjecture #conj:coble-zero-cusp-sterk-2 title="The Coble 0-cusp is Sterk cusp 2"}
 
 The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo$.
 The Sterk cusp diagram was first given by Sterk (1991).
@@ -88,7 +88,7 @@ This gives an independent handle on the dimension 9 already asserted in the proj
 
 ## Terminal Coble surfaces
 
-::: {.Definition title="Terminal"}
+::: {.Definition #def:terminal-coble-surface title="Terminal"}
 
 A Coble surface is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.

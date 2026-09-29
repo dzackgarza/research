@@ -19,7 +19,7 @@ Each was checked absent from `content_pandoc` and `knowledge` before being writt
 
 ## Negative curves
 
-::: {.Proposition title="Norms of smooth rational negative curves"}
+::: {.Proposition #prop:coble-negative-curve-norms title="Norms of smooth rational negative curves"}
 
 Let $S$ be a Coble surface with anti-bicanonical divisor $D$.
 Every smooth rational negative curve $E \containedin S$ satisfies
@@ -34,7 +34,7 @@ It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that gover
 
 ## Automorphisms
 
-::: {.Theorem title="Coble's theorem, lattice form"}
+::: {.Theorem #thm:coble-lattice-automorphisms title="Coble's theorem, lattice form"}
 
 Write $M_S \da K_S^{\perp\, \Pic(S)}$.
 Then $\Aut(S)$ is isomorphic to a finite-index subgroup $H \leq \Orth(M_S)$, and
@@ -55,7 +55,7 @@ Classifying all surfaces with this property is an open question recorded in the 
 
 ## The Coble-Mukai lattice
 
-::: {.Definition title="Coble-Mukai lattice"}
+::: {.Definition #def:coble-mukai-lattice title="Coble-Mukai lattice"}
 
 With $B_1,\ldots,B_n$ the boundary components, set
 $$
@@ -71,7 +71,7 @@ Whether $\mathrm{CM}(S)$ relates to $S_{\Co}$, and whether it is the more natura
 
 ## The Dolgachev-Zhang classification
 
-::: {.Definition title="Elliptic and rational types"}
+::: {.Definition #def:coble-elliptic-rational-types title="Elliptic and rational types"}
 
 A Coble surface is of **elliptic type** when there is $S \birational Y$ with $|-K_Y|$ a singleton and the mobile part of $|-2K_Y|$ generically a smooth elliptic curve.
 Elliptic type splits further:
@@ -84,7 +84,7 @@ It is of **rational type** when the mobile part of $|-2K_Y|$ consists of divisor
 These are blowups of minimal rational surfaces.
 :::
 
-::: {.Theorem title="K3 type criterion, Dolgachev-Zhang Thm. 6.5"}
+::: {.Theorem #thm:coble-k3-type-criterion title="K3 type criterion, Dolgachev-Zhang Thm. 6.5"}
 
 Let $X$ be a Coble surface with $M^2 = 0$.
 
@@ -93,7 +93,7 @@ Let $X$ be a Coble surface with $M^2 = 0$.
 - If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface by blowing up a singular point of one fibre $F$ and at least one singular point, with infinitely near points, on another fibre $F_1$, then $X$ is of K3 type **if and only if** each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
 :::
 
-::: {.Lemma title="Dolgachev-Zhang Lem. 6.2"}
+::: {.Lemma #lem:coble-reduced-antibicanonical-k3-cover title="Dolgachev-Zhang Lem. 6.2"}
 
 For a Coble surface $X$ the following are equivalent:
 
@@ -110,12 +110,12 @@ The Jacobian branch has no counterpart anywhere in the project.
 
 ## Rational log Enriques surfaces of index 2
 
-::: {.Definition title="Rational log Enriques surface of index 2"}
+::: {.Definition #def:rational-log-enriques-index-two title="Rational log Enriques surface of index 2"}
 
 A normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$.
 :::
 
-::: {.Theorem title="Terminal Cobles are resolutions of these"}
+::: {.Theorem #thm:terminal-coble-log-enriques-resolution title="Terminal Cobles are resolutions of these"}
 
 A terminal Coble surface is the minimal resolution of a **maximum** rational log Enriques surface of index 2. Conversely, the minimal resolution $X$ of a rational log Enriques surface $\bar X$ of index 2 is a Coble surface with $h^0(-2K_X) = 1$, whose unique member $D \in |-2K_X|$ is reduced and each of whose connected components is either a single $(-4)$-curve or a linear chain with a prescribed dual graph.
 :::
