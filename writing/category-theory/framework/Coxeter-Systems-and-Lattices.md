@@ -105,7 +105,7 @@ A *Coxeter system in a lattice* over $R$ is a triple $(\Phi,L,\iota)$ consisting
 
 - a lattice $L$ over $R$, and
 
-- a primitive embedding $\iota\colon\langle\Phi\rangle\hookrightarrow L$ in the sense of @def-primitive-embedding.
+- a primitive embedding $\iota\colon\langle\Phi\rangle\hookrightarrow L$ in the sense of @def:primitive-embedding.
 
 A morphism $(\Phi_1,L_1,\iota_1)\to(\Phi_2,L_2,\iota_2)$ is a pair $(u,g)$ consisting of a morphism $u\colon\langle\Phi_1\rangle\to\langle\Phi_2\rangle$ of $\mathbf{Lat}_R$ sending $\Phi_1$ into $\Phi_2$ and a morphism $g\colon L_1\to L_2$ of $\mathbf{Lat}_R$, such that the square
 
@@ -132,11 +132,11 @@ are functors to $\mathbf{Lat}_R$.
 ::: {.proposition #prop:coxeter-embedding-index title="The index of the root embedding"}
 
 Let $\iota\colon\langle\Phi\rangle\to L$ be a morphism of $\mathbf{Lat}_R$ with $R=\mathbb Z$ and with the two lattices of equal rank.
-Its index $[L:\iota(\langle\Phi\rangle)]$ of @def-index satisfies
+Its index $[L:\iota(\langle\Phi\rangle)]$ of @def:index satisfies
 $$
 \det\bigl(b_{\langle\Phi\rangle}\bigr)=[L:\iota(\langle\Phi\rangle)]^{2}\det(b_L)
 $$
-by @prp-embedding-index, and equals $1$ exactly when $\iota$ is an isometry.
+by @prop:embedding-index, and equals $1$ exactly when $\iota$ is an isometry.
 
 For an object $(\Phi,L,\iota)$ of $\mathbf{Cox}_{\mathbb Z}$ the index is therefore $1$ whenever the ranks agree: the cokernel of $\iota$ is torsion-free by primitivity and of rank $0$ by equality of ranks, so it vanishes.
 The invariant that survives on $\mathbf{Cox}_{\mathbb Z}$ is the orthogonal complement $\iota(\langle\Phi\rangle)^{\perp}\subseteq L$ of @def-orthogonal-complement together with its induced form.

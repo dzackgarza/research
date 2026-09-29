@@ -13,7 +13,7 @@ O(L)=\operatorname{Aut}(L).
 $$
 When nonempty, $\operatorname{Iso}(L,M)$ is an $(O(M),O(L))$-bitorsor: $O(M)$ acts on the left by postcomposition and $O(L)$ acts on the right by precomposition.
 
-::: {#def-discriminant-rep .def title="Discriminant representation"}
+::: {.definition #def:discriminant-rep title="Discriminant representation"}
 
 An isometry of $L$ induces an isometry of its discriminant form.
 Hence the discriminant construction gives a homomorphism
@@ -30,7 +30,7 @@ If $L$ is even and indefinite and $\operatorname{rank}(L)\geq\ell(A_L)+2$, where
 
 ## Embeddings and primitive embeddings {#sec-embeddings}
 
-::: {#prp-morphism-out-of-nondegenerate .prop title="Morphisms out of a nondegenerate object"}
+::: {.proposition #prop:morphism-out-of-nondegenerate title="Morphisms out of a nondegenerate object"}
 
 Let $f\colon(L,b_L)\to(M,b_M)$ be a morphism of $\mathcal B_{R,W}$ and let $b_L$ be nondegenerate.
 Then $f$ is injective: if $f(x)=0$ then $b_L(x,y)=b_M(fx,fy)=0$ for every $y\in L$, so $x\in\operatorname{rad}(L)=0$.
@@ -41,7 +41,7 @@ $$
 $$
 :::
 
-::: {#def-primitive-embedding .def title="Primitive embeddings"}
+::: {.definition #def:primitive-embedding title="Primitive embeddings"}
 
 A morphism $f\colon L\to M$ of $\mathbf{Lat}_R$ is a *primitive embedding* if $\operatorname{coker}(f)$ is torsion-free.
 Primitivity is a property of the morphism, and $\operatorname{PrimEmb}(L,M)$ is the subset of $\operatorname{Hom}_{\mathbf{Lat}_R}(L,M)$ it cuts out; a subobject of $M$ (@def:subobject-relation) is called primitive when a representing monomorphism has this property.
@@ -55,7 +55,7 @@ Its left term is isomorphic to $\operatorname{coker}(f)$ because $g$ is injectiv
 So the primitive embeddings form a subcategory of $\mathbf{Lat}_R$ with the same objects.
 :::
 
-::: {#exm-primitive-and-scaled .ex title="Primitive versus nonprimitive embeddings"}
+::: {.example #ex:primitive-and-scaled title="Primitive versus nonprimitive embeddings"}
 **Example.** Let $U$ be the hyperbolic plane of @def-hyperbolic-plane on $e,f$, let $\langle1\rangle$ be the rank one lattice on $w$ with $b(w,w)=1$, and let $M=U\perp\langle1\rangle$.
 The morphism $e\mapsto e$, $f\mapsto f$ has cokernel $\mathbb Zw$, which is torsion-free, so it is a primitive embedding.
 The map $e\mapsto2e$, $f\mapsto2f$ multiplies pairings by $4$, so it is a morphism $U(4)\to M$ for the twist $U(4)$ of @def-form-twist.
@@ -64,7 +64,7 @@ Its image is $2U$ and its cokernel is $\mathbb Zw\oplus(\mathbb Z/2\mathbb Z)^{2
 
 ## Adjoints, similarities and the index of an embedding {#sec-adjoint-similarity}
 
-::: {#def-adjoint-morphism .def title="The adjoint of a morphism"}
+::: {.definition #def:adjoint-morphism title="The adjoint of a morphism"}
 
 Let $f\colon(M,b_M)\to(N,b_N)$ be $R$-linear between modules with $W$-valued forms, and write $f^{\vee}\colon\operatorname{Hom}_R(N,W)\to\operatorname{Hom}_R(M,W)$ for the induced map.
 An *adjoint* of $f$ is an $R$-linear map $f^{*}\colon N\to M$ with
@@ -80,7 +80,7 @@ If $b_M$ is perfect it exists and equals $(b_M^{\sharp})^{-1}\circ f^{\vee}\circ
 Nondegeneracy alone does not give existence, since $b_M^{\sharp}$ need not be surjective.
 :::
 
-::: {#prp-adjoint-matrix .prop title="The adjoint in coordinates"}
+::: {.proposition #prop:adjoint-matrix title="The adjoint in coordinates"}
 
 Let $M$ and $N$ be free with chosen bases, let $G_M$ and $G_N$ be the Gram matrices of @prp-gram-matrix-free-module, and let $A$ be the matrix of $f$ on column vectors.
 If $G_M$ is invertible then
@@ -95,7 +95,7 @@ so an isometry is an endomorphism whose adjoint is its inverse.
 The identity $A^{-1}=A^{\mathsf T}$ holds when $G$ is the identity matrix.
 :::
 
-::: {#def-similarity .def title="Similarities"}
+::: {.definition #def:similarity title="Similarities"}
 
 A *similarity of scale* $\lambda\in R$ from $(M,b_M)$ to $(N,b_N)$ is an $R$-linear map $f$ with
 $$
@@ -109,10 +109,10 @@ $$
 $$
 :::
 
-::: {#prp-embedding-index .prop title="The index of an embedding"}
+::: {.proposition #prop:embedding-index title="The index of an embedding"}
 
 Let $f\colon L\to M$ be a morphism of $\mathbf{Lat}_{\mathbb Z}$ between lattices of the same rank $n$.
-Then $\operatorname{coker}(f)$ is finite, its order is the index $[M:f(L)]$ of @def-index, and
+Then $\operatorname{coker}(f)$ is finite, its order is the index $[M:f(L)]$ of @def:index, and
 $$
 \det(b_L)=[M:f(L)]^{2}\det(b_M).
 $$
@@ -122,7 +122,7 @@ Index $1$ holds exactly for the isometries.
 
 ## Reflections {#sec-reflections}
 
-::: {#def-reflection .def title="Reflection in a vector"}
+::: {.definition #def:reflection title="Reflection in a vector"}
 
 Let $R$ be a Dedekind domain with fraction field $K$, let $L$ be an $R$-lattice, write $q(x)=b(x,x)$, and let $v\in L$ satisfy $q(v)\neq0$.
 The *reflection in* $v$ is the $K$-linear map
@@ -144,9 +144,9 @@ the last two terms cancelling the first two.
 So $s_v\in O(L_K)$.
 :::
 
-::: {#prp-reflection-integrality .prop title="When a reflection is an isometry of $L$"}
+::: {.proposition #prop:reflection-integrality title="When a reflection is an isometry of $L$"}
 
-Keep the notation of @def-reflection and let $b(L,v)\subseteq R$ be the ideal generated by the values $b(x,v)$ for $x\in L$; over $R=\mathbb Z$ its nonnegative generator is the divisibility of $v$ in $L$.
+Keep the notation of @def:reflection and let $b(L,v)\subseteq R$ be the ideal generated by the values $b(x,v)$ for $x\in L$; over $R=\mathbb Z$ its nonnegative generator is the divisibility of $v$ in $L$.
 
 Then $s_v(L)\subseteq L$ if and only if
 $$
@@ -164,7 +164,7 @@ The reflections in the roots of a root lattice, which have $q(v)=-2$ in the sign
 
 ## Matrix realizations
 
-::: {#prp-matrix-realizations .prop title="Matrix realizations of automorphism groups"}
+::: {.proposition #prop:matrix-realizations title="Matrix realizations of automorphism groups"}
 If $L$ is free and a basis has been chosen, its Gram matrix $B$ identifies
 $$
 O(L)=\{g\in\operatorname{GL}_n(R)\mid g^{\mathsf T}Bg=B\}.
@@ -181,7 +181,7 @@ $$
 
 ## Isometries of a degenerate form {#sec-degenerate-isometries}
 
-::: {#prp-orthogonal-group-degenerate .prop title="The orthogonal group of a degenerate form"}
+::: {.proposition #prop:orthogonal-group-degenerate title="The orthogonal group of a degenerate form"}
 
 Let $R$ be a Dedekind domain and let $b$ be a symmetric bilinear form with values in $R$ on a finitely generated projective $R$-module $M$.
 Every isometry of $(M,b)$ maps $\operatorname{rad}(M)$ onto itself, so it acts on the radical and on the radical quotient.
@@ -205,7 +205,7 @@ and the subgroup fixing $\operatorname{rad}(M)$ pointwise is the preimage of $\{
 
 ## Index
 
-::: {#def-index .def title="Index of a subgroup"}
+::: {.definition #def:index title="Index of a subgroup"}
 For a subgroup $H\le G$, the *index* $[G:H]$ is the cardinality of the set of left cosets $G/H$.
 If $G$ is finite, $[G:H]=|G|/|H|$.
 In an abelian category, the analogous cardinality of a cokernel is used only after the relevant monomorphism and finiteness hypotheses have been stated.
@@ -213,7 +213,7 @@ In an abelian category, the analogous cardinality of a cokernel is used only aft
 
 ## The Miranda--Morrison sequence
 
-::: {#thm-miranda-morrison .theorem title="The Miranda--Morrison exact sequence"}
+::: {.theorem #thm:miranda-morrison title="The Miranda--Morrison exact sequence"}
 For an even indefinite lattice $L$ of rank at least $3$, the discriminant representation fits into the Miranda--Morrison exact sequence
 $$
 1\to\widetilde O(L)\to O(L)\to O(A_L,q_L)
@@ -227,7 +227,7 @@ It is distinct from $\operatorname{SO}(L)=\ker(\det)$.
 
 ## Genus {#sec-genus-sec}
 
-::: {#def-framework-genus .def title="Genus of a lattice"}
+::: {.definition #def:framework-genus title="Genus of a lattice"}
 
 Two integral lattices lie in the same genus if they are isometric over $\mathbb R$ and over $\mathbb Z_p$ for every prime $p$.
 Extension of scalars induces the map
