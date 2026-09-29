@@ -12,7 +12,7 @@ The latter can be obtained from the former by a classically well-known operation
 By the work of @AET23, to each such diagram one can associated a pair $(Y, C)$ where $Y$ is a surface, which in many cases is toric, and $C$ is a reduced boundary divisor such that $(Y, C)$ is an lc pair and $-2(K_Y + C)$ is an ample Cartier divisor providing a natural polarization.
 This provides a natural association of a classical $ADE+BC$ diagram (decorated with extra combinatorial parity data) to, in many cases, an explicit projective toric variety.
 We refer to such surfaces as **$ADE+BC$ surfaces**.
-This thesis details the construction of an isomorphism between the normalization of the KSBA stable pair compactification $\cpt{\fent}$ and a semitoroidal compactification $\semitorcpt{\fent}$ for the moduli space of Enriques surfaces with *numerical polarization* of degree 2. The main theorem establishes an isomorphism $\semitorcpt{\fent} \to \ksbacpt{\fent}$ where $\semifans{F} = \ts{ \semifan{F}_k }_{k=1,2,3,4,5}$ is a collection of semifans determined by the five 0-dimensional boundary components of the Baily-Borel compactification $\bbcpt{\fent}$.
+This thesis details the construction of an isomorphism between the normalization of the KSBA stable pair compactification $\ksbacpt{\fent}$ and a semitoroidal compactification $\semitorcpt{\fent}$ for the moduli space of Enriques surfaces with *numerical polarization* of degree 2. The main theorem establishes an isomorphism $\semitorcpt{\fent} \iso \normksbacpt{\fent}$ where $\semifans{F} = \ts{ \semifan{F}_k }_{k=1,2,3,4,5}$ is a collection of semifans determined by the five 0-dimensional boundary components of the Baily-Borel compactification $\bbcpt{\fent}$.
 Our goal is to prove the following:
 
 
@@ -27,12 +27,10 @@ There is a morphism
 \semitorcpt{\fent} \iso \normksbacpt{\fent}
 ,\end{align*}
 
-where $\normalize{(\wait)}$ denotes the normalization, the left-hand side is the semitoroidal compactification corresponding to an explicit collection $\semifans{F} = \ts{\semifan{F}_1, \torfan_2, \semifan{F}_3, \torfan_4, \semifan{F}_5}$ of semifans, one for each $0$-cusp of the Baily-Borel compactification $\bbcpt{\fent}$, and the right-hand side is the KSBA compactification. The semifans $\torfan_2, \torfan_4$ are fans, while $\semifan{F}_1, \semifan{F}_2, \semifan{F}_3$ are strict semifans.
+where $\normalize{(\wait)}$ denotes normalization, the left-hand side is the semitoroidal compactification corresponding to an explicit collection $\semifans{F} = \ts{\semifan{F}_1, \torfan_2, \semifan{F}_3, \torfan_4, \semifan{F}_5}$ of semifans, one for each $0$-cusp of the Baily-Borel compactification $\bbcpt{\fent}$, and the right-hand side is the normalization of the KSBA compactification. The semifans $\torfan_2, \torfan_4$ are fans, while $\semifan{F}_1, \semifan{F}_3, \semifan{F}_5$ are strict semifans [@AEGS25, Lem. 5.6].
 :::
 
-We note that the normalization is a technical condition that is often applied in the setting of KSBA compactifications, since the KSBA compactification is not guaranteed to be normal in general.
-Roughly speaking, this is due to the fact that its construction involves taking a Zariski closure, which can introduce non-normal points where degenerations are identified, leading to a non-separated stack.
-Since the normalization morphism is finite, birational, and relatively smooth in codimension one, this replacement restricts the worst singularities to lie in high codimension sub-loci and is thus a desirable tradeoff.
+The normalization is part of the statement: the KSBA compactification is not assumed to be normal, while the semitoroidal compactification in the theorem is normal. The classifying morphism constructed below identifies the semitoroidal model with $\normksbacpt{\fent}$ and then maps finitely to $\ksbacpt{\fent}$ by the normalization morphism [@AEGS25, Thm. 5.9].
 
 A standard construction in the study of del Pezzo and Enriques surfaces involves analyzing the invariant and coinvariant sublattices of a lattice $L$ acted on by an involution $L$.
 In this situation, we take $L = \lkt$, consider three involutions $I_\star$, and study the invariant sublattices $T_\star = \lkt^{I_\star = 1}$ -- these are the lattices into which the transcendental lattices $T_Z$ of Enriques surfaces $Z$ primitively embed.

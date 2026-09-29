@@ -21,7 +21,7 @@ The thesis is organized into three parts, establishing the foundations and provi
 
 - @sec:part-3 proves the main theorem and provides explicit computations:
 
-  - @sec:chapter-6 establishes the isomorphism $\ksbacpt{\fent} \cong \semitorcpt{\fent}$ through:
+  - @sec:chapter-6 establishes the isomorphism $\normksbacpt{\fent} \cong \semitorcpt{\fent}$ through:
 
     1. Embedding $\fent$ into the moduli space $\fttz$ of $(2,2,0)$-polarized K3 surfaces as a Noether-Lefschetz locus
 
@@ -31,7 +31,7 @@ The thesis is organized into three parts, establishing the foundations and provi
 
     4. Proving the classifying map $\normalize{B} \to \ksbacpt{\fent}$ is finite using geometric constraints on double curves
 
-    5. Applying Zariski's Main Theorem to conclude the isomorphism
+    5. Identifying $\normalize{B}$ with the normalization $\normksbacpt{\fent}$ once the classifying map is proved finite and birational
 
   - @sec:chapter-7 provides computational examples, constructing explicit dlt models for degenerations at each of the five 0-cusps of $\bd\bbcpt{\fent}$.
     It demonstrates the folding procedure that relates K3 degenerations to Enriques degenerations through the action of commuting involutions on $\IAS^2$ structures.
