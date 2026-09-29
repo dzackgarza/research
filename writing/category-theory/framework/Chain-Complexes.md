@@ -126,7 +126,7 @@ $$
 \qquad
 \tau(x\otimes y)=(-1)^{pq}\,y\otimes x,
 $$
-commutes with the two differentials and is an isomorphism of complexes; it is the symmetry of @def-braided-symmetric for this tensor product.
+commutes with the two differentials and is an isomorphism of complexes; it is the symmetry of @def:braided-symmetric for this tensor product.
 :::
 
 ::: {#def-value-complex .def title="Value complexes"}
