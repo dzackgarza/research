@@ -27,11 +27,3 @@ None of them blocks the build, which compiles with no LaTeX errors.
 
 - Part II carries only its part heading; Parts I and III each open with framing prose.
   The submitted LaTeX had four subsection headings here that the Markdown never had, so this is a long-standing divergence, not a regression.
-
-## Notes on the move
-
-- Citation keys were remapped to the live Zotero library, so a key in the text now matches the Better BibTeX key of the item.
-  Two of them changed meaning: Zotero has `Sha81` for Shah's degree 4 K3 paper and `Sha81a` for his Enriques paper, which is the opposite of the old local bibliography, and the text was swapped to match Zotero.
-  Worth spot-checking the two citation sites.
-
-- `[@Alexeev]` appears twice inside HTML comments in `sections/2-part-moduli/4-chapter-cpt/000-ksba.md`. It resolves to nothing, but the comments are invisible to the build, so nothing is broken.
