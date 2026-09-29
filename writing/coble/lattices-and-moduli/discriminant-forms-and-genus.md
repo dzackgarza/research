@@ -57,7 +57,7 @@ q_\beta(v) \da \beta(v, v)
 $$
 and $q_\beta$ depends only on the symmetric part of $\beta$.
 Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric
-bilinear module $(L, \beta_q)$ via its polar form from [the quadratic-form definition](#def:coble-quadratic-form).
+bilinear module $(L, \beta_q)$ via its polar form from @def:coble-quadratic-form.
 :::
 
 ::: {.lemma #lem:coble-even-lattice-bijection title="Even integral bilinear forms are equivalent to integral quadratic forms"}
@@ -75,7 +75,7 @@ $q(v) \da \tfrac{1}{2}\beta(v, v)$, and a quadratic form $q$ is sent to its
 polar form $\beta_q$.
 Note that this forward map $\beta\mapsto\tfrac{1}{2}\beta(v,v)$ differs by the
 factor $\tfrac{1}{2}$ from the map $\beta\mapsto q_\beta(v) = \beta(v,v)$ of
-[the bilinear/quadratic correspondence lemma](#lem:coble-bilinear-quadratic-correspondence), so this bijection is a distinct
+@lem:coble-bilinear-quadratic-correspondence, so this bijection is a distinct
 construction rather than a restriction of that lemma; only the backward
 (polar-form) direction is shared.
 Concretely, the polar form of any integral quadratic form is an even
@@ -293,7 +293,7 @@ comparatively rare.
 ::: {.proposition #prop:scattone-bound title="Scattone's lower bound for nontrivial class number"}
 
 If $\rank(L) > 16 + \ell(L)$, where $\ell(L)$ is the length of
-[the discriminant-form definition](#def:coble-discriminant-forms), then the class number satisfies
+@def:coble-discriminant-forms, then the class number satisfies
 $\abs{\operatorname{cl}(L)} \geq 2$.
 :::
 
@@ -349,11 +349,11 @@ $p^{s_i}$ and the ranks $\rank(L_i)$ are invariants of $L$ at $p$.
 ::: {.remark title="Jordan invariants determine the local genus data"}
 
 The Jordan invariants at every prime are exactly the data compared in
-[the genus definition](#def:coble-genus): two lattices lie in the same genus precisely when they have
+@def:coble-genus: two lattices lie in the same genus precisely when they have
 isometric Jordan decompositions at every prime and the same signature.
 For a $2$-elementary lattice only the primes $2$ and the archimedean place carry
 information, and the Jordan decomposition at $2$ is assembled from the rank-two
-$2$-adic lattices $V_k$ and $U_k$ from [Nikulin's $V_k,U_k$ definition](special-lattices.md#def:nikulin-Vk-Uk) together with
+$2$-adic lattices $V_k$ and $U_k$ from @def:nikulin-Vk-Uk together with
 rank-one summands.
 :::
 
@@ -363,7 +363,7 @@ rank-one summands.
 
 Let $L$ be a positive definite lattice and let $L^{(1)}, \ldots, L^{(h)}$ be
 representatives of the isometry classes in the genus of $L$, so that
-$h = \abs{\operatorname{cl}(L)}$ in the notation of [the genus definition](#def:coble-genus).
+$h = \abs{\operatorname{cl}(L)}$ in the notation of @def:coble-genus.
 The **mass** of the genus is
 $$
 m(L) \da \Sum_{i=1}^{h} \frac{1}{\abs{\Orth(L^{(i)})}}
@@ -376,9 +376,9 @@ $$
 The mass is computable from local data alone: the Smith--Minkowski--Siegel mass
 formula expresses $m(L)$ as a product of an archimedean factor and one $p$-adic
 factor for each prime, each factor read off from the Jordan decomposition of
-[the Jordan-decomposition theorem](#thm:jordan-decomposition); the explicit unimodular cases are tabulated in
+@thm:jordan-decomposition; the explicit unimodular cases are tabulated in
 [@CS10 Ch. 16].
-Since each summand of [the mass definition](#def:mass) is positive, the formula gives a criterion
+Since each summand of @def:mass is positive, the formula gives a criterion
 for class number one:
 $$
 m(L) = \frac{1}{\abs{\Orth(L)}}
@@ -445,7 +445,7 @@ This is the Gauss-sum formula of [@MH73 Appendix 4].
 ::: {.remark title="What each invariant determines"}
 
 Milgram's formula is a constraint linking the two halves of the classifying data
-of [the genus definition](#def:coble-genus); it is an invariant of the discriminant form alone.
+of @def:coble-genus; it is an invariant of the discriminant form alone.
 It is an invariant of the discriminant form, so two even lattices with the same
 discriminant form give the same Gauss sum whether or not they are isometric, and
 it recovers the index only modulo $8$, whereas the pair $(n_+, n_-)$ is what the
@@ -470,7 +470,7 @@ the genus determines the isometry class.
 
 If $S\containedin\Lambda$ is primitive in an even unimodular $\Lambda$ with
 complement $T = S^{\perp\Lambda}$, then $q_T\cong -q_S$ by
-[the embedding-gluing description](embeddings-and-overlattices.md#rmk:embedding-gluing-data), and applying [Milgram's formula](#thm:milgram) to both sides
+@rmk:embedding-gluing-data, and applying @thm:milgram to both sides
 gives the congruence
 $$
 \sign(S) + \sign(T)\equiv 0 \pmod 8
@@ -509,7 +509,7 @@ it guarantees that the $0$-cusps and $1$-cusps of a Baily--Borel compactificatio
 are finite in number before any of them is exhibited, and that an orbit
 computation can terminate.
 Under the hypothesis $U^{\oplus 2}\containedin L$ the Eichler criterion
-([the Eichler criterion](special-lattices.md#thm:eichler-criterion)) makes it effective, bounding the number of
+(@thm:eichler-criterion) makes it effective, bounding the number of
 $\widetilde{\SO}^+(L)$-orbits in $S_n$ by $\abs{A_L}$; without that hypothesis
 finiteness still holds but a bound has to come from elsewhere.
 :::
