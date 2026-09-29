@@ -10,6 +10,6 @@
 |  8  |           17           |   -8    |     $(18, 4, 0)$     |            $E_8 \oplus D_8 \oplus U(2)$            |   $U(2)^{\oplus 2}$    |
 |  8  |           17           |   -8    |     $(18, 4, 1)$     |     $E_{10} \oplus D_6 \oplus A_1^{\oplus 2}$      |      $I^{2,2}(2)$      |
 |  9  |           18           |   -9    |     $(19, 3, 1)$     |           $E_{10} \oplus D_8 \oplus A_1$           |      $I^{2,1}(2)$      |
-| 10  |           19           |   -10   |     $(20, 2, 1)$     |               $E_{10} \oplus D_{10}$               | $(2\rangle^{\oplus 2}$ |
+| 10  |           19           |   -10   |     $(20, 2, 1)$     |               $E_{10} \oplus D_{10}$               | $\langle 2\rangle^{\oplus 2}$ |
 
 : Lattices $M$ and $N$ associated to moduli of Coble surfaces with $n$ boundary components. {#tbl:coble-lattices}
