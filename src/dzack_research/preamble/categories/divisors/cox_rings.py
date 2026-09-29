@@ -36,7 +36,15 @@ class CoxRings(OwnedParameterizedCategory):
         return self.base()
 
     def grading_group(self):
-        return self.scheme().class_group()
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        scheme = self.scheme()
+        base = scheme.scheme_base_ring()
+        assert scheme in Schemes(base).LocallyNoetherian().Integral(), (
+            f"cannot grade the Cox ring of {scheme} by Cl({scheme}): the scheme-level divisor class group "
+            "is owned by locally Noetherian integral schemes"
+        )
+        return scheme.class_group()
 
     def an_object(self):
         r"""The Cox ring of the parameter toric scheme."""

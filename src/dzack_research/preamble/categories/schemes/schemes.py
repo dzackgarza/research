@@ -127,6 +127,7 @@ for _scheme_axiom in (
     "QuasiProjective",
     "Separated",
     "FiniteType",
+    "LocallyNoetherian",
     "Integral",
     "Normal",
 ):
@@ -1829,6 +1830,11 @@ def _affine_scheme(algebra, base, placements=(), **level_data):
     """
     schemes = Schemes(base)
     categories = [schemes.Affine()]
+    match algebra in OwnedRings().Noetherian():
+        case True:
+            categories.append(schemes.LocallyNoetherian())
+        case False:
+            pass
     if algebra is base or (algebra.is_framed_algebra() and algebra.algebra_generating_set().cardinality().is_finite()):
         categories.extend((schemes.FiniteType(), schemes.QuasiProjective()))
     if algebra is base:
@@ -2080,6 +2086,10 @@ class Schemes(OwnedCategoryOverBaseRing):
         def FiniteType(self):
             r"""Return this category with the axiom that its objects are of finite type over the base."""
             return self._with_axiom("FiniteType")
+
+        def LocallyNoetherian(self):
+            r"""Return this category with the axiom that its objects are locally Noetherian."""
+            return self._with_axiom("LocallyNoetherian")
 
         def Integral(self):
             r"""Return this category with the axiom that its objects are integral."""
@@ -2744,6 +2754,14 @@ class Schemes(OwnedCategoryOverBaseRing):
     class FiniteType(CategoryWithAxiom):
         r"""Schemes of finite type over the base."""
 
+        def extra_super_categories(self):
+            base = self.base_ring()
+            match base in OwnedRings().Noetherian():
+                case True:
+                    return [Schemes(base).LocallyNoetherian()]
+                case False:
+                    return []
+
         class ParentMethods:
             def is_finite_type(self):
                 return True
@@ -2775,6 +2793,89 @@ class Schemes(OwnedCategoryOverBaseRing):
         def an_object(self):
             r"""The affine line, of finite type over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+    class LocallyNoetherian(CategoryWithAxiom):
+        r"""Schemes locally covered by spectra of Noetherian rings (Stacks, Tag 01OV)."""
+
+        class ParentMethods:
+            def is_locally_noetherian(self):
+                return True
+
+        def an_object(self):
+            r"""The affine line when the selected base is Noetherian."""
+            base = self.base_ring()
+            assert base in OwnedRings().Noetherian(), (
+                f"the canonical locally Noetherian scheme over {base} used here is A^1_{base}, "
+                f"but {base} is not known to be Noetherian"
+            )
+            return AffineSpaces(base)(1)
+
+        class Integral(CategoryWithAxiom):
+            r"""Locally Noetherian integral schemes, where Weil divisor classes are defined."""
+
+            class ParentMethods:
+                def full_weil_divisor_group(self):
+                    r"""Return ``Div(X)``, the Weil divisor group (Stacks, Tag 0BE2)."""
+                    return self._full_weil_divisor_group()
+
+                def _full_weil_divisor_group(self):
+                    raise AssertionError(
+                        f"the Weil divisor group of the locally Noetherian integral scheme {self} is defined "
+                        "on its codimension-one prime divisors, but this realization does not supply a "
+                        "represented prime-divisor family and order-of-vanishing algorithm"
+                    )
+
+                @cached_method
+                def class_group(self):
+                    r"""Return ``Cl(X) = Div(X) / Prin(X)`` (Stacks, Tag 0BE4)."""
+                    return self._class_group()
+
+                def _class_group(self):
+                    raise AssertionError(
+                        f"the Weil divisor class group Cl({self}) is defined as Div({self}) modulo principal "
+                        "Weil divisors, but this realization does not supply a represented quotient presentation"
+                    )
+
+                @cached_method
+                def picard_to_class_group_morphism(
+                    self,
+                    base_picard_group=None,
+                    base_class_group=None,
+                    base_picard_to_class=None,
+                ):
+                    r"""Return the canonical comparison ``Pic(X) -> Cl(X)``.
+
+                    On a locally Noetherian integral scheme an invertible sheaf
+                    determines a Weil divisor class, hence this map belongs here.
+                    Represented descendants supply the computation from their
+                    Cartier/Weil or divisor-presentation data.
+                    """
+                    return self._picard_to_class_group_morphism(
+                        base_picard_group=base_picard_group,
+                        base_class_group=base_class_group,
+                        base_picard_to_class=base_picard_to_class,
+                    )
+
+                def _picard_to_class_group_morphism(
+                    self,
+                    base_picard_group=None,
+                    base_class_group=None,
+                    base_picard_to_class=None,
+                ):
+                    raise AssertionError(
+                        f"the canonical map Pic({self}) -> Cl({self}) is defined by sending an invertible "
+                        "sheaf to its Weil divisor class, but this realization does not supply a represented "
+                        "Cartier-to-Weil divisor comparison algorithm"
+                    )
+
+            def an_object(self):
+                r"""The affine line when the base is a Noetherian domain."""
+                base = self.base_ring()
+                assert base in OwnedRings().Noetherian() and base in OwnedIntegralDomains(), (
+                    f"the canonical locally Noetherian integral scheme over {base} used here is A^1_{base}, "
+                    "which requires the base to be a Noetherian integral domain"
+                )
+                return AffineSpaces(base)(1)
 
     class Proper(CategoryWithAxiom):
         r"""Schemes proper over the base.
@@ -2939,13 +3040,22 @@ class Schemes(OwnedCategoryOverBaseRing):
 
                 return _affine_cycle_group(self, cycle_dimension)
 
-            def full_weil_divisor_group(self):
-                r"""Return the full height-one Weil divisor group of this affine scheme."""
-                from dzack_research.preamble.categories.divisors.general_divisors import (
-                    _affine_normal_weil_divisor_group,
-                )
+            def _full_weil_divisor_group(self):
+                r"""Return the full height-one Weil divisor group in the represented affine-normal case."""
+                base = self.scheme_base_ring()
+                match self in Schemes(base).Normal():
+                    case True:
+                        from dzack_research.preamble.categories.divisors.general_divisors import (
+                            _affine_normal_weil_divisor_group,
+                        )
 
-                return _affine_normal_weil_divisor_group(self)
+                        return _affine_normal_weil_divisor_group(self)
+                    case False:
+                        raise AssertionError(
+                            f"the Weil divisor group Div({self}) is defined because {self} is locally "
+                            "Noetherian and integral, but the represented affine computation available "
+                            "here requires normality in order to compute height-one valuations"
+                        )
 
             def weil_cycle_isomorphism(self):
                 r"""Identify full Weil divisors with codimension-one cycles."""
@@ -3924,7 +4034,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             return PicardGroups().trivial(self)
 
         @cached_method
-        def class_group(self):
+        def _class_group(self):
             r"""Return ``Cl(A^n_k) = 0`` over a field."""
             base = self.scheme_base_ring()
             assert base in OwnedFields(), (
@@ -4035,7 +4145,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _projective_point_blowup(self, point)
 
         @cached_method
-        def picard_to_class_group_morphism(
+        def _picard_to_class_group_morphism(
             self,
             base_picard_group=None,
             base_class_group=None,
@@ -4086,6 +4196,11 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             """
             match base_picard_group:
                 case None:
+                    base = self.scheme_base_ring()
+                    assert base in OwnedFields(), (
+                        f"cannot compute Pic({self}) without a supplied base Picard group: the represented "
+                        f"default route uses Pic({self}) -> Cl({self}) over a field, but the base is {base}"
+                    )
                     return self.picard_to_class_group_morphism().domain()
                 case _:
                     from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
@@ -4129,7 +4244,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             )
             return bool(self.anticanonical_line_bundle().is_ample())
 
-        def class_group(self):
+        def _class_group(self):
             return self.picard_to_class_group_morphism().codomain()
 
         def homogeneous_coordinate_generators(self):

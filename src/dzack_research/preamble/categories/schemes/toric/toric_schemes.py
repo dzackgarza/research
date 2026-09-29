@@ -829,7 +829,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return not self.character_divisor_morphism().is_injective()
 
         @cached_method
-        def class_group(self):
+        def _class_group(self):
             r"""``Cl(X) = Div_T(X)/div(chi^M)`` (CLS Thm. 4.1.3).
 
             The sequence ``M -> Div_T(X) -> Cl(X) -> 0`` is exact for every
@@ -846,6 +846,12 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             ``Div_T(X)``, so the quotient sends each generator to the generator
             of the same name.
             """
+            base = self.scheme_base_ring()
+            assert self in Schemes(base).LocallyNoetherian().Integral(), (
+                f"cannot form the class-group projection for {self}: the scheme-level Weil divisor class "
+                "group is owned by locally Noetherian integral schemes, but this toric scheme is an object "
+                f"of {self.category()}"
+            )
             group = self.torus_invariant_divisor_group()
             classes = self.class_group()
             return group.module_category().Mor(group, classes)(
@@ -998,7 +1004,12 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return PicardGroups()(self.character_divisor_morphism().cokernel())
 
         @cached_method
-        def picard_to_class_group_morphism(self):
+        def _picard_to_class_group_morphism(
+            self,
+            base_picard_group=None,
+            base_class_group=None,
+            base_picard_to_class=None,
+        ):
             r"""The natural comparison ``Pic(X) -> Cl(X)`` for a smooth toric variety.
 
             Since every invariant Weil divisor is Cartier on a smooth fan, the
@@ -1006,6 +1017,11 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             the same presentation; this map records the comparison rather than
             identifying them by object identity.
             """
+            supplied = (base_picard_group, base_class_group, base_picard_to_class)
+            assert supplied == (None, None, None), (
+                f"cannot use supplied projective-bundle base data {supplied} to compute Pic({self}) -> Cl({self}): "
+                "the toric comparison is computed from the fan's divisor presentation"
+            )
             picard = self.picard_group()
             classes = self.class_group()
             forward = picard.module_category().Mor(picard, classes)(
@@ -1025,6 +1041,11 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         @cached_method
         def torus_invariant_cartier_class_projection(self):
             r"""The quotient ``CDiv_T(X) -> Pic(X)`` for a smooth toric variety."""
+            base = self.scheme_base_ring()
+            assert self in Schemes(base).LocallyNoetherian().Integral(), (
+                f"cannot form the Cartier class projection for {self}: the comparison Pic({self}) -> "
+                f"Cl({self}) requires a locally Noetherian integral scheme"
+            )
             return (
                 self.picard_to_class_group_morphism().inverse()
                 * self.class_group_projection()
