@@ -286,9 +286,9 @@ dependents; do not shadow it locally.
 
 A private word stands in for a notion with a standard name.
 
-**Banned:** "cut" / "axiom cut" (→ full subcategory defined by a property, or
-specified forgetful functor); "refinement" for a subcategory (→ full
-subcategory); "least common category" (→ a greatest lower bound in the
+**Banned:** "cut" / "axiom cut" (meaning a full subcategory defined by a property, or
+specified forgetful functor); "refinement" for a subcategory (meaning a full
+subcategory); "least common category" (meaning a greatest lower bound in the
 specified preorder of categories, if it exists).
 
 **Preferred:** the standard term or the book's term.
