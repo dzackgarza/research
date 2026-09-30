@@ -33,53 +33,54 @@ class CorpusInvalid(Exception):
         self.problems = problems
 
 
-def _corpus_problems(entries: list[Entry]) -> list[str]:
-    problems = []
+def problems(entries: list[Entry]) -> list[str]:
+    """The problems that concern more than one record: a file name that is not its tag, a repeated name or Gram tensor, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
+    found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     by_name: dict[str, Path] = {}
     by_components: dict[GramTensor, Path] = {}
     for entry in entries:
         lattice = entry.lattice
         if entry.path.stem != lattice.tag:
-            problems.append(f"{entry.path}: the file name must be the tag {lattice.tag}")
+            found.append(f"{entry.path}: the file name must be the tag {lattice.tag}")
         if lattice.name in by_name:
-            problems.append(f"{entry.path}: the name '{lattice.name}' is also the name of {by_name[lattice.name]}")
+            found.append(f"{entry.path}: the name '{lattice.name}' is also the name of {by_name[lattice.name]}")
         by_name.setdefault(lattice.name, entry.path)
         if lattice.gram_tensor in by_components:
-            problems.append(f"{entry.path}: the Gram tensor has the same components as that of {by_components[lattice.gram_tensor]}")
+            found.append(f"{entry.path}: the Gram tensor has the same components as that of {by_components[lattice.gram_tensor]}")
         by_components.setdefault(lattice.gram_tensor, entry.path)
         for related in lattice.related:
             if related.tag == lattice.tag:
-                problems.append(f"{entry.path}: a record cannot be related to itself")
+                found.append(f"{entry.path}: a record cannot be related to itself")
             elif related.tag not in by_tag:
-                problems.append(f"{entry.path}: the related tag {related.tag} is not in the corpus")
+                found.append(f"{entry.path}: the related tag {related.tag} is not in the corpus")
         span = lattice.root_span
         if span is not None and span.summands is not None and span.embedding is not None:
             missing = [tag for tag in span.summands if tag not in by_tag]
-            problems.extend(f"{entry.path}: the summand tag {tag} is not in the corpus" for tag in missing)
+            found.extend(f"{entry.path}: the summand tag {tag} is not in the corpus" for tag in missing)
             summands = tuple(by_tag[tag].gram_tensor for tag in span.summands if tag in by_tag)
             if not missing and arithmetic.restriction(lattice.gram_tensor, span.embedding) != arithmetic.orthogonal_sum(summands):
-                problems.append(f"{entry.path}: the rows of root_span.embedding do not have the Gram tensor of the orthogonal sum of the summands")
-    return problems
+                found.append(f"{entry.path}: the rows of root_span.embedding do not have the Gram tensor of the orthogonal sum of the summands")
+    return found
 
 
 def load(directory: Path) -> tuple[Entry, ...]:
     """Every entry of the corpus, in tag order. Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined."""
     entries: list[Entry] = []
-    problems: list[str] = []
+    found: list[str] = []
     paths = sorted(directory.glob("*.md"))
     if not paths:
-        problems.append(f"{directory}: no records")
+        found.append(f"{directory}: no records")
     for path in paths:
         document = frontmatter.load(str(path))
         # Pydantic reports the problems of a record only through this exception.
         try:
             entries.append(Entry(Lattice.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
-            problems.extend(f"{path}: {'.'.join(str(part) for part in problem['loc']) or 'record'}: {problem['msg']} [{problem['type']}]" for problem in error.errors())
-    problems.extend(_corpus_problems(entries))
-    if problems:
-        raise CorpusInvalid(tuple(problems))
+            found.extend(f"{path}: {'.'.join(str(part) for part in problem['loc']) or 'record'}: {problem['msg']} [{problem['type']}]" for problem in error.errors())
+    found.extend(problems(entries))
+    if found:
+        raise CorpusInvalid(tuple(found))
     return tuple(entries)
 
 

@@ -33,7 +33,7 @@ type Yaml = None | bool | int | float | str | date | list[Yaml] | dict[str, Yaml
 _RATIONAL = re.compile(r"-?\d+(/[1-9]\d*)?")
 
 
-def _rational(value: Yaml | Fraction) -> Fraction:
+def rational(value: Yaml | Fraction) -> Fraction:
     """Read an integer, or a string `p/q`, as an exact rational. Floats are refused."""
     match value:
         case Fraction():
@@ -50,7 +50,7 @@ def _rational(value: Yaml | Fraction) -> Fraction:
             raise PydanticCustomError("rational_type", "a rational is an integer or a string 'p/q'")
 
 
-Rational = Annotated[Fraction, BeforeValidator(_rational)]
+Rational = Annotated[Fraction, BeforeValidator(rational)]
 Tag = Annotated[str, Field(pattern=r"^[0-9A-Z]{4}$")]
 Family = Annotated[str, Field(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$")]
 AdeType = Annotated[str, Field(pattern=r"^(A[1-9]\d*|D[4-9]|D[1-9]\d+|E[678])$")]
@@ -158,7 +158,7 @@ class DefiniteData(Record):
         default=None,
         description=(
             "The root system $\\Phi(L)$ as its irreducible components, each with a base; `[]` when $L$ has no roots. "
-            "The build lists the roots of $L$, and it rejects a declaration that is not $\\Phi(L)$. `just roots` writes the field."
+            "The build lists the roots of $L$, and it rejects a declaration that is not $\\Phi(L)$. `latticedb new` writes the field."
         ),
     )
 
@@ -203,7 +203,7 @@ class RootSpan(Record):
     )
 
 
-def _definiteness(n_plus: int, n_minus: int, n_zero: int) -> Definiteness:
+def definiteness(n_plus: int, n_minus: int, n_zero: int) -> Definiteness:
     match (n_plus > 0, n_minus > 0, n_zero > 0):
         case (True, True, _):
             return "indefinite"
@@ -427,13 +427,13 @@ class Lattice(Record):
                 ("signature",),
                 {"n_plus": n_plus, "n_minus": n_minus, "stated_plus": self.signature[0], "stated_minus": self.signature[1]},
             )
-        definiteness = _definiteness(n_plus, n_minus, n_zero)
-        if self.definiteness != definiteness:
+        computed = definiteness(n_plus, n_minus, n_zero)
+        if self.definiteness != computed:
             yield _problem(
                 "definiteness_mismatch",
                 "a form of signature ({n_plus}, {n_minus}) and nullity {n_zero} is {computed}, the record states {stated}",
                 ("definiteness",),
-                {"n_plus": n_plus, "n_minus": n_minus, "n_zero": n_zero, "computed": definiteness, "stated": self.definiteness},
+                {"n_plus": n_plus, "n_minus": n_minus, "n_zero": n_zero, "computed": computed, "stated": self.definiteness},
             )
 
     def _integral_problems(self) -> Iterator[InitErrorDetails]:

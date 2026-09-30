@@ -18,11 +18,14 @@ The site is served at <http://lattice-database.localhost/>.
 | `src/latticedb/model.py` | The schema of a record and its validators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
+| `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
+| `src/latticedb/records.py` | Computes the fields of a record that the Gram tensor determines, and writes a record as a file |
+| `src/latticedb/nebe_sloane.py` | Reads an entry of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) and writes it as the declared fields of a record |
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
-| `scripts/` | The SageMath seed that wrote the first records, its source data, and the script that writes the root data |
-| `tests/` | Tests of the validators and of the built site |
+| `sources/nebe_sloane/<ENTRY>.json` | An entry of the Catalogue of Lattices as fetched, the source of the record that cites it |
+| `tests/` | Tests of the validators, of the record commands and of the built site |
 
 ## A record
 
@@ -58,6 +61,10 @@ A component is an integer or a string `p/q`. Floats are refused.
 
 Every other invariant of a record is a declaration, and the build checks each declaration against the Gram tensor with exact arithmetic.
 A record with `signature: [2, 0]` and the components above is rejected.
+
+The fields of a record are of two kinds.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`, and `latticedb new` computes them; a person never writes them.
+A person writes `name`, `latex`, `aliases`, `families`, `related`, `references`, `provenance` and the prose, and declares `integral.genus_symbol`, `definite.automorphism_group_order`, `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide, each with its source in the prose.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.
@@ -101,17 +108,23 @@ The address of a lattice is `tag/<TAG>.html`.
 
 To add a lattice:
 
-1. `just tag` prints the next tag.
+1. Search the database page for the lattice, by name and by its invariants (rank, determinant, minimum, kissing number), so that a lattice already in the corpus under another basis or another name is not added twice.
 
-2. Write `lattices/<TAG>.md` with the record and the prose.
+2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2 --source '...'` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
+   `--alias`, `--family`, `--reference`, `--url` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
+   For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`, fetches it first when it does not exist, checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference and the provenance of the entry.
+   The command refuses a record that does not validate, or that repeats the name or the components of a record in the corpus, and writes nothing.
 
-3. `just roots` writes the root data of the record: `definite.roots` for a definite record, and `root_span.roots` for a record that is not definite when the roots that it finds generate $L$.
-   When they do not, write the `root_span` block and its proof by hand.
+3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
+   For a record that is not definite whose `root_span` block the command could not decide, write the block and its proof by hand.
 
 4. `just build` validates the corpus and builds the site.
    It prints each problem of each record with the path of the file and the field.
 
 The corpus is also checked as a whole: two records cannot have the same name or the same components, and a `related` entry must name a tag in the corpus.
+
+`just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
+Run it after a change to the computation, and read the diff.
 
 ## Collection pages
 
@@ -152,16 +165,15 @@ The `justfile` calls it.
 
 | Recipe | Effect |
 | --- | --- |
+| `just new ...` | Write the record of a new lattice from its Gram tensor and the options |
+| `just nebe-sloane ENTRY ...` | Write the record of an entry of the Catalogue of Lattices |
+| `just derive` | Compute again, in every record, each field that the Gram tensor determines; write the records that change |
 | `just build` | Validate every record and build the site into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
-| `just roots` | Write `definite.roots` of each definite record, and `root_span.roots` of each other record that has no `root_span` block |
 | `just test` | Run the tests |
-| `just seed` | Write the first records into an empty `lattices/` directory; needs SageMath at `SAGE_BIN` |
 
 `uv run latticedb check` validates the records and builds nothing.
 
 The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN.
-
-`just seed` is a bootstrap.
-It assigns tags in the order of its own list, so it must not run on a directory that has records.
+The record commands compute with PARI/GP through `cypari2` and with `python-flint`, and `provenance.computed_with` names their versions.

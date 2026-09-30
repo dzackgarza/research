@@ -12,7 +12,7 @@ from fractions import Fraction
 from itertools import combinations
 from math import gcd, isqrt, lcm
 
-from cypari2 import Pari
+from cypari2 import Gen, Pari
 from flint import fmpq, fmpq_mat, fmpz_mat
 
 type GramTensor = tuple[tuple[Fraction, ...], ...]
@@ -150,6 +150,59 @@ def is_root(gram_tensor: GramTensor, r: Vector) -> bool:
     return _root_norm(_integer_components(gram_tensor)[1], r) is not None
 
 
+def pari_version() -> tuple[int, int, int]:
+    """The version of the PARI library that computes here."""
+    major, minor, patch = _PARI.version()
+    return int(major), int(minor), int(patch)
+
+
+def _positive_integer_form(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...], Gen]:
+    """Return `(k, components of k b, PARI matrix of B)` for a definite `b`, where `B = k b` or `B = -k b` is positive definite and integer valued.
+
+    `k` is the least positive integer for which `k b` is integer valued.
+    """
+    rank = len(gram_tensor)
+    sign = 1 if gram_tensor[0][0] > 0 else -1
+    scale, components = _integer_components(gram_tensor)
+    return scale, components, _PARI.matrix(rank, rank, [sign * value for row in components for value in row])
+
+
+def minimum_and_kissing_number(gram_tensor: GramTensor) -> tuple[Fraction, int]:
+    """Return the least value of `|b(x, x)|` over nonzero `x` and the number of `x` that attain it, for a definite `b`.
+
+    PARI's `qfminim` enumerates the vectors of least norm of the positive
+    definite integer form `B = k |b|` (Fincke and Pohst). The least value of
+    `|b(x, x)|` is the least value of `B` divided by `k`, and the number of
+    vectors counts both `x` and `-x`.
+    """
+    scale, _, form = _positive_integer_form(gram_tensor)
+    count, least, _ = form.qfminim(None, 0)
+    return Fraction(int(least), scale), int(count)
+
+
+def theta_coefficients(gram_tensor: GramTensor, bound: int) -> tuple[int, ...]:
+    """Return `(a_0, ..., a_bound)`, `a_k` the number of `x` with `|b(x, x)| = k`, for a definite integer-valued `b`.
+
+    PARI's `qfrep` counts, for `k = 1, ..., bound`, the pairs `x, -x` with `B(x, x) = k`.
+    """
+    assert is_integer_valued(gram_tensor), "the coefficients of the theta series are indexed by integers only for an integer-valued form"
+    _, _, form = _positive_integer_form(gram_tensor)
+    return (1, *(2 * int(pairs) for pairs in form.qfrep(bound)))
+
+
+def is_isotropic(gram_tensor: GramTensor) -> bool:
+    """Whether `b(x, x) = 0` for some nonzero `x`, for a nondegenerate `b`.
+
+    PARI's `qfsolve` returns a nonzero rational solution of `b(x, x) = 0`
+    when one exists (a column), and an integer that names the obstruction
+    when none does. A rational solution clears to an element of `L`.
+    """
+    rank = len(gram_tensor)
+    assert determinant(gram_tensor) != 0, "`qfsolve` decides isotropy of a nondegenerate form; a degenerate form is isotropic on its radical"
+    solution = _PARI.matrix(rank, rank, [str(value) for row in gram_tensor for value in row]).qfsolve()
+    return solution.type() == "t_COL"
+
+
 def definite_roots(gram_tensor: GramTensor) -> dict[Vector, Fraction]:
     """Return the roots of `L` for a definite `b`: one of `r`, `-r` for each root, with `b(r, r)`.
 
@@ -168,9 +221,7 @@ def definite_roots(gram_tensor: GramTensor) -> dict[Vector, Fraction]:
     columns of `V diag(d / gcd(d, D_i))` are a basis of `L_d`.
     """
     rank = len(gram_tensor)
-    sign = 1 if gram_tensor[0][0] > 0 else -1
-    scale, components = _integer_components(gram_tensor)
-    form = _PARI.matrix(rank, rank, [sign * value for row in components for value in row])
+    scale, components, form = _positive_integer_form(gram_tensor)
     _, right, smith = form.matsnf(1)
     diagonal = [abs(int(smith[i, i])) for i in range(rank)]
     exponent = max(diagonal)
