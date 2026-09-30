@@ -2326,8 +2326,8 @@ Use the detailed mathematical and repository rules above when they give a narrow
 ## Mathematical model before representation
 
 - Work in the order mathematical object → representation → implementation.
-- Start with the mathematical object, its data, its laws, and its hypotheses.
-- Identify the relevant category, objects, morphisms, functors, and universal properties before choosing classes or methods.
+- Start with the mathematical object as `lean-categories` formalizes it: its data, its laws, and its hypotheses.
+- Identify the relevant category, objects, morphisms, functors, and universal properties in `lean-categories` before choosing classes or methods.
 - Map that representation into Sage only after its objects, morphisms, hypotheses, and constructions are specified.
 - Implement only the operations that remain after native Sage structure is used.
 - Do not derive an API from the methods, classes, or data layouts that happen to exist.
@@ -2474,9 +2474,9 @@ Write the type:
 
 - `Self`, when the method returns another object of the receiver's own kind;
 - `None`, when it returns nothing;
-- a preamble-owned mathematical object whenever one exists. A natural number is
+- a preamble object whenever one exists. A natural number is
   the element type of `NN`, an integer the element type of `ZZ`, a real number
-  the element type of `RR`. Reach for the owned type before any Python
+  the element type of `RR`. Reach for the preamble type before any Python
   built-in.
 
 `float` is almost never right — it is a machine approximation standing where a
@@ -2512,9 +2512,9 @@ assembles the same unstructured data, the same mathematics is still missing,
 and now there is a class with no referent to maintain as well. Ask what the
 datum *is*. Usually it already has a name — a morphism, a generating set, a
 presentation, an indexed family — and naming it makes the signature right with
-no new type at all. When it genuinely has none and the notion is real, define
-it properly: that is the welcome case above, and a real addition to the
-category graph is a design decision to raise, never a wrapper to drop in.
+no new type at all. When it genuinely has none and the notion is real, it is
+`lean-categories`' to formalize: request it there, then present it; a real
+addition to the category graph is never a wrapper to drop in.
 
 Over-compliance is the failure from the other side. A class minted so a line
 technically passes, a name coined because the rule said not to write `tuple`,
@@ -2557,7 +2557,7 @@ the preamble.
 | `type(x) is X` | membership, or an owned element class |
 | `cast(T, x)` | make the type real, or narrow by assertion |
 | `x.__dict__.setdefault("_cache", {})` | `cached_method` |
-| `setattr` on a class imported from `sage.*` | own the category; see the ontology section above |
+| `setattr` on a class imported from `sage.*` | present the category through a preamble class; see *How the preamble presents the mathematics* above |
 
 **Every use of `setattr` is suspect, not only on Sage's classes.** A reader of a
 class must be able to see its fields by reading it. `setattr` puts state on an
@@ -2579,12 +2579,12 @@ The exceptions are narrow, and each must be nameable at the site:
 - `__contains__`, where the argument is genuinely arbitrary and deciding is the
   method's whole job.
 - `_element_constructor_`, where the host invokes the owned element-construction
-  contract for permitted literal or owned mathematical data. This is not public
+  contract for permitted literal or preamble data. This is not public
   admission for raw CAS parents or elements; private raising remains in adapters.
 - A documented Sage runtime protocol inside its designated host boundary, or
   foreign representation dispatch inside the selected private adapter under
   `OWN-06`. Document the exact protocol and owner; a local comment alone grants
-  no right to inspect owned mathematical state.
+  no right to inspect a preamble object's state.
 - Declarations under `if TYPE_CHECKING`, which have no runtime effect.
 
 Nothing else qualifies. A probe outside these sites is a defect, and it is
@@ -2723,28 +2723,29 @@ such a case is a criterion smuggled in without its theorem.
 - After ownership is known, commit required files and use recoverable deletion for disposable files.
 - Keep important work in version control, not only in a working tree or notebook session.
 
-# Addendum: private Sage-runtime realization of owned category types
+# Addendum: private Sage-runtime realization of preamble category types
 
 The [architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
 governs this boundary. Host runtime reuse and engine computation are different
 responsibilities. Neither permits a Sage mathematical parent or element to become
 the public preamble object by reclassification, subclassing, or facade parenting.
 
-The owned graph supplies `ObjectType`, `ElementType`, and Hom-category types.
-Its root runtime may use Sage `Parent`, `Element`, dynamic-class machinery, and
-method containers to realize those generated types. `ParentMethods`,
-`ElementMethods`, and `SubcategoryMethods` name private Sage mechanisms, not
-public mathematical owners. Keep the mapping in the shared runtime; descendants
+The preamble's category graph supplies `ObjectType`, `ElementType`, and
+Hom-category types. Its root runtime may use Sage `Parent`, `Element`,
+dynamic-class machinery, and method containers to realize those generated types.
+`ParentMethods`, `ElementMethods`, and `SubcategoryMethods` name private Sage
+mechanisms, not public placement. Keep the mapping in the shared runtime; descendants
 declare their immediate mathematical structure and do not assemble host bases.
 
 The shared construction path establishes required data before public return.
 Only the root owns non-cooperative host initialization. A host post-init or
 element-construction hook implements that path and cannot bypass it. Refinement
-acts on an independently owned object whose data justifies the added category;
-it neither constructs missing data by a label nor adopts a foreign instance.
+acts on a preamble object whose supplied data place it in the added category;
+it neither constructs missing data by a label, nor follows a computed answer,
+nor adopts a foreign instance.
 
 Method-resolution details remain private. The runtime must make the selected
-owned operation authoritative, preserve existing justified placements, and
+preamble operation authoritative, preserve existing justified placements, and
 propagate element and morphism behavior through the same graph. If private
 Sage category joining or dynamic-class ordering is required, implement it once
 at that owner under its declared protocol. Consumers do not call
@@ -2752,11 +2753,11 @@ at that owner under its declared protocol. Consumers do not call
 constructors to change a result's public meaning.
 
 Concrete Sage rings, modules, groups, matrices, and their elements remain private
-computation representations. An adapter builds them from owned data, invokes
-established algorithms, then raises every result through the owned constructors.
+computation representations. An adapter builds them from preamble data, invokes
+established algorithms, then raises every result through the preamble constructors.
 It does not reclass those Sage objects, patch their APIs, or teach Sage
-constructors to accept owned parents. Private computational workspace mutation
-does not alter owned defining data. Cache and lifetime choices respect `OWN-10`.
+constructors to accept preamble parents. Private computational workspace mutation
+does not alter the defining data. Cache and lifetime choices respect `OWN-10`.
 
 Historical mechanisms remain inspectable at
 `archives/lattice-research/src/sage_patches/ring_base_category.py`,
@@ -2850,14 +2851,14 @@ short synthesis did not capture.
 - Treat each mathematical correction as compressed research guidance.
 - Derive the structure that makes the correction true.
 - Do not translate one mathematical correction into one local method request.
-- Identify the objects, morphisms, hypotheses, codomains, and universal properties first.
-- Determine the categorical home of each construction before writing its representation.
+- Identify the objects, morphisms, hypotheses, codomains, and universal properties first, in `lean-categories`.
+- Determine where `lean-categories` places each construction before writing its representation.
 - A named category must exist as a category, not as a class with similarly named methods.
 - A named functor must act on objects and morphisms.
 - A named adjunction must include the hom-set bijection, unit, counit, and naturality.
 - Do not use category theory as a metaphor for a collection of constructors.
 - Do not replace a mathematical object with the data returned by an external engine.
-- External engines compute data used to construct owned mathematical objects.
+- External engines compute data used to construct preamble objects; their answers are untrusted.
 - Local computational data never replaces the structure that explains its functorial behavior.
 - Prefer a general mathematical construction when it removes many apparent local tasks.
 - A short advisor question can expose a missing theory rather than a missing method.
@@ -2875,7 +2876,7 @@ short synthesis did not capture.
 ## Object, structure, and representation
 
 - Start from mathematical objects and their relations.
-- Choose representations only after the mathematical ownership is clear.
+- Choose representations only after `lean-categories`' placement is clear.
 - A lattice is a set with module structure and a form.
 - It does not merely hold unrelated objects representing those structures.
 - A formed module is a module with a form.
@@ -2883,11 +2884,12 @@ short synthesis did not capture.
 - Category membership must correspond to actual supplied structure.
 - An object in a structured category must carry the data required by that category.
 - Do not refine an existing object into a data-bearing category without constructing the required data.
-- Construct owned objects through the owned category hierarchy.
-- Refine independently owned objects only when their defining data justifies the
-  added structure; keep Sage representations private to computation adapters.
+- Construct preamble objects through the preamble category hierarchy.
+- Refine preamble objects only when their supplied defining data place them in the
+  added structure, never on a computed answer; keep Sage representations private
+  to computation adapters.
 - Provide a `preamble.all` construction surface analogous to `sage.all`.
-- That surface constructs owned objects and populates the research namespace.
+- That surface constructs preamble objects and populates the research namespace.
 - Never build a parallel toy hierarchy when the task concerns the live preamble hierarchy.
 - A toy that proves itself against itself does not prove the real architecture.
 - Convert one real category before claiming that a category mechanism reduces author effort.
@@ -2899,7 +2901,7 @@ short synthesis did not capture.
 - Defining a new leaf category must feel routine.
 - The leaf author handles the leaf and its immediate supercategory only.
 - The leaf author never implements the transitive chain manually.
-- `super_categories()` is the sole declaration of categorical inheritance.
+- `super_categories()` is the sole declaration of categorical inheritance, presenting `lean-categories`' inclusions.
 - Do not add a second registry, binding declaration, or `forgets_to` relation.
 - The declared category graph already contains that information.
 - Sage already derives parent, element, and morphism method hierarchies from that graph.
@@ -2913,7 +2915,7 @@ short synthesis did not capture.
 - It must not merely declare an obligation that its own construction could discharge.
 - Abstract obligations remain valid for genuinely axiomatic categories.
 - An axiomatic subcategory need not have a separate concrete implementation class.
-- Generic mathematical operations belong on the owned category types that mathematically own them.
+- Generic mathematical operations belong on the category types where `lean-categories` places them.
 - Object operations belong on `ObjectType`; element operations on `ElementType`; arrow operations on the corresponding Hom-category element type.
 - Concrete/runtime classes remain minimal data containers when Sage ownership requires them.
 - Category methods precede concrete class methods in the owned MRO.
@@ -2935,7 +2937,7 @@ short synthesis did not capture.
 - It never reimplements set cardinality or product behavior.
 - A module constructor supplies its underlying set construction.
 - A free module of rank `n` supplies the product of `n` copies of its base ring.
-- The set level owns cardinality, finiteness, countability, products, and coproducts.
+- The set level carries cardinality, finiteness, countability, products, and coproducts.
 - The ring level supplies the set data for the ring.
 - Higher levels inherit the set operations through the category chain.
 - `L.cardinality()` must work without `Lattices` naming cardinality.
@@ -2950,15 +2952,17 @@ short synthesis did not capture.
 
 - Distinguish membership predicates from ordinary categorical operations.
 - A predicate-defined subcategory states the contract for membership.
-- An object refined into that subcategory supplies the predicate computation.
-- The category does not return `True` merely because its name asserts a property.
+- An object refined into that subcategory supplies the predicate computation, which is untrusted.
+- The category does not return `True` merely because its name asserts a property; it answers by placement only where `lean-categories` proves the predicate for every object.
 - Other operations should remain category methods whenever their hypotheses are categorical.
 - Place axioms as high as their hypotheses permit.
-- Foundational categories remain essential without current callers.
-- A category of magmas is foundational mathematical work, not disposable empty code.
+- Presentations of foundational categories remain essential without current callers.
+- Presenting the category of magmas is foundational work, not disposable empty code.
 - Empty method bodies, low call counts, and unfinished descendants do not reduce its value.
 
 ## Forms and formed modules
+
+These recall `lean-categories`' definitions to fix the presentation; where they differ, the formalization governs.
 
 - A form is not synonymous with a bilinear form.
 - Bilinear and quadratic forms have different classifying constructions.
@@ -2976,7 +2980,7 @@ short synthesis did not capture.
 - Each form flavor has its own free-forgetful adjunction.
 - The free bilinear form is the identity on the tensor-square classifier.
 - The free quadratic form is the identity on the quadratic classifier.
-- Prove each adjunction through its hom-set bijection.
+- Present each adjunction through its hom-set bijection, as `lean-categories` formalizes it.
 - Do not name an adjunction and then deny the existence of its adjoint.
 
 ## Base rings and morphisms
@@ -3002,9 +3006,9 @@ short synthesis did not capture.
 - Such machinery is significant research, not a conflict with the undecidability rule.
 - Return `Unknown` only where the available hypotheses and algorithms do not decide the question.
 - A specialized algorithm should return a definite result on its valid domain.
-- Record its hypotheses in the category that supplies it.
+- Record its hypotheses, citing the `lean-categories` theorem that justifies it, in the category that supplies it.
 - Let category placement select the specialized algorithm.
-- Do not special-case it inside a general method without mathematical ownership.
+- Do not special-case it inside a general method without a placement stating its hypotheses.
 
 ## Mathematical discrepancies and research findings
 
@@ -3013,8 +3017,8 @@ short synthesis did not capture.
 - It can distinguish full reflection-group orbits from smaller subgroup orbits.
 - Preserve the groups, actions, and orbit relation needed to state that difference.
 - Do not reduce such a finding to a note that two numbers disagree.
-- Derive the corrected mathematical statement from a false source statement.
-- Land the corrected proposition, construction, or cited specimen in the repository.
+- A false source statement is recorded with its evidence, and the corrected statement is requested from `lean-categories`; research does not write the correction.
+- Land the cited specimen that exposes the discrepancy in the repository.
 - Do not retain tests whose only purpose is to forbid a past mistake.
 - Test the intended positive mathematics instead.
 - Cited published tables and literature examples can be proper oracles.
@@ -3039,16 +3043,16 @@ short synthesis did not capture.
 - After a mistaken edit yields the correct state, repair forward.
 - Do not undo the correct state merely to reproduce it by a preferred method.
 - Reconcile source and destination until the result is semantically a move plus required updates.
-- Delete the original only after every useful notion has an owned destination.
+- Delete the original only after every useful notion has a destination: a preamble presentation, or a `lean-categories` request for mathematics it lacks.
 - Deletion is a receipt for completed relocation.
 - It is never a value judgment on the source.
 - Preserve code, tests, specifications, examples, design corpora, and incomplete research.
 - Incomplete research remains research.
-- Planning corpora can contain mathematical structure and future categorical homes.
-- Stub declarations can define essential structure before algorithms exist.
-- Existing TDD suites are forward requirements and must migrate to the owned surface.
+- Planning corpora can contain mathematical structure and future categorical homes; the mathematics in them is carried to `lean-categories` as requests, never adopted here.
+- Stub declarations can present structure `lean-categories` formalizes before algorithms exist.
+- Existing TDD suites are forward requirements and must migrate to the preamble surface.
 - Existing parity tests can document delegation boundaries.
-- False source mathematics creates a correction-synthesis obligation.
+- False source mathematics creates an obligation: record it with its evidence and request the corrected mathematics from `lean-categories`.
 - Do not delete the false statement and preserve only an error ledger.
 - Non-code logs, telemetry, caches, and tool output are outside a mathematical code migration.
 - Do not create dispositions or rulings for irrelevant material.
@@ -3097,7 +3101,7 @@ short synthesis did not capture.
 - Fix that foundation before patching its instances.
 - If a module can exist without a ring, forbid ringless construction.
 - Do not hunt only for the current ringless object.
-- If a formed module delegates through `forget_form`, fix its mathematical ownership.
+- If a formed module delegates through `forget_form`, fix its construction chain.
 - Do not add another forwarding method.
 - If many leaves restate set behavior, fix the category construction chain.
 - Do not optimize the forwarding calls.
@@ -3150,7 +3154,7 @@ When one condition occurs:
 
 ## Repository organization
 
-- Organize the preamble by mathematical ownership.
+- Organize the preamble by `lean-categories`' placement.
 - The tree should expose the category hierarchy to a mathematician.
 - Place generic constructions at the highest valid categorical level.
 - Keep value-level form morphisms distinct from categories of formed modules.
@@ -3197,18 +3201,18 @@ When one condition occurs:
 - A plan records settled mathematical direction.
 - It does not replace the code, proof, or migrated research.
 
-# Categorical constructions own structural relations
+# Categorical constructions carry structural relations
 
 The preamble has categories, method classes, and the category graph. It has no
 independent behavior-composition layer.
 
 - Do not call a preamble component a `mixin`.
 - Do not insert a hand-written Python base to state a mathematical relation.
-- State the relation in the category graph.
+- State the relation, as `lean-categories` formalizes it, in the category graph.
 - Class inheritance can implement the graph after category placement.
 - Class inheritance must never replace categorical placement.
-- `ObjectType`, `ElementType`, and Hom-category element types expose operations owned
-  by a category in the public preamble architecture.
+- `ObjectType`, `ElementType`, and Hom-category element types expose operations placed
+  on a category in the public preamble architecture.
 - Sage `ParentMethods`, `ElementMethods`, and `MorphismMethods` are private runtime
   implementation vocabulary during migration, not a second public class graph.
 
@@ -3217,11 +3221,11 @@ before creating another construction.
 
 - Start with `Cat.Object`, `SliceOver`, `CosliceUnder`, `Product`, `Coproduct`,
   `Biproduct`, `TensorProduct`, `Kernel`, and `Cokernel`.
-- Inspect the owned module-level `Subobjects` construction as part of the same
+- Inspect the preamble's module-level `Subobjects` construction as part of the same
   analysis.
 - Use this subtree as the canonical construction vocabulary.
 - Do not create a local helper for a relation already represented there.
-- Do not let an owned category silently use Sage's parallel construction.
+- Do not let a preamble category silently use Sage's parallel construction.
 - Resolve the construction owner instead of patching each call site.
 - Do not keep two construction paths for the same mathematical construction.
 
