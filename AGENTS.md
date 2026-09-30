@@ -1365,12 +1365,14 @@ What it exists to fix is Sage's non-uniformity, not Sage's algorithms.
 Sage carries more than ten distinct notions of *group*, and an operation as elementary as $\operatorname{Aut}(G)$ is, depending on which one you hold: absent; present under a different name; known and simple but unwired (it is a call into GAP); or genuinely uncomputable.
 A session cannot hold that variation, so the preamble presents one name for one mathematical operation, and either answers or asserts.
 
+The preamble owns no mathematics. Each operation it names is one formalized in `lean-categories`, which alone decides what the operation is, where it lives and what it returns. An operation `lean-categories` does not have is a formalization request there ([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)), never a name the preamble coins.
+
 This governs the rules below:
 
 - Sage objects are an implementation detail. The crossing happens inside owned code, at the point of computing, never in what a session receives.
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
-- Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
-- A session is a Sage session with the preamble loaded on top: Sage's names stay in scope and the preamble's shadow them. A session's numbers never enter Sage's symbolic ring. The preamble owns `pi`, `e` and the elementary functions (`sqrt`, `exp`, `log`, the trigonometric and hyperbolic functions, `sgn`, `zeta`) over its own real field (ruled 2026-09-23); applied to anything that is not a real number, each is Sage's function of the same name.
+- Where Sage has no algorithm, the operation keeps its name. A missing capability is a stated gap on the interface, never a second spelling and never a silent absence.
+- A session is a Sage session with the preamble loaded on top: Sage's names stay in scope and the preamble's shadow them. A session's numbers never enter Sage's symbolic ring. The preamble binds `pi`, `e` and the elementary functions (`sqrt`, `exp`, `log`, the trigonometric and hyperbolic functions, `sgn`, `zeta`) to its own real-number implementation (ruled 2026-09-23); applied to anything that is not a real number, each is Sage's function of the same name.
 
 # A missing foundation parks the work that found it (always-on)
 
@@ -1380,9 +1382,21 @@ same, and it is not a judgment call:
 1. **Park** the node you are on. It is not abandoned and not deferred; it is
    waiting on something that was just discovered to be underneath it.
 2. **Build the DAG of what it needs**, down to what already exists, and
-   terminating at the node you were doing.
+   terminating at the node you were doing. Every missing piece of mathematics
+   in it is a formalization request to `lean-categories`, never a research node
+   that writes it (below).
 3. **Add the edges**, so the parked node now `Needs:` the foundation.
-4. **Take a ready node** from the bottom of what you just built.
+4. **Take a ready node** from the bottom of what you just built, or any other
+   ready node that does not wait on the request.
+
+**Missing mathematics goes upstream to `lean-categories`.** A definition,
+category, construction, operation or theorem that research needs and
+`lean-categories` does not have is requested there, stating the mathematics
+wanted and its sources. Its own formalization author writes it there, blind to
+research and to every implementation. It is never hand-rolled in research or
+in a leaf: not as a local definition, a substitute category, a temporary notion
+to reconcile later, or a Lean file here. Until `lean-categories` formalizes and
+releases it, research has no such notion.
 
 You never proceed past an observed mathematical deficiency. Not with a note
 attached, not with a substitute in place, not with a `TODO` at the site. The
@@ -1921,9 +1935,9 @@ These rules govern preamble, spike, and any Sage-facing API in this repo.
 They are the generative constraints behind repeated corrections (override-refine, catalogue namespaces, Hom/Aut construction, session ergonomics).
 A design that violates them is wrong even when it “works.”
 
-**In one line:** write Sage as if the category and the catalogue *are* the theory — idiomatic constructions, one ontological home, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure.
+**In one line:** write Sage so that the category and the catalogue present the theory directly — idiomatic constructions, one home per notion, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure. The theory itself is `lean-categories`'; the preamble presents it and owns none of it.
 
-## 1. The owned category is the only mathematical extension point
+## 1. The owned category is the only extension point
 
 Public method placement is stated through the owned category protocol: `ObjectType`,
 `ElementType`, and the object/element types of Hom/End/Aut category constructions. Sage's
@@ -1931,9 +1945,12 @@ Public method placement is stated through the owned category protocol: `ObjectTy
 private runtime mechanisms used to realize that declaration on independently owned
 objects; they never decide where mathematics belongs or admit foreign parents.
 
-If Sage's interface is wrong or incomplete, **own the mathematics in the preamble category
-and map it onto Sage privately**. Workarounds (`without_element_wrap`, ad-hoc
-`L.isometry(matrix)`, freestanding patch modules) mean ownership was refused.
+If Sage's interface is wrong or incomplete, **state the operation on the preamble category,
+as `lean-categories` formalizes it, and map it onto Sage privately**; if `lean-categories`
+does not have it, it is requested there
+([missing foundations](#a-missing-foundation-parks-the-work-that-found-it-always-on)).
+Workarounds (`without_element_wrap`, ad-hoc `L.isometry(matrix)`, freestanding patch
+modules) mean the operation was not placed at its category.
 
 The private runtime mechanism remains one owned construction/dynamic-class path,
 not a new installation strategy per capability. Host `Parent`/`Element` primitives
@@ -2017,10 +2034,11 @@ Strengthen the general owned interface (element construction, Aut construction,
 `+` / `sum`, and structural refinement) so the special case disappears.
 Ask “why does this freestanding file/function exist?” — if it has no mathematical referent, delete it and place the content in the category or catalogue.
 
-## 7. Tests certify the intended contract
+## 7. Tests falsify the intended contract
 
 Tests falsify the mathematical or dispatch claim: refined methods win over class methods; this alias is the same parent; this Aut is an involution; this table entry is that named lattice.
 They do not exercise scaffolding, reassure about naming conflicts, or re-encode construction as gram-matrix comparisons.
+These tests are research's own and certify nothing outside it. Correctness evidence about a computation exists only in the `lean-cas-dsl` acceptance suite, which never sees this code.
 
 Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
 
@@ -2053,6 +2071,11 @@ survey of the tree to the delivery of every consumer. This section is the
 short form asked before any declaration is written; no declaration is written
 until each question has an answer in the commit body.
 
+A declaration here presents a category that `lean-categories` formalizes; it
+defines nothing. If `lean-categories` does not have the category, nothing is
+declared and the need is requested there
+([missing foundations](#a-missing-foundation-parks-the-work-that-found-it-always-on)).
+
 1. **What are the objects?** Write the definition in one sentence, in the
    field's words. If it names a chosen datum ("with a chosen basis", "with a
    differential"), this is a data subcategory. If it names only a property
@@ -2066,7 +2089,8 @@ until each question has an answer in the commit body.
    this category with the added structure forgotten, base and parameters
    untouched, is an object of exactly one category one step down. That is the
    declaration, and the only one (`CAT-15`, `CAT-16`). If the honest parent is
-   not in the tree, build it or declare nothing; `Sets()` and `Objects()` are
+   not in the tree, declare nothing: a parent `lean-categories` has is presented
+   first, and one it lacks is requested there. `Sets()` and `Objects()` are
    never placeholders.
 4. **Is anything in the list a change of base or parameter?** Restriction of
    scalars, base change, an ideal to its fractional ideal, an `R[G]`-module to
@@ -2105,13 +2129,15 @@ over itself \(\rho\) is the identity (`CON-16`).
 
 # Categorical organization model (always-on)
 
-How the preamble's category tree is organized, and where new content goes.
-For precise, formalized definitions of the notions below, defer to
+How the preamble's category tree is organized, and where content presenting
+`lean-categories`' mathematics goes. Every notion below is defined in
 `~/gitclones/lean-categories` (FOUNDATIONS.md and `LeanCategories/`): framed
 generators and bases are §13.5, chosen presentations as structure are §75,
 partial resolutions and the $FP_n$ hierarchy are §76, resolution classifiers
-are §77. When a preamble docstring and that document disagree, the document
-wins.
+are §77. The tree presents those definitions and defines none. When a preamble
+docstring and `lean-categories` disagree, `lean-categories` is right and the
+docstring is corrected; a notion `lean-categories` lacks is requested there,
+not defined here.
 
 ## Property subcategories vs data subcategories
 
@@ -2964,14 +2990,15 @@ short synthesis did not capture.
 - Land the corrected proposition, construction, or cited specimen in the repository.
 - Do not retain tests whose only purpose is to forbid a past mistake.
 - Test the intended positive mathematics instead.
-- Published tables, literature examples, and existing fixture values can be proper oracles.
+- Cited published tables and literature examples can be proper oracles.
 - Their value does not depend on whether an agent considers the source prestigious.
+- An expected value needs a verifiable source independent of the implementation: a proof, a cited result, or an independent oracle.
 - Verify provenance when adding a new citation-gated specimen.
-- Preserve an existing oracle during migration even when its provenance is informal.
+- An existing fixture value with informal provenance is not an oracle. Keep it during migration as a value awaiting its source, never as evidence.
 
 ## Semantic migration
 
-- The preamble centrally owns locally-authored Sage mathematics.
+- The preamble centrally holds research's locally-authored Sage code. The mathematics it presents is `lean-categories`'.
 - A migration request establishes the value of the selected corpus.
 - The executor decides destination and synthesis, not whether the corpus deserved preservation.
 - The unit of migration is a mathematical notion, not a file.
@@ -3010,8 +3037,8 @@ short synthesis did not capture.
 - A source outside the current preamble scope is a reason to enrich the preamble.
 - It is not a deletion reason.
 - Compare source and destination definitions, hypotheses, codomains, conventions, and behavior.
-- Verify that the destination owns every useful mathematical distinction.
-- If the destination cannot express a notion, extend the destination.
+- Verify that the destination presents every useful mathematical distinction.
+- If the destination cannot express a notion because `lean-categories` lacks it, request it there; research does not define it.
 - Do not discard the notion because the destination is incomplete.
 
 ## Execution shape for large migrations
