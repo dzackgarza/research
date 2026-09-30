@@ -29,4 +29,21 @@
   </div>
 </section>
 {% endfor %}
+<section aria-labelledby="properties">
+  <h2 id="properties">Properties</h2>
+  <p>The build derives the properties of a lattice from its record. The database page filters by them, and a collection page can select by them.</p>
+  <div class="table-scroll">
+    <table class="field-table">
+      <thead><tr><th scope="col">Property</th><th scope="col">Meaning</th></tr></thead>
+      <tbody>
+        {% for label, meaning in property_meanings.items() %}
+        <tr>
+          <th scope="row">{{ label }}</th>
+          <td>{{ meaning | inline_markup }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

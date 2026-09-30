@@ -125,6 +125,40 @@ def anisotropic_binary() -> dict[str, Yaml]:
     }
 
 
+def square_lattice() -> dict[str, Yaml]:
+    """Z^2 with the standard form: the four x with b(x, x) = 2 generate the sublattice of index 2 of the x with even coordinate sum."""
+    return {
+        "tag": "0007",
+        "name": "<1> + <1>",
+        "latex": r"\langle 1 \rangle \oplus \langle 1 \rangle",
+        "rank": 2,
+        "gram_tensor": [[1, 0], [0, 1]],
+        "signature": [2, 0],
+        "determinant": 1,
+        "definiteness": "positive_definite",
+        "provenance": PROVENANCE,
+        "integral": {"parity": "odd", "discriminant_group": []},
+        "definite": {"minimum": 1, "kissing_number": 4, "theta_series": [1, 4, 4], "root_system": ["A1", "A1"]},
+    }
+
+
+def a6() -> dict[str, Yaml]:
+    """The root lattice A6 in a basis of simple roots: determinant 7, 42 roots. The root system D5 + A1 also has rank 6 and 42 roots."""
+    return {
+        "tag": "0008",
+        "name": "A6",
+        "latex": "A_6",
+        "rank": 6,
+        "gram_tensor": [[2 if i == j else -1 if abs(i - j) == 1 else 0 for j in range(6)] for i in range(6)],
+        "signature": [6, 0],
+        "determinant": 7,
+        "definiteness": "positive_definite",
+        "provenance": PROVENANCE,
+        "integral": {"parity": "even", "discriminant_group": [7]},
+        "definite": {"minimum": 2, "kissing_number": 42, "root_system": ["A6"]},
+    }
+
+
 def with_block(record: dict[str, Yaml], block: str, **changes: Yaml) -> dict[str, Yaml]:
     current = record.get(block)
     assert isinstance(current, dict) or current is None
@@ -137,7 +171,7 @@ def error_types(record: dict[str, Yaml]) -> set[str]:
     return {error["type"] for error in raised.value.errors()}
 
 
-@pytest.mark.parametrize("record", [e8, hyperbolic_plane, a2_dual, affine_a1, binary_form_of_determinant_19, anisotropic_binary])
+@pytest.mark.parametrize("record", [e8, hyperbolic_plane, a2_dual, affine_a1, binary_form_of_determinant_19, anisotropic_binary, square_lattice, a6])
 def test_consistent_record_is_accepted(record: Callable[[], dict[str, Yaml]]) -> None:
     Lattice.model_validate(record())
 
@@ -149,6 +183,27 @@ def test_derived_properties_follow_from_the_record() -> None:
     assert Lattice.model_validate(affine_a1()).nullity == 1
     assert Lattice.model_validate(hyperbolic_plane()).is_hyperbolic
     assert not Lattice.model_validate(e8()).is_hyperbolic
+
+
+def test_the_roots_generate_a_root_lattice_and_a_sublattice_of_index_two_of_the_square_lattice() -> None:
+    assert Lattice.model_validate(e8()).root_sublattice_index == 1
+    assert Lattice.model_validate(e8()).is_root_lattice
+    assert Lattice.model_validate(a6()).is_root_lattice
+    square = Lattice.model_validate(square_lattice())
+    assert square.root_sublattice_rank == 2
+    assert square.root_sublattice_index == 2
+    assert not square.is_root_lattice
+
+
+def test_the_index_of_the_root_sublattice_is_not_stated_when_its_rank_is_less_than_the_rank_of_the_lattice() -> None:
+    lattice = Lattice.model_validate(with_block(binary_form_of_determinant_19(), "definite", root_system=["A1"]))
+    assert lattice.root_sublattice_rank == 1
+    assert lattice.root_sublattice_index is None
+    assert not lattice.is_root_lattice
+
+
+def test_a_root_system_whose_lattice_has_no_integer_index_is_rejected_for_that_reason_alone() -> None:
+    assert error_types(with_block(a6(), "definite", root_system=["D5", "A1"])) == {"root_system_index"}
 
 
 @pytest.mark.parametrize(

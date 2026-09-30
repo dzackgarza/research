@@ -12,6 +12,7 @@ hypothesis (`integral`, `definite`, `indefinite`, `hyperbolic`). A block on a
 lattice that does not satisfy its hypothesis is a validation error.
 """
 
+import math
 import re
 from collections.abc import Iterator
 from datetime import date
@@ -101,20 +102,24 @@ class IntegralData(Record):
 
 
 class DefiniteData(Record):
-    """Invariants of a positive definite or negative definite lattice. For a negative definite lattice they are those of $-b$."""
+    """Invariants of a definite lattice. They are stated for a positive definite form; on a negative definite lattice they are the invariants of $-b$."""
 
-    minimum: Rational = Field(description="Least value of $|b(x, x)|$ over nonzero $x$.")
-    kissing_number: int | None = Field(default=None, description="Number of $x$ with $|b(x, x)|$ equal to the minimum.")
+    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$.")
+    kissing_number: int | None = Field(
+        default=None,
+        description="Number of $x$ with $b(x, x)$ equal to the minimum. The number is finite because the form is definite.",
+    )
     automorphism_group_order: int | None = Field(default=None, description="Order of the group of isometries of the lattice.")
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
-        description="Entry $k$ is the number of $x$ with $|b(x, x)| = k$, for $k = 0, 1, 2, \\dots$ Requires integer values.",
+        description="Entry $k$ is the number of $x$ with $b(x, x) = k$, for $k = 0, 1, 2, \\dots$ Requires integer values.",
     )
     root_system: Annotated[tuple[RootComponent, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
-            "Irreducible components of the root system formed by the $x$ with $|b(x, x)| = 2$, such as `[E8]` or `[A1, A1]`. "
-            "The empty list means that there are no such $x$. Requires integer values."
+            "ADE type of $\\Phi_{\\{2\\}}(L) = \\{r \\in L : b(r, r) = 2\\}$, as irreducible components in any order: `[E8]`, `[A1, A1]`, or `[]` when it is empty. "
+            "$R_{\\{2\\}}(L) := \\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components (Witt's theorem); it is not primitive in $L$ in general. "
+            "Roots $r$ with $b(r, r) \\neq 2$ are not recorded. Requires integer values."
         ),
     )
 
@@ -157,6 +162,28 @@ def _root_count(component: str) -> int:
             return 2 * index * (index - 1)
         case _:
             return {6: 72, 7: 126, 8: 240}[index]
+
+
+def _root_determinant(component: str) -> int:
+    """Determinant of the root lattice of an irreducible simply laced root system.
+
+    Conway and Sloane, Sphere Packings, Lattices and Groups, 3rd ed., Chapter 4, sections 6 to 8.
+    """
+    family, index = component[0], int(component[1:])
+    match family:
+        case "A":
+            return index + 1
+        case "D":
+            return 4
+        case _:
+            return {6: 3, 7: 2, 8: 1}[index]
+
+
+def _squared_root_sublattice_index(roots: tuple[str, ...], rank: int, determinant: Fraction) -> Fraction | None:
+    """$[L : R_{\\{2\\}}(L)]^2 = \\det(R_{\\{2\\}}(L)) / \\det(L)$, when $R_{\\{2\\}}(L)$ has the rank of $L$."""
+    if sum(int(component[1:]) for component in roots) != rank:
+        return None
+    return Fraction(math.prod(_root_determinant(component) for component in roots)) / abs(determinant)
 
 
 def _problem(kind: str, message: str, location: tuple[str, ...], context: dict[str, str | int] | None = None) -> InitErrorDetails:
@@ -216,6 +243,26 @@ class Lattice(Record):
     @property
     def is_hyperbolic(self) -> bool:
         return self.is_nondegenerate and self.rank >= 2 and min(self.signature) == 1
+
+    @property
+    def root_sublattice_rank(self) -> int | None:
+        """The rank of $R_{\\{2\\}}(L)$, when the record states `root_system`."""
+        if self.definite is None or self.definite.root_system is None:
+            return None
+        return sum(int(component[1:]) for component in self.definite.root_system)
+
+    @property
+    def root_sublattice_index(self) -> int | None:
+        """$[L : R_{\\{2\\}}(L)]$, when the record states `root_system` and $R_{\\{2\\}}(L)$ has the rank of $L$."""
+        if self.definite is None or self.definite.root_system is None:
+            return None
+        squared = _squared_root_sublattice_index(self.definite.root_system, self.rank, self.determinant)
+        return None if squared is None else math.isqrt(squared.numerator)
+
+    @property
+    def is_root_lattice(self) -> bool:
+        """Whether $R_{\\{2\\}}(L) = L$."""
+        return self.root_sublattice_index == 1
 
     @model_validator(mode="after")
     def _well_defined(self) -> Self:
@@ -412,6 +459,14 @@ class Lattice(Record):
                     "the minimum is 2, so the {count} roots are the minimal vectors, but the kissing number is {stated}",
                     location,
                     {"count": count, "stated": kissing},
+                )
+            squared_index = _squared_root_sublattice_index(roots, rank, arithmetic.determinant(self.gram_tensor))
+            if squared_index is not None and (squared_index.denominator != 1 or math.isqrt(squared_index.numerator) ** 2 != squared_index.numerator):
+                yield _problem(
+                    "root_system_index",
+                    "the roots generate a sublattice of the rank of L, so its determinant is det(L) times the square of its index, but the quotient is {quotient}",
+                    location,
+                    {"quotient": str(squared_index)},
                 )
             if minimum > 2 and roots:
                 yield _problem("root_system_nonempty_above_norm_two", "the minimum is greater than 2, so there are no roots", location)

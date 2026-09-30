@@ -39,7 +39,7 @@ def test_the_row_of_e8_states_its_invariants(rows: dict[str, site.Row]) -> None:
     assert e8["signature"] == "(8, 0)"
     assert e8["determinant"] == "1"
     assert e8["definiteness"] == "positive definite"
-    assert e8["properties"] == ["integral", "even", "unimodular"]
+    assert e8["properties"] == ["integral", "even", "unimodular", "root lattice"]
     assert e8["discriminant_group"] == "0"
     assert e8["kissing_number"] == 240
     assert e8["automorphism_group_order"] == "696729600"
@@ -62,6 +62,25 @@ def test_a_collection_page_links_exactly_the_lattices_that_satisfy_its_condition
     members = {lattice.tag for lattice in lattices if lattice.integral is not None and lattice.integral.parity == "even" and lattice.is_unimodular}
     assert members
     assert {tag for tag in rows if f'href="../tag/{tag}.html"' in html} == members
+
+
+def test_the_root_lattice_collection_lists_the_lattices_that_their_roots_generate(built: Path) -> None:
+    html = (built / "collection" / "root-lattices.html").read_text()
+    e8, negative_e8, doubled_e8, z10 = "0094", "0104", "0095", "0120"
+    assert {tag for tag in (e8, negative_e8, doubled_e8, z10) if f'href="../tag/{tag}.html"' in html} == {e8, negative_e8}
+
+
+def test_the_page_of_z10_states_the_index_of_the_sublattice_that_its_roots_generate(built: Path) -> None:
+    html = (built / "tag" / "0120.html").read_text()
+    assert "rank 10, index 2 in" in html
+
+
+def test_the_fields_page_defines_every_property_of_the_database(built: Path) -> None:
+    html = (built / "fields.html").read_text()
+    labels = {label for entry in corpus.load(ROOT / "lattices") for label in site.properties(entry.lattice)}
+    assert labels
+    for label in labels:
+        assert f'<th scope="row">{"p-elementary" if label.endswith("-elementary") else label}</th>' in html
 
 
 def test_the_fields_page_documents_every_field_of_a_record(built: Path) -> None:

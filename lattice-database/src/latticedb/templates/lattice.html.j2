@@ -76,27 +76,32 @@
   {% if lattice.definite %}
   <section aria-labelledby="definite">
     <h2 id="definite">Definite lattice</h2>
+    {% set form = "-b" if lattice.definiteness == "negative_definite" else "b" %}
+    {% set norm = "-2" if lattice.definiteness == "negative_definite" else "2" %}
     {% if lattice.definiteness == "negative_definite" %}
     <p>The form is negative definite. The invariants below are those of \(-b\).</p>
     {% endif %}
     <table class="facts">
       <tbody>
-        <tr><th scope="row">Minimum of \(|b(x, x)|\), \(x \neq 0\)</th><td>\({{ rational_tex(lattice.definite.minimum) }}\)</td></tr>
+        <tr><th scope="row">Minimum of \({{ form }}(x, x)\), \(x \neq 0\)</th><td>\({{ rational_tex(lattice.definite.minimum) }}\)</td></tr>
         {% if lattice.definite.kissing_number is not none %}
-        <tr><th scope="row">Kissing number</th><td>{{ lattice.definite.kissing_number }}</td></tr>
+        <tr><th scope="row">Kissing number: the number of \(x\) at the minimum</th><td>{{ lattice.definite.kissing_number }}</td></tr>
         {% endif %}
         {% if lattice.definite.automorphism_group_order is not none %}
         <tr><th scope="row">Order of the isometry group</th><td>\({{ lattice.definite.automorphism_group_order }} = {{ factorisation_tex(lattice.definite.automorphism_group_order) }}\)</td></tr>
         {% endif %}
         {% if lattice.definite.root_system is not none %}
-        <tr><th scope="row">Root system of the \(x\) with \(|b(x, x)| = 2\)</th><td>{% if lattice.definite.root_system %}\({{ root_system_tex(lattice.definite.root_system) }}\){% else %}empty{% endif %}</td></tr>
+        <tr><th scope="row">Type of \(\Phi_{\{ {{- norm -}} \}}(L) = \{r \in L : b(r, r) = {{ norm }}\}\)</th><td>{% if lattice.definite.root_system %}\({{ root_system_tex(lattice.definite.root_system) }}\){% else %}\(\varnothing\){% endif %}</td></tr>
+        {% endif %}
+        {% if lattice.definite.root_system %}
+        <tr><th scope="row">\(R_{\{ {{- norm -}} \}}(L) = \mathbb{Z}\Phi_{\{ {{- norm -}} \}}(L)\)</th><td>rank {{ lattice.root_sublattice_rank }}{% if lattice.root_sublattice_index is not none %}, index {{ lattice.root_sublattice_index }} in \(L\){% endif %}</td></tr>
         {% endif %}
       </tbody>
     </table>
     {% if lattice.definite.theta_series is not none %}
     <h3>Theta series</h3>
-    <p>The coefficient of \(q^k\) is the number of \(x \in L\) with \(|b(x, x)| = k\).</p>
-    \[ \sum_{x \in L} q^{|b(x, x)|} = {{ theta_tex(lattice.definite.theta_series) }} \]
+    <p>The coefficient of \(q^k\) is the number of \(x \in L\) with \({{ form }}(x, x) = k\).</p>
+    \[ \sum_{x \in L} q^{ {{- form -}} (x, x)} = {{ theta_tex(lattice.definite.theta_series) }} \]
     {% endif %}
   </section>
   {% endif %}
