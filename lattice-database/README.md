@@ -87,7 +87,7 @@ The vectors with $b(r, r) = \pm 2$ are $\Phi_{\{\pm 2\}}(L)$, never "the roots" 
 Each record states $\mathbb{Z}\Phi(L)$.
 A definite record states $\Phi(L)$ in `definite.roots`: each irreducible component with its type, its scale and its simple roots.
 The build lists $\Phi(L)$ and compares.
-A record that is not definite states roots that generate $\mathbb{Z}\Phi(L)$ in `root_span.roots`.
+In `root_span.roots`, a record that is not definite states roots that generate $\mathbb{Z}\Phi(L)$.
 When they do not generate $L$, the prose proves that no root of $L$ is outside the sublattice that they generate, and `root_span.summands` and `root_span.embedding` state $\mathbb{Z}\Phi(L)$ as an orthogonal sum of records with its embedding in $L$.
 A root is a row of integers: its coordinates in the basis $e_1, \dots, e_n$ of the record.
 The page of the lattice writes it as $\sum_i c_i e_i$, and states the orthogonal decomposition of $L$ that the basis gives.
