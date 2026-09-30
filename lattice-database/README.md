@@ -17,10 +17,11 @@ The site is served at <http://lattice-database.localhost/>.
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `src/latticedb/model.py` | The schema of a record and its validators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
+| `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
-| `scripts/` | The SageMath seed that wrote the first records, and its source data |
+| `scripts/` | The SageMath seed that wrote the first records, its source data, and the script that writes the root data |
 | `tests/` | Tests of the validators and of the built site |
 
 ## A record
@@ -64,7 +65,8 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
 | `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `genus_symbol` |
-| `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system` |
+| `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
+| `root_span` | $b$ is not definite | `roots`, `summands`, `embedding` |
 | `indefinite` | $b(x, x)$ takes both signs | `isotropic` |
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
@@ -82,6 +84,15 @@ $\mathbb{Z}\Phi_S(L)$ is the sublattice that $\Phi_S(L)$ generates, and $L$ is a
 The definitions have no hypothesis on the signature or on the values of $b$.
 The vectors with $b(r, r) = \pm 2$ are $\Phi_{\{\pm 2\}}(L)$, never "the roots" of $L$.
 
+Each record states $\mathbb{Z}\Phi(L)$.
+A definite record states $\Phi(L)$ in `definite.roots`: each irreducible component with its type, its scale and its simple roots.
+The build lists $\Phi(L)$ and compares.
+A record that is not definite states roots that generate $\mathbb{Z}\Phi(L)$ in `root_span.roots`.
+When they do not generate $L$, the prose proves that no root of $L$ is outside the sublattice that they generate, and `root_span.summands` and `root_span.embedding` state $\mathbb{Z}\Phi(L)$ as an orthogonal sum of records with its embedding in $L$.
+A root is a row of integers: its coordinates in the basis $e_1, \dots, e_n$ of the record.
+The page of the lattice writes it as $\sum_i c_i e_i$, and states the orthogonal decomposition of $L$ that the basis gives.
+A record that is not definite and has no `root_span` block is not decided, and its page says so.
+
 ## Tags
 
 A tag is four characters from `0-9` and `A-Z`. The file name is the tag.
@@ -94,7 +105,10 @@ To add a lattice:
 
 2. Write `lattices/<TAG>.md` with the record and the prose.
 
-3. `just build` validates the corpus and builds the site.
+3. `just roots` writes the root data of the record: `definite.roots` for a definite record, and `root_span.roots` for a record that is not definite when the roots that it finds generate $L$.
+   When they do not, write the `root_span` block and its proof by hand.
+
+4. `just build` validates the corpus and builds the site.
    It prints each problem of each record with the path of the file and the field.
 
 The corpus is also checked as a whole: two records cannot have the same name or the same components, and a `related` entry must name a tag in the corpus.
@@ -141,6 +155,7 @@ The `justfile` calls it.
 | `just build` | Validate every record and build the site into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
+| `just roots` | Write `definite.roots` of each definite record, and `root_span.roots` of each other record that has no `root_span` block |
 | `just test` | Run the tests |
 | `just seed` | Write the first records into an empty `lattices/` directory; needs SageMath at `SAGE_BIN` |
 

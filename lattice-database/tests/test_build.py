@@ -76,7 +76,60 @@ def test_the_page_of_a_root_lattice_states_norms_of_roots_that_generate_it(built
     assert r"S = \{4\}" in (built / "tag" / "0095.html").read_text()
     assert r"S = \{1\}" in (built / "tag" / "0120.html").read_text()
     assert r"S = \{-2\}" in (built / "tag" / "0104.html").read_text()
-    assert '<h2 id="roots">' not in (built / "tag" / "0016.html").read_text()
+    assert r"\(S = " not in (built / "tag" / "0016.html").read_text()
+
+
+def test_the_row_of_a_definite_root_lattice_states_the_type_of_its_roots_and_the_lattice_that_they_generate(rows: dict[str, site.Row]) -> None:
+    # E8 is even and unimodular, so its roots are its 240 vectors with b(r, r) = 2.
+    e8 = rows["0094"]
+    assert (e8["phi_type"], e8["root_span"], e8["root_span_rank"], e8["root_span_index"], e8["root_maximum"]) == ("E8", "E8", 8, 1, "ZΦ(L)")
+    # The roots of Z^10 are the vectors +-e_i and +-e_i +-e_j: type B10. The vectors with b(r, r) = 2 alone are of type D10.
+    z10 = rows["0120"]
+    assert (z10["root_system"], z10["phi_type"], z10["root_span"], z10["root_span_index"]) == ("D10", "B10", "Z^10", 1)
+    # E8(2) has the roots of E8, with b(r, r) = 4, and no vector with b(r, r) = 2.
+    doubled_e8 = rows["0095"]
+    assert (doubled_e8["root_system"], doubled_e8["phi_type"], doubled_e8["root_span"]) == ("", "E8", "E8(2)")
+
+
+def test_the_row_of_a_lattice_that_is_not_a_root_lattice_states_the_index_and_that_there_is_no_maximum(rows: dict[str, site.Row]) -> None:
+    # The roots of U are +-(1, 1) and +-(1, -1), with b(r, r) = 2 and -2; they generate the vectors with even coordinate sum.
+    u = rows["0016"]
+    assert "not a root lattice" in u["properties"]
+    assert (u["root_span"], u["root_span_rank"], u["root_span_index"], u["root_maximum"]) == ("<2> + <-2>", 2, 2, "none")
+    # The roots of D12+ are the 264 roots of D12, which has index 2.
+    d12_plus = rows["0151"]
+    assert (d12_plus["phi_type"], d12_plus["root_span"], d12_plus["root_span_index"], d12_plus["root_maximum"]) == ("D12", "D12", 2, "none")
+    # <0> has no roots: the sublattice 0 is primitive, and its index is not finite.
+    zero_form = rows["0010"]
+    assert (zero_form["root_span"], zero_form["root_span_rank"], zero_form["root_span_index"], zero_form["root_maximum"]) == ("0", 0, None, "ZΦ(L)")
+
+
+def test_each_record_decides_whether_it_is_a_root_lattice(rows: dict[str, site.Row]) -> None:
+    for row in rows.values():
+        assert ("root lattice" in row["properties"]) != ("not a root lattice" in row["properties"]), row["tag"]
+        assert row["root_maximum"] in {"ZΦ(L)", "none"}, row["tag"]
+
+
+def test_the_page_of_a_lattice_writes_its_roots_in_the_basis_of_the_record(built: Path) -> None:
+    # The record of E8 is in a basis of simple roots, so the simple root alpha_j is e_j.
+    e8 = (built / "tag" / "0094.html").read_text()
+    for index in range(1, 9):
+        assert rf"<td>\(\alpha_{{{index}}}\)</td>" in e8
+        assert rf"<td>\(e_{{{index}}}\)</td>" in e8
+    # The roots of U are e_1 + e_2 and e_1 - e_2; they generate a sublattice that is isometric to <2> + <-2>.
+    u = (built / "tag" / "0016.html").read_text()
+    assert r"\(e_{1} + e_{2}\)" in u
+    assert r"\(e_{1} - e_{2}\)" in u
+    assert 'href="../tag/0002.html"' in u
+    assert 'href="../tag/0008.html"' in u
+
+
+def test_the_page_of_a_sum_states_the_orthogonal_decomposition_that_its_basis_gives(built: Path) -> None:
+    # U + E8(-2): e_1, e_2 are the basis of U, and e_3, ..., e_10 the basis of E8(-2).
+    html = (built / "tag" / "0124.html").read_text()
+    assert r"\(\mathbb{Z}\{e_{1}, e_{2}\}\) \(\oplus\) \(\mathbb{Z}\{e_{3}, \dots, e_{10}\}\)" in html
+    # E8 is not an orthogonal sum of two sublattices that its basis vectors generate.
+    assert "The record fixes an orthogonal decomposition" not in (built / "tag" / "0094.html").read_text()
 
 
 def test_the_page_of_z10_states_the_index_of_the_sublattice_that_its_roots_generate(built: Path) -> None:

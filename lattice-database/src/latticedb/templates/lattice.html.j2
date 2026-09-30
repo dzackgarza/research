@@ -36,7 +36,10 @@
 
   <section aria-labelledby="gram-tensor">
     <h2 id="gram-tensor">Gram tensor</h2>
-    <p>The components \(b(e_i, e_j)\) of the Gram tensor \(b\) in the basis \(e_1, \dots, e_{ {{- lattice.rank -}} }\) of the record.</p>
+    <p>The components \(b(e_i, e_j)\) of the Gram tensor \(b\) in the basis \({{ block_tex(range(1, lattice.rank + 1) | list) }}\) of the record.</p>
+    {% if blocks | length > 1 %}
+    <p>The record fixes an orthogonal decomposition of \(L\): \(L = {}\){% for block in blocks %}\(\mathbb{Z}\{ {{- block_tex(block) -}} \}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}, and \(b(e_i, e_j) = 0\) for \(e_i\), \(e_j\) in different summands.</p>
+    {% endif %}
     <div class="table-scroll">
       <table class="components">
         <thead>
@@ -94,7 +97,7 @@
         <tr><th scope="row">Type of \(\Phi_{\{ {{- norm -}} \}}(L) = \{r \in L : b(r, r) = {{ norm }}\}\)</th><td>{% if lattice.definite.root_system %}\({{ root_system_tex(lattice.definite.root_system) }}\){% else %}\(\varnothing\){% endif %}</td></tr>
         {% endif %}
         {% if lattice.definite.root_system %}
-        <tr><th scope="row">\(\mathbb{Z}\Phi_{\{ {{- norm -}} \}}(L)\)</th><td>rank {{ lattice.root_sublattice_rank }}{% if lattice.root_sublattice_index is not none %}, index {{ lattice.root_sublattice_index }} in \(L\){% endif %}</td></tr>
+        <tr><th scope="row">\(\mathbb{Z}\Phi_{\{ {{- norm -}} \}}(L)\)</th><td>rank {{ lattice.norm_two_span_rank }}{% if lattice.norm_two_span_index is not none %}, index {{ lattice.norm_two_span_index }} in \(L\){% endif %}</td></tr>
         {% endif %}
       </tbody>
     </table>
@@ -128,17 +131,135 @@
   </section>
   {% endif %}
 
-  {% if lattice.root_norms is not none %}
   <section aria-labelledby="roots">
     <h2 id="roots">Roots</h2>
+    <p><a href="{{ root }}collection/root-lattices.html">Root lattices</a> defines the set \(\Phi(L)\) of the roots of \(L\), the sublattice \(\mathbb{Z}\Phi(L)\) that the roots generate, the poset \(P(L)\) and its maximum \(R(L)\).</p>
+    {% set span = lattice.root_span %}
+    {% set full_rank = lattice.root_span_rank == lattice.rank %}
     <table class="facts">
       <tbody>
+        {% if lattice.is_root_lattice is none %}
+        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>not decided</td></tr>
+        <tr><th scope="row">\(\mathbb{Z}\Phi(L)\)</th><td>not decided: the record does not state roots that generate it</td></tr>
+        <tr><th scope="row">Maximum \(R(L)\) of \(P(L)\)</th><td>not decided</td></tr>
+        {% else %}
+        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ yes_no(lattice.is_root_lattice) }}</td></tr>
+        {% if lattice.root_norms is not none %}
         <tr><th scope="row">\(L = \mathbb{Z}\Phi_S(L)\) for</th><td>\(S = {{ set_tex(lattice.root_norms) }}\)</td></tr>
+        {% endif %}
+        {% if lattice.definite %}
+        <tr><th scope="row">Number of roots</th><td>{{ 2 * (lattice.positive_roots | length) }}</td></tr>
+        {% endif %}
+        <tr><th scope="row">\(\mathbb{Z}\Phi(L)\)</th><td>
+          {%- if span_summands -%}
+          \(\cong\) {% for summand in span_summands %}<a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ summand.latex }}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}
+          {%- elif span_name is none -%}
+          The record does not state a lattice that is isometric to it.
+          {%- elif span_name[1] in ("L", "0") -%}
+          \({{ span_name[1] }}\)
+          {%- else -%}
+          \(\cong {{ span_name[1] }}\)
+          {%- endif -%}
+        </td></tr>
+        <tr><th scope="row">Rank of \(\mathbb{Z}\Phi(L)\)</th><td>{{ lattice.root_span_rank }}</td></tr>
+        <tr><th scope="row">\([L : \mathbb{Z}\Phi(L)]\)</th><td>{% if full_rank %}{{ lattice.root_span_index }}{% else %}infinite: the rank of \(\mathbb{Z}\Phi(L)\) is less than the rank of \(L\){% endif %}</td></tr>
+        <tr><th scope="row">\(\mathbb{Z}\Phi(L)\) is primitive in \(L\)</th><td>
+          {%- if lattice.root_span_is_primitive -%}
+          yes
+          {%- elif full_rank -%}
+          no: \(L / \mathbb{Z}\Phi(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\)
+          {%- else -%}
+          no: \(M / \mathbb{Z}\Phi(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\) for \(M = L \cap (\mathbb{Z}\Phi(L) \otimes \mathbb{Q})\)
+          {%- endif -%}
+        </td></tr>
+        <tr><th scope="row">Maximum \(R(L)\) of \(P(L)\)</th><td>{% if lattice.root_span_is_primitive %}\(\mathbb{Z}\Phi(L)\){% else %}none: \(P(L)\) has a maximum only when \(\mathbb{Z}\Phi(L)\) is primitive in \(L\){% endif %}</td></tr>
+        <tr><th scope="row">Proof</th><td>
+          {%- if lattice.definite -%}
+          The form is definite, so \(\Phi(L)\) is finite. The build lists \(\Phi(L)\).
+          {%- elif not span.roots -%}
+          The notes prove that \(L\) has no roots.
+          {%- elif lattice.is_root_lattice -%}
+          The build checks that each row of the table of roots below is a root. The rows generate \(L\).
+          {%- else -%}
+          The build checks that each row of the table of roots below is a root. The notes prove that each root of \(L\) is in the sublattice that the rows generate.
+          {%- endif -%}
+        </td></tr>
+        {% endif %}
       </tbody>
     </table>
-    <p><a href="{{ root }}collection/root-lattices.html">Root lattices</a> defines \(\Phi_S(L)\).</p>
+    {% if lattice.definite and lattice.definite.roots %}
+    {% set several = lattice.definite.roots | length > 1 %}
+    <h3>Components of \(\Phi(L)\)</h3>
+    <p>\(\Phi(L)\) is the union of its irreducible components \(\Phi_c\), and two roots in different components are orthogonal. \(Q(\Phi_c)\) is the sublattice that \(\Phi_c\) generates, and \(\mathbb{Z}\Phi(L)\) is the orthogonal sum of the \(Q(\Phi_c)\).</p>
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Component</th><th scope="col">Type</th><th scope="col">Values of \(b(r, r)\)</th><th scope="col" class="numeric">Number of roots</th><th scope="col">\(Q(\Phi_c)\)</th></tr>
+        </thead>
+        <tbody>
+          {% for component in lattice.definite.roots %}
+          <tr><td>\(\Phi_{ {{- loop.index -}} }\)</td><td>\({{ root_system_tex((component.type,)) }}\)</td><td>\({{ set_tex(component_norms(lattice, component)) }}\)</td><td class="numeric">{{ root_count(component.type) }}</td><td>\(\cong {{ component_lattice_tex(component) }}\)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h3>Simple roots</h3>
+    <p>
+      Each row states one simple root in the basis \({{ block_tex(range(1, lattice.rank + 1) | list) }}\) of the record.
+      {% if several %}\(\alpha^{(c)}_j\) is simple root \(j\) of the component \(\Phi_c\).{% endif %}
+      The simple roots of a component are numbered as SageMath's <code>CartanMatrix</code> numbers them.
+      The rows are a basis of \(\mathbb{Z}\Phi(L)\): they are the matrix of the embedding into \(L\) of the orthogonal sum of the \(Q(\Phi_c)\).
+    </p>
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Simple root</th><th scope="col">In the basis of the record</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
+        </thead>
+        <tbody>
+          {% for component in lattice.definite.roots %}
+          {% set c = loop.index %}
+          {% set norms = component_norms(lattice, component) %}
+          {% for simple_root in component.simple_roots %}
+          <tr><td>\(\alpha{% if several %}^{({{ c }})}{% endif %}_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(simple_root) }}\)</td><td class="numeric">\({{ rational_tex(norms[loop.index0]) }}\)</td></tr>
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if span and span.roots %}
+    <h3>Roots that generate \(\mathbb{Z}\Phi(L)\)</h3>
+    <p>Each row states one root in the basis \({{ block_tex(range(1, lattice.rank + 1) | list) }}\) of the record.{% if lattice.is_root_lattice %} The rows are a basis of \(L\).{% endif %}</p>
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Root</th><th scope="col">In the basis of the record</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
+        </thead>
+        <tbody>
+          {% for generating_root in span.roots %}
+          <tr><td>\(r_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(generating_root) }}\)</td><td class="numeric">\({{ rational_tex(lattice.spanning_roots[generating_root]) }}\)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if span_images %}
+    <h3>Embedding of the orthogonal summands</h3>
+    <p>The isometric embedding of the orthogonal sum of the summands into \(L\) has the image \(\mathbb{Z}\Phi(L)\). Each row states the image of one basis vector of the record of a summand.</p>
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Summand</th><th scope="col">Basis vector of the summand</th><th scope="col">Image in \(L\)</th></tr>
+        </thead>
+        <tbody>
+          {% for summand, j, image in span_images %}
+          <tr><td><a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ summand.latex }}\)</td><td>\(e_{ {{- j -}} }\)</td><td>\({{ combination_tex(image) }}\)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
   </section>
-  {% endif %}
 
   {% if prose | trim %}
   <section aria-labelledby="notes">

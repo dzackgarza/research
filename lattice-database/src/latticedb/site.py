@@ -25,8 +25,22 @@ from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescap
 from markupsafe import Markup, escape
 from pydantic import BaseModel, Field
 
+from latticedb import arithmetic, root_systems
+from latticedb.arithmetic import Vector
 from latticedb.corpus import Entry, load
-from latticedb.model import DefiniteData, HyperbolicData, IndefiniteData, IntegralData, Lattice, Provenance, Record, Reference, Related
+from latticedb.model import (
+    DefiniteData,
+    HyperbolicData,
+    IndefiniteData,
+    IntegralData,
+    Lattice,
+    Provenance,
+    Record,
+    Reference,
+    Related,
+    RootSpan,
+    RootSystemComponent,
+)
 
 type Cell = str | int | float | bool | None | list[str]
 type Row = dict[str, Cell]
@@ -119,6 +133,94 @@ def set_tex(values: tuple[Fraction, ...]) -> str:
     return f"\\{{{', '.join(rational_tex(value) for value in sorted(set(values)))}\\}}"
 
 
+def combination_tex(coordinates: Vector, symbol: str = "e") -> str:
+    """`e_{1} - 2e_{3}` for the coordinates (1, 0, -2); `0` for the zero vector."""
+    terms = []
+    for index, coefficient in enumerate(coordinates, start=1):
+        if coefficient == 0:
+            continue
+        sign = "-" if coefficient < 0 else "+"
+        size = "" if abs(coefficient) == 1 else str(abs(coefficient))
+        terms.append((sign, f"{size}{symbol}_{{{index}}}"))
+    if not terms:
+        return "0"
+    first_sign, first = terms[0]
+    return ("-" if first_sign == "-" else "") + first + "".join(f" {sign} {term}" for sign, term in terms[1:])
+
+
+def _runs(names: list[str]) -> list[tuple[str, int]]:
+    return [(name, names.count(name)) for name in dict.fromkeys(names)]
+
+
+def component_lattice(component: RootSystemComponent) -> tuple[str, int, Fraction]:
+    """`(letter, rank, k)`: the root lattice of the component is the standard lattice of that letter and rank with the form `k b`."""
+    letter, rank, factor = root_systems.root_lattice(component.type)
+    return letter, rank, factor * component.scale
+
+
+def component_lattice_tex(component: RootSystemComponent) -> str:
+    """`E_{8}`, `D_{4}(2)`, `\\mathbb{Z}^{10}`, and `\\langle 4 \\rangle` for `A_1(2)`."""
+    letter, rank, scale = component_lattice(component)
+    if (letter, rank) == ("A", 1):
+        return f"\\langle {rational_tex(2 * scale)} \\rangle"
+    name = f"\\mathbb{{Z}}^{{{rank}}}" if letter == "Z" else f"{letter}_{{{rank}}}"
+    return name if scale == 1 else f"{name}({rational_tex(scale)})"
+
+
+def component_lattice_text(component: RootSystemComponent) -> str:
+    """`E8`, `D4(2)`, `Z^10`, and `<4>` for `A1(2)`."""
+    letter, rank, scale = component_lattice(component)
+    if (letter, rank) == ("A", 1):
+        return f"<{2 * scale}>"
+    name = f"Z^{rank}" if letter == "Z" else f"{letter}{rank}"
+    return name if scale == 1 else f"{name}({scale})"
+
+
+def root_span_tex(components: tuple[RootSystemComponent, ...]) -> str:
+    """`D_{4}(2)^{2} \\oplus \\langle 4 \\rangle`: the orthogonal sum of the root lattices of the components; `0` for no component."""
+    runs = _runs([component_lattice_tex(component) for component in components])
+    return " \\oplus ".join(f"{name}^{{{count}}}" if count > 1 else name for name, count in runs) or "0"
+
+
+def root_span_text(components: tuple[RootSystemComponent, ...]) -> str:
+    runs = _runs([component_lattice_text(component) for component in components])
+    return " + ".join(f"{name}^{count}" if count > 1 else name for name, count in runs) or "0"
+
+
+def component_norms(lattice: Lattice, component: RootSystemComponent) -> tuple[Fraction, ...]:
+    """The values `b(r, r)` on the roots of the component: each root is the image of a simple root under the Weyl group."""
+    return tuple(arithmetic.pairing(lattice.gram_tensor, r, r) for r in component.simple_roots)
+
+
+def orthogonal_blocks(lattice: Lattice) -> list[list[int]]:
+    """The finest partition of the indices $1, \\dots, n$ such that $b(e_i, e_j) = 0$ for $i$, $j$ in different parts.
+
+    The parts are the connected components of the graph on the basis vectors with an edge where $b(e_i, e_j) \\neq 0$.
+    The record fixes the orthogonal decomposition of $L$ into the sublattices that the parts generate.
+    """
+    blocks: list[list[int]] = []
+    for index, components_row in enumerate(lattice.gram_tensor, start=1):
+        linked = [block for block in blocks if any(components_row[other - 1] != 0 for other in block)]
+        blocks = [block for block in blocks if block not in linked] + [sorted([*(other for block in linked for other in block), index])]
+    return sorted(blocks)
+
+
+def block_tex(block: list[int], symbol: str = "e") -> str:
+    """`e_{3}, \\dots, e_{10}` for the indices 3 to 10; each vector for fewer than four indices or a block with a gap."""
+    if len(block) > 3 and block[-1] - block[0] == len(block) - 1:
+        return f"{symbol}_{{{block[0]}}}, \\dots, {symbol}_{{{block[-1]}}}"
+    return ", ".join(f"{symbol}_{{{index}}}" for index in block)
+
+
+def summand_images(lattice: Lattice, lattices: dict[str, Lattice]) -> list[tuple[Lattice, int, Vector]]:
+    """`(M, j, x)` for each row `x` of `root_span.embedding`: the embedding sends the basis vector $e_j$ of the summand record `M` to `x`."""
+    span = lattice.root_span
+    if span is None or span.summands is None or span.embedding is None:
+        return []
+    sources = [(lattices[tag], j) for tag in span.summands for j in range(1, lattices[tag].rank + 1)]
+    return [(summand, j, image) for (summand, j), image in zip(sources, span.embedding, strict=True)]
+
+
 def inline_markup(text: str) -> Markup:
     """HTML for one line of copy, in which backticks mark code and dollar signs mark TeX."""
     code = re.sub(r"`([^`]+)`", r"<code>\1</code>", str(escape(text)))
@@ -139,7 +241,11 @@ PROPERTY_MEANINGS = {
     "p-elementary": "Integral and nondegenerate, with discriminant group $(\\mathbb{Z}/p)^a$ for a prime $p$ and $a \\geq 1$. The label states the prime: `2-elementary`.",
     "root lattice": (
         "$L = \\mathbb{Z}\\Phi(L)$, where $\\Phi(L)$ is the set of roots of $L$: the primitive $r$ with $b(r, r) \\neq 0$ and $s_r \\in O(L)$. "
-        "A lattice has the label when the build finds roots that generate it. A lattice without the label is not decided."
+        "The record proves it: the build lists $\\Phi(L)$ for a definite lattice, and for another lattice it checks that each row of `root_span.roots` is a root."
+    ),
+    "not a root lattice": (
+        "$L \\neq \\mathbb{Z}\\Phi(L)$. The page of the lattice states $\\mathbb{Z}\\Phi(L)$ and its index. "
+        "A lattice with neither `root lattice` nor this label is not decided."
     ),
     "degenerate": "Some nonzero $x$ has $b(x, y) = 0$ for every $y$.",
     "hyperbolic": "Nondegenerate of rank at least 2, with signature $(1, n)$ or $(n, 1)$.",
@@ -163,8 +269,11 @@ def properties(lattice: Lattice) -> list[str]:
         prime = elementary_prime(lattice.integral.discriminant_group or ())
         if prime is not None:
             found.append(f"{prime}-elementary")
-    if lattice.is_root_lattice:
-        found.append("root lattice")
+    match lattice.is_root_lattice:
+        case True:
+            found.append("root lattice")
+        case False:
+            found.append("not a root lattice")
     if not lattice.is_nondegenerate:
         found.append("degenerate")
     if lattice.is_hyperbolic:
@@ -176,11 +285,45 @@ def properties(lattice: Lattice) -> list[str]:
     return found
 
 
-def row(lattice: Lattice) -> Row:
-    """The row of a lattice in `lattices.json`."""
+def root_span_name(lattice: Lattice, lattices: dict[str, Lattice]) -> tuple[str, str] | None:
+    """A lattice isometric to $\\mathbb{Z}\\Phi(L)$, as text and as TeX; `None` when the record does not state one.
+
+    Definite lattice: the orthogonal sum of the root lattices of the components
+    of `definite.roots`. Other lattice: the orthogonal sum of the records of
+    `root_span.summands`, `0` when the lattice has no roots, and `L` when the
+    rows of `root_span.roots` generate `L`.
+    """
+    if lattice.definite is not None and lattice.definite.roots is not None:
+        return root_span_text(lattice.definite.roots), root_span_tex(lattice.definite.roots)
+    span = lattice.root_span
+    if span is None:
+        return None
+    if span.summands is not None:
+        summands = [lattices[tag] for tag in span.summands]
+        return " + ".join(summand.name for summand in summands), " \\oplus ".join(summand.latex for summand in summands)
+    if not span.roots:
+        return "0", "0"
+    return ("L", "L") if lattice.is_root_lattice else None
+
+
+def root_maximum(lattice: Lattice) -> str:
+    """The maximum $R(L)$ of $P(L)$. It exists exactly when $\\mathbb{Z}\\Phi(L)$ is primitive in $L$, and it is then $\\mathbb{Z}\\Phi(L)$."""
+    match lattice.root_span_is_primitive:
+        case True:
+            return "ZΦ(L)"
+        case False:
+            return "none"
+        case None:
+            return "not decided"
+
+
+def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
+    """The row of a lattice in `lattices.json`. `lattices` maps each tag of the corpus to its lattice."""
     integral, definite = lattice.integral, lattice.definite
     group = integral.discriminant_group if integral else None
     order = definite.automorphism_group_order if definite else None
+    phi = tuple(component.type for component in definite.roots) if definite and definite.roots is not None else None
+    span_name = root_span_name(lattice, lattices)
     return {
         "tag": lattice.tag,
         "url": f"tag/{lattice.tag}.html",
@@ -205,6 +348,13 @@ def row(lattice: Lattice) -> Row:
         "automorphism_group_order_value": float(order) if order is not None else None,
         "root_system": " ".join(definite.root_system) if definite and definite.root_system is not None else None,
         "root_system_tex": root_system_tex(definite.root_system) if definite and definite.root_system else None,
+        "phi_type": " ".join(phi) if phi is not None else None,
+        "phi_type_tex": (root_system_tex(phi) or "\\varnothing") if phi is not None else None,
+        "root_span": span_name[0] if span_name else None,
+        "root_span_tex": span_name[1] if span_name else None,
+        "root_span_rank": lattice.root_span_rank,
+        "root_span_index": lattice.root_span_index if lattice.root_span_rank == lattice.rank else None,
+        "root_maximum": root_maximum(lattice),
         "families": list(lattice.families),
     }
 
@@ -220,7 +370,8 @@ def _satisfies(record: Row, key: str, required: int | str | bool | list[str]) ->
 
 
 def collections(directory: Path, entries: tuple[Entry, ...]) -> tuple[CollectionPage, ...]:
-    rows = {entry.lattice.tag: row(entry.lattice) for entry in entries}
+    lattices = {entry.lattice.tag: entry.lattice for entry in entries}
+    rows = {tag: row(lattice, lattices) for tag, lattice in lattices.items()}
     keys = set(next(iter(rows.values())))
     pages = []
     for path in sorted(directory.glob("*.md")):
@@ -263,8 +414,10 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     yield "Every lattice", None, Lattice
     yield "Integral lattice", "integral", IntegralData
     yield "Definite lattice", "definite", DefiniteData
+    yield "Component of the root system of a definite lattice", "definite.roots[]", RootSystemComponent
     yield "Indefinite lattice", "indefinite", IndefiniteData
     yield "Hyperbolic lattice", "hyperbolic", HyperbolicData
+    yield "Roots of a lattice that is not definite", "root_span", RootSpan
     yield "Related lattice", "related[]", Related
     yield "Reference", "references[]", Reference
     yield "Provenance", "provenance", Provenance
@@ -275,6 +428,7 @@ def build(root: Path, target: Path) -> int:
     entries = load(root / "lattices")
     pages = collections(root / "pages", entries)
     by_tag = {entry.lattice.tag: entry for entry in entries}
+    lattices = {tag: entry.lattice for tag, entry in by_tag.items()}
     environment = Environment(loader=PackageLoader("latticedb"), autoescape=select_autoescape(["html", "j2"]), undefined=StrictUndefined, trim_blocks=True, lstrip_blocks=True)
     environment.filters["inline_markup"] = inline_markup
     environment.globals.update(
@@ -285,6 +439,11 @@ def build(root: Path, target: Path) -> int:
         theta_tex=theta_tex,
         root_system_tex=root_system_tex,
         set_tex=set_tex,
+        combination_tex=combination_tex,
+        component_lattice_tex=component_lattice_tex,
+        component_norms=component_norms,
+        block_tex=block_tex,
+        root_count=root_systems.root_count,
         properties=properties,
         definiteness_label=DEFINITENESS_LABEL,
         collections=pages,
@@ -312,6 +471,10 @@ def build(root: Path, target: Path) -> int:
                 prose=prose[index],
                 components_text=components.replace('"', ""),
                 related=[(by_tag[related.tag].lattice, related.relation) for related in lattice.related],
+                span_name=root_span_name(lattice, lattices),
+                span_summands=[lattices[tag] for tag in lattice.root_span.summands] if lattice.root_span and lattice.root_span.summands else [],
+                span_images=summand_images(lattice, lattices),
+                blocks=orthogonal_blocks(lattice),
                 previous=entries[index - 1].lattice if index > 0 else None,
                 following=entries[index + 1].lattice if index + 1 < len(entries) else None,
             )
@@ -325,5 +488,5 @@ def build(root: Path, target: Path) -> int:
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))
     (target / "database.html").write_text(environment.get_template("database.html.j2").render(root="./"))
     (target / "fields.html").write_text(environment.get_template("fields.html.j2").render(root="./", models=models, property_meanings=PROPERTY_MEANINGS))
-    (target / "lattices.json").write_text(json.dumps({"rows": [row(entry.lattice) for entry in entries]}, separators=(",", ":")))
+    (target / "lattices.json").write_text(json.dumps({"rows": [row(entry.lattice, lattices) for entry in entries]}, separators=(",", ":")))
     return len(entries)

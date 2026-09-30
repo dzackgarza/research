@@ -457,8 +457,25 @@ table {
   white-space: nowrap;
 }
 
+/* The capitals and the spacing of a column heading do not apply to the formula in it. */
+.member-table thead th mjx-container,
+.field-table thead th mjx-container {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
 .member-table td {
   white-space: nowrap;
+}
+
+/* A table of vectors is as wide as its columns, so that a value stays next to the vector that it belongs to. */
+.member-table.vector-table {
+  width: auto;
+}
+
+.vector-table th,
+.vector-table td {
+  padding-right: 2.5rem;
 }
 
 .member-table td.member-properties {
