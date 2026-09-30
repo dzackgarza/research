@@ -1,0 +1,29 @@
+# lattice-database — a catalogue of lattices, one Markdown record per lattice, and the site built from it.
+#
+# Every recipe calls the `latticedb` command line (src/latticedb/cli.py), which owns the
+# validation of the records, the build and the deployment. The QC gates of the research
+# repository cover this directory; this file adds no gate of its own.
+
+# List available recipes
+default:
+    @just --list
+
+# Validate every record and build the site into _site/
+build:
+    uv run latticedb build
+
+# Build the site and serve it at http://lattice-database.localhost/
+deploy:
+    uv run latticedb deploy
+
+# Print the tag for the next new record
+tag:
+    uv run latticedb next-tag
+
+# Run the tests of the schema and of the build
+test:
+    uv run pytest
+
+# Write the initial records into an empty lattices/ directory (one-time bootstrap; needs SageMath)
+seed:
+    "${SAGE_BIN}" -python scripts/seed.py

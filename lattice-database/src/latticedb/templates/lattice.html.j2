@@ -1,0 +1,176 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ lattice.name }} · {% endblock %}
+{% macro yes_no(value) %}{{ "yes" if value else "no" }}{% endmacro %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker">Tag <span class="tag">{{ lattice.tag }}</span></p>
+    <h1>\({{ lattice.latex }}\)</h1>
+    <p class="names">{{ lattice.name }}{% for alias in lattice.aliases %}<span class="separator">·</span>{{ alias }}{% endfor %}</p>
+    <ul class="chips" aria-label="Properties and families">
+      <li><a href="{{ root }}database.html?definiteness={{ definiteness_label[lattice.definiteness] | urlencode }}">{{ definiteness_label[lattice.definiteness] }}</a></li>
+      {% for property in properties(lattice) %}
+      <li><a href="{{ root }}database.html?property={{ property | urlencode }}">{{ property }}</a></li>
+      {% endfor %}
+      {% for family in lattice.families %}
+      <li class="family"><a href="{{ root }}database.html?family={{ family | urlencode }}">{{ family }}</a></li>
+      {% endfor %}
+    </ul>
+  </header>
+
+  <section aria-labelledby="invariants">
+    <h2 id="invariants">Invariants</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">Rank</th><td>{{ lattice.rank }}</td></tr>
+        <tr><th scope="row">Signature \((n_+, n_-)\)</th><td>({{ lattice.signature[0] }}, {{ lattice.signature[1] }})</td></tr>
+        {% if lattice.nullity %}
+        <tr><th scope="row">Rank of the radical</th><td>{{ lattice.nullity }}</td></tr>
+        {% endif %}
+        <tr><th scope="row">Determinant</th><td>\({{ rational_tex(lattice.determinant) }}\)</td></tr>
+        <tr><th scope="row">Definiteness</th><td>{{ definiteness_label[lattice.definiteness] }}</td></tr>
+        <tr><th scope="row">Integer values</th><td>{{ yes_no(lattice.integral is not none) }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="gram-tensor">
+    <h2 id="gram-tensor">Gram tensor</h2>
+    <p>The components \(b(e_i, e_j)\) of the Gram tensor \(b\) in the basis \(e_1, \dots, e_{ {{- lattice.rank -}} }\) of the record.</p>
+    <div class="table-scroll">
+      <table class="components">
+        <thead>
+          <tr><td></td>{% for j in range(1, lattice.rank + 1) %}<th scope="col">\(e_{ {{- j -}} }\)</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for components_row in lattice.gram_tensor %}
+          <tr><th scope="row">\(e_{ {{- loop.index -}} }\)</th>{% for value in components_row %}<td{% if value == 0 %} class="zero"{% endif %}>{{ value }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="copy-block">
+      <pre id="components-text">{{ components_text }}</pre>
+      <button type="button" data-copy="components-text">Copy</button>
+    </div>
+  </section>
+
+  {% if lattice.integral %}
+  <section aria-labelledby="integral">
+    <h2 id="integral">Integral lattice</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">Parity</th><td>{{ lattice.integral.parity }}</td></tr>
+        {% if lattice.integral.discriminant_group is not none %}
+        <tr><th scope="row">Discriminant group</th><td>\({{ group_tex(lattice.integral.discriminant_group) }}\)</td></tr>
+        <tr><th scope="row">Unimodular</th><td>{{ yes_no(lattice.is_unimodular) }}</td></tr>
+        {% endif %}
+        {% if lattice.integral.genus_symbol %}
+        <tr><th scope="row">Genus symbol</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if lattice.definite %}
+  <section aria-labelledby="definite">
+    <h2 id="definite">Definite lattice</h2>
+    {% if lattice.definiteness == "negative_definite" %}
+    <p>The form is negative definite. The invariants below are those of \(-b\).</p>
+    {% endif %}
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">Minimum of \(|b(x, x)|\), \(x \neq 0\)</th><td>\({{ rational_tex(lattice.definite.minimum) }}\)</td></tr>
+        {% if lattice.definite.kissing_number is not none %}
+        <tr><th scope="row">Kissing number</th><td>{{ lattice.definite.kissing_number }}</td></tr>
+        {% endif %}
+        {% if lattice.definite.automorphism_group_order is not none %}
+        <tr><th scope="row">Order of the isometry group</th><td>\({{ lattice.definite.automorphism_group_order }} = {{ factorisation_tex(lattice.definite.automorphism_group_order) }}\)</td></tr>
+        {% endif %}
+        {% if lattice.definite.root_system is not none %}
+        <tr><th scope="row">Root system of the \(x\) with \(|b(x, x)| = 2\)</th><td>{% if lattice.definite.root_system %}\({{ root_system_tex(lattice.definite.root_system) }}\){% else %}empty{% endif %}</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+    {% if lattice.definite.theta_series is not none %}
+    <h3>Theta series</h3>
+    <p>The coefficient of \(q^k\) is the number of \(x \in L\) with \(|b(x, x)| = k\).</p>
+    \[ \sum_{x \in L} q^{|b(x, x)|} = {{ theta_tex(lattice.definite.theta_series) }} \]
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if lattice.indefinite %}
+  <section aria-labelledby="indefinite">
+    <h2 id="indefinite">Indefinite lattice</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">Isotropic: \(b(x, x) = 0\) for some \(x \neq 0\)</th><td>{{ yes_no(lattice.indefinite.isotropic) }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if lattice.hyperbolic %}
+  <section aria-labelledby="hyperbolic">
+    <h2 id="hyperbolic">Hyperbolic lattice</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">Reflective: the reflections generate a subgroup of finite index in the isometry group</th><td>{{ yes_no(lattice.hyperbolic.reflective) }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if prose | trim %}
+  <section aria-labelledby="notes">
+    <h2 id="notes">Notes</h2>
+    <div class="prose">{{ prose }}</div>
+  </section>
+  {% endif %}
+
+  {% if related %}
+  <section aria-labelledby="related">
+    <h2 id="related">Related lattices</h2>
+    <ul class="related-list">
+      {% for other, relation in related %}
+      <li><a class="tag" href="{{ root }}tag/{{ other.tag }}.html">{{ other.tag }}</a> <span class="tag-name">\({{ other.latex }}\)</span> <span class="relation">{{ relation }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if lattice.references %}
+  <section aria-labelledby="references">
+    <h2 id="references">References</h2>
+    <ol class="reference-list">
+      {% for reference in lattice.references %}
+      <li>{{ reference.citation }}{% if reference.url %} <a href="{{ reference.url }}">{{ reference.url }}</a>{% endif %}</li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="provenance">
+    <h2 id="provenance">Provenance</h2>
+    <p>{{ lattice.provenance.source }}</p>
+    <table class="facts">
+      <tbody>
+        {% if lattice.provenance.url %}
+        <tr><th scope="row">Source record</th><td><a href="{{ lattice.provenance.url }}">{{ lattice.provenance.url }}</a></td></tr>
+        {% endif %}
+        {% if lattice.provenance.computed_with %}
+        <tr><th scope="row">Computed with</th><td>{{ lattice.provenance.computed_with }}</td></tr>
+        {% endif %}
+        <tr><th scope="row">Record</th><td><code>lattices/{{ lattice.tag }}.md</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <nav class="pager" aria-label="Adjacent tags">
+    {% if previous %}<a rel="prev" href="{{ root }}tag/{{ previous.tag }}.html"><span class="pager-label">Previous</span><span class="tag">{{ previous.tag }}</span> \({{ previous.latex }}\)</a>{% else %}<span></span>{% endif %}
+    {% if following %}<a rel="next" href="{{ root }}tag/{{ following.tag }}.html"><span class="pager-label">Next</span><span class="tag">{{ following.tag }}</span> \({{ following.latex }}\)</a>{% endif %}
+  </nav>
+</article>
+{% endblock %}

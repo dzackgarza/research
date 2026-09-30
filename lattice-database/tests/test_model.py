@@ -1,5 +1,6 @@
 """A record validates exactly when its declarations agree with its Gram tensor."""
 
+from collections.abc import Callable
 from fractions import Fraction
 
 import pytest
@@ -59,7 +60,7 @@ def hyperbolic_plane() -> dict[str, Yaml]:
 
 
 def a2_dual() -> dict[str, Yaml]:
-    """The dual of the root lattice A2: the form takes the value 2/3, so it is not integral."""
+    """The dual lattice of the root lattice A2:the form takes the value 2/3, so it is not integral."""
     return {
         "tag": "0003",
         "name": "A2*",
@@ -137,11 +138,11 @@ def error_types(record: dict[str, Yaml]) -> set[str]:
 
 
 @pytest.mark.parametrize("record", [e8, hyperbolic_plane, a2_dual, affine_a1, binary_form_of_determinant_19, anisotropic_binary])
-def test_consistent_record_is_accepted(record):
+def test_consistent_record_is_accepted(record: Callable[[], dict[str, Yaml]]) -> None:
     Lattice.model_validate(record())
 
 
-def test_derived_properties_follow_from_the_record():
+def test_derived_properties_follow_from_the_record() -> None:
     assert Lattice.model_validate(e8()).is_unimodular
     assert Lattice.model_validate(a2_dual()).determinant == Fraction(1, 3)
     assert not Lattice.model_validate(a2_dual()).is_unimodular
@@ -210,11 +211,11 @@ def test_derived_properties_follow_from_the_record():
         (with_block(e8(), "definite", root_system=["D3"]), "string_pattern_mismatch"),
     ],
 )
-def test_inconsistent_record_is_rejected_for_its_reason(record, expected):
+def test_inconsistent_record_is_rejected_for_its_reason(record: dict[str, Yaml], expected: str) -> None:
     assert expected in error_types(record)
 
 
-def test_meyer_theorem_rejects_an_anisotropic_claim_in_rank_five():
+def test_meyer_theorem_rejects_an_anisotropic_claim_in_rank_five() -> None:
     record = hyperbolic_plane() | {
         "rank": 5,
         "gram_tensor": [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, -7]],
@@ -226,6 +227,6 @@ def test_meyer_theorem_rejects_an_anisotropic_claim_in_rank_five():
     assert error_types(record) == {"isotropy_mismatch"}
 
 
-def test_every_problem_of_a_record_is_reported_at_once():
+def test_every_problem_of_a_record_is_reported_at_once() -> None:
     record = e8() | {"determinant": 3, "signature": [4, 4], "definiteness": "indefinite"}
     assert error_types(record) == {"determinant_mismatch", "signature_mismatch", "definiteness_mismatch"}

@@ -1,0 +1,32 @@
+{% extends "base.html.j2" %}
+{% block title %}Fields · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <h1>Fields</h1>
+  <p class="lede">
+    A record is the YAML front matter of <code>lattices/&lt;TAG&gt;.md</code>. The build checks each declaration against the
+    components of the Gram tensor, and it rejects a record that is not well defined. An invariant that exists only under a
+    hypothesis is in the block for that hypothesis, and a block on a lattice that does not satisfy the hypothesis is an error.
+  </p>
+</header>
+{% for heading, key, description, model_fields in models %}
+<section aria-labelledby="fields-{{ loop.index }}">
+  <h2 id="fields-{{ loop.index }}">{{ heading }}{% if key %} <code>{{ key }}</code>{% endif %}</h2>
+  {% if description %}<p>{{ description | inline_markup }}</p>{% endif %}
+  <div class="table-scroll">
+    <table class="field-table">
+      <thead><tr><th scope="col">Field</th><th scope="col">Required</th><th scope="col">Meaning</th></tr></thead>
+      <tbody>
+        {% for name, field in model_fields %}
+        <tr>
+          <th scope="row"><code>{{ name }}</code></th>
+          <td>{{ "yes" if field.is_required() else "no" }}</td>
+          <td>{{ field.description | inline_markup }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

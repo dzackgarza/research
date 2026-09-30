@@ -1,0 +1,43 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<header class="page-heading">
+  <h1>Lattice Database</h1>
+  <p class="lede">
+    A catalogue of {{ total }} lattices of rank {{ by_rank | first }} to {{ by_rank | last }}. A lattice here is a free
+    \(\mathbb{Z}\)-module \(L\) of finite rank with a symmetric bilinear form \(b \colon L \times L \to \mathbb{Q}\).
+    The form can be definite, indefinite or degenerate, and its values need not be integers.
+    Each lattice has a permanent tag and one page.
+  </p>
+</header>
+
+<form class="search-form" action="{{ root }}database.html" method="get" role="search">
+  <label for="search-input">Search the database</label>
+  <div class="search-row">
+    <input id="search-input" type="search" name="q" placeholder="E8, laminated, 2-elementary, (1, 17), …" autocomplete="off">
+    <button type="submit">Search</button>
+  </div>
+  <p class="form-note">The <a href="{{ root }}database.html">database</a> filters and sorts all records by rank, signature, determinant, definiteness and the other invariants.</p>
+</form>
+
+<section aria-labelledby="by-rank">
+  <h2 id="by-rank">By rank</h2>
+  <ol class="rank-grid">
+    {% for rank, entries in by_rank.items() %}
+    <li><a href="{{ root }}database.html?rank={{ rank }}"><span class="rank-number">{{ rank }}</span><span class="rank-count">{{ entries | length }} lattices</span></a></li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section aria-labelledby="collections">
+  <h2 id="collections">Collections</h2>
+  <ul class="collection-list">
+    {% for page in collections %}
+    <li>
+      <a href="{{ root }}collection/{{ page.slug }}.html">{{ page.collection.title | inline_markup }}</a>
+      <span class="count">{{ page.members | length }}</span>
+      <p>{{ page.collection.summary | inline_markup }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

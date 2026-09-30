@@ -1,0 +1,35 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ page.collection.title | replace("$", "") }} · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <p class="kicker">Collection</p>
+  <h1>{{ page.collection.title | inline_markup }}</h1>
+  <p class="lede">{{ page.collection.summary | inline_markup }}</p>
+</header>
+<div class="prose">{{ prose }}</div>
+<section aria-labelledby="members">
+  <h2 id="members">{{ page.members | length }} lattices</h2>
+  {% if query %}
+  <p class="form-note"><a href="{{ root }}database.html?{{ query }}">Open this selection in the database</a> to sort it and to filter it more.</p>
+  {% endif %}
+  <div class="table-scroll">
+    <table class="member-table">
+      <thead>
+        <tr><th scope="col">Tag</th><th scope="col">Lattice</th><th scope="col" class="numeric">Rank</th><th scope="col">Signature</th><th scope="col" class="numeric">Determinant</th><th scope="col">Properties</th></tr>
+      </thead>
+      <tbody>
+        {% for entry in page.members %}
+        <tr>
+          <td><a class="tag" href="{{ root }}tag/{{ entry.lattice.tag }}.html">{{ entry.lattice.tag }}</a></td>
+          <td>\({{ entry.lattice.latex }}\)</td>
+          <td class="numeric">{{ entry.lattice.rank }}</td>
+          <td>({{ entry.lattice.signature[0] }}, {{ entry.lattice.signature[1] }})</td>
+          <td class="numeric">{{ entry.lattice.determinant }}</td>
+          <td class="member-properties">{% for property in properties(entry.lattice) %}<span class="chip">{{ property }}</span> {% endfor %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

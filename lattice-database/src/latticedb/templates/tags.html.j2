@@ -1,0 +1,25 @@
+{% extends "base.html.j2" %}
+{% block title %}Tags · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <h1>Tags</h1>
+  <p class="lede">Every lattice of the catalogue, by rank. A tag is permanent: it names the same lattice in every later version.</p>
+  <nav class="rank-jump" aria-label="Rank">
+    {% for rank in by_rank %}<a href="#rank-{{ rank }}">{{ rank }}</a>{% endfor %}
+  </nav>
+</header>
+{% for rank, entries in by_rank.items() %}
+<section aria-labelledby="rank-{{ rank }}">
+  <h2 id="rank-{{ rank }}">Rank {{ rank }}</h2>
+  <ul class="tag-list">
+    {% for entry in entries %}
+    <li>
+      <a class="tag" href="{{ root }}tag/{{ entry.lattice.tag }}.html">{{ entry.lattice.tag }}</a>
+      <span class="tag-name">\({{ entry.lattice.latex }}\)</span>
+      <span class="tag-signature">({{ entry.lattice.signature[0] }}, {{ entry.lattice.signature[1] }})</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endfor %}
+{% endblock %}

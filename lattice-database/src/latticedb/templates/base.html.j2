@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %}Lattice Database</title>
+  <link rel="stylesheet" href="{{ root }}assets/styles.css">
+  {% block head %}{% endblock %}
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+      chtml: { scale: 1.02 },
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+  <script defer src="{{ root }}assets/site.js"></script>
+</head>
+<body data-site-root="{{ root }}">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Site">
+      <a class="site-brand" href="{{ root }}index.html">Lattice Database</a>
+      <div class="site-links">
+        <a href="{{ root }}database.html">Database</a>
+        <a href="{{ root }}tags.html">Tags</a>
+        <a href="{{ root }}index.html#collections">Collections</a>
+        <a href="{{ root }}fields.html">Fields</a>
+      </div>
+      <form class="tag-lookup" data-tag-lookup>
+        <label for="tag-lookup-input">Tag</label>
+        <input id="tag-lookup-input" name="tag" inputmode="latin" autocomplete="off" spellcheck="false" maxlength="4" size="5" placeholder="0042" pattern="[0-9A-Za-z]{4}" required>
+        <button type="submit">Go</button>
+      </form>
+    </nav>
+  </header>
+  <main class="page-layout{% block layout %}{% endblock %}">
+    {% block main %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <p>{{ total }} lattices. Each record is one Markdown file; the schema is on the <a href="{{ root }}fields.html">fields page</a>.</p>
+  </footer>
+</body>
+</html>
