@@ -175,5 +175,4 @@ The `justfile` calls it.
 
 `uv run latticedb check` validates the records and builds nothing.
 
-The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN.
-The record commands compute with PARI/GP through `cypari2` and with `python-flint`, and `provenance.computed_with` names their versions.
+The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`, and `provenance.computed_with` names their versions.
