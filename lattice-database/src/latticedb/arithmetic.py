@@ -8,8 +8,8 @@ All arithmetic is exact (FLINT).
 """
 
 from fractions import Fraction
-from itertools import combinations
-from math import isqrt
+from itertools import combinations, product
+from math import isqrt, lcm
 
 from flint import fmpq, fmpq_mat, fmpz_mat
 
@@ -92,6 +92,68 @@ def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
     diagonal = [abs(int(smith[index, index])) for index in range(len(gram_tensor))]
     assert all(factor != 0 for factor in diagonal), "the cokernel of the correlation is finite only for a nonzero determinant"
     return tuple(factor for factor in diagonal if factor > 1)
+
+
+def _integer_components(gram_tensor: GramTensor) -> tuple[int, tuple[tuple[int, ...], ...]]:
+    """Return `(k, components of k b)` for the least positive integer `k` such that `k b` is integer valued."""
+    scale = lcm(*(value.denominator for row in gram_tensor for value in row))
+    return scale, tuple(tuple(int(value * scale) for value in row) for row in gram_tensor)
+
+
+def _is_root(pairings: tuple[int, ...], norm: int) -> bool:
+    """Whether a primitive `r` with `b(r, e_k) = pairings[k]` and `b(r, r) = norm` is a root of `L`: `norm != 0`, and the reflection `s_r` is in `O(L)`.
+
+    `s_r(x) = x - (2 b(x, r) / b(r, r)) r` is an isometry of `L` tensor `Q`
+    and its own inverse. It maps `L` into `L` exactly when
+    `(2 b(x, r) / b(r, r)) r` is in `L` for every `x` in `L`. `r` is
+    primitive, so that holds exactly when `2 b(x, r) / b(r, r)` is an
+    integer, and by linearity in `x` exactly when it is for each `x = e_k`.
+
+    The condition does not change when `b` is replaced by `k b`, `k != 0`.
+    """
+    return norm != 0 and all(2 * pairing % norm == 0 for pairing in pairings)
+
+
+def generate(vectors: list[tuple[int, ...]], rank: int) -> bool:
+    """Whether the vectors, given by their coordinates in the basis `e_i`, generate `L`.
+
+    The morphism `Z^m -> L` that sends the basis to the vectors is surjective
+    exactly when its cokernel is zero: when its Smith normal form has `rank`
+    invariant factors, all equal to 1.
+    """
+    if len(vectors) < rank:
+        return False
+    smith = fmpz_mat(vectors).snf()
+    return all(abs(int(smith[index, index])) == 1 for index in range(rank))
+
+
+def generating_root_norms(gram_tensor: GramTensor) -> tuple[Fraction, ...] | None:
+    """Return a set `S` of values of `b(r, r)` such that the roots `r` with `b(r, r)` in `S` generate `L`, or `None`.
+
+    The roots are sought among the `r` with coordinates in `{-1, 0, 1}` and at
+    most three nonzero coordinates. A returned `S` proves `L = Z Phi_S(L)`.
+    `None` proves nothing: `L` can have roots that are not of that form.
+
+    Among the sets that these roots prove, the result has the fewest elements,
+    and then the least absolute values.
+    """
+    rank = len(gram_tensor)
+    scale, components = _integer_components(gram_tensor)
+    roots: dict[int, list[tuple[int, ...]]] = {}
+    for size in range(1, min(rank, 3) + 1):
+        for support in combinations(range(rank), size):
+            for signs in product((1, -1), repeat=size - 1):
+                coefficients = dict(zip(support, (1, *signs), strict=True))
+                pairings = tuple(sum(sign * components[i][k] for i, sign in coefficients.items()) for k in range(rank))
+                norm = sum(sign * pairings[i] for i, sign in coefficients.items())
+                if _is_root(pairings, norm):
+                    roots.setdefault(norm, []).append(tuple(coefficients.get(k, 0) for k in range(rank)))
+    if not generate([r for found in roots.values() for r in found], rank):
+        return None
+    norms = sorted(roots, key=lambda norm: (abs(norm), norm))
+    subsets = (subset for size in range(1, len(norms) + 1) for subset in combinations(norms, size))
+    chosen = next(subset for subset in subsets if generate([r for norm in subset for r in roots[norm]], rank))
+    return tuple(Fraction(norm, scale) for norm in chosen)
 
 
 def is_rational_square(value: Fraction) -> bool:

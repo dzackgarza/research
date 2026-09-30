@@ -17,6 +17,7 @@ import re
 from collections.abc import Iterator
 from datetime import date
 from fractions import Fraction
+from functools import cached_property
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError, model_validator
@@ -118,7 +119,7 @@ class DefiniteData(Record):
         default=None,
         description=(
             "ADE type of $\\Phi_{\\{2\\}}(L) = \\{r \\in L : b(r, r) = 2\\}$, as irreducible components in any order: `[E8]`, `[A1, A1]`, or `[]` when it is empty. "
-            "$R_{\\{2\\}}(L) := \\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components (Witt's theorem); it is not primitive in $L$ in general. "
+            "$\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components (Witt's theorem); it is not primitive in $L$ in general. "
             "Roots $r$ with $b(r, r) \\neq 2$ are not recorded. Requires integer values."
         ),
     )
@@ -180,7 +181,7 @@ def _root_determinant(component: str) -> int:
 
 
 def _squared_root_sublattice_index(roots: tuple[str, ...], rank: int, determinant: Fraction) -> Fraction | None:
-    """$[L : R_{\\{2\\}}(L)]^2 = \\det(R_{\\{2\\}}(L)) / \\det(L)$, when $R_{\\{2\\}}(L)$ has the rank of $L$."""
+    """$[L : \\mathbb{Z}\\Phi_{\\{2\\}}(L)]^2 = \\det(\\mathbb{Z}\\Phi_{\\{2\\}}(L)) / \\det(L)$, when $\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ has the rank of $L$."""
     if sum(int(component[1:]) for component in roots) != rank:
         return None
     return Fraction(math.prod(_root_determinant(component) for component in roots)) / abs(determinant)
@@ -246,23 +247,34 @@ class Lattice(Record):
 
     @property
     def root_sublattice_rank(self) -> int | None:
-        """The rank of $R_{\\{2\\}}(L)$, when the record states `root_system`."""
+        """The rank of $\\mathbb{Z}\\Phi_{\\{2\\}}(L)$, when the record states `root_system`."""
         if self.definite is None or self.definite.root_system is None:
             return None
         return sum(int(component[1:]) for component in self.definite.root_system)
 
     @property
     def root_sublattice_index(self) -> int | None:
-        """$[L : R_{\\{2\\}}(L)]$, when the record states `root_system` and $R_{\\{2\\}}(L)$ has the rank of $L$."""
+        """$[L : \\mathbb{Z}\\Phi_{\\{2\\}}(L)]$, when the record states `root_system` and $\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ has the rank of $L$."""
         if self.definite is None or self.definite.root_system is None:
             return None
         squared = _squared_root_sublattice_index(self.definite.root_system, self.rank, self.determinant)
         return None if squared is None else math.isqrt(squared.numerator)
 
+    @cached_property
+    def root_norms(self) -> tuple[Fraction, ...] | None:
+        """A set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$, when the record or its Gram tensor proves one.
+
+        $\\Phi_S(L)$ is the set of roots $r$ of $L$ with $b(r, r) \\in S$. `None` does not
+        state that no such $S$ exists.
+        """
+        if self.root_sublattice_index == 1:
+            return (Fraction(-2 if self.definiteness == "negative_definite" else 2),)
+        return arithmetic.generating_root_norms(self.gram_tensor)
+
     @property
     def is_root_lattice(self) -> bool:
-        """Whether $R_{\\{2\\}}(L) = L$."""
-        return self.root_sublattice_index == 1
+        """Whether the record or its Gram tensor proves $L = \\mathbb{Z}\\Phi(L)$."""
+        return self.root_norms is not None
 
     @model_validator(mode="after")
     def _well_defined(self) -> Self:

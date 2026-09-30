@@ -94,7 +94,7 @@
         <tr><th scope="row">Type of \(\Phi_{\{ {{- norm -}} \}}(L) = \{r \in L : b(r, r) = {{ norm }}\}\)</th><td>{% if lattice.definite.root_system %}\({{ root_system_tex(lattice.definite.root_system) }}\){% else %}\(\varnothing\){% endif %}</td></tr>
         {% endif %}
         {% if lattice.definite.root_system %}
-        <tr><th scope="row">\(R_{\{ {{- norm -}} \}}(L) = \mathbb{Z}\Phi_{\{ {{- norm -}} \}}(L)\)</th><td>rank {{ lattice.root_sublattice_rank }}{% if lattice.root_sublattice_index is not none %}, index {{ lattice.root_sublattice_index }} in \(L\){% endif %}</td></tr>
+        <tr><th scope="row">\(\mathbb{Z}\Phi_{\{ {{- norm -}} \}}(L)\)</th><td>rank {{ lattice.root_sublattice_rank }}{% if lattice.root_sublattice_index is not none %}, index {{ lattice.root_sublattice_index }} in \(L\){% endif %}</td></tr>
         {% endif %}
       </tbody>
     </table>
@@ -125,6 +125,18 @@
         <tr><th scope="row">Reflective: the reflections generate a subgroup of finite index in the isometry group</th><td>{{ yes_no(lattice.hyperbolic.reflective) }}</td></tr>
       </tbody>
     </table>
+  </section>
+  {% endif %}
+
+  {% if lattice.root_norms is not none %}
+  <section aria-labelledby="roots">
+    <h2 id="roots">Roots</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">\(L = \mathbb{Z}\Phi_S(L)\) for</th><td>\(S = {{ set_tex(lattice.root_norms) }}\)</td></tr>
+      </tbody>
+    </table>
+    <p><a href="{{ root }}collection/root-lattices.html">Root lattices</a> defines \(\Phi_S(L)\).</p>
   </section>
   {% endif %}
 

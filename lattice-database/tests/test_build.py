@@ -67,7 +67,16 @@ def test_a_collection_page_links_exactly_the_lattices_that_satisfy_its_condition
 def test_the_root_lattice_collection_lists_the_lattices_that_their_roots_generate(built: Path) -> None:
     html = (built / "collection" / "root-lattices.html").read_text()
     e8, negative_e8, doubled_e8, z10 = "0094", "0104", "0095", "0120"
-    assert {tag for tag in (e8, negative_e8, doubled_e8, z10) if f'href="../tag/{tag}.html"' in html} == {e8, negative_e8}
+    zero_form, doubled_u, u, u_plus_doubled_e8 = "0010", "0013", "0016", "0124"
+    listed = {tag for tag in (e8, negative_e8, doubled_e8, z10, zero_form, doubled_u, u, u_plus_doubled_e8) if f'href="../tag/{tag}.html"' in html}
+    assert listed == {e8, negative_e8, doubled_e8, z10}
+
+
+def test_the_page_of_a_root_lattice_states_norms_of_roots_that_generate_it(built: Path) -> None:
+    assert r"S = \{4\}" in (built / "tag" / "0095.html").read_text()
+    assert r"S = \{1\}" in (built / "tag" / "0120.html").read_text()
+    assert r"S = \{-2\}" in (built / "tag" / "0104.html").read_text()
+    assert '<h2 id="roots">' not in (built / "tag" / "0016.html").read_text()
 
 
 def test_the_page_of_z10_states_the_index_of_the_sublattice_that_its_roots_generate(built: Path) -> None:
