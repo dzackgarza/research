@@ -1,0 +1,32 @@
+[project]
+name = "latticedb"
+version = "0.1.0"
+description = "Catalogue of lattices: one markdown file per lattice, validated metadata, static site"
+requires-python = ">=3.14"
+dependencies = [
+    "pydantic>=2.11",
+    "pyyaml>=6.0",
+    "python-frontmatter>=1.1",
+    "jinja2>=3.1",
+    "python-flint>=0.9",
+    "cyclopts>=3",
+]
+
+[project.scripts]
+latticedb = "latticedb.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/latticedb"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "types-PyYAML>=6",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
