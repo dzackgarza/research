@@ -6335,11 +6335,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-02`: Specimen-First Falsification Discipline
 
-- **Rule**: Accompany every new category, functor, or operation with a concrete, falsifiable mathematical specimen.
+- **Rule**: Accompany every newly presented category, functor, or operation with a concrete specimen that can fail.
 
-- **Rationale**: Progress is measured by mathematical specimens that can fail, not by uninstantiated schemas.
+- **Rationale**: A presentation is exercised by specimens that can fail, not by uninstantiated schemas.  These specimens are research's own and certify nothing outside it; correctness evidence exists only in the `lean-cas-dsl` acceptance suite.
 
-- **Violation Example**: Adding abstract category definitions without a test specimen or executable verification.
+- **Violation Example**: Presenting a category without a specimen that exercises it.
 
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
@@ -6373,27 +6373,27 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Seeing 53 failures after an ownership refactor and adding `coordinate_vector`, `gen`, `cover`, and Sage-category delegations one-by-one because each makes several tests pass.
 
-- **Correct Example**: State that a presented module owns its presentation and framing, has only a private optional Smith engine, and returns no Sage module/vector/submodule; inspect every public method and consumer against that statement, then run the module, Hom, discriminant, and lattice specimens.
+- **Correct Example**: State that a presented module holds its presentation and framing, has only a private optional Smith engine, and returns no Sage module/vector/submodule; inspect every public method and consumer against that statement, then run the module, Hom, discriminant, and lattice specimens.
 
 #### `DEV-06`: Tests Specify Mathematics and Consumer Contracts, Not Delegation
 
-- **Rule**: Tests of owned mathematics assert mathematical objects, morphisms, categories, domains and codomains, chosen data, invariants, subobjects, tensors, and actual downstream operations.
-  Do not add a test whose claim is merely that an owned object still carries an engine method or delegates to the engine under Sage's spelling.
+- **Rule**: Tests of the preamble's presentation assert mathematical objects, morphisms, categories, domains and codomains, chosen data, invariants, subobjects, tensors, and actual downstream operations.  They are research's own and certify nothing outside it.
+  Do not add a test whose claim is merely that a preamble object still carries an engine method or delegates to the engine under Sage's spelling.
 
 - **Rationale**: A delegation test converts an implementation leak into a compatibility promise and makes deleting the leak look like a regression.
   Tests should fail when the mathematics is wrong, not when a backend escape hatch has been closed.
 
-- **Violation Example**: Asserting `M.coordinate_vector(x) == M._engine.coordinate_vector(x)`, `hasattr(M, "gen")`, or that an owned subobject is a Sage submodule.
+- **Violation Example**: Asserting `M.coordinate_vector(x) == M._engine.coordinate_vector(x)`, `hasattr(M, "gen")`, or that a preamble subobject is a Sage submodule.
 
 - **Correct Example**: Assert that `x.to_vector()` gives the coordinates in the chosen basis, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
 
-#### `DEV-07`: Ownership Migrations Rewrite Their Consumers; They Do Not Preserve the Leak
+#### `DEV-07`: Boundary Migrations Rewrite Their Consumers; They Do Not Preserve the Leak
 
 - **Rule**: When an owned representation or boundary changes, sweep the repository for consumers of the old representation and rewrite those consumers to the owned operations in the same architectural change.
   Do not retain or reintroduce a public compatibility alias merely to defer that consumer migration.
 
 - **Rationale**: A public compatibility layer makes the old representation a supported second API and guarantees that new code will continue to use it.
-  The purpose of an ownership migration is to remove that route, so downstream breakage identifies consumers that must be repaired rather than methods that must be delegated.
+  The purpose of a boundary migration is to remove that route, so downstream breakage identifies consumers that must be repaired rather than methods that must be delegated.
 
 - **Violation Example**: After replacing a reclassed or backend-element free module by a genuinely owned module, keep `.gen()`, `.basis_matrix()`, and `.coordinate_vector()` because Internal Hom, free resolutions, and lattice invariants still use those names.
 
@@ -6418,7 +6418,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   The implementation then proceeds against the corrected written rule.
   Do not rely on the current conversation, agent memory, or an informal correction as the only statement of a newly discovered invariant.
 
-- **Rationale**: Architectural remediation is iterative: a local failure can expose a missing lower-level object or an incorrect ontology.
+- **Rationale**: Architectural remediation is iterative: a local failure can expose a missing lower-level object or an incorrect presentation.
   If that discovery is not immediately made durable, the next contributor or agent can repeat the same mistake while still technically following the written policies.
 
 - **Violation Example**: Discovering that matrices need a first-class owned category, discussing that conclusion in chat, and then continuing to patch `tensor.matrix` while `CONTRIBUTING.md` still teaches only generic backend encapsulation.
@@ -6438,9 +6438,9 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: Use the graded direct sum as the additive/module realization of a power algebra and refine it with multiplication/unit structure; express specialized module Homsets through the common module-Hom category/implementation; provide one parameterized indexed-symbol set whose prefix/indexing data specializes to Hermite, Fourier, Laurent, and sinc families.
 
-#### `DEV-11`: Assertions State Proof Context and the Current Computational Frontier
+#### `DEV-11`: Assertions State Hypotheses and the Current Computational Frontier
 
-- **Rule**: Use assertions liberally throughout mathematical code to state hypotheses, category containments, parentage relations, finiteness/nondegeneracy assumptions, shape constraints, derived identities, and the hypotheses under which the selected algorithm is currently total. Assertions are part of the readable proof skeleton of the code. They are not exception-style control flow and are not used as whole-method placeholders.
+- **Rule**: Use assertions liberally throughout mathematical code to state hypotheses, category containments, parentage relations, finiteness/nondegeneracy assumptions, shape constraints, derived identities, and the hypotheses under which the selected algorithm is currently total. Assertions make the hypotheses the code relies on readable; they are not proofs and certify nothing. They are not exception-style control flow and are not used as whole-method placeholders.
 
 - **Rationale**: This repository is a Sage research preamble used interactively. Mathematical code should read like a derivation under explicit assumptions. The implementation should loudly expose both what mathematics is being assumed and where current computability stops. This keeps API placement mathematically correct without pretending that every mathematically defined operation is currently decidable for every represented object.
 
@@ -6464,7 +6464,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-13`: A Missing Semantic Abstraction Is Part of the Current Task
 
-- **Rule**: Do not optimize for the smallest local diff when the requested feature exposes a missing or defective semantic API. Strengthen the common mathematical owner first, then implement the feature through it. A task that needs `f.kernel()`, a subobject pullback, a block Hom, an owned orbit set, or a theorem-backed predicate includes making that operation usable if the alternative is a local coordinate workaround.
+- **Rule**: Do not optimize for the smallest local diff when the requested feature exposes a missing or defective semantic API. Strengthen the common semantic API first, then implement the feature through it. A task that needs `f.kernel()`, a subobject pullback, a block Hom, an orbit set, or a structural predicate includes making that operation usable if the alternative is a local coordinate workaround.  When what is missing is mathematics rather than its presentation, it is a formalization request to `lean-categories`, and the task waits on it.
 
 - **Rationale**: LLMs strongly prefer completing the visible local TODO with information already at hand. In mathematical software this produces papercuts that permanently encode implementation accidents. Repository quality improves only if local work is allowed to reveal and repair lower-level semantic gaps. This is not uncontrolled scope growth: the lower-level change is justified exactly by the mathematical dependency of the requested feature and should make the original caller simpler.
 
@@ -6479,7 +6479,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: Treat issue bodies, plans, comments, docstrings, examples, tests, migration notes, and generated/reference artifacts as executable prescriptions for future contributors.  When a ruling falsifies one, repair or delete it at the source before implementation continues.  Do not leave contradictory prose beside corrected code.
 
-- **Rationale**: Agents and humans correctly follow authoritative-looking records.  A stale prescription therefore has multiplicative blast radius: it recruits compliant future work to recreate a rejected ontology.  Documentation consistency is not cleanup after implementation; it is part of preventing recurrence.
+- **Rationale**: Agents and humans correctly follow authoritative-looking records.  A stale prescription therefore has multiplicative blast radius: it recruits compliant future work to recreate a rejected design.  Documentation consistency is not cleanup after implementation; it is part of preventing recurrence.
 
 - **Violation Example**: Correct the subobject implementation but leave an issue body requiring “shared ambient coordinates”; replace a numerical `is_primitive` implementation but retain a docstring describing its old matrix criterion; delete an API while preserving a generated reference test that demonstrates it.
 
@@ -6499,7 +6499,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: When the owned API is corrected, migrate all repository callers and remove the superseded spelling/representation.  Do not preserve aliases, adapters, fallback signatures, or old constructor forms solely for backward compatibility unless the user explicitly designates a stable compatibility surface.
 
-- **Rationale**: This research preamble is allowed to make breaking corrections.  A shim leaves the rejected ontology constructible, creates two sources of truth, and teaches new code to keep using the route the migration was meant to eliminate.
+- **Rationale**: This research preamble is allowed to make breaking corrections.  A shim leaves the rejected design constructible, creates two sources of truth, and teaches new code to keep using the route the migration was meant to eliminate.
 
 - **Violation Example**: Keep `generators()` and add `module_generators()` as a wrapper over it; retain `from_matrix()` publicly after introducing the presentation-morphism constructor; accept both `ambient=` and the new inclusion object.
 
@@ -6513,17 +6513,17 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `del x` inside an `@abstract_method`; a broad `cast(Any, ...)` around a category operation; `# type: ignore` on every dynamic category method; an import wrapper created solely because static analysis cannot follow Sage.
 
-- **Correct Example**: Fix the real signature/owner when wrong; otherwise improve the Sage stub/plugin/QC rule centrally.  A narrow external-boundary suppression requires an explicit boundary reason and must not mask owned mathematical structure.
+- **Correct Example**: Fix the real signature/owner when wrong; otherwise improve the Sage stub/plugin/QC rule centrally.  A narrow external-boundary suppression requires an explicit boundary reason and must not mask the preamble's structure.
 
-#### `DEV-18`: Nontrivial Mathematical Claims and Manual Algorithms Are Source-Grounded
+#### `DEV-18`: Nontrivial Criteria and Manual Algorithms Cite `lean-categories`
 
-- **Rule**: A nontrivial mathematical test, hand-coded criterion, or owned algorithm is grounded in a definition/theorem already encoded by the semantic API or in an authoritative mathematical source.  Prefer delegating to an existing trusted implementation.  When project code must own a nontrivial computation, record the theorem/hypotheses it implements and test sourced specimens.
+- **Rule**: A nontrivial hand-coded criterion or local algorithm cites the `lean-categories` definition or theorem, with its hypotheses, that it implements; a test's expected value cites an independent source or proof.  Prefer delegating to an existing maintained implementation.  A criterion whose theorem `lean-categories` does not have is not written; the theorem is requested there.  No implementation, maintained or local, is trusted: its answers are judged only by the `lean-cas-dsl` acceptance suite.
 
-- **Rationale**: LLM recall reliably preserves the shape of conclusions while dropping hypotheses.  Source grounding makes the theorem and its domain reviewable and prevents an attractive numerical criterion from silently becoming a universal claim.
+- **Rationale**: LLM recall reliably preserves the shape of conclusions while dropping hypotheses.  Citing the formalized theorem makes its domain reviewable and prevents an attractive numerical criterion from silently becoming a universal claim.
 
 - **Violation Example**: Implement a lattice predicate by a remembered determinant/gcd criterion with no cited hypotheses; add a fixture whose expected invariant was guessed from another example; manually diagonalize a quadratic form when Sage already provides the exact invariant.
 
-- **Correct Example**: Implement the predicate from its mathematical definition through owned operations; let the low-level owner use a sourced criterion in the category where its hypotheses hold; cite/test canonical literature specimens for any genuinely owned nontrivial mathematics.
+- **Correct Example**: Implement the predicate from its `lean-categories` definition through preamble operations; let the low-level method use a criterion in the category where the `lean-categories` theorem's hypotheses hold, citing it; cite canonical literature specimens for the expected values of research's own tests.
 
 
 #### `DEV-19`: Stress-Test New Abstractions Against Infinite and Weak-Hypothesis Examples
@@ -6594,13 +6594,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-25`: Verified Mathematical Facts Are Reusable Data; Tests Are Thin Drivers
 
-- **Rule**: Stable externally verified mathematical facts used as test expectations belong in a centralized topic-organized fact/fixture corpus independent of any one implementation spike.  Each fact records enough mathematical identification to reconstruct the specimen, the expected value/statement, provenance (literature bibkey, source-system doctest, or independent oracle as appropriate), and verification status.  Tests consume this corpus parametrically rather than scattering literal expectations throughout test bodies.
+- **Rule**: Stable externally sourced mathematical facts used as test expectations belong in a centralized topic-organized fact/fixture corpus independent of any one implementation spike.  Each fact records enough mathematical identification to reconstruct the specimen, the expected value/statement, and its provenance: a literature citation or a proof, never an engine's output or its doctests.  Tests consume this corpus parametrically rather than scattering literal expectations throughout test bodies.
 
-- **Rationale**: A named invariant, classification row, orbit count, discriminant form, genus separation, or number-field fact is mathematical data reusable by multiple implementations and frontends.  Embedding it separately into individual tests duplicates provenance and allows contradictory expectations to accumulate.  A centralized corpus also prevents the implementation under test from silently becoming its own oracle.
+- **Rationale**: A named invariant, classification row, orbit count, discriminant form, genus separation, or number-field fact is mathematical data reusable by multiple implementations and frontends.  Embedding it separately into individual tests duplicates provenance and allows contradictory expectations to accumulate.  A centralized corpus also prevents the implementation under test from silently becoming its own oracle.  Research's tests over this corpus certify nothing outside research; correctness evidence exists only in the `lean-cas-dsl` acceptance suite.
 
 - **Violation Example**: Copy `240`, a discriminant tuple, or a list of genus representatives into several test functions with no citation; generate a “golden” expected value by running the same method and saving its output.
 
-- **Correct Example**: Store the cited/verified fact once in the mathematical fixture corpus; a thin test constructs the specimen through the current preamble API and checks the computed invariant against the fixture.  Backend parity data is clearly marked as such and is not promoted to mathematical truth without an independent basis.
+- **Correct Example**: Store the cited fact once in the mathematical fixture corpus; a thin test constructs the specimen through the current preamble API and checks the computed invariant against the fixture.  Backend parity data is clearly marked as such and is never an expected value.
 
 
 
@@ -6625,7 +6625,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: equal discriminant-group invariant factors used as proof that two discriminant **forms** are isometric; determinant preservation used as proof of basis reducedness; equal cardinalities used to certify a computed orbit/root/vector set is complete; a tautological `|H|^2=|A|` check used as proof that a generated subgroup has the required property.
 
-- **Correct Example**: exhibit/check the isometry; call a genuine reducedness verifier; compare against an independent complete enumeration; or invoke a cited complete classification invariant at its semantic owner.  Difficulty of the correct check is a blocker/algorithmic frontier, never permission to weaken the proposition.
+- **Correct Example**: exhibit/check the isometry; compare against a cited complete enumeration; or invoke a complete classification invariant `lean-categories` states.  A check computed by another implementation is research's own test and certifies nothing outside it.  Difficulty of the correct check is a blocker/algorithmic frontier, never permission to weaken the proposition.
 
 #### `DEV-28`: Negative Tests Must Establish a Live Positive Surface First
 
@@ -6653,7 +6653,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-30`: Fix Owned Defects at Their Authoritative Source During the Task
 
-- **Rule**: When implementing a feature exposes a concrete defect/papercut in an authoritative component of the user's owned project stack and that defect lies on the feature's actual dependency path, repair it at its source before continuing.  Recording it in a TODO, filing an issue, reporting it, or adding a downstream workaround is not completion of the discovered defect.  Preserve unrelated dirty work and normal scope boundaries; this rule is about following the real mathematical/implementation dependency to its owner, not gratuitous cleanup.
+- **Rule**: When implementing a feature exposes a concrete defect/papercut in an authoritative component of the user's project stack and that defect lies on the feature's actual dependency path, repair it at its source before continuing.  Missing or defective mathematics has one source, `lean-categories`, where it is requested and written by its own formalization author, never repaired from research.  Recording it in a TODO, filing an issue, reporting it, or adding a downstream workaround is not completion of the discovered defect.  Preserve unrelated dirty work and normal scope boundaries; this rule is about following the real mathematical/implementation dependency to its owner, not gratuitous cleanup.
 
 - **Rationale**: Reporting a fixable upstream defect as “known” feels cautious to an agent but leaves every downstream caller compensating for it.  The resulting Protocols, local stubs, facades, aliases, and copied computations turn one source defect into permanent distributed complexity.
 
@@ -6693,7 +6693,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: claim a Sage category/matrix operation behaves a certain way from its name/docstring alone; hand-roll a transformation because the native method was never searched; speculate that a dependency cannot handle Sage objects without installing/probing it.
 
-- **Correct Example**: inspect the exact Sage implementation and test a specimen that distinguishes the competing interpretations, then use or quarantine the verified native capability through the owned semantic API.
+- **Correct Example**: inspect the exact Sage implementation and test a specimen that distinguishes the competing interpretations, then use or quarantine the native capability through the preamble's semantic API.
 
 #### `DEV-34`: Automated Findings Are Inputs to Structural Diagnosis, Not Syntax-Golf Targets
 
@@ -6746,7 +6746,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rationale**: `tuple(X)` yields a value with no parent, no category, no cardinality and no homs -- an object of no category in this repository.  The assertion that follows is a statement about Python data structures, and because the test *is* the proof surface, that is what has been proved.  `len` carries the same exit one level down, and additionally asserts finiteness at a site that never stated it: a length is an `int`, a cardinality is a cardinal, and the roots of an indefinite lattice are infinite.  The order underlying a materialisation being genuine -- a framing is ordered, invariant factors are ordered by divisibility -- does not license the exit; order is not what is at issue.
 
-  Comparing after extraction is not merely differently spelled, it is **strictly weaker**.  `tuple(a) == tuple(b)` passes whether or not `a == b` is implemented, and whether or not it is implemented correctly, so the assertion silently declines to exercise the equality the preamble owns -- the very operation a mathematical test of two objects exists to check.  Extraction thus removes proof burden unilaterally: it can only admit more implementations than the direct comparison, never fewer.
+  Comparing after extraction is not merely differently spelled, it is **strictly weaker**.  `tuple(a) == tuple(b)` passes whether or not `a == b` is implemented, and whether or not it is implemented correctly, so the assertion silently declines to exercise the equality the preamble presents -- the very operation a mathematical test of two objects exists to check.  Extraction thus removes proof burden unilaterally: it can only admit more implementations than the direct comparison, never fewer.
 
   When there is nothing owned to compare against -- the operation hands back a bare tuple, so no equality, parent or cardinality is available to ask for -- the defect is upstream and the rule is not satisfiable in the test.  That is `CON-15`: the tuple is an element of a product nobody named, and the repair is to name it, after which the test states equality of owned elements.  A finding here and a tuple-valued return are one defect seen from two ends, so a test-side workaround for it is not a fix.
 
@@ -6795,13 +6795,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-41`: A Mathematical Expectation Is Cited Data; the Test Is a Thin Driver
 
-- **Rule**: Verified mathematical facts -- named-lattice invariants, \((r,a,\delta)\) classes, genus separations, discriminant forms, cusp and orbit results, number-field facts -- are **data**, not test code.  They live in one centralised fixtures subtree organised by mathematical topic, each fact carrying its value, its citation and its verification status, and importing nothing from the code under test.  The consuming test is a thin parametrised driver containing no literal expected values.  The expected value comes from the cited source; it is never harvested by running the implementation and recording what it printed.
+- **Rule**: Cited mathematical facts -- named-lattice invariants, \((r,a,\delta)\) classes, genus separations, discriminant forms, cusp and orbit results, number-field facts -- are **data**, not test code.  They live in one centralised fixtures subtree organised by mathematical topic, each fact carrying its value and its citation, and importing nothing from the code under test.  The consuming test is a thin parametrised driver containing no literal expected values.  The expected value comes from the cited source; it is never harvested by running the implementation and recording what it printed.
 
 - **Rationale**: The same fact corpus is shared by every consumer -- each spike, the preamble, future category work -- and must remain browsable and queryable independently of any of them, so scattering hand-written value assertions through suite code both duplicates the corpus and binds it to one caller.  An expectation recorded from the implementation's own output is not an oracle: it passes by construction and cannot detect the error it was copied from.
 
 - **Violation Example**: a literal invariant written inline in an assertion with no citation; a fixture that imports the module it is used to test; recording an expected value by running the code and pasting the result.
 
-- **Correct Example**: a fixture entry carrying construction, \((r,a,\delta)\), citation key and verified flag, with a short parametrised driver over it; a new fact greppable in the fixtures subtree beside its citation, and a consuming test with no literal values in it.
+- **Correct Example**: a fixture entry carrying construction, \((r,a,\delta)\) and citation key, with a short parametrised driver over it; a new fact greppable in the fixtures subtree beside its citation, and a consuming test with no literal values in it.
 
 - **Provenance**: `mem:projects/github.com__dzackgarza__research/decisions/testable-mathematical-facts-are-data-centralized-deep-fixtures-subtree-spike-independent` (user decision 2026-07-09, research#47); `mem:projects/github.com__dzackgarza__research/advice/what-a-test-cites`.
 
@@ -6893,7 +6893,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: choosing a return type because it silences a type error; deciding a Hom belongs in one place because a checker complains about another; letting a failing test dictate the shape of the operation it tests; treating a finding count as the definition of done.
 
-- **Correct Example**: deciding that a rank is a cardinal because ranks can be infinite and the repository owns cardinals, then applying that and using the type checker to find the sites; settling the design in discussion, then measuring.
+- **Correct Example**: reading that a rank is a cardinal because `lean-categories` gives ranks that codomain and the preamble presents cardinals, then applying that and using the type checker to find the sites; settling the design in discussion, then measuring.
 
 #### `DEV-50`: TODOs Contain Only Unfinished Work
 
@@ -7059,15 +7059,19 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   One general complaint can link several consumers. Its title and links should
   remain useful when those consumers move between files.
 
-  **Division of responsibility:** CONTRIBUTING and mathematical declarations
-  specify the enduring design; COMPLAINTS explains the observed unmet need and
-  its evidence; TODO supplies selected execution work, dependencies and acceptance.
+  **Division of responsibility:** `lean-categories` owns the mathematics, and a
+  missing piece of it is a formalization request there; CONTRIBUTING and the
+  preamble's declarations specify the enduring engineering design; COMPLAINTS
+  explains the observed unmet need and its evidence, and links the request; TODO
+  supplies selected execution work, dependencies and acceptance, with the parked
+  node waiting on the request.
   Link the existing TODO item when it already owns remediation. If the current
   task requires the fix, update that item with the actual remaining delta and
   continue it. An independent finding can remain recorded without starting a new
   workstream. External issues own upstream repair; link them from the local
-  complaint without copying their live status or surrendering the owned API's
-  obligation. Filing or recording a complaint never completes its repair.
+  complaint without copying their live status or surrendering the preamble's
+  obligation to present the result. Filing or recording a complaint never
+  completes its repair.
 
   **Maintenance:** follow the single-worker transaction rule in `DEV-61` for
   COMPLAINTS and TODO. Reread before editing and preserve other changes. On delivery, compare
@@ -7075,7 +7079,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   paths, then remove the resolved entry in that commit or an immediate companion.
   For partial delivery, retain only the unresolved need, evidence and links.
   Keep diagnosis and resolution history in git, not in resolved sections or
-  completion rows. Preserve enduring mathematical decisions at their declaration
+  completion rows. Preserve enduring engineering decisions at their declaration
   before removing the entry. Source-based remediation does not certify runtime
   behavior; required execution remains in terminal T under `DEV-58`. An observed
   runtime failure is not resolved merely because a speculative source fix exists.
@@ -7088,8 +7092,9 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   add another fraction constructor, and mention the missing relationship only
   in chat; record "needs a backend manager" instead of the missing morphism.
 - **Correct Example**: record the missing localization factorization with its
-  submonoid and universal map, link the existing repair item, and complete the
-  shared construction with its consumer. Remove the complaint only when that
+  submonoid and universal map, link the `lean-categories` request if it is not
+  formalized there and the existing repair item, and complete the shared
+  presentation with its consumer once the formalization exists. Remove the complaint only when that
   requirement is delivered, retaining any still-unverified execution obligation.
 
 #### `DEV-60`: Close One Front at a Time in Dependency Order
