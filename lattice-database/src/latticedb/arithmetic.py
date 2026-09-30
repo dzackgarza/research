@@ -10,7 +10,7 @@ below a bound in a definite lattice).
 
 from fractions import Fraction
 from itertools import combinations
-from math import gcd, isqrt, lcm
+from math import gcd, lcm
 
 from cypari2 import Gen, Pari
 from flint import fmpq, fmpq_mat, fmpz_mat
@@ -277,9 +277,3 @@ def generating_norms(roots: dict[Vector, Fraction], rank: int) -> tuple[Fraction
     norms = sorted(set(roots.values()), key=lambda norm: (abs(norm), norm))
     subsets = (subset for size in range(1, len(norms) + 1) for subset in combinations(norms, size))
     return next(subset for subset in subsets if generate([r for r, norm in roots.items() if norm in subset], rank))
-
-
-def is_rational_square(value: Fraction) -> bool:
-    if value < 0:
-        return False
-    return isqrt(value.numerator) ** 2 == value.numerator and isqrt(value.denominator) ** 2 == value.denominator

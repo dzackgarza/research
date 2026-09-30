@@ -59,12 +59,11 @@ $U$ is the lattice with basis $e, f$ and $b(e, e) = b(f, f) = 0$, $b(e, f) = 1$.
 `gram_tensor` is the defining datum: the components $b(e_i, e_j)$ of the Gram tensor $b$, a symmetric $(0,2)$-tensor, in a basis $e_1, \dots, e_n$ of $L$.
 A component is an integer or a string `p/q`. Floats are refused.
 
-Every other invariant of a record is a declaration, and the build checks each declaration against the Gram tensor with exact arithmetic.
-A record with `signature: [2, 0]` and the components above is rejected.
-
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`, and `latticedb new` computes them; a person never writes them.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`.
+`latticedb new` computes them, and the build computes each again with exact arithmetic and rejects a record that states another value: a record with `signature: [2, 0]` and the components above is rejected.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references`, `provenance` and the prose, and declares `integral.genus_symbol`, `definite.automorphism_group_order`, `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide, each with its source in the prose.
+The page of the lattice marks each declared value *declared*; every other value on the page, the build computed.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.
@@ -77,7 +76,8 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 | `indefinite` | $b(x, x)$ takes both signs | `isotropic` |
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
-The `integral` block is required when its hypothesis holds; the other blocks are optional.
+The `integral`, `definite` and `indefinite` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
+`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order` and `integral.genus_symbol` are optional.
 
 The page `fields.html` of the site documents every field.
 The build generates it from the schema, so it states what the validators enforce.

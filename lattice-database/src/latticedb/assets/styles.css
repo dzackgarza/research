@@ -339,6 +339,19 @@ mjx-container[display="true"] {
   line-height: 1.85;
 }
 
+/* A value that a person declared, which the build did not compute */
+.declared {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  vertical-align: 0.1em;
+  white-space: nowrap;
+}
+
 /* Tables */
 
 table {

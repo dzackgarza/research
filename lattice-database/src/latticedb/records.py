@@ -101,20 +101,6 @@ def _row(row: Yaml) -> tuple[Fraction, ...]:
             raise AssertionError("each row of gram_tensor is a list")
 
 
-def theta_bound(rank: int, minimum: Fraction) -> int:
-    """The greatest norm whose count the theta series of a new record states: past the minimum, and further for small ranks."""
-    match rank:
-        case _ if rank <= 4:
-            default = 12
-        case _ if rank <= 8:
-            default = 8
-        case _ if rank <= 12:
-            default = 6
-        case _:
-            default = 4
-    return max(int(minimum), default)
-
-
 def _block(record: dict[str, Yaml], key: str) -> dict[str, Yaml]:
     match record.get(key):
         case dict() as block:
@@ -147,7 +133,7 @@ def _definite(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
         block["automorphism_group_order"] = declared["automorphism_group_order"]
     positive_roots = arithmetic.definite_roots(gram)
     if arithmetic.is_integer_valued(gram):
-        bound = theta_bound(len(gram), minimum)
+        bound = model.theta_bound(len(gram), minimum)
         match declared.get("theta_series"):
             case list() as stated:
                 bound = max(bound, len(stated) - 1)

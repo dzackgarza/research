@@ -36,8 +36,10 @@ def e8() -> dict[str, Yaml]:
             "minimum": 2,
             "kissing_number": 240,
             "automorphism_group_order": 696729600,
-            "theta_series": [1, 0, 240, 0, 2160],
+            "theta_series": [1, 0, 240, 0, 2160, 0, 6720, 0, 17520],
             "root_system": ["E8"],
+            # E8 in its basis of simple roots.
+            "roots": [{"type": "E8", "scale": 1, "simple_roots": [[int(i == j) for j in range(8)] for i in range(8)]}],
         },
     }
 
@@ -71,7 +73,13 @@ def a2_dual() -> dict[str, Yaml]:
         "determinant": "1/3",
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
-        "definite": {"minimum": "2/3", "kissing_number": 6, "automorphism_group_order": 12},
+        "definite": {
+            "minimum": "2/3",
+            "kissing_number": 6,
+            "automorphism_group_order": 12,
+            # A2* is A2 with the form b / 3, so its roots are those of A2: type G2, with b(e_1, e_1) = 2/3 and b(-e_1 + e_2, -e_1 + e_2) = 2.
+            "roots": [{"type": "G2", "scale": "1/3", "simple_roots": [[1, 0], [-1, 1]]}],
+        },
     }
 
 
@@ -104,7 +112,14 @@ def binary_form_of_determinant_19() -> dict[str, Yaml]:
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [19]},
-        "definite": {"minimum": 2, "kissing_number": 2},
+        "definite": {
+            "minimum": 2,
+            "kissing_number": 2,
+            "theta_series": [1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0],
+            "root_system": ["A1"],
+            # Two orthogonal components of type A1, with b(r, r) = 2 and b(r, r) = 38.
+            "roots": [{"type": "A1", "scale": 1, "simple_roots": [[1, -1]]}, {"type": "A1", "scale": 19, "simple_roots": [[1, 1]]}],
+        },
     }
 
 
@@ -138,7 +153,14 @@ def square_lattice() -> dict[str, Yaml]:
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
         "integral": {"parity": "odd", "discriminant_group": []},
-        "definite": {"minimum": 1, "kissing_number": 4, "theta_series": [1, 4, 4], "root_system": ["A1", "A1"]},
+        "definite": {
+            "minimum": 1,
+            "kissing_number": 4,
+            "theta_series": [1, 4, 4, 0, 4, 8, 0, 0, 4, 4, 8, 0, 0],
+            "root_system": ["A1", "A1"],
+            # The simple roots e_1 - e_2 (long) and e_2 (short) of type B2; a short root has b(r, r) = 1.
+            "roots": [{"type": "B2", "scale": "1/2", "simple_roots": [[1, -1], [0, 1]]}],
+        },
     }
 
 
@@ -155,7 +177,13 @@ def a6() -> dict[str, Yaml]:
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [7]},
-        "definite": {"minimum": 2, "kissing_number": 42, "root_system": ["A6"]},
+        "definite": {
+            "minimum": 2,
+            "kissing_number": 42,
+            "theta_series": [1, 0, 42, 0, 210, 0, 350, 0, 882],
+            "root_system": ["A6"],
+            "roots": [{"type": "A6", "scale": 1, "simple_roots": [[int(i == j) for j in range(6)] for i in range(6)]}],
+        },
     }
 
 
@@ -189,7 +217,14 @@ def a2() -> dict[str, Yaml]:
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [3]},
-        "definite": {"minimum": 2, "kissing_number": 6, "root_system": ["A2"]},
+        "definite": {
+            "minimum": 2,
+            "kissing_number": 6,
+            "theta_series": [1, 0, 6, 0, 0, 0, 6, 0, 6, 0, 0, 0, 0],
+            "root_system": ["A2"],
+            # The simple roots e_1 (short) and -e_1 + e_2 (long, b = 6) of type G2, with b(e_1, -e_1 + e_2) = -3.
+            "roots": [{"type": "G2", "scale": 1, "simple_roots": [[1, 0], [-1, 1]]}],
+        },
     }
 
 
@@ -197,6 +232,12 @@ def with_block(record: dict[str, Yaml], block: str, **changes: Yaml) -> dict[str
     current = record.get(block)
     assert isinstance(current, dict) or current is None
     return record | {block: (current or {}) | changes}
+
+
+def without(record: dict[str, Yaml], block: str, field: str) -> dict[str, Yaml]:
+    current = record[block]
+    assert isinstance(current, dict)
+    return record | {block: {key: value for key, value in current.items() if key != field}}
 
 
 def error_types(record: dict[str, Yaml]) -> set[str]:
@@ -321,34 +362,24 @@ def test_a_lattice_that_is_not_definite_is_not_decided_without_a_root_span() -> 
     assert plane.root_norms is None
 
 
-@pytest.mark.parametrize(
-    "roots",
-    [
-        # E8 in its basis of simple roots.
-        (e8, [{"type": "E8", "scale": 1, "simple_roots": [[int(i == j) for j in range(8)] for i in range(8)]}]),
-        # Z^2: the simple roots e_1 - e_2 (long) and e_2 (short) of type B2; a short root has b(r, r) = 1.
-        (square_lattice, [{"type": "B2", "scale": "1/2", "simple_roots": [[1, -1], [0, 1]]}]),
-        # A2: the simple roots e_1 (short) and -e_1 + e_2 (long, b = 6) of type G2, with b(e_1, -e_1 + e_2) = -3.
-        (a2, [{"type": "G2", "scale": 1, "simple_roots": [[1, 0], [-1, 1]]}]),
-        # [10, 9, 10]: two orthogonal components of type A1, with b(r, r) = 2 and b(r, r) = 38.
-        (binary_form_of_determinant_19, [{"type": "A1", "scale": 1, "simple_roots": [[1, -1]]}, {"type": "A1", "scale": 19, "simple_roots": [[1, 1]]}]),
-    ],
-)
-def test_the_root_system_of_a_definite_lattice_is_accepted(roots: tuple[Callable[[], dict[str, Yaml]], list[Yaml]]) -> None:
-    record, components = roots
-    Lattice.model_validate(with_block(record(), "definite", roots=components))
+def test_a_root_system_with_the_right_rank_and_number_of_roots_is_rejected_when_it_is_not_the_root_system_of_the_lattice() -> None:
+    assert error_types(with_block(a6(), "definite", root_system=["D5", "A1"])) == {"root_system_mismatch"}
 
 
-def test_a_root_system_whose_lattice_has_no_integer_index_is_rejected_for_that_reason_alone() -> None:
-    assert error_types(with_block(a6(), "definite", root_system=["D5", "A1"])) == {"root_system_index"}
+def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank() -> None:
+    # Rank 8: through norm 8. Rank 2: through norm 12. A record can state more entries, and each is checked: [10, 9, 10] is even, so no x has b(x, x) = 13.
+    assert error_types(with_block(e8(), "definite", theta_series=[1, 0, 240, 0, 2160, 0, 6720, 0])) == {"theta_series_short"}
+    assert error_types(with_block(square_lattice(), "definite", theta_series=[1, 4, 4, 0, 4, 8, 0, 0, 4, 4, 8, 0])) == {"theta_series_short"}
+    Lattice.model_validate(with_block(binary_form_of_determinant_19(), "definite", theta_series=[1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0, 0]))
+    assert error_types(with_block(binary_form_of_determinant_19(), "definite", theta_series=[1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0, 2])) == {"theta_series_mismatch"}
 
 
 @pytest.mark.parametrize(
     ("record", "expected"),
     [
         # A block on a lattice that does not satisfy the hypothesis of the block.
-        (hyperbolic_plane() | {"definite": {"minimum": 2}}, "definite_requires_definite"),
-        (affine_a1() | {"definite": {"minimum": 2}}, "definite_requires_definite"),
+        (hyperbolic_plane() | {"definite": binary_form_of_determinant_19()["definite"]}, "definite_requires_definite"),
+        (affine_a1() | {"definite": binary_form_of_determinant_19()["definite"]}, "definite_requires_definite"),
         (e8() | {"indefinite": {"isotropic": False}}, "indefinite_requires_indefinite"),
         (e8() | {"hyperbolic": {"reflective": True}}, "hyperbolic_requires_hyperbolic"),
         (a2_dual() | {"integral": {"parity": "even", "discriminant_group": [3]}}, "integral_requires_integer_values"),
@@ -359,6 +390,11 @@ def test_a_root_system_whose_lattice_has_no_integer_index_is_rejected_for_that_r
         # A required block or field that is absent.
         ({key: value for key, value in e8().items() if key != "integral"}, "integral_block_missing"),
         (e8() | {"integral": {"parity": "even"}}, "discriminant_group_missing"),
+        ({key: value for key, value in e8().items() if key != "definite"}, "definite_block_missing"),
+        ({key: value for key, value in hyperbolic_plane().items() if key != "indefinite"}, "indefinite_block_missing"),
+        (without(e8(), "definite", "theta_series"), "theta_series_missing"),
+        (without(e8(), "definite", "root_system"), "root_system_missing"),
+        (without(e8(), "definite", "roots"), "missing"),
         # A declaration that the Gram tensor contradicts.
         (e8() | {"rank": 7}, "gram_tensor_shape"),
         (hyperbolic_plane() | {"gram_tensor": [[0, 1], [2, 0]]}, "gram_tensor_not_symmetric"),
@@ -369,28 +405,24 @@ def test_a_root_system_whose_lattice_has_no_integer_index_is_rejected_for_that_r
         (with_block(e8(), "integral", parity="odd"), "parity_mismatch"),
         (with_block(e8(), "integral", discriminant_group=[2]), "discriminant_group_mismatch"),
         (with_block(binary_form_of_determinant_19(), "integral", discriminant_group=[]), "discriminant_group_mismatch"),
-        # Invariants of a definite lattice that cannot occur together.
-        (with_block(e8(), "definite", minimum=0), "minimum_not_positive"),
-        (with_block(e8(), "definite", minimum=4), "minimum_exceeds_diagonal"),
-        (with_block(e8(), "definite", minimum=1), "minimum_not_even"),
-        (with_block(e8(), "definite", minimum="3/2"), "minimum_not_integer"),
-        (with_block(binary_form_of_determinant_19(), "definite", minimum=10), "minimum_violates_hermite"),
-        (with_block(e8(), "definite", kissing_number=241), "kissing_number_odd"),
-        (with_block(e8(), "definite", kissing_number=512), "kissing_number_exceeds_bound"),
-        (with_block(a2_dual(), "definite", kissing_number=2), "kissing_number_below_basis_count"),
+        # Invariants of a definite lattice that the Gram tensor contradicts.
+        (with_block(e8(), "definite", minimum=4), "minimum_mismatch"),
+        (with_block(binary_form_of_determinant_19(), "definite", minimum=10), "minimum_mismatch"),
+        (with_block(a2_dual(), "definite", minimum=2), "minimum_mismatch"),
+        (with_block(e8(), "definite", kissing_number=242), "kissing_number_mismatch"),
+        (with_block(a2_dual(), "definite", kissing_number=2), "kissing_number_mismatch"),
         (with_block(e8(), "definite", automorphism_group_order=696729601), "automorphism_order_odd"),
-        (with_block(e8(), "definite", theta_series=[2, 0, 240]), "theta_constant_term"),
-        (with_block(e8(), "definite", theta_series=[1, 0, 240, 0, 2161]), "theta_odd_coefficient"),
-        (with_block(e8(), "definite", theta_series=[1, 0, 240, 2, 2160]), "theta_odd_norm_in_even_lattice"),
-        (with_block(e8(), "definite", theta_series=[1, 0, 242, 0, 2160]), "theta_kissing_mismatch"),
-        (with_block(binary_form_of_determinant_19(), "definite", theta_series=[1, 2, 2]), "theta_below_minimum"),
-        (with_block(e8(), "definite", root_system=["E8", "A1"]), "root_system_rank"),
-        (with_block(e8(), "definite", root_system=["D8"]), "root_system_theta_mismatch"),
-        (with_block(e8(), "definite", root_system=["E7"]), "root_system_kissing_mismatch"),
-        (
-            binary_form_of_determinant_19() | {"gram_tensor": [[4, 1], [1, 5]], "definite": {"minimum": 4, "root_system": ["A1"]}},
-            "root_system_nonempty_above_norm_two",
-        ),
+        (with_block(e8(), "definite", theta_series=[2, 0, 240, 0, 2160, 0, 6720, 0, 17520]), "theta_series_mismatch"),
+        (with_block(e8(), "definite", theta_series=[1, 0, 240, 0, 2160, 0, 6720, 0, 17522]), "theta_series_mismatch"),
+        (with_block(e8(), "definite", theta_series=[1, 0, 240, 0, 2160]), "theta_series_short"),
+        (with_block(binary_form_of_determinant_19(), "definite", theta_series=[1, 2, 2, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0]), "theta_series_mismatch"),
+        # D8 has rank 8 and 112 roots; E7 + A1 has 128; E8 has 240. D5 + A1 has the rank and the number of roots of A6.
+        (with_block(e8(), "definite", root_system=["D8"]), "root_system_mismatch"),
+        (with_block(e8(), "definite", root_system=["E7", "A1"]), "root_system_mismatch"),
+        (with_block(e8(), "definite", root_system=[]), "root_system_mismatch"),
+        (with_block(a6(), "definite", root_system=["D5", "A1"]), "root_system_mismatch"),
+        # Z^2 has the 4 vectors +-e_1 +-e_2 with b(r, r) = 2, and A1 has 2 roots.
+        (with_block(square_lattice(), "definite", root_system=["A1"]), "root_system_mismatch"),
         # A root system that is not the set of roots of the lattice.
         # The vectors of norm 2 of A2 are a root system of type A2 with 6 roots; A2 has 12 roots.
         (with_block(a2(), "definite", roots=[{"type": "A2", "scale": 1, "simple_roots": [[1, 0], [0, 1]]}]), "root_count_mismatch"),
@@ -416,8 +448,6 @@ def test_a_root_system_whose_lattice_has_no_integer_index_is_rejected_for_that_r
             "root_components_not_orthogonal",
         ),
         (with_block(e8(), "definite", roots=[{"type": "E8", "scale": 1, "simple_roots": [[1, 0, 0, 0, 0, 0, 0, 0]]}]), "roots_shape"),
-        # Z^2 has the 4 vectors +-e_1 +-e_2 with b(r, r) = 2, and A1 has 2 roots.
-        (square_lattice() | {"definite": {"minimum": 1, "root_system": ["A1"]}}, "root_system_count_mismatch"),
         # The `root_span` block of a lattice that is not definite.
         (e8() | {"root_span": {"roots": []}}, "root_span_on_definite"),
         # b((1, 0), (1, 0)) = 0 in U, and (2, 2) is not primitive.

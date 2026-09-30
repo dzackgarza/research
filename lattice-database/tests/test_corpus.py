@@ -21,6 +21,13 @@ def rank_one(tag: str, value: int) -> dict[str, Yaml]:
         "definiteness": "positive_definite" if value > 0 else "negative_definite",
         "provenance": {"source": "Test record."},
         "integral": {"parity": "even", "discriminant_group": [2]},
+        "definite": {
+            "minimum": 2,
+            "kissing_number": 2,
+            "theta_series": [1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0],
+            "root_system": ["A1"],
+            "roots": [{"type": "A1", "scale": value // 2, "simple_roots": [[1]]}],
+        },
     }
 
 

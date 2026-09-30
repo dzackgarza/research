@@ -24,7 +24,7 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError, model_validator
 from pydantic_core import InitErrorDetails, PydanticCustomError
 
-from latticedb import arithmetic, root_systems
+from latticedb import arithmetic, root_systems, roots
 from latticedb.arithmetic import Vector
 
 type Yaml = None | bool | int | float | str | date | list[Yaml] | dict[str, Yaml]
@@ -136,26 +136,29 @@ class RootSystemComponent(Record):
 class DefiniteData(Record):
     """Invariants of a definite lattice. They are stated for a positive definite form; on a negative definite lattice they are the invariants of $-b$."""
 
-    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$.")
-    kissing_number: int | None = Field(
-        default=None,
-        description="Number of $x$ with $b(x, x)$ equal to the minimum. The number is finite because the form is definite.",
+    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$. The build computes it and rejects another value.")
+    kissing_number: int = Field(
+        description="Number of $x$ with $b(x, x)$ equal to the minimum. The number is finite because the form is definite. The build computes it and rejects another value."
     )
-    automorphism_group_order: int | None = Field(default=None, description="Order of the group of isometries of the lattice.")
+    automorphism_group_order: int | None = Field(
+        default=None, description="Order of the group of isometries of the lattice. Declared: the build checks only that it is even, and the prose gives its source."
+    )
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
-        description="Entry $k$ is the number of $x$ with $b(x, x) = k$, for $k = 0, 1, 2, \\dots$ Requires integer values.",
+        description=(
+            "Entry $k$ is the number of $x$ with $b(x, x) = k$, for $k = 0, 1, 2, \\dots$ Required for, and only for, integer values. "
+            "The build computes every entry and rejects another value; `latticedb new` writes the entries past the minimum, further for small ranks."
+        ),
     )
     root_system: Annotated[tuple[AdeType, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
             "ADE type of $\\Phi_{\\{2\\}}(L) = \\{r \\in L : b(r, r) = 2\\}$, as irreducible components in any order: `[E8]`, `[A1, A1]`, or `[]` when it is empty. "
             "$\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components (Witt's theorem); it is not primitive in $L$ in general. "
-            "The field `roots` states all of $\\Phi(L)$. Requires integer values."
+            "The field `roots` states all of $\\Phi(L)$. Required for, and only for, integer values. The build computes it and rejects another value."
         ),
     )
-    roots: Annotated[tuple[RootSystemComponent, ...], Field(strict=False)] | None = Field(
-        default=None,
+    roots: Annotated[tuple[RootSystemComponent, ...], Field(strict=False)] = Field(
         description=(
             "The root system $\\Phi(L)$ as its irreducible components, each with a base; `[]` when $L$ has no roots. "
             "The build lists the roots of $L$, and it rejects a declaration that is not $\\Phi(L)$. `latticedb new` writes the field."
@@ -217,6 +220,20 @@ def definiteness(n_plus: int, n_minus: int, n_zero: int) -> Definiteness:
             return "negative_semidefinite"
         case _:
             return "zero"
+
+
+def theta_bound(rank: int, minimum: Fraction) -> int:
+    """The least norm through which the theta series of a record states its counts: past the minimum, and further for small ranks."""
+    match rank:
+        case _ if rank <= 4:
+            default = 12
+        case _ if rank <= 8:
+            default = 8
+        case _ if rank <= 12:
+            default = 6
+        case _:
+            default = 4
+    return max(int(minimum), default)
 
 
 def _root_determinant(component: str) -> int:
@@ -476,142 +493,99 @@ class Lattice(Record):
             )
 
     def _definite_problems(self) -> Iterator[InitErrorDetails]:
-        if self.definite is None:
-            return
+        """The `definite` block is required exactly on a definite form, and its computed fields are compared with the Gram tensor."""
         n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
-        if n_zero > 0 or (n_plus > 0 and n_minus > 0):
+        definite = n_zero == 0 and (n_plus == 0 or n_minus == 0)
+        if self.definite is None:
+            if definite:
+                yield _problem("definite_block_missing", "the form is definite, so the `definite` block is required", ("definite",))
+            return
+        if not definite:
             yield _problem("definite_requires_definite", "the `definite` block requires a positive definite or negative definite form", ("definite",))
             return
         data = self.definite
-        rank = self.rank
         integer_valued = arithmetic.is_integer_valued(self.gram_tensor)
-        even = integer_valued and all(self.gram_tensor[i][i] % 2 == 0 for i in range(rank))
-        diagonal = [abs(self.gram_tensor[i][i]) for i in range(rank)]
-        minimum = data.minimum
-        if minimum <= 0:
-            yield _problem("minimum_not_positive", "the minimum of a definite form is positive", ("definite", "minimum"))
-            return
-        if minimum > min(diagonal):
+        minimum, kissing = arithmetic.minimum_and_kissing_number(self.gram_tensor)
+        if data.minimum != minimum:
             yield _problem(
-                "minimum_exceeds_diagonal",
-                "a basis vector has |b(e, e)| = {least}, less than the stated minimum {stated}",
+                "minimum_mismatch",
+                "the least |b(x, x)| over nonzero x is {computed}, the record states {stated}",
                 ("definite", "minimum"),
-                {"least": str(min(diagonal)), "stated": str(minimum)},
+                {"computed": str(minimum), "stated": str(data.minimum)},
             )
-        # Hermite's inequality: min^n <= (4/3)^(n(n-1)/2) * |det| for a definite form of rank n.
-        exponent = rank * (rank - 1) // 2
-        if minimum**rank * 3**exponent > 4**exponent * abs(arithmetic.determinant(self.gram_tensor)):
+        if data.kissing_number != kissing:
             yield _problem(
-                "minimum_violates_hermite",
-                "the stated minimum {stated} exceeds Hermite's bound for this rank and determinant",
-                ("definite", "minimum"),
-                {"stated": str(minimum)},
+                "kissing_number_mismatch",
+                "{computed} vectors attain the minimum, the record states {stated}",
+                ("definite", "kissing_number"),
+                {"computed": kissing, "stated": data.kissing_number},
             )
-        if integer_valued and minimum.denominator != 1:
-            yield _problem("minimum_not_integer", "an integer-valued form has an integer minimum", ("definite", "minimum"))
-        if even and minimum.denominator == 1 and minimum % 2 == 1:
-            yield _problem("minimum_not_even", "an even lattice has an even minimum", ("definite", "minimum"))
-
-        kissing = data.kissing_number
-        if kissing is not None:
-            if kissing <= 0 or kissing % 2 == 1:
-                message = "minimal vectors come in pairs x, -x, so their number is even and positive"
-                yield _problem("kissing_number_odd", message, ("definite", "kissing_number"))
-            # Minimal vectors x, y with x != y, x != -y are distinct modulo 2L and none is in 2L:
-            # otherwise (x + y)/2 or (x - y)/2, or x/2, is a shorter nonzero vector.
-            if kissing > 2 * (2**rank - 1):
-                yield _problem(
-                    "kissing_number_exceeds_bound",
-                    "a lattice of rank {rank} has at most {bound} minimal vectors",
-                    ("definite", "kissing_number"),
-                    {"rank": rank, "bound": 2 * (2**rank - 1)},
-                )
-            minimal_basis_vectors = sum(1 for entry in diagonal if entry == minimum)
-            if kissing < 2 * minimal_basis_vectors:
-                yield _problem(
-                    "kissing_number_below_basis_count",
-                    "{count} basis vectors attain the stated minimum, so there are at least {bound} minimal vectors",
-                    ("definite", "kissing_number"),
-                    {"count": minimal_basis_vectors, "bound": 2 * minimal_basis_vectors},
-                )
 
         order = data.automorphism_group_order
         if order is not None and (order <= 0 or order % 2 == 1):
             yield _problem("automorphism_order_odd", "x -> -x is an isometry of order 2, so the order is even", ("definite", "automorphism_group_order"))
 
         theta = data.theta_series
-        if theta is not None:
-            location = ("definite", "theta_series")
-            if not integer_valued:
+        location = ("definite", "theta_series")
+        if not integer_valued:
+            if theta is not None:
                 yield _problem("theta_requires_integral", "`theta_series` is indexed by integer values of b(x, x), so it requires an integer-valued form", location)
-            else:
-                if not theta or theta[0] != 1:
-                    yield _problem("theta_constant_term", "only x = 0 has b(x, x) = 0, so the first entry is 1", location)
-                if any(entry < 0 or entry % 2 == 1 for entry in theta[1:]):
-                    yield _problem("theta_odd_coefficient", "nonzero vectors come in pairs x, -x, so each later entry is even and not negative", location)
-                if any(entry != 0 for index, entry in enumerate(theta) if 0 < index < minimum):
-                    yield _problem("theta_below_minimum", "there is no nonzero x with |b(x, x)| less than the minimum", location)
-                if minimum.denominator == 1 and len(theta) > minimum and kissing is not None and theta[int(minimum)] != kissing:
-                    yield _problem("theta_kissing_mismatch", "the entry at the minimum is the kissing number", location)
-                if even and any(entry != 0 for entry in theta[1::2]):
-                    yield _problem("theta_odd_norm_in_even_lattice", "an even lattice has no x with b(x, x) odd", location)
+        elif theta is None:
+            yield _problem("theta_series_missing", "every b(e_i, e_j) is an integer, so `theta_series` is required", location)
+        elif len(theta) <= theta_bound(self.rank, minimum):
+            yield _problem(
+                "theta_series_short",
+                "the theta series of a lattice of rank {rank} and minimum {minimum} states the counts through norm {bound}",
+                location,
+                {"rank": self.rank, "minimum": str(minimum), "bound": theta_bound(self.rank, minimum)},
+            )
+        else:
+            computed = arithmetic.theta_coefficients(self.gram_tensor, len(theta) - 1)
+            if theta != computed:
+                yield _problem(
+                    "theta_series_mismatch",
+                    "the counts of x with |b(x, x)| = 0, 1, 2, ... are {computed}, the record states {stated}",
+                    location,
+                    {"computed": str(list(computed)), "stated": str(list(theta))},
+                )
 
-        roots = data.root_system
-        if roots is not None:
-            location = ("definite", "root_system")
-            if not integer_valued:
+        root_system = data.root_system
+        location = ("definite", "root_system")
+        if not integer_valued:
+            if root_system is not None:
                 yield _problem("root_system_requires_integral", "`root_system` requires an integer-valued form", location)
-                return
-            if sum(int(component[1:]) for component in roots) > rank:
-                yield _problem("root_system_rank", "the rank of the root system exceeds the rank of the lattice", location)
-            count = sum(root_systems.root_count(component) for component in roots)
-            if theta is not None and len(theta) > 2 and theta[2] != count:
+        elif root_system is None:
+            yield _problem("root_system_missing", "every b(e_i, e_j) is an integer, so `root_system` is required", location)
+        else:
+            computed = roots.norm_two_types(self.gram_tensor, arithmetic.definite_roots(self.gram_tensor))
+            if sorted(root_system) != sorted(computed):
                 yield _problem(
-                    "root_system_theta_mismatch",
-                    "the root system has {count} roots, the theta series has {stated} vectors with |b(x, x)| = 2",
+                    "root_system_mismatch",
+                    "the r in L with |b(r, r)| = 2 form a root system of type {computed}, the record states {stated}",
                     location,
-                    {"count": count, "stated": theta[2]},
+                    {"computed": " ".join(computed) or "[]", "stated": " ".join(root_system) or "[]"},
                 )
-            if minimum == 2 and kissing is not None and kissing != count:
-                yield _problem(
-                    "root_system_kissing_mismatch",
-                    "the minimum is 2, so the {count} roots are the minimal vectors, but the kissing number is {stated}",
-                    location,
-                    {"count": count, "stated": kissing},
-                )
-            squared_index = _squared_root_sublattice_index(roots, rank, arithmetic.determinant(self.gram_tensor))
-            if squared_index is not None and (squared_index.denominator != 1 or math.isqrt(squared_index.numerator) ** 2 != squared_index.numerator):
-                yield _problem(
-                    "root_system_index",
-                    "the roots generate a sublattice of the rank of L, so its determinant is det(L) times the square of its index, but the quotient is {quotient}",
-                    location,
-                    {"quotient": str(squared_index)},
-                )
-            if minimum > 2 and roots:
-                yield _problem("root_system_nonempty_above_norm_two", "the minimum is greater than 2, so there are no roots", location)
 
     def _indefinite_problems(self) -> Iterator[InitErrorDetails]:
-        if self.indefinite is None:
-            return
+        """The `indefinite` block is required exactly on a form that takes both signs, and `isotropic` is compared with the Gram tensor."""
         n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
-        if n_plus == 0 or n_minus == 0:
+        indefinite = n_plus > 0 and n_minus > 0
+        if self.indefinite is None:
+            if indefinite:
+                yield _problem("indefinite_block_missing", "b(x, x) takes both signs, so the `indefinite` block is required", ("indefinite",))
+            return
+        if not indefinite:
             yield _problem("indefinite_requires_indefinite", "the `indefinite` block requires a form that takes both signs", ("indefinite",))
             return
-        location = ("indefinite", "isotropic")
-        determinant = arithmetic.determinant(self.gram_tensor)
-        witness = None
-        if n_zero > 0:
-            witness = "the radical of a degenerate form contains a nonzero x with b(x, x) = 0"
-        elif any(self.gram_tensor[i][i] == 0 for i in range(self.rank)):
-            witness = "a basis vector has b(e, e) = 0"
-        elif self.rank >= 5:
-            witness = "an indefinite rational form of rank at least 5 is isotropic (Meyer's theorem)"
-        elif self.rank == 2 and arithmetic.is_rational_square(-determinant):
-            witness = "a nondegenerate binary form is isotropic when minus its determinant is a square"
-        if witness is not None and not self.indefinite.isotropic:
-            yield _problem("isotropy_mismatch", "the record states anisotropic, but {reason}", location, {"reason": witness})
-        if witness is None and self.rank == 2 and self.indefinite.isotropic:
-            yield _problem("isotropy_mismatch", "a nondegenerate binary form is isotropic only when minus its determinant is a square", location)
+        # The radical of a degenerate form is nonzero and isotropic; `qfsolve` decides a nondegenerate rational form.
+        isotropic = n_zero > 0 or arithmetic.is_isotropic(self.gram_tensor)
+        if self.indefinite.isotropic != isotropic:
+            yield _problem(
+                "isotropy_mismatch",
+                "the form is {computed}, the record states {stated}",
+                ("indefinite", "isotropic"),
+                {"computed": "isotropic" if isotropic else "anisotropic", "stated": "isotropic" if self.indefinite.isotropic else "anisotropic"},
+            )
 
     def _hyperbolic_problems(self) -> Iterator[InitErrorDetails]:
         if self.hyperbolic is None:
@@ -622,7 +596,7 @@ class Lattice(Record):
             yield _problem("hyperbolic_requires_hyperbolic", message, ("hyperbolic",))
 
     def _root_system_problems(self) -> Iterator[InitErrorDetails]:
-        """Whether `definite.roots` is $\\Phi(L)$, and whether `definite.root_system` has the number of roots $r$ with $|b(r, r)| = 2$.
+        """Whether `definite.roots` is $\\Phi(L)$.
 
         Let the declared simple roots $\\alpha_i$ of a component be roots of $L$ with
         $b(\\alpha_i, \\alpha_j) = k (\\alpha_i, \\alpha_j)$ for the symmetrized Cartan matrix of the
@@ -636,46 +610,35 @@ class Lattice(Record):
         if self.definite is None:
             return
         components = self.definite.roots
-        if components is not None:
-            location = ("definite", "roots")
-            shapes = (len(component.simple_roots) == int(component.type[1:]) and all(len(row) == self.rank for row in component.simple_roots) for component in components)
-            if not all(shapes):
-                yield _problem("roots_shape", "a component of rank m has m simple roots, each with {rank} coordinates", location, {"rank": self.rank})
-                return
-            for component in components:
-                for row in component.simple_roots:
-                    if not arithmetic.is_root(self.gram_tensor, row):
-                        yield _problem("simple_root_not_root", "{vector} is not a root of L", location, {"vector": str(list(row))})
-                expected = root_systems.simple_root_gram(component.type)
-                pairs = ((i, j) for i in range(len(expected)) for j in range(len(expected)))
-                if any(arithmetic.pairing(self.gram_tensor, component.simple_roots[i], component.simple_roots[j]) != component.scale * expected[i][j] for i, j in pairs):
-                    yield _problem(
-                        "simple_roots_gram_mismatch",
-                        "the simple roots of a component do not have the Gram matrix of type {type} with scale {scale}",
-                        location,
-                        {"type": component.type, "scale": str(component.scale)},
-                    )
-            for first, second in combinations(components, 2):
-                if any(arithmetic.pairing(self.gram_tensor, r, s) != 0 for r in first.simple_roots for s in second.simple_roots):
-                    yield _problem("root_components_not_orthogonal", "two components are not orthogonal", location)
-            declared = sum(root_systems.root_count(component.type) for component in components)
-            if declared != 2 * len(self.positive_roots):
+        location = ("definite", "roots")
+        shapes = (len(component.simple_roots) == int(component.type[1:]) and all(len(row) == self.rank for row in component.simple_roots) for component in components)
+        if not all(shapes):
+            yield _problem("roots_shape", "a component of rank m has m simple roots, each with {rank} coordinates", location, {"rank": self.rank})
+            return
+        for component in components:
+            for row in component.simple_roots:
+                if not arithmetic.is_root(self.gram_tensor, row):
+                    yield _problem("simple_root_not_root", "{vector} is not a root of L", location, {"vector": str(list(row))})
+            expected = root_systems.simple_root_gram(component.type)
+            pairs = ((i, j) for i in range(len(expected)) for j in range(len(expected)))
+            if any(arithmetic.pairing(self.gram_tensor, component.simple_roots[i], component.simple_roots[j]) != component.scale * expected[i][j] for i, j in pairs):
                 yield _problem(
-                    "root_count_mismatch",
-                    "the declared components have {declared} roots, the lattice has {listed}",
+                    "simple_roots_gram_mismatch",
+                    "the simple roots of a component do not have the Gram matrix of type {type} with scale {scale}",
                     location,
-                    {"declared": declared, "listed": 2 * len(self.positive_roots)},
+                    {"type": component.type, "scale": str(component.scale)},
                 )
-        if self.definite.root_system is not None:
-            declared = sum(root_systems.root_count(component) for component in self.definite.root_system)
-            listed = 2 * sum(1 for norm in self.positive_roots.values() if abs(norm) == 2)
-            if declared != listed:
-                yield _problem(
-                    "root_system_count_mismatch",
-                    "the declared root system has {declared} roots, the lattice has {listed} elements r with |b(r, r)| = 2",
-                    ("definite", "root_system"),
-                    {"declared": declared, "listed": listed},
-                )
+        for first, second in combinations(components, 2):
+            if any(arithmetic.pairing(self.gram_tensor, r, s) != 0 for r in first.simple_roots for s in second.simple_roots):
+                yield _problem("root_components_not_orthogonal", "two components are not orthogonal", location)
+        declared = sum(root_systems.root_count(component.type) for component in components)
+        if declared != 2 * len(self.positive_roots):
+            yield _problem(
+                "root_count_mismatch",
+                "the declared components have {declared} roots, the lattice has {listed}",
+                location,
+                {"declared": declared, "listed": 2 * len(self.positive_roots)},
+            )
 
     def _root_span_problems(self) -> Iterator[InitErrorDetails]:
         span = self.root_span

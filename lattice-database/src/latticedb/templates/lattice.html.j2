@@ -1,6 +1,7 @@
 {% extends "base.html.j2" %}
 {% block title %}{{ lattice.name }} · {% endblock %}
 {% macro yes_no(value) %}{{ "yes" if value else "no" }}{% endmacro %}
+{% macro declared() %}<span class="declared" title="A person declared this value, and the notes give its source. The build did not compute it.">declared</span>{% endmacro %}
 {% block main %}
 <article>
   <header class="page-heading">
@@ -20,6 +21,7 @@
 
   <section aria-labelledby="invariants">
     <h2 id="invariants">Invariants</h2>
+    <p>The build computes each value on this page from the Gram tensor and rejects a record that states another, except a value marked {{ declared() }}: a person declared it, and the notes give its source.</p>
     <table class="facts">
       <tbody>
         <tr><th scope="row">Rank</th><td>{{ lattice.rank }}</td></tr>
@@ -69,7 +71,7 @@
         <tr><th scope="row">Unimodular</th><td>{{ yes_no(lattice.is_unimodular) }}</td></tr>
         {% endif %}
         {% if lattice.integral.genus_symbol %}
-        <tr><th scope="row">Genus symbol</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
+        <tr><th scope="row">Genus symbol</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\) {{ declared() }}</td></tr>
         {% endif %}
       </tbody>
     </table>
@@ -87,11 +89,9 @@
     <table class="facts">
       <tbody>
         <tr><th scope="row">Minimum of \({{ form }}(x, x)\), \(x \neq 0\)</th><td>\({{ rational_tex(lattice.definite.minimum) }}\)</td></tr>
-        {% if lattice.definite.kissing_number is not none %}
         <tr><th scope="row">Kissing number: the number of \(x\) at the minimum</th><td>{{ lattice.definite.kissing_number }}</td></tr>
-        {% endif %}
         {% if lattice.definite.automorphism_group_order is not none %}
-        <tr><th scope="row">Order of the isometry group</th><td>\({{ lattice.definite.automorphism_group_order }} = {{ factorisation_tex(lattice.definite.automorphism_group_order) }}\)</td></tr>
+        <tr><th scope="row">Order of the isometry group</th><td>\({{ lattice.definite.automorphism_group_order }} = {{ factorisation_tex(lattice.definite.automorphism_group_order) }}\) {{ declared() }}</td></tr>
         {% endif %}
         {% if lattice.definite.root_system is not none %}
         <tr><th scope="row">Type of \(\Phi_{\{ {{- norm -}} \}}(L) = \{r \in L : b(r, r) = {{ norm }}\}\)</th><td>{% if lattice.definite.root_system %}\({{ root_system_tex(lattice.definite.root_system) }}\){% else %}\(\varnothing\){% endif %}</td></tr>
@@ -125,7 +125,7 @@
     <h2 id="hyperbolic">Hyperbolic lattice</h2>
     <table class="facts">
       <tbody>
-        <tr><th scope="row">Reflective: the reflections generate a subgroup of finite index in the isometry group</th><td>{{ yes_no(lattice.hyperbolic.reflective) }}</td></tr>
+        <tr><th scope="row">Reflective: the reflections generate a subgroup of finite index in the isometry group</th><td>{{ yes_no(lattice.hyperbolic.reflective) }} {{ declared() }}</td></tr>
       </tbody>
     </table>
   </section>
