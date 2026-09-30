@@ -6082,15 +6082,15 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Scope**: Gröbner bases, syzygies, primary decompositions, Hilbert series, polynomial reduction, and local algebra computations.
 
-- **Rationale**: Battle-tested engines provide numerical stability, optimized C/C++ implementations, and mathematical verification.
+- **Rationale**: Battle-tested engines provide numerical stability and optimized C/C++ implementations, and they carry their own maintenance.  Their answers are untrusted like every computation's; only the `lean-cas-dsl` acceptance suite judges them.
 
 - **Violation Example**: Writing custom Python algorithms for multivariate polynomial division or Gröbner basis calculation.
 
 #### `ENG-02`: Prohibition of Hand-Rolled Standard Mathematics
 
-- **Rule**: Do not hand-roll algorithms or data structures available in mature upstream dependencies or Mathlib.
+- **Rule**: Do not hand-roll algorithms or data structures available in mature upstream dependencies.
 
-- **Rationale**: Custom mathematical algorithms create high maintenance overhead and lack formal verification.
+- **Rationale**: Custom mathematical algorithms create high maintenance overhead without making any answer more trustworthy.
 
 - **Violation Example**: Implementing custom Smith Normal Form or LLL reduction instead of delegating to native library routines.
 
@@ -6109,8 +6109,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
   - Singular, Macaulay2, Maxima, and PARI/GP
 
-- **Rationale**: The preamble owns categorical representations, universal properties, and mathematical structures.
-  Concrete computations belong to dedicated, verified engines.
+- **Rationale**: The preamble presents the categories, universal properties, and structures `lean-categories` formalizes.
+  Concrete computations belong to dedicated, maintained engines, whose answers are untrusted.
 
 - **Violation Example**: Writing custom graph connectivity or automorphism algorithms instead of delegating to `networkx` or Sage graph backends.
 
@@ -6119,49 +6119,49 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Rule**: When an algorithm requires multi-step engine computations, implement the engine logic directly in the target engine language (such as Julia/OSCAR or Singular) and wrap it with preamble category interfaces, whenever this reduces complexity or eliminates excessive cross-bridge data transport.
   First apply `OWN-08`: use an existing suitable high-level engine operation.
   Native engine glue composes maintained operations; writing a replacement
-  algorithm in the engine's language still requires the `ENG-06` ownership decision.
-  The Python mathematical layer should prepare the owned mathematical input, cross once into the engine routine, and reconstruct the owned mathematical output; it should not become a line-by-line orchestration language for the engine's matrices, syzygies, lifts, or stabilizer workspaces.
+  algorithm in the engine's language still requires the `ENG-06` engineering decision.
+  The Python mathematical layer should prepare the preamble input, cross once into the engine routine, and reconstruct the preamble output; it should not become a line-by-line orchestration language for the engine's matrices, syzygies, lifts, or stabilizer workspaces.
 
 - **Rationale**: Executes compute-heavy algebra natively in the host engine while exposing a uniform categorical interface to Sage sessions.
   A long Python routine whose dominant content is translating and reshaping intermediate engine objects is backend code in the wrong language and location.
 
-- **Violation Example**: Transporting intermediate matrices back and forth across a language bridge in a loop when one native Julia routine can perform the reduction and return the final invariant; a hundreds-of-lines Python kernel routine manually building Singular augmented matrices, calling `syz` twice, reshaping every intermediate result, and calling `lift` before finally reconstructing the owned kernel.
+- **Violation Example**: Transporting intermediate matrices back and forth across a language bridge in a loop when one native Julia routine can perform the reduction and return the final invariant; a hundreds-of-lines Python kernel routine manually building Singular augmented matrices, calling `syz` twice, reshaping every intermediate result, and calling `lift` before finally reconstructing the preamble kernel.
 
-- **Correct Example**: Pass the finite presentation and morphism data through one private Singular adapter whose native routine computes kernel generators, their relations, and lift data; cross back once and construct the owned presented kernel together with its inclusion and lifting morphism.
+- **Correct Example**: Pass the finite presentation and morphism data through one private Singular adapter whose native routine computes kernel generators, their relations, and lift data; cross back once and construct the preamble presented kernel together with its inclusion and lifting morphism.
 
-#### `ENG-05`: Rank Architectures by Human-Owned Complexity and Change Blast Radius, Not Dependency Weight
+#### `ENG-05`: Rank Architectures by Maintained Complexity and Change Blast Radius, Not Dependency Weight
 
-- **Rule**: Do not count an ordinary external dependency, build toolchain, package scaffold, or install step as an architectural disadvantage by itself.  When choosing between mature reusable infrastructure and a local implementation, compare the amount/scrutability of logic humans in this project must own, the future edit/review blast radius, and whether understanding is centralized for reuse rather than reimplemented by each consumer.
+- **Rule**: Do not count an ordinary external dependency, build toolchain, package scaffold, or install step as an architectural disadvantage by itself.  When choosing between mature reusable infrastructure and a local implementation, compare the amount/scrutability of logic humans in this project must maintain, the future edit/review blast radius, and whether understanding is centralized for reuse rather than reimplemented by each consumer.
 
 - **Rationale**: Most substrate complexity is shifted rather than eliminated.  Avoiding one dependency by writing a parser, graph algorithm, dispatcher, traversal, or algebra engine locally transfers the same conceptual cost into bespoke code that this project must reason about indefinitely and often multiplies it across consumers.
 
-- **Violation Example**: reject a maintained tree-sitter grammar because it adds a C/build dependency and instead maintain handwritten parsing logic; avoid `networkx` to save a package while owning DFS/SCC/toposort implementations; avoid a mature dispatch library and accumulate hand-written case registries.
+- **Violation Example**: reject a maintained tree-sitter grammar because it adds a C/build dependency and instead maintain handwritten parsing logic; avoid `networkx` to save a package while maintaining DFS/SCC/toposort implementations; avoid a mature dispatch library and accumulate hand-written case registries.
 
-- **Correct Example**: prefer the dependency when it centralizes the generic problem and leaves the preamble owning only its mathematical semantics/adaptation.  Reject a dependency for semantic mismatch, correctness, maintenance/reliability, or inability to satisfy the owned boundary—not merely because it exists.
+- **Correct Example**: prefer the dependency when it centralizes the generic problem and leaves the preamble only its presentation and adaptation.  Reject a dependency for semantic mismatch, maintenance/reliability, or inability to satisfy the preamble boundary—not merely because it exists.
 
 
 
 #### `ENG-06`: A New Nontrivial Mathematical Algorithm Requires a Demonstrated Backend Gap
 
-- **Rule**: Before the preamble owns a new nontrivial mathematical algorithm, search the repository's backend/capability references and the relevant mature open-source systems for the semantic operation.  If a suitable exact implementation exists, wire it behind the owned mathematical method.  Bespoke implementation is justified only after the relevant alternatives have been checked and a real semantic/capability gap is established; if owning the algorithm materially expands the project's correctness burden, it requires an explicit project/user decision rather than an agent convenience choice.
+- **Rule**: Before the preamble implements a new nontrivial mathematical algorithm, search the repository's backend/capability references and the relevant mature open-source systems for the semantic operation.  If a suitable exact implementation exists, wire it behind the preamble method.  Bespoke implementation is justified only after the relevant alternatives have been checked and a real semantic/capability gap is established; if maintaining the algorithm materially expands the project's burden, it requires an explicit project/user decision rather than an agent convenience choice.  The algorithm is an untrusted computation; any correctness argument written for it is not evidence.  An algorithm that needs mathematics `lean-categories` does not formalize is not written: that mathematics is requested there first.
 
-- **Rationale**: The preamble should own the mathematical ontology and thin semantic routing, not duplicate decades of exact algebra/group/geometry algorithms.  LLMs readily write plausible local algorithms because doing so completes the immediate method; that silently transfers correctness, performance, and edge-case responsibility into this repository.
+- **Rationale**: The preamble should present `lean-categories`' mathematics through thin semantic routing, not duplicate decades of exact algebra/group/geometry algorithms.  LLMs readily write plausible local algorithms because doing so completes the immediate method; that silently transfers maintenance, performance, and edge-case responsibility into this repository.
 
 - **Violation Example**: implement local orbit/stabilizer enumeration without checking GAP; write polynomial syzygy/Groebner logic instead of Singular; implement lattice/form equivalence from scratch while Oscar/Hecke/Indefinite.jl/Sage already provide an exact route.
 
-- **Correct Example**: identify the owned operation first, inspect the capability map/upstream documentation, add the narrow backend crossing, and return the owned result.  If no mature implementation actually exists, record that concrete gap and only then design the smallest source-grounded algorithm the project deliberately chooses to own.
+- **Correct Example**: identify the `lean-categories` operation first, inspect the capability map/upstream documentation, add the narrow backend crossing, and return the preamble result.  If no mature implementation actually exists, record that concrete gap and only then design the smallest algorithm the project deliberately chooses to maintain.
 
 #### `ENG-07`: Friction With the Engine Is the Datum; It Is Never Routed Around
 
-- **Rule**: When a Sage route is slow, rejects an input, or returns a result of the wrong shape, the task changes at that point.  Before any other edit: isolate the engine from the preamble on a specimen of the same order and shape; measure the cost as wall time against the size parameter, at more than one size; search inside Sage for the alternate route (the method's `algorithm=` choices, a backend Sage ships reached through Sage's own interface, a different constructor, a sibling module), reading the source; and record what was found under `DEV-63`.  Only then choose the route the owned name delegates to.  Replacing the library, hand-rolling the routine, adding a cache, or deleting the call that exposed the cost before that record exists is banned, whatever the size of the tool and whether or not the code is preamble mathematics.
+- **Rule**: When a Sage route is slow, rejects an input, or returns a result of the wrong shape, the task changes at that point.  Before any other edit: isolate the engine from the preamble on a specimen of the same order and shape; measure the cost as wall time against the size parameter, at more than one size; search inside Sage for the alternate route (the method's `algorithm=` choices, a backend Sage ships reached through Sage's own interface, a different constructor, a sibling module), reading the source; and record what was found under `DEV-63`.  Only then choose the route the preamble name delegates to.  Replacing the library, hand-rolling the routine, adding a cache, or deleting the call that exposed the cost before that record exists is banned, whatever the size of the tool and whether or not the code is preamble mathematics.
 
-- **Rationale**: A gap in Sage has three kinds, absent, present and wrong, and present but unaffordable, and the owned name exists to absorb whichever one is found.  The measurement is the admission ticket: `ENG-06` lets the preamble own an algorithm only on a demonstrated gap, so discarding the measurement forecloses the one route by which the project could ever legitimately take the computation on.  The finding is also the most durable thing the task can produce: it does not expire, it does not depend on the state of the tree, and it costs a researcher's afternoon to rediscover every time it is lost.  See *The artifacts are instruments; the product is a map of Sage* under the design philosophy.
+- **Rationale**: A gap in Sage has three kinds, absent, present and wrong, and present but unaffordable, and the preamble name exists to absorb whichever one is found.  The measurement is the admission ticket: `ENG-06` lets the preamble implement an algorithm only on a demonstrated gap, so discarding the measurement forecloses the one route by which the project could ever legitimately take the computation on.  The finding is also the most durable thing the task can produce: it does not expire, it does not depend on the state of the tree, and it costs a researcher's afternoon to rediscover every time it is lost.  See *The artifacts are instruments; the product is a map of Sage* under the design philosophy.
 
 - **Observed**: the declared-category-graph tool, 2026-09-16.  The first version hand-rolled a spanning forest and a cycle basis where `Graph.minimum_cycle_basis` exists; the second, on a speed complaint, replaced Sage's graph library with `networkx`.  Neither examined the Sage routine.  The result was zero knowledge of `Graph.minimum_cycle_basis`, `longest_path`, or `SimplicialComplex.homology` on the one graph that Sage itself traverses to join and linearize the preamble's own categories, and the swap would have left the tool looking fine while the fact stayed hidden.  The measurement is scheduled as the TODO node `category-graph-engine`.
 
 - **Violation Example**: `import networkx` added to a module because a Sage call felt slow; a depth-first search written in place of the Sage routine because a Sage constructor rejected the input as given; a `cached_method` added to a slow path before anyone found out why it is slow; a slow view deleted from a tool so that the tool passes.
 
-- **Correct Example**: build a Sage graph of the same order and shape with no preamble in the process, time the call at three sizes, read the method's source for its `algorithm=` choices, record the curve and the chosen route in `TRAPS.md`, and route the owned operation through that spelling.  If the route is unaffordable at every size the research uses, that record is the `ENG-06` gap, and owning the algorithm becomes a decision the project can now make.
+- **Correct Example**: build a Sage graph of the same order and shape with no preamble in the process, time the call at three sizes, read the method's source for its `algorithm=` choices, record the curve and the chosen route in `TRAPS.md`, and route the preamble operation through that spelling.  If the route is unaffordable at every size the research uses, that record is the `ENG-06` gap, and implementing the algorithm becomes a decision the project can now make.
 
 #### `ENG-08`: A Second Engine Is Adopted Only on a Recorded Measurement
 
@@ -6181,11 +6181,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `BND-01`: Backend State Has One Private Owner and One Controlled Crossing
 
-- **Rule**: Durable backend state is private to the owned object or private adapter that owns that computational realization.
+- **Rule**: Durable backend state is private to the preamble object or private adapter that holds that computational realization.
   A backend datum has one private accessor or boundary helper at its owning layer; do not create public accessors, aliases, or unrelated direct field reads.
   Protected contracts satisfy `OWN-05`: name the owner, permitted roles, exact
   types and invariants at the declaration. Mathematical subsystems exchange
-  owned values, not raw handles. A comment authorizing a convenient private
+  preamble values, not raw handles. A comment authorizing a convenient private
   read is not a protected contract.
 
 - **Rationale**: Multiple ways to reach the same engine are multiple APIs.
@@ -6198,16 +6198,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `BND-02`: Cross In, Compute, Cross Back
 
-- **Rule**: A backend crossing converts owned inputs to the backend representation, performs the backend computation, and converts the result back before the boundary returns.
+- **Rule**: A backend crossing converts preamble inputs to the backend representation, performs the backend computation, and converts the result back before the boundary returns.
   Backend parents, elements, vectors, matrices, submodules, homsets, normal-form workspaces, GAP objects, and all other representation structures do not propagate past that computation site.
-  There is no element exception: a backend element is backend data and must be converted to an owned element before return.
+  There is no element exception: a backend element is backend data and must be converted to a preamble element before return.
 
-- **Rationale**: Backend delegation is safe only when the backend computes for the owned mathematics rather than becoming a second mathematical universe used by downstream code.
+- **Rationale**: Backend delegation is safe only when the backend computes behind the preamble objects rather than becoming a second universe used by downstream code.
   Immediate conversion back keeps representation-specific assumptions local and makes backend replacement possible without changing mathematical callers.
 
 - **Violation Example**: Internal Hom computes an FGP kernel and returns that Sage FGP module or its elements for later consumers to inspect; a lattice invariant returns a Sage kernel basis and expects its caller to reconstruct the lattice; an owned group operation returns a GAP element because GAP performed the multiplication.
 
-- **Correct Example**: Cross an owned module morphism and its owned coefficients into Sage's FGP representation to compute a kernel, then construct the owned presented kernel, owned kernel elements, and owned inclusion before returning.
+- **Correct Example**: Cross a preamble module morphism and its coefficients into Sage's FGP representation to compute a kernel, then construct the preamble presented kernel, its elements, and its inclusion before returning.
 
 
 #### `BND-05`: Backend Conversion Is Private and Non-Exported
@@ -6223,63 +6223,64 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: A private FGP adapter owns `_to_sage_ring`, `_to_sage_element`, and `_from_sage_element` locally, performs the whole Smith computation, and returns an owned tensor/module/morphism.  No public caller can obtain or supply those Sage objects.
 
-#### `BND-03`: Dispatch on Declared Owned Mathematics, Never by Type Peeking
+#### `BND-03`: Dispatch on Declared Placement, Never by Type Peeking
 
-- **Rule**: Public and category-level behavior is selected by owned category membership, owned structure, or the object's owned operations.
-  Do not use `isinstance`, `type(...)`, `hasattr`, `getattr`-probing, or `try/except AttributeError` to discover what mathematical structure an owned object has or which mathematical operation it supports.
+- **Rule**: Public and category-level behavior is selected by category membership, the structure the object was constructed with, or its category operations.
+  Do not use `isinstance`, `type(...)`, `hasattr`, `getattr`-probing, or `try/except AttributeError` to discover what mathematical structure a preamble object has or which mathematical operation it supports.
   Matching on engine classes is permitted only inside a private engine boundary whose job is to select an engine-specific implementation after the mathematical operation has already been chosen.
 
 - **Rationale**: Python class identity and method presence answer how an object happened to be implemented, not what mathematical structure it carries.
   Type- and capability-peeking recreate implementation hierarchies as hidden second category graphs and let consumers infer stronger structure than was declared.
 
-- **Violation Example**: A scalar-multiplication routine branches on `FreeModule_generic`, FGP module, and quotient-module classes after receiving an owned module; code asks `hasattr(M, "presentation_matrix")` to decide whether `M` is presented; a public group method decides group structure by inspecting the Sage class of the owned parent.
+- **Violation Example**: A scalar-multiplication routine branches on `FreeModule_generic`, FGP module, and quotient-module classes after receiving a preamble module; code asks `hasattr(M, "presentation_matrix")` to decide whether `M` is presented; a public group method decides group structure by inspecting the Sage class of the preamble parent.
 
-- **Correct Example**: Ask the owned module for its scalar action or `scalar_multiple`; inside the private group-engine boundary, match on the Sage engine class only to choose the corresponding GAP/Sage algorithm and return owned results.
+- **Correct Example**: Ask the preamble module for its scalar action or `scalar_multiple`; inside the private group-engine boundary, match on the Sage engine class only to choose the corresponding GAP/Sage algorithm and return preamble results.
 
 #### `BND-06`: Backend Correspondence Provides Capabilities; It Does Not Define the Category Taxonomy
 
-- **Rule**: Maintain backend mappings as implementation/capability correspondences from owned mathematical categories/constructions to available Sage/GAP/Julia/etc. realizations and algorithms.  The correspondence need not be injective and is not an equality of taxonomies.  Backend category names, graph edges, MRO order, and equality do not create or identify owned mathematical categories.
+- **Rule**: Maintain backend mappings as implementation/capability correspondences from the preamble's presented categories/constructions to available Sage/GAP/Julia/etc. realizations and algorithms.  The correspondence need not be injective and is not an equality of taxonomies.  Backend category names, graph edges, MRO order, and equality do not create or identify categories; `lean-categories` does.
 
-- **Rationale**: Several backend categories may implement the same normalized mathematics, and one backend category may package a combination of structures differently from the owned graph.  The useful question is “which backend capabilities are available for this owned object/operation?”, not “how do I make the owned hierarchy mirror Sage's?”.
+- **Rationale**: Several backend categories may implement the same mathematics, and one backend category may package a combination of structures differently from the preamble graph.  The useful question is “which backend capabilities are available for this preamble object/operation?”, not “how do I make the preamble hierarchy mirror Sage's?”.
 
-- **Violation Example**: Add an owned category only because a Sage category has no current target; require one-to-one mapping between Sage category names and owned categories; copy `super_categories()` edges into the mathematical graph as authoritative inclusions.
+- **Violation Example**: Add a preamble category only because a Sage category has no current target; require one-to-one mapping between Sage category names and preamble categories; copy `super_categories()` edges into the preamble graph as authoritative inclusions.
 
-- **Correct Example**: the owned graph is fixed by mathematics; a private/versioned bridge records each meaningful backend realization and the operations it can supply.  Multiple backend realizations may inhabit the same capability fiber, and updating Sage versions changes only the bridge, not the mathematical ontology.
+- **Correct Example**: the preamble graph is fixed by `lean-categories`; a private/versioned bridge records each meaningful backend realization and the operations it can supply.  Multiple backend realizations may inhabit the same capability fiber, and updating Sage versions changes only the bridge, never the category graph.
 
 #### `BND-07`: Reuse Engine Computation Without Adopting Its Public Objects
 
-- **Rule**: The preamble owns mathematical identity and all public objects;
-  maintained engines own their computations. Private engine representations
+- **Rule**: `lean-categories` defines the mathematics; the preamble presents it
+  through its own public objects; maintained engines perform the computations,
+  whose answers are untrusted. Private engine representations
   may be ephemeral or privately cached under `OWN-10`. Reuse of host runtime
-  primitives for generated owned types does not authorize adopting, reclassing,
+  primitives for generated preamble types does not authorize adopting, reclassing,
   subclassing, or returning an engine's concrete mathematical parent or elements
   as preamble objects. An audit does not waive `ARC-05`, `ARC-06`, or `OWN-04`.
 
-- **Rationale**: Algorithm reuse and independent public ownership are simultaneous
-  requirements. Treating runtime adoption as another public ownership mode
-  makes an engine's inherited API an alternate mathematical language.
+- **Rationale**: Algorithm reuse and the preamble's own public objects are
+  simultaneous requirements. Treating runtime adoption as another way to supply
+  public objects makes an engine's inherited API an alternate mathematical language.
 
 - **Violation Example**: Replace a Sage algorithm with local Smith reduction to
-  obtain owned elements; alternatively, return Sage elements from an owned parent
-  because its concrete runtime type was declared audited.
+  obtain preamble elements; alternatively, return Sage elements from a preamble
+  parent because its concrete runtime type was declared audited.
 
-- **Correct Example**: The preamble owns the module and its selected presentation;
+- **Correct Example**: The preamble module holds its selected presentation;
   a private Sage/Singular computation returns data that the adapter raises into
-  owned elements and an owned normalization isomorphism through the sanctioned
-  constructor. Sage `Parent`/`Element` primitives may implement the owned runtime
-  without making Sage's concrete modules the public objects.
+  preamble elements and a preamble normalization isomorphism through the
+  sanctioned constructor. Sage `Parent`/`Element` primitives may implement the
+  preamble runtime without making Sage's concrete modules the public objects.
 
-#### `BND-04`: Never Repair an Ownership Violation with Compatibility Machinery
+#### `BND-04`: Never Repair a Boundary Violation with Compatibility Machinery
 
-- **Rule**: When an owned object or element has been placed inside an engine object, an engine object has been reclassed as owned, or an owned parent has been made a facade over backend elements, fix that ownership seam.
-  Do not compensate by joining Sage categories into owned parents, teaching Sage constructors to accept owned rings, adding coercion hooks, skipping problematic engine element types, preserving backend elements through facade parents, or installing backend protocol methods solely to keep the invalid embedding working.
+- **Rule**: When a preamble object or element has been placed inside an engine object, an engine object has been reclassed as a preamble object, or a preamble parent has been made a facade over backend elements, fix that boundary seam.
+  Do not compensate by joining Sage categories into preamble parents, teaching Sage constructors to accept preamble rings, adding coercion hooks, skipping problematic engine element types, preserving backend elements through facade parents, or installing backend protocol methods solely to keep the invalid embedding working.
 
-- **Rationale**: These patches are symptoms of the same inversion: the engine has become responsible for understanding the owned universe.
+- **Rationale**: These patches are symptoms of the same inversion: the engine has become responsible for understanding the preamble's objects.
   Each workaround expands the coupling and creates the next failure at coercion, element identity, category comparison, or constructor dispatch.
 
-- **Violation Example**: Joining a Sage engine category into an owned ring so `FreeModule(owned_ring, n)` succeeds; skipping Cython element refinement because a reclassed permutation group loops in coercion; declaring Sage vectors to be the elements of an owned free module; adding `_im_gens_` only because a Sage algebra constructor received an owned module parent.
+- **Violation Example**: Joining a Sage engine category into a preamble ring so `FreeModule(preamble_ring, n)` succeeds; skipping Cython element refinement because a reclassed permutation group loops in coercion; declaring Sage vectors to be the elements of a preamble free module; adding `_im_gens_` only because a Sage algebra constructor received a preamble module parent.
 
-- **Correct Example**: A private adapter converts owned ring elements to Sage ring elements, builds a Sage free module or FGP workspace entirely on the backend side, computes there, and converts all outputs back.  A private group adapter may use a Sage/GAP group model, but public group parents and elements remain owned.  No backend category join, facade parent, reclassification, or backend-element exception is required.
+- **Correct Example**: A private adapter converts preamble ring elements to Sage ring elements, builds a Sage free module or FGP workspace entirely on the backend side, computes there, and converts all outputs back.  A private group adapter may use a Sage/GAP group model, but public group parents and elements remain preamble objects.  No backend category join, facade parent, reclassification, or backend-element exception is required.
 
 
 #### `BRG-01`: Structured Engine Bridges Over Ad-Hoc Shelling
@@ -6293,7 +6294,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `BRG-02`: Explicit Mathematical Interface Boundaries
 
 - **Rule**: Translate data explicitly across bridge boundaries.
-  Validate input types and convert results into owned repository types immediately upon return.
+  Validate input types and convert results into preamble types immediately upon return.
 
 - **Rationale**: Keeps engine-specific representation leaks out of the public category API.
 
