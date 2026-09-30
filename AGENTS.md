@@ -153,7 +153,7 @@ Read [COMPLAINTS.md](COMPLAINTS.md) for observed foundational gaps and papercuts
 relevant to the construction. It records unmet needs, not completed work or a
 substitute architecture.
 
-When the owner calls a move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external: look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
+When the owner calls an engineering move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external (for mathematics the standard is `lean-categories`): look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
 
 Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
@@ -289,7 +289,8 @@ choosing its implementation.** Apply
 and `OWN-01`. State the leaf request using standard mathematical objects, maps,
 categories and hypotheses, as it should be expressed in an ideal API. Recursively
 trace what those notions require down to the named set-theoretic and categorical
-foundations, reusing source-backed accounts of established dependencies. Do not
+foundations in `lean-categories`; a notion it lacks is requested there
+([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)). Do not
 start with the classes, engine objects, or methods that happen to be available.
 
 Trace defining data, morphisms, universal constructions, and preservation
@@ -303,7 +304,8 @@ not permission to rewrite foundations or create another tracking framework.
 [`DEV-59`](CONTRIBUTING.md#dev-59-record-observed-foundational-gaps-and-papercuts)
 in [COMPLAINTS.md](COMPLAINTS.md), including findings outside the selected task.
 Give the missing general mathematics, the dependency path, observed evidence,
-existing partial capability, affected consumers, and an honest coverage boundary.
+existing partial capability, affected consumers, an honest coverage boundary,
+and the `lean-categories` request for mathematics it lacks.
 Also record concrete workflow papercuts. A guessed absence or hypothetical future
 friction is not an observed defect; unresolved capability questions stay labeled.
 
@@ -316,25 +318,28 @@ The detailed capture and maintenance contract lives in `DEV-59`.
 
 ## Construction and engine boundaries (always-on)
 
-**The preamble's primary engineering purpose is stitching and organizing existing
-mathematics and implementations, not inventing another CAS.** Read the
+**The preamble's primary engineering purpose is presenting `lean-categories`'
+mathematics and organizing existing implementations behind it, not inventing
+another CAS.** Read the
 [design philosophy](CONTRIBUTING.md#preamble-design-philosophy) together with the
 architecture specification. Interpret an ordinary feature request as integrating
-existing capabilities through shared owned constructions. Local code supplies
+existing capabilities through shared preamble constructions. Local code supplies
 the actual missing semantic integration; a genuinely new algorithm requires the
-demonstrated gap and explicit ownership decision in `ENG-06`.
+demonstrated gap and explicit engineering decision in `ENG-06`, and is an
+untrusted computation like every other.
 
 This applies to shared categorical computation as well as specialized theories.
 Moving bespoke logic into the framework or an adapter does not make it reuse.
 Conversely, using an upstream algorithm never authorizes exposing its objects:
-the public mathematical interface and every constituent remain fully owned.
+the public interface and every constituent remain preamble objects.
 
-**Own all public mathematics; reuse maintained computation privately.** Apply
+**Present all public mathematics through preamble objects; reuse maintained
+computation privately.** Apply
 `OWN-01` through `OWN-14` in the
 [architecture specification](CONTRIBUTING.md#preamble-architecture-specification).
 Neither correct numerical output nor private naming excuses a different path.
 
-- **Enter through the mathematical owner.** Locate the category/object method
+- **Enter where `lean-categories` places the operation.** Locate the category/object method
   and defining constructor before editing a consumer. Direct construction,
   notation, functor images, catalogue examples, and raised engine results must
   establish the same defining datum. Public morphisms use `Mor`. An importable
@@ -344,34 +349,37 @@ Neither correct numerical output nor private naming excuses a different path.
   actions, differentials, inclusions, projections, and inherited operations must
   agree with that construction. A category label is not missing construction data.
 - **Raise every constituent.** Public results, lazy family values, coefficients,
-  base rings, representatives, maps, and arithmetic results are preamble-owned.
-  Returning an owned parent containing publicly reachable foreign mathematics
+  base rings, representatives, maps, and arithmetic results are preamble objects.
+  Returning a preamble parent containing publicly reachable foreign mathematics
   violates the boundary. No public raw-engine ingress or egress is authorized.
-- **Keep private access at its owner.** Ordinary mathematical code calls owned
+- **Keep private access at its owner.** Ordinary mathematical code calls preamble
   operations, never another object's engine accessor or storage. A protected
   protocol requires the declaration-side contract in `OWN-05`; an underscore,
   import, helper extraction, or comment at the call site does not grant access.
-- **Reuse algorithms at the right level.** Search existing owned constructions
+- **Reuse algorithms at the right level.** Search existing preamble constructions
   and maintained computational packages before adding logic. Inspect the result
   and map contract, not just the method name. A low-level library call inside a
   locally rebuilt standard algorithm does not satisfy reuse. Framework suitability
   and computational suitability are separate decisions.
 - **Repair the prerequisite.** If the sanctioned route cannot express the needed
-  construction, repair that exact owner before extending its consumer. Do not add
+  construction, repair that exact owner before extending its consumer; if what is
+  missing is mathematics, request it from `lean-categories` and park the consumer. Do not add
   an unchecked constructor, raw representation route, or local algorithm to keep
   the diff small. Report a genuine scope/authority obstruction without supplying
   the wrong object. Do not turn this into an unrelated framework rewrite.
 - **Review the route as well as the answer.** Read from the public entrypoint
-  through its defining data and private adapter to the fully owned result and
-  induced maps. Use mathematical specimens to distinguish the promised object
-  from its convenient substitute; source review establishes architectural reuse.
+  through its defining data and private adapter to the preamble result and
+  induced maps. Use specimens to distinguish the promised object from its
+  convenient substitute; source review establishes architectural reuse. Both are
+  engineering review and certify nothing about correctness, which only the
+  `lean-cas-dsl` acceptance suite judges.
   Follow `DEV-58` for the execution phase, not a new local checking workflow.
 
 The architecture specification also owns the required construction factorizations
 and upstream discovery references. Update that contract when the user decides an
 architectural change; do not make a TODO, comment, or local example a competing
 specification. These rules bind existing consumers as well as new code. Earlier
-source or archive examples are not permission to reproduce an ownership violation.
+source or archive examples are not permission to reproduce a boundary violation.
 
 ## Threaded specialization and universal constructions (always-on)
 
@@ -383,7 +391,8 @@ operations usable. Composition stores an actual owned instance of the general
 construction and delegates to it. Category labels, copied methods, equivalent
 answers, or a diagram attached after independent construction do not qualify.
 The general datum, maps and operations have one authority; the specialization
-adds its own structure and theorem-backed realization, not another general API.
+adds its own structure and a realization a `lean-categories` theorem justifies,
+not another general API.
 
 For limits, colimits, systems, completions, and related constructions, first read
 the normative
@@ -399,8 +408,8 @@ restriction directions, and mathematical distinctions required below.
   do not compute a second generic result or recurse through the same constructor
   merely to demonstrate threading.
 - Retain each construction's diagram and universal cone/cocone even when a
-  maintained engine realizes its result. Preserve every constituent as owned
-  mathematics, including lazy stages. Do not store caller-specific presentation
+  maintained engine realizes its result. Preserve every constituent as a preamble
+  object, including lazy stages. Do not store caller-specific presentation
   data on a shared result object or duplicate it in a leaf implementation.
 - Expose finite restrictions of the represented system with their indexing
   maps. Keep the full object, restricted diagram, stage and element precision
@@ -414,7 +423,8 @@ restriction directions, and mathematical distinctions required below.
 
 These are mathematical threading requirements for the selected consumer, not
 authorization to build every conceivable foundation first. Record actual gaps
-under `DEV-59`, and implement the remaining shared requirement with its consumer.
+under `DEV-59`, request missing mathematics from `lean-categories`, and implement
+the remaining shared presentation with its consumer.
 
 ## Do not end a turn without the next node started (always-on)
 
@@ -819,7 +829,7 @@ question.  The student must unfold the structure that makes the correction
 true.  The question is not a request for the smallest compatible patch.
 
 Consider an integral domain \(R\) and its fraction field
-\(K=\operatorname{Frac}(R)\).  The advisor asks why ideals are not owned as
+\(K=\operatorname{Frac}(R)\).  The advisor asks why ideals are not presented as
 \(R\)-submodules of the regular module \(R\).  The advisor also asks why an
 integral basis is not an \(R\)-basis of the relevant integral \(R\)-algebra.
 These are not two method requests.  They expose one missing mathematical
@@ -853,7 +863,8 @@ and number-field algebras therefore belong to one scalar-change theory.
 This theory is implementation compression.  Ideals can use module and
 subobject operations.  Bases can use the free-module structure.  Algebra
 morphisms can move through scalar extension.  Many apparent missing methods
-become consequences of structures that the repository already owns.
+become consequences of structures that `lean-categories` formalizes and the
+repository already presents.
 
 The failed trajectory hears only the word "basis".  It asks PARI for
 elements and returns a tuple in \(A\).  It can also take a chosen
@@ -895,8 +906,9 @@ just -f ~/gitclones/formalization-corpus/justfile search 'IsometryEquiv'
 code, preamble categories, notebooks and prose all state mathematics that somebody has probably
 already written down precisely, and a formal statement is the most precise form the literature
 has: it fixes the hypotheses, the codomain, and the generality that a paper leaves to context.
-Search it before deciding what a definition says, before adopting a name, before concluding a
-notion is this project's to invent, and before writing a proof of something standard.
+Search it, with `lean-categories`, before deciding what a definition says, before adopting a
+name, and before filing a `lean-categories` request. No notion is this project's to invent,
+and this project writes no proofs.
 
 A miss is a dated, scoped result — *not found in the corpus at the index it currently holds* —
 and never the claim that nobody has formalized this. Widen to upstream Mathlib, Loogle, LeanSearch
@@ -904,9 +916,11 @@ and GitHub before recording a negative, the way the reuse gate in `lean-categori
 
 **The corpus locates a notion; it does not rule on a field it has barely formalized.** Lattice
 theory over number fields (duals, `A`-modularity, genera, discriminant forms) is thin and partly
-wrong in Mathlib. There the authority is the number-theory literature — arXiv papers, Kirschmer,
-O'Meara — and the maintained implementations in Hecke/Oscar. A Mathlib definition is cited for
-such a notion only when it agrees with those sources.
+wrong in Mathlib. There the authority is `lean-categories`' formalization of the number-theory
+literature — arXiv papers, Kirschmer, O'Meara — and a notion it lacks is requested there with
+those sources. The maintained implementations in Hecke/Oscar are untrusted computations and
+never an authority on what a notion is. A Mathlib definition is cited for such a notion only
+when it agrees with those sources.
 
 # Work-selection discipline (always-on)
 
@@ -1018,7 +1032,7 @@ something is slow, is not optimization — it is hiding the defect. Reaching for
 different library is the same move with a worse consequence: it also deletes
 the site where the cost would have been measured (`ENG-07`, `ENG-08`).
 
-**Test specimens are small by default.** A proof of correctness for invariants,
+**Test specimens are small by default.** A test of invariants,
 coinvariants, or \(O(L)\) does not need \(E_8\), a K3 lattice, or an Enriques
 lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
 combinations; their orthogonal groups are finite and their invariants and
@@ -2691,8 +2705,9 @@ such a case is a criterion smuggled in without its theorem.
 - Use high-level notebooks for real mathematical work, not only API demonstrations.
 - Keep the preamble small, cohesive, native to Sage, and usable without notebook setup.
 
-## Proof and tests
+## Tests
 
+- Research's tests are its own and certify nothing outside it; correctness evidence exists only in the `lean-cas-dsl` acceptance suite.
 - Test mathematical behavior and method resolution through Sage categories, not scaffolding or correction history.
 - Assert the correct parent, category, domain, codomain, images of elements where defined, composition, or mathematical equality.
 - Test high-level notebook operations when notebook usability is the claimed behavior.
@@ -3136,14 +3151,14 @@ When one condition occurs:
 - Do not ask the user to select the next probe when the repository can answer it.
 - Do not manufacture ambiguity after the user has already decided the architecture.
 
-## Work selection and proof
+## Work selection and checking
 
 - A count of type errors does not measure architectural correctness.
 - A count of passing tests does not measure mathematical correctness.
 - A count of migrated files does not measure semantic completion.
 - A green toy specimen does not prove migration of the live surface.
-- State the mathematical claim that the current artifact makes true.
-- Verify that claim on a concrete repository-owned object.
+- State the mathematical claim the current artifact is meant to make true.
+- Exercise that claim on a concrete repository object; the exercise is research's own check, not evidence of correctness.
 - Choose specimens that exercise the real category, constructor, element, and morphism paths.
 - Use notebook research objects when the requirement concerns notebook research.
 - Do not substitute a nearby proxy object.
