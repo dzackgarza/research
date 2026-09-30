@@ -1,0 +1,75 @@
+{
+ "name": "KAPPA7",
+ "title": "KAPPA7",
+ "url": "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/KAPPA7.html",
+ "dimension": 7,
+ "determinant": 384,
+ "minimal_norm": 4,
+ "kissing_number": 92,
+ "references": [],
+ "gram_tensor": [
+  [
+   4,
+   -2,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   -2,
+   4,
+   -2,
+   2,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   -2,
+   4,
+   0,
+   0,
+   2,
+   0
+  ],
+  [
+   0,
+   2,
+   0,
+   4,
+   2,
+   2,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   2,
+   4,
+   2,
+   2
+  ],
+  [
+   0,
+   0,
+   2,
+   2,
+   2,
+   4,
+   1
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   2,
+   1,
+   4
+  ]
+ ]
+}
