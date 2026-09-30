@@ -1733,7 +1733,7 @@ Use this table during review before reading the longer entries below.  Each left
 | `Random*` / `Example*` / `Test*` type/category | process generates defining data for the ordinary constructor; named specimens go in catalogues |
 | negative/absence test passes if object/result is empty/dead | prove a positive live surface/completeness witness first; prefer the positive universal property |
 | easy determinant/count/fingerprint used to prove stronger claim | definition, cited complete invariant, or explicit witness |
-| algorithm must exhaust `G`, `M`, `L`, etc. | structural/generator/presentation/theorem-backed check; explicit lazy enumeration only when enumeration is the operation |
+| algorithm must exhaust `G`, `M`, `L`, etc. | structural/generator/presentation check justified by a `lean-categories` theorem; explicit lazy enumeration only when enumeration is the operation |
 | public name contains `partial`/`fast`/`cached`/engine name | use the stable mathematical noun/verb; put algorithm routing in implementation |
 | “tensor product of matrices” | Kronecker product of matrices; tensor product belongs to represented maps/modules |
 | `dot_product`/Euclidean norm/projection on arbitrary formed object | use the object's declared form/correlation; Euclidean algorithms only under the correct refinement |
@@ -2600,7 +2600,7 @@ orbit = G.orbit(x)
 stabilizer = G.stabilizer(x)
 ```
 
-with the implementation delegated through the private group backend.  The preamble owns the mathematical object; GAP owns the generic finite-group algorithm.
+with the implementation delegated through the private group backend.  The preamble presents the group action `lean-categories` formalizes; GAP performs the generic finite-group algorithm.
 
 #### `STY-43`: Genuine fixed-point/search algorithm -> keep explicit loop
 
@@ -3599,7 +3599,7 @@ Thin wrappers are therefore judged by **session ergonomics**, not by whether bac
 
 #### `STY-89`: Method visibility follows mathematical definability, not current decidability
 
-A method visible under tab completion says: **this notion is mathematically defined for this object**. It does *not* promise that the CAS can decide or compute it for every represented instance today.
+A method visible under tab completion says: **`lean-categories` defines this notion for this object**. It does *not* promise that the CAS can decide or compute it for every represented instance today.
 
 Canonical example: a set such as
 
@@ -3709,7 +3709,7 @@ return image_rows == relation_rows
 return d1.image() == augmentation.kernel()
 ```
 
-with subobject/Hom equality owning whatever finite-coordinate algorithm is presently available.  This allows future infinite/theorem-backed equality algorithms without rewriting `FreeResolution.is_exact()`.
+with subobject/Hom equality owning whatever finite-coordinate algorithm is presently available.  This allows future infinite-case equality algorithms without rewriting `FreeResolution.is_exact()`.
 
 #### `STY-94`: Assemble block matrices by hand -> construct the block morphism on biproducts/direct sums
 
@@ -3763,7 +3763,7 @@ This also avoids the blast radius when `G` is infinitely generated but represent
 
 **Bad default:** enumerate every element of a finite underlying set and every scalar, then test all triples to decide associativity/module laws or enumerate every element to compute an annihilator.
 
-**Preferred:** express the structure by the mathematical maps that make the law meaningful and use category/theorem-backed algorithms.  For a module, the scalar action is `rho:R -> End(M)`; for the annihilator, use the kernel/ideal of the scalar-action morphism where represented.  An exhaustive finite check can remain one explicit computability case in a routing table, but must not become the ontology or the only architecture.
+**Preferred:** express the structure by the mathematical maps that make the law meaningful and use structural algorithms.  For a module, the scalar action is `rho:R -> End(M)`; for the annihilator, use the kernel/ideal of the scalar-action morphism where represented.  An exhaustive finite check can remain one explicit computability case in a routing table, but must not become the ontology or the only architecture.
 
 Concrete smell: `GeneralModuleParent.annihilator()` currently enumerates the scalar ring and entire module; `_verify_module_laws_when_decidable()` performs cubic scans of the underlying set.  Those are acceptable finite diagnostics/fallbacks, not the general mathematical implementation strategy.
 
@@ -3914,7 +3914,7 @@ else:
 K = f.kernel()
 ```
 
-with `kernel()` itself routing finite-free, finitely-presented, sparse/infinite, theorem-backed, or engine-specific cases. Downstream mathematics should normally be representation-oblivious.
+with `kernel()` itself routing finite-free, finitely-presented, sparse/infinite, or engine-specific cases. Downstream mathematics should normally be representation-oblivious.
 
 #### `STY-108`: Local helper that reconstructs a universal construction -> delete it in favor of the universal construction
 
@@ -3976,9 +3976,9 @@ Inside a private finite-coordinate boundary, do not manually own standard row/co
 
 **Preferred finite backend idioms:** `matrix(rows)`, `column_matrix(columns)`, `diagonal_matrix`, `block_matrix`, `block_diagonal_matrix`, `identity_matrix`, `zero_matrix`, sparse constructors, `.apply_map`, and slicing.  Better still, if the object is mathematically a biproduct morphism, form, or endomorphism, construct that semantic object and let its backend choose the matrix constructor.
 
-#### `STY-115`: Ported Sage signature -> resite the mathematics; never port the ontology
+#### `STY-115`: Ported Sage signature -> resite the operation; never port Sage's object model
 
-A foreign method name/signature is evidence about available computation, not a contract for the owned API.
+A foreign method name/signature is a fact about available computation, not a contract for the preamble API; the contract is `lean-categories`' operation.
 
 **Red flags:** `ambient=`, `in_ambient=`, `even=`, `negative=`, mode booleans naming category membership, or a method on a bare object whose actual datum is an inclusion/morphism/base change.
 
@@ -4058,11 +4058,11 @@ A prescription that describes the rejected model is a code generator for future 
 
 #### `STY-126`: Copy/port old implementation structure -> semantic reconciliation
 
-When absorbing archived/legacy code, first map every notion onto the current owned ontology.
+When absorbing archived/legacy code, first map every notion onto the `lean-categories` notion the preamble presents.
 
 **Bad:** copy a module/class hierarchy because it already implements the algorithm, or quarantine only a tiny slice while leaving duplicate notions.
 
-**Preferred:** reuse current categories/functors/Homs where the notion already exists; rewrite only genuinely missing mathematics into current owners and style.  Preserve semantics, not directory layout, class names, or historical architecture.
+**Preferred:** reuse current categories/functors/Homs where the notion is already presented; present a notion only where `lean-categories` formalizes it, and request it there otherwise.  Old code's own notions carry no authority.  Preserve the formalized semantics, not directory layout, class names, or historical architecture.
 
 #### `STY-127`: Bare multi-structure generator name -> qualify the structure
 
@@ -4082,13 +4082,13 @@ Do not confuse inability to enumerate/generate an object with inability to repre
 
 **Bad:** refuse to construct `O(L)`, a stabilizer, a center, or another predicate carve-out because generators/relations are unavailable.
 
-**Preferred:** construct the owned predicate-defined subgroup/subset/category with membership and the operations that are available.  Add enumeration/generator algorithms as computable cases later.  A predicate must not claim `True` merely on trust; construction-time trust, when unavoidable, is a separately documented choice.
+**Preferred:** construct the predicate-defined subgroup/subset/category, as `lean-categories` defines it, with membership and the operations that are available.  Add enumeration/generator algorithms as computable cases later.  A predicate computes its answer; it never answers `True` because construction accepted an input.
 
-#### `STY-130`: Definition hard-codes a removable hypothesis -> formulate generally, recover the special case by refinement
+#### `STY-130`: Presentation hard-codes a hypothesis the definition lacks -> present at the formalized generality, recover the special case by refinement
 
-**Red flags:** a framing requires a finite/ordered set although the definition only needs a set; a direct-sum notion is defined only for finite families because the first backend is matrix-based; a construction is named after one base ring even though its definition works over a wider ring class.
+**Red flags:** a framing requires a finite/ordered set although the definition only needs a set; a direct-sum notion is presented only for finite families because the first backend is matrix-based; a construction is named after one base ring even though its definition works over a wider ring class.
 
-**Preferred:** state the notion at the weakest hypotheses under which it remains mathematically meaningful, then recover finite/free/projective/ordered/enumerable/commutative special cases as axioms, subcategories, or algorithmic cases.  Use extreme infinite/nonenumerable objects as stress tests of the interface even when the current computation does not handle them.
+**Preferred:** present the notion at the hypotheses `lean-categories` states for it, then recover finite/free/projective/ordered/enumerable/commutative special cases as the axioms, subcategories, or algorithmic cases it formalizes.  If `lean-categories` states the notion under a hypothesis stronger than the literature needs, that is a request there, not a local generalization.  Use extreme infinite/nonenumerable objects as stress tests of the interface even when the current computation does not handle them.
 
 #### `STY-131`: Hidden mathematical choice / definite article -> name the selecting datum
 
@@ -4213,7 +4213,7 @@ A notion with an a priori mathematical meaning is not a customization hook.
 
 **Bad:** ask for an `integrality_submodule`, an `integral_over=` mode, or another parameter redefining what “integral” means when the existing ring map already determines integrality.
 
-**Preferred:** derive the notion from the relevant structure already present—for example integrality in a ring extension from the specified ring morphism.  If a genuinely different notion is wanted, give it a different mathematical name rather than parameterizing the standard one into ambiguity.
+**Preferred:** derive the notion from the relevant structure already present—for example integrality in a ring extension from the specified ring morphism.  If a genuinely different notion is wanted, it is a different notion, requested from `lean-categories` under its own name, never a parameter that makes the standard one ambiguous.
 
 #### `STY-144`: “Safe” horizontal patch during an architectural migration -> make the breaking vertical move
 
@@ -4235,7 +4235,7 @@ Do not force every question into a Python boolean, and do not use `Unknown` to r
 
 **Soft knowledge/computability predicate:** a deliberately epistemic API such as `generators_are_computable()` or `has_computed_group_generators()` may have the explicit three-valued codomain `True | False | Unknown` when “not currently known/decided” is itself what the method is asking.
 
-**Bad:** return `False` from `is_nondegenerate()` because no algorithm is known; return `Unknown` as the “cardinality” of a set; return `True` from a soft predicate merely because construction trusted an input.
+**Bad:** return `False` from `is_nondegenerate()` because no algorithm is known; return `Unknown` as the “cardinality” of a set; return `True` from a soft predicate merely because construction accepted an input.
 
 #### `STY-147`: Universal-property test checks one factorization only -> test existence and uniqueness
 
@@ -4261,13 +4261,13 @@ as object identity/one owned construction with the relevant category placements.
 
 **Bad:** dozens of tests independently write facts such as named-lattice ranks, discriminants, orbit counts, genus classes, number-field invariants, or classification-table rows as inline literals, often with duplicated or missing provenance.
 
-**Preferred:** put the independently verified mathematical fact in the repository's topic-organized fixture/fact corpus with its construction/identifier, value(s), citation/oracle provenance, and verification status.  Tests become thin parametrized drivers that compute the repository result and compare it to that fact.
+**Preferred:** put the fact in the repository's topic-organized fixture/fact corpus with its construction/identifier, value(s) and citation.  Tests become thin parametrized drivers that compute the repository result and compare it to that fact.  These tests are research's own and certify nothing outside it; correctness evidence exists only in the `lean-cas-dsl` acceptance suite.
 
-#### `STY-150`: Current implementation output used as its own expected value -> independent source/oracle
+#### `STY-150`: Current implementation output used as its own expected value -> independent cited source
 
-**Bad:** run the method being tested, copy its output into a fixture, then assert future runs reproduce that output; or treat a Sage result as mathematical truth merely because Sage is the current backend under test.
+**Bad:** run the method being tested, copy its output into a fixture, then assert future runs reproduce that output; or treat a Sage result, or any engine's own test corpus, as mathematical truth.
 
-**Preferred:** expected mathematical values come from an independent cited source, a separately justified oracle/reference implementation, or a migrated source-system test corpus appropriate to the task.  The implementation under test is never the provenance for its own expected result.
+**Preferred:** expected mathematical values come from an independent cited source or proof.  No implementation, including the one under test, a Sage call or research code, is the provenance for an expected result.
 
 #### `STY-151`: Element repr exposes coordinate storage -> render the mathematical expression
 
@@ -4291,15 +4291,15 @@ for an owned set `S`.  The distinguished-generator map is the underlying-set ima
 
 #### `STY-153`: Backend-category graph used as mathematical taxonomy -> capability correspondence
 
-**Bad:** mirror Sage's `super_categories()` graph, manufacture owned categories solely so every Sage name has a destination, or use Sage category equality/edge layout to decide mathematical identity.
+**Bad:** mirror Sage's `super_categories()` graph, manufacture preamble categories solely so every Sage name has a destination, or use Sage category equality/edge layout to decide what a category is.
 
-**Preferred:** the owned category/functor graph defines the mathematics.  A private/versioned correspondence records which Sage categories/implementations can compute for which owned categories and operations.  Several Sage categories may provide one owned capability; one Sage category may require a normalized owned expression.  Backend taxonomy is empirical implementation data, not ontology.
+**Preferred:** `lean-categories` defines the categories and functors; the preamble's category graph presents them.  A private/versioned correspondence records which Sage categories/implementations can compute for which presented categories and operations.  Several Sage categories may provide one capability; one Sage category may require a normalized preamble expression.  Backend taxonomy is empirical implementation data, never mathematics.
 
 #### `STY-154`: Descendants repeat inherited operations -> fulfill obligations through the preferred functor
 
 **Bad:** lattices reimplement cardinality/iteration, modules reimplement generic set products, every structured category writes its own version of an operation already owned below a forgetful/structure functor.
 
-**Preferred:** declare the semantic operation once and identify a preferred structure-forgetting/projection functor at the appropriate rollup point.  Delegate `X.operation()` through that functor when the target category already owns the operation.  A descendant implements only the new structure or a genuinely better algorithm justified by its refinement.
+**Preferred:** declare the semantic operation once and identify a preferred structure-forgetting/projection functor at the appropriate rollup point.  Delegate `X.operation()` through that functor when the target category already carries the operation.  A descendant implements only the new structure or a genuinely better algorithm justified by its refinement.
 
 #### `STY-155`: Constructor named after a derived subcategory -> construct at the owning root and refine the result
 
@@ -4466,7 +4466,7 @@ using the same immutable mathematical data for equality and hashing.  Let Sage's
 
 **Preferred:** represent the element as the actual finite formal combination of its owned symbols and coefficients, and use Sage's `repr_lincomb` (or the corresponding owned formal-sum renderer) when its semantics match.  Let the coefficient ring and symbol objects supply their own representations.  Do not rebuild sign/`±1`/zero formatting by hand in every module/lattice/algebra element class.
 
-This is not cosmetic: a symbolic `2*e - f` display reinforces that the element is a formal mathematical element, while a raw tuple or hand-formatted coordinate vector trains the numerical ontology the API is trying to prevent.
+This is not cosmetic: a symbolic `2*e - f` display reinforces that the element is a formal mathematical element, while a raw tuple or hand-formatted coordinate vector trains the numerical reading the API is trying to prevent.
 
 #### `STY-169`: Algorithm exhausts an entire mathematical object -> use structural data/theorem or make enumeration the explicit operation
 
@@ -4510,7 +4510,7 @@ In chosen finite bases, its representing matrix is the Kronecker product of `A` 
 
 **Bad:** make the base formed-object API positive definite or nondegenerate because the first available matrix routine needs an invertible/PD Gram matrix.
 
-**Preferred:** arbitrary (including degenerate/indefinite) forms are first-class at the general owner.  Methods whose **mathematical definition** requires definiteness/nondegeneracy live on that narrower category; methods defined generally keep their general name/domain and route/assertion-gate the currently computable cases.  Backend assumptions never redefine the base mathematical object.
+**Preferred:** arbitrary (including degenerate/indefinite) forms are first-class at the general category.  Methods whose **mathematical definition** requires definiteness/nondegeneracy live on that narrower category; methods defined generally keep their general name/domain and route/assertion-gate the currently computable cases.  Backend assumptions never redefine the base mathematical object.
 
 #### `STY-173`: Defect found in an owned dependency -> local facade/protocol workaround -> fix the owner
 
@@ -4520,23 +4520,23 @@ In chosen finite bases, its representing matrix is the Kronecker product of `A` 
 
 #### `STY-174`: Stored backend object as long-lived implementation twin -> reconstruct ephemeral computation state when practical
 
-**Bad:** an owned mathematical object stores a Sage/GAP/etc. twin and ordinary downstream methods repeatedly dig into it, allowing the backend ontology to become durable hidden state.
+**Bad:** a preamble object stores a Sage/GAP/etc. twin and ordinary downstream methods repeatedly dig into it, allowing the backend's object model to become durable hidden state.
 
-**Preferred:** for large standard algorithms whose inputs/outputs are mathematical data, construct the private backend representation from the owned data at the computation boundary, perform the complete operation, convert back, and discard it.  Durable backend state is justified only when the representation itself is a required long-lived computational resource and then remains behind one private owner/boundary (`BND-01`).
+**Preferred:** for large standard algorithms whose inputs/outputs are mathematical data, construct the private backend representation from the preamble data at the computation boundary, perform the complete operation, convert back, and discard it.  Durable backend state is justified only when the representation itself is a required long-lived computational resource and then remains behind one private owner/boundary (`BND-01`).
 
 #### `STY-175`: Read every Sage `super_categories()` edge as inclusion -> classify the structural map first
 
 Sage uses one graph edge mechanism for mathematically different relationships: full-subcategory inclusion, forgetting one operation/projection from a structured object, parameterized-family relationships, and implementation/MRO organization.
 
-**Bad:** see `A in B.super_categories()` and conclude “every `B` is an `A`” or copy the edge directly into the owned category graph.
+**Bad:** see `A in B.super_categories()` and conclude “every `B` is an `A`” or copy the edge directly into the preamble's category graph.
 
-**Preferred:** determine the actual mathematical map represented by that Sage declaration—subcategory inclusion, forgetful/projection functor, reindexing/base-family map, or merely host implementation organization—then encode that owned construction/functor.  The Sage edge is empirical evidence about Sage, not the mathematical theorem.
+**Preferred:** determine which `lean-categories` map, if any, that Sage declaration corresponds to (subcategory inclusion, forgetful/projection functor, reindexing/base-family map) or whether it is merely host implementation organization, then present that construction/functor.  The Sage edge is a fact about Sage, never a theorem.
 
-#### `STY-176`: Sage category equality/parent lists used as category equivalence -> compare owned mathematical constructions
+#### `STY-176`: Sage category equality/parent lists used as category equivalence -> compare the formalized categories
 
 **Bad:** conclude two categories are mathematically different because Sage `C != D`, or identical because `C.super_categories() == D.super_categories()`.
 
-**Preferred:** identify the owned normalized mathematical construction each Sage category models and compare those.  Two different Sage presentations of one pullback/category may compare unequal; two genuinely different refinements can have identical declared parents.  Missing Sage edges are implementation gaps, not mathematical non-inclusions.
+**Preferred:** identify the `lean-categories` category each Sage category corresponds to and compare those.  Two different Sage presentations of one pullback/category may compare unequal; two genuinely different refinements can have identical declared parents.  Missing Sage edges are implementation gaps, not mathematical non-inclusions.
 
 #### `STY-177`: Bundled object type/presentation called “the category” -> keep the levels separate
 
@@ -4553,41 +4553,41 @@ Before naming an implementation artifact, separately identify:
 
 **Preferred:** name each level explicitly.  Equivalence between presentations does not erase which choice/structure the API actually carries.
 
-#### `STY-178`: Exact upstream name not found -> compose standard mathematics before declaring a gap
+#### `STY-178`: Exact name not found -> look for the formalized composition before declaring a gap
 
-**Bad:** search Sage/Mathlib for one class/function with the exact local spelling, find none, and conclude the concept must be newly implemented or contributed upstream.
+**Bad:** search `lean-categories`, Sage or Mathlib for one class/function with the exact local spelling, find none, and conclude the concept must be requested or implemented.
 
-**Preferred:** attempt to express it as a standard composition: a full subcategory cut out by a property, structured objects, a Hom/category construction, slice/coslice, inclusion/forgetful functor, base change, or transport through an equivalence.  A missing packaged noun is not a missing mathematical primitive.
+**Preferred:** look in `lean-categories` for the notion as a standard composition it already formalizes: a full subcategory cut out by a property, structured objects, a Hom/category construction, slice/coslice, inclusion/forgetful functor, base change, or transport through an equivalence.  A missing packaged noun is not a missing mathematical primitive.  Composing it is `lean-categories`' work; if it does not formalize the composite, request it there.
 
 #### `STY-179`: Upstream correspondence found -> preserve redundant local declaration -> delete/resite it if the correspondence exposes wrong ownership
 
 **Bad:** discover that a ring-specific `size()` is exactly underlying-set cardinality and “fix” the design by delegating `Ring.size()` to that set cardinality, preserving the duplicate public word.
 
-**Preferred:** use the correspondence diagnostically.  If the standard owner is `Sets`, remove the ring-local synonym and let the ring recover `cardinality()` through the forgetful/structural functor.  Alignment can prove a declaration redundant or misplaced; it does not automatically justify keeping it.
+**Preferred:** use the correspondence diagnostically.  If `lean-categories` places the operation on `Sets`, remove the ring-local synonym and let the ring recover `cardinality()` through the forgetful/structural functor.  Alignment can prove a declaration redundant or misplaced; it does not automatically justify keeping it.
 
-#### `STY-180`: Avoid a mature dependency because it is “heavy” -> compare human ownership and blast radius instead
+#### `STY-180`: Avoid a mature dependency because it is “heavy” -> compare maintained code and blast radius instead
 
 **Bad reasoning:** reject `networkx`, a parser/grammar package, a multidispatch library, or another mature dependency because it adds packages, a build toolchain, or installation scaffolding, then implement the generic machinery locally.
 
-**Preferred reasoning:** treat ordinary dependency/build/package substrate as baseline engineering.  Compare designs by the mathematics/generic logic the repository must now own and review, the blast radius of adding/changing a case, and whether other consumers can reuse the external abstraction instead of relearning it.  Use the mature dependency when it removes substantial owned machinery and is semantically appropriate.
+**Preferred reasoning:** treat ordinary dependency/build/package substrate as baseline engineering.  Compare designs by the generic logic the repository must now maintain and review, the blast radius of adding/changing a case, and whether other consumers can reuse the external abstraction instead of relearning it.  Use the mature dependency when it removes substantial local machinery and is semantically appropriate.
 
 #### `STY-181`: Hand-roll against Sage because the relevant host idiom was not checked -> inspect the host first
 
 **Bad:** manually implement generator naming, identity construction, conformance checking, matrix reshaping, coercion, graph traversal, or another operation before checking Sage/stdlib/upstream for the native idiom.
 
-**Preferred:** inspect the live host API/source and, when behavior matters, run a distinguishing probe.  Use the host operation where its semantics match; wrap it only at the owned mathematical boundary if vocabulary/ontology differs.  Lack of familiarity with Sage is not a reason to create a second local language.
+**Preferred:** inspect the live host API/source and, when behavior matters, run a distinguishing probe.  Use the host operation where its semantics match; wrap it only at the preamble boundary if its vocabulary or object model differs.  Lack of familiarity with Sage is not a reason to create a second local language.
 
 #### `STY-182`: Nontrivial local algorithm appears before backend search -> map the semantic operation to mature software first
 
 **Red flag:** a new multi-step algorithm for groups, ideals, lattices/forms, polyhedra, number theory, symbolic algebra, or graph structure appears in Python without any indication that the installed/open-source capability stack was checked.
 
-**Preferred:** name the semantic operation, search the repository capability map and relevant mature exact systems, then either delegate through the owned boundary or document the true gap that forces local ownership.  “It was straightforward to code here” is not evidence that the repository should own it.
+**Preferred:** name the semantic operation, search the repository capability map and relevant mature exact systems, then either delegate through the preamble boundary or document the true gap that justifies a local implementation under `ENG-06`.  “It was straightforward to code here” is not a reason for the repository to maintain it.
 
 #### `STY-183`: Named composite/classifier spelling -> duplicate category vertex -> preserve one identity
 
 **Bad:** represent `Semigroups` and `Magmas.Associative` as two independent categories connected by an equivalence/alias edge; similarly create a second category solely for every readable composite name.
 
-**Preferred:** the standard name and the classifier expression are two presentations of **one category identity**.  The public name may be `Semigroups`; the defining expression may be `Magmas.Associative`; no second vertex/object is created.
+**Preferred:** the standard name and the classifier expression are two spellings of **one category**, the one `lean-categories` formalizes.  The public name may be `Semigroups`; the defining expression may be `Magmas.Associative`; no second vertex/object is created.
 
 #### `STY-184`: Same axiom word reused globally -> interpret classifier relative to its host category
 
@@ -4595,29 +4595,29 @@ Names such as `Commutative`, `Distributive`, `Graded`, `Finite`, etc. have meani
 
 **Bad:** create one global `Commutative` node because Sage happens to reuse that axiom spelling across unrelated theories.
 
-**Preferred:** `Groups.Commutative`, `Rings.Commutative`, a lattice-poset classifier, etc. are classifier applications whose actual mathematics is determined by the host/defining morphism.  Transport a classifier to another category via the corresponding pullback when that is the mathematics; do not identify classifiers by string.
+**Preferred:** `Groups.Commutative`, `Rings.Commutative`, a lattice-poset classifier, etc. are classifier applications whose meaning is the one `lean-categories` gives on that host.  Transport a classifier to another category via the corresponding pullback where `lean-categories` states it; do not identify classifiers by string.
 
 #### `STY-185`: Readable name for a pullback/refinement -> independent species -> retain the defining category expression
 
 **Bad:** mint `FiniteRings`, `GradedAlgebras`, `BasedModules`, etc. as unrelated categories merely because a readable plural name is convenient.
 
-**Preferred:** first represent the actual expression, e.g. `Rings.Finite` or `Algebras(R).Graded`, with the appropriate classifier/pullback structure.  A standard established plural may be registered as the public name/alias of that same identity; the name does not replace or duplicate the construction.
+**Preferred:** first represent the actual expression, e.g. `Rings.Finite` or `Algebras(R).Graded`, with the appropriate classifier/pullback structure.  A standard established plural may be registered as the public name/alias of that same category; the name does not replace or duplicate the construction.
 
 #### `STY-186`: Generated “certificate/evidence/status” artifact for facts derivable from live code -> live semantic structure plus on-demand report
 
 **Bad:** add a per-object certificate/attestation JSON, proof-metadata ABC, generated status ledger, or stored compliance manifest whose fields are all recomputable from category placement, MRO, constructors, functors, and runtime behavior.
 
-**Preferred:** put the actual invariant into the type/category/constructor language; verify live behavior with mathematical specimens or the host's native conformance mechanism; generate any human-readable inventory on demand.  Store only genuinely authored mathematical design commitments that cannot be derived from the live system.  Do not create a second ledger that must be synchronized forever.
+**Preferred:** put the actual invariant into the type/category/constructor language; exercise live behavior with specimens or the host's native conformance mechanism; generate any human-readable inventory on demand.  Do not create a second ledger that must be synchronized forever.  No certificate, attestation or status an implementation produces about itself is evidence of anything; correctness evidence exists only in the `lean-cas-dsl` acceptance suite.
 
 #### `STY-187`: Category constructibility decided by graph reachability/name lookup -> derive canonical structural maps
 
 **Bad:** say a category/refinement is “constructible” because a named node exists or because BFS finds some path through an implementation graph; traverse projection arrows backwards to manufacture structure.
 
-**Preferred:** use the owned category expression/finite-limit grammar: canonical structural maps compose in their declared direction; classifiers/refinements are introduced only when the required map to their host exists; pullback/classifier constructions create their own projections.  Constructibility is derivability in this typed structural calculus, not arbitrary graph connectivity.
+**Preferred:** use the preamble's category-expression/finite-limit grammar, which presents `lean-categories`' structural maps: canonical structural maps compose in their stated direction; classifiers/refinements are introduced only when the required map to their host exists; pullback/classifier constructions create their own projections.  Constructibility is derivability in this typed structural calculus, not arbitrary graph connectivity.
 
 #### `STY-188`: Default display repeats the type/role -> expose mathematical data of this object
 
-The default display of every preamble-owned object must reduce mathematical uncertainty about the **particular object being displayed**.  A class name, noun phrase, constructor family, or paraphrase of the object's type is not a display.  The researcher already knows that a value returned by `module_generators()` is a generator family and that an object constructed by `Lattices(R)(...)` is a lattice.  Printing only `"Lattice-generator family"`, `"Lattice"`, `"placed map"`, or an equivalent type-renaming is therefore a failed display.
+The default display of every preamble object must reduce mathematical uncertainty about the **particular object being displayed**.  A class name, noun phrase, constructor family, or paraphrase of the object's type is not a display.  The researcher already knows that a value returned by `module_generators()` is a generator family and that an object constructed by `Lattices(R)(...)` is a lattice.  Printing only `"Lattice-generator family"`, `"Lattice"`, `"placed map"`, or an equivalent type-renaming is therefore a failed display.
 
 **Preferred:** show independently useful mathematical information that distinguishes this object from another object of the same type.  Use whichever data are already cheap and canonical for the object, for example:
 
@@ -4657,7 +4657,7 @@ A stronger object may of course use a distinct parent so that two choices of add
 
 #### `STY-191`: Comment or docstring teaches standard mathematics -> state the convention, cite the source, delete the lesson
 
-The reader of this repository's source is a mathematician.  A comment or docstring states what the reader cannot supply from the code and their own training: the convention chosen where several exist (reduced or unreduced homology, left or right action, which duality functor), an engine's input demand or output shape (with its `TRAPS.md` row), the hypothesis under which a criterion applies, and the citation.  It never derives, motivates, or teaches the mathematics the code uses.
+The reader of this repository's source is a mathematician.  A comment or docstring states what the reader cannot supply from the code and their own training: the convention in force where several exist (reduced or unreduced homology, left or right action, which duality functor), as `lean-categories` fixes it or as the engine returns it, an engine's input demand or output shape (with its `TRAPS.md` row), the hypothesis under which a criterion applies, and the citation.  It never derives, motivates, or teaches the mathematics the code uses.
 
 **Bad:** a docstring explaining that a graph is a 1-dimensional complex, that \(H_1\) is therefore the whole cycle space, and that \(\pi_1\) is free of rank \(E - V + C\), above a function that calls `minimum_cycle_basis`.
 
@@ -4669,7 +4669,7 @@ The test: delete the paragraph and ask whether a mathematician reading the code 
 
 Before accepting a new global helper, explicit `for`/`while`, mutable accumulator, cache, registry, runtime probe, or bespoke data structure, check the catalogue above and answer:
 
-1. Which mathematical object owns this operation?
+1. On which mathematical object does `lean-categories` place this operation?
 2. Can the user discover it from that object with tab completion?
 3. Is this exactly map/filter/fold/search/group/flatten/count/queue/traversal syntax already named by Python or a dependency?
 4. Is there already a repository abstraction for the same mathematical operation?
@@ -4677,7 +4677,7 @@ Before accepting a new global helper, explicit `for`/`while`, mutable accumulato
 6. Can the computation remain lazy or finite-support instead of materializing a whole family?
 7. Is the loop genuinely stateful mathematics/algorithmics?  If yes, keep it explicit and use the standard worklist/data structure.
 8. Does adding this specialized feature force an ancestor to import or name the descendant?  If yes, recheck dependency direction.
-9. Does a backend already own the generic algorithm?  If yes, delegate and cross back.
+9. Does a backend already implement the generic algorithm?  If yes, delegate and cross back.
 
 A construct that survives these questions is allowed.  The catalogue exists to make the routine cases routine and to keep review attention on the mathematics.
 
