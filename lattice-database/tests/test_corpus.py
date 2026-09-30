@@ -1,10 +1,11 @@
 """A corpus is valid exactly when the statements of a record about other records agree with those records."""
 
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
 import yaml
-from latticedb import corpus
+from latticedb import arithmetic, corpus
 from latticedb.model import Yaml
 
 
@@ -101,3 +102,48 @@ def test_the_families_file_is_read_as_one_line_of_meaning_per_family(tmp_path: P
     with pytest.raises(corpus.CorpusInvalid) as raised:
         corpus.load(directory)
     assert len(raised.value.problems) == 1
+
+
+def rank_three(tag: str, name: str, gram_tensor: list[list[int]]) -> dict[str, Yaml]:
+    """A3 or D3 in its basis of simple roots: the same lattice, since A3 and D3 are isometric."""
+    return {
+        "tag": tag,
+        "name": name,
+        "latex": name,
+        "rank": 3,
+        "gram_tensor": gram_tensor,
+        "signature": [3, 0],
+        "determinant": 4,
+        "definiteness": "positive_definite",
+        "provenance": {"source": "Test record."},
+        "integral": {"parity": "even", "discriminant_group": [4]},
+        "definite": {
+            "minimum": 2,
+            "kissing_number": 12,
+            "theta_series": [1, 0, 12, 0, 6, 0, 24, 0, 12, 0, 24, 0, 8],
+            "root_system": ["A3"],
+            "roots": [{"type": "C3", "scale": 1, "simple_roots": [[0, 1, 0], [0, 0, 1], [1, 0, -1]] if name == "A3" else [[0, 0, 1], [0, 1, 0], [1, -1, 0]]}],
+        },
+    }
+
+
+def test_two_definite_records_that_are_isometric_in_different_bases_are_rejected(tmp_path: Path) -> None:
+    a3 = rank_three("0002", "A3", [[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
+    d3 = rank_three("0003", "D3", [[2, 0, -1], [0, 2, -1], [-1, -1, 2]])
+    directory = write(tmp_path, a3, d3)
+    with pytest.raises(corpus.CorpusInvalid) as raised:
+        corpus.load(directory)
+    assert len(raised.value.problems) == 1
+    assert "0002" in raised.value.problems[0] and raised.value.problems[0].startswith(str(directory / "lattices" / "0003.md"))
+
+
+def test_isometry_of_definite_lattices_is_decided_on_the_gram_tensors() -> None:
+    a3 = tuple(tuple(Fraction(value) for value in row) for row in [[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
+    d3 = tuple(tuple(Fraction(value) for value in row) for row in [[2, 0, -1], [0, 2, -1], [-1, -1, 2]])
+    assert arithmetic.is_isometric(a3, d3)
+    # Both of determinant 3, positive definite: <1> + <3> has a vector of norm 1 and A2 does not.
+    diagonal = ((Fraction(1), Fraction(0)), (Fraction(0), Fraction(3)))
+    a2 = ((Fraction(2), Fraction(1)), (Fraction(1), Fraction(2)))
+    assert not arithmetic.is_isometric(diagonal, a2)
+    # A2 and its scaling by 1/2 have different least denominators.
+    assert not arithmetic.is_isometric(a2, tuple(tuple(value / 2 for value in row) for row in a2))

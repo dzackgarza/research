@@ -2,10 +2,13 @@
 
 A file is YAML front matter, which holds the record of one lattice, and then
 prose in Markdown. `load` validates each record by itself and then checks the
-statements that concern more than one record, or a record and the families.
+statements that concern more than one record, or a record and the families,
+and that no two definite records are the same lattice in different bases.
 """
 
 from dataclasses import dataclass
+from fractions import Fraction
+from itertools import combinations
 from pathlib import Path
 
 import frontmatter
@@ -14,7 +17,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from latticedb import arithmetic
 from latticedb.arithmetic import GramTensor
-from latticedb.model import Family, Lattice
+from latticedb.model import AdeType, Definiteness, Family, Lattice
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -45,8 +48,40 @@ class CorpusInvalid(Exception):
         self.problems = problems
 
 
+IsometryInvariants = tuple[int, Definiteness, Fraction, Fraction, int, tuple[AdeType, ...] | None, tuple[int, ...] | None, tuple[int, ...] | None]
+"""Rank, definiteness, determinant, minimum, kissing number, root system, theta series and discriminant group: invariants of the isometry class that a record states, and that the build has checked."""
+
+
+def _isometry_invariants(lattice: Lattice) -> IsometryInvariants:
+    definite = lattice.definite
+    assert definite is not None, "only a definite record is compared by isometry class"
+    integral = lattice.integral
+    discriminant_group = None if integral is None else integral.discriminant_group
+    return (lattice.rank, lattice.definiteness, lattice.determinant, definite.minimum, definite.kissing_number, definite.root_system, definite.theta_series, discriminant_group)
+
+
+def _isometric_pairs(entries: list[Entry]) -> list[tuple[Entry, Entry]]:
+    """Each pair of definite records that are isometric, decided by `qfisom` on the pairs whose stated invariants agree.
+
+    Whether two indefinite lattices are isometric is not decided here: `qfisom`
+    decides it for definite forms only, and the corpus states no invariant that
+    would decide it for the others.
+    """
+    by_invariants: dict[IsometryInvariants, list[Entry]] = {}
+    for entry in entries:
+        if entry.lattice.definite is not None:
+            by_invariants.setdefault(_isometry_invariants(entry.lattice), []).append(entry)
+    return [
+        (first, second)
+        for group in by_invariants.values()
+        for first, second in combinations(group, 2)
+        # A pair with the same components is reported as such.
+        if first.lattice.gram_tensor != second.lattice.gram_tensor and arithmetic.is_isometric(first.lattice.gram_tensor, second.lattice.gram_tensor)
+    ]
+
+
 def problems(entries: list[Entry], families: Families) -> list[str]:
-    """The problems that concern more than one record or the families: a file name that is not its tag, a repeated name or Gram tensor, a family that `families.yaml` does not list, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
+    """The problems that concern more than one record or the families: a file name that is not its tag, a repeated name or Gram tensor, two definite records that are isometric, a family that `families.yaml` does not list, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     by_name: dict[str, Path] = {}
@@ -74,6 +109,7 @@ def problems(entries: list[Entry], families: Families) -> list[str]:
             summands = tuple(by_tag[tag].gram_tensor for tag in span.summands if tag in by_tag)
             if not missing and arithmetic.restriction(lattice.gram_tensor, span.embedding) != arithmetic.orthogonal_sum(summands):
                 found.append(f"{entry.path}: the rows of root_span.embedding do not have the Gram tensor of the orthogonal sum of the summands")
+    found.extend(f"{second.path}: the lattice is isometric to {first.path} ({first.lattice.name}), in another basis" for first, second in _isometric_pairs(entries))
     return found
 
 

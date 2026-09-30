@@ -131,6 +131,15 @@ def test_new_refuses_a_lattice_whose_components_are_those_of_a_record_of_the_cor
     assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
 
 
+def test_new_refuses_a_definite_lattice_that_is_isometric_to_a_record_of_the_corpus(tmp_path: Path) -> None:
+    root = write_corpus(tmp_path)
+    run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--source", "Test record.", "--root", str(root))
+    # A2 in the basis e_1, -e_2 has b(e_1, e_2) = -1.
+    with pytest.raises(SystemExit):
+        run("new", "--gram", "[[2, -1], [-1, 2]]", "--name", "A2 in another basis", "--latex", "A_2", "--source", "Test record.", "--root", str(root))
+    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md", "0002.md"]
+
+
 def test_new_refuses_a_family_that_families_yaml_does_not_list(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     with pytest.raises(SystemExit):

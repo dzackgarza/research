@@ -21,7 +21,8 @@ type GramTensor = tuple[tuple[Fraction, ...], ...]
 type Vector = tuple[int, ...]
 """Coordinates of an element of `L` in the basis `e_1, ..., e_n`."""
 
-_PARI = Pari()
+# `qfisom` on two distinct even unimodular lattices of rank 16 grew the stack to 128 MB; the stack grows on demand up to this bound.
+_PARI = Pari(sizemax=2**30)
 
 
 def _components(gram_tensor: GramTensor) -> fmpq_mat:
@@ -188,6 +189,23 @@ def theta_coefficients(gram_tensor: GramTensor, bound: int) -> tuple[int, ...]:
     assert is_integer_valued(gram_tensor), "the coefficients of the theta series are indexed by integers only for an integer-valued form"
     _, _, form = _positive_integer_form(gram_tensor)
     return (1, *(2 * int(pairs) for pairs in form.qfrep(bound)))
+
+
+def is_isometric(gram_tensor: GramTensor, other: GramTensor) -> bool:
+    """Whether the two definite lattices are isometric: whether some `g` in `GL_n(Z)` has `g^t b g = b'`.
+
+    Isometric lattices have the same least `k` with `k b` integer valued, and
+    are isometric exactly when the positive definite integer forms `k |b|`
+    and `k |b'|` are. PARI's `qfisom` decides that by the algorithm of
+    Plesken and Souvignier, and returns `0` when they are not.
+    """
+    assert len(gram_tensor) == len(other), "isometric lattices have the same rank"
+    assert (gram_tensor[0][0] > 0) == (other[0][0] > 0), "isometric lattices have the same sign"
+    scale, _, form = _positive_integer_form(gram_tensor)
+    other_scale, _, other_form = _positive_integer_form(other)
+    if scale != other_scale:
+        return False
+    return form.qfisom(other_form).type() != "t_INT"
 
 
 def is_isotropic(gram_tensor: GramTensor) -> bool:

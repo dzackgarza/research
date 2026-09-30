@@ -122,12 +122,13 @@ The address of a lattice is `tag/<TAG>.html`.
 
 To add a lattice:
 
-1. Search the database page for the lattice, by name and by its invariants (rank, determinant, minimum, kissing number), so that a lattice already in the corpus under another basis or another name is not added twice.
+1. Search the database page for the lattice, by name and by its invariants (rank, determinant, minimum, kissing number), so that a lattice already in the corpus under another name is not added twice.
+   For a definite lattice the command below decides isometry with a record of the corpus (PARI `qfisom`) and refuses a lattice that is already there in another basis; for an indefinite lattice the search is the only check.
 
 2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2 --source '...'` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
    `--alias`, `--family`, `--reference`, `--url` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
    For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`, fetches it first when it does not exist, checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference and the provenance of the entry.
-   The command refuses a record that does not validate, that repeats the name or the components of a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
+   The command refuses a record that does not validate, that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
 
 3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
    For a record that is not definite whose `root_span` block the command could not decide, write the block and its proof by hand.
@@ -135,7 +136,8 @@ To add a lattice:
 4. `just build` validates the corpus and builds the site.
    It prints each problem of each record with the path of the file and the field.
 
-The corpus is also checked as a whole: two records cannot have the same name or the same components, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`.
+The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`.
+Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree, so the check costs nothing on a corpus without such a pair.
 
 `just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
 Run it after a change to the computation, and read the diff.
