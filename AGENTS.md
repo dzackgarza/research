@@ -1475,14 +1475,17 @@ first -- the formalization corpus, a text -- never recalled. The centre of a non
 algebra was asserted from memory on 2026-09-17 where the definition is the centroid
 (Mathlib `CentroidHom`), and the question built on it was wrong.
 
-# A supercategory declaration is a mathematical claim (always-on)
+# A supercategory entry presents a formalized inclusion (always-on)
 
 `super_categories()` states that **every object of this category is an object
-of those**. It is a theorem about the objects, not a slot to fill so that
-construction proceeds, and it is read by inheritance: an object receives the
-operations of everything its category declares.
+of those**. It presents a theorem `lean-categories` states about the objects, not
+a slot to fill so that construction proceeds, and it is read by inheritance: an
+object receives the operations of everything its category declares. The
+mathematics recalled in this section is `lean-categories`'; where the two
+differ, the formalization governs, and an inclusion it does not state is not
+declared.
 
-So a declaration that is merely *available* is a false theorem installed where
+So a declaration that is merely *available* is a false statement installed where
 nobody looks for one. The recurring shape is `Sets()` written where the objects
 are not sets:
 
@@ -1500,17 +1503,20 @@ category belongs.
 
 **A false declaration is never an admissible state, and recording it elsewhere
 does not make it one.** Filing the gap while the wrong supercategory stays in
-the source leaves every reader and every object inheriting the false theorem;
+the source leaves every reader and every object inheriting the false statement;
 the note in `COMPLAINTS.md` is read by nobody executing the code. There is no
 ranking here in which the wrong claim is the better of two states.
 
-When the honest supercategory does not exist in the tree, there are two moves
-and nothing else:
+When the honest supercategory is not presented in the tree, there are two
+moves and nothing else:
 
-- **Build the missing category.** This is usually the answer, and it is
-  usually smaller than it looks, because the general construction is already
-  owned. Presheaves needed no new theory: `[C, D]` is the functor category and
-  `C^op` the opposite, both of which the tree has.
+- **Present the missing category, if `lean-categories` formalizes it.** This is
+  usually the answer, and it is usually smaller than it looks, because the
+  general construction is already presented. Presheaves needed no new theory:
+  `[C, D]` is the functor category and `C^op` the opposite, both of which the
+  tree presents. If `lean-categories` does not formalize it, request it there
+  ([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)) and
+  make the second move until it is released.
 - **Declare nothing.** `super_categories()` left abstract, so the category
   cannot be used until its placement is known, is honest and fails loudly.
   `OwnedCategoryOverBaseRing` already does this. A category that refuses to
@@ -1524,14 +1530,14 @@ missing -- never a licence to keep a substitute in the source while it stands.
 **Presheaves and sheaves are functor categories.** $\mathrm{Presh}(C) := [C,
 \mathbf{Set}]$, a functor $\mathrm{Cat} \to \mathrm{Cat}$; more generally
 $(C, D) \mapsto [C, D]$ is a bifunctor $\mathrm{Cat} \times \mathrm{Cat} \to
-\mathrm{Cat}$, which is the same construction the tree already owns as its
+\mathrm{Cat}$, which is the same construction the tree already presents as its
 functor category. Sheaves on $C$ are the full subcategory of $\mathrm{Presh}(C)$
 cut out by descent for a coverage. Stating them this way is what makes the
 passage to stacks and $\infty$-stacks a change of value category rather than a
 new theory (`https://ncatlab.org/nlab/show/infinity-stack`). Any sheaf-like
 category -- quasi-coherent sheaves, invertible sheaves, structure sheaves,
-sheaves of modules or of algebras -- is placed under that construction, never
-under `Sets()`.
+sheaves of modules or of algebras -- is placed under that construction as
+`lean-categories` formalizes it, never under `Sets()`.
 
 ## Reading the declarations
 
@@ -1567,31 +1573,32 @@ so it must never be read as evidence that a declaration is absent.
 Declaring `C -> D` asserts a forgetful functor $U : C \to D$. The rule is that
 $U$ must be **atomic**: one step of structure, not a composite.
 
-> **The factorization test.** Ask, from the mathematics alone: is there a
-> category $A$ with $C \to A \to D$, where $A$ is a well-defined category that
-> can own operations? If yes, the declaration `C -> D` is wrong and must be
-> replaced by `C -> A`. **This holds when $A$ does not exist in the tree.**
-> Then $A$ is what you build.
+> **The factorization test.** Ask, from `lean-categories` alone: is there a
+> category $A$ with $C \to A \to D$, where $A$ is a category that carries
+> operations? If yes, the declaration `C -> D` is wrong and must be
+> replaced by `C -> A`. **This holds when $A$ is not presented in the tree.**
+> Then presenting $A$ is the work. If the literature has such an $A$ and
+> `lean-categories` does not, it is requested there.
 
-Run the test on the mathematics, never on the code. Reading the category list
+Run the test on the formalized mathematics, never on the code. Reading the category list
 first and picking the nearest available node inverts the whole thing: it makes
 the current contents of the tree decide what is true, so every gap becomes
 permanent the moment something is declared across it. Name the categories the
 objects actually pass through, and only then find out which of them exist.
 
-The bar for $A$ is that it is a real category with a definition and operations
-of its own -- convex bodies, topological spaces, labelled graphs, modules.
+The bar for $A$ is that `lean-categories` formalizes it, with a definition and
+operations of its own -- convex bodies, topological spaces, labelled graphs, modules.
 Inventing a node so that a rule is technically satisfied is the over-compliance
 failure this repository bans everywhere else: a category with no mathematical
 referent is worse than the unfactored edge, because the edge is at least
-visibly wrong. If the intermediate has no name in the literature, that is a
-signal to check the notion, not licence to coin one.
+visibly wrong. If the intermediate has no name in `lean-categories` or the
+literature, that is a signal to check the notion, not licence to coin one.
 
 ## The shape the graph is converging on
 
 **A near-tree: high depth, low breadth.** Depth is what atomic declarations
 produce -- a long chain from a leaf to `Sets()`, each step adding exactly one
-structure, every operation inherited from the level that owns it. Breadth at a
+structure, every operation inherited from the level that carries it. Breadth at a
 node is how many categories declare it directly, and it is the diagnostic:
 
 | Reading | What it means |
@@ -1612,7 +1619,7 @@ per declaration, and no higher cells. So $H_1$ is the whole cycle space,
 nothing bounds, and $\pi_1$ is free of rank $E - V + C$. A generator is a pair
 of distinct paths $C \rightsquigarrow D$, hence two composites of forgetful
 functors that the graph asserts are equal, and **the 2-cell that would fill it
-is that assertion\'s proof**. The complex has none. Nothing checks that assertion: Sage
+is that assertion\'s proof**, which is `lean-categories`'. The complex has none. Nothing checks that assertion: Sage
 computes a C3 linearization, so a diamond that does *not* commute never raises
 -- it silently selects one route, and the object's inherited operations are
 whichever the ordering picked. **Each generator is a coherence obligation and a
@@ -1640,10 +1647,11 @@ exists to prevent. A star is a tree, so thirty categories each declaring only
 `Sets()` has rank zero; you can drive $\pi_1$ to zero by deleting every
 intermediate category, and a single point is perfectly coherent. The criterion
 is therefore **minimal $\pi_1$ among graphs that state every true forgetful
-functor and only immediate ones**. Factoring an edge through a new category adds
-one vertex and one edge and leaves the rank unchanged, so building the missing
-mathematics is free by this measure. The rank rises only where a genuine join
-appears, and that loop is wanted, because it is a real theorem.
+functor and only immediate ones**. Factoring an edge through a newly presented
+category adds one vertex and one edge and leaves the rank unchanged, so
+presenting a missing intermediate category is free by this measure. The rank
+rises only where a genuine join appears, and that loop is wanted, because it is
+a theorem `lean-categories` states.
 
 Genuine multiple inheritance is real -- $\mathbf{Z}$ is a ring and a module and
 a monoid. Those diamonds are **computed**, as joins and axioms, so that
@@ -1662,9 +1670,10 @@ Each is observable in the declaration itself, with no judgment of intent:
   objects pass through. The tell is a declaration that nobody could derive from
   the category's own definition.
 - A supercategory added so that construction proceeds, or so that one inherited
-  method becomes reachable. Placement is a theorem about the objects; it is not
-  a way to obtain a method.
-- A leaf implementing an operation that a category on its path already owns.
+  method becomes reachable. Placement presents a `lean-categories` theorem about
+  the objects; it is not a way to obtain a method.
+- A declaration no `lean-categories` inclusion supports.
+- A leaf implementing an operation that a category on its path already carries.
   That is evidence the path is missing, and the fix is the path, not the leaf.
 - Any node whose breadth grew in the change you are about to commit.
 
@@ -1675,34 +1684,38 @@ applies every axiom of a category to every declared supercategory
 (`CategoryWithAxiom.super_categories` joins `category._with_axiom_as_tuple(axiom)`
 over the base's supercategories, category_with_axiom.py), so the declared
 edge would make `Modules(QQ).FinitelyGenerated()` a subcategory of
-`Modules(ZZ).FinitelyGenerated()`, a false theorem for every property stated
+`Modules(ZZ).FinitelyGenerated()`, a false statement for every property stated
 relative to the base. Ruled 2026-09-16; `TRAPS.md` holds the engine fact.
 
-# Mathematical ontology (always-on)
+# How the preamble presents the mathematics (always-on)
 
 The rules below are the shapes that recur across unrelated categories. Each states
-what an object *is*; the *tell* names the code shape or phrase that shows up while
-the drift is happening, when the category involved is not the one a past record
-named. The vault holds the episodes; this section is the contract.
+how the preamble presents what `lean-categories` says an object *is*; the *tell*
+names the code shape or phrase that shows up while the drift is happening, when
+the category involved is not the one a past record named. The mathematics these
+rules recall is `lean-categories`'; they recall it to fix the presentation, and
+where they differ from the formalization, the formalization governs. The vault
+holds the episodes; this section is the contract.
 
-**The preamble owns its categories outright; it never monkey-patches Sage's.** When
-the preamble needs a category, it defines and owns that category itself. Private
-adapters lower its owned data to Sage and raise results through the same owned
-construction contracts. Sage parents and elements are never reclassified or
+**The preamble presents categories through its own classes; it never
+monkey-patches Sage's.** When the preamble needs a category that
+`lean-categories` formalizes, it presents it through its own class. Private
+adapters lower the preamble object's data to Sage and raise results through the
+same construction contracts. Sage parents and elements are never reclassified or
 exposed as the owned objects. Installing
 an axiom or a method onto one of Sage's own category classes (`setattr` on
 `Groups`, `Modules`, `Category_module`, ...) is the legacy mechanism this project
 is migrating away from: it makes Sage's spelling the public surface, splits
 authority between two class hierarchies, and breaks silently when two copies of a
-class exist in one process. The owned category is the single surface; Sage's
+class exist in one process. The preamble's category is the single surface; Sage's
 classes stay unmodified and are consumed, not extended. Tests assert against the
-owned surface, never against Sage's spelling of a preamble-defined notion.
+preamble surface, never against Sage's spelling of a notion the preamble presents.
 *The tell:* `setattr` whose target is a class imported from `sage.*`; an axiom or
 accessor that only exists because the preamble injected it into a Sage category; a
 test asserting membership through `sage.categories.*` for behavior the preamble
-defines; a stub declaration on a Sage class for a member Sage does not have.
+presents; a stub declaration on a Sage class for a member Sage does not have.
 
-**Enrichment is of two kinds, and which one applies is a fact about the mathematics.**
+**Enrichment is of two kinds, and which one applies is a fact about the mathematics, as `lean-categories` formalizes it.**
 *Determined* enrichment adds structure the object itself determines — a free algebra *is*
 the free module on $\mathrm{Mon}(S)$, a subobject is the object together with its own
 inclusion, an axiom is a property of what is already there. The forgetful functor is
@@ -1723,7 +1736,7 @@ category; the specified accessor returns that exact `M`. Keeping this datum is
 required, not evidence of a wrapper. A second implementation of the weaker
 operations, or an `equip_*`/`forget_*` identification pair connecting it back to
 `M`, is the prohibited duplication. Elements pass through the owner-established
-coercion. The category owns its forgetful functor; no object-level `forget_*`
+coercion. The category carries its forgetful functor; no object-level `forget_*`
 forwarding API is introduced.
 
 `CON-16` and `OWN-15`--`OWN-17` own this distinction. Actual mathematical maps
@@ -1739,7 +1752,7 @@ A morphism of $\mathbf{C}$ is an *element of* $\mathrm{Hom}_\mathbf{C}(A,B)$, an
 categories are ordinary objects of `Cat`; there is no third public "morphism methods"
 mechanism. Sage's `ParentMethods`, `ElementMethods`, `MorphismMethods`, dynamic classes,
 and related names are private runtime machinery while the owned type-protocol migration is
-completed. Never use those Sage container names to decide mathematical ownership or to
+completed. Never use those Sage container names to decide placement or to
 specify a new public preamble API.
 
 **`MorphismMethods` is not the owned vehicle, and this was measured.** Sage never
@@ -1771,7 +1784,7 @@ $S$, it is $1$. If a construction reaches a lattice without passing through an
 owned set that answers these, the construction is wrong, and stamping a placement
 onto the lattice hides it.
 
-**The category graph generates the implementation types.** The owned mathematical
+**The category graph generates the implementation types.** The preamble's
 architecture names `ObjectType`, `ElementType`, and the Hom-category types; it does not ask
 contributors to maintain a parallel handwritten class hierarchy. Sage currently supplies
 the dynamic-class/runtime mechanism underneath this: `parent_class`, `element_class`, and
@@ -1790,7 +1803,7 @@ second class graph by hand and has broken the construction chain.
 **The leaf contract, which is what the mechanism exists to buy.** Defining a new leaf must
 feel routine: the author should not search for an implementation class or know the transitive
 construction chain. They declare the immediate mathematical supercategories/structure
-functors; extend only the appropriate owned `ObjectType`/`ElementType`/Hom-category types for
+functors, as `lean-categories` states them; extend only the appropriate `ObjectType`/`ElementType`/Hom-category types for
 what this level adds; introduce only this level's datum; and construct through the immediate
 supercategory. No implementation base is written. A leaf knows its own level and the one
 above: it never names a category two levels up, never restates anything from below, and never
@@ -1842,7 +1855,7 @@ names an arrow.
 `witness-consuming-methods-belong-on-morphisms-not-objects`,
 `primitive-embedding-is-computed-from-cokernel-not-caller-flag`.)
 
-**Implement the general notion; recover the special case from it.** A form is
+**Present the general notion; recover the special case from it.** As formalized, a form is
 $b: M\times M\to W$ for an arbitrary value module $W$, so its scale is a submodule of
 $W$ — an ideal only when $W$ happens to be the ring. A group's generating set is a
 set; finiteness and an ordering are the axioms `FinitelyGenerated` and `Finite`, not
@@ -1857,8 +1870,10 @@ code that runs on $\mathbb{Q}/\mathbb{Z}$ where the statement was about $K/R$.
 
 **When the vocabulary cannot express the general statement, that is the finding.**
 Discovering that the repo can build $\mathbb{Q}/\mathbb{Z}$ but has no object for
-$K/R$ stops the work and opens a discussion. Patching the case that already worked
-leaves the general statement unsayable and the gap unrecorded.
+$K/R$ stops the work. If `lean-categories` formalizes $K/R$, presenting it is the
+work; if it does not, it is a request there and the work parks on it. Patching the
+case that already worked leaves the general statement unsayable and the gap
+unrecorded.
 *The tell:* agreement with a general statement followed by an edit confined to the
 one case that already worked.
 (Vault: `agreeing-to-general-mathematics-the-dsl-has-no-vocabulary-to-express`.)
@@ -1868,9 +1883,9 @@ one case that already worked.
 `dual_group`. A bare `generators` or `dual` is ill-defined the moment an object sits
 in more than one category, which every object here does. Generators are a *set*,
 possibly ordered, possibly finite: they have a cardinality, not a length, and
-repeated elements are not an error. Where the field has a word, use the field's word;
-where it has none, that absence is a signal to check the notion, not licence to coin
-a name for it.
+repeated elements are not an error. Use `lean-categories`' word, which is the
+field's; where there is none, that absence is a signal to check the notion, not
+licence to coin a name for it.
 *The tell:* a bare structure noun; a plural returned as `tuple`, `list` or
 `Sequence`; `len(...)` on generators; a coined compound adjective; `Any` or `object`
 standing where a mathematical noun belongs.
@@ -1887,8 +1902,8 @@ $\mathrm{GL}_n(R)$, $\mathrm{Gal}(\overline{\mathbb{Q}}/\mathbb{Q})$, $O(L)$ for
 indefinite $L$, and $\mathbb{Z}^{\infty}$ are all ordinary inputs here. Where the
 check cannot be made, the answer is a three-valued *unknown* that collapses to false,
 with the reason stated — never a loop that works on small inputs. Sage is a computer
-algebra system, not a proof assistant: a standard theorem is cited, never
-re-established at runtime.
+algebra system, not a proof assistant: a theorem is cited from `lean-categories`,
+never re-established at runtime, and no computed answer is a proof.
 *The tell:* `for g in G`; `for f in Hom(...)`; a bounded search with a cap;
 `all(... for ... in <an object>)`; a docstring claiming a property is "verified" or
 "proven" by the method body.
@@ -1920,14 +1935,16 @@ exclusion added while fixing a failure in one repo.
 `a-highly-specific-fix-is-not-a-general-rule-project-conventions-never-promote-to-global-qc`.)
 
 **Reference implementations are absorbed by semantic reconciliation.** The archived
-spikes are this project's own earlier versions. Each notion they hold is first mapped
-onto the preamble's notion: where the preamble already owns it, the spike's version
-is superseded and call sites are re-expressed in the owned vocabulary; where it is
-genuinely missing, it arrives rewritten to current standards and sited where the
-category tree says it belongs. Neither a wholesale copy nor a minimal trim is
+spikes are this project's own earlier versions, and their notions carry no
+authority. Each notion they hold is first mapped onto the `lean-categories` notion:
+where the preamble already presents it, the spike's version is superseded and call
+sites are re-expressed in the preamble vocabulary; where the preamble does not yet
+present it, it arrives rewritten to current standards and sited where
+`lean-categories` places it; where `lean-categories` has no such notion, it is
+requested there and the spike's version is not carried over. Neither a wholesale copy nor a minimal trim is
 reconciliation.
 *The tell:* a new file mirroring the source layout; a second definition of a notion
-the preamble already has; not-yet-absorbed code described as severed or contaminated
+the preamble already presents; not-yet-absorbed code described as severed or contaminated
 rather than as pending its round.
 (Vault:
 `spike-absorption-is-semantic-reconciliation-never-quarantine-or-copy-paste`.)
