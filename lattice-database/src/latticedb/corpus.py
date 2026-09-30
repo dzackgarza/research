@@ -11,6 +11,7 @@ from pathlib import Path
 import frontmatter
 from pydantic import ValidationError
 
+from latticedb import arithmetic
 from latticedb.arithmetic import GramTensor
 from latticedb.model import Lattice
 
@@ -34,7 +35,7 @@ class CorpusInvalid(Exception):
 
 def _corpus_problems(entries: list[Entry]) -> list[str]:
     problems = []
-    tags = {entry.lattice.tag for entry in entries}
+    by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     by_name: dict[str, Path] = {}
     by_components: dict[GramTensor, Path] = {}
     for entry in entries:
@@ -50,8 +51,15 @@ def _corpus_problems(entries: list[Entry]) -> list[str]:
         for related in lattice.related:
             if related.tag == lattice.tag:
                 problems.append(f"{entry.path}: a record cannot be related to itself")
-            elif related.tag not in tags:
+            elif related.tag not in by_tag:
                 problems.append(f"{entry.path}: the related tag {related.tag} is not in the corpus")
+        span = lattice.root_span
+        if span is not None and span.summands is not None and span.embedding is not None:
+            missing = [tag for tag in span.summands if tag not in by_tag]
+            problems.extend(f"{entry.path}: the summand tag {tag} is not in the corpus" for tag in missing)
+            summands = tuple(by_tag[tag].gram_tensor for tag in span.summands if tag in by_tag)
+            if not missing and arithmetic.restriction(lattice.gram_tensor, span.embedding) != arithmetic.orthogonal_sum(summands):
+                problems.append(f"{entry.path}: the rows of root_span.embedding do not have the Gram tensor of the orthogonal sum of the summands")
     return problems
 
 

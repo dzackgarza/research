@@ -27,3 +27,7 @@ test:
 # Write the initial records into an empty lattices/ directory (one-time bootstrap; needs SageMath)
 seed:
     "${SAGE_BIN}" -python scripts/seed.py
+
+# Write the root data of every record: Phi(L) for a definite record, a basis of roots for the others
+roots:
+    uv run python scripts/root_data.py

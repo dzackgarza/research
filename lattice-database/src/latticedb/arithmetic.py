@@ -4,17 +4,24 @@ Let `L` be a free module of finite rank over the integers with basis
 `e_1, ..., e_n`, and `b` a symmetric bilinear form on `L` with rational
 values. The Gram tensor of the lattice is `b` itself, a symmetric
 (0,2)-tensor. Every function here takes its components `b(e_i, e_j)`.
-All arithmetic is exact (FLINT).
+All arithmetic is exact (FLINT, and PARI for the vectors `x` with `b(x, x)`
+below a bound in a definite lattice).
 """
 
 from fractions import Fraction
-from itertools import combinations, product
-from math import isqrt, lcm
+from itertools import combinations
+from math import gcd, isqrt, lcm
 
+from cypari2 import Pari
 from flint import fmpq, fmpq_mat, fmpz_mat
 
 type GramTensor = tuple[tuple[Fraction, ...], ...]
 """Components: entry `[i][j]` is `b(e_i, e_j)`."""
+
+type Vector = tuple[int, ...]
+"""Coordinates of an element of `L` in the basis `e_1, ..., e_n`."""
+
+_PARI = Pari()
 
 
 def _components(gram_tensor: GramTensor) -> fmpq_mat:
@@ -94,66 +101,131 @@ def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
     return tuple(factor for factor in diagonal if factor > 1)
 
 
-def _integer_components(gram_tensor: GramTensor) -> tuple[int, tuple[tuple[int, ...], ...]]:
+def _integer_components(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...]]:
     """Return `(k, components of k b)` for the least positive integer `k` such that `k b` is integer valued."""
     scale = lcm(*(value.denominator for row in gram_tensor for value in row))
     return scale, tuple(tuple(int(value * scale) for value in row) for row in gram_tensor)
 
 
-def _is_root(pairings: tuple[int, ...], norm: int) -> bool:
-    """Whether a primitive `r` with `b(r, e_k) = pairings[k]` and `b(r, r) = norm` is a root of `L`: `norm != 0`, and the reflection `s_r` is in `O(L)`.
+def pairing(gram_tensor: GramTensor, x: Vector, y: Vector) -> Fraction:
+    """Return `b(x, y)`."""
+    return sum((x[i] * gram_tensor[i][j] * y[j] for i in range(len(x)) for j in range(len(y)) if x[i] and y[j]), Fraction(0))
 
-    `s_r(x) = x - (2 b(x, r) / b(r, r)) r` is an isometry of `L` tensor `Q`
-    and its own inverse. It maps `L` into `L` exactly when
+
+def restriction(gram_tensor: GramTensor, vectors: tuple[Vector, ...]) -> GramTensor:
+    """Return the components `b(v_i, v_j)` for the given vectors `v_1, v_2, ...`."""
+    return tuple(tuple(pairing(gram_tensor, x, y) for y in vectors) for x in vectors)
+
+
+def orthogonal_sum(summands: tuple[GramTensor, ...]) -> GramTensor:
+    """Return the components of the form of the orthogonal sum, in the union of the bases of the summands."""
+    offsets = [sum(len(summand) for summand in summands[:index]) for index in range(len(summands))]
+    rank = sum(len(summand) for summand in summands)
+    rows = [[Fraction(0)] * rank for _ in range(rank)]
+    for offset, summand in zip(offsets, summands, strict=True):
+        for i, row in enumerate(summand):
+            rows[offset + i][offset : offset + len(summand)] = row
+    return tuple(tuple(row) for row in rows)
+
+
+def _root_norm(components: tuple[Vector, ...], r: Vector) -> int | None:
+    """Return `b(r, r)` when `r` is a root of `L`, for an integer-valued `b` with the given components, and `None` when `r` is not a root.
+
+    A root is a primitive `r` with `b(r, r) != 0` such that the reflection
+    `s_r` is in `O(L)`. `s_r(x) = x - (2 b(x, r) / b(r, r)) r` is an isometry
+    of `L` tensor `Q` and its own inverse. It maps `L` into `L` exactly when
     `(2 b(x, r) / b(r, r)) r` is in `L` for every `x` in `L`. `r` is
     primitive, so that holds exactly when `2 b(x, r) / b(r, r)` is an
     integer, and by linearity in `x` exactly when it is for each `x = e_k`.
-
-    The condition does not change when `b` is replaced by `k b`, `k != 0`.
     """
-    return norm != 0 and all(2 * pairing % norm == 0 for pairing in pairings)
+    if gcd(*r) != 1:
+        return None
+    pairings = [sum(row[i] * r[i] for i in range(len(r))) for row in components]
+    norm = sum(pairings[i] * r[i] for i in range(len(r)))
+    return norm if norm != 0 and all(2 * value % norm == 0 for value in pairings) else None
 
 
-def generate(vectors: list[tuple[int, ...]], rank: int) -> bool:
-    """Whether the vectors, given by their coordinates in the basis `e_i`, generate `L`.
-
-    The morphism `Z^m -> L` that sends the basis to the vectors is surjective
-    exactly when its cokernel is zero: when its Smith normal form has `rank`
-    invariant factors, all equal to 1.
-    """
-    if len(vectors) < rank:
-        return False
-    smith = fmpz_mat(vectors).snf()
-    return all(abs(int(smith[index, index])) == 1 for index in range(rank))
+def is_root(gram_tensor: GramTensor, r: Vector) -> bool:
+    """Whether `r` is a root of `L`. `L` and `L` with the form `k b`, `k != 0`, have the same roots."""
+    return _root_norm(_integer_components(gram_tensor)[1], r) is not None
 
 
-def generating_root_norms(gram_tensor: GramTensor) -> tuple[Fraction, ...] | None:
-    """Return a set `S` of values of `b(r, r)` such that the roots `r` with `b(r, r)` in `S` generate `L`, or `None`.
+def definite_roots(gram_tensor: GramTensor) -> dict[Vector, Fraction]:
+    """Return the roots of `L` for a definite `b`: one of `r`, `-r` for each root, with `b(r, r)`.
 
-    The roots are sought among the `r` with coordinates in `{-1, 0, 1}` and at
-    most three nonzero coordinates. A returned `S` proves `L = Z Phi_S(L)`.
-    `None` proves nothing: `L` can have roots that are not of that form.
+    Let `B = k b` be integer valued and positive definite, `k` an integer.
+    Let `r` be a root and `B(r, L) = d Z`, `d > 0`. `B(r, r)` is in `d Z` and
+    divides `2 d`, so `B(r, r)` is `d` or `2 d`. `r / d` is in the dual
+    lattice `L*` of `(L, B)`, and its class in `L* / L` has order `d`,
+    because `r` is primitive; so `d` divides the exponent `e` of `L* / L`.
 
-    Among the sets that these roots prove, the result has the fewest elements,
-    and then the least absolute values.
+    For each `d` that divides `e`, the roots with `B(r, L) = d Z` are
+    therefore among the `x` in `L_d = {x in L : B(x, L) in d Z}` with
+    `B(x, x) / d <= 2`, which PARI's `qfminim` lists for the positive
+    definite form `B / d` on `L_d`. `matsnf` gives `U`, `V` invertible over
+    the integers with `U B V` diagonal, with entries `D_i`. For `x = V y`,
+    `B x` is in `d Z^n` exactly when each `D_i y_i` is in `d Z`, so the
+    columns of `V diag(d / gcd(d, D_i))` are a basis of `L_d`.
     """
     rank = len(gram_tensor)
+    sign = 1 if gram_tensor[0][0] > 0 else -1
     scale, components = _integer_components(gram_tensor)
-    roots: dict[int, list[tuple[int, ...]]] = {}
-    for size in range(1, min(rank, 3) + 1):
-        for support in combinations(range(rank), size):
-            for signs in product((1, -1), repeat=size - 1):
-                coefficients = dict(zip(support, (1, *signs), strict=True))
-                pairings = tuple(sum(sign * components[i][k] for i, sign in coefficients.items()) for k in range(rank))
-                norm = sum(sign * pairings[i] for i, sign in coefficients.items())
-                if _is_root(pairings, norm):
-                    roots.setdefault(norm, []).append(tuple(coefficients.get(k, 0) for k in range(rank)))
-    if not generate([r for found in roots.values() for r in found], rank):
-        return None
-    norms = sorted(roots, key=lambda norm: (abs(norm), norm))
+    form = _PARI.matrix(rank, rank, [sign * value for row in components for value in row])
+    _, right, smith = form.matsnf(1)
+    diagonal = [abs(int(smith[i, i])) for i in range(rank)]
+    exponent = max(diagonal)
+    roots: dict[Vector, Fraction] = {}
+    for d in (d for d in range(1, exponent + 1) if exponent % d == 0):
+        basis = right * _PARI.matdiagonal([d // gcd(d, factor) for factor in diagonal])
+        short = basis * (basis.mattranspose() * form * basis / d).qfminim(2, None, 0)[2]
+        for column in range(short.ncols()):
+            r = tuple(int(short[i, column]) for i in range(rank))
+            norm = _root_norm(components, r)
+            if norm is not None:
+                roots[r if next(c for c in r if c) > 0 else tuple(-c for c in r)] = Fraction(norm, scale)
+    return roots
+
+
+def invariant_factors(vectors: list[Vector], rank: int) -> tuple[int, ...]:
+    """Return the nonzero invariant factors `d_1 | d_2 | ...` of the morphism `Z^m -> L` that sends the basis to the vectors.
+
+    Let `M` be the image, and `M'` the primitive sublattice `L cap (M tensor Q)`.
+    The number of factors is the rank of `M`, and `M' / M` is
+    `Z/d_1 + Z/d_2 + ...`: the product of the factors is `[M' : M]`.
+    """
+    if not vectors:
+        return ()
+    smith = fmpz_mat(vectors).snf()
+    diagonal = (abs(int(smith[index, index])) for index in range(min(len(vectors), rank)))
+    return tuple(factor for factor in diagonal if factor != 0)
+
+
+def generate(vectors: list[Vector], rank: int) -> bool:
+    """Whether the vectors generate `L`: whether the morphism `Z^m -> L` has `rank` invariant factors, all equal to 1."""
+    return invariant_factors(vectors, rank) == (1,) * rank
+
+
+def span_basis(vectors: list[Vector]) -> tuple[Vector, ...]:
+    """Return the basis in Hermite normal form of the sublattice that the vectors generate.
+
+    Two lists of vectors generate the same sublattice exactly when they have the same result.
+    """
+    if not vectors:
+        return ()
+    hermite = fmpz_mat(vectors).hnf()
+    rows = (tuple(int(hermite[i, j]) for j in range(hermite.ncols())) for i in range(hermite.nrows()))
+    return tuple(row for row in rows if any(row))
+
+
+def generating_norms(roots: dict[Vector, Fraction], rank: int) -> tuple[Fraction, ...]:
+    """Return a set `S` such that the given roots `r` with `b(r, r)` in `S` generate `L`. The given roots must generate `L`.
+
+    Among the sets `S` of values `b(r, r)` of the given roots, the result has
+    the fewest elements, and then the least absolute values.
+    """
+    norms = sorted(set(roots.values()), key=lambda norm: (abs(norm), norm))
     subsets = (subset for size in range(1, len(norms) + 1) for subset in combinations(norms, size))
-    chosen = next(subset for subset in subsets if generate([r for norm in subset for r in roots[norm]], rank))
-    return tuple(Fraction(norm, scale) for norm in chosen)
+    return next(subset for subset in subsets if generate([r for r, norm in roots.items() if norm in subset], rank))
 
 
 def is_rational_square(value: Fraction) -> bool:
