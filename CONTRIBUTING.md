@@ -23,23 +23,33 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 ## Preamble design philosophy
 
-**The preamble primarily stitches together, organizes, and composes existing
-mathematics and existing implementations behind one fully owned mathematical
-interface. It is not a mandate to build another computer algebra system from
-first principles.** A feature request ordinarily asks the contributor to make
-an established construction available in the right category, with the right
-objects, maps, hypotheses, and relationships. It does not ordinarily ask the
-contributor to invent or reimplement the algorithm that computes it.
+**The preamble presents, behind one uniform interface, operations that
+`lean-categories` formalizes, and wires them to existing implementations. It
+owns no mathematics and is not a mandate to build another computer algebra
+system.** `lean-categories` is the single mathematical authority: it alone
+defines what an object, category, operation or theorem is, where it lives and
+what it returns, formalizing from the literature and blind to every
+implementation. A feature request ordinarily asks the contributor to present a
+construction `lean-categories` already formalizes, with the objects, maps and
+hypotheses it states, and to route it to a computation. It does not ask the
+contributor to define mathematics or to invent the algorithm that computes it.
+Mathematics `lean-categories` does not have is requested there
+([AGENTS.md](AGENTS.md#a-missing-foundation-parks-the-work-that-found-it-always-on)),
+never written here.
 
-The public language is owned throughout. Sage, GAP, Julia, OSCAR, Singular,
+Every public value is a preamble object. Sage, GAP, Julia, OSCAR, Singular,
 Macaulay2, PARI/GP, and other suitable maintained systems provide private
-computation. The preamble supplies the mathematical organization and the
-necessary integration between their results and its own objects. A uniform
-interface must make these capabilities compose without requiring the researcher
-to know which engine was called, speak its vocabulary, or handle its objects.
+computation. The preamble supplies the uniform presentation and the integration
+between their results and its own objects. A uniform interface must make these
+capabilities compose without requiring the researcher to know which engine was
+called, speak its vocabulary, or handle its objects. Every computation behind
+the interface, a Sage call or research code alike, is untrusted: nothing it
+reports about its own correctness is believed. Correctness evidence exists only
+in the `lean-cas-dsl` acceptance suite, whose expected values are independently
+cited or proved.
 
 This is the integration philosophy of `sage-categories`, applied to the
-preamble's stricter recursively owned public boundary. Its
+preamble's stricter public boundary. Its
 [README](https://github.com/dzackgarza/sage-categories/blob/main/README.md)
 names categories, functors, and universal constructions as the reuse model;
 its [repository-role instructions](https://github.com/dzackgarza/sage-categories/blob/main/AGENTS.md#repository-role-integration-framework-and-engine-delegation)
@@ -49,9 +59,9 @@ that purpose into construction, dependency, and encapsulation contracts.
 
 ### Mathematical dependency tracing
 
-**First formulate the addition in mathematics, independently of the current
-implementation. Then unfold the mathematics it needs. Only afterwards select
-its implementation.** This applies to a new operation, category, object,
+**First locate the addition in `lean-categories`' formalization, independently
+of the current implementation. Then unfold the formalized mathematics it needs.
+Only afterwards select its implementation.** This applies to a new operation, category, object,
 morphism, specialization, research example, or repair that introduces new
 mathematical behavior. It is not a preliminary search for a convenient class
 whose existing methods can be made to resemble the requested answer.
@@ -60,8 +70,10 @@ Start with the mathematical question a researcher is asking. State the input
 objects and their categories, the desired object or morphism, its defining
 datum or universal property, and the hypotheses under which it exists. Include
 the maps that make the result useful in subsequent mathematics. Establish these
-facts from the project's mathematical specifications and actual mathematical
-sources, not from recalled definitions or the current backend's capabilities.
+facts from `lean-categories`' formalization, not from recalled definitions, this
+repository's code or the current backend's capabilities. What `lean-categories`
+does not formalize is a request there, stating the mathematics wanted and its
+sources.
 
 Express the request in the vocabulary an ideal mathematical API should support:
 sets, indexed families, maps, categories, functors, groups, actions, rings,
@@ -100,13 +112,13 @@ adding a class named after the missing notion.
 
 #### Unfold through established foundations, not repeated reconstruction
 
-The trace must reach the foundations, but it need not rewrite their definitions
-for every leaf. Follow and cite an existing source-backed mathematical account
-when it already unfolds a prerequisite. Make the path to that account explicit;
-do not stop at an unexplained term such as module, action, or sheaf because a
-similarly named class exists. Expand precisely the uncertain or new part of the
-dependency account, and retain consequential choices at the existing mathematical
-declaration or specification. No separate trace registry is required.
+The trace must reach the foundations, but it need not restate their definitions
+for every leaf. Follow and cite the `lean-categories` formalization that unfolds
+a prerequisite. Make the path to it explicit; do not stop at an unexplained term
+such as module, action, or sheaf because a similarly named class exists. A
+prerequisite `lean-categories` does not formalize is a formalization request
+there, never a definition supplied here. No separate trace registry is
+required.
 
 Distinguish three sorts of dependency without weakening any of them:
 
@@ -127,15 +139,14 @@ using one justified route. For example, a particular sheaf-cohomology computatio
 may use an acyclic cover while another uses a resolution. The underlying sheaf
 and complex categories and the comparison remain mathematical requirements;
 this does not force every calculation to construct a spectral sequence. An
-unimplemented required general interface remains owed even when one computation
-can already be performed.
+unpresented general interface that `lean-categories` formalizes remains owed
+even when one computation can already be performed.
 
 #### An example of the reasoning, not a prescribed workstream
 
-Consider a request involving an equivariant morphism of modules. The existing
-[action-functor account](src/dzack_research/preamble/categories/functors/group_actions.py)
-describes actions as functors and forgetting the action as evaluation. A
-mathematical trace can therefore begin as follows:
+Consider a request involving an equivariant morphism of modules, with actions
+formalized as functors and forgetting the action as evaluation. A mathematical
+trace can begin as follows:
 
 ```text
 Requested: a morphism between two R-modules with G-actions.
@@ -152,9 +163,9 @@ functors, and naturality, with the actual source and target of each map.
 If the request also asks for a kernel, scalar change, or invariant submodule,
 continue the trace through that construction and its hypotheses. Do not append
 an unrelated collection of matrix routines. The point is to identify which
-general mathematics supplies the requested result, so that a module action,
-a geometric action, and another structured action can share the appropriate
-theory without pretending their computations are identical.
+formalized general mathematics supplies the requested result, so that a module
+action, a geometric action, and another structured action are presented through
+the same theory without pretending their computations are identical.
 
 The same reasoning applies in geometry, homological algebra, arithmetic,
 polyhedral geometry, and every other preamble domain. A sheaf operation unfolds
@@ -166,31 +177,37 @@ foundations to implement on every task, and not a toric-cohomology checklist.
 
 #### Compare the mathematical account with the available language
 
-After the mathematical trace, inspect the owned declarations, generated
-reference, live source and consumers, and then the relevant maintained packages.
-For each required notion, establish whether the available path supplies its
-defining data, maps, hypotheses, inherited structure, and computational case.
-The name of a method, a numerical answer, a category label, or a foreign engine
-object is not sufficient evidence that the mathematical prerequisite exists.
+After the mathematical trace, check each required notion against
+`lean-categories`, then inspect the preamble's presentation of it (generated
+reference, live source and consumers), and then the relevant maintained
+packages. For each required notion, establish whether `lean-categories`
+formalizes it, whether the preamble presents it with its data, maps, hypotheses
+and inherited structure, and whether a computation is wired for the case at
+hand. Only `lean-categories` establishes that a mathematical prerequisite exists;
+the name of a method, a numerical answer, a category label, or a foreign engine
+object does not.
 
-Distinguish a missing general notion from a missing operation on an existing
-notion, a missing comparison or inherited datum, a specialization that bypasses
-its foundation, and an unavailable computational case. These require different
-repairs. In particular, an operation can exist in Sage while remaining absent
-from the owned mathematical language; that calls for integration, not reinvention.
-An API may also express the correct object while a requested decision procedure
-is unavailable or undecidable. Do not confuse that with nonexistence of the object.
+Distinguish mathematics `lean-categories` lacks from a formalized operation the
+preamble does not yet present, a missing comparison or inherited datum in the
+presentation, a specialization that bypasses its foundation, and an unavailable
+computational case. These require different responses. Missing mathematics is a
+formalization request to `lean-categories` and parks the work
+([AGENTS.md](AGENTS.md#a-missing-foundation-parks-the-work-that-found-it-always-on));
+it is never written here. A formalized operation that exists in Sage while
+absent from the preamble calls for integration, not reinvention. An API may also
+present the correct object while a requested decision procedure is unavailable
+or undecidable. Do not confuse that with nonexistence of the object.
 
 When this comparison exposes an actual gap, record it in
-[COMPLAINTS.md](COMPLAINTS.md) under `DEV-59`. Explain the missing general
-mathematics and the dependency path that exposed it, not only the failing leaf
-method. Search broadly enough to distinguish absent machinery from undiscovered
-machinery; record the inspected boundary and unresolved questions honestly.
-The complaint should let another mathematician understand the required theory
-without first understanding this repository's implementation.
+[COMPLAINTS.md](COMPLAINTS.md) under `DEV-59`. Explain the missing mathematics
+and the dependency path that exposed it, not only the failing method. Search
+broadly enough to distinguish absent machinery from undiscovered machinery;
+record the inspected boundary and unresolved questions honestly. For missing
+mathematics, the complaint links the `lean-categories` request.
 
 Then select the remaining implementation delta under `OWN-01` and `DEV-56`.
-Repair the required foundation through its owner and connect the real consumer.
+Repair a missing presentation or wiring at its owner and connect the real
+consumer.
 Record newly discovered independent needs without silently expanding the active
 task. Do not turn the trace or complaint into a substitute for a repair already
 required by that task. Equally, do not suppress a foundational finding merely
@@ -198,22 +215,26 @@ because it is outside the file, workstream, or session currently being edited.
 
 ### What the preamble contributes
 
-The distinctive work is making separate capabilities form one usable mathematical
-language. That includes identifying the correct owner of an operation, retaining
-the data that defines an object, transporting additional structure, constructing
-the maps that relate results, and reconciling engine representations with those
-requirements. This is substantive mathematical design even when the final
-implementation consists mostly of declarations and short compositions.
+The distinctive work is making separate capabilities form one usable interface
+to the mathematics `lean-categories` formalizes. That includes placing an
+operation where `lean-categories` places it, retaining the data its definition
+names, carrying the structure and maps its constructions state, and reconciling
+engine representations with those requirements. The mathematics is
+`lean-categories`'; the contribution here is its presentation and wiring, even
+when the final implementation consists mostly of declarations and short
+compositions.
 
 For a typical feature, the intended contribution consists of:
 
-- An owned mathematical declaration with its defining data and hypotheses.
-- Construction through existing categories and sanctioned constructors.
+- A presentation of the `lean-categories` definition, with the defining data and
+  hypotheses it states.
+- Construction through existing preamble categories and sanctioned constructors.
 - Reuse of inherited operations, structural functors, and universal maps.
 - A private integration of a suitable maintained computational operation.
 - Complete raising of results, including elements and constituent maps.
-- Mathematical specimens that distinguish the requested construction from a
-  plausible substitute, executed only in the authorized verification phase.
+- Examples that exercise the presentation, executed only in the authorized
+  verification phase. They are research's own and certify nothing; correctness
+  evidence exists only in the `lean-cas-dsl` acceptance suite.
 
 These responsibilities do not imply a new file, class, or adapter for every
 feature. An existing owner may already supply several of them, and an existing
@@ -222,33 +243,33 @@ actual missing integration, not a restatement of everything the dependencies do.
 
 ### Two kinds of reuse are required together
 
-**Mathematical reuse** means deriving behavior from structure already represented
-in the category framework. A differential graded algebra uses the common graded
+**Mathematical reuse** means deriving behavior from structure `lean-categories`
+formalizes and the category framework already presents. A differential graded algebra uses the common graded
 algebra and complex structures. A special localization uses the general
-localization construction. A new structured category uses the existing object,
-element, morphism, and functor machinery rather than reimplementing them under
-new names. The hypotheses that justify inheritance or transport remain part of
-the mathematics; a forgetful functor does not preserve every construction merely
-because it forgets structure.
+localization construction. A newly presented structured category uses the
+existing object, element, morphism, and functor machinery rather than
+reimplementing them under new names. The hypotheses that justify inheritance or
+transport are `lean-categories`' theorems; a forgetful functor does not preserve
+every construction merely because it forgets structure.
 
 **Computational reuse** means leaving established algorithms with systems that
-already maintain them. A generic owned cohomology interface does not justify a
-new local homology algorithm. A common owned category does not justify rebuilding
+already maintain them. A generic cohomology interface does not justify a new
+local homology algorithm. A common preamble category does not justify rebuilding
 finite-diagram or path-reduction computations. The same prior-art requirement
 applies at the framework level as at a specialized mathematical level.
 
 Neither kind substitutes for the other. Calling Sage directly from a specialized
-constructor can reuse an algorithm while bypassing the owned mathematical
-construction. Conversely, expressing the right mathematical definition in a
-generic module can still duplicate an entire maintained computational system.
+constructor can reuse an algorithm while bypassing the preamble's presentation
+of the construction. Conversely, presenting the right construction in a generic
+module can still duplicate an entire maintained computational system.
 The intended architecture combines a shared semantic construction with suitable
 maintained computations behind its private boundaries.
 
-**Owning an API does not mean owning the algorithm; delegating the algorithm does
-not mean surrendering the API.** All publicly reachable constituents remain
-preamble objects. A private engine can compute a presentation or representative,
-but its result must become the owned object with the structural maps the public
-contract requires. Neither a thin facade over foreign objects nor a fresh
+**Presenting an operation does not mean implementing its algorithm; delegating
+the algorithm does not mean surrendering the interface.** All publicly reachable
+constituents remain preamble objects. A private engine can compute a
+presentation or representative, but its result must become the preamble object
+with the structural maps the formalized operation requires. Neither a thin facade over foreign objects nor a fresh
 implementation of all their arithmetic satisfies this division of responsibility.
 
 ### Shared foundations should make later work smaller
@@ -271,14 +292,14 @@ available framework and repair the exact prerequisite that the consumer needs.
 A claim of reusable foundations must be visible in a real consumer. The new
 construction should obtain its data, maps, and inherited operations through the
 shared route. Merely placing duplicate algorithms in one file, adding an abstract
-base, or declaring a category does not establish that later work has become
+base, or adding a category class does not establish that later work has become
 simpler. If each new specialization still needs to understand transitive runtime
 initialization or reconstruct structural maps, repair the framework contract.
 
 ### Select dependencies by the responsibility they can discharge
 
 A computation package need not implement the preamble's class compiler, public
-ontology, or whole research workflow to be useful. Ask whether it supplies the
+interface, or whole research workflow to be useful. Ask whether it supplies the
 specific computation with the required inputs, hypotheses, and outputs. A
 different object model or method spelling normally calls for an adapter, not
 rejection of the computation. A result missing necessary maps calls for further
@@ -311,10 +332,10 @@ not a reason to restrict discovery to the first familiar engine.
 ### Integration code has a specific job
 
 Local code is justified by the semantic difference between an existing capability
-and the owned operation. Typical differences include expressing the source and
-target as owned objects, reconciling grading or variance conventions, preserving
+and the presented operation. Typical differences include expressing the source and
+target as preamble objects, reconciling grading or variance conventions, preserving
 chosen presentation data, constructing the required comparison maps, and
-converting complete results into their owned parents. State that difference at
+converting complete results into their preamble parents. State that difference at
 the construction or adapter that owns it.
 
 An adapter is not a place where arbitrary new algorithms become acceptable by
@@ -332,32 +353,34 @@ an unexamined presumption that locally implementing familiar mathematics is the
 normal route. Fix defective packaging or bridges at their established owner;
 they are not mathematical evidence that a replacement algorithm is necessary.
 
-### Invention is an explicit research responsibility
+### New mathematics goes upstream; a new algorithm is an engineering decision
 
-The repository supports mathematical research; this philosophy does not prohibit
-new mathematics. It distinguishes a research contribution from the ordinary
-engineering work of exposing established mathematics. A request to make an
-existing construction available does not silently authorize a new algorithm,
-new correctness argument, or new long-term maintenance obligation.
+New definitions, categories, constructions and theorems are formalized in
+`lean-categories` by its own formalization author, never here. A request to
+present an existing construction does not authorize new mathematics, and
+research never supplies a missing notion locally, not even temporarily.
 
 When the relevant mature systems and standard compositions do not supply the
-required computation, state the precise remaining gap. Preserve the original
-mathematical domain while distinguishing the representations and cases for which
-an algorithm exists. General undecidability does not invalidate an available
-specialized algorithm, and a useful special case does not justify claiming a
-general decision procedure.
+required computation, state the precise remaining gap. Preserve the formalized
+domain of the operation while distinguishing the representations and cases for
+which an algorithm exists. General undecidability does not invalidate an
+available specialized algorithm, and a useful special case does not justify
+claiming a general decision procedure.
 
-Owning a genuinely new nontrivial algorithm requires the deliberate decision in
-`ENG-06`, its source-grounded mathematical contract, and its own correctness
-burden. The decision concerns that algorithm, not permission to rebuild adjacent
-infrastructure. Discovery can establish that the operation needs further research;
-it cannot turn an unmet interface into a guessed answer, a weaker substitute, or
-an assertion that the requested mathematics does not exist.
+Writing a new nontrivial algorithm here requires the deliberate engineering
+decision in `ENG-06`, because it adds a maintenance obligation. The algorithm is
+an untrusted computation like any other: any correctness argument attached to it
+is not evidence, and only the `lean-cas-dsl` acceptance suite judges its
+answers. The decision concerns that algorithm, not permission to rebuild
+adjacent infrastructure. Discovery can establish that the operation needs further
+research; it cannot turn an unmet interface into a guessed answer, a weaker
+substitute, or an assertion that the requested mathematics does not exist.
 
-### Progress means useful composition with controlled ownership
+### Progress means useful composition with controlled maintenance
 
 Assess a feature by what mathematical work a researcher can perform through the
-owned interface, whether the result retains its required structure, and which
+preamble's interface, whether the result retains the structure its formalized
+operation requires, and which
 system maintains each necessary computation. This includes the cost imposed on
 future changes: a shared correction should reach its consumers through their
 existing contracts rather than require the same repair in every theory.
@@ -388,8 +411,9 @@ durable map of Sage's ecosystem: which spelling of an operation to route
 through, what it demands of its input, what it returns, where it is absent,
 where it is present and wrong, and where it is present, correct, and
 unaffordable at the size the research runs at. The preamble encodes that map as
-one owned name per operation, and every owned name is a place where somebody
-found out what Sage does there. Without that finding an owned name is a rename.
+one name per operation that `lean-categories` formalizes, and every such name is
+a place where somebody found out what Sage does there. Without that finding a
+preamble name is a rename.
 
 This inverts the ordinary cost model. The route that feels cheap, which is to
 close the task in front of you by whatever works, yields nothing: the task
@@ -409,44 +433,44 @@ convention, its input demands, or its failure modes. Pivoting to a second
 library at the first bump leaves the ecosystem the project is mapping, so the
 search for the Sage-internal answer is abandoned exactly where it would have
 paid, and the dependency surface fragments. The escalation ladder, Sage native,
-then the backends Sage ships, then ownership under an audit trail, is not a
+then the backends Sage ships, then a local implementation under an audit trail, is not a
 convenience ordering. It is the research protocol, and a rung teaches only if
 you stand on it. `ENG-07` and `ENG-08` make this reviewable; `DEV-62` says what
 counts as a finding and `DEV-63` says where a finding lands.
 
 ### Interactive discovery is the user-facing consequence
 
-The preamble is an **interactive discovery language for mathematics**, not a flat library of globally named functions.  A user should be able to start from the mathematical object already in hand and discover the language locally with tab completion.  If `C` is a category, `C.<TAB>` should expose the constructions and structure that `C` knows; if `M` is a module, `M.<TAB>` should expose module-level operations; if `x` is an element, `x.<TAB>` should expose element operations; if `f` is a morphism, `f.<TAB>` should expose morphism operations; and Homsets, functors, subobjects, and other mathematical objects should likewise expose the operations they own.  The receiver is part of the mathematical documentation: it tells the user what kind of thing an operation acts on and sharply narrows the admissible language before any manual or source file is opened.
+The preamble is an **interactive discovery language for mathematics**, not a flat library of globally named functions.  A user should be able to start from the mathematical object already in hand and discover the language locally with tab completion.  If `C` is a category, `C.<TAB>` should expose the constructions and structure that `C` knows; if `M` is a module, `M.<TAB>` should expose module-level operations; if `x` is an element, `x.<TAB>` should expose element operations; if `f` is a morphism, `f.<TAB>` should expose morphism operations; and Homsets, functors, subobjects, and other mathematical objects should likewise expose the operations `lean-categories` places on them.  The receiver is part of the mathematical documentation: it tells the user what kind of thing an operation acts on and sharply narrows the admissible language before any manual or source file is opened.
 
 This is a deliberate contrast with a GAP/Julia-style global operation catalogue.  A global name such as `Product`, `Kernel`, or `Orbit` gives almost no local information about its domain: the user must already know whether it acts on categories, parents, morphisms, elements, families, or some combination.  As the system grows, that design requires memorizing an ever larger language or repeatedly consulting documentation.  The preamble instead scales by **navigating from mathematical objects to their methods**.  The public global namespace therefore exists primarily for canonical mathematical objects, category/object constructors, notation entry points, and genuinely language-level forms—not as a convenience catalogue of operations on objects that already exist.
 
-**Mathematical ownership determines API placement.**  An operation lives on the mathematical object whose structure makes the operation meaningful.  A category that claims products owns the construction of its selected products.  A Homset owns operations whose hypotheses are properties of that Hom.  Morphisms own morphism-level constructions; parents own parent-level constructions; elements own element-level operations; functors own functorial operations.  The code implementing the operation belongs with that owner or in its mathematical subtree.  Free-standing helpers may support notation internally, but they must not become a second public mathematical language.
+**The formalized placement determines API placement.**  An operation lives where `lean-categories` places it: on the mathematical object whose structure makes the operation meaningful.  Products of a category with products are constructed on that category.  Operations whose hypotheses are properties of a Hom live on that Homset.  Morphism-level constructions live on morphisms, parent-level constructions on parents, element-level operations on elements, functorial operations on functors.  The code implementing the operation belongs with that receiver or in its subtree.  Free-standing helpers may support notation internally, but they must not become a second public language.
 
-The same ownership principle determines implementation dataflow.  Code should teach the repository a mathematical fact **where that fact lives**, and downstream behavior should follow from the object/category graph.  If `C` has products, teach `C` how to construct them; do not teach a global `Product(...)` dispatcher every category for which products happen to exist.  If equality of arrows is determined by structure of a Homset, teach that Homset; do not make a root equality helper enumerate concrete theories.  This is mathematical organization used as implementation compression: the general structure is stated once at its owner and inherited or delegated through the ordinary category machinery.
+The same placement determines implementation dataflow.  Code wires a computation **where `lean-categories` places the operation**, and downstream behavior follows from the presented object/category graph.  If `C` has products, wire their construction on `C`; do not teach a global `Product(...)` dispatcher every category for which products happen to exist.  If equality of arrows is determined by structure of a Homset, teach that Homset; do not make a root equality helper enumerate concrete theories.  This is mathematical organization used as implementation compression: the general structure is stated once at its owner and inherited or delegated through the ordinary category machinery.
 
 
-**Mathematical domain and computational domain are different.** Method placement follows the first category/object/element on which the notion is mathematically defined, not the currently decidable or implemented cases. Every set has a cardinality, so `cardinality()` belongs to sets even though no CAS can compute the cardinality of an arbitrary represented set such as `X = {n in NN | n.is_twin_prime()}`. Every formed module has a well-defined degeneracy predicate, so `is_nondegenerate()` belongs with formed modules even when the current implementation only decides finite-rank represented forms. The implementation may therefore route across the cases currently understood and assert-gate the remainder with an informative statement of the missing computational hypothesis. This is not a stub: supported cases must actually compute. Over time the routing table grows so that the computational domain converges toward the mathematical domain.
+**Mathematical domain and computational domain are different.** Method placement follows the first category/object/element on which `lean-categories` defines the notion, not the currently decidable or implemented cases. Every set has a cardinality, so `cardinality()` belongs to sets even though no CAS can compute the cardinality of an arbitrary represented set such as `X = {n in NN | n.is_twin_prime()}`. Every formed module has a well-defined degeneracy predicate, so `is_nondegenerate()` belongs with formed modules even when the current implementation only decides finite-rank represented forms. The implementation may therefore route across the cases currently understood and assert-gate the remainder with an informative statement of the missing computational hypothesis. This is not a stub: supported cases must actually compute. Over time the routing table grows so that the computational domain converges toward the mathematical domain.
 
 This is one of the few places where an explicit `case`/`match` or other routing table is positively desirable. It reads like mathematics: identify which represented situation the object lies in, invoke the theorem/algorithm appropriate to that case, and use an exhaustive final assertion for cases not yet computationally covered. The banned shape is a method whose entire body is failure (`assert False`, `NotImplementedError`, or equivalent) and which therefore advertises functionality without implementing any case at all.
 
-**Infinite-compatible semantics come before finite-coordinate algorithms.**  The mathematical layer should be written so that replacing a finite indexing set by an infinite one, a finite basis by a lazy framing, or a matrix realization by an abstract Hom does not force a redesign of unrelated consumers.  Finite coordinates, rows, columns, exhaustive enumeration, and concrete arrays are computational specializations.  They belong behind semantic objects that remain meaningful in infinite settings: owned sets/families, finite-support elements, subobjects, Homs, kernels/images, products/coproducts, tensor/block constructions, actions, and universal properties.  A large blast radius when moving from finite to infinite data is strong evidence that coordinates or enumeration leaked above their proper layer.
+**Infinite-compatible semantics come before finite-coordinate algorithms.**  The mathematical layer should be written so that replacing a finite indexing set by an infinite one, a finite basis by a lazy framing, or a matrix realization by an abstract Hom does not force a redesign of unrelated consumers.  Finite coordinates, rows, columns, exhaustive enumeration, and concrete arrays are computational specializations.  They belong behind semantic objects that remain meaningful in infinite settings: preamble sets/families, finite-support elements, subobjects, Homs, kernels/images, products/coproducts, tensor/block constructions, actions, and universal properties.  A large blast radius when moving from finite to infinite data is strong evidence that coordinates or enumeration leaked above their proper layer.
 
 **The public API is an adversarial semantic gate.**  It is judged not only by whether correct code can be written through it, but by which mathematically invalid shortcuts it makes easy to write.  If a caller holding a morphism can casually unwrap a matrix, compute a nullspace, and rebuild a pretend kernel, the interface is too permissive even when `f.kernel()` also exists.  If an element constructor accepts a bare coordinate tuple, the API invites callers to forget the parent and framing that make those coordinates meaningful.  Close these hatches structurally: force construction through mathematical data, keep numerical representations private or one-way, and use assertions that reject a predicted shortcut while naming the correct construction.  The goal is not to trust every future consumer to remember the doctrine; the interface should make the semantic route the path of least resistance and the numerical bypass visibly abnormal.
 
 **Repository prescriptions are part of the executable architecture.**  Issue bodies, plan cards, comments, docstrings, examples, tests, and migration notes train later contributors and agents just as neighboring source code does.  Once a mathematical or architectural ruling falsifies a prescription, correct or delete that prescription before implementation continues.  A stale comment that says “shared ambient,” a test that still unwraps coordinates, or an issue body that asks for a deprecated signature can faithfully regenerate the exact defect that the code was meant to remove.
 
-**Diagnose recurring slop by generator, not by instance.**  A new occurrence of a known pattern is repaired by the existing rule; it does not earn another bespoke exception or workaround.  Add a catalogue entry only when review discovers a genuinely new code-shape generator.  The principal generators include presentation/object confusion, theorem proxies replacing definitions, stored or witness-free structure, signature-porting from a foreign ontology, contaminated prescriptions, and laundering mathematically correct failures instead of repairing what they expose.
+**Diagnose recurring slop by generator, not by instance.**  A new occurrence of a known pattern is repaired by the existing rule; it does not earn another bespoke exception or workaround.  Add a catalogue entry only when review discovers a genuinely new code-shape generator.  The principal generators include presentation/object confusion, theorem proxies replacing definitions, stored or witness-free structure, signature-porting from a foreign engine's object model, contaminated prescriptions, and laundering mathematically correct failures instead of repairing what they expose.
 
-**Construct the defining data at their mathematical owner.** Start a category contribution by reading its immediate structure owners and constructors.
-State the added datum, its domain and codomain, and the equations its morphisms preserve in that category's documentation.
+**Construct the defining data where the definition places them.** Start a category contribution by reading the `lean-categories` definition, then the preamble's immediate structure owners and constructors.
+Cite the formalized datum, its domain and codomain, and the equations its morphisms preserve in that category's documentation; the documentation cites them and defines nothing.
 Pass the datum through the owning constructor so its concrete accessors are fulfilled there.
 Alternative constructors must establish the same datum, including the maps that transport it between presentations.
 An inherited method name alone does not establish its required state.
 
-Distinguish properties from additional choices.
+Distinguish properties from additional choices, as the formalization does.
 A property refinement retains the existing structure; a selected action, multiplication, framing, or presentation requires construction data.
-Specify morphisms as well as objects when adding structure.
-Reuse a universal construction through a structural functor only with the corresponding preservation or creation result and canonical maps.
+Present morphisms as well as objects when presenting structure.
+Reuse a universal construction through a structural functor only where `lean-categories` states the corresponding preservation or creation result and canonical maps.
 
 **Keep specialization at its own owner.** A specialized constructor calls its general mathematical construction.
 Adding a leaf should ordinarily require changes to that leaf and its immediate mathematical dependencies.
@@ -455,12 +479,12 @@ Read the [construction and inheritance proposal](references/preamble-architectur
 The [architecture prerequisite](TODO.md#constructor-and-admission-foundations) sets their implementation order.
 
 For review, follow one public constructor through its defining datum, one nonidentity structural-functor image, and one inherited operation.
-Include the resulting objects, morphism endpoints, and defining equations in the mathematical example.
+Include the resulting objects, morphism endpoints, and defining equations in the example.
 Inspect required operations on the actual generated classes through Sage's abstract-method discovery.
 Write the example at the existing owning test surface, subject to the expectation-subtree rules and the current verification policy.
 Keep the category declaration, constructor signature, and executable contract as the discoverable source; derive reports from them.
 
-These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, ownership, locality, and dependency-direction model to new code even when no existing example names the exact violation.
+These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, placement, locality, and dependency-direction model to new code even when no existing example names the exact violation.
 
 ## Preamble architecture specification
 
