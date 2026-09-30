@@ -1,10 +1,11 @@
 """The record of one lattice, with the checks that make the record well defined.
 
 A lattice here is a free module of finite rank over the integers with a
-symmetric bilinear form `b` that takes rational values. The form is given by
-its Gram matrix in a basis. It is not assumed positive definite, integral,
-or nondegenerate: each of those is declared, and each declaration is checked
-against the Gram matrix.
+symmetric bilinear form `b` that takes rational values. The Gram tensor of
+the lattice is `b`, a symmetric (0,2)-tensor; a record gives its components
+`b(e_i, e_j)` in a basis. The form is not assumed positive definite,
+integral, or nondegenerate: each of those is declared, and each declaration
+is checked against the Gram tensor.
 
 Invariants that exist only under a hypothesis live in a block named for the
 hypothesis (`integral`, `definite`, `indefinite`, `hyperbolic`). A block on a
@@ -74,13 +75,13 @@ class Reference(Record):
 
 
 class Provenance(Record):
-    source: str = Field(description="Where the Gram matrix and the recorded invariants come from.")
+    source: str = Field(description="Where the Gram tensor and the recorded invariants come from.")
     url: str | None = Field(default=None, description="Address of the source record, when it has one.")
     computed_with: str | None = Field(default=None, description="Software that computed the recorded invariants.")
 
 
 class IntegralData(Record):
-    """Invariants of a lattice whose form takes integer values. Required when the Gram matrix has integer entries."""
+    """Invariants of a lattice whose form takes integer values. Required when every b(e_i, e_j) is an integer."""
 
     parity: Literal["even", "odd"] = Field(description="`even` when b(x, x) is even for every x, `odd` otherwise.")
     discriminant_group: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
@@ -162,13 +163,19 @@ class Lattice(Record):
     latex: str = Field(description="Name as TeX, without math delimiters.")
     aliases: Annotated[tuple[str, ...], Field(strict=False)] = Field(default=(), description="Other names, as plain text.")
     rank: int = Field(ge=1, description="Rank of the underlying free module.")
-    gram: Annotated[tuple[Annotated[tuple[Rational, ...], Field(strict=False)], ...], Field(strict=False)] = Field(
-        description="Gram matrix (b(e_i, e_j)) in a basis e_1, ..., e_n. Entries are integers or strings 'p/q'."
+    gram_tensor: Annotated[tuple[Annotated[tuple[Rational, ...], Field(strict=False)], ...], Field(strict=False)] = Field(
+        description=(
+            "Components of the Gram tensor, the symmetric (0,2)-tensor b, in a basis e_1, ..., e_n: "
+            "row i lists b(e_i, e_1), ..., b(e_i, e_n). Values are integers or strings 'p/q'."
+        )
     )
     signature: Annotated[tuple[int, int], Field(strict=False)] = Field(
-        description="[n_plus, n_minus]: the numbers of positive and negative eigenvalues of the Gram matrix."
+        description=(
+            "[n_plus, n_minus]: the numbers of v with b(v, v) > 0 and with b(v, v) < 0 in a b-orthogonal basis of the rational span of L. "
+            "They do not depend on the basis (Sylvester's law of inertia)."
+        )
     )
-    determinant: Rational = Field(description="Determinant of the Gram matrix.")
+    determinant: Rational = Field(description="det(b(e_i, e_j)). It is the same for every basis of L.")
     definiteness: Definiteness = Field(
         description=(
             "`positive_definite` or `negative_definite` when b(x, x) has one sign on nonzero x; `indefinite` when it takes both signs; "
@@ -220,26 +227,31 @@ class Lattice(Record):
         return self
 
     def _shape_problems(self) -> Iterator[InitErrorDetails]:
-        if len(self.gram) != self.rank or any(len(row) != self.rank for row in self.gram):
-            yield _problem("gram_not_square", "the Gram matrix is not a square matrix of size {rank}", ("gram",), {"rank": self.rank})
+        if len(self.gram_tensor) != self.rank or any(len(row) != self.rank for row in self.gram_tensor):
+            yield _problem(
+                "gram_tensor_shape",
+                "a (0,2)-tensor on a module of rank {rank} has {rank} rows of {rank} components",
+                ("gram_tensor",),
+                {"rank": self.rank},
+            )
             return
-        if any(self.gram[i][j] != self.gram[j][i] for i in range(self.rank) for j in range(i)):
-            yield _problem("gram_not_symmetric", "the Gram matrix is not symmetric", ("gram",))
+        if any(self.gram_tensor[i][j] != self.gram_tensor[j][i] for i in range(self.rank) for j in range(i)):
+            yield _problem("gram_tensor_not_symmetric", "b(e_i, e_j) differs from b(e_j, e_i) for some i, j", ("gram_tensor",))
 
     def _invariant_problems(self) -> Iterator[InitErrorDetails]:
-        determinant = arithmetic.determinant(self.gram)
+        determinant = arithmetic.determinant(self.gram_tensor)
         if self.determinant != determinant:
             yield _problem(
                 "determinant_mismatch",
-                "the Gram matrix has determinant {computed}, the record states {stated}",
+                "the Gram tensor has determinant {computed}, the record states {stated}",
                 ("determinant",),
                 {"computed": str(determinant), "stated": str(self.determinant)},
             )
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram)
+        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
         if self.signature != (n_plus, n_minus):
             yield _problem(
                 "signature_mismatch",
-                "the Gram matrix has signature ({n_plus}, {n_minus}), the record states ({stated_plus}, {stated_minus})",
+                "the Gram tensor has signature ({n_plus}, {n_minus}), the record states ({stated_plus}, {stated_minus})",
                 ("signature",),
                 {"n_plus": n_plus, "n_minus": n_minus, "stated_plus": self.signature[0], "stated_minus": self.signature[1]},
             )
@@ -253,49 +265,56 @@ class Lattice(Record):
             )
 
     def _integral_problems(self) -> Iterator[InitErrorDetails]:
-        integer_valued = arithmetic.is_integer_matrix(self.gram)
+        integer_valued = arithmetic.is_integer_valued(self.gram_tensor)
         if self.integral is None:
             if integer_valued:
-                yield _problem("integral_block_missing", "the Gram matrix has integer entries, so the `integral` block is required", ("integral",))
+                yield _problem("integral_block_missing", "every b(e_i, e_j) is an integer, so the `integral` block is required", ("integral",))
             return
         if not integer_valued:
-            yield _problem("integral_requires_integer_gram", "the `integral` block requires a Gram matrix with integer entries", ("integral",))
+            yield _problem("integral_requires_integer_values", "the `integral` block requires every b(e_i, e_j) to be an integer", ("integral",))
             return
-        parity = "even" if all(self.gram[i][i] % 2 == 0 for i in range(self.rank)) else "odd"
+        # b(x, x) = sum_i x_i^2 b(e_i, e_i) + 2 sum_{i<j} x_i x_j b(e_i, e_j), so b(x, x) is even for all x when each b(e_i, e_i) is.
+        parity = "even" if all(self.gram_tensor[i][i] % 2 == 0 for i in range(self.rank)) else "odd"
         if self.integral.parity != parity:
-            yield _problem("parity_mismatch", "the lattice is {computed}, the record states {stated}", ("integral", "parity"), {"computed": parity, "stated": self.integral.parity})
-        nondegenerate = arithmetic.determinant(self.gram) != 0
+            yield _problem(
+                "parity_mismatch",
+                "the lattice is {computed}, the record states {stated}",
+                ("integral", "parity"),
+                {"computed": parity, "stated": self.integral.parity},
+            )
+        nondegenerate = arithmetic.determinant(self.gram_tensor) != 0
         stated_group = self.integral.discriminant_group
+        location = ("integral", "discriminant_group")
         if not nondegenerate:
             if stated_group is not None:
-                yield _problem("discriminant_group_requires_nondegenerate", "the discriminant group is finite only when the determinant is not zero", ("integral", "discriminant_group"))
+                yield _problem("discriminant_group_requires_nondegenerate", "the discriminant group is finite only when the determinant is not zero", location)
             if self.integral.genus_symbol is not None:
                 yield _problem("genus_requires_nondegenerate", "the genus symbol requires a nonzero determinant", ("integral", "genus_symbol"))
             return
         if stated_group is None:
-            yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", ("integral", "discriminant_group"))
+            yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", location)
             return
-        group = arithmetic.discriminant_invariants(self.gram)
+        group = arithmetic.discriminant_invariants(self.gram_tensor)
         if stated_group != group:
             yield _problem(
                 "discriminant_group_mismatch",
                 "the discriminant group has invariant factors {computed}, the record states {stated}",
-                ("integral", "discriminant_group"),
+                location,
                 {"computed": str(list(group)), "stated": str(list(stated_group))},
             )
 
     def _definite_problems(self) -> Iterator[InitErrorDetails]:
         if self.definite is None:
             return
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram)
+        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
         if n_zero > 0 or (n_plus > 0 and n_minus > 0):
             yield _problem("definite_requires_definite", "the `definite` block requires a positive definite or negative definite form", ("definite",))
             return
         data = self.definite
         rank = self.rank
-        integer_valued = arithmetic.is_integer_matrix(self.gram)
-        even = integer_valued and all(self.gram[i][i] % 2 == 0 for i in range(rank))
-        diagonal = [abs(self.gram[i][i]) for i in range(rank)]
+        integer_valued = arithmetic.is_integer_valued(self.gram_tensor)
+        even = integer_valued and all(self.gram_tensor[i][i] % 2 == 0 for i in range(rank))
+        diagonal = [abs(self.gram_tensor[i][i]) for i in range(rank)]
         minimum = data.minimum
         if minimum <= 0:
             yield _problem("minimum_not_positive", "the minimum of a definite form is positive", ("definite", "minimum"))
@@ -309,8 +328,13 @@ class Lattice(Record):
             )
         # Hermite's inequality: min^n <= (4/3)^(n(n-1)/2) * |det| for a definite form of rank n.
         exponent = rank * (rank - 1) // 2
-        if minimum**rank * 3**exponent > 4**exponent * abs(arithmetic.determinant(self.gram)):
-            yield _problem("minimum_violates_hermite", "the stated minimum {stated} exceeds Hermite's bound for this rank and determinant", ("definite", "minimum"), {"stated": str(minimum)})
+        if minimum**rank * 3**exponent > 4**exponent * abs(arithmetic.determinant(self.gram_tensor)):
+            yield _problem(
+                "minimum_violates_hermite",
+                "the stated minimum {stated} exceeds Hermite's bound for this rank and determinant",
+                ("definite", "minimum"),
+                {"stated": str(minimum)},
+            )
         if integer_valued and minimum.denominator != 1:
             yield _problem("minimum_not_integer", "an integer-valued form has an integer minimum", ("definite", "minimum"))
         if even and minimum.denominator == 1 and minimum % 2 == 1:
@@ -319,7 +343,8 @@ class Lattice(Record):
         kissing = data.kissing_number
         if kissing is not None:
             if kissing <= 0 or kissing % 2 == 1:
-                yield _problem("kissing_number_odd", "minimal vectors come in pairs x, -x, so their number is even and positive", ("definite", "kissing_number"))
+                message = "minimal vectors come in pairs x, -x, so their number is even and positive"
+                yield _problem("kissing_number_odd", message, ("definite", "kissing_number"))
             # Minimal vectors x, y with x != y, x != -y are distinct modulo 2L and none is in 2L:
             # otherwise (x + y)/2 or (x - y)/2, or x/2, is a shorter nonzero vector.
             if kissing > 2 * (2**rank - 1):
@@ -346,7 +371,7 @@ class Lattice(Record):
         if theta is not None:
             location = ("definite", "theta_series")
             if not integer_valued:
-                yield _problem("theta_requires_integral", "`theta_series` is indexed by integer values of b(x, x), so it requires an integer Gram matrix", location)
+                yield _problem("theta_requires_integral", "`theta_series` is indexed by integer values of b(x, x), so it requires an integer-valued form", location)
             else:
                 if not theta or theta[0] != 1:
                     yield _problem("theta_constant_term", "only x = 0 has b(x, x) = 0, so the first entry is 1", location)
@@ -363,7 +388,7 @@ class Lattice(Record):
         if roots is not None:
             location = ("definite", "root_system")
             if not integer_valued:
-                yield _problem("root_system_requires_integral", "`root_system` requires an integer Gram matrix", location)
+                yield _problem("root_system_requires_integral", "`root_system` requires an integer-valued form", location)
                 return
             if sum(int(component[1:]) for component in roots) > rank:
                 yield _problem("root_system_rank", "the rank of the root system exceeds the rank of the lattice", location)
@@ -388,16 +413,16 @@ class Lattice(Record):
     def _indefinite_problems(self) -> Iterator[InitErrorDetails]:
         if self.indefinite is None:
             return
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram)
+        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
         if n_plus == 0 or n_minus == 0:
             yield _problem("indefinite_requires_indefinite", "the `indefinite` block requires a form that takes both signs", ("indefinite",))
             return
         location = ("indefinite", "isotropic")
-        determinant = arithmetic.determinant(self.gram)
+        determinant = arithmetic.determinant(self.gram_tensor)
         witness = None
         if n_zero > 0:
             witness = "the radical of a degenerate form contains a nonzero x with b(x, x) = 0"
-        elif any(self.gram[i][i] == 0 for i in range(self.rank)):
+        elif any(self.gram_tensor[i][i] == 0 for i in range(self.rank)):
             witness = "a basis vector has b(e, e) = 0"
         elif self.rank >= 5:
             witness = "an indefinite rational form of rank at least 5 is isotropic (Meyer's theorem)"
@@ -411,6 +436,7 @@ class Lattice(Record):
     def _hyperbolic_problems(self) -> Iterator[InitErrorDetails]:
         if self.hyperbolic is None:
             return
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram)
+        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
         if n_zero > 0 or self.rank < 2 or min(n_plus, n_minus) != 1:
-            yield _problem("hyperbolic_requires_hyperbolic", "the `hyperbolic` block requires a nondegenerate form of signature (1, n) or (n, 1) with n >= 1", ("hyperbolic",))
+            message = "the `hyperbolic` block requires a nondegenerate form of signature (1, n) or (n, 1) with n >= 1"
+            yield _problem("hyperbolic_requires_hyperbolic", message, ("hyperbolic",))

@@ -1,11 +1,10 @@
-"""A record validates exactly when its declarations agree with its Gram matrix."""
+"""A record validates exactly when its declarations agree with its Gram tensor."""
 
 from fractions import Fraction
 
 import pytest
-from pydantic import ValidationError
-
 from latticedb.model import Lattice, Yaml
+from pydantic import ValidationError
 
 PROVENANCE: dict[str, Yaml] = {"source": "Test record."}
 
@@ -17,7 +16,7 @@ def e8() -> dict[str, Yaml]:
         "name": "E8",
         "latex": "E_8",
         "rank": 8,
-        "gram": [
+        "gram_tensor": [
             [2, 0, -1, 0, 0, 0, 0, 0],
             [0, 2, 0, -1, 0, 0, 0, 0],
             [-1, 0, 2, -1, 0, 0, 0, 0],
@@ -49,7 +48,7 @@ def hyperbolic_plane() -> dict[str, Yaml]:
         "name": "U",
         "latex": "U",
         "rank": 2,
-        "gram": [[0, 1], [1, 0]],
+        "gram_tensor": [[0, 1], [1, 0]],
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
@@ -66,7 +65,7 @@ def a2_dual() -> dict[str, Yaml]:
         "name": "A2*",
         "latex": "A_2^*",
         "rank": 2,
-        "gram": [["2/3", "-1/3"], ["-1/3", "2/3"]],
+        "gram_tensor": [["2/3", "-1/3"], ["-1/3", "2/3"]],
         "signature": [2, 0],
         "determinant": "1/3",
         "definiteness": "positive_definite",
@@ -82,7 +81,7 @@ def affine_a1() -> dict[str, Yaml]:
         "name": "affine A1",
         "latex": r"\widetilde{A}_1",
         "rank": 2,
-        "gram": [[2, -2], [-2, 2]],
+        "gram_tensor": [[2, -2], [-2, 2]],
         "signature": [1, 0],
         "determinant": 0,
         "definiteness": "positive_semidefinite",
@@ -98,7 +97,7 @@ def binary_form_of_determinant_19() -> dict[str, Yaml]:
         "name": "[10, 9, 10]",
         "latex": "[10, 9, 10]",
         "rank": 2,
-        "gram": [[10, 9], [9, 10]],
+        "gram_tensor": [[10, 9], [9, 10]],
         "signature": [2, 0],
         "determinant": 19,
         "definiteness": "positive_definite",
@@ -115,7 +114,7 @@ def anisotropic_binary() -> dict[str, Yaml]:
         "name": "<1> + <-2>",
         "latex": r"\langle 1 \rangle \oplus \langle -2 \rangle",
         "rank": 2,
-        "gram": [[1, 0], [0, -2]],
+        "gram_tensor": [[1, 0], [0, -2]],
         "signature": [1, 1],
         "determinant": -2,
         "definiteness": "indefinite",
@@ -159,7 +158,7 @@ def test_derived_properties_follow_from_the_record():
         (affine_a1() | {"definite": {"minimum": 2}}, "definite_requires_definite"),
         (e8() | {"indefinite": {"isotropic": False}}, "indefinite_requires_indefinite"),
         (e8() | {"hyperbolic": {"reflective": True}}, "hyperbolic_requires_hyperbolic"),
-        (a2_dual() | {"integral": {"parity": "even", "discriminant_group": [3]}}, "integral_requires_integer_gram"),
+        (a2_dual() | {"integral": {"parity": "even", "discriminant_group": [3]}}, "integral_requires_integer_values"),
         (with_block(a2_dual(), "definite", theta_series=[1, 0, 6]), "theta_requires_integral"),
         (with_block(a2_dual(), "definite", root_system=[]), "root_system_requires_integral"),
         (with_block(affine_a1(), "integral", discriminant_group=[2]), "discriminant_group_requires_nondegenerate"),
@@ -167,9 +166,9 @@ def test_derived_properties_follow_from_the_record():
         # A required block or field that is absent.
         ({key: value for key, value in e8().items() if key != "integral"}, "integral_block_missing"),
         (e8() | {"integral": {"parity": "even"}}, "discriminant_group_missing"),
-        # A declaration that the Gram matrix contradicts.
-        (e8() | {"rank": 7}, "gram_not_square"),
-        (hyperbolic_plane() | {"gram": [[0, 1], [2, 0]]}, "gram_not_symmetric"),
+        # A declaration that the Gram tensor contradicts.
+        (e8() | {"rank": 7}, "gram_tensor_shape"),
+        (hyperbolic_plane() | {"gram_tensor": [[0, 1], [2, 0]]}, "gram_tensor_not_symmetric"),
         (e8() | {"determinant": 2}, "determinant_mismatch"),
         (e8() | {"signature": [7, 1]}, "signature_mismatch"),
         (e8() | {"definiteness": "indefinite"}, "definiteness_mismatch"),
@@ -196,7 +195,7 @@ def test_derived_properties_follow_from_the_record():
         (with_block(e8(), "definite", root_system=["D8"]), "root_system_theta_mismatch"),
         (with_block(e8(), "definite", root_system=["E7"]), "root_system_kissing_mismatch"),
         (
-            binary_form_of_determinant_19() | {"gram": [[4, 1], [1, 5]], "definite": {"minimum": 4, "root_system": ["A1"]}},
+            binary_form_of_determinant_19() | {"gram_tensor": [[4, 1], [1, 5]], "definite": {"minimum": 4, "root_system": ["A1"]}},
             "root_system_nonempty_above_norm_two",
         ),
         # Isotropy that the rank and the determinant decide.
@@ -218,7 +217,7 @@ def test_inconsistent_record_is_rejected_for_its_reason(record, expected):
 def test_meyer_theorem_rejects_an_anisotropic_claim_in_rank_five():
     record = hyperbolic_plane() | {
         "rank": 5,
-        "gram": [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, -7]],
+        "gram_tensor": [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, -7]],
         "signature": [4, 1],
         "determinant": -7,
         "integral": {"parity": "odd", "discriminant_group": [7]},
