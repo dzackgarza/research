@@ -6587,7 +6587,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 
 
-#### `DEV-25`: Verified Mathematical Facts Are Reusable Data; Tests Are Thin Drivers
+#### `DEV-25`: Cited Mathematical Facts Are Reusable Data; Tests Are Thin Drivers
 
 - **Rule**: Stable externally sourced mathematical facts used as test expectations belong in a centralized topic-organized fact/fixture corpus independent of any one implementation spike.  Each fact records enough mathematical identification to reconstruct the specimen, the expected value/statement, and its provenance: a literature citation or a proof, never an engine's output or its doctests.  Tests consume this corpus parametrically rather than scattering literal expectations throughout test bodies.
 
