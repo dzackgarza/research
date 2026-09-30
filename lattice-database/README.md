@@ -136,8 +136,7 @@ To add a lattice:
 4. `just build` validates the corpus and builds the site.
    It prints each problem of each record with the path of the file and the field.
 
-The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`.
-Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree, so the check costs nothing on a corpus without such a pair.
+The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`. Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree, so the check costs nothing on a corpus without such a pair.
 
 `just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
 Run it after a change to the computation, and read the diff.
