@@ -488,29 +488,39 @@ These principles are more important than any current list of prohibited code sha
 
 ## Preamble architecture specification
 
-This section is the authoritative specification of construction ownership,
-entrypoints, encapsulation, and computational delegation in the preamble.
+This section is the authoritative specification of construction, entrypoints,
+encapsulation, and computational delegation in the preamble. It is an engineering
+specification: the mathematics each construction presents is `lean-categories`',
+and nothing here defines it.
 It applies to new features, repairs, internal consumers, engine adapters,
 catalogues, and session integration. An importable implementation is not thereby
 a sanctioned entrypoint. A policy permitting private implementation machinery
 does not permit a second mathematical API.
 
-`AGENTS.md` routes contributors here. The category declaration, constructor,
-and their docstrings give each operation's concrete contract; this specification
+`AGENTS.md` routes contributors here. `lean-categories` gives each operation's
+mathematical contract; the category declaration, constructor, and their
+docstrings cite it and state how the preamble presents it; this specification
 gives the architecture those declarations must realize. TODOs contain only the
 unfinished delta to that architecture. They do not own architectural decisions
 that would disappear when an item is completed. Historical proposals and examples
 are reference material, not exceptions to this contract.
 
-### Ownership and permitted dependencies
+### Layers and permitted dependencies
 
-| Layer | Owns | Permitted dependency | Forbidden responsibility |
+`lean-categories` is outside this table: it alone defines the objects, maps,
+hypotheses, categories and theorems every layer below presents or computes.
+
+| Layer | Responsible for | Permitted dependency | Forbidden responsibility |
 | --- | --- | --- | --- |
-| Session and notation | The selected preamble language | Owned mathematical entrypoints | Backend exports, adoption helpers, alternative constructor languages |
-| Mathematical categories and constructions | Defining objects and maps, hypotheses, elements, functorial behavior, public result types | Immediate mathematical owners and their sanctioned operations | Engine data inspection; reimplementation of inherited structure |
-| Shared categorical runtime | Construction dispatch, generated owned types, cooperative initialization | Its declared framework interfaces and private host primitives | Theory-specific branches, backend mathematical identity, a second category graph |
-| Private computation adapters | Lowering, established engine calls, representation correspondence, raising | Owned semantic inputs and the selected engines' supported interfaces | Public mathematical identity or taxonomy; raw results returned to mathematical consumers |
-| External engines | Their maintained computational algorithms and internal representations | Their own dependencies and supported bridges | Defining the preamble's public API or accepting owned objects as foreign parents |
+| Session and notation | The selected preamble spellings | Preamble entrypoints | Backend exports, adoption helpers, alternative constructor languages |
+| Preamble categories and constructions | Presenting `lean-categories`' objects and maps, hypotheses, elements, functorial behavior and result types | Immediate preamble categories and their sanctioned operations | Defining mathematics; engine data inspection; reimplementation of inherited structure |
+| Shared categorical runtime | Construction dispatch, generated preamble types, cooperative initialization | Its declared framework interfaces and private host primitives | Theory-specific branches, a second category graph |
+| Private computation adapters | Lowering, established engine calls, representation correspondence, raising | Preamble inputs and the selected engines' supported interfaces | Public taxonomy; raw results returned to mathematical consumers |
+| External engines | Their maintained computational algorithms and internal representations | Their own dependencies and supported bridges | Defining the preamble's public API or accepting preamble objects as foreign parents |
+
+Every computation in the last three rows, including research's own code, is
+untrusted: its answers are run, never believed, and only the `lean-cas-dsl`
+acceptance suite judges them.
 
 The shared framework boundary remains `sage-categories`: reuse its suitable
 released interfaces for generic categorical/runtime work. Repair an existing
@@ -520,33 +530,35 @@ Suitability for class construction and suitability for mathematical computation
 are separate questions. A package can supply the latter without supplying the
 former.
 
-### `OWN-01`: Name the semantic owner before selecting an implementation
+### `OWN-01`: Locate the formalized operation before selecting an implementation
 
 - **Rule:** First perform the
   [mathematical dependency trace](#mathematical-dependency-tracing), independent
-  of the implementation's current shape. Then read its defining category, immediate
-  structure owners, current entrypoints, and consumers. Identify the owned input,
-  output, structural maps, and exact operation needed. Search the megadoc and live
+  of the implementation's current shape, against `lean-categories`. Then read the
+  preamble category presenting it, its immediate structure owners, current
+  entrypoints, and consumers. Identify the input, output, structural maps, and
+  exact operation the formalization states. Search the megadoc and live
   source beyond the selected subtree for that operation, then inspect relevant
-  upstream implementations. Reuse both the owned mathematical construction and
-  the maintained computation; satisfying only one half is insufficient.
-  Record actual missing foundations, missing structural relationships, and
-  observed workflow friction in `COMPLAINTS.md` under `DEV-59`, even when found
-  outside the selected implementation task. The complaint states the mathematical
-  need; it does not authorize a bespoke replacement or a change of scope.
-- **Rationale:** A private Sage call can bypass an owned localization just as a
-  correctly named owned kernel can conceal a redundant local elimination algorithm.
+  upstream implementations. Reuse both the preamble's presentation of the
+  construction and the maintained computation; satisfying only one half is
+  insufficient. Missing mathematics is a formalization request to
+  `lean-categories`. Record it, missing presentations, and observed workflow
+  friction in `COMPLAINTS.md` under `DEV-59`, even when found outside the selected
+  implementation task. The complaint states the need; it does not authorize a
+  bespoke replacement or a change of scope.
+- **Rationale:** A private Sage call can bypass the presented localization just as
+  a correctly named kernel can conceal a redundant local elimination algorithm.
 - **Violation Example:** Start a geometry-specific matrix kernel because the
   selected geometry file does not implement kernels; reject CAP's computational
   categories because CAP does not generate Python classes.
-- **Correct Example:** Geometry asks the owned complex for cohomology; the complex
-  and module owners supply the structure, and their private adapters reuse an
+- **Correct Example:** Geometry asks the complex for cohomology; the complex
+  and module categories present the structure, and their private adapters reuse an
   applicable established homology or module algorithm.
 
 ### `OWN-02`: Every construction route converges on one semantic constructor
 
-- **Rule:** Each mathematical construction has one authoritative construction
-  contract at its owning category or object. Operator notation, literal ingress,
+- **Rule:** Each construction `lean-categories` formalizes has one construction
+  contract at the preamble category or object that presents it. Operator notation, literal ingress,
   catalogue specimens, functor images, direct morphism construction, and raised
   engine results establish that same contract. Specialized routes supply the
   general constructor's defining datum; they do not allocate an alternative
@@ -556,8 +568,7 @@ former.
   `Mor`; operations are asked of their owners. A private implementation function
   is not a second public constructor. A named convenience route requires an
   actual mathematical input form and factors through the owner. No `from_engine`,
-  `from_raw`, `trusted`, `unchecked`, or validation-disabling route admits weaker
-  data. Host allocation and `_element_constructor_` implement this contract;
+  `from_raw`, `unchecked`, or validation-disabling route admits weaker data. Host allocation and `_element_constructor_` implement this contract;
   they do not exempt a caller from it.
 - **Rationale:** One semantic funnel makes an invariant apply to every way an
   object is obtained, instead of making correctness depend on caller diligence.
@@ -587,21 +598,21 @@ former.
 - **Rationale:** Inherited method names without inherited construction data make
   invalid objects available for subsequent features to build upon.
 - **Violation Example:** A DGA gets a cochain-complex category label but its
-  differential interface cannot supply the zero components its declared grading
+  differential interface cannot supply the zero components its grading
   requires; a formed object implements its own set operations.
 - **Correct Example:** The DGA construction supplies the graded module and
   differential contract, then adds multiplication; generic complex operations
-  consume that same differential. Each lower level owns its own inherited data.
+  consume that same differential. Each lower level holds its own inherited data.
 
-### `OWN-04`: Public ownership is recursive and includes implicit operations
+### `OWN-04`: The public boundary is recursive and includes implicit operations
 
 - **Rule:** Every mathematical value reachable through a public preamble operation
-  is owned. This includes coefficients, base rings, indexing sets, family values,
+  is a preamble object, never a raw engine value. This includes coefficients, base rings, indexing sets, family values,
   iterated elements, morphism endpoints, structural maps, cycles, boundaries,
   quotients, chosen representatives, and results of arithmetic and coercion.
-  A lazy family or callable must return owned values when evaluated; owning its
-  outer container is not enough. Public coordinate objects are themselves owned
-  mathematics tied to their chosen framing, never foreign arrays.
+  A lazy family or callable must return preamble values when evaluated; wrapping
+  its outer container is not enough. Public coordinate objects are themselves
+  preamble objects tied to their chosen framing, never foreign arrays.
 
   Public signatures, inherited methods, parser bindings, introspection-visible
   conveniences, and serialization/reconstruction routes obey the same closure.
@@ -612,20 +623,20 @@ former.
 
   Encapsulation hides representation, not the mathematics: the defining action,
   form, framing, inclusion, projection, and other required structure remain
-  available through their owned APIs. Returning opaque handles in place of
+  available through their preamble APIs. Returning opaque handles in place of
   these objects is not stronger encapsulation.
 - **Rationale:** One reachable foreign constituent gives every downstream consumer
-  a second API even when the outer parent appears owned.
-- **Violation Example:** An owned cohomology module returns Sage cycle vectors;
-  an owned family yields GAP elements; inherited arithmetic returns Sage scalars.
-- **Correct Example:** A cycle representative is an element of the owned cycle
-  module, its inclusion lands in the owned complex component, and its quotient
-  image has the owned cohomology module as parent.
+  a second API even when the outer parent is a preamble object.
+- **Violation Example:** A preamble cohomology module returns Sage cycle vectors;
+  a preamble family yields GAP elements; inherited arithmetic returns Sage scalars.
+- **Correct Example:** A cycle representative is an element of the preamble cycle
+  module, its inclusion lands in the preamble complex component, and its quotient
+  image has the preamble cohomology module as parent.
 
 ### `OWN-05`: Private means confined to a named owner, not merely underscored
 
 - **Rule:** Store private representation fields only at their owning runtime or
-  adapter boundary. Mathematical consumers use owned public operations, including
+  adapter boundary. Mathematical consumers use public preamble operations, including
   when the consumer lives in the same repository or file. An underscore, a helper
   module, a friend-like import, or omission from `preamble.all` is not permission
   to access another owner's storage. Do not expose raw state through a newly
@@ -638,20 +649,20 @@ former.
   A comment at a consuming call site cannot create that authority. Protected
   mathematical contracts exchange owned values. Raw handles may move only among
   helpers of the same declared private computation/transport boundary; they do
-  not cross into another mathematical subsystem.
+  not cross into another subsystem.
 - **Rationale:** Broad permission for a documented private call makes every
   inconvenient public contract optional.
 - **Violation Example:** A lattice module imports a ring's private engine accessor
   and documents the import as a protected extension so it can run its own algebra.
-- **Correct Example:** The ring or module owner exposes the missing mathematical
+- **Correct Example:** The ring or module category presents the missing formalized
   operation. Its private adapter may share transport helpers internally while
-  mathematical callers receive only the owned result.
+  mathematical callers receive only the preamble result.
 
 ### `OWN-06`: Engine inspection is local to an already selected computation
 
-- **Rule:** Mathematical dispatch follows owned structure and hypotheses. Only
-  the designated adapter may inspect foreign representation types or invoke
-  engine-specific APIs after the owned operation is selected. Prefer supported
+- **Rule:** Mathematical dispatch follows the presented structure and hypotheses.
+  Only the designated adapter may inspect foreign representation types or invoke
+  engine-specific APIs after the operation is selected. Prefer supported
   upstream APIs. If an upstream private function is genuinely required, first
   check the public alternatives; document the exact upstream symbol, source,
   assumptions, and consuming adapter at that adapter's declaration. This grants
@@ -659,7 +670,7 @@ former.
 
   No dynamic attribute forwarding, blanket delegation of unknown methods,
   runtime class mutation, public engine selector, backend option bag, or raw
-  adoption constructor belongs on an owned object. Private host initialization
+  adoption constructor belongs on a preamble object. Private host initialization
   and dispatch hooks are runtime implementation contracts, not escape routes.
 - **Rationale:** Foreign implementation details need one repair site when upstream
   changes, and must not become the language used by mathematical consumers.
@@ -668,12 +679,12 @@ former.
   to a Sage parent.
 - **Correct Example:** One toric adapter calls the source-grounded Sage helper
   when no suitable public operation supplies the needed data; it raises the
-  result through the owned complex construction before returning.
+  result through the preamble complex construction before returning.
 
 ### `OWN-07`: Raise results through the same construction without losing maps
 
-- **Rule:** A private adapter lowers already-owned defining data, performs the
-  engine computation, and raises the result through the relevant owned
+- **Rule:** A private adapter lowers the preamble object's defining data, performs
+  the engine computation, and raises the result through the relevant preamble
   construction. Preserve the selected base ring, grading, action, presentation,
   and structural arrows. Record actual comparison morphisms whenever a change
   of representation requires them. An engine normal form cannot replace a
@@ -691,7 +702,7 @@ former.
   that subsequent mathematics needs.
 - **Violation Example:** Wrap the dimension of cohomology in a fresh vector space
   and expose it as the cycle quotient; discard basis-change maps during lowering.
-- **Correct Example:** Raise the computed cycle and boundary data into the owned
+- **Correct Example:** Raise the computed cycle and boundary data into the preamble
   modules and maps, retain their quotient map, and derive the induced map from
   the supplied chain map through those structures.
 
@@ -709,15 +720,15 @@ former.
   Record the selected upstream operation and its actual uncovered semantic delta
   at the private adapter or owning construction. For a planned task, record the
   selection in the unfinished item and retain the durable contract at delivery.
-  A new nontrivial algorithm needs the demonstrated gap and explicit ownership
+  A new nontrivial algorithm needs the demonstrated gap and explicit engineering
   decision required by `ENG-06`. Moving a local algorithm to Julia, Singular,
   or a generic helper does not make it upstream-maintained.
-- **Rationale:** Mature dependencies reduce the project's algorithmic correctness
-  burden only when they actually own the corresponding computation.
+- **Rationale:** Mature dependencies reduce the project's algorithmic maintenance
+  burden only when they actually perform the corresponding computation.
 - **Violation Example:** Rebuild syzygy or chain-reduction logic because a package
   has an inconvenient return type, a different class model, or missing packaging.
 - **Correct Example:** Adapt an existing module-presentation or homology operation,
-  adding only the owned construction and map conversion that the engine does not
+  adding only the preamble construction and map conversion that the engine does not
   supply. Repair a bridge or packaging defect at its existing owner.
 
 ### Existing computation references
@@ -739,47 +750,53 @@ The [sage-categories README](https://github.com/dzackgarza/sage-categories/blob/
 and [engine-boundary specification](https://github.com/dzackgarza/sage-categories/blob/main/specs/leaves.md#computation-engine-boundary)
 provide additional discovery context. Their historical findings are not a current
 capability audit, and their framework-specific exceptions do not relax the
-preamble's recursively owned public universe.
+preamble's recursive public boundary (`OWN-04`).
 
 ### `OWN-09`: Transport through structure, with the actual preservation theorem
 
-- **Rule:** Construct functors on objects and morphisms, with their declared
-  domain, codomain, variance, and required comparison maps. Inherited operations
-  follow those structural functors only where the relevant preservation or
-  creation result applies. Reuse the framework's composition, identities, and
+- **Rule:** Present functors on objects and morphisms, with the domain, codomain,
+  variance, and comparison maps `lean-categories` states. Inherited operations
+  follow those structural functors only where `lean-categories` proves the
+  relevant preservation or creation result. Reuse the framework's composition, identities, and
   universal-construction interfaces; a leaf adds its new datum and genuinely
   specialized computation, not another implementation of general map calculus.
 
   Neither forgetfulness nor faithfulness implies preservation of every limit,
-  colimit, quotient, or cohomology operation. State the theorem and its hypotheses
-  at the owner; do not generate runtime boolean proofs of general categorical
-  identities or undecidable equality. Distinct mathematical choices remain
+  colimit, quotient, or cohomology operation. Cite the `lean-categories` theorem
+  and its hypotheses at the preamble construction; do not generate runtime boolean
+  proofs of general categorical identities or undecidable equality. A theorem
+  `lean-categories` lacks is requested there; the transport waits for it. Distinct mathematical choices remain
   distinct even when an engine represents them by the same data.
 - **Rationale:** Generic reuse without its hypotheses can propagate incorrect
   mathematics just as efficiently as correct mathematics.
 - **Violation Example:** Treat every algebraic cokernel as the cokernel of the
   underlying linear map; implement scalar extension by changing stored ring
   fields without transporting the module and its structure maps.
-- **Correct Example:** The relevant quotient owner constructs the required ideal
+- **Correct Example:** The relevant quotient construction builds the required ideal
   closure before the quotient; scalar extension acts on the module and the
   defining action or multiplication through the same functorial construction.
 
 ### Required construction factorizations
 
-These are semantic obligations, not additional global function names or a runtime
-registry. Each row names the general owner through which its special cases pass.
+These are presentation obligations, not additional global function names or a
+runtime registry. The constructions and their hypotheses are `lean-categories`';
+each row names the general preamble construction through which its special cases
+pass. A row whose mathematics `lean-categories` does not yet formalize is a
+formalization request there.
 
 | Family | Required construction and retained data | Specialization boundary |
 | --- | --- | --- |
-| Limits and colimits | The owned indexing category, diagram, universal cone/cocone, and induced maps under the [general contract](#limits-colimits-and-structured-specialization) | Product/equalizer and coproduct/coequalizer constructions, directed systems, and category-specific realizations implement the same construction through inheritance or composition |
-| Ring localization | The commutative ring's localization at an owned multiplicative submonoid, with its structure map and universal factorization | Element inversion uses the generated submonoid; prime localization uses the prime complement; a domain's fraction field uses its nonzero elements |
-| Scalar change | The existing scalar-change construction along an owned ring morphism, acting on objects and morphisms | Module localization uses the localization ring map; extra algebra/action/form structure is transported under the applicable hypotheses |
-| Completion | The owned inverse system of ideal-power quotients, its transition maps, limit, source map, and projections | Series and adic engines realize supported instances privately; no finite stage becomes the completed object |
-| Complexes and cohomology | The owned graded components and differentials; cycle inclusion, boundary inclusion, quotient, and induced maps | Chain/cochain conventions, coefficient hypotheses, and boundedness belong to the stated construction or computational case, never an implicit matrix convention |
+| Limits and colimits | The indexing category, diagram, universal cone/cocone, and induced maps under the [general contract](#limits-colimits-and-structured-specialization) | Product/equalizer and coproduct/coequalizer constructions, directed systems, and category-specific realizations implement the same construction through inheritance or composition |
+| Ring localization | The commutative ring's localization at a multiplicative submonoid, with its structure map and universal factorization | Element inversion uses the generated submonoid; prime localization uses the prime complement; a domain's fraction field uses its nonzero elements |
+| Scalar change | The existing scalar-change construction along a ring morphism, acting on objects and morphisms | Module localization uses the localization ring map; extra algebra/action/form structure is transported under the applicable hypotheses |
+| Completion | The inverse system of ideal-power quotients, its transition maps, limit, source map, and projections | Series and adic engines realize supported instances privately; no finite stage becomes the completed object |
+| Complexes and cohomology | The graded components and differentials; cycle inclusion, boundary inclusion, quotient, and induced maps | Chain/cochain conventions, coefficient hypotheses, and boundedness belong to the stated construction or computational case, never an implicit matrix convention |
 | Differential graded algebras | The common complex and graded algebra structures, with the differential and multiplication compatibility | Cohomology multiplication is induced through those structures; a commutative-DGA engine does not cover arbitrary DGAs by renaming |
 | Subobjects, quotients, and Homs | The existing inclusion/projection and fixed-endpoint `Mor` constructions | Coordinates enter only through the appropriate chosen framing/presentation and the same morphism constructor |
 
-For localization, use [Stacks 02C5](https://stacks.math.columbia.edu/tag/02C5).
+The citations below orient the reader to the sources `lean-categories`
+formalizes from; the formalization, not this text, is the authority. For
+localization, see [Stacks 02C5](https://stacks.math.columbia.edu/tag/02C5).
 Locality is a consequence with hypotheses, not a property of every localization:
 prime localization is local, whereas `ZZ[1/2]` retains distinct maximal ideals
 generated by 3 and by 5. For completion use
@@ -792,10 +809,12 @@ apply the general contract below and specialize its realization.
 
 ### Limits, colimits, and structured specialization
 
-**Place the theory at its most general mathematical owner, then specialize by
-threading that owner through every refinement.** A completion, a directed union,
-or a geometric construction does not own a separate theory of diagrams. This
-section specifies the common architecture; `OWN-14` makes the same threading
+**Present the theory at the most general category where `lean-categories`
+places it, then specialize by threading that construction through every
+refinement.** A completion, a directed union, or a geometric construction does
+not carry a separate theory of diagrams. The mathematics recalled below is
+`lean-categories`', cited here from its sources; this section specifies how the
+preamble presents it; `OWN-14` makes the same threading
 requirement binding on all specialized constructions, not just limits.
 
 #### Diagrams and universal constructions
@@ -806,10 +825,10 @@ cone over `D`; a colimit is an initial cocone under `D`. Their structural maps
 and universal factorizations are part of the construction, not optional output.
 Use the definitions in [Stacks, Limits and colimits](https://stacks.math.columbia.edu/tag/002D).
 
-The owned language must express the index category, object and arrow families,
+The preamble must express the index category, object and arrow families,
 their source/target and composition, the functor, cone/cocone legs, and maps
 between these objects. All constituents, including lazily returned values, use
-the existing owned categories, Homs, functors and indexed families. A Python
+the existing preamble categories, Homs, functors and indexed families. A Python
 iterator of engine values is not a diagram. A finite list of arrows does not
 define an arbitrary category without its identities, composites and relations.
 
@@ -820,15 +839,15 @@ indexing; do not define the general interface using integer degrees, a maximum
 stage, a matrix size, or finite traversal. Size hypotheses belong to the
 mathematical contract; representation limitations belong to specific operations.
 
-Establish functoriality, compatibility and universality through the sanctioned
-mathematical constructions and their hypotheses. Do not try to validate an
-infinite diagram by traversing every arrow, or treat a finite sample as proof
-of its laws. Represented input must meet its declared construction contract;
+Functoriality, compatibility and universality are `lean-categories`' theorems,
+used through the sanctioned constructions and their hypotheses. Do not try to
+validate an infinite diagram by traversing every arrow, or treat a finite sample
+as proof of its laws. Represented input must meet its declared construction contract;
 an arbitrary callable plus a boolean claiming compatibility is not a substitute.
 This is not permission to add an unchecked ingress or a runtime theorem registry.
 
 A chosen universal construction retains its actual diagram and universal
-cone/cocone, with access to their constituents through owned mathematics. Its
+cone/cocone, with access to their constituents through preamble objects. Its
 underlying result object alone need not determine its presentation. Distinct
 diagrams may have isomorphic results, or share one canonical result object.
 Keep each construction's data at that construction; never overwrite shared
@@ -871,8 +890,8 @@ coproducts alone do not impose identifications. See
 [Stacks 002P](https://stacks.math.columbia.edu/tag/002P).
 These displays are mathematical pseudocode, not new public factory names.
 
-Implement these theorem-backed realizations through the common construction's
-sanctioned specialization boundary. Do not introduce a competing public
+Wire these realizations, which `lean-categories`' theorems justify, through the
+common construction's sanctioned specialization boundary. Do not introduce a competing public
 product-based limit API. Products and equalizers are themselves limits, so an
 implementation must distinguish their defining diagram from a request to solve
 that diagram again. The primitive category-specific realization supplies its
@@ -880,8 +899,8 @@ universal data to the common constructor without recursively requesting itself.
 The same rule applies to coproducts and coequalizers. A general reduction is
 not an excuse for constructor recursion or an unchecked allocation path.
 
-For every specialized realization, identify the applicability theorem and the
-actual computational operations it delegates to. An optimized realization
+For every specialized realization, cite the `lean-categories` applicability
+theorem and identify the actual computational operations it delegates to. An optimized realization
 overrides the realization step of the inherited general construction, or
 operates through the composed general instance under its declared contract.
 It does not maintain a parallel limit implementation. Both the generic reduction
@@ -956,20 +975,20 @@ or sheaf constructions must follow their own creation/preservation theorems
 (`OWN-09`). An infinite product of finite-rank modules need not have finite
 rank; a subcategory restriction must not silently change the target category.
 Use maintained algebra, module, series, and geometric computations privately.
-The general constructor owns the mathematical relationships, not a second CAS
-implementation of every product or quotient.
+The general constructor presents the mathematical relationships; it is not a
+second CAS implementation of every product or quotient.
 
 #### Representation, existence, and homotopical structure
 
 Keep distinct the ability to represent a diagram, the existence of its universal
-object in the declared category, a chosen representation of that object, and
-the computability of a requested operation. A source-backed construction may
-represent an infinite universal object exactly without an eager enumeration or
+object in the category, a chosen representation of that object, and the
+computability of a requested operation. A construction may represent an
+infinite universal object exactly without an eager enumeration or
 general equality algorithm. Conversely, retaining a diagram alone is not a
 proof of existence in a category lacking that limit. A formal system must stay
 identified as a system; it cannot be relabeled an existing object of that
 category. Any use of a different completion of the category requires its actual
-mathematical construction and declared target.
+construction, formalized in `lean-categories`, and its target.
 
 Ordinary strict limits and homotopy limits are different mathematical requests.
 Name the relevant category, equivalences and coherence before selecting their
@@ -987,49 +1006,54 @@ structure when expressing finite portions or universal constructions. See
 This example sets a generality boundary, not a prerequisite to implement stable
 homotopy theory before repairing ring completion.
 
-#### Evidence that a specialization remains threaded
+#### Reviewing that a specialization remains threaded
 
 For a selected realization, follow its inherited or composed general object
 from construction through stage access, restrictions, universal factorization,
 and a nonidentity induced morphism. All use the same diagram and structural
-maps. A comparison with another valid realization respects those maps; agreement
-of dimensions, printed expressions, or finite residues is insufficient.
+maps. A comparison with another realization respects those maps; agreement of
+dimensions, printed expressions, or finite residues is insufficient. This is an
+engineering review of the wiring; it is not correctness evidence, which exists
+only in the `lean-cas-dsl` acceptance suite.
 
 Distinguishing specimens include a diagram with parallel arrows, both an empty
 limit and empty colimit, a directed index with incomparable elements, an inverse
 system with non-surjective transitions, and a direct system with non-injective
 transitions. Select specimens for the contract being delivered, preserve broader
 unfinished cases in TODO, and follow terminal T for execution (`DEV-58`). Record
-observed missing foundations in COMPLAINTS, not invented failures inferred merely
-from the breadth of this specification.
+observed missing foundations in COMPLAINTS, with the `lean-categories` request
+for missing mathematics, not invented failures inferred merely from the breadth
+of this specification.
 
 ### `OWN-10`: Representation state cannot alter mathematical meaning
 
-- **Rule:** Defining owned data is authoritative. Backend workspaces, caches,
-  finite precision, normalization state, and transport handles are private
-  realizations of that data. Reuse existing cache/lifetime mechanisms with keys
-  respecting the owned construction's actual choices. Replacing an engine,
-  increasing precision, or populating a cache does not by itself change the
-  object's mathematical identity, defining maps, or category. A newly established
-  mathematical property may justify refinement; engine identity never does.
+- **Rule:** The defining data a preamble object was constructed from are
+  authoritative over its representation. Backend workspaces, caches, finite
+  precision, normalization state, and transport handles are private realizations
+  of those data. Reuse existing cache/lifetime mechanisms with keys respecting the
+  construction's actual choices. Replacing an engine, increasing precision, or
+  populating a cache does not change what the object is, its defining maps, or
+  its category. Engine identity never justifies refinement.
 
   Exact equality, zero, membership, and hashing cannot be inferred from a lossy
   projection or an engine's inconclusive boolean. Apply `DEV-51` and `DEV-52`.
   Unsupported computation fails at its documented boundary; it never returns
   a foreign object, an approximation under an exact name, or an invented answer.
-- **Rationale:** Private storage otherwise becomes a second source of mathematical
-  truth and can contradict the structure the constructor established.
+- **Rationale:** Private storage otherwise becomes a second source of meaning and
+  can contradict the structure the constructor received.
 - **Violation Example:** Treat one truncated series residue as the exact element,
   or cache two differently framed objects under the same engine normal form.
 - **Correct Example:** Retain the exact defining object and its projection maps;
   precision describes available computational information about its elements.
-  A new presentation comes with the owned change-of-presentation map.
+  A new presentation comes with its change-of-presentation map.
 
 ### `OWN-11`: A missing shared operation is repaired at its owner
 
 - **Rule:** If the sanctioned path is absent, recursive, awkward, slow, or
   insufficient, identify the exact missing datum or operation at its owner.
-  Repair that prerequisite and route the selected consumer through it. Source
+  Repair that prerequisite and route the selected consumer through it. When the
+  missing piece is mathematics rather than presentation or wiring, it is a
+  formalization request to `lean-categories` and the consumer waits for it. Source
   locality, elapsed effort, a passing example, or a smaller diff cannot justify
   a second constructor, a private-field read, or a copied algorithm. Existing
   violations are repair sites, not precedents for new code.
@@ -1055,11 +1079,13 @@ from the breadth of this specification.
   nonidentity induced map where the feature has one. Compare every alternative
   route touched by the work against the same semantic contract. Reject a correct
   invariant obtained through an unsanctioned path. A conforming specimen must
-  expose the owned constituents and their mathematical relationships, not merely
-  an outer type, engine call count, or dimension.
+  expose the preamble constituents and their mathematical relationships, not
+  merely an outer type, engine call count, or dimension.
 
+  This is engineering acceptance of the wiring. It is not evidence that any
+  answer is correct; that exists only in the `lean-cas-dsl` acceptance suite.
   Establish architectural reuse by reading the implementation and upstream
-  contract. Mathematical specimens establish observable behavior; do not turn
+  contract. Research's specimens exercise observable behavior; do not turn
   them into source scanners or mock expectations that a particular helper was
   called. Respect the protected expectation subtrees and `DEV-58`: written
   specimens remain unverified until the authorized execution phase. A policy
@@ -1070,13 +1096,14 @@ from the breadth of this specification.
   while representatives or induced maps still escape to Sage; call a moved
   private algorithm delegated because its Python caller became shorter.
 - **Correct Example:** Source review follows the shared construction and real
-  maintained algorithm. The mathematical specimen composes the owned inclusion,
+  maintained algorithm. The specimen composes the preamble inclusion,
   quotient map, and induced morphism and distinguishes the promised behavior
   from a dimension-only substitute.
 
 ### `OWN-13`: Declarations identify sanctioned entrypoints and private boundaries
 
-- **Rule:** At each construction's existing declaration, document its owning
+- **Rule:** At each construction's existing declaration, cite the
+  `lean-categories` definition it presents and document its preamble
   category/object, canonical signature, defining datum and maps, admissible input
   forms, required output structure, and how each specialization factors through
   it. At each adapter declaration, document the semantic operation it implements,
@@ -1105,17 +1132,17 @@ from the breadth of this specification.
 ### `OWN-14`: Specializations inherit or compose their general construction
 
 - **Rule:** A specialized construction is implemented by honest inheritance from
-  the general owned construction, or by composition with an actual instance of
+  the general preamble construction, or by composition with an actual instance of
   it. Declare which relationship is used at the existing owner (`OWN-13`). This
   applies to every mathematical refinement, not only the
   [limit and colimit contract](#limits-colimits-and-structured-specialization).
 
   Inheritance initializes the general defining datum and retains its operational
-  contract. Overrides supply only the specialized datum or theorem-backed
-  realization. A category label, class ancestry, or copied method body is not
+  contract. Overrides supply only the specialized datum or a realization a
+  `lean-categories` theorem justifies. A category label, class ancestry, or copied method body is not
   enough when inherited operations have missing state or disagree with the leaf.
 
-  Composition stores the actual owned general construction and delegates its
+  Composition stores the actual general construction and delegates its
   general operations to that instance. The specialized object adds its own
   mathematical structure and the maps relating the two. A diagram accessor or
   metadata-only object attached to an independent implementation is not this
@@ -1124,7 +1151,7 @@ from the breadth of this specification.
   Keep a single authority for defining data, universal maps, restrictions and
   induced morphisms. Do not keep parallel mutable copies in the specialized and
   general objects. A mathematical comparison between distinct presentations is
-  allowed and must be owned, but an isomorphism does not excuse duplicating the
+  allowed and must be an explicit map, but an isomorphism does not excuse duplicating the
   general implementation. Thread specialized computation through the shared
   constructor without eagerly computing a second, generic realization merely
   to prove that the architecture was followed.
@@ -1147,7 +1174,7 @@ from the breadth of this specification.
 ### `OWN-15`: The underlying object is defining construction data, never a post-hoc view
 
 - **Rule:** When a mathematical object is obtained by adding structure to an
-  existing owned object, construct the weaker object first and retain that exact
+  existing preamble object, construct the weaker object first and retain that exact
   object as part of the stronger object's defining data.  The stronger object
   is then the weaker object together with additional selected datum and the
   structural maps required by the mathematics. An accessor such as `underlying_set()`,
@@ -1167,8 +1194,8 @@ from the breadth of this specification.
   Lazy realization is permitted only for computation *inside* an already fixed
   underlying object.  It is not permission to postpone deciding what the
   underlying mathematical object is until a method is first called.
-- **Rationale:** Reconstructing the weaker object later creates a second source
-  of identity and lets generic operations drift from the object whose structure
+- **Rationale:** Reconstructing the weaker object later creates a second
+  authority for the object and lets generic operations drift from the object whose structure
   they are supposed to inherit.
 - **Observed defect:** lattice construction already created a concrete
   `FreeModuleOn(R,S)` and stored it as `_module`, but lattice-level accessors then
@@ -1184,8 +1211,8 @@ from the breadth of this specification.
 ### `OWN-16`: Thread added structure through the retained datum
 
 - **Rule:** `CON-16` governs every structure-adding constructor. Construct
-  `X=(M,d)` through the immediate category owner on the data of the exact owned
-  `M`. Inherited module operations act on `X` through that construction chain;
+  `X=(M,d)` through the immediate category owner on the data of the exact
+  `M` received. Inherited module operations act on `X` through that construction chain;
   they do not forward to a separately implemented module. An accessor explicitly
   required by the mathematical contract, such as `unformed_module()`, returns
   the received `M`. Distinct choices of `d` remain distinct structured objects.
@@ -1198,7 +1225,7 @@ from the breadth of this specification.
 
   This rule does not remove actual mathematical arrows: kernel inclusions,
   quotient projections, framing epimorphisms, localization maps, scalar-change
-  units/counits and a genuinely selected isomorphism remain owned morphisms with
+  units/counits and a genuinely selected isomorphism remain preamble morphisms with
   their exact endpoints. A forgetful functor is supplied by its category; the
   retained-input accessor is not a second implementation of that functor.
 - **Rationale:** The input datum and inherited structure have one authority.
@@ -1220,7 +1247,7 @@ from the breadth of this specification.
   object, selected generating set, framing, presentation, category placement,
   or structural map merely because the user asked for it.
 
-  In particular, a method inherited from a category is evidence that the
+  In particular, a method inherited from a category presumes that the
   constructor already supplied the datum that method names.  If calling
   `module_generators()` causes the object to manufacture a new generator-family
   wrapper because no canonical generator object was retained, or if calling
@@ -1230,7 +1257,7 @@ from the breadth of this specification.
 
   Caching an accessor result does not cure this violation.  “Construct once on
   first query” is still post-hoc construction unless the result is merely a
-  realization of defining data whose mathematical identity was already fixed.
+  realization of defining data that were already fixed at construction.
 - **Rationale:** Retroactive construction makes object validity depend on which
   methods happened to be called and rewards synthetic compatibility layers over
   honest reuse of general constructors.
@@ -1239,25 +1266,25 @@ from the breadth of this specification.
   already having built the free module and its canonical generating data.
   Similar labels such as `Free-module generator family` and `Presented-module
   generator family` show the same tendency to manufacture an interface object
-  instead of exposing the construction that already owns the generators.
-- **Correct Example:** `Free_R(S)` owns the canonical basis map at construction;
+  instead of exposing the construction that already holds the generators.
+- **Correct Example:** `Free_R(S)` holds the canonical basis map from construction;
   `module_generating_set()` exposes `S`, `module_generator(s)` evaluates the
   stored unit/basis map, and `module_generators()` exposes its represented image
   when that image is mathematically a set.
 
-### `OWN-18`: Generic operations are owned by the weakest sufficient structure
+### `OWN-18`: Generic operations live on the weakest sufficient structure
 
-- **Rule:** The public meaning and codomain of an operation are determined by the
-  weakest mathematical structure that defines it.  A refinement may provide a
-  faster implementation or additional specialized operations, but it does not
-  silently specialize the generic operation's result type, display vocabulary,
-  or ontology.
+- **Rule:** The public meaning and codomain of an operation are those of the
+  weakest structure on which `lean-categories` defines it.  A refinement may
+  provide a faster implementation or additional specialized operations, but it
+  does not silently specialize the generic operation's result type or display
+  vocabulary.
 
   If `module_generators()` is defined for framed/free modules, a lattice that is
   a formed free module uses that same module-theoretic operation.  The result is
   not a “lattice generator family” merely because the receiver is internally
   refined as a lattice.  A lattice-specific generating object is justified only
-  when extra lattice mathematics is genuinely selected — for example a simple
+  when extra lattice structure is genuinely selected — for example a simple
   root basis carrying root-system structure — and then it belongs to a distinct
   lattice/root operation whose stronger codomain is part of its contract.
 
@@ -1279,10 +1306,10 @@ from the breadth of this specification.
 
 ### `OWN-19`: One defining datum has one authority throughout a construction chain
 
-- **Rule:** Do not maintain parallel copies or parallel owners of the same
-  mathematical datum.  An indexing set `S`, selected generating map, relation
-  family, grading, action, form, presentation, or universal arrow is established
-  once at its owner and referenced by stronger constructions.  A descendant may
+- **Rule:** Do not maintain parallel copies or parallel holders of the same
+  defining datum.  An indexing set `S`, selected generating map, relation
+  family, grading, action, form, presentation, or universal arrow is received
+  once at its constructor and referenced by stronger constructions.  A descendant may
   retain a direct reference or canonical map to it; it may not copy it into a
   second `_indices`, `_generators`, `_presentation`, or equivalent field and then
   implement generic operations against the copy.
@@ -1310,7 +1337,8 @@ from the breadth of this specification.
 ### `OWN-20`: Essential-image claims require using the functorial construction, not imitating it
 
 - **Rule:** When an object is claimed to lie in the image or essential image of
-  a standard owned functor/construction, build it through that construction (or
+  a standard functor/construction, build it through the preamble's presentation
+  of that construction (or
   retain an actual object and specified isomorphism from that construction).
   Do not independently implement an object with equivalent-looking methods and
   then infer after the fact that it “is” a free module, quotient, localization,
@@ -1355,12 +1383,12 @@ from the breadth of this specification.
   display useful.  Conversely, adding more internal words does not make a display
   informative if those words describe routing rather than mathematics.
 
-  A public preamble-owned object must never fall back to Python's object-address
+  A public preamble object must never fall back to Python's object-address
   representation (`<... object at 0x...>`), and a public `_repr_`/`_latex_` must
   never delegate wholesale to a private backend/engine object's display.  Even
   when that backend currently prints familiar mathematics, its notation and
   future changes are implementation details.  Cross the represented data back
-  into owned mathematical syntax and render that syntax here.
+  into preamble mathematical syntax and render that syntax here.
 
   Display must not perform expensive classification, enumerate an unknown or
   infinite object, mutate caches in a mathematically significant way, or create
@@ -1381,12 +1409,15 @@ from the breadth of this specification.
 ### `OWN-22`: Structure is constructed, and checking it is asked for
 
 - **Rule:** An object or morphism is built by the construction that places it
-  in its category, and that construction is trusted: the preamble constructs
-  objects into the right categories, and nothing re-derives at construction
-  what the construction already states.  Checking that a map preserves
-  structure, is equivariant, is bilinear, or satisfies an algebra's relations
-  is never eager.  It is a flag the caller sets when they want their input
-  checked, or a method they call; the default constructs without checking.
+  in its category, and construction does not check it: nothing re-derives at
+  construction what the construction states.  Construction is not evidence that
+  the result satisfies its laws, and nothing treats it as such; whether an
+  implementation's answers are correct is judged only by the `lean-cas-dsl`
+  acceptance suite.  Checking that a map preserves structure, is equivariant, is
+  bilinear, or satisfies an algebra's relations is never eager.  It is a flag the
+  caller sets when they want their input checked, or a method they call; the
+  default constructs without checking.  Such a check is itself an untrusted
+  computation, a diagnostic for the caller and never evidence.
 
   Structure is the morphism that defines it, held as a callable, not a
   computed table.  An algebra's multiplication is its ring structure, and
@@ -1408,7 +1439,7 @@ from the breadth of this specification.
   construction never needed, and it compounds: building `End_R(C)` for a
   presented `C` built its multiplication `End ⊗ End -> End` through another
   presented Mor module, so `End(Z/2 + Z^(n-1))` took 0.42 s, 2.76 s and 329 s
-  for n = 1, 2, 3 (measured 2026-09-25).  Owner ruling, 2026-09-25.
+  for n = 1, 2, 3 (measured 2026-09-25).
 - **Violation Example:** a Mor constructor that computes the presented
   internal-Hom model of its endpoints; an `End` constructor that builds its
   multiplication as a morphism out of `End ⊗ End`; a constructor that checks
@@ -1457,14 +1488,14 @@ For any constructor that adds structure, review the construction chain before
 reviewing leaf methods.  This is a source-review discipline, not a request for a
 new static checker, certificate, registry, or generated compliance report.
 
-1. **Write the mathematics first.** State the weaker object `Y`, the added datum
-   `d`, the stronger object `X=(Y,d)`, and every canonical map relating them.
-   If the construction is functorial, name the functor/unit/counit or structural
-   arrow that supplies the relationship.
-2. **Find the unique construction of `Y`.** There must be one owned source of
-   truth.  If no actual `Y` is constructed, determine whether honest inheritance
+1. **Read the mathematics first.** From `lean-categories`, take the weaker object
+   `Y`, the added datum `d`, the stronger object `X=(Y,d)`, and every canonical
+   map relating them. If the construction is functorial, name the
+   functor/unit/counit or structural arrow that supplies the relationship.
+2. **Find the unique construction of `Y`.** There must be one construction of it
+   in the preamble.  If no actual `Y` is constructed, determine whether honest inheritance
    supplies it; otherwise the stronger constructor is imitating a weaker theory.
-3. **Follow identity, not equality.** Confirm that `X` retains that exact owned
+3. **Follow identity, not equality.** Confirm that `X` retains that exact
    `Y` or an explicit chosen isomorphism when only equivalence is intended.
    Reconstructing an equal/isomorphic object later is not reuse.
 4. **Follow every defining datum forward.** Index set, framing, presentation,
@@ -1501,31 +1532,35 @@ Immediate red flags discovered in prior repository work include:
 | A structured object stores `_module`, `_underlying`, `_source`, etc., but its `underlying_*()` accessor returns `self` | the real weaker object exists but the public construction bypasses it | return/reuse the stored object and build the actual structural maps |
 | A constructor builds `Free_R(S)` while the descendant also stores `_indices` or another copy of `S` | two authorities for one defining datum | make `Free_R(S).module_generating_set()` authoritative |
 | `module_generators()` / `relations()` / `presentation()` first allocates a wrapper describing data that should already define the object | accessor is acting as a hidden constructor | construct/retain the mathematical datum at the owning constructor |
-| Generic operation results are named `Lattice-*`, `Group-*`, `Scheme-*`, etc. only because the receiver is refined | internal category refinement leaked into a weaker public operation | return the result type/display owned by the weakest sufficient structure |
+| Generic operation results are named `Lattice-*`, `Group-*`, `Scheme-*`, etc. only because the receiver is refined | internal category refinement leaked into a weaker public operation | return the result type/display of the weakest sufficient structure |
 | A free-module generator prints as `1*B['alpha']` | storage coordinates escaped as mathematical syntax | render the selected formal generator/linear combination |
 | A display says only `Lattice-generator family`, `Natural numbers`, `placed map`, or another type paraphrase | zero mathematical information gain | show defining data, endpoints, members/window, invariants, or canonical notation |
 | An isomorphic replacement is reconstructed from rank/dimension/labels while the original object is available | equality/isomorphism substituted for construction provenance | retain the original object or explicit chosen comparison map |
-| Category membership is used as evidence that framing/action/form/presentation data must exist | property/type label substituted for selected structure | require the constructor to supply the actual datum |
+| Category membership is taken to mean that framing/action/form/presentation data must exist | property/type label substituted for selected structure | require the constructor to supply the actual datum |
 
 These are examples of the general policies `OWN-15` through `OWN-21`, not an
 exhaustive blacklist.  When a new instance has the same generator, repair the
 construction owner; do not mint a narrower exception or a detector for the one
 spelling that happened to expose it.
 
-### Contributing a category: the procedure
+### Presenting a category: the procedure
 
-This is the order of work for adding, moving, splitting or retiring a category.
-It exists because the declared graph read on 2026-09-16 was the sum of locally
+This is the order of work for adding, moving, splitting or retiring the
+preamble's presentation of a category. The preamble has no categories of its
+own: every category class presents a category `lean-categories` formalizes, and
+every supercategory entry presents an inclusion `lean-categories` states. A
+category `lean-categories` lacks is requested there and is not presented until it
+is released. This procedure exists because the declared graph read on 2026-09-16 was the sum of locally
 defensible edits: thirty categories under `Sets()`, a hand-meshed block of 135,
 four notions each under two names, restriction of scalars declared on three
 bases, a diamond through two different objects.  None of those was wrong at the
 moment it was written, from where its author stood.  The procedure moves the
-author to where the errors are visible, which is the mathematics first and the
-whole graph second, and it makes each step leave evidence in the commit body.
+author to where the errors are visible, which is the formalization first and the
+whole graph second, and it makes each step leave a record in the commit body.
 
 **How the graph drifts, so that the steps below read as remedies.**  A
-category is minted where a consumer needs it and named from that vantage, so
-one notion acquires a second name (`FormedModules` beside `FormModules`).  A
+category is minted where a consumer needs it and named from that vantage,
+which is research authoring mathematics, and one notion acquires a second name (`FormedModules` beside `FormModules`).  A
 property is written as a class because a class is what the language offers,
 and then a class per combination follows, so a product of independent axes
 becomes a mesh of hand-declared diamonds (`FinitelyPresentedQuadraticFormModules`).
@@ -1538,53 +1573,56 @@ added so the package still imports, which hides the dangling import for a year.
 Each step is local, each is defensible, and the disorder is only visible in
 aggregate, which is why the instrument runs on every declaration change.
 
-1. **State the notion in the field's words, with no implementation names.**
-   Objects, morphisms, the defining datum, the hypotheses, and the reference
-   that defines it (Stacks tag, Bourbaki chapter, the paper).  Apply
+1. **Read the notion in `lean-categories`, with no implementation names.**
+   Its objects, morphisms, defining datum, hypotheses and inclusions, as
+   formalized there.  Apply
    [mathematical dependency tracing](#mathematical-dependency-tracing): the
-   categories the definition passes through, down to ones the tree must own,
-   each a real category with a literature name.  Do not open the tree yet;
+   categories the definition passes through, each formalized in
+   `lean-categories`.  If any is not, stop: it is a formalization request there
+   ([AGENTS.md](AGENTS.md#a-missing-foundation-parks-the-work-that-found-it-always-on)),
+   and nothing is presented until it is released.  Do not open the tree yet;
    reading the tree first makes its current contents decide what is true.
-2. **Classify every level of that chain.**  A property of the objects with no
-   chosen datum is an axiom on the base that first states it (`CAT-17`).  A
-   chosen datum is a data subcategory, a class that declares the axiom it
-   truncates to; a chosen generating set, presentation or syzygy tower is a
-   truncated resolution in the category of resolutions over the base
-   (`CAT-29`).  A construction on a category (G-objects, direct-sum
-   decompositions, arrows, presheaves) is parameterized by that category and
-   declares it (`CAT-20`).  An object constructor is the category applied to
-   the object's data and is not a category at all.  A combination of
-   properties is a join and gets no class (`CAT-18`).
+2. **Classify every level of that chain as the formalization does.**  A
+   property of the objects with no chosen datum is presented as an axiom on the
+   base that first states it (`CAT-17`).  A chosen datum is presented as a data
+   subcategory, a class that declares the axiom it truncates to; a chosen
+   generating set, presentation or syzygy tower is a truncated resolution in the
+   category of resolutions over the base (`CAT-29`).  A construction on a
+   category (G-objects, direct-sum decompositions, arrows, presheaves) is
+   parameterized by that category and declares it (`CAT-20`).  An object
+   constructor is the category applied to the object's data and is not a
+   category at all.  A combination of properties is a join and gets no class
+   (`CAT-18`).
 3. **Survey the tree, level by level.**  `just category-graph by-supercategory`
    for the parent each level would declare; `just category-graph json` with
    `jq` for who owns an operation; `rg` on the nouns of each definition across
    `categories/`; the expectation files under `tests/constructions/`,
-   `tests/user_simulations/` and `tests/conftest.py` for the names the
-   specification uses.  Record each level as: exists; exists under another
-   name, which is retired into the owner (`CAT-22`); or missing.
+   `tests/user_simulations/` and `tests/conftest.py` for the names they use.
+   Record each level as: presented; presented under another name, which is
+   retired into the owner (`CAT-22`); or not yet presented.
 4. **Reuse axioms before naming any.**  `sage.categories.category_with_axiom.all_axioms`
-   and the base's nested axiom classes first.  A new name is the reference
-   text's word, registered once; a property relative to a different structure
-   is qualified in Sage's idiom (`FinitelyPresentedAsAlgebra`) so that it does
-   not collide with the module meaning (`CAT-19`).  Two established names is a
-   choice, not coining.
-5. **Build what is missing from the top down.**  The deepest missing
-   intermediate category first, declaring its one immediate parent, then the
-   next, then the leaf.  A leaf written before its intermediates is a leaf that
+   and the base's nested axiom classes first.  A new axiom name is
+   `lean-categories`' name for the property, registered once; a property relative
+   to a different structure is qualified in Sage's idiom
+   (`FinitelyPresentedAsAlgebra`) so that it does not collide with the module
+   meaning (`CAT-19`).
+5. **Present what is missing from the top down.**  The deepest intermediate
+   category `lean-categories` formalizes and the preamble does not yet present
+   first, declaring its one immediate parent, then the next, then the leaf.  A leaf written before its intermediates is a leaf that
    declares two levels up, and that edge is never removed later.
 6. **Wire the leaf onto the deepest existing node.**  Its declaration is the
    most specific category the tree can spell, as a join where it is one:
    `Schemes(R).Affine().FiniteType().Smooth()`, not `AffineSchemes(R)` beside a
    list of properties the join already composes.  One entry, unless the object
    is genuinely two structures at once (a ring and a module), in which case
-   write both and say in the commit body why the two routes are the same
-   functor (`CAT-21`).
+   write both and cite in the commit body the `lean-categories` theorem that the
+   two routes are the same functor (`CAT-21`).
 7. **Keep every change of base or parameter out of the list.**  Restriction of
    scalars, base change, the passage from an ideal to a fractional ideal or from
    an `R[G]`-module to a `G`-object over `R`: each is a functor obtained from
    the category by a method named for the construction (`CAT-16`).  Sage
    applies every axiom along a declared edge, so such an entry is a false
-   theorem for every relative property.
+   statement for every relative property.
 8. **Write the declaration as expressions a reader can resolve** (`CAT-24`):
    names and parameters, no locals, no method calls on `self` that compute a
    category.  `extra_super_categories` on an axiom class states a genuine
@@ -1592,23 +1630,25 @@ aggregate, which is why the instrument runs on every declaration change.
 9. **Read the graph before and after** (`CAT-25`): `shape`, `cells`, `audit`,
    and `just preamble-imports`.  The breadth of the target does not grow, no
    shortcut appears, no piece splits off, and any new generator owing a cell is
-   named in the commit body with the theorem that fills it.
+   named in the commit body with the `lean-categories` theorem that fills it; a
+   cell with no such theorem is a request there, and the generator waits.
 10. **Deliver the consequences in the same commit.**  Consumers of a retired or
-    renamed name are rewritten (`CAT-26`); a name the specification requires
+    renamed name are rewritten (`CAT-26`); a name an interface requires
     survives as a thin function returning the category (`CAT-27`); the TODO
     node the change delivers is removed with its edges; the delta from step 9
     is in the body.
-11. **When the honest parent is not in the tree, stop and say so.**  Build it
-    if steps 1 to 5 defined it; otherwise leave `super_categories` abstract so
-    the category refuses to construct, and record the missing category in
-    `COMPLAINTS.md` with its dependency path and in `TODO.md` as a node the
-    consumer needs.  Never a placeholder, never a mechanism that makes the
+11. **When the honest parent is not in the tree, stop and say so.**  Present it
+    if `lean-categories` formalizes it; otherwise request it there, leave
+    `super_categories` abstract so the category refuses to construct, and record
+    the missing category in `COMPLAINTS.md` with its dependency path and in
+    `TODO.md` as a node the consumer needs, waiting on the request.  Never a
+    placeholder, never a local definition, never a mechanism that makes the
     construction proceed (`DEV-65`).
 
-The procedure in one line: define, classify, survey, reuse, build top-down,
-wire to the deepest node, keep functors out of the list, write resolvable
-expressions, read the graph, deliver the consequences, and stop where the
-mathematics is missing.
+The procedure in one line: read the formalization, classify as it does, survey,
+reuse, present top-down, wire to the deepest node, keep functors out of the
+list, write resolvable expressions, read the graph, deliver the consequences,
+and stop where `lean-categories` has no mathematics yet.
 
 ## Corrective implementation style guide (`STY-*`)
 
@@ -1616,7 +1656,7 @@ This is a **living catalogue of concrete code shapes**.  Add a new entry wheneve
 
 The default order of preference is:
 
-1. an owned mathematical operation on the category/parent/element/morphism/Homset/functor that owns the notion;
+1. the preamble operation on the category/parent/element/morphism/Homset/functor where `lean-categories` places the notion;
 2. a mature library abstraction (`itertools`, `collections`, `functools`, graph/group/CAS APIs, etc.);
 3. a declarative Python expression (comprehension, generator expression, `any`, `all`, `sum`, `min`, `max`, `next`, dictionary union, etc.);
 4. an explicit stateful loop only when state evolution is actually the algorithm.
