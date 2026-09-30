@@ -1957,7 +1957,7 @@ A design that violates them is wrong even when it “works.”
 
 **In one line:** write Sage so that the category and the catalogue present the theory directly — idiomatic constructions, one home per notion, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure. The theory itself is `lean-categories`'; the preamble presents it and owns none of it.
 
-## 1. The owned category is the only extension point
+## 1. The preamble category is the only extension point
 
 Public method placement is stated through the owned category protocol: `ObjectType`,
 `ElementType`, and the object/element types of Hom/End/Aut category constructions. Sage's
@@ -1993,7 +1993,7 @@ Reject APIs that are software-coherent but mathematically incoherent.
 
 If the call site would not be written at a Sage prompt while doing the math, the API is wrong.
 
-## 3. Ontological placement — one home
+## 3. Placement — one home
 
 Every entity has exactly one kind of home:
 
@@ -2020,11 +2020,11 @@ Prefer **one clean export** for a catalogue surface: import `Lattices`, use `Lat
 
 A standalone `XFunctor(...)`, `x_adjunction(...)`, `Ext(n, M, N)` or `finite_g_set(...)` in the session surface is a placement defect; the name belongs on the category or object above and the function is retired, not aliased.
 
-**Group modules are `Modules(R[G])`**, modules over the group ring, never a category of their own. Induction, coinduction and restriction along `H ≤ G` are scalar extension, coextension and restriction along `ZZ[H] → ZZ[G]`; the trivial action, coinvariants and invariants are restriction, extension and coextension along the augmentation `ZZ[G] → ZZ`. These functors are stated once over `ZZ`, the initial ring, and preserve the finer scalars an `R[G]`-module carries. Actions in categories that are not modules (sets, schemes) are `GObjects(G, C)`, with `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence when needed. Actions are left actions: `rho(g h) = rho(g) rho(h)`, the product of the matrices acting on an ordered basis, and the owned group law is composition.
+**Group modules are `Modules(R[G])`**, modules over the group ring, never a category of their own. Induction, coinduction and restriction along `H ≤ G` are scalar extension, coextension and restriction along `ZZ[H] → ZZ[G]`; the trivial action, coinvariants and invariants are restriction, extension and coextension along the augmentation `ZZ[G] → ZZ`. These functors are stated once over `ZZ`, the initial ring, and preserve the finer scalars an `R[G]`-module carries. Actions in categories that are not modules (sets, schemes) are `GObjects(G, C)`, with `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence when needed. Actions are left actions: `rho(g h) = rho(g) rho(h)`, the product of the matrices acting on an ordered basis, and the group law is composition.  These are presentations of `lean-categories`' definitions and conventions; where it states them differently, it governs.
 
 ## 4. One source of truth, stated once, inline
 
-Construction **is** the definition.
+Construction **is** where a catalogue value is defined.
 Define values inline in the namespace class body (or a helper called from that body while dependencies are in scope).
 Do not spread a definition across “empty container → later assignment → `globals().update` → string lookup → re-export.”
 Do not construct after the class and patch attributes on afterward — that means the class body was not the definition.
@@ -2050,7 +2050,7 @@ This is the same discipline as work-selection (above): an artifact that cannot f
 ## 6. Generality over local cleverness
 
 When blocked, do not add a special case for this object.
-Strengthen the general owned interface (element construction, Aut construction,
+Strengthen the general preamble interface (element construction, Aut construction,
 `+` / `sum`, and structural refinement) so the special case disappears.
 Ask “why does this freestanding file/function exist?” — if it has no mathematical referent, delete it and place the content in the category or catalogue.
 
@@ -2060,9 +2060,9 @@ Tests falsify the mathematical or dispatch claim: refined methods win over class
 They do not exercise scaffolding, reassure about naming conflicts, or re-encode construction as gram-matrix comparisons.
 These tests are research's own and certify nothing outside it. Correctness evidence about a computation exists only in the `lean-cas-dsl` acceptance suite, which never sees this code.
 
-Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
+Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the preamble category interfaces, not side conditions in catalogue loaders.
 
-**Adding to `tests/test_known_mathematics.sage`.** That file is the owner's specification of mathematics the preamble must reproduce, so agents do not extend it freely — but an addition is allowed whenever an independent source citation is attached to the new row: the Stacks Project, Kerodon, an item in the owner's Zotero library, a published paper, or an arXiv preprint. The citation is the admission ticket, and it names the source of the *asserted fact*, not of the implementation. Cite by the source's own identifier (Zotero `citationkey`, Stacks tag, arXiv id), verified against the source rather than recalled.
+**Adding to `tests/test_known_mathematics.sage`.** That file states mathematics the preamble must reproduce; it is research's own test and certifies nothing outside research. Agents do not extend it freely — but an addition is allowed whenever an independent source citation is attached to the new row: the Stacks Project, Kerodon, an item in the owner's Zotero library, a published paper, or an arXiv preprint. The citation is the admission ticket, and it names the source of the *asserted fact*, not of the implementation. Cite by the source's own identifier (Zotero `citationkey`, Stacks tag, arXiv id), verified against the source rather than recalled.
 
 A row whose assertion would hold with the functionality removed certifies nothing. Assert the content: a maximal overlattice is reached by an inclusion, so the arrow's index is the assertion, not the codomain's existence.
 
@@ -2085,8 +2085,8 @@ scalars declared as a supercategory on three bases, and a diamond whose two
 routes landed on different objects. None of it was a wrong object; all of it
 was a wrong belief about what a declaration says. `CONTRIBUTING.md` codes
 `CAT-15` to `CAT-27`, `DEV-64` and `DEV-65` state the rules with the artifact
-each one came from, and *Contributing a category: the procedure* there is the
-full order of work, from the definition in the field's words through the
+each one came from, and *Presenting a category: the procedure* there is the
+full order of work, from the `lean-categories` definition through the
 survey of the tree to the delivery of every consumer. This section is the
 short form asked before any declaration is written; no declaration is written
 until each question has an answer in the commit body.
@@ -2096,8 +2096,8 @@ defines nothing. If `lean-categories` does not have the category, nothing is
 declared and the need is requested there
 ([missing foundations](#a-missing-foundation-parks-the-work-that-found-it-always-on)).
 
-1. **What are the objects?** Write the definition in one sentence, in the
-   field's words. If it names a chosen datum ("with a chosen basis", "with a
+1. **What are the objects?** Quote `lean-categories`' definition in one
+   sentence, with its locator. If it names a chosen datum ("with a chosen basis", "with a
    differential"), this is a data subcategory. If it names only a property
    ("Noetherian", "finitely generated", "separated"), this is an axiom on its
    base and there is no class to write (`CAT-17`, `CAT-18`).
@@ -2116,11 +2116,12 @@ declared and the need is requested there
    scalars, base change, an ideal to its fractional ideal, an `R[G]`-module to
    a `G`-object over `R`: each is a functor obtained from the category by a
    named method, never an entry in the list (`CAT-16`). Sage applies every
-   axiom along a declared edge, so such an entry is a false theorem for every
+   axiom along a declared edge, so such an entry is a false statement for every
    relative property.
-5. **Does the list create a second route to anything?** Write both composites.
-   Same category twice: delete the shortcut. Computed join: fine. Different
-   objects: the entry is false (`CAT-21`).
+5. **Does the list create a second route to anything?** Write both composites
+   and cite the `lean-categories` theorem relating them. Same category twice:
+   delete the shortcut. Computed join: fine. Different objects: the entry is
+   false (`CAT-21`).
 6. **Is it a construction on a category?** Then it takes that category as a
    parameter and declares it; its instances do not declare the base again
    (`CAT-20`).
@@ -2137,7 +2138,7 @@ combination of properties; a class for a property that Sage's axiom mechanism
 states; a `super_categories` override on an axiom class; a category declaring
 its own name over a lower base; `__contains__` deciding membership by a
 predicate, a base tower or an attribute probe; a declaration computed from a
-local variable; a second class for a notion the tree already owns.
+local variable; a second class for a notion the tree already presents.
 
 Banned on 2026-09-17 (`CAT-28`): a category declared for the class of objects
 an engine or a construction produces (a condition set is a class; the groups
@@ -2259,16 +2260,20 @@ Do not confuse a genuine contract with either of these different situations:
   abstract accessor merely to ask later for data the construction necessarily established.
 - **A mathematically general operation with incomplete current algorithms.** `cardinality()`
   on sets and `is_nondegenerate()` on formed modules are not abstract merely because some
-  represented cases are not presently computable. Keep the method at its mathematical
-  owner, route the cases currently implemented, and assertion-gate the unhandled
+  represented cases are not presently computable. Keep the method where `lean-categories`
+  places it, route the cases currently implemented, and assertion-gate the unhandled
   computational remainder with an informative message. A specialized category may supply a
   stronger implementation without moving the mathematical notion.
 
 An abstract predicate on an axiomatic/data-bearing subcategory is a requirement on
 participants, not an inherited `return True`. If a refinement says that its objects must
-supply a named operation/predicate, the participant supplies it (possibly by a theorem-backed
-implementation returning `True`); the category declaration itself does not manufacture the
-answer. Runtime proof/certificate/evidence objects are not introduced for this purpose.
+supply a named operation/predicate, the participant supplies it by computing it, and that
+answer is an untrusted computation like any other. Where `lean-categories` proves the
+predicate for every object of a category, the preamble presents that inclusion and the
+predicate answers by placement, as for a property subcategory above; an implementation
+returning `True` on the strength of a theorem it asserts itself is a claim nothing
+supports. The category declaration itself does not manufacture the answer, and runtime
+proof/certificate/evidence objects are not introduced for this purpose.
 
 Sage's `abstract_method` is the repository's explicit marker for the rare case where a
 method is intentionally a category implementation contract. It is not a TODO mechanism and
@@ -2284,10 +2289,12 @@ the object's data (`Sets()`, `Modules(R)`, `Lattices(R)`, `Groups()`,
 `Algebras(R)`, ...). It asserts that the constructions agree. It asserts that the
 object is in the categories it belongs to (`assert L in Lattices(ZZ)`). Then it
 calls each operation expected of the object and asserts the result, one call
-after another. Each expected value is known independently of the
-implementation: computed by hand, cited from a source, or known from the
-mathematics. A new constructor or construction route adds its route to the file
-of the object it builds; a new object adds its own file.
+after another. Each expected value is cited from a source or proved,
+independently of the implementation; a value of informal provenance is not an
+expected value. These files are research's own and certify nothing outside it;
+correctness evidence exists only in the `lean-cas-dsl` acceptance suite. A new
+constructor or construction route adds its route to the file of the object it
+builds; a new object adds its own file.
 
 Nothing in these files inspects the implementation. There is no introspection,
 no table of constructors and no check that a method is implemented: an
@@ -2295,11 +2302,11 @@ operation whose owner never supplied it fails when it is called, inside the
 test that names it. `just test-lint` enforces the same standard here as for
 every other test.
 
-## Runtime classes only realize owned constructions
+## Runtime classes only realize the presented constructions
 
-Almost everything mathematical lives at the categorical level. The owned `ObjectType`,
-`ElementType`, and Hom-category types are the implementation protocol generated by that
-mathematical graph; a separate handwritten concrete hierarchy is the exception, not the
+Almost everything mathematical lives at the categorical level. The preamble's `ObjectType`,
+`ElementType`, and Hom-category types are the implementation protocol generated by the
+category graph presenting `lean-categories`; a separate handwritten concrete hierarchy is the exception, not the
 rule. Host/runtime primitives remain where they implement the generated owned
 types; concrete engine representations remain inside private adapters.
 Historically this read the other way, and named classes such as `BasedFreeModule`
@@ -2308,7 +2315,7 @@ are migration specimens, not patterns to copy.
 
 Constructions are uniformized as high as their mathematics allows: one free functor for the
 relevant category, one resolution contract, one universal construction. A new capability is new
-owned category/type content plus only the representation machinery genuinely required by the
+category/type content presenting `lean-categories` plus only the representation machinery genuinely required by the
 host; it is never a parallel class hierarchy.
 
 # Python and Sage research code style (always-on)

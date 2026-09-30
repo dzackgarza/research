@@ -5654,7 +5654,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Introducing `FinitePresentationCertificate`, `ProofOfNondegeneracy`, or an evidence registry that must accompany refinement into the corresponding category; a predicate hard-coded to return `True` offered as grounds for placement.
 
-- **Correct Example**: A finitely generated formed module computes `is_nondegenerate` from the defining correlation when that is decidable.  Where `lean-categories` proves that every object of a category is nondegenerate, the preamble presents that inclusion as a supercategory entry (`CAT-15`); the predicate still computes, and its answer remains an untrusted computation.
+- **Correct Example**: A finitely generated formed module computes `is_nondegenerate` from the defining correlation when that is decidable, and that answer is an untrusted computation.  Where `lean-categories` proves that every object of a category is nondegenerate, the preamble presents that inclusion as a supercategory entry (`CAT-15`), and on that category the predicate answers by placement.  An implementation returning `True` on the strength of a theorem it asserts itself is a claim nothing supports.
 
 #### `CAT-05`: Operations Live on the First Category Where They Are Mathematically Defined
 
