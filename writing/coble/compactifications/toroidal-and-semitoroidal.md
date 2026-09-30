@@ -126,10 +126,10 @@ The resulting comparison target between the KSBA and semitoroidal compactificati
 
 ::: {.definition #def:looijenga-compactification}
 
-Let $\cH$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period domain $D$.
-The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\cH}$ is the compactification of the arrangement complement $\Gamma\backslash(D - \cH)$ determined by $\cH$ [@Loo02].
-It is a semitoroidal compactification in the sense of @def:semitoroidal-compactification, so it sits in the same tower over the Baily--Borel compactification; the semifan it defines at a $0$-cusp is read off the traces of the hyperplanes of $\cH$ on the boundary of that cusp.
-When $\cH$ is empty the construction returns the Baily--Borel compactification.
+Let $\mch$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period domain $D$.
+The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\mch}$ is the compactification of the arrangement complement $\Gamma\backslash(D - \mch)$ determined by $\mch$ [@Loo02].
+It is a semitoroidal compactification in the sense of @def:semitoroidal-compactification, so it sits in the same tower over the Baily--Borel compactification; the semifan it defines at a $0$-cusp is read off the traces of the hyperplanes of $\mch$ on the boundary of that cusp.
+When $\mch$ is empty the construction returns the Baily--Borel compactification.
 :::
 
 ::: {.remark}
@@ -141,7 +141,7 @@ Three semifans are in play for a single period domain, and they are produced by 
 
 - the **KSBA semifan**, determined by which degenerations of stable pairs occur (@def:ksba-compactification), and in the cases treated here a coarsening of the Coxeter semifan obtained by deleting irrelevant walls;
 
-- the **Looijenga semifan** of an arrangement $\cH$, determined by the arithmetic of $\cH$ alone.
+- the **Looijenga semifan** of an arrangement $\mch$, determined by the arithmetic of $\mch$ alone.
 
 The identification of a GIT compactification with a Looijenga compactification therefore carries no information about the KSBA semifan: the two are computed from different data, and knowing one does not constrain the other.
 Where the three sit relative to one another in the refinement order is a question in its own right, recorded among the open problems.

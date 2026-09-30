@@ -12,14 +12,14 @@ A *semifan* $\Sigma$ attached to a toroidal or semitoroidal compactification is 
 A semifan $\semifan{G}_k$ is a *coarsening* of $\semifan{F}_k$ if every cone $\sigma$ of $\semifan{G}_k$ is a union of cones in $\semifan{F}_k$. In geometric terms, coarsening contracts certain boundary strata, potentially identifying distinct types of degenerations.
 
 :::{.lemma title="{Semifan Comparison}" #lem:semifan-comparison}
-Let $\semitorcpt{\fent}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^{5}$ associated with the KSBA compactification $\ksbacpt{\fent}$ such that:
-1. $\ksbacpt{\fent} = \semitorcpt{\fent}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for every $k$.
+Let $\semitorcpt{\fentwo}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^{5}$ associated with the KSBA compactification $\ksbacpt{\fentwo}$ such that:
+1. $\ksbacpt{\fentwo} = \semitorcpt{\fentwo}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for every $k$.
 2. Each $\semifan{G}_k$ is a coarsening of $\semifan{F}_k$.
 3. The morphism $\phi$ is finite if and only if all $\semifan{G}_k = \semifan{F}_k$.
 :::
 
 :::{.proof}
-The normalization of any KSBA compactification with recognized boundary divisors admits a semitoroidal structure defined by a tuple $\{\semifan{G}_k\}$. For each $k$, a coarsening $\semifan{G}_k\subseteq\semifan{F}_k$ means that certain boundary strata, corresponding to distinct cones in $\semifan{F}_k$, are identified in the KSBA moduli space $\ksbacpt{\fent}$. By the structure of semitoroidal (and toroidal) compactifications, the strata correspondence is functorial and set-theoretically bijective if and only if there is no coarsening (see [AE23, Theorem 7.18][AEGS.pdf]). Thus, $\phi$ is finite if and only if all semifans agree.
+The normalization of any KSBA compactification with recognized boundary divisors admits a semitoroidal structure defined by a tuple $\{\semifan{G}_k\}$. For each $k$, a coarsening $\semifan{G}_k\subseteq\semifan{F}_k$ means that certain boundary strata, corresponding to distinct cones in $\semifan{F}_k$, are identified in the KSBA moduli space $\ksbacpt{\fentwo}$. By the structure of semitoroidal (and toroidal) compactifications, the strata correspondence is functorial and set-theoretically bijective if and only if there is no coarsening (see [AE23, Theorem 7.18][AEGS.pdf]). Thus, $\phi$ is finite if and only if all semifans agree.
 :::
 
 #### 2. Technical Notions and Maximality of Degenerations
@@ -88,13 +88,13 @@ A Type III Kulikov model is one where all components are rational and the dual c
  -->
 
 <!-- 
-We now prove a crucial structural property of the classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized3 stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier. =
+We now prove a crucial structural property of the classifying morphism $\phi : \normalize{B} \to \cpt{\fentwo}$ constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized3 stable Enriques pairs via the period map and semitoroidal construction, and its proof relies on a precise analysis of the combinatorial boundary stratifications encoded by the semifans developed earlier. =
 
 :::{.theorem
     title="{Finiteness of the Classifying Map}"
     #thm:finiteness-classifying
 }
-The classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ is finite.
+The classifying morphism $\phi : \normalize{B} \to \cpt{\fentwo}$ is finite.
 :::
 
 To establish this result, we compare the semitoroidal structures on source and target, using the combinatorial data provided by the corresponding semifans. The proof is based on the matching of boundary stratifications and the maximality of degenerations as detected in the geometry of Kulikov models.
@@ -103,8 +103,8 @@ To establish this result, we compare the semitoroidal structures on source and t
     title="{Semifan Comparison}"
     #lem:semifan-comparison
 }
-Let $\semitorcpt{\fent}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in [@AEGS25, §5.2]. There exist semifans $\semifan{G} = \{ \semifan{G}_k \}_{k=1}^5$ such that:
-1. $\ksbacpt{\fent} = \semitorcpt{\fent}$.
+Let $\semitorcpt{\fentwo}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in [@AEGS25, §5.2]. There exist semifans $\semifan{G} = \{ \semifan{G}_k \}_{k=1}^5$ such that:
+1. $\ksbacpt{\fentwo} = \semitorcpt{\fentwo}$.
 2. Each $\semifan{G}_k$ is a coarsening of $\semifan{F}_k$.
 3. The morphism $\phi$ is finite if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
 :::
@@ -133,7 +133,7 @@ Let $(X_0, \epsilon R_0)$ be a degeneration of K3 pairs with a fixed-point-free 
 :::{.proof}
 The first two claims follow from the behavior of the quotient map: irreducible components and double curves of $X_0$ are grouped into orbits by $\ien$ and descend to components and double curves of $Z_0$ respectively. 
 
-[@AEGS25, Prop. 4.8] shows that if $(\mcz, \mcr_\mcz) \to (C, 0)$ is a half-divisor model for $\fent$, then we have the following possibilities:
+[@AEGS25, Prop. 4.8] shows that if $(\mcz, \mcr_\mcz) \to (C, 0)$ is a half-divisor model for $\fentwo$, then we have the following possibilities:
 
 - Type $\III$:
   - Cusp 1:
@@ -168,7 +168,7 @@ Consider points in $\normalize{B}$ mapping to $\sigma$ via the period map: these
     title="{Finiteness of the Classifying Map}"
     #cor:finiteness-classifying-map
 }
-By the previous lemma, the boundary stratifications, as encoded by semifans, agree identically. Therefore, the morphism $\phi: \normalize{B} \to \cpt{\fent}$ is finite.
+By the previous lemma, the boundary stratifications, as encoded by semifans, agree identically. Therefore, the morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ is finite.
 :::
 
 :::{.proof}
@@ -180,7 +180,7 @@ With semifans agreeing as established above, the semitoroidal compactifications 
 We now prove a crucial structural property of the classifying morphism
 
 \begin{align*}
-\phi : \normalize{B} \to \cpt{\fent}
+\phi : \normalize{B} \to \cpt{\fentwo}
 .\end{align*}
 
 constructed in previous sections: namely, that $\phi$ is finite. This assertion is the final step needed for modular identification of the compactified moduli of degree-2 polarized stable Enriques pairs via the period map and semitoroidal construction.
@@ -188,9 +188,9 @@ constructed in previous sections: namely, that $\phi$ is finite. This assertion 
 #### Semifan Comparison and Finiteness: Addressing the Critical Gap
 
 :::{.lemma title="{Semifan Comparison}" #lem:semifan-comparison}
-Let $\semitorcpt{\fent}$ be the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in @AEGS25. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^5$ associated with the normalization of the KSBA compactification $\ksbacpt{\fent}$ such that:
+Let $\semitorcpt{\fentwo}$ be the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in @AEGS25. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^5$ associated with the normalization of the KSBA compactification $\ksbacpt{\fentwo}$ such that:
 
-1. $\ksbacpt{\fent} = \semitorcpt{\fent}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
+1. $\ksbacpt{\fentwo} = \semitorcpt{\fentwo}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
 
 2. Each $\semifan{G}_k$ is a coarsening of $\semifan{F}_k$.
 
@@ -244,10 +244,10 @@ Therefore, identification of such cones in a coarsened semifan would force posit
 #### Properness, Quasi-finiteness, and Conclusion
 
 :::{.corollary title="{Finiteness of the Classifying Map}" #cor:finiteness-classifying-map}
-By the previous lemma, the boundary stratifications, as encoded by semifans, agree identically. Therefore, the morphism $\phi: \normalize{B} \to \cpt{\fent}$ is finite.
+By the previous lemma, the boundary stratifications, as encoded by semifans, agree identically. Therefore, the morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ is finite.
 :::
 
 :::{.proof}
-It remains to ensure that no positive-dimensional fibers exist away from the boundary and that the map is proper. Since both $\normalize{B}$ and $\cpt{\fent}$ are normal, proper algebraic spaces (by the properness of the moduli of stable pairs), and semifan agreement guarantees finite fibers at the boundary, the only possible source of positive-dimensional fibers would be in the interior. However, in the open moduli, the period map is finite (by Torelli for K3s, and the specific construction of $\halfpd{\ten}$). Hence the morphism is quasi-finite and proper, and by Zariski's Main Theorem, $\phi$ is finite.
+It remains to ensure that no positive-dimensional fibers exist away from the boundary and that the map is proper. Since both $\normalize{B}$ and $\cpt{\fentwo}$ are normal, proper algebraic spaces (by the properness of the moduli of stable pairs), and semifan agreement guarantees finite fibers at the boundary, the only possible source of positive-dimensional fibers would be in the interior. However, in the open moduli, the period map is finite (by Torelli for K3s, and the specific construction of $\halfpd{\ten}$). Hence the morphism is quasi-finite and proper, and by Zariski's Main Theorem, $\phi$ is finite.
 :::
 

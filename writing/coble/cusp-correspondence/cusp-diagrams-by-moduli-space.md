@@ -1,6 +1,6 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces
 
-The mirror move algorithm of [Cusp Diagrams](cusp-diagram-calculations.md#sec:mirror-moves) is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fent$.
+The mirror move algorithm of [Cusp Diagrams](cusp-diagram-calculations.md#sec:mirror-moves) is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fentwo$.
 Each section records the cusp diagram, the Coxeter diagrams of its 0-cusps, and the maximal parabolic subdiagrams that determine the adjacent 1-cusps.
 
 ## The Enriques moduli space
@@ -50,7 +50,7 @@ Applying the same mirror moves, we obtain the cusp diagram for $\fco$, the modul
 ::: {#fig-coble-cusps .figure}
 \input{tikz/fig_Cusp_Diagram_Co.tex}
 
-Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.
+Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \generators{2} \oplus E_{10}(2)$.
 :::
 
 The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in @fig-coble-coxeter-diagrams.
@@ -61,7 +61,7 @@ Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determin
 \pic {object=coxeter/vinberg-9-9-1};
 \end{tikzpicture}
 
-The Coxeter diagram $G_{(9,9,1)_1} = G_{\gens{2} \oplus E_8(2)}$.
+The Coxeter diagram $G_{(9,9,1)_1} = G_{\generators{2} \oplus E_8(2)}$.
 :::
 
 ::: {#fig-coble-cusp-9-9-1-parabolics .figure}
@@ -78,14 +78,14 @@ This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_
 
 ::: {.remark}
 
-We recall Sterk's cusp diagram for $\fent$:
+We recall Sterk's cusp diagram for $\fentwo$:
 
 ::: {#fig-sterk-cusp-diagram .figure}
 \begin{tikzpicture}
 \pic {object=bb-cusps/fen2};
 \end{tikzpicture}
 
-Sterk's cusp diagram for $\fent$.
+Sterk's cusp diagram for $\fentwo$.
 :::
 
 We have the following divisibilities in various lattices:
@@ -98,7 +98,7 @@ We have the following divisibilities in various lattices:
 | 4 | $2e' + f' + \overline{\alpha}_1$ | 2 | 1 |
 | 5 | $2e + 2f + \overline{\alpha}_1$ | 2 | 1 |
 
-: Isotropic vectors in $\fent$ and their divisibilities.
+: Isotropic vectors in $\fentwo$ and their divisibilities.
 :::
 
 ::: {.remark}

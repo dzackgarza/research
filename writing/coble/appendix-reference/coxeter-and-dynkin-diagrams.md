@@ -49,5 +49,5 @@ Geometric cusp correspondence (Coble).
 ::: {#fig-coxeter-diagrams .figure}
 \input{tikz/fig_Coxeter_Diagram_L_Co_1.tex}
 
-The Coxeter diagram of $L_{\Co, 1} \da \gens{2} \oplus E_8(2)$.
+The Coxeter diagram of $L_{\Co, 1} \definedas \generators{2} \oplus E_8(2)$.
 :::

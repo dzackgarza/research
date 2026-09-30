@@ -24,12 +24,12 @@ A generic Enriques surface is unnodal, and $F_{\En,\mathrm{Nod}}$ is an irreduci
 :::
 
 $$
-S_{\Nod} = \gens{-4}\oplus U \oplus E_8(2),
+S_{\Nod} = \generators{-4}\oplus U \oplus E_8(2),
 \qquad
-T_{\Nod} \da S_{\Nod}^\perp \cong \gens{4}\oplus U \oplus E_8(2),
+T_{\Nod} \definedas S_{\Nod}^\perp \cong \generators{4}\oplus U \oplus E_8(2),
 $$
 the generic Picard lattice of the K3 cover $X$ and its transcendental lattice.
-$F_{\Nod}$ is realized as the divisor $\cH_{-4}/\Orth(T_{\En})$, a 9-dimensional irreducible quasiprojective variety.
+$F_{\Nod}$ is realized as the divisor $\mch_{-4}/\Orth(T_{\En})$, a 9-dimensional irreducible quasiprojective variety.
 
 ::: {.remark}
 ### Discrepancy to reconcile: two forms of the embedding
@@ -43,7 +43,7 @@ attributed to Cossec-Dolgachev-Liedtke p. 561. The research statement records it
 $$
 ((e_1,f_1), x) \mapsto \big(f_2,\ 2e_2+f_2+h,\ x\big),
 $$
-with $h$ a generator of $\gens{-4}$.
+with $h$ a generator of $\generators{-4}$.
 Both are the identity on the $E_8(2)$ factor and both are claimed to exhibit $F_{\Nod}\injects F_{\En}$.
 They are written in different bases and have not been checked against each other.
 Reconciling them, or identifying which is correct, is a small and worthwhile task.

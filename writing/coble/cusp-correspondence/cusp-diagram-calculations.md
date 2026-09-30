@@ -30,16 +30,16 @@ Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mi
 Thus $F_\Co$ has one 0-cusp corresponding to an isotropic vector $v_0$ with
 
 $$
-v_0^{\perp T_{\Co}}/\gens{v_0} \cong (9,9,1)_1 \cong \gens{2} \oplus E_{8}(2)
+v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus E_{8}(2)
 $$
 
-Moreover, this 0-cusp $v_0$ is incident to one 1-cusp $C_0$ corresponding to an isotropic plane $J = \gens{v_0, v_1}$ with
+Moreover, this 0-cusp $v_0$ is incident to one 1-cusp $C_0$ corresponding to an isotropic plane $J = \generators{v_0, v_1}$ with
 
 $$
-J^{\perp T_{\Co}}/\gens{J} \cong (7,7,1)_0 \cong A_1^{\oplus 7} ,
+J^{\perp T_{\Co}}/\generators{J} \cong (7,7,1)_0 \cong A_1^{\oplus 7} ,
 $$
 
-where $v_1 \in v_0^{\perp T_{\Co}}/\gens{v_0}$.
+where $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$.
 In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a $U^2$ move and can be summarized in the following mirror move diagram as a composition of two even ordinary $U(2)$-type moves:
 
 ::: {#fig-mirror-moves-coble-simplified .figure}
@@ -58,14 +58,14 @@ We note that by [@AE22 §5], such isotropic vectors are unique up to $\Orth(T_\C
 
 - $v_1 = 2h + \alpha_1 + \alpha_2$.
 
-Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/\gens{v_0}$, and that $v_0v_1 = 0$, and thus $J \da \gens{v_0, v_1}$ is an admissible choice of an isotropic plane.
+Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$, and that $v_0v_1 = 0$, and thus $J \definedas \generators{v_0, v_1}$ is an admissible choice of an isotropic plane.
 We further note that $\div_{T_{\Co}}(v_0) = \div_{T_{\Co}}(v_1) = 2$, which will be an important invariant for establishing a correspondence to cusps of other moduli spaces.
 For an isotropic plane $J$, we denote the divisibilities of the constituent generating vectors as a tuple $(d_1, d_2)$, and in this convention we have $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
 
 By [@CDL25 Prop. 5.4.6], there is an open embedding $F_{(11, 11, 1)} \injects F_{(10,10,0)}$, i.e. $\fco \injects \fen$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
-The image is an open subset of a closed irreducible subset of $\cH_{-2}/\Gamma_\En$.
+The image is an open subset of a closed irreducible subset of $\mch_{-2}/\Gamma_\En$.
 By [@CDL25 Thm. 5.8.2], the coarse space of $\fco$ is a rational variety, and since $\fen$ is quasiprojective, so too is $\fco$.
-Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\cH_{-2}$ contains the modular curve $X$.
+Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\mch_{-2}$ contains the modular curve $X$.
 
 ::: {.remark}
 
@@ -94,7 +94,7 @@ The divisibilities in $\tdp$ can be seen as follows: the image of $v_0$ in $\tdp
 ::: {.remark}
 
 As further proof that the cusp diagram of $\fco$ is correct, we can use the theory of Coxeter diagrams.
-Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice $e^{\perp L}/\gens{e}$ is a hyperbolic lattice equipped with a root system $R_e$ with a Coxeter diagram $G_e$.
+Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice $e^{\perp L}/\generators{e}$ is a hyperbolic lattice equipped with a root system $R_e$ with a Coxeter diagram $G_e$.
 Generally, when $e$ corresponds to a 0-cusp in a Baily-Borel compactification, the adjacent 1-cusps correspond precisely to maximal parabolic subdiagrams of $G_e$.
 The cusp diagram of $\fco$ suggests that the 0-cusp $v_0$ should have a Coxeter diagram $G_{v_0}$ with precisely one maximal parabolic subdiagram.
 One can run Vinberg's algorithm to determine the Coxeter diagram for $v_0$, and it is a straightforward check to determine that there is indeed a unique maximal parabolic subdiagram of the form $\tilde B_7(2)$; see @fig-coble-cusp-9-9-1-parabolics.

@@ -56,7 +56,7 @@ K_X + D + R = \pi^*(K_Y + C + \tfrac{1}{2}B)
 where $K_X$ and $K_Y$ denote the canonical class on the cover and base, $D$ is the pullback of the boundary, $R$ is the ramification divisor, and $B$ is the branch divisor as described in @AT17.
 In various degenerations -- such as those of Enriques surfaces, realized via K3 surfaces with involution, or of log del Pezzo surfaces of index two -- the boundary components are precisely the surfaces associated with $\ADE$ or folded $BC$-type Dynkin diagrams, and passing to a double cover eliminates half-integral phenomena: it yields a normalization of the associated quotient surface in which the boundary becomes reduced and Cartier.
 We give below several examples of the polytopes for such surfaces, indicating which sides are *long* and *short*.
-In particular, folded $BC$-type surfaces appear as irreducible components in the boundary of $\ksbacpt{\fent}$.
+In particular, folded $BC$-type surfaces appear as irreducible components in the boundary of $\ksbacpt{\fentwo}$.
 
 ![The $A_3$ surface.](figures/rendered/objects/ade/A3.pdf){width=48%} ![The $A_4^-$ surface.](figures/rendered/objects/ade/A4-minus.pdf){width=48%}
 

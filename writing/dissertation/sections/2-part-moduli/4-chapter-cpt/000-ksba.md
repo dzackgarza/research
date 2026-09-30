@@ -30,7 +30,7 @@ A canonical example of a recognizable divisor comes from @AE23, who compactify t
 The **rational curve divisor** is the formal sum $R_\rcop$ of all smooth genus zero curves in the linear system $\abs{L}$:
 
 \begin{align*}
-R_\rcop \da  \sum_{i=1}^{n_d} R_i \in |n_d L|
+R_\rcop \definedas  \sum_{i=1}^{n_d} R_i \in |n_d L|
 .\end{align*}
 
 where each $R_i$ is an irreducible rational curve and $n_d$ is given by the *Yau–Zaslow* formula, see e.g. [@AE23, Thm. 10.2].
@@ -44,13 +44,13 @@ Thus one can reverse-engineer this procedure, starting with a model for a hemisp
 The process starts from a *monodromy invariant* $\lambda$ encoding a degeneration, then constructs an integral-affine polygon $P(\lambda)$ in $\RR^2$ with singularities, performing Symington surgeries on $P(\lambda)$ that encode the degeneration. Passing to a complete triangulation and taking the pushout
 
 \begin{align*}
-B(\lambda) \da  P(\lambda) \Disjoint_{\partial P(\lambda)} (-P(\lambda))
+B(\lambda) \definedas  P(\lambda) \Disjoint_{\partial P(\lambda)} (-P(\lambda))
 ,\end{align*}
 
 where $-P(\lambda)$ denotes reversing the orientation, yields an $\IAS^2$.
 
-From this, one can construct a *$d$-semistable Kulikov surface* such that $B(\lambda) \cong \Gamma(\mcx_0(\lambda) )$, which by @Fri83a smooths to K3 surface $\mcx_t \da \mcx_t(\lambda)$ and thus specifies a family $\mcx \da \mcx(\lambda)$.
-One extends the induced involution $\iota$ on $mcx_0$ to $\mcx$, passes to a carefully chosen divisorial component of the ramification divisor $R_\iota$ on $\mcx$ and performs modifications to obtain a pair $(X,\eps R) \da (X(\lambda), \eps R(\lambda))$.
+From this, one can construct a *$d$-semistable Kulikov surface* such that $B(\lambda) \cong \Gamma(\mcx_0(\lambda) )$, which by @Fri83a smooths to K3 surface $\mcx_t \definedas \mcx_t(\lambda)$ and thus specifies a family $\mcx \definedas \mcx(\lambda)$.
+One extends the induced involution $\iota$ on $mcx_0$ to $\mcx$, passes to a carefully chosen divisorial component of the ramification divisor $R_\iota$ on $\mcx$ and performs modifications to obtain a pair $(X,\eps R) \definedas (X(\lambda), \eps R(\lambda))$.
 One then shows that the limit of $R_\iota$ is big and nef and thus defines a contraction $\pi: (X, \eps R) \to (\bar X, \eps \bar R)$ to a KSBA stable pair
 There is a decomposition $X = \union_i ( V_i, D_i)$ into irreducible components indexed by the lattice points in $B(\lambda)$, each of which forms an anticanonical pair, and so we can write $(X, \eps R) = \union_i ((V_i, D_i), \eps R_i)$, which contracts under $\pi$ to a decomposition $(\bar X, \eps \bar R) = \union_i ( (\bar V_i, \bar D_i ), \eps \bar R_i )$ of the stable model.
 Tracing this construction backwards, we thus access the irreducible components of the stable model by understanding how the contraction $\pi$ combinatorially acts at the level of $B(\lambda) = \Gamma(\mcx_0)$, and in particular how the contraction acts on individual anticanonical pairs $(V_i, D_i)$.

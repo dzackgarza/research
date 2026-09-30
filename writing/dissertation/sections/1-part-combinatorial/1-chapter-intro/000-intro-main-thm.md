@@ -6,13 +6,13 @@ The central object needed to define such a compactification is a **KSBA stable p
 We will then define KSBA compactifications as closures of spaces of particular types of surface pairs in the space of stable pairs.
 When constructing such compactifications, we will often take the divisor $R_Z$ to be the ramification divisor corresponding to a $2$-divisible ample line bundle coming from a branched double-cover construction, i.e. an involution.
 We note, however, that explicitly determining or classifying the boundary strata of a given KSBA compactification and the exact stable pairs that appear is nontrivial.
-In @AEGS25, we classify the strata of $\bd\cpt{\fent}$, the KSBA compactification of $\fent$, and find that the irreducible components of stable limits of surface pairs are described by **$ADE+BC$ diagrams**, we which we mean the classical Dynkin diagrams corresponding to the semisimple complex Lie algebras of types $A_n, D_n, E_6, E_7, E_8$, which we refer to as simply-laced, and the diagrams of types $B_n$ and $C_n$.
+In @AEGS25, we classify the strata of $\bd\cpt{\fentwo}$, the KSBA compactification of $\fentwo$, and find that the irreducible components of stable limits of surface pairs are described by **$ADE+BC$ diagrams**, we which we mean the classical Dynkin diagrams corresponding to the semisimple complex Lie algebras of types $A_n, D_n, E_6, E_7, E_8$, which we refer to as simply-laced, and the diagrams of types $B_n$ and $C_n$.
 The latter can be obtained from the former by a classically well-known operation called **folding**.
 
 By the work of @AET23, to each such diagram one can associated a pair $(Y, C)$ where $Y$ is a surface, which in many cases is toric, and $C$ is a reduced boundary divisor such that $(Y, C)$ is an lc pair and $-2(K_Y + C)$ is an ample Cartier divisor providing a natural polarization.
 This provides a natural association of a classical $ADE+BC$ diagram (decorated with extra combinatorial parity data) to, in many cases, an explicit projective toric variety.
 We refer to such surfaces as **$ADE+BC$ surfaces**.
-This thesis details the construction of an isomorphism between the normalization of the KSBA stable pair compactification $\cpt{\fent}$ and a semitoroidal compactification $\semitorcpt{\fent}$ for the moduli space of Enriques surfaces with *numerical polarization* of degree 2. The main theorem establishes an isomorphism $\semitorcpt{\fent} \to \ksbacpt{\fent}$ where $\semifans{F} = \ts{ \semifan{F}_k }_{k=1,2,3,4,5}$ is a collection of semifans determined by the five 0-dimensional boundary components of the Baily-Borel compactification $\bbcpt{\fent}$.
+This thesis details the construction of an isomorphism between the normalization of the KSBA stable pair compactification $\cpt{\fentwo}$ and a semitoroidal compactification $\semitorcpt{\fentwo}$ for the moduli space of Enriques surfaces with *numerical polarization* of degree 2. The main theorem establishes an isomorphism $\semitorcpt{\fentwo} \to \ksbacpt{\fentwo}$ where $\semifans{F} = \theset{ \semifan{F}_k }_{k=1,2,3,4,5}$ is a collection of semifans determined by the five 0-dimensional boundary components of the Baily-Borel compactification $\bbcpt{\fentwo}$.
 Our goal is to prove the following:
 
 
@@ -20,14 +20,14 @@ Our goal is to prove the following:
     title="[@AEGS25, Thm. 1.1]"
     #thm:intro-main-theorem
 }
-Let $\fent$ be the moduli space of numerically polarized degree 2 Enriques surfaces, and let $\cpt{\fent}$ be its KSBA compactification.
+Let $\fentwo$ be the moduli space of numerically polarized degree 2 Enriques surfaces, and let $\cpt{\fentwo}$ be its KSBA compactification.
 There is a morphism
 
 \begin{align*}
-\semitorcpt{\fent} \iso \normksbacpt{\fent}
+\semitorcpt{\fentwo} \iso \normksbacpt{\fentwo}
 ,\end{align*}
 
-where $\normalize{(\wait)}$ denotes the normalization, the left-hand side is the semitoroidal compactification corresponding to an explicit collection $\semifans{F} = \ts{\semifan{F}_1, \torfan_2, \semifan{F}_3, \torfan_4, \semifan{F}_5}$ of semifans, one for each $0$-cusp of the Baily-Borel compactification $\bbcpt{\fent}$, and the right-hand side is the KSBA compactification. The semifans $\torfan_2, \torfan_4$ are fans, while $\semifan{F}_1, \semifan{F}_2, \semifan{F}_3$ are strict semifans.
+where $\normalize{(\wait)}$ denotes the normalization, the left-hand side is the semitoroidal compactification corresponding to an explicit collection $\semifans{F} = \theset{\semifan{F}_1, \torfan_2, \semifan{F}_3, \torfan_4, \semifan{F}_5}$ of semifans, one for each $0$-cusp of the Baily-Borel compactification $\bbcpt{\fentwo}$, and the right-hand side is the KSBA compactification. The semifans $\torfan_2, \torfan_4$ are fans, while $\semifan{F}_1, \semifan{F}_2, \semifan{F}_3$ are strict semifans.
 :::
 
 We note that the normalization is a technical condition that is often applied in the setting of KSBA compactifications, since the KSBA compactification is not guaranteed to be normal in general.

@@ -214,7 +214,7 @@ T_{\Nod} \coloneqq S^{\perp} \cong \left\langle{4}\right\rangle \oplus U \oplus 
 \]
 is its transcendental lattice.
 It is known that \( F_{\operatorname{En}, \Nod} \) forms an irreducible hypersurface in \( F_{\operatorname{En}} \), and that a generic Enriques surface is unnodal.
-Similar to the case of Coble surfaces, \( F_{\Nod} \) can also be realized as a divisor \( \cH_{-4}/{\operatorname{O}}(T_{\operatorname{En}}) \), yielding an 9-dimensional irreducible quasiprojective variety.
+Similar to the case of Coble surfaces, \( F_{\Nod} \) can also be realized as a divisor \( \mch_{-4}/{\operatorname{O}}(T_{\operatorname{En}}) \), yielding an 9-dimensional irreducible quasiprojective variety.
 By [@CDL25, Def. 5.6.3], there is a primitive embedding of lattices
 \[
 \begin{aligned} S_{\operatorname{En}} \coloneqq E_{10}(2) \coloneqq U(2) \oplus E_8(2) &\to S_{\Nod} \coloneqq\left\langle{-4}\right\rangle \oplus U \oplus E_8(2) \\ ((e_1, f_1), x) &\mapsto (f_2, 2e_2 + f_2 + h , x)  \end{aligned}

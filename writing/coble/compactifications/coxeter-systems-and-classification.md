@@ -16,22 +16,22 @@ A **Coxeter matrix** on $S$ is a symmetric matrix $M = (m_{st})_{s,t\in S}$ with
 $$
 m_{ss} = 1,
 \qquad
-m_{st} = m_{ts} \in \ts{2,3,4,\dots}\union\ts{\infty}
+m_{st} = m_{ts} \in \theset{2,3,4,\dots}\union\theset{\infty}
 \quad (s\neq t)
 .
 $$
 The Coxeter group presented by $M$ is the group $W(M)$ of @def:coxeter-group, the relation $(s t)^{m_{st}} = e$ being imposed only for $m_{st} < \infty$.
 The pair $(W(M), S)$ is a **Coxeter system** of **rank** $\abs{S}$.
-Its **Coxeter diagram** $\Sigma(M)$ is the graph on the vertex set $S$ with an edge $\ts{s,t}$ whenever $m_{st}\geq 3$, labelled by $m_{st}$ when $m_{st}\geq 4$.
+Its **Coxeter diagram** $\Sigma(M)$ is the graph on the vertex set $S$ with an edge $\theset{s,t}$ whenever $m_{st}\geq 3$, labelled by $m_{st}$ when $m_{st}\geq 4$.
 :::
 
 ::: {.definition #def:coxeter-gram-form}
 ### The Gram form of a Coxeter matrix
 
 Let $M$ be a Coxeter matrix on $S$.
-The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\ts{\alpha_s}_{s\in S}$ determined by
+The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\theset{\alpha_s}_{s\in S}$ determined by
 $$
-G(M)_{st} \da \beta(\alpha_s,\alpha_t) = 2\cos\!\left(\frac{\pi}{m_{st}}\right)
+G(M)_{st} \definedas \beta(\alpha_s,\alpha_t) = 2\cos\!\left(\frac{\pi}{m_{st}}\right)
 ,
 $$
 read on the diagonal as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when $m_{st} = \infty$.
@@ -66,12 +66,12 @@ $$
 ::: {.remark #rmk:gram-versus-cartan}
 ### Gram and Cartan matrices
 
-Let $\ts{\alpha_s}_{s\in S}$ be simple roots in a lattice $L$.
+Let $\theset{\alpha_s}_{s\in S}$ be simple roots in a lattice $L$.
 Two matrices are attached to them.
 The **Gram matrix** is $G_{st} = \beta_L(\alpha_s,\alpha_t)$; it is symmetric and records the form.
 The **Cartan matrix** is
 $$
-A_{st} \da \frac{2\,\beta_L(\alpha_s,\alpha_t)}{\beta_L(\alpha_t,\alpha_t)}
+A_{st} \definedas \frac{2\,\beta_L(\alpha_s,\alpha_t)}{\beta_L(\alpha_t,\alpha_t)}
 ,
 $$
 so that $A_{ss} = 2$ and $s_{\alpha_t}(\alpha_s) = \alpha_s - A_{st}\alpha_t$; it records the reflections and is symmetric only when all the $\alpha_s$ have equal norm.
@@ -130,7 +130,7 @@ Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
 
 3. If $(W,S)$ is hyperbolic, then $\RR^S$ with the form $G$ is a model of hyperbolic $(n-1)$-space in the sense of @def:hyperbolic-model, and the reflections $s_{\alpha_s}$ generate a discrete subgroup of its isometry group whose fundamental domain is the Coxeter polytope
    $$
-   P \da \ts{\, [v] \in \HH^{\,n-1} \mid \beta(v,\alpha_s)\geq 0 \text{ for all } s\in S \,}
+   P \definedas \theset{\, [v] \in \HH^{\,n-1} \mid \beta(v,\alpha_s)\geq 0 \text{ for all } s\in S \,}
    $$
    of @def:coxeter-polytope [@Vin67; @Vin85].
 :::
@@ -144,12 +144,12 @@ Statement (3) asserts nothing about the volume of $P$: the finite-volume and com
 
 ::: {.definition #def:coxeter-subdiagram}
 
-Let $\Sigma$ be the Coxeter diagram of $(W,S)$ and let $I\containedin S$.
+Let $\Sigma$ be the Coxeter diagram of $(W,S)$ and let $I\iscontainedin S$.
 The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form the principal submatrix $G[I,I]$.
 The **rank** of $\Sigma_I$ is the rank of $G[I,I]$.
 The subgroup
 $$
-W_I \da \gens{\, s \mid s\in I \,} \leq W
+W_I \definedas \generators{\, s \mid s\in I \,} \leq W
 $$
 is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Coxeter system with Coxeter matrix $M[I,I]$ [@Bou08].
 :::
@@ -158,7 +158,7 @@ is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Co
 ### Parabolic subgroups and parabolic subdiagrams
 
 The two uses of *parabolic* are independent.
-The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\containedin S$, whatever the definiteness of $G[I,I]$.
+The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram), and then $(W_I, I)$ is a product of irreducible euclidean Coxeter systems, one for each component.
 :::
 
@@ -168,7 +168,7 @@ The subdiagram $\Sigma_I$ is parabolic when each of its connected components is 
 Let $\beta$ be a symmetric bilinear form on a finite-dimensional real vector space $V$, write $n_\pm(\beta)$ for its numbers of positive and negative squares, and let $V'\leq V$ be a subspace of codimension $c$.
 Then
 $$
-n_+(\beta) - c \;\leq\; n_+\!\left(\ro{\beta}{V'}\right) \;\leq\; n_+(\beta)
+n_+(\beta) - c \;\leq\; n_+\!\left(\restrictionof{\beta}{V'}\right) \;\leq\; n_+(\beta)
 ,
 $$
 and the same inequalities hold for $n_-$.
@@ -176,14 +176,14 @@ and the same inequalities hold for $n_-$.
 
 ::: {.proof}
 The integer $n_+(\beta)$ is the largest dimension of a subspace of $V$ on which $\beta$ is positive definite.
-A subspace of $V'$ on which $\ro{\beta}{V'}$ is positive definite is such a subspace of $V$, which gives the upper bound.
+A subspace of $V'$ on which $\restrictionof{\beta}{V'}$ is positive definite is such a subspace of $V$, which gives the upper bound.
 If $P\leq V$ is positive definite of dimension $n_+(\beta)$, then $\beta$ is positive definite on $P\intersect V'$, and $\dim(P\intersect V')\geq n_+(\beta) - c$, which gives the lower bound.
 Applying both to $-\beta$ gives the statement for $n_-$.
 :::
 
 ::: {.corollary #cor:subdiagram-inheritance}
 
-Let $\Sigma$ be a Coxeter diagram on $S$ and $J\containedin I\containedin S$.
+Let $\Sigma$ be a Coxeter diagram on $S$ and $J\iscontainedin I\iscontainedin S$.
 
 1. If $\Sigma_I$ is elliptic then so is $\Sigma_J$.
    Equivalently, a subdiagram that is not elliptic is contained in no elliptic subdiagram.
@@ -249,7 +249,7 @@ The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty
 ::: {.proposition #prop:euclidean-radical}
 ### The radical of a euclidean diagram
 
-Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\ts{\alpha_s}_{s\in I}$.
+Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\theset{\alpha_s}_{s\in I}$.
 Then $\ker G[I,I]$ is spanned by a vector
 $$
 \delta = \Sum_{s\in I} n_s\,\alpha_s
@@ -269,7 +269,7 @@ For $\tilde E_8$ the coefficients are the marks $(1,2,3,4,6,5,4,3,2)$ of the hig
 
 ::: {.definition #def:crystallographic-coxeter}
 
-A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\ts{2,3,4,6,\infty}$ for all $s\neq t$.
+A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6,\infty}$ for all $s\neq t$.
 :::
 
 ::: {.theorem #thm:crystallographic-lattice}
@@ -281,7 +281,7 @@ A Coxeter matrix $M$ is crystallographic if and only if the group $W(M)$ preserv
 ### Rescaling to an integral form
 
 The equal-norm normalization $\alpha_s^2 = -2$ of @def:coxeter-gram-form does not itself make the form integral, and a crystallographic $M$ becomes integral only after the simple roots are rescaled.
-For $m_{st} = 4$ one has $\beta(\alpha_s,\alpha_t) = 2\cos(\pi/4) = \sqrt2$; replacing $\alpha_t$ by $\alpha_t' \da \sqrt2\,\alpha_t$ gives
+For $m_{st} = 4$ one has $\beta(\alpha_s,\alpha_t) = 2\cos(\pi/4) = \sqrt2$; replacing $\alpha_t$ by $\alpha_t' \definedas \sqrt2\,\alpha_t$ gives
 $$
 \alpha_s^2 = -2,
 \qquad
@@ -292,7 +292,7 @@ $$
 $$
 a short root and a long root in the sense of @def:2elementary-roots.
 For $m_{st} = 6$ the same rescaling by $\sqrt3$ gives norms $-2$ and $-6$ with pairing $3$, which is the ratio occurring in $G_2$.
-For $m_{st}\in\ts{2,3}$ the entries $0$ and $1$ are already integral, and the simply-laced diagrams need no rescaling.
+For $m_{st}\in\theset{2,3}$ the entries $0$ and $1$ are already integral, and the simply-laced diagrams need no rescaling.
 :::
 
 ::: {.definition #def:coxeter-base-field}
@@ -300,7 +300,7 @@ For $m_{st}\in\ts{2,3}$ the entries $0$ and $1$ are already integral, and the si
 Let $M$ be a Coxeter matrix on $S$.
 Its **base field** is the subfield
 $$
-K(M) \da \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \containedin \RR
+K(M) \definedas \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \iscontainedin \RR
 ,
 $$
 the smallest field over which the Gram form $G(M)$ is defined.
@@ -313,30 +313,30 @@ $$
 \left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#\unitsof{(\ZZ/2m\ZZ)}
 .
 $$
-In particular $K(M) = \QQ$ exactly when $m_{st}\in\ts{2,3,\infty}$ for all $s\neq t$.
+In particular $K(M) = \QQ$ exactly when $m_{st}\in\theset{2,3,\infty}$ for all $s\neq t$.
 :::
 
 ::: {.proposition #prop:gram-form-integrality}
 ### When the Gram form is integral
 
-$G(M)$ has all its entries in $\ZZ$ if and only if $m_{st}\in\ts{2,3,\infty}$ for every $s\neq t$.
+$G(M)$ has all its entries in $\ZZ$ if and only if $m_{st}\in\theset{2,3,\infty}$ for every $s\neq t$.
 Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the simply-laced ones.
 :::
 
 ::: {.proof}
 The entries are the values of @rmk:coxeter-form-values, and an entry lies in $\ZZ$ only if it lies in $\QQ$.
-By @prop:coxeter-base-field-degree the degree of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\ts{4,6}$, that is when $m\in\ts{2,3}$; the value at $m=\infty$ is $2$.
+By @prop:coxeter-base-field-degree the degree of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\theset{4,6}$, that is when $m\in\theset{2,3}$; the value at $m=\infty$ is $2$.
 The remaining orders therefore give irrational entries, and the three admissible orders give $0$, $1$ and $2$.
 :::
 
 ::: {.example #ex:noncrystallographic-base-rings}
 ### The non-crystallographic spherical types
 
-Of the spherical types of @thm:spherical-classification, those that are not crystallographic are $H_3$, $H_4$, and $I_2(p)$ for $p\notin\ts{2,3,4,6}$.
+Of the spherical types of @thm:spherical-classification, those that are not crystallographic are $H_3$, $H_4$, and $I_2(p)$ for $p\notin\theset{2,3,4,6}$.
 
 For $m = 5$,
 $$
-2\cos(\pi/5) = \varphi \da \frac{1+\sqrt5}{2},
+2\cos(\pi/5) = \varphi \definedas \frac{1+\sqrt5}{2},
 \qquad
 \varphi^2 = \varphi + 1
 ,
@@ -350,7 +350,7 @@ For $m = 8$ the base field is $\QQ(\sqrt{2+\sqrt2})$, of degree $4$ over $\QQ$ b
 
 Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
 Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ of the same rank, with the same diagonal $-2$.
-Its signature is not determined by that of $G(M)$: the signature of a symmetric form over a totally real field is not a Galois invariant, as the rank-one forms $\gens{1-\sqrt2}$ and $\gens{1+\sqrt2}$ over $\QQ(\sqrt2)$ show.
+Its signature is not determined by that of $G(M)$: the signature of a symmetric form over a totally real field is not a Galois invariant, as the rank-one forms $\generators{1-\sqrt2}$ and $\generators{1+\sqrt2}$ over $\QQ(\sqrt2)$ show.
 Whether every nontrivial conjugate of a hyperbolic Gram form is negative definite is a condition on $M$ that must be computed, and is the arithmeticity question recorded in the Open Problems section.
 :::
 

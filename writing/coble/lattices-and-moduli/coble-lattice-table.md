@@ -2,7 +2,7 @@
 
 The following can be found in an unpublished note of Dolgachev.[^coble-note]
 Write
-$\abs{-2K_S} = \ts{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible
+$\abs{-2K_S} = \theset{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible
 components.
 By adjunction, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$.
 Let $\Sigma$ be a general Coble set of points in $\PP^2$.

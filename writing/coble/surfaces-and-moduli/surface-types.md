@@ -20,7 +20,7 @@ $$
 $$
 and its irregularity vanishes,
 $$
-q(X) \da h^{0,1}(X) = h^1(X, \OO_X) = 0
+q(X) \definedas h^{0,1}(X) = h^1(X, \OO_X) = 0
 .
 $$
 :::
@@ -175,7 +175,7 @@ Let $Y = \PP^1\times\PP^1$ and let $\tau\colon (x, y)\mapsto(-x, -y)$ be the coo
 The quotient $W = Y/\tau$ is a singular del Pezzo surface of degree $4$, with four $A_1$ singularities.
 Both $Y$ and $W$ are toric, sharing the same polytope
 $$
-Q_{4, 4} \da [0, 4]^2
+Q_{4, 4} \definedas [0, 4]^2
 ,
 $$
 but with different lattices:
@@ -183,7 +183,7 @@ $$
 M_Y = \ZZ^2,
 \qquad
 M_W = \ZZ^2_{\mathrm{ev}}
-\da \ts{ (i, j)\in\ZZ^2 \mid i + j\in 2\ZZ }
+\definedas \theset{ (i, j)\in\ZZ^2 \mid i + j\in 2\ZZ }
 .
 $$
 :::
@@ -193,10 +193,10 @@ $$
 ::: {.remark #rmk:moduli-elliptic}
 ### The moduli space $F_{\mathrm{ell}}$
 
-The moduli space $F_{\mathrm{ell}}$ parametrizes elliptic $K3$ surfaces with a chosen section, which fixes a hyperbolic summand $U_1\containedin\lkt$.
+The moduli space $F_{\mathrm{ell}}$ parametrizes elliptic $K3$ surfaces with a chosen section, which fixes a hyperbolic summand $U_1\iscontainedin\lkt$.
 The period map is defined on the orthogonal complement
 $$
-T_{\mathrm{ell}} \da U_1^{\perp\,\lkt} \cong U^2\oplus E_8^{2}
+T_{\mathrm{ell}} \definedas U_1^{\perp\,\lkt} \cong U^2\oplus E_8^{2}
 ,
 $$
 of signature $(2, 18)$.

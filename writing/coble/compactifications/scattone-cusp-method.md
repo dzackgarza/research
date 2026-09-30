@@ -18,9 +18,9 @@ Scattone [@Sca87] gives a concrete arithmetic approach to enumerating the $0$-cu
 
 The boundary of $\bbcpt{\ftd}$ is stratified by $\Gamma_{2d}$-orbits of primitive isotropic subspaces of $L_{2d}$:
 
-1. the **$0$-cusps** (Type III boundary points) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *lines* $I\containedin L_{2d}$;
+1. the **$0$-cusps** (Type III boundary points) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *lines* $I\iscontainedin L_{2d}$;
 
-2. the **$1$-cusps** (Type II boundary curves) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *planes* (rank-$2$ isotropic sublattices) $J\containedin L_{2d}$.
+2. the **$1$-cusps** (Type II boundary curves) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *planes* (rank-$2$ isotropic sublattices) $J\iscontainedin L_{2d}$.
 
 Each $0$-cusp records a degeneration of the underlying K3 surfaces, whose limiting Hodge structure is encoded by the lattice $I^{\perp}/I$; likewise each $1$-cusp carries the boundary lattice $J^{\perp}/J$.
 Thus the enumeration of boundary components reduces to a purely lattice-theoretic orbit problem for primitive isotropic sublattices of $L_{2d}$.
@@ -44,12 +44,12 @@ For $d = 1$ the classification uses primitive embeddings into the $24$ Niemeier 
 ## Divisibility and the discriminant group
 
 The two invariants that separate isotropic orbits are the divisibility of a primitive vector and its image in the discriminant group.
-Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of $v\in L$ is the positive generator of the ideal $\beta_L(v, L)\containedin\ZZ$, and that $v^* \da v/\div_L(v)$.
+Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of $v\in L$ is the positive generator of the ideal $\beta_L(v, L)\iscontainedin\ZZ$, and that $v^* \definedas v/\div_L(v)$.
 
 ::: {.proposition #prop:coble-divisibility-discriminant}
 
 Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily isotropic) vector.
-Then $v^* \da v/\div_L(v)\in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da \dualof{L}/L$ has order $\div_L(v)$.
+Then $v^* \definedas v/\div_L(v)\in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$.
 
 In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc(L)}$.
 :::
@@ -84,7 +84,7 @@ Equivalently, the $\OStab(L)$-orbit of a primitive vector is determined by its l
 ### Scattone's condition for Eichler transvection orbits
 
 Let $L$ be an even lattice admitting a splitting $L \xrightarrow{\sim} U^{2}\oplus M$ with $M$ an arbitrary lattice, and fix $k\in\ZZ$.
-Write $L[k] \da \ts{ x\in L \mid x^2 = k }$.
+Write $L[k] \definedas \theset{ x\in L \mid x^2 = k }$.
 Then for $v, w\in L[k]$,
 $$
 v \sim_{E(L)} w

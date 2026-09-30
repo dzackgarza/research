@@ -9,7 +9,7 @@ The thesis is organized into three parts, establishing the foundations and provi
   - @sec:chapter-2 establishes lattice-theoretic foundations, particularly Nikulin's theory of 2-elementary lattices, with applications to the invariant lattices $\lkt$, $\len$, $\ten$, and $\tdp$.
     This includes the classification of primitive embeddings and the structure of discriminant groups.
 
-  - @sec:chapter-3 develops the theory of Enriques surfaces and their K3 covers, analyzing the period domains $\fent$ and $\fttz$, and classifying the five 0-cusps of $\bd\bbcpt{\fent}$ through explicit lattice-theoretic computations.
+  - @sec:chapter-3 develops the theory of Enriques surfaces and their K3 covers, analyzing the period domains $\fentwo$ and $\fttz$, and classifying the five 0-cusps of $\bd\bbcpt{\fentwo}$ through explicit lattice-theoretic computations.
 
 - @sec:part-2 constructs the compactifications:
 
@@ -21,17 +21,17 @@ The thesis is organized into three parts, establishing the foundations and provi
 
 - @sec:part-3 proves the main theorem and provides explicit computations:
 
-  - @sec:chapter-6 establishes the isomorphism $\ksbacpt{\fent} \cong \semitorcpt{\fent}$ through:
+  - @sec:chapter-6 establishes the isomorphism $\ksbacpt{\fentwo} \cong \semitorcpt{\fentwo}$ through:
 
-    1. Embedding $\fent$ into the moduli space $\fttz$ of $(2,2,0)$-polarized K3 surfaces as a Noether-Lefschetz locus
+    1. Embedding $\fentwo$ into the moduli space $\fttz$ of $(2,2,0)$-polarized K3 surfaces as a Noether-Lefschetz locus
 
     2. Showing the normalized closure $\normalize{B}$ inherits a semitoroidal structure from $\ksbacpt{\fttz}$
 
     3. Constructing the universal family of Enriques pairs via quotient by the Enriques involution
 
-    4. Proving the classifying map $\normalize{B} \to \ksbacpt{\fent}$ is finite using geometric constraints on double curves
+    4. Proving the classifying map $\normalize{B} \to \ksbacpt{\fentwo}$ is finite using geometric constraints on double curves
 
     5. Applying Zariski's Main Theorem to conclude the isomorphism
 
-  - @sec:chapter-7 provides computational examples, constructing explicit dlt models for degenerations at each of the five 0-cusps of $\bd\bbcpt{\fent}$.
+  - @sec:chapter-7 provides computational examples, constructing explicit dlt models for degenerations at each of the five 0-cusps of $\bd\bbcpt{\fentwo}$.
     It demonstrates the folding procedure that relates K3 degenerations to Enriques degenerations through the action of commuting involutions on $\IAS^2$ structures.

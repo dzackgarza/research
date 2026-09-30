@@ -1,8 +1,8 @@
 ### Nikulin's Embedding Theorems {#section-2-5}
 
-Throughout this section, we adopt some simplifying notational conventions: for any lattice $L$, writing $\signature(L) = (p, q)$, we define $\tau(L) = p+q$, $\min \signature(L) = \min\ts{p, q}$, and $\max\signature(L)$ similarly.
+Throughout this section, we adopt some simplifying notational conventions: for any lattice $L$, writing $\signature(L) = (p, q)$, we define $\tau(L) = p+q$, $\min \signature(L) = \min\theset{p, q}$, and $\max\signature(L)$ similarly.
 Let $S \injects L$ be an embedding of lattices. We say $L$ is an **overlattice** of $S$ if $\iota(S)$ is a finite index sublattice.
-We will be primarily interested in the case where $S\injects L$ is a primitive embedding with $T\da S^{\perp L} \injects L$ its (primitively embedded) orthogonal complement. In this situation, $L$ is an overlattice of $S\oplus T$, and we would like to know when it is of index 1. When this happens, we will say that $S$ **splits** $L$.
+We will be primarily interested in the case where $S\injects L$ is a primitive embedding with $T\definedas S^{\perp L} \injects L$ its (primitively embedded) orthogonal complement. In this situation, $L$ is an overlattice of $S\oplus T$, and we would like to know when it is of index 1. When this happens, we will say that $S$ **splits** $L$.
 We first note a basic tool: for any lattice $L$, there is a canonical primitive embedding
 \begin{align*}
 \delta: L(2) &\to L \oplus L \\
@@ -19,13 +19,13 @@ To motivate the detailed study of primitive embeddings, we note that the method 
 
 By the classification of boundary components for arithmetic quotients of Hermitian symmetric domains [@BB66], $0$-cusps correspond to $\Gamma_{2d}$-orbits of primitive isotropic lines $I \subset L_{2d}$, where
 $$
-\lkttd \da  \gens{-2d} \oplus U^{ 2} \oplus E_8^{ 2}
+\lkttd \definedas  \generators{-2d} \oplus U^{ 2} \oplus E_8^{ 2}
 $$
 is the rank-$21$ lattice of signature $(2,19)$ associated to degree-$2d$ polarized K3 surfaces.
 
 Each such cusp corresponds to a degeneration of K3 surfaces with associated lattice $I^\perp / I$, an even lattice of signature $(1,18)$, which encodes the limiting Hodge structure for degenerations to that cusp.
 @Sca87 classified boundary components by studying primitive embeddings $U\injects L$ where $L$ is one of the $24$ **Niemeier lattices** -- the even, negative-definite, unimodular lattices of rank $24$.
-For each such embedding $U \injects L$, the orthogonal complement $T \da  U^{\perp_L}$ is an even, negative-definite, unimodular lattice of rank $22$. These are the possible isometry classes of lattices of the form $I^{\perp}/I$ at $0$-cusps of $\bbcpt{\ftd}$.
+For each such embedding $U \injects L$, the orthogonal complement $T \definedas  U^{\perp_L}$ is an even, negative-definite, unimodular lattice of rank $22$. These are the possible isometry classes of lattices of the form $I^{\perp}/I$ at $0$-cusps of $\bbcpt{\ftd}$.
 The enumeration of $0$-cusps is thus reduced to counting the orbits of primitive embeddings $U \injects L$ for each Niemeier lattice $L$ up to $\Orth(L)$, where @Sca87 establishes that each such orbit corresponds to a *distinct* $0$-cusp, allowing for an explicit enumeration and thus an understanding of the entire cusp diagram for $\ftd$ for a wide range of values of $d$.
 From this, we find that the class number $\cl(T)$ directly influences the number of 0-cusps, and representatives of isometry classes can be used to provide an explicit indexing set.
 :::
@@ -124,27 +124,27 @@ Let $S$ be a primitive non-degenerate sublattice of a unimodular lattice $L$, an
 
 #### Gluing and Overlattices
 
-Throughout this section, for a discriminant group $(G, q)$, we write $G(n)$ for the group $G$ with quadratic form $\tilde q \da n q$.
+Throughout this section, for a discriminant group $(G, q)$, we write $G(n)$ for the group $G$ with quadratic form $\tilde q \definedas n q$.
 In particular, $G_1\iso G_2(-1)$ are isometric by a map $f$ if and only if $G_1\cong G_2$ as groups and $q_1(v) = -q_2(f(v))$ for all $v\in G_1$. 
-Let $L$ be as above; a primitive embedding $S \injects L$ with $T\da S^{\perp L}$ is uniquely determined by the choice of
+Let $L$ be as above; a primitive embedding $S \injects L$ with $T\definedas S^{\perp L}$ is uniquely determined by the choice of
 
 1. A subgroup $H \leq A_{L}$, the *embedding subgroup*, and
 
-2. An isometry $\gamma: H \iso H^{\prime} \containedin A_{S}$, the *embedding isometry*, where $H'$ is the image of $H$.
+2. An isometry $\gamma: H \iso H^{\prime} \iscontainedin A_{S}$, the *embedding isometry*, where $H'$ is the image of $H$.
 
 Letting $\Gamma$ be the graph of $\gamma$ in $A_{L} \oplus A_{S}(-1)$, one has $A_{T}=\Gamma^{\perp} / \Gamma$ and we note that there is a discriminant formula
 $$
 |\disc T|=\frac{|\disc L| \cdot|\disc S|}{(\sharp H)^{2}} 
 .$$
-Now let $\iota: S \injects L$ be an embedding of even lattices where $L$ is unimodular, and define $H_{L}\da L / \iota(S)$. Using the chain of embeddings $S \injects L \injects L^{\vee} \injects S^{\vee}$ to produce embeddings $H_{L} \injects L^{\vee} / S \injects A_{S}$, one can regard $H_L$ as a subgroup of $A_S$.
-Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\da \inverseof{\eta}(H) \containedin S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
+Now let $\iota: S \injects L$ be an embedding of even lattices where $L$ is unimodular, and define $H_{L}\definedas L / \iota(S)$. Using the chain of embeddings $S \injects L \injects L^{\vee} \injects S^{\vee}$ to produce embeddings $H_{L} \injects L^{\vee} / S \injects A_{S}$, one can regard $H_L$ as a subgroup of $A_S$.
+Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\definedas \inverseof{\eta}(H) \iscontainedin S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
 
 These constructions are mutually inverse and define a bijection:
 \begin{align*}
 \{\text { Even overlattices } L \text { of } S\} & \mapstofrom
 \left\{\text { Isotropic subgroups } H \leq A_{S}\right\} \\
-L &\mapsto H_{L}\da L / S \\
-L\da S_{H} & \leftarrow H
+L &\mapsto H_{L}\definedas L / S \\
+L\definedas S_{H} & \leftarrow H
 \end{align*}
 
 We apply this to the following:
@@ -163,21 +163,21 @@ $$
 [L: S \oplus T]^{2}=\frac{\disc(S \oplus T)}{\disc(L)}=\frac{\disc(S) \cdot \disc(T)}{\disc(L)}=1 .
 $$
 Finally, a pair of isometries of $S$ and $T$ lifts to an isometry of $L$ if and only if they preserve $H_{L}$, or equivalently commute with the glue map.
-Thus given $S\injects L$ as above with $T\da S^{\perp L}$, even if $S$ does not split $L$, we still have a way to construct isometries on $L$: one first constructs isometries $f_S\in \Orth(S)$ and $f_T \in \Orth(T)$ such that the restricted action of $f_S$ to $A_S$ and that of $f_T$ to $A_T$ agree, using the anti-isometry $A_S\iso A_T(-1)$, then produces a lift of $f_S \oplus f_T$ to an element of $f\in \Orth(L)$ that restricts to both $f_S$ and $f_T$. In particular, $f$ stabilizes both $S$ and $T$, and thus defines isometries in the stabilizers $\Stab_{\Orth(L)}(S)$ and $\Stab_{\Orth(L)}(T)$.
+Thus given $S\injects L$ as above with $T\definedas S^{\perp L}$, even if $S$ does not split $L$, we still have a way to construct isometries on $L$: one first constructs isometries $f_S\in \Orth(S)$ and $f_T \in \Orth(T)$ such that the restricted action of $f_S$ to $A_S$ and that of $f_T$ to $A_T$ agree, using the anti-isometry $A_S\iso A_T(-1)$, then produces a lift of $f_S \oplus f_T$ to an element of $f\in \Orth(L)$ that restricts to both $f_S$ and $f_T$. In particular, $f$ stabilizes both $S$ and $T$, and thus defines isometries in the stabilizers $\Stab_{\Orth(L)}(S)$ and $\Stab_{\Orth(L)}(T)$.
 :::
 
-#### Applications to $\fent$ {#sec:applications-fent}
+#### Applications to $\fentwo$ {#sec:applications-fent}
 
-To see some of this theory applied to the moduli problem at hand, we take a small detour to prove that $\fent$ is the normalization of a closed subvariety of $\fttz$ -- an essential ingredient in the main theorem.
+To see some of this theory applied to the moduli problem at hand, we take a small detour to prove that $\fentwo$ is the normalization of a closed subvariety of $\fttz$ -- an essential ingredient in the main theorem.
 The strategy is as follows:
 
-1. Identify a morphism $\Psi: \fent \to \fttz$ arising from a lattice embedding $\tilde \Psi: \ten \injects \tdp$.
+1. Identify a morphism $\Psi: \fentwo \to \fttz$ arising from a lattice embedding $\tilde \Psi: \ten \injects \tdp$.
   
 2. Establish a rigidity theorem at the level of lattice embeddings to assert that $\Psi$ is well-defined and canonically determined.
 
-3. Restrict $\Psi$ to its scheme-theoretic image, i.e. the smallest closed subscheme of $\fttz$ through which $\Psi$ factors, to obtain $\Psi: \fent \to X$
+3. Restrict $\Psi$ to its scheme-theoretic image, i.e. the smallest closed subscheme of $\fttz$ through which $\Psi$ factors, to obtain $\Psi: \fentwo \to X$
 
-4. Since $\fent$ is known to be normal by the general theory of @BB66, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
+4. Since $\fentwo$ is known to be normal by the general theory of @BB66, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
 
 We first claim there is a holomorphic, algebraic morphism of period domains
 \begin{align*}
@@ -186,7 +186,7 @@ We first claim there is a holomorphic, algebraic morphism of period domains
 
 This follows from defining an embedding of lattices by
 \begin{align*}
-\tilde \Psi: \ten \da U \oplus U(2) \oplus E_8(2) &\injects \tdp\da  U \oplus U(2) \oplus E_8^2 \\
+\tilde \Psi: \ten \definedas U \oplus U(2) \oplus E_8(2) &\injects \tdp\definedas  U \oplus U(2) \oplus E_8^2 \\
 (u_1, u_2, v) &\mapsto (u_1, u_2, v, v)
 \end{align*}
 which in block form is $(\id, \id, \delta)$ where $\delta$ is the canonical doubling embedding.
@@ -235,7 +235,7 @@ We first claim $U(2) \injects U(2) \oplus E_8(2)$ is unique.
 By untwisting, it suffices to show that $U\injects U\oplus E_8$ is unique.
 Write $U = S = \II_{1,1}$ and $U \oplus E_8 = L = \II_{1, 9}$, noting that both are the unique even unimodular lattices with those signatures. 
 The existence of an embedding $S\injects L$, is clear, since one can simply take $x\mapsto (x, 0)$ and check that the cokernel is isometric to $E_8$ and thus free.
-For uniqueness, let $T\da S^{\perp L}$: then $T$ is an even unimodular lattice of signature $(0, 8)$, and thus isometric to $E_8 = \II_{0, 8}$, which is unique up to isometry.
+For uniqueness, let $T\definedas S^{\perp L}$: then $T$ is an even unimodular lattice of signature $(0, 8)$, and thus isometric to $E_8 = \II_{0, 8}$, which is unique up to isometry.
 So if $j_i: S_i \injects L$ are any two primitive embeddings, there are decompositions $L \cong S_1 \oplus T_1$ and $L\cong S_2 \oplus T_2$ where $S_1\cong S_2 \cong \II_{1,1}$ and $T_1\cong T_2 \cong \II_{0, 8}$ are both unique up to isometry. 
 So there exist isometries $\phi_S: S_1\to S_2$ and $\phi_T: T_1\to T_2$, and thus an isometry $\phi_S \oplus \phi_T: S_1\oplus T_1\to S_2\oplus T_2$. 
 Since $S_i, T_i$ are unimodular, $\phi_S$ and $\phi_T$ trivially act identically on the discriminant groups, and thus lift to an isometry $\phi\in \Orth(L)$.
@@ -253,7 +253,7 @@ We conclude by the observations above.
 :::{.proposition}
 The map $\tilde \Psi$ descends to a well-defined algebraic morphism on arithmetic quotients:
 $$
-\Psi: \fent = \halfpd{\ten}/\gent \to \fttz = \halfpd{\tdp}/\Orth(\tdp)
+\Psi: \fentwo = \halfpd{\ten}/\gent \to \fttz = \halfpd{\tdp}/\Orth(\tdp)
 .$$
 :::
 
@@ -276,11 +276,11 @@ By construction, $f_{T}$ and $f_{S}$ act identically on $A_S$ and $A_T$, and so 
   title="[@AEGS25, Lemma 2.8]"
   #lem:fent-to-fttz-closed-immersion
 }
-There exists a closed subscheme $X \subset \fttz$ such that $\fent$ is canonically isomorphic to the normalization of $X$.
+There exists a closed subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
 :::
 
 :::{.proof}
-The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fent$ and $\fttz$ are normal since they are complex analytic manifolds, following @BB66. The closed subscheme $X$ inherits normality as a subscheme of a normal variety. 
+The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fentwo \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fentwo$ and $\fttz$ are normal since they are complex analytic manifolds, following @BB66. The closed subscheme $X$ inherits normality as a subscheme of a normal variety. 
 
-By Zariski's Main Theorem, a finite birational morphism from a normal variety to an integral variety identifies the source with the normalization of the target. Therefore, $\Psi\colon \fent \to X$ exhibits $\fent$ as the normalization of $X$.
+By Zariski's Main Theorem, a finite birational morphism from a normal variety to an integral variety identifies the source with the normalization of the target. Therefore, $\Psi\colon \fentwo \to X$ exhibits $\fentwo$ as the normalization of $X$.
 :::

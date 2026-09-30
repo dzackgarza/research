@@ -21,14 +21,14 @@ A bilinear form $\beta$ is:
 A **quadratic form** on a $\ZZ$-module $L$ is a map of sets $q: L \to \QQ$ such that $q(\lambda v) = \lambda^2 q(v)$ for all $v \in L, \lambda \in \QQ$, and such that its **polar form** $\beta_q$ is a symmetric bilinear form on $L$:
 \begin{align*}
 \beta_q: L \tensor_{\ZZ} L &\to \QQ \\
-(v,w) &\mapsto \beta_q(v,w) \da q(v+w) - q(v) - q(w)
+(v,w) &\mapsto \beta_q(v,w) \definedas q(v+w) - q(v) - q(w)
 \end{align*}
-We say $q$ is **integral** if $q(L) \containedin \ZZ$. The pair $(L,q)$ is called a **quadratic $\ZZ$-module**.
+We say $q$ is **integral** if $q(L) \iscontainedin \ZZ$. The pair $(L,q)$ is called a **quadratic $\ZZ$-module**.
 :::
 
 :::{.lemma title="{Correspondence between Bilinear and Quadratic Forms}" #lem:bilinear-quadratic-correspondence}
 
-Every $\QQ$-valued bilinear module $(L,\beta)$ determines a $\QQ$-valued quadratic module $(L,q_\beta)$ by $q_\beta(v) \da \beta(v,v)$, which depends only on the symmetric part of $\beta$. Conversely, every $\QQ$-valued quadratic module $(L,q)$ determines a symmetric bilinear module $(L,\beta_q)$ via the polar form.
+Every $\QQ$-valued bilinear module $(L,\beta)$ determines a $\QQ$-valued quadratic module $(L,q_\beta)$ by $q_\beta(v) \definedas \beta(v,v)$, which depends only on the symmetric part of $\beta$. Conversely, every $\QQ$-valued quadratic module $(L,q)$ determines a symmetric bilinear module $(L,\beta_q)$ via the polar form.
 :::
 
 :::{.lemma title="{Bijection for Even Lattices}" #lem:even-lattice-bijection}
@@ -36,10 +36,10 @@ Every $\QQ$-valued bilinear module $(L,\beta)$ determines a $\QQ$-valued quadrat
 There is a bijection between even symmetric integral forms and integral quadratic forms:
 $$\begin{aligned}
 \{\beta \in \Sym_{\ZZ}^2(\dualof{L}) \st \beta \text{ is even}\} &\mapstofrom \Quad_{\ZZ}(L) \\
-\beta &\mapsto q(v) \da {1\over 2}\beta(v,v) \\
+\beta &\mapsto q(v) \definedas {1\over 2}\beta(v,v) \\
 \beta_q &\mapsfrom q
 \end{aligned}$$
-In other words, the polar form of any integral quadratic form is an even symmetric integral form. Conversely, every even symmetric integral form $\beta$ is the polar form of the integral quadratic form $q(v) \da {1\over 2}\beta(v,v)$.
+In other words, the polar form of any integral quadratic form is an even symmetric integral form. Conversely, every even symmetric integral form $\beta$ is the polar form of the integral quadratic form $q(v) \definedas {1\over 2}\beta(v,v)$.
 :::
 
 ##### Lattices
@@ -52,7 +52,7 @@ A lattice $(L,\beta)$ is **even** if $\beta(v,v) \in 2\ZZ$ for all $v \in L$, an
 ##### Gram Matrices
 
 :::{.definition title="{Gram Matrix}" #def:gram-matrices}
-Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \da (\beta(e_i, e_j))_{i,j} \in \Mat_{n \times n}(\QQ)$. For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
+Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \definedas (\beta(e_i, e_j))_{i,j} \in \Mat_{n \times n}(\QQ)$. For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
 Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.
 We define the **discriminant** $\disc(L)$ of $L$ as $\det(G_\beta)$ in any choice of basis.
 We note that for any sublattice $S \leq L$, we have the formula 
@@ -68,7 +68,7 @@ The Gram matrix reflects properties of the form: $\beta$ is symmetric $\iff G_\b
 Let $S$ be any unimodular lattice admitting a primitive embedding into a nondegenerate lattice $L$.
 Then $L \cong S \oplus T$ where 
 $$
-T\da S^{\perp} = \ts{v\in L \st \beta(v, S) = 0}
+T\definedas S^{\perp} = \theset{v\in L \st \beta(v, S) = 0}
 $$ 
 is the **orthogonal complement** of $S$ in $L$.
 Moreover, if $S$ is unimodular, then so is $T$.
@@ -110,7 +110,7 @@ For any lattice $(L,\beta)$ and positive integer $m$, the **scaled lattice** $L(
 :::
 
 :::{.example title="{Diagonal and Hyperbolic Lattices}"}
-The **diagonal lattice** $\gens{a_1, \ldots, a_n}$ is $\ZZ^n$ with the bilinear form $\beta(x,y) = \Sum a_i x_i y_i$ and diagonal Gram matrix $\diag(a_1, \ldots, a_n)$.
+The **diagonal lattice** $\generators{a_1, \ldots, a_n}$ is $\ZZ^n$ with the bilinear form $\beta(x,y) = \Sum a_i x_i y_i$ and diagonal Gram matrix $\diag(a_1, \ldots, a_n)$.
 In the special case $a_1,\cdots, a_{p} = 1$ and $a_{m+1}, \cdots, a_n = -1$, we write this lattice as $\I_{p, q}$, due to its distinguished nature as the unique nondegenerate odd unimodular lattice of signature $p, q$. 
 The **hyperbolic lattice** $U$ is the free $\ZZ$-module $\ZZ^2$ with basis $e,f$ such that $\beta(e,e) = \beta(f,f) = 0$ and $\beta(e,f) = 1$. It is an even, integral, rank 2 lattice with Gram matrix 
 $$
@@ -126,7 +126,7 @@ We write $\Lat$ for the category of integral lattices, and $\Hom_{\Lat}(L_1, L_2
 An **embedding** is an injective morphism.
 An embedding is **primitive** if its cokernel, $\coker(f)$, is a torsion-free $\ZZ$-module.
 An **isometry** is a morphism of lattices that is also an isomorphism of $\ZZ$-modules. Two lattices $L_1, L_2$ are **isometric**, written $L_1 \iso L_2$, if an isometry exists between them.
-The **orthogonal group** of a lattice $L$ is its group of self-isometries $\Orth(L) \da \Aut_{\Lat}(L)$.
+The **orthogonal group** of a lattice $L$ is its group of self-isometries $\Orth(L) \definedas \Aut_{\Lat}(L)$.
 In terms of a Gram matrix $G_\beta$, the orthogonal group has the characterization:
 $$
 \Orth(L) = \{M \in \GL_n(\ZZ) \st M G_\beta M^t = G_\beta\}
@@ -134,16 +134,16 @@ $$
 :::
 
 :::{.definition title="{Primitive and Saturated Sublattices}" #def:primitive-sublattice}
-A sublattice $S \leq L$ is **primitive** (or **saturated**) if the quotient module $L/S$ is torsion-free. An element $v \in L$ is **primitive** if the sublattice $\gens{v}_{\ZZ}$ is primitive.
+A sublattice $S \leq L$ is **primitive** (or **saturated**) if the quotient module $L/S$ is torsion-free. An element $v \in L$ is **primitive** if the sublattice $\generators{v}_{\ZZ}$ is primitive.
 :::
 
 :::{.proposition title="{Characterization of Primitive Sublattices}" #prop:saturation-characterization}
 
-For a sublattice $S \containedin L$, the following are equivalent:
+For a sublattice $S \iscontainedin L$, the following are equivalent:
 
 - $S$ is a primitive sublattice of $L$.
 - The inclusion $S \injects L$ is a primitive embedding.
-- $S$ is saturated in $L$, meaning $S = \Sat_L(S) \da \{v \in L \st nv \in S \text{ for some } n \in \ZZ \sm \{0\}\}$.
+- $S$ is saturated in $L$, meaning $S = \Sat_L(S) \definedas \{v \in L \st nv \in S \text{ for some } n \in \ZZ \sm \{0\}\}$.
 - $S$ is a direct summand of $L$ as a $\ZZ$-module (i.e., $L \cong S \oplus T$ for some submodule $T$).
 - Any $\ZZ$-basis of $S$ can be extended to a $\ZZ$-basis of $L$.
 - $S_\QQ \intersect L = S$.
@@ -173,15 +173,15 @@ corpus-references: ""
 depends-on: "#def:lattice"
 audited: false
 ```
-For a lattice $(L,\beta)$, a submodule $W \containedin L$ is **isotropic** if $\beta|_W = 0$ (equivalently, $W \containedin W^{\perp L}$). An **isotropic vector** is an element $v \in L$ with $\beta(v,v) = 0$. The **Witt index** $\WI(L)$ is the maximal rank of an isotropic sublattice.
+For a lattice $(L,\beta)$, a submodule $W \iscontainedin L$ is **isotropic** if $\beta|_W = 0$ (equivalently, $W \iscontainedin W^{\perp L}$). An **isotropic vector** is an element $v \in L$ with $\beta(v,v) = 0$. The **Witt index** $\WI(L)$ is the maximal rank of an isotropic sublattice.
 :::
 
 :::{.definition title="{Divisibility}" #def:divisibility-primitive-elements}
-Let $L$ be a lattice with form $\beta$, and let $v \in L$. The **divisibility** of $v$ in $L$, denoted $\div_L(v)$, is the positive generator of the ideal $\ts{ \beta(v, w)\st w \in L} \containedin \ZZ$.
+Let $L$ be a lattice with form $\beta$, and let $v \in L$. The **divisibility** of $v$ in $L$, denoted $\div_L(v)$, is the positive generator of the ideal $\theset{ \beta(v, w)\st w \in L} \iscontainedin \ZZ$.
 :::
 
 :::{.proposition title="{Divisibility and Discriminant for Primitive Vectors}" #prop:divisibility-discriminant}
-Let $L$ be a nondegenerate lattice, and $v \in L$ an arbitrary (not necessarily isotropic) vector. The element $v^* \da v/\div_L(v) \in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da \dualof{L}/L$ has order $\div_L(v)$. In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc(L)|$.
+Let $L$ be a nondegenerate lattice, and $v \in L$ an arbitrary (not necessarily isotropic) vector. The element $v^* \definedas v/\div_L(v) \in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$. In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc(L)|$.
 :::
 
 :::{.proof}
@@ -201,15 +201,15 @@ Since $L$ is unimodular, $L \iso \dualof{L}$. The linear form $x \mapsto (v, x)$
 #### Dual Lattices and Discriminant Forms
 
 :::{.definition title="{Dual Lattice}" #def:dual-lattice-construction}
-For an integral lattice $(L,\beta)$, the **dual lattice** is the $\ZZ$-module of linear functionals $\dualof{L} \da \Hom_{\ZZ}(L, \ZZ)$.
+For an integral lattice $(L,\beta)$, the **dual lattice** is the $\ZZ$-module of linear functionals $\dualof{L} \definedas \Hom_{\ZZ}(L, \ZZ)$.
 :::
 
 :::{.theorem title="{Geometric Identification of the Dual Lattice}" #thm:geometric-identification-dual}
-For a nondegenerate integral lattice $(L,\beta)$, the dual lattice can be identified with a sublattice of $L_{\QQ} \da L \tensor_{\ZZ} \QQ$ via the bijection:
+For a nondegenerate integral lattice $(L,\beta)$, the dual lattice can be identified with a sublattice of $L_{\QQ} \definedas L \tensor_{\ZZ} \QQ$ via the bijection:
 \begin{align*}
-\dualof{L} \cong \{ v \in L_{\QQ} \st \beta_{\QQ}(v,L) \containedin \ZZ\}
+\dualof{L} \cong \{ v \in L_{\QQ} \st \beta_{\QQ}(v,L) \iscontainedin \ZZ\}
 \end{align*}
-where a functional $\phi \in \dualof{L}$ corresponds to the unique vector $v_\phi \in L_\QQ$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. Under this identification, we have the inclusions $L \containedin \dualof{L} \containedin L_{\QQ}$.
+where a functional $\phi \in \dualof{L}$ corresponds to the unique vector $v_\phi \in L_\QQ$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. Under this identification, we have the inclusions $L \iscontainedin \dualof{L} \iscontainedin L_{\QQ}$.
 :::
 
 :::{.remark title="{Properties of Dual Lattices}" #rem:dual-lattice-properties}
@@ -222,14 +222,14 @@ We summarize some standard properties of dual lattices
 
 :::{.definition title="{Discriminant Group and Discriminant}" #def:discriminant-group}
 
-For a nondegenerate lattice $(L,\beta)$, the **discriminant group** is the finite abelian group $A_L \da \dualof{L} / L$.
+For a nondegenerate lattice $(L,\beta)$, the **discriminant group** is the finite abelian group $A_L \definedas \dualof{L} / L$.
 The order of the discriminant group equals the absolute value of the discriminant, i.e. $|A_L| = |\disc(L)| = [\dualof{L}\colon L]$, so $L$ is unimodular if and only if $A_L$ is trivial.
 :::
 
 :::{.definition title="Discriminant Forms, [@PS24, Def. 1.6.5]" #def:discriminant-forms}
 For a nondegenerate *even* lattice $(L,\beta)$, the **discriminant bilinear form** is $\beta_{A_L}: A_L \times A_L \to \QQ/\ZZ$, given by $\beta_{A_L}(\bar{x}, \bar{y}) = \beta(x,y) \bmod \ZZ$ for any lifts $x,y \in \dualof{L}$ and $\beta$ the induced form on $\dualof{L}$.
 It admits an associated quadratic form $q_{A_L}(\bar x) = \beta(x,x)\pmod{\ZZ} \in \QQ/\ZZ$ for any lift $x$.
-We note that there are two conventions in the literature, where one sometimes defines $q_{A_L}(\bar x) \da \beta(x,x)\pmod{2\ZZ}\in \QQ/2\ZZ$; these agree by the isomorphism $\QQ/\ZZ \iso \QQ/2\ZZ$ induced by multiplication by $2$.
+We note that there are two conventions in the literature, where one sometimes defines $q_{A_L}(\bar x) \definedas \beta(x,x)\pmod{2\ZZ}\in \QQ/2\ZZ$; these agree by the isomorphism $\QQ/\ZZ \iso \QQ/2\ZZ$ induced by multiplication by $2$.
 We define its **orthogonal group** $\Orth(A_L)$ as the automorphisms that preserve $q_{A_L}$.
 The **length** $\ell(L)$ of $L$ is the minimal number of generators for the abelian group $A_L$.
 :::
@@ -248,7 +248,7 @@ Similarly, by functoriality, any isometry $f \in \Orth(L)$ lifts to an isometry 
 $$
 0 \to \OStab(L) \to \Orth(L) \xrightarrow{\psi} \Orth(A_L) \to \OStab(A_L) \to 0
 $$
-where $\OStab(L) \da \ker(\psi)$ and $\OStab(A_L) \da \coker(\psi)$ are the **stable orthogonal groups** of $L$ and $A_L$. The cokernel, $\OStab(A_L) \da \coker(\psi)$, measures the obstruction to lifting isometries from the discriminant form $A_L$ to the lattice $L$.
+where $\OStab(L) \definedas \ker(\psi)$ and $\OStab(A_L) \definedas \coker(\psi)$ are the **stable orthogonal groups** of $L$ and $A_L$. The cokernel, $\OStab(A_L) \definedas \coker(\psi)$, measures the obstruction to lifting isometries from the discriminant form $A_L$ to the lattice $L$.
 We note that $\psi$ is surjective (i.e., $\OStab(A_L) = 0$) when $L$ is indefinite and satisfies $\ell(A_L) + 2 \leq \rank(L)$, where $\ell(A_L)$ is the minimal number of generators of $A_L$. For unimodular lattices like $U$ and $E_8$, the discriminant group is trivial, so $\OStab(L) = \Orth(L)$.
 :::
 

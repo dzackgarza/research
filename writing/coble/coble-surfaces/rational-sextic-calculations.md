@@ -36,7 +36,7 @@ The classical unnodal Coble surface construction specifically requires a sextic 
 Let $W\subset \PP^2$ be a generic irreducible rational sextic with ten $A_1$ singularities.
 The classical Coble surfaces $S$ were first constructed in [@Cob19] in a study of Cremona transformations of $\PP^2$ that preserve such a rational sextic $W$.
 These surfaces can be realized as the blowup $\pi: S \to \PP^2$ at the ten points $p_1, \ldots, p_{10}$ that are the $A_1$ singularities of $W$.
-In this construction, letting $C$ be the proper transform of $W$, one can show that $C$ is a rational curve and $\abs{-2K_S} = \ts{C}$ by adjunction.
+In this construction, letting $C$ be the proper transform of $W$, one can show that $C$ is a rational curve and $\abs{-2K_S} = \theset{C}$ by adjunction.
 Moreover, the square of the canonical class can be computed as follows:
 
 $$
@@ -93,7 +93,7 @@ A sextic with ten nodes exists only when the ten points are special enough that 
 ::: {.proof}
 
 The monomials $x^iy^jz^k$ with $i+j+k=6$ number $\binom{6+2}{2} = 28$, giving the stated dimension.
-For a fixed $p$, singularity of $\ts{F = 0}$ at $p$ is the vanishing of the three partial derivatives $\partial_x F(p)$, $\partial_y F(p)$, $\partial_z F(p)$; each is a linear condition on the coefficients of $F$, and $F(p) = 0$ follows from Euler's identity $\Sum_i x_i\,\partial_i F = 6F$.
+For a fixed $p$, singularity of $\theset{F = 0}$ at $p$ is the vanishing of the three partial derivatives $\partial_x F(p)$, $\partial_y F(p)$, $\partial_z F(p)$; each is a linear condition on the coefficients of $F$, and $F(p) = 0$ follows from Euler's identity $\Sum_i x_i\,\partial_i F = 6F$.
 Imposing this at ten points gives $30$ linear conditions on a space of projective dimension $27$, so the general such linear system has empty intersection.
 :::
 

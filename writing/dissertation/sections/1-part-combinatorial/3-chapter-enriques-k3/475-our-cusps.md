@@ -2,14 +2,14 @@
 
 
 
-The boundary lattices at 0-cusps $\eta$ have the form $\bdlattice{T}{\eta} = \eta^\perp/\gens{\eta}$ for each primitive isotropic vector $\eta$. 
+The boundary lattices at 0-cusps $\eta$ have the form $\bdlattice{T}{\eta} = \eta^\perp/\generators{\eta}$ for each primitive isotropic vector $\eta$. 
 The typical situation is two have some number $n$ of possible isometry classes for boundary lattices, and some number $m\geq n$ of *actual* boundary lattices, where $m$ depends on $\Gamma$, reflecting isometry classes splitting into further possibilities.
 For $\fttz$, there are two isometry classes, each containing one sub-type of lattice, so the two cusps can be labeled
 $$
-\tilde\eta_1 \da (18, 2, 0)_1, \qquad 
-\tilde \eta_2 \da (18, 0, 0)_1
+\tilde\eta_1 \definedas (18, 2, 0)_1, \qquad 
+\tilde \eta_2 \definedas (18, 0, 0)_1
 .$$
-For $\fent$, there are two isometry classes, one which does not split into further subclass corresponding to orbits of divisibility one vectors in $\ten$, the other splitting into four sub-classes, reflecting an $\Orth(\ten)$ orbit of divisibility two vectors that splits into 4 separate orbits.
+For $\fentwo$, there are two isometry classes, one which does not split into further subclass corresponding to orbits of divisibility one vectors in $\ten$, the other splitting into four sub-classes, reflecting an $\Orth(\ten)$ orbit of divisibility two vectors that splits into 4 separate orbits.
 We label the cusps $\eta_1,\cdots, \eta_5$, and note that the two isometry classes are given by
 $$
 \div_{\ten}(\eta) = 1\colon \EnriquesInvariants_1,
@@ -18,18 +18,18 @@ $$
 $$
 
 
-| $\fent$ Cusp | $\fttz$ Cusp | Involution | Folded Lattice |
+| $\fentwo$ Cusp | $\fttz$ Cusp | Involution | Folded Lattice |
 |---|---|---|---|
-| $\eta_1$ ($\div(\eta_1) = 1$) | $\tilde\eta_1 \da (18,2,0)_1$ | $180^\circ$ rotation | $\EnriquesInvariants_1$ |
-| $\eta_2$ ($\div(\eta_2) = 2$) | $\tilde\eta_2 \da (18,0,0)_1$ | Vertical reflection | $(10,8,0)_1$ |
-| $\eta_3$ ($\div(\eta_3) = 2$) | $\tilde\eta_1 \da (18,2,0)_1$ | Diagonal + reflection | $(10,8,0)_1$ |
-| $\eta_4$ ($\div(\eta_4) = 2$) | $\tilde\eta_1 \da (18,2,0)_1$ | Horizontal reflection | $(10,8,0)_1$ |
-| $\eta_5$ ($\div(\eta_5) = 2$) | $\tilde\eta_1 \da (18,2,0)_1$ | 8 commuting reflections | $(10,8,0)_1$ |
+| $\eta_1$ ($\div(\eta_1) = 1$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | $180^\circ$ rotation | $\EnriquesInvariants_1$ |
+| $\eta_2$ ($\div(\eta_2) = 2$) | $\tilde\eta_2 \definedas (18,0,0)_1$ | Vertical reflection | $(10,8,0)_1$ |
+| $\eta_3$ ($\div(\eta_3) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | Diagonal + reflection | $(10,8,0)_1$ |
+| $\eta_4$ ($\div(\eta_4) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | Horizontal reflection | $(10,8,0)_1$ |
+| $\eta_5$ ($\div(\eta_5) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | 8 commuting reflections | $(10,8,0)_1$ |
 
 ### Cusps by Folding
 
-Following [@AEGS25, Lemmas 3.10, 3.19], the five 0-cusps of the Baily–Borel compactification $\bbcpt{\fent}$ correspond to five different involutions on the K3 lattice $\tdp$.
-Let $T$ be an even indefinite lattice and let $\eta \in T$ be a primitive isotropic vector. Define the boundary lattice $\bdlattice{T}{\eta} \da  \eta^{\perp T} / \gen{\eta}$, which we will often simply write as $\bar T \da \eta^{\perp}/\eta$ when working with a fixed vector $\eta$.
+Following [@AEGS25, Lemmas 3.10, 3.19], the five 0-cusps of the Baily–Borel compactification $\bbcpt{\fentwo}$ correspond to five different involutions on the K3 lattice $\tdp$.
+Let $T$ be an even indefinite lattice and let $\eta \in T$ be a primitive isotropic vector. Define the boundary lattice $\bdlattice{T}{\eta} \definedas  \eta^{\perp T} / \genus{\eta}$, which we will often simply write as $\bar T \definedas \eta^{\perp}/\eta$ when working with a fixed vector $\eta$.
 Write $\Phi(\bar T)$ for the root system of $\bdlattice{T}{\eta}$.
 Let $\Gamma\leq \Orth(T)$ be a fixed arithmetic subgroup acting on $T$.
 For each such $\eta$, we write $U_\eta$ for the maximal unipotent subgroup of the stabilizer of $\eta$ in $\Gamma$ which acts trivially on $\bdlattice{T}{\eta}$.
@@ -87,14 +87,14 @@ or as in @eq:three-lattice-involutions,
 \\
 \Inik:(u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (u_1,\ u_2,\ u_3,\ -\alpha_2,\ -\alpha_1)
 \end{align*}
-By [@AEGS25, Lem. 3.4], the coinvariant sublattice $\tdp^{\Ien = -1}\iso \ten$, and so to simplify matters we write $I \da - \Ien = \Inik$ and thus $\tdp^{I} \da \tdp^{I=1} = \ten$.
-Fixing a primitive isotropic vector $\eta \in \ten$, we write $\bdlattice{\ten}{\eta} \da \eta^{\perp \ten}/\gens{\eta}_{\ten}$ and $\bdlattice{\tdp}{\eta} \da \eta^{\perp \tdp}/\gens{\eta}_{\tdp}$, and so on.
+By [@AEGS25, Lem. 3.4], the coinvariant sublattice $\tdp^{\Ien = -1}\iso \ten$, and so to simplify matters we write $I \definedas - \Ien = \Inik$ and thus $\tdp^{I} \definedas \tdp^{I=1} = \ten$.
+Fixing a primitive isotropic vector $\eta \in \ten$, we write $\bdlattice{\ten}{\eta} \definedas \eta^{\perp \ten}/\generators{\eta}_{\ten}$ and $\bdlattice{\tdp}{\eta} \definedas \eta^{\perp \tdp}/\generators{\eta}_{\tdp}$, and so on.
 Under the primitive embedding $\ten\injects \tdp$, we can construct two distinct boundary lattices associated to $\eta$,
 
 \begin{align*}
-\bdlattice{\ten}{\eta} \da \eta^{\perp \ten}/\gens{\eta}, 
+\bdlattice{\ten}{\eta} \definedas \eta^{\perp \ten}/\generators{\eta}, 
 \qquad 
-\bdlattice{\tdp}{\eta} \da \eta^{\perp \tdp}/\gens{\eta}
+\bdlattice{\tdp}{\eta} \definedas \eta^{\perp \tdp}/\generators{\eta}
 ,
 .\end{align*}
 
@@ -114,8 +114,8 @@ $$
 ,\quad\textor\quad 
 (10,8,0)_1 = U \oplus E_8(2)
 .$$
-Both possibilities for $\bdlattice{\tdp}{\eta}$ are hyperbolic, 2-elementary lattices with induced involutions $\bar{I}_{\En}$ and $\bar{I}_{\dP}$, and if we write $J\da -\bar{I}_{\En}$ then we recover $\bdlattice{\tdp}{\eta}^J = \bdlattice{\ten}{\eta}$ as the invariant sublattice.
-We immediately note that the involution $J$ is highly sensitive to the choice of $\eta$, as are the isometry classes of $\bdlattice{\tdp}{\eta}$ and thus $\bdlattice{\ten}{\eta}$ -- in our situation, this highly depends on the geometry of the moduli spaces $\fent$ and $\fttz$.
+Both possibilities for $\bdlattice{\tdp}{\eta}$ are hyperbolic, 2-elementary lattices with induced involutions $\bar{I}_{\En}$ and $\bar{I}_{\dP}$, and if we write $J\definedas -\bar{I}_{\En}$ then we recover $\bdlattice{\tdp}{\eta}^J = \bdlattice{\ten}{\eta}$ as the invariant sublattice.
+We immediately note that the involution $J$ is highly sensitive to the choice of $\eta$, as are the isometry classes of $\bdlattice{\tdp}{\eta}$ and thus $\bdlattice{\ten}{\eta}$ -- in our situation, this highly depends on the geometry of the moduli spaces $\fentwo$ and $\fttz$.
 To make this dependence explicit, we define the arithmetic groups used to construct period domains for these spaces.
 We define a distinguished polarization
 $$
@@ -123,25 +123,25 @@ h = e + f \in \sdp \iso U(2) \injects \sen \iso U(2) \oplus E_8(2) = \EnriquesIn
 ,$$
 and writing $\Psi: \Orth(\lkt) \to \Orth(\ten)$ for the restriction map,
 $$
-\Gamma_{\En, 2} \da \Psi\qty{\ts{ 
+\Gamma_{\En, 2} \definedas \Psi\qty{\theset{ 
 g\in \Orth(\lkt) \st g\circ \Ien = \Ien\circ g, \, g(h) = h
-}},\,\,\, \Gamma_{\dP} \da \Orth(\tdp)
+}},\,\,\, \Gamma_{\dP} \definedas \Orth(\tdp)
 ,$$
 where we form $\Gamma_{\En, 2}$ by taking the intersection of the commutator of $\Ien$ in $\Orth(\lkt)$, intersecting it with the stabilizer of the polarization, and taking the image in $\Orth(\ten)$.
-This is the correct monodromy group for $\fent$; the full details can be found e.g. in [@Ste91].
+This is the correct monodromy group for $\fentwo$; the full details can be found e.g. in [@Ste91].
 For any lattice $T$ of signature $(2, n)$, we define its period domain as
 $$
-\halfpd{T} \da\interiorof{\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }}
+\halfpd{T} \definedas\interiorof{\theset{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }}
 ,$$
 where $\interiorof{(\wait)}$ denotes taking one connected component. 
 We then define the two moduli spaces
 $$
-\fent \da \dmodgamma{ \halfpd{T} }{ \Gamma }_{\En, 2},
+\fentwo \definedas \dmodgamma{ \halfpd{T} }{ \Gamma }_{\En, 2},
 \qquad
-\fttz \da \dmodgamma{ \halfpd{T} }{ \Gamma }_{\dP} = \halfpd{T}/\Orth(\tdp)
+\fttz \definedas \dmodgamma{ \halfpd{T} }{ \Gamma }_{\dP} = \halfpd{T}/\Orth(\tdp)
 .$$
 corresponding to degree 2 numerically polarized Enriques surfaces and quartic hyperelliptic K3 surfaces respectively.
-To study the Baily-Borel compactification $\bbcpt{\fent}$, we will be interested in $\Gamma_{\En, 2}$-orbits of primitive isotropic vectors $\eta_i$, which correspond to 0-cusps, and the Coxeter diagrams for the stable reflection groups $\Gamma_{\En, 2, \eta_i}$ at each $\eta_i$, which can be used to determine the 1-cusps and their adjacencies.
+To study the Baily-Borel compactification $\bbcpt{\fentwo}$, we will be interested in $\Gamma_{\En, 2}$-orbits of primitive isotropic vectors $\eta_i$, which correspond to 0-cusps, and the Coxeter diagrams for the stable reflection groups $\Gamma_{\En, 2, \eta_i}$ at each $\eta_i$, which can be used to determine the 1-cusps and their adjacencies.
 We note that if $\alpha\in \Phi(\tdp)$ is a (negative) root of $\tdp$, then the folded root $\alpha_I$ is in $\Phi(\tdp^I) = \Phi(\ten)$ and is thus a root of $\ten$.
 We can thus use the known stable reflection groups of $\tdp$ at its known 0-cusps to study those of $\ten$ and $\bar{\ten}_{\eta_i}$ at each cusp $\eta_i$.
 We analyze the structure of reflection groups and invariant lattices associated to each $0$-cusp $\eta_i$ on the moduli space, using the correspondence between the (negative) roots of the covering domain and its foldings. The results are organized by cusp.
@@ -218,22 +218,22 @@ $$
 #### The main cusp correspondence
 
 
-In this section, we record the cusp diagrams of the main moduli spaces of interest: $\fttz$ and $\fent$. 
+In this section, we record the cusp diagrams of the main moduli spaces of interest: $\fttz$ and $\fentwo$. 
 The cusp diagram for $\fttz$ is shown below, which can be found in @AE22 or reconstructed using the mirror move algorithm.
 The boundary lattices for $\fttz$ at its two 0-cusps are $(18,0,0)_1$ and $(18,2,0)_1$.
 The cusps, their Coxeter diagrams, and the KSBA compactification $\ksbacpt{\fttz}$ were analyzed in detail in [@AE22, §10].
 Consider the Enriques transcendental lattice
 
 \begin{align*}
-\ten \da U \oplus U(2) \oplus E_8(2)
+\ten \definedas U \oplus U(2) \oplus E_8(2)
 .
 .\end{align*}
 
-The classification of $\gent$-orbits of primitive isotropic vectors in $\ten$ provides an enumeration of the 0-cusps in the Baily–Borel compactification of $\fent$.
-We know by @Ste91 what the five 0-cusps $\eta_1,\cdots, \eta_5$ of $\bbcpt{\fent}$ are, as well as their stable reflection groups, Coxeter diagrams, and the associated 1-cusps. We collect below some of the lattice-theoretic calculations that will be relevant to showing that folding methods can be used to recover this data.
-The following shows the cusp diagram for $\fent$, where we note that the mirror move algorithm does *not* apply, since it only determines cusps when $\Gamma$ is the full stable orthogonal group. We can instead appeal to @Ste91, who computed these cusps and their incidences in their entirety.
+The classification of $\gent$-orbits of primitive isotropic vectors in $\ten$ provides an enumeration of the 0-cusps in the Baily–Borel compactification of $\fentwo$.
+We know by @Ste91 what the five 0-cusps $\eta_1,\cdots, \eta_5$ of $\bbcpt{\fentwo}$ are, as well as their stable reflection groups, Coxeter diagrams, and the associated 1-cusps. We collect below some of the lattice-theoretic calculations that will be relevant to showing that folding methods can be used to recover this data.
+The following shows the cusp diagram for $\fentwo$, where we note that the mirror move algorithm does *not* apply, since it only determines cusps when $\Gamma$ is the full stable orthogonal group. We can instead appeal to @Ste91, who computed these cusps and their incidences in their entirety.
 In the diagram below, we recapitulate these incidences, adding new information: recalling if $D$ is a $G$-space and $H\leq G$ is a subgroup, the chain of subgroups $1\injects H\injects G$ induces a chain of surjective morphisms $D\surjects \dmodgamma{D}{H}\surjects \dmodgamma{D}{G}$.
-Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consider the images of the cusps of $\fent$ in $\fen$ as well as their images in $\fttz$.
+Thus there is a chain of maps $\halfpd{\ten}\to \fentwo\to \fen$, and we can consider the images of the cusps of $\fentwo$ in $\fen$ as well as their images in $\fttz$.
 
 :::{#fig:fent-boundary-cusp-maps .figure}
 
@@ -255,7 +255,7 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 \node[anchor=east] at (-1.3,0) {$F_{\En, 2}$};
 \node[anchor=east] at (-1.3,-8) {$F_{(2,2,0)}$};
 \end{tikzpicture}
-Mappings of boundary cusps under $\fen \from \fent \to \fttz$.
+Mappings of boundary cusps under $\fen \from \fentwo \to \fttz$.
 
 :::
 
@@ -314,7 +314,7 @@ We then find that all divisibility one vectors are in the same orbit:
 :::{.proposition
   title="[@Ste91, Lem. 4.2.1]"
 }
-If $\div_{\ten}(v)=1$, then $v \sim_{\gent } v_{1} \da e \in U$.
+If $\div_{\ten}(v)=1$, then $v \sim_{\gent } v_{1} \definedas e \in U$.
 :::
 
 :::{.proof}
@@ -329,7 +329,7 @@ we have $v \sim_{\Orth^{*}\left(\ten\right)} e$ and thus $v \sim_{\gent} e$.
 
 The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$:
 [@Ste91, §4.2.2] first uses the fact that there is a decomposition
-$$A_{\ten} = A\oplus B \da {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$
+$$A_{\ten} = A\oplus B \definedas {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$
 and if $\div_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \dualof{\ten}$ induces a nontrivial class in $A_{\ten}$.
 Any such class can be written as $g = a + b$ with $a\in A, b\in B$ and $q(g) = q_A(a) + q_B(b)$.
 If $q(g) = 0\pmod{2\ZZ}$, there are exactly two possibilities:
@@ -365,8 +365,8 @@ Sterk then shows that under the full isometry group $\Orth(\ten)$, the four divi
 
 #### Folded Coxeter Diagrams
 
-We now describe—in precise terms following @AEGS25 -- how the Coxeter diagrams for the 0-cusps of $\fent$ are obtained by folding the Coxeter diagrams for the 0-cusps of the related quartic hyperelliptic K3 moduli $\fttz$ under the involution $I = -\Ien$.
-Recall there are two $\Orth(\tdp)$-orbits of primitive isotropic vectors in $\tdp$, associated to the boundary lattices $(18,2,0)_1 = U(2)\oplus E_8^2$ and $(18,0,0)_1 = U\oplus E_8^2$. Each determines a *Coxeter diagram* encoding the walls of the fundamental chamber for the stable reflection group. The five 0-cusps of $\fent$ correspond to five distinct orbits of primitive isotropic vectors in $\ten$ (Sterk), and each is *realized as a folded image* of one of the K3 diagrams under the involution.
+We now describe—in precise terms following @AEGS25 -- how the Coxeter diagrams for the 0-cusps of $\fentwo$ are obtained by folding the Coxeter diagrams for the 0-cusps of the related quartic hyperelliptic K3 moduli $\fttz$ under the involution $I = -\Ien$.
+Recall there are two $\Orth(\tdp)$-orbits of primitive isotropic vectors in $\tdp$, associated to the boundary lattices $(18,2,0)_1 = U(2)\oplus E_8^2$ and $(18,0,0)_1 = U\oplus E_8^2$. Each determines a *Coxeter diagram* encoding the walls of the fundamental chamber for the stable reflection group. The five 0-cusps of $\fentwo$ correspond to five distinct orbits of primitive isotropic vectors in $\ten$ (Sterk), and each is *realized as a folded image* of one of the K3 diagrams under the involution.
 
 The fundamental fact is that the set of simple roots defining the faces of the Coxeter chamber are determined by @lem:which-roots-descend
 The *folded chamber* for the reflection group in $\ten$ is the intersection
@@ -377,12 +377,12 @@ $$
 where $\thecone{C}$ is the Coxeter chamber for $\tdp$, yielding a fundamental chamber for the reflection group in $\ten$ whose faces correspond to the roots described above.
 Simple roots fixed by $I$ correspond to cases 1 and 2 above, and pass directly to the folded diagram as roots of the same norm.
 Pairs of simple $(-2)$-roots swapped by the involution $I$ and orthogonal to their images, i.e. $I(\alpha) \in \alpha^{\perp}$, are "averaged" into a new $(-4)$-root wall of the folded diagram.
-Moreover, every wall of the folded chamber, and hence every boundary divisor at each 0-cusp of $\fent$, arises by this procedure.
+Moreover, every wall of the folded chamber, and hence every boundary divisor at each 0-cusp of $\fentwo$, arises by this procedure.
 Maximal *parabolic subdiagrams* of the K3 diagrams invariant under $I$ (i.e., unions of nodes fixed or swapped under $I$ as above) yield, upon folding, the parabolic subdiagrams of the Enriques diagram, which can thus be used to find the 1-cusps and complete the full cusp diagram.
 
-To summarize, the five Coxeter diagrams for the five 0-cusps of $\fent$ are obtained by explicit folding of the diagrams $G(18,2,0)$ and $G(18,0,0)$ of $\fttz$ under $I$.
+To summarize, the five Coxeter diagrams for the five 0-cusps of $\fentwo$ are obtained by explicit folding of the diagrams $G(18,2,0)$ and $G(18,0,0)$ of $\fttz$ under $I$.
 This process precisely matches Sterk's list: each 0-cusp boundary lattice in $\ten$ is the fixed lattice under $I$ of the appropriate K3 boundary lattice for $\tdp$, and the combinatorics of simple roots and walls are gotten by descending them from $\tdp$ under the involution.
-Moreover, each Coxeter diagram for each 0-cusp of $\fent$ arises from an explicit involution on a Coxeter diagram for $\fttz$, which we list below. In each diagram, a folding symmetry is defined by a combination of blue arrows and crossed out red nodes. 
+Moreover, each Coxeter diagram for each 0-cusp of $\fentwo$ arises from an explicit involution on a Coxeter diagram for $\fttz$, which we list below. In each diagram, a folding symmetry is defined by a combination of blue arrows and crossed out red nodes. 
 Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ for an appropriate lattice $T$, which decmoposes as the semidirect product of a reflection group and a subgroup of diagram symmetries, as described above. We can thus specify *some* isometries of $\Phi(T)$ by combining elements from each factor. In these diagrams, the blue decorations indicate isometries taken from the group of diagram symmetries, while red crossed-out nodes indicate elements taken from the Weyl group. Explicitly, in each case we have:
 
 1. A counter-clockwise rotation by $\pi$,
@@ -405,6 +405,6 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
   \node[above] at (\x+\c,14) {Cover \name};
 }
 \end{tikzpicture}
-The five 0-cusps $\eta_i$ in $\fent$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.
+The five 0-cusps $\eta_i$ in $\fentwo$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.
 
 :::

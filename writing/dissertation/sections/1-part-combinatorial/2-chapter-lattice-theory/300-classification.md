@@ -15,10 +15,10 @@ We note that for indefinite even lattices $L$, one typically expects the class n
 A lattice $(L,\beta)$ is **$p$-elementary** if its discriminant group $A_L$ is a $p$-elementary abelian group, i.e., $A_L \cong (\zpz)^a$ for some integer $a \geq 0$.
 We will be particularly concerned with the case $p=2$.
 We call the exponent $a = \rank_{\FF_2} A_L$ the **2-rank** of the discriminant group.
-For a 2-elementary lattice $L$, let $L^{\adjoint} \da \dualof{L}(2)$. We say $L$ is **co-even** if $L^{\adjoint}$ is even and define the invariant $\delta = 0$, and **co-odd** otherwise and set $\delta = 1$.
+For a 2-elementary lattice $L$, let $L^{\adjoint} \definedas \dualof{L}(2)$. We say $L$ is **co-even** if $L^{\adjoint}$ is even and define the invariant $\delta = 0$, and **co-odd** otherwise and set $\delta = 1$.
 Equivalently,
 \begin{align}
-\delta(L) \da  \begin{cases}
+\delta(L) \definedas  \begin{cases}
 0 & \textif q_{A_L}(x) \in \ZZ \,\,\forall\,\, x \in A_L \\
 1 & \textelse
 \end{cases}
@@ -27,8 +27,8 @@ The following lattices are particularly important to the classification of 2-ele
 
 | $(L, \beta)$ | $(A_L, q)$ | Co-even/Co-odd |
 |---|---|---|
-| $\gens{2} \cong \left( \ZZ, \begin{bmatrix} 2 \end{bmatrix} \right)$ | $p \cong \lieq_1(2) \cong \left( C_2, \left[ \tfrac{1}{2} \right] \right)$ | Co-odd |
-| $\gens{-2} \cong \left( \ZZ, \begin{bmatrix} -2 \end{bmatrix} \right)$ | $q \cong \lieq_1(-2) \cong \left( C_2, \left[ -\tfrac{1}{2} \right] \right)$ | Co-odd |
+| $\generators{2} \cong \left( \ZZ, \begin{bmatrix} 2 \end{bmatrix} \right)$ | $p \cong \lieq_1(2) \cong \left( C_2, \left[ \tfrac{1}{2} \right] \right)$ | Co-odd |
+| $\generators{-2} \cong \left( \ZZ, \begin{bmatrix} -2 \end{bmatrix} \right)$ | $q \cong \lieq_1(-2) \cong \left( C_2, \left[ -\tfrac{1}{2} \right] \right)$ | Co-odd |
 | $U(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 0 & 2 \\ 2 & 0 \end{bmatrix} \right)$ | $u \cong \lieu(2) \cong \left( C_2^2, \begin{bmatrix} 0 & \tfrac{1}{2} \\ \tfrac{1}{2} & 0 \end{bmatrix} \right)$ | Co-even |
 | $V(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 4 & 2 \\ 2 & 4 \end{bmatrix} \right)$ | $v \cong \liev(2) \cong \left( C_2 \times C_6, \begin{bmatrix} 1 & \tfrac{1}{2} \\ \tfrac{1}{2} & \tfrac{1}{3} \end{bmatrix} \right)$ | Co-even |
 
@@ -62,21 +62,21 @@ In any case, the even 2-elementary lattices that admit a primitive embedding int
 
 | Lattice $L$ | Discriminant Form $A_{L}$ | Co-even/Co-odd |
 |---|---|---|
-| $A_{1}$ | $q\da \lieq_{1}(-2)$ | Co-odd |
-| $D_{4}$ | $v\da \liev(2)$ | Co-even |
-| $D_{6}$ | $p^{ 2}\da \lieq_{1}(2)^{ 2}$ | Co-odd |
-| $D_{8}$ | $u\da \lieu(2)$ | Co-even |
-| $E_{7}$ | $p\da \lieq_{1}(2)$ | Co-odd |
+| $A_{1}$ | $q\definedas \lieq_{1}(-2)$ | Co-odd |
+| $D_{4}$ | $v\definedas \liev(2)$ | Co-even |
+| $D_{6}$ | $p^{ 2}\definedas \lieq_{1}(2)^{ 2}$ | Co-odd |
+| $D_{8}$ | $u\definedas \lieu(2)$ | Co-even |
+| $E_{7}$ | $p\definedas \lieq_{1}(2)$ | Co-odd |
 | $E_{8}$ | $0$ | Co-even |
-| $E_{8}(2)$ | $u^{ 4}\da \lieu(2)^{ 4}$ | Co-even |
-| $\gens{2}$ | $p\da \lieq_{1}(2)$ | Co-odd |
+| $E_{8}(2)$ | $u^{ 4}\definedas \lieu(2)^{ 4}$ | Co-even |
+| $\generators{2}$ | $p\definedas \lieq_{1}(2)$ | Co-odd |
 | $U$ | $0$ | Co-even |
-| $U(2)$ | $u\da \lieu(2)$ | Co-even |
+| $U(2)$ | $u\definedas \lieu(2)$ | Co-even |
 
 #### Ordinary and Characteristic
 
 
-For 2-elementary lattices, one always has $\div_{L}(v) \in\{1,2\}$. We set $v^{*}\da v / \div_{L}(v) \in$ $A_{L}$. Letting $q_{L}: A_{L} \to {1\over 2} \ZZ / \ZZ$ be the induced quadratic form on $A_{L}$, we say $v^{*}$ is **characteristic** if $q_{L}(x)=\beta_{L}\left(v^{*}, x\right) \bmod \ZZ$ for all $x \in A_{L}$, and is **ordinary** otherwise. We say that a primitive isotropic vector $e \in L$ is
+For 2-elementary lattices, one always has $\div_{L}(v) \in\{1,2\}$. We set $v^{*}\definedas v / \div_{L}(v) \in$ $A_{L}$. Letting $q_{L}: A_{L} \to {1\over 2} \ZZ / \ZZ$ be the induced quadratic form on $A_{L}$, we say $v^{*}$ is **characteristic** if $q_{L}(x)=\beta_{L}\left(v^{*}, x\right) \bmod \ZZ$ for all $x \in A_{L}$, and is **ordinary** otherwise. We say that a primitive isotropic vector $e \in L$ is
 
 - **odd** if $\div_{L}(v)=1$,
 

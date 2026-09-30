@@ -19,7 +19,7 @@ index-words: >-
   Semitoroidal Compactifications, Stable Pairs, Lattices, Reflection Groups,
   Coxeter Diagrams.
 abstract: |
-  We construct and describe a modular compactification $\ksbacpt{\fent}$
+  We construct and describe a modular compactification $\ksbacpt{\fentwo}$
   of the moduli space of degree $2$ numerically polarized Enriques
   surfaces by KSBA stable pairs compactifications. Our approach blends
   explicit lattice-theoretic methods -- rooted in Nikulin's classification
@@ -27,24 +27,24 @@ abstract: |
   polarizing lattice $\ten$ -- with the Hodge-theoretic theory of period
   maps and the analytic theory of compactification for Type $\IV$
   locally symmetric spaces of orthogonal type. We provide a detailed
-  classification of $\bd{\cpt{\fent}}$ via orbits of primitive isotropic
+  classification of $\bd{\cpt{\fentwo}}$ via orbits of primitive isotropic
   sublattices in $\ten$, connecting the five $0$-cusps of the
-  Baily--Borel compactification $\bbcpt{\fent}$ to explicit
+  Baily--Borel compactification $\bbcpt{\fentwo}$ to explicit
   degenerations of Enriques surfaces. Combining combinatorial, geometric,
   and computational techniques, we construct explicit divisorial log
-  terminal (dlt) models for all stable limits in $\bd \ksbacpt{\fent}$,
-  relating them to semitoroidal compactifications $\semitorcpt{\fent}$
+  terminal (dlt) models for all stable limits in $\bd \ksbacpt{\fentwo}$,
+  relating them to semitoroidal compactifications $\semitorcpt{\fentwo}$
   defined by semifans at each boundary component in the Baily-Borel
-  compactification $\bbcpt{\fent}$. The key innovation is the use of
+  compactification $\bbcpt{\fentwo}$. The key innovation is the use of
   "folding" procedures, arising from involutions of the K3 lattice
   $\lkt$ -- as the primary source of combinatorial data to construct
-  models for all strata in $\bd\ksbacpt{\fent}$. The irreducible
+  models for all strata in $\bd\ksbacpt{\fentwo}$. The irreducible
   components appearing include *$\ADE$ surfaces*, as well as new,
   non-simply-laced types $B$ and $C$.
 
   Our main theorem establishes an isomorphism between the normalization of
   the KSBA compactification and an explicit semitoroidal compactification
-  $\semitorcpt{\fent}$ determined by the arithmetic of $\ten$. This
+  $\semitorcpt{\fentwo}$ determined by the arithmetic of $\ten$. This
   provides the first explicit and functorial identification of these two
   approaches for Enriques surfaces.
 ---

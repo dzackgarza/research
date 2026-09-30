@@ -34,7 +34,7 @@ Given a fixed Picard–Lefschetz monodromy invariant $\lambda$, the combinatoria
 :::
 
 :::{.proposition title="{Semitoroidal Compactification via Recognizable Divisors}" #prop:semitoroidal-recognizable}
-If $R$ is a recognizable divisor (such as the fixed locus of a nonsymplectic involution), then there exists a unique semifan $\semifan{F}_R$ whose semitoroidal compactification normalizes the KSBA compactification of the relevant moduli space $\fent$[6, Sec. 5C].
+If $R$ is a recognizable divisor (such as the fixed locus of a nonsymplectic involution), then there exists a unique semifan $\semifan{F}_R$ whose semitoroidal compactification normalizes the KSBA compactification of the relevant moduli space $\fentwo$[6, Sec. 5C].
 :::
 
 :::{.theorem title="{Explicit Construction and Type Determination}" #thm:explicit-construction}
@@ -58,7 +58,7 @@ These models realize degenerations of Enriques pairs as quotients of K3 divisor 
 :::
 
 :::{.proposition title="{Geometric Types and Boundary Strata}" #prop:geometric-types}
-Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $\fent$ as constructed above. Then the following properties hold:
+Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $\fentwo$ as constructed above. Then the following properties hold:
 
 - The fibers of $\mcz$ have semi-log canonical (slc) singularities.
   

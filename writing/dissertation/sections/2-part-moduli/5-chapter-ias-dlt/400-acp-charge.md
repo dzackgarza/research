@@ -20,7 +20,7 @@ The following is a numerical invariant that measures the deviation of an antican
 Let $(V, D = \sum_j D_j)$ be an anticanonical pair. The **charge** of the pair is defined as
 
 \begin{align*}
-Q(V, D) \da  12 - \sum_j (D_j^2 + 3).
+Q(V, D) \definedas  12 - \sum_j (D_j^2 + 3).
 .\end{align*}
 
 This quantity is a non-negative integer for all anticanonical pairs and is zero if and only if the pair $(V, D)$ is toric.

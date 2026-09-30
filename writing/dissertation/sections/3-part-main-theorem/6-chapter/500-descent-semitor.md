@@ -1,6 +1,6 @@
 ### Descent of Semitoroidal Data {#section-7-5}
 
-In order to construct a modular compactification of the moduli space of stable Enriques pairs -- with explicit control of the boundary -- it is necessary to analyze the singularities along the boundary of the Noether–Lefschetz locus $B \subset \cpt{\fttz}$ and to pass to the normalization. This normalization process allows the descent of the ramification semifans from $\fttz$ to $\fent$, which defines $\semitorcpt{\fen}$.
+In order to construct a modular compactification of the moduli space of stable Enriques pairs -- with explicit control of the boundary -- it is necessary to analyze the singularities along the boundary of the Noether–Lefschetz locus $B \subset \cpt{\fttz}$ and to pass to the normalization. This normalization process allows the descent of the ramification semifans from $\fttz$ to $\fentwo$, which defines $\semitorcpt{\fen}$.
 
 :::{.proposition
     title="{Normalization and Pullback Family}"
@@ -34,20 +34,20 @@ Let $B \subset \mcm$ be a Noether–Lefschetz locus with compactification $\cpt{
 It follows that normalization of $\cpt{B}$ corresponds to resolving the branching and non-normal crossing behavior caused by failure of injectivity of the period map, singularities in the intersection of boundary divisors, and ramification induced by the global monodromy representation.
 :::
 
-Let $\mathsf{P}: \fent \to \fttz$ denote the period map between the moduli stack of lattice-polarized K3 (or Enriques) surfaces and its image in the period domain, extended to suitable toroidal or semi-toric compactifications $\cpt{\fent} \to \cpt{\fttz}$ as established in @AEGS25. Both source and target are Deligne–Mumford stacks, locally of finite type over $\CC$.
+Let $\mathsf{P}: \fentwo \to \fttz$ denote the period map between the moduli stack of lattice-polarized K3 (or Enriques) surfaces and its image in the period domain, extended to suitable toroidal or semi-toric compactifications $\cpt{\fentwo} \to \cpt{\fttz}$ as established in @AEGS25. Both source and target are Deligne–Mumford stacks, locally of finite type over $\CC$.
 
 :::{.proposition}
-The non-normality of the scheme-theoretic image of $\cpt{\fent} \to \cpt{\fttz}$ (and in particular for the closures of Noether–Lefschetz loci) along the boundary $\Delta = \cpt{\fttz} \setminus \fttz$ is a consequence of failures of separatedness and unramifiedness of the period map at points of $\Delta$, due to three mechanisms: (1) failure of injectivity of the period map at the boundary, (2) non-transversality of the intersection of irreducible components of $\Delta$, and (3) identifications arising from monodromy action.
+The non-normality of the scheme-theoretic image of $\cpt{\fentwo} \to \cpt{\fttz}$ (and in particular for the closures of Noether–Lefschetz loci) along the boundary $\Delta = \cpt{\fttz} \setminus \fttz$ is a consequence of failures of separatedness and unramifiedness of the period map at points of $\Delta$, due to three mechanisms: (1) failure of injectivity of the period map at the boundary, (2) non-transversality of the intersection of irreducible components of $\Delta$, and (3) identifications arising from monodromy action.
 :::
 
 :::{.proof}
 1. **Failure of injectivity over boundary divisors.**
    
-   Let $x \in D \subset \Delta$ be a point lying on a boundary divisor. Consider the local behavior of $\cpt{\fent}$ and the period map over a small analytic neighborhood $U$ of $x$. The period map may send distinct limit points in $\cpt{\fent}$ (corresponding to non-isomorphic degenerations with the same mixed Hodge structure or period data) to the same point in $\cpt{\fttz}$, particularly when the monodromy representation around $D$ is nontrivial. Formally, there exist $y_1, y_2 \in \cpt{\fent}$ with $\mathsf{P}(y_1) = \mathsf{P}(y_2) = x$ but which are not identified scheme-theoretically in $\cpt{\fent}$. The completed local ring $\widehat{\mathcal{O}}_{\cpt{\fent},y_1} \times \widehat{\mathcal{O}}_{\cpt{\fent},y_2}$ then maps finitely (and possibly not surjectively) into $\widehat{\mathcal{O}}_{\cpt{\fttz},x}$, so the scheme-theoretic image is not normal at $x$: it has multiple analytic branches glued via the period map, and integral closure introduces a normalization that separates these branches.
+   Let $x \in D \subset \Delta$ be a point lying on a boundary divisor. Consider the local behavior of $\cpt{\fentwo}$ and the period map over a small analytic neighborhood $U$ of $x$. The period map may send distinct limit points in $\cpt{\fentwo}$ (corresponding to non-isomorphic degenerations with the same mixed Hodge structure or period data) to the same point in $\cpt{\fttz}$, particularly when the monodromy representation around $D$ is nontrivial. Formally, there exist $y_1, y_2 \in \cpt{\fentwo}$ with $\mathsf{P}(y_1) = \mathsf{P}(y_2) = x$ but which are not identified scheme-theoretically in $\cpt{\fentwo}$. The completed local ring $\widehat{\mathcal{O}}_{\cpt{\fentwo},y_1} \times \widehat{\mathcal{O}}_{\cpt{\fentwo},y_2}$ then maps finitely (and possibly not surjectively) into $\widehat{\mathcal{O}}_{\cpt{\fttz},x}$, so the scheme-theoretic image is not normal at $x$: it has multiple analytic branches glued via the period map, and integral closure introduces a normalization that separates these branches.
 
 2. **Non-transversality of boundary divisor intersections.**
    
-   Suppose $x \in D_1 \cap D_2$, where $D_1, D_2 \subset \Delta$ are distinct irreducible components and their intersection is non-transverse. Locally, the structure of $\cpt{\fttz}$ near $x$ is modeled as $\operatorname{Spec} \CC[[u,v]]/(uv)$ or, for higher codimension intersections, as the vanishing locus of a product of local coordinates. If $\cpt{\fent}$ maps into $\cpt{\fttz}$ so that the scheme-theoretic fiber above $x$ is reducible or singular, then the local ring at $x$ fails Serre's condition $(R_1)$ or $(S_2)$ for normality, as integral closure may add missing functions or resolve multiple components. The normalization then corresponds to separating these intersection branches, producing a cover ramified along $D_1 \cap D_2$.
+   Suppose $x \in D_1 \cap D_2$, where $D_1, D_2 \subset \Delta$ are distinct irreducible components and their intersection is non-transverse. Locally, the structure of $\cpt{\fttz}$ near $x$ is modeled as $\operatorname{Spec} \CC[[u,v]]/(uv)$ or, for higher codimension intersections, as the vanishing locus of a product of local coordinates. If $\cpt{\fentwo}$ maps into $\cpt{\fttz}$ so that the scheme-theoretic fiber above $x$ is reducible or singular, then the local ring at $x$ fails Serre's condition $(R_1)$ or $(S_2)$ for normality, as integral closure may add missing functions or resolve multiple components. The normalization then corresponds to separating these intersection branches, producing a cover ramified along $D_1 \cap D_2$.
 
 3. **Monodromy identifications and stack-theoretic quotients.**
    
@@ -70,8 +70,8 @@ The pulled-back family
 satisfies:
 
 - Every fiber is a KSBA-stable Enriques pair of degree two,
-- The family is universal among stable families over normal bases mapping to $\cpt{\fent}$,
-- There exists a canonical classifying morphism $\phi: \normalize{B} \to \cpt{\fent}$ compatible with the moduli functor.
+- The family is universal among stable families over normal bases mapping to $\cpt{\fentwo}$,
+- There exists a canonical classifying morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ compatible with the moduli functor.
 :::
 
 :::{.proof}
@@ -97,8 +97,8 @@ The restriction of the period domain reflects the imposition of involution-invar
     title="{Folded Semifans and Complete Boundary Stratification}"
     #const:folded-semifans
 }
-The classifying morphism $\phi: \normalize{B} \to \cpt{\fent}$ transports the combinatorial structure of $\semifan{F}_B$ to the boundary stratification on $\cpt{\fent}$.
-According to the explicit construction in [@AEGS25, §2.2], the semitoroidal compactification $\ksbacpt{\fent}$ is isomorphic to $\cpt{\fent}^{\semifan{F}}$, where $\mathcal{F} = \{\semifan{F}_k\}_{k=1}^5$ is the collection of semifans assigned to the five $0$-cusps (maximal boundary components) of $\cpt{\fent}$.
+The classifying morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ transports the combinatorial structure of $\semifan{F}_B$ to the boundary stratification on $\cpt{\fentwo}$.
+According to the explicit construction in [@AEGS25, §2.2], the semitoroidal compactification $\ksbacpt{\fentwo}$ is isomorphic to $\cpt{\fentwo}^{\semifan{F}}$, where $\mathcal{F} = \{\semifan{F}_k\}_{k=1}^5$ is the collection of semifans assigned to the five $0$-cusps (maximal boundary components) of $\cpt{\fentwo}$.
 Each semifan $\semifan{F}_k$ associated to the five 0-cusps of the moduli space $\mathcal{F}_{\mathrm{En},2}$ is defined by intersecting the ambient ramification semifan $\semifan{F}_{\mathrm{ram}}$ for the K3 covering with the period subdomain corresponding to the cusp, followed by folding under the involution. This folding identifies cones related by involution-invariant lattice automorphisms.
 For each $k$, the combinatorial structure is given by the following:
 
@@ -112,9 +112,9 @@ For each $k$, the combinatorial structure is given by the following:
     title="{Properties of the Classifying Morphism}"
     #prop:properties-classifying
 }
-The classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ has the following properties:
+The classifying morphism $\phi : \normalize{B} \to \cpt{\fentwo}$ has the following properties:
 
-- $\phi$ is birational and an isomorphism over the interior moduli stack $\fent$,
+- $\phi$ is birational and an isomorphism over the interior moduli stack $\fentwo$,
 - $\phi$ is proper as a morphism between proper Deligne–Mumford stacks,
 - $\phi$ respects the combinatorial boundary stratification induced by the semitoroidal structures: the combinatorial types of boundary strata, as encoded by cones of the folded semifans, correspond under $\phi$, so that degeneration types are preserved.
 :::

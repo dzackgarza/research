@@ -9,7 +9,7 @@ In particular, the techniques and perspectives developed for understanding degen
 The development of higher-dimensional minimal model theory (see, for example, [@KM98]) built directly on these ideas, offering new tools for analyzing the compactification of moduli spaces for surfaces and varieties of general type, especially through the theory of log-canonical pairs.
 
 Enriques surfaces were initially studied by Federigo Enriques at the beginning of the twentieth century as part of his broader classification of algebraic surfaces; see [@Enr07]. The modern viewpoint that an Enriques surface arises as a quotient of a K3 surface by a fixed-point-free involution was developed much later in the work of @Hor78a and @Nam85. The study of the moduli of Enriques surfaces advanced through the work of @CD89, who developed a classification theory for linear systems on Enriques surfaces, laying the groundwork for the study of moduli of polarized Enriques surfaces.
-@Ste91 constructed the first complete (Baily–Borel) compactification of the moduli space $\fent$ by exploiting the lattice-theoretic structure inherited from the universal K3 cover.
+@Ste91 constructed the first complete (Baily–Borel) compactification of the moduli space $\fentwo$ by exploiting the lattice-theoretic structure inherited from the universal K3 cover.
 
 The modern approach to compactifying moduli spaces of surfaces has been dominated by the theory of stable pairs established by @KS88 and @Ale96a. This machinery produces projective compactifications by allowing degenerations to semi-log-canonical pairs, and we refer to @Kol23 for details.
 KSBA theory has been especially effective for surfaces of general type and for Calabi–Yau surfaces.

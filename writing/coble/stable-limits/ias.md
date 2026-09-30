@@ -2,17 +2,17 @@
 
 ::: {.remark}
 
-Following [@AEGS25], a **Kulikov model** is a $K$-trivial semistable model $\cX \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$.
-For each such degeneration, one can define the dual complex of the central fiber $\Gamma(\cX_0)$.
+Following [@AEGS25], a **Kulikov model** is a $K$-trivial semistable model $\mcx \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$.
+For each such degeneration, one can define the dual complex of the central fiber $\Gamma(\mcx_0)$.
 For Type II degenerations of K3 surfaces the dual complex is an interval $\bD^1$, and for Type III it is an integral affine $S^2$ with singularities of total charge $24$.
-The additional data of an integral affine polarization $R_{\mathrm{IA}} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a degeneration $(\cX^*, \varepsilon \cR^*)$.
-The geometry of such a degeneration is depicted in @fig-moduli-degeneration: the family $\cX$ is fibred over a curve $C$ in the moduli space $\cM$, and the stable limit is the fiber over the point where $C$ meets the boundary.
-For Enriques (and hence Coble) surfaces, we take the corresponding dlt models $\cZ \da \cX/\ien$ and half-divisor models $(\cZ, \cR_{\cZ}) \da (\cX, \cR)/\ien$ where $\cX \to (C, 0)$ and $(\cX, \cR)$ are Kulikov and divisor models of their K3 covers.
+The additional data of an integral affine polarization $R_{\mathrm{IA}} \subset \Gamma(\mcx_0)$ describes the KSBA stable limit of a degeneration $(\mcx^*, \varepsilon \mcr^*)$.
+The geometry of such a degeneration is depicted in @fig-moduli-degeneration: the family $\mcx$ is fibred over a curve $C$ in the moduli space $\mcm$, and the stable limit is the fiber over the point where $C$ meets the boundary.
+For Enriques (and hence Coble) surfaces, we take the corresponding dlt models $\mcz \definedas \mcx/\ien$ and half-divisor models $(\mcz, \mcr_{\mcz}) \definedas (\mcx, \mcr)/\ien$ where $\mcx \to (C, 0)$ and $(\mcx, \mcr)$ are Kulikov and divisor models of their K3 covers.
 :::
 
 ::: {.definition #def:singular_ias}
 
-The dual complex $\Gamma(\cX_0)$ of a Type III Kulikov model carries a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs.
+The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model carries a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs.
 The total charge is $24$, which constrains the number and type of singularities; for instance one may have $24$ singularities of type $I_1$.
 :::
 
@@ -23,13 +23,13 @@ Gluing two copies along their boundary,
 $$
 B(\lambda) = P(\lambda) \union P(\lambda)^{\mathrm{op}},
 $$
-produces the integral affine sphere realizing the dual complex $\Gamma(\cX_0)$; the equator along which the two copies are glued supports the integral affine polarization $R_{\mathrm{IA}}$ [@AE23].
+produces the integral affine sphere realizing the dual complex $\Gamma(\mcx_0)$; the equator along which the two copies are glued supports the integral affine polarization $R_{\mathrm{IA}}$ [@AE23].
 :::
 
 ::: {#fig-moduli-degeneration .figure}
 \input{tikz/moduli_space_degeneration.tikz}
 
-A one-parameter family $\cX \to C$ of surfaces over a curve $C \containedin \cM$ in the moduli space, with fibers $\cX_0$ and $\cX_t$ over interior points and the limit $\cX_\infty$ over the boundary point $\infty$.
+A one-parameter family $\mcx \to C$ of surfaces over a curve $C \iscontainedin \mcm$ in the moduli space, with fibers $\mcx_0$ and $\mcx_t$ over interior points and the limit $\mcx_\infty$ over the boundary point $\infty$.
 :::
 
 ::: {.remark}

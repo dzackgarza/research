@@ -12,9 +12,9 @@ As such, they are intimately tied to the theory of algebraic K3 surfaces equippe
 For a reduced plane sextic $C$, the double cover of $S$ branched along the proper transform of $C$ is a K3 surface $X$ which can be realized as a degeneration of the universal double cover of an Enriques surface, where $X$ acquires an $A_1$ singularity fixed by the Enriques involution.
 The resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $\tilde C$ satisfying $\tilde C^2 = -4$, and thus by [@Nue15 §3] is a Coble surface.
 
-We will be interested in Coble surfaces in the strong sense, where $\abs{-2K_S} = \ts{C_1 + \cdots + C_n}$ is a single reduced divisor comprised of $n$ disjoint smooth rational curves referred to as *boundary components* of $S$.
+We will be interested in Coble surfaces in the strong sense, where $\abs{-2K_S} = \theset{C_1 + \cdots + C_n}$ is a single reduced divisor comprised of $n$ disjoint smooth rational curves referred to as *boundary components* of $S$.
 It is known that $1\leq n\leq 10$, and for each such $n$, there is a moduli space $F_{\Co, n}$ of Coble surfaces with $n$ boundary components.
-When $n=1$, the moduli space $F_{\Co} \da F_{\Co, 1}$ of Coble surfaces can be described as a boundary divisor $\cH_{-2}$ in the 10-dimensional moduli space $F_{\En}$ of unpolarized Enriques surfaces, and thus $F_{\Co}$ is 9-dimensional.
+When $n=1$, the moduli space $F_{\Co} \definedas F_{\Co, 1}$ of Coble surfaces can be described as a boundary divisor $\mch_{-2}$ in the 10-dimensional moduli space $F_{\En}$ of unpolarized Enriques surfaces, and thus $F_{\Co}$ is 9-dimensional.
 Moreover, $F_{\Co}$ was shown to be rational in [@DK13] via a comparison to a moduli space of cuspidal plane quintics.
 A natural question is whether or not $F_{\Co}$ admits a geometrically meaningful, modular compactification $\overline{F_{\Co}}$, and if so, if the boundary $\partial \overline{F_{\Co}}$ can be described and classified.
 Toward this end, we turn to the stable pair compactifications of Kollár, Shepherd-Barron, and Alexeev [@KS88; @Ale96; @Kol23a].
@@ -38,9 +38,9 @@ Although KSBA compactifications admit strong modular interpretations, their boun
 A recent strategy employed in [@ABE22; @AET23; @AE22; @AEGS25] is to simultaneously leverage the advantages of both semitoric and KSBA compactifications by finding comparison morphisms between them.
 This allows the modular boundary of the KSBA compactification to be studied and classified using the combinatorics of toric geometry, lattice theory, and critically, advances in integral affine geometry and mirror symmetry.
 
-The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$ where $T_\Co$ is a fixed lattice and $\Gamma_\Co \da \Orth^+(T_\Co)^*$ is the stable orthogonal group preserving the period domain component (an arithmetic subgroup of finite index in $\Orth(T_\Co)$). Its Baily-Borel compactification $\overline{F_{\Co}}^{\bb}$ contains only one 0-cusp $p_0$, and thus the combinatorial data of a semitoroidal compactification is determined by a single $\Gamma_\Co\dash$invariant semifan associated to a lattice at $p_0$.
+The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$ where $T_\Co$ is a fixed lattice and $\Gamma_\Co \definedas \Orth^+(T_\Co)^*$ is the stable orthogonal group preserving the period domain component (an arithmetic subgroup of finite index in $\Orth(T_\Co)$). Its Baily-Borel compactification $\overline{F_{\Co}}^{\bb}$ contains only one 0-cusp $p_0$, and thus the combinatorial data of a semitoroidal compactification is determined by a single $\Gamma_\Co\dash$invariant semifan associated to a lattice at $p_0$.
 A canonical choice one can take is the Coxeter fan, formed by a fundamental domain of the action of the lattice's Weyl group, along with its reflections; see @fig-coxeter-fan-cone.
-Perhaps more naturally, one can also search for a semifan $\cF$ such that the resulting compactification $\overline{F_\Co}^{\cF}$ is isomorphic to the KSBA compactification $\overline{F_\Co}$ for a suitably chosen divisor, and indeed this is what we do in this paper.
+Perhaps more naturally, one can also search for a semifan $\mcf$ such that the resulting compactification $\overline{F_\Co}^{\mcf}$ is isomorphic to the KSBA compactification $\overline{F_\Co}$ for a suitably chosen divisor, and indeed this is what we do in this paper.
 To this end, we prove the following:
 :::
 
@@ -58,18 +58,18 @@ Confirm what the two components and the interior lens are intended to denote.
 ::: {#fig-coxeter-fan-cone .figure}
 \input{tikz/hyperbolic_cone_fundamental_domain.tikz}
 
-A fundamental polyhedron $P$ for the Weyl group of a hyperbolic lattice acting on the positive cone $\cC$, together with its images under the reflections in the walls of $P$; the Coxeter fan is the resulting decomposition of $\cC$.
+A fundamental polyhedron $P$ for the Weyl group of a hyperbolic lattice acting on the positive cone $\mcc$, together with its images under the reflections in the walls of $P$; the Coxeter fan is the resulting decomposition of $\mcc$.
 Such a polyhedron is computed by Vinberg's algorithm [@Vin75 §1].
 :::
 
 ::: {.theorem #thm:main}
 
-There is a semifan $\cF$ such that there exists a morphism
+There is a semifan $\mcf$ such that there exists a morphism
 $$
-\Psi: (\overline{F_\Co})^{\nu} \to \overline{F_\Co}^{\cF}
+\Psi: (\overline{F_\Co})^{\nu} \to \overline{F_\Co}^{\mcf}
 $$
-from the normalization of the KSBA compactification to the semitoroidal compactification associated with $\cF$.
-The Coxeter fan of $T_{\Co}$ is a refinement of $\cF$, and stable Coble surfaces in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
+from the normalization of the KSBA compactification to the semitoroidal compactification associated with $\mcf$.
+The Coxeter fan of $T_{\Co}$ is a refinement of $\mcf$, and stable Coble surfaces in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
 :::
 
 ::: {.remark}

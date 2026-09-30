@@ -5,7 +5,7 @@
 ::: {.definition #def:numerical-polarization}
 ### Numerical polarization
 
-A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface --- is the numerical class of $h \da c_1(\cL)$ for an ample line bundle $\cL\in\Pic(Z)$, often written $[\cL]$.
+A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
 :::
 
 ::: {.remark}
@@ -57,7 +57,7 @@ The appearance of these extra invariant classes in $\NS$ is what cuts out the lo
 
 The Zariski closure
 $$
-B \da \overline{j(\fentwo)}\containedin \ksbacpt{\fttz}
+B \definedas \overline{j(\fentwo)}\iscontainedin \ksbacpt{\fttz}
 $$
 parameterizes all KSBA limits of these double covers.
 The space fails to be normal along the boundary, due to branching and boundary divisor intersections.
@@ -68,7 +68,7 @@ The space fails to be normal along the boundary, due to branching and boundary d
 ::: {.remark}
 
 On the K3 cover of a Coble surface with $n = 1$ there are two distinct divisor classes of square $2$, and the K3 cover, and a third class of square $4$; keeping them apart is what makes the comparison with $F_{\En, 2}$ well posed.
-Throughout, $S = \Bl_{p_1,\dots,p_{10}}\PP^2$ is the ten-point blowup, $\Pic(S) = \gens{H, E_1,\dots,E_{10}}\cong\latI_{1,10}$ is its Picard lattice with $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and $f\colon X\to S$ is the K3 double cover.
+Throughout, $S = \Bl_{p_1,\dots,p_{10}}\PP^2$ is the ten-point blowup, $\Pic(S) = \generators{H, E_1,\dots,E_{10}}\cong\latI_{1,10}$ is its Picard lattice with $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and $f\colon X\to S$ is the K3 double cover.
 :::
 
 ::: {.proposition #prop:canonical-perp-is-e10}
@@ -95,7 +95,7 @@ $$
 ::: {.proof}
 
 The expression for $K_S$ is the blowup formula, and $D\cdot K_S = -3a - \Sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \Sum_i b_i$ up to sign, giving the stated condition.
-Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\gens{K_S}\cong\gens{-1}$ is unimodular, so by [the unimodular-splitting proposition](#prop:unimodular-splits) it splits $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
+Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\generators{K_S}\cong\generators{-1}$ is unimodular, so by [the unimodular-splitting proposition](#prop:unimodular-splits) it splits $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
 That complement is even: for $D = aH - \Sum_i b_iE_i$ with $\Sum_i b_i = 3a$,
 $$
 D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv 0
@@ -112,9 +112,9 @@ Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 
 The two classes to be distinguished are:
 
-1. the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its K3 pullback $e_0\da f^{*}H\in S_\Co$ has $e_0^2 = 2$ by [the K3 double-cover proposition](#prop:double-cover-is-k3);
+1. the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by [the K3 double-cover proposition](#prop:double-cover-is-k3);
 
-2. the **degree-$2$ Coble polarization** $h_\Co\in K_S^{\perp}\containedin\Pic(S)$, of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\da f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\containedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
+2. the **degree-$2$ Coble polarization** $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$, of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
 :::
 
 ::: {.remark}

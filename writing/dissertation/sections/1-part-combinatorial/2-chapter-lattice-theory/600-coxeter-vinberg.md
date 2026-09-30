@@ -3,16 +3,16 @@
 
 #### Cusp Diagrams
 
-Let $T$ be an even nondegenerate lattice of signature $(2,n)$ and $\Gamma \leq \OStab(T)$ a finite index arithmetic subgroup. As we have seen and will explore in more detail in @sec:chapter-4, the quotient $\FG \da \dmodgamma{ \halfpd{T} }{\Gamma}$ admits a Baily–Borel compactification $\bbcpt{\FG}$.
+Let $T$ be an even nondegenerate lattice of signature $(2,n)$ and $\Gamma \leq \OStab(T)$ a finite index arithmetic subgroup. As we have seen and will explore in more detail in @sec:chapter-4, the quotient $\FG \definedas \dmodgamma{ \halfpd{T} }{\Gamma}$ admits a Baily–Borel compactification $\bbcpt{\FG}$.
 The rational boundary components (or **cusps**) of $\bd\bbcpt{\FG}$ are indexed by $\Gamma$-orbits of isotropic sublattices of $L$. In particular, **0-cusps** correspond to orbits of isotropic lines $\eta \subset L$, and **1-cusps** correspond to orbits of isotropic planes $I \subset L$. We can thus often combinatorially understand a compactification by first constructing the following:
 
 :::{.definition title="{Cusp Diagrams}" #def:cusp-diagrams-moduli}
 Let $X$ be a complex analytic space equipped with a stratification $\partial X = \Disjoint_{i \geq 0} \partial_i X$ by boundary strata indexed by codimension. The **cusp diagram** of $X$ is the directed graph whose vertices index the irreducible components of $\partial_i X$, with a directed edge $e_{i \to j}$ corresponding to components $V_i$ and $V_j$ whenever $V_j$ lies in the Zariski closure of $V_i$.
 :::
 
-For a given $0$-cusp defined by $I$, the orthogonal complement modulo $I$, which we refer to as the *boundary lattice*  $\bdlattice{T}{I} \da  I^\perp / I$, is an even lattice of signature $(1, n{-}1)$ and admits the structure of a hyperbolic lattice. By studying reflective subgroups of $\Orth(T)$, one can determine $1$-cusps adjacent $[I]$ using the Coxeter diagram associated to $W(M)$.
-As explained in e.g. @Sca87 and @Ste91, the 1-cusps adjacent to a given $0$-cusp $[I]$ in the Baily–Borel compactification correspond bijectively to $\Gamma$-orbits of isotropic planes $J$ such that $I \subset J$, or equivalently, to the set of **maximal parabolic subdiagrams** of the Coxeter diagram associated to the reflection group of the hyperbolic lattice $M \da  I^\perp / I$. Each such subdiagram determines a codimension-one face of the Coxeter polytope in $\HH_M$, and hence a distinct $\Gamma_I$ orbit of a $1$-cusp, where $\Gamma_I$ is the stabilizer of $[I]$ in $\Gamma$.
-We use this description in @AEGS25 to determine the boundary stratification of $\cpt{\fent}$ using semitoroidal data, which in turn comes from Coxeter-theoretic data ranging over the $0$-cusps of $\bbcpt{\fent}$. We then reduce the analysis of $\bd\cpt{\fent}$ to a combinatorial study of the poset of elliptic and parabolic subdiagrams of Coxeter diagrams that are "folded" from those of $\fttz$. This yields integral affine structures and ultimately dlt models of stable degenerations of Enriques surfaces.
+For a given $0$-cusp defined by $I$, the orthogonal complement modulo $I$, which we refer to as the *boundary lattice*  $\bdlattice{T}{I} \definedas  I^\perp / I$, is an even lattice of signature $(1, n{-}1)$ and admits the structure of a hyperbolic lattice. By studying reflective subgroups of $\Orth(T)$, one can determine $1$-cusps adjacent $[I]$ using the Coxeter diagram associated to $W(M)$.
+As explained in e.g. @Sca87 and @Ste91, the 1-cusps adjacent to a given $0$-cusp $[I]$ in the Baily–Borel compactification correspond bijectively to $\Gamma$-orbits of isotropic planes $J$ such that $I \subset J$, or equivalently, to the set of **maximal parabolic subdiagrams** of the Coxeter diagram associated to the reflection group of the hyperbolic lattice $M \definedas  I^\perp / I$. Each such subdiagram determines a codimension-one face of the Coxeter polytope in $\HH_M$, and hence a distinct $\Gamma_I$ orbit of a $1$-cusp, where $\Gamma_I$ is the stabilizer of $[I]$ in $\Gamma$.
+We use this description in @AEGS25 to determine the boundary stratification of $\cpt{\fentwo}$ using semitoroidal data, which in turn comes from Coxeter-theoretic data ranging over the $0$-cusps of $\bbcpt{\fentwo}$. We then reduce the analysis of $\bd\cpt{\fentwo}$ to a combinatorial study of the poset of elliptic and parabolic subdiagrams of Coxeter diagrams that are "folded" from those of $\fttz$. This yields integral affine structures and ultimately dlt models of stable degenerations of Enriques surfaces.
 
 #### Root Systems and Weyl Groups
 
@@ -23,11 +23,11 @@ We use this description in @AEGS25 to determine the boundary stratification of $
 Let $L$ be a nondegenerate integranl lattice and let $v\in L$ be a primitive vector. 
 We recall that the reflection in $v$ is defined by the formula
 $$
-s_v(x) \da x - 2{x\cdot v \over v^2}v, \qquad s_v \in \Orth(L_\QQ)
+s_v(x) \definedas x - 2{x\cdot v \over v^2}v, \qquad s_v \in \Orth(L_\QQ)
 ,$$
 which is generally only a rational isometry and not necessarily integral, and only well-defined if $v$ is not isotropic.
-We note that a sufficient condition for integrality is that $2(v, L) \containedin k \ZZ$.
-We note that this is precisely the formula for a reflection about the hyperplane $H_v \da v^{\perp L}$, which we refer to as the **mirror** or **wall** associated to $v$.
+We note that a sufficient condition for integrality is that $2(v, L) \iscontainedin k \ZZ$.
+We note that this is precisely the formula for a reflection about the hyperplane $H_v \definedas v^{\perp L}$, which we refer to as the **mirror** or **wall** associated to $v$.
 We define the **$k$-Weyl group** $W^k(L)$ as the group of reflections $s_v$ such that $s_v\in \Orth(L)$ is integral and $v^2 = -k$.
 More generally, we define the **full Weyl group** $W(L)$ as $\Union_k W^k(L)$, the group generated by integral reflections in vectors of any norm.
 We say $v$ is a **$k$-root** if $s_v\in W^k(L)$, and more generally that $v$ is simply a **root** if $s_v\in W(L)$, so its mirror supports a well-defined integral reflection isometry.
@@ -46,17 +46,17 @@ We call any group generated by roots a **reflection group**.
 }
 The **discriminant locus** is the union of all mirrors, 
 $$
-\Delta(L) \da  \Union_{v \in \Phi_2(L)} v^{\perp L}
+\Delta(L) \definedas  \Union_{v \in \Phi_2(L)} v^{\perp L}
 .$$
 When $L \injects \lkt$ is a primitively embedded  lattice corresponding to a polarization $h$ on a K3 surface $X$, this locus corresponds to points in the corresponding period domain $\halfpd{T}$ where $X$ acquires extra algebraic cycles -- if one identifies the holomorphic 2-form $\omega$ on $X$ with its period point in $\halfpd{L}$, the condition that $\omega$ on a mirror $H_\alpha$ is precisely that $\omega\cdot\alpha = 0$, so $\alpha \in \omega^{\perp H^2(X; \CC)}$ and thus $\omega\in H^{1,1,}(X)$, which by the Lefschetz $(1,1)$-theorem for $(-2)$-curves on K3 surfaces makes $\alpha$ a Hodge class.
-The **Weyl chambers** are the connected components of $\interiorof{\thecone{C}_L} \da  \thecone{C}_L \sm \Delta(L)$ where $\thecone{C}_L$ is the cone of positive-norm vectors in $L$. A **simple system** is a set of roots $v$ such that the mirrors $H_v$ form the bounding hyperplanes for a fundamental domain for the action of $W(L)$ on $L$.
+The **Weyl chambers** are the connected components of $\interiorof{\thecone{C}_L} \definedas  \thecone{C}_L \sm \Delta(L)$ where $\thecone{C}_L$ is the cone of positive-norm vectors in $L$. A **simple system** is a set of roots $v$ such that the mirrors $H_v$ form the bounding hyperplanes for a fundamental domain for the action of $W(L)$ on $L$.
 :::
 
 #### Coxeter Groups and Polytopes
 
 A **Coxeter group** is a group $S$ with presentation 
 $$
-S = \gens{s_1,\cdots, s_n \st s_i^2 = (s_i s_j)^{m_{ij}} = e },\,\,m_{ii} = 1 \,\,\forall i, m_{ij} = m_{ji} \geq 2\,\,\forall i\neq j
+S = \generators{s_1,\cdots, s_n \st s_i^2 = (s_i s_j)^{m_{ij}} = e },\,\,m_{ii} = 1 \,\,\forall i, m_{ij} = m_{ji} \geq 2\,\,\forall i\neq j
 .$$
 The **Coxeter diagram** $G_S$ of $S$ is a labeled graph whose vertices correspond to generators $s_i$, with edges between $s_i$ and $s_j$ for $i < j$ and $m_{ij} \geq 3$.
 We label the edges with $m_{ij}$ when $m_{ij} \geq 3$.
@@ -71,56 +71,56 @@ We say $P$ is a **Coxeter polytope** if the following hold:
 
 2. The dihedral angles between adjacent faces are of the form $\pi/m_{ij}$ for positive integers $m_{ij}\geq 1$, and
 
-3. The reflection group $W = \gens{s_{\alpha_i}}$ generated by reflections about the faces of $P$ acts properly discontinuously on $X$ with fundamental domain $P$.
+3. The reflection group $W = \generators{s_{\alpha_i}}$ generated by reflections about the faces of $P$ acts properly discontinuously on $X$ with fundamental domain $P$.
 
-We often identify a Coxeter polytope $P$ with a a minimal set of bounding hyperplanes $\ts{H_i}$ such that $P$ is the intersection of the positive half-spaces of all of the $H_i$.
+We often identify a Coxeter polytope $P$ with a a minimal set of bounding hyperplanes $\theset{H_i}$ such that $P$ is the intersection of the positive half-spaces of all of the $H_i$.
 We say $P$ is **Euclidean**, **spherical**, or **hyperbolic** according to whether $X = \EE^n, S^n$, or $\HH^n$ respectively.
 
 #### Hyperbolic Lattices and Polytopes
 
-Let $\thecone{C}_L$ be the cone of positive norm vectors in $L_\RR$, i.e. $\thecone{C}_L\da \ts{v\in L_\RR \st v^2 > 0}$.
+Let $\thecone{C}_L$ be the cone of positive norm vectors in $L_\RR$, i.e. $\thecone{C}_L\definedas \theset{v\in L_\RR \st v^2 > 0}$.
 There is a decomposition $\thecone{C}_L = \thecone{C}_L^+ \amalg \thecone{C}_L^-$, where
 $$
-\thecone{C}_L^+ \da  \ts{ v \in \thecone{C}_L \st v_0 > 0 },
+\thecone{C}_L^+ \definedas  \theset{ v \in \thecone{C}_L \st v_0 > 0 },
 \qquad
-\thecone{C}_L^- \da  \ts{ v \in \thecone{C}_L \st v_0 < 0 }
+\thecone{C}_L^- \definedas  \theset{ v \in \thecone{C}_L \st v_0 < 0 }
 ,$$ 
 and note that we can equivalently characterize $\thecone{C}_L^+$ as those vectors $v\in L_\RR$ such that $v\cdot h > 0$ an ordered basis where $h$ is the first generator.
 Recall that a lattice $L$ is called **hyperbolic** or **Lorentzian** if it is nondegenerate and has signature $(1, n+1)$ for $n \geq 1$, following the standard algebro-geometric convention.
 The standard example is the hyperbolic lattice $U$.
-The intersection pairing on $L$ induces a hyperbolic metric $\rho(v,w) \da  \operatorname{arccosh}(v\cdot w)$ on $L_\RR$.
+The intersection pairing on $L$ induces a hyperbolic metric $\rho(v,w) \definedas  \operatorname{arccosh}(v\cdot w)$ on $L_\RR$.
 The group of orientation-preserving isometries of $\HH^n_L$ is:
 $$
-\Isom^+(\HH^n_L) \cong \OStab(L_\RR) \da  \Stab_{\Orth(L_\RR)}(\thecone{C}_L^+),
+\Isom^+(\HH^n_L) \cong \OStab(L_\RR) \definedas  \Stab_{\Orth(L_\RR)}(\thecone{C}_L^+),
 $$
 Moreover, the associated hyperbolic space $\HH_L^n$ admits several standard models:
 
 - The **unit hyperboloid model**:
   $$
-  \HH^n_L \da  \ts{ v \in L_{\RR} \st v^2 = 1,\, v \in \thecone{C}_L^+ },
+  \HH^n_L \definedas  \theset{ v \in L_{\RR} \st v^2 = 1,\, v \in \thecone{C}_L^+ },
   ,$$
 
 - The **projective or Klein model**:
   $$
-  \mathbf{B}_L^n \da  \PP(\thecone{C}_L ) \subset \PP(L_\RR)
+  \mathbf{B}_L^n \definedas  \PP(\thecone{C}_L ) \subset \PP(L_\RR)
   ,$$
 
-For a hyperbolic lattice $L$, consider the Poincaré ball model $\mathbf{B}_L^n$. For vectors $v, w \in L$ and their associated hyperplanes $H_v \da  v^{\perp}$ and $H_w \da  w^{\perp}$, the dihedral angle $\angle(H_v, H_w)$ between these hyperplanes is determined by $vw$.
+For a hyperbolic lattice $L$, consider the Poincaré ball model $\mathbf{B}_L^n$. For vectors $v, w \in L$ and their associated hyperplanes $H_v \definedas  v^{\perp}$ and $H_w \definedas  w^{\perp}$, the dihedral angle $\angle(H_v, H_w)$ between these hyperplanes is determined by $vw$.
 When $|vw| < 1$, the hyperplanes intersect in the interior of the ball and satisfy $-vw = \cos(\angle(H_v, H_w))$ where $\angle(H_v, H_w)$ denotes the dihedral angle. When $|vw| = 1$, the hyperplanes are *asymptotically parallel*, meeting at an *ideal point* in $\bd \HH^n$. When $|vw| > 1$, the hyperplanes are *ultra-parallel* and satisfy $-vw = \cosh(\rho(H_v, H_w))$ where $\rho(H_v, H_w)$ denotes the hyperbolic distance between them.
 
 #### Coxeter-Vinberg Diagrams
 
 
-Let $v \in L$ be a simple root, the the reflection $s_v$ is in $\Orth(L)$ precisely when $2(v, L)/v^2 \containedin \ZZ$.
+Let $v \in L$ be a simple root, the the reflection $s_v$ is in $\Orth(L)$ precisely when $2(v, L)/v^2 \iscontainedin \ZZ$.
 Thus if $L$ is 2-elementary, the roots of $L$ are primitive vectors $v \in L$ such that either $v^2 = -2$, or $v^2 = -4$ and $\div_L(v) = 2$.
-The mirrors $H_v \da  v^\perp \subset L_\RR$ for $v \in \Phi(L)$ define a hyperplane arrangement. The intersection of the positive cone $\thecone{C}_L^+$ with the complement of all mirrors,
+The mirrors $H_v \definedas  v^\perp \subset L_\RR$ for $v \in \Phi(L)$ define a hyperplane arrangement. The intersection of the positive cone $\thecone{C}_L^+$ with the complement of all mirrors,
 $$
-\interiorof{\thecone{C}_L} \da  \thecone{C}_L^+ \sm \Union_{v \in \Phi(L)} H_v,
+\interiorof{\thecone{C}_L} \definedas  \thecone{C}_L^+ \sm \Union_{v \in \Phi(L)} H_v,
 $$
 decomposes into connected components called **Weyl chambers**, each of which is a fundamental domain $P$ for the action of the Weyl group $W(L)$ on $\thecone{C}_L^+$. This is a hyperbolic Coxeter polytope, and thus the Gram matrix corresponding to its walls encodes a Coxeter diagram.
-Let $P$ by a hyperbolic Coxeter polytope arising from a root system in $L$ as above. Its **Coxeter diagram** is the colored undirected graph whose vertices correspond to simple roots $r_i$ with $r_i^2 < 0$ and whose edges $e_{i,j}$ encode the angle $\angle(H_i, H_j)$ between $H_i \da r_i^{\perp}$ and $H_j \da r_j^{\perp}$ by the formula
+Let $P$ by a hyperbolic Coxeter polytope arising from a root system in $L$ as above. Its **Coxeter diagram** is the colored undirected graph whose vertices correspond to simple roots $r_i$ with $r_i^2 < 0$ and whose edges $e_{i,j}$ encode the angle $\angle(H_i, H_j)$ between $H_i \definedas r_i^{\perp}$ and $H_j \definedas r_j^{\perp}$ by the formula
 $$
-g_{i,j} \da { r_i \cdot r_j \over \sqrt{ r_i^2 r_j^2} } = \cos\qty{\pi \over m_{ij}}
+g_{i,j} \definedas { r_i \cdot r_j \over \sqrt{ r_i^2 r_j^2} } = \cos\qty{\pi \over m_{ij}}
 .$$
 We let $e_{i. j}$ be
 
@@ -146,7 +146,7 @@ Putting this together, we thus obtain a general, effective method for indexing r
 
 1. Compute the 0-cusps of $\dmodgamma{ D }{ \Gamma }$ by any means possible, yielding (orbits of) primitive isotropic vectors $\eta_i \in T$.
 
-2. For each $i$, compute the lattice $\bdlattice{T}{\eta} \da \eta_i^{\perp T}$, which is of signature $(1, n-1)$ and thus hyperbolic.
+2. For each $i$, compute the lattice $\bdlattice{T}{\eta} \definedas \eta_i^{\perp T}$, which is of signature $(1, n-1)$ and thus hyperbolic.
 
 3. Compute the "minimal stabilizing" subgroup $\Gamma_{\eta_i}$ of $\eta_i$ in $\Gamma$ determined by the exact sequence
 $$
@@ -168,7 +168,7 @@ Toward carrying out the program proposed above, let $\Gamma \subset \Orth(L)$ be
   These vectors will define the simple roots of $L$.
 
 1. **Ordering/pruning**:  
-  List the simple roots in order of increasing *height* $h(v) \da -2(v_0\cdot v)/v^2$. For each candidate simple root $v$, check whether the associated reflection $s_v$ defines a new bounding wall of $P$, i.e., whether $H_v$ intersects $\tilde P$ transversely.
+  List the simple roots in order of increasing *height* $h(v) \definedas -2(v_0\cdot v)/v^2$. For each candidate simple root $v$, check whether the associated reflection $s_v$ defines a new bounding wall of $P$, i.e., whether $H_v$ intersects $\tilde P$ transversely.
 
 1. **Constructing the diagram**:  
     Whenever $\tilde P$ becomes a convex polytope, the Gram matrix $(v_i \cdot v_j)$ determines the angles between faces and the Coxeter diagram of $P$.

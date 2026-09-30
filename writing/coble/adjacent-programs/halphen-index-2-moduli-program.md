@@ -47,7 +47,7 @@ Every relatively minimal rational elliptic surface is Halphen of some index.
 ::: {.remark}
 ### Where the Coble lattices reappear
 
-In AE22, the case $S = (10,10,1)$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \da X/\iota$ is an index 2 Halphen pencil.
+In AE22, the case $S = (10,10,1)$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \definedas X/\iota$ is an index 2 Halphen pencil.
 More generally, by AE22 section 4C, the lattices $S = (10+n,\, 12-n,\, \delta)$ for $1\leq n\leq 9$ give index 2 Halphen K3 surfaces $X$ with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber yields index 2 Halphen pencils with an $I_k$ fiber.
 
 These are **precisely the lattices of `tbl:coble-lattices`**, the ten Coble families of [the Coble families research program](../coble-moduli/coble-families-research-program.md).
@@ -73,7 +73,7 @@ This is the load-bearing conjecture: it is what supplies the $R$ the previous co
 
 ## The stated starting point
 
-The Coxeter diagram for $S \da (10,10,1)$ is well known and the K3 moduli theory is developed, so the program begins there:
+The Coxeter diagram for $S \definedas (10,10,1)$ is well known and the K3 moduli theory is developed, so the program begins there:
 
 1. Construct the period domain $F_S$.
 
@@ -83,7 +83,7 @@ The Coxeter diagram for $S \da (10,10,1)$ is well known and the K3 moduli theory
 
 4. Determine the cusp diagram of $\partial\overline{F_S}^{\bb}$ lattice-theoretically.
 
-5. Compute $e_i^\perp/\gens{e_i}$ and the Coxeter diagrams at the corresponding 0-cusps.
+5. Compute $e_i^\perp/\generators{e_i}$ and the Coxeter diagrams at the corresponding 0-cusps.
 
 6. Find a recognizable divisor $R$ and construct $\overline{F_S}^R$.
 
