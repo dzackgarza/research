@@ -60,8 +60,7 @@ $U$ is the lattice with basis $e, f$ and $b(e, e) = b(f, f) = 0$, $b(e, f) = 1$.
 A component is an integer or a string `p/q`. Floats are refused.
 
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`.
-`latticedb new` computes them, and the build computes each again with exact arithmetic and rejects a record that states another value: a record with `signature: [2, 0]` and the components above is rejected.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`. `latticedb new` computes them, and the build computes each again with exact arithmetic and rejects a record that states another value: a record with `signature: [2, 0]` and the components above is rejected.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references`, `provenance` and the prose, and declares `integral.genus_symbol`, `definite.automorphism_group_order`, `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide, each with its source in the prose.
 The page of the lattice marks each declared value *declared*; every other value on the page, the build computed.
 

@@ -139,9 +139,7 @@ def _definite(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
                 bound = max(bound, len(stated) - 1)
         block["theta_series"] = list(arithmetic.theta_coefficients(gram, bound))
         block["root_system"] = list(roots.norm_two_types(gram, positive_roots))
-    block["roots"] = [
-        {"type": root_type, "scale": rational(scale), "simple_roots": [list(r) for r in simple]} for root_type, scale, simple in roots.root_system(gram)
-    ]
+    block["roots"] = [{"type": root_type, "scale": rational(scale), "simple_roots": [list(r) for r in simple]} for root_type, scale, simple in roots.root_system(gram)]
     return _ordered(block, tuple(model.DefiniteData.model_fields))
 
 
