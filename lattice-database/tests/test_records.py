@@ -105,6 +105,7 @@ def test_derive_reproduces_every_record_of_the_corpus() -> None:
 def write_corpus(directory: Path) -> Path:
     lattices = directory / "lattices"
     lattices.mkdir()
+    shutil.copy(REPOSITORY / corpus.FAMILIES_FILE, directory / corpus.FAMILIES_FILE)
     record = records.derive(declared("A1", [[2]]))
     (lattices / "0001.md").write_text(records.record_text(record, "The root lattice of type A1."))
     return directory
@@ -113,7 +114,7 @@ def write_corpus(directory: Path) -> Path:
 def test_new_writes_a_valid_record_under_the_next_tag(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--source", "Test record.", "--family", "root-lattice", "--alias", "Hexagonal lattice", "--reference", "A citation.", "--prose", "The root lattice of type A2.", "--root", str(root))
-    entries = corpus.load(root / "lattices")
+    entries = corpus.load(root).entries
     assert [entry.lattice.tag for entry in entries] == ["0001", "0002"]
     lattice = entries[1].lattice
     assert (lattice.name, lattice.aliases, lattice.families) == ("A2", ("Hexagonal lattice",), ("root-lattice",))
@@ -130,12 +131,19 @@ def test_new_refuses_a_lattice_whose_components_are_those_of_a_record_of_the_cor
     assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
 
 
+def test_new_refuses_a_family_that_families_yaml_does_not_list(tmp_path: Path) -> None:
+    root = write_corpus(tmp_path)
+    with pytest.raises(SystemExit):
+        run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--source", "Test record.", "--family", "hexagonal", "--root", str(root))
+    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
+
+
 def test_nebe_sloane_writes_the_record_of_a_stored_entry_with_its_reference_and_provenance(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     (root / "sources" / "nebe_sloane").mkdir(parents=True)
     shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "K12.json", root / "sources" / "nebe_sloane" / "K12.json")
     run("nebe-sloane", "K12", "--name", "K12", "--latex", "K_{12}", "--alias", "Coxeter-Todd lattice", "--root", str(root))
-    lattice = corpus.load(root / "lattices")[1].lattice
+    lattice = corpus.load(root).entries[1].lattice
     assert (lattice.name, lattice.aliases, lattice.families) == ("K12", ("K12", "Coxeter-Todd lattice"), ("nebe-sloane-catalogue",))
     assert (lattice.rank, lattice.determinant) == (12, 729)
     assert lattice.definite is not None

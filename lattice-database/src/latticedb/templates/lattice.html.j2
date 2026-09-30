@@ -14,7 +14,7 @@
       <li><a href="{{ root }}database.html?property={{ property | urlencode }}">{{ property }}</a></li>
       {% endfor %}
       {% for family in lattice.families %}
-      <li class="family"><a href="{{ root }}database.html?family={{ family | urlencode }}">{{ family }}</a></li>
+      <li class="family"><a href="{{ root }}database.html?family={{ family | urlencode }}" title="{{ families[family] }}">{{ family }}</a></li>
       {% endfor %}
     </ul>
   </header>

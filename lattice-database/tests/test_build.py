@@ -28,7 +28,7 @@ def sections(built: Path, tag: str) -> set[str]:
 
 
 def test_the_database_has_one_row_and_one_page_for_each_record(built: Path, rows: dict[str, site.Row]) -> None:
-    tags = {entry.lattice.tag for entry in corpus.load(ROOT / "lattices")}
+    tags = {entry.lattice.tag for entry in corpus.load(ROOT).entries}
     assert set(rows) == tags
     assert {path.stem for path in (built / "tag").glob("*.html")} == tags
 
@@ -58,7 +58,7 @@ def test_the_page_of_a_lattice_shows_the_components_of_its_gram_tensor(built: Pa
 
 def test_a_collection_page_links_exactly_the_lattices_that_satisfy_its_conditions(built: Path, rows: dict[str, site.Row]) -> None:
     html = (built / "collection" / "even-unimodular.html").read_text()
-    lattices = [entry.lattice for entry in corpus.load(ROOT / "lattices")]
+    lattices = [entry.lattice for entry in corpus.load(ROOT).entries]
     members = {lattice.tag for lattice in lattices if lattice.integral is not None and lattice.integral.parity == "even" and lattice.is_unimodular}
     assert members
     assert {tag for tag in rows if f'href="../tag/{tag}.html"' in html} == members
@@ -139,10 +139,21 @@ def test_the_page_of_z10_states_the_index_of_the_sublattice_that_its_roots_gener
 
 def test_the_fields_page_defines_every_property_of_the_database(built: Path) -> None:
     html = (built / "fields.html").read_text()
-    labels = {label for entry in corpus.load(ROOT / "lattices") for label in site.properties(entry.lattice)}
+    labels = {label for entry in corpus.load(ROOT).entries for label in site.properties(entry.lattice)}
     assert labels
     for label in labels:
         assert f'<th scope="row">{"p-elementary" if label.endswith("-elementary") else label}</th>' in html
+
+
+def test_the_fields_page_lists_every_family_with_its_meaning_and_its_number_of_lattices(built: Path) -> None:
+    html = (built / "fields.html").read_text()
+    loaded = corpus.load(ROOT)
+    assert loaded.families
+    for family, meaning in loaded.families.items():
+        count = sum(family in entry.lattice.families for entry in loaded.entries)
+        assert f'<th scope="row"><code>{family}</code></th>' in html
+        assert f'href="./database.html?family={family}">{count}</a>' in html
+        assert meaning.split("$")[0].split("`")[0].strip() in html
 
 
 def test_the_fields_page_documents_every_field_of_a_record(built: Path) -> None:

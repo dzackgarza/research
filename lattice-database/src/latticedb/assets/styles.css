@@ -770,8 +770,12 @@ h2[id^="rank-"] {
     font-size: var(--label);
   }
 
-  .field-table td:nth-child(2)::before {
+  .field-table td.required::before {
     content: "required: ";
+  }
+
+  .field-table td:nth-child(2) a::after {
+    content: " lattices";
   }
 
   .field-table td:last-child {

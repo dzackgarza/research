@@ -1,0 +1,10 @@
+# Every family that a record may name, with one line of meaning. The build rejects a record whose family is not here.
+diagonal: 'The basis is orthogonal: $b(e_i, e_j) = 0$ for $i \neq j$. The lattices $\langle a \rangle$, $\mathbb{Z}^n$ and $\mathrm{I}_{p,q}$.'
+root-lattice: A root lattice $A_n$, $D_n$ or $E_n$ in a basis of simple roots, an orthogonal sum of these, the dual lattice of one, or an affine root lattice.
+root-lattice-sum: An orthogonal sum of two or more root lattices $A_n$, $D_n$, $E_n$, in the union of their bases of simple roots.
+dual-root-lattice: The dual lattice $R^*$ of a root lattice $R$, in the basis of fundamental weights, dual to the basis of simple roots of $R$.
+affine-root-lattice: 'The lattice of an affine root system $\widetilde{A}_n$, $\widetilde{D}_n$ or $\widetilde{E}_n$ in the basis of its simple roots: positive semidefinite, with a radical of rank 1.'
+even-unimodular: 'Even and unimodular: $\mathrm{II}_{p,q}$ with $p - q \equiv 0 \pmod 8$, as an orthogonal sum $U^{s} \oplus E_8(-1)^{t}$.'
+r-plus-a-22: An even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$ and $r + a = 22$, the lattices of Theorem 1.1 of Alexeev, arXiv:2209.09110.
+laminated: A laminated lattice $\Lambda_n$ of Conway and Sloane, in the basis of its entry of the Catalogue of Lattices.
+nebe-sloane-catalogue: An entry of the Catalogue of Lattices of G. Nebe and N. J. A. Sloane, with the Gram tensor as the entry states it, written by `latticedb nebe-sloane`.

@@ -425,7 +425,8 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
 
 def build(root: Path, target: Path) -> int:
     """Write the site for the corpus under `root` to `target`. Returns the number of lattices."""
-    entries = load(root / "lattices")
+    corpus = load(root)
+    entries = corpus.entries
     pages = collections(root / "pages", entries)
     by_tag = {entry.lattice.tag: entry for entry in entries}
     lattices = {tag: entry.lattice for tag, entry in by_tag.items()}
@@ -447,6 +448,7 @@ def build(root: Path, target: Path) -> int:
         properties=properties,
         definiteness_label=DEFINITENESS_LABEL,
         collections=pages,
+        families=corpus.families,
         total=len(entries),
     )
 
@@ -487,6 +489,7 @@ def build(root: Path, target: Path) -> int:
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))
     (target / "database.html").write_text(environment.get_template("database.html.j2").render(root="./"))
-    (target / "fields.html").write_text(environment.get_template("fields.html.j2").render(root="./", models=models, property_meanings=PROPERTY_MEANINGS))
+    family_counts = {family: sum(family in entry.lattice.families for entry in entries) for family in corpus.families}
+    (target / "fields.html").write_text(environment.get_template("fields.html.j2").render(root="./", models=models, property_meanings=PROPERTY_MEANINGS, family_counts=family_counts))
     (target / "lattices.json").write_text(json.dumps({"rows": [row(entry.lattice, lattices) for entry in entries]}, separators=(",", ":")))
     return len(entries)

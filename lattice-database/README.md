@@ -14,6 +14,7 @@ The site is served at <http://lattice-database.localhost/>.
 | Path | Contents |
 | --- | --- |
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
+| `families.yaml` | Every family that a record may name, with one line of its meaning |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `src/latticedb/model.py` | The schema of a record and its validators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
@@ -81,6 +82,20 @@ The `integral`, `definite` and `indefinite` blocks are required when their hypot
 The page `fields.html` of the site documents every field.
 The build generates it from the schema, so it states what the validators enforce.
 
+The fields that a person writes follow these conventions, so that the database reads as one hand wrote it:
+
+| Field | Convention | Examples |
+| --- | --- | --- |
+| `name` | Plain text, as the lattice is written on a blackboard: `+` for the orthogonal sum, `^n` for a power, `*` for the dual lattice, `(k)` for the form scaled by $k$, `<a>` for the rank-one lattice with $b(e, e) = a$ | `E8`, `A3*`, `U + E8(-1)`, `E8^2 + A1`, `<2> + <-2>`, `I_{1,3}`, `Z^11`, `affine D5`, `Lambda10` |
+| `latex` | The same name as TeX, without `$` | `E_{8}`, `A_{3}^{*}`, `U \oplus E_{8}(-1)`, `\langle 2 \rangle`, `\mathrm{I}_{1,3}`, `\mathbb{Z}^{11}`, `\widetilde{D}_{5}`, `\Lambda_{10}` |
+| `aliases` | Other names in the literature and the names of the same lattice in other conventions, each as plain text; the name of the entry when the source is a catalogue | `II_{4,4}`; `LAMBDA16`, `BW16`, `Barnes-Wall lattice`; `(r, a, delta) = (15, 7, 1)` |
+| `families` | Keys of `families.yaml`. A family is a class of lattices that a definition cuts out, not a property that the build derives from the record: `even-unimodular` is a family because its members are a named series, and *unimodular* is a property. To add a family, add its key and one line of meaning to `families.yaml` in the same change as its first member; the build rejects a record whose family is not listed | `root-lattice`, `laminated`, `r-plus-a-22` |
+| `related.relation` | One sentence, from this record to the related one, that states the map or the change of form; TeX between `\(` and `\)` | `The dual lattice, in the basis dual to the basis of this record.`; `The same module with the form \(-b\).`; `The same module with the form \(2b\).` |
+| `references.citation` | Author initials and surnames, the title, and the locator that the source uses; with `url` when the source is on the web | `G. Nebe and N. J. A. Sloane, Catalogue of Lattices, entry LAMBDA9.`; `V. Alexeev, "Reflective hyperbolic 2-elementary lattices, K3 surfaces and hyperkahler manifolds", arXiv:2209.09110v4, Theorem 1.1.` |
+| `provenance.source` | Where the Gram tensor comes from, then how the invariants were obtained, as one or two sentences | `Constructed in SageMath. The invariants were computed from the Gram tensor.`; `Catalogue of Lattices (G. Nebe, N. J. A. Sloane), entry LAMBDA9. The invariants were computed again from the Gram tensor.` |
+
+The page `fields.html` also lists every family with its meaning and the number of its lattices.
+
 The prose is Pandoc Markdown.
 `$...$` is inline TeX and `$$...$$` is display TeX.
 
@@ -112,7 +127,7 @@ To add a lattice:
 2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2 --source '...'` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
    `--alias`, `--family`, `--reference`, `--url` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
    For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`, fetches it first when it does not exist, checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference and the provenance of the entry.
-   The command refuses a record that does not validate, or that repeats the name or the components of a record in the corpus, and writes nothing.
+   The command refuses a record that does not validate, that repeats the name or the components of a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
 
 3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
    For a record that is not definite whose `root_span` block the command could not decide, write the block and its proof by hand.
@@ -120,7 +135,7 @@ To add a lattice:
 4. `just build` validates the corpus and builds the site.
    It prints each problem of each record with the path of the file and the field.
 
-The corpus is also checked as a whole: two records cannot have the same name or the same components, and a `related` entry must name a tag in the corpus.
+The corpus is also checked as a whole: two records cannot have the same name or the same components, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`.
 
 `just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
 Run it after a change to the computation, and read the diff.

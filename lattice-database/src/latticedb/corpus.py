@@ -1,21 +1,27 @@
-"""The corpus: every `lattices/<TAG>.md`, read and validated as one database.
+"""The corpus: every `lattices/<TAG>.md` and the families of `families.yaml`, read and validated as one database.
 
 A file is YAML front matter, which holds the record of one lattice, and then
 prose in Markdown. `load` validates each record by itself and then checks the
-statements that concern more than one record.
+statements that concern more than one record, or a record and the families.
 """
 
 from dataclasses import dataclass
 from pathlib import Path
 
 import frontmatter
-from pydantic import ValidationError
+import yaml
+from pydantic import TypeAdapter, ValidationError
 
 from latticedb import arithmetic
 from latticedb.arithmetic import GramTensor
-from latticedb.model import Lattice
+from latticedb.model import Family, Lattice
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+Families = dict[Family, str]
+"""Each family that a record may name, with one line of its meaning."""
+
+FAMILIES_FILE = "families.yaml"
 
 
 @dataclass(frozen=True)
@@ -23,6 +29,12 @@ class Entry:
     lattice: Lattice
     prose: str
     path: Path
+
+
+@dataclass(frozen=True)
+class Corpus:
+    entries: tuple[Entry, ...]
+    families: Families
 
 
 class CorpusInvalid(Exception):
@@ -33,8 +45,8 @@ class CorpusInvalid(Exception):
         self.problems = problems
 
 
-def problems(entries: list[Entry]) -> list[str]:
-    """The problems that concern more than one record: a file name that is not its tag, a repeated name or Gram tensor, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
+def problems(entries: list[Entry], families: Families) -> list[str]:
+    """The problems that concern more than one record or the families: a file name that is not its tag, a repeated name or Gram tensor, a family that `families.yaml` does not list, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     by_name: dict[str, Path] = {}
@@ -49,6 +61,7 @@ def problems(entries: list[Entry]) -> list[str]:
         if lattice.gram_tensor in by_components:
             found.append(f"{entry.path}: the Gram tensor has the same components as that of {by_components[lattice.gram_tensor]}")
         by_components.setdefault(lattice.gram_tensor, entry.path)
+        found.extend(f"{entry.path}: the family '{family}' is not in {FAMILIES_FILE}" for family in lattice.families if family not in families)
         for related in lattice.related:
             if related.tag == lattice.tag:
                 found.append(f"{entry.path}: a record cannot be related to itself")
@@ -64,24 +77,35 @@ def problems(entries: list[Entry]) -> list[str]:
     return found
 
 
-def load(directory: Path) -> tuple[Entry, ...]:
-    """Every entry of the corpus, in tag order. Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined."""
+def _record_problems(path: Path, error: ValidationError) -> list[str]:
+    return [f"{path}: {'.'.join(str(part) for part in problem['loc']) or 'record'}: {problem['msg']} [{problem['type']}]" for problem in error.errors()]
+
+
+def load(root: Path) -> Corpus:
+    """The families of `root/families.yaml` and every entry of `root/lattices`, in tag order. Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined."""
     entries: list[Entry] = []
     found: list[str] = []
+    families: Families = {}
+    families_path = root / FAMILIES_FILE
+    # Pydantic reports the problems of a value only through this exception.
+    try:
+        families = TypeAdapter(Families).validate_python(yaml.safe_load(families_path.read_text()))
+    except ValidationError as error:
+        found.extend(_record_problems(families_path, error))
+    directory = root / "lattices"
     paths = sorted(directory.glob("*.md"))
     if not paths:
         found.append(f"{directory}: no records")
     for path in paths:
         document = frontmatter.load(str(path))
-        # Pydantic reports the problems of a record only through this exception.
         try:
             entries.append(Entry(Lattice.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
-            found.extend(f"{path}: {'.'.join(str(part) for part in problem['loc']) or 'record'}: {problem['msg']} [{problem['type']}]" for problem in error.errors())
-    found.extend(problems(entries))
+            found.extend(_record_problems(path, error))
+    found.extend(problems(entries, families))
     if found:
         raise CorpusInvalid(tuple(found))
-    return tuple(entries)
+    return Corpus(tuple(entries), families)
 
 
 def next_tag(entries: tuple[Entry, ...]) -> str:
