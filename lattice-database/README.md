@@ -84,7 +84,7 @@ $\mathbb{Z}\Phi_S(L)$ is the sublattice that $\Phi_S(L)$ generates, and $L$ is a
 The definitions have no hypothesis on the signature or on the values of $b$.
 The vectors with $b(r, r) = \pm 2$ are $\Phi_{\{\pm 2\}}(L)$, never "the roots" of $L$.
 
-Each record states $\mathbb{Z}\Phi(L)$.
+The root sublattice of $L$ is $R(L) := \mathbb{Z}\Phi(L)$, and each record states it.
 A definite record states $\Phi(L)$ in `definite.roots`: each irreducible component with its type, its scale and its simple roots.
 The build lists $\Phi(L)$ and compares.
 In `root_span.roots`, a record that is not definite states roots that generate $\mathbb{Z}\Phi(L)$.

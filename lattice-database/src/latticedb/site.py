@@ -306,13 +306,13 @@ def root_span_name(lattice: Lattice, lattices: dict[str, Lattice]) -> tuple[str,
     return ("L", "L") if lattice.is_root_lattice else None
 
 
-def root_maximum(lattice: Lattice) -> str:
-    """The maximum $R(L)$ of $P(L)$. It exists exactly when $\\mathbb{Z}\\Phi(L)$ is primitive in $L$, and it is then $\\mathbb{Z}\\Phi(L)$."""
+def root_span_primitive(lattice: Lattice) -> str:
+    """Whether $R(L) = \\mathbb{Z}\\Phi(L)$ is primitive in $L$, as the text of a cell."""
     match lattice.root_span_is_primitive:
         case True:
-            return "ZΦ(L)"
+            return "yes"
         case False:
-            return "none"
+            return "no"
         case None:
             return "not decided"
 
@@ -354,7 +354,7 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "root_span_tex": span_name[1] if span_name else None,
         "root_span_rank": lattice.root_span_rank,
         "root_span_index": lattice.root_span_index if lattice.root_span_rank == lattice.rank else None,
-        "root_maximum": root_maximum(lattice),
+        "root_span_primitive": root_span_primitive(lattice),
         "families": list(lattice.families),
     }
 

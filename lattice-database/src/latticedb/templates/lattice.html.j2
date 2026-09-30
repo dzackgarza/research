@@ -133,15 +133,14 @@
 
   <section aria-labelledby="roots">
     <h2 id="roots">Roots</h2>
-    <p><a href="{{ root }}collection/root-lattices.html">Root lattices</a> defines the set \(\Phi(L)\) of the roots of \(L\), the sublattice \(\mathbb{Z}\Phi(L)\) that the roots generate, the poset \(P(L)\) and its maximum \(R(L)\).</p>
+    <p><a href="{{ root }}collection/root-lattices.html">Root lattices</a> defines the set \(\Phi(L)\) of the roots of \(L\), and the root sublattice \(R(L) = \mathbb{Z}\Phi(L)\) that the roots generate.</p>
     {% set span = lattice.root_span %}
     {% set full_rank = lattice.root_span_rank == lattice.rank %}
     <table class="facts">
       <tbody>
         {% if lattice.is_root_lattice is none %}
         <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>not decided</td></tr>
-        <tr><th scope="row">\(\mathbb{Z}\Phi(L)\)</th><td>not decided: the record does not state roots that generate it</td></tr>
-        <tr><th scope="row">Maximum \(R(L)\) of \(P(L)\)</th><td>not decided</td></tr>
+        <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>not decided: the record does not state roots that generate it</td></tr>
         {% else %}
         <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ yes_no(lattice.is_root_lattice) }}</td></tr>
         {% if lattice.root_norms is not none %}
@@ -150,7 +149,7 @@
         {% if lattice.definite %}
         <tr><th scope="row">Number of roots</th><td>{{ 2 * (lattice.positive_roots | length) }}</td></tr>
         {% endif %}
-        <tr><th scope="row">\(\mathbb{Z}\Phi(L)\)</th><td>
+        <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>
           {%- if span_summands -%}
           \(\cong\) {% for summand in span_summands %}<a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ summand.latex }}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}
           {%- elif span_name is none -%}
@@ -161,18 +160,17 @@
           \(\cong {{ span_name[1] }}\)
           {%- endif -%}
         </td></tr>
-        <tr><th scope="row">Rank of \(\mathbb{Z}\Phi(L)\)</th><td>{{ lattice.root_span_rank }}</td></tr>
-        <tr><th scope="row">\([L : \mathbb{Z}\Phi(L)]\)</th><td>{% if full_rank %}{{ lattice.root_span_index }}{% else %}infinite: the rank of \(\mathbb{Z}\Phi(L)\) is less than the rank of \(L\){% endif %}</td></tr>
-        <tr><th scope="row">\(\mathbb{Z}\Phi(L)\) is primitive in \(L\)</th><td>
+        <tr><th scope="row">Rank of \(R(L)\)</th><td>{{ lattice.root_span_rank }}</td></tr>
+        <tr><th scope="row">\([L : R(L)]\)</th><td>{% if full_rank %}{{ lattice.root_span_index }}{% else %}infinite: the rank of \(R(L)\) is less than the rank of \(L\){% endif %}</td></tr>
+        <tr><th scope="row">\(R(L)\) is primitive in \(L\)</th><td>
           {%- if lattice.root_span_is_primitive -%}
           yes
           {%- elif full_rank -%}
-          no: \(L / \mathbb{Z}\Phi(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\)
+          no: \(L / R(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\)
           {%- else -%}
-          no: \(M / \mathbb{Z}\Phi(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\) for \(M = L \cap (\mathbb{Z}\Phi(L) \otimes \mathbb{Q})\)
+          no: \(M / R(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\) for \(M = L \cap (R(L) \otimes \mathbb{Q})\)
           {%- endif -%}
         </td></tr>
-        <tr><th scope="row">Maximum \(R(L)\) of \(P(L)\)</th><td>{% if lattice.root_span_is_primitive %}\(\mathbb{Z}\Phi(L)\){% else %}none: \(P(L)\) has a maximum only when \(\mathbb{Z}\Phi(L)\) is primitive in \(L\){% endif %}</td></tr>
         <tr><th scope="row">Proof</th><td>
           {%- if lattice.definite -%}
           The form is definite, so \(\Phi(L)\) is finite. The build lists \(\Phi(L)\).

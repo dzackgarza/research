@@ -82,7 +82,7 @@ def test_the_page_of_a_root_lattice_states_norms_of_roots_that_generate_it(built
 def test_the_row_of_a_definite_root_lattice_states_the_type_of_its_roots_and_the_lattice_that_they_generate(rows: dict[str, site.Row]) -> None:
     # E8 is even and unimodular, so its roots are its 240 vectors with b(r, r) = 2.
     e8 = rows["0094"]
-    assert (e8["phi_type"], e8["root_span"], e8["root_span_rank"], e8["root_span_index"], e8["root_maximum"]) == ("E8", "E8", 8, 1, "ZΦ(L)")
+    assert (e8["phi_type"], e8["root_span"], e8["root_span_rank"], e8["root_span_index"], e8["root_span_primitive"]) == ("E8", "E8", 8, 1, "yes")
     # The roots of Z^10 are the vectors +-e_i and +-e_i +-e_j: type B10. The vectors with b(r, r) = 2 alone are of type D10.
     z10 = rows["0120"]
     assert (z10["root_system"], z10["phi_type"], z10["root_span"], z10["root_span_index"]) == ("D10", "B10", "Z^10", 1)
@@ -91,23 +91,23 @@ def test_the_row_of_a_definite_root_lattice_states_the_type_of_its_roots_and_the
     assert (doubled_e8["root_system"], doubled_e8["phi_type"], doubled_e8["root_span"]) == ("", "E8", "E8(2)")
 
 
-def test_the_row_of_a_lattice_that_is_not_a_root_lattice_states_the_index_and_that_there_is_no_maximum(rows: dict[str, site.Row]) -> None:
+def test_the_row_of_a_lattice_that_is_not_a_root_lattice_states_the_index_and_that_the_root_sublattice_is_not_primitive(rows: dict[str, site.Row]) -> None:
     # The roots of U are +-(1, 1) and +-(1, -1), with b(r, r) = 2 and -2; they generate the vectors with even coordinate sum.
     u = rows["0016"]
     assert "not a root lattice" in u["properties"]
-    assert (u["root_span"], u["root_span_rank"], u["root_span_index"], u["root_maximum"]) == ("<2> + <-2>", 2, 2, "none")
+    assert (u["root_span"], u["root_span_rank"], u["root_span_index"], u["root_span_primitive"]) == ("<2> + <-2>", 2, 2, "no")
     # The roots of D12+ are the 264 roots of D12, which has index 2.
     d12_plus = rows["0151"]
-    assert (d12_plus["phi_type"], d12_plus["root_span"], d12_plus["root_span_index"], d12_plus["root_maximum"]) == ("D12", "D12", 2, "none")
+    assert (d12_plus["phi_type"], d12_plus["root_span"], d12_plus["root_span_index"], d12_plus["root_span_primitive"]) == ("D12", "D12", 2, "no")
     # <0> has no roots: the sublattice 0 is primitive, and its index is not finite.
     zero_form = rows["0010"]
-    assert (zero_form["root_span"], zero_form["root_span_rank"], zero_form["root_span_index"], zero_form["root_maximum"]) == ("0", 0, None, "ZΦ(L)")
+    assert (zero_form["root_span"], zero_form["root_span_rank"], zero_form["root_span_index"], zero_form["root_span_primitive"]) == ("0", 0, None, "yes")
 
 
 def test_each_record_decides_whether_it_is_a_root_lattice(rows: dict[str, site.Row]) -> None:
     for row in rows.values():
         assert ("root lattice" in row["properties"]) != ("not a root lattice" in row["properties"]), row["tag"]
-        assert row["root_maximum"] in {"ZΦ(L)", "none"}, row["tag"]
+        assert row["root_span_primitive"] in {"yes", "no"}, row["tag"]
 
 
 def test_the_page_of_a_lattice_writes_its_roots_in_the_basis_of_the_record(built: Path) -> None:

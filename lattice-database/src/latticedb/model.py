@@ -360,7 +360,7 @@ class Lattice(Record):
 
     @property
     def root_span_is_primitive(self) -> bool | None:
-        """Whether $\\mathbb{Z}\\Phi(L)$ is primitive in $L$: whether $P(L)$ has a maximum, which is then $R(L) = \\mathbb{Z}\\Phi(L)$."""
+        """Whether the root sublattice $R(L) = \\mathbb{Z}\\Phi(L)$ is primitive in $L$; `None` when $\\mathbb{Z}\\Phi(L)$ is not decided."""
         index = self.root_span_index
         return None if index is None else index == 1
 
