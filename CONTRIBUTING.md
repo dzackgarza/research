@@ -5800,8 +5800,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Rule**: A public name denotes a standard mathematical object, morphism, construction, invariant, property, or chosen structure with its defining data understood from the category.
   Do not mint public wrapper types or names for implementation roles, storage formats, backend distinctions, or local workflow conveniences.
 
-- **Rationale**: A type name is part of the mathematical theory exposed by the repository.
-  An implementation-flavored noun creates a parallel ontology that downstream code will start treating as mathematics.
+- **Rationale**: A type name presents `lean-categories`' mathematics to the session.
+  An implementation-flavored noun creates a parallel vocabulary that downstream code will start treating as mathematics.
 
 - **Violation Example**: `ExactScalar`, `NativeLattice`, `DiscriminantGroup` as a new type distinct from the finite abelian group underlying a discriminant form, or a wrapper whose only purpose is to package a tuple of constructor arguments.
 
@@ -5833,11 +5833,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: `RealNumber` denotes an exact real in the repository's mathematical vocabulary where represented; `RealApproximation` or an explicitly precision-bearing operation denotes an MPFR approximation.
 
 
-#### `LEX-04`: Software Roles Do Not Define Mathematical Ontology
+#### `LEX-04`: Software Roles Are Not Mathematics
 
 - **Rule**: Interpret fields, accessors, aliases, wrappers, helper classes, registries, and implementation edges by the mathematics they denote, not by their software role.  Public mathematical nouns must be standard mathematical objects/data whenever such a referent exists.  Do not create an epistemic or administrative vocabulary (`knowledge`, `evidence`, `provider`, `manager`, `context`, `metadata`, `model`, `descriptor`, `record`, `info`, `result`, `factory`, `payload`, `adapter`, `backend`) to stand in for morphisms, functors, bases, sections, predicates, isomorphisms, or other standard data.
 
-- **Rationale**: Code is one presentation of mathematics.  Treating declaration shape as ontology causes real mathematical content to be demoted to “plumbing” and then replaced by project-private concepts.  That private vocabulary expands rapidly because every later operation has to translate between it and the actual mathematical objects.
+- **Rationale**: Code is one presentation of mathematics.  Treating declaration shape as mathematics causes real mathematical content to be demoted to “plumbing” and then replaced by project-private concepts.  That private vocabulary expands rapidly because every later operation has to translate between it and the actual mathematical objects.
 
 - **Violation Example**: `SubobjectEvidence` containing an inclusion; `GeneratorProvider` containing an indexed family; `NormalizationContext` containing an isomorphism; dismissing a local functor as a mere “realization edge” because it is stored in a helper field.
 
@@ -5847,13 +5847,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `LEX-05`: Standard Mathematical Vocabulary Outranks Backend Vocabulary
 
-- **Rule**: Public names follow the standard terminology of the mathematical literature and the repository's mathematical lexicon, even when Sage or another backend uses a different historical spelling.  Backend class/method names are preserved only inside backend calls and adapters; they do not determine the owned public noun or verb.
+- **Rule**: Public names follow `lean-categories`' names, which follow the standard terminology of the mathematical literature, even when Sage or another backend uses a different historical spelling.  Backend class/method names are preserved only inside backend calls and adapters; they do not determine the public noun or verb.
 
-- **Rationale**: The preamble is a mathematical language, not a compatibility facade.  Importing backend terminology into the public API imports its historical conventions, implementation distinctions, and sometimes mathematically misleading names.  Standard vocabulary makes the same concept recognizable independently of the current engine.
+- **Rationale**: The preamble presents a mathematical language, not a compatibility facade.  Importing backend terminology into the public API imports its historical conventions, implementation distinctions, and sometimes mathematically misleading names.  Standard vocabulary makes the same concept recognizable independently of the current engine.
 
 - **Violation Example**: Call invariant factors merely `invariants` because Sage does; expose an FGP/backend class name as a mathematical category; retain an implementation-specific normal-form name for the object rather than the literature's object/invariant.
 
-- **Correct Example**: Use `invariant_factors`, standard signature terminology, standard dual/functor names, and ordinary categorical nouns.  Private adapters may call Sage's `.invariants()`, `.gens()`, or exact backend class names while converting the result back into owned vocabulary.
+- **Correct Example**: Use `invariant_factors`, standard signature terminology, standard dual/functor names, and ordinary categorical nouns.  Private adapters may call Sage's `.invariants()`, `.gens()`, or exact backend class names while converting the result back into preamble vocabulary.
 
 
 
@@ -5861,7 +5861,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: A public type/category/constructor name must denote a reusable mathematical concept, not the process by which an ordinary object was generated or its role in a test/example.  Randomness, fixture/example status, “standard test object”, and similar modifiers generate/select data for existing constructors.  A named specimen may live in a catalogue without becoming a new category-level concept.
 
-- **Rationale**: Reifying process labels produces artificial `Random*`, `Example*`, `Test*`, `Factory*` ontologies and then forces routing, methods, and documentation to distinguish objects that are mathematically just ordinary members of an existing category.
+- **Rationale**: Reifying process labels produces artificial `Random*`, `Example*`, `Test*`, `Factory*` taxonomies and then forces routing, methods, and documentation to distinguish objects that are mathematically just ordinary members of an existing category.
 
 - **Violation Example**: `RandomLattices`, `RandomLatticeOfSignature`, `ExampleModule`, or a category API obligation for a local `rankTwo` example.
 
@@ -5873,11 +5873,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: Name a public operation by the mathematical concept it denotes.  Words describing the present decision procedure, engine, performance profile, or implementation branch—`partial`, `fast`, `cached`, `sage`, `gap`, `brute`, `PDOnly`, theorem-name-as-algorithm-adjective, etc.—belong in implementation notes/private adapters, not in the mathematical noun/verb.
 
-- **Rationale**: The mathematical predicate stays the same as algorithms improve.  Encoding today's route in the name freezes a temporary computational boundary into the ontology and invites duplicate methods when a second algorithm arrives.
+- **Rationale**: The mathematical predicate stays the same as algorithms improve.  Encoding today's route in the name freezes a temporary computational boundary into the public vocabulary and invites duplicate methods when a second algorithm arrives.
 
 - **Violation Example**: `eichler_partial_is_isometric`, `sage_computable_genus`, `fast_kernel`, `cached_discriminant_group` as public mathematical operations.
 
-- **Correct Example**: `is_isometric`, `genus`, `kernel`, `discriminant_group`; their implementations route among exact algorithms and assertion-gate the current frontier as needed.  The docstring/private implementation records which theorem/backend handles each case.
+- **Correct Example**: `is_isometric`, `genus`, `kernel`, `discriminant_group`; their implementations route among exact algorithms and assertion-gate the current frontier as needed.  The docstring/private implementation records which `lean-categories` theorem or backend handles each case.
 
 #### `LEX-08`: Distinguish a Mathematical Construction From the Numerical Operation Representing It
 
@@ -5893,13 +5893,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `LEX-09`: Public Category Names Are Standard Names for Identities, Not Substitutes for Their Definitions
 
-- **Rule**: Use the standard plural/category notation when established, but retain the underlying owned construction/classifier expression as the mathematical definition.  Project/Sage aliases are metadata/presentations on that identity, never extra categories whose existence must be reconciled later.
+- **Rule**: Use `lean-categories`' plural/category name, and retain the construction/classifier expression that presents its definition.  Project/Sage aliases are metadata on that one category, never extra categories whose existence must be reconciled later.
 
-- **Rationale**: Good names make the interactive language readable; definitions make the graph coherent.  Treating either as the other yields the two bad extremes: unreadable classifier-only APIs or a forest of independently named categories with duplicated semantics.
+- **Rationale**: Good names make the interactive language readable; presenting the formalized definition makes the graph coherent.  Treating either as the other yields the two bad extremes: unreadable classifier-only APIs or a forest of independently named categories with duplicated semantics.
 
 - **Violation Example**: expose only `Magmas.Associative.Unital.Inverse` when `Groups` is the established mathematical noun; or create `Groups` as a separate wrapper category around that classifier expression.
 
-- **Correct Example**: `Groups` is the standard public name of the one owned category whose definition is the corresponding classifier/category expression; aliases and backend names resolve to that identity.
+- **Correct Example**: `Groups` is the standard public name of the one preamble category, presented by the classifier/category expression for `lean-categories`' definition; aliases and backend names resolve to that identity.
 
 
 #### `LEX-10`: Every Generator, Dual and Basis Names Its Structure -- and No Alias Omits It
@@ -5908,7 +5908,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rationale**: Every object here sits in several categories at once, so an unqualified request names no operation.  `ZZ` is at once a ring, a rank-one \(\mathbb Z\)-module, a rank-one \(\mathbb Z\)-algebra, a group and a monoid; its module generators are \(\{1\}\) and its multiplicative monoid generators are the primes together with \(-1\).  An ideal of \(R\) is both an ideal and an \(R\)-submodule of \(R\), with different generating sets.  The question has no answer until the structure is named.  An alias is worse than a bad name: it makes an ill-posed question answerable, and whatever it returns is a silent choice of one structure among several, made by the implementer and invisible at the call site.  Sage can afford `gens()` because a Sage object usually has one privileged structure baked into its class; the preamble cannot, because multi-category placement is the design.
 
-- **Violation Example**: `gens = ideal_generators` or `generators = gens` on an owned class; `def basis(self)` on an object that is a module and a formed module at once; a caller reaching for `.gens()` because the class offers it.
+- **Violation Example**: `gens = ideal_generators` or `generators = gens` on a preamble class; `def basis(self)` on an object that is a module and a formed module at once; a caller reaching for `.gens()` because the class offers it.
 
 - **Correct Example**: `ideal_generators()` as the only accessor, with callers renamed; Sage's `.gens()` retained only on an engine handle inside a private adapter, where the receiver is a Sage object with one structure.
 
@@ -5987,13 +5987,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `LEX-17`: The Central Typing Layer Is an Independently Auditable Artifact
 
-- **Rule**: The typing layer is reviewed, refined and improved **on its own schedule**, as an object of study separate from any call site.  An audit of it asks a mathematical question -- does this name admit a sharper referent than it currently carries -- and answering that question is ordinary maintenance, not a change to the code that uses it.  A `LEX-15` alias is deliberately left in place until such an audit refines it; it is not debt awaiting cleanup.
+- **Rule**: The typing layer is reviewed, refined and improved **on its own schedule**, as an object of study separate from any call site.  An audit of it asks one question -- does `lean-categories` give this name a sharper referent than it currently carries -- and answering that question is ordinary maintenance, not a change to the code that uses it.  A `LEX-15` alias is deliberately left in place until such an audit refines it; it is not debt awaiting cleanup.
 
-- **Rationale**: Once the mathematics is named in one place, the collection of names becomes a readable account of what the repository believes its objects are, and it can be improved by reading it alone.  `ProductOfNaturalNumbers` can be recognised as admitting a much better refinement without opening a single consumer, because the name already states the intent that the refinement must respect.  This is only possible when the ignorance was localised: inlined `Any`, ad-hoc per-file aliases, and framework universals leave nothing to audit, since each site must first be reverse-engineered to learn what it meant.
+- **Rationale**: Once the mathematics is named in one place, the collection of names becomes a readable account of how the repository presents its objects, checkable against `lean-categories` by reading it alone.  `ProductOfNaturalNumbers` can be recognised as admitting a much better refinement without opening a single consumer, because the name already states the intent that the refinement must respect.  This is only possible when the ignorance was localised: inlined `Any`, ad-hoc per-file aliases, and framework universals leave nothing to audit, since each site must first be reverse-engineered to learn what it meant.
 
 - **Violation Example**: treating the alias file as scaffolding to be minimised; refining a type only when a call site forces it; discovering the intent of a site by reading its body because its annotation records none.
 
-- **Correct Example**: a scheduled read of the typing layer that proposes refinements from the names alone; an alias that survives several releases because no sharper referent has yet been established, and is none the worse for it.
+- **Correct Example**: a scheduled read of the typing layer that proposes refinements from the names and `lean-categories` alone; an alias that survives several releases because no sharper referent is yet formalized, and is none the worse for it.
 
 #### `LEX-18`: Narrowing a Type Is a Designed Experiment; Its Errors Are the Result
 
@@ -6002,7 +6002,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Rationale**: Because every consumer already declared its intent by using the name, the checker is doing two things at once when the name narrows: it is checking the new definition, and it is checking each site's declared intent against that definition.  Each error is therefore a specific disagreement between a usage and the refinement, and lights up the complete census of consumers at once.  Three kinds of finding come out of it, and each is worth more than the narrowing itself:
 
   - a call site needs an operation the refined type does not offer, which names a **missing API** and is a gap discovered rather than guessed;
-  - a call site uses less structure than the refinement supplies, which distinguishes the sites needing only the **set** structure from those needing the **monoid** structure -- a mathematical distinction across the corpus that no reading of individual files would surface;
+  - a call site uses less structure than the refinement supplies, which distinguishes the sites needing only the **set** structure from those needing the **monoid** structure -- a distinction across the corpus that no reading of individual files would surface, and that is checked against the codomain `lean-categories` gives;
   - a call site is simply wrong, and was wrong before, invisibly.
 
   A narrowing that produces no errors has told you something too, but a narrowing whose errors are suppressed has told you nothing and cost the opportunity.
@@ -6011,21 +6011,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: narrowing, then reading the errors as a census -- these sites want an operation we do not have, these sites only ever needed the underlying set, this one is a real defect -- and letting that reading determine what changes, including possibly the refinement itself.
 
-#### `LEX-19`: Accumulated Usage Is Evidence for the Theorem
-
-- **Rule**: Treat the corpus of call sites of a named mathematical type as **evidence about what the operation actually is**, and consult it when deciding the operation's real definition.  The code is a place to reason about and experiment with a proposed mathematical statement before committing to it.
-
-- **Rationale**: A named type accumulates, at every call site, a record of what consumers needed from the object.  That record answers questions a definition alone cannot settle.  If one later wants to define a valence as an honest morphism into a monoid, or into a product of monoids, the usages say whether the monoid structure is ever used, whether anything relies on more than the underlying set, and whether the proposed morphism would in fact be natural in the ways the callers assume.  A refinement can then be tried against the corpus and the outcome read off, so the theorem is developed with evidence instead of asserted and patched afterwards.
-
-- **Violation Example**: settling an operation's definition from one implementation and one caller; proposing a structural refinement without checking which structure the existing sites use; treating call sites purely as work to update rather than as data about the notion.
-
-- **Correct Example**: before promoting a valence to a morphism of monoids, reading its sites to see which of them use addition of valences at all, and letting the answer decide whether the monoid structure belongs in the definition or is being imported for tidiness.
-
 * * *
 
 ### 7. Sets, Collections & Cardinality (`SET-*`)
 
-#### `SET-01`: Mathematical Collections Are Owned Sets or Families, Never Python Sequences
+#### `SET-01`: Mathematical Collections Are Preamble Sets or Families, Never Python Sequences
 
 - **Rule**: Every mathematical collection inside the preamble—not only a public return value—is represented by its mathematical collection object: set, ordered set, multiset, ordered multiset, indexed family, image, product, coproduct, or another named construction.  Raw Python `list` and `tuple` are not mathematical storage types.  They may appear only as transient serialization at a private backend boundary after finiteness and ordering have already been established mathematically.
 
@@ -6033,7 +6023,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `self._generators = tuple(generators)`; `labels = list(M.module_generating_set())`; `module_generators() -> tuple[...]`; returning a list of subgroup representatives; converting an index set to a tuple merely to enumerate it twice; widening an input type to `Sequence` because callers pass lists.
 
-- **Correct Example**: A generating family is an owned ordered/indexed set with `__iter__`, membership, cardinality, and when appropriate `rank`/`unrank`; repeated framing images form an indexed family over the framing set; conjugacy representatives form an owned set.  Consumers iterate lazily.  A private CAS adapter may finally serialize a *known finite* ordered set to the row/column array demanded by that backend, and that sequence does not escape the adapter.
+- **Correct Example**: A generating family is a preamble ordered/indexed set with `__iter__`, membership, cardinality, and when appropriate `rank`/`unrank`; repeated framing images form an indexed family over the framing set; conjugacy representatives form a preamble set.  Consumers iterate lazily.  A private CAS adapter may finally serialize a *known finite* ordered set to the row/column array demanded by that backend, and that sequence does not escape the adapter.
 
 #### `SET-02`: Cardinality and Order Are Cardinal-Valued; Finiteness Is Never Smuggled in by `len`
 
@@ -6047,38 +6037,38 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: A finite free module over `F_q` has cardinality `q^n`; a finitely generated infinite group has countable underlying set when that theorem applies; an unknown cardinality is represented as unknown rather than forced through `len`.
 
-#### `SET-03`: Set-Level Operations Are Owned Once by Sets and Standard Constructions
+#### `SET-03`: Set-Level Operations Live Once at Sets and Standard Constructions
 
-- **Rule**: Cardinality, finiteness, countability, membership, enumeration, products, coproducts, and other generic set operations live at the owned set layer or the standard construction that first has enough data to implement them.
+- **Rule**: Cardinality, finiteness, countability, membership, enumeration, products, coproducts, and other generic set operations live at the preamble set layer or the standard construction where `lean-categories` first defines them.
   Structured descendants obtain those operations through their canonical forgetful/construction path rather than reimplementing the same set theory at every leaf.
 
 - **Rationale**: A lattice, module, algebra, or group has an underlying set; it does not acquire a second definition of cardinality because it has extra structure.
   Centralizing set behavior prevents coordinate models and leaf-specific enumerators from becoming alternate definitions of the underlying set.
 
-- **Violation Example**: A lattice-specific `cardinality()` multiplying invariant factors directly while the underlying finite group already owns cardinality; a module-level iterator returning coordinate tuples instead of module elements because a basis is available.
+- **Violation Example**: A lattice-specific `cardinality()` multiplying invariant factors directly while the underlying finite group already carries cardinality; a module-level iterator returning coordinate tuples instead of module elements because a basis is available.
 
-- **Correct Example**: A discriminant form inherits cardinality from its underlying finite abelian group; a chosen basis may supply an isomorphism with a coordinate product for computation, but iteration crosses back through the inverse and returns elements of the owned module.
+- **Correct Example**: A discriminant form inherits cardinality from its underlying finite abelian group; a chosen basis may supply an isomorphism with a coordinate product for computation, but iteration crosses back through the inverse and returns elements of the preamble module.
 
 #### `SET-04`: Finite Support Does Not Imply a Finite Underlying Family
 
-- **Rule**: Distinguish an element having finite support from its parent/indexing set being finite.  Free modules, formal divisor groups, group/algebra monoid rings, sparse polynomial-like objects, and indexed sums may be built on infinite owned sets while each represented element uses only finitely many indices.  Do not coerce the whole indexing family to a finite ordered set merely because the current element or backend input is finite.
+- **Rule**: Distinguish an element having finite support from its parent/indexing set being finite.  Free modules, formal divisor groups, group/algebra monoid rings, sparse polynomial-like objects, and indexed sums may be built on infinite sets while each represented element uses only finitely many indices.  Do not coerce the whole indexing family to a finite ordered set merely because the current element or backend input is finite.
 
 - **Rationale**: Conflating finite support with finite parent data is one of the main ways finitary assumptions spread through the API.  The correct abstraction keeps the parent infinite/lazy and lets each element expose its finite support.
 
 - **Violation Example**: Defining the group of formal divisors by `finite_ordered_set(prime_divisors)`; materializing every module generator before forming a sparse linear combination; requiring a group ring's entire group to be enumerable in order to represent one finite group-ring element.
 
-- **Correct Example**: `FormalDivisorGroup(R,S)` is the free `R`-module on the owned set `S`; a divisor is a finite-support coefficient map on `S`.  Algorithms consume only that support unless their theorem genuinely requires a finite parent.
+- **Correct Example**: `FormalDivisorGroup(R,S)` is the free `R`-module on the set `S`; a divisor is a finite-support coefficient map on `S`.  Algorithms consume only that support unless their theorem genuinely requires a finite parent.
 
 
 #### `SET-05`: The Set API Is Closed Under Standard Set Constructions and Canonical Identifications
 
-- **Rule**: Every owned object that is mathematically a set—ordinary sets, exponentials/function sets, Set-Homs, power sets, Cartesian products, coproducts, images, subobjects, and similar constructions—participates in the same owned set API.  Canonically identical set constructions are represented by one parent/object, not parallel implementations reached through different notation.
+- **Rule**: Every preamble object that is mathematically a set—ordinary sets, exponentials/function sets, Set-Homs, power sets, Cartesian products, coproducts, images, subobjects, and similar constructions—participates in the same preamble set API.  Canonically identical set constructions are represented by one parent/object, not parallel implementations reached through different notation.
 
 - **Rationale**: Set-level operations such as membership, cardinality, enumeration, indexing, maps, products, and coproducts should propagate through the standard construction graph.  If `Hom_Set(X,Y)` and `Y^X` are implemented separately, each acquires its own cardinality/enumeration/equality behavior and the architecture immediately forks.
 
 - **Violation Example**: Maintain an independent power-set implementation beside exponentials; make Set-Homs a Homset object that does not receive ordinary set methods; compute function-set cardinality separately from Set-Hom cardinality.
 
-- **Correct Example**: Own the canonical identifications `Hom_Set(X,Y)=Y^X` and `P(X)=2^X`; the one resulting parent has both Hom/exponential placements and inherits the complete set interface.  Cartesian products/coproducts likewise own their standard projections/injections and cardinal arithmetic at the set-construction level.
+- **Correct Example**: Present the canonical identifications `Hom_Set(X,Y)=Y^X` and `P(X)=2^X` that `lean-categories` states; the one resulting parent has both Hom/exponential placements and inherits the complete set interface.  Cartesian products/coproducts likewise carry their standard projections/injections and cardinal arithmetic at the set-construction level.
 
 
 
