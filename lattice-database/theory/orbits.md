@@ -73,8 +73,7 @@ For $SO$, $\widetilde{O}$ and $S\widetilde{O}$, $Q$ is the image of $O(L)$ under
 $O^+$ and its subgroups are then given by the [proposition on definite lattices](#groups).
 
 For an indefinite lattice the sets are infinite.
-Dawes gives algorithms for the orbits of vectors under subgroups of $O(L)$ ([Dawes 2022](https://arxiv.org/abs/2205.10601), Algorithms 2.1 to 2.3).
-When $L$ is even and contains two orthogonal hyperbolic planes, the coefficients come from $A_L$ and its finite quadratic form $q_L\colon A_L \to \mathbb{Q}/2\mathbb{Z}$.
+Dawes gives algorithms for the orbits of vectors under subgroups of $O(L)$ ([Dawes 2022](https://arxiv.org/abs/2205.10601), Algorithms 2.1 to 2.3). When $L$ is even and contains two orthogonal hyperbolic planes, the coefficients come from $A_L$ and its finite quadratic form $q_L\colon A_L \to \mathbb{Q}/2\mathbb{Z}$.
 
 The *divisor* $\operatorname{div}(v)$ of $v \in L$ is the positive generator of the ideal $b(v, L) \subseteq \mathbb{Z}$.
 Then $v^* = v / \operatorname{div}(v)$ is in $L^\vee$, and its image in $A_L$ has order $\operatorname{div}(v)$ when $v$ is primitive ([GHS 2009](https://arxiv.org/abs/0810.1614), Section 3.3).
@@ -113,8 +112,7 @@ Thus $O$, $SO$, $O^+$ and $SO^+$ have one image in $O(q_L)$.
 $L$ is even and indefinite, and $\operatorname{rank} L = 4 + \operatorname{rank} L_0 \geq l(A_L) + 4$, where $l$ is the minimal number of generators; so $O(L) \to O(q_L)$ is surjective ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060), Theorem 1.14.2).
 :::
 
-`latticedb certify` computes $c_\Gamma(n)$ for $1 \leq |n| \leq 4$ and $n = 0$ by this proposition, for an even lattice whose hyperbolic index, stored or bounded from below by the embeddings of $U^k$ in its morphism files, is at least 2.
-The class `TorsionQuadraticModule` of SageMath gives $A_L$, $q_L$ and generators of $O(q_L)$, and the orbits on $S_n$ are found by breadth-first search.
+`latticedb certify` computes $c_\Gamma(n)$ for $1 \leq |n| \leq 4$ and $n = 0$ by this proposition, for an even lattice whose hyperbolic index, stored or bounded from below by the embeddings of $U^k$ in its morphism files, is at least 2. The class `TorsionQuadraticModule` of SageMath gives $A_L$, $q_L$ and generators of $O(q_L)$, and the orbits on $S_n$ are found by breadth-first search.
 For an odd lattice the coefficients are stated with a `reference` that proves them.
 
 ::: {.example}
@@ -123,5 +121,4 @@ Then $A_L = 0$ and $S_n = \{0\}$ for each even $n$, so $c_\Gamma(n) = 1$ for eac
 For the K3 lattice $U^3 \oplus E_8(-1)^2$ this is [GHS 2013](https://arxiv.org/abs/1012.4155), Example 7.6.
 :::
 
-GHS 2009: V. Gritsenko, K. Hulek and G. K. Sankaran, *Abelianisation of orthogonal groups and the fundamental group of modular varieties*, arXiv:0810.1614.
-GHS 2013: V. Gritsenko, K. Hulek and G. K. Sankaran, *Moduli of K3 surfaces and irreducible symplectic manifolds*, arXiv:1012.4155. Dawes 2022: M. Dawes, *Orbits in lattices*, arXiv:2205.10601.
+GHS 2009: V. Gritsenko, K. Hulek and G. K. Sankaran, *Abelianisation of orthogonal groups and the fundamental group of modular varieties*, arXiv:0810.1614. GHS 2013: V. Gritsenko, K. Hulek and G. K. Sankaran, *Moduli of K3 surfaces and irreducible symplectic manifolds*, arXiv:1012.4155. Dawes 2022: M. Dawes, *Orbits in lattices*, arXiv:2205.10601.
