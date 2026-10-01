@@ -1,4 +1,4 @@
-# Coble lattices
+# Coble lattices {#sec-coble-lattice-table}
 
 The following can be found in an unpublished note of Dolgachev.[^coble-note]
 Write

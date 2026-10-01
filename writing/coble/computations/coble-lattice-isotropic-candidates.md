@@ -1,5 +1,5 @@
 ---
-title: Candidate isotropic vectors in T_Co and their transport to T_En and T_dP
+title: Candidate isotropic vectors in  {#sec-coble-lattice-isotropic-candidates}T_Co and their transport to T_En and T_dP
 unit: computation
 status: partial
 tags:
@@ -94,4 +94,4 @@ Also recorded, from a separate OSCAR/Julia notebook, the $(r,a,\delta)$ invarian
 Here $\delta$ is computed as "some diagonal entry of the discriminant quadratic form is non-integral", citing AE22 Def.
 2.3 for coparity.
 
-Related: [cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md), [computational toolchain and recipe](computational-toolchain-and-recipe.md).
+Related: [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe).

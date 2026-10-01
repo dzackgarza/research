@@ -1,5 +1,5 @@
 ---
-title: Sterk's simple-root counts and the computed Vinberg chambers
+title: Sterk's simple-root counts and the computed Vinberg {#sec-sterk-root-counts-and-computed-chambers} chambers
 unit: computation
 status: open
 tags:
@@ -11,7 +11,7 @@ tags:
 
 # Sterk's simple-root counts and the computed Vinberg chambers
 
-**Provenance.** `notes/computations/sterk-root-count-discrepancy.md`, recorded 2026-08-20 from the computation in `computations/scripts/init.sage`. The CoxIter data quoted for comparison is that of [CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md); the folded diagrams are those of [root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md).
+**Provenance.** `notes/computations/sterk-root-count-discrepancy.md`, recorded 2026-08-20 from the computation in `computations/scripts/init.sage`. The CoxIter data quoted for comparison is that of [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices); the folded diagrams are those of [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams).
 
 ## The lattices and the two computations
 
@@ -26,7 +26,7 @@ $$
 \eta_4 = e'+2f'+\alpha,\quad
 \eta_5 = 2e+2f+\alpha
 $$
-of $\ten = U\oplus E_{10}(2)$, with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](coble-lattice-isotropic-candidates.md)). Each determines a rank-$10$ hyperbolic lattice $\eta_j^{\perp}/\eta_j$, and hence a copy of $\HH^9$ (@def:hyperbolic-model) on which reflection groups act.
+of $\ten = U\oplus E_{10}(2)$, with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)). Each determines a rank-$10$ hyperbolic lattice $\eta_j^{\perp}/\eta_j$, and hence a copy of $\HH^9$ (@def:hyperbolic-model) on which reflection groups act.
 The isometry tests recorded with the computation give
 $$
 \eta_1^{\perp}/\eta_1 \cong U(2)\oplus E_8(2) = E_{10}(2),
@@ -77,7 +77,7 @@ A finite-volume polyhedron in $\HH^9$ with exactly $10$ facets is a $9$-simplex,
 $$
 (f_0,\dots,f_9) = (10, 45, 120, 210, 252, 210, 120, 45, 10, 1).
 $$
-This is the $f$-vector CoxIter reports for the folded Sterk 2 diagram and for both rank-$10$ $0$-cusp diagrams $(10,8,0)_1$ and $(10,10,0)_1$ ([CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md)). The Sterk 1, 3, 4 and 5 diagrams have $f$-vectors beginning $23, 33, 26, 115$, so those four polyhedra have more vertices than a simplex.
+This is the $f$-vector CoxIter reports for the folded Sterk 2 diagram and for both rank-$10$ $0$-cusp diagrams $(10,8,0)_1$ and $(10,10,0)_1$ ([CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices)). The Sterk 1, 3, 4 and 5 diagrams have $f$-vectors beginning $23, 33, 26, 115$, so those four polyhedra have more vertices than a simplex.
 :::
 
 ::: {.remark}
@@ -139,13 +139,13 @@ Under a chamber decomposition answering @qst:sterk-reflection-subgroup, determin
 ### Cusp 2 is the case where the two agree
 
 The published Sterk 2 diagram has ten walls, two vertices at infinity, and the simplex $f$-vector, matching the Vinberg chamber of $U\oplus E_8(2)$ in every recorded invariant.
-Cusp 2 is the Sterk cusp to which the Coble $0$-cusp is claimed to correspond ([cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md)), and it is the one cusp for which @qst:sterk-reflection-subgroup already has the answer $W_2 = W(\eta_2^{\perp}/\eta_2)$.
+Cusp 2 is the Sterk cusp to which the Coble $0$-cusp is claimed to correspond ([cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain)), and it is the one cusp for which @qst:sterk-reflection-subgroup already has the answer $W_2 = W(\eta_2^{\perp}/\eta_2)$.
 :::
 
 ::: {.remark}
 ### The four cusps the Coble boundary sees are exactly the four that force the question
 
-Every primitive isotropic vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only cusps $2$ to $5$ are in play there ([KSBA stable limits](../stable-limits/ksba.md)). Those are exactly the four with mutually isometric quotients $\eta_j^{\perp}/\eta_j\cong U\oplus E_8(2)$ and pairwise inequivalent published diagrams, which is the configuration @qst:sterk-reflection-subgroup is about.
+Every primitive isotropic vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only cusps $2$ to $5$ are in play there ([KSBA stable limits](#sec-ksba)). Those are exactly the four with mutually isometric quotients $\eta_j^{\perp}/\eta_j\cong U\oplus E_8(2)$ and pairwise inequivalent published diagrams, which is the configuration @qst:sterk-reflection-subgroup is about.
 :::
 
 ## Hypotheses of the recorded runs
@@ -153,7 +153,7 @@ Every primitive isotropic vector of $T_\Co$ has divisibility $2$ (@lem:divisibil
 ::: {.warning}
 ### The sign convention of the recorded runs is not recorded
 
-The Vinberg implementation used takes a lattice of signature $(n,1)$, while this project's convention is $(1,n)$ ([reflection groups and Vinberg](../compactifications/reflection-groups-and-vinberg.md)). The intended transport negates the form before the call and negates the returned roots afterwards.
+The Vinberg implementation used takes a lattice of signature $(n,1)$, while this project's convention is $(1,n)$ ([reflection groups and Vinberg](#sec-reflection-groups-and-vinberg)). The intended transport negates the form before the call and negates the returned roots afterwards.
 Which of $L$ and $L(-1)$ the recorded runs were given is not part of the record, and the roots quoted above should be reproduced with the convention fixed before they are used as input to a further computation.
 :::
 
@@ -164,4 +164,4 @@ The base field of a Coxeter matrix is generated by the values $2\cos(\pi/m_{st})
 CoxIter reports Gram field $\QQ$ for the folded Sterk 1 diagram and for $(10,10,0)_1$, and $\QQ[\sqrt2]$ for the other four folded diagrams and for $(10,8,0)_1$ and $(9,9,1)_1$; the $\sqrt2$ is $2\cos(\pi/4)$, the label-$4$ bond of the $B$-type diagrams.
 :::
 
-Related: [CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md), [root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md), [fundamental chamber polyhedra](fundamental-chamber-polyhedra.md), [cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
+Related: [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [fundamental chamber polyhedra](#sec-fundamental-chamber-polyhedra), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).

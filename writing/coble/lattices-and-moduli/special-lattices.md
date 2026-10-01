@@ -143,7 +143,7 @@ E_{10}(2) = U(2)\oplus E_8(2)
 $$
 which is even of signature $(1, 9)$ and, being the twist by $2$ of a rank-$10$ unimodular lattice, is $2$-elementary with $A_{E_{10}(2)}\cong E_{10}/2E_{10}\cong(\ZZ/2\ZZ)^{10}$ by [the scaled-discriminant exact sequence](#prop:scaled-discriminant-ses).
 In the invariant notation of the Lattice Theory section it has $2$-elementary type $(r, a, \delta) = \EnriquesInvariants$.
-This is the lattice denoted $\sen = E_{10}(2)$ in the lattice summary, and it recurs throughout the Coble tables as the base summand $E_{10}(2)$ appearing alongside $U(2)$ and the root lattices; compare [the Coble lattice table](coble-lattice-table.md).
+This is the lattice denoted $\sen = E_{10}(2)$ in the lattice summary, and it recurs throughout the Coble tables as the base summand $E_{10}(2)$ appearing alongside $U(2)$ and the root lattices; compare [the Coble lattice table](#sec-coble-lattice-table).
 :::
 
 ## Degree $2d$ K3 lattices
@@ -249,7 +249,7 @@ The criterion is due to Eichler [@Eic74]; see [@GHS08] for the formulation used 
 
 The hypothesis $U^{\oplus 2}\containedin L$ cannot be dropped.
 A lattice all of whose pairings are even contains no copy of $U$ at all, since $U$ requires two vectors pairing to $1$; this is the case for every twist $M(2)$, and in particular for $\sen = E_{10}(2)$, for $S_\Co = \gens{-2}\oplus E_{10}(2)$ and for $T_\Co = \gens{2}\oplus E_{10}(2)$.
-Among the lattices of [Period domain embeddings and normalization](lattices.md) only $\ten$ and $\tdp$ contain a unimodular hyperbolic summand, and each contains exactly one.
+Among the lattices of [Period domain embeddings and normalization](#sec-lattices) only $\ten$ and $\tdp$ contain a unimodular hyperbolic summand, and each contains exactly one.
 Orbit statements for the Coble lattices therefore have to come from elsewhere; the alternatives used below are the transitivity results for split maximal lattices and the algorithms of [@Daw22] for a subgroup prescribed by its image in $\Orth(q_L)$.
 :::
 
@@ -317,5 +317,5 @@ This standard building-block list is not asserted to be exhaustive.
 ::: {.remark}
 
 This building-block list is drawn from Nikulin's study of the even $2$-elementary hyperbolic lattices embedding into $\lkt$ [@Nik80], the same theory that underlies the invariant triple $(r, a, \delta)$ of the Lattice Theory section.
-The Coble lattices of [that table](coble-lattice-table.md) are exactly of this form: each $2$-elementary lattice $M$ appearing there is assembled from these blocks --- for example $M = E_8(2)\oplus U\oplus A_1^{\oplus 2}$ at $n = 2$ and $M = E_8\oplus D_8\oplus U(2)$ at $n = 8$ --- so the table is a concrete census of the decomposition in the range relevant to Coble surfaces.
+The Coble lattices of [that table](#sec-coble-lattice-table) are exactly of this form: each $2$-elementary lattice $M$ appearing there is assembled from these blocks --- for example $M = E_8(2)\oplus U\oplus A_1^{\oplus 2}$ at $n = 2$ and $M = E_8\oplus D_8\oplus U(2)$ at $n = 8$ --- so the table is a concrete census of the decomposition in the range relevant to Coble surfaces.
 :::

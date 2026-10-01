@@ -1,5 +1,5 @@
 ---
-title: Integral-affine edge-length data for the Sterk cusps
+title: Integral-affine edge-length data for the St {#sec-sterk-integral-affine-data}erk cusps
 unit: computation
 status: partial
 tags:

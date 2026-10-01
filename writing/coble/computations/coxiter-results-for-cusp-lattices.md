@@ -1,5 +1,5 @@
 ---
-title: CoxIter results for the Sterk cusps and the Coble/Enriques 0-cusp lattices
+title: CoxIter results for the Sterk cusps and the Coble/ {#sec-coxiter-results-for-cusp-lattices}Enriques 0-cusp lattices
 unit: computation
 status: computed
 tags:
@@ -58,7 +58,7 @@ Nothing in the dissertation contradicts these numbers, and nothing in it reprodu
 
 $(9,9,1)$ is the **Coble 0-cusp lattice** named in this project's own text, alongside the 1-cusp $(7,7,1)$.
 $(10,10,0)$ and $(10,8,0)$ are the two Enriques 0-cusps to which the Coble cusps are claimed to map.
-So this table is direct computational evidence bearing on the cusp correspondence; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
+So this table is direct computational evidence bearing on the cusp correspondence; see [the cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).
 :::
 
 ::: {.remark}
@@ -87,7 +87,7 @@ Sterk 1 for instance carries $A_8(2)\times4$, $E_8(2)\times4$, $D_8(2)\times8$ a
 ### These are not orbit representatives
 
 The lists are the **full** sets of elliptic subdiagrams, before quotienting by diagram symmetry.
-The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [the computational toolchain and recipe](computational-toolchain-and-recipe.md).
+The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe).
 :::
 
-Related: [root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md), [computational toolchain and recipe](computational-toolchain-and-recipe.md), [Sterk root counts and computed chambers](sterk-root-counts-and-computed-chambers.md).
+Related: [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [Sterk root counts and computed chambers](#sec-sterk-root-counts-and-computed-chambers).

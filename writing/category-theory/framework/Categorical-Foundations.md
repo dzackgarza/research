@@ -151,7 +151,7 @@ Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c
 ::: {.definition #def:endomorphism-monoid title="The endomorphism monoid and the automorphism group"}
 
 For an object $X$ of a category $\mathcal C$, composition makes $\operatorname{Hom}_{\mathcal C}(X,X)$ a monoid with unit $\operatorname{id}_X$.
-Its group of invertible elements is $\operatorname{Aut}_{\mathcal C}(X)$, the automorphism group of $X$, which is $\operatorname{Iso}_{\mathcal C}(X,X)$ in the notation of [Equivalences and witnesses](Identification.md#sec-equivalence-spaces).
+Its group of invertible elements is $\operatorname{Aut}_{\mathcal C}(X)$, the automorphism group of $X$, which is $\operatorname{Iso}_{\mathcal C}(X,X)$ in the notation of [Equivalences and witnesses](#sec-equivalence-spaces).
 When $\mathcal C$ is preadditive, $\operatorname{Hom}_{\mathcal C}(X,X)$ is a ring under composition and the group addition, and $\operatorname{Aut}_{\mathcal C}(X)$ is its group of units.
 :::
 

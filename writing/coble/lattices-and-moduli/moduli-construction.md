@@ -1,4 +1,4 @@
-# Constructions of the moduli space
+# Constructions of the moduli space {#sec-moduli-construction}
 
 We summarize the relevant moduli spaces:
 
@@ -303,7 +303,7 @@ Until the first inclusion is shown to be an equality, $\cM_{10A_1}$ and $F_\Co$ 
 
 The same theorems hold for every singular type of plane sextic with simple singularities, of which the root lattices have been classified by Urabe [@Ura88] and Yang [@Yan96]: the maximal rank is $19$, and the number of root lattices of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25 §1].
 Each such type therefore carries both an arithmetic model of its moduli space and a Looijenga model of its GIT compactification.
-The Coble families with $n$ boundary components are indexed by the number of irreducible components of the branch sextic ([the Coble lattice table](coble-lattice-table.md)) rather than by its singular type, so which type $T$ carries which family is a question this section does not settle.
+The Coble families with $n$ boundary components are indexed by the number of irreducible components of the branch sextic ([the Coble lattice table](#sec-coble-lattice-table)) rather than by its singular type, so which type $T$ carries which family is a question this section does not settle.
 :::
 
 ## KSBA spaces

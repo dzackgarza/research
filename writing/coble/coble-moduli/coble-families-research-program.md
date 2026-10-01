@@ -1,5 +1,5 @@
 ---
-title: The research program for F_(Co,n) with 2 <= n <= 10
+title: The research program for F_(Co,n) with 2 <= n < {#sec-coble-families-research-program}= 10
 unit: research-program
 status: conjectural
 tags:

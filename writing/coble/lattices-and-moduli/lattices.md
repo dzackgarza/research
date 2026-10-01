@@ -1,4 +1,4 @@
-# Period domain embeddings and normalization
+# Period domain embeddings and normalization {#sec-lattices}
 
 We summarize the lattices that will be relevant to our discussion:
 

@@ -1,4 +1,4 @@
-# Hyperbolic Coxeter polytopes and finite covolume
+# Hyperbolic Coxeter polytopes and finite covolume {#sec-hyperbolic-coxeter-polytopes}
 
 ::: {.remark}
 ### Orientation

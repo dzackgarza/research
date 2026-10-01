@@ -82,11 +82,11 @@ $$
 \longrightarrow\mathbf{Set}.
 $$
 The additive and multiplicative functors from rings are distinct.
-Comparisons or factorizations involving them use the named functor, as specified in [Distinguished functors and comparison](Distinguished-Functors.md).
+Comparisons or factorizations involving them use the named functor, as specified in [Distinguished functors and comparison](#sec-distinguished-functors).
 :::
 
 Combining two categories of structures over the same underlying category uses the pseudo-pullback of their forgetful functors.
-Combining two object properties uses the intersection described in [Joins, meets, and closure](Joins-Meets-and-Closure.md).
+Combining two object properties uses the intersection described in [Joins, meets, and closure](#sec-join-meet).
 
 ## Free algebras {#sec-free-algebras}
 

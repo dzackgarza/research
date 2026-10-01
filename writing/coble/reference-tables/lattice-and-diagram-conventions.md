@@ -1,5 +1,5 @@
 ---
-title: Lattice length table and Coxeter-Vinberg diagram conventions
+title: Lattice length table and Coxeter-Vinberg diagram co {#sec-lattice-and-diagram-conventions}nventions
 unit: reference
 status: reference
 tags:

@@ -1,5 +1,5 @@
 ---
-title: Explicit root vectors and the folded Sterk diagrams
+title: Explicit root vectors and the folded Sterk {#sec-root-vectors-and-folded-sterk-diagrams} diagrams
 unit: computation
 status: computed
 tags:
@@ -62,7 +62,7 @@ All 19 roots have norm $-2$.
 | $w_9$ | $f-e$ | $w_{19}$ | $\tilde\alpha_2$ |
 | $w_{10}$ | $\tilde w_8+e$ |  |  |
 
-$(18,0,0)_1 = U\oplus E_8^{\oplus2}$ is the lattice to which the Coble cusps are claimed to correspond under $\tilde\eta$; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
+$(18,0,0)_1 = U\oplus E_8^{\oplus2}$ is the lattice to which the Coble cusps are claimed to correspond under $\tilde\eta$; see [the cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).
 
 ## The folded diagrams
 
@@ -154,7 +154,7 @@ Settling it is a prerequisite, not a footnote.
 ### A related contradiction, resolved
 
 Two blocks of the same archived outline disagree about which 0-cusps of $\fentwo$ carry toroidal rather than strictly semitoroidal compactifications: one says cusps 2 and 4, the other says cusps 2 and 3. The dissertation settles it as **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35, citing AEGS Thm.
-5.9. This matters here because the Coble 0-cusp is claimed to be Sterk cusp 2, which is toroidal under either reading; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
+5.9. This matters here because the Coble 0-cusp is claimed to be Sterk cusp 2, which is toroidal under either reading; see [the cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).
 :::
 
-Related: [CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md), [computational toolchain and recipe](computational-toolchain-and-recipe.md), [lattice and diagram conventions](../reference-tables/lattice-and-diagram-conventions.md), [cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
+Related: [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [lattice and diagram conventions](#sec-lattice-and-diagram-conventions), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).

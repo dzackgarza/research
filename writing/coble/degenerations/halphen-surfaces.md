@@ -42,7 +42,7 @@ Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 
 Why introduce Halphen surfaces?
 I conjecture that the geometric construction(s) above yield some kind of correspondence between moduli spaces of Coble surfaces with $n$ boundary components and the various moduli spaces of index 2 Halphen pencils on the $g=0$ line of Nikulin's triangle diagram of 2-elementary lattices.
-Regarding the coarse spaces as period domains attached to lattices, the lattices match up precisely; see [the Coble lattice table](coble-lattice-table.md).
+Regarding the coarse spaces as period domains attached to lattices, the lattices match up precisely; see [the Coble lattice table](#sec-coble-lattice-table).
 Applications of mirror moves indicate that the cusp diagrams would correspondingly coincide as well.
 :::
 

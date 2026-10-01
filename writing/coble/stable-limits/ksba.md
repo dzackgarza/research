@@ -1,4 +1,4 @@
-# KSBA stable limits
+# KSBA stable limits {#sec-ksba}
 
 ## How a stable limit is obtained
 
@@ -77,7 +77,7 @@ Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], th
 ::: {.remark #rmk:gamma-co-2-two-definitions}
 ### The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors
 
-The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](moduli-construction.md) defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
+The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](#sec-moduli-construction) defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
 These agree, and the bridge is $T_\Co \cong \delta^{\perp \ten}$ above.
 
 An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \containedin \Stab(T_\Co)$.

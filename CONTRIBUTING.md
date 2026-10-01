@@ -7490,6 +7490,41 @@ pipeline resolves `\cite{}` to `?` and `\ref{}` to `[0]`, so read an
 extraction for its mathematics and take citations and numbering from the PDF.
 Do not commit LaTeX build intermediates beside an extraction.
 
+### The dissertation
+
+`writing/dissertation` is the Markdown source of *Compact Moduli of
+Numerically Polarized Degree Two Enriques Surfaces* (D. Zack Garza, University
+of Georgia, 2025), and its build.
+
+- `main.md` holds the front matter (title page, committee, abstract, index
+  words) and the ordered `include` list of section files.
+- `sections/` has one directory per part, one per chapter, and numbered files
+  per section. `#` is a part, `##` a chapter, `###` a section.
+  Theorem-like environments are fenced divs (`:::{.theorem title="..."}`);
+  cross-references use typed Pandoc-crossref ids and `@...` references;
+  citations use Better BibTeX keys (`@key`, `[@key]`). The full conventions
+  are `~/.pandoc/AUTHORING_STYLE.md`.
+- `figures` is a symlink to `~/.pandoc/figures`, the single owner of every
+  figure and its editable source.
+- `submitted-2025-08-12.pdf` is the dissertation as submitted to the UGA
+  Graduate School, 227 pages, built from the LaTeX that this Markdown
+  superseded. It is a record, not a build target; `just compile` does not
+  produce it and does not match it page for page.
+
+```bash
+just compile          # dissertation-<date>.pdf via ~/.pandoc (pandoc -> latexmk)
+just preview FILE     # live preview of one section
+just format-md        # normalize markdown
+```
+
+Everything the build needs lives in `~/.pandoc`: the page template
+`templates/uga-dissertation.tex`, the macro package
+`styles/dzg-dissertation.sty` (shared tiers plus
+`styles/macros/dissertation-overrides.tex`), the TikZ sources under
+`figures/tikz/dissertation/`, and the bibliography `bib/references.bib`, which
+is the live Zotero export. A citation key that does not resolve there is fixed
+in Zotero, never in a local bib file.
+
 ### Numbered blocks (`DEF-4`)
 
 A numbered block is a fenced div whose class is the full lowercase

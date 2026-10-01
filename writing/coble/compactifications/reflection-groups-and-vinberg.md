@@ -1,4 +1,4 @@
-# Hyperbolic reflection groups and Vinberg's algorithm
+# Hyperbolic reflection groups and Vinberg's algorithm {#sec-reflection-groups-and-vinberg}
 
 ::: {.remark}
 ### Orientation and sign convention

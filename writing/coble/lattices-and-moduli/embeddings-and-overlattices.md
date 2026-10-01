@@ -2,9 +2,9 @@
 
 ::: {.remark}
 
-The basic vocabulary of lattices, primitive embeddings, orthogonal complements, discriminant groups, and the unimodular lattices $\latI_{p, q}$ and $\latII_{p, q}$ was fixed in [Lattice Theory](lattice-theory.md#sec:lattice-theory).
+The basic vocabulary of lattices, primitive embeddings, orthogonal complements, discriminant groups, and the unimodular lattices $\latI_{p, q}$ and $\latII_{p, q}$ was fixed in [Lattice Theory](#sec:lattice-theory).
 We now develop the finer theory that underlies the lattice computations of this monograph: the several equivalent characterizations of a primitive sublattice, the classification of primitive embeddings up to isometry, Nikulin's correspondence between overlattices and isotropic subgroups of the discriminant form, the splitting of a unimodular sublattice off its ambient lattice, the classification of unimodular lattices, the finiteness of the set of primitive embeddings into an even unimodular lattice, and the behaviour of the discriminant group under scaling.
-Throughout, $S$, $T$, and $L$ denote nondegenerate lattices in the sense of [Lattice Theory](lattice-theory.md#sec:lattice-theory), $\beta$ denotes the ambient bilinear form when no confusion can arise, and $A_L \da \dualof{L}/L$ is the discriminant group with its quadratic form $q_L$.
+Throughout, $S$, $T$, and $L$ denote nondegenerate lattices in the sense of [Lattice Theory](#sec:lattice-theory), $\beta$ denotes the ambient bilinear form when no confusion can arise, and $A_L \da \dualof{L}/L$ is the discriminant group with its quadratic form $q_L$.
 :::
 
 ## Primitive and saturated sublattices
@@ -119,7 +119,7 @@ Nikulin's classification of primitive embeddings [@Nik80 Prop. 1.15.1] is stated
 ### Overlattice
 
 An **overlattice** of a lattice $S$ is a lattice $L$ containing $S$ as a finite-index sublattice, with $\ro{\beta_L}{S} = \beta_S$.
-Equivalently, $L$ is a lattice with $S\containedin L\containedin \dualof{S}$, where the inclusions use the canonical map $S\injects \dualof{S}$ of [Lattice Theory](lattice-theory.md#sec:lattice-theory) and its dual; the finite quotient $L/S$ is then a subgroup of $A_S = \dualof{S}/S$.
+Equivalently, $L$ is a lattice with $S\containedin L\containedin \dualof{S}$, where the inclusions use the canonical map $S\injects \dualof{S}$ of [Lattice Theory](#sec:lattice-theory) and its dual; the finite quotient $L/S$ is then a subgroup of $A_S = \dualof{S}/S$.
 :::
 
 ::: {.theorem #thm:nikulin-gluing}
@@ -166,7 +166,7 @@ The orbit statement is immediate from the definitions: an isometry of $S$ extend
 ::: {.remark #rmk:embedding-gluing-data}
 
 The correspondence of [Nikulin's gluing theorem](#thm:nikulin-gluing) is the engine behind the classification of primitive embeddings.
-A primitive embedding $S\injects L$ with orthogonal complement $T\da S^{\perp L}$ realizes $L$ as an even overlattice of the orthogonal direct sum $S\oplus T$, whose discriminant group is $A_S\oplus A_T$ by the additivity recorded in [Lattice Theory](lattice-theory.md#sec:lattice-theory).
+A primitive embedding $S\injects L$ with orthogonal complement $T\da S^{\perp L}$ realizes $L$ as an even overlattice of the orthogonal direct sum $S\oplus T$, whose discriminant group is $A_S\oplus A_T$ by the additivity recorded in [Lattice Theory](#sec:lattice-theory).
 The corresponding isotropic subgroup $H\le A_S\oplus A_T$ is the graph of an isometry $\gamma\colon H_S\xrightarrow{\sim} H_T$ between subgroups $H_S\le A_S$ and $H_T\le A_T$, anti-isometric for the two discriminant forms; the embedding is thus determined by the gluing data $(H_S, H_T, \gamma)$.
 Comparing discriminants across the overlattice $L$ of $S\oplus T$ gives the **discriminant formula**
 $$
@@ -381,7 +381,7 @@ A finite union of finite sets of $\Orth(q_T)$-orbits is finite, so $\operatornam
 ::: {.proposition #prop:scaled-discriminant-ses}
 ### Discriminant group of a scaled lattice
 
-Let $L$ be a lattice and $m$ a positive integer, and let $L(m)$ be the twist of $L$ by $m$ ([Lattice Theory](lattice-theory.md#sec:lattice-theory)). There is a short exact sequence of finite abelian groups
+Let $L$ be a lattice and $m$ a positive integer, and let $L(m)$ be the twist of $L$ by $m$ ([Lattice Theory](#sec:lattice-theory)). There is a short exact sequence of finite abelian groups
 $$
 0 \to L/mL \to A_{L(m)} \to A_L \to 0
 .
@@ -416,7 +416,7 @@ $$
 \psi\colon\Orth(L)\to\Orth(q_L)
 .
 $$
-Writing $\tilde\Orth(L)\da\ker\psi$ for the **stable orthogonal group** of $L$ ([Lattice Theory](lattice-theory.md#sec:lattice-theory)) and $\Orth^*(q_L)\da\coker\psi$, there is an exact sequence
+Writing $\tilde\Orth(L)\da\ker\psi$ for the **stable orthogonal group** of $L$ ([Lattice Theory](#sec:lattice-theory)) and $\Orth^*(q_L)\da\coker\psi$, there is an exact sequence
 $$
 0 \to \tilde\Orth(L) \to \Orth(L) \xrightarrow{\;\psi\;} \Orth(q_L) \to \Orth^*(q_L) \to 0
 .

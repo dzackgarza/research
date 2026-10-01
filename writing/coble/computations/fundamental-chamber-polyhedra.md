@@ -1,5 +1,5 @@
 ---
-title: The fundamental chamber as a polyhedral cone
+title: The fundamental chamber as a polyhe {#sec-fundamental-chamber-polyhedra}dral cone
 unit: method
 status: reusable
 tags:
@@ -57,7 +57,7 @@ The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ th
 ::: {.remark}
 ### Why each hypothesis is separate
 
-A cone containing a line meets both components of the positive cone, so (3) does not follow from (1). A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2). Applied to the recorded runs, @prop:chamber-cone-criterion is what identifies the count reported as *vertices at infinity* in [the CoxIter results](coxiter-results-for-cusp-lattices.md) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
+A cone containing a line meets both components of the positive cone, so (3) does not follow from (1). A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2). Applied to the recorded runs, @prop:chamber-cone-criterion is what identifies the count reported as *vertices at infinity* in [the CoxIter results](#sec-coxiter-results-for-cusp-lattices) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
 :::
 
 ## Integral data of the chamber
@@ -79,7 +79,7 @@ The last two are the data of the chamber as a subset of $L$, and are what a comp
 ::: {.remark}
 ### The recorded specimen
 
-These cells were run over the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md)) and over their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
+These cells were run over the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)) and over their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
 The chamber there is full-dimensional, closed and non-compact, with the ray and integral-point data extracted through a Normaliz backend, and containment was checked by sampling $x\in C$ and testing $\beta_L(r_i,x)\geq 0$ for every root.
 :::
 
@@ -129,4 +129,4 @@ Vinberg's algorithm produces a simple system by admitting a candidate root only 
 For an infinite reflection group the orbit is infinite and the simple system is finite.
 :::
 
-Related: [reflection groups and Vinberg](../compactifications/reflection-groups-and-vinberg.md), [hyperbolic Coxeter polytopes](../compactifications/hyperbolic-coxeter-polytopes.md), [CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md), [Sterk root counts and computed chambers](sterk-root-counts-and-computed-chambers.md), [lattice and diagram conventions](../reference-tables/lattice-and-diagram-conventions.md).
+Related: [reflection groups and Vinberg](#sec-reflection-groups-and-vinberg), [hyperbolic Coxeter polytopes](#sec-hyperbolic-coxeter-polytopes), [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [Sterk root counts and computed chambers](#sec-sterk-root-counts-and-computed-chambers), [lattice and diagram conventions](#sec-lattice-and-diagram-conventions).

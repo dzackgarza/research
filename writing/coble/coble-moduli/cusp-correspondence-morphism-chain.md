@@ -1,5 +1,5 @@
 ---
-title: The Coble cusp correspondence and the morphism chain to F_(2,2,0)
+title: The Coble cusp correspondence and the morph {#sec-cusp-correspondence-morphism-chain}ism chain to F_(2,2,0)
 unit: research-program
 status: conjectural
 tags:

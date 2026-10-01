@@ -5,7 +5,7 @@
 The Coble locus is the $(-2)$ Heegner divisor $\cH_{-2}$ inside the Enriques period domain, and the Coble period lattice is the orthogonal complement of a $(-2)$ vector of $T_\En$.
 Both statements are used throughout, and both are statements about a *choice* of vector.
 This section fixes that choice explicitly, shows it is unique up to the degree-$2$ Enriques arithmetic group, and describes the subgroup of $\Orth(T_\Co)$ that the choice produces.
-The lattices are those of [Period domain embeddings and normalization](lattices.md), and the arithmetic groups those of [Constructions of the moduli space](moduli-construction.md).
+The lattices are those of [Period domain embeddings and normalization](#sec-lattices), and the arithmetic groups those of [Constructions of the moduli space](#sec-moduli-construction).
 :::
 
 ## The Heegner vector inside $T_\En$

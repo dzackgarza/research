@@ -1,5 +1,5 @@
 ---
-title: Which lattice algorithms apply in which signature
+title: Which lattice algorithms apply in which  {#sec-lattice-algorithms-by-signature}signature
 unit: method
 status: reusable
 tags:

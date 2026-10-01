@@ -30,7 +30,7 @@ In a monoidal category, every diagram built from instances of $\alpha$, $\lambda
 :::
 
 Coherence is what licenses the notation $a_1\otimes\cdots\otimes a_n$ without parentheses.
-A construction that transports data along $\alpha$, $\lambda$, or $\varrho$ names the comparison it uses, in the sense of [Equivalences and witnesses](Identification.md#sec-canonical-identification).
+A construction that transports data along $\alpha$, $\lambda$, or $\varrho$ names the comparison it uses, in the sense of [Equivalences and witnesses](#sec-canonical-identification).
 
 ::: {.example #ex:cartesian-monoidal title="Cartesian and cocartesian structures"}
 

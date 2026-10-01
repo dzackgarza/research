@@ -1,4 +1,4 @@
-# Scattone's method for cusp enumeration
+# Scattone's method for cusp enumeration {#sec-scattone-cusp-method}
 
 ::: {.remark}
 ### Orientation

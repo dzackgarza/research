@@ -85,7 +85,7 @@ Composition is substitution of operations, and the symmetric-group action permut
 
 For an arbitrary morphism $X\to Y$, neither precomposition nor postcomposition defines a map $\operatorname{Hom}(X^n,X)\to\operatorname{Hom}(Y^n,Y)$.
 Consequently the assignment $X\mapsto\operatorname{Hom}(X^n,X)$ is not a presheaf on $\mathcal C$.
-Categories of algebras instead use operations and structure-preserving morphisms, as in [Algebraic categories from operations](Mathematical-Framework.md).
+Categories of algebras instead use operations and structure-preserving morphisms, as in [Algebraic categories from operations](#sec-named-categories).
 
 ## Equations and coherence {#sec-filled-diagrams}
 
