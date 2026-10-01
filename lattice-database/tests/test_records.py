@@ -205,6 +205,7 @@ def test_certify_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> No
     run("certify", "--tag", "0001", "--root", str(root))
     assert path.read_text() == stale_text
 
+
 def test_morphism_appends_each_morphism_that_preserves_the_forms_up_to_its_scale_and_refuses_one_that_does_not(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     run("morphism", "0001", "0001", "--name", "identity", "--matrix", "[[1]]", "--prose", "Automorphisms of Z.", "--root", str(root))
@@ -323,9 +324,7 @@ U = admitted("U", [[0, 1], [1, 0]])
 
 
 def morphism(matrix: list[list[int]], row_subdivisions: list[int] | None = None, scale: int = 1) -> Morphism:
-    return Morphism.model_validate(
-        {"name": "phi", "matrix": matrix, "scale": scale, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []}
-    )
+    return Morphism.model_validate({"name": "phi", "matrix": matrix, "scale": scale, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []})
 
 
 @pytest.mark.parametrize(
