@@ -397,6 +397,7 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "discriminant_group": group_text(group) if group is not None else None,
         "discriminant_group_tex": group_tex(group) if group is not None else None,
         "genus_symbol": integral.genus_symbol if integral else None,
+        "genus_class_count": integral.genus_class_count if integral else None,
         "overlattice_count": integral.overlattice_count if integral else None,
         "delta": integral.delta if integral else None,
         "minimum": str(definite.minimum) if definite else None,

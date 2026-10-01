@@ -78,14 +78,14 @@ The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
 The build and `latticedb check` read the stored values and compute nothing again.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-A person also writes `integral.genus_symbol`, computed from the Gram tensor with `Genus` of SageMath, and `definite.automorphism_group_order`, computed with `qfauto` of PARI/GP. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
+A person also writes `integral.genus_symbol` and `integral.genus_class_count`, computed from the Gram tensor with `Genus` of SageMath, and `definite.automorphism_group_order`, computed with `qfauto` of PARI/GP. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.
 
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
-| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol` |
+| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol`, `genus_class_count` |
 | `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
 | `root_span` | $b$ is not definite | `roots`, `norms`, `summands`, `embedding` |
 | `root_sublattice` | $b$ is definite, or the record has `root_span` | `invariant_factors`, `norms` |
@@ -93,7 +93,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
 The `integral`, `definite`, `indefinite` and `root_sublattice` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
-`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order` and `integral.genus_symbol` are optional.
+`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.genus_symbol` and `integral.genus_class_count` are optional.
 
 `integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.
 A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.
@@ -189,8 +189,10 @@ morphisms:
 ```
 
 The matrix is in the bases of the two records, with rank $T$ rows and rank $S$ columns: column $j$ lists the coordinates of $\varphi(e_j)$.
+A morphism with `scale: c` is a morphism $S(c) \to T$ from the twist of $S$: $b_T(\varphi x, \varphi y) = c \, b_S(x, y)$.
+The corpus records a lattice once up to twist and sign, so a lattice that a source names as $M(c)$ maps through the record $M$ with scale $c$: the coinvariant lattice $\Lambda_G = M(-1)$ of a symplectic K3 group embeds in the K3 lattice with scale $-1$.
 The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
-The build checks that $M^{\top} G_T M = G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
+The build checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
 Each file has the page `morphism/<S>-<T>.html`, which draws each matrix with its lines; `morphisms.html` lists the files, and the page of each lattice links the files that name it.
 
 `just morphism S T --name ... --matrix ...` checks a morphism and appends it to the file.

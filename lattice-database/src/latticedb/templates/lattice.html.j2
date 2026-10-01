@@ -75,6 +75,9 @@
         {% if lattice.integral.genus_symbol %}
         <tr><th scope="row">{{ theory("overlattices", "genus-symbol", "Genus symbol") }}</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
         {% endif %}
+        {% if lattice.integral.genus_class_count is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "class-number", "Class number of the genus") }}</th><td>{{ lattice.integral.genus_class_count }}</td></tr>
+        {% endif %}
       </tbody>
     </table>
   </section>

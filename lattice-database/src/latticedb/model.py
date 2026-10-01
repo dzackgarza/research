@@ -139,6 +139,14 @@ class IntegralData(Record):
             "that divides twice the determinant follows in parentheses, in the notation that SageMath prints. Requires a nonzero determinant."
         ),
     )
+    genus_class_count: int | None = Field(
+        default=None,
+        gt=0,
+        description=(
+            "The class number of the genus of $L$: the number of isometry classes of lattices in the genus, $L$ counted. "
+            "Computed from the Gram tensor with `Genus(G).representatives()` of SageMath. Requires a nonzero determinant; absent when it is not computed."
+        ),
+    )
 
 
 class RootSystemComponent(Record):
@@ -439,6 +447,9 @@ class Lattice(Record):
                 yield _problem("discriminant_group_requires_nondegenerate", message, ("integral", "discriminant_group"))
             if self.integral.genus_symbol is not None:
                 yield _problem("genus_requires_nondegenerate", "the genus symbol requires a nonzero determinant", ("integral", "genus_symbol"))
+            if self.integral.genus_class_count is not None:
+                message = "the class number of the genus requires a nonzero determinant"
+                yield _problem("genus_class_count_requires_nondegenerate", message, ("integral", "genus_class_count"))
             if self.integral.overlattice_count is not None:
                 message = "the number of overlattices is finite only when the determinant is not zero"
                 yield _problem("overlattice_count_requires_nondegenerate", message, ("integral", "overlattice_count"))
@@ -519,7 +530,7 @@ def _subdivision_problems(lines: Vector, size: int, location: tuple[str, ...]) -
 
 
 class Morphism(Record):
-    """A morphism $\\varphi \\colon S \\to T$ of lattices: a $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = b_S(x, y)$.
+    """A morphism $\\varphi \\colon S(c) \\to T$ of lattices: a $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = c \\, b_S(x, y)$ for a nonzero integer $c$, 1 by default.
 
     Its matrix is in the chosen bases of $S$ and $T$, which list the orthogonal summands in the order of their names.
     """
@@ -529,9 +540,16 @@ class Morphism(Record):
     matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = Field(
         description=(
             "Matrix of $\\varphi$, with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\\varphi(e_j)$ "
-            "in the chosen basis of $T$, so that $M^{\\top} G_T M = G_S$ for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$. "
+            "in the chosen basis of $T$, so that $M^{\\top} G_T M = c \\, G_S$ for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$. "
             "A SageMath morphism `phi` gives `phi.matrix().transpose()`, because SageMath lists the images in rows."
         )
+    )
+    scale: int = Field(
+        default=1,
+        description=(
+            "The nonzero integer $c$ with $b_T(\\varphi x, \\varphi y) = c \\, b_S(x, y)$: the map is a morphism $S(c) \\to T$ from the twist of $S$ by $c$. "
+            "Absent for $c = 1$. A lattice that a source names as a twist $M(c)$ of the record $M$ maps to $T$ with this scale."
+        ),
     )
     row_subdivisions: IntegerVector = Field(
         default=(),
@@ -554,6 +572,8 @@ class Morphism(Record):
         problems: list[InitErrorDetails] = []
         if columns == 0 or any(len(row) != columns for row in self.matrix):
             problems.append(_problem("matrix_shape", "the rows of the matrix are nonempty and have one length", ("matrix",)))
+        if self.scale == 0:
+            problems.append(_problem("scale_nonzero", "the scale c of a morphism S(c) -> T is not zero", ("scale",)))
         problems.extend(_subdivision_problems(self.row_subdivisions, len(self.matrix), ("row_subdivisions",)))
         problems.extend(_subdivision_problems(self.column_subdivisions, columns, ("column_subdivisions",)))
         if problems:

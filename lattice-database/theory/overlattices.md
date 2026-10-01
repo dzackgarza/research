@@ -30,3 +30,12 @@ The number is stated when $A_L$ has at most 100000 subgroups; otherwise it is [n
 The genus symbol of $L$ is $\mathrm{I}$ when $L$ is odd and $\mathrm{II}$ when $L$ is even, with the signature as subscript, such as $\mathrm{II}_{1,9}$.
 When the determinant is not $1$ or $-1$, the local symbol at each prime that divides twice the determinant follows in parentheses, in the notation that SageMath prints.
 :::
+
+## Class number of the genus {#class-number}
+
+::: {.definition}
+Two lattices are in the same *genus* when they have the same signature and $L \otimes \mathbb{Z}_p \cong L' \otimes \mathbb{Z}_p$ for every prime $p$.
+The *class number* of the genus of $L$ is the number of isometry classes of lattices in that genus, the class of $L$ counted.
+:::
+
+The page states the class number when the record has it. It is computed with `Genus(G).representatives()` of SageMath.

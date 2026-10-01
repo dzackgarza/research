@@ -167,8 +167,9 @@ def _integral(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
             block["overlattice_count"] = count
         if block["parity"] == "even" and all(factor == 2 for factor in invariants):
             block["delta"] = arithmetic.delta(gram)
-        if "genus_symbol" in declared:
-            block["genus_symbol"] = declared["genus_symbol"]
+        for field in ("genus_symbol", "genus_class_count"):
+            if field in declared:
+                block[field] = declared[field]
     return _ordered(block, tuple(model.IntegralData.model_fields))
 
 
@@ -354,8 +355,8 @@ def morphism_problems(morphism: Morphism, source: Lattice, target: Lattice) -> l
     if len(morphism.matrix) != target.rank or len(morphism.matrix[0]) != source.rank:
         return [f"{morphism.name}: the matrix has {target.rank} rows and {source.rank} columns, the ranks of the target and the source"]
     found = []
-    if arithmetic.restriction(target.gram_tensor, morphism.images) != source.gram_tensor:
-        found.append(f"{morphism.name}: the matrix does not preserve the forms: M^T G_target M is not G_source")
+    if arithmetic.restriction(target.gram_tensor, morphism.images) != arithmetic.scaled(source.gram_tensor, morphism.scale):
+        found.append(f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source")
     if _crosses_parts(target.gram_tensor, morphism.row_subdivisions):
         found.append(f"{morphism.name}: the parts of row_subdivisions are not orthogonal summands of the target")
     if _crosses_parts(source.gram_tensor, morphism.column_subdivisions):

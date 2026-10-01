@@ -112,6 +112,7 @@ def morphism(
     name: Annotated[str, Parameter(help="Name as plain text; TeX between `$` signs is rendered.")],
     matrix: Annotated[str, Parameter(help="JSON rows of integers, rank(target) rows by rank(source) columns: column j is the image of e_j.")],
     description: Annotated[str | None, Parameter(help="One or two sentences on the morphism.")] = None,
+    scale: Annotated[int, Parameter(help="The integer c with b_T(phi x, phi y) = c b_S(x, y): a morphism S(c) -> T.")] = 1,
     row_subdivisions: Annotated[str, Parameter(help="JSON list of the lines between rows, as SageMath's `M.subdivisions()[0]`.")] = "[]",
     column_subdivisions: Annotated[str, Parameter(help="JSON list of the lines between columns, as SageMath's `M.subdivisions()[1]`.")] = "[]",
     prose: Annotated[str | None, Parameter(help="Notes of the file in Pandoc Markdown; replaces the notes that are there.")] = None,
@@ -129,6 +130,8 @@ def morphism(
     }
     if description is not None:
         added["description"] = description
+    if scale != 1:
+        added["scale"] = scale
     listed: list[dict[str, Yaml]] = [morphism.model_dump(mode="json", exclude_defaults=True) for entry in present for morphism in entry.morphisms.morphisms]
     notes = prose if prose is not None else (present[0].prose if present else "")
     # Pydantic reports the problems of a record only through this exception.

@@ -304,8 +304,10 @@ def test_a_root_span_of_u_is_refused_for_its_reasons(span: dict[str, Yaml], expe
 U = admitted("U", [[0, 1], [1, 0]])
 
 
-def morphism(matrix: list[list[int]], row_subdivisions: list[int] | None = None) -> Morphism:
-    return Morphism.model_validate({"name": "phi", "matrix": matrix, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []})
+def morphism(matrix: list[list[int]], row_subdivisions: list[int] | None = None, scale: int = 1) -> Morphism:
+    return Morphism.model_validate(
+        {"name": "phi", "matrix": matrix, "scale": scale, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []}
+    )
 
 
 @pytest.mark.parametrize(
@@ -313,6 +315,8 @@ def morphism(matrix: list[list[int]], row_subdivisions: list[int] | None = None)
     [
         ([[1, 0], [0, 1]], [], []),
         ([[0, 1], [1, 0]], [], []),
+        # e -> e, f -> -f is an isometry U(-1) -> U, so it is refused as a morphism U -> U.
+        ([[1, 0], [0, -1]], [], ["is not 1 G_source"]),
         # The image of f is 2f, so b(e, f) = 1 goes to b(e, 2f) = 2.
         ([[1, 0], [0, 2]], [], ["does not preserve the forms"]),
         ([[1, 0]], [], ["2 rows and 2 columns"]),
@@ -326,3 +330,8 @@ def test_a_morphism_of_u_is_refused_when_its_matrix_does_not_preserve_the_forms_
     found = records.morphism_problems(morphism(matrix, row_subdivisions), U, U)
     assert len(found) == len(expected)
     assert all(fragment in problem for fragment, problem in zip(expected, found, strict=True))
+
+
+def test_a_morphism_with_a_scale_is_a_morphism_from_the_twist_of_its_source() -> None:
+    # e -> e, f -> -f takes b(e, f) = 1 to b(e, -f) = -1, so it is a morphism U(-1) -> U.
+    assert records.morphism_problems(morphism([[1, 0], [0, -1]], scale=-1), U, U) == []

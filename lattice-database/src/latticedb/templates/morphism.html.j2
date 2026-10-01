@@ -21,6 +21,7 @@
   {% for morphism, tex, text in morphisms %}
   <section aria-labelledby="morphism-{{ loop.index }}">
     <h2 id="morphism-{{ loop.index }}">{{ morphism.name | inline_markup }}</h2>
+    {% if morphism.scale != 1 %}<p>A morphism \({{ source.latex }}({{ morphism.scale }}) \to {{ target.latex }}\): \(b_T(\varphi x, \varphi y) = {{ morphism.scale }} \, b_S(x, y)\).</p>{% endif %}
     {% if morphism.description %}<p>{{ morphism.description | inline_markup }}</p>{% endif %}
     <div class="table-scroll">\[{{ tex }}\]</div>
     <div class="copy-block">
