@@ -83,6 +83,16 @@
         {% endif %}
       </tbody>
     </table>
+    {% if lattice.integral.primitive_orbits %}
+    <h3 id="primitive-orbits">{{ theory("orbits", "primitive-orbits", "Orbits of primitive vectors") }} \(F_{L,\Gamma}(z, w) = \sum_n c_\Gamma(n)\, z^n\), with \(w^n\) for \(z^{-n}\)</h3>
+    <table class="facts">
+      <tbody>
+        {% for group, series in lattice.integral.primitive_orbits.items() %}
+        <tr><th scope="row">\(\Gamma = {{ orbit_group_tex(group) }}\)</th><td>\({{ orbit_series_tex(series) }}\){% if series.reference %}, by {% if series.reference.url %}<a href="{{ series.reference.url }}">{{ series.reference.citation }}</a>{% else %}{{ series.reference.citation }}{% endif %}{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
   </section>
   {% endif %}
 

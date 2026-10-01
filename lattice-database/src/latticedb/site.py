@@ -38,6 +38,8 @@ from latticedb.model import (
     Lattice,
     Morphism,
     Morphisms,
+    OrbitGroup,
+    PrimitiveOrbitSeries,
     Record,
     Reference,
     Related,
@@ -122,6 +124,27 @@ def elementary_prime(factors: tuple[int, ...]) -> int | None:
 
 def factorisation_tex(value: int) -> str:
     return " \\cdot ".join(f"{int(prime)}^{{{int(exponent)}}}" if exponent > 1 else str(int(prime)) for prime, exponent in fmpz(value).factor())
+
+
+def orbit_group_tex(group: OrbitGroup) -> str:
+    """TeX for a key of `integral.primitive_orbits`, such as `\\widetilde{SO}^+(L)` for `SOtilde+`."""
+    name, plus = group.removesuffix("+"), "^+" if group.endswith("+") else ""
+    letters = name.removesuffix("tilde")
+    return f"\\widetilde{{{letters}}}{plus}(L)" if name.endswith("tilde") else f"\\mathrm{{{letters}}}{plus}(L)"
+
+
+def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
+    """TeX for $F_{L,\\Gamma}(z, w)$: the stated nonzero terms, `?` for each coefficient that is not stated, and the order to which the series is stated."""
+    terms = []
+    for n in sorted(series.degrees, key=lambda n: (abs(n), -n)):
+        count = series.coefficient(n)
+        if count == 0:
+            continue
+        variable = "" if n == 0 else ("z" if n > 0 else "w") + (f"^{{{abs(n)}}}" if abs(n) > 1 else "")
+        coefficient = "?" if count is None else str(count)
+        terms.append(coefficient if not variable else (variable if coefficient == "1" else f"{coefficient}\\,{variable}"))
+    order = f"O(z^{{{len(series.z) + 1}}}, w^{{{len(series.w) + 1}}})"
+    return " + ".join([*terms, order])
 
 
 def genus_tex(symbol: str) -> str:
@@ -517,6 +540,7 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     """The models of the schema: heading, block key, model."""
     yield "Every lattice", None, Lattice
     yield "Integral lattice", "integral", IntegralData
+    yield "Series of orbits of primitive vectors", "integral.primitive_orbits.<group>", PrimitiveOrbitSeries
     yield "Definite lattice", "definite", DefiniteData
     yield "Component of the root system of a definite lattice", "definite.roots[]", RootSystemComponent
     yield "Indefinite lattice", "indefinite", IndefiniteData
@@ -543,6 +567,8 @@ def build(root: Path, target: Path) -> int:
         group_tex=group_tex,
         factorisation_tex=factorisation_tex,
         genus_tex=genus_tex,
+        orbit_group_tex=orbit_group_tex,
+        orbit_series_tex=orbit_series_tex,
         theta_tex=theta_tex,
         root_system_tex=root_system_tex,
         set_tex=set_tex,
