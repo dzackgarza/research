@@ -38,4 +38,5 @@ Two lattices are in the same *genus* when they have the same signature and $L \o
 The *class number* of the genus of $L$ is the number of isometry classes of lattices in that genus, the class of $L$ counted.
 :::
 
-The page states the class number when the record has it. It is computed with `Genus(G).representatives()` of SageMath.
+The page states the class number when the record has it.
+It is computed with `Genus(G).representatives()` of SageMath.
