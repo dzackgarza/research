@@ -11,12 +11,17 @@ local render_raw_block = assert(
   filter_environment.RawBlock,
   "pandoc-tikzcd.lua: canonical filter did not define RawBlock"
 )
+local render_raw_inline = assert(
+  filter_environment.RawInline,
+  "pandoc-tikzcd.lua: canonical filter did not define RawInline"
+)
 
 return {
   {
     Pandoc = function(document)
       return document:walk({
         RawBlock = render_raw_block,
+        RawInline = render_raw_inline,
       })
     end,
   },

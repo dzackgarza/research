@@ -125,3 +125,19 @@ The crossref stage then derives the reference type from the ID, which it expects
 A user filter without `at:` runs at pre-quarto, after normalize, so it cannot intervene.
 The `amsthm-divs` extension hides each reserved class that `custom-numbered-blocks` also numbers: it renames the class at pre-ast and restores it at pre-quarto.
 Today that is only `remark`. `.proof` divs take no ID, and Quarto still renders them.
+
+## Pandoc splits `\dynkin[options]E6` after the options
+
+Pandoc's markdown reader takes a LaTeX command as raw TeX only through its bracketed and braced arguments.
+In `\dynkin[label]E6` the type letter and rank are bare tokens, so the raw inline ends at `]` and `E6` becomes ordinary text.
+The figure filter then compiles `\dynkin[label]` alone, and TeX stops with `Argument of \end has an extra }`.
+
+Write the braced form that the `dynkin-diagrams` package also accepts: `\dynkin[label]{E}{6}`, and `\dynkin[label]{A}{}` for a diagram of arbitrary rank.
+The whole call is then one raw inline, which `tikzcd.lua` renders as an inline SVG.
+
+## Raw TeX that no filter handles disappears from the HTML
+
+Pandoc's HTML writer omits a raw `tex` block or inline.
+A figure whose source the TikZ filter does not recognise therefore renders as its caption alone, with no warning, and the gate passes because nothing is unresolved.
+`tikzcd.lua` recognises a block that opens `tikzpicture` or `tikzcd`, an `\input` of a `.tikz`/`.tikzcd` file or of any file whose body opens one of those environments, and an inline `\dynkin`.
+After adding a figure in another form, look at the rendered page.

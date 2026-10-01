@@ -1,4 +1,4 @@
-w# Diagrams
+# Diagrams
 
 Conventions:
 
@@ -10,9 +10,7 @@ Conventions:
 
 The table below lists the labelled classical and affine Dynkin diagrams.
 
-```include
-coble/tables/dynkin-diagrams.md
-```
+{{< include ../tables/dynkin-diagrams.md >}}
 
 ### Mirror move algorithm
 
