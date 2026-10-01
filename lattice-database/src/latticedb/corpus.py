@@ -4,6 +4,10 @@ A file is YAML front matter, which holds the record of one lattice, and then
 prose in Markdown. `load` validates each record by itself and then checks the
 statements that concern more than one record, or a record and the families,
 and that no two definite records are the same lattice in different bases.
+
+A tag is permanent. `retired-tags.yaml` lists each tag whose record the corpus
+no longer admits, with the lattice that was there and why it is not a record;
+no record takes a retired tag, and `next_tag` counts them.
 """
 
 from dataclasses import dataclass
@@ -17,7 +21,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from latticedb import arithmetic
 from latticedb.arithmetic import GramTensor
-from latticedb.model import AdeType, Definiteness, Family, Lattice
+from latticedb.model import AdeType, Definiteness, Family, Lattice, Tag
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -25,6 +29,11 @@ Families = dict[Family, str]
 """Each family that a record may name, with one line of its meaning."""
 
 FAMILIES_FILE = "families.yaml"
+
+Retired = dict[Tag, str]
+"""Each tag that no record may take again, with the lattice that was there and why it is not a record."""
+
+RETIRED_FILE = "retired-tags.yaml"
 
 
 @dataclass(frozen=True)
@@ -38,6 +47,7 @@ class Entry:
 class Corpus:
     entries: tuple[Entry, ...]
     families: Families
+    retired: Retired
 
 
 class CorpusInvalid(Exception):
@@ -80,8 +90,8 @@ def _isometric_pairs(entries: list[Entry]) -> list[tuple[Entry, Entry]]:
     ]
 
 
-def problems(entries: list[Entry], families: Families) -> list[str]:
-    """The problems that concern more than one record or the families: a file name that is not its tag, a repeated name or Gram tensor, two definite records that are isometric, a family that `families.yaml` does not list, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
+def problems(entries: list[Entry], families: Families, retired: Retired) -> list[str]:
+    """The problems that concern more than one record, the families or the retired tags: a file name that is not its tag, a retired tag, a repeated name or Gram tensor, two definite records that are isometric, a family that `families.yaml` does not list, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     by_name: dict[str, Path] = {}
@@ -90,6 +100,8 @@ def problems(entries: list[Entry], families: Families) -> list[str]:
         lattice = entry.lattice
         if entry.path.stem != lattice.tag:
             found.append(f"{entry.path}: the file name must be the tag {lattice.tag}")
+        if lattice.tag in retired:
+            found.append(f"{entry.path}: the tag {lattice.tag} is retired ({retired[lattice.tag]})")
         if lattice.name in by_name:
             found.append(f"{entry.path}: the name '{lattice.name}' is also the name of {by_name[lattice.name]}")
         by_name.setdefault(lattice.name, entry.path)
@@ -104,9 +116,9 @@ def problems(entries: list[Entry], families: Families) -> list[str]:
                 found.append(f"{entry.path}: the related tag {related.tag} is not in the corpus")
         span = lattice.root_span
         if span is not None and span.summands is not None and span.embedding is not None:
-            missing = [tag for tag in span.summands if tag not in by_tag]
+            missing = [summand.tag for summand in span.summands if summand.tag not in by_tag]
             found.extend(f"{entry.path}: the summand tag {tag} is not in the corpus" for tag in missing)
-            summands = tuple(by_tag[tag].gram_tensor for tag in span.summands if tag in by_tag)
+            summands = tuple(arithmetic.scaled(by_tag[summand.tag].gram_tensor, summand.scale) for summand in span.summands if summand.tag in by_tag)
             if not missing and arithmetic.restriction(lattice.gram_tensor, span.embedding) != arithmetic.orthogonal_sum(summands):
                 found.append(f"{entry.path}: the rows of root_span.embedding do not have the Gram tensor of the orthogonal sum of the summands")
     found.extend(f"{second.path}: the lattice is isometric to {first.path} ({first.lattice.name}), in another basis" for first, second in _isometric_pairs(entries))
@@ -118,16 +130,22 @@ def _record_problems(path: Path, error: ValidationError) -> list[str]:
 
 
 def load(root: Path) -> Corpus:
-    """The families of `root/families.yaml` and every entry of `root/lattices`, in tag order. Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined."""
+    """The families of `root/families.yaml`, the retired tags of `root/retired-tags.yaml` and every entry of `root/lattices`, in tag order. Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined."""
     entries: list[Entry] = []
     found: list[str] = []
     families: Families = {}
+    retired: Retired = {}
     families_path = root / FAMILIES_FILE
+    retired_path = root / RETIRED_FILE
     # Pydantic reports the problems of a value only through this exception.
     try:
         families = TypeAdapter(Families).validate_python(yaml.safe_load(families_path.read_text()))
     except ValidationError as error:
         found.extend(_record_problems(families_path, error))
+    try:
+        retired = TypeAdapter(Retired).validate_python(yaml.safe_load(retired_path.read_text()) or {})
+    except ValidationError as error:
+        found.extend(_record_problems(retired_path, error))
     directory = root / "lattices"
     paths = sorted(directory.glob("*.md"))
     if not paths:
@@ -138,16 +156,16 @@ def load(root: Path) -> Corpus:
             entries.append(Entry(Lattice.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
-    found.extend(problems(entries, families))
+    found.extend(problems(entries, families, retired))
     if found:
         raise CorpusInvalid(tuple(found))
-    return Corpus(tuple(entries), families)
+    return Corpus(tuple(entries), families, retired)
 
 
-def next_tag(entries: tuple[Entry, ...]) -> str:
-    """The tag after the greatest tag of the corpus, in the order 0-9 then A-Z."""
+def next_tag(corpus: Corpus) -> str:
+    """The tag after the greatest tag of the corpus, retired tags counted, in the order 0-9 then A-Z."""
     value = 0
-    for character in max(entry.lattice.tag for entry in entries):
+    for character in max(*(entry.lattice.tag for entry in corpus.entries), *corpus.retired):
         value = value * len(TAG_ALPHABET) + TAG_ALPHABET.index(character)
     value += 1
     digits = []

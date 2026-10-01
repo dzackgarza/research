@@ -31,7 +31,7 @@ def _record_problems(error: ValidationError) -> list[str]:
 def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
     """Compute the derived fields of a new record, check it by itself and against the corpus, and write it under the next tag."""
     loaded = corpus.load(root)
-    tag = corpus.next_tag(loaded.entries)
+    tag = corpus.next_tag(loaded)
     record = records.derive({"tag": tag, **declared})
     # Pydantic reports the problems of a record only through this exception.
     try:
@@ -40,7 +40,7 @@ def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
         print("\n".join(_record_problems(error)), file=sys.stderr)
         sys.exit(1)
     path = root / "lattices" / f"{tag}.md"
-    found = corpus.problems([*loaded.entries, corpus.Entry(lattice, prose, path)], loaded.families)
+    found = corpus.problems([*loaded.entries, corpus.Entry(lattice, prose, path)], loaded.families, loaded.retired)
     if found:
         print("\n".join(found), file=sys.stderr)
         sys.exit(1)
@@ -150,4 +150,4 @@ def deploy(root: Root = Path()) -> None:
 @app.command
 def next_tag(root: Root = Path()) -> None:
     """Print the tag for the next new record."""
-    print(corpus.next_tag(corpus.load(root).entries))
+    print(corpus.next_tag(corpus.load(root)))

@@ -82,16 +82,16 @@ def test_derive_leaves_the_root_sublattice_undecided_when_the_roots_it_finds_do_
 
 
 def test_derive_keeps_the_fields_that_a_person_declares() -> None:
-    record = declared("A1", [[2]])
-    record["integral"] = {"parity": "odd", "genus_symbol": "I_{1,0}(2)"}
-    record["definite"] = {"minimum": 1, "automorphism_group_order": 2}
+    record = declared("I_{1,0}", [[1]])
+    record["integral"] = {"parity": "even", "genus_symbol": "I_{1,0}"}
+    record["definite"] = {"minimum": 5, "automorphism_group_order": 2}
     record["provenance"] = {"source": "Test record.", "computed_with": "by hand"}
     derived = records.derive(record)
     lattice = Lattice.model_validate(derived)
     assert lattice.integral is not None
-    assert (lattice.integral.parity, lattice.integral.genus_symbol) == ("even", "I_{1,0}(2)")
+    assert (lattice.integral.parity, lattice.integral.genus_symbol) == ("odd", "I_{1,0}")
     assert lattice.definite is not None
-    assert (lattice.definite.minimum, lattice.definite.automorphism_group_order) == (2, 2)
+    assert (lattice.definite.minimum, lattice.definite.automorphism_group_order) == (1, 2)
     assert lattice.provenance.computed_with == "by hand"
 
 
@@ -106,8 +106,9 @@ def write_corpus(directory: Path) -> Path:
     lattices = directory / "lattices"
     lattices.mkdir()
     shutil.copy(REPOSITORY / corpus.FAMILIES_FILE, directory / corpus.FAMILIES_FILE)
-    record = records.derive(declared("A1", [[2]]))
-    (lattices / "0001.md").write_text(records.record_text(record, "The root lattice of type A1."))
+    (directory / corpus.RETIRED_FILE).write_text("{}\n")
+    record = records.derive(declared("I_{1,0}", [[1]]))
+    (lattices / "0001.md").write_text(records.record_text(record, "The lattice Z with the form b(x, y) = xy."))
     return directory
 
 
@@ -127,7 +128,15 @@ def test_new_writes_a_valid_record_under_the_next_tag(tmp_path: Path) -> None:
 def test_new_refuses_a_lattice_whose_components_are_those_of_a_record_of_the_corpus(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     with pytest.raises(SystemExit):
-        run("new", "--gram", "[[2]]", "--name", "A1 again", "--latex", "A_1", "--source", "Test record.", "--root", str(root))
+        run("new", "--gram", "[[1]]", "--name", "I_{1,0} again", "--latex", r"\mathrm{I}_{1,0}", "--source", "Test record.", "--root", str(root))
+    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
+
+
+def test_new_refuses_a_twist_of_a_lattice(tmp_path: Path) -> None:
+    # A1 = <1>(2), and the corpus records <1>.
+    root = write_corpus(tmp_path)
+    with pytest.raises(SystemExit):
+        run("new", "--gram", "[[2]]", "--name", "A1", "--latex", "A_1", "--source", "Test record.", "--root", str(root))
     assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
 
 

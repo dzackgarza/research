@@ -102,6 +102,17 @@ def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
     return tuple(factor for factor in diagonal if factor > 1)
 
 
+def scale(gram_tensor: GramTensor) -> Fraction:
+    """The scale of `b`: the positive generator of the subgroup of `Q` that the values `b(e_i, e_j)` generate, and `0` for `b = 0`.
+
+    With `k` the least positive integer such that `k b` is integer valued, the
+    scale is `gcd(k b(e_i, e_j)) / k`. The values `b(x, y)` on all of `L` generate
+    the same subgroup, as they are integer combinations of the `b(e_i, e_j)`.
+    """
+    k, components = _integer_components(gram_tensor)
+    return Fraction(gcd(*(value for row in components for value in row)), k)
+
+
 def _integer_components(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...]]:
     """Return `(k, components of k b)` for the least positive integer `k` such that `k b` is integer valued."""
     scale = lcm(*(value.denominator for row in gram_tensor for value in row))
@@ -116,6 +127,11 @@ def pairing(gram_tensor: GramTensor, x: Vector, y: Vector) -> Fraction:
 def restriction(gram_tensor: GramTensor, vectors: tuple[Vector, ...]) -> GramTensor:
     """Return the components `b(v_i, v_j)` for the given vectors `v_1, v_2, ...`."""
     return tuple(tuple(pairing(gram_tensor, x, y) for y in vectors) for x in vectors)
+
+
+def scaled(gram_tensor: GramTensor, k: Fraction | int) -> GramTensor:
+    """Return the components of `k b`: the form of the twist `L(k)`."""
+    return tuple(tuple(k * value for value in row) for row in gram_tensor)
 
 
 def orthogonal_sum(summands: tuple[GramTensor, ...]) -> GramTensor:

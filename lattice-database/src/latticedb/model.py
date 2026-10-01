@@ -66,6 +66,10 @@ Definiteness = Literal[
 ]
 
 
+def _problem(kind: str, message: str, location: tuple[str, ...], context: dict[str, str | int] | None = None) -> InitErrorDetails:
+    return InitErrorDetails(type=PydanticCustomError(kind, message, context), loc=location, input=None)
+
+
 class Record(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
@@ -73,6 +77,23 @@ class Record(BaseModel):
 class Related(Record):
     tag: Tag = Field(description="Tag of another lattice in the catalogue.")
     relation: str = Field(description="How that lattice is related to this one, as a short phrase.")
+
+
+class Summand(Record):
+    """A lattice $M(k)$: a record $M$ of the catalogue with its form scaled by a nonzero integer $k$.
+
+    The catalogue records no twist $M(k)$ with $|k| \\geq 2$, and no $M(-1)$ outside its sign convention,
+    so a summand of a root sublattice such as $A_1 = \\langle 1 \\rangle(2)$ names the record and the scale.
+    """
+
+    tag: Tag = Field(description="Tag of the lattice $M$ in the catalogue.")
+    scale: int = Field(description="The nonzero integer $k$: the summand is $M$ with the form $k b_M$.")
+
+    @model_validator(mode="after")
+    def _nonzero_scale(self) -> Self:
+        if self.scale == 0:
+            raise ValidationError.from_exception_data(type(self).__name__, [_problem("summand_scale_zero", "M(0) has the zero form and is not a summand of a root sublattice", ("scale",))])
+        return self
 
 
 class Reference(Record):
@@ -189,10 +210,10 @@ class RootSpan(Record):
             "When they do not, the notes of the record prove that each root of $L$ is in the sublattice that the rows generate."
         )
     )
-    summands: Annotated[tuple[Tag, ...], Field(strict=False)] | None = Field(
+    summands: Annotated[tuple[Summand, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
-            "Tags of lattices $M_1, M_2, \\dots$ with $\\mathbb{Z}\\Phi(L) \\cong M_1 \\oplus M_2 \\oplus \\cdots$, an orthogonal sum. "
+            "Lattices $M_1(k_1), M_2(k_2), \\dots$, each a record with a scale, with $\\mathbb{Z}\\Phi(L) \\cong M_1(k_1) \\oplus M_2(k_2) \\oplus \\cdots$, an orthogonal sum. "
             "Stated together with `embedding`. A root lattice does not state it: $\\mathbb{Z}\\Phi(L)$ is $L$."
         ),
     )
@@ -256,10 +277,6 @@ def _squared_root_sublattice_index(roots: tuple[str, ...], rank: int, determinan
     if sum(int(component[1:]) for component in roots) != rank:
         return None
     return Fraction(math.prod(_root_determinant(component) for component in roots)) / abs(determinant)
-
-
-def _problem(kind: str, message: str, location: tuple[str, ...], context: dict[str, str | int] | None = None) -> InitErrorDetails:
-    return InitErrorDetails(type=PydanticCustomError(kind, message, context), loc=location, input=None)
 
 
 class Lattice(Record):
@@ -403,6 +420,7 @@ class Lattice(Record):
         problems = list(self._shape_problems())
         if not problems:
             problems = [
+                *self._twist_problems(),
                 *self._invariant_problems(),
                 *self._integral_problems(),
                 *self._definite_problems(),
@@ -426,6 +444,34 @@ class Lattice(Record):
             return
         if any(self.gram_tensor[i][j] != self.gram_tensor[j][i] for i in range(self.rank) for j in range(i)):
             yield _problem("gram_tensor_not_symmetric", "b(e_i, e_j) differs from b(e_j, e_i) for some i, j", ("gram_tensor",))
+
+    def _twist_problems(self) -> Iterator[InitErrorDetails]:
+        """The corpus records one lattice of each class under scaling $L \\mapsto L(n)$, $n$ a nonzero integer.
+
+        $L$ is admitted when it is not $M(n)$ for a lattice $M$ and an integer $n$ with $|n| \\geq 2$,
+        that is, when the scale of $b$ has numerator 1, and when its sign is the conventional one:
+        $b$ is positive when it takes one sign, and $n_+ \\leq n_-$ when it takes both.
+        The zero form is $M(0)$ for every $M$ and is not admitted.
+        """
+        scale = arithmetic.scale(self.gram_tensor)
+        if scale == 0:
+            yield _problem("twisted", "b = 0 is M(0) for every lattice M of rank {rank}; the corpus records no zero form", ("gram_tensor",), {"rank": self.rank})
+            return
+        if scale.numerator != 1:
+            yield _problem(
+                "twisted",
+                "the lattice is M({n}) for the lattice M with Gram tensor b/{n}; the corpus records M and not its twist",
+                ("gram_tensor",),
+                {"n": scale.numerator},
+            )
+        n_plus, n_minus, _ = arithmetic.inertia(self.gram_tensor)
+        if (n_plus == 0 and n_minus > 0) or (n_plus > n_minus > 0):
+            yield _problem(
+                "twisted",
+                "the lattice is M(-1) for the lattice M with Gram tensor -b and signature ({n_minus}, {n_plus}); the corpus records M: positive when b has one sign, n_plus <= n_minus when it has both",
+                ("gram_tensor",),
+                {"n_plus": n_plus, "n_minus": n_minus},
+            )
 
     def _invariant_problems(self) -> Iterator[InitErrorDetails]:
         determinant = arithmetic.determinant(self.gram_tensor)

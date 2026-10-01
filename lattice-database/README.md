@@ -15,6 +15,7 @@ The site is served at <http://lattice-database.localhost/>.
 | --- | --- |
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
+| `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `src/latticedb/model.py` | The schema of a record and its validators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
@@ -59,6 +60,14 @@ $U$ is the lattice with basis $e, f$ and $b(e, e) = b(f, f) = 0$, $b(e, f) = 1$.
 
 `gram_tensor` is the defining datum: the components $b(e_i, e_j)$ of the Gram tensor $b$, a symmetric $(0,2)$-tensor, in a basis $e_1, \dots, e_n$ of $L$.
 A component is an integer or a string `p/q`. Floats are refused.
+
+The corpus records a lattice once, up to twist and sign.
+For an integer $n$, the twist $L(n)$ is the module of $L$ with the form $nb$.
+A Gram tensor that is $n$ times a Gram tensor with integer components for some $n \geq 2$, or that is zero, is refused: the lattice is $M(n)$ for the lattice $M$ with Gram tensor $b/n$, and the corpus records $M$.
+So $\langle 1 \rangle$ is a record and $A_1 = \langle 1 \rangle(2)$ is not; $E_8$ is a record and $E_8(2)$ is not; $U$ is a record and $U(2)$ is not.
+Of $L$ and $L(-1)$ the corpus records one: the positive one when $b(x, x)$ has one sign, and the one with signature $(n_+, n_-)$, $n_+ \leq n_-$, when it has both.
+So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature $(1, 9)$, is a record.
+A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
 The fields of a record are of two kinds.
 The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`. `latticedb new` computes them, and the build computes each again with exact arithmetic and rejects a record that states another value: a record with `signature: [2, 0]` and the components above is rejected.
@@ -109,7 +118,8 @@ The root sublattice of $L$ is $R(L) := \mathbb{Z}\Phi(L)$, and each record state
 A definite record states $\Phi(L)$ in `definite.roots`: each irreducible component with its type, its scale and its simple roots.
 The build lists $\Phi(L)$ and compares.
 In `root_span.roots`, a record that is not definite states roots that generate $\mathbb{Z}\Phi(L)$.
-When they do not generate $L$, the prose proves that no root of $L$ is outside the sublattice that they generate, and `root_span.summands` and `root_span.embedding` state $\mathbb{Z}\Phi(L)$ as an orthogonal sum of records with its embedding in $L$.
+When they do not generate $L$, the prose proves that no root of $L$ is outside the sublattice that they generate, and `root_span.summands` and `root_span.embedding` state $\mathbb{Z}\Phi(L)$ as an orthogonal sum of twists of records with its embedding in $L$.
+A summand is a record with a scale, `{tag: '0001', scale: 2}` for $\langle 1 \rangle(2)$, and the rows of `embedding` have the Gram tensor of $M_1(k_1) \oplus M_2(k_2) \oplus \cdots$.
 A root is a row of integers: its coordinates in the basis $e_1, \dots, e_n$ of the record.
 The page of the lattice writes it as $\sum_i c_i e_i$, and states the orthogonal decomposition of $L$ that the basis gives.
 A record that is not definite and has no `root_span` block is not decided, and its page says so.
@@ -118,6 +128,7 @@ A record that is not definite and has no `root_span` block is not decided, and i
 
 A tag is four characters from `0-9` and `A-Z`. The file name is the tag.
 A tag is permanent: it never moves to another lattice, and a record is never renumbered.
+When a record leaves the corpus, its tag goes to `retired-tags.yaml` with the lattice that was there and why it is not a record; the build rejects a record under a retired tag, and the next tag is after every tag, retired or not.
 The address of a lattice is `tag/<TAG>.html`.
 
 To add a lattice:
@@ -128,7 +139,7 @@ To add a lattice:
 2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2 --source '...'` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
    `--alias`, `--family`, `--reference`, `--url` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
    For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`, fetches it first when it does not exist, checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference and the provenance of the entry.
-   The command refuses a record that does not validate, that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
+   The command refuses a record that does not validate, that is a twist $M(n)$ with $n \neq 1$ of the lattice the corpus records, that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
 
 3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
    For a record that is not definite whose `root_span` block the command could not decide, write the block and its proof by hand.

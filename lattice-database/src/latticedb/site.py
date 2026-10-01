@@ -212,13 +212,31 @@ def block_tex(block: list[int], symbol: str = "e") -> str:
     return ", ".join(f"{symbol}_{{{index}}}" for index in block)
 
 
-def summand_images(lattice: Lattice, lattices: dict[str, Lattice]) -> list[tuple[Lattice, int, Vector]]:
-    """`(M, j, x)` for each row `x` of `root_span.embedding`: the embedding sends the basis vector $e_j$ of the summand record `M` to `x`."""
+def summand_name(record: Lattice, scale: int) -> tuple[str, str]:
+    """The name of $M(k)$ as text and as TeX: `<ka>` for the rank-one record `<a>`, the name of `M` for `k = 1`, and `M(k)` otherwise."""
+    if record.rank == 1:
+        value = scale * record.gram_tensor[0][0]
+        return f"<{value}>", f"\\langle {rational_tex(value)} \\rangle"
+    if scale == 1:
+        return record.name, record.latex
+    return f"{record.name}({scale})", f"{record.latex}({scale})"
+
+
+def span_summands(lattice: Lattice, lattices: dict[str, Lattice]) -> list[tuple[Lattice, str]]:
+    """`(M, name of M(k) as TeX)` for each summand $M(k)$ of `root_span.summands`."""
+    span = lattice.root_span
+    if span is None or span.summands is None:
+        return []
+    return [(lattices[summand.tag], summand_name(lattices[summand.tag], summand.scale)[1]) for summand in span.summands]
+
+
+def summand_images(lattice: Lattice, lattices: dict[str, Lattice]) -> list[tuple[Lattice, str, int, Vector]]:
+    """`(M, name of M(k) as TeX, j, x)` for each row `x` of `root_span.embedding`: the embedding sends the basis vector $e_j$ of the summand $M(k)$ to `x`."""
     span = lattice.root_span
     if span is None or span.summands is None or span.embedding is None:
         return []
-    sources = [(lattices[tag], j) for tag in span.summands for j in range(1, lattices[tag].rank + 1)]
-    return [(summand, j, image) for (summand, j), image in zip(sources, span.embedding, strict=True)]
+    sources = [(record, name, j) for record, name in span_summands(lattice, lattices) for j in range(1, record.rank + 1)]
+    return [(record, name, j, image) for (record, name, j), image in zip(sources, span.embedding, strict=True)]
 
 
 def inline_markup(text: str) -> Markup:
@@ -299,8 +317,8 @@ def root_span_name(lattice: Lattice, lattices: dict[str, Lattice]) -> tuple[str,
     if span is None:
         return None
     if span.summands is not None:
-        summands = [lattices[tag] for tag in span.summands]
-        return " + ".join(summand.name for summand in summands), " \\oplus ".join(summand.latex for summand in summands)
+        names = [summand_name(lattices[summand.tag], summand.scale) for summand in span.summands]
+        return " + ".join(text for text, _ in names), " \\oplus ".join(tex for _, tex in names)
     if not span.roots:
         return "0", "0"
     return ("L", "L") if lattice.is_root_lattice else None
@@ -474,7 +492,7 @@ def build(root: Path, target: Path) -> int:
                 components_text=components.replace('"', ""),
                 related=[(by_tag[related.tag].lattice, related.relation) for related in lattice.related],
                 span_name=root_span_name(lattice, lattices),
-                span_summands=[lattices[tag] for tag in lattice.root_span.summands] if lattice.root_span and lattice.root_span.summands else [],
+                span_summands=span_summands(lattice, lattices),
                 span_images=summand_images(lattice, lattices),
                 blocks=orthogonal_blocks(lattice),
                 previous=entries[index - 1].lattice if index > 0 else None,

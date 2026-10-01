@@ -48,7 +48,7 @@ def test_the_row_of_e8_states_its_invariants(rows: dict[str, site.Row]) -> None:
 
 def test_a_page_has_a_section_exactly_for_each_block_of_its_record(built: Path) -> None:
     assert sections(built, "0094") == {"integral", "definite"}
-    assert sections(built, "0138") == {"integral", "indefinite", "hyperbolic"}
+    assert sections(built, "0233") == {"integral", "indefinite", "hyperbolic"}
 
 
 def test_the_page_of_a_lattice_shows_the_components_of_its_gram_tensor(built: Path) -> None:
@@ -66,16 +66,16 @@ def test_a_collection_page_links_exactly_the_lattices_that_satisfy_its_condition
 
 def test_the_root_lattice_collection_lists_the_lattices_that_their_roots_generate(built: Path) -> None:
     html = (built / "collection" / "root-lattices.html").read_text()
-    e8, negative_e8, doubled_e8, z10 = "0094", "0104", "0095", "0120"
-    zero_form, doubled_u, u, u_plus_doubled_e8 = "0010", "0013", "0016", "0124"
-    listed = {tag for tag in (e8, negative_e8, doubled_e8, z10, zero_form, doubled_u, u, u_plus_doubled_e8) if f'href="../tag/{tag}.html"' in html}
-    assert listed == {e8, negative_e8, doubled_e8, z10}
+    e8, z10, u_plus_negative_e8 = "0094", "0120", "0128"
+    k12, u, u_plus_doubled_u, u_plus_doubled_e8 = "0150", "0016", "0036", "0124"
+    listed = {tag for tag in (e8, z10, u_plus_negative_e8, k12, u, u_plus_doubled_u, u_plus_doubled_e8) if f'href="../tag/{tag}.html"' in html}
+    assert listed == {e8, z10, u_plus_negative_e8}
 
 
 def test_the_page_of_a_root_lattice_states_norms_of_roots_that_generate_it(built: Path) -> None:
-    assert r"S = \{4\}" in (built / "tag" / "0095.html").read_text()
+    assert r"S = \{2\}" in (built / "tag" / "0094.html").read_text()
     assert r"S = \{1\}" in (built / "tag" / "0120.html").read_text()
-    assert r"S = \{-2\}" in (built / "tag" / "0104.html").read_text()
+    assert r"S = \{-2, 2\}" in (built / "tag" / "0128.html").read_text()
     assert r"\(S = " not in (built / "tag" / "0016.html").read_text()
 
 
@@ -86,9 +86,9 @@ def test_the_row_of_a_definite_root_lattice_states_the_type_of_its_roots_and_the
     # The roots of I_{10,0} are the vectors +-e_i and +-e_i +-e_j: type B10. The vectors with b(r, r) = 2 alone are of type D10.
     i10 = rows["0120"]
     assert (i10["root_system"], i10["phi_type"], i10["root_span"], i10["root_span_index"]) == ("D10", "B10", "I_{10,0}", 1)
-    # E8(2) has the roots of E8, with b(r, r) = 4, and no vector with b(r, r) = 2.
-    doubled_e8 = rows["0095"]
-    assert (doubled_e8["root_system"], doubled_e8["phi_type"], doubled_e8["root_span"]) == ("", "E8", "E8(2)")
+    # Lambda9 has minimum 4, so no vector with b(r, r) = 2; its roots are of type D8, with b(r, r) = 4, and A1, with b(r, r) = 8.
+    laminated_9 = rows["0110"]
+    assert (laminated_9["root_system"], laminated_9["phi_type"], laminated_9["root_span"], laminated_9["root_span_index"]) == ("", "D8 A1", "D8(2) + <8>", 4)
 
 
 def test_the_row_of_a_lattice_that_is_not_a_root_lattice_states_the_index_and_that_the_root_sublattice_is_not_primitive(rows: dict[str, site.Row]) -> None:
@@ -99,9 +99,9 @@ def test_the_row_of_a_lattice_that_is_not_a_root_lattice_states_the_index_and_th
     # The roots of D12+ are the 264 roots of D12, which has index 2.
     d12_plus = rows["0151"]
     assert (d12_plus["phi_type"], d12_plus["root_span"], d12_plus["root_span_index"], d12_plus["root_span_primitive"]) == ("D12", "D12", 2, "no")
-    # <0> has no roots: the sublattice 0 is primitive, and its index is not finite.
-    zero_form = rows["0010"]
-    assert (zero_form["root_span"], zero_form["root_span_rank"], zero_form["root_span_index"], zero_form["root_span_primitive"]) == ("0", 0, None, "yes")
+    # K12 has minimum 4 and no roots: the sublattice 0 is primitive, and its index is not finite.
+    k12 = rows["0150"]
+    assert (k12["root_span"], k12["root_span_rank"], k12["root_span_index"], k12["root_span_primitive"]) == ("0", 0, None, "yes")
 
 
 def test_each_record_decides_whether_it_is_a_root_lattice(rows: dict[str, site.Row]) -> None:
@@ -120,8 +120,9 @@ def test_the_page_of_a_lattice_writes_its_roots_in_the_basis_of_the_record(built
     u = (built / "tag" / "0016.html").read_text()
     assert r"\(e_{1} + e_{2}\)" in u
     assert r"\(e_{1} - e_{2}\)" in u
-    assert 'href="../tag/0002.html"' in u
-    assert 'href="../tag/0008.html"' in u
+    assert 'href="../tag/0001.html"' in u
+    assert r"\langle 2 \rangle" in u
+    assert r"\langle -2 \rangle" in u
 
 
 def test_the_page_of_a_sum_states_the_orthogonal_decomposition_that_its_basis_gives(built: Path) -> None:
