@@ -202,3 +202,18 @@ The `justfile` calls it.
 `uv run latticedb check` validates the records and builds nothing.
 
 The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`, and `provenance.computed_with` names their versions.
+
+## Sources to absorb
+
+The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane), <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/>, with its indefinite lattices first.
+`sources/nebe_sloane/` holds the 17 entries absorbed so far: the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$ and $BW_{16}$, all definite.
+
+The work that remains, in order:
+
+1. Find the indefinite entries.
+   The index page, read on 2026-10-01, contains none of the words "indefinite", "hyperbolic", "Lorentzian" and "signature"; its sections are ordered by dimension and by class (root, laminated, modular, unimodular, perfect, Niemeier, the tables of quaternary and quinary forms).
+   The entry pages were not read, so the signature of each entry is not known: read every entry page and compute the signature from its Gram tensor.
+2. Make `just nebe-sloane` admit an indefinite entry.
+   `nebe_sloane.check` compares the minimum and the kissing number that the catalogue states, which an indefinite lattice does not have.
+3. Absorb the indefinite entries, then the definite ones.
+   The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
