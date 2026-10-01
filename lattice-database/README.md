@@ -83,7 +83,7 @@ The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
 The build reads the stored values and computes nothing again.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-`latticedb certify` computes `integral.genus_symbol` and `integral.genus_class_count` with `Genus` of SageMath, and `definite.automorphism_group_order` with `qfauto` of PARI/GP, under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a value that SageMath does not compute within the time limit is not written.
+`latticedb certify` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, and `definite.automorphism_group_order` with `qfauto` of PARI/GP, under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a value that SageMath does not compute within the time limit is not written.
 `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
@@ -91,7 +91,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
-| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol`, `genus_class_count` |
+| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol`, `genus_class_count`, `hyperbolic_index` |
 | `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
 | `root_span` | $b$ is not definite | `roots`, `norms`, `summands`, `embedding` |
 | `root_sublattice` | $b$ is definite, or the record has `root_span` | `invariant_factors`, `norms` |
@@ -99,7 +99,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
 The `integral`, `definite`, `indefinite` and `root_sublattice` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
-`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.genus_symbol` and `integral.genus_class_count` are optional.
+`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` are optional.
 
 `integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.
 A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.

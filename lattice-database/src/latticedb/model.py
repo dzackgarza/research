@@ -148,6 +148,18 @@ class IntegralData(Record):
             "Requires a nonzero determinant; absent when it is not computed."
         ),
     )
+    hyperbolic_index: int | None = Field(
+        default=None,
+        ge=0,
+        description=(
+            "The largest $n$ with $L \\cong U^n \\oplus L'$ for a lattice $L'$, where $U$ is the hyperbolic plane. "
+            "For an integral $L$ this is the largest $n$ with an embedding $U^n \\hookrightarrow L$, because a unimodular sublattice $M$ of $L$ "
+            "satisfies $L = M \\oplus M^{\\perp}$. "
+            "Computed by `latticedb certify`: $L \\cong U^n \\oplus L'$ holds exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of "
+            "signature $(n_+ - n, n_- - n)$, since a lattice $U \\oplus L'$ of rank at least 3 is alone in its genus "
+            "(Nikulin 1980, Theorem 1.13.1*). Requires a nonzero determinant; absent when it is not computed."
+        ),
+    )
 
 
 class RootSystemComponent(Record):
@@ -451,6 +463,9 @@ class Lattice(Record):
             if self.integral.genus_class_count is not None:
                 message = "the class number of the genus requires a nonzero determinant"
                 yield _problem("genus_class_count_requires_nondegenerate", message, ("integral", "genus_class_count"))
+            if self.integral.hyperbolic_index is not None:
+                message = "the hyperbolic index requires a nonzero determinant"
+                yield _problem("hyperbolic_index_requires_nondegenerate", message, ("integral", "hyperbolic_index"))
             if self.integral.overlattice_count is not None:
                 message = "the number of overlattices is finite only when the determinant is not zero"
                 yield _problem("overlattice_count_requires_nondegenerate", message, ("integral", "overlattice_count"))

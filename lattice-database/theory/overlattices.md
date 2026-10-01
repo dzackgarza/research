@@ -40,3 +40,36 @@ The *class number* of the genus of $L$ is the number of isometry classes of latt
 
 The page states the class number when the record has it.
 It is computed with `Genus(G).representatives()` of SageMath.
+
+## Hyperbolic index {#hyperbolic-index}
+
+::: {.definition}
+Let $U$ be the hyperbolic plane, with Gram matrix $\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$.
+The *hyperbolic index* of a nondegenerate integral lattice $L$ is the largest $n \geq 0$ with $L \cong U^n \oplus L'$ for a lattice $L'$.
+:::
+
+::: {.proposition}
+Let $L$ be integral and let $M \subseteq L$ be a unimodular sublattice. Then $L = M \oplus M^{\perp}$.
+So the hyperbolic index of $L$ is also the largest $n$ with an embedding $U^n \hookrightarrow L$.
+:::
+
+::: {.proof}
+For $x \in L$, the map $y \mapsto b(x, y)$ on $M$ takes integer values.
+Because $M$ is unimodular, this map is $b(m, \cdot)$ for one $m \in M$, and then $x - m \in M^{\perp}$.
+So $L = M + M^{\perp}$, and $M \cap M^{\perp} = 0$ because $b$ is nondegenerate on $M$.
+:::
+
+So an embedding of $U^n$ into an integral lattice is primitive, and $L$ is never a proper overlattice of $U^n \oplus (U^n)^{\perp}$.
+The proposition requires $L$ integral: $U \subseteq U(\tfrac{1}{2})$ has index 2, and $U(\tfrac{1}{2})$ has no summand $U$.
+
+::: {.theorem data-name="Kneser"}
+An indefinite lattice $S$ of rank at least 3 is alone in its genus when, for each odd prime $p$, $S \otimes \mathbb{Z}_p$ has two orthogonal summands of rank 1 and the same scale, and $S \otimes \mathbb{Z}_2$ has a summand $U(2^k)$ or one of two other forms that the theorem lists ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060): V. V. Nikulin, *Integral symmetric bilinear forms and some of their applications*, Math.
+USSR-Izv.
+14 (1980), 103–167, Theorem 1.13.1*).
+:::
+
+A lattice $U \oplus L'$ of rank at least 3 satisfies these conditions with $k = 0$.
+A lattice in the genus of $U$ is even, unimodular and binary with determinant $-1$, so it has a primitive isotropic vector $e$; unimodularity gives $f$ with $b(e, f) = 1$, so it contains a copy of $U$, which is all of it by the proposition.
+So $L \cong U^n \oplus L'$ for some $L'$ exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of signature $(n_+ - n, n_- - n)$, and the hyperbolic index depends only on the genus of $L$.
+`latticedb certify` computes it so: for $n$ from $\min(n_+, n_-)$ down to 1, it searches the genera of that signature with determinant $(-1)^n \det L$ and the parity of $L$, with `genera` and `Genus.direct_sum` of SageMath.
+A definite lattice has hyperbolic index 0.

@@ -2,8 +2,8 @@
 
 Reads from standard input a JSON object `{"seconds": s, "lattices": [{"tag", "gram", "sign", "fields"}, ...]}`,
 where `sign` is 1 for a positive definite lattice, -1 for a negative definite one and 0 otherwise, and
-`fields` names the values to compute among `genus_symbol`, `genus_class_count` and
-`automorphism_group_order`. Writes one JSON line per lattice to standard output, as soon as it is
+`fields` names the values to compute among `genus_symbol`, `genus_class_count`, `hyperbolic_index`
+and `automorphism_group_order`. Writes one JSON line per lattice to standard output, as soon as it is
 computed: the tag, the version of SageMath as `by`, and each value of `fields`. A value that is not
 computed within `s` seconds is null.
 
@@ -17,10 +17,10 @@ from functools import partial
 from typing import TypedDict
 
 from cysignals.signals import AlarmInterrupt
-from sage.all import ZZ, alarm, cancel_alarm, matrix, pari
+from sage.all import ZZ, alarm, block_diagonal_matrix, cancel_alarm, matrix, pari
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.quadratic_forms.binary_qf import BinaryQF
-from sage.quadratic_forms.genera.genus import Genus
+from sage.quadratic_forms.genera.genus import Genus, genera
 from sage.version import version
 
 
@@ -58,6 +58,29 @@ def class_count(gram: Matrix_integer_dense) -> int:
     return len(classes)
 
 
+def hyperbolic_index(gram: Matrix_integer_dense) -> int:
+    """The largest n with L isometric to U^n + L', for the hyperbolic plane U.
+
+    A lattice U + L' of rank at least 3 is alone in its genus (Nikulin 1980, Theorem 1.13.1*), and the
+    even unimodular lattice of signature (n, n) is U^n. So L is isometric to U^n + L' for some L' exactly
+    when the genus of L is the sum of the genus of U^n and a genus of signature (p - n, q - n) and
+    determinant (-1)^n det(L), with the parity of L.
+    """
+    genus = Genus(gram)
+    positive, negative = genus.signature_pair()
+    plane = matrix(ZZ, [[0, 1], [1, 0]])
+    for n in range(min(positive, negative), 0, -1):
+        planes = Genus(block_diagonal_matrix([plane] * n))
+        if (positive, negative) == (n, n):
+            if genus == planes:
+                return n
+            continue
+        complements = genera((positive - n, negative - n), (-1) ** n * gram.det(), even=genus.is_even())
+        if any(complement.direct_sum(planes) == genus for complement in complements):
+            return n
+    return 0
+
+
 def within(seconds: int, compute: Callable[[], int | str]) -> int | str | None:
     """The value of `compute`, or None when it takes more than `seconds` seconds."""
     alarm(seconds)
@@ -85,6 +108,7 @@ def main() -> None:
         computations: dict[str, Callable[[], int | str]] = {
             "genus_symbol": partial(symbol, gram),
             "genus_class_count": partial(class_count, gram),
+            "hyperbolic_index": partial(hyperbolic_index, gram),
             "automorphism_group_order": partial(automorphism_group_order, positive),
         }
         line: dict[str, int | str | None] = {"tag": lattice["tag"], "by": f"SageMath {version}"}

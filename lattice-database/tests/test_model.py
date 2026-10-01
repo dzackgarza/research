@@ -375,6 +375,7 @@ def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank(
         (with_block(affine_a2(), "integral", genus_symbol="II_{2,0}"), "genus_requires_nondegenerate"),
         (with_block(affine_a2(), "integral", overlattice_count=1), "overlattice_count_requires_nondegenerate"),
         (with_block(affine_a2(), "integral", genus_class_count=1), "genus_class_count_requires_nondegenerate"),
+        (with_block(affine_a2(), "integral", hyperbolic_index=0), "hyperbolic_index_requires_nondegenerate"),
         (with_block(a2(), "integral", delta=0), "delta_requires_two_elementary_even"),
         (hyperbolic_plane() | {"root_sublattice": ROOT_SUBLATTICE_OF_U}, "root_sublattice_not_decided"),
         # A required block or field that is absent.

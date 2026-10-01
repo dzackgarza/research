@@ -1,4 +1,4 @@
-"""The genus symbol, the class number of the genus and the order of O(L), computed by SageMath and stored in the records.
+"""The genus symbol, the class number of the genus, the hyperbolic index and the order of O(L), computed by SageMath and stored in the records.
 
 `certify` sends the Gram tensor of each integral record with a nonzero determinant, with the values that
 have no certificate for that Gram tensor, to `sage_genus.py` under `sage -python`, and stores each value as
@@ -24,6 +24,7 @@ from latticedb.model import DefiniteData, IntegralData, Lattice, Yaml
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_symbol": ("integral", IntegralData),
     "genus_class_count": ("integral", IntegralData),
+    "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
 }
 """Each computed field, with the block of the record that holds it and the model of that block."""

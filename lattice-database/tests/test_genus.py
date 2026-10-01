@@ -5,6 +5,7 @@ from pathlib import Path
 
 import frontmatter
 from latticedb import certificates, corpus, genus
+from latticedb.model import Yaml
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 LOADED = corpus.load(REPOSITORY)
@@ -18,7 +19,35 @@ def test_sagemath_computes_the_invariants_of_a2() -> None:
         "genus_symbol": "II_{2,0} (2: 1^-2; 3: 1^-1 3^-1)",
         "automorphism_group_order": 12,
         "genus_class_count": 1,
+        "hyperbolic_index": 0,
     }
+
+
+def test_sagemath_computes_the_hyperbolic_index() -> None:
+    # U + U + E8(-1) has hyperbolic index 2; U(2) + <-2> has 0, because its discriminant group (Z/2)^3 needs rank 3;
+    # I_{1,1} is odd unimodular and U is even, so it has 0; I_{2,1} is U + <1>.
+    plane = [[0, 1], [1, 0]]
+    e8 = next(entry.lattice for entry in LOADED.entries if entry.lattice.tag == "0094")
+    negative_e8: list[list[int]] = [[-int(x) for x in row] for row in e8.gram_tensor]
+    grams: dict[str, list[list[int]]] = {
+        "U+U+E8(-1)": block_sum(plane, plane, negative_e8),
+        "U(2)+<-2>": block_sum([[0, 2], [2, 0]], [[-2]]),
+        "I_{1,1}": block_sum([[1]], [[-1]]),
+        "I_{2,1}": block_sum([[1]], [[1]], [[-1]]),
+    }
+    chosen: list[dict[str, Yaml]] = [{"tag": tag, "gram": gram, "sign": 0, "fields": ["hyperbolic_index"]} for tag, gram in grams.items()]
+    computed = {str(values["tag"]): values["hyperbolic_index"] for values in genus.computed(chosen, seconds=60)}
+    assert computed == {"U+U+E8(-1)": 2, "U(2)+<-2>": 0, "I_{1,1}": 0, "I_{2,1}": 1}
+
+
+def block_sum(*blocks: list[list[int]]) -> list[list[int]]:
+    size = sum(len(block) for block in blocks)
+    rows: list[list[int]] = []
+    offset = 0
+    for block in blocks:
+        rows.extend([0] * offset + row + [0] * (size - offset - len(row)) for row in block)
+        offset += len(block)
+    return rows
 
 
 def test_a_certified_value_is_not_requested() -> None:
