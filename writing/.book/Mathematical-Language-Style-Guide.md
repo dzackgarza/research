@@ -1,1 +1,0 @@
-category-theory/contributing/Mathematical-Language-Style-Guide.md

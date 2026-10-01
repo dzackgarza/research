@@ -1,8 +1,8 @@
-# Contributing to the book
+# Writing guidelines
 
-This is a mathematical book. Contributions are definitions, theorems,
-constructions, examples, and remarks in standard mathematical register.
-Each entry below has a code, a banned example, and the replacement.
+These rules govern mathematical prose in this repository: the book under
+`writing/`, papers, talks, docstrings, issue bodies, and plan cards. Each
+entry has a code, a banned example, and the replacement.
 
 ## Prose (`PR-*`)
 
@@ -454,6 +454,29 @@ source is inadmissible even when it resembles a standard definition.
 If the book's definition conflicts with the literature, correct it at the
 defining occurrence and repair its dependents. Do not shadow it locally.
 
+### `DEF-35`: Mathematics before its realization
+
+A mathematical chapter defines its categories, functors, morphisms, and
+universal properties without implementation names. A realization section can
+then name the Lean, Sage, or Mathlib object that represents the defined
+mathematics. Lean, Mathlib, and Sage identifiers are code-formatted and are
+never prose nouns.
+
+### `DEF-36`: Higher-categorical primitive first
+
+For a notion intrinsic to higher categories, first fix the universe, the model
+of higher categories, and the standard name of the category that model
+defines. Define the primitive construction there, with the type of every
+object, morphism, and comparison cell. If the familiar formulation lives in
+$\mathbf{Spaces}$, name the functor from the chosen category of higher
+categories to spaces, and cite the theorem that identifies the image of the
+primitive construction with the published space-level definition. The
+space-level formulation is a specialization, not the definition.
+
+Representable, Yoneda, mapping-space, and detection criteria are theorems
+stated after the definition, with their hypotheses. Recovery of an ordinary
+or strict special case is a lemma or remark after the general construction.
+
 ### `DEF-4`: Numbered block syntax
 
 ```markdown
@@ -526,6 +549,87 @@ from the cores. An invariant on isomorphism classes is drawn as a map from
 $\pi_0$. Membership of an object in a category is not drawn as a functor
 between categories.
 
+### `DIA-3`: A classifying object with its universal property
+
+A classifying object, classifying category, or universal family is named only
+together with the represented functor or its explicit universal property.
+
+### `DIA-4`: Display an adjunction
+
+An adjunction $F\dashv G$ is displayed with its source and target categories
+and both functors. The shared `\adj` macro gives the diagram.
+
+### `DIA-5`: A comparison of functors is a 2-cell
+
+A comparison between functors is a natural transformation or another
+specified 2-cell. A morphism between objects is a morphism in the stated
+category.
+
+### `DIA-6`: Landing in a subcategory is a factorization
+
+A theorem that a functor lands in a replete full subcategory is a proved
+factorization through its inclusion. Any other landing statement names the
+actual codomain.
+
+## Formation conventions (`FORM-*`)
+
+### `FORM-1`: Working 2-category
+
+State the universe. In $\mathbf{Cat}_{\mathcal U}$, objects are
+$\mathcal U$-small categories, 1-morphisms are functors, and 2-morphisms are
+natural transformations.
+
+### `FORM-2`: Pullbacks
+
+Use pseudo-pullbacks unless the relevant leg is an isofibration. A strict
+pullback along an isofibration presents the pseudo-pullback up to
+equivalence. A replete full inclusion is an isofibration.
+
+### `FORM-3`: Repleteness
+
+A full subcategory defined by an isomorphism-invariant object property is
+replete. A predicate that is not isomorphism-invariant can define a full
+subcategory that is not replete.
+
+### `FORM-4`: Categories of elements
+
+Fix one variance convention and state whether the projection is a fibration
+or an opfibration. For a presheaf $F$, define its category of elements and its
+projection once; a natural transformation of presheaves induces the functor
+between categories of elements.
+
+### `FORM-5`: Nerves
+
+The ordinary nerve of a category is the simplicial set of composable chains.
+For a simplicial category, use the homotopy coherent nerve ([Kerodon
+`00KS`](https://kerodon.net/tag/00KS)); on an ordinary category with discrete
+mapping spaces it agrees with the ordinary nerve.
+
+### `FORM-6`: Truncation
+
+Set-level and groupoid-level constructions are not interchangeable. Apply
+$\pi_0$ to a homotopy pullback only under hypotheses where $\pi_0$ preserves
+the construction; otherwise keep the groupoid-level or space-level object.
+
+### `FORM-7`: Generated functors
+
+A composite, induced functor, inclusion, projection, or whiskered natural
+transformation cites the constructions it is obtained from. Natural
+transformations are whiskered; functors are composed.
+
+### `FORM-8`: Abelian characterizations
+
+In an abelian category, monicity, epicity, or isomorphism can be expressed by
+the kernel and cokernel vanishing criteria. Outside an additive or abelian
+setting, use the categorical definition.
+
+### `FORM-9`: Form presheaves
+
+A family of forms is a named presheaf with its codomain stated. If comparison
+identities use $R$-module operations, state the presheaf as
+$F\colon\mathcal C^{\mathrm{op}}\to R\text{-}\mathbf{Mod}$ and type every
+natural transformation in the identity.
+
 ## Notation (`NOT-*`)
 
 ### `NOT-1`: State the mathematical type
@@ -535,12 +639,20 @@ morphisms in a specified category, categories and functors, natural
 transformations, object properties, chosen structures, invariants, sections,
 and obstructions.
 
+An obstruction is a specified class or map together with a theorem stating
+whether its vanishing is necessary, sufficient, or equivalent to the stated
+lifting or extension problem under the given hypotheses. A set-valued
+isomorphism invariant has the form $\pi_0(\mathcal C^{\simeq})\to S$; a
+functorial invariant with a richer codomain states that codomain and its
+functoriality.
+
 ### `NOT-2`: Typed equality symbols
 
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
 written with distinct symbols. $\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
-asserted separately.
+asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
+by notation.
 
 ### `NOT-3`: One symbol, one meaning
 
@@ -553,8 +665,9 @@ standard construction has been stated.
 Use established names in their standard meanings: category of elements,
 Grothendieck construction, core, arrow category, full subcategory, replete,
 natural isomorphism, automorphism group, torsor, monoidal category, abelian
-category, kernel, cokernel, discriminant form, genus, isometry, classifying
-object. Do not coin a name for a notion that already has one.
+category, preadditive category, kernel, cokernel, discriminant form, genus,
+isometry, classifying object, classifying space, classifying category, total
+category. Do not coin a name for a notion that already has one.
 
 ## Properties and structure (`STR-*`)
 
@@ -563,14 +676,18 @@ object. Do not coin a name for a notion that already has one.
 For a specified forgetful functor $U\colon\mathcal S\to\mathcal C$, full
 faithfulness gives at most property, faithfulness gives at most structure, and
 an arbitrary functor gives at most stuff. Repleteness is a separate condition
-when an essential image is replaced by a full subcategory.
+when an essential image is replaced by a full subcategory. Property language is
+used only when each homotopy fiber of $U$ is empty or a contractible groupoid;
+otherwise name the chosen structured object over $X$.
 
 ### `STR-2`: Name every chosen structure
 
 A structure on $X$ is a chosen object in the fiber over $X$ of a specified
 forgetful functor. When several choices exist, name the one used by the
-construction. For example, tensor product and direct sum give different
-monoidal structures on modules.
+construction. For example, for a commutative ring $R$, tensor product and
+direct sum give the different monoidal structures $(R\text{-}\mathbf{Mod},
+\otimes_R,R)$ and $(R\text{-}\mathbf{Mod},\oplus,0)$. Over a noncommutative
+ring, state the bimodule, left-module, or right-module setting.
 
 ### `STR-3`: State every hypothesis
 
@@ -762,6 +879,16 @@ constructions. Name the mathematical functor or the implementation operation
 actually meant. Restrict Mathlib identifiers to code-formatted implementation
 anchors.
 
+### `TERM-15`: Module and algebra bilinear forms
+
+A *module bilinear form* is an element of
+$\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$
+(@def:module-bilinear-form). An *algebra bilinear form* is an element of
+$\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$ with the tensor
+product of $R$-algebras (@def:algebra-bilinear-form). An associative pairing
+on a unital algebra is a condition on a module bilinear form on $U(A)$,
+equivalently a trace pairing $\varepsilon\circ\mu$.
+
 ### `TERM-2`: "Homomorphism" for a morphism or map
 
 Modern $\infty$-categorical and spectral literature writes "morphism" or
@@ -906,6 +1033,16 @@ is.
 **Preferred:** "$\mu\colon A\otimes_{\mathbb{Z}}A\to A$ is a homomorphism;
 the corresponding bilinear map $A\times A\to A$ is the multiplication."
 Declare the map, then name its role.
+
+### `SYM-3`: A tensor symbol has neither a bound monoidal structure nor an explicit base
+
+A bare tensor symbol $\otimes$ is meaningful only after the monoidal product itself has been bound as constituent data, e.g. by a tuple $(\mathcal C,\otimes,\mathbf 1)$ (with any further associator, unitors, or braiding also named). In module, lattice, sheaf, or algebra contexts there is no such implicit binding: the base ring or structure sheaf is part of the type and must appear in every tensor expression.
+
+Thus write $M\otimes_RN$, $L\otimes_{\mathbb Z}\mathbb Q$, $\mathcal L\otimes_{\mathcal O_X}\mathcal M$, $(f\otimes_R g)$, and $x\otimes_Ry$. The rule applies equally to tensor powers, pure tensors, tensors of morphisms, scalar extension, and derived tensor products (with the base displayed, e.g. $\otimes_R^L$).
+
+**Banned:** "$M\otimes N$" in $\mathbf{Mod}_R$; "$L\otimes\mathbb Q$" for an integral lattice; "$\mathcal L^{\otimes 2}$" for a line bundle on $X$; "$(f\otimes f)^*$" in an $R$-linear module category.
+
+**Preferred:** "$M\otimes_RN$"; "$L\otimes_{\mathbb Z}\mathbb Q$"; "$\mathcal L^{\otimes_{\mathcal O_X}2}$"; "$(f\otimes_Rf)^*$". Bare $\otimes$ is reserved for passages that first bind the monoidal structure itself, such as "let $(\mathcal C,\otimes,\mathbf1)$ be a monoidal category."
 
 ### `SYM-4`: A symbol overloaded within one passage
 
@@ -1547,8 +1684,8 @@ do not describe it as "identifying conventions."
 
 A construction that is functorially $B\otimes_A(-)$ — extension of scalars
 on modules, base change of a bilinear form as $B\otimes_A b$ — is defined
-by an elementwise recipe $b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y)$ on
-pure tensors $c\otimes x$. The recipe names no functor, no canonical
+by an elementwise recipe $b_B(c\otimes_A x,d\otimes_A y)=cd\otimes_A b(x,y)$ on
+pure tensors $c\otimes_A x$. The recipe names no functor, no canonical
 isomorphisms, and is well-defined only by $B$-bilinear extension; it fails
 outside free modules and hides whether $\otimes_A$ is the derived
 ($\otimes_A^L$) or underived product. The element formula, when it holds,
@@ -1560,11 +1697,11 @@ B\otimes_A(M\otimes_A M)\xrightarrow{B\otimes_A b} B\otimes_A W,
 $$
 i.e. $b_B$ is $B\otimes_A b$ composed with the canonical
 $(B\otimes_A M)\otimes_B(B\otimes_A M)\simeq B\otimes_A(M\otimes_A M)$;
-on pure tensors this is $b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y)$
+on pure tensors this is $b_B(c\otimes_A x,d\otimes_A y)=cd\otimes_A b(x,y)$
 when $B$-bilinear extension is well-defined.
 
 **Banned:** "Its base change is the $B$-bilinear map
-$b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y)$, whose value module is
+$b_B(c\otimes_A x,d\otimes_A y)=cd\otimes_A b(x,y)$, whose value module is
 $B\otimes_A W$."
 
 **Preferred:** "Let $M,W\in\mathbf{LMod}_A$ and
@@ -1584,7 +1721,7 @@ the reader unable to determine whether the construction is homotopically
 correct. State the derived product; note when passage to $\pi_0$ recovers
 the classical formula.
 
-**Banned:** "$B\otimes_A M$" and "$b_B(c\otimes x,d\otimes y)=cd\otimes
+**Banned:** "$B\otimes_A M$" and "$b_B(c\otimes_A x,d\otimes_A y)=cd\otimes
 b(x,y)$" with no indication whether $\otimes_A$ is $\otimes_A^L$.
 
 **Preferred:** "$B\otimes_A^L M$ for derived extension of scalars; its
@@ -2676,13 +2813,13 @@ Concrete standards (state one, then apply it):
   $M \simeq (M\otimes_{\mathbb Z}^L\mathbb Z_p)\times_{M\otimes_{\mathbb
   Z}^L\mathbb Q_p}(M\otimes_{\mathbb Z}^L\mathbb Q)$ as a pullback in
   $\mathbf{LMod}_{\mathbb Z}$; equivalently $M$ is recovered from the
-  pair $(M\otimes\mathbb Z_p, M\otimes\mathbb Q)$ plus an identification
+  pair $(M\otimes_{\mathbb Z}\mathbb Z_p, M\otimes_{\mathbb Z}\mathbb Q)$ plus an identification
   over $\mathbb Q_p$. Hypotheses: finite presentation (or perfect) for
   the pullback to be exact; without it the square need not be cartesian.
 
 * **Local-to-global for lattices:** $L\simeq L'$ as $\mathbb Z$-lattices
-  iff $L\otimes\mathbb Z_p\simeq L'\otimes\mathbb Z_p$ for all $p$ and
-  $L\otimes\mathbb Q\simeq L'\otimes\mathbb Q$ compatibly over
+  iff $L\otimes_{\mathbb Z}\mathbb Z_p\simeq L'\otimes_{\mathbb Z}\mathbb Z_p$ for all $p$ and
+  $L\otimes_{\mathbb Z}\mathbb Q\simeq L'\otimes_{\mathbb Z}\mathbb Q$ compatibly over
   $\mathbb Q_p$ — a conjunction, not "either image."
 
 **Banned:** "A conclusion about $L$ from either image requires a stated
@@ -2741,8 +2878,8 @@ checkable claim is made.
 **Preferred:** state the proposition with quantifiers: "For finitely
 presented $M$, $M\simeq0$ iff $S\otimes_R^L M\simeq0$ for faithfully
 flat $R\to S$"; "For $\mathbb Z$-lattices $L,L'$,
-$L\simeq L'$ iff $L\otimes\mathbb Z_p\simeq L'\otimes\mathbb Z_p$ for
-all $p$ and $L\otimes\mathbb Q\simeq L'\otimes\mathbb Q$ compatibly
+$L\simeq L'$ iff $L\otimes_{\mathbb Z}\mathbb Z_p\simeq L'\otimes_{\mathbb Z}\mathbb Z_p$ for
+all $p$ and $L\otimes_{\mathbb Z}\mathbb Q\simeq L'\otimes_{\mathbb Z}\mathbb Q$ compatibly
 over $\mathbb Q_p$." Name the conclusion; do not use "a conclusion" /
 "a result."
 
@@ -2823,7 +2960,7 @@ Concrete standards:
 * **Comparison map:** the natural $c_M\colon M\otimes_{\mathbb Z}^L
   \mathbb Z_p \to \widehat M_p$ induced by
   $\mathbb Z_p\simeq\lim_n\mathbb Z/p^n$ and
-  $M\otimes^L\lim_n\mathbb Z/p^n\to\lim_n(M\otimes^L\mathbb Z/p^n)$.
+  $M\otimes^L_{\mathbb Z}\lim_n\mathbb Z/p^n\to\lim_n(M\otimes^L_{\mathbb Z}\mathbb Z/p^n)$.
 
 Do not state that the functors are distinct. State what $c_M$ does.
 
@@ -2838,7 +2975,7 @@ equivalence; in particular $M\otimes_{\mathbb Z}\mathbb Z_p\simeq\widehat
 M_p$ for discrete finitely generated $M$. :::" Then apply or refute:
 "$c_M$ is not an equivalence in general: for
 $M=\bigoplus_{\mathbb N}\mathbb Z$,
-$M\otimes\mathbb Z_p=\bigoplus_{\mathbb N}\mathbb Z_p$ (finite support)
+$M\otimes_{\mathbb Z}\mathbb Z_p=\bigoplus_{\mathbb N}\mathbb Z_p$ (finite support)
 while $\widehat M_p$ strictly contains it; for $M=\mathbb Q$,
 $\mathbb Q\otimes_{\mathbb Z}\mathbb Z_p\simeq\mathbb Q_p$ while
 $\widehat{\mathbb Q}_p\simeq0$ [@Stacks-0A05, Tag 0A05; Lurie DAG, formal
@@ -2894,7 +3031,7 @@ $-\otimes_{\mathbb Z}^L\mathbb Z_p$ and $\widehat{(-)}_p$ with different
 definitions — their distinctness as definitions is already established;
 no sentence is needed to say they are distinct. Stating the positive
 quantified theorem with the comparison map (PR-33) — "$c_M\colon
-M\otimes^L\mathbb Z_p\to\widehat M_p$ is an equivalence for $M$ perfect
+M\otimes^L_{\mathbb Z}\mathbb Z_p\to\widehat M_p$ is an equivalence for $M$ perfect
 (in particular discrete finitely generated over Noetherian $\mathbb Z$)"
 — already makes the complement implicit and obvious to any reader: without
 $H$, the theorem does not apply and $c_M$ need not be an equivalence.
@@ -2912,7 +3049,7 @@ sentence.
 
 **Banned:** "Without the finite-generation hypothesis, scalar extension
 and completion are distinct constructions" alongside the definitions and
-"For finitely generated $M$, $M\otimes\mathbb Z_p\simeq\widehat M_p$."
+"For finitely generated $M$, $M\otimes_{\mathbb Z}\mathbb Z_p\simeq\widehat M_p$."
 
 **Preferred:** present the two functors with different definitions (hence
 distinct), then state one quantified theorem with the map:
@@ -3194,7 +3331,7 @@ $\operatorname{Bil}_{R,W}(M)$ vs. the functor
 $M\mapsto\operatorname{Bil}_{R,W}(M)$) and adds no content beyond
 "functor," since
 $\operatorname{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes_R M,W)$ is
-already functorial in $M$ by the Hom — $f\mapsto (f\otimes f)^*$.
+already functorial in $M$ by the Hom — $f\mapsto (f\otimes_R f)^*$.
 
 Concrete standards:
 
@@ -3219,9 +3356,9 @@ R\text{-}\mathbf{Mod}$."
 
 **Preferred:** "$\operatorname{Bil}_{R,W}(M):=
 \operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module, functorial in $M$
-by $(f\colon M\to N)\mapsto (f\otimes f)^*\colon
+by $(f\colon M\to N)\mapsto (f\otimes_R f)^*\colon
 \operatorname{Hom}_R(N\otimes_R N,W)\to\operatorname{Hom}_R(M\otimes_R
-M,W)$, $f^*b(x,y)=b(fx,fy)$ as the element formula for $(f\otimes f)^*b$."
+M,W)$, $f^*b(x,y)=b(fx,fy)$ as the element formula for $(f\otimes_R f)^*b$."
 If the word is needed, "as an $\mathbf{Mod}_R$-valued presheaf on
 $\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via
 {#thm-mod-closed})"; otherwise just "as a functor
@@ -3303,8 +3440,8 @@ prose on elements what the tensor classifier and the symmetry already
 encode as a morphism.
 
 Concrete standards — state the diagrammatic notion once via the
-symmetric monoidal structure (non-lax: $\tau\colon M\otimes M\to
-M\otimes M$ is an isomorphism with $\tau^2=\mathrm{id}$, not a lax
+symmetric monoidal structure (non-lax: $\tau\colon M\otimes_R M\to
+M\otimes_R M$ is an isomorphism with $\tau^2=\mathrm{id}$, not a lax
 comparison), then derive the element formula as its unwrapping when
 $U$ exists:
 
@@ -3312,13 +3449,13 @@ $U$ exists:
   (stably $(\mathbf{LMod}_R,\otimes^L_R,R,\tau)$) symmetric monoidal
   closed and self-enriched {#thm-mod-closed}, with $M\otimes_R M$
   classifying bilinears {#def-tensor}. Let $\tau_{M,M}\colon M\otimes
-  M\to M\otimes M$ be the symmetry, $\Delta\colon M\to M\otimes M$ the
+  M\to M\otimes_R M$ be the symmetry, $\Delta\colon M\to M\otimes_R M$ the
   diagonal for alternating, and $\Gamma^2_R(M)\xrightarrow{\gamma}
-  \operatorname{Sym}^2_R(M)\to M\otimes M$ the divided-power classifier
+  \operatorname{Sym}^2_R(M)\to M\otimes_R M$ the divided-power classifier
   for even/quadratic.
 
 * **$W$-valued bilinear $b\colon M\otimes_R M\to W$ is:**
-  — **symmetric** if $b\circ\tau = b\colon M\otimes M\to W$;
+  — **symmetric** if $b\circ\tau = b\colon M\otimes_R M\to W$;
   — **skew-symmetric** if $b\circ\tau = -b$;
   — **alternating** if $b\circ\Delta =0$ (equivalently $b\circ\tau=-b$
   and $b\circ\Delta=0$; in $2$ invertible alternating $=$ skew);
@@ -3343,7 +3480,7 @@ $b$ is **symmetric** if $b\circ\tau=b$, **skew** if $b\circ\tau=-b$,
 **alternating** if $b\circ\Delta=0$, **even** if $b$ lifts through
 $\Gamma^2_R(M)$." Then, if pedagogically useful: "On elements this is
 $b(x,y)=b(y,x)$, $b(x,x)=0$, etc., as the evaluation of those equalities
-on $x\otimes y\colon R\to M\otimes M$."
+on $x\otimes y\colon R\to M\otimes_R M$."
 
 ### `PR-44`: "$b$ is *even* if $b(x,x)\in2W$" breaks the value-module abstraction just built
 
@@ -3362,11 +3499,11 @@ This is the general form of PR-43 and PR-37/TERM-9: prose on elements
 that collapses the abstraction just built for $W$-valued forms.
 
 Concrete standard — evenness is a lift of the morphism
-$b\colon M\otimes M\to W$, not a pointwise divisibility:
+$b\colon M\otimes_R M\to W$, not a pointwise divisibility:
 
 * **Classifiers (once, fenced):**
   $\Gamma^2_R(M)\xrightarrow{\gamma}\operatorname{Sym}^2_R(M)
-  \twoheadrightarrow M\otimes_R M$ with $\tau$ on $M\otimes M$ as in
+  \twoheadrightarrow M\otimes_R M$ with $\tau$ on $M\otimes_R M$ as in
   PR-43; stably $\mathbf{\Gamma}^2_R(M)\to\mathbf{Sym}^2_R(M)$. Then
   $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$,
   $\operatorname{Sym}_{R,W}(M):=\operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)$,
@@ -3389,7 +3526,7 @@ $\operatorname{Hom}_R(M\otimes_RM,W)$.
 **Preferred:** "$b\colon M\otimes_RM\to W$ symmetric is **even** if it
 lifts through $\Gamma^2_R(M)$ (i.e. $b$ is in the image of
 $\operatorname{Hom}_R(\Gamma^2_R(M),W)\xrightarrow{\gamma^*}
-\operatorname{Hom}_R(M\otimes M,W)$)." Then, only after and only for
+\operatorname{Hom}_R(M\otimes_R M,W)$)." Then, only after and only for
 discrete $W$ with $U$: "On elements this is $b(x,x)\in2W$."
 
 ### `PR-45`: Carrying $b(x,x)\in2W$ on every use instead of naming the governing $R$-submodule $\operatorname{Val}(b)\subseteq W$ — local thinking for a global object
@@ -3421,7 +3558,7 @@ $R$-submodules, not pointwise checks:
   $\operatorname{Val}(b):=\langle b(x,x)\mid x\in M\rangle_R\subseteq W$
   the $R$-submodule spanned by the diagonal — equivalently the image
   $R$-submodule of $b\circ\Delta\colon M\to W$ for
-  $\Delta\colon M\to M\otimes M$, i.e. the image of
+  $\Delta\colon M\to M\otimes_R M$, i.e. the image of
   $\operatorname{Hom}_R(\Gamma^2_R(M),W)\xrightarrow{\gamma^*}W$ under
   evaluation. It is an $R$-submodule of $W$, functorial in $W$ via
   $\operatorname{Hom}$. :::" Stably the image $R$-submodule of
@@ -3502,7 +3639,7 @@ $\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to\operatorname{Bil}_{R,W}(M)$,
 $q\mapsto b_q$, so a $q$ with $b_q=b$ can be called a quadratic refinement
 of $b$. That meaning requires the named $R$-linear
 $\gamma^*\colon\operatorname{Hom}_R(\Gamma^2_R(M),W)\to\operatorname{Hom}_R(M\otimes_RM,W)$
-(induced by $\Gamma^2_R(M)\xrightarrow{\gamma}\operatorname{Sym}^2_R(M)\to M\otimes M$)
+(induced by $\Gamma^2_R(M)\xrightarrow{\gamma}\operatorname{Sym}^2_R(M)\to M\otimes_R M$)
 to be defined, with its (non-)injectivity/surjectivity and fiber discussed —
 is a refinement a section, a lift, a fiber over $b$? No $\gamma^*$ was named
 and no $\ker(\gamma^*)/\operatorname{coker}(\gamma^*)$ was stated, so there
@@ -3683,11 +3820,11 @@ $x$" is its evaluation on $U$-points $x\colon 1\to M$ when $U$ exists:
 * **Functor, not family:** $M\mapsto\operatorname{Bil}_{R,W}(M):=
   \operatorname{Hom}_R(M\otimes_RM,W)$ as functor
   $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$ with
-  $f\mapsto(f\otimes f)^*$ — not "for every $M$, the $R$-module …
+  $f\mapsto(f\otimes_R f)^*$ — not "for every $M$, the $R$-module …
   and for every $f\colon M\to N$, $f^*b(x,y)=b(fx,fy)$."
 
 * **Submodule, not pointwise membership:** $\operatorname{Val}(b)\subseteq
-  W$ as $R$-submodule for $b\colon M\otimes M\to W$ — not "for every
+  W$ as $R$-submodule for $b\colon M\otimes_R M\to W$ — not "for every
   $x$, $b(x,x)\in2W$."
 
 * **Section, not pointwise choice:** a "continuously varying choice of
@@ -3748,7 +3885,7 @@ recovers the element formula as a theorem, not a definition, so one
 general concept does the work everywhere.
 
 This is the general form behind PR-43/PR-44 and PR-39/PR-40/TERM-11: the
-tensor classifier $M\otimes M$ and $\tau$ already encode bilinears and
+tensor classifier $M\otimes_R M$ and $\tau$ already encode bilinears and
 symmetry; re-spelling them as "$\forall x,y\in M$" concretizes the
 abstraction just built.
 
@@ -3818,7 +3955,7 @@ later theory is immediate:
   \underline{\operatorname{Hom}}_R(N,W))$ (and $\perp_{\!R}$ via the other
   adjoint), the $R$-submodule classified by the universal property for
   "$b(x,N)=0$";
-  $Q_{R,W}(M):=\ker(M\xrightarrow{\Delta}M\otimes M\xrightarrow{b}W)$ for
+  $Q_{R,W}(M):=\ker(M\xrightarrow{\Delta}M\otimes_R M\xrightarrow{b}W)$ for
   $q:=b\circ\Delta$ (quadratic diagonal) — $x$ isotropic iff
   $x\in\ker(q)$ as $U$-shadow, and $b$ anisotropic iff $\ker(q)=0$ as
   subobject of $M$ (not "$0$ is the only isotropic element");
@@ -3880,9 +4017,9 @@ Foresight is stating the scaffolding and the governing object once, diagrammatic
 
 Concrete scaffolding that was owed once, fenced, before any $b(x,y)$ or $N^{\perp}$:
 
-* $(\mathbf{Mod}_R,\otimes_R,R,\tau)$ symmetric monoidal closed and self-enriched, $M\otimes_RM$ classifying $R$-bilinears, $\underline{\operatorname{Hom}}_R(M,W)\in\mathbf{Mod}_R$ as internal hom {#thm-mod-closed}/{#def-tensor}; $\operatorname{Hom}_R(M\otimes M,W)\cong\operatorname{Hom}_R(M,\underline{\operatorname{Hom}}_R(M,W))$ giving $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$.
-* $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ and its named $R$-submodules $\operatorname{SymBil}:=\ker(\tau^*-\mathrm{id})$, $\operatorname{SkewBil}:=\ker(\tau^*+\mathrm{id})$, $\operatorname{AltBil}:=\ker(\Delta^*)$, $\operatorname{EvBil}:=\operatorname{im}(\gamma^*)$ with $\Gamma^2_R\xrightarrow{\gamma}\operatorname{Sym}^2_R\to M\otimes M$; $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and $\gamma^*\colon\operatorname{Quad}\to\operatorname{Bil}$.
-* $\operatorname{Val}(b)\subseteq W$ as $R$-submodule $\langle b(x,x)\rangle$ i.e. image of $\gamma^*$; $N^{\perp}:=\ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))$; isotropic as $\ker(M\xrightarrow{\Delta}M\otimes M\xrightarrow{b}W)$, anisotropic as $\ker=0$; nondegenerate as $b^{\sharp}$ iso; $M^\vee:=\underline{\operatorname{Hom}}_R(M,R)$; $(M,b)\perp(N,c)$ as orthogonal sum in $\mathbf{Bil}_{R,W}$.
+* $(\mathbf{Mod}_R,\otimes_R,R,\tau)$ symmetric monoidal closed and self-enriched, $M\otimes_RM$ classifying $R$-bilinears, $\underline{\operatorname{Hom}}_R(M,W)\in\mathbf{Mod}_R$ as internal hom {#thm-mod-closed}/{#def-tensor}; $\operatorname{Hom}_R(M\otimes_R M,W)\cong\operatorname{Hom}_R(M,\underline{\operatorname{Hom}}_R(M,W))$ giving $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$.
+* $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$ and its named $R$-submodules $\operatorname{SymBil}:=\ker(\tau^*-\mathrm{id})$, $\operatorname{SkewBil}:=\ker(\tau^*+\mathrm{id})$, $\operatorname{AltBil}:=\ker(\Delta^*)$, $\operatorname{EvBil}:=\operatorname{im}(\gamma^*)$ with $\Gamma^2_R\xrightarrow{\gamma}\operatorname{Sym}^2_R\to M\otimes_R M$; $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and $\gamma^*\colon\operatorname{Quad}\to\operatorname{Bil}$.
+* $\operatorname{Val}(b)\subseteq W$ as $R$-submodule $\langle b(x,x)\rangle$ i.e. image of $\gamma^*$; $N^{\perp}:=\ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))$; isotropic as $\ker(M\xrightarrow{\Delta}M\otimes_R M\xrightarrow{b}W)$, anisotropic as $\ker=0$; nondegenerate as $b^{\sharp}$ iso; $M^\vee:=\underline{\operatorname{Hom}}_R(M,R)$; $(M,b)\perp(N,c)$ as orthogonal sum in $\mathbf{Bil}_{R,W}$.
 
 With those named, hygiene is: every definition is membership in a named $R$-submodule / kernel of a named $R$-linear map; every theorem is a containment of named subobjects or a statement about a named map $2_*$ / $\gamma^*$ being (non-)iso with obstruction $\ker/\operatorname{coker}$; every "for every $x$" is the $U$-evaluation of that diagram when $U$ exists. The minimal "$\forall x\in M$, $b(x,y)=b(y,x)$ / $b(x,N)=0$ / $b(x,x)\in2W$" is then never the definition.
 
@@ -3908,7 +4045,7 @@ $\mathbf{LMod}_R$ stably, $\mathbf{Sp}$-modules, sheaves have no
 underlying set $M/N$).
 
 Concrete standards — name the mono and its cokernel, then the induced
-form is the unique factorization through $\pi\otimes\pi$:
+form is the unique factorization through $\pi\otimes_R\pi$:
 
 * **Scaffolding (once, fenced):** in abelian $\mathcal C$, a subobject of
   $M$ is a mono $i\colon N\hookrightarrow M$ up to iso over $M$; its
@@ -3916,15 +4053,15 @@ form is the unique factorization through $\pi\otimes\pi$:
   \operatorname{coker}(i)$ with universal property: $f\colon M\to T$
   factors uniquely through $\operatorname{coker}(i)$ iff $f\circ i=0$.
 
-* **Forms on quotients:** for $b\colon M\otimes M\to W$ symmetric (or
+* **Forms on quotients:** for $b\colon M\otimes_R M\to W$ symmetric (or
   any $b$), and $i\colon N\hookrightarrow M$, the **restriction** is
-  $i^*b:=b\circ(i\otimes i)\colon N\otimes N\to W$; $i$ is **isotropic**
-  ($N\subseteq N^{\perp}$) iff $b\circ(i\otimes\mathrm{id}_M)=0\colon
-  N\otimes M\to W$ (i.e. $i^*b$ and the cross terms vanish as $b\circ
-  (i\otimes\mathrm{id})=0$). Then $b$ **induces** $\bar b\colon
+  $i^*b:=b\circ(i\otimes_R i)\colon N\otimes_R N\to W$; $i$ is **isotropic**
+  ($N\subseteq N^{\perp}$) iff $b\circ(i\otimes_R\mathrm{id}_M)=0\colon
+  N\otimes_R M\to W$ (i.e. $i^*b$ and the cross terms vanish as $b\circ
+  (i\otimes_R\mathrm{id})=0$). Then $b$ **induces** $\bar b\colon
   \operatorname{coker}(i)\otimes\operatorname{coker}(i)\to W$ iff
   $i^*b=0$ in that sense, and $\bar b$ is the unique $R$-linear with
-  $\bar b\circ(\pi\otimes\pi)=b$ for $\pi:=\operatorname{coker}(i)$. No
+  $\bar b\circ(\pi\otimes_R\pi)=b$ for $\pi:=\operatorname{coker}(i)$. No
   $[x]$ to choose, no well-definedness to check.
 
   Stably $\operatorname{cofib}(i)$ for $i\colon N\to M$ in
@@ -3933,12 +4070,12 @@ form is the unique factorization through $\pi\otimes\pi$:
 **Banned:** "Let $b$ be symmetric on $M$ and let $N\subseteq M$ be a
 submodule. … forms on quotients $M/N$ … $\bar b([x],[y])=b(x,y)$."
 
-**Preferred:** "Let $b\colon M\otimes M\to W$ be symmetric and let
+**Preferred:** "Let $b\colon M\otimes_R M\to W$ be symmetric and let
 $i\colon N\hookrightarrow M$ be a mono (a subobject). Put
 $\pi\colon M\twoheadrightarrow\operatorname{coker}(i)$ for the quotient.
 Then $b$ induces $\bar b\colon\operatorname{coker}(i)\otimes
 \operatorname{coker}(i)\to W$ iff $i^*b=0$ (i.e. $b\circ(i\otimes
-\mathrm{id}_M)=0$), uniquely with $\bar b\circ(\pi\otimes\pi)=b$."
+\mathrm{id}_M)=0$), uniquely with $\bar b\circ(\pi\otimes_R\pi)=b$."
 Then, only after and only when $U$ exists: "On $U$-points this is
 $\bar b([x],[y])=b(x,y)$ for $[x]=\pi(x)$."
 
@@ -3947,9 +4084,9 @@ $\bar b([x],[y])=b(x,y)$ for $[x]=\pi(x)$."
 "$N^{\perp}$" as written suggests a function of the abstract $R$-module
 $N$ (or of $N$ up to isometry as lattice), but
 $N^{\perp}:=\ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))$
-with $b^{\sharp}=b\circ(i\otimes\mathrm{id}_M)$ depends on the triple
+with $b^{\sharp}=b\circ(i\otimes_R\mathrm{id}_M)$ depends on the triple
 $(M,b,i)$ — the ambient $M$, the $W$-valued
-$b\colon M\otimes M\to W$, and the mono $i\colon N\hookrightarrow M$ that
+$b\colon M\otimes_R M\to W$, and the mono $i\colon N\hookrightarrow M$ that
 makes $N$ a *subobject*, not on $N$ abstractly. Change $b$ or change $i$
 and the kernel moves while abstract $N$ does not. "Abstractly a submodule
 of $M$" (i.e. $N\cong N'$ as $R$-module / as lattice) does not determine
@@ -3960,7 +4097,7 @@ Concrete standards — name the triple, and keep $N^{\perp}$ with its
 ambient:
 
 * **Object:** for $i\colon N\hookrightarrow M$ and
-  $b\colon M\otimes M\to W$, put
+  $b\colon M\otimes_R M\to W$, put
   $N^{\perp_{b}}:=N^{\perp_{i}}:=
   (i\colon N\hookrightarrow(M,b))^{\perp}:=
   \ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))\subseteq M$
@@ -4002,7 +4139,7 @@ via $i_1,i_2$ with $N^{\perp_{i_1}}\not\cong N^{\perp_{i_2}}$."
 "$\operatorname{Gram}(b)$" as a matrix $(b(e_i,e_j))$ presupposes a finite
 ordered basis $e\colon R^n\xrightarrow{\sim}M$, i.e. an object of
 $\mathbf{FMod}_R^{\mathrm{fr}}$ / $\mathbf{BMod}_R$, not of
-$\mathbf{Mod}_R$. An object $(M,b\colon M\otimes M\to W)$ in
+$\mathbf{Mod}_R$. An object $(M,b\colon M\otimes_R M\to W)$ in
 $\mathbf{Bil}_{R,W}$ has $M$ arbitrary — $M=\mathbb Q$,
 $\mathbb Q/\mathbb Z$, $\bigoplus_{\mathbb N}\mathbb Z$, non-free
 projective all carry $W$-valued $b$ with no $n$ and no $(e_i)$ — so no
@@ -4013,7 +4150,7 @@ On $\mathbf{Lat}_R\subseteq\mathbf{Bil}_{R,W}$ — finite free over $\mathbb Z$
 (resp. $\mathbb Z_{(p)}$) with nondegenerate $b$ — an $n$ *does* exist, but
 still no distinguished $e$: the $n\times n$ matrix is defined only *after*
 choosing an ordered basis. Framed, it is well-typed as the pullback
-$G_e(b):=e^*b:=b\circ(e\otimes e)\in M_n(W)=\operatorname{Hom}_R(R^n\otimes R^n,W)$,
+$G_e(b):=e^*b:=b\circ(e\otimes_R e)\in M_n(W)=\operatorname{Hom}_R(R^n\otimes_R R^n,W)$,
 i.e. $(b(e_i,e_j))$, and then $\det$, $\operatorname{rk}$, etc. are
 $\operatorname{GL}_n(R)$-invariants of the isometry class $[G_e(b)]$.
 
@@ -4107,21 +4244,21 @@ Philosophy — never overfit to finite / finitely generated / finitely presented
 
 Concrete standards:
 
-* **$b$ as $W$-valued $(0,2)$-tensor.** For $R$ commutative and $W,M\in\mathbf{Mod}_R$, $b\colon M\otimes_RM\to W$ is $W$-valued covariant $2$-tensor — in index notation $b_{ij}$ with two *down* indices. When $W=R$ and $M\cong R^n$ finite free, $\operatorname{Hom}_R(M\otimes M,R)\cong M^\vee\otimes M^\vee$ is the $(0,2)$-tensor $b_{ij}$; an endomorphism is $(1,1)$-tensor $T^i_j\in\operatorname{Hom}_R(M,M)\cong M\otimes M^\vee$. $G_{ij}=b(e_i,e_j)$ as $(0,2)$ transforms by **congruence** $G_{e'}=P^{\!t}G_eP$ for $e'=eP$, $P\in\operatorname{GL}_n(R)$, i.e. $G_{e'\,kl}=\sum_{i,j}P^i_kP^j_lG_{e\,ij}$, while $(1,1)$ transforms by **similarity** $T_{e'}=P^{-1}T_eP$, $T^i_j\mapsto\sum_{k,l}(P^{-1})^i_kT^k_lP^l_j$. Writing both as "$G_{ij}$" and "$\sum a_iG_{ij}c_j$" conflates $(0,2)$ with $(1,1)$ (and with $(2,0)$ $W^\vee$-valued) and hides which $P$ acts on which side and whether $W$ is involved.
+* **$b$ as $W$-valued $(0,2)$-tensor.** For $R$ commutative and $W,M\in\mathbf{Mod}_R$, $b\colon M\otimes_RM\to W$ is $W$-valued covariant $2$-tensor — in index notation $b_{ij}$ with two *down* indices. When $W=R$ and $M\cong R^n$ finite free, $\operatorname{Hom}_R(M\otimes_R M,R)\cong M^\vee\otimes_R M^\vee$ is the $(0,2)$-tensor $b_{ij}$; an endomorphism is $(1,1)$-tensor $T^i_j\in\operatorname{Hom}_R(M,M)\cong M\otimes_R M^\vee$. $G_{ij}=b(e_i,e_j)$ as $(0,2)$ transforms by **congruence** $G_{e'}=P^{\!t}G_eP$ for $e'=eP$, $P\in\operatorname{GL}_n(R)$, i.e. $G_{e'\,kl}=\sum_{i,j}P^i_kP^j_lG_{e\,ij}$, while $(1,1)$ transforms by **similarity** $T_{e'}=P^{-1}T_eP$, $T^i_j\mapsto\sum_{k,l}(P^{-1})^i_kT^k_lP^l_j$. Writing both as "$G_{ij}$" and "$\sum a_iG_{ij}c_j$" conflates $(0,2)$ with $(1,1)$ (and with $(2,0)$ $W^\vee$-valued) and hides which $P$ acts on which side and whether $W$ is involved.
 
 * **The map from matrices to tensors, not the identification.**
-  Fix an ordered basis $e\colon R^n\xrightarrow{\sim}M$ (framed $((M,e),b)$). The $R$-linear $\Phi_e\colon M_{n\times n}(W):=W^{I\times I}\to\operatorname{Hom}_R(M\otimes M,W)$, $\Phi_e((G_{ij})):=e^*b$ with $b(e_i,e_j)=G_{ij}$, is an *isomorphism* only when $M=R^{(I)}$ free on $I$ and $W$ is discrete with $M^{(I)}$-finite support; its kernel/cokernel are the well-definedness/ambiguity content. For general $M$ the domain $M_{n\times n}(W)$ has no map to $\operatorname{Hom}_R(M\otimes M,W)$ at all — the matrix algebra and the space of $W$-valued $(0,2)$-tensors are not the same object.
+  Fix an ordered basis $e\colon R^n\xrightarrow{\sim}M$ (framed $((M,e),b)$). The $R$-linear $\Phi_e\colon M_{n\times n}(W):=W^{I\times I}\to\operatorname{Hom}_R(M\otimes_R M,W)$, $\Phi_e((G_{ij})):=e^*b$ with $b(e_i,e_j)=G_{ij}$, is an *isomorphism* only when $M=R^{(I)}$ free on $I$ and $W$ is discrete with $M^{(I)}$-finite support; its kernel/cokernel are the well-definedness/ambiguity content. For general $M$ the domain $M_{n\times n}(W)$ has no map to $\operatorname{Hom}_R(M\otimes_R M,W)$ at all — the matrix algebra and the space of $W$-valued $(0,2)$-tensors are not the same object.
 
-* **The sum and $(L^2(\mathbb R),\int)$.** "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$, finite by finite support" is the coordinate shadow of $b\circ(e\otimes e)$ for $v=\sum_ia_ie_i$ with $a_i$ finitely supported — i.e. $M=R^{(I)}$ as *algebraic* free module with discrete topology. $(L^2(\mathbb R),\langle f,g\rangle:=\int_{\mathbb R}fg\in\mathbb R)$ is a perfectly reasonable $\mathbb R$-valued bilinear $\mathbb R$-module — $M:=L^2(\mathbb R)\in\mathbf{Mod}_{\mathbb R}$, $b(f,g):=\int fg\in\mathbb R$, $b\in\operatorname{Hom}_{\mathbb R}(L^2\otimes L^2,\mathbb R)$ stably — but $L^2$ is not $\mathbb R^{(I)}$ for any $I$ (no Hamel basis gives $f=\sum a_ie_i$ finitely; no orthonormal basis gives algebraic finite sums; $f=\sum\langle f,e_i\rangle e_i$ is $L^2$-convergent, not finite). No $I\times I$ family $G_{ij}\in\mathbb R$ and no finite $\sum a_iG_{ij}c_j$ computes $\int fg$; the Gram "matrix" is the integral kernel $K$ with $\int fg=\iint f(x)K(x,y)g(y)$, i.e. the $(0,2)$-tensor as distribution, whose map $M_{I\times I}(\mathbb R)\to\operatorname{Hom}(L^2\otimes L^2,\mathbb R)$ has huge kernel/cokernel. Never assume finite support / discrete topology.
+* **The sum and $(L^2(\mathbb R),\int)$.** "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$, finite by finite support" is the coordinate shadow of $b\circ(e\otimes_R e)$ for $v=\sum_ia_ie_i$ with $a_i$ finitely supported — i.e. $M=R^{(I)}$ as *algebraic* free module with discrete topology. $(L^2(\mathbb R),\langle f,g\rangle:=\int_{\mathbb R}fg\in\mathbb R)$ is a perfectly reasonable $\mathbb R$-valued bilinear $\mathbb R$-module — $M:=L^2(\mathbb R)\in\mathbf{Mod}_{\mathbb R}$, $b(f,g):=\int fg\in\mathbb R$, $b\in\operatorname{Hom}_{\mathbb R}(L^2\otimes_{\mathbb R} L^2,\mathbb R)$ stably — but $L^2$ is not $\mathbb R^{(I)}$ for any $I$ (no Hamel basis gives $f=\sum a_ie_i$ finitely; no orthonormal basis gives algebraic finite sums; $f=\sum\langle f,e_i\rangle e_i$ is $L^2$-convergent, not finite). No $I\times I$ family $G_{ij}\in\mathbb R$ and no finite $\sum a_iG_{ij}c_j$ computes $\int fg$; the Gram "matrix" is the integral kernel $K$ with $\int fg=\iint f(x)K(x,y)g(y)$, i.e. the $(0,2)$-tensor as distribution, whose map $M_{I\times I}(\mathbb R)\to\operatorname{Hom}(L^2\otimes_{\mathbb R} L^2,\mathbb R)$ has huge kernel/cokernel. Never assume finite support / discrete topology.
 
 **Banned:** the block as stated in $\mathbf{Bil}_{R,W}$ — "$M$ free on $E$, $b$ with values in $R$, $G_{ij}=b(e_i,e_j)$, $b(v,w)=\sum a_iG_{ij}c_j$ finite, every $(G_{ij})$ arises" as the definition of $\operatorname{Gram}$ for $(M,b)\in\mathbf{Bil}_{R,W}$.
 
-**Preferred:** for $R$ commutative and $W,M\in\mathbf{Mod}_R$, put $b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ as $W$-valued $(0,2)$-tensor $b_{ij}$ with two down indices; for framed $((M,e),b)$, $e\colon R^n\xrightarrow{\sim}M$, put $G_e(b)_{ij}:=b(e_i,e_j)\in W$ and state $\Phi_e$ and its variance $G_{e'}=P^{\!t}G_eP$ (congruence, not similarity), with kernel/cokernel of $\Phi_e$ as the well-definedness content. Never write $G_{ij}$ for a $(1,1)$-tensor and a $(0,2)$-tensor without distinguishing, and never assume $M=R^{(I)}$ or finite $I$.
+**Preferred:** for $R$ commutative and $W,M\in\mathbf{Mod}_R$, put $b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$ as $W$-valued $(0,2)$-tensor $b_{ij}$ with two down indices; for framed $((M,e),b)$, $e\colon R^n\xrightarrow{\sim}M$, put $G_e(b)_{ij}:=b(e_i,e_j)\in W$ and state $\Phi_e$ and its variance $G_{e'}=P^{\!t}G_eP$ (congruence, not similarity), with kernel/cokernel of $\Phi_e$ as the well-definedness content. Never write $G_{ij}$ for a $(1,1)$-tensor and a $(0,2)$-tensor without distinguishing, and never assume $M=R^{(I)}$ or finite $I$.
 
 ### `PR-62`: "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$" smuggles a Riesz theorem and the canonical $\langle v,w\rangle_0:=\sum_ia_ic_i$ on $F=R^{(I)}$ — eliding its hypotheses, completions, and the operator form $b(v,w)=\langle v,Aw\rangle$
 
 The double sum as *definition* of how $b$ is evaluated assumes the
-theorem "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(R^{(I)}\otimes R^{(I)},W)$ and
+theorem "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(R^{(I)}\otimes_R R^{(I)},W)$ and
 $b(v,w)=\sum_{i,j}a_iG_{ij}c_j$" — i.e. that $b$ is determined by
 $G_{ij}$ and evaluation pulls through the finite $a_i,c_j$. For
 $F:=R^{(I)}$ algebraic free with discrete $W$, $\sum a_iG_{ij}c_j$ is
@@ -4149,7 +4286,7 @@ which is perfect on $F$.
 Riesz as usually stated never writes the double sum: it is
 "$b(v,w)=\langle v,Aw\rangle$ for a unique $A$ with … (symmetric $\iff$
 $A$ self-adjoint, bounded / Hilbert-Schmidt / Fredholm / elliptic per the
-topological hypotheses)," with the map $W^{I\times I}\to\operatorname{Hom}(F\otimes F,W)$
+topological hypotheses)," with the map $W^{I\times I}\to\operatorname{Hom}(F\otimes_R F,W)$
 and its kernel/cokernel, and the convergence/completion hypotheses, made
 explicit. The "$b(v,w)=\sum a_iG_{ij}c_j$ finite by finite support" elides
 all of that, and defers the research extensions — completions,
@@ -4175,10 +4312,10 @@ of the coordinates. Every family $(G_{ij})$ arises uniquely" as the
 
 **Preferred:** for $F=R^{(I)}$ state the Proposition with honest
 hypotheses — "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}
-\operatorname{Hom}_R(F\otimes F,W)$ via $G_{ij}=b(e_i,e_j)$ is an iso for
+\operatorname{Hom}_R(F\otimes_R F,W)$ via $G_{ij}=b(e_i,e_j)$ is an iso for
 $F$ free on finite $I$ (resp. algebraic $R^{(I)}$ discrete), with
 $b(v,w)=\langle v,Aw\rangle_0$ for $A$ as above" — and for general
-$(M,b)$ keep $b\colon M\otimes M\to W$ as $(0,2)$-tensor, not a double
+$(M,b)$ keep $b\colon M\otimes_R M\to W$ as $(0,2)$-tensor, not a double
 sum.
 
 ### `PR-63`: One bilinear setup must simultaneously generalize the arithmetic local, the geometric global, and the analytic — do not overfit to finite / discrete and defer the extensions that will be needed anyway
@@ -4186,7 +4323,7 @@ sum.
 The Gram block as written is overfit to the arithmetic *finite* free
 $W=R$ case ($M=R^{(I)}$ algebraic, $I$ finite, $W$ discrete,
 $b(v,w)=\sum a_iG_{ij}c_j$ finite) and elides that the same $b\colon
-M\otimes M\to W$ must already work for the geometric and analytic
+M\otimes_R M\to W$ must already work for the geometric and analytic
 specializations that the book will need anyway. Any definition that does
 not immediately generalize to topological groups/modules/algebras,
 schemes/stacks, sheaves, derived categories, infinite-dimensional/rank
@@ -4198,7 +4335,7 @@ discrete (PR-61/PR-62), and always ask if the statement immediately
 generalizes:
 
 * **Arithmetic local theory:** finitely generated $R$-modules, tensors
-  $M\otimes_RM$, $W$-valued forms $b\colon M\otimes M\to W$,
+  $M\otimes_RM$, $W$-valued forms $b\colon M\otimes_R M\to W$,
   $\operatorname{Val}(b)$, $b^{\sharp}$, $M^\vee$, $D_L$, Grothendieck–Witt
   theory as the study of $(M,b)$ over local $R$ (strict henselizations,
   completions).
@@ -4249,7 +4386,7 @@ This is why categorical / diagrammatic definitions are preferable when available
 For $R$ commutative, $\mathbf{Bil}_{R,W}$ is functorial in the *value
 module* $W\in\mathbf{Mod}_R$: any $R$-linear $\varphi\colon W\to W'$
 induces $\varphi_*\colon\mathbf{Bil}_{R,W}\to\mathbf{Bil}_{R,W'}$,
-$(M,b\colon M\otimes M\to W)\mapsto(M,\varphi\circ b\colon M\otimes M\to W')$
+$(M,b\colon M\otimes_R M\to W)\mapsto(M,\varphi\circ b\colon M\otimes_R M\to W')$
 by post-composition. When $W'=W$, an endomorphism $\varphi\colon W\to W$
 induces an endofunctor $\varphi_*$ on $\mathbf{Bil}_{R,W}$; *any*
 $\varphi\in\operatorname{End}_R(W)$ defines a twist. The usual
@@ -4260,7 +4397,7 @@ $W=R$ or $\lambda$ invertible.
 
 Stating twist as "$\lambda\in R$, $b(\lambda):=\lambda b$ on the same
 $M$, $G\mapsto\lambda G$" fixes $W=R$ and a global element $\lambda$ and
-hides the functoriality that is already in the type $b\colon M\otimes M\to W$.
+hides the functoriality that is already in the type $b\colon M\otimes_R M\to W$.
 
 Concrete standard — name $\varphi$ and $\varphi_*$:
 
@@ -4295,11 +4432,11 @@ generalisations in this document without remembering them.
 
 Timeless heuristics that generalize (use on every new definition):
 
-* **Functoriality in the parameter.** $b\colon M\otimes M\to W$ exhibits
+* **Functoriality in the parameter.** $b\colon M\otimes_R M\to W$ exhibits
   $W$ as the codomain object $W\in\mathbf{Mod}_R$ of
-  $\operatorname{Hom}_R(M\otimes M,W)=\mathbf{Bil}_{R,W}(M)$. Any
+  $\operatorname{Hom}_R(M\otimes_R M,W)=\mathbf{Bil}_{R,W}(M)$. Any
   $R$-linear $\varphi\colon W\to W'$ post-composes to
-  $\varphi_*\colon\operatorname{Hom}(M\otimes M,W)\to\operatorname{Hom}(M\otimes M,W')$,
+  $\varphi_*\colon\operatorname{Hom}(M\otimes_R M,W)\to\operatorname{Hom}(M\otimes_R M,W')$,
   $b\mapsto\varphi\circ b$. So $\mathbf{Bil}_R(-)$ is a functor
   $\mathbf{Mod}_R\to\mathbf{Cat}$ in $W$ by definition — $W\mapsto\mathbf{Bil}_{R,W}$,
   $\varphi\mapsto\varphi_*$ — and a twist is $\varphi_*$ when $W'=W$.
@@ -4310,9 +4447,9 @@ Timeless heuristics that generalize (use on every new definition):
   by the morphism it names; the general is any $\varphi\in\operatorname{End}_R(W)$,
   not just $\lambda\cdot_W$.
 
-* **Variance.** $\mathbf{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes M,W)$ is
+* **Variance.** $\mathbf{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes_R M,W)$ is
   covariant in $W$ (post-composition) and contravariant in $M$
-  ($(f\otimes f)^*$), so $W\to W'$ gives $\mathbf{Bil}_W\to\mathbf{Bil}_{W'}$
+  ($(f\otimes_R f)^*$), so $W\to W'$ gives $\mathbf{Bil}_W\to\mathbf{Bil}_{W'}$
   and $f\colon M\to N$ gives $\mathbf{Bil}(N)\to\mathbf{Bil}(M)$.
 
 * **Grothendieck construction for the parameter.** The categories
@@ -4324,10 +4461,10 @@ Timeless heuristics that generalize (use on every new definition):
 
 To rediscover a forgotten generalization: re-read the definition as a Hom
 in its codomain, list the categories of its parameters ($W\in\mathbf{Mod}_R$,
-$M\in\mathbf{Mod}_R$, $b\in\operatorname{Hom}(M\otimes M,W)$), and ask "what
+$M\in\mathbf{Mod}_R$, $b\in\operatorname{Hom}(M\otimes_R M,W)$), and ask "what
 $\operatorname{Hom}$-maps in those categories could act here?" The answer is
 forced by type: $W\to W'$ must act by $\varphi\circ b$, $M\to N$ by
-$b\circ(f\otimes f)$, and the special $\lambda$ is the single $\varphi$
+$b\circ(f\otimes_R f)$, and the special $\lambda$ is the single $\varphi$
 coming from $R\to\operatorname{End}(W)$.
 
 ### `PR-69`: Prose "greatest dimension of a subspace on which $b$ is positive definite" for the hard equations $V\cong P\perp Q\perp\operatorname{rad}(V)$ and $G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ — Sylvester's law hand-waved as language
@@ -4419,7 +4556,7 @@ R$ / non-free case saves nothing and forces a rewrite when the
 geometric / analytic specialization is needed anyway (PR-63, PR-66, PR-70).
 
 This is the general form behind PR-61/PR-63 (free $W=R$ finite $M=R^{(I)}$
-discrete vs. $M\in\mathbf{Mod}_R$ arbitrary with $b\colon M\otimes M\to W$),
+discrete vs. $M\in\mathbf{Mod}_R$ arbitrary with $b\colon M\otimes_R M\to W$),
 PR-66/PR-70 ($V$ finite-dimensional ordered $F$ with $\max$ vs. $V$
 arbitrary with $\sup$ in $\mathbf{Card}$ / on $\mathrm{Fl}(V)$),
 PR-58/60 (no framing vs. framed $((M,e),b)$ with variance clause), and
@@ -4437,7 +4574,7 @@ Concrete check — on every new unit, ask explicitly:
 * $R$ commutative / $2$ invertible vs. general $R$ / $2$ not invertible
   (PR-48)?
 
-If the general $W$-valued $(0,2)$-tensor $b\colon M\otimes M\to W$ as
+If the general $W$-valued $(0,2)$-tensor $b\colon M\otimes_R M\to W$ as
 $R$-module, or the sup $(p,q,r)\in\mathbf{Card}^3$ on $\mathrm{Gr}(V)$,
 is one line more and the proof is Sylvester with the same $b^{\sharp}$
 / $\Gamma^2_R$, state the general and add "::: {.Remark} When
@@ -4450,7 +4587,7 @@ $M$ free on $E$, $b$ with values in $R$, $p$ is the greatest dimension …"
 as the *definition*, when the sup / $W$-valued / $M$ arbitrary form is
 one line more and the same proof works.
 
-**Preferred:** state the general $b\colon M\otimes M\to W$ / $\sup$ /
+**Preferred:** state the general $b\colon M\otimes_R M\to W$ / $\sup$ /
 $M$ arbitrary / $W$ varying form fenced, then the finite $W=R$ / $V$
 finite-dimensional / $M=R^n$ / $G_{ij}$ / $\max$ specialization as a
 fenced Remark / Corollary that recovers the desired case. Always perform
@@ -4522,7 +4659,7 @@ Concretely:
   "$\mathbb Z\to\mathbb Q$ plus a little more" ($F$ ordered finite-dimensional
   with $\max$) therefore presents the $\mathbb R$-specialization as if it
   were the notion and lets the book proceed without ever naming the general
-  $W$-valued $b\colon M\otimes M\to W$ over a Dedekind $R$, its base changes
+  $W$-valued $b\colon M\otimes_R M\to W$ over a Dedekind $R$, its base changes
   $L\otimes_RF$, $L\otimes_RK_\sigma$, $L\otimes_R\mathbb Q_p$,
   $L\otimes_R\mathbb A$, and the invariants that actually do the work there.
   It should have been flagged at the point of writing as *needs research* /
@@ -4671,7 +4808,7 @@ $p-q$ and hence the signature $(p,q)$ since $p+q=n-r$."
 A fenced `Definition` is an atomic unit with one logical status: it
 introduces one notion (or one tightly related family, e.g. the four
 flavours symmetric / skew / alternating / even via the same
-$b\colon M\otimes M\to W$, $\tau$, $\Delta$, $\Gamma^2$). Grouping
+$b\colon M\otimes_R M\to W$, $\tau$, $\Delta$, $\Gamma^2$). Grouping
 several *related* definitions in one block is the rare exception and
 requires each to be clearly enumerated as a definition. A Lemma,
 Proposition, Theorem, or Remark is never in that block — not even as a
@@ -4730,7 +4867,7 @@ negated containment made explicit:
 imply alternating. Let $e=(e_1,e_2)\colon\mathbb Z^2\xrightarrow{\sim}
 \mathbb Z^2$ be the standard ordered basis and put
 $G_e(b):=\begin{pmatrix}0&1\\1&0\end{pmatrix}=e^*b\in M_2(\mathbb Z)$ for
-$b\colon\mathbb Z^2\otimes\mathbb Z^2\to\mathbb Z$. Then $b$ is symmetric
+$b\colon\mathbb Z^2\otimes_{\mathbb Z}\mathbb Z^2\to\mathbb Z$. Then $b$ is symmetric
 ($b\circ\tau=b$) with $G_{ii}=b(e_i,e_i)=0$ for $i=1,2$, but
 $b\notin\operatorname{AltBil}_{\mathbb Z,\mathbb Z}(\mathbb Z^2)$ since
 $(b\circ\Delta)(e_1+e_2)=b(e_1+e_2,e_1+e_2)=2\neq0$. Hence
@@ -4850,7 +4987,7 @@ iff …" — objects and containments, not signatures and element formulas.
 
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
-Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
+Unwrapping the abstract $(f\otimes_R f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
 pedagogically fine *after* the Hom is defined (PR-39/PR-40) — the
 incoherence is not the element formula but the clause that the
 pullback/formula "defines a presheaf."
@@ -4872,8 +5009,8 @@ pullback/formula "defines a presheaf."
 
 What is intended is the functoriality already in the Hom:
 $M\mapsto\operatorname{Bil}_{R,W}(M)$ with
-$(f\colon M\to N)\mapsto (f\otimes f)^*$. The element formula is the
-unwrapping of that $(f\otimes f)^*$, not its definition.
+$(f\colon M\to N)\mapsto (f\otimes_R f)^*$. The element formula is the
+unwrapping of that $(f\otimes_R f)^*$, not its definition.
 
 Concrete standards [@Stacks-04E9, Tag 04E9; Lurie HTT 6.1] — state the
 functor data explicitly, with types, domains, codomains, and referents:
@@ -4885,7 +5022,7 @@ R\text{-}\mathbf{Mod}$."
 
 **Preferred:** "Put $\operatorname{Bil}_{R,W}(M):=
 \operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module. For $f\colon M\to N$
-in $\mathbf{Mod}_R$, put $f^*:=(f\otimes f)^*\colon
+in $\mathbf{Mod}_R$, put $f^*:=(f\otimes_R f)^*\colon
 \operatorname{Bil}_{R,W}(N)\to\operatorname{Bil}_{R,W}(M)$. As a
 functor $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$
 ($\mathbf{Mod}_R$-valued presheaf via {#thm-mod-closed}) it satisfies
@@ -5031,7 +5168,7 @@ mathematical text (cf. PR-24, PR-16–18).
 **9. "Are distinct constructions" tautology and "without $H$" vacuity.**
 Two functors defined differently are distinct by definition, with or
 without any hypothesis; the substantive claim is whether the canonical
-comparison map $c_M\colon M\otimes^L\mathbb Z_p\to\widehat M_p$ is an
+comparison map $c_M\colon M\otimes^L_{\mathbb Z}\mathbb Z_p\to\widehat M_p$ is an
 equivalence (PR-33). "Without the finite-generation hypothesis, $A$ and
 $B$ are distinct" is true of every theorem $H\Rightarrow A\simeq B$ and
 says nothing, with unquantified $H$ (finitely generated vs. presented
@@ -5108,7 +5245,7 @@ data.** Pullback is a limit / slice functor, presheaf is
 $\mathcal C^{\mathrm{op}}\to\mathbf{Set}$ — types do not match, and one
 $f^*b(x,y)=b(fx,fy)$ does not define a functor (PR-41). Every functor
 owes on objects with type, on morphisms $(f\colon M\to N)\mapsto
-(f\otimes f)^*\colon\operatorname{Bil}(N)\to\operatorname{Bil}(M)$ with
+(f\otimes_R f)^*\colon\operatorname{Bil}(N)\to\operatorname{Bil}(M)$ with
 domain/codomain, element unwrapping if useful, and
 $\mathrm{id}^*/(g\circ f)^*$ — not "defines a presheaf" with only an
 element formula (PR-42). Unwrapping $f^*b(x,y)=b(fx,fy)$ *after* the
@@ -5122,7 +5259,7 @@ $U(M)$ and hide the single non-lax symmetric monoidal
 $(\otimes,1,\tau)$ that makes it portable (PR-43). Standard is the
 diagram $b\colon M\otimes_RM\to W$, $b\circ\tau=b$ / $b\circ\tau=-b$ /
 $b\circ\Delta=0$ / lift through $\Gamma^2_R(M)$, with element formulas
-only as the evaluation on $x\otimes y\colon R\to M\otimes M$ when $U$
+only as the evaluation on $x\otimes y\colon R\to M\otimes_R M$ when $U$
 exists. "$b$ is even if $b(x,x)\in2W$" collapses the $W$-parameter
 abstraction just built for $W$-valued forms to $U(W)$ and "$\in2W$"
 (PR-44); even is the lift through $\Gamma^2_R(M)$, and carrying
@@ -5155,7 +5292,7 @@ block, rarely a tightly related family, never a Lemma/Proposition/Remark
 (PR-64). Pithy prose avoids naming
 $\operatorname{SymBil}$, $\operatorname{SkewBil}$, $\operatorname{AltBil}$,
 $\operatorname{EvBil}$ and $2_*$ between named $R$-submodules of
-$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$, and
+$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$, and
 restates $b\colon M\times M\to W$ instead of $b\in\operatorname{Bil}$
 (PR-49) — definitions as objects and containments, not signatures and
 element formulas.
@@ -5219,7 +5356,7 @@ the elementwise $\bar b([x],[y])=b(x,y)$ re-spells the universal property
 of the cokernel on representatives (PR-56). Stated with $i$ and
 $\operatorname{coker}(i)$, the induced $W$-valued form $\bar b$ on the
 quotient is the unique factorization of $b$ through
-$\pi\otimes\pi$ for $\pi:=\operatorname{coker}(i)$ when $i^*b=0$ —
+$\pi\otimes_R\pi$ for $\pi:=\operatorname{coker}(i)$ when $i^*b=0$ —
 immediate in $\mathrm{QCoh}(X)$, $\mathbf{LMod}_R$, $\mathbf{Sp}$, sheaves,
 where $N\subseteq M$ has no meaning as a subset.
 
@@ -5261,11 +5398,11 @@ discrete topology / finite support, never conflate a $W$-valued
 $(0,2)$-tensor with a matrix.** The block "$M$ free on $E$, $b$ with
 values in $R$, $G_{ij}=b(e_i,e_j)$, $b(v,w)=\sum a_iG_{ij}c_j$ finite,
 every $(G_{ij})$ arises" is the $W=R$, $M=R^{(I)}$ specialization of
-$b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ as
+$b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$ as
 $W$-valued $(0,2)$-tensor $b_{ij}$ (two down indices, $G_{e'}=P^{\!t}G_eP$
 congruence) conflated with a $(1,1)$-tensor $T^i_j$ ($P^{-1}T_eP$
 similarity) and with the matrix algebra $M_{I\times I}(W)$ itself
-(PR-61). The map $\Phi_e\colon M_{I\times I}(W)\to\operatorname{Hom}_R(M\otimes M,W)$
+(PR-61). The map $\Phi_e\colon M_{I\times I}(W)\to\operatorname{Hom}_R(M\otimes_R M,W)$
 is an isomorphism only for $M=R^{(I)}$ discrete; its kernel/cokernel are
 the well-definedness content, and $(L^2(\mathbb R),\int)$ is a valid
 $\mathbb R$-valued bilinear $\mathbb R$-module with no finite $G_{ij}$
@@ -5275,7 +5412,7 @@ and no finite $\sum a_iG_{ij}c_j$.
 $\langle v,w\rangle_0$ on $F=R^{(I)}$; the operator form
 $b(v,w)=\langle v,Aw\rangle$ is the honest statement.** "$b(v,w)=\sum
 a_iG_{ij}c_j$" as definition assumes
-$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(F\otimes F,W)$
+$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(F\otimes_R F,W)$
 and hides that $F$ already carries $\langle v,w\rangle_0:=\sum a_ic_i$
 ($\delta_{ij}$) well-defined only for $a_i,c_i$ finitely supported
 discrete; for $\widehat F$ / $L^2$ the sum is infinite and convergence
@@ -5302,7 +5439,7 @@ finite $G_{ij}$ and $\sum a_iG_{ij}c_j$ need not be correct for
 $L^2(\mathbb R)$ / $\mathrm{QCoh}(X)$ where no finite $G_{ij}$ and no
 finite sum computes $\int fg$, and bounded $\neq$ symmetric $\neq$
 self-adjoint $\neq$ normal thread apart (PR-66). Define diagrammatically
-($b\colon M\otimes M\to W$, $b^{\sharp}$, $\ker$, $\Gamma^2_R$) so the
+($b\colon M\otimes_R M\to W$, $b^{\sharp}$, $\ker$, $\Gamma^2_R$) so the
 statement is valid in every $\mathcal C$; then prove the finite
 specialization ($W^{I\times I}\cong\operatorname{Hom}(R^{(I)}\otimes
 R^{(I)},W)$, $b(v,w)=\langle v,Aw\rangle$ with $A$ symmetric $\iff$
@@ -5350,7 +5487,7 @@ $M=R^{(I)}$ $\to$ $M$ arbitrary," "discrete / finite support $\to$
 topological / $L^2$-convergent," "$2$ invertible $\to$ general $R$")
 and ask "is it that much harder with $X$ relaxed?" If no, the general
 is the definition and the desired special case is a Remark / Corollary
-(PR-71) — as with $b\colon M\otimes M\to W$ vs. $M$ free $W=R$ finite,
+(PR-71) — as with $b\colon M\otimes_R M\to W$ vs. $M$ free $W=R$ finite,
 and $\sup$ vs. $\max$ for signature.
 
 **33. Premature specialization of signature hides the Dedekind /
@@ -5392,7 +5529,7 @@ $(p,q,r)$ (TERM-14).
 
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
-gives $\varphi_*\colon(M,b\colon M\otimes M\to W)\mapsto(M,\varphi\circ
+gives $\varphi_*\colon(M,b\colon M\otimes_R M\to W)\mapsto(M,\varphi\circ
 b)$ by post-composition, and a twist is $\varphi_*$ when $W'=W$
 (PR-67); $\lambda b$ is the case $\varphi:=\lambda\cdot_W$. State
 $\varphi_*$ for any $\varphi$, then note $\lambda\cdot_W$ as a
@@ -5400,9 +5537,9 @@ specialization.
 
 **30. Heuristic: read every parameter as an object and ask variance.**
 The twist is forced by reading $W$ as $W\in\mathbf{Mod}_R$ and
-$b\in\operatorname{Hom}_R(M\otimes M,W)$ and asking how $\operatorname{Hom}$
+$b\in\operatorname{Hom}_R(M\otimes_R M,W)$ and asking how $\operatorname{Hom}$
 varies covariantly in $W$ ($\varphi\circ b$) and contravariantly in $M$
-($b\circ(f\otimes f)$) — i.e. replace "$\lambda\in R$" / "$\forall x\in
+($b\circ(f\otimes_R f)$) — i.e. replace "$\lambda\in R$" / "$\forall x\in
 M$" by the morphisms $\varphi\colon W\to W'$ / $x\colon1\to M$ they
 shadow (PR-68). That habit rediscovers $\varphi_*\colon\mathbf{Bil}_W\to
 \mathbf{Bil}_{W'}$, $W\mapsto\mathbf{Bil}_{R,W}$ as a fibered category,

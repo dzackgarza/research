@@ -72,9 +72,8 @@ book:
         - Stable-Categories-of-Modules-with-Duality.md
         - Morphisms-of-Form-Modules.md
         - Chain-Complexes.md
-    - part: Authoring and reference
+    - part: Reference
       chapters:
-        - Mathematical-Language-Style-Guide.md
         - Mathematical-Sources.md
     # Part 2. The geometry the paper starts from: the three surface classes, then
     # the K3 cover that carries every lattice-theoretic statement later.

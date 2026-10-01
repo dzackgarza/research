@@ -8064,14 +8064,12 @@ lemmas about it.
 
 ## Detailed Documentation References
 
-For in-depth guides and stylistic standards, see the documentation book:
+- **Writing guidelines**: [`CONTRIBUTING-WRITING.md`](CONTRIBUTING-WRITING.md)
 
-- **Contribution Workflow**: [`writing/category-theory/contributing/Contribution-Guidelines.md`](writing/category-theory/contributing/Contribution-Guidelines.md)
+- **Contribution workflow**: [`.agents/references/contribution-guidelines.md`](.agents/references/contribution-guidelines.md)
 
-- **Categorical Principles**: [`writing/category-theory/contributing/Categorical-Presentation-Principles.md`](writing/category-theory/contributing/Categorical-Presentation-Principles.md)
+- **Categorical principles**: [`.agents/references/categorical-presentation-principles.md`](.agents/references/categorical-presentation-principles.md)
 
-- **Mathematical Style Guide**: [`writing/category-theory/contributing/Mathematical-Language-Style-Guide.md`](writing/category-theory/contributing/Mathematical-Language-Style-Guide.md)
+- **Design hazards ledger**: [`.agents/references/design-hazard-ledger.md`](.agents/references/design-hazard-ledger.md)
 
-- **Design Hazards Ledger**: [`writing/category-theory/contributing/Design-Hazard-Ledger.md`](writing/category-theory/contributing/Design-Hazard-Ledger.md)
-
-- **Mathematical Lexicon**: [`writing/category-theory/contributing/Mathematical-Lexicon.md`](writing/category-theory/contributing/Mathematical-Lexicon.md)
+- **Mathematical lexicon**: [`.agents/references/mathematical-lexicon.md`](.agents/references/mathematical-lexicon.md)
