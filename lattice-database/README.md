@@ -26,11 +26,13 @@ The site is served at <http://lattice-database.localhost/>.
 | `src/latticedb/records.py` | Computes the fields of a record that the Gram tensor determines, and writes a record as a file |
 | `src/latticedb/nebe_sloane.py` | Reads an entry of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) and writes it as the declared fields of a record |
 | `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, and checks every equation they state against the records |
+| `src/latticedb/hoehn_mason.py` | Reads the coinvariant lattices of the Leech lattice of Höhn and Mason, computes their inclusions in the Leech lattice and the actions of their stabilizers, and checks them against the records, Table 10.2 of Hashimoto and the morphism files |
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
 | `sources/nebe_sloane/<ENTRY>.json` | An entry of the Catalogue of Lattices as fetched, the source of the record that cites it |
 | `sources/hashimoto/table_10_2.json`, `table_10_3.json` | Tables 10.2 and 10.3 of K. Hashimoto, arXiv:1012.2682, as printed, each row linked to the records of $\Lambda_G$ and $\Lambda^G$ by a twist and a change of basis |
+| `sources/hoehn_mason/leech.json`, `lattices_<i>_<j>.json` | The Leech lattice and the 40 entries `lattices[i,j]` of the Magma file of G. Höhn and G. Mason, arXiv:1505.06420, whose coinvariant lattice is $\Lambda_G(-1)$ for a row of Table 10.2 of Hashimoto: the bases and the stabilizer generators as printed, each linked to its record by a twist and a change of basis |
 | `tests/` | Tests of the validators, of the record commands and of the built site |
 
 ## A record
@@ -78,7 +80,7 @@ A twist that a construction names is written as a summand with its scale, in the
 The fields of a record are of two kinds.
 The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new`, `latticedb nebe-sloane` and `latticedb derive` compute them once, with exact arithmetic, when they write the record.
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
-The build and `latticedb check` read the stored values and compute nothing again.
+The build reads the stored values and computes nothing again. `latticedb check` computes again only the equations that the files under `sources/` state.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
 A person also writes `integral.genus_symbol` and `integral.genus_class_count`, computed from the Gram tensor with `Genus` of SageMath, and `definite.automorphism_group_order`, computed with `qfauto` of PARI/GP. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
@@ -270,7 +272,7 @@ The `justfile` calls it.
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
 
-`uv run latticedb check` validates the records, checks them against the files under `sources/hashimoto/`, and builds nothing.
+`uv run latticedb check` validates the records, checks them against the files under `sources/hashimoto/` and `sources/hoehn_mason/`, checks that the morphism files hold the maps that `sources/hoehn_mason/` determines, and builds nothing.
 
 The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`.
 

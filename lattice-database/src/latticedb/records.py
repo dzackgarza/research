@@ -91,7 +91,7 @@ def _body(prose: str) -> str:
     return "\n" + prose + "\n" if prose else "\n\n"
 
 
-MORPHISM_KEYS = ("name", "description", "matrix", "row_subdivisions", "column_subdivisions")
+MORPHISM_KEYS = ("name", "description", "matrix", "scale", "row_subdivisions", "column_subdivisions")
 """The keys of a morphism, in the order in which a morphism file lists them."""
 
 

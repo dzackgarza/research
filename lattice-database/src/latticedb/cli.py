@@ -10,7 +10,7 @@ import frontmatter
 from cyclopts import App, Parameter
 from pydantic import ValidationError
 
-from latticedb import corpus, hashimoto, nebe_sloane, records, site
+from latticedb import corpus, hashimoto, hoehn_mason, nebe_sloane, records, site
 from latticedb.model import Lattice, Morphisms, Yaml
 
 SERVED = Path("/var/www/static-sites/lattice-database")
@@ -175,6 +175,7 @@ def check(root: Root = Path()) -> None:
         sys.exit(1)
     lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
     _refuse(hashimoto.stored_problems(root, lattices))
+    _refuse(hoehn_mason.stored_problems(root, loaded))
     print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid, the sources agree with them")
 
 
