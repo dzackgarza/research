@@ -7456,6 +7456,40 @@ open-problems part are grouped on these fields.
 Each page has one level-1 heading; later headings are `##` sections. Do not
 number headings by hand: sections number automatically.
 
+The book builds from the repository root:
+
+```bash
+just docs-preview                # serve the site locally with live reload
+just docs-lint coble/<page>.md   # render one page
+just docs-check                  # render, then fail on any citation, cross-ref, or link defect
+```
+
+### The Coble part
+
+`writing/coble` holds the Coble surfaces work, one topic per page. The
+mathematics that is written up sits beside the computations and the open
+questions that produced it; there is no separate paper tree or notes tree.
+
+```text
+<topic>/              One directory per topic, kebab-case, one page per file
+index.md              The part landing page
+papers/               Extracted third-party sources, one directory per citation key
+reference/            Source PDFs and the last built version of the paper
+scripts/              The computational toolchain
+tables/               Generated lattice and diagram tables
+heegner-report/       A standalone research report and its own bibliography
+coble_supplement.bib  Project-local entries not yet in the global bibliography
+```
+
+There is no PDF build for this work; the last dated PDF build is in
+`reference/`.
+
+`papers/<KEY>/` holds a read-only source archive of a third-party paper: its
+LaTeX, its figures, and where available a readable extraction. The extraction
+pipeline resolves `\cite{}` to `?` and `\ref{}` to `[0]`, so read an
+extraction for its mathematics and take citations and numbering from the PDF.
+Do not commit LaTeX build intermediates beside an extraction.
+
 ### Numbered blocks (`DEF-4`)
 
 A numbered block is a fenced div whose class is the full lowercase
