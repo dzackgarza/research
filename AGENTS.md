@@ -1159,6 +1159,8 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
   Spike tests live in each spike's own `tests/` tree.
   `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
 
+- **`lattice-database/`** — the catalogue of lattices, one record per lattice, and its site. It stores every computation about its lattices: no invariant, identification, map or source transcription computed for it is thrown away. `lattice-database/AGENTS.md` owns that rule.
+
 - **`writing/`** — authored prose: the Coble paper draft and research notes, oral exams, research statement, talks.
   The user's durable authored artifacts — preserve native LaTeX/tikz source.
 
