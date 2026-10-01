@@ -399,7 +399,7 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "genus_symbol": integral.genus_symbol if integral else None,
         "overlattice_count": integral.overlattice_count if integral else None,
         "delta": integral.delta if integral else None,
-        "minimum":str(definite.minimum) if definite else None,
+        "minimum": str(definite.minimum) if definite else None,
         "minimum_value": float(definite.minimum) if definite else None,
         "kissing_number": definite.kissing_number if definite else None,
         "automorphism_group_order": str(order) if order is not None else None,
