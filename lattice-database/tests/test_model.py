@@ -360,6 +360,38 @@ def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank(
     Lattice.model_validate(with_block(binary_form_of_determinant_19(), "definite", theta_series=[1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0, 0]))
 
 
+def with_orbits(record: dict[str, Yaml], **series: list[int]) -> dict[str, Yaml]:
+    """`record` with the series of orbits of primitive vectors whose coefficients of z are given for each group; `Otilde_plus` names `Otilde+`."""
+    return with_block(record, "integral", primitive_orbits={group.replace("_plus", "+"): {"z": z} for group, z in series.items()})
+
+
+def test_the_series_of_orbits_of_a2_is_accepted() -> None:
+    # O~(A2) = W(A2) is simply transitive on the 6 roots, and its subgroup of rotations has 2 orbits on them.
+    one, two = [0, 1, 0, 0], [0, 2, 0, 0]
+    lattice = Lattice.model_validate(with_orbits(a2(), O=one, SO=one, O_plus=one, SO_plus=one, Otilde=one, SOtilde=two, Otilde_plus=two, SOtilde_plus=two))
+    assert lattice.integral is not None and lattice.integral.primitive_orbits is not None
+    assert lattice.integral.primitive_orbits["SOtilde"].coefficient(2) == 2
+    assert lattice.integral.primitive_orbits["SOtilde"].coefficient(-2) is None
+
+
+@pytest.mark.parametrize(
+    ("record", "expected"),
+    [
+        # A2 is even, positive definite, and has 6 vectors of norm 2, all primitive.
+        (with_orbits(a2(), O=[1, 1]), {"primitive_orbit_without_vectors", "primitive_orbit_theta_series"}),
+        (with_block(a2(), "integral", primitive_orbits={"O": {"constant": 1}}), {"primitive_orbit_without_vectors"}),
+        (with_block(a2(), "integral", primitive_orbits={"O": {"w": [0, 1]}}), {"primitive_orbit_without_vectors"}),
+        (with_orbits(a2(), O=[0, 0]), {"primitive_orbit_theta_series"}),
+        # SO is a subgroup of O, and on a positive definite lattice O+ is SO.
+        (with_orbits(a2(), O=[0, 2], SO=[0, 1]), {"primitive_orbit_subgroup"}),
+        (with_orbits(a2(), SO=[0, 2], O_plus=[0, 1]), {"primitive_orbit_same_group"}),
+        (with_block(affine_a2(), "integral", primitive_orbits={"O": {"z": [0, 1]}}), {"primitive_orbits_requires_nondegenerate"}),
+    ],
+)
+def test_a_series_of_orbits_is_rejected_for_its_reason(record: dict[str, Yaml], expected: set[str]) -> None:
+    assert error_types(record) == expected
+
+
 @pytest.mark.parametrize(
     ("record", "expected"),
     [

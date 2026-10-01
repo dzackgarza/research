@@ -1,9 +1,10 @@
-"""The genus symbol, the class number of the genus, the hyperbolic index and the order of O(L), computed by SageMath and stored in the records.
+"""The genus symbol, the class number of the genus, the hyperbolic index, the order of O(L) and the series of orbits of primitive vectors, computed by SageMath and stored in the records.
 
 `certify` sends the Gram tensor of each integral record with a nonzero determinant, with the values that
 have no certificate for that Gram tensor, to `sage_genus.py` under `sage -python`, and stores each value as
 soon as SageMath returns it: a value that the record does not hold is written into it, and a stored value
-that differs from the computed one is a problem. A value that agrees with the record is certified; a value
+that differs from the computed one is a problem. A series of orbits merges with the stored one: each coefficient
+that the record does not state is written, and the stated ones must agree. A value that agrees with the record is certified; a value
 that SageMath does not compute within the time limit is certified as not finished within it.
 """
 
@@ -26,8 +27,12 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_class_count": ("integral", IntegralData),
     "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
+    "primitive_orbits": ("integral", IntegralData),
 }
 """Each computed field, with the block of the record that holds it and the model of that block."""
+
+DEFINITE_ONLY = ("automorphism_group_order", "primitive_orbits")
+"""The fields that SageMath computes only for a definite lattice, whose vectors of bounded norm are finite in number."""
 
 SAGE_MODULE = Path(__file__).with_name("sage_genus.py")
 
@@ -55,7 +60,7 @@ def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], s
         if lattice.integral is None or lattice.determinant == 0 or (tags and lattice.tag not in tags):
             continue
         inputs = certificates.gram_digest(lattice)
-        applicable = [field for field in BLOCKS if field != "automorphism_group_order" or lattice.definite is not None]
+        applicable = [field for field in BLOCKS if field not in DEFINITE_ONLY or lattice.definite is not None]
         fields: list[Yaml] = [field for field in applicable if certificates.is_pending(held, name(lattice.tag, field), inputs, seconds)]
         if fields:
             gram: list[Yaml] = [[int(x) for x in row] for row in lattice.gram_tensor]
@@ -63,7 +68,7 @@ def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], s
     return chosen
 
 
-def computed(chosen: list[dict[str, Yaml]], seconds: int) -> Iterator[dict[str, int | str | None]]:
+def computed(chosen: list[dict[str, Yaml]], seconds: int) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
     task = json.dumps({"seconds": seconds, "lattices": chosen})
     # `sage -python` runs the first `python` on PATH, and `uv run` puts the environment of latticedb first.
@@ -80,7 +85,40 @@ def computed(chosen: list[dict[str, Yaml]], seconds: int) -> Iterator[dict[str, 
     assert process.returncode == 0, f"{SAGE_MODULE} exited with status {process.returncode}"
 
 
-def store(path: Path, values: dict[str, int | str | None]) -> dict[str, str]:
+def merged(stored: Yaml, value: Yaml, location: str) -> tuple[Yaml, list[str]]:
+    """The union of a stored and a computed value, with a problem at each place where both state a different scalar.
+
+    Dictionaries merge key by key, lists entry by entry with null for an entry that is not stated, and a null value is not stated.
+    """
+    match stored, value:
+        case None, _:
+            return value, []
+        case _, None:
+            return stored, []
+        case dict(), dict():
+            union: dict[str, Yaml] = {}
+            found: list[str] = []
+            for key in [*stored, *(key for key in value if key not in stored)]:
+                union[key], problems = merged(stored.get(key), value.get(key), f"{location}.{key}")
+                found.extend(problems)
+            return union, found
+        case list(), list():
+            entries: list[Yaml] = []
+            found = []
+            for index in range(max(len(stored), len(value))):
+                left = stored[index] if index < len(stored) else None
+                right = value[index] if index < len(value) else None
+                entry, problems = merged(left, right, f"{location}[{index}]")
+                entries.append(entry)
+                found.extend(problems)
+            return entries, found
+        case _ if stored == value:
+            return stored, []
+        case _:
+            return stored, [f"{location} is {stored}, and SageMath computes {value}"]
+
+
+def store(path: Path, values: dict[str, Yaml]) -> dict[str, str]:
     """Write into the record at `path` each computed value that it does not hold; for each field whose stored value differs from the computed one, the problem."""
     document = frontmatter.load(str(path))
     metadata: dict[str, Yaml] = dict(document.metadata)
@@ -89,12 +127,12 @@ def store(path: Path, values: dict[str, int | str | None]) -> dict[str, str]:
         value = values.get(field)
         match metadata.get(block_name):
             case dict() as block if value is not None:
-                stored = block.get(field)
-                if stored is None:
-                    block[field] = value
-                    metadata[block_name] = {key: block[key] for key in model.model_fields if key in block}
-                elif stored != value:
-                    found[field] = f"{path}: {block_name}.{field} is {stored}, and SageMath computes {value}"
+                union, problems = merged(block.get(field), value, f"{path}: {block_name}.{field}")
+                if problems:
+                    found[field] = "; ".join(problems)
+                    continue
+                block[field] = union
+                metadata[block_name] = {key: block[key] for key in model.model_fields if key in block}
     text = records.record_text(metadata, document.content)
     if text != path.read_text():
         path.write_text(text)
