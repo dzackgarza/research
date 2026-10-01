@@ -113,10 +113,7 @@ Measured on 2026-10-01 with PARI 2.17: the count takes 0.06 s for `(Z/2)^7`
 # `forsubgroup` gives each subgroup `H` of `Z/c_1 + ... + Z/c_k` as a matrix whose columns generate it.
 # The first loop counts the subgroups and stops above the bound; the second counts those on which the form vanishes.
 _ISOTROPIC_SUBGROUPS = _PARI(
-    "(cyc, N, e, bound) -> my(n = 0, c = 0);"
-    " forsubgroup(H = cyc, , n++; if(n > bound, break));"
-    " if(n <= bound, forsubgroup(H = cyc, , if((H~ * N * H) % e == 0, c++)));"
-    " [n, c]"
+    "(cyc, N, e, bound) -> my(n = 0, c = 0); forsubgroup(H = cyc, , n++; if(n > bound, break)); if(n <= bound, forsubgroup(H = cyc, , if((H~ * N * H) % e == 0, c++))); [n, c]"
 )
 
 
@@ -162,7 +159,8 @@ def overlattice_count(gram_tensor: GramTensor) -> int | None:
     lift = left**-1
     scaled_form = exponent * (lift.mattranspose() * form**-1 * lift)
     size = len(cyclic_factors)
-    subgroups, isotropic = _ISOTROPIC_SUBGROUPS(cyclic_factors, _PARI.matrix(size, size, [scaled_form[i, j] for i in range(size) for j in range(size)]), exponent, SUBGROUP_BOUND)
+    form_on_generators = _PARI.matrix(size, size, [scaled_form[i, j] for i in range(size) for j in range(size)])
+    subgroups, isotropic = _ISOTROPIC_SUBGROUPS(cyclic_factors, form_on_generators, exponent, SUBGROUP_BOUND)
     return None if int(subgroups) > SUBGROUP_BOUND else int(isotropic)
 
 

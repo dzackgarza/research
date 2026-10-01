@@ -136,7 +136,8 @@ def write_corpus(directory: Path) -> Path:
 
 def test_new_writes_a_valid_record_under_the_next_tag(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
-    run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--source", "Test record.", "--family", "root-lattice", "--alias", "Hexagonal lattice", "--reference", "A citation.", "--prose", "The root lattice of type A2.", "--root", str(root))
+    declared = ("--name", "A2", "--latex", "A_2", "--source", "Test record.", "--family", "root-lattice", "--alias", "Hexagonal lattice", "--reference", "A citation.")
+    run("new", "--gram", "[[2, 1], [1, 2]]", *declared, "--prose", "The root lattice of type A2.", "--root", str(root))
     entries = corpus.load(root).entries
     assert [entry.lattice.tag for entry in entries] == ["0001", "0002"]
     lattice = entries[1].lattice

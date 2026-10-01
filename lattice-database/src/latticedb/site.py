@@ -509,6 +509,7 @@ def build(root: Path, target: Path) -> int:
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))
     (target / "database.html").write_text(environment.get_template("database.html.j2").render(root="./"))
     family_counts = {family: sum(family in entry.lattice.families for entry in entries) for family in corpus.families}
-    (target / "fields.html").write_text(environment.get_template("fields.html.j2").render(root="./", models=models, property_meanings=PROPERTY_MEANINGS, family_counts=family_counts))
+    fields_page = environment.get_template("fields.html.j2")
+    (target / "fields.html").write_text(fields_page.render(root="./", models=models, property_meanings=PROPERTY_MEANINGS, family_counts=family_counts))
     (target / "lattices.json").write_text(json.dumps({"rows": [row(entry.lattice, lattices) for entry in entries]}, separators=(",", ":")))
     return len(entries)

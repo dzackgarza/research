@@ -92,7 +92,8 @@ class Summand(Record):
     @model_validator(mode="after")
     def _nonzero_scale(self) -> Self:
         if self.scale == 0:
-            raise ValidationError.from_exception_data(type(self).__name__, [_problem("summand_scale_zero", "M(0) has the zero form and is not a summand of a root sublattice", ("scale",))])
+            problem = _problem("summand_scale_zero", "M(0) has the zero form and is not a summand of a root sublattice", ("scale",))
+            raise ValidationError.from_exception_data(type(self).__name__, [problem])
         return self
 
 
@@ -222,7 +223,8 @@ class RootSpan(Record):
     summands: Annotated[tuple[Summand, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
-            "Lattices $M_1(k_1), M_2(k_2), \\dots$, each a record with a scale, with $\\mathbb{Z}\\Phi(L) \\cong M_1(k_1) \\oplus M_2(k_2) \\oplus \\cdots$, an orthogonal sum. "
+            "Lattices $M_1(k_1), M_2(k_2), \\dots$, each a record with a scale, "
+            "with $\\mathbb{Z}\\Phi(L) \\cong M_1(k_1) \\oplus M_2(k_2) \\oplus \\cdots$, an orthogonal sum. "
             "Stated together with `embedding`. A root lattice does not state it: $\\mathbb{Z}\\Phi(L)$ is $L$."
         ),
     )
@@ -477,7 +479,8 @@ class Lattice(Record):
         if (n_plus == 0 and n_minus > 0) or (n_plus > n_minus > 0):
             yield _problem(
                 "twisted",
-                "the lattice is M(-1) for the lattice M with Gram tensor -b and signature ({n_minus}, {n_plus}); the corpus records M: positive when b has one sign, n_plus <= n_minus when it has both",
+                "the lattice is M(-1) for the lattice M with Gram tensor -b and signature ({n_minus}, {n_plus}); "
+                "the corpus records M: positive when b has one sign, n_plus <= n_minus when it has both",
                 ("gram_tensor",),
                 {"n_plus": n_plus, "n_minus": n_minus},
             )
@@ -567,7 +570,8 @@ class Lattice(Record):
                     {"bound": arithmetic.SUBGROUP_BOUND},
                 )
             case _, None:
-                yield _problem("overlattice_count_missing", "the discriminant group has at most {bound} subgroups, so `overlattice_count` is required", location, {"bound": arithmetic.SUBGROUP_BOUND})
+                message = "the discriminant group has at most {bound} subgroups, so `overlattice_count` is required"
+                yield _problem("overlattice_count_missing", message, location, {"bound": arithmetic.SUBGROUP_BOUND})
             case computed, _ if computed != stated:
                 yield _problem(
                     "overlattice_count_mismatch",

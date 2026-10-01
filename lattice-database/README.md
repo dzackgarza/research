@@ -91,7 +91,8 @@ The `integral`, `definite` and `indefinite` blocks are required when their hypot
 
 `integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.
 A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.
-It counts subgroups, not their orbits under the isometries of $L$, and it counts every integral $M$: for an even $L$ some $M$ can be odd. For $U(2)$ the count is 4, and 3 of the 4 lattices are even.
+It counts subgroups, not their orbits under the isometries of $L$, and it counts every integral $M$: for an even $L$ some $M$ can be odd.
+For $U(2)$ the count is 4, and 3 of the 4 lattices are even.
 The build enumerates the subgroups of $A_L$, so the field is required exactly when the determinant is not zero and $A_L$ has at most 100000 subgroups.
 A record without it is not decided, and its page says so: $(\mathbb{Z}/2)^8$ has 417199 subgroups.
 
@@ -220,7 +221,9 @@ The work that remains, in order:
 1. Find the indefinite entries.
    The index page, read on 2026-10-01, contains none of the words "indefinite", "hyperbolic", "Lorentzian" and "signature"; its sections are ordered by dimension and by class (root, laminated, modular, unimodular, perfect, Niemeier, the tables of quaternary and quinary forms).
    The entry pages were not read, so the signature of each entry is not known: read every entry page and compute the signature from its Gram tensor.
+
 2. Make `just nebe-sloane` admit an indefinite entry.
    `nebe_sloane.check` compares the minimum and the kissing number that the catalogue states, which an indefinite lattice does not have.
+
 3. Absorb the indefinite entries, then the definite ones.
    The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.

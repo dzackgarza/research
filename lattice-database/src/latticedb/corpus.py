@@ -59,7 +59,10 @@ class CorpusInvalid(Exception):
 
 
 IsometryInvariants = tuple[int, Definiteness, Fraction, Fraction, int, tuple[AdeType, ...] | None, tuple[int, ...] | None, tuple[int, ...] | None]
-"""Rank, definiteness, determinant, minimum, kissing number, root system, theta series and discriminant group: invariants of the isometry class that a record states, and that the build has checked."""
+"""Rank, definiteness, determinant, minimum, kissing number, root system, theta series and discriminant group.
+
+Invariants of the isometry class that a record states, and that the build has checked.
+"""
 
 
 def _isometry_invariants(lattice: Lattice) -> IsometryInvariants:
@@ -91,7 +94,12 @@ def _isometric_pairs(entries: list[Entry]) -> list[tuple[Entry, Entry]]:
 
 
 def problems(entries: list[Entry], families: Families, retired: Retired) -> list[str]:
-    """The problems that concern more than one record, the families or the retired tags: a file name that is not its tag, a retired tag, a repeated name or Gram tensor, two definite records that are isometric, a family that `families.yaml` does not list, a related or summand tag that is not in the corpus, and an embedding whose Gram tensor is not that of its summands."""
+    """The problems that concern more than one record, the families or the retired tags.
+
+    A file name that is not its tag, a retired tag, a repeated name or Gram tensor, two definite records that are isometric,
+    a family that `families.yaml` does not list, a related or summand tag that is not in the corpus,
+    and an embedding whose Gram tensor is not that of its summands.
+    """
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     by_name: dict[str, Path] = {}
@@ -130,7 +138,10 @@ def _record_problems(path: Path, error: ValidationError) -> list[str]:
 
 
 def load(root: Path) -> Corpus:
-    """The families of `root/families.yaml`, the retired tags of `root/retired-tags.yaml` and every entry of `root/lattices`, in tag order. Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined."""
+    """The families of `root/families.yaml`, the retired tags of `root/retired-tags.yaml` and every entry of `root/lattices`, in tag order.
+
+    Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined.
+    """
     entries: list[Entry] = []
     found: list[str] = []
     families: Families = {}

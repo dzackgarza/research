@@ -61,6 +61,10 @@ def hyperbolic_plane() -> dict[str, Yaml]:
     }
 
 
+# The roots (1, 1) and (1, -1) of U have b(v, v) = 2 and -2 and are orthogonal: their span is M(2) + M(-2) for the record 0001 of rank 1.
+ROOT_SPAN_SUMMANDS_OF_U: list[Yaml] = [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}]
+
+
 def a2_dual() -> dict[str, Yaml]:
     """The dual lattice of the root lattice A2:the form takes the value 2/3, so it is not integral."""
     return {
@@ -323,7 +327,7 @@ def test_roots_that_generate_a_lattice_that_is_not_definite_prove_that_it_is_a_r
 
 def test_the_roots_of_the_hyperbolic_plane_generate_a_sublattice_of_index_two() -> None:
     # The roots of U are (1, 1), (1, -1) and their negatives.
-    plane = Lattice.model_validate(hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}], "embedding": [[1, 1], [1, -1]]}})
+    plane = Lattice.model_validate(hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": ROOT_SPAN_SUMMANDS_OF_U, "embedding": [[1, 1], [1, -1]]}})
     assert plane.is_root_lattice is False
     assert plane.root_span_rank == 2
     assert plane.root_span_index == 2
@@ -464,10 +468,10 @@ def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank(
         (hyperbolic_plane() | {"root_span": {"roots": [[1, 0]]}}, "root_span_not_root"),
         (hyperbolic_plane() | {"root_span": {"roots": [[2, 2]]}}, "root_span_not_root"),
         (hyperbolic_plane() | {"root_span": {"roots": [[1, 1, 0]]}}, "root_span_shape"),
-        (hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}]}}, "root_span_representative_incomplete"),
+        (hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": ROOT_SPAN_SUMMANDS_OF_U}}, "root_span_representative_incomplete"),
         # e and f generate U, and the roots (1, 1) and (1, -1) generate a sublattice of index 2.
         (
-            hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}], "embedding": [[1, 0], [0, 1]]}},
+            hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": ROOT_SPAN_SUMMANDS_OF_U, "embedding": [[1, 0], [0, 1]]}},
             "root_span_embedding_mismatch",
         ),
         # Isotropy that the rank and the determinant decide.
