@@ -2,7 +2,7 @@
 
 Reads from standard input a JSON object `{"seconds": s, "lattices": [{"tag", "gram", "sign", "fields"}, ...]}`,
 where `sign` is 1 for a positive definite lattice, -1 for a negative definite one and 0 otherwise, and
-`fields` names the values to compute among `genus_symbol`, `genus_class_count`, `hyperbolic_index`,
+`fields` names the values to compute among `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`,
 `automorphism_group_order` and `primitive_orbits`. Writes one JSON line per lattice to standard output, as soon as it is
 computed: the tag, the version of SageMath as `by`, and each value of `fields`. A value that is not
 computed within `s` seconds is null.
@@ -14,16 +14,18 @@ import json
 import sys
 from collections.abc import Callable
 from functools import partial
+from itertools import chain, combinations
 from typing import TypedDict
 
 from cysignals.signals import AlarmInterrupt
-from sage.all import QQ, ZZ, alarm, block_diagonal_matrix, cancel_alarm, gcd, matrix, pari
+from sage.all import QQ, ZZ, Integer, Primes, QuadraticForm, alarm, block_diagonal_matrix, cancel_alarm, gcd, matrix, pari
 from sage.groups.fqf_orthogonal import FqfIsometry
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.modules.torsion_quadratic_module import TorsionQuadraticModuleElement
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.genera.genus import Genus, genera
+from sage.quadratic_forms.quadratic_form__neighbors import neighbor_iteration
 from sage.version import version
 
 
@@ -61,6 +63,51 @@ def class_count(gram: Matrix_integer_dense) -> int:
     return len(classes)
 
 
+def spinor_genus_count(gram: Matrix_integer_dense) -> int:
+    """The number of spinor genera in the genus of a Gram matrix of rank at least 3.
+
+    `spinor_generators(proper=False)` adds a prime p only when its spinor operator is not in the subgroup that the spinor kernel and
+    the operators already chosen generate, so the operators of the primes are independent in the quotient, an elementary abelian 2-group.
+    """
+    return 2 ** len(Genus(gram).spinor_generators(proper=False))
+
+
+def _neighbour(form: QuadraticForm, p: Integer) -> QuadraticForm:
+    return form.find_p_neighbor_from_vec(p, form.find_primitive_p_divisible_vector__next(p))
+
+
+def spinor_genera(gram: Matrix_integer_dense, sign: int) -> list[int]:
+    """The number of classes in each spinor genus of the genus of a Gram matrix of rank at least 3: that of `gram` first, then the others in decreasing order.
+
+    An indefinite genus has one class in each spinor genus (SPLAG, Chapter 15, Theorem 14). For a definite one, M is a p-neighbour of L when
+    [L : L n M] = [M : L n M] = p, so its spinor genus is that of L times the spinor operator of p (SPLAG, Chapter 15, Theorem 15).
+    A product of neighbours at the primes of `spinor_generators` reaches each spinor genus once; the p-neighbours at a prime p in the spinor kernel
+    stay in the spinor genus. The neighbours are found by `algorithm="orbits"`, which computes every neighbour up to the isometries of the form,
+    and the masses 1/|O(M)| of the classes found must add up to the mass of the genus, so that no class is missing.
+    `_improper_spinor_kernel` is the method of SageMath that gives the spinor kernel.
+    """
+    genus = Genus(gram)
+    count = spinor_genus_count(gram)
+    if sign == 0:
+        return [1] * count
+    spinor_operators, kernel = genus._improper_spinor_kernel()
+    primes = genus.spinor_generators(proper=False)
+    # A Hessian matrix of SageMath is twice the Gram matrix of its form, so an odd Gram matrix is doubled.
+    form = QuadraticForm(ZZ, (sign if genus.is_even() else 2 * sign) * gram)
+    p = ZZ(2)
+    while p.divides(genus.determinant()) or spinor_operators.delta(p) not in kernel:
+        p = Primes().next(p)
+    classes: list[list[QuadraticForm]] = []
+    for chosen in chain.from_iterable(combinations(primes, size) for size in range(len(primes) + 1)):
+        seed = form
+        for q in chosen:
+            seed = _neighbour(seed, q)
+        classes.append(neighbor_iteration([seed], p, algorithm="orbits", max_classes=10**6))
+    mass = sum(QQ(1) / found.number_of_automorphisms() for spinor_genus in classes for found in spinor_genus)
+    assert mass == form.conway_mass(), f"the classes found in the spinor genera of {gram.list()} have mass {mass}, and the genus {form.conway_mass()}"
+    return [len(classes[0]), *sorted((len(spinor_genus) for spinor_genus in classes[1:]), reverse=True)]
+
+
 def hyperbolic_index(gram: Matrix_integer_dense) -> int:
     """The largest n with L isometric to U^n + L', for the hyperbolic plane U.
 
@@ -90,7 +137,7 @@ ORBIT_NORM_BOUND = 4
 Series = dict[str, int | list[int]]
 """The coefficients of a series F_{L,Gamma}: `constant`, and the lists `z` and `w` of the coefficients of z^n and w^n for n = 1, 2, ..."""
 
-Value = int | str | dict[str, Series]
+Value = int | str | list[int] | dict[str, Series]
 
 
 def _discriminant_actions(gram: Matrix_integer_dense, generators: list[Matrix_integer_dense]) -> tuple[list[int], list[Matrix_integer_dense]]:
@@ -273,6 +320,8 @@ def main() -> None:
         computations: dict[str, Callable[[], Value]] = {
             "genus_symbol": partial(symbol, gram),
             "genus_class_count": partial(class_count, gram),
+            "spinor_genus_count": partial(spinor_genus_count, gram),
+            "spinor_genera": partial(spinor_genera, gram, lattice["sign"]),
             "hyperbolic_index": partial(hyperbolic_index, gram),
             "automorphism_group_order": partial(automorphism_group_order, positive),
             "primitive_orbits": partial(primitive_orbits, positive, lattice["sign"]),

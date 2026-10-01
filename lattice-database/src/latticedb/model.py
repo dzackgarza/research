@@ -230,6 +230,27 @@ class IntegralData(Record):
             "Requires a nonzero determinant; absent when it is not computed."
         ),
     )
+    spinor_genus_count: int | None = Field(
+        default=None,
+        gt=0,
+        description=(
+            "The number of spinor genera in the genus of $L$, a power of 2 (Conway and Sloane, SPLAG, Chapter 15, Section 9.1): "
+            "the order of the quotient of the spinor operators by the spinor kernel of Theorems 16 and 17 there, enlarged by the spinor operator of one improper "
+            "isometry, so that a spinor genus is a union of isometry classes. "
+            "Computed by `latticedb certify` with `Genus(G).spinor_generators(proper=False)` of SageMath. Requires a nonzero determinant and rank at least 3."
+        ),
+    )
+    spinor_genera: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "The number of isometry classes in each spinor genus of the genus of $L$: first in the spinor genus of $L$, then in the others in decreasing order. "
+            "The first entry is the class number of the spinor genus of $L$, and the sum is the class number of the genus. "
+            "An indefinite $L$ has one class in each spinor genus (Eichler; SPLAG, Chapter 15, Theorem 14). For a definite $L$, `latticedb certify` iterates "
+            "$p$-neighbours from one lattice of each spinor genus at a prime $p$ whose spinor operator is in the spinor kernel, so that each neighbour stays in its "
+            "spinor genus (SPLAG, Chapter 15, Theorem 15), and stores the counts only when the masses $\\sum 1/|O(M)|$ of the classes found add up to the mass "
+            "of the genus. Requires a nonzero determinant and rank at least 3."
+        ),
+    )
     hyperbolic_index: int | None = Field(
         default=None,
         ge=0,
@@ -573,6 +594,31 @@ class Lattice(Record):
             yield _problem("delta_requires_two_elementary_even", "`delta` requires an even lattice with 2 A_L = 0 and a nonzero determinant", ("integral", "delta"))
         if self.integral.primitive_orbits is not None and self.determinant != 0:
             yield from self._orbit_problems(self.integral.primitive_orbits)
+        yield from self._spinor_problems()
+
+    def _spinor_problems(self) -> Iterator[InitErrorDetails]:
+        """Spinor genera exist for a nondegenerate lattice of rank at least 3; their number is a power of 2, and their classes make up the genus."""
+        assert self.integral is not None
+        count, genera = self.integral.spinor_genus_count, self.integral.spinor_genera
+        if count is None and genera is None:
+            return
+        if self.determinant == 0 or self.rank < 3:
+            yield _problem("spinor_genera_require_rank_three", "spinor genera require a nonzero determinant and rank at least 3", ("integral", "spinor_genus_count"))
+            return
+        if count is not None and count & (count - 1):
+            yield _problem("spinor_genus_count_power_of_two", "the number of spinor genera is {count}, not a power of 2", ("integral", "spinor_genus_count"), {"count": count})
+        if genera is None:
+            return
+        location = ("integral", "spinor_genera")
+        if not genera or min(genera) < 1 or list(genera[1:]) != sorted(genera[1:], reverse=True):
+            yield _problem("spinor_genera_order", "the class numbers of the spinor genera are positive, and after the first in decreasing order", location)
+        if count is not None and len(genera) != count:
+            yield _problem("spinor_genera_count", "{listed} spinor genera are listed, and there are {count}", location, {"listed": len(genera), "count": count})
+        total = self.integral.genus_class_count
+        if total is not None and sum(genera) != total:
+            yield _problem("spinor_genera_sum", "the spinor genera hold {sum} classes, and the genus holds {total}", location, {"sum": sum(genera), "total": total})
+        if self.definite is None and set(genera) != {1}:
+            yield _problem("spinor_genera_indefinite", "a spinor genus of an indefinite lattice of rank at least 3 holds one class", location)
 
     def _orbit_problems(self, series: dict[OrbitGroup, PrimitiveOrbitSeries]) -> Iterator[InitErrorDetails]:
         """The coefficients vanish where no primitive vector has norm n, grow from a group to a subgroup, and agree for two keys that name one group."""

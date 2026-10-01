@@ -25,6 +25,8 @@ from latticedb.model import DefiniteData, IntegralData, Lattice, Yaml
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_symbol": ("integral", IntegralData),
     "genus_class_count": ("integral", IntegralData),
+    "spinor_genus_count": ("integral", IntegralData),
+    "spinor_genera": ("integral", IntegralData),
     "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
     "primitive_orbits": ("integral", IntegralData),
@@ -34,6 +36,7 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
 def applies(field: str, lattice: Lattice, planes: int) -> bool:
     """Whether SageMath computes `field` for `lattice`, of which `planes` is a lower bound of the hyperbolic index.
 
+    Spinor genera are computed for a lattice of rank at least 3, the dimension for which SPLAG, Chapter 15, Theorem 15(b) defines them.
     The order of O(L) is computed for a definite lattice, whose vectors of bounded norm are finite in number. The series of
     orbits of primitive vectors is computed for a definite lattice, and for an even lattice that contains U^2 (theory/orbits.md).
     """
@@ -41,6 +44,8 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
     match field:
         case "automorphism_group_order":
             return lattice.definite is not None
+        case "spinor_genus_count" | "spinor_genera":
+            return lattice.rank >= 3
         case "primitive_orbits":
             index = max(planes, lattice.integral.hyperbolic_index or 0)
             return lattice.definite is not None or (lattice.integral.parity == "even" and index >= 2)

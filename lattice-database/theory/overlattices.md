@@ -41,6 +41,25 @@ The *class number* of the genus of $L$ is the number of isometry classes of latt
 The page states the class number when the record has it.
 It is computed with `Genus(G).representatives()` of SageMath.
 
+## Spinor genera {#spinor-genera}
+
+::: {.definition}
+Let $L$ and $M$ be in the same genus, of rank at least 3, with determinant $d$.
+There are lattices in their isometry classes with $[L : L \cap M] = [M : L \cap M] = r$ for an integer $r$ prime to $2d$.
+$L$ and $M$ are in the same *spinor genus* when the spinor operator $\Delta(r)$ is in the spinor kernel (Conway and Sloane, *Sphere Packings, Lattices and Groups*, 3rd edition, Chapter 15, §9.2–§9.4, Theorems 15–17).
+The database counts spinor genera up to isometry, proper or improper: the spinor kernel is enlarged by the spinor operator of one improper isometry, so that each spinor genus is a union of isometry classes.
+:::
+
+A genus is partitioned into spinor genera, and their number is a power of 2 (Conway and Sloane, Chapter 15, §9.1).
+The record states that number as `spinor_genus_count`, computed with `Genus(G).spinor_generators(proper=False)` of SageMath.
+
+The record states the partition of the class number as `spinor_genera`: the number of isometry classes in the spinor genus of $L$, then the number in each other spinor genus, in decreasing order.
+The first entry is the *spinor class number* of $L$, and the sum is the class number of the genus.
+
+For an indefinite lattice of rank at least 3, a spinor genus contains exactly one isometry class (Eichler; Conway and Sloane, Chapter 15, Theorem 14), so every entry is $1$ and the class number equals the number of spinor genera.
+For a definite lattice the class number and the number of spinor genera do not determine the partition: the genus of $\langle 1 \rangle \oplus \langle 4 \rangle \oplus \langle 64 \rangle$ has three classes in two spinor genera.
+`latticedb certify` finds the classes of each spinor genus by Kneser's neighbour method at a prime $p$ whose spinor operator is in the kernel, which stays in one spinor genus, and checks that the sum of $1/|O(M)|$ over all classes found equals the mass of the genus.
+
 ## Hyperbolic index {#hyperbolic-index}
 
 ::: {.definition}

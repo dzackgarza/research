@@ -83,7 +83,7 @@ The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
 The build reads the stored values and computes nothing again.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-`latticedb certify` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, `definite.automorphism_group_order` with `qfauto` of PARI/GP, and `integral.primitive_orbits` through $z^4$ and $w^4$, of a definite lattice with `qfauto` and `qfminim` and of an even lattice of hyperbolic index at least 2 from its discriminant form (`theory/orbits.md`), under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a series of orbits merges coefficient by coefficient with the stored one, and a person states the coefficients of any other indefinite lattice with a `reference` that proves them; a value that SageMath does not compute within the time limit is not written.
+`latticedb certify` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, `integral.spinor_genus_count` and `integral.spinor_genera` of a lattice of rank at least 3 with `Genus` and the neighbour method of SageMath (`theory/overlattices.md`), `definite.automorphism_group_order` with `qfauto` of PARI/GP, and `integral.primitive_orbits` through $z^4$ and $w^4$, of a definite lattice with `qfauto` and `qfminim` and of an even lattice of hyperbolic index at least 2 from its discriminant form (`theory/orbits.md`), under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a series of orbits merges coefficient by coefficient with the stored one, and a person states the coefficients of any other indefinite lattice with a `reference` that proves them; a value that SageMath does not compute within the time limit is not written.
 `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
@@ -91,7 +91,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
-| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol`, `genus_class_count`, `hyperbolic_index`, `primitive_orbits` |
+| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`, `primitive_orbits` |
 | `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
 | `root_span` | $b$ is not definite | `roots`, `norms`, `summands`, `embedding` |
 | `root_sublattice` | $b$ is definite, or the record has `root_span` | `invariant_factors`, `norms` |
@@ -99,7 +99,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
 The `integral`, `definite`, `indefinite` and `root_sublattice` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
-`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.hyperbolic_index` and `integral.primitive_orbits` are optional.
+`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.spinor_genus_count`, `integral.spinor_genera`, `integral.hyperbolic_index` and `integral.primitive_orbits` are optional.
 `integral.primitive_orbits` maps each of `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+` to the coefficients `constant`, `z` and `w` of the series $F_{L,\Gamma}(z, w)$ of the numbers of $\Gamma$-orbits of primitive vectors of each norm, null where a coefficient is not known (`theory/orbits.md`).
 
 `integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.

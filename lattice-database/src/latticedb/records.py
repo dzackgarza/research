@@ -167,7 +167,7 @@ def _integral(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
             block["overlattice_count"] = count
         if block["parity"] == "even" and all(factor == 2 for factor in invariants):
             block["delta"] = arithmetic.delta(gram)
-        for field in ("genus_symbol", "genus_class_count", "hyperbolic_index", "primitive_orbits"):
+        for field in ("genus_symbol", "genus_class_count", "spinor_genus_count", "spinor_genera", "hyperbolic_index", "primitive_orbits"):
             if field in declared:
                 block[field] = declared[field]
     return _ordered(block, tuple(model.IntegralData.model_fields))

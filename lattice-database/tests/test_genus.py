@@ -13,13 +13,13 @@ A2 = next(entry.lattice for entry in LOADED.entries if entry.lattice.tag == "001
 
 
 def test_sagemath_computes_the_invariants_of_a2() -> None:
-    # A2 (record 0012) is alone in its genus, and O(A2) is the dihedral group of order 12 (Conway and Sloane, SPLAG, Chapter 4, Section 6.1).
+    # A2 (record 0012) has rank 2, so no spinor genera are computed. It is alone in its genus, and O(A2) is the dihedral group of order 12 (Conway and Sloane, SPLAG, Chapter 4, Section 6.1).
     # O(A2) = W(A2) x {1, -1}, and -1 acts on A_L = Z/3 by -1 while W(A2) acts trivially, so O~(A2) = W(A2): it is simply transitive on the 6 roots,
     # its rotations of order 3 have 2 orbits on them, and so do SO~ = O~ n SO. The norms of A2 are 2, 6, 8, ..., so c(1) = c(3) = c(4) = 0.
     one = {"constant": 0, "z": [0, 1, 0, 0], "w": [0, 0, 0, 0]}
     two = {"constant": 0, "z": [0, 2, 0, 0], "w": [0, 0, 0, 0]}
     [values] = genus.computed(genus.requests(LOADED, {}, ("0012",), seconds=60), seconds=60)
-    assert {field: values[field] for field in genus.BLOCKS} == {
+    assert {field: values[field] for field in genus.BLOCKS if field in values} == {
         "genus_symbol": "II_{2,0} (2: 1^-2; 3: 1^-1 3^-1)",
         "automorphism_group_order": 12,
         "genus_class_count": 1,
@@ -73,6 +73,19 @@ def test_the_orbits_of_an_indefinite_lattice_are_computed_only_when_it_is_even_a
     assert not genus.applies("primitive_orbits", by_tag["0036"], 1)
     assert not genus.applies("primitive_orbits", by_tag["0015"], 2)
     assert genus.applies("primitive_orbits", A2, 0)
+
+
+def test_sagemath_computes_the_spinor_genera() -> None:
+    # SPLAG, Chapter 15, Section 9.6: the genus of A2 + <18> has two spinor genera, one with the form and one with a second representative.
+    # Genus(G).representatives() finds two classes, so each spinor genus holds one.
+    # SPLAG, Chapter 15, Section 11: the genus of diag(-1, 64, 2) has two spinor genera and hence two classes.
+    chosen: list[dict[str, Yaml]] = [
+        {"tag": "SPLAG 9.6", "gram": [[2, 1, 0], [1, 2, 0], [0, 0, 18]], "sign": 1, "fields": ["genus_class_count", "spinor_genus_count", "spinor_genera"]},
+        {"tag": "SPLAG 11", "gram": [[-1, 0, 0], [0, 64, 0], [0, 0, 2]], "sign": 0, "fields": ["genus_class_count", "spinor_genus_count", "spinor_genera"]},
+    ]
+    computed = {str(values.pop("tag")): values for values in genus.computed(chosen, seconds=60)}
+    expected = {"genus_class_count": 2, "spinor_genus_count": 2, "spinor_genera": [1, 1]}
+    assert {tag: {field: values[field] for field in expected} for tag, values in computed.items()} == {"SPLAG 9.6": expected, "SPLAG 11": expected}
 
 
 def block_sum(*blocks: list[list[int]]) -> list[list[int]]:
