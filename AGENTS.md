@@ -620,7 +620,7 @@ Full catalogue: `.agents/references/terminology-dictionary.md`; code-shape patte
 
 # Docs prose policy (always-on)
 
-Prose in the docs book is governed by `CONTRIBUTING-WRITING.md` — a citable policy index of banned prose patterns, each with a concrete example and remediation:
+Prose in the docs book is governed by the [mathematical writing policy](https://github.com/dzackgarza/ai/blob/main/opencode/skills/mathematics/writing/policy/policy.md) (the `mathematical-writing-policy` skill) — a citable policy index of banned prose patterns, each with a concrete example and remediation — together with the [writing house conventions](CONTRIBUTING.md#writing-house-conventions):
 
 - **Prose tells (`PR-*`)** — bad prose on its own terms; the fix is a rewrite.
 
@@ -631,11 +631,11 @@ Prose in the docs book is governed by `CONTRIBUTING-WRITING.md` — a citable po
 
 **Check feedback for the pattern, not just the instance.** Before applying any writing correction, check whether it instantiates a recorded item.
 If so, fix it and cite the id.
-If it is a *new* pattern, record it in the guide — forward-facing, with an example and remediation — before or alongside fixing the one instance; a correction that fixes a sentence and leaves the pattern unrecorded will recur, and the guide is where a one-off correction graduates into policy an auditor applies everywhere.
+If it is a *new* pattern, record it in the policy — forward-facing, with an example and remediation — before or alongside fixing the one instance; a correction that fixes a sentence and leaves the pattern unrecorded will recur, and the policy is where a one-off correction graduates into policy an auditor applies everywhere.
 Run the index in the fresh-context audit (`.agents/references/mathematical-auditor-priming.md`) after every substantive docs edit, the same as the vocabulary pass.
 Requirements the docs must satisfy (definition-before-use, resolvable references) are audited against the artifact, never self-certified in prose (`PR-3`).
 
-**Delegating a docs rewrite.** Give the writer the artifact itself, `CONTRIBUTING-WRITING.md`, the chapter slice with the purpose and prerequisites of each section, the source passages whose mathematics must survive, the anchors of the definitions it uses, and the files it must not edit.
+**Delegating a docs rewrite.** Give the writer the artifact itself, the writing policy and house conventions above, the chapter slice with the purpose and prerequisites of each section, the source passages whose mathematics must survive, the anchors of the definitions it uses, and the files it must not edit.
 After the edit, compare the destination with the source for lost definitions, hypotheses, codomains, diagrams, citations, examples, and anchors; then run the fresh-context audit above.
 Each source proposition ends preserved, corrected with a mathematical reason, or recorded as an open contradiction.
 When a diagram fails to render, render it alone and read the first TeX diagnostic.

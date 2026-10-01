@@ -8062,9 +8062,58 @@ lemmas about it.
 
 * * *
 
+## Writing house conventions
+
+Mathematical prose in this repository (the book under `writing/`, papers,
+talks, docstrings, issue bodies, and plan cards) follows the
+[mathematical writing policy](https://github.com/dzackgarza/ai/blob/main/opencode/skills/mathematics/writing/policy/policy.md).
+Cite its codes (`PR-30`, `DEF-26`, `SYM-1`, …) in commits and review. This
+section fixes the mechanisms that the policy leaves to the house.
+
+- **Numbered blocks (`DEF-4`).** A statement is a Quarto fenced block:
+
+  ```markdown
+  ::: {#def-universe}
+  ## Universe and decoded objects
+
+  Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$
+  with pullbacks and terminal object $*$.
+  :::
+  ```
+
+  The declared block classes are listed at the bottom of
+  `writing/.book/_quarto.yml`. Add a class there before using it.
+- **Resolver (`XREF-1`).** `\ref` and `\longref` are the only two commands
+  that resolve numbered blocks. They reach any numbered block in the book, in
+  any chapter, in either direction. `@def-…` also resolves.
+- **No `\cref` or `\Cref`.** They do not match the resolver. Pandoc drops an
+  unmatched macro silently, so the reference disappears and the sentence
+  around it is left dangling.
+- **Label format.** Labels use colon separators: `def:universe`,
+  `thm:coble-cusps`. Do not start a label with a Quarto-reserved prefix
+  (`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`, `fig-`,
+  `tbl-`, `eq-`, `sec-`, `lst-`); use a hyphen instead. Quarto hijacks those
+  prefixes for its own crossrefs and the render fails.
+- **Sections and figures (`XREF-4`).** Sections auto-number. Reference a
+  section by link: `[Lattice Theory](lattice-theory.md#sec:lattice-theory)`.
+  Anchor a figure `{#fig-x}`, with a hyphen, and reference it `@fig-x`.
+- **Defined terms (`XREF-5`).** Link a use of a defined term with
+  `\ref{def-…}`, `\longref{def-…}`, or `@def-…`.
+- **Definiendum (`DEF-26`, `PR-10`).** The term being defined is in
+  *italics* at its defining occurrence and nowhere else.
+- **Citations (`CITE-1`, `CITE-2`).** Better BibTeX keys from Zotero:
+  `[@OR23, Definition 1.5.1]`. The docs gate rejects an inline URL to arXiv,
+  a DOI, or nLab.
+- **Audience (`PR-18`).** The book's reader is the audience of `DEF-12` and
+  `DEF-13`: comfortable with $\infty$-categories, $\mathbb{E}_1$- and
+  $\mathbb{E}_\infty$-ring spectra, $\mathbf{LMod}_R$ versus
+  $\mathbf{RMod}_R$, derived stacks, and homotopy types.
+- **Ontology.** The book adopts the derived and homotopical ontology of
+  `DEF-8` to `DEF-14`.
+
 ## Detailed Documentation References
 
-- **Writing guidelines**: [`CONTRIBUTING-WRITING.md`](CONTRIBUTING-WRITING.md)
+- **Writing guidelines**: [mathematical writing policy](https://github.com/dzackgarza/ai/blob/main/opencode/skills/mathematics/writing/policy/policy.md), with the [writing house conventions](#writing-house-conventions) above
 
 - **Contribution workflow**: [`.agents/references/contribution-guidelines.md`](.agents/references/contribution-guidelines.md)
 
