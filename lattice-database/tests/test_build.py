@@ -1,10 +1,10 @@
 """The site that `build` writes from the corpus of this repository."""
 
 import json
-from html import escape
 from pathlib import Path
 
 import pytest
+from markupsafe import escape
 from latticedb import corpus, site
 
 ROOT = Path(__file__).parent.parent
