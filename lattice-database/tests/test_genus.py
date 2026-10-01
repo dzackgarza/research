@@ -57,6 +57,24 @@ def test_sagemath_computes_the_hyperbolic_index() -> None:
     assert computed == {"U+U+E8(-1)": 2, "U(2)+<-2>": 0, "I_{1,1}": 0, "I_{2,1}": 1}
 
 
+def test_sagemath_computes_the_orbits_of_an_even_lattice_that_contains_two_hyperbolic_planes() -> None:
+    # U + U + <-2> has A_L = Z/2 with q(a) = -1/2, and O(q_L) = 1. A primitive v has v* + L = 0 when div(v) = 1, which needs b(v, v) even,
+    # and v* + L = a when div(v) = 2, which needs b(v, v) / 4 = -1/2 mod 2: of norms in [-4, 4] only -2. So c(-2) = 2 and c(n) = 1 for the other even n.
+    plane = [[0, 1], [1, 0]]
+    [values] = genus.computed([{"tag": "U+U+<-2>", "gram": block_sum(plane, plane, [[-2]]), "sign": 0, "fields": ["primitive_orbits"]}], seconds=60)
+    series = {"constant": 1, "z": [0, 1, 0, 1], "w": [0, 2, 0, 1]}
+    assert values["primitive_orbits"] == dict.fromkeys(("O", "SO", "Otilde", "SOtilde", "O+", "SO+", "Otilde+", "SOtilde+"), series)
+
+
+def test_the_orbits_of_an_indefinite_lattice_are_computed_only_when_it_is_even_and_contains_two_hyperbolic_planes() -> None:
+    # Record 0036 is U + U(2), even with no stored hyperbolic index; record 0015 is the odd lattice I_{1,1}.
+    by_tag = {entry.lattice.tag: entry.lattice for entry in LOADED.entries}
+    assert genus.applies("primitive_orbits", by_tag["0036"], 2)
+    assert not genus.applies("primitive_orbits", by_tag["0036"], 1)
+    assert not genus.applies("primitive_orbits", by_tag["0015"], 2)
+    assert genus.applies("primitive_orbits", A2, 0)
+
+
 def block_sum(*blocks: list[list[int]]) -> list[list[int]]:
     size = sum(len(block) for block in blocks)
     rows: list[list[int]] = []

@@ -248,7 +248,8 @@ class IntegralData(Record):
             "For a group $\\Gamma \\subseteq O(L)$, the series $F_{L,\\Gamma}(z, w)$ whose coefficient $c_\\Gamma(n)$ is the number of $\\Gamma$-orbits of primitive "
             "vectors $v$ with $b(v, v) = n$. The keys are `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+`: $S$ is the kernel of the determinant, "
             "$+$ the kernel of the real spinor norm, and $\\widetilde{O}(L)$ the kernel of $O(L) \\to O(A_L)$. "
-            "Computed by `latticedb certify` through $z^4$ and $w^4$ for a definite lattice; stated with a reference otherwise. Requires a nonzero determinant."
+            "Computed by `latticedb certify` through $z^4$ and $w^4$ for a definite lattice, and from $(A_L, q_L)$ for an even lattice of hyperbolic index at least 2 "
+            "(Gritsenko, Hulek and Sankaran 2009, Proposition 3.3(i); Nikulin 1980, Theorem 1.14.2); stated with a reference otherwise. Requires a nonzero determinant."
         ),
     )
 

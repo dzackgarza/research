@@ -31,8 +31,21 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
 }
 """Each computed field, with the block of the record that holds it and the model of that block."""
 
-DEFINITE_ONLY = ("automorphism_group_order", "primitive_orbits")
-"""The fields that SageMath computes only for a definite lattice, whose vectors of bounded norm are finite in number."""
+def applies(field: str, lattice: Lattice, planes: int) -> bool:
+    """Whether SageMath computes `field` for `lattice`, of which `planes` is a lower bound of the hyperbolic index.
+
+    The order of O(L) is computed for a definite lattice, whose vectors of bounded norm are finite in number. The series of
+    orbits of primitive vectors is computed for a definite lattice, and for an even lattice that contains U^2 (theory/orbits.md).
+    """
+    assert lattice.integral is not None
+    match field:
+        case "automorphism_group_order":
+            return lattice.definite is not None
+        case "primitive_orbits":
+            index = max(planes, lattice.integral.hyperbolic_index or 0)
+            return lattice.definite is not None or (lattice.integral.parity == "even" and index >= 2)
+        case _:
+            return True
 
 SAGE_MODULE = Path(__file__).with_name("sage_genus.py")
 
@@ -55,12 +68,13 @@ def _sign(lattice: Lattice) -> int:
 def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int) -> list[dict[str, Yaml]]:
     """For each integral record with a nonzero determinant, among `tags` when it is not empty, the fields that are pending with the time limit `seconds`."""
     chosen: list[dict[str, Yaml]] = []
+    bounds = corpus.hyperbolic_index_bounds(loaded.morphisms, loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
         if lattice.integral is None or lattice.determinant == 0 or (tags and lattice.tag not in tags):
             continue
         inputs = certificates.gram_digest(lattice)
-        applicable = [field for field in BLOCKS if field not in DEFINITE_ONLY or lattice.definite is not None]
+        applicable = [field for field in BLOCKS if applies(field, lattice, bounds.get(lattice.tag, 0))]
         fields: list[Yaml] = [field for field in applicable if certificates.is_pending(held, name(lattice.tag, field), inputs, seconds)]
         if fields:
             gram: list[Yaml] = [[int(x) for x in row] for row in lattice.gram_tensor]
