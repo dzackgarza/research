@@ -160,6 +160,60 @@ the audit."
 **Preferred:** state the mathematical proposition. Project process belongs in
 agent-facing files, not in a mathematical chapter.
 
+### `PR-74`: Importance stated in place of the result
+
+**Banned:** "The question that matters is whether the construction is
+local."; "The following is the key fact about proper morphisms."
+
+**Preferred:** "A proper morphism of schemes is universally closed,
+separated, and of finite type." "Matters", "key", "central", "important",
+and "useful" give a status and no proposition. State the result with its
+hypotheses, or the consequence that gives it value. A causal sentence that
+names a use is content: "Apply monotone convergence to the partial sums to
+interchange $\sum$ and $\int$."
+
+### `PR-75`: A position in the page in place of a named relation
+
+**Banned:** "As discussed above, this map is an isomorphism."; "the next
+step"; "the previous section".
+
+**Preferred:** "By the normalization theorem, the induced map is an
+isomorphism", with a cross-reference to the theorem (`XREF-1`). "Above",
+"below", "next", and "as discussed" refer to the layout of the page, which
+changes when a page is split, transcluded, or reordered. Name the object,
+map, hypothesis, or result that the reader uses. If no such relation
+exists, delete the pointer.
+
+### `PR-76`: A reading order without a mathematical dependency
+
+**Banned:** "Read the chapters in this order."; "Readers who are learning
+the subject should read forward; readers short of time should start with
+the applications and work backward."
+
+**Preferred:** "The cohomology chapter uses the definition of a scheme in
+\ref{def:scheme}." A sequence is a claim only when it names a dependency.
+Chronology, an author's view of what is easier, and reader categories by
+urgency, ability, or purpose are not dependencies. The book's navigation
+already gives the editorial order.
+
+### `PR-77`: A missing definition assigned to the reader
+
+**Banned:** "Follow the links backward when a definition is missing."
+
+**Preferred:** define the notion before its first use, or link its defining
+occurrence at that use (`XREF-5`). An instruction to repair the order
+hides an authoring defect and gives the work to the reader.
+
+### `PR-78`: Second person in exposition
+
+**Banned:** "You are given a matrix and asked for a normal form."; "Now you
+apply Cauchy's theorem."
+
+**Preferred:** first person plural or the impersonal form: "Given a matrix
+$A$ over a field $F$, …"; "By Cauchy's theorem, …". The imperatives of
+mathematics ("let", "suppose", "define") are standard and are not a
+second-person address.
+
 ## Evasion (`EV-*`)
 
 Prose that substitutes for mathematical work not done. The tell is stylistic;
@@ -262,6 +316,211 @@ projections."
 $\lambda_a$, $\varrho_a$ are the unique isomorphisms supplied by the
 universal property of the product." Name the universal property and the
 object that supplies it.
+
+## Authorial stance (`STANCE-*`)
+
+These rules govern the relationship that copy sets up with its readers, with
+the authors it cites, and with institutions. They apply to every surface:
+exposition, source annotations, talks, research statements, and
+documentation. Public copy speaks under the owner's name. A sentence that
+judges colleagues or manages readers assigns that judgement to the owner.
+
+Several banned examples quote observed text from the `new-qual-site` resource
+pages.
+
+### `STANCE-1`: The writer as judge of people
+
+**Banned:** "A student who has taken the course should read these and
+nothing else."; "The discerning mathematician knows which treatments
+deserve study."
+
+**Preferred:** "The references below treat [topics] in [sections]."
+Expertise in a subject gives no authority over the competence, education,
+or conduct of other people. Write as a colleague who supplies mathematics
+and references.
+
+The defect is the relationship, not one adjective. A sequence of small
+judgements across introductions, headings, comparisons, and asides sets up
+a sustained superior persona; the recurrence is the evidence. Read the
+document as a whole (`STANCE-8`). Intent is not a criterion: fluent,
+friendly, or helpful wording does not change the relationship.
+
+### `STANCE-2`: A diagnosis of the reader
+
+**Banned:** "it is the book to use if the classical theory was never
+properly learned rather than merely forgotten"; "It is worth two
+evenings."; "removes most of the drudgery from Chapter II"; "Consult it by
+index; it is not a book to read through."
+
+**Preferred:** "[Source] treats [topics] in §§[locations]." "The section
+assumes tensor products." Name the prerequisite and the dependency. Do not
+classify the reader's education, predict a reading time, call an argument
+tedious, or explain an ordinary operation such as the use of an index. A
+reading time becomes a standard of ability; a judgement of tedium presents
+a preference as a property of the mathematics.
+
+### `STANCE-3`: Certification of scholars
+
+**Banned:** "with real proofs"; "the shortest honest account"; "the proofs
+are complete"; "Circulating solution manuals are of very uneven quality",
+followed by a list of named authors.
+
+**Preferred:** "The proof of [result] computes [quantity] in §[location]."
+Praise of one work as honest, real, or complete implies that other authors
+fail an ordinary obligation. A collective verdict attaches to every name
+that the page lists near it. Describe contents and methods. "Detailed" and
+"terse" are acceptable when they describe an observed feature.
+
+### `STANCE-4`: A correction made into a verdict
+
+**Banned:** "The literature on this point is unreliable."
+
+**Preferred:** an erratum: the statement, its version and location, the
+correction, and the argument or counterexample that establishes it. Keep
+the object of a criticism a mathematical statement. Do not extend it to
+the author or to the whole work. Do not suppress a verified error.
+
+### `STANCE-5`: Authority borrowed from an institution
+
+**Banned:** "an examiner who has read your file knows it"; "Referees will
+expect this construction."; "Experts know that this is the right
+definition."
+
+**Preferred:** attribute a documented requirement to its source and link
+it: "The published syllabus lists [topic]." Claims about what examiners,
+referees, or experts know, value, or infer give the writer an authority
+that the writer does not have.
+
+### `STANCE-6`: An assignment in place of information
+
+**Banned:** "Read II.1--II.8 and III.1--III.5."; "Work its exercises rather
+than reading it."; "Use them to check an answer you have already produced,
+never to read a solution for the first time."
+
+**Preferred:** state what the sections contain and how their topics
+connect: "The exercises in §[location] develop [technique], which the proof
+of [result] uses." Knowledge of a subject does not give knowledge of the
+reader's goals, background, or constraints. Present the information and the
+reasons; the reader makes the decision. A first-person suggestion or a
+hedge keeps the same assignment.
+
+### `STANCE-7`: Neutral wording without the content
+
+**Banned:** a page of book rankings replaced by "Several sources discuss
+this subject", with no locations.
+
+**Preferred:** the identified works, their access links, and the section
+references that the page's topics need. Removal of the stance does not
+complete the repair. Supply the definitions, arguments, or references that
+the rhetoric displaced. A softer adjective, a hedge, or a disclaimer of
+good intent is not a correction. After a revision, check which content the
+reader receives and which decisions stay with the reader.
+
+### `STANCE-8`: Review of the whole artifact
+
+Before a page is accepted, answer these questions from its sentences:
+
+- Which authority over other people does the writer claim?
+- Which competence, history, motives, or needs does it assign to readers?
+- Which authors receive an implied judgement through nearby names,
+  headings, contrasts, or lists?
+- Does praise of one source imply a failure elsewhere?
+- Does an observation become an instruction about how to learn, feel, or
+  work?
+- After the framing is removed, does the page supply its content?
+
+This is a semantic reading, not a phrase match. A minimizing diagnosis
+("needs a citation", "too verbose", "the tone could be friendlier", "an
+isolated mistake") is not a substitute for the stance repair.
+
+## Source descriptions (`SRC-*`)
+
+These rules apply `STANCE-*` to bibliographies, reference pages, and source
+annotations, such as `writing/category-theory/framework/Mathematical-Sources.md`.
+
+### `SRC-1`: Quality words in place of contents
+
+**Banned:** "The clearest and most rigorous introduction to the subject.";
+"This volume finally makes the subject clear."; "an illustration-driven
+presentation with the ideal pedagogical mix".
+
+**Preferred:** "The text defines [term], proves [theorem], and treats
+[topic] in §§[locations]." "Clear", "rigorous", "complete", "systematic",
+and "accessible" state a quality without a measure. Record contents,
+theorems, sections, and prerequisites. Use an ordinary word for an ordinary
+feature: "has many examples".
+
+### `SRC-2`: A comparison without a checkable difference
+
+**Banned:** "This is the serious book; the other text leaves the real
+theory out."; "still the fastest route from a fan to an answer".
+
+**Preferred:** "[A] treats [topic] in §§[locations]; [B] treats [other
+topic] in §§[locations]." A superlative needs a comparison class and
+evidence. "Still" and "remains" imply a ranking with a history that the
+sentence does not supply.
+
+### `SRC-3`: A promise in place of named content
+
+**Banned:** "Explains what the theory is really about."; "Turns
+combinatorial data into solutions."
+
+**Preferred:** "Discusses generic points and nonreduced schemes."
+"Constructs a toric variety from a fan." Name what the source constructs,
+computes, proves, or classifies, with its input and hypotheses.
+
+### `SRC-4`: A metaphor in place of a bibliographic verb
+
+**Banned:** "This volume is the home of the examples that settle the
+issue."; "The definitions march into the chapter with examples at their
+side."
+
+**Preferred:** "Section [location] gives an example of a [property A]
+module that is not [property B]." Use the verb that names the relation:
+defines, treats, contains, proves, uses. A location metaphor ("is where",
+"lives in") also suggests that one source owns material that many sources
+treat.
+
+### `SRC-5`: An expository example presented as history
+
+**Banned:** "Each definition comes paired with the problem that originally
+inspired it."
+
+**Preferred:** "The text introduces [definition] through [example]." The
+choice of an example does not establish the history of a definition.
+Attribute a historical motivation only when a source establishes it.
+
+### `SRC-6`: A literature claim beyond the evidence
+
+**Banned:** "No other source supplies these intermediate steps."; "The one
+book the subject is drawn from."
+
+**Preferred:** "Section [location] works through [computation], including
+[step]." Knowledge of one source does not establish what other sources
+lack, and a failed search is evidence only about that search. A claim of
+uniqueness or completeness needs a bounded comparison and the evidence that
+covers it.
+
+### `SRC-7`: An access failure reported as a property of the work
+
+**Banned:** "The abandoned notes have disappeared from the web."
+
+**Preferred:** link an available copy under its author and title, or give
+the bibliographic data that lets a library find it. A failed request shows
+an access failure at one address and time. It does not show that the work
+is unavailable, abandoned, or defective. Record a broken address as
+maintenance work, not as page copy.
+
+### `SRC-8`: Commentary in place of navigation
+
+**Banned:** "There are many competing treatments, but few merit serious
+attention."; "Only in the last part does the theory earn its keep."
+
+**Preferred:** the identified works with author, title, citation, and
+access link, grouped under subject headings, with the sections that treat
+each topic: "Chapter [location] applies [theorem] to [problem]." A source
+page exists so that readers do not repeat the bibliographic work. Make
+each mapping by reading the source.
 
 ## Mathematical tells (`MA-*`)
 
@@ -476,6 +735,15 @@ space-level formulation is a specialization, not the definition.
 Representable, Yoneda, mapping-space, and detection criteria are theorems
 stated after the definition, with their hypotheses. Recovery of an ordinary
 or strict special case is a lemma or remark after the general construction.
+
+### `DEF-37`: Localization at a submonoid
+
+**Banned:** "Let $S\subseteq R$ be a multiplicatively closed subset" where
+the construction uses $1\in S$.
+
+**Preferred:** "Let $S$ be a submonoid of the multiplicative monoid
+$(R,\cdot)$." A nonempty subset closed under multiplication need not
+contain $1$, so it need not be a submonoid.
 
 ### `DEF-4`: Numbered block syntax
 
@@ -2509,7 +2777,7 @@ redefine, or what notation does not imply. Cross-references via
 mathematical $\S$'s.
 
 **Preferred:** state the mathematics — a fenced `::: {#def-...}` with the
-term bold, a Proposition with proof exhibiting the factorization, an
+term in italics, a Proposition with proof exhibiting the factorization, an
 Example, a Remark attached to its primary unit — and link with
 `(\ref{def-...})` or "Recall that … (\ref{def-...})". If a notational
 clarification is truly needed, put it in a footnote `[^1]` and keep it to
@@ -2764,21 +3032,19 @@ $\mathbf{BMod}_R\to\mathbf{Sets}$, $(M,e)\mapsto I$, are part of the
 data. Then put $\operatorname{Bas}_I(M):=\operatorname{Iso}(F(I),M)$,
 which is a torsor under $\operatorname{Aut}(F(I))$ when nonempty.
 
-### `DEF-26`: Bold the term being defined
+### `DEF-26`: Italicize the term being defined
 
-In a definition, the term being defined is bold at its first
-introduction. This marks the definiendum for the reader and for
-cross-referencing. The surrounding text states the quantifiers and
-conditions; the bold names which word is being introduced.
+In a definition, the term being defined is in italics at its defining
+occurrence, and nowhere else (`PR-10`). The surrounding text states the
+quantifiers and conditions; the italics mark which word is introduced.
 
-**Banned:** "An $R$-module $M$ is torsion when …" — the term "torsion"
-is not marked.
+**Banned:** "An $R$-module $M$ is torsion when …", with the term
+unmarked; "An $R$-module $M$ is **torsion** if …".
 
-**Preferred:** "An $R$-module $M$ is **torsion** if
+**Preferred:** "An $R$-module $M$ is *torsion* if
 $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$." Similarly, "A family
-$(m_i)_{i\in I}$ in $M$ is a **basis** if …," "A **based module** is a
-pair $(M,e)$ …," "A $t$-structure is **hereditary** if …" Bold the term;
-do not bold surrounding prose.
+$(m_i)_{i\in I}$ in $M$ is a *basis* if …," "A *based module* is a pair
+$(M,e)$ …," "A $t$-structure is *hereditary* if …"
 
 ### `PR-28`: "Requires a stated descent/local-to-global theorem with its hypotheses" is not a theorem
 
@@ -5061,6 +5327,19 @@ $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" with the enrichment
 from {#thm-mod-closed} named when needed.
 
 ## Contributing to this document
+
+- Start from an observed defect. Quote the passage with its file, revision,
+  and heading. An invented caricature is easier to recognize than the
+  plausible prose in which the defect occurred.
+- Extract the general mechanism. One page supplies the evidence; the rule
+  states the pattern at the level where it applies.
+- Cover every correction since the last update, not only the last one.
+- When a later correction shows that an earlier rule has the wrong model,
+  rewrite or delete the earlier rule. An appended stronger rule that leaves
+  the contradiction authoritative keeps the defect.
+- Integrate a new rule into its family. Do not start a parallel catalogue.
+- Keep evidence apart from proposals. A preferred form must not invent
+  coverage, history, or facts about a source.
 
 When reading the corpus, audit for new instances of the general patterns
 below and always mint general policies grounded in examples that illustrate
