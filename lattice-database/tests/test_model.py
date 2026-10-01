@@ -8,7 +8,6 @@ from latticedb.model import Lattice, Morphism, Yaml
 from pydantic import ValidationError
 
 
-
 def e8() -> dict[str, Yaml]:
     """The root lattice E8: even, unimodular, positive definite, 240 minimal vectors."""
     return {
