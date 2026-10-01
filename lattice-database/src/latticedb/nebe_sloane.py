@@ -1,7 +1,8 @@
 """Entries of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) as records.
 
-Each entry page lists sections `NAME`, `DIMENSION`, `DET`, `MINIMAL_NORM`,
-`KISSING_NUMBER`, `REFERENCES` and `GRAM`. The `GRAM` section gives the rank
+Each entry page lists sections `NAME`, `DIMENSION`, `DET` (the entries of the
+Niemeier lattices name it `DETERMINANT`), `MINIMAL_NORM`, `KISSING_NUMBER`,
+`REFERENCES` and `GRAM`. The `GRAM` section gives the rank
 and then the components `b(e_i, e_j)`, row by row, for all `j` or for `j <= i`.
 `fetch` reads an entry page into an `Entry`; `sources/nebe_sloane/<NAME>.json`
 stores it. `record` writes the entry as the declared fields of a record, and
@@ -76,7 +77,7 @@ def fetch(name: str) -> Entry:
         title=" ".join(found["NAME"]),
         url=url,
         dimension=int(found["DIMENSION"][0]),
-        determinant=integer(found["DET"][0]),
+        determinant=integer(found["DET" if "DET" in found else "DETERMINANT"][0]),
         minimal_norm=integer(found["MINIMAL_NORM"][0]),
         kissing_number=integer(found["KISSING_NUMBER"][0]),
         references=tuple(found.get("REFERENCES", [])),

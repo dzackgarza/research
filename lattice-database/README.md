@@ -273,7 +273,7 @@ The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a
 ## Sources to absorb
 
 The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane), <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/>, with its indefinite lattices first.
-`sources/nebe_sloane/` holds the 17 entries absorbed so far: the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$ and $BW_{16}$, all definite.
+`sources/nebe_sloane/` holds the 41 entries absorbed so far, all definite: the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$, $BW_{16}$, the Leech lattice $\Lambda_{24}$ and the 23 other Niemeier lattices.
 
 The work that remains, in order:
 
