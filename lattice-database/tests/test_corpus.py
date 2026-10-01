@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 import yaml
-from latticedb import arithmetic, corpus
+from latticedb import arithmetic, corpus, records
 from latticedb.model import Yaml
 
 
@@ -162,3 +162,71 @@ def test_isometry_of_definite_lattices_is_decided_on_the_gram_tensors() -> None:
     assert not arithmetic.is_isometric(diagonal, a2)
     # A2 and its scaling by 1/2 have different least denominators.
     assert not arithmetic.is_isometric(a2, tuple(tuple(value / 2 for value in row) for row in a2))
+
+
+def square_sum() -> dict[str, Yaml]:
+    """<1> + <1>, with the fields that its Gram tensor determines computed by `records.derive`."""
+    declared: dict[str, Yaml] = {"tag": "0002", "name": "<1>^2", "latex": r"\langle 1 \rangle^2", "gram_tensor": [[1, 0], [0, 1]], "provenance": {"source": "Test record."}}
+    return records.derive(declared)
+
+
+def write_morphisms(root: Path, source: str, target: str, morphisms: list[dict[str, Yaml]], stem: str | None = None) -> Path:
+    """The file `morphisms/<stem>.md` under `root`, with `<source>-<target>` as the stem unless another is given."""
+    (root / "morphisms").mkdir(exist_ok=True)
+    (root / "morphisms" / f"{stem or f'{source}-{target}'}.md").write_text(records.morphisms_text(source, target, morphisms, "Test morphisms."))
+    return root
+
+
+VALID_U = [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}]
+
+
+def morphism_problems(tmp_path: Path, source: str, target: str, morphisms: list[dict[str, Yaml]], stem: str | None = None) -> tuple[str, ...]:
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), square_sum(), hyperbolic_plane(VALID_U)), source, target, morphisms, stem)
+    with pytest.raises(corpus.CorpusInvalid) as raised:
+        corpus.load(directory)
+    return raised.value.problems
+
+
+def test_the_identity_and_the_exchange_of_e_and_f_are_morphisms_of_u(tmp_path: Path) -> None:
+    morphisms: list[dict[str, Yaml]] = [{"name": "identity", "matrix": [[1, 0], [0, 1]]}, {"name": "exchange", "matrix": [[0, 1], [1, 0]]}]
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), hyperbolic_plane(VALID_U)), "0016", "0016", morphisms)
+    (loaded,) = corpus.load(directory).morphisms
+    assert [morphism.name for morphism in loaded.morphisms.morphisms] == ["identity", "exchange"]
+
+
+def test_the_inclusion_of_a_summand_is_a_morphism_whose_lines_cut_orthogonal_summands(tmp_path: Path) -> None:
+    morphisms: list[dict[str, Yaml]] = [{"name": "first summand", "matrix": [[1], [0]], "row_subdivisions": [1]}]
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", morphisms)
+    (loaded,) = corpus.load(directory).morphisms
+    assert loaded.morphisms.morphisms[0].images == ((1, 0),)
+
+
+def test_a_matrix_that_does_not_preserve_the_forms_is_rejected(tmp_path: Path) -> None:
+    # The image of f is 2f, so b(e, f) = 1 goes to b(e, 2f) = 2.
+    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "scaling", "matrix": [[1, 0], [0, 2]]}])
+    assert "does not preserve the forms" in problem
+
+
+def test_a_matrix_whose_shape_is_not_the_ranks_of_target_and_source_is_rejected(tmp_path: Path) -> None:
+    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "short", "matrix": [[1, 0]]}])
+    assert "2 rows and 2 columns" in problem
+
+
+def test_a_line_that_cuts_u_is_rejected_because_e_and_f_are_not_orthogonal(tmp_path: Path) -> None:
+    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "identity", "matrix": [[1, 0], [0, 1]], "row_subdivisions": [1]}])
+    assert "row_subdivisions are not orthogonal summands of the target" in problem
+
+
+def test_a_morphism_file_is_rejected_when_a_tag_is_not_in_the_corpus_or_is_retired(tmp_path: Path) -> None:
+    problems = morphism_problems(tmp_path, "0003", "000Z", [{"name": "identity", "matrix": [[1]]}])
+    assert sorted(problems) == sorted(
+        [
+            f"{tmp_path / 'morphisms' / '0003-000Z.md'}: the tag 0003 is not in the corpus",
+            f"{tmp_path / 'morphisms' / '0003-000Z.md'}: the tag 000Z is retired ({RETIRED['000Z']})",
+        ]
+    )
+
+
+def test_a_morphism_file_is_rejected_when_its_name_is_not_source_dash_target(tmp_path: Path) -> None:
+    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "identity", "matrix": [[1, 0], [0, 1]]}], stem="0016-0001")
+    assert "the file name must be 0016-0016" in problem

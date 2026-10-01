@@ -278,6 +278,19 @@
   </section>
   {% endif %}
 
+  {% if morphism_files %}
+  <section aria-labelledby="morphisms">
+    <h2 id="morphisms">Morphisms</h2>
+    <p>Files of morphisms of lattices with this lattice as the source or the target.</p>
+    <ul class="related-list">
+      {% for file in morphism_files %}
+      {% set source, target = lattices[file.source], lattices[file.target] %}
+      <li><a href="{{ root }}morphism/{{ file.source }}-{{ file.target }}.html">\({{ source.latex }} \to {{ target.latex }}\)</a> <span class="relation">{{ file.morphisms | length }} {{ "morphism" if file.morphisms | length == 1 else "morphisms" }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
   {% if lattice.references %}
   <section aria-labelledby="references">
     <h2 id="references">References</h2>

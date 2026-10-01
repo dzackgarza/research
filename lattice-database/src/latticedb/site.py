@@ -34,6 +34,8 @@ from latticedb.model import (
     IndefiniteData,
     IntegralData,
     Lattice,
+    Morphism,
+    Morphisms,
     Provenance,
     Record,
     Reference,
@@ -210,6 +212,27 @@ def block_tex(block: list[int], symbol: str = "e") -> str:
     if len(block) > 3 and block[-1] - block[0] == len(block) - 1:
         return f"{symbol}_{{{block[0]}}}, \\dots, {symbol}_{{{block[-1]}}}"
     return ", ".join(f"{symbol}_{{{index}}}" for index in block)
+
+
+def matrix_tex(morphism: Morphism) -> str:
+    """The matrix as a TeX `array`, with a vertical line at each column subdivision and `\\hline` at each row subdivision."""
+    columns = len(morphism.matrix[0])
+    bounds = (0, *morphism.column_subdivisions, columns)
+    alignment = "|".join("r" * (high - low) for low, high in zip(bounds, bounds[1:], strict=False))
+    lines = []
+    for index, matrix_row in enumerate(morphism.matrix):
+        if index in morphism.row_subdivisions:
+            lines.append("\\hline")
+        lines.append(" & ".join(str(value) for value in matrix_row) + " \\\\")
+    return f"\\left(\\begin{{array}}{{{alignment}}}\n" + "\n".join(lines) + "\n\\end{array}\\right)"
+
+
+def matrix_text(morphism: Morphism) -> str:
+    """The matrix and its subdivisions as JSON, one row per line, in the form that `latticedb morphism` reads."""
+    rows = ",\n  ".join(json.dumps(list(matrix_row)) for matrix_row in morphism.matrix)
+    row_lines = json.dumps(list(morphism.row_subdivisions))
+    column_lines = json.dumps(list(morphism.column_subdivisions))
+    return f'{{"matrix": [\n  {rows}\n],\n "row_subdivisions": {row_lines},\n "column_subdivisions": {column_lines}}}'
 
 
 def summand_name(record: Lattice, scale: int) -> tuple[str, str]:
@@ -440,6 +463,8 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     yield "Related lattice", "related[]", Related
     yield "Reference", "references[]", Reference
     yield "Provenance", "provenance", Provenance
+    yield "Morphism file", "morphisms/<S>-<T>.md", Morphisms
+    yield "Morphism", "morphisms[]", Morphism
 
 
 def build(root: Path, target: Path) -> int:
@@ -476,11 +501,13 @@ def build(root: Path, target: Path) -> int:
         shutil.rmtree(target)
     (target / "tag").mkdir(parents=True)
     (target / "collection").mkdir()
+    (target / "morphism").mkdir()
     shutil.copytree(str(files("latticedb") / "assets"), target / "assets")
 
     ranks = sorted({entry.lattice.rank for entry in entries})
     by_rank = {rank: [entry for entry in entries if entry.lattice.rank == rank] for rank in ranks}
-    prose = markdown_to_html([entry.prose for entry in entries] + [page.prose for page in pages])
+    morphism_files = [entry.morphisms for entry in corpus.morphisms]
+    prose = markdown_to_html([entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms])
     lattice_page = environment.get_template("lattice.html.j2")
     for index, entry in enumerate(entries):
         lattice = entry.lattice
@@ -496,6 +523,8 @@ def build(root: Path, target: Path) -> int:
                 span_summands=span_summands(lattice, lattices),
                 span_images=summand_images(lattice, lattices),
                 blocks=orthogonal_blocks(lattice),
+                lattices=lattices,
+                morphism_files=[file for file in morphism_files if lattice.tag in (file.source, file.target)],
                 previous=entries[index - 1].lattice if index > 0 else None,
                 following=entries[index + 1].lattice if index + 1 < len(entries) else None,
             )
@@ -504,6 +533,18 @@ def build(root: Path, target: Path) -> int:
     for index, page in enumerate(pages):
         html = collection_page.render(root="../", page=page, prose=prose[len(entries) + index], query=database_query(page.collection))
         (target / "collection" / f"{page.slug}.html").write_text(html)
+    morphism_page = environment.get_template("morphism.html.j2")
+    for index, file in enumerate(morphism_files):
+        html = morphism_page.render(
+            root="../",
+            file=file,
+            source=lattices[file.source],
+            target=lattices[file.target],
+            prose=prose[len(entries) + len(pages) + index],
+            morphisms=[(morphism, matrix_tex(morphism), matrix_text(morphism)) for morphism in file.morphisms],
+        )
+        (target / "morphism" / f"{file.source}-{file.target}.html").write_text(html)
+    (target / "morphisms.html").write_text(environment.get_template("morphisms.html.j2").render(root="./", files=morphism_files, lattices=lattices))
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))

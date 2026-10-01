@@ -6,7 +6,7 @@ provenance, the genus symbol, the order of the isometry group, and the
 `root_span` block of a lattice that is not definite when the search for roots
 does not decide it. `record_text` writes a record in the layout of the
 corpus. A record that is not definite and has no `root_span` block after
-`derive` is not decided.
+`derive` is not decided. `morphisms_text` writes a morphism file.
 """
 
 from fractions import Fraction
@@ -77,6 +77,18 @@ def record_text(record: dict[str, Yaml], prose: str) -> str:
     assert set(record) <= set(KEYS), set(record) - set(KEYS)
     ordered = {key: _styled(record[key]) for key in KEYS if key in record}
     return "---\n" + yaml.dump(ordered, sort_keys=False, allow_unicode=True, width=100000) + "---\n\n" + prose + "\n"
+
+
+MORPHISM_KEYS = ("name", "description", "matrix", "row_subdivisions", "column_subdivisions")
+"""The keys of a morphism, in the order in which a morphism file lists them."""
+
+
+def morphisms_text(source: str, target: str, morphisms: list[dict[str, Yaml]], prose: str) -> str:
+    """Return the text of the file `morphisms/<source>-<target>.md`."""
+    assert all(set(morphism) <= set(MORPHISM_KEYS) for morphism in morphisms)
+    ordered = [{key: _styled(morphism[key]) for key in MORPHISM_KEYS if key in morphism} for morphism in morphisms]
+    document = {"source": source, "target": target, "morphisms": ordered}
+    return "---\n" + yaml.dump(document, sort_keys=False, allow_unicode=True, width=100000) + "---\n\n" + prose + "\n"
 
 
 def rational(value: Fraction) -> int | str:

@@ -11,7 +11,7 @@ from cyclopts import App, Parameter
 from pydantic import ValidationError
 
 from latticedb import corpus, nebe_sloane, records, site
-from latticedb.model import Lattice, Yaml
+from latticedb.model import Lattice, Morphisms, Yaml
 
 SERVED = Path("/var/www/static-sites/lattice-database")
 ADDRESS = "http://127.0.0.1/"
@@ -101,6 +101,49 @@ def nebe_sloane_entry(
 
 
 @app.command
+def morphism(
+    source: Annotated[str, Parameter(help="Tag of the source lattice.")],
+    target: Annotated[str, Parameter(help="Tag of the target lattice.")],
+    *,
+    name: Annotated[str, Parameter(help="Name as plain text; TeX between `$` signs is rendered.")],
+    matrix: Annotated[str, Parameter(help="JSON rows of integers, rank(target) rows by rank(source) columns: column j is the image of e_j.")],
+    description: Annotated[str | None, Parameter(help="One or two sentences on the morphism.")] = None,
+    row_subdivisions: Annotated[str, Parameter(help="JSON list of the lines between rows, as SageMath's `M.subdivisions()[0]`.")] = "[]",
+    column_subdivisions: Annotated[str, Parameter(help="JSON list of the lines between columns, as SageMath's `M.subdivisions()[1]`.")] = "[]",
+    prose: Annotated[str | None, Parameter(help="Notes of the file in Pandoc Markdown; replaces the notes that are there.")] = None,
+    root: Root = Path(),
+) -> None:
+    """Add a morphism to `morphisms/<SOURCE>-<TARGET>.md`, after a check that it preserves the forms and that the subdivisions cut orthogonal summands."""
+    loaded = corpus.load(root)
+    path = root / "morphisms" / f"{source}-{target}.md"
+    present = [entry for entry in loaded.morphisms if entry.path == path]
+    added: dict[str, Yaml] = {
+        "name": name,
+        "matrix": json.loads(matrix),
+        "row_subdivisions": json.loads(row_subdivisions),
+        "column_subdivisions": json.loads(column_subdivisions),
+    }
+    if description is not None:
+        added["description"] = description
+    listed: list[dict[str, Yaml]] = [morphism.model_dump(mode="json", exclude_defaults=True) for entry in present for morphism in entry.morphisms.morphisms]
+    notes = prose if prose is not None else (present[0].prose if present else "")
+    # Pydantic reports the problems of a record only through this exception.
+    try:
+        record = Morphisms.model_validate({"source": source, "target": target, "morphisms": [*listed, added]})
+    except ValidationError as error:
+        print("\n".join(_record_problems(error)), file=sys.stderr)
+        sys.exit(1)
+    others = [entry for entry in loaded.morphisms if entry.path != path]
+    found = corpus.morphism_problems([*others, corpus.MorphismEntry(record, notes, path)], list(loaded.entries), loaded.retired)
+    if found:
+        print("\n".join(found), file=sys.stderr)
+        sys.exit(1)
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(records.morphisms_text(source, target, [*listed, added], notes))
+    print(path)
+
+
+@app.command
 def derive(root: Root = Path()) -> None:
     """Compute again, in every record, each field that the Gram tensor determines, and write the records that change."""
     written = 0
@@ -124,7 +167,7 @@ def check(root: Root = Path()) -> None:
         print("\n".join(invalid.problems), file=sys.stderr)
         print(f"{len(invalid.problems)} problems", file=sys.stderr)
         sys.exit(1)
-    print(f"{len(loaded.entries)} lattices, all records valid")
+    print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid")
 
 
 @app.command

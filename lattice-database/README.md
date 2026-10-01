@@ -16,8 +16,9 @@ The site is served at <http://lattice-database.localhost/>.
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
 | `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
+| `morphisms/<S>-<T>.md` | Morphisms from the lattice `S` to the lattice `T`, as matrices, and prose |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
-| `src/latticedb/model.py` | The schema of a record and its validators |
+| `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
@@ -160,6 +161,42 @@ The corpus is also checked as a whole: two records cannot have the same name or 
 `just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
 Run it after a change to the computation, and read the diff.
 
+## Morphisms
+
+A file `morphisms/<S>-<T>.md` holds morphisms from the lattice with tag `S` to the lattice with tag `T`: maps $\varphi$ with $b_T(\varphi x, \varphi y) = b_S(x, y)$.
+The front matter is the record, and the body is notes in Pandoc Markdown.
+
+```yaml
+---
+source: '0128'
+target: 027E
+morphisms:
+- name: $U \oplus E_8(-1) \hookrightarrow U^3 \oplus E_8(-1)^2$
+  description: The inclusion as the first summand $U$ and the first summand $E_8(-1)$.
+  matrix:
+  - [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - ...
+  row_subdivisions: [2, 4, 6, 14]
+  column_subdivisions: [2]
+---
+```
+
+The matrix is in the bases of the two records, with rank $T$ rows and rank $S$ columns: column $j$ lists the coordinates of $\varphi(e_j)$.
+The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
+The build checks that $M^{\top} G_T M = G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
+Each file has the page `morphism/<S>-<T>.html`, which draws each matrix with its lines; `morphisms.html` lists the files, and the page of each lattice links the files that name it.
+
+`just morphism S T --name ... --matrix ...` checks a morphism and appends it to the file.
+From SageMath, for a matrix `M` whose columns are the images (a morphism `phi` gives `M = phi.matrix().transpose()`, because SageMath lists the images in rows):
+
+```python
+import json
+rows, columns = M.subdivisions()
+print(json.dumps([[int(x) for x in row] for row in M.rows()]), json.dumps(rows), json.dumps(columns))
+```
+
+The three outputs are the values of `--matrix`, `--row-subdivisions` and `--column-subdivisions`.
+
 ## Collection pages
 
 A file `pages/<slug>.md` gives the page `collection/<slug>.html`, which lists the lattices whose database row satisfies every condition of `where`.
@@ -201,6 +238,7 @@ The `justfile` calls it.
 | --- | --- |
 | `just new ...` | Write the record of a new lattice from its Gram tensor and the options |
 | `just nebe-sloane ENTRY ...` | Write the record of an entry of the Catalogue of Lattices |
+| `just morphism S T ...` | Check a morphism of lattices and append it to `morphisms/<S>-<T>.md` |
 | `just derive` | Compute again, in every record, each field that the Gram tensor determines; write the records that change |
 | `just build` | Validate every record and build the site into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |

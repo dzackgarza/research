@@ -205,3 +205,14 @@ def test_derive_rewrites_exactly_the_records_whose_computed_fields_changed(tmp_p
     text = path.read_text()
     run("derive", "--root", str(root))
     assert path.read_text() == text
+
+
+def test_morphism_appends_each_morphism_that_preserves_the_forms_and_refuses_one_that_does_not(tmp_path: Path) -> None:
+    root = write_corpus(tmp_path)
+    run("morphism", "0001", "0001", "--name", "identity", "--matrix", "[[1]]", "--prose", "Automorphisms of Z.", "--root", str(root))
+    run("morphism", "0001", "0001", "--name", "negation", "--matrix", "[[-1]]", "--root", str(root))
+    with pytest.raises(SystemExit):
+        run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--root", str(root))
+    (entry,) = corpus.load(root).morphisms
+    assert [(morphism.name, morphism.matrix) for morphism in entry.morphisms.morphisms] == [("identity", ((1,),)), ("negation", ((-1,),))]
+    assert entry.prose.strip() == "Automorphisms of Z."

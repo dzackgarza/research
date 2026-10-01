@@ -8,6 +8,10 @@ and that no two definite records are the same lattice in different bases.
 A tag is permanent. `retired-tags.yaml` lists each tag whose record the corpus
 no longer admits, with the lattice that was there and why it is not a record;
 no record takes a retired tag, and `next_tag` counts them.
+
+`morphisms/<S>-<T>.md` holds morphisms from the lattice with tag `S` to the
+lattice with tag `T`: YAML front matter, a `Morphisms` record, and notes in
+Markdown. `load` checks that each matrix preserves the forms.
 """
 
 from dataclasses import dataclass
@@ -21,7 +25,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from latticedb import arithmetic
 from latticedb.arithmetic import GramTensor
-from latticedb.model import AdeType, Definiteness, Family, Lattice, Tag
+from latticedb.model import AdeType, Definiteness, Family, Lattice, Morphisms, Tag
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -44,10 +48,18 @@ class Entry:
 
 
 @dataclass(frozen=True)
+class MorphismEntry:
+    morphisms: Morphisms
+    prose: str
+    path: Path
+
+
+@dataclass(frozen=True)
 class Corpus:
     entries: tuple[Entry, ...]
     families: Families
     retired: Retired
+    morphisms: tuple[MorphismEntry, ...]
 
 
 class CorpusInvalid(Exception):
@@ -133,12 +145,57 @@ def problems(entries: list[Entry], families: Families, retired: Retired) -> list
     return found
 
 
+def _crosses_parts(gram_tensor: GramTensor, lines: tuple[int, ...]) -> bool:
+    """Whether $b(e_i, e_j) \\neq 0$ for some $i$, $j$ in different parts of the indices that the lines cut."""
+    bounds = (0, *lines, len(gram_tensor))
+    part = [index for index, (low, high) in enumerate(zip(bounds, bounds[1:], strict=False)) for _ in range(low, high)]
+    return any(gram_tensor[i][j] != 0 for i in range(len(gram_tensor)) for j in range(len(gram_tensor)) if part[i] != part[j])
+
+
+def morphism_problems(morphisms: list[MorphismEntry], entries: list[Entry], retired: Retired) -> list[str]:
+    """The problems of the morphism files.
+
+    A file name that is not `<source>-<target>`, a tag that is not in the corpus or is retired, two files for one pair,
+    a matrix whose shape is not (rank of the target) by (rank of the source), a matrix that does not preserve the forms,
+    and a subdivision whose parts are not orthogonal summands.
+    """
+    found = []
+    by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
+    pairs: dict[tuple[str, str], Path] = {}
+    for entry in morphisms:
+        record = entry.morphisms
+        pair = (record.source, record.target)
+        if entry.path.stem != f"{record.source}-{record.target}":
+            found.append(f"{entry.path}: the file name must be {record.source}-{record.target}")
+        if pair in pairs:
+            found.append(f"{entry.path}: {pairs[pair]} also holds morphisms {record.source} -> {record.target}")
+        pairs.setdefault(pair, entry.path)
+        missing = [tag for tag in pair if tag not in by_tag]
+        found.extend(f"{entry.path}: the tag {tag} is retired ({retired[tag]})" for tag in missing if tag in retired)
+        found.extend(f"{entry.path}: the tag {tag} is not in the corpus" for tag in missing if tag not in retired)
+        if missing:
+            continue
+        source, target = by_tag[record.source], by_tag[record.target]
+        for morphism in record.morphisms:
+            where = f"{entry.path}: {morphism.name}"
+            if len(morphism.matrix) != target.rank or len(morphism.matrix[0]) != source.rank:
+                found.append(f"{where}: the matrix has {target.rank} rows and {source.rank} columns, the ranks of the target and the source")
+                continue
+            if arithmetic.restriction(target.gram_tensor, morphism.images) != source.gram_tensor:
+                found.append(f"{where}: the matrix does not preserve the forms: M^T G_target M is not G_source")
+            if _crosses_parts(target.gram_tensor, morphism.row_subdivisions):
+                found.append(f"{where}: the parts of row_subdivisions are not orthogonal summands of the target")
+            if _crosses_parts(source.gram_tensor, morphism.column_subdivisions):
+                found.append(f"{where}: the parts of column_subdivisions are not orthogonal summands of the source")
+    return found
+
+
 def _record_problems(path: Path, error: ValidationError) -> list[str]:
     return [f"{path}: {'.'.join(str(part) for part in problem['loc']) or 'record'}: {problem['msg']} [{problem['type']}]" for problem in error.errors()]
 
 
 def load(root: Path) -> Corpus:
-    """The families of `root/families.yaml`, the retired tags of `root/retired-tags.yaml` and every entry of `root/lattices`, in tag order.
+    """The families, the retired tags, every entry of `root/lattices` in tag order, and every file of `root/morphisms`.
 
     Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined.
     """
@@ -167,10 +224,19 @@ def load(root: Path) -> Corpus:
             entries.append(Entry(Lattice.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
+    morphisms: list[MorphismEntry] = []
+    for path in sorted((root / "morphisms").glob("*.md")):
+        document = frontmatter.load(str(path))
+        # Pydantic reports the problems of a morphism file only through this exception.
+        try:
+            morphisms.append(MorphismEntry(Morphisms.model_validate(document.metadata), document.content, path))
+        except ValidationError as error:
+            found.extend(_record_problems(path, error))
     found.extend(problems(entries, families, retired))
+    found.extend(morphism_problems(morphisms, entries, retired))
     if found:
         raise CorpusInvalid(tuple(found))
-    return Corpus(tuple(entries), families, retired)
+    return Corpus(tuple(entries), families, retired, tuple(morphisms))
 
 
 def next_tag(corpus: Corpus) -> str:

@@ -4,7 +4,7 @@ from collections.abc import Callable
 from fractions import Fraction
 
 import pytest
-from latticedb.model import Lattice, Yaml
+from latticedb.model import Lattice, Morphism, Yaml
 from pydantic import ValidationError
 
 PROVENANCE: dict[str, Yaml] = {"source": "Test record."}
@@ -505,3 +505,25 @@ def test_meyer_theorem_rejects_an_anisotropic_claim_in_rank_five() -> None:
 def test_every_problem_of_a_record_is_reported_at_once() -> None:
     record = e8() | {"determinant": 3, "signature": [4, 4], "definiteness": "indefinite"}
     assert error_types(record) == {"determinant_mismatch", "signature_mismatch", "definiteness_mismatch"}
+
+
+@pytest.mark.parametrize(
+    ("matrix", "row_subdivisions", "column_subdivisions"),
+    [
+        ([[1, 0], [0]], [], []),
+        ([[]], [], []),
+        ([[1, 0], [0, 1]], [0], []),
+        ([[1, 0], [0, 1]], [], [2]),
+        ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [2, 1], []),
+    ],
+)
+def test_a_morphism_is_rejected_when_its_matrix_is_not_rectangular_or_a_line_does_not_lie_inside_it(
+    matrix: list[list[int]], row_subdivisions: list[int], column_subdivisions: list[int]
+) -> None:
+    with pytest.raises(ValidationError):
+        Morphism.model_validate({"name": "phi", "matrix": matrix, "row_subdivisions": row_subdivisions, "column_subdivisions": column_subdivisions})
+
+
+def test_the_images_of_a_morphism_are_the_columns_of_its_matrix() -> None:
+    morphism = Morphism.model_validate({"name": "phi", "matrix": [[1, 2], [3, 4], [5, 6]], "row_subdivisions": [1, 2], "column_subdivisions": [1]})
+    assert morphism.images == ((1, 3, 5), (2, 4, 6))

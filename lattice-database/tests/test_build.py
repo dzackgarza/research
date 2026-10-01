@@ -162,3 +162,22 @@ def test_the_fields_page_documents_every_field_of_a_record(built: Path) -> None:
     for _, _, model in site.fields():
         for field in model.model_fields:
             assert f"<code>{field}</code>" in html
+
+
+def test_each_morphism_file_has_a_page_linked_from_the_index_and_from_the_pages_of_its_lattices(built: Path) -> None:
+    files = corpus.load(ROOT).morphisms
+    assert files
+    index = (built / "morphisms.html").read_text()
+    for entry in files:
+        record = entry.morphisms
+        link = f"morphism/{record.source}-{record.target}.html"
+        assert (built / link).exists()
+        assert link in index
+        for tag in (record.source, record.target):
+            assert link in (built / "tag" / f"{tag}.html").read_text()
+
+
+def test_a_morphism_page_draws_the_lines_of_each_matrix(built: Path) -> None:
+    html = (built / "morphism" / "0128-027E.html").read_text()
+    assert r"\begin{array}{rr|rrrrrrrr}" in html
+    assert html.count(r"\hline") == 4

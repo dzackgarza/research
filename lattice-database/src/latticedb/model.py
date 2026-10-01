@@ -750,3 +750,61 @@ class Lattice(Record):
             if len(basis) != len(span.embedding) or basis != arithmetic.span_basis(list(span.roots)):
                 message = "the rows of `embedding` are not a basis of the sublattice that the rows of `roots` generate"
                 yield _problem("root_span_embedding_mismatch", message, ("root_span", "embedding"))
+
+
+def _subdivision_problems(lines: Vector, size: int, location: tuple[str, ...]) -> Iterator[InitErrorDetails]:
+    if any(not 0 < line < size for line in lines) or any(first >= second for first, second in zip(lines, lines[1:], strict=False)):
+        yield _problem("subdivision_range", "the lines increase strictly and each lies strictly between 0 and {size}", location, {"size": size})
+
+
+class Morphism(Record):
+    """A morphism $\\varphi \\colon S \\to T$ of lattices: a $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = b_S(x, y)$.
+
+    Its matrix is in the bases of the records of $S$ and $T$, which list the orthogonal summands in the order of their names.
+    """
+
+    name: str = Field(description="Name as plain text; TeX between `$` signs is rendered.")
+    description: str | None = Field(default=None, description="One or two sentences on the morphism, as plain text with TeX between `$` signs.")
+    matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = Field(
+        description=(
+            "Matrix of $\\varphi$, with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\\varphi(e_j)$ "
+            "in the basis of the record of $T$. The build checks that $M^{\\top} G_T M = G_S$ for the Gram tensors $G_S$, $G_T$. "
+            "A SageMath morphism `phi` gives `phi.matrix().transpose()`, because SageMath lists the images in rows."
+        )
+    )
+    row_subdivisions: IntegerVector = Field(
+        default=(),
+        description=(
+            "Lines between the rows, as `M.subdivisions()` of SageMath states them: a line $k$ lies between rows $k$ and $k + 1$. "
+            "The build checks that the parts are orthogonal summands of $T$."
+        ),
+    )
+    column_subdivisions: IntegerVector = Field(
+        default=(),
+        description="Lines between the columns, in the same way. The build checks that the parts are orthogonal summands of $S$.",
+    )
+
+    @model_validator(mode="after")
+    def _well_defined(self) -> Self:
+        columns = len(self.matrix[0])
+        problems: list[InitErrorDetails] = []
+        if columns == 0 or any(len(row) != columns for row in self.matrix):
+            problems.append(_problem("matrix_shape", "the rows of the matrix are nonempty and have one length", ("matrix",)))
+        problems.extend(_subdivision_problems(self.row_subdivisions, len(self.matrix), ("row_subdivisions",)))
+        problems.extend(_subdivision_problems(self.column_subdivisions, columns, ("column_subdivisions",)))
+        if problems:
+            raise ValidationError.from_exception_data(type(self).__name__, problems)
+        return self
+
+    @property
+    def images(self) -> tuple[Vector, ...]:
+        """The columns of the matrix: the coordinates of $\\varphi(e_1), \\varphi(e_2), \\dots$."""
+        return tuple(zip(*self.matrix, strict=True))
+
+
+class Morphisms(Record):
+    """The front matter of `morphisms/<S>-<T>.md`: morphisms from the lattice $S$ to the lattice $T$ of the corpus."""
+
+    source: Tag = Field(description="Tag of the source $S$.")
+    target: Tag = Field(description="Tag of the target $T$.")
+    morphisms: Annotated[tuple[Morphism, ...], Field(strict=False, min_length=1)] = Field(description="The morphisms $S \\to T$.")

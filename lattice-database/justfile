@@ -16,6 +16,10 @@ new *ARGS:
 nebe-sloane ENTRY *ARGS:
     uv run latticedb nebe-sloane {{ENTRY}} {{ARGS}}
 
+# Check a morphism of lattices and append it to morphisms/<S>-<T>.md: `just morphism 0016 0016 --name exchange --matrix '[[0,1],[1,0]]'`
+morphism SOURCE TARGET *ARGS:
+    uv run latticedb morphism {{SOURCE}} {{TARGET}} {{ARGS}}
+
 # Compute again, in every record, each field that the Gram tensor determines, and write the records that change
 derive:
     uv run latticedb derive
