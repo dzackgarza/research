@@ -7434,40 +7434,93 @@ talks, docstrings, issue bodies, and plan cards) follows the
 Cite its codes (`PR-30`, `DEF-26`, `SYM-1`, …) in commits and review. This
 section fixes the mechanisms that the policy leaves to the house.
 
-- **Numbered blocks (`DEF-4`).** A statement is a Quarto fenced block:
+### The book
 
-  ```markdown
-  ::: {#def-universe}
-  ## Universe and decoded objects
+The book is the Quarto site in `writing/.book`, which links in
+`category-theory`, `coble`, `data`, and `index.md`. Everything else under
+`writing/` (the dissertation, the research statement, the talks, the exams)
+builds through `~/.pandoc`. The theorem syntax is the same in both, so a block
+moves between the book and a paper unchanged. The book's own mechanics (the
+flat chapter links, the two renders, the declared block classes) stop at what
+`writing/.book` links in.
 
-  Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$
-  with pullbacks and terminal object $*$.
-  :::
-  ```
+`writing/.book/_quarto.yml` lists the chapters, and that list is the book's
+reading order (`SEC-9`). A page that is not listed does not render. After
+adding pages, check both directions: every listed chapter has a file, and
+every prose file is listed or deliberately unlisted. A page's frontmatter
+often settles its part: `unit:` separates a reusable `method` from the
+`computation` it produced and from a `research-program`, and
+`status: conjectural` marks what is not proved. The Computations part and the
+open-problems part are grouped on these fields.
 
-  The declared block classes are listed at the bottom of
-  `writing/.book/_quarto.yml`. Add a class there before using it.
-- **Resolver (`XREF-1`).** `\ref` and `\longref` are the only two commands
-  that resolve numbered blocks. They reach any numbered block in the book, in
-  any chapter, in either direction. `@def-…` also resolves.
-- **No `\cref` or `\Cref`.** They do not match the resolver. Pandoc drops an
-  unmatched macro silently, so the reference disappears and the sentence
-  around it is left dangling.
-- **Label format.** Labels use colon separators: `def:universe`,
-  `thm:coble-cusps`. Do not start a label with a Quarto-reserved prefix
-  (`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`, `fig-`,
-  `tbl-`, `eq-`, `sec-`, `lst-`); use a hyphen instead. Quarto hijacks those
-  prefixes for its own crossrefs and the render fails.
-- **Sections and figures (`XREF-4`).** Sections auto-number. Reference a
-  section by link: `[Lattice Theory](lattice-theory.md#sec:lattice-theory)`.
-  Anchor a figure `{#fig-x}`, with a hyphen, and reference it `@fig-x`.
-- **Defined terms (`XREF-5`).** Link a use of a defined term with
-  `\ref{def-…}`, `\longref{def-…}`, or `@def-…`.
-- **Definiendum (`DEF-26`, `PR-10`).** The term being defined is in
-  *italics* at its defining occurrence and nowhere else.
-- **Citations (`CITE-1`, `CITE-2`).** Better BibTeX keys from Zotero:
-  `[@OR23, Definition 1.5.1]`. The docs gate rejects an inline URL to arXiv,
-  a DOI, or nLab.
+Each page has one level-1 heading; later headings are `##` sections. Do not
+number headings by hand: sections number automatically.
+
+### Numbered blocks (`DEF-4`)
+
+A numbered block is a fenced div whose class is the full lowercase
+environment name and whose id is a family prefix, a colon, and a key:
+
+```markdown
+::: {.theorem #thm:coble-cusps title="Cusps of the Coble moduli space"}
+...
+:::
+```
+
+The family prefixes are `ass clm conj cons conv cor def ex exr lem not obs
+prob prop qst rmk thm warn`. Their registry is `THEOREM_FAMILY_METADATA` in
+the zettlr-pandoc fork; the amsenv filter
+(`~/.pandoc/filters/convert_amsthm_envs.lua`) and
+`writing/.book/_extensions/local/amsthm-refs` mirror it. The colon keeps these
+ids apart from Quarto's reserved hyphen prefixes (`def-`, `thm-`, `fig-`,
+`sec-`, …), which Quarto takes for its own cross-references. The declared
+block classes are listed at the bottom of `writing/.book/_quarto.yml`; add a
+class there before using it.
+
+### References (`XREF-1`, `XREF-4`, `XREF-5`)
+
+- Reference a block as `@thm:coble-cusps` ("Theorem 2.9") or
+  `[-@thm:coble-cusps]` ("2.9"). A bracketed cluster keeps its text:
+  `[see @thm:a, (ii); @lem:b]`. A use of a defined term links its block,
+  `@def:key`.
+- The `amsthm-refs` filter rewrites each theorem-family citation into the
+  `\ref` and `\longref` commands that `custom-numbered-blocks` resolves
+  (`writing/.book/_extensions/ute/custom-numbered-blocks/cnb-3-crossref.lua`).
+  A cluster that holds any other key goes to citeproc unchanged.
+- A reference to an id that no block declares renders as nothing, and the
+  sentence around it is left dangling. Raw LaTeX such as `\cref{x}`
+  disappears the same way. `just docs-check` scans the sources for both,
+  because the rendered HTML has nothing to find.
+- A reference reaches any numbered block in the book, in any chapter, in
+  either direction. Every chapter is symlinked flat into `writing/.book`,
+  which gives the resolver one registry, and the gate renders twice, which
+  lets a reference reach a later block. `writing/.book/TRAPS.md` records what
+  breaks without either. Ids are therefore unique across the whole book.
+- A section is anchored `{#sec-x}` and referenced `@sec-x`, or linked. A table
+  carries no number; link to the page that holds it.
+- A figure is anchored `{#fig-x}`, with a hyphen, and referenced `@fig-x`;
+  Quarto numbers it within its chapter. The image lives in the shared
+  pandoc-config repository and `scripts/docs_figures.py` stages it into the
+  book. A reference to a figure that is not there fails the build.
+
+### Citations (`CITE-*`)
+
+- Zotero is the source of truth. The global bibliography is exported to
+  `~/.pandoc/bib/references.bib` and copied into `writing/.book/references.bib`
+  by the build. Cite with a Better BibTeX key: `[@OR23, Definition 1.5.1]`.
+  Add a missing work to Zotero first, by DOI or arXiv identifier, through the
+  `zotero` skill.
+- `writing/coble/coble_supplement.bib` holds only entries with no global
+  counterpart yet; the work still belongs in Zotero.
+- The docs gate rejects an inline URL to arXiv, a DOI, or nLab (`CITE-2`).
+- Cite the Stacks Project as `[@stacks-02LS]` (`CITE-3`). The `stacks-tags`
+  filter rewrites the key to the one global Stacks entry and appends a linked
+  `[Tag 02LS]`.
+
+### House parameters
+
+- **Definiendum (`DEF-26`, `PR-10`).** The term being defined is in *italics*
+  at its defining occurrence and nowhere else.
 - **Audience (`PR-18`).** The book's reader is the audience of `DEF-12` and
   `DEF-13`: comfortable with $\infty$-categories, $\mathbb{E}_1$- and
   $\mathbb{E}_\infty$-ring spectra, $\mathbf{LMod}_R$ versus
