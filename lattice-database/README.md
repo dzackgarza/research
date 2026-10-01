@@ -25,10 +25,12 @@ The site is served at <http://lattice-database.localhost/>.
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
 | `src/latticedb/records.py` | Computes the fields of a record that the Gram tensor determines, and writes a record as a file |
 | `src/latticedb/nebe_sloane.py` | Reads an entry of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) and writes it as the declared fields of a record |
+| `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, and checks every equation they state against the records |
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
 | `sources/nebe_sloane/<ENTRY>.json` | An entry of the Catalogue of Lattices as fetched, the source of the record that cites it |
+| `sources/hashimoto/table_10_2.json`, `table_10_3.json` | Tables 10.2 and 10.3 of K. Hashimoto, arXiv:1012.2682, as printed, each row linked to the records of $\Lambda_G$ and $\Lambda^G$ by a twist and a change of basis |
 | `tests/` | Tests of the validators, of the record commands and of the built site |
 
 ## A record
@@ -268,7 +270,7 @@ The `justfile` calls it.
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
 
-`uv run latticedb check` validates the records and builds nothing.
+`uv run latticedb check` validates the records, checks them against the files under `sources/hashimoto/`, and builds nothing.
 
 The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`.
 

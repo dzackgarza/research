@@ -10,7 +10,7 @@ import frontmatter
 from cyclopts import App, Parameter
 from pydantic import ValidationError
 
-from latticedb import corpus, nebe_sloane, records, site
+from latticedb import corpus, hashimoto, nebe_sloane, records, site
 from latticedb.model import Lattice, Morphisms, Yaml
 
 SERVED = Path("/var/www/static-sites/lattice-database")
@@ -166,14 +166,16 @@ def derive(root: Root = Path()) -> None:
 
 @app.command
 def check(root: Root = Path()) -> None:
-    """Validate every record of the corpus. Prints each problem and exits with status 1 when a record is not well defined."""
+    """Validate every record of the corpus and check it against the sources. Prints each problem and exits with status 1 when there is one."""
     try:
         loaded = corpus.load(root)
     except corpus.CorpusInvalid as invalid:
         print("\n".join(invalid.problems), file=sys.stderr)
         print(f"{len(invalid.problems)} problems", file=sys.stderr)
         sys.exit(1)
-    print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid")
+    lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
+    _refuse(hashimoto.stored_problems(root, lattices))
+    print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid, the sources agree with them")
 
 
 @app.command
