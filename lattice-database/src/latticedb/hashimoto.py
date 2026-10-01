@@ -17,8 +17,8 @@ $j$-th basis vector of $T$, so that $P^{\\top} (t \\, G_R) P = T$.
 """
 
 import re
-from fractions import Fraction
 from collections.abc import Mapping
+from fractions import Fraction
 from pathlib import Path
 
 from flint import fmpz, fmpz_mat
@@ -146,5 +146,3 @@ def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], la
 def stored_problems(root: Path, lattices: Mapping[str, Lattice]) -> list[str]:
     """`check` on the files under `root/sources/hashimoto`."""
     return check(*stored(root / "sources" / "hashimoto"), lattices)
-
-
