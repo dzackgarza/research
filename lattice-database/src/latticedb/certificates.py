@@ -3,7 +3,7 @@
 `certificates.yaml` maps the name of a computation to its certificate. The name of a computation on one
 record is `<tag> <computation>`: `<tag> derive` for the fields that `records.derive` computes from the Gram
 tensor, and `<tag> <block>.<field>` for a value that SageMath computes. The name of a check of a source
-against the corpus is `source <name>`.
+against the corpus is `source <name>`, and that of a computation over every record is `corpus <name>`.
 
 A computation is carried out once. `latticedb certify` carries out only the computations without a
 certificate for their present inputs, and writes the certificate when the computation agrees with the

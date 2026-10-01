@@ -182,6 +182,7 @@ Each computation is carried out once.
 | `<tag> derive` | The fields that the Gram tensor determines | The Gram tensor |
 | `<tag> <block>.<field>` | A value that SageMath computes, such as `0012 integral.genus_symbol` | The Gram tensor |
 | `source <name>` | The check of `sources/<name>/` against the records and the morphism files | The files of the source, the Gram tensors and the morphism files |
+| `corpus summands` | The embeddings between records that are orthogonal sums, of `latticedb.summands` | The Gram tensors of every record |
 
 `latticedb certify` carries out each computation without a certificate for its present inputs, stores its values, and writes its certificate; a check of a source is certified only when it finds no problem.
 A computation that did not finish within the time limit is carried out again only with a larger `--seconds`. To carry out a computation again, after a change to the computation, remove its certificate.
@@ -216,6 +217,13 @@ A morphism with `scale: c` is a morphism $S(c) \to T$ from the twist of $S$: $b_
 The corpus records a lattice once up to twist and sign, so a lattice that a source names as $M(c)$ maps through the record $M$ with scale $c$: the coinvariant lattice $\Lambda_G = M(-1)$ of a symplectic K3 group embeds in the K3 lattice with scale $-1$.
 The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
 The build checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
+
+`latticedb certify` writes the embeddings into each record $T$ that is an orthogonal sum.
+The orthogonal summands of $T$ are the connected components of the graph on its basis in which $e_i$ and $e_j$ are adjacent when $b(e_i, e_j) \neq 0$; group them by their Gram matrix, $T = \bigoplus_M M^{n_M}$.
+The diagonal $x \mapsto (x, \ldots, x)$ embeds $M(k)$ into $M^k$.
+For each $M$, a partition $\lambda$ of an integer $m \leq n_M$, with its parts placed on consecutive summands, gives an embedding $\bigoplus_M \bigoplus_j M(\lambda_j) \to T$; with $g = \gcd_j \lambda_j$, it is a morphism of scale $g$ from the record with the summands $M(\lambda_j / g)$, when the corpus holds one.
+Up to the permutations of isometric summands there are $\prod_M \sum_{m \leq n_M} p(m)$ such embeddings, with $p$ the partition function; the identity of $T$ is not written.
+
 Each file has the page `morphism/<S>-<T>.html`, which draws each matrix with its lines; `morphisms.html` lists the files, and the page of each lattice links the files that name it.
 
 `just morphism S T --name ... --matrix ...` checks a morphism and appends it to the file.

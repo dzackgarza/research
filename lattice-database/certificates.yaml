@@ -904,3 +904,6 @@
 0176 integral.genus_symbol:
   inputs: 56934148b116c3397b009e4f2382db4c1e90f34af5927115f956d72341fedf75
   by: SageMath 10.10.beta8
+corpus summands:
+  inputs: 39d13220034c8914e270f83bde7fdcd29087eb445f9dae5be92e4eee174af9ed
+  by: latticedb 0.1.0

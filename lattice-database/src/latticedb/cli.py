@@ -11,7 +11,7 @@ import frontmatter
 from cyclopts import App, Parameter
 from pydantic import ValidationError
 
-from latticedb import certificates, corpus, genus, hashimoto, hoehn_mason, nebe_sloane, records, site
+from latticedb import certificates, corpus, genus, hashimoto, hoehn_mason, nebe_sloane, records, site, summands
 from latticedb.model import Lattice, Morphisms, Yaml
 
 SERVED = Path("/var/www/static-sites/lattice-database")
@@ -168,11 +168,17 @@ def _source_inputs(root: Path, loaded: corpus.Corpus, directories: tuple[str, ..
     return certificates.digest("\n".join(parts))
 
 
+def _corpus_inputs(loaded: corpus.Corpus) -> str:
+    """The digest of the Gram tensors of the records: the inputs of a computation over the whole corpus."""
+    return certificates.digest("\n".join(certificates.gram_digest(entry.lattice) for entry in loaded.entries))
+
+
 def _pending(root: Path, loaded: corpus.Corpus, held: certificates.Certificates, seconds: int) -> list[str]:
     """The names of the computations without a certificate for their present inputs."""
     derived = {f"{entry.lattice.tag} derive": certificates.gram_digest(entry.lattice) for entry in loaded.entries}
     checked = {f"source {source}": _source_inputs(root, loaded, directories) for source, (_, directories) in SOURCES.items()}
-    names = [name for name, inputs in (derived | checked).items() if not certificates.is_certified(held, name, inputs)]
+    corpus_wide = {summands.CERTIFICATE: _corpus_inputs(loaded)}
+    names = [name for name, inputs in (derived | checked | corpus_wide).items() if not certificates.is_certified(held, name, inputs)]
     names += [genus.name(str(request["tag"]), str(field)) for request in genus.requests(loaded, held, (), seconds) for field in request["fields"]]
     return names
 
@@ -229,6 +235,12 @@ def certify(
             held[f"source {source}"] = certificates.Certificate(inputs=inputs, by=LATTICEDB)
             certificates.save(root, held)
             print(f"sources/{source} agrees with the corpus")
+    if not tag and not certificates.is_certified(held, summands.CERTIFICATE, _corpus_inputs(loaded)):
+        problems = summands.store(root, loaded)
+        found.extend(problems)
+        if not problems:
+            held[summands.CERTIFICATE] = certificates.Certificate(inputs=_corpus_inputs(loaded), by=LATTICEDB)
+            certificates.save(root, held)
     found.extend(genus.certify(root, loaded, held, tag, seconds))
     _refuse(found)
 
