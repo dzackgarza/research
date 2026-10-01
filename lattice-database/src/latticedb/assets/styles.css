@@ -350,6 +350,7 @@ mjx-container[display="true"] {
   font-size: 0.78rem;
   vertical-align: 0.1em;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 /* Tables */

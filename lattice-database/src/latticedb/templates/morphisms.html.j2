@@ -1,10 +1,11 @@
 {% extends "base.html.j2" %}
+{% from "macros.html.j2" import theory with context %}
 {% block title %}Morphisms · {% endblock %}
 {% block main %}
 <header class="page-heading">
   <h1>Morphisms</h1>
   <p class="lede">
-    Morphisms of lattices of the catalogue: maps \(\varphi \colon S \to T\) with \(b_T(\varphi x, \varphi y) = b_S(x, y)\), as matrices in the bases
+    {{ theory("morphisms", "morphisms", "Morphisms") }} of lattices of the catalogue, as {{ theory("morphisms", "matrices", "matrices") }} in the bases
     of the records. A file <code>morphisms/&lt;S&gt;-&lt;T&gt;.md</code> holds the morphisms from \(S\) to \(T\).
   </p>
 </header>

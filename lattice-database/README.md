@@ -18,6 +18,7 @@ The site is served at <http://lattice-database.localhost/>.
 | `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
 | `morphisms/<S>-<T>.md` | Morphisms from the lattice `S` to the lattice `T`, as matrices, and prose |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
+| `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
@@ -213,6 +214,20 @@ where:
 A key of `where` is a key of a row of `lattices.json`, for example `rank`, `definiteness`, `properties` or `families`. For a key whose value is a list, the list must contain each required value.
 In `title` and `summary`, backticks mark code and dollar signs mark TeX. The body is Pandoc Markdown.
 The build fails for a key that no row has and for a collection with no member.
+
+## Theory pages
+
+A file `theory/<slug>.md` gives the page `theory/<slug>.html`, and `theory.html` lists these pages in the order of `order`. Each definition and convention of the site is stated on one theory page, under a heading with an explicit anchor such as `{#signature}`. A lattice page, a collection page, a morphism page and the prose of a record link to that anchor; they do not state the definition again.
+
+```yaml
+---
+title: Definite lattices
+summary: The invariants that a record of a definite lattice states, and the sign convention for negative definite forms.
+order: 6
+---
+```
+
+The build fails when two theory pages have the same `order`. At the end, the build reads every page that it wrote and fails for an internal link to a file that does not exist or to an anchor that the destination page does not have.
 
 ## The database page
 

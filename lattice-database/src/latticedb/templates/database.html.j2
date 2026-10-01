@@ -1,4 +1,5 @@
 {% extends "base.html.j2" %}
+{% from "macros.html.j2" import theory with context %}
 {% block title %}Database · {% endblock %}
 {% block layout %} page-wide{% endblock %}
 {% block head %}
@@ -31,8 +32,8 @@
     All {{ total }} records as one table. The panes filter by rank, definiteness, property and family.
     The condition builder makes a query on any column, such as \(n_- = 1\) and determinant \(> -8\).
     The minimum, the kissing number, the order of the isometry group and the types of \(\Phi_{\{\pm 2\}}(L)\) and \(\Phi(L)\) are recorded for definite lattices only.
-    The column <em>Integral overlattices</em> is the number of integral lattices \(M\) with \(L \subseteq M \subseteq L^*\), with \(M = L\) counted; it is empty where the record does not decide it.
-    \(R(L) = \mathbb{Z}\Phi(L)\) is the sublattice that the roots of \(L\) generate; <a href="{{ root }}collection/root-lattices.html">Root lattices</a> defines it.
+    The column <em>Integral overlattices</em> counts the {{ theory("overlattices", "overlattices", "integral overlattices") }}; it is empty where the record does not decide it.
+    {{ theory("roots", "root-sublattices", "Roots") }} defines \(R(L) = \mathbb{Z}\Phi(L)\).
     <a href="{{ root }}fields.html">Fields</a> defines each column and each property.
   </p>
 </header>

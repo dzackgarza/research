@@ -1,12 +1,11 @@
 {% extends "base.html.j2" %}
+{% from "macros.html.j2" import theory with context %}
 {% block main %}
 <header class="page-heading">
   <h1>Lattice Database</h1>
   <p class="lede">
-    A catalogue of {{ total }} lattices of rank {{ by_rank | first }} to {{ by_rank | last }}. A lattice here is a free
-    \(\mathbb{Z}\)-module \(L\) of finite rank with a symmetric bilinear form \(b \colon L \times L \to \mathbb{Q}\).
-    The form can be definite, indefinite or degenerate, and its values need not be integers.
-    Each lattice has a permanent tag and one page.
+    A catalogue of {{ total }} {{ theory("lattices", "lattices", "lattices") }} of rank {{ by_rank | first }} to {{ by_rank | last }}.
+    Each lattice has a permanent tag and one page. The <a href="{{ root }}theory.html">theory pages</a> define each notion that the pages use.
   </p>
 </header>
 

@@ -181,3 +181,20 @@ def test_a_morphism_page_draws_the_lines_of_each_matrix(built: Path) -> None:
     html = (built / "morphism" / "0128-027E.html").read_text()
     assert r"\begin{array}{rr|rrrrrrrr}" in html
     assert html.count(r"\hline") == 4
+
+
+def test_the_theory_index_links_each_theory_page_and_a_lattice_page_links_the_theory_it_uses(built: Path) -> None:
+    slugs = {path.stem for path in (ROOT / "theory").glob("*.md")}
+    assert {path.stem for path in (built / "theory").glob("*.html")} == slugs
+    index = (built / "theory.html").read_text()
+    assert all(f'href="./theory/{slug}.html"' in index for slug in slugs)
+    e8 = (built / "tag" / "0094.html").read_text()
+    assert 'href="../theory/roots.html#roots"' in e8
+    assert 'href="../theory/definite-lattices.html#theta-series"' in e8
+
+
+def test_the_link_check_reports_a_missing_page_and_a_missing_anchor(tmp_path: Path) -> None:
+    (tmp_path / "theory").mkdir()
+    (tmp_path / "theory" / "roots.html").write_text('<h2 id="roots">Roots</h2>')
+    (tmp_path / "index.html").write_text('<a href="theory/roots.html#roots">a</a><a href="theory/roots.html#record">b</a><a href="theory/morphisms.html">c</a>')
+    assert site.broken_links(tmp_path) == ["index.html: theory/roots.html#record", "index.html: theory/morphisms.html"]

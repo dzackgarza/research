@@ -3,7 +3,8 @@
 The site has one page for each lattice (`tag/<TAG>.html`), whose tables and
 sections come from the record and whose prose comes from the Markdown body;
 a database page that filters and sorts `lattices.json`, the union of all
-records; an index of tags; one page for each collection in `pages/`; and a
+records; an index of tags; one page for each collection in `pages/`; one page for each
+part of the theory in `theory/`, which the other pages link to; and a
 reference page for the fields, generated from the schema.
 """
 
@@ -15,9 +16,10 @@ from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from fractions import Fraction
+from html.parser import HTMLParser
 from importlib.resources import files
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import frontmatter
 from flint import fmpz
@@ -70,6 +72,21 @@ class Collection(Record):
             "For a key whose value is a list, such as `properties`, the list must contain the required value, or each of the required values."
         )
     )
+
+
+class Article(Record):
+    """A page of `theory/`: the one place where the site explains a part of the theory, which the other pages link to."""
+
+    title: str = Field(description="Title of the page. Dollar signs mark TeX.")
+    summary: str = Field(description="One sentence that says what the page explains. Dollar signs mark TeX.")
+    order: int = Field(description="Position of the page in the list of theory pages.")
+
+
+@dataclass(frozen=True)
+class ArticlePage:
+    slug: str
+    article: Article
+    prose: str
 
 
 @dataclass(frozen=True)
@@ -426,6 +443,50 @@ def collections(directory: Path, entries: tuple[Entry, ...]) -> tuple[Collection
     return tuple(pages)
 
 
+def articles(directory: Path) -> tuple[ArticlePage, ...]:
+    pages = []
+    for path in directory.glob("*.md"):
+        document = frontmatter.load(str(path))
+        pages.append(ArticlePage(path.stem, Article.model_validate(document.metadata), document.content))
+    orders = [page.article.order for page in pages]
+    assert len(set(orders)) == len(orders), f"{directory}: two theory pages have one order"
+    return tuple(sorted(pages, key=lambda page: page.article.order))
+
+
+class _Anchors(HTMLParser):
+    """The internal links (`href` and `src` without a scheme) and the element ids of one HTML page."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.links: list[str] = []
+        self.ids: set[str] = set()
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        for name, value in attrs:
+            match name, value:
+                case "id", str():
+                    self.ids.add(value)
+                case "href" | "src", str() if not urlsplit(value).scheme:
+                    self.links.append(value)
+
+
+def broken_links(target: Path) -> list[str]:
+    """Each internal link of the site under `target` whose file, or whose anchor in that file, does not exist."""
+    pages = {}
+    for path in target.rglob("*.html"):
+        parser = _Anchors()
+        parser.feed(path.read_text())
+        pages[path.resolve()] = parser
+    broken = []
+    for path, parser in pages.items():
+        for link in parser.links:
+            parts = urlsplit(link)
+            destination = (path.parent / parts.path).resolve() if parts.path else path
+            if not destination.exists() or (parts.fragment and parts.fragment not in pages[destination].ids):
+                broken.append(f"{path.relative_to(target.resolve())}: {link}")
+    return broken
+
+
 def database_query(collection: Collection) -> str | None:
     """The query string that selects the members of a collection on the database page, when its conditions are filter panes."""
     parameters = {}
@@ -472,6 +533,7 @@ def build(root: Path, target: Path) -> int:
     corpus = load(root)
     entries = corpus.entries
     pages = collections(root / "pages", entries)
+    theory = articles(root / "theory")
     by_tag = {entry.lattice.tag: entry for entry in entries}
     lattices = {tag: entry.lattice for tag, entry in by_tag.items()}
     environment = Environment(loader=PackageLoader("latticedb"), autoescape=select_autoescape(["html", "j2"]), undefined=StrictUndefined, trim_blocks=True, lstrip_blocks=True)
@@ -492,6 +554,7 @@ def build(root: Path, target: Path) -> int:
         properties=properties,
         definiteness_label=DEFINITENESS_LABEL,
         collections=pages,
+        theory=theory,
         families=corpus.families,
         total=len(entries),
     )
@@ -502,12 +565,15 @@ def build(root: Path, target: Path) -> int:
     (target / "tag").mkdir(parents=True)
     (target / "collection").mkdir()
     (target / "morphism").mkdir()
+    (target / "theory").mkdir()
     shutil.copytree(str(files("latticedb") / "assets"), target / "assets")
 
     ranks = sorted({entry.lattice.rank for entry in entries})
     by_rank = {rank: [entry for entry in entries if entry.lattice.rank == rank] for rank in ranks}
     morphism_files = [entry.morphisms for entry in corpus.morphisms]
-    prose = markdown_to_html([entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms])
+    prose = markdown_to_html(
+        [entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms] + [page.prose for page in theory]
+    )
     lattice_page = environment.get_template("lattice.html.j2")
     for index, entry in enumerate(entries):
         lattice = entry.lattice
@@ -544,6 +610,11 @@ def build(root: Path, target: Path) -> int:
             morphisms=[(morphism, matrix_tex(morphism), matrix_text(morphism)) for morphism in file.morphisms],
         )
         (target / "morphism" / f"{file.source}-{file.target}.html").write_text(html)
+    article_page = environment.get_template("article.html.j2")
+    for index, page in enumerate(theory):
+        html = article_page.render(root="../", page=page, prose=prose[len(entries) + len(pages) + len(morphism_files) + index])
+        (target / "theory" / f"{page.slug}.html").write_text(html)
+    (target / "theory.html").write_text(environment.get_template("theory.html.j2").render(root="./"))
     (target / "morphisms.html").write_text(environment.get_template("morphisms.html.j2").render(root="./", files=morphism_files, lattices=lattices))
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
@@ -553,4 +624,6 @@ def build(root: Path, target: Path) -> int:
     fields_page = environment.get_template("fields.html.j2")
     (target / "fields.html").write_text(fields_page.render(root="./", models=models, property_meanings=PROPERTY_MEANINGS, family_counts=family_counts))
     (target / "lattices.json").write_text(json.dumps({"rows": [row(entry.lattice, lattices) for entry in entries]}, separators=(",", ":")))
+    broken = broken_links(target)
+    assert not broken, "links to a missing page or anchor:\n" + "\n".join(broken)
     return len(entries)

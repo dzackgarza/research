@@ -76,7 +76,12 @@ def record_text(record: dict[str, Yaml], prose: str) -> str:
     """Return the text of the file of a record."""
     assert set(record) <= set(KEYS), set(record) - set(KEYS)
     ordered = {key: _styled(record[key]) for key in KEYS if key in record}
-    return "---\n" + yaml.dump(ordered, sort_keys=False, allow_unicode=True, width=100000) + "---\n\n" + prose + "\n"
+    return "---\n" + yaml.dump(ordered, sort_keys=False, allow_unicode=True, width=100000) + "---\n" + _body(prose)
+
+
+def _body(prose: str) -> str:
+    """The prose after the front matter: nothing when there is no prose, else a blank line and the prose."""
+    return "\n" + prose + "\n" if prose else ""
 
 
 MORPHISM_KEYS = ("name", "description", "matrix", "row_subdivisions", "column_subdivisions")
@@ -88,7 +93,7 @@ def morphisms_text(source: str, target: str, morphisms: list[dict[str, Yaml]], p
     assert all(set(morphism) <= set(MORPHISM_KEYS) for morphism in morphisms)
     ordered = [{key: _styled(morphism[key]) for key in MORPHISM_KEYS if key in morphism} for morphism in morphisms]
     document = {"source": source, "target": target, "morphisms": ordered}
-    return "---\n" + yaml.dump(document, sort_keys=False, allow_unicode=True, width=100000) + "---\n\n" + prose + "\n"
+    return "---\n" + yaml.dump(document, sort_keys=False, allow_unicode=True, width=100000) + "---\n" + _body(prose)
 
 
 def rational(value: Fraction) -> int | str:
