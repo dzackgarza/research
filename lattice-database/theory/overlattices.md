@@ -46,12 +46,10 @@ It is computed with `Genus(G).representatives()` of SageMath.
 ::: {.definition}
 Let $L$ and $M$ be in the same genus, of rank at least 3, with determinant $d$.
 There are lattices in their isometry classes with $[L : L \cap M] = [M : L \cap M] = r$ for an integer $r$ prime to $2d$.
-$L$ and $M$ are in the same *spinor genus* when the spinor operator $\Delta(r)$ is in the spinor kernel (Conway and Sloane, *Sphere Packings, Lattices and Groups*, 3rd edition, Chapter 15, §9.2–§9.4, Theorems 15–17).
-The database counts spinor genera up to isometry, proper or improper: the spinor kernel is enlarged by the spinor operator of one improper isometry, so that each spinor genus is a union of isometry classes.
+$L$ and $M$ are in the same *spinor genus* when the spinor operator $\Delta(r)$ is in the spinor kernel (Conway and Sloane, *Sphere Packings, Lattices and Groups*, 3rd edition, Chapter 15, §9.2–§9.4, Theorems 15–17). The database counts spinor genera up to isometry, proper or improper: the spinor kernel is enlarged by the spinor operator of one improper isometry, so that each spinor genus is a union of isometry classes.
 :::
 
-A genus is partitioned into spinor genera, and their number is a power of 2 (Conway and Sloane, Chapter 15, §9.1).
-The record states that number as `spinor_genus_count`, computed with `Genus(G).spinor_generators(proper=False)` of SageMath.
+A genus is partitioned into spinor genera, and their number is a power of 2 (Conway and Sloane, Chapter 15, §9.1). The record states that number as `spinor_genus_count`, computed with `Genus(G).spinor_generators(proper=False)` of SageMath.
 
 The record states the partition of the class number as `spinor_genera`: the number of isometry classes in the spinor genus of $L$, then the number in each other spinor genus, in decreasing order.
 The first entry is the *spinor class number* of $L$, and the sum is the class number of the genus.

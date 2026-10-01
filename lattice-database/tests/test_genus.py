@@ -13,7 +13,8 @@ A2 = next(entry.lattice for entry in LOADED.entries if entry.lattice.tag == "001
 
 
 def test_sagemath_computes_the_invariants_of_a2() -> None:
-    # A2 (record 0012) has rank 2, so no spinor genera are computed. It is alone in its genus, and O(A2) is the dihedral group of order 12 (Conway and Sloane, SPLAG, Chapter 4, Section 6.1).
+    # A2 (record 0012) has rank 2, so no spinor genera are computed.
+    # It is alone in its genus, and O(A2) is the dihedral group of order 12 (Conway and Sloane, SPLAG, Chapter 4, Section 6.1).
     # O(A2) = W(A2) x {1, -1}, and -1 acts on A_L = Z/3 by -1 while W(A2) acts trivially, so O~(A2) = W(A2): it is simply transitive on the 6 roots,
     # its rotations of order 3 have 2 orbits on them, and so do SO~ = O~ n SO. The norms of A2 are 2, 6, 8, ..., so c(1) = c(3) = c(4) = 0.
     one = {"constant": 0, "z": [0, 1, 0, 0], "w": [0, 0, 0, 0]}

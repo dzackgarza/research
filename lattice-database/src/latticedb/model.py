@@ -156,7 +156,8 @@ def _orbit_equality_problems(first: PrimitiveOrbitSeries, second: PrimitiveOrbit
         a, b = first.coefficient(n), second.coefficient(n)
         if a is not None and b is not None and a != b:
             message = "{first} and {second} are one group on this lattice, but c({n}) is {a} and {b}"
-            yield _problem("primitive_orbit_same_group", message, ("integral", "primitive_orbits", first_name), {"first": first_name, "second": second_name, "n": n, "a": a, "b": b})
+            context = {"first": first_name, "second": second_name, "n": n, "a": a, "b": b}
+            yield _problem("primitive_orbit_same_group", message, ("integral", "primitive_orbits", first_name), context)
 
 OrbitCounts = Annotated[tuple[Annotated[int, Field(ge=0)] | None, ...], Field(strict=False)]
 

@@ -1,4 +1,4 @@
-"""The genus symbol, the class number of the genus, the hyperbolic index, the order of O(L) and the series of orbits of primitive vectors, computed by SageMath and stored in the records.
+"""The genus symbol, the class number, the spinor genera, the hyperbolic index, the order of O(L) and the series of orbits of primitive vectors, from SageMath.
 
 `certify` sends the Gram tensor of each integral record with a nonzero determinant, with the values that
 have no certificate for that Gram tensor, to `sage_genus.py` under `sage -python`, and stores each value as
