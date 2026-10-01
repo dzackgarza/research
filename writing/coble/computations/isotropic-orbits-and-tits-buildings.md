@@ -1,5 +1,5 @@
 ---
-title: Orbits of isotropic vectors and the Tits building of a cusp conf {#sec-isotropic-orbits-and-tits-buildings}iguration
+title: Orbits of isotropic vectors and the Tits building of a cusp configuration
 unit: method
 status: reusable
 tags:
@@ -10,7 +10,7 @@ tags:
   - method
 ---
 
-# Orbits of isotropic vectors and the Tits building of a cusp configuration
+# Orbits of isotropic vectors and the Tits building of a cusp configuration {#sec-isotropic-orbits-and-tits-buildings}
 
 **Provenance.** `notes/papers/dawes-2022-orbits-in-lattices/research-notes.md` for the algorithms and examples of [@Daw22], and `notes/computations/enriques-moduli/` for those of [@SH23].
 

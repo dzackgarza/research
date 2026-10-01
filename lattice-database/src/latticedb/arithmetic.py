@@ -102,6 +102,70 @@ def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
     return tuple(factor for factor in diagonal if factor > 1)
 
 
+SUBGROUP_BOUND = 100_000
+"""`overlattice_count` decides a discriminant group with at most this number of subgroups.
+
+Measured on 2026-10-01 with PARI 2.17: the count takes 0.06 s for `(Z/2)^7`
+(29212 subgroups), 1.3 s for `(Z/2)^8` (417199) and 33 s for `(Z/2)^9`
+(8283458), about 4 microseconds for each subgroup.
+"""
+
+# `forsubgroup` gives each subgroup `H` of `Z/c_1 + ... + Z/c_k` as a matrix whose columns generate it.
+# The first loop counts the subgroups and stops above the bound; the second counts those on which the form vanishes.
+_ISOTROPIC_SUBGROUPS = _PARI(
+    "(cyc, N, e, bound) -> my(n = 0, c = 0);"
+    " forsubgroup(H = cyc, , n++; if(n > bound, break));"
+    " if(n <= bound, forsubgroup(H = cyc, , if((H~ * N * H) % e == 0, c++)));"
+    " [n, c]"
+)
+
+
+def overlattice_count(gram_tensor: GramTensor) -> int | None:
+    """Return the number of integral lattices `M` with `L <= M <= L^*`, or `None` when the discriminant group has more than `SUBGROUP_BOUND` subgroups.
+
+    `b` must be integer valued with nonzero determinant. `L^*` is the set of
+    `x` in `L (x) Q` with `b(x, L)` in `Z`, and `b` extends to it with rational
+    values. The discriminant group is `A = L^* / L`, and
+    `b_A(x + L, y + L) = b(x, y) + Z` is a symmetric bilinear form on `A` with
+    values in `Q/Z`, defined because `b(L^*, L)` is in `Z`.
+
+    A lattice `M` with `L <= M` of finite index is integral exactly when
+    `b(M, M)` is in `Z`. Then `b(M, L)` is in `Z`, so `M <= L^*`. So the
+    integral `M` are the subgroups `H = M / L` of `A` with `b_A(H, H) = 0`,
+    and the function counts those subgroups. `H = 0` is `M = L`, which is
+    counted: a unimodular lattice has the count 1. The count is of subgroups,
+    not of their orbits under the isometries of `L`.
+
+    Computation. With `G` the matrix of the `b(e_i, e_j)`, `u -> G^-1 u` maps
+    `Z^n` onto `L^*` (the columns of `G^-1` are the basis dual to the `e_i`)
+    and `G Z^n` onto `L`, and `b(G^-1 u, G^-1 v) = u^T G^-1 v`. PARI's `matsnf`
+    gives unimodular `U`, `V` with `U G V = D` diagonal, so `u -> U u` maps
+    `Z^n / G Z^n` onto `Z^n / D Z^n`, and the generator `e_i` of the factor
+    `Z / D_ii` is the class of `G^-1 U^-1 e_i`. On these generators `b_A` has
+    the matrix `B = W^T G^-1 W` with `W = U^-1`. With `e` the largest `D_ii`,
+    `N = e B` is an integer matrix, and `b_A` vanishes on the subgroup that the
+    columns of `H` generate exactly when `H^T N H` is `0` modulo `e`, because
+    `b_A` is bilinear.
+    """
+    assert is_integer_valued(gram_tensor), "the dual lattice contains L only for an integer-valued form"
+    rank = len(gram_tensor)
+    form = _PARI.matrix(rank, rank, [int(value) for row in gram_tensor for value in row])
+    left, _, smith = form.matsnf(1)
+    diagonal = [abs(int(smith[index, index])) for index in range(rank)]
+    assert all(factor != 0 for factor in diagonal), "the discriminant group is finite only for a nonzero determinant"
+    cyclic_factors = [factor for factor in diagonal if factor > 1]
+    assert diagonal[: len(cyclic_factors)] == cyclic_factors, "matsnf puts the factors greater than 1 first"
+    if not cyclic_factors:
+        return 1
+    exponent = cyclic_factors[0]
+    assert all(exponent % factor == 0 for factor in cyclic_factors), "matsnf puts the largest factor first"
+    lift = left**-1
+    scaled_form = exponent * (lift.mattranspose() * form**-1 * lift)
+    size = len(cyclic_factors)
+    subgroups, isotropic = _ISOTROPIC_SUBGROUPS(cyclic_factors, _PARI.matrix(size, size, [scaled_form[i, j] for i in range(size) for j in range(size)]), exponent, SUBGROUP_BOUND)
+    return None if int(subgroups) > SUBGROUP_BOUND else int(isotropic)
+
+
 def scale(gram_tensor: GramTensor) -> Fraction:
     """The scale of `b`: the positive generator of the subgroup of `Q` that the values `b(e_i, e_j)` generate, and `0` for `b = 0`.
 

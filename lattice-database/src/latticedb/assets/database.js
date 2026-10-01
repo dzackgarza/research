@@ -77,6 +77,7 @@
     plain("root_span_index", { className: "dt-right" }),
     plain("root_span_rank", { visible: false }),
     plain("root_span_primitive", { visible: false }),
+    plain("overlattice_count", { className: "dt-right" }),
   ];
   // A pane selects the options that are equal to the values of its column, so the values of a number column are numbers.
   const paneOf = { rank: [2, Number], definiteness: [5, String], property: [6, String], family: [13, String] };

@@ -31,7 +31,7 @@ def e8() -> dict[str, Yaml]:
         "determinant": 1,
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "even", "discriminant_group": []},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
             "kissing_number": 240,
@@ -56,7 +56,7 @@ def hyperbolic_plane() -> dict[str, Yaml]:
         "determinant": -1,
         "definiteness": "indefinite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "even", "discriminant_group": []},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
     }
 
@@ -111,7 +111,7 @@ def binary_form_of_determinant_19() -> dict[str, Yaml]:
         "determinant": 19,
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "even", "discriminant_group": [19]},
+        "integral": {"parity": "even", "discriminant_group": [19], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
             "kissing_number": 2,
@@ -135,7 +135,7 @@ def anisotropic_binary() -> dict[str, Yaml]:
         "determinant": -2,
         "definiteness": "indefinite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "odd", "discriminant_group": [2]},
+        "integral": {"parity": "odd", "discriminant_group": [2], "overlattice_count": 1},
         "indefinite": {"isotropic": False},
     }
 
@@ -152,7 +152,7 @@ def square_lattice() -> dict[str, Yaml]:
         "determinant": 1,
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "odd", "discriminant_group": []},
+        "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1},
         "definite": {
             "minimum": 1,
             "kissing_number": 4,
@@ -176,7 +176,7 @@ def a6() -> dict[str, Yaml]:
         "determinant": 7,
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "even", "discriminant_group": [7]},
+        "integral": {"parity": "even", "discriminant_group": [7], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
             "kissing_number": 42,
@@ -199,7 +199,7 @@ def hyperbolic_plane_plus_a1() -> dict[str, Yaml]:
         "determinant": 2,
         "definiteness": "indefinite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "even", "discriminant_group": [2]},
+        "integral": {"parity": "even", "discriminant_group": [2], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
     }
 
@@ -216,7 +216,7 @@ def a2() -> dict[str, Yaml]:
         "determinant": 3,
         "definiteness": "positive_definite",
         "provenance": PROVENANCE,
-        "integral": {"parity": "even", "discriminant_group": [3]},
+        "integral": {"parity": "even", "discriminant_group": [3], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
             "kissing_number": 6,
@@ -387,6 +387,10 @@ def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank(
         (with_block(a2_dual(), "definite", root_system=[]), "root_system_requires_integral"),
         (with_block(affine_a2(), "integral", discriminant_group=[2]), "discriminant_group_requires_nondegenerate"),
         (with_block(affine_a2(), "integral", genus_symbol="II_{2,0}"), "genus_requires_nondegenerate"),
+        (with_block(affine_a2(), "integral", overlattice_count=1), "overlattice_count_requires_nondegenerate"),
+        (without(a2(), "integral", "overlattice_count"), "overlattice_count_missing"),
+        # The discriminant group of A2 has order 3 and a nondegenerate form, so the form vanishes on the trivial subgroup only.
+        (with_block(a2(), "integral", overlattice_count=2), "overlattice_count_mismatch"),
         # A required block or field that is absent.
         ({key: value for key, value in e8().items() if key != "integral"}, "integral_block_missing"),
         (e8() | {"integral": {"parity": "even"}}, "discriminant_group_missing"),
@@ -488,7 +492,7 @@ def test_meyer_theorem_rejects_an_anisotropic_claim_in_rank_five() -> None:
         "gram_tensor": [[7, 0, 0, 0, 0], [0, -1, 0, 0, 0], [0, 0, -1, 0, 0], [0, 0, 0, -1, 0], [0, 0, 0, 0, -1]],
         "signature": [1, 4],
         "determinant": 7,
-        "integral": {"parity": "odd", "discriminant_group": [7]},
+        "integral": {"parity": "odd", "discriminant_group": [7], "overlattice_count": 1},
         "indefinite": {"isotropic": False},
     }
     assert error_types(record) == {"isotropy_mismatch"}

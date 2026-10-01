@@ -1,5 +1,5 @@
 ---
-title: The Coble cusp correspondence and the morph {#sec-cusp-correspondence-morphism-chain}ism chain to F_(2,2,0)
+title: The Coble cusp correspondence and the morphism chain to F_(2,2,0)
 unit: research-program
 status: conjectural
 tags:
@@ -9,7 +9,7 @@ tags:
   - morphisms
 ---
 
-# The Coble cusp correspondence and the morphism chain
+# The Coble cusp correspondence and the morphism chain {#sec-cusp-correspondence-morphism-chain}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md` (author's own research statement, sections "Current Work" and "Compact moduli spaces of Coble surfaces") and `/home/dzack/gitclones/diss/000-writing/.archive/thesis-outline/part3/08_Future_Directions.md`. Neither source is in the finished dissertation, which mentions Coble surfaces only once in passing.
 

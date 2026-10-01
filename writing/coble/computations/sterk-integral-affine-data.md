@@ -1,5 +1,5 @@
 ---
-title: Integral-affine edge-length data for the St {#sec-sterk-integral-affine-data}erk cusps
+title: Integral-affine edge-length data for the Sterk cusps
 unit: computation
 status: partial
 tags:
@@ -8,7 +8,7 @@ tags:
   - dlt-models
 ---
 
-# Integral-affine edge-length data for the Sterk cusps
+# Integral-affine edge-length data for the Sterk cusps {#sec-sterk-integral-affine-data}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/notebooks/Sterk IAS Plotting.ipynb`. This is the only place in the corpus with concrete integral-affine output.
 Absent from the dissertation, which treats integral-affine structures theoretically without tabulating edge lengths.

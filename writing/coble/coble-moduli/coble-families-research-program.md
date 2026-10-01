@@ -1,5 +1,5 @@
 ---
-title: The research program for F_(Co,n) with 2 <= n < {#sec-coble-families-research-program}= 10
+title: The research program for F_(Co,n) with 2 <= n <= 10
 unit: research-program
 status: conjectural
 tags:
@@ -9,7 +9,7 @@ tags:
   - recognizable-divisor
 ---
 
-# The research program for $F_{\Co,n}$, $2 \leq n \leq 10$
+# The research program for $F_{\Co,n}$, $2 \leq n \leq 10$ {#sec-coble-families-research-program}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md`, section "Future Work / Coble surfaces with $1\leq n\leq 10$ boundary components".
 Not in the dissertation.

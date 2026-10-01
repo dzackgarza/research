@@ -120,6 +120,9 @@ def _integral(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
     block: dict[str, Yaml] = {"parity": "even" if all(gram[i][i] % 2 == 0 for i in range(rank)) else "odd"}
     if arithmetic.determinant(gram) != 0:
         block["discriminant_group"] = list(arithmetic.discriminant_invariants(gram))
+        count = arithmetic.overlattice_count(gram)
+        if count is not None:
+            block["overlattice_count"] = count
         if "genus_symbol" in declared:
             block["genus_symbol"] = declared["genus_symbol"]
     return _ordered(block, tuple(model.IntegralData.model_fields))

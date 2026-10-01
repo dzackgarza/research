@@ -1,5 +1,5 @@
 ---
-title: The fundamental chamber as a polyhe {#sec-fundamental-chamber-polyhedra}dral cone
+title: The fundamental chamber as a polyhedral cone
 unit: method
 status: reusable
 tags:
@@ -9,7 +9,7 @@ tags:
   - method
 ---
 
-# The fundamental chamber as a polyhedral cone
+# The fundamental chamber as a polyhedral cone {#sec-fundamental-chamber-polyhedra}
 
 **Provenance.** `notes/computations/fundamental-chamber-as-root-halfspace-cone.md`, landed 2026-08-20 from the cone cells of `archives/notebooks/Coble Lattice Invariants.ipynb` and the prototype `computations/scripts/components/coxeter-vinberg/Vinberg_L_2_1.py`.
 

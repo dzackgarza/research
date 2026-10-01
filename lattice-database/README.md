@@ -47,6 +47,7 @@ definiteness: indefinite
 integral:
   parity: even
   discriminant_group: []
+  overlattice_count: 1
   genus_symbol: II_{1,1}
 indefinite:
   isotropic: true
@@ -70,7 +71,7 @@ So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature 
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`. `latticedb new` computes them, and the build computes each again with exact arithmetic and rejects a record that states another value: a record with `signature: [2, 0]` and the components above is rejected.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots` and `indefinite.isotropic`. `latticedb new` computes them, and the build computes each again with exact arithmetic and rejects a record that states another value: a record with `signature: [2, 0]` and the components above is rejected.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references`, `provenance` and the prose, and declares `integral.genus_symbol`, `definite.automorphism_group_order`, `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide, each with its source in the prose.
 The page of the lattice marks each declared value *declared*; every other value on the page, the build computed.
 
@@ -79,7 +80,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
-| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `genus_symbol` |
+| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `genus_symbol` |
 | `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
 | `root_span` | $b$ is not definite | `roots`, `summands`, `embedding` |
 | `indefinite` | $b(x, x)$ takes both signs | `isotropic` |
@@ -87,6 +88,12 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 
 The `integral`, `definite` and `indefinite` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
 `definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order` and `integral.genus_symbol` are optional.
+
+`integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.
+A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.
+It counts subgroups, not their orbits under the isometries of $L$, and it counts every integral $M$: for an even $L$ some $M$ can be odd. For $U(2)$ the count is 4, and 3 of the 4 lattices are even.
+The build enumerates the subgroups of $A_L$, so the field is required exactly when the determinant is not zero and $A_L$ has at most 100000 subgroups.
+A record without it is not decided, and its page says so: $(\mathbb{Z}/2)^8$ has 417199 subgroups.
 
 The page `fields.html` of the site documents every field.
 The build generates it from the schema, so it states what the validators enforce.

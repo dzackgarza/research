@@ -1,5 +1,5 @@
 ---
-title: The nodal Enriques modul {#sec-nodal-enriques-moduli-program}i program
+title: The nodal Enriques moduli program
 unit: research-program
 status: conjectural
 tags:
@@ -8,7 +8,7 @@ tags:
   - moduli
 ---
 
-# The nodal Enriques moduli program
+# The nodal Enriques moduli program {#sec-nodal-enriques-moduli-program}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md`, section "Future Work / Nodal Enriques surfaces", together with `/home/dzack/gitclones/diss/000-writing/.archive/thesis-outline/part3/08_Future_Directions.md` and `.../past_writing/mathematical_tools_and_concepts/730_nodal_enriques.md`. Absent from the dissertation entirely.
 

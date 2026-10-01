@@ -1,5 +1,5 @@
 ---
-title: CoxIter results for the Sterk cusps and the Coble/ {#sec-coxiter-results-for-cusp-lattices}Enriques 0-cusp lattices
+title: CoxIter results for the Sterk cusps and the Coble/Enriques 0-cusp lattices
 unit: computation
 status: computed
 tags:
@@ -9,7 +9,7 @@ tags:
   - hyperbolic-lattices
 ---
 
-# CoxIter results for the Sterk cusps and the 0-cusp lattices
+# CoxIter results for the Sterk cusps and the 0-cusp lattices {#sec-coxiter-results-for-cusp-lattices}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/reports/Sterk{1..5}Output.txt` and `.../coxeter-diagrams/coxiter/`. None of this appears in the dissertation: the strings "CoxIter", "f-vector", "growth rate" and "cocompact" occur nowhere in `dissertation/sections/`.
 

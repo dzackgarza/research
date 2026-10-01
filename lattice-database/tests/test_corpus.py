@@ -21,7 +21,7 @@ def rank_one(tag: str) -> dict[str, Yaml]:
         "determinant": 1,
         "definiteness": "positive_definite",
         "provenance": {"source": "Test record."},
-        "integral": {"parity": "odd", "discriminant_group": []},
+        "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1},
         "definite": {
             "minimum": 1,
             "kissing_number": 2,
@@ -44,7 +44,7 @@ def hyperbolic_plane(summands: list[dict[str, str | int]]) -> dict[str, Yaml]:
         "determinant": -1,
         "definiteness": "indefinite",
         "provenance": {"source": "Test record."},
-        "integral": {"parity": "even", "discriminant_group": []},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
         "root_span": {"roots": [[1, 1], [1, -1]], "summands": summands, "embedding": [[1, 1], [1, -1]]},
     }
@@ -131,7 +131,7 @@ def rank_three(tag: str, name: str, gram_tensor: list[list[int]]) -> dict[str, Y
         "determinant": 4,
         "definiteness": "positive_definite",
         "provenance": {"source": "Test record."},
-        "integral": {"parity": "even", "discriminant_group": [4]},
+        "integral": {"parity": "even", "discriminant_group": [4], "overlattice_count": 2},
         "definite": {
             "minimum": 2,
             "kissing_number": 12,

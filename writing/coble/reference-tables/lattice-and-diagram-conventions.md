@@ -1,5 +1,5 @@
 ---
-title: Lattice length table and Coxeter-Vinberg diagram co {#sec-lattice-and-diagram-conventions}nventions
+title: Lattice length table and Coxeter-Vinberg diagram conventions
 unit: reference
 status: reference
 tags:
@@ -9,7 +9,7 @@ tags:
   - conventions
 ---
 
-# Lattice length table and Coxeter-Vinberg diagram conventions
+# Lattice length table and Coxeter-Vinberg diagram conventions {#sec-lattice-and-diagram-conventions}
 
 **Provenance.** `/home/dzack/gitclones/diss/000-writing/.archive/source_material/thesis-appendix-tables-figures.md`, sections A.1.3, A.2.1, A.2.2, A.4. That file cites its own sources as `1.8_Discriminant_Bilinear_Quadratic_Forms.tex`, `1.30.2_Coxeter-Vinberg_Diagrams.tex` and `1.28_Root_lattices_and_labeling_Conventions.tex`, all in the same archive.
 None of these tables appear in the dissertation.

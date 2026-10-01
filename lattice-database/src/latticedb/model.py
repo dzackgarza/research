@@ -118,6 +118,15 @@ class IntegralData(Record):
             "The empty list is the trivial group. Required when the determinant is not zero."
         ),
     )
+    overlattice_count: int | None = Field(
+        default=None,
+        description=(
+            "The number of integral lattices $M$ with $L \\subseteq M \\subseteq L^*$, with $M = L$ counted: the number of subgroups $H$ of the discriminant group "
+            "$A_L = L^*/L$ with $b_{A_L}(H, H) = 0$, for the form $b_{A_L}(x + L, y + L) = b(x, y) + \\mathbb{Z}$ with values in $\\mathbb{Q}/\\mathbb{Z}$. "
+            "Subgroups are counted, not their orbits under the isometries of $L$. An even $L$ can have odd lattices among the $M$. "
+            f"Required when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; a record without it is not decided."
+        ),
+    )
     genus_symbol: str | None = Field(
         default=None,
         description=(
@@ -525,6 +534,10 @@ class Lattice(Record):
                 yield _problem("discriminant_group_requires_nondegenerate", "the discriminant group is finite only when the determinant is not zero", location)
             if self.integral.genus_symbol is not None:
                 yield _problem("genus_requires_nondegenerate", "the genus symbol requires a nonzero determinant", ("integral", "genus_symbol"))
+            if self.integral.overlattice_count is not None:
+                yield _problem(
+                    "overlattice_count_requires_nondegenerate", "the number of overlattices is finite only when the determinant is not zero", ("integral", "overlattice_count")
+                )
             return
         if stated_group is None:
             yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", location)
@@ -537,6 +550,31 @@ class Lattice(Record):
                 location,
                 {"computed": str(list(group)), "stated": str(list(stated_group))},
             )
+        yield from self._overlattice_problems()
+
+    def _overlattice_problems(self) -> Iterator[InitErrorDetails]:
+        assert self.integral is not None
+        location = ("integral", "overlattice_count")
+        stated = self.integral.overlattice_count
+        match arithmetic.overlattice_count(self.gram_tensor), stated:
+            case None, None:
+                return
+            case None, _:
+                yield _problem(
+                    "overlattice_count_not_decided",
+                    "the discriminant group has more than {bound} subgroups, so the number of overlattices is not computed and the record must not state it",
+                    location,
+                    {"bound": arithmetic.SUBGROUP_BOUND},
+                )
+            case _, None:
+                yield _problem("overlattice_count_missing", "the discriminant group has at most {bound} subgroups, so `overlattice_count` is required", location, {"bound": arithmetic.SUBGROUP_BOUND})
+            case computed, _ if computed != stated:
+                yield _problem(
+                    "overlattice_count_mismatch",
+                    "the discriminant form vanishes on {computed} subgroups of the discriminant group, the record states {stated}",
+                    location,
+                    {"computed": computed, "stated": stated},
+                )
 
     def _definite_problems(self) -> Iterator[InitErrorDetails]:
         """The `definite` block is required exactly on a definite form, and its computed fields are compared with the Gram tensor."""

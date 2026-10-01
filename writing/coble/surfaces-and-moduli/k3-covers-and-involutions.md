@@ -2,7 +2,7 @@
 
 This section records the general machinery of the K3 double cover of a rational surface, the distinguished geometric involutions it carries, and the lattice involutions they induce on $H^2$ together with their invariant and coinvariant sublattices.
 The Coble-specific instance of the double-cover construction — where the base is a terminal Coble surface and the branch locus is the anticanonical curve — is treated in the section on K3 covers of Coble surfaces; here we develop the construction for a general base and the involution-theoretic apparatus common to the del Pezzo, Enriques, and Nikulin quotients.
-The general invariant/coinvariant lattice formalism $L^G$, $L_G$ is developed in [the invariant/coinvariant-lattice definition](#def:invariant_coinvariant_lattices) and [the involution-eigenspace proposition](#prop:involution_eigenspaces); we cross-reference it rather than restating it.
+The general invariant/coinvariant lattice formalism $L^G$, $L_G$ is developed in the invariant/coinvariant-lattice definition (@def:invariant_coinvariant_lattices) and the involution-eigenspace proposition (@prop:involution_eigenspaces); we cross-reference it rather than restating it.
 
 ## The double cover construction
 
@@ -28,14 +28,14 @@ Here $\tau$ is the involution
 $$
 \tau(x, y) = (-x, -y)
 $$
-of $Y = \PP^1\times\PP^1$, the involution covered by the Enriques and Nikulin involutions of [the geometric-involutions remark](#rmk:geometric-involutions); the del Pezzo involution covers the identity.
+of $Y = \PP^1\times\PP^1$, the involution covered by the Enriques and Nikulin involutions of the geometric-involutions remark (@rmk:geometric-involutions); the del Pezzo involution covers the identity.
 Its fixed locus is the four torus-fixed points, those with $x, y\in\ts{0, \infty}$.
 By taking $B \subset Y$ to be a smooth $\tau$-invariant curve in $\abs{-2K_Y} = \abs{\OO_Y(4,4)}$, we obtain a $10$-dimensional family of K3 surfaces, after quotienting by the toric automorphisms $D_4 \semidirect (\CC^\times)^2$.
 :::
 
 ::: {.remark}
 
-The specialization of [the K3 double-cover construction](#rmk:k3-double-cover-construction) to a terminal Coble surface of K3 type is carried out in the section on K3 covers of Coble surfaces: there one takes $\cL = \OO_S(-K_S)$ for $S$ the (rational) base and a section $s \in H^0(\cL^{\tensor 2})$ cutting out the anticanonical curve $C$, and the resulting double cover $f: X \to S$ is a smooth K3 surface with $\Pic(X)$ a $2$-elementary lattice of invariants $(r,a,\delta)_1 = (10+n, 12-n, \delta)_1$ [@DK25 Prop. 9.1.1; @CDL25 Def. 5.4.3].
+The specialization of the K3 double-cover construction (@rmk:k3-double-cover-construction) to a terminal Coble surface of K3 type is carried out in the section on K3 covers of Coble surfaces: there one takes $\cL = \OO_S(-K_S)$ for $S$ the (rational) base and a section $s \in H^0(\cL^{\tensor 2})$ cutting out the anticanonical curve $C$, and the resulting double cover $f: X \to S$ is a smooth K3 surface with $\Pic(X)$ a $2$-elementary lattice of invariants $(r,a,\delta)_1 = (10+n, 12-n, \delta)_1$ [@DK25 Prop. 9.1.1; @CDL25 Def. 5.4.3].
 :::
 
 ## Geometric involutions on the double cover
@@ -62,7 +62,7 @@ The del Pezzo and Enriques involutions act on the holomorphic $2$-form by $-1$ (
 ### Lattice involutions for K3 covers
 
 Fix a basis of the K3 lattice $\lkt$ corresponding to the decomposition $U^3 \oplus E_8^2$, and write a general vector as $(u_1, u_2, u_3, \alpha_1, \alpha_2)$ with $u_i \in U$ and $\alpha_j \in E_8$.
-The three geometric involutions $\idp$, $\ien$, and $\inik$ of [the geometric-involutions remark](#rmk:geometric-involutions) induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
+The three geometric involutions $\idp$, $\ien$, and $\inik$ of the geometric-involutions remark (@rmk:geometric-involutions) induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
 $$
 \begin{aligned}
     \Idp(u_1, u_2, u_3, \alpha_1, \alpha_2)        &= (-u_1,\, u_3,\, u_2,\, -\alpha_1,\, -\alpha_2), \\
@@ -79,14 +79,14 @@ The lattice involutions satisfy the following.
 
 - The group $\gens{\Idp, \Ien, \Inik}$ is isomorphic to $\ZZ_2^2$; in particular these involutions mutually commute, and $\Ien\circ \Idp = \Inik$.
 
-- For each involution $I_\star$, the **invariant sublattice** is denoted $S_\star \da \lkt^{I_\star = 1}$ and the **coinvariant sublattice** is $T_\star \da \lkt^{I_\star = -1}$, in the sense of [the invariant/coinvariant-lattice definition](#def:invariant_coinvariant_lattices): $S_\star$ is the $+1$-eigenlattice and $T_\star$ the $-1$-eigenlattice of $I_\star$, and by [the involution-eigenspace proposition](#prop:involution_eigenspaces) these are orthogonal and rationally span $\lkt_\QQ$.
+- For each involution $I_\star$, the **invariant sublattice** is denoted $S_\star \da \lkt^{I_\star = 1}$ and the **coinvariant sublattice** is $T_\star \da \lkt^{I_\star = -1}$, in the sense of the invariant/coinvariant-lattice definition (@def:invariant_coinvariant_lattices): $S_\star$ is the $+1$-eigenlattice and $T_\star$ the $-1$-eigenlattice of $I_\star$, and by the involution-eigenspace proposition (@prop:involution_eigenspaces) these are orthogonal and rationally span $\lkt_\QQ$.
 
 - The transcendental lattices $T_Z$ of the Enriques surfaces $Z$ primitively embed into these invariant sublattices.
 :::
 
 The isometry classes of the invariant and coinvariant sublattices of the three involutions, together with their $2$-elementary invariants $(r,a,\delta)_n$ (where $n = n_+$ is the number of positive eigenvalues) and discriminant groups $A_L$, are collected in @tbl-k3-cover-coinvariant-lattices.
-For the del Pezzo and Enriques involutions these lattices also appear in [Period domain embeddings and normalization](#sec-lattices) alongside [the sequence of primitive embeddings](#lem:sequence_of_embeddings). The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($\sen = E_{10}(2)$, $\ten = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $\sdp = U(2)$, $\tdp = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
-The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of [the coinvariant $2$-elementarity proposition](#prop:coinvariant_involution_2elementary), and their classification is Nikulin's [@Nik80].
+For the del Pezzo and Enriques involutions these lattices also appear in [Period domain embeddings and normalization](#sec-lattices) alongside the sequence of primitive embeddings (@lem:sequence_of_embeddings). The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($\sen = E_{10}(2)$, $\ten = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $\sdp = U(2)$, $\tdp = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
+The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of the coinvariant $2$-elementarity proposition (@prop:coinvariant_involution_2elementary), and their classification is Nikulin's [@Nik80].
 
 | $L$ | Isometry class | $\rank_\ZZ(L)$ | $\operatorname{sig}(L)$ | $(r,a,\delta)_n$ | $A_L$ |
 | --- | --- | --- | --- | --- | --- |

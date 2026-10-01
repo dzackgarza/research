@@ -1,5 +1,5 @@
 ---
-title: Moduli of index 2 Halphen and rational elliptic {#sec-halphen-index-2-moduli-program} surfaces
+title: Moduli of index 2 Halphen and rational elliptic surfaces
 unit: research-program
 status: conjectural
 tags:
@@ -9,7 +9,7 @@ tags:
   - ksba
 ---
 
-# Moduli of index 2 Halphen and rational elliptic surfaces
+# Moduli of index 2 Halphen and rational elliptic surfaces {#sec-halphen-index-2-moduli-program}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md`, section "Future Work / Halphen and rational elliptic surfaces".
 Absent from the dissertation.

@@ -1,5 +1,5 @@
 ---
-title: Explicit root vectors and the folded Sterk {#sec-root-vectors-and-folded-sterk-diagrams} diagrams
+title: Explicit root vectors and the folded Sterk diagrams
 unit: computation
 status: computed
 tags:
@@ -9,7 +9,7 @@ tags:
   - sterk
 ---
 
-# Explicit root vectors and the folded Sterk diagrams
+# Explicit root vectors and the folded Sterk diagrams {#sec-root-vectors-and-folded-sterk-diagrams}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/notebooks/Lattices and Coxeter Diagrams DZG.ipynb`, `.../reports/rank-checks/*.rtf`, and the root correspondence tables A.3.2a/b of `/home/dzack/gitclones/diss/000-writing/.archive/source_material/thesis-appendix-tables-figures.md`. The two sources agree.
 Absent from the dissertation, which states only the generic fact that roots have norm $-2$ or $-4$ with divisibility 2.

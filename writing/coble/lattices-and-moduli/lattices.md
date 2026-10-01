@@ -159,7 +159,7 @@ Hence $\inverseof{f}(y)$ is finite, of cardinality at most half the number of $(
 **Properness and finiteness.** By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB) the map $f$ extends to a morphism $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
 A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
 So $\bar f$ carries boundary to boundary, giving $\inverseof{\bar f}(\fen) = \fco$, and $f$ is proper because properness is stable under base change.
-A proper morphism with finite fibres is finite [Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS), so $f$ is finite.
+A proper morphism with finite fibres is finite [@stacks-02LS], so $f$ is finite.
 Let $Z\da f(\fco)$, which is closed in $\fen$ because a finite morphism is closed.
 
 **Generic injectivity.** A proper primitive sublattice $S\subsetneq T_\Co$ of signature $(2,\ast)$ cuts out a proper closed analytic subset $\bD(S)\subsetneq\bD(T_\Co)$, and there are countably many such $S$.

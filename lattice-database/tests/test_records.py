@@ -10,6 +10,7 @@ import yaml
 from latticedb import corpus, records, root_systems
 from latticedb.cli import app
 from latticedb.model import Lattice, Yaml
+from pydantic import ValidationError
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 
@@ -47,6 +48,27 @@ def test_derive_computes_the_invariants_and_the_root_system_of_e8() -> None:
     assert lattice.definite.roots is not None
     assert [(component.type, component.scale) for component in lattice.definite.roots] == [("E8", 1)]
     assert lattice.is_root_lattice
+
+
+def test_derive_states_the_number_of_integral_overlattices_of_a3() -> None:
+    # The discriminant group of A3 is Z/4 with a generator g, b(g, g) = 3/4: the form vanishes on 0 and on <2g>, and the lattices are A3 and I_3.
+    record = records.derive(declared("A3", [[2, -1, 0], [-1, 2, -1], [0, -1, 2]]))
+    lattice = Lattice.model_validate(record)
+    assert lattice.integral is not None
+    assert lattice.integral.overlattice_count == 2
+
+
+def test_a_record_does_not_state_the_overlattice_count_above_the_subgroup_bound() -> None:
+    # I_{1,0} + <-2>^8 has the discriminant group (Z/2)^8, which has more subgroups than the bound of the enumeration.
+    record = records.derive(declared("<1> + <-2>^8", [[(1 if i == 0 else -2) if i == j else 0 for j in range(9)] for i in range(9)]))
+    lattice = Lattice.model_validate(record)
+    assert lattice.integral is not None
+    assert lattice.integral.overlattice_count is None
+    integral = record["integral"]
+    assert isinstance(integral, dict)
+    with pytest.raises(ValidationError) as raised:
+        Lattice.model_validate(record | {"integral": integral | {"overlattice_count": 2981}})
+    assert {error["type"] for error in raised.value.errors()} == {"overlattice_count_not_decided"}
 
 
 def test_derive_states_the_roots_of_a_definite_lattice_whose_values_are_not_integers() -> None:

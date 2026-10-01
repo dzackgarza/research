@@ -17,7 +17,7 @@ c_1\colon \Pic(Z)\xrightarrow{\ \sim\ } H^2(Z; \ZZ)
 ,
 $$
 so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical divisor classes $\Num(Z)$.
-Under the intersection pairing this free part is the even unimodular lattice of signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of [the Enriques-lattice definition](#def:enriques-lattice) [@CDL25]; the numerical polarization $[h]$ is thus an ample class in $\Num(Z)\iso E_{10}$.
+Under the intersection pairing this free part is the even unimodular lattice of signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of the Enriques-lattice definition (@def:enriques-lattice) [@CDL25]; the numerical polarization $[h]$ is thus an ample class in $\Num(Z)\iso E_{10}$.
 :::
 
 ::: {.remark}
@@ -48,7 +48,7 @@ $$
 \sen = E_{10}(2) = U(2)\oplus E_8(2)
 ,
 $$
-the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$ (see [the Enriques-lattice definition](#def:enriques-lattice) and the Special Lattices section).
+the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$ (see the Enriques-lattice definition (@def:enriques-lattice) and the Special Lattices section).
 The appearance of these extra invariant classes in $\NS$ is what cuts out the locus.
 :::
 
@@ -84,7 +84,7 @@ $$
 K_S^{\perp} \cong E_{10} = U\oplus E_8
 ,
 $$
-the Enriques lattice of [the Enriques-lattice definition](#def:enriques-lattice).
+the Enriques lattice of the Enriques-lattice definition (@def:enriques-lattice).
 The Coble boundary curve has class
 $$
 C = 6H - 2\Sum_{i=1}^{10} E_i = -2K_S
@@ -95,7 +95,7 @@ $$
 ::: {.proof}
 
 The expression for $K_S$ is the blowup formula, and $D\cdot K_S = -3a - \Sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \Sum_i b_i$ up to sign, giving the stated condition.
-Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\generators{K_S}\cong\generators{-1}$ is unimodular, so by [the unimodular-splitting proposition](#prop:unimodular-splits) it splits $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
+Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\generators{K_S}\cong\generators{-1}$ is unimodular, so by the unimodular-splitting proposition (@prop:unimodular-splits) it splits $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
 That complement is even: for $D = aH - \Sum_i b_iE_i$ with $\Sum_i b_i = 3a$,
 $$
 D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv 0
@@ -103,7 +103,7 @@ D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv
 ,
 $$
 using $b^2\equiv b\bmod 2$.
-An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by [the indefinite unimodular classification](#thm:indefinite-unimodular-classification).
+An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the indefinite unimodular classification (@thm:indefinite-unimodular-classification).
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
@@ -112,7 +112,7 @@ Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 
 The two classes to be distinguished are:
 
-1. the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by [the K3 double-cover proposition](#prop:double-cover-is-k3);
+1. the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3);
 
 2. the **degree-$2$ Coble polarization** $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$, of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
 :::
@@ -123,6 +123,6 @@ The two classes to be distinguished are:
 Both $H$ and $h_\Co$ have square $2$ after pullback and square $2$ downstairs respectively, so the numerical coincidence is easy to mistake for an identity.
 They are different classes: $H\notin K_S^{\perp}$, since $H\cdot K_S = -3\neq 0$, whereas $h_\Co$ lies in $K_S^{\perp}$ by definition, and their pullbacks have different squares, $e_0^2 = 2$ against $\tilde h_\Co^2 = 4$.
 
-The analogue of the Enriques degree-$2$ polarization is $h_\Co$: polarization: for a degree-$2$ Enriques surface the numerical polarization has $h^2 = 2$ in $\Num(Z)\cong E_{10}$ while the K3-side vector $h = e + f\in U(2)$ has $h^2 = 4$ ([the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing)), exactly the pattern of $h_\Co$ and $\tilde h_\Co$.
+The analogue of the Enriques degree-$2$ polarization is $h_\Co$: polarization: for a degree-$2$ Enriques surface the numerical polarization has $h^2 = 2$ in $\Num(Z)\cong E_{10}$ while the K3-side vector $h = e + f\in U(2)$ has $h^2 = 4$ (the discriminant description of $\Gamma_{\En,2}$ (@prop:gamma-en-two-gluing)), exactly the pattern of $h_\Co$ and $\tilde h_\Co$.
 Any comparison of Coble and Enriques polarized moduli, and any pairing of a polarization class against roots of a Coxeter diagram, must first record which of these classes is meant and in which lattice it lives.
 :::

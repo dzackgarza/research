@@ -69,6 +69,7 @@
         {% if lattice.integral.discriminant_group is not none %}
         <tr><th scope="row">Discriminant group</th><td>\({{ group_tex(lattice.integral.discriminant_group) }}\)</td></tr>
         <tr><th scope="row">Unimodular</th><td>{{ yes_no(lattice.is_unimodular) }}</td></tr>
+        <tr><th scope="row">Integral lattices \(M\) with \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}not decided{% endif %}</td></tr>
         {% endif %}
         {% if lattice.integral.genus_symbol %}
         <tr><th scope="row">Genus symbol</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\) {{ declared() }}</td></tr>

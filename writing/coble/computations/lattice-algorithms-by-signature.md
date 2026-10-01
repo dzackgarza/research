@@ -1,5 +1,5 @@
 ---
-title: Which lattice algorithms apply in which  {#sec-lattice-algorithms-by-signature}signature
+title: Which lattice algorithms apply in which signature
 unit: method
 status: reusable
 tags:
@@ -9,7 +9,7 @@ tags:
   - method
 ---
 
-# Which lattice algorithms apply in which signature
+# Which lattice algorithms apply in which signature {#sec-lattice-algorithms-by-signature}
 
 **Provenance.** `notes/computations/coxeter-algorithms/`, seven survey documents landed 2026-08-20, and the decomposition search of `notes/computations/scripts/Isometry_Searching_LLM.md`.
 

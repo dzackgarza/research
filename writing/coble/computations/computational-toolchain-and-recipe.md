@@ -1,5 +1,5 @@
 ---
-title: The computational toolchain and the recipe for a  {#sec-computational-toolchain-and-recipe}hyperbolic 2-elementary lattice
+title: The computational toolchain and the recipe for a hyperbolic 2-elementary lattice
 unit: method
 status: reusable
 tags:
@@ -9,7 +9,7 @@ tags:
   - method
 ---
 
-# Toolchain and recipe for a hyperbolic 2-elementary lattice
+# Toolchain and recipe for a hyperbolic 2-elementary lattice {#sec-computational-toolchain-and-recipe}
 
 **Provenance.** Originally `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/sage-scripts/` and `.../notebooks/`, a tree that has since been trashed.
 Nothing of this appears in the dissertation.

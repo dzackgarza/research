@@ -1,5 +1,5 @@
 ---
-title: Candidate isotropic vectors in  {#sec-coble-lattice-isotropic-candidates}T_Co and their transport to T_En and T_dP
+title: Candidate isotropic vectors in T_Co and their transport to T_En and T_dP
 unit: computation
 status: partial
 tags:
@@ -9,7 +9,7 @@ tags:
   - cusps
 ---
 
-# Candidate isotropic vectors in $T_{\Co}$
+# Candidate isotropic vectors in $T_{\Co}$ {#sec-coble-lattice-isotropic-candidates}
 
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/notebooks/Coble Lattice Invariants.ipynb` and `.../sage-scripts/init.sage`. Absent from the dissertation, which contains no Coble lattice at all.
 

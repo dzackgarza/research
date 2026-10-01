@@ -1,5 +1,5 @@
 ---
-title: Sterk's simple-root counts and the computed Vinberg {#sec-sterk-root-counts-and-computed-chambers} chambers
+title: Sterk's simple-root counts and the computed Vinberg chambers
 unit: computation
 status: open
 tags:
@@ -9,7 +9,7 @@ tags:
   - cusps
 ---
 
-# Sterk's simple-root counts and the computed Vinberg chambers
+# Sterk's simple-root counts and the computed Vinberg chambers {#sec-sterk-root-counts-and-computed-chambers}
 
 **Provenance.** `notes/computations/sterk-root-count-discrepancy.md`, recorded 2026-08-20 from the computation in `computations/scripts/init.sage`. The CoxIter data quoted for comparison is that of [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices); the folded diagrams are those of [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams).
 

@@ -150,13 +150,13 @@ In particular it is self-dual, $E_8 \cong \dualof{E_8}$.
 
 ::: {.remark}
 
-The characterization in [the $E_8$ characterization theorem](#thm:E8-characterization) is a classical fact of lattice theory [@CS10].
-The construction of [the $E_n$ lattice definition](#def:lattice-En) exhibits $E_8$ concretely as the overlattice $D_8^+$ of $D_8$ (see [the plus-construction definition](#def:plus-construction) and [the plus-construction theorem](#thm:plus-construction)), which makes both the evenness and the unimodularity transparent.
+The characterization in the $E_8$ characterization theorem (@thm:E8-characterization) is a classical fact of lattice theory [@CS10].
+The construction of the $E_n$ lattice definition (@def:lattice-En) exhibits $E_8$ concretely as the overlattice $D_8^+$ of $D_8$ (see the plus-construction definition (@def:plus-construction) and the plus-construction theorem (@thm:plus-construction)), which makes both the evenness and the unimodularity transparent.
 :::
 
 ## Non-simply-laced root systems
 
-The following root systems carry two root lengths and so are not root lattices in the sense of [the root-lattice definition](#def:root-lattice); we record them for completeness in the Euclidean model.
+The following root systems carry two root lengths and so are not root lattices in the sense of the root-lattice definition (@def:root-lattice); we record them for completeness in the Euclidean model.
 
 ::: {.remark}
 ### Which reflection groups arise from a lattice
@@ -209,7 +209,7 @@ $$
 
 ## The plus construction and $D_8^+ \cong E_8$
 
-The realization of $E_8$ in [the $E_n$ lattice definition](#def:lattice-En) is an instance of a general overlattice construction for the $D_n$ family.
+The realization of $E_8$ in the $E_n$ lattice definition (@def:lattice-En) is an instance of a general overlattice construction for the $D_n$ family.
 
 ::: {.definition #def:plus-construction}
 
@@ -232,7 +232,7 @@ each obtained by adjoining one half-integer coset to $D_n$.
 
 ::: {.theorem #thm:plus-construction}
 
-Let $D_n^+ = D_n\union(v_+ + D_n)$ with $v_+ = \tfrac12(1,\dots,1)$ be the overlattice of [the plus-construction definition](#def:plus-construction).
+Let $D_n^+ = D_n\union(v_+ + D_n)$ with $v_+ = \tfrac12(1,\dots,1)$ be the overlattice of the plus-construction definition (@def:plus-construction).
 
 1. $D_n^+$ is a lattice if and only if $n$ is even.
    For $n$ odd, $2v_+ = (1,\dots,1)\notin D_n$ --- equivalently $[v_+]$ has order $4$ in $A_{D_n}\cong\ZZ/4\ZZ$ --- so the coset union is not closed under addition and is not a lattice.
@@ -247,8 +247,8 @@ Let $D_n^+ = D_n\union(v_+ + D_n)$ with $v_+ = \tfrac12(1,\dots,1)$ be the overl
 
 ::: {.remark}
 
-The properties in [the plus-construction theorem](#thm:plus-construction) are standard for the $D_n$ family [@CS10].
-Because $D_8^+$ is unimodular and contains $D_8$ with index $2$, the even-coordinate-sum sublattice $D_8$ has discriminant group of order $4$; the half-integer coset $v_+ + D_8$ supplies precisely the $128$ half-sum roots of $E_8$ recorded in [the $E_8$ root example](#ex:E8-roots), while the $112$ roots of $D_8$ supply the difference vectors.
+The properties in the plus-construction theorem (@thm:plus-construction) are standard for the $D_n$ family [@CS10].
+Because $D_8^+$ is unimodular and contains $D_8$ with index $2$, the even-coordinate-sum sublattice $D_8$ has discriminant group of order $4$; the half-integer coset $v_+ + D_8$ supplies precisely the $128$ half-sum roots of $E_8$ recorded in the $E_8$ root example (@ex:E8-roots), while the $112$ roots of $D_8$ supply the difference vectors.
 This recovers the count $112 + 128 = 240$ and identifies $E_8$ with $D_8^+$.
 :::
 
