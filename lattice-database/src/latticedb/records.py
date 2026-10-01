@@ -1,8 +1,8 @@
 """The text of a record, and the fields of a record that the Gram tensor determines.
 
-`derive` computes every field that the Gram tensor determines and leaves the
-fields that a person declares: the names, the families, the references, the
-provenance, the genus symbol, the order of the isometry group, and the
+`derive` computes every field that the Gram tensor determines and keeps the
+other stored fields: the names, the families, the references, the genus
+symbol, the order of the isometry group, and the
 `root_span` block of a lattice that is not definite when the search for roots
 does not decide it. `record_text` writes a record in the layout of the
 corpus. A record that is not definite and has no `root_span` block after
@@ -11,7 +11,6 @@ corpus. A record that is not definite and has no `root_span` block after
 
 from fractions import Fraction
 
-import flint
 import yaml
 
 from latticedb import arithmetic, model, roots
@@ -35,13 +34,9 @@ KEYS = (
     "families",
     "related",
     "references",
-    "provenance",
     "hyperbolic",
 )
 """The keys of a record, in the order in which a record lists them."""
-
-COMPUTED_WITH = f"PARI/GP {'.'.join(str(part) for part in arithmetic.pari_version())} through cypari2, python-flint {flint.__version__}"
-"""The software that `derive` computes with."""
 
 
 class Flow(list[Yaml]):
@@ -185,8 +180,7 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     The fields `rank`, `signature`, `determinant` and `definiteness`; the
     blocks `integral`, `definite` and `indefinite`, each present exactly when
     its hypothesis holds; and `root_span` when the record has none and the
-    roots that `roots.small_roots` finds generate `L`. `provenance.computed_with`
-    is set when the record has none.
+    roots that `roots.small_roots` finds generate `L`.
     """
     gram = gram_tensor(record["gram_tensor"])
     rank = len(gram)
@@ -211,7 +205,4 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
             derived["root_span"] = _ordered(span, tuple(model.RootSpan.model_fields))
     if definiteness == "indefinite":
         derived["indefinite"] = _indefinite(gram)
-    provenance = _block(record, "provenance")
-    if "computed_with" not in provenance:
-        derived["provenance"] = _ordered({**provenance, "computed_with": COMPUTED_WITH}, tuple(model.Provenance.model_fields))
     return {key: derived[key] for key in KEYS if key in derived}

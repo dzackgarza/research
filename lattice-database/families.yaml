@@ -1,6 +1,6 @@
 # Every family that a lattice may name, with one sentence of its meaning.
 diagonal: 'The basis is orthogonal: $b(e_i, e_j) = 0$ for $i \neq j$. For example $\langle a \rangle$ and $\mathrm{I}_{p,q}$.'
-root-lattice: A root lattice $A_n$, $D_n$, $E_6$, $E_7$ or $E_8$ in a basis of simple roots, an orthogonal sum of these, the dual lattice of one, or an affine root lattice.
+irreducible-root-lattice: An irreducible root lattice $A_n$, $D_n$, $E_6$, $E_7$ or $E_8$, in the basis of its simple roots.
 root-lattice-sum: An orthogonal sum of two or more root lattices $A_n$, $D_n$, $E_6$, $E_7$, $E_8$, in the union of their bases of simple roots.
 dual-root-lattice: The dual lattice $R^*$ of a root lattice $R$, in the basis of fundamental weights, dual to the basis of simple roots of $R$.
 affine-root-lattice: 'The lattice of an affine root system $\widetilde{A}_n$, $\widetilde{D}_n$, $\widetilde{E}_6$, $\widetilde{E}_7$ or $\widetilde{E}_8$ in the basis of its simple roots: positive semidefinite, with a radical of rank 1.'

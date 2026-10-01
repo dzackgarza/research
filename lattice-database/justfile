@@ -8,7 +8,7 @@
 default:
     @just --list
 
-# Write the record of a new lattice from its Gram tensor: `just new --gram '[[2,1],[1,2]]' --name A2 --latex A_2 --source '...'`
+# Write the record of a new lattice from its Gram tensor: `just new --gram '[[2,1],[1,2]]' --name A2 --latex A_2`
 new *ARGS:
     uv run latticedb new {{ARGS}}
 

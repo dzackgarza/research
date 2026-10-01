@@ -7,7 +7,6 @@ import pytest
 from latticedb.model import Lattice, Morphism, Yaml
 from pydantic import ValidationError
 
-PROVENANCE: dict[str, Yaml] = {"source": "Test record."}
 
 
 def e8() -> dict[str, Yaml]:
@@ -30,7 +29,6 @@ def e8() -> dict[str, Yaml]:
         "signature": [8, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
@@ -55,7 +53,6 @@ def hyperbolic_plane() -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
     }
@@ -76,7 +73,6 @@ def a2_dual() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": "1/3",
         "definiteness": "positive_definite",
-        "provenance": PROVENANCE,
         "definite": {
             "minimum": "2/3",
             "kissing_number": 6,
@@ -98,7 +94,6 @@ def affine_a2() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 0,
         "definiteness": "positive_semidefinite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even"},
     }
 
@@ -114,7 +109,6 @@ def binary_form_of_determinant_19() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 19,
         "definiteness": "positive_definite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [19], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
@@ -138,7 +132,6 @@ def anisotropic_binary() -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -2,
         "definiteness": "indefinite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "odd", "discriminant_group": [2], "overlattice_count": 1},
         "indefinite": {"isotropic": False},
     }
@@ -155,7 +148,6 @@ def square_lattice() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1},
         "definite": {
             "minimum": 1,
@@ -179,7 +171,6 @@ def a6() -> dict[str, Yaml]:
         "signature": [6, 0],
         "determinant": 7,
         "definiteness": "positive_definite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [7], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
@@ -202,7 +193,6 @@ def hyperbolic_plane_plus_a1() -> dict[str, Yaml]:
         "signature": [1, 2],
         "determinant": 2,
         "definiteness": "indefinite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [2], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
     }
@@ -219,7 +209,6 @@ def a2() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 3,
         "definiteness": "positive_definite",
-        "provenance": PROVENANCE,
         "integral": {"parity": "even", "discriminant_group": [3], "overlattice_count": 1},
         "definite": {
             "minimum": 2,
@@ -265,19 +254,6 @@ def test_derived_properties_follow_from_the_record() -> None:
     assert Lattice.model_validate(affine_a2()).nullity == 1
     assert Lattice.model_validate(hyperbolic_plane()).is_hyperbolic
     assert not Lattice.model_validate(e8()).is_hyperbolic
-
-
-def test_the_vectors_of_norm_two_generate_e8_and_a_sublattice_of_index_two_of_the_square_lattice() -> None:
-    assert Lattice.model_validate(e8()).norm_two_span_index == 1
-    square = Lattice.model_validate(square_lattice())
-    assert square.norm_two_span_rank == 2
-    assert square.norm_two_span_index == 2
-
-
-def test_the_index_of_the_span_of_the_vectors_of_norm_two_is_not_stated_when_its_rank_is_less_than_the_rank_of_the_lattice() -> None:
-    lattice = Lattice.model_validate(with_block(binary_form_of_determinant_19(), "definite", root_system=["A1"]))
-    assert lattice.norm_two_span_rank == 1
-    assert lattice.norm_two_span_index is None
 
 
 def test_the_roots_of_a_definite_lattice_are_listed_with_every_value_of_the_form() -> None:
@@ -347,7 +323,6 @@ def test_a_lattice_with_no_roots_has_the_zero_sublattice_as_a_primitive_root_spa
             "signature": [1, 0],
             "determinant": 0,
             "definiteness": "positive_semidefinite",
-            "provenance": PROVENANCE,
             "integral": {"parity": "odd"},
             "root_span": {"roots": []},
         }

@@ -229,12 +229,6 @@ def is_root(gram_tensor: GramTensor, r: Vector) -> bool:
     return _root_norm(_integer_components(gram_tensor)[1], r) is not None
 
 
-def pari_version() -> tuple[int, int, int]:
-    """The version of the PARI library that computes here."""
-    major, minor, patch = _PARI.version()
-    return int(major), int(minor), int(patch)
-
-
 def _positive_integer_form(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...], Gen]:
     """Return `(k, components of k b, PARI matrix of B)` for a definite `b`, where `B = k b` or `B = -k b` is positive definite and integer valued.
 

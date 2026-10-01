@@ -54,18 +54,13 @@ def new(
     gram: Annotated[str, Parameter(help="The components b(e_i, e_j) as JSON rows of integers or strings `p/q`: `[[2, 1], [1, 2]]`.")],
     name: Annotated[str, Parameter(help="Name as plain text.")],
     latex: Annotated[str, Parameter(help="Name as TeX, without math delimiters.")],
-    source: Annotated[str, Parameter(help="Where the Gram tensor comes from, as one or two sentences.")],
     alias: Aliases = (),
     family: Families = (),
-    url: Annotated[str | None, Parameter(help="Address of the source.")] = None,
     reference: Annotated[tuple[str, ...], Parameter(help="A bibliographic citation as plain text; repeat for each one.")] = (),
     prose: Annotated[str, Parameter(help="The notes of the record, in Pandoc Markdown.")] = "",
     root: Root = Path(),
 ) -> None:
     """Write the record of a new lattice: the fields that the Gram tensor determines are computed, the others are the options."""
-    provenance: dict[str, Yaml] = {"source": source}
-    if url is not None:
-        provenance["url"] = url
     declared: dict[str, Yaml] = {
         "name": name,
         "latex": latex,
@@ -74,7 +69,6 @@ def new(
         "families": list(family),
         "related": [],
         "references": [{"citation": citation} for citation in reference],
-        "provenance": provenance,
     }
     print(_admit(root, declared, prose))
 

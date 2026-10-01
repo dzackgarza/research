@@ -38,7 +38,6 @@ from latticedb.model import (
     Lattice,
     Morphism,
     Morphisms,
-    Provenance,
     Record,
     Reference,
     Related,
@@ -521,7 +520,6 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     yield "Roots of a lattice that is not definite", "root_span", RootSpan
     yield "Related lattice", "related[]", Related
     yield "Reference", "references[]", Reference
-    yield "Provenance", "provenance", Provenance
     yield "Morphisms between two lattices", "morphisms/<S>-<T>.md", Morphisms
     yield "Morphism", "morphisms[]", Morphism
 

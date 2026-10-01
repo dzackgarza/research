@@ -103,10 +103,6 @@ def record(entry: Entry, name: str, latex: str, aliases: tuple[str, ...], famili
         "families": [FAMILY, *(family for family in families if family != FAMILY)],
         "related": [],
         "references": [{"citation": f"G. Nebe and N. J. A. Sloane, Catalogue of Lattices, entry {entry.name}.", "url": entry.url}],
-        "provenance": {
-            "source": f"Catalogue of Lattices (G. Nebe, N. J. A. Sloane), entry {entry.name}. The invariants were computed again from the Gram tensor.",
-            "url": entry.url,
-        },
     }
     prose = f"The components $b(e_i, e_j)$ are those of the section `GRAM` of the entry `{entry.name}` of the Catalogue of Lattices."
     if entry.references:

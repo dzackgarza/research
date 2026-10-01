@@ -20,7 +20,6 @@ def rank_one(tag: str) -> dict[str, Yaml]:
         "signature": [1, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "provenance": {"source": "Test record."},
         "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1},
         "definite": {
             "minimum": 1,
@@ -43,7 +42,6 @@ def hyperbolic_plane(summands: list[dict[str, str | int]]) -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
-        "provenance": {"source": "Test record."},
         "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
         "root_span": {"roots": [[1, 1], [1, -1]], "summands": summands, "embedding": [[1, 1], [1, -1]]},
@@ -130,7 +128,6 @@ def rank_three(tag: str, name: str, gram_tensor: list[list[int]]) -> dict[str, Y
         "signature": [3, 0],
         "determinant": 4,
         "definiteness": "positive_definite",
-        "provenance": {"source": "Test record."},
         "integral": {"parity": "even", "discriminant_group": [4], "overlattice_count": 2},
         "definite": {
             "minimum": 2,
@@ -166,7 +163,7 @@ def test_isometry_of_definite_lattices_is_decided_on_the_gram_tensors() -> None:
 
 def square_sum() -> dict[str, Yaml]:
     """<1> + <1>, with the fields that its Gram tensor determines computed by `records.derive`."""
-    declared: dict[str, Yaml] = {"tag": "0002", "name": "<1>^2", "latex": r"\langle 1 \rangle^2", "gram_tensor": [[1, 0], [0, 1]], "provenance": {"source": "Test record."}}
+    declared: dict[str, Yaml] = {"tag": "0002", "name": "<1>^2", "latex": r"\langle 1 \rangle^2", "gram_tensor": [[1, 0], [0, 1]]}
     return records.derive(declared)
 
 

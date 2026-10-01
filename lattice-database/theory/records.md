@@ -12,6 +12,7 @@ Its Markdown body holds the notes: the construction of the lattice, the source o
 ## Computed values {#computed}
 
 Each invariant on the page of a lattice is computed from the Gram tensor with exact arithmetic, except a declared value.
+The genus symbol is computed with `Genus` of SageMath, and the order of the isometry group with `qfauto` of PARI/GP.
 
 ## Declared values {#declared}
 

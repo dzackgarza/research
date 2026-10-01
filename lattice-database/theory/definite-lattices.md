@@ -40,10 +40,10 @@ $O(L)$ permutes $V_c$, and an isometry is determined by its values on that basis
 $-1 \in O(L)$ has order 2 for $L \neq 0$.
 :::
 
-The order is [declared](records.html#declared); the notes cite its source.
+The order is computed with `qfauto` of PARI/GP.
 
 ## Vectors of norm 2 {#norm-two}
 
 $\Phi_{\{2\}}(L) = \{r \in L : b(r, r) = 2\}$ is a set of [roots](roots.html#roots).
-By [Witt's theorem](roots.html#definite), $\mathbb{Z}\Phi_{\{2\}}(L)$ is an orthogonal sum of lattices $A_n$, $D_n$, $E_6$, $E_7$ and $E_8$, and the page of an integral lattice states its type.
+By [Witt's theorem](roots.html#definite), $\mathbb{Z}\Phi_{\{2\}}(L)$ is an orthogonal sum of lattices $A_n$, $D_n$, $E_6$, $E_7$ and $E_8$, and the [database](../database.html) states its type for each integral lattice.
 The full set of roots $\Phi(L)$ is a [root system](roots.html#definite), with components and simple roots.

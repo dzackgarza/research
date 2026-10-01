@@ -102,12 +102,6 @@ class Reference(Record):
     url: str | None = Field(default=None, description="Address of the source, when it has one.")
 
 
-class Provenance(Record):
-    source: str = Field(description="Source of the Gram tensor and of the declared values.")
-    url: str | None = Field(default=None, description="Address of the source record, when it has one.")
-    computed_with: str | None = Field(default=None, description="Software that computed the invariants.")
-
-
 class IntegralData(Record):
     """Invariants of a lattice whose form takes integer values. Required when every $b(e_i, e_j)$ is an integer."""
 
@@ -267,28 +261,6 @@ def theta_bound(rank: int, minimum: Fraction) -> int:
     return max(int(minimum), default)
 
 
-def _root_determinant(component: str) -> int:
-    """Determinant of the root lattice of an irreducible simply laced root system.
-
-    Conway and Sloane, Sphere Packings, Lattices and Groups, 3rd ed., Chapter 4, sections 6 to 8.
-    """
-    family, index = component[0], int(component[1:])
-    match family:
-        case "A":
-            return index + 1
-        case "D":
-            return 4
-        case _:
-            return {6: 3, 7: 2, 8: 1}[index]
-
-
-def _squared_root_sublattice_index(roots: tuple[str, ...], rank: int, determinant: Fraction) -> Fraction | None:
-    """$[L : \\mathbb{Z}\\Phi_{\\{2\\}}(L)]^2 = \\det(\\mathbb{Z}\\Phi_{\\{2\\}}(L)) / \\det(L)$, when $\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ has the rank of $L$."""
-    if sum(int(component[1:]) for component in roots) != rank:
-        return None
-    return Fraction(math.prod(_root_determinant(component) for component in roots)) / abs(determinant)
-
-
 class Lattice(Record):
     tag: Tag = Field(description="Permanent identifier: four characters from 0-9 and A-Z. The file name is the tag.")
     name: str = Field(description="Name as plain text, for search.")
@@ -318,7 +290,6 @@ class Lattice(Record):
     families: Annotated[tuple[Family, ...], Field(strict=False)] = Field(default=(), description="Named families that contain the lattice.")
     related: Annotated[tuple[Related, ...], Field(strict=False)] = Field(default=(), description="Related lattices in the catalogue.")
     references: Annotated[tuple[Reference, ...], Field(strict=False)] = Field(default=(), description="Literature for the lattice.")
-    provenance: Provenance = Field(description="Source of the Gram tensor and of the declared values.")
     integral: IntegralData | None = Field(default=None, description=IntegralData.__doc__)
     definite: DefiniteData | None = Field(default=None, description=DefiniteData.__doc__)
     indefinite: IndefiniteData | None = Field(default=None, description=IndefiniteData.__doc__)
@@ -344,21 +315,6 @@ class Lattice(Record):
     @property
     def is_hyperbolic(self) -> bool:
         return self.is_nondegenerate and self.rank >= 2 and min(self.signature) == 1
-
-    @property
-    def norm_two_span_rank(self) -> int | None:
-        """The rank of $\\mathbb{Z}\\Phi_{\\{2\\}}(L)$, when the record states `root_system`."""
-        if self.definite is None or self.definite.root_system is None:
-            return None
-        return sum(int(component[1:]) for component in self.definite.root_system)
-
-    @property
-    def norm_two_span_index(self) -> int | None:
-        """$[L : \\mathbb{Z}\\Phi_{\\{2\\}}(L)]$, when the record states `root_system` and $\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ has the rank of $L$."""
-        if self.definite is None or self.definite.root_system is None:
-            return None
-        squared = _squared_root_sublattice_index(self.definite.root_system, self.rank, self.determinant)
-        return None if squared is None else math.isqrt(squared.numerator)
 
     @cached_property
     def positive_roots(self) -> dict[Vector, Fraction]:
