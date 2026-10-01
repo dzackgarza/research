@@ -5,7 +5,7 @@ A *lattice* here is a free module $L$ of finite rank over $\mathbb{Z}$ with a sy
 The form can be definite, indefinite or degenerate, and its values need not be integers.
 
 Each lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it.
-The build validates every record, writes one page for each lattice, and writes the union of the records as one table that the database page filters, sorts and exports.
+The build validates every record, writes one page for each lattice, and writes one table, with one row per record, that the database page filters, sorts and exports.
 
 The site is served at <http://lattice-database.localhost/>.
 
@@ -68,7 +68,7 @@ The corpus records a lattice once, up to twist and sign.
 For an integer $n$, the twist $L(n)$ is the module of $L$ with the form $nb$.
 A Gram tensor that is $n$ times a Gram tensor with integer components for some $n \geq 2$, or that is zero, is refused: the lattice is $M(n)$ for the lattice $M$ with Gram tensor $b/n$, and the corpus records $M$.
 So $\langle 1 \rangle$ is a record and $A_1 = \langle 1 \rangle(2)$ is not; $E_8$ is a record and $E_8(2)$ is not; $U$ is a record and $U(2)$ is not.
-Of $L$ and $L(-1)$ the corpus records one: the positive one when $b(x, x)$ has one sign, and the one with signature $(n_+, n_-)$, $n_+ \leq n_-$, when it has both.
+Of $L$ and $L(-1)$ the corpus records one: the one with $b(x, x) \geq 0$ for all $x$ when $b$ is definite or semidefinite, and the one with signature $(n_+, n_-)$, $n_+ \leq n_-$, when $b$ is indefinite.
 So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature $(1, 9)$, is a record.
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
@@ -98,10 +98,9 @@ For $U(2)$ the count is 4, and 3 of the 4 lattices are even.
 The build enumerates the subgroups of $A_L$, so the field is required exactly when the determinant is not zero and $A_L$ has at most 100000 subgroups.
 A record without it is not decided, and its page says so: $(\mathbb{Z}/2)^8$ has 417199 subgroups.
 
-The page `fields.html` of the site documents every field.
-The build generates it from the schema, so it states what the validators enforce.
+`fields.html` is generated from `model.py`.
 
-The fields that a person writes follow these conventions, so that the database reads as one hand wrote it:
+The fields that a person writes follow these conventions:
 
 | Field | Convention | Examples |
 | --- | --- | --- |
@@ -157,7 +156,7 @@ To add a lattice:
 4. `just build` validates the corpus and builds the site.
    It prints each problem of each record with the path of the file and the field.
 
-The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`. Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree, so the check costs nothing on a corpus without such a pair.
+The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`. Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree.
 
 `just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
 Run it after a change to the computation, and read the diff.
@@ -217,7 +216,7 @@ The build fails for a key that no row has and for a collection with no member.
 
 ## Theory pages
 
-A file `theory/<slug>.md` gives the page `theory/<slug>.html`, and `theory.html` lists these pages in the order of `order`. Each definition and convention of the site is stated on one theory page, under a heading with an explicit anchor such as `{#signature}`. A lattice page, a collection page, a morphism page and the prose of a record link to that anchor; they do not state the definition again.
+A file `theory/<slug>.md` gives the page `theory/<slug>.html`, and `theory.html` lists these pages in the order of `order`. Each definition and convention of the site is stated on one theory page, under a heading with an explicit anchor such as `{#signature}`. A lattice page, a collection page, a morphism page and the prose of a record link to that anchor.
 
 ```yaml
 ---

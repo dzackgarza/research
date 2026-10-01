@@ -1,13 +1,13 @@
-# Every family that a record may name, with one line of meaning. The build rejects a record whose family is not here.
-diagonal: 'The basis is orthogonal: $b(e_i, e_j) = 0$ for $i \neq j$. The lattices $\langle a \rangle$ and $\mathrm{I}_{p,q}$.'
-root-lattice: A root lattice $A_n$, $D_n$ or $E_n$ in a basis of simple roots, an orthogonal sum of these, the dual lattice of one, or an affine root lattice.
-root-lattice-sum: An orthogonal sum of two or more root lattices $A_n$, $D_n$, $E_n$, in the union of their bases of simple roots.
+# Every family that a lattice may name, with one sentence of its meaning.
+diagonal: 'The basis is orthogonal: $b(e_i, e_j) = 0$ for $i \neq j$. For example $\langle a \rangle$ and $\mathrm{I}_{p,q}$.'
+root-lattice: A root lattice $A_n$, $D_n$, $E_6$, $E_7$ or $E_8$ in a basis of simple roots, an orthogonal sum of these, the dual lattice of one, or an affine root lattice.
+root-lattice-sum: An orthogonal sum of two or more root lattices $A_n$, $D_n$, $E_6$, $E_7$, $E_8$, in the union of their bases of simple roots.
 dual-root-lattice: The dual lattice $R^*$ of a root lattice $R$, in the basis of fundamental weights, dual to the basis of simple roots of $R$.
-affine-root-lattice: 'The lattice of an affine root system $\widetilde{A}_n$, $\widetilde{D}_n$ or $\widetilde{E}_n$ in the basis of its simple roots: positive semidefinite, with a radical of rank 1.'
-even-unimodular: 'Even and unimodular: $\mathrm{II}_{p,q}$ with $p - q \equiv 0 \pmod 8$, as an orthogonal sum $U^{s} \oplus E_8(-1)^{t}$.'
-r-plus-a-22: An even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$ and $r + a = 22$, the lattices of Theorem 1.1 of Alexeev, arXiv:2209.09110, except $(11, 11, 1) = \mathrm{I}_{1,10}(2)$, a twist.
+affine-root-lattice: 'The lattice of an affine root system $\widetilde{A}_n$, $\widetilde{D}_n$, $\widetilde{E}_6$, $\widetilde{E}_7$ or $\widetilde{E}_8$ in the basis of its simple roots: positive semidefinite, with a radical of rank 1.'
+even-unimodular: 'Even and unimodular: an orthogonal sum $U^{s} \oplus E_8(-1)^{t}$ with $s \geq 1$, of signature $(s, s + 8t)$.'
+r-plus-a-22: An even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$ and $r + a = 22$, the lattices of Theorem 1.1 of Alexeev, arXiv:2209.09110, except $(r, a, \delta) = (11, 11, 1)$, whose lattice is isometric to the twist $\mathrm{I}_{1,10}(2)$.
 laminated: A laminated lattice $\Lambda_n$ of Conway and Sloane, in the basis of its entry of the Catalogue of Lattices.
-nebe-sloane-catalogue: An entry of the Catalogue of Lattices of G. Nebe and N. J. A. Sloane, with the Gram tensor as the entry states it, written by `latticedb nebe-sloane`.
-nikulin-two-elementary: 'An even hyperbolic 2-elementary lattice of signature $(1, r - 1)$ with discriminant group $(\mathbb{Z}/2)^a$, named by its invariants $(r, a, \delta)$: one of the 75 invariant lattices of nonsymplectic involutions of K3 surfaces that Nikulin classifies (Math. USSR-Izv. 14 (1980), DOI 10.1070/IM1980v014n01ABEH001060). The 13 with $a = r$ are each $M(2)$ for a unimodular $M$, a twist, and are not records.'
+nebe-sloane-catalogue: An entry of the Catalogue of Lattices of G. Nebe and N. J. A. Sloane, with the Gram tensor as the entry states it.
+nikulin-two-elementary: 'An even hyperbolic 2-elementary lattice of signature $(1, r - 1)$ with discriminant group $(\mathbb{Z}/2)^a$, named by its invariants $(r, a, \delta)$: one of the 75 invariant lattices of nonsymplectic involutions of K3 surfaces that Nikulin classifies (Math. USSR-Izv. 14 (1980), DOI 10.1070/IM1980v014n01ABEH001060). The 13 with $a = r$ are the twists $M(2)$ of unimodular lattices $M$; the catalogue holds $M$.'
 beauville-bogomolov: $H^2(Y, \mathbb{Z})$ with the Beauville-Bogomolov form, for $Y$ an irreducible holomorphic symplectic variety of one of the known deformation types $S^{[n]}$, $K_n(T)$, OG6, OG10, as the table of the introduction of Rapagnetta, arXiv:math/0606409, states it.
-polarized-k3: The lattice $L_{2d} = U^2 \oplus E_8(-1)^2 \oplus \langle -2d \rangle$, the orthogonal complement in $\mathrm{II}_{3,19}$ of a primitive vector $h$ with $b(h, h) = 2d$, on which the period domain of K3 surfaces with a polarization of degree $2d$ is built.
+polarized-k3: The lattice $L_{2d} \cong U^2 \oplus E_8(-1)^2 \oplus \langle -2d \rangle$, the orthogonal complement in $\mathrm{II}_{3,19}$ of a primitive vector $h$ with $b(h, h) = 2d$; the period domain of K3 surfaces with a polarization of degree $2d$ is defined from it.

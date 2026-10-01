@@ -76,7 +76,7 @@ class Record(BaseModel):
 
 class Related(Record):
     tag: Tag = Field(description="Tag of another lattice in the catalogue.")
-    relation: str = Field(description="How that lattice is related to this one, as a short phrase.")
+    relation: str = Field(description="One sentence that states how that lattice is related to this one.")
 
 
 class Summand(Record):
@@ -103,9 +103,9 @@ class Reference(Record):
 
 
 class Provenance(Record):
-    source: str = Field(description="Where the Gram tensor and the recorded invariants come from.")
+    source: str = Field(description="Source of the Gram tensor and of the declared values.")
     url: str | None = Field(default=None, description="Address of the source record, when it has one.")
-    computed_with: str | None = Field(default=None, description="Software that computed the recorded invariants.")
+    computed_with: str | None = Field(default=None, description="Software that computed the invariants.")
 
 
 class IntegralData(Record):
@@ -125,7 +125,7 @@ class IntegralData(Record):
             "The number of integral lattices $M$ with $L \\subseteq M \\subseteq L^*$, with $M = L$ counted: the number of subgroups $H$ of the discriminant group "
             "$A_L = L^*/L$ with $b_{A_L}(H, H) = 0$, for the form $b_{A_L}(x + L, y + L) = b(x, y) + \\mathbb{Z}$ with values in $\\mathbb{Q}/\\mathbb{Z}$. "
             "Subgroups are counted, not their orbits under the isometries of $L$. An even $L$ can have odd lattices among the $M$. "
-            f"Required when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; a record without it is not decided."
+            f"Required when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; otherwise absent, and the count is not decided."
         ),
     )
     genus_symbol: str | None = Field(
@@ -148,15 +148,15 @@ class RootSystemComponent(Record):
     )
     scale: Rational = Field(
         description=(
-            "The $k \\neq 0$ such that a short root $r$ of the component has $b(r, r) = 2k$. "
+            "The $k \\neq 0$ with $b(r, r) = 2k$ for each short root $r$ of the component. "
             "The simple roots have $b(\\alpha_i, \\alpha_j) = k\\,(\\alpha_i, \\alpha_j)$, "
-            "where $(\\alpha_i, \\alpha_j)$ is the entry of the symmetrized Cartan matrix of the type in which a short root has norm 2. "
+            "where $(\\alpha_i, \\alpha_j)$ is the entry of the symmetrized Cartan matrix of the type, normalized so that $(r, r) = 2$ for a short root $r$. "
             "$k$ is negative on a negative definite lattice."
         )
     )
     simple_roots: Annotated[tuple[IntegerVector, ...], Field(strict=False)] = Field(
         description=(
-            "Row $i$ lists the coordinates of the simple root $\\alpha_i$ in the basis $e_1, \\dots, e_n$ of the record. "
+            "Row $i$ lists the coordinates of the simple root $\\alpha_i$ in the chosen basis $e_1, \\dots, e_n$. "
             "The simple roots are numbered as SageMath's `CartanMatrix` numbers them. "
             "The rows of all components are a basis of $\\mathbb{Z}\\Phi(L)$: "
             "they are the matrix of the embedding into $L$ of the orthogonal sum of the root lattices of the components."
@@ -167,32 +167,31 @@ class RootSystemComponent(Record):
 class DefiniteData(Record):
     """Invariants of a definite lattice. They are stated for a positive definite form; on a negative definite lattice they are the invariants of $-b$."""
 
-    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$. The build computes it and rejects another value.")
-    kissing_number: int = Field(
-        description="Number of $x$ with $b(x, x)$ equal to the minimum. The number is finite because the form is definite. The build computes it and rejects another value."
-    )
-    automorphism_group_order: int | None = Field(
-        default=None, description="Order of the group of isometries of the lattice. Declared: the build checks only that it is even, and the prose gives its source."
-    )
+    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$. Verified against the Gram tensor.")
+    kissing_number: int = Field(description="Number of $x$ with $b(x, x)$ equal to the minimum; finite because $b$ is definite. Verified against the Gram tensor.")
+    automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$. Declared; the notes cite its source.")
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
             "Entry $k$ is the number of $x$ with $b(x, x) = k$, for $k = 0, 1, 2, \\dots$ Required for, and only for, integer values. "
-            "The build computes every entry and rejects another value; `latticedb new` writes the entries past the minimum, further for small ranks."
+            "Each entry is verified against the Gram tensor. `latticedb new` writes the entries for $k \\leq \\max(\\mu, N)$, "
+            "where $\\mu$ is the minimum and $N$ is 12, 8, 6 or 4 for rank at most 4, at most 8, at most 12, or greater."
         ),
     )
     root_system: Annotated[tuple[AdeType, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
-            "ADE type of $\\Phi_{\\{2\\}}(L) = \\{r \\in L : b(r, r) = 2\\}$, as irreducible components in any order: `[E8]`, `[A1, A1]`, or `[]` when it is empty. "
-            "$\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components (Witt's theorem); it is not primitive in $L$ in general. "
-            "The field `roots` states all of $\\Phi(L)$. Required for, and only for, integer values. The build computes it and rejects another value."
+            "ADE type of $\\Phi_{\\{2\\}}(L) = \\{r \\in L : b(r, r) = 2\\}$, as irreducible components in any order: `[E8]`, `[A1, A1]`, or `[]` "
+            "when it is empty. "
+            "By Witt's theorem (Conway and Sloane, *Sphere Packings, Lattices and Groups*, 3rd edition, Chapter 4, §3), "
+            "$\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components. "
+            "Required for, and only for, integer values. Verified against the Gram tensor."
         ),
     )
     roots: Annotated[tuple[RootSystemComponent, ...], Field(strict=False)] = Field(
         description=(
             "The root system $\\Phi(L)$ as its irreducible components, each with a base; `[]` when $L$ has no roots. "
-            "The build lists the roots of $L$, and it rejects a declaration that is not $\\Phi(L)$. `latticedb new` writes the field."
+            "Verified against the enumerated $\\Phi(L)$. `latticedb new` writes the field."
         ),
     )
 
@@ -210,12 +209,12 @@ class HyperbolicData(Record):
 
 
 class RootSpan(Record):
-    """$\\mathbb{Z}\\Phi(L)$ for a lattice that is not definite. On a definite lattice the build lists $\\Phi(L)$, and this block is an error."""
+    """$\\mathbb{Z}\\Phi(L)$ for a lattice that is not definite. Present only when $b$ is not definite."""
 
     roots: Annotated[tuple[IntegerVector, ...], Field(strict=False)] = Field(
         description=(
-            "Roots of $L$ that generate $\\mathbb{Z}\\Phi(L)$: each row lists the coordinates of one root in the basis $e_1, \\dots, e_n$ of the record. "
-            "`[]` when $L$ has no roots. The build checks that each row is a root. "
+            "Roots of $L$ that generate $\\mathbb{Z}\\Phi(L)$: each row lists the coordinates of one root in the chosen basis $e_1, \\dots, e_n$. "
+            "`[]` when $L$ has no roots. Each row is verified to be a root. "
             "When the rows generate $L$, that proves $L = \\mathbb{Z}\\Phi(L)$. "
             "When they do not, the notes of the record prove that each root of $L$ is in the sublattice that the rows generate."
         )
@@ -225,15 +224,15 @@ class RootSpan(Record):
         description=(
             "Lattices $M_1(k_1), M_2(k_2), \\dots$, each a record with a scale, "
             "with $\\mathbb{Z}\\Phi(L) \\cong M_1(k_1) \\oplus M_2(k_2) \\oplus \\cdots$, an orthogonal sum. "
-            "Stated together with `embedding`. A root lattice does not state it: $\\mathbb{Z}\\Phi(L)$ is $L$."
+            "Present exactly when `embedding` is present. Absent when $L = \\mathbb{Z}\\Phi(L)$."
         ),
     )
     embedding: Annotated[tuple[IntegerVector, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
             "Matrix of an isometric embedding $M_1 \\oplus M_2 \\oplus \\cdots \\to L$ with image $\\mathbb{Z}\\Phi(L)$: "
-            "the rows list the coordinates of the images of the basis vectors of the records of $M_1, M_2, \\dots$, in that order. "
-            "The build checks that the rows have the Gram tensor of the orthogonal sum, and that they generate the sublattice that `roots` generates."
+            "the rows list the coordinates of the images of the chosen basis vectors of $M_1$, then of $M_2$, and so on. "
+            "The rows are verified to have the Gram tensor of the orthogonal sum and to generate the sublattice that `roots` generates."
         ),
     )
 
@@ -312,13 +311,14 @@ class Lattice(Record):
     definiteness: Definiteness = Field(
         description=(
             "`positive_definite` or `negative_definite` when $b(x, x)$ has one sign on nonzero $x$; `indefinite` when it takes both signs; "
-            "`positive_semidefinite` or `negative_semidefinite` when it has one sign and the determinant is zero; `zero` when $b = 0$."
+            "`positive_semidefinite` when $b(x, x) \\geq 0$ for all $x$, $b \\neq 0$ and the determinant is zero, "
+            "and `negative_semidefinite` with $\\leq$; `zero` when $b = 0$."
         )
     )
     families: Annotated[tuple[Family, ...], Field(strict=False)] = Field(default=(), description="Named families that contain the lattice.")
     related: Annotated[tuple[Related, ...], Field(strict=False)] = Field(default=(), description="Related lattices in the catalogue.")
     references: Annotated[tuple[Reference, ...], Field(strict=False)] = Field(default=(), description="Literature for the lattice.")
-    provenance: Provenance = Field(description="Origin of the record.")
+    provenance: Provenance = Field(description="Source of the Gram tensor and of the declared values.")
     integral: IntegralData | None = Field(default=None, description=IntegralData.__doc__)
     definite: DefiniteData | None = Field(default=None, description=DefiniteData.__doc__)
     indefinite: IndefiniteData | None = Field(default=None, description=IndefiniteData.__doc__)
@@ -760,7 +760,7 @@ def _subdivision_problems(lines: Vector, size: int, location: tuple[str, ...]) -
 class Morphism(Record):
     """A morphism $\\varphi \\colon S \\to T$ of lattices: a $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = b_S(x, y)$.
 
-    Its matrix is in the bases of the records of $S$ and $T$, which list the orthogonal summands in the order of their names.
+    Its matrix is in the chosen bases of $S$ and $T$, which list the orthogonal summands in the order of their names.
     """
 
     name: str = Field(description="Name as plain text; TeX between `$` signs is rendered.")
@@ -768,7 +768,7 @@ class Morphism(Record):
     matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = Field(
         description=(
             "Matrix of $\\varphi$, with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\\varphi(e_j)$ "
-            "in the basis of the record of $T$. The build checks that $M^{\\top} G_T M = G_S$ for the Gram tensors $G_S$, $G_T$. "
+            "in the chosen basis of $T$. Verified: $M^{\\top} G_T M = G_S$ for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$. "
             "A SageMath morphism `phi` gives `phi.matrix().transpose()`, because SageMath lists the images in rows."
         )
     )
@@ -776,12 +776,15 @@ class Morphism(Record):
         default=(),
         description=(
             "Lines between the rows, as `M.subdivisions()` of SageMath states them: a line $k$ lies between rows $k$ and $k + 1$. "
-            "The build checks that the parts are orthogonal summands of $T$."
+            "The basis vectors of $T$ between two consecutive lines span an orthogonal summand of $T$; this is verified."
         ),
     )
     column_subdivisions: IntegerVector = Field(
         default=(),
-        description="Lines between the columns, in the same way. The build checks that the parts are orthogonal summands of $S$.",
+        description=(
+            "Lines between the columns: a line $k$ lies between columns $k$ and $k + 1$. "
+            "The basis vectors of $S$ between two consecutive lines span an orthogonal summand of $S$; this is verified."
+        ),
     )
 
     @model_validator(mode="after")

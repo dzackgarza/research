@@ -1,23 +1,23 @@
 ---
 title: Records
-summary: What a record states, which values the build computes, and which values a person declares.
+summary: Source files, computed values, declared values, and values that are not decided.
 order: 1
 ---
 
 ## Records {#records}
 
-Each lattice of the catalogue has a permanent tag and one record, the file `lattices/<TAG>.md`. Its front matter states the [Gram tensor](lattices.html#gram-tensor) in the basis of the record and the invariants; the [fields page](../fields.html) gives the schema.
-Its Markdown body holds the notes: the construction of the lattice, the source of each declared value, and the proofs that the build does not check.
+Each lattice of the catalogue has a permanent tag and a source file `lattices/<TAG>.md`. Its YAML front matter stores the [Gram tensor](lattices.html#gram-tensor) in the chosen basis and the invariants, in the [fields](../fields.html) of the schema.
+Its Markdown body holds the notes: the construction of the lattice, the source of each declared value, and the proofs of the statements that are not computed.
 
 ## Computed values {#computed}
 
-The build computes each invariant on the page of a lattice from the Gram tensor, and it rejects a record that states another value.
+Each invariant on the page of a lattice is computed from the Gram tensor with exact arithmetic, except a declared value.
 
 ## Declared values {#declared}
 
-A value marked *declared* is one that a person declared, and the notes give its source.
-The build does not compute it.
+A value marked *declared* is not computed; the notes cite its source.
 
 ## Values that are not decided {#not-decided}
 
-A record that does not state a value leaves it *not decided*. The page of the lattice says so; it does not say that the property fails.
+A value that the source file does not state is *not decided*, and the page of the lattice shows it so.
+Not decided does not mean that the property fails.

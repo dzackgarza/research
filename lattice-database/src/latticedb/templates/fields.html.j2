@@ -1,12 +1,13 @@
 {% extends "base.html.j2" %}
+{% from "macros.html.j2" import theory with context %}
 {% block title %}Fields · {% endblock %}
 {% block main %}
 <header class="page-heading">
   <h1>Fields</h1>
   <p class="lede">
-    A record is the YAML front matter of <code>lattices/&lt;TAG&gt;.md</code>. The build checks each declaration against the
-    components of the Gram tensor, and it rejects a record that is not well defined. An invariant that exists only under a
-    hypothesis is in the block for that hypothesis, and a block on a lattice that does not satisfy the hypothesis is an error.
+    Each lattice is stored as <code>lattices/&lt;TAG&gt;.md</code>; these fields are its YAML front matter.
+    A field that exists only under a hypothesis on \(b\) sits under the key named for that hypothesis,
+    and that key is present exactly when the hypothesis holds.
   </p>
 </header>
 {% for heading, key, description, model_fields in models %}
@@ -31,14 +32,14 @@
 {% endfor %}
 <section aria-labelledby="properties">
   <h2 id="properties">Properties</h2>
-  <p>The build derives the properties of a lattice from its record. The database page filters by them, and a collection page can select by them.</p>
+  <p>Each property below is computed from the Gram tensor.</p>
   <div class="table-scroll">
     <table class="field-table">
       <thead><tr><th scope="col">Property</th><th scope="col">Meaning</th></tr></thead>
       <tbody>
-        {% for label, meaning in property_meanings.items() %}
+        {% for label, (page, anchor, meaning) in property_meanings.items() %}
         <tr>
-          <th scope="row">{{ label }}</th>
+          <th scope="row">{{ theory(page, anchor, label) }}</th>
           <td>{{ meaning | inline_markup }}</td>
         </tr>
         {% endfor %}
@@ -48,7 +49,6 @@
 </section>
 <section aria-labelledby="families">
   <h2 id="families">Families</h2>
-  <p>A record names its families in <code>families</code>. <code>families.yaml</code> lists every family with one line of its meaning, and the build rejects a record that names a family not listed there.</p>
   <div class="table-scroll">
     <table class="field-table">
       <thead><tr><th scope="col">Family</th><th scope="col">Lattices</th><th scope="col">Meaning</th></tr></thead>

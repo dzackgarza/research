@@ -5,5 +5,5 @@ where:
   properties: [hyperbolic]
 ---
 
-The members are the [hyperbolic](../theory/indefinite-lattices.html#hyperbolic) lattices of the catalogue.
-A record of a hyperbolic lattice can hold the `hyperbolic` block; the schema rejects that block on every other record.
+A lattice of rank $n + 1 \geq 2$ is [hyperbolic](../theory/indefinite-lattices.html#hyperbolic) when it is nondegenerate of signature $(1, n)$ or $(n, 1)$.
+The page of each member states whether it is [reflective](../theory/indefinite-lattices.html#reflective), when this is known.

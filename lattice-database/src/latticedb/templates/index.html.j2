@@ -5,7 +5,7 @@
   <h1>Lattice Database</h1>
   <p class="lede">
     A catalogue of {{ total }} {{ theory("lattices", "lattices", "lattices") }} of rank {{ by_rank | first }} to {{ by_rank | last }}.
-    Each lattice has a permanent tag and one page. The <a href="{{ root }}theory.html">theory pages</a> define each notion that the pages use.
+    Each lattice has a permanent <a href="{{ root }}tags.html">tag</a>.
   </p>
 </header>
 
@@ -15,7 +15,6 @@
     <input id="search-input" type="search" name="q" placeholder="E8, laminated, 2-elementary, (1, 17), …" autocomplete="off">
     <button type="submit">Search</button>
   </div>
-  <p class="form-note">The <a href="{{ root }}database.html">database</a> filters and sorts all records by rank, signature, determinant, definiteness and the other invariants.</p>
 </form>
 
 <section aria-labelledby="by-rank">

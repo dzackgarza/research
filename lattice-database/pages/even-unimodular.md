@@ -5,4 +5,4 @@ where:
   properties: [even, unimodular]
 ---
 
-The members are the [even](../theory/lattices.html#integral) [unimodular](../theory/discriminant-forms.html#unimodular) lattices of the catalogue.
+Each member is [even](../theory/lattices.html#integral) and [unimodular](../theory/discriminant-forms.html#unimodular).

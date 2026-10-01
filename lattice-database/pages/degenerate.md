@@ -5,5 +5,5 @@ where:
   properties: [degenerate]
 ---
 
-The members are the [degenerate](../theory/lattices.html#degenerate) lattices of the catalogue.
-The schema rejects the discriminant group and the genus symbol on these records.
+A lattice is [degenerate](../theory/lattices.html#degenerate) when its radical is nonzero.
+Its discriminant group and genus symbol are undefined.

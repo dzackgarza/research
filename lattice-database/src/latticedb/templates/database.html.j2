@@ -29,12 +29,10 @@
 <header class="page-heading">
   <h1>Database</h1>
   <p class="lede">
-    All {{ total }} records as one table. The panes filter by rank, definiteness, property and family.
-    The condition builder makes a query on any column, such as \(n_- = 1\) and determinant \(> -8\).
-    The minimum, the kissing number, the order of the isometry group and the types of \(\Phi_{\{\pm 2\}}(L)\) and \(\Phi(L)\) are recorded for definite lattices only.
-    The column <em>Integral overlattices</em> counts the {{ theory("overlattices", "overlattices", "integral overlattices") }}; it is empty where the record does not decide it.
-    {{ theory("roots", "root-sublattices", "Roots") }} defines \(R(L) = \mathbb{Z}\Phi(L)\).
-    <a href="{{ root }}fields.html">Fields</a> defines each column and each property.
+    Every lattice of the catalogue, with its invariants.
+    The minimum, the kissing number, the order of the isometry group and the types of \(\Phi_{\{2\}}(L)\) and \(\Phi(L)\) are columns of the {{ theory("lattices", "definiteness", "definite") }} lattices.
+    An empty cell in <em>Integral overlattices</em> is {{ theory("records", "not-decided", "not decided") }}.
+    Each column is defined on the <a href="{{ root }}fields.html">fields</a> page; \(R(L) = \mathbb{Z}\Phi(L)\) is the {{ theory("roots", "root-sublattices", "root sublattice") }}.
   </p>
 </header>
 <table id="lattice-table" class="display compact" style="width: 100%">
@@ -51,13 +49,13 @@
       <th>Minimum</th>
       <th>Kissing number</th>
       <th>Isometry group order</th>
-      <th>Type of Φ<sub>{±2}</sub>(L) (definite)</th>
+      <th>Type of Φ<sub>{2}</sub>(L)</th>
       <th>Genus symbol</th>
       <th>Families</th>
       <th>Other names</th>
       <th>n₊</th>
       <th>n₋</th>
-      <th>Type of Φ(L) (definite)</th>
+      <th>Type of Φ(L)</th>
       <th>R(L) = ℤΦ(L)</th>
       <th>[L : R(L)], when finite</th>
       <th>Rank of R(L)</th>
@@ -66,5 +64,5 @@
     </tr>
   </thead>
 </table>
-<noscript><p>The database needs JavaScript. The <a href="{{ root }}tags.html">tag index</a> lists every lattice without it.</p></noscript>
+<noscript><p>This table needs JavaScript. The <a href="{{ root }}tags.html">tag index</a> lists every lattice.</p></noscript>
 {% endblock %}

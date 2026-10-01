@@ -143,7 +143,9 @@ def test_the_fields_page_defines_every_property_of_the_database(built: Path) -> 
     labels = {label for entry in corpus.load(ROOT).entries for label in site.properties(entry.lattice)}
     assert labels
     for label in labels:
-        assert f'<th scope="row">{"p-elementary" if label.endswith("-elementary") else label}</th>' in html
+        page, anchor, _ = site.PROPERTY_MEANINGS["p-elementary" if label.endswith("-elementary") else label]
+        name = "p-elementary" if label.endswith("-elementary") else label
+        assert f'<th scope="row"><a class="theory-link" href="./theory/{page}.html#{anchor}">{name}</a></th>' in html
 
 
 def test_the_fields_page_lists_every_family_with_its_meaning_and_its_number_of_lattices(built: Path) -> None:

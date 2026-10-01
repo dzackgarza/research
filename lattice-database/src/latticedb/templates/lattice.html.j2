@@ -2,7 +2,7 @@
 {% block title %}{{ lattice.name }} · {% endblock %}
 {% from "macros.html.j2" import theory with context %}
 {% macro yes_no(value) %}{{ "yes" if value else "no" }}{% endmacro %}
-{% macro declared() %}<a class="declared" href="{{ root }}theory/records.html#declared" title="A person declared this value, and the notes give its source. The build did not compute it.">declared</a>{% endmacro %}
+{% macro declared() %}<a class="declared" href="{{ root }}theory/records.html#declared" title="Not computed here; the notes cite its source.">declared</a>{% endmacro %}
 {% block main %}
 <article>
   <header class="page-heading">
@@ -22,7 +22,7 @@
 
   <section aria-labelledby="invariants">
     <h2 id="invariants">Invariants</h2>
-    <p>The build {{ theory("records", "computed", "computes") }} each value on this page from the Gram tensor, except a value marked {{ declared() }}.</p>
+    <p>Each value on this page is {{ theory("records", "computed", "computed") }} from the Gram tensor, except a value marked {{ declared() }}.</p>
     <table class="facts">
       <tbody>
         <tr><th scope="row">Rank</th><td>{{ lattice.rank }}</td></tr>
@@ -32,16 +32,16 @@
         {% endif %}
         <tr><th scope="row">{{ theory("lattices", "signature", "Determinant") }}</th><td>\({{ rational_tex(lattice.determinant) }}\)</td></tr>
         <tr><th scope="row">{{ theory("lattices", "definiteness", "Definiteness") }}</th><td>{{ definiteness_label[lattice.definiteness] }}</td></tr>
-        <tr><th scope="row">{{ theory("lattices", "integral", "Integer values") }}</th><td>{{ yes_no(lattice.integral is not none) }}</td></tr>
+        <tr><th scope="row">{{ theory("lattices", "integral", "Integral") }}</th><td>{{ yes_no(lattice.integral is not none) }}</td></tr>
       </tbody>
     </table>
   </section>
 
   <section aria-labelledby="gram-tensor">
     <h2 id="gram-tensor">Gram tensor</h2>
-    <p>The components \(b(e_i, e_j)\) of the {{ theory("lattices", "gram-tensor", "Gram tensor") }} \(b\) in the basis \({{ block_tex(range(1, lattice.rank + 1) | list) }}\) of the record. {{ theory("named-lattices", "", "Named lattices") }} gives the basis of the record of each named lattice.</p>
+    <p>The components \(b(e_i, e_j)\) of the {{ theory("lattices", "gram-tensor", "Gram tensor") }} \(b\) in the {{ theory("lattices", "gram-tensor", "chosen basis") }} \({{ block_tex(range(1, lattice.rank + 1) | list) }}\).</p>
     {% if blocks | length > 1 %}
-    <p>The basis of the record gives the {{ theory("lattices", "orthogonal-sums", "orthogonal decomposition") }} \(L = {}\){% for block in blocks %}\(\mathbb{Z}\{ {{- block_tex(block) -}} \}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}.</p>
+    <p>In this basis, \(L = {}\){% for block in blocks %}\(\mathbb{Z}\{ {{- block_tex(block) -}} \}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}, an {{ theory("lattices", "orthogonal-sums", "orthogonal sum") }}.</p>
     {% endif %}
     <div class="table-scroll">
       <table class="components">
@@ -70,7 +70,7 @@
         {% if lattice.integral.discriminant_group is not none %}
         <tr><th scope="row">{{ theory("discriminant-forms", "discriminant-group", "Discriminant group") }}</th><td>\({{ group_tex(lattice.integral.discriminant_group) }}\)</td></tr>
         <tr><th scope="row">{{ theory("discriminant-forms", "unimodular", "Unimodular") }}</th><td>{{ yes_no(lattice.is_unimodular) }}</td></tr>
-        <tr><th scope="row">{{ theory("overlattices", "overlattices", "Integral overlattices") }} \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}not decided{% endif %}</td></tr>
+        <tr><th scope="row">{{ theory("overlattices", "overlattices", "Integral overlattices") }} \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}{{ theory("records", "not-decided", "not decided") }}{% endif %}</td></tr>
         {% endif %}
         {% if lattice.integral.genus_symbol %}
         <tr><th scope="row">{{ theory("overlattices", "genus-symbol", "Genus symbol") }}</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\) {{ declared() }}</td></tr>
@@ -133,15 +133,14 @@
   {% endif %}
 
   <section aria-labelledby="roots">
-    <h2 id="roots">Roots</h2>
-    <p>{{ theory("roots", "roots", "Roots") }} defines \(\Phi(L)\) and \(R(L) = \mathbb{Z}\Phi(L)\), and {{ theory("roots", "record", "what a record states") }} about them.</p>
+    <h2 id="roots">{{ theory("roots", "roots", "Roots") }}</h2>
     {% set span = lattice.root_span %}
     {% set full_rank = lattice.root_span_rank == lattice.rank %}
     <table class="facts">
       <tbody>
         {% if lattice.is_root_lattice is none %}
-        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>not decided</td></tr>
-        <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>not decided: the record does not state roots that generate it</td></tr>
+        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
+        <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
         {% else %}
         <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ yes_no(lattice.is_root_lattice) }}</td></tr>
         {% if lattice.root_norms is not none %}
@@ -154,7 +153,7 @@
           {%- if span_summands -%}
           \(\cong\) {% for summand, name in span_summands %}<a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ name }}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}
           {%- elif span_name is none -%}
-          The record does not state a lattice that is isometric to it.
+          {{ theory("records", "not-decided", "isometry class not decided") }}
           {%- elif span_name[1] in ("L", "0") -%}
           \({{ span_name[1] }}\)
           {%- else -%}
@@ -174,13 +173,13 @@
         </td></tr>
         <tr><th scope="row">Proof</th><td>
           {%- if lattice.definite -%}
-          The form is definite, so \(\Phi(L)\) is finite. The build lists \(\Phi(L)\).
+          \(\Phi(L)\) is finite because \(b\) is definite; it is enumerated.
           {%- elif not span.roots -%}
           The notes prove that \(L\) has no roots.
           {%- elif lattice.is_root_lattice -%}
-          The build checks that each row of the table of roots below is a root. The rows generate \(L\).
+          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is verified to be a root, and the \(r_i\) generate \(L\).
           {%- else -%}
-          The build checks that each row of the table of roots below is a root. The notes prove that each root of \(L\) is in the sublattice that the rows generate.
+          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is verified to be a root. The notes prove that each root of \(L\) is in \(\mathbb{Z}\{r_i\}\).
           {%- endif -%}
         </td></tr>
         {% endif %}
@@ -203,14 +202,13 @@
     </div>
     <h3>Simple roots</h3>
     <p>
-      Each row states one simple root in the basis \({{ block_tex(range(1, lattice.rank + 1) | list) }}\) of the record.
+      The {{ theory("roots", "definite", "simple roots") }} are a basis of \(\mathbb{Z}\Phi(L)\).
       {% if several %}\(\alpha^{(c)}_j\) is simple root \(j\) of the component \(\Phi_c\).{% endif %}
-      The rows are a basis of \(\mathbb{Z}\Phi(L)\) ({{ theory("roots", "definite", "simple roots") }}).
     </p>
     <div class="table-scroll">
       <table class="member-table vector-table">
         <thead>
-          <tr><th scope="col">Simple root</th><th scope="col">In the basis of the record</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
+          <tr><th scope="col">Simple root</th><th scope="col">Coordinates</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
         </thead>
         <tbody>
           {% for component in lattice.definite.roots %}
@@ -225,12 +223,12 @@
     </div>
     {% endif %}
     {% if span and span.roots %}
-    <h3>{{ theory("roots", "not-definite", "Roots that generate") }} \(\mathbb{Z}\Phi(L)\)</h3>
-    <p>Each row states one root in the basis \({{ block_tex(range(1, lattice.rank + 1) | list) }}\) of the record.{% if lattice.is_root_lattice %} The rows are a basis of \(L\).{% endif %}</p>
+    <h3 id="generating-roots">{{ theory("roots", "not-definite", "Roots that generate") }} \(\mathbb{Z}\Phi(L)\)</h3>
+    {% if lattice.is_root_lattice %}<p>The \(r_i\) are a basis of \(L\).</p>{% endif %}
     <div class="table-scroll">
       <table class="member-table vector-table">
         <thead>
-          <tr><th scope="col">Root</th><th scope="col">In the basis of the record</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
+          <tr><th scope="col">Root</th><th scope="col">Coordinates</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
         </thead>
         <tbody>
           {% for generating_root in span.roots %}
@@ -241,8 +239,8 @@
     </div>
     {% endif %}
     {% if span_images %}
-    <h3>{{ theory("roots", "not-definite", "Embedding") }} of the orthogonal sum of the summands, with image \(\mathbb{Z}\Phi(L)\)</h3>
-    <p>Each row states the image of one basis vector of the record of a summand.</p>
+    <h3>{{ theory("roots", "not-definite", "Embedding") }} \(M_1 \oplus M_2 \oplus \dots \to L\) with image \(\mathbb{Z}\Phi(L)\)</h3>
+    <p>Image of each basis vector \(e_j\) of each summand \(M_i\).</p>
     <div class="table-scroll">
       <table class="member-table vector-table">
         <thead>
@@ -278,8 +276,7 @@
 
   {% if morphism_files %}
   <section aria-labelledby="morphisms">
-    <h2 id="morphisms">Morphisms</h2>
-    <p>{{ theory("morphisms", "morphisms", "Morphisms") }} with this lattice as the source or the target.</p>
+    <h2 id="morphisms">{{ theory("morphisms", "morphisms", "Morphisms") }}</h2>
     <ul class="related-list">
       {% for file in morphism_files %}
       {% set source, target = lattices[file.source], lattices[file.target] %}
@@ -311,7 +308,7 @@
         {% if lattice.provenance.computed_with %}
         <tr><th scope="row">Computed with</th><td>{{ lattice.provenance.computed_with }}</td></tr>
         {% endif %}
-        <tr><th scope="row">Record</th><td><code>lattices/{{ lattice.tag }}.md</code></td></tr>
+        <tr><th scope="row">Source file</th><td><code>lattices/{{ lattice.tag }}.md</code></td></tr>
       </tbody>
     </table>
   </section>

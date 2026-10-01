@@ -99,13 +99,15 @@
     ],
     language: {
       paginate: { first: "First", previous: "Previous", next: "Next", last: "Last" },
-      searchBuilder: { title: { 0: "Conditions", _: "Conditions (%d)" }, add: "Add a condition" },
+      info: "Lattices _START_–_END_ of _TOTAL_",
+      search: "Search",
+      searchBuilder: { title: { 0: "Conditions", _: "Conditions (%d)" }, add: "Add a condition", data: "Column" },
     },
     searchPanes: { cascadePanes: true, viewTotal: true, orderable: false, layout: "columns-4", preSelect },
     buttons: [
       { extend: "colvis", text: "Columns" },
       { extend: "csvHtml5", text: "CSV", title: "lattices", exportOptions: { orthogonal: "filter" } },
-      { extend: "copyHtml5", text: "Copy", exportOptions: { orthogonal: "filter", columns: ":visible" } },
+      { extend: "copyHtml5", text: "Copy table", exportOptions: { orthogonal: "filter", columns: ":visible" } },
     ],
     layout: {
       top2: "searchPanes",
