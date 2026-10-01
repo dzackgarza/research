@@ -626,7 +626,7 @@ class Lattice(Record):
         character = arithmetic.quadratic_character(self.rank, determinant) if determinant != 0 and self.rank % 2 == 0 else None
         if self.integral.quadratic_character != character:
             context = {"stated": self.integral.quadratic_character, "computed": character}
-            yield _problem("quadratic_character", "`quadratic_character` is {stated}, and the rank and determinant give {computed}", ("integral", "quadratic_character"), context)
+            yield _problem("quadratic_character", "`quadratic_character` is {stated}, and rank and determinant give {computed}", ("integral", "quadratic_character"), context)
 
     def _spinor_problems(self) -> Iterator[InitErrorDetails]:
         """Spinor genera exist for a nondegenerate lattice of rank at least 3; their number is a power of 2, and their classes make up the genus."""
