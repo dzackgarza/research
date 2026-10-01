@@ -7474,6 +7474,23 @@ section fixes the mechanisms that the policy leaves to the house.
   $\mathbf{RMod}_R$, derived stacks, and homotopy types.
 - **Ontology.** The book adopts the derived and homotopical ontology of
   `DEF-8` to `DEF-14`.
+- **Proof obligation (`SEC-6`, `EX-2`).** Every claim in a statement block
+  is proved in the book, and every lemma a proof uses is proved earlier.
+- **One notion per block (`DEF-15`).** A definition block defines one
+  notion. An enumerated family of notions gets one block per notion.
+- **Pullbacks (`MA-8`, `DIA-*`).** A pullback is drawn in place as a
+  `tikzcd` square with both legs and the corner mark before fiber-product
+  notation names its apex.
+- **Adjunctions (`DIA-4`).** The shared `\adj` macro gives the one
+  adjunction diagram.
+- **Open problems (`PR-72`).** A deferred generalization or a missing
+  intrinsic definition is a GitHub issue labeled `needs-research`, never
+  a block in the book.
+- **Terminology (`TERM-*`).** The citation-backed inventory of recurring
+  terminology drift is `.agents/references/terminology-dictionary.md`.
+- **Source annotations (`STANCE-*`, `RESOURCE-*`).** The rules apply to
+  the bibliography pages, such as
+  `writing/category-theory/framework/Mathematical-Sources.md`.
 
 ## Detailed Documentation References
 
