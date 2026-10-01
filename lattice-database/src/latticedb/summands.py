@@ -47,7 +47,10 @@ class Embedding:
 
 
 def summands(gram: GramTensor) -> list[tuple[int, ...]]:
-    """The basis indices of each orthogonal summand, ordered by the first index: the connected components of the graph of the nonzero entries (breadth-first search, Cormen et al., Introduction to Algorithms, 22.2)."""
+    """The basis indices of each orthogonal summand, ordered by the first index: the connected components of the graph of the nonzero entries.
+
+    The search is breadth-first search (Cormen et al., Introduction to Algorithms, 22.2).
+    """
     found: list[tuple[int, ...]] = []
     seen: set[int] = set()
     for start in range(len(gram)):
@@ -146,7 +149,7 @@ def all_embeddings(entries: Sequence[Entry]) -> list[Embedding]:
 CERTIFICATE = "corpus summands"
 """The name of the computation of the embeddings between the records; its inputs are the Gram tensors of the corpus."""
 
-PROSE = "The embeddings of `latticedb.summands`: each summand of the source maps by $x \\mapsto (x, \\ldots, x)$ into a set of orthogonal summands of the target.\n"
+PROSE = "The embeddings of `latticedb.summands`: each summand of the source maps by $x \\mapsto (x, \\ldots, x)$ into a set of orthogonal summands of the target."
 
 
 def _morphism(embedding: Embedding) -> dict[str, Yaml]:
