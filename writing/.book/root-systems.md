@@ -1,1 +1,0 @@
-coble/lattices-and-moduli/root-systems.md

@@ -1,1 +1,0 @@
-coble/compactifications/dynkin-foldings.md

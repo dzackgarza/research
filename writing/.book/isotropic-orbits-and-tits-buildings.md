@@ -1,1 +1,0 @@
-coble/computations/isotropic-orbits-and-tits-buildings.md

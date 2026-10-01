@@ -1,1 +1,0 @@
-category-theory/framework/Isometries-and-Arithmetic-Invariants.md

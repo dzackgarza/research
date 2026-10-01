@@ -7554,19 +7554,27 @@ class there before using it.
   `@def:key`.
 - The `amsthm-refs` filter rewrites each theorem-family citation into the
   `\ref` and `\longref` commands that `custom-numbered-blocks` resolves
-  (`writing/.book/_extensions/ute/custom-numbered-blocks/cnb-3-crossref.lua`).
+  (`writing/.book/_extensions/dzackgarza/custom-numbered-blocks/cnb-3-crossref.lua`).
   A cluster that holds any other key goes to citeproc unchanged.
 - A reference to an id that no block declares renders as nothing, and the
   sentence around it is left dangling. Raw LaTeX such as `\cref{x}`
   disappears the same way. `just docs-check` scans the sources for both,
   because the rendered HTML has nothing to find.
 - A reference reaches any numbered block in the book, in any chapter, in
-  either direction. Every chapter is symlinked flat into `writing/.book`,
-  which gives the resolver one registry, and the gate renders twice, which
-  lets a reference reach a later block. `writing/.book/TRAPS.md` records what
-  breaks without either. Ids are therefore unique across the whole book.
-- A section is anchored `{#sec-x}` and referenced `@sec-x`, or linked. A table
-  carries no number; link to the page that holds it.
+  either direction. The forked resolver keeps one registry for the whole
+  book, and the gate renders twice, which lets a reference reach a later
+  block. `writing/.book/TRAPS.md` records what breaks without either. Ids are
+  therefore unique across the whole book.
+- A section is anchored `{#sec-x}` and referenced `@sec-x`, or linked as
+  `[text](#sec-x)`. Quarto finds the page that holds the id, so a link does
+  not change when either page moves. A link to a page links the id of its
+  `#` heading. A link by path, `[text](../dir/Page.md)`, fails
+  `just docs-check`. A table carries no number; link to the section that
+  holds it.
+- A numbered block is referenced `@thm:key`, never linked as
+  `[text](#thm:key)`. Quarto finds the page only for a heading id, so a
+  link to a block in another chapter is a dead anchor. Write
+  `the gluing theorem (@thm:key)`; `just docs-check` fails the link form.
 - A figure is anchored `{#fig-x}`, with a hyphen, and referenced `@fig-x`;
   Quarto numbers it within its chapter. The image lives in the shared
   pandoc-config repository and `scripts/docs_figures.py` stages it into the

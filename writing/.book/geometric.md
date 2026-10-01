@@ -1,1 +1,0 @@
-coble/stable-limits/geometric.md

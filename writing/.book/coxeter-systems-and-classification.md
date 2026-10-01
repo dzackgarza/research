@@ -1,1 +1,0 @@
-coble/compactifications/coxeter-systems-and-classification.md

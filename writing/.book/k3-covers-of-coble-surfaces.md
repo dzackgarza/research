@@ -1,1 +1,0 @@
-coble/coble-surfaces/k3-covers-of-coble-surfaces.md

@@ -1,1 +1,0 @@
-category-theory/framework/Generators-and-Presentations.md

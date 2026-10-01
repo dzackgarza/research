@@ -1,1 +1,0 @@
-coble/coble-surfaces/coble-surface-basics.md

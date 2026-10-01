@@ -1,1 +1,0 @@
-coble/reference-tables/lattice-and-diagram-conventions.md

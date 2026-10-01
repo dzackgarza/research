@@ -1,1 +1,0 @@
-coble/appendix-reference/coxeter-and-dynkin-diagrams.md

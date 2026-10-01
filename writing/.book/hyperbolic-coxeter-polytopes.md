@@ -1,1 +1,0 @@
-coble/compactifications/hyperbolic-coxeter-polytopes.md

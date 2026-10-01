@@ -1,1 +1,0 @@
-coble/computations/sterk-integral-affine-data.md

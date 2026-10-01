@@ -1,1 +1,0 @@
-category-theory/framework/Coxeter-Systems-and-Lattices.md

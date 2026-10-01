@@ -1,1 +1,0 @@
-coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md

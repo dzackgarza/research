@@ -1,1 +1,0 @@
-coble/coble-moduli/coble-families-research-program.md

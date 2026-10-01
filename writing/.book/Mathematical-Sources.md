@@ -1,1 +1,0 @@
-category-theory/framework/Mathematical-Sources.md

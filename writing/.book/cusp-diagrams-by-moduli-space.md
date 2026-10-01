@@ -1,1 +1,0 @@
-coble/cusp-correspondence/cusp-diagrams-by-moduli-space.md

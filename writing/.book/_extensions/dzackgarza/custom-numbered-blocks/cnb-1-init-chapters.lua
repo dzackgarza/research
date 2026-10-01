@@ -84,7 +84,8 @@ end
 --- sideeffects: add the following to cnbx:
 ---     isbook: logical
 ---     ishtmlbook: logical
----     processedfile: string, filename without extension
+---     processedfile: string, filename without extension; for a book, the path
+---       relative to the project root
 ---     isfirstfile, islastfile : logical, for htmlbooks
 ---     xreffile: filename for json file to store crossref information
 ---     prefix: common prefix for all numbers instead of chapter or section number (if any)
@@ -108,12 +109,20 @@ local initRenderInfo = function (meta)
    -- for testing only
    cnbx.xreffile= ".test_xref.json"
   ---
-  if cnbx.isbook then 
+  if cnbx.isbook then
+    -- Pandoc runs in the directory of each chapter. So a chapter is identified by its
+    -- path relative to the project root, as book.render lists it, and the registry is
+    -- written at the project root. Chapters in different directories then share one
+    -- registry, and their numbers and links resolve across directories.
+    local projectdir = quarto.project.directory
+    processedfile = pandoc.path.split_extension(
+      pandoc.path.make_relative(quarto.doc.input_file, projectdir))
+    cnbx.processedfile = processedfile
     local chinfo = chapterinfo(meta.book, processedfile)
     if cnbx.ishtmlbook then
-      cnbx.xreffile= "._htmlbook_xref.json"
-    else 
-      cnbx.xreffile= "._pdfbook_xref.json"
+      cnbx.xreffile= pandoc.path.join({projectdir, "._htmlbook_xref.json"})
+    else
+      cnbx.xreffile= pandoc.path.join({projectdir, "._pdfbook_xref.json"})
       -- cnbx.xreffile= "._"..chinfo.lastchapter.."_xref.json"
     end  
     cnbx.isfirstfile = chinfo.isfirst 

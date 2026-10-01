@@ -1,1 +1,0 @@
-category-theory/framework/Elements-and-Containment.md

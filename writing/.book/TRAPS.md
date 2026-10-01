@@ -76,21 +76,18 @@ Reported by a parallel session that hit it while merging chapter entries; the da
 
 ## The numbered-block registry is one file, and the render must run twice
 
-`custom-numbered-blocks` resolves `\ref` and `\longref` (which `amsthm-refs` emits for `@thm:x` and `[-@thm:x]`) through a registry it writes to disk as `._htmlbook_xref.json`. The filename is a bare relative name hard-coded in `cnb-1-init-chapters.lua`, so it lands in pandoc's working directory — which is the directory of the input **as the project lists it**, not the realpath of what a symlink points at.
+`custom-numbered-blocks` resolves `\ref` and `\longref` (which `amsthm-refs` emits for `@thm:x` and `[-@thm:x]`) through a registry it writes to disk as `._htmlbook_xref.json`.
 
-Two consequences, and the layout depends on both.
+**Upstream, the registry is per directory.** Upstream writes the registry as a bare relative filename, so it lands in pandoc's working directory, which is the directory of each chapter. Upstream also identifies a chapter by its basename. With chapters at nested paths, each topic directory got its own registry, `\longref{thm:x}` resolved only within one directory, and 188 of 525 references in the Coble part rendered as nothing. Pandoc drops an unmatched macro rather than printing it, so nothing showed the loss.
 
-**Every chapter is symlinked flat into `writing/.book`.** The prose stays in its topic directory under `writing/`; the project root holds one link per chapter.
-That is what makes the registry a single book-wide file.
-When the chapters were listed at nested paths instead, each topic directory got its own registry, `\longref{thm:x}` resolved only within one directory, and 188 of 525 references in the Coble part rendered as nothing — invisibly, because pandoc drops an unmatched macro rather than printing it.
-Never add a chapter at a nested path; add the flat link.
+The book therefore uses the fork `dzackgarza/custom-numbered-blocks`, branch `project-root-registry`, installed under `_extensions/dzackgarza/`. It writes one registry at the project root, and it identifies a chapter by its path relative to the project root, as `book.render` lists it. A link to a block in another chapter is made relative to the directory of the page that contains the link. Chapters are listed in `_quarto.yml` at their paths in the topic tree. Do not reinstall upstream over the fork: the references across directories would disappear without an error.
 
 **The gate renders twice.** The registry is built as the render proceeds, so a first pass reaches only blocks in chapters it has already processed and every forward reference is dropped.
 The registry is written to disk and read back at the start of each chapter, so a second pass resolves them all.
 `scripts/docs_check.py` therefore runs `quarto render` twice — the same reason a LaTeX document is compiled twice — and CI calls that script, so a fresh clone gets both passes.
 
 `docs-check` cannot see a dropped reference directly: its check looks for Quarto's `quarto-unresolved-ref` marker in the rendered HTML, and a reference the block filter dropped never became a Quarto crossref.
-What it does check is that every chapter in `_quarto.yml` is a flat symlink, since a chapter that became a copy would render against the wrong registry and drift from the prose.
+Its check 7 reads the source instead: every `@thm:x` must name a block that some chapter declares.
 
 ## The gate needs the project to itself, and a preview will take it back
 

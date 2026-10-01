@@ -1,1 +1,0 @@
-coble/coble-moduli/coble-surface-structure-and-classification.md

@@ -1,1 +1,0 @@
-coble/lattices-and-moduli/nodal-enriques-lattices.md

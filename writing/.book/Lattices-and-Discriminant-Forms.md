@@ -1,1 +1,0 @@
-category-theory/framework/Lattices-and-Discriminant-Forms.md

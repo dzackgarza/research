@@ -241,7 +241,13 @@ local function resolvelatexref(data)
           if brefid then linktext = target.reflabel.." "..target.refnumber end
           local href = '#'..foundid
             if cnbx.ishtmlbook then 
-              href = data[foundid].file .. '.html' .. href 
+              -- target.file is relative to the project root; the link is
+              -- relative to the directory of the page that contains it
+              local projectdir = quarto.project.directory
+              href = pandoc.path.make_relative(
+                pandoc.path.join({projectdir, target.file .. '.html'}),
+                pandoc.path.directory(pandoc.path.join({projectdir, cnbx.processedfile})),
+                true) .. href
             end  
            -- print("found "..foundid.." href "..href.." linktext ".. linktext)  
             return pandoc.Link(linktext, href)
@@ -273,9 +279,9 @@ local writexref = function(filename)
   
   local xrjson = quarto.json.encode(strippedxref)
   local file = io.open(filename,"w")
-
-  if file ~= nil then
-    file:write(xrjson)
+  
+  if file ~= nil then 
+    file:write(xrjson) 
     file:close()
  -- end
   --[[
