@@ -28,7 +28,7 @@ def e8() -> dict[str, Yaml]:
         "signature": [8, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0},
         "definite": {
             "minimum": 2,
             "kissing_number": 240,
@@ -53,7 +53,7 @@ def hyperbolic_plane() -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
-        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0},
         "indefinite": {"isotropic": True},
     }
 
@@ -198,7 +198,7 @@ def hyperbolic_plane_plus_a1() -> dict[str, Yaml]:
         "signature": [1, 2],
         "determinant": 2,
         "definiteness": "indefinite",
-        "integral": {"parity": "even", "discriminant_group": [2], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [2], "overlattice_count": 1, "delta": 1},
         "indefinite": {"isotropic": True},
     }
 
@@ -374,10 +374,12 @@ def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank(
         (with_block(affine_a2(), "integral", discriminant_group=[2]), "discriminant_group_requires_nondegenerate"),
         (with_block(affine_a2(), "integral", genus_symbol="II_{2,0}"), "genus_requires_nondegenerate"),
         (with_block(affine_a2(), "integral", overlattice_count=1), "overlattice_count_requires_nondegenerate"),
+        (with_block(a2(), "integral", delta=0), "delta_requires_two_elementary_even"),
         (hyperbolic_plane() | {"root_sublattice": ROOT_SUBLATTICE_OF_U}, "root_sublattice_not_decided"),
         # A required block or field that is absent.
         ({key: value for key, value in e8().items() if key != "integral"}, "integral_block_missing"),
         (e8() | {"integral": {"parity": "even"}}, "discriminant_group_missing"),
+        (without(e8(), "integral", "delta"), "delta_missing"),
         ({key: value for key, value in e8().items() if key != "definite"}, "definite_block_missing"),
         ({key: value for key, value in hyperbolic_plane().items() if key != "indefinite"}, "indefinite_block_missing"),
         (without(e8(), "definite", "theta_series"), "theta_series_missing"),

@@ -42,7 +42,7 @@ def hyperbolic_plane(summands: list[dict[str, str | int]]) -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
-        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0},
         "indefinite": {"isotropic": True},
         "root_span": {"roots": [[1, 1], [1, -1]], "norms": [2, -2], "summands": summands, "embedding": [[1, 1], [1, -1]]},
         "root_sublattice": {"invariant_factors": [1, 2]},

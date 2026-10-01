@@ -123,6 +123,15 @@ class IntegralData(Record):
             f"Stated when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; otherwise absent, and the count is not decided."
         ),
     )
+    delta: Literal[0, 1] | None = Field(
+        default=None,
+        description=(
+            "Nikulin's invariant $\\delta$ of an even lattice with $2 A_L = 0$: "
+            "0 when $b(x, x)$ is an integer for every $x$ in the dual lattice $L^*$, and 1 otherwise. "
+            "With the rank $r$ and $A_L \\cong (\\mathbb{Z}/2)^a$ it gives $(r, a, \\delta)$. "
+            "Required for, and only for, an even lattice whose determinant is not zero and whose invariant factors all equal 2."
+        ),
+    )
     genus_symbol: str | None = Field(
         default=None,
         description=(
@@ -335,6 +344,14 @@ class Lattice(Record):
         return self.integral is not None and abs(self.determinant) == 1
 
     @property
+    def is_two_elementary_even(self) -> bool:
+        """Whether $L$ is even and nondegenerate with $2 A_L = 0$: the lattices with Nikulin's invariants $(r, a, \\delta)$."""
+        integral = self.integral
+        if integral is None or integral.parity != "even" or integral.discriminant_group is None:
+            return False
+        return all(factor == 2 for factor in integral.discriminant_group)
+
+    @property
     def is_hyperbolic(self) -> bool:
         return self.is_nondegenerate and self.rank >= 2 and min(self.signature) == 1
 
@@ -427,6 +444,11 @@ class Lattice(Record):
                 yield _problem("overlattice_count_requires_nondegenerate", message, ("integral", "overlattice_count"))
         elif self.integral.discriminant_group is None:
             yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", ("integral", "discriminant_group"))
+        defined = self.is_two_elementary_even
+        if defined and self.integral.delta is None:
+            yield _problem("delta_missing", "the lattice is even with 2 A_L = 0, so `delta` is required", ("integral", "delta"))
+        if not defined and self.integral.delta is not None:
+            yield _problem("delta_requires_two_elementary_even", "`delta` requires an even lattice with 2 A_L = 0 and a nonzero determinant", ("integral", "delta"))
 
     def _definite_problems(self) -> Iterator[InitErrorDetails]:
         if self.definite is None:

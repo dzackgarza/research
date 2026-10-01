@@ -102,6 +102,23 @@ def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
     return tuple(factor for factor in diagonal if factor > 1)
 
 
+def delta(gram_tensor: GramTensor) -> int:
+    """Return Nikulin's `delta` of an even lattice `L` with `2 A_L = 0`: 0 when `b(x, x)` is an integer for every `x` in `L^*`, else 1.
+
+    The basis of `L^*` dual to `e_i` has the Gram tensor `G^{-1}`, the inverse
+    of the Gram tensor `G` of `L`. `2 A_L = 0` says `2 L^* <= L`, so every
+    `2 G^{-1}_ij` is an integer. For `x = sum_i c_i f_i` in `L^*`,
+    `b(x, x) = sum_i c_i^2 G^{-1}_ii + sum_{i < j} 2 c_i c_j G^{-1}_ij`, whose
+    second sum is an integer: `b(x, x)` is an integer for every `x` exactly
+    when every `G^{-1}_ii` is. Nikulin, Math. USSR-Izv. 14 (1980), §3.6, defines
+    `delta` by the values of the discriminant quadratic form `q(x + L) = b(x, x) + 2Z`.
+    """
+    assert all(factor == 2 for factor in discriminant_invariants(gram_tensor)), "delta is defined for a lattice with 2 A_L = 0"
+    assert all(gram_tensor[i][i] % 2 == 0 for i in range(len(gram_tensor))), "delta is defined for an even lattice"
+    inverse = _components(gram_tensor).inv()
+    return 0 if all(inverse[i, i].q == 1 for i in range(len(gram_tensor))) else 1
+
+
 SUBGROUP_BOUND = 100_000
 """`overlattice_count` decides a discriminant group with at most this number of subgroups.
 

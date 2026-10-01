@@ -69,6 +69,9 @@
         <tr><th scope="row">{{ theory("discriminant-forms", "unimodular", "Unimodular") }}</th><td>{{ yes_no(lattice.is_unimodular) }}</td></tr>
         <tr><th scope="row">{{ theory("overlattices", "overlattices", "Integral overlattices") }} \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}{{ theory("records", "not-decided", "not decided") }}{% endif %}</td></tr>
         {% endif %}
+        {% if lattice.integral.delta is not none %}
+        <tr><th scope="row">{{ theory("discriminant-forms", "two-elementary", "Nikulin invariants") }} \((r, a, \delta)\)</th><td>\(({{ lattice.rank }}, {{ lattice.integral.discriminant_group | length }}, {{ lattice.integral.delta }})\)</td></tr>
+        {% endif %}
         {% if lattice.integral.genus_symbol %}
         <tr><th scope="row">{{ theory("overlattices", "genus-symbol", "Genus symbol") }}</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
         {% endif %}
