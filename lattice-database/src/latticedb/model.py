@@ -621,11 +621,11 @@ class Lattice(Record):
         determinant = int(self.determinant)
         primes = arithmetic.bad_reduction_primes(determinant) if determinant != 0 else None
         if self.integral.bad_reduction_primes != primes:
-            context = {"stated": self.integral.bad_reduction_primes, "computed": primes}
+            context = {"stated": str(self.integral.bad_reduction_primes), "computed": str(primes)}
             yield _problem("bad_reduction_primes", "`bad_reduction_primes` is {stated}, and the determinant gives {computed}", ("integral", "bad_reduction_primes"), context)
         character = arithmetic.quadratic_character(self.rank, determinant) if determinant != 0 and self.rank % 2 == 0 else None
         if self.integral.quadratic_character != character:
-            context = {"stated": self.integral.quadratic_character, "computed": character}
+            context = {"stated": str(self.integral.quadratic_character), "computed": str(character)}
             yield _problem("quadratic_character", "`quadratic_character` is {stated}, and rank and determinant give {computed}", ("integral", "quadratic_character"), context)
 
     def _spinor_problems(self) -> Iterator[InitErrorDetails]:
