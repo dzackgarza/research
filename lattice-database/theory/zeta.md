@@ -27,8 +27,7 @@ The record states as `integral.quadratic_character` the discriminant $d$ of the 
 For $p \notin \Sigma_L$, $\chi_D(p)$ is the Kronecker symbol $(d / p)$, which is the Legendre symbol $(D / p)$.
 :::
 
-Every nondegenerate quadratic space over a finite field $\mathbb{F}_q$ of odd characteristic is isomorphic to exactly one of $mH \oplus c x^2$ in dimension $2m + 1$, and $mH$ or $(m - 1)H \oplus N$ in dimension $2m$, where $H$ is the hyperbolic plane and $N$ is the norm form of $\mathbb{F}_{q^2}$ (Casselman, *Quadratic forms over finite fields*, 2018, Theorem 1.6, [PDF](https://personal.math.ubc.ca/~cass/research/pdf/FiniteFields.pdf)).
-The determinant of $H$ is $-1$ and that of $N$ is $-1$ times a nonsquare, up to squares.
+Every nondegenerate quadratic space over a finite field $\mathbb{F}_q$ of odd characteristic is isomorphic to exactly one of $mH \oplus c x^2$ in dimension $2m + 1$, and $mH$ or $(m - 1)H \oplus N$ in dimension $2m$, where $H$ is the hyperbolic plane and $N$ is the norm form of $\mathbb{F}_{q^2}$ (Casselman, *Quadratic forms over finite fields*, 2018, Theorem 1.6, [PDF](https://personal.math.ubc.ca/~cass/research/pdf/FiniteFields.pdf)). The determinant of $H$ is $-1$ and that of $N$ is $-1$ times a nonsquare, up to squares.
 So $Q$ modulo $p$ is $mH$ exactly when $\chi_D(p) = 1$.
 Over $\mathbb{F}_{p^k}$ the same holds with $\chi_D(p)^k$, because an element of $\mathbb{F}_p^{\times}$ is a square in $\mathbb{F}_{p^k}$ exactly when it is a square in $\mathbb{F}_p$ or $k$ is even.
 
@@ -37,15 +36,17 @@ Over $\mathbb{F}_{p^k}$ the same holds with $\chi_D(p)^k$, because an element of
 Let $p \notin \Sigma_L$, $q = p^k$ and $\chi = \chi_D(p)^k$.
 Casselman (§3, cases 4 and 5) counts the points of $mH$ and $(m - 1)H \oplus N$, which gives for $r = 2m$:
 
-| | $n = 0$ | $n \neq 0$, $p \nmid n$ |
+|  | $n = 0$ | $n \neq 0$, $p \nmid n$ |
 | --- | --- | --- |
 | $\lvert X_n(\mathbb{F}_q) \rvert$ | $q^{2m - 1} + \chi\, q^{m} - \chi\, q^{m - 1}$ | $q^{2m - 1} - \chi\, q^{m - 1}$ |
 
 For $r = 2m + 1$, $Q \cong mH \oplus c x^2$ with $c = (-1)^m \det L$ up to squares.
 A point of $mH \oplus c z^2$ with value $n$ is a $z$ and a point of $mH$ with value $n - c z^2$.
-The value $0$ is taken $1 + \left(\frac{nc}{q}\right)$ times by $c z^2 - n$, and $mH$ takes the value $0$ at $q^{2m - 1} + q^m - q^{m - 1}$ points and each other value at $q^{2m - 1} - q^{m - 1}$ points, so for $p \nmid n$
-$$\lvert X_n(\mathbb{F}_q) \rvert = q \left(q^{2m - 1} - q^{m - 1}\right) + \left(1 + \left(\tfrac{nc}{q}\right)\right) q^m = q^{2m} + \left(\tfrac{D_n}{p}\right)^k q^m, \qquad D_n = (-1)^m n \det L,$$
-and $\lvert X_0(\mathbb{F}_q) \rvert = q^{2m}$.
+The value $0$ is taken $1 + \left(\frac{nc}{q}\right)$ times by $c z^2 - n$, and $mH$ takes the value $0$ at $q^{2m - 1} + q^m - q^{m - 1}$ points and each other value at $q^{2m - 1} - q^{m - 1}$ points, so for $p \nmid n$:
+
+$$\lvert X_n(\mathbb{F}_q) \rvert = q \left(q^{2m - 1} - q^{m - 1}\right) + \left(1 + \left(\tfrac{nc}{q}\right)\right) q^m = q^{2m} + \left(\tfrac{D_n}{p}\right)^k q^m, \qquad D_n = (-1)^m n \det L.$$
+
+Also $\lvert X_0(\mathbb{F}_q) \rvert = q^{2m}$.
 Casselman's case 6 prints $\operatorname{sgn}(-x/c)$ in place of $\left(\frac{xc}{q}\right)$; the count above gives the sign.
 
 For $G$ the identity matrix, $\det L = 1$ and the counts for $n = 1$ are those of Ireland and Rosen, *A Classical Introduction to Modern Number Theory*, 2nd edition, Springer, Proposition 8.6.1.
@@ -60,7 +61,7 @@ Also $\zeta^\Sigma(s) = \prod_{p \notin \Sigma} (1 - p^{-s})^{-1}$ and $L^\Sigma
 A count $\sum_j \pm a_j^k$ gives $Z_p = \prod_j (1 - a_j T)^{\mp 1}$, because $\sum_k a^k T^k / k = -\log(1 - aT)$.
 So the counts of the [points](#points) give, with $\Sigma = \Sigma_L$ for $n = 0$ and $\Sigma = \Sigma_L \cup \{p : p \mid n\}$ for $n \neq 0$:
 
-| | $\zeta^\Sigma(X_0, s)$ | $\zeta^\Sigma(X_n, s)$, $n \neq 0$ |
+|  | $\zeta^\Sigma(X_0, s)$ | $\zeta^\Sigma(X_n, s)$, $n \neq 0$ |
 | --- | --- | --- |
 | $r = 2m$ | $\dfrac{\zeta^\Sigma(s - 2m + 1)\, L^\Sigma(s - m, \chi_D)}{L^\Sigma(s - m + 1, \chi_D)}$ | $\dfrac{\zeta^\Sigma(s - 2m + 1)}{L^\Sigma(s - m + 1, \chi_D)}$ |
 | $r = 2m + 1$ | $\zeta^\Sigma(s - 2m)$ | $\zeta^\Sigma(s - 2m)\, L^\Sigma(s - m, \chi_{D_n})$ |
