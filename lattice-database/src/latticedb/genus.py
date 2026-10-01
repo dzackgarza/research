@@ -33,6 +33,7 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
 }
 """Each computed field, with the block of the record that holds it and the model of that block."""
 
+
 def applies(field: str, lattice: Lattice, planes: int) -> bool:
     """Whether SageMath computes `field` for `lattice`, of which `planes` is a lower bound of the hyperbolic index.
 
@@ -51,6 +52,7 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.definite is not None or (lattice.integral.parity == "even" and index >= 2)
         case _:
             return True
+
 
 SAGE_MODULE = Path(__file__).with_name("sage_genus.py")
 

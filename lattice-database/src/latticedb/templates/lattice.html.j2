@@ -72,6 +72,16 @@
         {% if lattice.integral.delta is not none %}
         <tr><th scope="row">{{ theory("discriminant-forms", "two-elementary", "Nikulin invariants") }} \((r, a, \delta)\)</th><td>\(({{ lattice.rank }}, {{ lattice.integral.discriminant_group | length }}, {{ lattice.integral.delta }})\)</td></tr>
         {% endif %}
+        {% if lattice.integral.bad_reduction_primes is not none %}
+        <tr><th scope="row">{{ theory("zeta", "bad-reduction", "Primes of bad reduction") }} \(\Sigma_L = \{p \mid 2 \det L\}\)</th><td>\(\{ {{- lattice.integral.bad_reduction_primes | join(", ") -}} \}\)</td></tr>
+        {% endif %}
+        {% if lattice.integral.quadratic_character is not none %}
+        <tr><th scope="row">{{ theory("zeta", "character", "Character of the discriminant") }} \(\chi_D\), \(D = (-1)^{ {{- lattice.rank // 2 -}} } \det L\)</th><td>{% if lattice.integral.quadratic_character == 1 %}trivial{% else %}\(\chi_{ {{- lattice.integral.quadratic_character -}} } = \left(\frac{ {{- lattice.integral.quadratic_character -}} }{\cdot}\right)\){% endif %}</td></tr>
+        {% endif %}
+        {% if lattice.integral.bad_reduction_primes is not none %}
+        <tr><th scope="row">{{ theory("zeta", "zeta", "Zeta function") }} of the cone \(X_0 : Q(x) = 0\), \(\Sigma = \Sigma_L\)</th><td>\(\zeta^\Sigma(X_0, s) = {{ zeta_tex(lattice, true) }}\)</td></tr>
+        <tr><th scope="row">{{ theory("zeta", "zeta", "Zeta function") }} of \(X_n : Q(x) = n\), \(n \neq 0\), \(\Sigma = \Sigma_L \cup \{p \mid n\}\)</th><td>\(\zeta^\Sigma(X_n, s) = {{ zeta_tex(lattice, false) }}\)</td></tr>
+        {% endif %}
         {% if lattice.integral.genus_symbol %}
         <tr><th scope="row">{{ theory("overlattices", "genus-symbol", "Genus symbol") }}</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
         {% endif %}

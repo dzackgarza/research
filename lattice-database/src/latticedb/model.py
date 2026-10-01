@@ -159,6 +159,7 @@ def _orbit_equality_problems(first: PrimitiveOrbitSeries, second: PrimitiveOrbit
             context = {"first": first_name, "second": second_name, "n": n, "a": a, "b": b}
             yield _problem("primitive_orbit_same_group", message, ("integral", "primitive_orbits", first_name), context)
 
+
 OrbitCounts = Annotated[tuple[Annotated[int, Field(ge=0)] | None, ...], Field(strict=False)]
 
 
@@ -213,6 +214,22 @@ class IntegralData(Record):
             "0 when $b(x, x)$ is an integer for every $x$ in the dual lattice $L^*$, and 1 otherwise. "
             "With the rank $r$ and $A_L \\cong (\\mathbb{Z}/2)^a$ it gives $(r, a, \\delta)$. "
             "Required for, and only for, an even lattice whose determinant is not zero and whose invariant factors all equal 2."
+        ),
+    )
+    bad_reduction_primes: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "The primes that divide $2 \\det L$, in increasing order: the primes $p$ at which $Q(x) = b(x, x)$ is degenerate modulo $p$. "
+            "Outside them and the primes that divide $n$, the scheme $Q(x) = n$ over $\\mathbb{Z}$ has good reduction. Required for, and only for, a nonzero determinant."
+        ),
+    )
+    quadratic_character: int | None = Field(
+        default=None,
+        description=(
+            "For rank $2m$: the discriminant $d$ of the field $\\mathbb{Q}(\\sqrt{D})$ with $D = (-1)^m \\det L$, and 1 when $D$ is a square. "
+            "For $p \\nmid 2 \\det L$ the Kronecker symbol $\\chi_D(p) = (d / p)$ is 1 exactly when $Q$ modulo $p$ is a sum of $m$ hyperbolic planes, "
+            "and it determines the number of points of $Q(x) = n$ over $\\mathbb{F}_{p^k}$. "
+            "Required for, and only for, an even rank and a nonzero determinant."
         ),
     )
     genus_symbol: str | None = Field(
@@ -596,6 +613,20 @@ class Lattice(Record):
         if self.integral.primitive_orbits is not None and self.determinant != 0:
             yield from self._orbit_problems(self.integral.primitive_orbits)
         yield from self._spinor_problems()
+        yield from self._reduction_problems()
+
+    def _reduction_problems(self) -> Iterator[InitErrorDetails]:
+        """The primes of bad reduction and the character of the discriminant are those of the determinant."""
+        assert self.integral is not None
+        determinant = int(self.determinant)
+        primes = arithmetic.bad_reduction_primes(determinant) if determinant != 0 else None
+        if self.integral.bad_reduction_primes != primes:
+            context = {"stated": self.integral.bad_reduction_primes, "computed": primes}
+            yield _problem("bad_reduction_primes", "`bad_reduction_primes` is {stated}, and the determinant gives {computed}", ("integral", "bad_reduction_primes"), context)
+        character = arithmetic.quadratic_character(self.rank, determinant) if determinant != 0 and self.rank % 2 == 0 else None
+        if self.integral.quadratic_character != character:
+            context = {"stated": self.integral.quadratic_character, "computed": character}
+            yield _problem("quadratic_character", "`quadratic_character` is {stated}, and the rank and determinant give {computed}", ("integral", "quadratic_character"), context)
 
     def _spinor_problems(self) -> Iterator[InitErrorDetails]:
         """Spinor genera exist for a nondegenerate lattice of rank at least 3; their number is a power of 2, and their classes make up the genus."""

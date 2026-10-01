@@ -147,6 +147,34 @@ def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
     return " + ".join([*terms, order])
 
 
+def _argument(shift: int) -> str:
+    """TeX for $s - k$."""
+    return "s" if shift == 0 else f"s - {shift}" if shift > 0 else f"s + {-shift}"
+
+
+def _l_tex(shift: int, discriminant: str) -> str:
+    """TeX for $L^\\Sigma(s - k, \\chi_d)$, which is $\\zeta^\\Sigma(s - k)$ for the trivial character."""
+    if discriminant == "1":
+        return f"\\zeta^\\Sigma({_argument(shift)})"
+    return f"L^\\Sigma({_argument(shift)}, \\chi_{{{discriminant}}})"
+
+
+def zeta_tex(lattice: Lattice, cone: bool) -> str:
+    """TeX for $\\zeta^\\Sigma(X_n, s)$ of $X_n : Q(x) = n$: for $n = 0$ when `cone`, and for $n \\neq 0$ otherwise (theory page `zeta`)."""
+    assert lattice.integral is not None and lattice.determinant != 0
+    m = lattice.rank // 2
+    if lattice.rank % 2 == 1:
+        if cone:
+            return _l_tex(2 * m, "1")
+        coefficient = (-1) ** m * int(lattice.determinant)
+        discriminant = "n" if coefficient == 1 else "-n" if coefficient == -1 else f"{coefficient}n"
+        return f"{_l_tex(2 * m, '1')}\\, {_l_tex(m, discriminant)}"
+    character = str(lattice.integral.quadratic_character)
+    if cone:
+        return f"\\frac{{{_l_tex(2 * m - 1, '1')}\\, {_l_tex(m, character)}}}{{{_l_tex(m - 1, character)}}}"
+    return f"\\frac{{{_l_tex(2 * m - 1, '1')}}}{{{_l_tex(m - 1, character)}}}"
+
+
 def genus_tex(symbol: str) -> str:
     """TeX for a stored genus symbol such as `II_{1,9} (2: 2^10)`."""
     head, _, local = symbol.partition(" (")
@@ -569,6 +597,7 @@ def build(root: Path, target: Path) -> int:
         genus_tex=genus_tex,
         orbit_group_tex=orbit_group_tex,
         orbit_series_tex=orbit_series_tex,
+        zeta_tex=zeta_tex,
         theta_tex=theta_tex,
         root_system_tex=root_system_tex,
         set_tex=set_tex,

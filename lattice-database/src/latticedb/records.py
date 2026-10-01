@@ -167,6 +167,10 @@ def _integral(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
             block["overlattice_count"] = count
         if block["parity"] == "even" and all(factor == 2 for factor in invariants):
             block["delta"] = arithmetic.delta(gram)
+        determinant = int(arithmetic.determinant(gram))
+        block["bad_reduction_primes"] = list(arithmetic.bad_reduction_primes(determinant))
+        if rank % 2 == 0:
+            block["quadratic_character"] = arithmetic.quadratic_character(rank, determinant)
         for field in ("genus_symbol", "genus_class_count", "spinor_genus_count", "spinor_genera", "hyperbolic_index", "primitive_orbits"):
             if field in declared:
                 block[field] = declared[field]

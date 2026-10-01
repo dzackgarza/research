@@ -7,7 +7,7 @@ from pathlib import Path
 import frontmatter
 import pytest
 import yaml
-from latticedb import corpus, records, root_systems
+from latticedb import corpus, records, root_systems, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Morphism, Yaml
 
@@ -54,6 +54,20 @@ def test_derive_states_the_number_of_integral_overlattices_of_a3() -> None:
     lattice = Lattice.model_validate(record)
     assert lattice.integral is not None
     assert lattice.integral.overlattice_count == 2
+
+
+def test_derive_states_the_primes_of_bad_reduction_and_the_character_of_the_discriminant() -> None:
+    # A2 has det 3, so D = -3 and Q(sqrt(-3)) has discriminant -3; Q(x) = 2x^2 - 2xy + 2y^2 is 0 modulo 2.
+    # Modulo p != 2, 3, Q is a hyperbolic plane exactly when -3 is a square, so the cone has 2q - 1 or 1 points over F_q (theory/zeta.md).
+    a2 = Lattice.model_validate(records.derive(declared("A2", [[2, -1], [-1, 2]])))
+    assert a2.integral is not None
+    assert (a2.integral.bad_reduction_primes, a2.integral.quadratic_character) == ((2, 3), -3)
+    assert site.zeta_tex(a2, cone=True) == "\\frac{\\zeta^\\Sigma(s - 1)\\, L^\\Sigma(s - 1, \\chi_{-3})}{L^\\Sigma(s, \\chi_{-3})}"
+    # <1> + <1> + <-1> has odd rank 3 and det -1, so D_n = (-1)^1 n (-1) = n.
+    odd = Lattice.model_validate(records.derive(declared("I_{2,1}", [[1, 0, 0], [0, 1, 0], [0, 0, -1]])))
+    assert odd.integral is not None
+    assert (odd.integral.bad_reduction_primes, odd.integral.quadratic_character) == ((2,), None)
+    assert site.zeta_tex(odd, cone=False) == "\\zeta^\\Sigma(s - 2)\\, L^\\Sigma(s - 1, \\chi_{n})"
 
 
 def test_a_record_does_not_state_the_overlattice_count_above_the_subgroup_bound() -> None:

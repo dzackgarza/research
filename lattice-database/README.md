@@ -79,7 +79,7 @@ So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature 
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new` and `latticedb nebe-sloane` compute them once, with exact arithmetic, when they write the record.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `integral.bad_reduction_primes`, `integral.quadratic_character`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new` and `latticedb nebe-sloane` compute them once, with exact arithmetic, when they write the record.
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
 The build reads the stored values and computes nothing again.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
@@ -91,7 +91,7 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
-| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`, `primitive_orbits` |
+| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `overlattice_count`, `delta`, `bad_reduction_primes`, `quadratic_character`, `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`, `primitive_orbits` |
 | `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
 | `root_span` | $b$ is not definite | `roots`, `norms`, `summands`, `embedding` |
 | `root_sublattice` | $b$ is definite, or the record has `root_span` | `invariant_factors`, `norms` |
@@ -112,6 +112,10 @@ A record without it is not decided, and its page says so: $(\mathbb{Z}/2)^8$ has
 `integral.delta` is Nikulin's invariant $\delta$ of an even lattice with $2 A_L = 0$, and it is required for exactly those lattices, $A_L = 0$ included: 0 when $b(x, x)$ is an integer for every $x$ in $L^*$, and 1 otherwise.
 With the rank $r$ and $A_L \cong (\mathbb{Z}/2)^a$ it gives Nikulin's $(r, a, \delta)$.
 Because $2 L^* \subseteq L$, every $2 b(x, y)$ with $x, y \in L^*$ is an integer, so $\delta = 0$ exactly when every diagonal entry of $G^{-1}$ is an integer.
+
+`integral.bad_reduction_primes` is the set $\Sigma_L$ of primes that divide $2 \det L$, required exactly when the determinant is not zero.
+`integral.quadratic_character` is, for rank $2m$ and a nonzero determinant, the discriminant of $\mathbb{Q}(\sqrt{D})$ with $D = (-1)^m \det L$, and 1 when $D$ is a square.
+With the rank and the determinant they give the zeta functions of the quadrics $Q(x) = n$ outside $\Sigma_L$ and the primes that divide $n$ (`theory/zeta.md`).
 
 `fields.html` is generated from `model.py`.
 

@@ -119,6 +119,31 @@ def delta(gram_tensor: GramTensor) -> int:
     return 0 if all(inverse[i, i].q == 1 for i in range(len(gram_tensor))) else 1
 
 
+def bad_reduction_primes(determinant: int) -> tuple[int, ...]:
+    """Return the primes that divide `2 det`, in increasing order: the primes `p` at which `Q(x) = b(x, x)` is degenerate modulo `p`.
+
+    For odd `p`, `Q` modulo `p` is nondegenerate exactly when `p` does not divide
+    `det`. Modulo 2, `Q(x) = sum_i b(e_i, e_i) x_i^2` is the square of a linear
+    form, so 2 is always among them.
+    """
+    assert determinant != 0, "the reduction of a degenerate form is degenerate at every prime"
+    return tuple(int(prime) for prime in _PARI.factor(2 * abs(determinant))[0])
+
+
+def quadratic_character(rank: int, determinant: int) -> int:
+    """Return the discriminant `d` of the field `Q(sqrt(D))` for `D = (-1)^m det` and `rank = 2m`, and 1 when `D` is a square.
+
+    For a prime `p` that does not divide `2 det`, the Kronecker symbol `(d / p)`
+    is the Legendre symbol `(D / p)`, because `D / d` is the square of a
+    rational number prime to `p`. It is 1 exactly when `Q` modulo `p` is the sum of
+    `m` hyperbolic planes (Casselman, *Quadratic forms over finite fields*,
+    Theorem 1.6). PARI's `coredisc` is the discriminant of `Q(sqrt(D))`.
+    """
+    assert rank % 2 == 0, "the character of the discriminant is stated for an even rank"
+    assert determinant != 0, "the character requires a nonzero determinant"
+    return int(_PARI.coredisc((-1) ** (rank // 2) * determinant))
+
+
 SUBGROUP_BOUND = 100_000
 """`overlattice_count` decides a discriminant group with at most this number of subgroups.
 
