@@ -28,4 +28,6 @@ $L$ is *unimodular* when the correlation $L \to \operatorname{Hom}_{\mathbb{Z}}(
 $L$ is *2-elementary* when $A_L \cong (\mathbb{Z}/2)^a$ with $a \geq 1$.
 An even 2-elementary lattice has invariants $(r, a, \delta)$: $r$ is the rank, the discriminant group is $(\mathbb{Z}/2)^a$, and $\delta = 0$ exactly when $b(x, x)$ is an integer for every $x$ in the dual lattice.
 
-An indefinite even 2-elementary lattice is determined by its signature and $(r, a, \delta)$ ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060): V. V. Nikulin, *Integral symmetric bilinear forms and some of their applications*, Math. USSR-Izv. 14 (1980), 103–167).
+An indefinite even 2-elementary lattice is determined by its signature and $(r, a, \delta)$ ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060): V. V. Nikulin, *Integral symmetric bilinear forms and some of their applications*, Math.
+USSR-Izv.
+14 (1980), 103–167).
