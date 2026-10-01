@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 
 import pytest
-from markupsafe import escape
 from latticedb import corpus, site
+from markupsafe import escape
 
 ROOT = Path(__file__).parent.parent
 
