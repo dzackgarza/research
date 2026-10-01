@@ -1,4 +1,4 @@
-"""The record commands compute every field that the Gram tensor determines, and the corpus is their output."""
+"""The record commands compute every field that the Gram tensor determines, once, when they write a record, and refuse a record whose declared values are false."""
 
 import shutil
 from fractions import Fraction
@@ -9,8 +9,7 @@ import pytest
 import yaml
 from latticedb import corpus, records, root_systems
 from latticedb.cli import app
-from latticedb.model import Lattice, Yaml
-from pydantic import ValidationError
+from latticedb.model import Lattice, Morphism, Yaml
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 
@@ -63,11 +62,6 @@ def test_a_record_does_not_state_the_overlattice_count_above_the_subgroup_bound(
     lattice = Lattice.model_validate(record)
     assert lattice.integral is not None
     assert lattice.integral.overlattice_count is None
-    integral = record["integral"]
-    assert isinstance(integral, dict)
-    with pytest.raises(ValidationError) as raised:
-        Lattice.model_validate(record | {"integral": integral | {"overlattice_count": 2981}})
-    assert {error["type"] for error in raised.value.errors()} == {"overlattice_count_not_decided"}
 
 
 def test_derive_states_the_roots_of_a_definite_lattice_whose_values_are_not_integers() -> None:
@@ -112,13 +106,6 @@ def test_derive_keeps_the_fields_that_a_person_declares() -> None:
     assert (lattice.integral.parity, lattice.integral.genus_symbol) == ("odd", "I_{1,0}")
     assert lattice.definite is not None
     assert (lattice.definite.minimum, lattice.definite.automorphism_group_order) == (1, 2)
-
-
-def test_derive_reproduces_every_record_of_the_corpus() -> None:
-    for path in sorted((REPOSITORY / "lattices").glob("*.md")):
-        text = path.read_text()
-        document = frontmatter.loads(text)
-        assert records.record_text(records.derive(document.metadata), document.content) == text, path
 
 
 def write_corpus(directory: Path) -> Path:
@@ -212,3 +199,114 @@ def test_morphism_appends_each_morphism_that_preserves_the_forms_and_refuses_one
     (entry,) = corpus.load(root).morphisms
     assert [(morphism.name, morphism.matrix) for morphism in entry.morphisms.morphisms] == [("identity", ((1,),)), ("negation", ((-1,),))]
     assert entry.prose.strip() == "Automorphisms of Z."
+
+
+def gram(rows: list[list[int]]) -> tuple[tuple[Fraction, ...], ...]:
+    return tuple(tuple(Fraction(value) for value in row) for row in rows)
+
+
+@pytest.mark.parametrize(
+    ("rows", "expected"),
+    [
+        ([[0, 1], [2, 0]], ["differs from b(e_j, e_i)"]),
+        # <1>(2), <1>(0) and <1>(-1).
+        ([[2, 0], [0, 2]], ["M(2)"]),
+        ([[0, 0], [0, 0]], ["zero form"]),
+        ([[-1, 0], [0, -1]], ["M(-1)"]),
+        # U + <2> is the twist by -1 of U + <-2>, whose signature (1, 2) has n_plus <= n_minus.
+        ([[0, 1, 0], [1, 0, 0], [0, 0, 2]], ["M(-1)"]),
+        ([[0, 1, 0], [1, 0, 0], [0, 0, -2]], []),
+    ],
+)
+def test_a_gram_tensor_is_refused_when_it_is_not_symmetric_or_is_a_twist(rows: list[list[int]], expected: list[str]) -> None:
+    found = records.gram_problems(gram(rows))
+    assert len(found) == len(expected)
+    assert all(fragment in problem for fragment, problem in zip(expected, found, strict=True))
+
+
+def admitted(name: str, rows: list[list[int]], **declared: Yaml) -> Lattice:
+    return Lattice.model_validate(records.derive(declared_fields(name, rows) | declared))
+
+
+def declared_fields(name: str, rows: list[list[int]]) -> dict[str, Yaml]:
+    return declared(name, [list(row) for row in rows])
+
+
+A3 = [[2, -1, 0], [-1, 2, -1], [0, -1, 2]]
+D3 = [[2, 0, -1], [0, 2, -1], [-1, -1, 2]]
+
+
+def test_a_definite_lattice_isometric_to_a_written_record_in_another_basis_is_refused() -> None:
+    # A3 and D3 are isometric: both have determinant 4 and 12 roots of norm 2.
+    written = {"0002": admitted("A3", A3).model_copy(update={"tag": "0002"})}
+    (problem,) = records.admission_problems(admitted("D3", D3), written)
+    assert "isometric to 0002" in problem
+    # <1> + <3> and A2 have determinant 3; <1> + <3> has a vector of norm 1 and A2 does not.
+    assert records.admission_problems(admitted("<1> + <3>", [[1, 0], [0, 3]]), {"0002": admitted("A2", [[2, 1], [1, 2]])}) == []
+
+
+def test_an_odd_automorphism_group_order_is_refused() -> None:
+    lattice = admitted("A2", [[2, 1], [1, 2]], definite={"automorphism_group_order": 13})
+    (problem,) = records.admission_problems(lattice, {})
+    assert "order is even" in problem
+
+
+def u_with_root_span(span: dict[str, Yaml]) -> Lattice:
+    return admitted("U", [[0, 1], [1, 0]], root_span=span)
+
+
+RANK_ONE = {"0001": admitted("<1>", [[1]])}
+
+
+def test_a_root_span_of_u_is_admitted_when_its_embedding_has_the_gram_tensor_of_the_sum_of_its_summands() -> None:
+    span: dict[str, Yaml] = {"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}], "embedding": [[1, 1], [1, -1]]}
+    assert records.admission_problems(u_with_root_span(span), RANK_ONE) == []
+
+
+@pytest.mark.parametrize(
+    ("span", "expected"),
+    [
+        # b((1, 0), (1, 0)) = 0 in U, and (2, 2) is not primitive.
+        ({"roots": [[1, 0]]}, ["is not a root of L"]),
+        ({"roots": [[2, 2]]}, ["is not a root of L"]),
+        # e and f generate U, and the roots (1, 1) and (1, -1) generate a sublattice of index 2; U is not <2> + <-2>.
+        (
+            {"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}], "embedding": [[1, 0], [0, 1]]},
+            ["not a basis", "orthogonal sum"],
+        ),
+        # <2> + <2> is positive definite, and the sublattice that (1, 1) and (1, -1) generate is <2> + <-2>.
+        ({"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": 2}], "embedding": [[1, 1], [1, -1]]}, ["orthogonal sum"]),
+        ({"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 2}, {"tag": "0008", "scale": -2}], "embedding": [[1, 1], [1, -1]]}, ["0008 is not in the corpus"]),
+    ],
+)
+def test_a_root_span_of_u_is_refused_for_its_reasons(span: dict[str, Yaml], expected: list[str]) -> None:
+    found = records.admission_problems(u_with_root_span(span), RANK_ONE)
+    assert len(found) == len(expected)
+    assert all(fragment in problem for fragment, problem in zip(expected, found, strict=True))
+
+
+U = admitted("U", [[0, 1], [1, 0]])
+
+
+def morphism(matrix: list[list[int]], row_subdivisions: list[int] | None = None) -> Morphism:
+    return Morphism.model_validate({"name": "phi", "matrix": matrix, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []})
+
+
+@pytest.mark.parametrize(
+    ("matrix", "row_subdivisions", "expected"),
+    [
+        ([[1, 0], [0, 1]], [], []),
+        ([[0, 1], [1, 0]], [], []),
+        # The image of f is 2f, so b(e, f) = 1 goes to b(e, 2f) = 2.
+        ([[1, 0], [0, 2]], [], ["does not preserve the forms"]),
+        ([[1, 0]], [], ["2 rows and 2 columns"]),
+        # e and f are not orthogonal, so the line between them does not cut U into orthogonal summands.
+        ([[1, 0], [0, 1]], [1], ["row_subdivisions are not orthogonal summands of the target"]),
+    ],
+)
+def test_a_morphism_of_u_is_refused_when_its_matrix_does_not_preserve_the_forms_or_a_line_cuts_u(
+    matrix: list[list[int]], row_subdivisions: list[int], expected: list[str]
+) -> None:
+    found = records.morphism_problems(morphism(matrix, row_subdivisions), U, U)
+    assert len(found) == len(expected)
+    assert all(fragment in problem for fragment, problem in zip(expected, found, strict=True))

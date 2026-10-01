@@ -137,7 +137,7 @@
         <tr><th scope="row">\(L = \mathbb{Z}\Phi_S(L)\) for</th><td>\(S = {{ set_tex(lattice.root_norms) }}\)</td></tr>
         {% endif %}
         {% if lattice.definite %}
-        <tr><th scope="row">Number of roots</th><td>{{ 2 * (lattice.positive_roots | length) }}</td></tr>
+        <tr><th scope="row">Number of roots</th><td>{{ lattice.root_count }}</td></tr>
         {% endif %}
         <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>
           {%- if span_summands -%}
@@ -166,9 +166,9 @@
           {%- if not span.roots -%}
           The notes prove that \(L\) has no roots.
           {%- elif lattice.is_root_lattice -%}
-          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is verified to be a root, and the \(r_i\) generate \(L\).
+          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is a root, and the \(r_i\) generate \(L\).
           {%- else -%}
-          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is verified to be a root. The notes prove that each root of \(L\) is in \(\mathbb{Z}\{r_i\}\).
+          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is a root. The notes prove that each root of \(L\) is in \(\mathbb{Z}\{r_i\}\).
           {%- endif -%}
         </td></tr>
         {% endif %}
@@ -185,7 +185,7 @@
         </thead>
         <tbody>
           {% for component in lattice.definite.roots %}
-          <tr><td>\(\Phi_{ {{- loop.index -}} }\)</td><td>\({{ root_system_tex((component.type,)) }}\)</td><td>\({{ set_tex(component_norms(lattice, component)) }}\)</td><td class="numeric">{{ root_count(component.type) }}</td><td>\(\cong {{ component_lattice_tex(component) }}\)</td></tr>
+          <tr><td>\(\Phi_{ {{- loop.index -}} }\)</td><td>\({{ root_system_tex((component.type,)) }}\)</td><td>\({{ set_tex(component_norms(component)) }}\)</td><td class="numeric">{{ root_count(component.type) }}</td><td>\(\cong {{ component_lattice_tex(component) }}\)</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -200,7 +200,7 @@
         <tbody>
           {% for component in lattice.definite.roots %}
           {% set c = loop.index %}
-          {% set norms = component_norms(lattice, component) %}
+          {% set norms = component_norms(component) %}
           {% for simple_root in component.simple_roots %}
           <tr><td>\(\alpha{% if several %}^{({{ c }})}{% endif %}_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(simple_root) }}\)</td><td class="numeric">\({{ rational_tex(norms[loop.index0]) }}\)</td></tr>
           {% endfor %}
@@ -219,7 +219,7 @@
         </thead>
         <tbody>
           {% for generating_root in span.roots %}
-          <tr><td>\(r_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(generating_root) }}\)</td><td class="numeric">\({{ rational_tex(lattice.spanning_roots[generating_root]) }}\)</td></tr>
+          <tr><td>\(r_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(generating_root) }}\)</td><td class="numeric">\({{ rational_tex(span.norms[loop.index0]) }}\)</td></tr>
           {% endfor %}
         </tbody>
       </table>

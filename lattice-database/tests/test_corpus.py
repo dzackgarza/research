@@ -1,11 +1,10 @@
-"""A corpus is valid exactly when the statements of a record about other records agree with those records."""
+"""A corpus is valid exactly when the tags, families and file names that its records name exist and are unique."""
 
-from fractions import Fraction
 from pathlib import Path
 
 import pytest
 import yaml
-from latticedb import arithmetic, corpus, records
+from latticedb import corpus, records
 from latticedb.model import Yaml
 
 
@@ -28,6 +27,7 @@ def rank_one(tag: str) -> dict[str, Yaml]:
             "root_system": [],
             "roots": [{"type": "A1", "scale": "1/2", "simple_roots": [[1]]}],
         },
+        "root_sublattice": {"invariant_factors": [1], "norms": [1]},
     }
 
 
@@ -44,7 +44,8 @@ def hyperbolic_plane(summands: list[dict[str, str | int]]) -> dict[str, Yaml]:
         "definiteness": "indefinite",
         "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1},
         "indefinite": {"isotropic": True},
-        "root_span": {"roots": [[1, 1], [1, -1]], "summands": summands, "embedding": [[1, 1], [1, -1]]},
+        "root_span": {"roots": [[1, 1], [1, -1]], "norms": [2, -2], "summands": summands, "embedding": [[1, 1], [1, -1]]},
+        "root_sublattice": {"invariant_factors": [1, 2]},
     }
 
 
@@ -65,14 +66,6 @@ def write(root: Path, *records: dict[str, Yaml]) -> Path:
 def test_a_root_span_is_accepted_when_its_embedding_has_the_gram_tensor_of_the_sum_of_its_summands(tmp_path: Path) -> None:
     directory = write(tmp_path, rank_one("0001"), hyperbolic_plane([{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}]))
     assert [entry.lattice.tag for entry in corpus.load(directory).entries] == ["0001", "0016"]
-
-
-def test_a_root_span_is_rejected_when_its_summands_are_not_isometric_to_the_image_of_its_embedding(tmp_path: Path) -> None:
-    # <2> + <2> is positive definite, and the sublattice of U that (1, 1) and (1, -1) generate is <2> + <-2>.
-    directory = write(tmp_path, rank_one("0001"), hyperbolic_plane([{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": 2}]))
-    with pytest.raises(corpus.CorpusInvalid) as raised:
-        corpus.load(directory)
-    assert len(raised.value.problems) == 1
 
 
 def test_a_root_span_is_rejected_when_a_summand_is_not_a_record_of_the_corpus(tmp_path: Path) -> None:
@@ -117,50 +110,6 @@ def test_the_families_file_is_read_as_one_line_of_meaning_per_family(tmp_path: P
     assert len(raised.value.problems) == 1
 
 
-def rank_three(tag: str, name: str, gram_tensor: list[list[int]]) -> dict[str, Yaml]:
-    """A3 or D3 in its basis of simple roots: the same lattice, since A3 and D3 are isometric."""
-    return {
-        "tag": tag,
-        "name": name,
-        "latex": name,
-        "rank": 3,
-        "gram_tensor": gram_tensor,
-        "signature": [3, 0],
-        "determinant": 4,
-        "definiteness": "positive_definite",
-        "integral": {"parity": "even", "discriminant_group": [4], "overlattice_count": 2},
-        "definite": {
-            "minimum": 2,
-            "kissing_number": 12,
-            "theta_series": [1, 0, 12, 0, 6, 0, 24, 0, 12, 0, 24, 0, 8],
-            "root_system": ["A3"],
-            "roots": [{"type": "C3", "scale": 1, "simple_roots": [[0, 1, 0], [0, 0, 1], [1, 0, -1]] if name == "A3" else [[0, 0, 1], [0, 1, 0], [1, -1, 0]]}],
-        },
-    }
-
-
-def test_two_definite_records_that_are_isometric_in_different_bases_are_rejected(tmp_path: Path) -> None:
-    a3 = rank_three("0002", "A3", [[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
-    d3 = rank_three("0003", "D3", [[2, 0, -1], [0, 2, -1], [-1, -1, 2]])
-    directory = write(tmp_path, a3, d3)
-    with pytest.raises(corpus.CorpusInvalid) as raised:
-        corpus.load(directory)
-    assert len(raised.value.problems) == 1
-    assert "0002" in raised.value.problems[0] and raised.value.problems[0].startswith(str(directory / "lattices" / "0003.md"))
-
-
-def test_isometry_of_definite_lattices_is_decided_on_the_gram_tensors() -> None:
-    a3 = tuple(tuple(Fraction(value) for value in row) for row in [[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
-    d3 = tuple(tuple(Fraction(value) for value in row) for row in [[2, 0, -1], [0, 2, -1], [-1, -1, 2]])
-    assert arithmetic.is_isometric(a3, d3)
-    # Both of determinant 3, positive definite: <1> + <3> has a vector of norm 1 and A2 does not.
-    diagonal = ((Fraction(1), Fraction(0)), (Fraction(0), Fraction(3)))
-    a2 = ((Fraction(2), Fraction(1)), (Fraction(1), Fraction(2)))
-    assert not arithmetic.is_isometric(diagonal, a2)
-    # A2 and its scaling by 1/2 have different least denominators.
-    assert not arithmetic.is_isometric(a2, tuple(tuple(value / 2 for value in row) for row in a2))
-
-
 def square_sum() -> dict[str, Yaml]:
     """<1> + <1>, with the fields that its Gram tensor determines computed by `records.derive`."""
     declared: dict[str, Yaml] = {"tag": "0002", "name": "<1>^2", "latex": r"\langle 1 \rangle^2", "gram_tensor": [[1, 0], [0, 1]]}
@@ -196,22 +145,6 @@ def test_the_inclusion_of_a_summand_is_a_morphism_whose_lines_cut_orthogonal_sum
     directory = write_morphisms(write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", morphisms)
     (loaded,) = corpus.load(directory).morphisms
     assert loaded.morphisms.morphisms[0].images == ((1, 0),)
-
-
-def test_a_matrix_that_does_not_preserve_the_forms_is_rejected(tmp_path: Path) -> None:
-    # The image of f is 2f, so b(e, f) = 1 goes to b(e, 2f) = 2.
-    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "scaling", "matrix": [[1, 0], [0, 2]]}])
-    assert "does not preserve the forms" in problem
-
-
-def test_a_matrix_whose_shape_is_not_the_ranks_of_target_and_source_is_rejected(tmp_path: Path) -> None:
-    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "short", "matrix": [[1, 0]]}])
-    assert "2 rows and 2 columns" in problem
-
-
-def test_a_line_that_cuts_u_is_rejected_because_e_and_f_are_not_orthogonal(tmp_path: Path) -> None:
-    (problem,) = morphism_problems(tmp_path, "0016", "0016", [{"name": "identity", "matrix": [[1, 0], [0, 1]], "row_subdivisions": [1]}])
-    assert "row_subdivisions are not orthogonal summands of the target" in problem
 
 
 def test_a_morphism_file_is_rejected_when_a_tag_is_not_in_the_corpus_or_is_retired(tmp_path: Path) -> None:

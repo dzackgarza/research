@@ -28,22 +28,28 @@ def _record_problems(error: ValidationError) -> list[str]:
     return [f"{'.'.join(str(part) for part in problem['loc']) or 'record'}: {problem['msg']} [{problem['type']}]" for problem in error.errors()]
 
 
+def _refuse(found: list[str]) -> None:
+    """Print the problems and exit with status 1 when there are any."""
+    if found:
+        print("\n".join(found), file=sys.stderr)
+        sys.exit(1)
+
+
 def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
-    """Compute the derived fields of a new record, check it by itself and against the corpus, and write it under the next tag."""
+    """Compute the values of a new record once, check it against its declared values and the corpus, and write it under the next tag."""
     loaded = corpus.load(root)
     tag = corpus.next_tag(loaded)
+    _refuse(records.gram_problems(records.gram_tensor(declared["gram_tensor"])))
     record = records.derive({"tag": tag, **declared})
     # Pydantic reports the problems of a record only through this exception.
     try:
         lattice = Lattice.model_validate(record)
     except ValidationError as error:
-        print("\n".join(_record_problems(error)), file=sys.stderr)
+        _refuse(_record_problems(error))
         sys.exit(1)
     path = root / "lattices" / f"{tag}.md"
-    found = corpus.problems([*loaded.entries, corpus.Entry(lattice, prose, path)], loaded.families, loaded.retired)
-    if found:
-        print("\n".join(found), file=sys.stderr)
-        sys.exit(1)
+    _refuse(records.admission_problems(lattice, {entry.lattice.tag: entry.lattice for entry in loaded.entries}))
+    _refuse(corpus.problems([*loaded.entries, corpus.Entry(lattice, prose, path)], loaded.families, loaded.retired))
     path.write_text(records.record_text(record, prose))
     return path
 
@@ -125,13 +131,12 @@ def morphism(
     try:
         record = Morphisms.model_validate({"source": source, "target": target, "morphisms": [*listed, added]})
     except ValidationError as error:
-        print("\n".join(_record_problems(error)), file=sys.stderr)
+        _refuse(_record_problems(error))
         sys.exit(1)
     others = [entry for entry in loaded.morphisms if entry.path != path]
-    found = corpus.morphism_problems([*others, corpus.MorphismEntry(record, notes, path)], list(loaded.entries), loaded.retired)
-    if found:
-        print("\n".join(found), file=sys.stderr)
-        sys.exit(1)
+    _refuse(corpus.morphism_problems([*others, corpus.MorphismEntry(record, notes, path)], list(loaded.entries), loaded.retired))
+    by_tag = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
+    _refuse(records.morphism_problems(record.morphisms[-1], by_tag[source], by_tag[target]))
     path.parent.mkdir(exist_ok=True)
     path.write_text(records.morphisms_text(source, target, [*listed, added], notes))
     print(path)
@@ -139,7 +144,7 @@ def morphism(
 
 @app.command
 def derive(root: Root = Path()) -> None:
-    """Compute again, in every record, each field that the Gram tensor determines, and write the records that change."""
+    """Seed again every record: compute each field that the Gram tensor determines, and write the records that change."""
     written = 0
     for path in sorted((root / "lattices").glob("*.md")):
         text = path.read_text()

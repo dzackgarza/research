@@ -130,7 +130,7 @@ $\Phi(L)$ is finite, $O(L)$ permutes it, $2 b(r, r') / b(r, r) \in \mathbb{Z}$ f
 $\Phi(\mathbb{Z}^n)$ is of type $B_n$ for $n \geq 2$, with the roots $\pm e_i$ and $\pm e_i \pm e_j$, and $\Phi(A_2)$ is of type $G_2$.
 :::
 
-$\Phi(L)$ is enumerated, and the page states each component $\Phi_c$ with its type, its scale $k$ and its simple roots in the chosen basis.
+The page states each component $\Phi_c$ of $\Phi(L)$ with its type, its scale $k$ and its simple roots in the chosen basis.
 Each short root $r$ of $\Phi_c$ has $b(r, r) = 2k$.
 $R(L)$ is the orthogonal sum of the sublattices $\mathbb{Z}\Phi_c$, and the simple roots are a basis of it.
 $\mathbb{Z}\Phi_c$ is isometric to $X_n(k)$ for a type $X_n$ among $A_n$, $D_n$, $E_n$; to $\mathbb{Z}^n(2k)$ for $B_n$; to $D_n(k)$ for $C_n$, with $D_3 \cong A_3$; to $D_4(k)$ for $F_4$; and to $A_2(k)$ for $G_2$.
@@ -138,14 +138,14 @@ $\mathbb{Z}\Phi_c$ is isometric to $X_n(k)$ for a type $X_n$ among $A_n$, $D_n$,
 ## Lattices that are not definite {#not-definite}
 
 $\Phi(L)$ can be infinite.
-The page states roots $r_1, r_2, \dots$ that generate $R(L)$, and each $r_i$ is verified to be a root.
+The page states roots $r_1, r_2, \dots$ that generate $R(L)$.
 When the $r_i$ generate $L$, $L = R(L)$.
 When they do not, the notes prove that each root of $L$ is in $\sum_i \mathbb{Z}r_i$, and the page states lattices $M_1, M_2, \dots$ of the catalogue and the matrix of an isometric embedding $M_1 \oplus M_2 \oplus \cdots \to L$ with image $R(L)$.
 
 ## Labels and the page of a lattice {#record}
 
-The label `root lattice` means that $L = R(L)$ is verified.
-The label `not a root lattice` means that $L \neq R(L)$ is verified.
+The label `root lattice` means that $L = R(L)$.
+The label `not a root lattice` means that $L \neq R(L)$.
 For a lattice with neither label, the question is [not decided](records.html#not-decided).
 The page of a lattice states a lattice of the catalogue isometric to $R(L)$, its rank, the index $[L : R(L)]$ and whether $R(L)$ is primitive in $L$, with the quotient when it is not.
 Each of these rows is [not decided](records.html#not-decided) when $R(L)$ is not stated.

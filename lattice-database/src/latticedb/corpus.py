@@ -1,9 +1,10 @@
 """The corpus: every `lattices/<TAG>.md` and the families of `families.yaml`, read and validated as one database.
 
 A file is YAML front matter, which holds the record of one lattice, and then
-prose in Markdown. `load` validates each record by itself and then checks the
-statements that concern more than one record, or a record and the families,
-and that no two definite records are the same lattice in different bases.
+prose in Markdown. The corpus is static: `records` computes and checks each
+value once, when the record is written. `load` reads the stored values,
+checks that each record has the shape of the schema, and checks the
+references between records, families, retired tags and file names.
 
 A tag is permanent. `retired-tags.yaml` lists each tag whose record the corpus
 no longer admits, with the lattice that was there and why it is not a record;
@@ -11,21 +12,18 @@ no record takes a retired tag, and `next_tag` counts them.
 
 `morphisms/<S>-<T>.md` holds morphisms from the lattice with tag `S` to the
 lattice with tag `T`: YAML front matter, a `Morphisms` record, and notes in
-Markdown. `load` checks that each matrix preserves the forms.
+Markdown. `records.morphism_problems` checks a morphism when it is written.
 """
 
 from dataclasses import dataclass
-from fractions import Fraction
-from itertools import combinations
 from pathlib import Path
 
 import frontmatter
 import yaml
 from pydantic import TypeAdapter, ValidationError
 
-from latticedb import arithmetic
 from latticedb.arithmetic import GramTensor
-from latticedb.model import AdeType, Definiteness, Family, Lattice, Morphisms, Tag
+from latticedb.model import Family, Lattice, Morphisms, Tag
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -70,47 +68,11 @@ class CorpusInvalid(Exception):
         self.problems = problems
 
 
-IsometryInvariants = tuple[int, Definiteness, Fraction, Fraction, int, tuple[AdeType, ...] | None, tuple[int, ...] | None, tuple[int, ...] | None]
-"""Rank, definiteness, determinant, minimum, kissing number, root system, theta series and discriminant group.
-
-Invariants of the isometry class that a record states, and that the build has checked.
-"""
-
-
-def _isometry_invariants(lattice: Lattice) -> IsometryInvariants:
-    definite = lattice.definite
-    assert definite is not None, "only a definite record is compared by isometry class"
-    integral = lattice.integral
-    discriminant_group = None if integral is None else integral.discriminant_group
-    return (lattice.rank, lattice.definiteness, lattice.determinant, definite.minimum, definite.kissing_number, definite.root_system, definite.theta_series, discriminant_group)
-
-
-def _isometric_pairs(entries: list[Entry]) -> list[tuple[Entry, Entry]]:
-    """Each pair of definite records that are isometric, decided by `qfisom` on the pairs whose stated invariants agree.
-
-    Whether two indefinite lattices are isometric is not decided here: `qfisom`
-    decides it for definite forms only, and the corpus states no invariant that
-    would decide it for the others.
-    """
-    by_invariants: dict[IsometryInvariants, list[Entry]] = {}
-    for entry in entries:
-        if entry.lattice.definite is not None:
-            by_invariants.setdefault(_isometry_invariants(entry.lattice), []).append(entry)
-    return [
-        (first, second)
-        for group in by_invariants.values()
-        for first, second in combinations(group, 2)
-        # A pair with the same components is reported as such.
-        if first.lattice.gram_tensor != second.lattice.gram_tensor and arithmetic.is_isometric(first.lattice.gram_tensor, second.lattice.gram_tensor)
-    ]
-
-
 def problems(entries: list[Entry], families: Families, retired: Retired) -> list[str]:
     """The problems that concern more than one record, the families or the retired tags.
 
-    A file name that is not its tag, a retired tag, a repeated name or Gram tensor, two definite records that are isometric,
-    a family that `families.yaml` does not list, a related or summand tag that is not in the corpus,
-    and an embedding whose Gram tensor is not that of its summands.
+    A file name that is not its tag, a retired tag, a repeated name or Gram tensor,
+    a family that `families.yaml` does not list, and a related or summand tag that is not in the corpus.
     """
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
@@ -135,29 +97,15 @@ def problems(entries: list[Entry], families: Families, retired: Retired) -> list
             elif related.tag not in by_tag:
                 found.append(f"{entry.path}: the related tag {related.tag} is not in the corpus")
         span = lattice.root_span
-        if span is not None and span.summands is not None and span.embedding is not None:
-            missing = [summand.tag for summand in span.summands if summand.tag not in by_tag]
-            found.extend(f"{entry.path}: the summand tag {tag} is not in the corpus" for tag in missing)
-            summands = tuple(arithmetic.scaled(by_tag[summand.tag].gram_tensor, summand.scale) for summand in span.summands if summand.tag in by_tag)
-            if not missing and arithmetic.restriction(lattice.gram_tensor, span.embedding) != arithmetic.orthogonal_sum(summands):
-                found.append(f"{entry.path}: the rows of root_span.embedding do not have the Gram tensor of the orthogonal sum of the summands")
-    found.extend(f"{second.path}: the lattice is isometric to {first.path} ({first.lattice.name}), in another basis" for first, second in _isometric_pairs(entries))
+        if span is not None and span.summands is not None:
+            found.extend(f"{entry.path}: the summand tag {summand.tag} is not in the corpus" for summand in span.summands if summand.tag not in by_tag)
     return found
-
-
-def _crosses_parts(gram_tensor: GramTensor, lines: tuple[int, ...]) -> bool:
-    """Whether $b(e_i, e_j) \\neq 0$ for some $i$, $j$ in different parts of the indices that the lines cut."""
-    bounds = (0, *lines, len(gram_tensor))
-    part = [index for index, (low, high) in enumerate(zip(bounds, bounds[1:], strict=False)) for _ in range(low, high)]
-    return any(gram_tensor[i][j] != 0 for i in range(len(gram_tensor)) for j in range(len(gram_tensor)) if part[i] != part[j])
 
 
 def morphism_problems(morphisms: list[MorphismEntry], entries: list[Entry], retired: Retired) -> list[str]:
     """The problems of the morphism files.
 
-    A file name that is not `<source>-<target>`, a tag that is not in the corpus or is retired, two files for one pair,
-    a matrix whose shape is not (rank of the target) by (rank of the source), a matrix that does not preserve the forms,
-    and a subdivision whose parts are not orthogonal summands.
+    A file name that is not `<source>-<target>`, a tag that is not in the corpus or is retired, and two files for one pair.
     """
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
@@ -173,20 +121,6 @@ def morphism_problems(morphisms: list[MorphismEntry], entries: list[Entry], reti
         missing = [tag for tag in pair if tag not in by_tag]
         found.extend(f"{entry.path}: the tag {tag} is retired ({retired[tag]})" for tag in missing if tag in retired)
         found.extend(f"{entry.path}: the tag {tag} is not in the corpus" for tag in missing if tag not in retired)
-        if missing:
-            continue
-        source, target = by_tag[record.source], by_tag[record.target]
-        for morphism in record.morphisms:
-            where = f"{entry.path}: {morphism.name}"
-            if len(morphism.matrix) != target.rank or len(morphism.matrix[0]) != source.rank:
-                found.append(f"{where}: the matrix has {target.rank} rows and {source.rank} columns, the ranks of the target and the source")
-                continue
-            if arithmetic.restriction(target.gram_tensor, morphism.images) != source.gram_tensor:
-                found.append(f"{where}: the matrix does not preserve the forms: M^T G_target M is not G_source")
-            if _crosses_parts(target.gram_tensor, morphism.row_subdivisions):
-                found.append(f"{where}: the parts of row_subdivisions are not orthogonal summands of the target")
-            if _crosses_parts(source.gram_tensor, morphism.column_subdivisions):
-                found.append(f"{where}: the parts of column_subdivisions are not orthogonal summands of the source")
     return found
 
 

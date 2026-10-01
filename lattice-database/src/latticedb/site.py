@@ -27,7 +27,7 @@ from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescap
 from markupsafe import Markup, escape
 from pydantic import BaseModel, Field
 
-from latticedb import arithmetic, root_systems
+from latticedb import root_systems
 from latticedb.arithmetic import Vector
 from latticedb.corpus import Entry, load
 from latticedb.model import (
@@ -205,9 +205,10 @@ def root_span_text(components: tuple[RootSystemComponent, ...]) -> str:
     return " + ".join(f"{name}^{count}" if count > 1 else name for name, count in runs) or "0"
 
 
-def component_norms(lattice: Lattice, component: RootSystemComponent) -> tuple[Fraction, ...]:
-    """The values `b(r, r)` on the roots of the component: each root is the image of a simple root under the Weyl group."""
-    return tuple(arithmetic.pairing(lattice.gram_tensor, r, r) for r in component.simple_roots)
+def component_norms(component: RootSystemComponent) -> tuple[Fraction, ...]:
+    """The values `b(\\alpha_i, \\alpha_i) = k (\\alpha_i, \\alpha_i)` on the simple roots; each root of the component is the image of a simple root under the Weyl group."""
+    gram = root_systems.simple_root_gram(component.type)
+    return tuple(component.scale * gram[i][i] for i in range(component.rank))
 
 
 def orthogonal_blocks(lattice: Lattice) -> list[list[int]]:

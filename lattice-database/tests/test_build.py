@@ -133,9 +133,10 @@ def test_the_page_of_a_sum_states_the_orthogonal_decomposition_that_its_basis_gi
     assert "The record fixes an orthogonal decomposition" not in (built / "tag" / "0094.html").read_text()
 
 
-def test_the_page_of_z10_states_the_index_of_the_sublattice_that_its_roots_generate(built: Path) -> None:
-    html = (built / "tag" / "0120.html").read_text()
-    assert "rank 10, index 2 in" in html
+def test_the_pages_of_z10_and_u_state_the_index_of_the_sublattice_that_the_roots_generate(built: Path) -> None:
+    # The roots +-e_i of Z^10 generate it; the roots of U generate the vectors with even coordinate sum.
+    assert r'<th scope="row">\([L : R(L)]\)</th><td>1</td>' in (built / "tag" / "0120.html").read_text()
+    assert r'<th scope="row">\([L : R(L)]\)</th><td>2</td>' in (built / "tag" / "0016.html").read_text()
 
 
 def test_the_fields_page_defines_every_property_of_the_database(built: Path) -> None:

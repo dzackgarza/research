@@ -1,15 +1,18 @@
-"""The record of one lattice, with the checks that make the record well defined.
+"""The schema of the record of one lattice.
 
 A lattice here is a free module of finite rank over the integers with a
 symmetric bilinear form `b` that takes rational values. The Gram tensor of
 the lattice is `b`, a symmetric (0,2)-tensor; a record gives its components
 `b(e_i, e_j)` in a basis. The form is not assumed positive definite,
-integral, or nondegenerate: each of those is declared, and each declaration
-is checked against the Gram tensor.
+integral, or nondegenerate.
+
+A record is static. `records.derive` computes its values once, when the
+record is written; reading a record checks only that its fields have the
+shapes of the schema and that each block is present exactly when the stored
+fields state its hypothesis.
 
 Invariants that exist only under a hypothesis live in a block named for the
-hypothesis (`integral`, `definite`, `indefinite`, `hyperbolic`). A block on a
-lattice that does not satisfy its hypothesis is a validation error.
+hypothesis (`integral`, `definite`, `indefinite`, `hyperbolic`).
 """
 
 import math
@@ -17,14 +20,12 @@ import re
 from collections.abc import Iterator
 from datetime import date
 from fractions import Fraction
-from functools import cached_property
-from itertools import combinations
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError, model_validator
 from pydantic_core import InitErrorDetails, PydanticCustomError
 
-from latticedb import arithmetic, root_systems, roots
+from latticedb import arithmetic, root_systems
 from latticedb.arithmetic import Vector
 
 type Yaml = None | bool | int | float | str | date | list[Yaml] | dict[str, Yaml]
@@ -119,7 +120,7 @@ class IntegralData(Record):
             "The number of integral lattices $M$ with $L \\subseteq M \\subseteq L^*$, with $M = L$ counted: the number of subgroups $H$ of the discriminant group "
             "$A_L = L^*/L$ with $b_{A_L}(H, H) = 0$, for the form $b_{A_L}(x + L, y + L) = b(x, y) + \\mathbb{Z}$ with values in $\\mathbb{Q}/\\mathbb{Z}$. "
             "Subgroups are counted, not their orbits under the isometries of $L$. An even $L$ can have odd lattices among the $M$. "
-            f"Required when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; otherwise absent, and the count is not decided."
+            f"Stated when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; otherwise absent, and the count is not decided."
         ),
     )
     genus_symbol: str | None = Field(
@@ -157,18 +158,22 @@ class RootSystemComponent(Record):
         )
     )
 
+    @property
+    def rank(self) -> int:
+        return int(self.type[1:])
+
 
 class DefiniteData(Record):
     """Invariants of a definite lattice. They are stated for a positive definite form; on a negative definite lattice they are the invariants of $-b$."""
 
-    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$. Verified against the Gram tensor.")
-    kissing_number: int = Field(description="Number of $x$ with $b(x, x)$ equal to the minimum; finite because $b$ is definite. Verified against the Gram tensor.")
+    minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$.")
+    kissing_number: int = Field(description="Number of $x$ with $b(x, x)$ equal to the minimum; finite because $b$ is definite.")
     automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$. Declared; the notes cite its source.")
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
             "Entry $k$ is the number of $x$ with $b(x, x) = k$, for $k = 0, 1, 2, \\dots$ Required for, and only for, integer values. "
-            "Each entry is verified against the Gram tensor. `latticedb new` writes the entries for $k \\leq \\max(\\mu, N)$, "
+            "The entries run through $k = \\max(\\mu, N)$ at least, "
             "where $\\mu$ is the minimum and $N$ is 12, 8, 6 or 4 for rank at most 4, at most 8, at most 12, or greater."
         ),
     )
@@ -179,14 +184,11 @@ class DefiniteData(Record):
             "when it is empty. "
             "By Witt's theorem (Conway and Sloane, *Sphere Packings, Lattices and Groups*, 3rd edition, Chapter 4, §3), "
             "$\\mathbb{Z}\\Phi_{\\{2\\}}(L)$ is the orthogonal sum of the root lattices of the components. "
-            "Required for, and only for, integer values. Verified against the Gram tensor."
+            "Required for, and only for, integer values."
         ),
     )
     roots: Annotated[tuple[RootSystemComponent, ...], Field(strict=False)] = Field(
-        description=(
-            "The root system $\\Phi(L)$ as its irreducible components, each with a base; `[]` when $L$ has no roots. "
-            "Verified against the enumerated $\\Phi(L)$. `latticedb new` writes the field."
-        ),
+        description="The root system $\\Phi(L)$ as its irreducible components, each with a base; `[]` when $L$ has no roots.",
     )
 
 
@@ -208,11 +210,12 @@ class RootSpan(Record):
     roots: Annotated[tuple[IntegerVector, ...], Field(strict=False)] = Field(
         description=(
             "Roots of $L$ that generate $\\mathbb{Z}\\Phi(L)$: each row lists the coordinates of one root in the chosen basis $e_1, \\dots, e_n$. "
-            "`[]` when $L$ has no roots. Each row is verified to be a root. "
+            "`[]` when $L$ has no roots. "
             "When the rows generate $L$, that proves $L = \\mathbb{Z}\\Phi(L)$. "
             "When they do not, the notes of the record prove that each root of $L$ is in the sublattice that the rows generate."
         )
     )
+    norms: Annotated[tuple[Rational, ...], Field(strict=False)] = Field(description="Entry $i$ is $b(r_i, r_i)$ for the root $r_i$ in row $i$ of `roots`.")
     summands: Annotated[tuple[Summand, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
@@ -225,8 +228,26 @@ class RootSpan(Record):
         default=None,
         description=(
             "Matrix of an isometric embedding $M_1 \\oplus M_2 \\oplus \\cdots \\to L$ with image $\\mathbb{Z}\\Phi(L)$: "
-            "the rows list the coordinates of the images of the chosen basis vectors of $M_1$, then of $M_2$, and so on. "
-            "The rows are verified to have the Gram tensor of the orthogonal sum and to generate the sublattice that `roots` generates."
+            "the rows list the coordinates of the images of the chosen basis vectors of $M_1$, then of $M_2$, and so on."
+        ),
+    )
+
+
+class RootSublattice(Record):
+    """The root sublattice $R(L) = \\mathbb{Z}\\Phi(L)$ as a sublattice of $L$. Present when $L$ is definite or has a `root_span` block."""
+
+    invariant_factors: Annotated[tuple[int, ...], Field(strict=False)] = Field(
+        description=(
+            "The invariant factors $d_1 \\mid d_2 \\mid \\dots$ of $R(L)$ in $L$. Their number is the rank of $R(L)$. "
+            "With $M'$ the primitive sublattice $L \\cap (R(L) \\otimes \\mathbb{Q})$, "
+            "$M' / R(L) \\cong \\mathbb{Z}/d_1 \\oplus \\mathbb{Z}/d_2 \\oplus \\cdots$."
+        )
+    )
+    norms: Annotated[tuple[Rational, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "For a root lattice, a set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$: among the sets of values $b(r, r)$ of generating roots, "
+            "one with the fewest elements, and then the least absolute values. Present exactly when $L = R(L)$."
         ),
     )
 
@@ -295,6 +316,7 @@ class Lattice(Record):
     indefinite: IndefiniteData | None = Field(default=None, description=IndefiniteData.__doc__)
     hyperbolic: HyperbolicData | None = Field(default=None, description=HyperbolicData.__doc__)
     root_span: RootSpan | None = Field(default=None, description=RootSpan.__doc__)
+    root_sublattice: RootSublattice | None = Field(default=None, description=RootSublattice.__doc__)
 
     @property
     def nullity(self) -> int:
@@ -316,86 +338,61 @@ class Lattice(Record):
     def is_hyperbolic(self) -> bool:
         return self.is_nondegenerate and self.rank >= 2 and min(self.signature) == 1
 
-    @cached_property
-    def positive_roots(self) -> dict[Vector, Fraction]:
-        """One of $r$, $-r$ for each root $r$ of a definite lattice, with $b(r, r)$."""
-        assert self.is_definite, "the build lists the roots of a lattice only for a definite form"
-        return arithmetic.definite_roots(self.gram_tensor)
+    @property
+    def is_integer_valued(self) -> bool:
+        return all(entry.denominator == 1 for row in self.gram_tensor for entry in row)
 
-    @cached_property
-    def spanning_roots(self) -> dict[Vector, Fraction] | None:
-        """Roots that generate $\\mathbb{Z}\\Phi(L)$, each with $b(r, r)$. `None` when the record does not decide $\\mathbb{Z}\\Phi(L)$.
+    @property
+    def root_count(self) -> int:
+        """$|\\Phi(L)|$ for a definite lattice: the sum of the numbers of roots of the types of its components."""
+        assert self.definite is not None, "a lattice that is not definite can have infinitely many roots"
+        return sum(root_systems.root_count(component.type) for component in self.definite.roots)
 
-        On a definite lattice they are all the roots. On another lattice they are the rows of `root_span.roots`.
-        """
-        if self.is_definite:
-            return self.positive_roots
-        if self.root_span is None:
-            return None
-        return {r: arithmetic.pairing(self.gram_tensor, r, r) for r in self.root_span.roots}
-
-    @cached_property
+    @property
     def root_span_factors(self) -> tuple[int, ...] | None:
-        """The invariant factors $d_1 \\mid d_2 \\mid \\dots$ of $\\mathbb{Z}\\Phi(L)$ in $L$; `None` when $\\mathbb{Z}\\Phi(L)$ is not decided.
-
-        Their number is the rank of $\\mathbb{Z}\\Phi(L)$. With $M'$ the primitive sublattice
-        $L \\cap (\\mathbb{Z}\\Phi(L) \\otimes \\mathbb{Q})$, $M' / \\mathbb{Z}\\Phi(L) \\cong \\mathbb{Z}/d_1 \\oplus \\mathbb{Z}/d_2 \\oplus \\cdots$.
-        """
-        roots = self.spanning_roots
-        return None if roots is None else arithmetic.invariant_factors(list(roots), self.rank)
+        """The invariant factors of $R(L)$ in $L$; `None` when $R(L)$ is not decided."""
+        return None if self.root_sublattice is None else self.root_sublattice.invariant_factors
 
     @property
     def root_span_rank(self) -> int | None:
-        """The rank of $\\mathbb{Z}\\Phi(L)$."""
+        """The rank of $R(L)$."""
         factors = self.root_span_factors
         return None if factors is None else len(factors)
 
     @property
     def root_span_index(self) -> int | None:
-        """$[M' : \\mathbb{Z}\\Phi(L)]$ for the primitive sublattice $M' = L \\cap (\\mathbb{Z}\\Phi(L) \\otimes \\mathbb{Q})$.
-
-        It is $[L : \\mathbb{Z}\\Phi(L)]$ when the ranks agree.
-        """
+        """$[M' : R(L)]$ for the primitive sublattice $M' = L \\cap (R(L) \\otimes \\mathbb{Q})$. It is $[L : R(L)]$ when the ranks agree."""
         factors = self.root_span_factors
         return None if factors is None else math.prod(factors)
 
     @property
     def root_span_is_primitive(self) -> bool | None:
-        """Whether the root sublattice $R(L) = \\mathbb{Z}\\Phi(L)$ is primitive in $L$; `None` when $\\mathbb{Z}\\Phi(L)$ is not decided."""
+        """Whether $R(L)$ is primitive in $L$; `None` when $R(L)$ is not decided."""
         index = self.root_span_index
         return None if index is None else index == 1
 
     @property
     def is_root_lattice(self) -> bool | None:
-        """Whether $L = \\mathbb{Z}\\Phi(L)$; `None` when $\\mathbb{Z}\\Phi(L)$ is not decided."""
+        """Whether $L = R(L)$; `None` when $R(L)$ is not decided."""
         factors = self.root_span_factors
         return None if factors is None else factors == (1,) * self.rank
 
-    @cached_property
+    @property
     def root_norms(self) -> tuple[Fraction, ...] | None:
-        """A set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$, for a root lattice; `None` for another lattice.
-
-        $S$ has the fewest elements among the sets of values $b(r, r)$ of the roots of `spanning_roots`, and then the least absolute values.
-        """
-        roots = self.spanning_roots
-        if roots is None or not self.is_root_lattice:
-            return None
-        return arithmetic.generating_norms(roots, self.rank)
+        """A set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$, for a root lattice; `None` for another lattice."""
+        return None if self.root_sublattice is None else self.root_sublattice.norms
 
     @model_validator(mode="after")
     def _well_defined(self) -> Self:
+        """The fields have the shapes of the schema, and each block is present exactly when the stored fields state its hypothesis."""
         problems = list(self._shape_problems())
         if not problems:
             problems = [
-                *self._twist_problems(),
-                *self._invariant_problems(),
                 *self._integral_problems(),
                 *self._definite_problems(),
                 *self._indefinite_problems(),
-                *self._hyperbolic_problems(),
+                *self._root_problems(),
             ]
-        if not problems:
-            problems = [*self._root_system_problems(), *self._root_span_problems()]
         if problems:
             raise ValidationError.from_exception_data(type(self).__name__, problems)
         return self
@@ -408,304 +405,90 @@ class Lattice(Record):
                 ("gram_tensor",),
                 {"rank": self.rank},
             )
-            return
-        if any(self.gram_tensor[i][j] != self.gram_tensor[j][i] for i in range(self.rank) for j in range(i)):
-            yield _problem("gram_tensor_not_symmetric", "b(e_i, e_j) differs from b(e_j, e_i) for some i, j", ("gram_tensor",))
-
-    def _twist_problems(self) -> Iterator[InitErrorDetails]:
-        """The corpus records one lattice of each class under scaling $L \\mapsto L(n)$, $n$ a nonzero integer.
-
-        $L$ is admitted when it is not $M(n)$ for a lattice $M$ and an integer $n$ with $|n| \\geq 2$,
-        that is, when the scale of $b$ has numerator 1, and when its sign is the conventional one:
-        $b$ is positive when it takes one sign, and $n_+ \\leq n_-$ when it takes both.
-        The zero form is $M(0)$ for every $M$ and is not admitted.
-        """
-        scale = arithmetic.scale(self.gram_tensor)
-        if scale == 0:
-            yield _problem("twisted", "b = 0 is M(0) for every lattice M of rank {rank}; the corpus records no zero form", ("gram_tensor",), {"rank": self.rank})
-            return
-        if scale.numerator != 1:
-            yield _problem(
-                "twisted",
-                "the lattice is M({n}) for the lattice M with Gram tensor b/{n}; the corpus records M and not its twist",
-                ("gram_tensor",),
-                {"n": scale.numerator},
-            )
-        n_plus, n_minus, _ = arithmetic.inertia(self.gram_tensor)
-        if (n_plus == 0 and n_minus > 0) or (n_plus > n_minus > 0):
-            yield _problem(
-                "twisted",
-                "the lattice is M(-1) for the lattice M with Gram tensor -b and signature ({n_minus}, {n_plus}); "
-                "the corpus records M: positive when b has one sign, n_plus <= n_minus when it has both",
-                ("gram_tensor",),
-                {"n_plus": n_plus, "n_minus": n_minus},
-            )
-
-    def _invariant_problems(self) -> Iterator[InitErrorDetails]:
-        determinant = arithmetic.determinant(self.gram_tensor)
-        if self.determinant != determinant:
-            yield _problem(
-                "determinant_mismatch",
-                "the Gram tensor has determinant {computed}, the record states {stated}",
-                ("determinant",),
-                {"computed": str(determinant), "stated": str(self.determinant)},
-            )
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
-        if self.signature != (n_plus, n_minus):
-            yield _problem(
-                "signature_mismatch",
-                "the Gram tensor has signature ({n_plus}, {n_minus}), the record states ({stated_plus}, {stated_minus})",
-                ("signature",),
-                {"n_plus": n_plus, "n_minus": n_minus, "stated_plus": self.signature[0], "stated_minus": self.signature[1]},
-            )
-        computed = definiteness(n_plus, n_minus, n_zero)
-        if self.definiteness != computed:
-            yield _problem(
-                "definiteness_mismatch",
-                "a form of signature ({n_plus}, {n_minus}) and nullity {n_zero} is {computed}, the record states {stated}",
-                ("definiteness",),
-                {"n_plus": n_plus, "n_minus": n_minus, "n_zero": n_zero, "computed": computed, "stated": self.definiteness},
-            )
+        if min(self.signature) < 0 or self.nullity < 0:
+            yield _problem("signature_shape", "n_plus and n_minus are nonnegative with n_plus + n_minus <= {rank}", ("signature",), {"rank": self.rank})
 
     def _integral_problems(self) -> Iterator[InitErrorDetails]:
-        integer_valued = arithmetic.is_integer_valued(self.gram_tensor)
         if self.integral is None:
-            if integer_valued:
+            if self.is_integer_valued:
                 yield _problem("integral_block_missing", "every b(e_i, e_j) is an integer, so the `integral` block is required", ("integral",))
             return
-        if not integer_valued:
+        if not self.is_integer_valued:
             yield _problem("integral_requires_integer_values", "the `integral` block requires every b(e_i, e_j) to be an integer", ("integral",))
             return
-        # b(x, x) = sum_i x_i^2 b(e_i, e_i) + 2 sum_{i<j} x_i x_j b(e_i, e_j), so b(x, x) is even for all x when each b(e_i, e_i) is.
-        parity = "even" if all(self.gram_tensor[i][i] % 2 == 0 for i in range(self.rank)) else "odd"
-        if self.integral.parity != parity:
-            yield _problem(
-                "parity_mismatch",
-                "the lattice is {computed}, the record states {stated}",
-                ("integral", "parity"),
-                {"computed": parity, "stated": self.integral.parity},
-            )
-        nondegenerate = arithmetic.determinant(self.gram_tensor) != 0
-        stated_group = self.integral.discriminant_group
-        location = ("integral", "discriminant_group")
-        if not nondegenerate:
-            if stated_group is not None:
-                yield _problem("discriminant_group_requires_nondegenerate", "the discriminant group is finite only when the determinant is not zero", location)
+        if self.determinant == 0:
+            if self.integral.discriminant_group is not None:
+                message = "the discriminant group is finite only when the determinant is not zero"
+                yield _problem("discriminant_group_requires_nondegenerate", message, ("integral", "discriminant_group"))
             if self.integral.genus_symbol is not None:
                 yield _problem("genus_requires_nondegenerate", "the genus symbol requires a nonzero determinant", ("integral", "genus_symbol"))
             if self.integral.overlattice_count is not None:
-                yield _problem(
-                    "overlattice_count_requires_nondegenerate", "the number of overlattices is finite only when the determinant is not zero", ("integral", "overlattice_count")
-                )
-            return
-        if stated_group is None:
-            yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", location)
-            return
-        group = arithmetic.discriminant_invariants(self.gram_tensor)
-        if stated_group != group:
-            yield _problem(
-                "discriminant_group_mismatch",
-                "the discriminant group has invariant factors {computed}, the record states {stated}",
-                location,
-                {"computed": str(list(group)), "stated": str(list(stated_group))},
-            )
-        yield from self._overlattice_problems()
-
-    def _overlattice_problems(self) -> Iterator[InitErrorDetails]:
-        assert self.integral is not None
-        location = ("integral", "overlattice_count")
-        stated = self.integral.overlattice_count
-        match arithmetic.overlattice_count(self.gram_tensor), stated:
-            case None, None:
-                return
-            case None, _:
-                yield _problem(
-                    "overlattice_count_not_decided",
-                    "the discriminant group has more than {bound} subgroups, so the number of overlattices is not computed and the record must not state it",
-                    location,
-                    {"bound": arithmetic.SUBGROUP_BOUND},
-                )
-            case _, None:
-                message = "the discriminant group has at most {bound} subgroups, so `overlattice_count` is required"
-                yield _problem("overlattice_count_missing", message, location, {"bound": arithmetic.SUBGROUP_BOUND})
-            case computed, _ if computed != stated:
-                yield _problem(
-                    "overlattice_count_mismatch",
-                    "the discriminant form vanishes on {computed} subgroups of the discriminant group, the record states {stated}",
-                    location,
-                    {"computed": computed, "stated": stated},
-                )
+                message = "the number of overlattices is finite only when the determinant is not zero"
+                yield _problem("overlattice_count_requires_nondegenerate", message, ("integral", "overlattice_count"))
+        elif self.integral.discriminant_group is None:
+            yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", ("integral", "discriminant_group"))
 
     def _definite_problems(self) -> Iterator[InitErrorDetails]:
-        """The `definite` block is required exactly on a definite form, and its computed fields are compared with the Gram tensor."""
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
-        definite = n_zero == 0 and (n_plus == 0 or n_minus == 0)
         if self.definite is None:
-            if definite:
+            if self.is_definite:
                 yield _problem("definite_block_missing", "the form is definite, so the `definite` block is required", ("definite",))
             return
-        if not definite:
+        if not self.is_definite:
             yield _problem("definite_requires_definite", "the `definite` block requires a positive definite or negative definite form", ("definite",))
             return
         data = self.definite
-        integer_valued = arithmetic.is_integer_valued(self.gram_tensor)
-        minimum, kissing = arithmetic.minimum_and_kissing_number(self.gram_tensor)
-        if data.minimum != minimum:
-            yield _problem(
-                "minimum_mismatch",
-                "the least |b(x, x)| over nonzero x is {computed}, the record states {stated}",
-                ("definite", "minimum"),
-                {"computed": str(minimum), "stated": str(data.minimum)},
-            )
-        if data.kissing_number != kissing:
-            yield _problem(
-                "kissing_number_mismatch",
-                "{computed} vectors attain the minimum, the record states {stated}",
-                ("definite", "kissing_number"),
-                {"computed": kissing, "stated": data.kissing_number},
-            )
-
-        order = data.automorphism_group_order
-        if order is not None and (order <= 0 or order % 2 == 1):
-            yield _problem("automorphism_order_odd", "x -> -x is an isometry of order 2, so the order is even", ("definite", "automorphism_group_order"))
-
-        theta = data.theta_series
-        location = ("definite", "theta_series")
-        if not integer_valued:
-            if theta is not None:
-                yield _problem("theta_requires_integral", "`theta_series` is indexed by integer values of b(x, x), so it requires an integer-valued form", location)
-        elif theta is None:
-            yield _problem("theta_series_missing", "every b(e_i, e_j) is an integer, so `theta_series` is required", location)
-        elif len(theta) <= theta_bound(self.rank, minimum):
+        integer_valued = self.is_integer_valued
+        for name, value in (("theta_series", data.theta_series), ("root_system", data.root_system)):
+            if integer_valued and value is None:
+                yield _problem(f"{name}_missing", "every b(e_i, e_j) is an integer, so `{name}` is required", ("definite", name), {"name": name})
+            if not integer_valued and value is not None:
+                yield _problem(f"{name}_requires_integral", "`{name}` requires an integer-valued form", ("definite", name), {"name": name})
+        if data.theta_series is not None and len(data.theta_series) <= theta_bound(self.rank, data.minimum):
             yield _problem(
                 "theta_series_short",
                 "the theta series of a lattice of rank {rank} and minimum {minimum} states the counts through norm {bound}",
-                location,
-                {"rank": self.rank, "minimum": str(minimum), "bound": theta_bound(self.rank, minimum)},
+                ("definite", "theta_series"),
+                {"rank": self.rank, "minimum": str(data.minimum), "bound": theta_bound(self.rank, data.minimum)},
             )
-        else:
-            computed = arithmetic.theta_coefficients(self.gram_tensor, len(theta) - 1)
-            if theta != computed:
-                yield _problem(
-                    "theta_series_mismatch",
-                    "the counts of x with |b(x, x)| = 0, 1, 2, ... are {computed}, the record states {stated}",
-                    location,
-                    {"computed": str(list(computed)), "stated": str(list(theta))},
-                )
-
-        root_system = data.root_system
-        location = ("definite", "root_system")
-        if not integer_valued:
-            if root_system is not None:
-                yield _problem("root_system_requires_integral", "`root_system` requires an integer-valued form", location)
-        elif root_system is None:
-            yield _problem("root_system_missing", "every b(e_i, e_j) is an integer, so `root_system` is required", location)
-        else:
-            computed = roots.norm_two_types(self.gram_tensor, arithmetic.definite_roots(self.gram_tensor))
-            if sorted(root_system) != sorted(computed):
-                yield _problem(
-                    "root_system_mismatch",
-                    "the r in L with |b(r, r)| = 2 form a root system of type {computed}, the record states {stated}",
-                    location,
-                    {"computed": " ".join(computed) or "[]", "stated": " ".join(root_system) or "[]"},
-                )
+        if any(len(component.simple_roots) != component.rank or any(len(row) != self.rank for row in component.simple_roots) for component in data.roots):
+            yield _problem("roots_shape", "a component of rank m has m simple roots, each with {rank} coordinates", ("definite", "roots"), {"rank": self.rank})
 
     def _indefinite_problems(self) -> Iterator[InitErrorDetails]:
-        """The `indefinite` block is required exactly on a form that takes both signs, and `isotropic` is compared with the Gram tensor."""
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
-        indefinite = n_plus > 0 and n_minus > 0
-        if self.indefinite is None:
-            if indefinite:
-                yield _problem("indefinite_block_missing", "b(x, x) takes both signs, so the `indefinite` block is required", ("indefinite",))
-            return
-        if not indefinite:
+        indefinite = self.definiteness == "indefinite"
+        if self.indefinite is None and indefinite:
+            yield _problem("indefinite_block_missing", "b(x, x) takes both signs, so the `indefinite` block is required", ("indefinite",))
+        if self.indefinite is not None and not indefinite:
             yield _problem("indefinite_requires_indefinite", "the `indefinite` block requires a form that takes both signs", ("indefinite",))
-            return
-        # The radical of a degenerate form is nonzero and isotropic; `qfsolve` decides a nondegenerate rational form.
-        isotropic = n_zero > 0 or arithmetic.is_isotropic(self.gram_tensor)
-        if self.indefinite.isotropic != isotropic:
-            yield _problem(
-                "isotropy_mismatch",
-                "the form is {computed}, the record states {stated}",
-                ("indefinite", "isotropic"),
-                {"computed": "isotropic" if isotropic else "anisotropic", "stated": "isotropic" if self.indefinite.isotropic else "anisotropic"},
-            )
-
-    def _hyperbolic_problems(self) -> Iterator[InitErrorDetails]:
-        if self.hyperbolic is None:
-            return
-        n_plus, n_minus, n_zero = arithmetic.inertia(self.gram_tensor)
-        if n_zero > 0 or self.rank < 2 or min(n_plus, n_minus) != 1:
+        if self.hyperbolic is not None and not self.is_hyperbolic:
             message = "the `hyperbolic` block requires a nondegenerate form of signature (1, n) or (n, 1) with n >= 1"
             yield _problem("hyperbolic_requires_hyperbolic", message, ("hyperbolic",))
 
-    def _root_system_problems(self) -> Iterator[InitErrorDetails]:
-        """Whether `definite.roots` is $\\Phi(L)$.
-
-        Let the declared simple roots $\\alpha_i$ of a component be roots of $L$ with
-        $b(\\alpha_i, \\alpha_j) = k (\\alpha_i, \\alpha_j)$ for the symmetrized Cartan matrix of the
-        declared type. Each $s_{\\alpha_i}$ is in $O(L)$, and $O(L)$ maps $\\Phi(L)$ to itself,
-        so the orbit of the $\\alpha_i$ under the group $W$ that the $s_{\\alpha_i}$ generate is in
-        $\\Phi(L)$. The form is definite, so that orbit is a root system with base $\\alpha_i$: it
-        has the declared type, and `root_count(type)` elements. The orbits of orthogonal
-        components are disjoint. The union is therefore $\\Phi(L)$ exactly when the sum of
-        the `root_count(type)` is the number of roots of $L$.
-        """
-        if self.definite is None:
-            return
-        components = self.definite.roots
-        location = ("definite", "roots")
-        shapes = (len(component.simple_roots) == int(component.type[1:]) and all(len(row) == self.rank for row in component.simple_roots) for component in components)
-        if not all(shapes):
-            yield _problem("roots_shape", "a component of rank m has m simple roots, each with {rank} coordinates", location, {"rank": self.rank})
-            return
-        for component in components:
-            for row in component.simple_roots:
-                if not arithmetic.is_root(self.gram_tensor, row):
-                    yield _problem("simple_root_not_root", "{vector} is not a root of L", location, {"vector": str(list(row))})
-            expected = root_systems.simple_root_gram(component.type)
-            pairs = ((i, j) for i in range(len(expected)) for j in range(len(expected)))
-            if any(arithmetic.pairing(self.gram_tensor, component.simple_roots[i], component.simple_roots[j]) != component.scale * expected[i][j] for i, j in pairs):
-                yield _problem(
-                    "simple_roots_gram_mismatch",
-                    "the simple roots of a component do not have the Gram matrix of type {type} with scale {scale}",
-                    location,
-                    {"type": component.type, "scale": str(component.scale)},
-                )
-        for first, second in combinations(components, 2):
-            if any(arithmetic.pairing(self.gram_tensor, r, s) != 0 for r in first.simple_roots for s in second.simple_roots):
-                yield _problem("root_components_not_orthogonal", "two components are not orthogonal", location)
-        declared = sum(root_systems.root_count(component.type) for component in components)
-        if declared != 2 * len(self.positive_roots):
-            yield _problem(
-                "root_count_mismatch",
-                "the declared components have {declared} roots, the lattice has {listed}",
-                location,
-                {"declared": declared, "listed": 2 * len(self.positive_roots)},
-            )
-
-    def _root_span_problems(self) -> Iterator[InitErrorDetails]:
+    def _root_problems(self) -> Iterator[InitErrorDetails]:
         span = self.root_span
-        if span is None:
+        if span is not None:
+            if self.is_definite:
+                yield _problem("root_span_on_definite", "`definite.roots` states the roots of a definite lattice, so the `root_span` block is an error there", ("root_span",))
+            if any(len(row) != self.rank for row in (*span.roots, *(span.embedding or ()))):
+                yield _problem("root_span_shape", "each row lists {rank} coordinates", ("root_span",), {"rank": self.rank})
+            if len(span.norms) != len(span.roots):
+                yield _problem("root_span_norms_shape", "`norms` has one entry for each row of `roots`", ("root_span", "norms"))
+            if (span.summands is None) != (span.embedding is None):
+                yield _problem("root_span_representative_incomplete", "`summands` and `embedding` are stated together", ("root_span",))
+        sublattice = self.root_sublattice
+        decided = self.is_definite or span is not None
+        if sublattice is None:
+            if decided:
+                yield _problem("root_sublattice_missing", "the roots of the lattice are stated, so the `root_sublattice` block is required", ("root_sublattice",))
             return
-        location = ("root_span",)
-        if self.is_definite:
-            yield _problem("root_span_on_definite", "the build lists the roots of a definite lattice, so the `root_span` block is an error there", location)
+        if not decided:
+            yield _problem("root_sublattice_not_decided", "the `root_sublattice` block requires `definite` or `root_span`", ("root_sublattice",))
             return
-        if any(len(row) != self.rank for row in (*span.roots, *(span.embedding or ()))):
-            yield _problem("root_span_shape", "each row lists {rank} coordinates", location, {"rank": self.rank})
-            return
-        for row in span.roots:
-            if not arithmetic.is_root(self.gram_tensor, row):
-                yield _problem("root_span_not_root", "{vector} is not a root of L", ("root_span", "roots"), {"vector": str(list(row))})
-        if (span.summands is None) != (span.embedding is None):
-            yield _problem("root_span_representative_incomplete", "`summands` and `embedding` are stated together", location)
-            return
-        if span.embedding is not None:
-            basis = arithmetic.span_basis(list(span.embedding))
-            if len(basis) != len(span.embedding) or basis != arithmetic.span_basis(list(span.roots)):
-                message = "the rows of `embedding` are not a basis of the sublattice that the rows of `roots` generate"
-                yield _problem("root_span_embedding_mismatch", message, ("root_span", "embedding"))
+        factors = sublattice.invariant_factors
+        if len(factors) > self.rank or any(d < 1 for d in factors) or any(second % first != 0 for first, second in zip(factors, factors[1:], strict=False)):
+            message = "at most {rank} positive invariant factors, each dividing the next"
+            yield _problem("root_sublattice_factors_shape", message, ("root_sublattice", "invariant_factors"), {"rank": self.rank})
+        if (sublattice.norms is not None) != (factors == (1,) * self.rank):
+            yield _problem("root_sublattice_norms", "`norms` is present exactly for a root lattice", ("root_sublattice", "norms"))
 
 
 def _subdivision_problems(lines: Vector, size: int, location: tuple[str, ...]) -> Iterator[InitErrorDetails]:
@@ -724,7 +507,7 @@ class Morphism(Record):
     matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = Field(
         description=(
             "Matrix of $\\varphi$, with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\\varphi(e_j)$ "
-            "in the chosen basis of $T$. Verified: $M^{\\top} G_T M = G_S$ for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$. "
+            "in the chosen basis of $T$, so that $M^{\\top} G_T M = G_S$ for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$. "
             "A SageMath morphism `phi` gives `phi.matrix().transpose()`, because SageMath lists the images in rows."
         )
     )
@@ -732,14 +515,14 @@ class Morphism(Record):
         default=(),
         description=(
             "Lines between the rows, as `M.subdivisions()` of SageMath states them: a line $k$ lies between rows $k$ and $k + 1$. "
-            "The basis vectors of $T$ between two consecutive lines span an orthogonal summand of $T$; this is verified."
+            "The basis vectors of $T$ between two consecutive lines span an orthogonal summand of $T$."
         ),
     )
     column_subdivisions: IntegerVector = Field(
         default=(),
         description=(
             "Lines between the columns: a line $k$ lies between columns $k$ and $k + 1$. "
-            "The basis vectors of $S$ between two consecutive lines span an orthogonal summand of $S$; this is verified."
+            "The basis vectors of $S$ between two consecutive lines span an orthogonal summand of $S$."
         ),
     )
 
