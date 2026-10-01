@@ -286,6 +286,3 @@ The work that remains, in order:
 
 3. Absorb the indefinite entries, then the definite ones.
    The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
-
-The corpus must also absorb the coinvariant lattices $L_G = (L^G)^\perp$ of the finite groups $G$ that act symplectically on the K3 lattice $L = U^3 \oplus E_8(-1)^2$, from the classification of K. Hashimoto, "Finite symplectic actions on the K3 lattice", arXiv:1012.2682.
-Each is negative definite, so its record is $L_G(-1)$.
