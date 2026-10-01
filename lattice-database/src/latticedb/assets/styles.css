@@ -785,3 +785,83 @@ h2[id^="rank-"] {
     padding-top: 0.2rem;
   }
 }
+
+/* Theory blocks: Pandoc fenced divs `::: {.definition}` and the like */
+
+.definition,
+.theorem,
+.proposition,
+.example,
+.proof {
+  max-width: var(--measure);
+  margin: 1rem 0;
+}
+
+.definition,
+.theorem,
+.proposition {
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 3px solid var(--line);
+}
+
+.theorem,
+.proposition {
+  border-left-color: var(--accent);
+}
+
+.definition > p,
+.theorem > p,
+.proposition > p,
+.example > p,
+.proof > p {
+  margin: 0.4rem 0;
+}
+
+.definition > p:first-child::before,
+.theorem > p:first-child::before,
+.proposition > p:first-child::before,
+.example > p:first-child::before,
+.proof > p:first-child::before {
+  font-weight: bold;
+  font-style: normal;
+}
+
+.definition > p:first-child::before {
+  content: "Definition. ";
+}
+
+.theorem > p:first-child::before {
+  content: "Theorem. ";
+}
+
+/* attr() reads the element that generates the pseudo-element, so the named
+   label belongs to the block itself, floated beside its first paragraph. */
+.theorem[data-name] > p:first-child::before {
+  content: none;
+}
+
+.theorem[data-name]::before {
+  content: "Theorem (" attr(data-name) ").";
+  float: left;
+  margin: 0.4rem 0.3em 0 0;
+  font-weight: bold;
+}
+
+.proposition > p:first-child::before {
+  content: "Proposition. ";
+}
+
+.example > p:first-child::before {
+  content: "Example. ";
+}
+
+.proof > p:first-child::before {
+  content: "Proof. ";
+  font-style: italic;
+  font-weight: normal;
+}
+
+.proof > p:last-child::after {
+  content: " \220E";
+  float: right;
+}

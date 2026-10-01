@@ -6,13 +6,25 @@ order: 9
 
 ## Morphisms {#morphisms}
 
+::: {.definition}
 A *morphism* $\varphi \colon S \to T$ of [lattices](lattices.html#lattices) is a $\mathbb{Z}$-linear map with $b_T(\varphi x, \varphi y) = b_S(x, y)$ for all $x, y \in S$.
-When $S$ is nondegenerate, $\varphi$ is injective, because $\varphi x = 0$ gives $b_S(x, -) = 0$; $\varphi$ is then an *isometric embedding*.
+:::
+
+::: {.proposition}
+When $S$ is nondegenerate, a morphism $\varphi \colon S \to T$ is injective; it is then an *isometric embedding*.
+:::
+
+::: {.proof}
+$\varphi x = 0$ gives $b_S(x, y) = b_T(0, \varphi y) = 0$ for all $y$, so $x$ is in the radical of $S$, which is zero.
+:::
 
 ## Matrices {#matrices}
 
+::: {.definition}
 The matrix $M$ of $\varphi$ is in the [chosen bases](lattices.html#gram-tensor) of $S$ and $T$, with the orthogonal summands in the order in which the name of the lattice writes them.
 It has $\operatorname{rank} T$ rows and $\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\varphi(e_j)$ in the chosen basis of $T$.
+:::
+
 $M^{\top} G_T M = G_S$ is verified for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$, so $\varphi$ preserves the forms.
 A SageMath morphism `phi` gives `phi.matrix().transpose()`, because SageMath lists the images in rows.
 

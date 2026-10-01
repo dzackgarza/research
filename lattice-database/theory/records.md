@@ -15,9 +15,14 @@ Each invariant on the page of a lattice is computed from the Gram tensor with ex
 
 ## Declared values {#declared}
 
+::: {.definition}
 A value marked *declared* is not computed; the notes cite its source.
+:::
 
 ## Values that are not decided {#not-decided}
 
+::: {.definition}
 A value that the source file does not state is *not decided*, and the page of the lattice shows it so.
+:::
+
 Not decided does not mean that the property fails.
