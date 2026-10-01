@@ -1,8 +1,8 @@
 """The seeding of the corpus: the values of a record are computed here once, when the record is written.
 
 `derive` computes every field that the Gram tensor determines and keeps the
-other stored fields: the names, the families, the references, the genus
-symbol, the order of the isometry group, and the
+other stored fields: the names, the families, the references, the values
+that `latticedb certify` computes with SageMath, and the
 `root_span` block of a lattice that is not definite when the search for roots
 does not decide it. A record that is not definite and has no `root_span`
 block after `derive` is not decided.

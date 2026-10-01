@@ -176,19 +176,20 @@ def test_nebe_sloane_writes_the_record_of_a_stored_entry_with_its_reference(tmp_
     assert [reference.url for reference in lattice.references] == ["https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/K12.html"]
 
 
-def test_derive_rewrites_exactly_the_records_whose_computed_fields_changed(tmp_path: Path) -> None:
+def test_certify_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     path = root / "lattices" / "0001.md"
     document = frontmatter.loads(path.read_text())
     stale = dict(document.metadata)
     stale["signature"] = [0, 1]
-    path.write_text("---\n" + yaml.safe_dump(stale, sort_keys=False) + "---\n\n" + document.content + "\n")
-    run("derive", "--root", str(root))
+    stale_text = "---\n" + yaml.safe_dump(stale, sort_keys=False) + "---\n\n" + document.content + "\n"
+    path.write_text(stale_text)
+    run("certify", "--tag", "0001", "--root", str(root))
     assert Lattice.model_validate(frontmatter.loads(path.read_text()).metadata).signature == (1, 0)
-    text = path.read_text()
-    run("derive", "--root", str(root))
-    assert path.read_text() == text
-
+    # The certificate of the derived values names the Gram tensor, which has not changed: they are not computed again.
+    path.write_text(stale_text)
+    run("certify", "--tag", "0001", "--root", str(root))
+    assert path.read_text() == stale_text
 
 def test_morphism_appends_each_morphism_that_preserves_the_forms_up_to_its_scale_and_refuses_one_that_does_not(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)

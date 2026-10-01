@@ -2,6 +2,7 @@
 
 import json
 import sys
+from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
 from urllib.request import Request, urlopen
@@ -10,7 +11,7 @@ import frontmatter
 from cyclopts import App, Parameter
 from pydantic import ValidationError
 
-from latticedb import corpus, hashimoto, hoehn_mason, nebe_sloane, records, site
+from latticedb import certificates, corpus, genus, hashimoto, hoehn_mason, nebe_sloane, records, site
 from latticedb.model import Lattice, Morphisms, Yaml
 
 SERVED = Path("/var/www/static-sites/lattice-database")
@@ -55,6 +56,9 @@ def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
     _refuse(records.admission_problems(lattice, {entry.lattice.tag: entry.lattice for entry in loaded.entries}))
     _refuse(corpus.problems([*loaded.entries, corpus.Entry(lattice, prose, path)], loaded.families, loaded.retired))
     path.write_text(records.record_text(record, prose))
+    held = certificates.load(root)
+    held[f"{tag} derive"] = certificates.Certificate(inputs=certificates.gram_digest(lattice), by=LATTICEDB)
+    certificates.save(root, held)
     return path
 
 
@@ -149,33 +153,83 @@ def morphism(
     print(path)
 
 
-@app.command
-def derive(root: Root = Path()) -> None:
-    """Seed again every record: compute each field that the Gram tensor determines, and write the records that change."""
-    written = 0
-    for path in sorted((root / "lattices").glob("*.md")):
-        text = path.read_text()
-        document = frontmatter.loads(text)
-        updated = records.record_text(records.derive(document.metadata), document.content)
-        if updated != text:
-            path.write_text(updated)
-            written += 1
-            print(path)
-    print(f"{written} records written")
+SOURCES = {"hashimoto": (hashimoto.stored_problems, ("hashimoto",)), "hoehn_mason": (hoehn_mason.stored_problems, ("hashimoto", "hoehn_mason"))}
+"""Each source checked against the corpus, with its check and the directories under `sources/` that it reads."""
+
+LATTICEDB = f"latticedb {version('latticedb')}"
+
+
+def _source_inputs(root: Path, loaded: corpus.Corpus, directories: tuple[str, ...]) -> str:
+    """The digest of the files of `directories` under `sources/`, the Gram tensors of the records and the morphism files: the inputs of a source check."""
+    files = sorted(path for directory in directories for path in (root / "sources" / directory).rglob("*") if path.is_file())
+    parts = [path.read_text() for path in files]
+    parts += [certificates.gram_digest(entry.lattice) for entry in loaded.entries]
+    parts += [entry.path.read_text() for entry in loaded.morphisms]
+    return certificates.digest("\n".join(parts))
+
+
+def _pending(root: Path, loaded: corpus.Corpus, held: certificates.Certificates, seconds: int) -> list[str]:
+    """The names of the computations without a certificate for their present inputs."""
+    names = [f"{entry.lattice.tag} derive" for entry in loaded.entries if not certificates.is_certified(held, f"{entry.lattice.tag} derive", certificates.gram_digest(entry.lattice))]
+    names += [f"source {source}" for source, (_, directories) in SOURCES.items() if not certificates.is_certified(held, f"source {source}", _source_inputs(root, loaded, directories))]
+    names += [genus.name(str(request["tag"]), str(field)) for request in genus.requests(loaded, held, (), seconds) for field in request["fields"]]
+    return names
 
 
 @app.command
-def check(root: Root = Path()) -> None:
-    """Validate every record of the corpus and check it against the sources. Prints each problem and exits with status 1 when there is one."""
+def check(root: Root = Path(), seconds: Annotated[int, Parameter(help="Time limit of the computations that `certify` carries out.")] = 120) -> None:
+    """Validate every record of the corpus and list the computations without a certificate. Computes nothing; exits with status 1 when a record is not valid."""
     try:
         loaded = corpus.load(root)
     except corpus.CorpusInvalid as invalid:
         print("\n".join(invalid.problems), file=sys.stderr)
         print(f"{len(invalid.problems)} problems", file=sys.stderr)
         sys.exit(1)
-    _refuse(hashimoto.stored_problems(root, loaded))
-    _refuse(hoehn_mason.stored_problems(root, loaded))
-    print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid, the sources agree with them")
+    pending = _pending(root, loaded, certificates.load(root), seconds)
+    print("\n".join(pending))
+    print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid; {len(pending)} computations without a certificate")
+
+
+@app.command
+def certify(
+    *,
+    tag: Annotated[tuple[str, ...], Parameter(help="Tag of a record to compute; repeat for each one. All records and the sources when absent.")] = (),
+    seconds: Annotated[int, Parameter(help="Time limit of SageMath for one value of one record.")] = 120,
+    root: Root = Path(),
+) -> None:
+    """Carry out each computation without a certificate for its present inputs, store its values, and write its certificate.
+
+    The fields that `records.derive` computes from the Gram tensor, the checks of the sources against the
+    corpus, and the values that SageMath computes. A certified computation is never carried out again.
+    """
+    loaded = corpus.load(root)
+    held = certificates.load(root)
+    found: list[str] = []
+    for entry in loaded.entries:
+        lattice = entry.lattice
+        inputs = certificates.gram_digest(lattice)
+        if (tag and lattice.tag not in tag) or certificates.is_certified(held, f"{lattice.tag} derive", inputs):
+            continue
+        text = entry.path.read_text()
+        document = frontmatter.loads(text)
+        updated = records.record_text(records.derive(document.metadata), document.content)
+        if updated != text:
+            entry.path.write_text(updated)
+            print(f"{entry.path}: derived values written")
+        held[f"{lattice.tag} derive"] = certificates.Certificate(inputs=inputs, by=LATTICEDB)
+        certificates.save(root, held)
+    for source, (stored_problems, directories) in SOURCES.items() if not tag else ():
+        inputs = _source_inputs(root, loaded, directories)
+        if certificates.is_certified(held, f"source {source}", inputs):
+            continue
+        problems = stored_problems(root, loaded)
+        found.extend(problems)
+        if not problems:
+            held[f"source {source}"] = certificates.Certificate(inputs=inputs, by=LATTICEDB)
+            certificates.save(root, held)
+            print(f"sources/{source} agrees with the corpus")
+    found.extend(genus.certify(root, loaded, held, tag, seconds))
+    _refuse(found)
 
 
 @app.command

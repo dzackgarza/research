@@ -144,7 +144,8 @@ class IntegralData(Record):
         gt=0,
         description=(
             "The class number of the genus of $L$: the number of isometry classes of lattices in the genus, $L$ counted. "
-            "Computed from the Gram tensor with `Genus(G).representatives()` of SageMath. Requires a nonzero determinant; absent when it is not computed."
+            "Computed by `latticedb certify` with `Genus(G).representatives()` of SageMath; for an indefinite binary form, the representatives counted up to equivalence. "
+            "Requires a nonzero determinant; absent when it is not computed."
         ),
     )
 
@@ -185,7 +186,7 @@ class DefiniteData(Record):
 
     minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$.")
     kissing_number: int = Field(description="Number of $x$ with $b(x, x)$ equal to the minimum; finite because $b$ is definite.")
-    automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$. Declared; the notes cite its source.")
+    automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$, computed by `latticedb certify` with `qfauto` of PARI/GP.")
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(

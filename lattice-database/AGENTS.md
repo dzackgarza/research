@@ -25,5 +25,21 @@ validator, its row in `README.md`, and the value on every record that the comput
 It is never left in a scratch script, a terminal or a chat.
 
 A script that produced stored data is itself part of the database: it becomes the module that
-reads the source and checks it, so that `latticedb check` derives every claim of the prose from
-stored data again.
+reads the source and checks it, so that `latticedb certify` derives every claim of the prose from
+stored data, once.
+
+## A certified computation never runs again
+
+`certificates.yaml` records each computation that the database has carried out, with the digest of
+its inputs. A computation with a certificate for its present inputs is never carried out again: the
+stored value is the result, and computing it again to "re-prove" it spends hours and proves nothing
+new. Only a change of the inputs, or a removed certificate, starts it again.
+
+Heavy computation runs in the nightly CI job `.github/workflows/lattice-database-certify.yml`, never
+on this machine over the corpus. A test computes on one small specimen, such as $A_2$ (record
+`0012`); it never runs a check, a derivation or a SageMath computation over every record. Locally,
+`latticedb certify --tag <tag>` runs for one new record at most, and `latticedb check` computes
+nothing.
+
+A new computation gets a certificate name in `certificates.py` and a step in `latticedb certify`
+before it stores its first value.

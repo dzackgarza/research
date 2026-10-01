@@ -27,6 +27,7 @@ The site is served at <http://lattice-database.localhost/>.
 | `src/latticedb/nebe_sloane.py` | Reads an entry of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) and writes it as the declared fields of a record |
 | `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, checks every equation they state against the records, and checks that the morphism files embed each $\Lambda^G$ and its $\Lambda_G$ in the K3 lattice as orthogonal primitive sublattices |
 | `src/latticedb/hoehn_mason.py` | Reads the coinvariant lattices of the Leech lattice of Höhn and Mason, computes their inclusions in the Leech lattice and the actions of their stabilizers, and checks them against the records, Table 10.2 of Hashimoto and the morphism files |
+| `src/latticedb/genus.py`, `sage_genus.py` | Computes the genus symbol, the class number of the genus and the order of $O(L)$ with SageMath, and stores them in the records |
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
@@ -78,12 +79,11 @@ So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature 
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new`, `latticedb nebe-sloane` and `latticedb derive` compute them once, with exact arithmetic, when they write the record.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new` and `latticedb nebe-sloane` compute them once, with exact arithmetic, when they write the record.
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
 The build reads the stored values and computes nothing again.
-`latticedb check` computes again only the equations that the files under `sources/` state.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-A person also writes `integral.genus_symbol` and `integral.genus_class_count`, computed from the Gram tensor with `Genus` of SageMath, and `definite.automorphism_group_order`, computed with `qfauto` of PARI/GP. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
+`latticedb certify` computes `integral.genus_symbol` and `integral.genus_class_count` with `Genus` of SageMath, and `definite.automorphism_group_order` with `qfauto` of PARI/GP, under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a value that SageMath does not compute within the time limit is not written. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.
@@ -170,8 +170,24 @@ To add a lattice:
 
 The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`. Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree.
 
-`just derive` computes again, in every record, each field that the Gram tensor determines, and writes the records that change.
-Run it after a change to the computation, and read the diff.
+## Certificates
+
+Each computation is carried out once. `certificates.yaml` maps the name of each computation that the database has carried out to its certificate: the SHA-256 digest of its inputs, the program that carried it out with its version, and, for a computation that did not finish, the time limit in seconds.
+
+| Name | Computation | Inputs |
+| --- | --- | --- |
+| `<tag> derive` | The fields that the Gram tensor determines | The Gram tensor |
+| `<tag> <block>.<field>` | A value that SageMath computes, such as `0012 integral.genus_symbol` | The Gram tensor |
+| `source <name>` | The check of `sources/<name>/` against the records and the morphism files | The files of the source, the Gram tensors and the morphism files |
+
+`latticedb certify` carries out each computation without a certificate for its present inputs, stores its values, and writes its certificate; a check of a source is certified only when it finds no problem.
+A computation that did not finish within the time limit is carried out again only with a larger `--seconds`.
+To carry out a computation again, after a change to the computation, remove its certificate.
+`latticedb new` and `latticedb nebe-sloane` certify the derived values of the record that they write.
+
+The computations are heavy for a large lattice, so they run in the nightly job `.github/workflows/lattice-database-certify.yml`, which opens a pull request with the new values and certificates.
+Locally, run `just certify --tag <tag>` for one new record at most.
+`latticedb check` validates the records and lists the computations without a certificate; it computes nothing.
 
 ## Morphisms
 
@@ -267,15 +283,16 @@ The `justfile` calls it.
 | `just new ...` | Write the record of a new lattice from its Gram tensor and the options |
 | `just nebe-sloane ENTRY ...` | Write the record of an entry of the Catalogue of Lattices |
 | `just morphism S T ...` | Check a morphism of lattices and append it to `morphisms/<S>-<T>.md` |
-| `just derive` | Compute again, in every record, each field that the Gram tensor determines; write the records that change |
+| `just check` | Validate every record and list the computations without a certificate |
+| `just certify ...` | Carry out the computations without a certificate, store their values and certify them |
 | `just build` | Validate every record and build the site into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
 
-`uv run latticedb check` validates the records, checks them against the files under `sources/hashimoto/` and `sources/hoehn_mason/`, checks that the morphism files hold the maps that `sources/hoehn_mason/` determines and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices, and builds nothing.
+The check of `sources/hashimoto/` checks the records against Tables 10.2 and 10.3 of Hashimoto, and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices. The check of `sources/hoehn_mason/` checks that the morphism files hold the maps that the source determines.
 
-The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`.
+The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`. `latticedb certify` needs SageMath at `$SAGE_BIN`.
 
 ## Sources to absorb
 

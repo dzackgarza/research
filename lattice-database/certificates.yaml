@@ -1,0 +1,906 @@
+0001 definite.automorphism_group_order:
+  inputs: e28610836ab702cd35495751839961e9fae54fec4ee18dc4b314862c18c3d104
+  by: SageMath 10.10.beta8
+0001 integral.genus_class_count:
+  inputs: e28610836ab702cd35495751839961e9fae54fec4ee18dc4b314862c18c3d104
+  by: SageMath 10.10.beta8
+0001 integral.genus_symbol:
+  inputs: e28610836ab702cd35495751839961e9fae54fec4ee18dc4b314862c18c3d104
+  by: SageMath 10.10.beta8
+0002 definite.automorphism_group_order:
+  inputs: 72cb573c0f06ed22eef9d55a3a5e5b118322555ae843675245337139e103506a
+  by: SageMath 10.10.beta8
+0002 integral.genus_class_count:
+  inputs: 72cb573c0f06ed22eef9d55a3a5e5b118322555ae843675245337139e103506a
+  by: SageMath 10.10.beta8
+0002 integral.genus_symbol:
+  inputs: 72cb573c0f06ed22eef9d55a3a5e5b118322555ae843675245337139e103506a
+  by: SageMath 10.10.beta8
+0011 definite.automorphism_group_order:
+  inputs: d961a3cc60cff8329a3a4e94c0903709c3f0c9b380b136f512dc8f36f34d286b
+  by: SageMath 10.10.beta8
+0011 integral.genus_class_count:
+  inputs: d961a3cc60cff8329a3a4e94c0903709c3f0c9b380b136f512dc8f36f34d286b
+  by: SageMath 10.10.beta8
+0011 integral.genus_symbol:
+  inputs: d961a3cc60cff8329a3a4e94c0903709c3f0c9b380b136f512dc8f36f34d286b
+  by: SageMath 10.10.beta8
+0012 definite.automorphism_group_order:
+  inputs: b07f740998a24cdaf9405370b209772131040471a2fcb1daf469d07f57ceae7a
+  by: SageMath 10.10.beta8
+0012 integral.genus_class_count:
+  inputs: b07f740998a24cdaf9405370b209772131040471a2fcb1daf469d07f57ceae7a
+  by: SageMath 10.10.beta8
+0012 integral.genus_symbol:
+  inputs: b07f740998a24cdaf9405370b209772131040471a2fcb1daf469d07f57ceae7a
+  by: SageMath 10.10.beta8
+0013 integral.genus_class_count:
+  inputs: e58a8797e7cd0607f8adab31134ba025a181a49755e79f865b9456824acc8cfb
+  by: SageMath 10.10.beta8
+0013 integral.genus_symbol:
+  inputs: e58a8797e7cd0607f8adab31134ba025a181a49755e79f865b9456824acc8cfb
+  by: SageMath 10.10.beta8
+0014 integral.genus_class_count:
+  inputs: 617dd188f71defadc25305cb03c7c5855c98da1a72c477788a2ed74f13170eae
+  by: SageMath 10.10.beta8
+0014 integral.genus_symbol:
+  inputs: 617dd188f71defadc25305cb03c7c5855c98da1a72c477788a2ed74f13170eae
+  by: SageMath 10.10.beta8
+0015 integral.genus_class_count:
+  inputs: 0a48126bf3e31785f812ba9568b90100fb4c43699cbb78ccaac43d2ea117187c
+  by: SageMath 10.10.beta8
+0015 integral.genus_symbol:
+  inputs: 0a48126bf3e31785f812ba9568b90100fb4c43699cbb78ccaac43d2ea117187c
+  by: SageMath 10.10.beta8
+0016 integral.genus_class_count:
+  inputs: 06ea6923a3bb02016fb87803ee85d719c363705f1f79565dfc4004602b8b1816
+  by: SageMath 10.10.beta8
+0016 integral.genus_symbol:
+  inputs: 06ea6923a3bb02016fb87803ee85d719c363705f1f79565dfc4004602b8b1816
+  by: SageMath 10.10.beta8
+0021 integral.genus_class_count:
+  inputs: cc1311825be048e29809d61c2e177a51bd7c02b95f5a167b8ea1bda0120514f5
+  by: SageMath 10.10.beta8
+0021 integral.genus_symbol:
+  inputs: cc1311825be048e29809d61c2e177a51bd7c02b95f5a167b8ea1bda0120514f5
+  by: SageMath 10.10.beta8
+0022 definite.automorphism_group_order:
+  inputs: c24ecf7d64263f883c5052ed2a56466190eee43399095d818cd0f63eeca7d972
+  by: SageMath 10.10.beta8
+0022 integral.genus_class_count:
+  inputs: c24ecf7d64263f883c5052ed2a56466190eee43399095d818cd0f63eeca7d972
+  by: SageMath 10.10.beta8
+0022 integral.genus_symbol:
+  inputs: c24ecf7d64263f883c5052ed2a56466190eee43399095d818cd0f63eeca7d972
+  by: SageMath 10.10.beta8
+0023 definite.automorphism_group_order:
+  inputs: 9849c6e4fc3803c83d214c2a5dd998bc158a28360bd0ed6bd214f21a9255f760
+  by: SageMath 10.10.beta8
+0023 integral.genus_class_count:
+  inputs: 9849c6e4fc3803c83d214c2a5dd998bc158a28360bd0ed6bd214f21a9255f760
+  by: SageMath 10.10.beta8
+0023 integral.genus_symbol:
+  inputs: 9849c6e4fc3803c83d214c2a5dd998bc158a28360bd0ed6bd214f21a9255f760
+  by: SageMath 10.10.beta8
+0024 integral.genus_class_count:
+  inputs: 97f597518df90f63a606cb23560b9a0b917f6640284a0a33dfa3fa2aa7962a85
+  by: SageMath 10.10.beta8
+0024 integral.genus_symbol:
+  inputs: 97f597518df90f63a606cb23560b9a0b917f6640284a0a33dfa3fa2aa7962a85
+  by: SageMath 10.10.beta8
+0025 integral.genus_class_count:
+  inputs: 7d4db78390a6987d1620d93726252a594a7598e28246def5f73761eaddb5ea3f
+  by: SageMath 10.10.beta8
+0025 integral.genus_symbol:
+  inputs: 7d4db78390a6987d1620d93726252a594a7598e28246def5f73761eaddb5ea3f
+  by: SageMath 10.10.beta8
+0026 integral.genus_class_count:
+  inputs: 0bfb5c44c10ed2bd17b01debb1786e2e96ffbd8efab9003660398d230a8d1ba4
+  by: SageMath 10.10.beta8
+0026 integral.genus_symbol:
+  inputs: 0bfb5c44c10ed2bd17b01debb1786e2e96ffbd8efab9003660398d230a8d1ba4
+  by: SageMath 10.10.beta8
+0029 definite.automorphism_group_order:
+  inputs: 6a00991bb836ebff7bd272d946e7ea0ae43fa033ea5d3bba084224a811d9ea2b
+  by: SageMath 10.10.beta8
+0029 integral.genus_class_count:
+  inputs: 6a00991bb836ebff7bd272d946e7ea0ae43fa033ea5d3bba084224a811d9ea2b
+  by: SageMath 10.10.beta8
+0029 integral.genus_symbol:
+  inputs: 6a00991bb836ebff7bd272d946e7ea0ae43fa033ea5d3bba084224a811d9ea2b
+  by: SageMath 10.10.beta8
+0033 definite.automorphism_group_order:
+  inputs: 6ad6bb43838301a81fc55bb5c0fb5c47f3dae561c4f8933cc09a9f530ce8c5c9
+  by: SageMath 10.10.beta8
+0033 integral.genus_class_count:
+  inputs: 6ad6bb43838301a81fc55bb5c0fb5c47f3dae561c4f8933cc09a9f530ce8c5c9
+  by: SageMath 10.10.beta8
+0033 integral.genus_symbol:
+  inputs: 6ad6bb43838301a81fc55bb5c0fb5c47f3dae561c4f8933cc09a9f530ce8c5c9
+  by: SageMath 10.10.beta8
+0034 definite.automorphism_group_order:
+  inputs: 9bb0f21601362bccf3ea54a401d99ff33a8e9f325f76289fcf2a6e0f542a5a61
+  by: SageMath 10.10.beta8
+0034 integral.genus_class_count:
+  inputs: 9bb0f21601362bccf3ea54a401d99ff33a8e9f325f76289fcf2a6e0f542a5a61
+  by: SageMath 10.10.beta8
+0034 integral.genus_symbol:
+  inputs: 9bb0f21601362bccf3ea54a401d99ff33a8e9f325f76289fcf2a6e0f542a5a61
+  by: SageMath 10.10.beta8
+0035 definite.automorphism_group_order:
+  inputs: fdaa64768df9f5a44180deb22def91fdc41bfdb652b6a1557ac7cddc5f20aee5
+  by: SageMath 10.10.beta8
+0035 integral.genus_class_count:
+  inputs: fdaa64768df9f5a44180deb22def91fdc41bfdb652b6a1557ac7cddc5f20aee5
+  by: SageMath 10.10.beta8
+0035 integral.genus_symbol:
+  inputs: fdaa64768df9f5a44180deb22def91fdc41bfdb652b6a1557ac7cddc5f20aee5
+  by: SageMath 10.10.beta8
+0036 integral.genus_class_count:
+  inputs: d716caf49dd94073b1e1115fd1ab2827d01970042bec787a1cb56091a838a63c
+  by: SageMath 10.10.beta8
+0036 integral.genus_symbol:
+  inputs: d716caf49dd94073b1e1115fd1ab2827d01970042bec787a1cb56091a838a63c
+  by: SageMath 10.10.beta8
+0038 integral.genus_class_count:
+  inputs: 3663181591cc0544d6602accd4a4d9110df00265d52a346fe54e7643e2d482f1
+  by: SageMath 10.10.beta8
+0038 integral.genus_symbol:
+  inputs: 3663181591cc0544d6602accd4a4d9110df00265d52a346fe54e7643e2d482f1
+  by: SageMath 10.10.beta8
+0039 integral.genus_class_count:
+  inputs: 72a9a8754ff30990f027c541f7fbd612e8a9261ca2fecb30efe9986473baf2a3
+  by: SageMath 10.10.beta8
+0039 integral.genus_symbol:
+  inputs: 72a9a8754ff30990f027c541f7fbd612e8a9261ca2fecb30efe9986473baf2a3
+  by: SageMath 10.10.beta8
+0040 integral.genus_class_count:
+  inputs: 5b971617acf9c7378001485df29bc31fdd3df8b3b686fe5a2dabf6c190f0764a
+  by: SageMath 10.10.beta8
+0040 integral.genus_symbol:
+  inputs: 5b971617acf9c7378001485df29bc31fdd3df8b3b686fe5a2dabf6c190f0764a
+  by: SageMath 10.10.beta8
+0043 definite.automorphism_group_order:
+  inputs: 5da75f7088d2633f766ebdd2a36a055ebfe3741404480b99b22a351acf6e02f9
+  by: SageMath 10.10.beta8
+0043 integral.genus_class_count:
+  inputs: 5da75f7088d2633f766ebdd2a36a055ebfe3741404480b99b22a351acf6e02f9
+  by: SageMath 10.10.beta8
+0043 integral.genus_symbol:
+  inputs: 5da75f7088d2633f766ebdd2a36a055ebfe3741404480b99b22a351acf6e02f9
+  by: SageMath 10.10.beta8
+0046 integral.genus_class_count:
+  inputs: 458df6c03df24c5127224211a0e3350dae74be0a07da769ab68e3957ce814d43
+  by: SageMath 10.10.beta8
+0046 integral.genus_symbol:
+  inputs: 458df6c03df24c5127224211a0e3350dae74be0a07da769ab68e3957ce814d43
+  by: SageMath 10.10.beta8
+0049 definite.automorphism_group_order:
+  inputs: 419ed5c13c7545d1fc421b1210e75c048616cd54bbfc742dd1422efa7ae7c54b
+  by: SageMath 10.10.beta8
+0049 integral.genus_class_count:
+  inputs: 419ed5c13c7545d1fc421b1210e75c048616cd54bbfc742dd1422efa7ae7c54b
+  by: SageMath 10.10.beta8
+0049 integral.genus_symbol:
+  inputs: 419ed5c13c7545d1fc421b1210e75c048616cd54bbfc742dd1422efa7ae7c54b
+  by: SageMath 10.10.beta8
+0050 definite.automorphism_group_order:
+  inputs: f016fc52d8503afff67fcf86a4158759dffb1d3d4a36d7b48d5b87a9ff6a1b43
+  by: SageMath 10.10.beta8
+0050 integral.genus_class_count:
+  inputs: f016fc52d8503afff67fcf86a4158759dffb1d3d4a36d7b48d5b87a9ff6a1b43
+  by: SageMath 10.10.beta8
+0050 integral.genus_symbol:
+  inputs: f016fc52d8503afff67fcf86a4158759dffb1d3d4a36d7b48d5b87a9ff6a1b43
+  by: SageMath 10.10.beta8
+0051 definite.automorphism_group_order:
+  inputs: 1137290a361930e93bb36a360ae0f368db04f98fa95d21ce3d2ee083dde5ccb4
+  by: SageMath 10.10.beta8
+0051 integral.genus_class_count:
+  inputs: 1137290a361930e93bb36a360ae0f368db04f98fa95d21ce3d2ee083dde5ccb4
+  by: SageMath 10.10.beta8
+0051 integral.genus_symbol:
+  inputs: 1137290a361930e93bb36a360ae0f368db04f98fa95d21ce3d2ee083dde5ccb4
+  by: SageMath 10.10.beta8
+0052 integral.genus_class_count:
+  inputs: aa7f11259c72400347b89239fdbdbd3f7b31d5e8722292a864217f203bacf919
+  by: SageMath 10.10.beta8
+0052 integral.genus_symbol:
+  inputs: aa7f11259c72400347b89239fdbdbd3f7b31d5e8722292a864217f203bacf919
+  by: SageMath 10.10.beta8
+0053 integral.genus_class_count:
+  inputs: 7004fadcc707a07df932195e36ea0cb687749a22af3a68840082ad115817db03
+  by: SageMath 10.10.beta8
+0053 integral.genus_symbol:
+  inputs: 7004fadcc707a07df932195e36ea0cb687749a22af3a68840082ad115817db03
+  by: SageMath 10.10.beta8
+0056 definite.automorphism_group_order:
+  inputs: e4d3a76cc847a6c79958480b41235279ae94732ccda51cadbb15169198470283
+  by: SageMath 10.10.beta8
+0056 integral.genus_class_count:
+  inputs: e4d3a76cc847a6c79958480b41235279ae94732ccda51cadbb15169198470283
+  by: SageMath 10.10.beta8
+0056 integral.genus_symbol:
+  inputs: e4d3a76cc847a6c79958480b41235279ae94732ccda51cadbb15169198470283
+  by: SageMath 10.10.beta8
+0057 definite.automorphism_group_order:
+  inputs: d851d65993e63f1bd5872d5fabd797509eec86d0b3ff4521c42d4c141da59a9a
+  by: SageMath 10.10.beta8
+0057 integral.genus_class_count:
+  inputs: d851d65993e63f1bd5872d5fabd797509eec86d0b3ff4521c42d4c141da59a9a
+  by: SageMath 10.10.beta8
+0057 integral.genus_symbol:
+  inputs: d851d65993e63f1bd5872d5fabd797509eec86d0b3ff4521c42d4c141da59a9a
+  by: SageMath 10.10.beta8
+0059 integral.genus_class_count:
+  inputs: d74209ec9b1f0dd9f37c9933098d23c640180f1e7090d622a50530a25a5e5054
+  by: SageMath 10.10.beta8
+0059 integral.genus_symbol:
+  inputs: d74209ec9b1f0dd9f37c9933098d23c640180f1e7090d622a50530a25a5e5054
+  by: SageMath 10.10.beta8
+0061 definite.automorphism_group_order:
+  inputs: 7009daec2ed8cc0b5c27b9730af30ec3cf965b743ffd79867fdb38f159c03c1b
+  by: SageMath 10.10.beta8
+0061 integral.genus_class_count:
+  inputs: 7009daec2ed8cc0b5c27b9730af30ec3cf965b743ffd79867fdb38f159c03c1b
+  by: SageMath 10.10.beta8
+0061 integral.genus_symbol:
+  inputs: 7009daec2ed8cc0b5c27b9730af30ec3cf965b743ffd79867fdb38f159c03c1b
+  by: SageMath 10.10.beta8
+0062 definite.automorphism_group_order:
+  inputs: b7fd4e9b786014555251dbdee6c8a9875d0aaf8cdee6d141130e7b2921868b47
+  by: SageMath 10.10.beta8
+0062 integral.genus_class_count:
+  inputs: b7fd4e9b786014555251dbdee6c8a9875d0aaf8cdee6d141130e7b2921868b47
+  by: SageMath 10.10.beta8
+0062 integral.genus_symbol:
+  inputs: b7fd4e9b786014555251dbdee6c8a9875d0aaf8cdee6d141130e7b2921868b47
+  by: SageMath 10.10.beta8
+0063 definite.automorphism_group_order:
+  inputs: b984495c6e4113599375371464403dc1cd9c98406efbaf11c6e69f2193024b28
+  by: SageMath 10.10.beta8
+0063 integral.genus_class_count:
+  inputs: b984495c6e4113599375371464403dc1cd9c98406efbaf11c6e69f2193024b28
+  by: SageMath 10.10.beta8
+0063 integral.genus_symbol:
+  inputs: b984495c6e4113599375371464403dc1cd9c98406efbaf11c6e69f2193024b28
+  by: SageMath 10.10.beta8
+0064 definite.automorphism_group_order:
+  inputs: 5639ede9a66c0e1fbcde9177638912deff72a9d70247b82f48ccb31b81aee182
+  by: SageMath 10.10.beta8
+0064 integral.genus_class_count:
+  inputs: 5639ede9a66c0e1fbcde9177638912deff72a9d70247b82f48ccb31b81aee182
+  by: SageMath 10.10.beta8
+0064 integral.genus_symbol:
+  inputs: 5639ede9a66c0e1fbcde9177638912deff72a9d70247b82f48ccb31b81aee182
+  by: SageMath 10.10.beta8
+0065 integral.genus_class_count:
+  inputs: 8df7f0307b813d4210c5c7ab3b74f872201d701babfad8e26187c45c63b12074
+  by: SageMath 10.10.beta8
+0065 integral.genus_symbol:
+  inputs: 8df7f0307b813d4210c5c7ab3b74f872201d701babfad8e26187c45c63b12074
+  by: SageMath 10.10.beta8
+0066 integral.genus_class_count:
+  inputs: 13f10b7e46db56f449f5ffd9a0ef8a632fa5174921ef48e94ae8f27750ca5b15
+  by: SageMath 10.10.beta8
+0066 integral.genus_symbol:
+  inputs: 13f10b7e46db56f449f5ffd9a0ef8a632fa5174921ef48e94ae8f27750ca5b15
+  by: SageMath 10.10.beta8
+0067 integral.genus_class_count:
+  inputs: 2212b05cf03f01f461a67299db30be529ee49c6629fafd29db7d680d17f36ba6
+  by: SageMath 10.10.beta8
+0067 integral.genus_symbol:
+  inputs: 2212b05cf03f01f461a67299db30be529ee49c6629fafd29db7d680d17f36ba6
+  by: SageMath 10.10.beta8
+0071 definite.automorphism_group_order:
+  inputs: 1f20cc73410d082605806ba1c7ca0506589d9a5fada3f638dff49beba1b655a6
+  by: SageMath 10.10.beta8
+0071 integral.genus_class_count:
+  inputs: 1f20cc73410d082605806ba1c7ca0506589d9a5fada3f638dff49beba1b655a6
+  by: SageMath 10.10.beta8
+0071 integral.genus_symbol:
+  inputs: 1f20cc73410d082605806ba1c7ca0506589d9a5fada3f638dff49beba1b655a6
+  by: SageMath 10.10.beta8
+0072 definite.automorphism_group_order:
+  inputs: 32732b78958a2cccf18b0309b868a41ece98fa348f06b2fe0ea57eb690b5599c
+  by: SageMath 10.10.beta8
+0072 integral.genus_class_count:
+  inputs: 32732b78958a2cccf18b0309b868a41ece98fa348f06b2fe0ea57eb690b5599c
+  by: SageMath 10.10.beta8
+0072 integral.genus_symbol:
+  inputs: 32732b78958a2cccf18b0309b868a41ece98fa348f06b2fe0ea57eb690b5599c
+  by: SageMath 10.10.beta8
+0074 integral.genus_class_count:
+  inputs: 9d8aa6cc95b5bdc2a10b4dc5b25b5964cb1445b9779a211df6e7b99582d0a6e4
+  by: SageMath 10.10.beta8
+0074 integral.genus_symbol:
+  inputs: 9d8aa6cc95b5bdc2a10b4dc5b25b5964cb1445b9779a211df6e7b99582d0a6e4
+  by: SageMath 10.10.beta8
+0076 definite.automorphism_group_order:
+  inputs: e022acfeaf3c4a06fc6f9f6e99c735e903c0d978eb534cbca6ff24ae435b66bd
+  by: SageMath 10.10.beta8
+0076 integral.genus_class_count:
+  inputs: e022acfeaf3c4a06fc6f9f6e99c735e903c0d978eb534cbca6ff24ae435b66bd
+  by: SageMath 10.10.beta8
+0076 integral.genus_symbol:
+  inputs: e022acfeaf3c4a06fc6f9f6e99c735e903c0d978eb534cbca6ff24ae435b66bd
+  by: SageMath 10.10.beta8
+0077 definite.automorphism_group_order:
+  inputs: d4e15e1301f8289cf2de490555ef41e48b42579445000dc0701c59794db7ea04
+  by: SageMath 10.10.beta8
+0077 integral.genus_class_count:
+  inputs: d4e15e1301f8289cf2de490555ef41e48b42579445000dc0701c59794db7ea04
+  by: SageMath 10.10.beta8
+0077 integral.genus_symbol:
+  inputs: d4e15e1301f8289cf2de490555ef41e48b42579445000dc0701c59794db7ea04
+  by: SageMath 10.10.beta8
+0078 definite.automorphism_group_order:
+  inputs: bba21e17b30f521fa12afabd35bf20569737262440452edf02ad52cc54c94096
+  by: SageMath 10.10.beta8
+0078 integral.genus_class_count:
+  inputs: bba21e17b30f521fa12afabd35bf20569737262440452edf02ad52cc54c94096
+  by: SageMath 10.10.beta8
+0078 integral.genus_symbol:
+  inputs: bba21e17b30f521fa12afabd35bf20569737262440452edf02ad52cc54c94096
+  by: SageMath 10.10.beta8
+0079 definite.automorphism_group_order:
+  inputs: fddd40157f5aa8a999a7d6aaadba24e5662d80208040a08a8bb6417248d08b0c
+  by: SageMath 10.10.beta8
+0079 integral.genus_class_count:
+  inputs: fddd40157f5aa8a999a7d6aaadba24e5662d80208040a08a8bb6417248d08b0c
+  by: SageMath 10.10.beta8
+0079 integral.genus_symbol:
+  inputs: fddd40157f5aa8a999a7d6aaadba24e5662d80208040a08a8bb6417248d08b0c
+  by: SageMath 10.10.beta8
+0080 definite.automorphism_group_order:
+  inputs: 984d85d5550dc43155213aca7a4eb94684ff06df27a23223187e36a80aed973b
+  by: SageMath 10.10.beta8
+0080 integral.genus_class_count:
+  inputs: 984d85d5550dc43155213aca7a4eb94684ff06df27a23223187e36a80aed973b
+  by: SageMath 10.10.beta8
+0080 integral.genus_symbol:
+  inputs: 984d85d5550dc43155213aca7a4eb94684ff06df27a23223187e36a80aed973b
+  by: SageMath 10.10.beta8
+0081 integral.genus_class_count:
+  inputs: fd4834558571ab7d8987c768e3db13e143877482504bde4cbab0eda48c3d4695
+  by: SageMath 10.10.beta8
+0081 integral.genus_symbol:
+  inputs: fd4834558571ab7d8987c768e3db13e143877482504bde4cbab0eda48c3d4695
+  by: SageMath 10.10.beta8
+0082 integral.genus_class_count:
+  inputs: 6ae7c15c967369d965828b63d177b847bbd011f7cbdf9fff605c0b4c0a4387cc
+  by: SageMath 10.10.beta8
+0082 integral.genus_symbol:
+  inputs: 6ae7c15c967369d965828b63d177b847bbd011f7cbdf9fff605c0b4c0a4387cc
+  by: SageMath 10.10.beta8
+0086 definite.automorphism_group_order:
+  inputs: 33a268cd9fa91a1a3858dfe8fc75be6e338fd391411d9bcee2168cd5fb6208b4
+  by: SageMath 10.10.beta8
+0086 integral.genus_class_count:
+  inputs: 33a268cd9fa91a1a3858dfe8fc75be6e338fd391411d9bcee2168cd5fb6208b4
+  by: SageMath 10.10.beta8
+0086 integral.genus_symbol:
+  inputs: 33a268cd9fa91a1a3858dfe8fc75be6e338fd391411d9bcee2168cd5fb6208b4
+  by: SageMath 10.10.beta8
+0087 definite.automorphism_group_order:
+  inputs: 125aa69c14c92ccdb777a16535677c4e89fa9a7a580449dcb99a4cd3f78e397a
+  by: SageMath 10.10.beta8
+0087 integral.genus_class_count:
+  inputs: 125aa69c14c92ccdb777a16535677c4e89fa9a7a580449dcb99a4cd3f78e397a
+  by: SageMath 10.10.beta8
+0087 integral.genus_symbol:
+  inputs: 125aa69c14c92ccdb777a16535677c4e89fa9a7a580449dcb99a4cd3f78e397a
+  by: SageMath 10.10.beta8
+0089 integral.genus_class_count:
+  inputs: 1a8195d807902f4352a843da6bc12f54d1e4d04df1c91ec4554c0c6ed2c9fb81
+  by: SageMath 10.10.beta8
+0089 integral.genus_symbol:
+  inputs: 1a8195d807902f4352a843da6bc12f54d1e4d04df1c91ec4554c0c6ed2c9fb81
+  by: SageMath 10.10.beta8
+0091 definite.automorphism_group_order:
+  inputs: 91605f25a45bc3e645c896883a7379e0a13566f82e959369ac2930b27a94694c
+  by: SageMath 10.10.beta8
+0091 integral.genus_class_count:
+  inputs: 91605f25a45bc3e645c896883a7379e0a13566f82e959369ac2930b27a94694c
+  by: SageMath 10.10.beta8
+0091 integral.genus_symbol:
+  inputs: 91605f25a45bc3e645c896883a7379e0a13566f82e959369ac2930b27a94694c
+  by: SageMath 10.10.beta8
+0092 definite.automorphism_group_order:
+  inputs: 20c6fe5182a0525d7e486906630d2c3c4c5015f606be4f7dbbf84380259240f0
+  by: SageMath 10.10.beta8
+0092 integral.genus_class_count:
+  inputs: 20c6fe5182a0525d7e486906630d2c3c4c5015f606be4f7dbbf84380259240f0
+  by: SageMath 10.10.beta8
+0092 integral.genus_symbol:
+  inputs: 20c6fe5182a0525d7e486906630d2c3c4c5015f606be4f7dbbf84380259240f0
+  by: SageMath 10.10.beta8
+0093 definite.automorphism_group_order:
+  inputs: 3c12d7ba7b16430923dd7c0fef6ceece0197269c19623bbf551629b703259d1f
+  by: SageMath 10.10.beta8
+0093 integral.genus_class_count:
+  inputs: 3c12d7ba7b16430923dd7c0fef6ceece0197269c19623bbf551629b703259d1f
+  by: SageMath 10.10.beta8
+0093 integral.genus_symbol:
+  inputs: 3c12d7ba7b16430923dd7c0fef6ceece0197269c19623bbf551629b703259d1f
+  by: SageMath 10.10.beta8
+0094 definite.automorphism_group_order:
+  inputs: f913924917539b672d2e6d05c007f34ba4e7c57fa0999221b8c983f5c0ea39bb
+  by: SageMath 10.10.beta8
+0094 integral.genus_class_count:
+  inputs: f913924917539b672d2e6d05c007f34ba4e7c57fa0999221b8c983f5c0ea39bb
+  by: SageMath 10.10.beta8
+0094 integral.genus_symbol:
+  inputs: f913924917539b672d2e6d05c007f34ba4e7c57fa0999221b8c983f5c0ea39bb
+  by: SageMath 10.10.beta8
+0096 definite.automorphism_group_order:
+  inputs: 8daa89d08ec842853dd4345901acdb6edd93cf9c73640a36fa36b37424484639
+  by: SageMath 10.10.beta8
+0096 integral.genus_class_count:
+  inputs: 8daa89d08ec842853dd4345901acdb6edd93cf9c73640a36fa36b37424484639
+  by: SageMath 10.10.beta8
+0096 integral.genus_symbol:
+  inputs: 8daa89d08ec842853dd4345901acdb6edd93cf9c73640a36fa36b37424484639
+  by: SageMath 10.10.beta8
+0097 integral.genus_class_count:
+  inputs: 336fb286993b5e780605ece96548d704d3ebb9b1e411e5cb733fbc34e2da9d16
+  by: SageMath 10.10.beta8
+0097 integral.genus_symbol:
+  inputs: 336fb286993b5e780605ece96548d704d3ebb9b1e411e5cb733fbc34e2da9d16
+  by: SageMath 10.10.beta8
+0098 integral.genus_class_count:
+  inputs: fd26c4be0c527d364f1d1639eef12eb2613994895c7eb9793c52cddcad3980dc
+  by: SageMath 10.10.beta8
+0098 integral.genus_symbol:
+  inputs: fd26c4be0c527d364f1d1639eef12eb2613994895c7eb9793c52cddcad3980dc
+  by: SageMath 10.10.beta8
+0099 integral.genus_class_count:
+  inputs: b445f352235e6daa021c49dd0810eff1f0943421036fbf2fb58c238c5698bfb1
+  by: SageMath 10.10.beta8
+0099 integral.genus_symbol:
+  inputs: b445f352235e6daa021c49dd0810eff1f0943421036fbf2fb58c238c5698bfb1
+  by: SageMath 10.10.beta8
+0102 definite.automorphism_group_order:
+  inputs: dcaf0a19af6d654a1d7f51d518137d16cd6f4c4f98d72b98d6674a4f23f3828d
+  by: SageMath 10.10.beta8
+0102 integral.genus_class_count:
+  inputs: dcaf0a19af6d654a1d7f51d518137d16cd6f4c4f98d72b98d6674a4f23f3828d
+  by: SageMath 10.10.beta8
+0102 integral.genus_symbol:
+  inputs: dcaf0a19af6d654a1d7f51d518137d16cd6f4c4f98d72b98d6674a4f23f3828d
+  by: SageMath 10.10.beta8
+0103 definite.automorphism_group_order:
+  inputs: 5a05bd3dbdbf9b00306516c236a490475b880b61a800a2c4a60edebaf1729bc7
+  by: SageMath 10.10.beta8
+0103 integral.genus_class_count:
+  inputs: 5a05bd3dbdbf9b00306516c236a490475b880b61a800a2c4a60edebaf1729bc7
+  by: SageMath 10.10.beta8
+0103 integral.genus_symbol:
+  inputs: 5a05bd3dbdbf9b00306516c236a490475b880b61a800a2c4a60edebaf1729bc7
+  by: SageMath 10.10.beta8
+0105 integral.genus_class_count:
+  inputs: c83eb667b3ba1671c9eb3080848507609779a787b3e93c512448f3d42737d14d
+  by: SageMath 10.10.beta8
+0105 integral.genus_symbol:
+  inputs: c83eb667b3ba1671c9eb3080848507609779a787b3e93c512448f3d42737d14d
+  by: SageMath 10.10.beta8
+0107 definite.automorphism_group_order:
+  inputs: 7494081115dfdb2f9c3f50a3bdf177cf502e57d49fe3b6a77da7761d1fb4d93a
+  by: SageMath 10.10.beta8
+0107 integral.genus_class_count:
+  inputs: 7494081115dfdb2f9c3f50a3bdf177cf502e57d49fe3b6a77da7761d1fb4d93a
+  by: SageMath 10.10.beta8
+0107 integral.genus_symbol:
+  inputs: 7494081115dfdb2f9c3f50a3bdf177cf502e57d49fe3b6a77da7761d1fb4d93a
+  by: SageMath 10.10.beta8
+0108 definite.automorphism_group_order:
+  inputs: a59335f2ddc97ad164037d55ef78e0aa077d703f22cca26952383e353141a555
+  by: SageMath 10.10.beta8
+0108 integral.genus_class_count:
+  inputs: a59335f2ddc97ad164037d55ef78e0aa077d703f22cca26952383e353141a555
+  by: SageMath 10.10.beta8
+0108 integral.genus_symbol:
+  inputs: a59335f2ddc97ad164037d55ef78e0aa077d703f22cca26952383e353141a555
+  by: SageMath 10.10.beta8
+0109 definite.automorphism_group_order:
+  inputs: b471e94554afdb75ee9754acba975a63aec83d41378fb23c389f1b5257280daa
+  by: SageMath 10.10.beta8
+0109 integral.genus_class_count:
+  inputs: b471e94554afdb75ee9754acba975a63aec83d41378fb23c389f1b5257280daa
+  by: SageMath 10.10.beta8
+0109 integral.genus_symbol:
+  inputs: b471e94554afdb75ee9754acba975a63aec83d41378fb23c389f1b5257280daa
+  by: SageMath 10.10.beta8
+0110 definite.automorphism_group_order:
+  inputs: ab7b76ce080a6d8058d75e9375c35cf1907cb8274070f406de37f3885cb39bc3
+  by: SageMath 10.10.beta8
+0110 integral.genus_class_count:
+  inputs: ab7b76ce080a6d8058d75e9375c35cf1907cb8274070f406de37f3885cb39bc3
+  by: SageMath 10.10.beta8
+0110 integral.genus_symbol:
+  inputs: ab7b76ce080a6d8058d75e9375c35cf1907cb8274070f406de37f3885cb39bc3
+  by: SageMath 10.10.beta8
+0111 definite.automorphism_group_order:
+  inputs: bbea416f58d4b046485c7cd4d76243bc620b1a5731824a63e4edc2e59020224c
+  by: SageMath 10.10.beta8
+0111 integral.genus_class_count:
+  inputs: bbea416f58d4b046485c7cd4d76243bc620b1a5731824a63e4edc2e59020224c
+  by: SageMath 10.10.beta8
+0111 integral.genus_symbol:
+  inputs: bbea416f58d4b046485c7cd4d76243bc620b1a5731824a63e4edc2e59020224c
+  by: SageMath 10.10.beta8
+0112 integral.genus_class_count:
+  inputs: 0325a6a56e7e50f7bfd696bb91c9baf13751c33f96eb9d0beb37e653c925e053
+  by: SageMath 10.10.beta8
+0112 integral.genus_symbol:
+  inputs: 0325a6a56e7e50f7bfd696bb91c9baf13751c33f96eb9d0beb37e653c925e053
+  by: SageMath 10.10.beta8
+0113 integral.genus_class_count:
+  inputs: e672c70b23116e3b39f157abfea796dc19cf30d8de7c425b02c04f7ab1836135
+  by: SageMath 10.10.beta8
+0113 integral.genus_symbol:
+  inputs: e672c70b23116e3b39f157abfea796dc19cf30d8de7c425b02c04f7ab1836135
+  by: SageMath 10.10.beta8
+0116 definite.automorphism_group_order:
+  inputs: a02c16fd7555fbbf20405c1b3e815217cfce694bdd6ab9f256c842810e2af55d
+  by: SageMath 10.10.beta8
+0116 integral.genus_class_count:
+  inputs: a02c16fd7555fbbf20405c1b3e815217cfce694bdd6ab9f256c842810e2af55d
+  by: SageMath 10.10.beta8
+0116 integral.genus_symbol:
+  inputs: a02c16fd7555fbbf20405c1b3e815217cfce694bdd6ab9f256c842810e2af55d
+  by: SageMath 10.10.beta8
+0118 integral.genus_class_count:
+  inputs: b62b86d4d8f11252d227fad4c4b1a47fd5a4b8c6542bd38d87340ce512acaa86
+  by: SageMath 10.10.beta8
+0118 integral.genus_symbol:
+  inputs: b62b86d4d8f11252d227fad4c4b1a47fd5a4b8c6542bd38d87340ce512acaa86
+  by: SageMath 10.10.beta8
+0120 definite.automorphism_group_order:
+  inputs: 183d8ce6dc0c2977df8cfacb16ef7e6c48aa1618df7eeeac68727ff14ec19596
+  by: SageMath 10.10.beta8
+0120 integral.genus_class_count:
+  inputs: 183d8ce6dc0c2977df8cfacb16ef7e6c48aa1618df7eeeac68727ff14ec19596
+  by: SageMath 10.10.beta8
+0120 integral.genus_symbol:
+  inputs: 183d8ce6dc0c2977df8cfacb16ef7e6c48aa1618df7eeeac68727ff14ec19596
+  by: SageMath 10.10.beta8
+0121 definite.automorphism_group_order:
+  inputs: 2c21f8c62d2f08adb81a46aedd3f13e9ed75fb0f1f39d0b37e11a540db37ec0b
+  by: SageMath 10.10.beta8
+0121 integral.genus_class_count:
+  inputs: 2c21f8c62d2f08adb81a46aedd3f13e9ed75fb0f1f39d0b37e11a540db37ec0b
+  by: SageMath 10.10.beta8
+0121 integral.genus_symbol:
+  inputs: 2c21f8c62d2f08adb81a46aedd3f13e9ed75fb0f1f39d0b37e11a540db37ec0b
+  by: SageMath 10.10.beta8
+0122 definite.automorphism_group_order:
+  inputs: ca88215dd660996f55c1420fc86c0b66a36756feb4200a0f32f35cb050ec4702
+  by: SageMath 10.10.beta8
+0122 integral.genus_class_count:
+  inputs: ca88215dd660996f55c1420fc86c0b66a36756feb4200a0f32f35cb050ec4702
+  by: SageMath 10.10.beta8
+0122 integral.genus_symbol:
+  inputs: ca88215dd660996f55c1420fc86c0b66a36756feb4200a0f32f35cb050ec4702
+  by: SageMath 10.10.beta8
+0123 definite.automorphism_group_order:
+  inputs: 16e6621238ef61ab5744e652dc238d2c8401ae600b00cee54df080adbc188990
+  by: SageMath 10.10.beta8
+0123 integral.genus_class_count:
+  inputs: 16e6621238ef61ab5744e652dc238d2c8401ae600b00cee54df080adbc188990
+  by: SageMath 10.10.beta8
+0123 integral.genus_symbol:
+  inputs: 16e6621238ef61ab5744e652dc238d2c8401ae600b00cee54df080adbc188990
+  by: SageMath 10.10.beta8
+0124 integral.genus_class_count:
+  inputs: a9ad82b760539bb20b6a0d8c38f691881d8db10cc39eb670e89bfc71e73589ff
+  by: SageMath 10.10.beta8
+0124 integral.genus_symbol:
+  inputs: a9ad82b760539bb20b6a0d8c38f691881d8db10cc39eb670e89bfc71e73589ff
+  by: SageMath 10.10.beta8
+0125 integral.genus_class_count:
+  inputs: 49cec16292cc93469a17fb3651e37db037a6143812b9767713b6e79769418530
+  by: SageMath 10.10.beta8
+0125 integral.genus_symbol:
+  inputs: 49cec16292cc93469a17fb3651e37db037a6143812b9767713b6e79769418530
+  by: SageMath 10.10.beta8
+0126 integral.genus_class_count:
+  inputs: 5573760b6494c1137d2fc8fa0fa223bda6bfc4612e7c2a93eb0737df116c3c62
+  by: SageMath 10.10.beta8
+0126 integral.genus_symbol:
+  inputs: 5573760b6494c1137d2fc8fa0fa223bda6bfc4612e7c2a93eb0737df116c3c62
+  by: SageMath 10.10.beta8
+0127 integral.genus_class_count:
+  inputs: 5cc8abf19eca947b133550a681ae4489f14a824f37cf373e128e338643217c75
+  by: SageMath 10.10.beta8
+0127 integral.genus_symbol:
+  inputs: 5cc8abf19eca947b133550a681ae4489f14a824f37cf373e128e338643217c75
+  by: SageMath 10.10.beta8
+0128 integral.genus_class_count:
+  inputs: 1420e909a0c654c19bcdf369234888d4afbcad65b99ef03201133adf7be6209d
+  by: SageMath 10.10.beta8
+0128 integral.genus_symbol:
+  inputs: 1420e909a0c654c19bcdf369234888d4afbcad65b99ef03201133adf7be6209d
+  by: SageMath 10.10.beta8
+0131 definite.automorphism_group_order:
+  inputs: 845ac2e97e3679d3171ce289c302246dfb1d3a4b9eb5d7ca839ef8c7574a3bd4
+  by: SageMath 10.10.beta8
+0131 integral.genus_class_count:
+  inputs: 845ac2e97e3679d3171ce289c302246dfb1d3a4b9eb5d7ca839ef8c7574a3bd4
+  by: SageMath 10.10.beta8
+0131 integral.genus_symbol:
+  inputs: 845ac2e97e3679d3171ce289c302246dfb1d3a4b9eb5d7ca839ef8c7574a3bd4
+  by: SageMath 10.10.beta8
+0133 integral.genus_class_count:
+  inputs: 063085965824e0b33f50db481afc2af6c75445ba006356ade2100ecfe907afa6
+  by: SageMath 10.10.beta8
+0133 integral.genus_symbol:
+  inputs: 063085965824e0b33f50db481afc2af6c75445ba006356ade2100ecfe907afa6
+  by: SageMath 10.10.beta8
+0134 definite.automorphism_group_order:
+  inputs: ed665bd6f1d89fd2ac601b733a3cc98ac8455246143518e674dac0b382c4d25e
+  by: SageMath 10.10.beta8
+0134 integral.genus_class_count:
+  inputs: ed665bd6f1d89fd2ac601b733a3cc98ac8455246143518e674dac0b382c4d25e
+  by: SageMath 10.10.beta8
+0134 integral.genus_symbol:
+  inputs: ed665bd6f1d89fd2ac601b733a3cc98ac8455246143518e674dac0b382c4d25e
+  by: SageMath 10.10.beta8
+0135 definite.automorphism_group_order:
+  inputs: b786489965b49edad12493c88dec83b677a06b8fb4d37928db9f2299978d3474
+  by: SageMath 10.10.beta8
+0135 integral.genus_class_count:
+  inputs: b786489965b49edad12493c88dec83b677a06b8fb4d37928db9f2299978d3474
+  by: SageMath 10.10.beta8
+0135 integral.genus_symbol:
+  inputs: b786489965b49edad12493c88dec83b677a06b8fb4d37928db9f2299978d3474
+  by: SageMath 10.10.beta8
+0136 definite.automorphism_group_order:
+  inputs: 1e9a051f8388d0cf650d02dc2aec13868423222eb539cbc44c2bd12c4b6e28de
+  by: SageMath 10.10.beta8
+0136 integral.genus_class_count:
+  inputs: 1e9a051f8388d0cf650d02dc2aec13868423222eb539cbc44c2bd12c4b6e28de
+  by: SageMath 10.10.beta8
+0136 integral.genus_symbol:
+  inputs: 1e9a051f8388d0cf650d02dc2aec13868423222eb539cbc44c2bd12c4b6e28de
+  by: SageMath 10.10.beta8
+0137 definite.automorphism_group_order:
+  inputs: 2ab9a0d04f3b72079c2de1e594a10780a38aed53d7b647a6a6df94f5e0c4f5ba
+  by: SageMath 10.10.beta8
+0137 integral.genus_class_count:
+  inputs: 2ab9a0d04f3b72079c2de1e594a10780a38aed53d7b647a6a6df94f5e0c4f5ba
+  by: SageMath 10.10.beta8
+  seconds: 120
+0137 integral.genus_symbol:
+  inputs: 2ab9a0d04f3b72079c2de1e594a10780a38aed53d7b647a6a6df94f5e0c4f5ba
+  by: SageMath 10.10.beta8
+0138 integral.genus_class_count:
+  inputs: 20b00e69e8f20c677c4612f2836dc364493658fd626f113fb10218fad8765f7d
+  by: SageMath 10.10.beta8
+0138 integral.genus_symbol:
+  inputs: 20b00e69e8f20c677c4612f2836dc364493658fd626f113fb10218fad8765f7d
+  by: SageMath 10.10.beta8
+0139 integral.genus_class_count:
+  inputs: 1078312d2ae3a35d22bb05e9181c78c3dc79e36871742f4afdb91aec778f3dda
+  by: SageMath 10.10.beta8
+0139 integral.genus_symbol:
+  inputs: 1078312d2ae3a35d22bb05e9181c78c3dc79e36871742f4afdb91aec778f3dda
+  by: SageMath 10.10.beta8
+0140 integral.genus_class_count:
+  inputs: cb009757082cd777c1aced31f6b21edb365c6bc7bb61ed7a4b39f98aabfaebb7
+  by: SageMath 10.10.beta8
+0140 integral.genus_symbol:
+  inputs: cb009757082cd777c1aced31f6b21edb365c6bc7bb61ed7a4b39f98aabfaebb7
+  by: SageMath 10.10.beta8
+0143 definite.automorphism_group_order:
+  inputs: 8588741eb8eb73ffebb151ebbcec50333260611a5b62d6b3eb63a211aed86037
+  by: SageMath 10.10.beta8
+0143 integral.genus_class_count:
+  inputs: 8588741eb8eb73ffebb151ebbcec50333260611a5b62d6b3eb63a211aed86037
+  by: SageMath 10.10.beta8
+0143 integral.genus_symbol:
+  inputs: 8588741eb8eb73ffebb151ebbcec50333260611a5b62d6b3eb63a211aed86037
+  by: SageMath 10.10.beta8
+0145 integral.genus_class_count:
+  inputs: b330b940cdfba86e773247dbc38e1b2553421d0c33ebf1880754c55c4998c1ed
+  by: SageMath 10.10.beta8
+0145 integral.genus_symbol:
+  inputs: b330b940cdfba86e773247dbc38e1b2553421d0c33ebf1880754c55c4998c1ed
+  by: SageMath 10.10.beta8
+0146 definite.automorphism_group_order:
+  inputs: 118bb09f1fbfcd9a6a64327a2bad8e0f236cf50e9391f42dc4d8ec734f75c556
+  by: SageMath 10.10.beta8
+0146 integral.genus_class_count:
+  inputs: 118bb09f1fbfcd9a6a64327a2bad8e0f236cf50e9391f42dc4d8ec734f75c556
+  by: SageMath 10.10.beta8
+0146 integral.genus_symbol:
+  inputs: 118bb09f1fbfcd9a6a64327a2bad8e0f236cf50e9391f42dc4d8ec734f75c556
+  by: SageMath 10.10.beta8
+0147 definite.automorphism_group_order:
+  inputs: c9b2240c40c0d70e138e9b36088ba056d367a5cfdc077b7f79807d0dfde23aa8
+  by: SageMath 10.10.beta8
+0147 integral.genus_class_count:
+  inputs: c9b2240c40c0d70e138e9b36088ba056d367a5cfdc077b7f79807d0dfde23aa8
+  by: SageMath 10.10.beta8
+0147 integral.genus_symbol:
+  inputs: c9b2240c40c0d70e138e9b36088ba056d367a5cfdc077b7f79807d0dfde23aa8
+  by: SageMath 10.10.beta8
+0148 definite.automorphism_group_order:
+  inputs: d3865697cb99eed7680d591e32c7fc983b8ae30040b61764faf28bea3bc18ff4
+  by: SageMath 10.10.beta8
+0148 integral.genus_class_count:
+  inputs: d3865697cb99eed7680d591e32c7fc983b8ae30040b61764faf28bea3bc18ff4
+  by: SageMath 10.10.beta8
+0148 integral.genus_symbol:
+  inputs: d3865697cb99eed7680d591e32c7fc983b8ae30040b61764faf28bea3bc18ff4
+  by: SageMath 10.10.beta8
+0149 definite.automorphism_group_order:
+  inputs: 886cce4f5a6285a8ca19fb251c365ba78c6c555f44821950e14f2890fc0177ee
+  by: SageMath 10.10.beta8
+0149 integral.genus_class_count:
+  inputs: 886cce4f5a6285a8ca19fb251c365ba78c6c555f44821950e14f2890fc0177ee
+  by: SageMath 10.10.beta8
+0149 integral.genus_symbol:
+  inputs: 886cce4f5a6285a8ca19fb251c365ba78c6c555f44821950e14f2890fc0177ee
+  by: SageMath 10.10.beta8
+0150 definite.automorphism_group_order:
+  inputs: 278456d2f1ab2cad64e74077398993896bb868640a80893a4b1fac69b26e2460
+  by: SageMath 10.10.beta8
+0150 integral.genus_class_count:
+  inputs: 278456d2f1ab2cad64e74077398993896bb868640a80893a4b1fac69b26e2460
+  by: SageMath 10.10.beta8
+0150 integral.genus_symbol:
+  inputs: 278456d2f1ab2cad64e74077398993896bb868640a80893a4b1fac69b26e2460
+  by: SageMath 10.10.beta8
+0151 definite.automorphism_group_order:
+  inputs: f9b17d07de0917f7bafa3672e728e949960f62639813b26ead0a790330d8d06d
+  by: SageMath 10.10.beta8
+0151 integral.genus_class_count:
+  inputs: f9b17d07de0917f7bafa3672e728e949960f62639813b26ead0a790330d8d06d
+  by: SageMath 10.10.beta8
+0151 integral.genus_symbol:
+  inputs: f9b17d07de0917f7bafa3672e728e949960f62639813b26ead0a790330d8d06d
+  by: SageMath 10.10.beta8
+0152 integral.genus_class_count:
+  inputs: d631de6d23cab08575843d88f42324412911f78e2c553a528e72c6476b2e6b3e
+  by: SageMath 10.10.beta8
+0152 integral.genus_symbol:
+  inputs: d631de6d23cab08575843d88f42324412911f78e2c553a528e72c6476b2e6b3e
+  by: SageMath 10.10.beta8
+0153 integral.genus_class_count:
+  inputs: 87ab8f1ad3ba1a090333f6deaba35ba5f0402537118d6a52a686a1a7f790e2b8
+  by: SageMath 10.10.beta8
+0153 integral.genus_symbol:
+  inputs: 87ab8f1ad3ba1a090333f6deaba35ba5f0402537118d6a52a686a1a7f790e2b8
+  by: SageMath 10.10.beta8
+0154 integral.genus_class_count:
+  inputs: 39d88af46442dea487834024bf0ea8f10046adef6d1a27a49fd42547f41f032e
+  by: SageMath 10.10.beta8
+0154 integral.genus_symbol:
+  inputs: 39d88af46442dea487834024bf0ea8f10046adef6d1a27a49fd42547f41f032e
+  by: SageMath 10.10.beta8
+0155 integral.genus_class_count:
+  inputs: 13620585e1ef69c7991e667fe7f0879ec157d7c8e070c29f4e8410ac5f2ae3e7
+  by: SageMath 10.10.beta8
+0155 integral.genus_symbol:
+  inputs: 13620585e1ef69c7991e667fe7f0879ec157d7c8e070c29f4e8410ac5f2ae3e7
+  by: SageMath 10.10.beta8
+0156 integral.genus_class_count:
+  inputs: 5b973bcc72227d26d61873e82733aad9a644a2d37add4d633528bfd14228b85c
+  by: SageMath 10.10.beta8
+0156 integral.genus_symbol:
+  inputs: 5b973bcc72227d26d61873e82733aad9a644a2d37add4d633528bfd14228b85c
+  by: SageMath 10.10.beta8
+0159 definite.automorphism_group_order:
+  inputs: eb788221fbb1684b9742740a39ab6690d84fb3ed5a5fdeb7f80249ac68bafbc8
+  by: SageMath 10.10.beta8
+0159 integral.genus_class_count:
+  inputs: eb788221fbb1684b9742740a39ab6690d84fb3ed5a5fdeb7f80249ac68bafbc8
+  by: SageMath 10.10.beta8
+0159 integral.genus_symbol:
+  inputs: eb788221fbb1684b9742740a39ab6690d84fb3ed5a5fdeb7f80249ac68bafbc8
+  by: SageMath 10.10.beta8
+0160 definite.automorphism_group_order:
+  inputs: 26321dce19ef7e6897c6ea5da78af0697434b093a370b2207c6a3755edae97c4
+  by: SageMath 10.10.beta8
+0160 integral.genus_class_count:
+  inputs: 26321dce19ef7e6897c6ea5da78af0697434b093a370b2207c6a3755edae97c4
+  by: SageMath 10.10.beta8
+0160 integral.genus_symbol:
+  inputs: 26321dce19ef7e6897c6ea5da78af0697434b093a370b2207c6a3755edae97c4
+  by: SageMath 10.10.beta8
+0162 integral.genus_class_count:
+  inputs: 93fa9eacce2247a4c7497a8bcc219423d849899efa70c2d8117d66f8e1fb4f1a
+  by: SageMath 10.10.beta8
+0162 integral.genus_symbol:
+  inputs: 93fa9eacce2247a4c7497a8bcc219423d849899efa70c2d8117d66f8e1fb4f1a
+  by: SageMath 10.10.beta8
+0163 definite.automorphism_group_order:
+  inputs: 073f63874c0dd16785ad83ee62c25cc1730fdd3e6e2f83b14146d84479174d27
+  by: SageMath 10.10.beta8
+0163 integral.genus_class_count:
+  inputs: 073f63874c0dd16785ad83ee62c25cc1730fdd3e6e2f83b14146d84479174d27
+  by: SageMath 10.10.beta8
+0163 integral.genus_symbol:
+  inputs: 073f63874c0dd16785ad83ee62c25cc1730fdd3e6e2f83b14146d84479174d27
+  by: SageMath 10.10.beta8
+0164 definite.automorphism_group_order:
+  inputs: 9b42eb2619522ea28e9d1273bba21ee2b9a7f528173b8012ff631c5e9cd7fac5
+  by: SageMath 10.10.beta8
+0164 integral.genus_class_count:
+  inputs: 9b42eb2619522ea28e9d1273bba21ee2b9a7f528173b8012ff631c5e9cd7fac5
+  by: SageMath 10.10.beta8
+0164 integral.genus_symbol:
+  inputs: 9b42eb2619522ea28e9d1273bba21ee2b9a7f528173b8012ff631c5e9cd7fac5
+  by: SageMath 10.10.beta8
+0165 definite.automorphism_group_order:
+  inputs: 21b239c98a02b0a9b60cbfd453c1502f33f70d2bde54cb427ab32a575936e057
+  by: SageMath 10.10.beta8
+0165 integral.genus_class_count:
+  inputs: 21b239c98a02b0a9b60cbfd453c1502f33f70d2bde54cb427ab32a575936e057
+  by: SageMath 10.10.beta8
+0165 integral.genus_symbol:
+  inputs: 21b239c98a02b0a9b60cbfd453c1502f33f70d2bde54cb427ab32a575936e057
+  by: SageMath 10.10.beta8
+0166 definite.automorphism_group_order:
+  inputs: 1014cfd97517bb4cc83322e0cf085460477abe35c874659b7f396b901947237e
+  by: SageMath 10.10.beta8
+0166 integral.genus_class_count:
+  inputs: 1014cfd97517bb4cc83322e0cf085460477abe35c874659b7f396b901947237e
+  by: SageMath 10.10.beta8
+  seconds: 120
+0166 integral.genus_symbol:
+  inputs: 1014cfd97517bb4cc83322e0cf085460477abe35c874659b7f396b901947237e
+  by: SageMath 10.10.beta8
+0167 integral.genus_class_count:
+  inputs: 24929290b145bf7bf4679170bd4ae390c222bd42a26b49928f73e2a07c408d35
+  by: SageMath 10.10.beta8
+0167 integral.genus_symbol:
+  inputs: 24929290b145bf7bf4679170bd4ae390c222bd42a26b49928f73e2a07c408d35
+  by: SageMath 10.10.beta8
+0168 integral.genus_class_count:
+  inputs: 636934fde004513dbd122ffac6c0c27f750ebb65fcc9ec601e729b8dee228a5d
+  by: SageMath 10.10.beta8
+0168 integral.genus_symbol:
+  inputs: 636934fde004513dbd122ffac6c0c27f750ebb65fcc9ec601e729b8dee228a5d
+  by: SageMath 10.10.beta8
+0169 integral.genus_class_count:
+  inputs: 067d06f4a8bb147c34c180c068d1ac37a86e7e00d587f538f18be2cd9b98e8af
+  by: SageMath 10.10.beta8
+0169 integral.genus_symbol:
+  inputs: 067d06f4a8bb147c34c180c068d1ac37a86e7e00d587f538f18be2cd9b98e8af
+  by: SageMath 10.10.beta8
+0172 definite.automorphism_group_order:
+  inputs: 788e09774e09d3816eb1aefed44cf9a4e926831e0f029ca16b4188fc77e15947
+  by: SageMath 10.10.beta8
+0172 integral.genus_class_count:
+  inputs: 788e09774e09d3816eb1aefed44cf9a4e926831e0f029ca16b4188fc77e15947
+  by: SageMath 10.10.beta8
+0172 integral.genus_symbol:
+  inputs: 788e09774e09d3816eb1aefed44cf9a4e926831e0f029ca16b4188fc77e15947
+  by: SageMath 10.10.beta8
+0174 integral.genus_class_count:
+  inputs: 952948153faac853f2cd6d7e206826f586b059355737f4bb61ed52518337d6db
+  by: SageMath 10.10.beta8
+0174 integral.genus_symbol:
+  inputs: 952948153faac853f2cd6d7e206826f586b059355737f4bb61ed52518337d6db
+  by: SageMath 10.10.beta8
+0175 definite.automorphism_group_order:
+  inputs: 3cc3f67e72cf9f84b05abd8497bba322f658c4f742dd82562cffaeb478800abf
+  by: SageMath 10.10.beta8
+0175 integral.genus_class_count:
+  inputs: 3cc3f67e72cf9f84b05abd8497bba322f658c4f742dd82562cffaeb478800abf
+  by: SageMath 10.10.beta8
+0175 integral.genus_symbol:
+  inputs: 3cc3f67e72cf9f84b05abd8497bba322f658c4f742dd82562cffaeb478800abf
+  by: SageMath 10.10.beta8
+0176 definite.automorphism_group_order:
+  inputs: 56934148b116c3397b009e4f2382db4c1e90f34af5927115f956d72341fedf75
+  by: SageMath 10.10.beta8
+0176 integral.genus_class_count:
+  inputs: 56934148b116c3397b009e4f2382db4c1e90f34af5927115f956d72341fedf75
+  by: SageMath 10.10.beta8
+  seconds: 120
+0176 integral.genus_symbol:
+  inputs: 56934148b116c3397b009e4f2382db4c1e90f34af5927115f956d72341fedf75
+  by: SageMath 10.10.beta8

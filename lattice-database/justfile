@@ -20,9 +20,13 @@ nebe-sloane ENTRY *ARGS:
 morphism SOURCE TARGET *ARGS:
     uv run latticedb morphism {{SOURCE}} {{TARGET}} {{ARGS}}
 
-# Compute again, in every record, each field that the Gram tensor determines, and write the records that change
-derive:
-    uv run latticedb derive
+# Validate every record, and list the computations that have no certificate; computes nothing
+check:
+    uv run latticedb check
+
+# Carry out the computations that have no certificate, store their results and certify them; the nightly CI job runs it: `just certify --tag 0094 --seconds 600`
+certify *ARGS:
+    uv run latticedb certify {{ARGS}}
 
 # Validate every record and build the site into _site/
 build:

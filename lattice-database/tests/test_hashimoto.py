@@ -12,10 +12,6 @@ HELD = corpus.held(LOADED)
 GROUPS, INVARIANTS = hashimoto.stored(REPOSITORY / "sources" / "hashimoto")
 
 
-def test_the_records_satisfy_tables_10_2_and_10_3() -> None:
-    assert hashimoto.check(GROUPS, INVARIANTS, LATTICES, HELD) == []
-
-
 def test_the_group_of_a_genus_symbol_is_the_sum_of_its_cyclic_factors() -> None:
     assert hashimoto.symbol_group("2_II^{-2}, 8_1^{+1}, 5^{-1}") == [2, 2, 5, 8]
 

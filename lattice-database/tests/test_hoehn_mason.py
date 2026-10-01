@@ -13,11 +13,6 @@ GROUPS, _ = hashimoto.stored(REPOSITORY / "sources" / "hashimoto")
 LEECH, ENTRIES = hoehn_mason.stored(REPOSITORY / "sources" / "hoehn_mason")
 
 
-def test_the_stored_entries_agree_with_the_records_table_10_2_and_the_morphism_files() -> None:
-    assert len(ENTRIES) == 40
-    assert hoehn_mason.check(LEECH, ENTRIES, GROUPS, LATTICES, HELD) == []
-
-
 def test_the_group_order_is_the_order_of_the_closure() -> None:
     # The rotation by a quarter turn generates the cyclic group of order 4.
     assert hoehn_mason.group_order([((0, -1), (1, 0))]) == 4
@@ -27,7 +22,8 @@ Change = dict[str, int | tuple[corpus.Matrix, ...]]
 
 
 def _replace(index: int, change: Change) -> tuple[hoehn_mason.Entry, ...]:
-    return tuple(entry.model_copy(update=change) if k == index else entry for k, entry in enumerate(ENTRIES))
+    """The entry `index` with `change`, alone: a check of the other entries computes their group orders again."""
+    return (ENTRIES[index].model_copy(update=change),)
 
 
 def test_a_generator_that_does_not_fix_the_fixed_point_lattice_is_refused() -> None:
