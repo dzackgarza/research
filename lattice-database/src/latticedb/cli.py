@@ -39,7 +39,11 @@ def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
     """Compute the values of a new record once, check it against its declared values and the corpus, and write it under the next tag."""
     loaded = corpus.load(root)
     tag = corpus.next_tag(loaded)
-    _refuse(records.gram_problems(records.gram_tensor(declared["gram_tensor"])))
+    match declared["families"]:
+        case list() as families:
+            _refuse(records.gram_problems(records.gram_tensor(declared["gram_tensor"]), tuple(str(family) for family in families)))
+        case _:
+            raise AssertionError("families is a list of keys of families.yaml")
     record = records.derive({"tag": tag, **declared})
     # Pydantic reports the problems of a record only through this exception.
     try:

@@ -65,7 +65,9 @@ A component is an integer or a string `p/q`. Floats are refused.
 The corpus records a lattice once, up to twist and sign.
 For an integer $n$, the twist $L(n)$ is the module of $L$ with the form $nb$.
 A Gram tensor that is $n$ times a Gram tensor with integer components for some $n \geq 2$, or that is zero, is refused: the lattice is $M(n)$ for the lattice $M$ with Gram tensor $b/n$, and the corpus records $M$.
-So $\langle 1 \rangle$ is a record and $A_1 = \langle 1 \rangle(2)$ is not; $E_8$ is a record and $E_8(2)$ is not; $U$ is a record and $U(2)$ is not.
+So $\langle 1 \rangle$ is a record and $A_1 = \langle 1 \rangle(2)$ is not; $E_8$ is a record and $E_8(2)$ is not.
+The one exception is the 13 rows $a = r$ of Table 1 of Nikulin (J. Soviet Math. 22 (1983)), the family `nikulin-two-elementary`: each row is a twist $M(2)$ of a unimodular record $M$, and each is a record, because the classification names the twist and not $M$.
+`latticedb new` admits a twist by 2 in that family and no other twist.
 Of $L$ and $L(-1)$ the corpus records one: the one with $b(x, x) \geq 0$ for all $x$ when $b$ is definite or semidefinite, and the one with signature $(n_+, n_-)$, $n_+ \leq n_-$, when $b$ is indefinite.
 So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature $(1, 9)$, is a record.
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
@@ -152,7 +154,7 @@ To add a lattice:
 2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
    `--alias`, `--family`, `--reference` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
    For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`, fetches it first when it does not exist, checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference of the entry.
-   The command refuses a record that does not validate, that is a twist $M(n)$ with $n \neq 1$ of the lattice the corpus records, that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
+   The command refuses a record that does not validate, that is a twist $M(n)$ with $n \neq 1$ of the lattice the corpus records (other than a twist by 2 in the family `nikulin-two-elementary`), that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
 
 3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
    For a record that is not definite whose `root_span` block the command could not decide, write the block and its proof by hand.

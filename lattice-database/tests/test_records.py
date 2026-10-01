@@ -219,7 +219,23 @@ def gram(rows: list[list[int]]) -> tuple[tuple[Fraction, ...], ...]:
     ],
 )
 def test_a_gram_tensor_is_refused_when_it_is_not_symmetric_or_is_a_twist(rows: list[list[int]], expected: list[str]) -> None:
-    found = records.gram_problems(gram(rows))
+    found = records.gram_problems(gram(rows), ())
+    assert len(found) == len(expected)
+    assert all(fragment in problem for fragment, problem in zip(expected, found, strict=True))
+
+
+@pytest.mark.parametrize(
+    ("rows", "expected"),
+    [
+        # U(2), the row (2, 2, 0) of Nikulin's Table 1, is a record of the family.
+        ([[0, 2], [2, 0]], []),
+        # <1>(4) is not a twist by 2, and <1>(-2) is a twist by 2 against the sign convention.
+        ([[4]], ["M(4)"]),
+        ([[-2]], ["M(-1)"]),
+    ],
+)
+def test_the_nikulin_family_admits_exactly_the_twists_by_2(rows: list[list[int]], expected: list[str]) -> None:
+    found = records.gram_problems(gram(rows), (records.TWIST_FAMILY,))
     assert len(found) == len(expected)
     assert all(fragment in problem for fragment, problem in zip(expected, found, strict=True))
 

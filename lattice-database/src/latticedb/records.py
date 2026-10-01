@@ -260,13 +260,18 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     return {key: derived[key] for key in KEYS if key in derived}
 
 
-def gram_problems(gram: GramTensor) -> list[str]:
+TWIST_FAMILY = "nikulin-two-elementary"
+"""The family whose twists $M(2)$ are records: the 13 rows $a = r$ of Nikulin's Table 1 are lattices $M(2)$, and the classification names them, not $M$."""
+
+
+def gram_problems(gram: GramTensor, families: tuple[str, ...]) -> list[str]:
     """The problems of the Gram tensor of a new record: it is not symmetric, or it is a twist that the corpus does not record.
 
     The corpus records one lattice of each class under scaling $L \\mapsto L(n)$, $n$ a nonzero integer.
     $L$ is admitted when it is not $M(n)$ for a lattice $M$ and an integer $n$ with $|n| \\geq 2$,
     that is, when the scale of $b$ has numerator 1, and when its sign is the conventional one:
     $b$ is positive when it takes one sign, and $n_+ \\leq n_-$ when it takes both.
+    The one exception is a twist $M(2)$ in the family `TWIST_FAMILY`.
     The zero form is $M(0)$ for every $M$ and is not admitted.
     """
     rank = len(gram)
@@ -278,7 +283,7 @@ def gram_problems(gram: GramTensor) -> list[str]:
     if scale == 0:
         return [f"gram_tensor: b = 0 is M(0) for every lattice M of rank {rank}; the corpus records no zero form"]
     found = []
-    if scale.numerator != 1:
+    if scale.numerator != 1 and not (scale.numerator == 2 and TWIST_FAMILY in families):
         found.append(f"gram_tensor: the lattice is M({scale.numerator}) for the lattice M with Gram tensor b/{scale.numerator}; the corpus records M and not its twist")
     n_plus, n_minus, _ = arithmetic.inertia(gram)
     if (n_plus == 0 and n_minus > 0) or (n_plus > n_minus > 0):
