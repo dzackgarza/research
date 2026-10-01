@@ -71,10 +71,11 @@ So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature 
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new`, `latticedb nebe-sloane` and `latticedb derive` compute them once, with exact arithmetic, when they write the record. `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus. The build and `latticedb check` read the stored values and compute nothing again.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new`, `latticedb nebe-sloane` and `latticedb derive` compute them once, with exact arithmetic, when they write the record.
+`latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
+The build and `latticedb check` read the stored values and compute nothing again.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-A person also writes `integral.genus_symbol`, computed from the Gram tensor with `Genus` of SageMath, and `definite.automorphism_group_order`, computed with `qfauto` of PARI/GP.
-`hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
+A person also writes `integral.genus_symbol`, computed from the Gram tensor with `Genus` of SageMath, and `definite.automorphism_group_order`, computed with `qfauto` of PARI/GP. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.

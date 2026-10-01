@@ -44,5 +44,7 @@ An even 2-elementary lattice has invariants $(r, a, \delta)$: $r$ is the rank, t
 :::
 
 ::: {.theorem data-name="Nikulin"}
-An indefinite even 2-elementary lattice is determined by its signature and $(r, a, \delta)$ ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060): V. V. Nikulin, *Integral symmetric bilinear forms and some of their applications*, Math. USSR-Izv. 14 (1980), 103–167).
+An indefinite even 2-elementary lattice is determined by its signature and $(r, a, \delta)$ ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060): V. V. Nikulin, *Integral symmetric bilinear forms and some of their applications*, Math.
+USSR-Izv.
+14 (1980), 103–167).
 :::

@@ -84,8 +84,11 @@ def record_text(record: dict[str, Yaml], prose: str) -> str:
 
 
 def _body(prose: str) -> str:
-    """The prose after the front matter: nothing when there is no prose, else a blank line and the prose."""
-    return "\n" + prose + "\n" if prose else ""
+    """The prose after the front matter, in the form the Markdown formatter flowmark keeps.
+
+    That is two blank lines when there is no prose, else a blank line and the prose.
+    """
+    return "\n" + prose + "\n" if prose else "\n\n"
 
 
 MORPHISM_KEYS = ("name", "description", "matrix", "row_subdivisions", "column_subdivisions")
