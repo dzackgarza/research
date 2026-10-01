@@ -13,7 +13,10 @@ on each other row, the record $R$ and the twist $t$ with $\\Lambda_G = R(t)$.
 `sources/hashimoto/table_10_3.json` stores each printed Gram tensor $T$ with the record $R$, the
 twist $t$, and the matrix $P$ whose column $j$ holds the coordinates in the basis of $R$ of the
 $j$-th basis vector of $T$, so that $P^{\\top} (t \\, G_R) P = T$.
-`check` asserts every equation that these files state.
+`check` asserts every equation that these files state, and that the morphism files hold, for each
+printed lattice $R(s)$ of Table 10.3, an embedding of $R(s)$ in the K3 lattice and an embedding of the
+coinvariant lattice of its row whose images are primitive and orthogonal: the invariant lattice and its
+orthogonal complement.
 """
 
 import re
@@ -24,10 +27,11 @@ from pathlib import Path
 from flint import fmpz, fmpz_mat
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
-from latticedb import arithmetic
+from latticedb import arithmetic, corpus
 from latticedb.model import Lattice, Tag
 
 K3_RANK = 22
+K3_RECORD = "027E"
 _SYMBOL = re.compile(r"(\d+)(?:_(?:II|\d))?\^\{([+-])(\d+)\}")
 
 
@@ -104,8 +108,26 @@ def _tensor(rows: tuple[tuple[int, ...], ...]) -> arithmetic.GramTensor:
     return tuple(tuple(map(Fraction, row)) for row in rows)
 
 
-def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], lattices: Mapping[str, Lattice]) -> list[str]:
-    """The equations of Tables 10.2 and 10.3 that the records do not satisfy."""
+def _primitive(matrix: corpus.Matrix) -> bool:
+    """Whether the columns of `matrix` are a basis of a primitive sublattice."""
+    columns = [tuple(row[j] for row in matrix) for j in range(len(matrix[0]))]
+    return arithmetic.invariant_factors(columns, len(matrix)) == (1,) * len(columns)
+
+
+def complements(invariant: tuple[Tag, int], coinvariant: tuple[Tag, int], k3: Lattice, morphisms: corpus.Held) -> bool:
+    """Whether the morphism files hold embeddings of `invariant` $= R(s)$ and `coinvariant` $= C(t)$ into the K3 lattice whose images are primitive and orthogonal."""
+    gram = fmpz_mat([[int(x) for x in row] for row in k3.gram_tensor])
+    for first, scale in morphisms.get((invariant[0], K3_RECORD), ()):
+        for second, other in morphisms.get((coinvariant[0], K3_RECORD), ()):
+            if (scale, other) != (invariant[1], coinvariant[1]) or len(first[0]) + len(second[0]) != K3_RANK:
+                continue
+            if (fmpz_mat([list(r) for r in first]).transpose() * gram * fmpz_mat([list(r) for r in second])).is_zero() and _primitive(first) and _primitive(second):
+                return True
+    return False
+
+
+def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], lattices: Mapping[str, Lattice], morphisms: corpus.Held) -> list[str]:
+    """The equations of Tables 10.2 and 10.3 that the records and the morphism files do not satisfy."""
     found: list[str] = []
     by_n = {row.n: row for row in groups}
     assert sorted(by_n) == list(range(1, 82)), "Table 10.2 has the rows 1 to 81"
@@ -140,9 +162,14 @@ def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], la
             stated = (rank, (3, rank - 3), row.discriminant_order, symbol_group(row.discriminant_form))
             if computed != stated:
                 found.append(f"Table 10.3 row {invariant.n}: (rank, signature, |q|, group of q) is {stated}, the printed Gram tensor gives {computed}")
+            assert row.coinvariant is not None
+            if not complements((printed.record, printed.twist), (row.coinvariant.record, row.coinvariant.twist), lattices[K3_RECORD], morphisms):
+                pair = f"{printed.record}({printed.twist}) and {row.coinvariant.record}({row.coinvariant.twist})"
+                found.append(f"Table 10.3 row {invariant.n}: the morphism files hold no primitive orthogonal embeddings of {pair} in {K3_RECORD}")
     return found
 
 
-def stored_problems(root: Path, lattices: Mapping[str, Lattice]) -> list[str]:
-    """`check` on the files under `root/sources/hashimoto`."""
-    return check(*stored(root / "sources" / "hashimoto"), lattices)
+def stored_problems(root: Path, loaded: corpus.Corpus) -> list[str]:
+    """`check` on the files under `root/sources/hashimoto`, against the records and the morphism files of `loaded`."""
+    lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
+    return check(*stored(root / "sources" / "hashimoto"), lattices, corpus.held(loaded))

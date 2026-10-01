@@ -25,10 +25,10 @@ from flint import fmpq, fmpq_mat, fmpz_mat
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from latticedb import corpus, hashimoto
+from latticedb.corpus import Matrix
 from latticedb.model import Lattice, Tag
 
 LEECH_RANK = 24
-Matrix = tuple[tuple[int, ...], ...]
 
 
 class Leech(BaseModel):
@@ -136,7 +136,7 @@ def group_order(generators: list[Matrix]) -> int:
     return len(seen)
 
 
-def check(leech: Leech, entries: tuple[Entry, ...], groups: tuple[hashimoto.GroupRow, ...], lattices: Mapping[str, Lattice], morphisms: Mapping[tuple[str, str], tuple[tuple[Matrix, int], ...]]) -> list[str]:
+def check(leech: Leech, entries: tuple[Entry, ...], groups: tuple[hashimoto.GroupRow, ...], lattices: Mapping[str, Lattice], morphisms: corpus.Held) -> list[str]:
     """The equations of the stored file that the records, Table 10.2 of Hashimoto and the morphism files do not satisfy."""
     found: list[str] = []
     gram = leech_gram(leech)
@@ -183,13 +183,8 @@ def check(leech: Leech, entries: tuple[Entry, ...], groups: tuple[hashimoto.Grou
     return found
 
 
-def held(loaded: corpus.Corpus) -> dict[tuple[str, str], tuple[tuple[Matrix, int], ...]]:
-    """For each pair of tags with a morphism file, the matrices and scales of its morphisms."""
-    return {(entry.morphisms.source, entry.morphisms.target): tuple((morphism.matrix, morphism.scale) for morphism in entry.morphisms.morphisms) for entry in loaded.morphisms}
-
-
 def stored_problems(root: Path, loaded: corpus.Corpus) -> list[str]:
     """`check` on the files under `root/sources/hoehn_mason`, against the records and the morphism files of `loaded`."""
     groups, _ = hashimoto.stored(root / "sources" / "hashimoto")
     lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
-    return check(*stored(root / "sources" / "hoehn_mason"), groups, lattices, held(loaded))
+    return check(*stored(root / "sources" / "hoehn_mason"), groups, lattices, corpus.held(loaded))

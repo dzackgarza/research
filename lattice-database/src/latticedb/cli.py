@@ -173,8 +173,7 @@ def check(root: Root = Path()) -> None:
         print("\n".join(invalid.problems), file=sys.stderr)
         print(f"{len(invalid.problems)} problems", file=sys.stderr)
         sys.exit(1)
-    lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
-    _refuse(hashimoto.stored_problems(root, lattices))
+    _refuse(hashimoto.stored_problems(root, loaded))
     _refuse(hoehn_mason.stored_problems(root, loaded))
     print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid, the sources agree with them")
 

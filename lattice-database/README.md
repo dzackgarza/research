@@ -25,7 +25,7 @@ The site is served at <http://lattice-database.localhost/>.
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
 | `src/latticedb/records.py` | Computes the fields of a record that the Gram tensor determines, and writes a record as a file |
 | `src/latticedb/nebe_sloane.py` | Reads an entry of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) and writes it as the declared fields of a record |
-| `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, and checks every equation they state against the records |
+| `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, checks every equation they state against the records, and checks that the morphism files embed each $\Lambda^G$ and its $\Lambda_G$ in the K3 lattice as orthogonal primitive sublattices |
 | `src/latticedb/hoehn_mason.py` | Reads the coinvariant lattices of the Leech lattice of Höhn and Mason, computes their inclusions in the Leech lattice and the actions of their stabilizers, and checks them against the records, Table 10.2 of Hashimoto and the morphism files |
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
@@ -273,7 +273,7 @@ The `justfile` calls it.
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
 
-`uv run latticedb check` validates the records, checks them against the files under `sources/hashimoto/` and `sources/hoehn_mason/`, checks that the morphism files hold the maps that `sources/hoehn_mason/` determines, and builds nothing.
+`uv run latticedb check` validates the records, checks them against the files under `sources/hashimoto/` and `sources/hoehn_mason/`, checks that the morphism files hold the maps that `sources/hoehn_mason/` determines and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices, and builds nothing.
 
 The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`.
 

@@ -60,6 +60,16 @@ class Corpus:
     morphisms: tuple[MorphismEntry, ...]
 
 
+Matrix = tuple[tuple[int, ...], ...]
+Held = dict[tuple[Tag, Tag], tuple[tuple[Matrix, int], ...]]
+"""For each pair (source, target) with a morphism file, the matrix and the scale of each of its morphisms."""
+
+
+def held(corpus: Corpus) -> Held:
+    """The matrices and scales of the morphism files of `corpus`."""
+    return {(entry.morphisms.source, entry.morphisms.target): tuple((morphism.matrix, morphism.scale) for morphism in entry.morphisms.morphisms) for entry in corpus.morphisms}
+
+
 class CorpusInvalid(Exception):
     """Raised with every problem of the corpus, one line each."""
 

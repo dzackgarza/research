@@ -8,7 +8,7 @@ from latticedb import corpus, hashimoto, hoehn_mason
 REPOSITORY = Path(__file__).resolve().parent.parent
 LOADED = corpus.load(REPOSITORY)
 LATTICES = {entry.lattice.tag: entry.lattice for entry in LOADED.entries}
-HELD = hoehn_mason.held(LOADED)
+HELD = corpus.held(LOADED)
 GROUPS, _ = hashimoto.stored(REPOSITORY / "sources" / "hashimoto")
 LEECH, ENTRIES = hoehn_mason.stored(REPOSITORY / "sources" / "hoehn_mason")
 
@@ -23,7 +23,7 @@ def test_the_group_order_is_the_order_of_the_closure() -> None:
     assert hoehn_mason.group_order([((0, -1), (1, 0))]) == 4
 
 
-Change = dict[str, int | tuple[hoehn_mason.Matrix, ...]]
+Change = dict[str, int | tuple[corpus.Matrix, ...]]
 
 
 def _replace(index: int, change: Change) -> tuple[hoehn_mason.Entry, ...]:
