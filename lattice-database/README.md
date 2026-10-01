@@ -83,7 +83,8 @@ The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `
 `latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
 The build reads the stored values and computes nothing again.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-`latticedb certify` computes `integral.genus_symbol` and `integral.genus_class_count` with `Genus` of SageMath, and `definite.automorphism_group_order` with `qfauto` of PARI/GP, under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a value that SageMath does not compute within the time limit is not written. `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
+`latticedb certify` computes `integral.genus_symbol` and `integral.genus_class_count` with `Genus` of SageMath, and `definite.automorphism_group_order` with `qfauto` of PARI/GP, under `sage -python`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a value that SageMath does not compute within the time limit is not written.
+`hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.
@@ -172,7 +173,8 @@ The corpus is also checked as a whole: two records cannot have the same name or 
 
 ## Certificates
 
-Each computation is carried out once. `certificates.yaml` maps the name of each computation that the database has carried out to its certificate: the SHA-256 digest of its inputs, the program that carried it out with its version, and, for a computation that did not finish, the time limit in seconds.
+Each computation is carried out once.
+`certificates.yaml` maps the name of each computation that the database has carried out to its certificate: the SHA-256 digest of its inputs, the program that carried it out with its version, and, for a computation that did not finish, the time limit in seconds.
 
 | Name | Computation | Inputs |
 | --- | --- | --- |
@@ -181,8 +183,7 @@ Each computation is carried out once. `certificates.yaml` maps the name of each 
 | `source <name>` | The check of `sources/<name>/` against the records and the morphism files | The files of the source, the Gram tensors and the morphism files |
 
 `latticedb certify` carries out each computation without a certificate for its present inputs, stores its values, and writes its certificate; a check of a source is certified only when it finds no problem.
-A computation that did not finish within the time limit is carried out again only with a larger `--seconds`.
-To carry out a computation again, after a change to the computation, remove its certificate.
+A computation that did not finish within the time limit is carried out again only with a larger `--seconds`. To carry out a computation again, after a change to the computation, remove its certificate.
 `latticedb new` and `latticedb nebe-sloane` certify the derived values of the record that they write.
 
 The computations are heavy for a large lattice, so they run in the nightly job `.github/workflows/lattice-database-certify.yml`, which opens a pull request with the new values and certificates.
@@ -290,7 +291,8 @@ The `justfile` calls it.
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
 
-The check of `sources/hashimoto/` checks the records against Tables 10.2 and 10.3 of Hashimoto, and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices. The check of `sources/hoehn_mason/` checks that the morphism files hold the maps that the source determines.
+The check of `sources/hashimoto/` checks the records against Tables 10.2 and 10.3 of Hashimoto, and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices.
+The check of `sources/hoehn_mason/` checks that the morphism files hold the maps that the source determines.
 
 The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`. `latticedb certify` needs SageMath at `$SAGE_BIN`.
 

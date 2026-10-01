@@ -170,8 +170,9 @@ def _source_inputs(root: Path, loaded: corpus.Corpus, directories: tuple[str, ..
 
 def _pending(root: Path, loaded: corpus.Corpus, held: certificates.Certificates, seconds: int) -> list[str]:
     """The names of the computations without a certificate for their present inputs."""
-    names = [f"{entry.lattice.tag} derive" for entry in loaded.entries if not certificates.is_certified(held, f"{entry.lattice.tag} derive", certificates.gram_digest(entry.lattice))]
-    names += [f"source {source}" for source, (_, directories) in SOURCES.items() if not certificates.is_certified(held, f"source {source}", _source_inputs(root, loaded, directories))]
+    derived = {f"{entry.lattice.tag} derive": certificates.gram_digest(entry.lattice) for entry in loaded.entries}
+    checked = {f"source {source}": _source_inputs(root, loaded, directories) for source, (_, directories) in SOURCES.items()}
+    names = [name for name, inputs in (derived | checked).items() if not certificates.is_certified(held, name, inputs)]
     names += [genus.name(str(request["tag"]), str(field)) for request in genus.requests(loaded, held, (), seconds) for field in request["fields"]]
     return names
 

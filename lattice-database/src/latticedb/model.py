@@ -531,7 +531,9 @@ def _subdivision_problems(lines: Vector, size: int, location: tuple[str, ...]) -
 
 
 class Morphism(Record):
-    """A morphism $\\varphi \\colon S(c) \\to T$ of lattices: a $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = c \\, b_S(x, y)$ for a nonzero integer $c$, 1 by default.
+    """A morphism $\\varphi \\colon S(c) \\to T$ of lattices.
+
+    A $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = c \\, b_S(x, y)$ for a nonzero integer $c$, 1 by default.
 
     Its matrix is in the chosen bases of $S$ and $T$, which list the orthogonal summands in the order of their names.
     """
