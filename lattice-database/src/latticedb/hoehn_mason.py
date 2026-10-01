@@ -140,8 +140,9 @@ def check(leech: Leech, entries: tuple[Entry, ...], groups: tuple[hashimoto.Grou
     """The equations of the stored file that the records, Table 10.2 of Hashimoto and the morphism files do not satisfy."""
     found: list[str] = []
     gram = leech_gram(leech)
-    leech_basis = _integral(_rational(leech.record_basis))
-    if _integral(gram) is None or leech_basis is None or abs(leech_basis.det()) != 1 or _rational(leech.record_basis).transpose() * gram * _rational(leech.record_basis) != _gram(lattices[leech.record]):
+    basis = _rational(leech.record_basis)
+    leech_basis = _integral(basis)
+    if _integral(gram) is None or leech_basis is None or abs(leech_basis.det()) != 1 or basis.transpose() * gram * basis != _gram(lattices[leech.record]):
         found.append(f"leech[1]: the stored basis is not an isometry from {leech.record} to leech[1]")
     by_n = {row.n: row for row in groups}
     rows = sorted(entry.row for entry in entries)

@@ -1,4 +1,4 @@
-"""The coinvariant records are the coinvariant lattices of Höhn and Mason, their groups have the orders of Table 10.2 of Hashimoto, and the morphism files hold their maps; a false entry is refused."""
+"""The coinvariant records are the lattices of Höhn and Mason, with the group orders of Table 10.2 of Hashimoto and the maps of the morphism files."""
 
 from pathlib import Path
 
