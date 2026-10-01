@@ -19,7 +19,7 @@ def rank_one(tag: str) -> dict[str, Yaml]:
         "signature": [1, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1},
+        "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1, "bad_reduction_primes": [2]},
         "definite": {
             "minimum": 1,
             "kissing_number": 2,
@@ -42,7 +42,7 @@ def hyperbolic_plane(summands: list[dict[str, str | int]]) -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
-        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0, "bad_reduction_primes": [2], "quadratic_character": 1},
         "indefinite": {"isotropic": True},
         "root_span": {"roots": [[1, 1], [1, -1]], "norms": [2, -2], "summands": summands, "embedding": [[1, 1], [1, -1]]},
         "root_sublattice": {"invariant_factors": [1, 2]},
@@ -149,7 +149,7 @@ def test_an_embedding_of_u_bounds_the_hyperbolic_index_from_below(tmp_path: Path
 
 def test_a_hyperbolic_index_below_an_embedding_of_u_is_refused(tmp_path: Path) -> None:
     plane = hyperbolic_plane(VALID_U)
-    plane["integral"] = {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0, "hyperbolic_index": 0}
+    plane["integral"] = {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0, "hyperbolic_index": 0, "bad_reduction_primes": [2], "quadratic_character": 1}
     identity: list[dict[str, Yaml]] = [{"name": "identity", "matrix": [[1, 0], [0, 1]]}]
     directory = write_morphisms(write(tmp_path, rank_one("0001"), plane), "0016", "0016", identity)
     with pytest.raises(corpus.CorpusInvalid) as raised:

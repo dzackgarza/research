@@ -28,7 +28,7 @@ def e8() -> dict[str, Yaml]:
         "signature": [8, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0, "bad_reduction_primes": [2], "quadratic_character": 1},
         "definite": {
             "minimum": 2,
             "kissing_number": 240,
@@ -53,7 +53,7 @@ def hyperbolic_plane() -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -1,
         "definiteness": "indefinite",
-        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0},
+        "integral": {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0, "bad_reduction_primes": [2], "quadratic_character": 1},
         "indefinite": {"isotropic": True},
     }
 
@@ -110,7 +110,7 @@ def binary_form_of_determinant_19() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 19,
         "definiteness": "positive_definite",
-        "integral": {"parity": "even", "discriminant_group": [19], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [19], "overlattice_count": 1, "bad_reduction_primes": [2, 19], "quadratic_character": -19},
         "definite": {
             "minimum": 2,
             "kissing_number": 2,
@@ -135,7 +135,7 @@ def anisotropic_binary() -> dict[str, Yaml]:
         "signature": [1, 1],
         "determinant": -2,
         "definiteness": "indefinite",
-        "integral": {"parity": "odd", "discriminant_group": [2], "overlattice_count": 1},
+        "integral": {"parity": "odd", "discriminant_group": [2], "overlattice_count": 1, "bad_reduction_primes": [2], "quadratic_character": 8},
         "indefinite": {"isotropic": False},
     }
 
@@ -151,7 +151,7 @@ def square_lattice() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 1,
         "definiteness": "positive_definite",
-        "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1},
+        "integral": {"parity": "odd", "discriminant_group": [], "overlattice_count": 1, "bad_reduction_primes": [2], "quadratic_character": -4},
         "definite": {
             "minimum": 1,
             "kissing_number": 4,
@@ -175,7 +175,7 @@ def a6() -> dict[str, Yaml]:
         "signature": [6, 0],
         "determinant": 7,
         "definiteness": "positive_definite",
-        "integral": {"parity": "even", "discriminant_group": [7], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [7], "overlattice_count": 1, "bad_reduction_primes": [2, 7], "quadratic_character": -7},
         "definite": {
             "minimum": 2,
             "kissing_number": 42,
@@ -198,7 +198,7 @@ def hyperbolic_plane_plus_a1() -> dict[str, Yaml]:
         "signature": [1, 2],
         "determinant": 2,
         "definiteness": "indefinite",
-        "integral": {"parity": "even", "discriminant_group": [2], "overlattice_count": 1, "delta": 1},
+        "integral": {"parity": "even", "discriminant_group": [2], "overlattice_count": 1, "delta": 1, "bad_reduction_primes": [2]},
         "indefinite": {"isotropic": True},
     }
 
@@ -214,7 +214,7 @@ def a2() -> dict[str, Yaml]:
         "signature": [2, 0],
         "determinant": 3,
         "definiteness": "positive_definite",
-        "integral": {"parity": "even", "discriminant_group": [3], "overlattice_count": 1},
+        "integral": {"parity": "even", "discriminant_group": [3], "overlattice_count": 1, "bad_reduction_primes": [2, 3], "quadratic_character": -3},
         "definite": {
             "minimum": 2,
             "kissing_number": 6,
