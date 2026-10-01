@@ -14,3 +14,6 @@ isometry classes over the image of a lattice class.
 ```
 
 [Open the diagram fullscreen](category-graph.html). Scroll to zoom and drag to pan.
+
+The SageMath runtime category hierarchy is in the
+[SageMath category framework reference](https://github.com/dzackgarza/research/blob/main/docs/sage-inventory/Sage-Category-Framework-Inventory.md).
