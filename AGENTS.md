@@ -1,3 +1,97 @@
+# Ground everything in INTENT.md (read before anything else)
+
+[`INTENT.md`](INTENT.md) states the architecture these repositories exist to build: single semantic
+authority in `lean-categories`; a kernel that consumes mathematics and authors none; leaves that hold
+zero semantic authority and ship no mathematics; permanent, leaf-agnostic acceptance tests as the
+only evidence about computations; a one-way workflow in which each stage is blind to the later ones.
+Every decision, contract, gate, plan node and change here is grounded against it. Before writing
+anything, check whether it, or anything it touches, violates that model or its invariants. A
+violation found, in your task or outside it, is recorded as a defect where this repository records
+defects, never worked around or silently kept.
+
+# The evidence model: nothing from a leaf is trusted (read before anything else)
+
+These invariants bind every repository of the programme. They are stated here in full, not only
+by link, because they have been violated repeatedly by moves that each looked locally reasonable.
+The governing statement is `lean-cas-dsl/specs/architecture.md`, "The evidence model".
+
+**The firewall.** The evidence model is a one-way firewall between two sides.
+- *The formal side:* `lean-categories`' formalized mathematics, the kernel's proved contracts, and
+  the `lean-cas-dsl` acceptance suite. Every expected value there is grounded in a formal proof, a
+  cited source, or a mathematically trusted oracle. Rigid verification standards apply, and nothing
+  is taken on anyone's word.
+- *The leaf side:* anything goes, provided it fulfils the type of its contract.
+
+Only answers cross from the leaf side, and an answer is only ever checked against the formal side,
+never believed. The firewall exists because leaf code will be bad; it is the shield against that.
+
+1. **Nothing from a leaf is trusted, in any form.** Nothing a leaf says is believed by anything
+   else. That includes text, a label, a comment, a status, a trust level, a certificate, a checker,
+   a Lean proof, a theorem about its own code, a denotation of its values, an identification of two
+   values, evidence for a decision, its own tests and their results, and any other claim. None of it
+   is consulted, recorded as evidence, or allowed to affect meaning or acceptance.
+2. **A leaf may provide any computation that meets the type.** For a registered operation, a leaf
+   supplies a computation from the declared input form to the declared result form. It may be a
+   mature engine, a heuristic, a lookup table, a random number or a wrong answer. The system has no
+   choice but to run it, and it believes nothing about it.
+3. **How correct a leaf thinks it is, is the leaf's own business.** Its self-assessment carries no
+   weight anywhere.
+4. **The whole body of evidence is the `lean-cas-dsl` acceptance suite.** Correctness evidence
+   exists only in the permanent acceptance assertions of `lean-cas-dsl`. Each assertion:
+   - is a true proposition of the mathematical language;
+   - has an expected value that is independently verifiable and cited (a formal proof, a cited
+     known result, or an independent oracle);
+   - is written once and never changed because of an implementation or a leaf's claim;
+   - is blind to leaves: it never names, inspects or imports a leaf, a handle, a backend or a
+     representation, and is never established from an implementation's definitions.
+
+   A leaf's only evidence is that its answers meet a suite it never sees.
+5. **`lean-cas-dsl` is the sole authority on how correct an implementation is.** Nothing a leaf
+   does can change, weaken, satisfy, bypass or influence that judgment, other than by answering
+   correctly.
+6. **What can be discharged in Lean is never a leaf's.** A computation that can be carried out
+   entirely in Lean belongs to the formalization surface. Either `lean-categories` proves it, by its
+   own standards and blind to every implementation, or the kernel discharges it automatically and
+   generically, blind to every leaf. A leaf never implements a Lean-checked computation, because
+   that would let a leaf certify itself.
+7. **A leaf can be arbitrarily bad, and leaves will be.** A leaf can be riddled with bugs, a
+   million lines that do nothing, a from-scratch reimplementation of GAP, or every method throwing an
+   error in fifteen languages. This is not a risk to be minimized; it is certain to happen, and it
+   is acceptable. Nothing a leaf does can reach the formal side. Its only effect is that its answers
+   fail the suite, which makes exactly how badly it fails visible.
+8. **A leaf bolstering its own standing is reward hacking.** Any mechanism by which a leaf raises
+   its own trust or acceptance signal is the failure this programme exists to prevent. So is any
+   repository, kernel, test, tool or document that consumes such a signal. Examples:
+   - a status field, a certificate, or a proof about the leaf's own code;
+   - a self-test counted as evidence;
+   - an acceptance assertion proved from a leaf's definitions;
+   - a suite run from a leaf package;
+   - an assertion adjusted to fit a leaf.
+
+   Such a mechanism is removed. It is never tolerated, labelled, or kept "for now".
+
+9. **Quality is raised by proving more, never by trusting more.** The system never guarantees an
+   implementation's correctness and never accepts a claim of it. The response to bad leaves is:
+   - formalize more mathematics in `lean-categories`;
+   - add more cited or proved assertions to the suite: results a correct implementation must
+     recover, and a wrong one fails.
+
+   It is never to trust a leaf more. A separate engineering review may check that a leaf wires
+   into existing systems (GAP, Sage, Singular, Macaulay2, Julia, research code) rather than
+   reinventing their algorithms. Its outcome is an engineering finding, never correctness evidence,
+   and nothing on the formal side reads it.
+
+Consequences:
+- A leaf holds zero semantic authority. It never decides what a value is, which values are equal,
+  what holds of them, or which operations an object has.
+- A leaf is a registration (operation, input form, opaque implementation). It ships no mathematics
+  and no Lean.
+- The kernel and the language never read anything a leaf wrote to decide meaning, types,
+  available operations or acceptance.
+- The workflow runs one way: formalization, then assertions, then implementations. A leaf's
+  failure never changes the mathematics, the kernel's rules or an assertion.
+- Text anywhere that contradicts this is rewritten to state this model, not kept with a label.
+
 <!-- agent-memory:start -->
 # Agent memory
 
@@ -59,7 +153,7 @@ Read [COMPLAINTS.md](COMPLAINTS.md) for observed foundational gaps and papercuts
 relevant to the construction. It records unmet needs, not completed work or a
 substitute architecture.
 
-When the owner calls a move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external: look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
+When the owner calls an engineering move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external (for mathematics the standard is `lean-categories`): look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
 
 Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
@@ -195,7 +289,8 @@ choosing its implementation.** Apply
 and `OWN-01`. State the leaf request using standard mathematical objects, maps,
 categories and hypotheses, as it should be expressed in an ideal API. Recursively
 trace what those notions require down to the named set-theoretic and categorical
-foundations, reusing source-backed accounts of established dependencies. Do not
+foundations in `lean-categories`; a notion it lacks is requested there
+([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)). Do not
 start with the classes, engine objects, or methods that happen to be available.
 
 Trace defining data, morphisms, universal constructions, and preservation
@@ -209,7 +304,8 @@ not permission to rewrite foundations or create another tracking framework.
 [`DEV-59`](CONTRIBUTING.md#dev-59-record-observed-foundational-gaps-and-papercuts)
 in [COMPLAINTS.md](COMPLAINTS.md), including findings outside the selected task.
 Give the missing general mathematics, the dependency path, observed evidence,
-existing partial capability, affected consumers, and an honest coverage boundary.
+existing partial capability, affected consumers, an honest coverage boundary,
+and the `lean-categories` request for mathematics it lacks.
 Also record concrete workflow papercuts. A guessed absence or hypothetical future
 friction is not an observed defect; unresolved capability questions stay labeled.
 
@@ -222,25 +318,28 @@ The detailed capture and maintenance contract lives in `DEV-59`.
 
 ## Construction and engine boundaries (always-on)
 
-**The preamble's primary engineering purpose is stitching and organizing existing
-mathematics and implementations, not inventing another CAS.** Read the
+**The preamble's primary engineering purpose is presenting `lean-categories`'
+mathematics and organizing existing implementations behind it, not inventing
+another CAS.** Read the
 [design philosophy](CONTRIBUTING.md#preamble-design-philosophy) together with the
 architecture specification. Interpret an ordinary feature request as integrating
-existing capabilities through shared owned constructions. Local code supplies
+existing capabilities through shared preamble constructions. Local code supplies
 the actual missing semantic integration; a genuinely new algorithm requires the
-demonstrated gap and explicit ownership decision in `ENG-06`.
+demonstrated gap and explicit engineering decision in `ENG-06`, and is an
+untrusted computation like every other.
 
 This applies to shared categorical computation as well as specialized theories.
 Moving bespoke logic into the framework or an adapter does not make it reuse.
 Conversely, using an upstream algorithm never authorizes exposing its objects:
-the public mathematical interface and every constituent remain fully owned.
+the public interface and every constituent remain preamble objects.
 
-**Own all public mathematics; reuse maintained computation privately.** Apply
+**Present all public mathematics through preamble objects; reuse maintained
+computation privately.** Apply
 `OWN-01` through `OWN-14` in the
 [architecture specification](CONTRIBUTING.md#preamble-architecture-specification).
 Neither correct numerical output nor private naming excuses a different path.
 
-- **Enter through the mathematical owner.** Locate the category/object method
+- **Enter where `lean-categories` places the operation.** Locate the category/object method
   and defining constructor before editing a consumer. Direct construction,
   notation, functor images, catalogue examples, and raised engine results must
   establish the same defining datum. Public morphisms use `Mor`. An importable
@@ -250,34 +349,37 @@ Neither correct numerical output nor private naming excuses a different path.
   actions, differentials, inclusions, projections, and inherited operations must
   agree with that construction. A category label is not missing construction data.
 - **Raise every constituent.** Public results, lazy family values, coefficients,
-  base rings, representatives, maps, and arithmetic results are preamble-owned.
-  Returning an owned parent containing publicly reachable foreign mathematics
+  base rings, representatives, maps, and arithmetic results are preamble objects.
+  Returning a preamble parent containing publicly reachable foreign mathematics
   violates the boundary. No public raw-engine ingress or egress is authorized.
-- **Keep private access at its owner.** Ordinary mathematical code calls owned
+- **Keep private access at its owner.** Ordinary mathematical code calls preamble
   operations, never another object's engine accessor or storage. A protected
   protocol requires the declaration-side contract in `OWN-05`; an underscore,
   import, helper extraction, or comment at the call site does not grant access.
-- **Reuse algorithms at the right level.** Search existing owned constructions
+- **Reuse algorithms at the right level.** Search existing preamble constructions
   and maintained computational packages before adding logic. Inspect the result
   and map contract, not just the method name. A low-level library call inside a
   locally rebuilt standard algorithm does not satisfy reuse. Framework suitability
   and computational suitability are separate decisions.
 - **Repair the prerequisite.** If the sanctioned route cannot express the needed
-  construction, repair that exact owner before extending its consumer. Do not add
+  construction, repair that exact owner before extending its consumer; if what is
+  missing is mathematics, request it from `lean-categories` and park the consumer. Do not add
   an unchecked constructor, raw representation route, or local algorithm to keep
   the diff small. Report a genuine scope/authority obstruction without supplying
   the wrong object. Do not turn this into an unrelated framework rewrite.
 - **Review the route as well as the answer.** Read from the public entrypoint
-  through its defining data and private adapter to the fully owned result and
-  induced maps. Use mathematical specimens to distinguish the promised object
-  from its convenient substitute; source review establishes architectural reuse.
+  through its defining data and private adapter to the preamble result and
+  induced maps. Use specimens to distinguish the promised object from its
+  convenient substitute; source review establishes architectural reuse. Both are
+  engineering review and certify nothing about correctness, which only the
+  `lean-cas-dsl` acceptance suite judges.
   Follow `DEV-58` for the execution phase, not a new local checking workflow.
 
 The architecture specification also owns the required construction factorizations
 and upstream discovery references. Update that contract when the user decides an
 architectural change; do not make a TODO, comment, or local example a competing
 specification. These rules bind existing consumers as well as new code. Earlier
-source or archive examples are not permission to reproduce an ownership violation.
+source or archive examples are not permission to reproduce a boundary violation.
 
 ## Threaded specialization and universal constructions (always-on)
 
@@ -289,7 +391,8 @@ operations usable. Composition stores an actual owned instance of the general
 construction and delegates to it. Category labels, copied methods, equivalent
 answers, or a diagram attached after independent construction do not qualify.
 The general datum, maps and operations have one authority; the specialization
-adds its own structure and theorem-backed realization, not another general API.
+adds its own structure and a realization a `lean-categories` theorem justifies,
+not another general API.
 
 For limits, colimits, systems, completions, and related constructions, first read
 the normative
@@ -305,8 +408,8 @@ restriction directions, and mathematical distinctions required below.
   do not compute a second generic result or recurse through the same constructor
   merely to demonstrate threading.
 - Retain each construction's diagram and universal cone/cocone even when a
-  maintained engine realizes its result. Preserve every constituent as owned
-  mathematics, including lazy stages. Do not store caller-specific presentation
+  maintained engine realizes its result. Preserve every constituent as a preamble
+  object, including lazy stages. Do not store caller-specific presentation
   data on a shared result object or duplicate it in a leaf implementation.
 - Expose finite restrictions of the represented system with their indexing
   maps. Keep the full object, restricted diagram, stage and element precision
@@ -320,7 +423,8 @@ restriction directions, and mathematical distinctions required below.
 
 These are mathematical threading requirements for the selected consumer, not
 authorization to build every conceivable foundation first. Record actual gaps
-under `DEV-59`, and implement the remaining shared requirement with its consumer.
+under `DEV-59`, request missing mathematics from `lean-categories`, and implement
+the remaining shared presentation with its consumer.
 
 ## Do not end a turn without the next node started (always-on)
 
@@ -730,7 +834,7 @@ question.  The student must unfold the structure that makes the correction
 true.  The question is not a request for the smallest compatible patch.
 
 Consider an integral domain \(R\) and its fraction field
-\(K=\operatorname{Frac}(R)\).  The advisor asks why ideals are not owned as
+\(K=\operatorname{Frac}(R)\).  The advisor asks why ideals are not presented as
 \(R\)-submodules of the regular module \(R\).  The advisor also asks why an
 integral basis is not an \(R\)-basis of the relevant integral \(R\)-algebra.
 These are not two method requests.  They expose one missing mathematical
@@ -764,7 +868,8 @@ and number-field algebras therefore belong to one scalar-change theory.
 This theory is implementation compression.  Ideals can use module and
 subobject operations.  Bases can use the free-module structure.  Algebra
 morphisms can move through scalar extension.  Many apparent missing methods
-become consequences of structures that the repository already owns.
+become consequences of structures that `lean-categories` formalizes and the
+repository already presents.
 
 The failed trajectory hears only the word "basis".  It asks PARI for
 elements and returns a tuple in \(A\).  It can also take a chosen
@@ -806,8 +911,9 @@ just -f ~/gitclones/formalization-corpus/justfile search 'IsometryEquiv'
 code, preamble categories, notebooks and prose all state mathematics that somebody has probably
 already written down precisely, and a formal statement is the most precise form the literature
 has: it fixes the hypotheses, the codomain, and the generality that a paper leaves to context.
-Search it before deciding what a definition says, before adopting a name, before concluding a
-notion is this project's to invent, and before writing a proof of something standard.
+Search it, with `lean-categories`, before deciding what a definition says, before adopting a
+name, and before filing a `lean-categories` request. No notion is this project's to invent,
+and this project writes no proofs.
 
 A miss is a dated, scoped result — *not found in the corpus at the index it currently holds* —
 and never the claim that nobody has formalized this. Widen to upstream Mathlib, Loogle, LeanSearch
@@ -815,9 +921,11 @@ and GitHub before recording a negative, the way the reuse gate in `lean-categori
 
 **The corpus locates a notion; it does not rule on a field it has barely formalized.** Lattice
 theory over number fields (duals, `A`-modularity, genera, discriminant forms) is thin and partly
-wrong in Mathlib. There the authority is the number-theory literature — arXiv papers, Kirschmer,
-O'Meara — and the maintained implementations in Hecke/Oscar. A Mathlib definition is cited for
-such a notion only when it agrees with those sources.
+wrong in Mathlib. There the authority is `lean-categories`' formalization of the number-theory
+literature — arXiv papers, Kirschmer, O'Meara — and a notion it lacks is requested there with
+those sources. The maintained implementations in Hecke/Oscar are untrusted computations and
+never an authority on what a notion is. A Mathlib definition is cited for such a notion only
+when it agrees with those sources.
 
 # Work-selection discipline (always-on)
 
@@ -929,7 +1037,7 @@ something is slow, is not optimization — it is hiding the defect. Reaching for
 different library is the same move with a worse consequence: it also deletes
 the site where the cost would have been measured (`ENG-07`, `ENG-08`).
 
-**Test specimens are small by default.** A proof of correctness for invariants,
+**Test specimens are small by default.** A test of invariants,
 coinvariants, or \(O(L)\) does not need \(E_8\), a K3 lattice, or an Enriques
 lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
 combinations; their orthogonal groups are finite and their invariants and
@@ -1279,12 +1387,14 @@ What it exists to fix is Sage's non-uniformity, not Sage's algorithms.
 Sage carries more than ten distinct notions of *group*, and an operation as elementary as $\operatorname{Aut}(G)$ is, depending on which one you hold: absent; present under a different name; known and simple but unwired (it is a call into GAP); or genuinely uncomputable.
 A session cannot hold that variation, so the preamble presents one name for one mathematical operation, and either answers or asserts.
 
+The preamble owns no mathematics. Each operation it names is one formalized in `lean-categories`, which alone decides what the operation is, where it lives and what it returns. An operation `lean-categories` does not have is a formalization request there ([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)), never a name the preamble coins.
+
 This governs the rules below:
 
 - Sage objects are an implementation detail. The crossing happens inside owned code, at the point of computing, never in what a session receives.
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
-- Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
-- A session is a Sage session with the preamble loaded on top: Sage's names stay in scope and the preamble's shadow them. A session's numbers never enter Sage's symbolic ring. The preamble owns `pi`, `e` and the elementary functions (`sqrt`, `exp`, `log`, the trigonometric and hyperbolic functions, `sgn`, `zeta`) over its own real field (ruled 2026-09-23); applied to anything that is not a real number, each is Sage's function of the same name.
+- Where Sage has no algorithm, the operation keeps its name. A missing capability is a stated gap on the interface, never a second spelling and never a silent absence.
+- A session is a Sage session with the preamble loaded on top: Sage's names stay in scope and the preamble's shadow them. A session's numbers never enter Sage's symbolic ring. The preamble binds `pi`, `e` and the elementary functions (`sqrt`, `exp`, `log`, the trigonometric and hyperbolic functions, `sgn`, `zeta`) to its own real-number implementation (ruled 2026-09-23); applied to anything that is not a real number, each is Sage's function of the same name.
 
 # A missing foundation parks the work that found it (always-on)
 
@@ -1294,9 +1404,21 @@ same, and it is not a judgment call:
 1. **Park** the node you are on. It is not abandoned and not deferred; it is
    waiting on something that was just discovered to be underneath it.
 2. **Build the DAG of what it needs**, down to what already exists, and
-   terminating at the node you were doing.
+   terminating at the node you were doing. Every missing piece of mathematics
+   in it is a formalization request to `lean-categories`, never a research node
+   that writes it (below).
 3. **Add the edges**, so the parked node now `Needs:` the foundation.
-4. **Take a ready node** from the bottom of what you just built.
+4. **Take a ready node** from the bottom of what you just built, or any other
+   ready node that does not wait on the request.
+
+**Missing mathematics goes upstream to `lean-categories`.** A definition,
+category, construction, operation or theorem that research needs and
+`lean-categories` does not have is requested there, stating the mathematics
+wanted and its sources. Its own formalization author writes it there, blind to
+research and to every implementation. It is never hand-rolled in research or
+in a leaf: not as a local definition, a substitute category, a temporary notion
+to reconcile later, or a Lean file here. Until `lean-categories` formalizes and
+releases it, research has no such notion.
 
 You never proceed past an observed mathematical deficiency. Not with a note
 attached, not with a substitute in place, not with a `TODO` at the site. The
@@ -1372,14 +1494,17 @@ first -- the formalization corpus, a text -- never recalled. The centre of a non
 algebra was asserted from memory on 2026-09-17 where the definition is the centroid
 (Mathlib `CentroidHom`), and the question built on it was wrong.
 
-# A supercategory declaration is a mathematical claim (always-on)
+# A supercategory entry presents a formalized inclusion (always-on)
 
 `super_categories()` states that **every object of this category is an object
-of those**. It is a theorem about the objects, not a slot to fill so that
-construction proceeds, and it is read by inheritance: an object receives the
-operations of everything its category declares.
+of those**. It presents a theorem `lean-categories` states about the objects, not
+a slot to fill so that construction proceeds, and it is read by inheritance: an
+object receives the operations of everything its category declares. The
+mathematics recalled in this section is `lean-categories`'; where the two
+differ, the formalization governs, and an inclusion it does not state is not
+declared.
 
-So a declaration that is merely *available* is a false theorem installed where
+So a declaration that is merely *available* is a false statement installed where
 nobody looks for one. The recurring shape is `Sets()` written where the objects
 are not sets:
 
@@ -1397,17 +1522,20 @@ category belongs.
 
 **A false declaration is never an admissible state, and recording it elsewhere
 does not make it one.** Filing the gap while the wrong supercategory stays in
-the source leaves every reader and every object inheriting the false theorem;
+the source leaves every reader and every object inheriting the false statement;
 the note in `COMPLAINTS.md` is read by nobody executing the code. There is no
 ranking here in which the wrong claim is the better of two states.
 
-When the honest supercategory does not exist in the tree, there are two moves
-and nothing else:
+When the honest supercategory is not presented in the tree, there are two
+moves and nothing else:
 
-- **Build the missing category.** This is usually the answer, and it is
-  usually smaller than it looks, because the general construction is already
-  owned. Presheaves needed no new theory: `[C, D]` is the functor category and
-  `C^op` the opposite, both of which the tree has.
+- **Present the missing category, if `lean-categories` formalizes it.** This is
+  usually the answer, and it is usually smaller than it looks, because the
+  general construction is already presented. Presheaves needed no new theory:
+  `[C, D]` is the functor category and `C^op` the opposite, both of which the
+  tree presents. If `lean-categories` does not formalize it, request it there
+  ([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)) and
+  make the second move until it is released.
 - **Declare nothing.** `super_categories()` left abstract, so the category
   cannot be used until its placement is known, is honest and fails loudly.
   `OwnedCategoryOverBaseRing` already does this. A category that refuses to
@@ -1421,14 +1549,14 @@ missing -- never a licence to keep a substitute in the source while it stands.
 **Presheaves and sheaves are functor categories.** $\mathrm{Presh}(C) := [C,
 \mathbf{Set}]$, a functor $\mathrm{Cat} \to \mathrm{Cat}$; more generally
 $(C, D) \mapsto [C, D]$ is a bifunctor $\mathrm{Cat} \times \mathrm{Cat} \to
-\mathrm{Cat}$, which is the same construction the tree already owns as its
+\mathrm{Cat}$, which is the same construction the tree already presents as its
 functor category. Sheaves on $C$ are the full subcategory of $\mathrm{Presh}(C)$
 cut out by descent for a coverage. Stating them this way is what makes the
 passage to stacks and $\infty$-stacks a change of value category rather than a
 new theory (`https://ncatlab.org/nlab/show/infinity-stack`). Any sheaf-like
 category -- quasi-coherent sheaves, invertible sheaves, structure sheaves,
-sheaves of modules or of algebras -- is placed under that construction, never
-under `Sets()`.
+sheaves of modules or of algebras -- is placed under that construction as
+`lean-categories` formalizes it, never under `Sets()`.
 
 ## Reading the declarations
 
@@ -1464,31 +1592,32 @@ so it must never be read as evidence that a declaration is absent.
 Declaring `C -> D` asserts a forgetful functor $U : C \to D$. The rule is that
 $U$ must be **atomic**: one step of structure, not a composite.
 
-> **The factorization test.** Ask, from the mathematics alone: is there a
-> category $A$ with $C \to A \to D$, where $A$ is a well-defined category that
-> can own operations? If yes, the declaration `C -> D` is wrong and must be
-> replaced by `C -> A`. **This holds when $A$ does not exist in the tree.**
-> Then $A$ is what you build.
+> **The factorization test.** Ask, from `lean-categories` alone: is there a
+> category $A$ with $C \to A \to D$, where $A$ is a category that carries
+> operations? If yes, the declaration `C -> D` is wrong and must be
+> replaced by `C -> A`. **This holds when $A$ is not presented in the tree.**
+> Then presenting $A$ is the work. If the literature has such an $A$ and
+> `lean-categories` does not, it is requested there.
 
-Run the test on the mathematics, never on the code. Reading the category list
+Run the test on the formalized mathematics, never on the code. Reading the category list
 first and picking the nearest available node inverts the whole thing: it makes
 the current contents of the tree decide what is true, so every gap becomes
 permanent the moment something is declared across it. Name the categories the
 objects actually pass through, and only then find out which of them exist.
 
-The bar for $A$ is that it is a real category with a definition and operations
-of its own -- convex bodies, topological spaces, labelled graphs, modules.
+The bar for $A$ is that `lean-categories` formalizes it, with a definition and
+operations of its own -- convex bodies, topological spaces, labelled graphs, modules.
 Inventing a node so that a rule is technically satisfied is the over-compliance
 failure this repository bans everywhere else: a category with no mathematical
 referent is worse than the unfactored edge, because the edge is at least
-visibly wrong. If the intermediate has no name in the literature, that is a
-signal to check the notion, not licence to coin one.
+visibly wrong. If the intermediate has no name in `lean-categories` or the
+literature, that is a signal to check the notion, not licence to coin one.
 
 ## The shape the graph is converging on
 
 **A near-tree: high depth, low breadth.** Depth is what atomic declarations
 produce -- a long chain from a leaf to `Sets()`, each step adding exactly one
-structure, every operation inherited from the level that owns it. Breadth at a
+structure, every operation inherited from the level that carries it. Breadth at a
 node is how many categories declare it directly, and it is the diagnostic:
 
 | Reading | What it means |
@@ -1509,7 +1638,7 @@ per declaration, and no higher cells. So $H_1$ is the whole cycle space,
 nothing bounds, and $\pi_1$ is free of rank $E - V + C$. A generator is a pair
 of distinct paths $C \rightsquigarrow D$, hence two composites of forgetful
 functors that the graph asserts are equal, and **the 2-cell that would fill it
-is that assertion\'s proof**. The complex has none. Nothing checks that assertion: Sage
+is that assertion\'s proof**, which is `lean-categories`'. The complex has none. Nothing checks that assertion: Sage
 computes a C3 linearization, so a diamond that does *not* commute never raises
 -- it silently selects one route, and the object's inherited operations are
 whichever the ordering picked. **Each generator is a coherence obligation and a
@@ -1537,10 +1666,11 @@ exists to prevent. A star is a tree, so thirty categories each declaring only
 `Sets()` has rank zero; you can drive $\pi_1$ to zero by deleting every
 intermediate category, and a single point is perfectly coherent. The criterion
 is therefore **minimal $\pi_1$ among graphs that state every true forgetful
-functor and only immediate ones**. Factoring an edge through a new category adds
-one vertex and one edge and leaves the rank unchanged, so building the missing
-mathematics is free by this measure. The rank rises only where a genuine join
-appears, and that loop is wanted, because it is a real theorem.
+functor and only immediate ones**. Factoring an edge through a newly presented
+category adds one vertex and one edge and leaves the rank unchanged, so
+presenting a missing intermediate category is free by this measure. The rank
+rises only where a genuine join appears, and that loop is wanted, because it is
+a theorem `lean-categories` states.
 
 Genuine multiple inheritance is real -- $\mathbf{Z}$ is a ring and a module and
 a monoid. Those diamonds are **computed**, as joins and axioms, so that
@@ -1559,9 +1689,10 @@ Each is observable in the declaration itself, with no judgment of intent:
   objects pass through. The tell is a declaration that nobody could derive from
   the category's own definition.
 - A supercategory added so that construction proceeds, or so that one inherited
-  method becomes reachable. Placement is a theorem about the objects; it is not
-  a way to obtain a method.
-- A leaf implementing an operation that a category on its path already owns.
+  method becomes reachable. Placement presents a `lean-categories` theorem about
+  the objects; it is not a way to obtain a method.
+- A declaration no `lean-categories` inclusion supports.
+- A leaf implementing an operation that a category on its path already carries.
   That is evidence the path is missing, and the fix is the path, not the leaf.
 - Any node whose breadth grew in the change you are about to commit.
 
@@ -1572,34 +1703,38 @@ applies every axiom of a category to every declared supercategory
 (`CategoryWithAxiom.super_categories` joins `category._with_axiom_as_tuple(axiom)`
 over the base's supercategories, category_with_axiom.py), so the declared
 edge would make `Modules(QQ).FinitelyGenerated()` a subcategory of
-`Modules(ZZ).FinitelyGenerated()`, a false theorem for every property stated
+`Modules(ZZ).FinitelyGenerated()`, a false statement for every property stated
 relative to the base. Ruled 2026-09-16; `TRAPS.md` holds the engine fact.
 
-# Mathematical ontology (always-on)
+# How the preamble presents the mathematics (always-on)
 
 The rules below are the shapes that recur across unrelated categories. Each states
-what an object *is*; the *tell* names the code shape or phrase that shows up while
-the drift is happening, when the category involved is not the one a past record
-named. The vault holds the episodes; this section is the contract.
+how the preamble presents what `lean-categories` says an object *is*; the *tell*
+names the code shape or phrase that shows up while the drift is happening, when
+the category involved is not the one a past record named. The mathematics these
+rules recall is `lean-categories`'; they recall it to fix the presentation, and
+where they differ from the formalization, the formalization governs. The vault
+holds the episodes; this section is the contract.
 
-**The preamble owns its categories outright; it never monkey-patches Sage's.** When
-the preamble needs a category, it defines and owns that category itself. Private
-adapters lower its owned data to Sage and raise results through the same owned
-construction contracts. Sage parents and elements are never reclassified or
+**The preamble presents categories through its own classes; it never
+monkey-patches Sage's.** When the preamble needs a category that
+`lean-categories` formalizes, it presents it through its own class. Private
+adapters lower the preamble object's data to Sage and raise results through the
+same construction contracts. Sage parents and elements are never reclassified or
 exposed as the owned objects. Installing
 an axiom or a method onto one of Sage's own category classes (`setattr` on
 `Groups`, `Modules`, `Category_module`, ...) is the legacy mechanism this project
 is migrating away from: it makes Sage's spelling the public surface, splits
 authority between two class hierarchies, and breaks silently when two copies of a
-class exist in one process. The owned category is the single surface; Sage's
+class exist in one process. The preamble's category is the single surface; Sage's
 classes stay unmodified and are consumed, not extended. Tests assert against the
-owned surface, never against Sage's spelling of a preamble-defined notion.
+preamble surface, never against Sage's spelling of a notion the preamble presents.
 *The tell:* `setattr` whose target is a class imported from `sage.*`; an axiom or
 accessor that only exists because the preamble injected it into a Sage category; a
 test asserting membership through `sage.categories.*` for behavior the preamble
-defines; a stub declaration on a Sage class for a member Sage does not have.
+presents; a stub declaration on a Sage class for a member Sage does not have.
 
-**Enrichment is of two kinds, and which one applies is a fact about the mathematics.**
+**Enrichment is of two kinds, and which one applies is a fact about the mathematics, as `lean-categories` formalizes it.**
 *Determined* enrichment adds structure the object itself determines — a free algebra *is*
 the free module on $\mathrm{Mon}(S)$, a subobject is the object together with its own
 inclusion, an axiom is a property of what is already there. The forgetful functor is
@@ -1620,7 +1755,7 @@ category; the specified accessor returns that exact `M`. Keeping this datum is
 required, not evidence of a wrapper. A second implementation of the weaker
 operations, or an `equip_*`/`forget_*` identification pair connecting it back to
 `M`, is the prohibited duplication. Elements pass through the owner-established
-coercion. The category owns its forgetful functor; no object-level `forget_*`
+coercion. The category carries its forgetful functor; no object-level `forget_*`
 forwarding API is introduced.
 
 `CON-16` and `OWN-15`--`OWN-17` own this distinction. Actual mathematical maps
@@ -1636,7 +1771,7 @@ A morphism of $\mathbf{C}$ is an *element of* $\mathrm{Hom}_\mathbf{C}(A,B)$, an
 categories are ordinary objects of `Cat`; there is no third public "morphism methods"
 mechanism. Sage's `ParentMethods`, `ElementMethods`, `MorphismMethods`, dynamic classes,
 and related names are private runtime machinery while the owned type-protocol migration is
-completed. Never use those Sage container names to decide mathematical ownership or to
+completed. Never use those Sage container names to decide placement or to
 specify a new public preamble API.
 
 **`MorphismMethods` is not the owned vehicle, and this was measured.** Sage never
@@ -1668,7 +1803,7 @@ $S$, it is $1$. If a construction reaches a lattice without passing through an
 owned set that answers these, the construction is wrong, and stamping a placement
 onto the lattice hides it.
 
-**The category graph generates the implementation types.** The owned mathematical
+**The category graph generates the implementation types.** The preamble's
 architecture names `ObjectType`, `ElementType`, and the Hom-category types; it does not ask
 contributors to maintain a parallel handwritten class hierarchy. Sage currently supplies
 the dynamic-class/runtime mechanism underneath this: `parent_class`, `element_class`, and
@@ -1687,7 +1822,7 @@ second class graph by hand and has broken the construction chain.
 **The leaf contract, which is what the mechanism exists to buy.** Defining a new leaf must
 feel routine: the author should not search for an implementation class or know the transitive
 construction chain. They declare the immediate mathematical supercategories/structure
-functors; extend only the appropriate owned `ObjectType`/`ElementType`/Hom-category types for
+functors, as `lean-categories` states them; extend only the appropriate `ObjectType`/`ElementType`/Hom-category types for
 what this level adds; introduce only this level's datum; and construct through the immediate
 supercategory. No implementation base is written. A leaf knows its own level and the one
 above: it never names a category two levels up, never restates anything from below, and never
@@ -1739,7 +1874,7 @@ names an arrow.
 `witness-consuming-methods-belong-on-morphisms-not-objects`,
 `primitive-embedding-is-computed-from-cokernel-not-caller-flag`.)
 
-**Implement the general notion; recover the special case from it.** A form is
+**Present the general notion; recover the special case from it.** As formalized, a form is
 $b: M\times M\to W$ for an arbitrary value module $W$, so its scale is a submodule of
 $W$ — an ideal only when $W$ happens to be the ring. A group's generating set is a
 set; finiteness and an ordering are the axioms `FinitelyGenerated` and `Finite`, not
@@ -1754,8 +1889,10 @@ code that runs on $\mathbb{Q}/\mathbb{Z}$ where the statement was about $K/R$.
 
 **When the vocabulary cannot express the general statement, that is the finding.**
 Discovering that the repo can build $\mathbb{Q}/\mathbb{Z}$ but has no object for
-$K/R$ stops the work and opens a discussion. Patching the case that already worked
-leaves the general statement unsayable and the gap unrecorded.
+$K/R$ stops the work. If `lean-categories` formalizes $K/R$, presenting it is the
+work; if it does not, it is a request there and the work parks on it. Patching the
+case that already worked leaves the general statement unsayable and the gap
+unrecorded.
 *The tell:* agreement with a general statement followed by an edit confined to the
 one case that already worked.
 (Vault: `agreeing-to-general-mathematics-the-dsl-has-no-vocabulary-to-express`.)
@@ -1765,9 +1902,9 @@ one case that already worked.
 `dual_group`. A bare `generators` or `dual` is ill-defined the moment an object sits
 in more than one category, which every object here does. Generators are a *set*,
 possibly ordered, possibly finite: they have a cardinality, not a length, and
-repeated elements are not an error. Where the field has a word, use the field's word;
-where it has none, that absence is a signal to check the notion, not licence to coin
-a name for it.
+repeated elements are not an error. Use `lean-categories`' word, which is the
+field's; where there is none, that absence is a signal to check the notion, not
+licence to coin a name for it.
 *The tell:* a bare structure noun; a plural returned as `tuple`, `list` or
 `Sequence`; `len(...)` on generators; a coined compound adjective; `Any` or `object`
 standing where a mathematical noun belongs.
@@ -1784,8 +1921,8 @@ $\mathrm{GL}_n(R)$, $\mathrm{Gal}(\overline{\mathbb{Q}}/\mathbb{Q})$, $O(L)$ for
 indefinite $L$, and $\mathbb{Z}^{\infty}$ are all ordinary inputs here. Where the
 check cannot be made, the answer is a three-valued *unknown* that collapses to false,
 with the reason stated — never a loop that works on small inputs. Sage is a computer
-algebra system, not a proof assistant: a standard theorem is cited, never
-re-established at runtime.
+algebra system, not a proof assistant: a theorem is cited from `lean-categories`,
+never re-established at runtime, and no computed answer is a proof.
 *The tell:* `for g in G`; `for f in Hom(...)`; a bounded search with a cap;
 `all(... for ... in <an object>)`; a docstring claiming a property is "verified" or
 "proven" by the method body.
@@ -1817,14 +1954,16 @@ exclusion added while fixing a failure in one repo.
 `a-highly-specific-fix-is-not-a-general-rule-project-conventions-never-promote-to-global-qc`.)
 
 **Reference implementations are absorbed by semantic reconciliation.** The archived
-spikes are this project's own earlier versions. Each notion they hold is first mapped
-onto the preamble's notion: where the preamble already owns it, the spike's version
-is superseded and call sites are re-expressed in the owned vocabulary; where it is
-genuinely missing, it arrives rewritten to current standards and sited where the
-category tree says it belongs. Neither a wholesale copy nor a minimal trim is
+spikes are this project's own earlier versions, and their notions carry no
+authority. Each notion they hold is first mapped onto the `lean-categories` notion:
+where the preamble already presents it, the spike's version is superseded and call
+sites are re-expressed in the preamble vocabulary; where the preamble does not yet
+present it, it arrives rewritten to current standards and sited where
+`lean-categories` places it; where `lean-categories` has no such notion, it is
+requested there and the spike's version is not carried over. Neither a wholesale copy nor a minimal trim is
 reconciliation.
 *The tell:* a new file mirroring the source layout; a second definition of a notion
-the preamble already has; not-yet-absorbed code described as severed or contaminated
+the preamble already presents; not-yet-absorbed code described as severed or contaminated
 rather than as pending its round.
 (Vault:
 `spike-absorption-is-semantic-reconciliation-never-quarantine-or-copy-paste`.)
@@ -1835,9 +1974,9 @@ These rules govern preamble, spike, and any Sage-facing API in this repo.
 They are the generative constraints behind repeated corrections (override-refine, catalogue namespaces, Hom/Aut construction, session ergonomics).
 A design that violates them is wrong even when it “works.”
 
-**In one line:** write Sage as if the category and the catalogue *are* the theory — idiomatic constructions, one ontological home, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure.
+**In one line:** write Sage so that the category and the catalogue present the theory directly — idiomatic constructions, one home per notion, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure. The theory itself is `lean-categories`'; the preamble presents it and owns none of it.
 
-## 1. The owned category is the only mathematical extension point
+## 1. The preamble category is the only extension point
 
 Public method placement is stated through the owned category protocol: `ObjectType`,
 `ElementType`, and the object/element types of Hom/End/Aut category constructions. Sage's
@@ -1845,9 +1984,12 @@ Public method placement is stated through the owned category protocol: `ObjectTy
 private runtime mechanisms used to realize that declaration on independently owned
 objects; they never decide where mathematics belongs or admit foreign parents.
 
-If Sage's interface is wrong or incomplete, **own the mathematics in the preamble category
-and map it onto Sage privately**. Workarounds (`without_element_wrap`, ad-hoc
-`L.isometry(matrix)`, freestanding patch modules) mean ownership was refused.
+If Sage's interface is wrong or incomplete, **state the operation on the preamble category,
+as `lean-categories` formalizes it, and map it onto Sage privately**; if `lean-categories`
+does not have it, it is requested there
+([missing foundations](#a-missing-foundation-parks-the-work-that-found-it-always-on)).
+Workarounds (`without_element_wrap`, ad-hoc `L.isometry(matrix)`, freestanding patch
+modules) mean the operation was not placed at its category.
 
 The private runtime mechanism remains one owned construction/dynamic-class path,
 not a new installation strategy per capability. Host `Parent`/`Element` primitives
@@ -1870,7 +2012,7 @@ Reject APIs that are software-coherent but mathematically incoherent.
 
 If the call site would not be written at a Sage prompt while doing the math, the API is wrong.
 
-## 3. Ontological placement — one home
+## 3. Placement — one home
 
 Every entity has exactly one kind of home:
 
@@ -1897,11 +2039,11 @@ Prefer **one clean export** for a catalogue surface: import `Lattices`, use `Lat
 
 A standalone `XFunctor(...)`, `x_adjunction(...)`, `Ext(n, M, N)` or `finite_g_set(...)` in the session surface is a placement defect; the name belongs on the category or object above and the function is retired, not aliased.
 
-**Group modules are `Modules(R[G])`**, modules over the group ring, never a category of their own. Induction, coinduction and restriction along `H ≤ G` are scalar extension, coextension and restriction along `ZZ[H] → ZZ[G]`; the trivial action, coinvariants and invariants are restriction, extension and coextension along the augmentation `ZZ[G] → ZZ`. These functors are stated once over `ZZ`, the initial ring, and preserve the finer scalars an `R[G]`-module carries. Actions in categories that are not modules (sets, schemes) are `GObjects(G, C)`, with `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence when needed. Actions are left actions: `rho(g h) = rho(g) rho(h)`, the product of the matrices acting on an ordered basis, and the owned group law is composition.
+**Group modules are `Modules(R[G])`**, modules over the group ring, never a category of their own. Induction, coinduction and restriction along `H ≤ G` are scalar extension, coextension and restriction along `ZZ[H] → ZZ[G]`; the trivial action, coinvariants and invariants are restriction, extension and coextension along the augmentation `ZZ[G] → ZZ`. These functors are stated once over `ZZ`, the initial ring, and preserve the finer scalars an `R[G]`-module carries. Actions in categories that are not modules (sets, schemes) are `GObjects(G, C)`, with `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence when needed. Actions are left actions: `rho(g h) = rho(g) rho(h)`, the product of the matrices acting on an ordered basis, and the group law is composition.  These are presentations of `lean-categories`' definitions and conventions; where it states them differently, it governs.
 
 ## 4. One source of truth, stated once, inline
 
-Construction **is** the definition.
+Construction **is** where a catalogue value is defined.
 Define values inline in the namespace class body (or a helper called from that body while dependencies are in scope).
 Do not spread a definition across “empty container → later assignment → `globals().update` → string lookup → re-export.”
 Do not construct after the class and patch attributes on afterward — that means the class body was not the definition.
@@ -1927,18 +2069,19 @@ This is the same discipline as work-selection (above): an artifact that cannot f
 ## 6. Generality over local cleverness
 
 When blocked, do not add a special case for this object.
-Strengthen the general owned interface (element construction, Aut construction,
+Strengthen the general preamble interface (element construction, Aut construction,
 `+` / `sum`, and structural refinement) so the special case disappears.
 Ask “why does this freestanding file/function exist?” — if it has no mathematical referent, delete it and place the content in the category or catalogue.
 
-## 7. Tests certify the intended contract
+## 7. Tests falsify the intended contract
 
 Tests falsify the mathematical or dispatch claim: refined methods win over class methods; this alias is the same parent; this Aut is an involution; this table entry is that named lattice.
 They do not exercise scaffolding, reassure about naming conflicts, or re-encode construction as gram-matrix comparisons.
+These tests are research's own and certify nothing outside it. Correctness evidence about a computation exists only in the `lean-cas-dsl` acceptance suite, which never sees this code.
 
-Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
+Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the preamble category interfaces, not side conditions in catalogue loaders.
 
-**Adding to `tests/test_known_mathematics.sage`.** That file is the owner's specification of mathematics the preamble must reproduce, so agents do not extend it freely — but an addition is allowed whenever an independent source citation is attached to the new row: the Stacks Project, Kerodon, an item in the owner's Zotero library, a published paper, or an arXiv preprint. The citation is the admission ticket, and it names the source of the *asserted fact*, not of the implementation. Cite by the source's own identifier (Zotero `citationkey`, Stacks tag, arXiv id), verified against the source rather than recalled.
+**Adding to `tests/test_known_mathematics.sage`.** That file states mathematics the preamble must reproduce; it is research's own test and certifies nothing outside research. Agents do not extend it freely — but an addition is allowed whenever an independent source citation is attached to the new row: the Stacks Project, Kerodon, an item in the owner's Zotero library, a published paper, or an arXiv preprint. The citation is the admission ticket, and it names the source of the *asserted fact*, not of the implementation. Cite by the source's own identifier (Zotero `citationkey`, Stacks tag, arXiv id), verified against the source rather than recalled.
 
 A row whose assertion would hold with the functionality removed certifies nothing. Assert the content: a maximal overlattice is reached by an inclusion, so the arrow's index is the assertion, not the codomain's existence.
 
@@ -1961,14 +2104,19 @@ scalars declared as a supercategory on three bases, and a diamond whose two
 routes landed on different objects. None of it was a wrong object; all of it
 was a wrong belief about what a declaration says. `CONTRIBUTING.md` codes
 `CAT-15` to `CAT-27`, `DEV-64` and `DEV-65` state the rules with the artifact
-each one came from, and *Contributing a category: the procedure* there is the
-full order of work, from the definition in the field's words through the
+each one came from, and *Presenting a category: the procedure* there is the
+full order of work, from the `lean-categories` definition through the
 survey of the tree to the delivery of every consumer. This section is the
 short form asked before any declaration is written; no declaration is written
 until each question has an answer in the commit body.
 
-1. **What are the objects?** Write the definition in one sentence, in the
-   field's words. If it names a chosen datum ("with a chosen basis", "with a
+A declaration here presents a category that `lean-categories` formalizes; it
+defines nothing. If `lean-categories` does not have the category, nothing is
+declared and the need is requested there
+([missing foundations](#a-missing-foundation-parks-the-work-that-found-it-always-on)).
+
+1. **What are the objects?** Quote `lean-categories`' definition in one
+   sentence, with its locator. If it names a chosen datum ("with a chosen basis", "with a
    differential"), this is a data subcategory. If it names only a property
    ("Noetherian", "finitely generated", "separated"), this is an axiom on its
    base and there is no class to write (`CAT-17`, `CAT-18`).
@@ -1980,17 +2128,19 @@ until each question has an answer in the commit body.
    this category with the added structure forgotten, base and parameters
    untouched, is an object of exactly one category one step down. That is the
    declaration, and the only one (`CAT-15`, `CAT-16`). If the honest parent is
-   not in the tree, build it or declare nothing; `Sets()` and `Objects()` are
+   not in the tree, declare nothing: a parent `lean-categories` has is presented
+   first, and one it lacks is requested there. `Sets()` and `Objects()` are
    never placeholders.
 4. **Is anything in the list a change of base or parameter?** Restriction of
    scalars, base change, an ideal to its fractional ideal, an `R[G]`-module to
    a `G`-object over `R`: each is a functor obtained from the category by a
    named method, never an entry in the list (`CAT-16`). Sage applies every
-   axiom along a declared edge, so such an entry is a false theorem for every
+   axiom along a declared edge, so such an entry is a false statement for every
    relative property.
-5. **Does the list create a second route to anything?** Write both composites.
-   Same category twice: delete the shortcut. Computed join: fine. Different
-   objects: the entry is false (`CAT-21`).
+5. **Does the list create a second route to anything?** Write both composites
+   and cite the `lean-categories` theorem relating them. Same category twice:
+   delete the shortcut. Computed join: fine. Different objects: the entry is
+   false (`CAT-21`).
 6. **Is it a construction on a category?** Then it takes that category as a
    parameter and declares it; its instances do not declare the base again
    (`CAT-20`).
@@ -2007,7 +2157,7 @@ combination of properties; a class for a property that Sage's axiom mechanism
 states; a `super_categories` override on an axiom class; a category declaring
 its own name over a lower base; `__contains__` deciding membership by a
 predicate, a base tower or an attribute probe; a declaration computed from a
-local variable; a second class for a notion the tree already owns.
+local variable; a second class for a notion the tree already presents.
 
 Banned on 2026-09-17 (`CAT-28`): a category declared for the class of objects
 an engine or a construction produces (a condition set is a class; the groups
@@ -2019,13 +2169,15 @@ over itself \(\rho\) is the identity (`CON-16`).
 
 # Categorical organization model (always-on)
 
-How the preamble's category tree is organized, and where new content goes.
-For precise, formalized definitions of the notions below, defer to
+How the preamble's category tree is organized, and where content presenting
+`lean-categories`' mathematics goes. Every notion below is defined in
 `~/gitclones/lean-categories` (FOUNDATIONS.md and `LeanCategories/`): framed
 generators and bases are §13.5, chosen presentations as structure are §75,
 partial resolutions and the $FP_n$ hierarchy are §76, resolution classifiers
-are §77. When a preamble docstring and that document disagree, the document
-wins.
+are §77. The tree presents those definitions and defines none. When a preamble
+docstring and `lean-categories` disagree, `lean-categories` is right and the
+docstring is corrected; a notion `lean-categories` lacks is requested there,
+not defined here.
 
 ## Property subcategories vs data subcategories
 
@@ -2127,16 +2279,20 @@ Do not confuse a genuine contract with either of these different situations:
   abstract accessor merely to ask later for data the construction necessarily established.
 - **A mathematically general operation with incomplete current algorithms.** `cardinality()`
   on sets and `is_nondegenerate()` on formed modules are not abstract merely because some
-  represented cases are not presently computable. Keep the method at its mathematical
-  owner, route the cases currently implemented, and assertion-gate the unhandled
+  represented cases are not presently computable. Keep the method where `lean-categories`
+  places it, route the cases currently implemented, and assertion-gate the unhandled
   computational remainder with an informative message. A specialized category may supply a
   stronger implementation without moving the mathematical notion.
 
 An abstract predicate on an axiomatic/data-bearing subcategory is a requirement on
 participants, not an inherited `return True`. If a refinement says that its objects must
-supply a named operation/predicate, the participant supplies it (possibly by a theorem-backed
-implementation returning `True`); the category declaration itself does not manufacture the
-answer. Runtime proof/certificate/evidence objects are not introduced for this purpose.
+supply a named operation/predicate, the participant supplies it by computing it, and that
+answer is an untrusted computation like any other. Where `lean-categories` proves the
+predicate for every object of a category, the preamble presents that inclusion and the
+predicate answers by placement, as for a property subcategory above; an implementation
+returning `True` on the strength of a theorem it asserts itself is a claim nothing
+supports. The category declaration itself does not manufacture the answer, and runtime
+proof/certificate/evidence objects are not introduced for this purpose.
 
 Sage's `abstract_method` is the repository's explicit marker for the rare case where a
 method is intentionally a category implementation contract. It is not a TODO mechanism and
@@ -2152,10 +2308,12 @@ the object's data (`Sets()`, `Modules(R)`, `Lattices(R)`, `Groups()`,
 `Algebras(R)`, ...). It asserts that the constructions agree. It asserts that the
 object is in the categories it belongs to (`assert L in Lattices(ZZ)`). Then it
 calls each operation expected of the object and asserts the result, one call
-after another. Each expected value is known independently of the
-implementation: computed by hand, cited from a source, or known from the
-mathematics. A new constructor or construction route adds its route to the file
-of the object it builds; a new object adds its own file.
+after another. Each expected value is cited from a source or proved,
+independently of the implementation; a value of informal provenance is not an
+expected value. These files are research's own and certify nothing outside it;
+correctness evidence exists only in the `lean-cas-dsl` acceptance suite. A new
+constructor or construction route adds its route to the file of the object it
+builds; a new object adds its own file.
 
 Nothing in these files inspects the implementation. There is no introspection,
 no table of constructors and no check that a method is implemented: an
@@ -2163,11 +2321,11 @@ operation whose owner never supplied it fails when it is called, inside the
 test that names it. `just test-lint` enforces the same standard here as for
 every other test.
 
-## Runtime classes only realize owned constructions
+## Runtime classes only realize the presented constructions
 
-Almost everything mathematical lives at the categorical level. The owned `ObjectType`,
-`ElementType`, and Hom-category types are the implementation protocol generated by that
-mathematical graph; a separate handwritten concrete hierarchy is the exception, not the
+Almost everything mathematical lives at the categorical level. The preamble's `ObjectType`,
+`ElementType`, and Hom-category types are the implementation protocol generated by the
+category graph presenting `lean-categories`; a separate handwritten concrete hierarchy is the exception, not the
 rule. Host/runtime primitives remain where they implement the generated owned
 types; concrete engine representations remain inside private adapters.
 Historically this read the other way, and named classes such as `BasedFreeModule`
@@ -2176,7 +2334,7 @@ are migration specimens, not patterns to copy.
 
 Constructions are uniformized as high as their mathematics allows: one free functor for the
 relevant category, one resolution contract, one universal construction. A new capability is new
-owned category/type content plus only the representation machinery genuinely required by the
+category/type content presenting `lean-categories` plus only the representation machinery genuinely required by the
 host; it is never a parallel class hierarchy.
 
 # Python and Sage research code style (always-on)
@@ -2187,8 +2345,8 @@ Use the detailed mathematical and repository rules above when they give a narrow
 ## Mathematical model before representation
 
 - Work in the order mathematical object → representation → implementation.
-- Start with the mathematical object, its data, its laws, and its hypotheses.
-- Identify the relevant category, objects, morphisms, functors, and universal properties before choosing classes or methods.
+- Start with the mathematical object as `lean-categories` formalizes it: its data, its laws, and its hypotheses.
+- Identify the relevant category, objects, morphisms, functors, and universal properties in `lean-categories` before choosing classes or methods.
 - Map that representation into Sage only after its objects, morphisms, hypotheses, and constructions are specified.
 - Implement only the operations that remain after native Sage structure is used.
 - Do not derive an API from the methods, classes, or data layouts that happen to exist.
@@ -2335,9 +2493,9 @@ Write the type:
 
 - `Self`, when the method returns another object of the receiver's own kind;
 - `None`, when it returns nothing;
-- a preamble-owned mathematical object whenever one exists. A natural number is
+- a preamble object whenever one exists. A natural number is
   the element type of `NN`, an integer the element type of `ZZ`, a real number
-  the element type of `RR`. Reach for the owned type before any Python
+  the element type of `RR`. Reach for the preamble type before any Python
   built-in.
 
 `float` is almost never right — it is a machine approximation standing where a
@@ -2373,9 +2531,9 @@ assembles the same unstructured data, the same mathematics is still missing,
 and now there is a class with no referent to maintain as well. Ask what the
 datum *is*. Usually it already has a name — a morphism, a generating set, a
 presentation, an indexed family — and naming it makes the signature right with
-no new type at all. When it genuinely has none and the notion is real, define
-it properly: that is the welcome case above, and a real addition to the
-category graph is a design decision to raise, never a wrapper to drop in.
+no new type at all. When it genuinely has none and the notion is real, it is
+`lean-categories`' to formalize: request it there, then present it; a real
+addition to the category graph is never a wrapper to drop in.
 
 Over-compliance is the failure from the other side. A class minted so a line
 technically passes, a name coined because the rule said not to write `tuple`,
@@ -2418,7 +2576,7 @@ the preamble.
 | `type(x) is X` | membership, or an owned element class |
 | `cast(T, x)` | make the type real, or narrow by assertion |
 | `x.__dict__.setdefault("_cache", {})` | `cached_method` |
-| `setattr` on a class imported from `sage.*` | own the category; see the ontology section above |
+| `setattr` on a class imported from `sage.*` | present the category through a preamble class; see *How the preamble presents the mathematics* above |
 
 **Every use of `setattr` is suspect, not only on Sage's classes.** A reader of a
 class must be able to see its fields by reading it. `setattr` puts state on an
@@ -2440,12 +2598,12 @@ The exceptions are narrow, and each must be nameable at the site:
 - `__contains__`, where the argument is genuinely arbitrary and deciding is the
   method's whole job.
 - `_element_constructor_`, where the host invokes the owned element-construction
-  contract for permitted literal or owned mathematical data. This is not public
+  contract for permitted literal or preamble data. This is not public
   admission for raw CAS parents or elements; private raising remains in adapters.
 - A documented Sage runtime protocol inside its designated host boundary, or
   foreign representation dispatch inside the selected private adapter under
   `OWN-06`. Document the exact protocol and owner; a local comment alone grants
-  no right to inspect owned mathematical state.
+  no right to inspect a preamble object's state.
 - Declarations under `if TYPE_CHECKING`, which have no runtime effect.
 
 Nothing else qualifies. A probe outside these sites is a defect, and it is
@@ -2552,8 +2710,9 @@ such a case is a criterion smuggled in without its theorem.
 - Use high-level notebooks for real mathematical work, not only API demonstrations.
 - Keep the preamble small, cohesive, native to Sage, and usable without notebook setup.
 
-## Proof and tests
+## Tests
 
+- Research's tests are its own and certify nothing outside it; correctness evidence exists only in the `lean-cas-dsl` acceptance suite.
 - Test mathematical behavior and method resolution through Sage categories, not scaffolding or correction history.
 - Assert the correct parent, category, domain, codomain, images of elements where defined, composition, or mathematical equality.
 - Test high-level notebook operations when notebook usability is the claimed behavior.
@@ -2584,28 +2743,29 @@ such a case is a criterion smuggled in without its theorem.
 - After ownership is known, commit required files and use recoverable deletion for disposable files.
 - Keep important work in version control, not only in a working tree or notebook session.
 
-# Addendum: private Sage-runtime realization of owned category types
+# Addendum: private Sage-runtime realization of preamble category types
 
 The [architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
 governs this boundary. Host runtime reuse and engine computation are different
 responsibilities. Neither permits a Sage mathematical parent or element to become
 the public preamble object by reclassification, subclassing, or facade parenting.
 
-The owned graph supplies `ObjectType`, `ElementType`, and Hom-category types.
-Its root runtime may use Sage `Parent`, `Element`, dynamic-class machinery, and
-method containers to realize those generated types. `ParentMethods`,
-`ElementMethods`, and `SubcategoryMethods` name private Sage mechanisms, not
-public mathematical owners. Keep the mapping in the shared runtime; descendants
+The preamble's category graph supplies `ObjectType`, `ElementType`, and
+Hom-category types. Its root runtime may use Sage `Parent`, `Element`,
+dynamic-class machinery, and method containers to realize those generated types.
+`ParentMethods`, `ElementMethods`, and `SubcategoryMethods` name private Sage
+mechanisms, not public placement. Keep the mapping in the shared runtime; descendants
 declare their immediate mathematical structure and do not assemble host bases.
 
 The shared construction path establishes required data before public return.
 Only the root owns non-cooperative host initialization. A host post-init or
 element-construction hook implements that path and cannot bypass it. Refinement
-acts on an independently owned object whose data justifies the added category;
-it neither constructs missing data by a label nor adopts a foreign instance.
+acts on a preamble object whose supplied data place it in the added category;
+it neither constructs missing data by a label, nor follows a computed answer,
+nor adopts a foreign instance.
 
 Method-resolution details remain private. The runtime must make the selected
-owned operation authoritative, preserve existing justified placements, and
+preamble operation authoritative, preserve existing justified placements, and
 propagate element and morphism behavior through the same graph. If private
 Sage category joining or dynamic-class ordering is required, implement it once
 at that owner under its declared protocol. Consumers do not call
@@ -2613,11 +2773,11 @@ at that owner under its declared protocol. Consumers do not call
 constructors to change a result's public meaning.
 
 Concrete Sage rings, modules, groups, matrices, and their elements remain private
-computation representations. An adapter builds them from owned data, invokes
-established algorithms, then raises every result through the owned constructors.
+computation representations. An adapter builds them from preamble data, invokes
+established algorithms, then raises every result through the preamble constructors.
 It does not reclass those Sage objects, patch their APIs, or teach Sage
-constructors to accept owned parents. Private computational workspace mutation
-does not alter owned defining data. Cache and lifetime choices respect `OWN-10`.
+constructors to accept preamble parents. Private computational workspace mutation
+does not alter the defining data. Cache and lifetime choices respect `OWN-10`.
 
 Historical mechanisms remain inspectable at
 `archives/lattice-research/src/sage_patches/ring_base_category.py`,
@@ -2711,14 +2871,14 @@ short synthesis did not capture.
 - Treat each mathematical correction as compressed research guidance.
 - Derive the structure that makes the correction true.
 - Do not translate one mathematical correction into one local method request.
-- Identify the objects, morphisms, hypotheses, codomains, and universal properties first.
-- Determine the categorical home of each construction before writing its representation.
+- Identify the objects, morphisms, hypotheses, codomains, and universal properties first, in `lean-categories`.
+- Determine where `lean-categories` places each construction before writing its representation.
 - A named category must exist as a category, not as a class with similarly named methods.
 - A named functor must act on objects and morphisms.
 - A named adjunction must include the hom-set bijection, unit, counit, and naturality.
 - Do not use category theory as a metaphor for a collection of constructors.
 - Do not replace a mathematical object with the data returned by an external engine.
-- External engines compute data used to construct owned mathematical objects.
+- External engines compute data used to construct preamble objects; their answers are untrusted.
 - Local computational data never replaces the structure that explains its functorial behavior.
 - Prefer a general mathematical construction when it removes many apparent local tasks.
 - A short advisor question can expose a missing theory rather than a missing method.
@@ -2736,7 +2896,7 @@ short synthesis did not capture.
 ## Object, structure, and representation
 
 - Start from mathematical objects and their relations.
-- Choose representations only after the mathematical ownership is clear.
+- Choose representations only after `lean-categories`' placement is clear.
 - A lattice is a set with module structure and a form.
 - It does not merely hold unrelated objects representing those structures.
 - A formed module is a module with a form.
@@ -2744,11 +2904,12 @@ short synthesis did not capture.
 - Category membership must correspond to actual supplied structure.
 - An object in a structured category must carry the data required by that category.
 - Do not refine an existing object into a data-bearing category without constructing the required data.
-- Construct owned objects through the owned category hierarchy.
-- Refine independently owned objects only when their defining data justifies the
-  added structure; keep Sage representations private to computation adapters.
+- Construct preamble objects through the preamble category hierarchy.
+- Refine preamble objects only when their supplied defining data place them in the
+  added structure, never on a computed answer; keep Sage representations private
+  to computation adapters.
 - Provide a `preamble.all` construction surface analogous to `sage.all`.
-- That surface constructs owned objects and populates the research namespace.
+- That surface constructs preamble objects and populates the research namespace.
 - Never build a parallel toy hierarchy when the task concerns the live preamble hierarchy.
 - A toy that proves itself against itself does not prove the real architecture.
 - Convert one real category before claiming that a category mechanism reduces author effort.
@@ -2760,7 +2921,7 @@ short synthesis did not capture.
 - Defining a new leaf category must feel routine.
 - The leaf author handles the leaf and its immediate supercategory only.
 - The leaf author never implements the transitive chain manually.
-- `super_categories()` is the sole declaration of categorical inheritance.
+- `super_categories()` is the sole declaration of categorical inheritance, presenting `lean-categories`' inclusions.
 - Do not add a second registry, binding declaration, or `forgets_to` relation.
 - The declared category graph already contains that information.
 - Sage already derives parent, element, and morphism method hierarchies from that graph.
@@ -2774,7 +2935,7 @@ short synthesis did not capture.
 - It must not merely declare an obligation that its own construction could discharge.
 - Abstract obligations remain valid for genuinely axiomatic categories.
 - An axiomatic subcategory need not have a separate concrete implementation class.
-- Generic mathematical operations belong on the owned category types that mathematically own them.
+- Generic mathematical operations belong on the category types where `lean-categories` places them.
 - Object operations belong on `ObjectType`; element operations on `ElementType`; arrow operations on the corresponding Hom-category element type.
 - Concrete/runtime classes remain minimal data containers when Sage ownership requires them.
 - Category methods precede concrete class methods in the owned MRO.
@@ -2796,7 +2957,7 @@ short synthesis did not capture.
 - It never reimplements set cardinality or product behavior.
 - A module constructor supplies its underlying set construction.
 - A free module of rank `n` supplies the product of `n` copies of its base ring.
-- The set level owns cardinality, finiteness, countability, products, and coproducts.
+- The set level carries cardinality, finiteness, countability, products, and coproducts.
 - The ring level supplies the set data for the ring.
 - Higher levels inherit the set operations through the category chain.
 - `L.cardinality()` must work without `Lattices` naming cardinality.
@@ -2811,15 +2972,17 @@ short synthesis did not capture.
 
 - Distinguish membership predicates from ordinary categorical operations.
 - A predicate-defined subcategory states the contract for membership.
-- An object refined into that subcategory supplies the predicate computation.
-- The category does not return `True` merely because its name asserts a property.
+- An object refined into that subcategory supplies the predicate computation, which is untrusted.
+- The category does not return `True` merely because its name asserts a property; it answers by placement only where `lean-categories` proves the predicate for every object.
 - Other operations should remain category methods whenever their hypotheses are categorical.
 - Place axioms as high as their hypotheses permit.
-- Foundational categories remain essential without current callers.
-- A category of magmas is foundational mathematical work, not disposable empty code.
+- Presentations of foundational categories remain essential without current callers.
+- Presenting the category of magmas is foundational work, not disposable empty code.
 - Empty method bodies, low call counts, and unfinished descendants do not reduce its value.
 
 ## Forms and formed modules
+
+These recall `lean-categories`' definitions to fix the presentation; where they differ, the formalization governs.
 
 - A form is not synonymous with a bilinear form.
 - Bilinear and quadratic forms have different classifying constructions.
@@ -2837,7 +3000,7 @@ short synthesis did not capture.
 - Each form flavor has its own free-forgetful adjunction.
 - The free bilinear form is the identity on the tensor-square classifier.
 - The free quadratic form is the identity on the quadratic classifier.
-- Prove each adjunction through its hom-set bijection.
+- Present each adjunction through its hom-set bijection, as `lean-categories` formalizes it.
 - Do not name an adjunction and then deny the existence of its adjoint.
 
 ## Base rings and morphisms
@@ -2863,9 +3026,9 @@ short synthesis did not capture.
 - Such machinery is significant research, not a conflict with the undecidability rule.
 - Return `Unknown` only where the available hypotheses and algorithms do not decide the question.
 - A specialized algorithm should return a definite result on its valid domain.
-- Record its hypotheses in the category that supplies it.
+- Record its hypotheses, citing the `lean-categories` theorem that justifies it, in the category that supplies it.
 - Let category placement select the specialized algorithm.
-- Do not special-case it inside a general method without mathematical ownership.
+- Do not special-case it inside a general method without a placement stating its hypotheses.
 
 ## Mathematical discrepancies and research findings
 
@@ -2874,18 +3037,19 @@ short synthesis did not capture.
 - It can distinguish full reflection-group orbits from smaller subgroup orbits.
 - Preserve the groups, actions, and orbit relation needed to state that difference.
 - Do not reduce such a finding to a note that two numbers disagree.
-- Derive the corrected mathematical statement from a false source statement.
-- Land the corrected proposition, construction, or cited specimen in the repository.
+- A false source statement is recorded with its evidence, and the corrected statement is requested from `lean-categories`; research does not write the correction.
+- Land the cited specimen that exposes the discrepancy in the repository.
 - Do not retain tests whose only purpose is to forbid a past mistake.
 - Test the intended positive mathematics instead.
-- Published tables, literature examples, and existing fixture values can be proper oracles.
+- Cited published tables and literature examples can be proper oracles.
 - Their value does not depend on whether an agent considers the source prestigious.
+- An expected value needs a verifiable source independent of the implementation: a proof, a cited result, or an independent oracle.
 - Verify provenance when adding a new citation-gated specimen.
-- Preserve an existing oracle during migration even when its provenance is informal.
+- An existing fixture value with informal provenance is not an oracle. Keep it during migration as a value awaiting its source, never as evidence.
 
 ## Semantic migration
 
-- The preamble centrally owns locally-authored Sage mathematics.
+- The preamble centrally holds research's locally-authored Sage code. The mathematics it presents is `lean-categories`'.
 - A migration request establishes the value of the selected corpus.
 - The executor decides destination and synthesis, not whether the corpus deserved preservation.
 - The unit of migration is a mathematical notion, not a file.
@@ -2899,16 +3063,16 @@ short synthesis did not capture.
 - After a mistaken edit yields the correct state, repair forward.
 - Do not undo the correct state merely to reproduce it by a preferred method.
 - Reconcile source and destination until the result is semantically a move plus required updates.
-- Delete the original only after every useful notion has an owned destination.
+- Delete the original only after every useful notion has a destination: a preamble presentation, or a `lean-categories` request for mathematics it lacks.
 - Deletion is a receipt for completed relocation.
 - It is never a value judgment on the source.
 - Preserve code, tests, specifications, examples, design corpora, and incomplete research.
 - Incomplete research remains research.
-- Planning corpora can contain mathematical structure and future categorical homes.
-- Stub declarations can define essential structure before algorithms exist.
-- Existing TDD suites are forward requirements and must migrate to the owned surface.
+- Planning corpora can contain mathematical structure and future categorical homes; the mathematics in them is carried to `lean-categories` as requests, never adopted here.
+- Stub declarations can present structure `lean-categories` formalizes before algorithms exist.
+- Existing TDD suites are forward requirements and must migrate to the preamble surface.
 - Existing parity tests can document delegation boundaries.
-- False source mathematics creates a correction-synthesis obligation.
+- False source mathematics creates an obligation: record it with its evidence and request the corrected mathematics from `lean-categories`.
 - Do not delete the false statement and preserve only an error ledger.
 - Non-code logs, telemetry, caches, and tool output are outside a mathematical code migration.
 - Do not create dispositions or rulings for irrelevant material.
@@ -2924,8 +3088,8 @@ short synthesis did not capture.
 - A source outside the current preamble scope is a reason to enrich the preamble.
 - It is not a deletion reason.
 - Compare source and destination definitions, hypotheses, codomains, conventions, and behavior.
-- Verify that the destination owns every useful mathematical distinction.
-- If the destination cannot express a notion, extend the destination.
+- Verify that the destination presents every useful mathematical distinction.
+- If the destination cannot express a notion because `lean-categories` lacks it, request it there; research does not define it.
 - Do not discard the notion because the destination is incomplete.
 
 ## Execution shape for large migrations
@@ -2957,7 +3121,7 @@ short synthesis did not capture.
 - Fix that foundation before patching its instances.
 - If a module can exist without a ring, forbid ringless construction.
 - Do not hunt only for the current ringless object.
-- If a formed module delegates through `forget_form`, fix its mathematical ownership.
+- If a formed module delegates through `forget_form`, fix its construction chain.
 - Do not add another forwarding method.
 - If many leaves restate set behavior, fix the category construction chain.
 - Do not optimize the forwarding calls.
@@ -2992,14 +3156,14 @@ When one condition occurs:
 - Do not ask the user to select the next probe when the repository can answer it.
 - Do not manufacture ambiguity after the user has already decided the architecture.
 
-## Work selection and proof
+## Work selection and checking
 
 - A count of type errors does not measure architectural correctness.
 - A count of passing tests does not measure mathematical correctness.
 - A count of migrated files does not measure semantic completion.
 - A green toy specimen does not prove migration of the live surface.
-- State the mathematical claim that the current artifact makes true.
-- Verify that claim on a concrete repository-owned object.
+- State the mathematical claim the current artifact is meant to make true.
+- Exercise that claim on a concrete repository object; the exercise is research's own check, not evidence of correctness.
 - Choose specimens that exercise the real category, constructor, element, and morphism paths.
 - Use notebook research objects when the requirement concerns notebook research.
 - Do not substitute a nearby proxy object.
@@ -3010,7 +3174,7 @@ When one condition occurs:
 
 ## Repository organization
 
-- Organize the preamble by mathematical ownership.
+- Organize the preamble by `lean-categories`' placement.
 - The tree should expose the category hierarchy to a mathematician.
 - Place generic constructions at the highest valid categorical level.
 - Keep value-level form morphisms distinct from categories of formed modules.
@@ -3057,18 +3221,18 @@ When one condition occurs:
 - A plan records settled mathematical direction.
 - It does not replace the code, proof, or migrated research.
 
-# Categorical constructions own structural relations
+# Categorical constructions carry structural relations
 
 The preamble has categories, method classes, and the category graph. It has no
 independent behavior-composition layer.
 
 - Do not call a preamble component a `mixin`.
 - Do not insert a hand-written Python base to state a mathematical relation.
-- State the relation in the category graph.
+- State the relation, as `lean-categories` formalizes it, in the category graph.
 - Class inheritance can implement the graph after category placement.
 - Class inheritance must never replace categorical placement.
-- `ObjectType`, `ElementType`, and Hom-category element types expose operations owned
-  by a category in the public preamble architecture.
+- `ObjectType`, `ElementType`, and Hom-category element types expose operations placed
+  on a category in the public preamble architecture.
 - Sage `ParentMethods`, `ElementMethods`, and `MorphismMethods` are private runtime
   implementation vocabulary during migration, not a second public class graph.
 
@@ -3077,11 +3241,11 @@ before creating another construction.
 
 - Start with `Cat.Object`, `SliceOver`, `CosliceUnder`, `Product`, `Coproduct`,
   `Biproduct`, `TensorProduct`, `Kernel`, and `Cokernel`.
-- Inspect the owned module-level `Subobjects` construction as part of the same
+- Inspect the preamble's module-level `Subobjects` construction as part of the same
   analysis.
 - Use this subtree as the canonical construction vocabulary.
 - Do not create a local helper for a relation already represented there.
-- Do not let an owned category silently use Sage's parallel construction.
+- Do not let a preamble category silently use Sage's parallel construction.
 - Resolve the construction owner instead of patching each call site.
 - Do not keep two construction paths for the same mathematical construction.
 
