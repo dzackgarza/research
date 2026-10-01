@@ -83,9 +83,9 @@ def test_the_row_of_a_definite_root_lattice_states_the_type_of_its_roots_and_the
     # E8 is even and unimodular, so its roots are its 240 vectors with b(r, r) = 2.
     e8 = rows["0094"]
     assert (e8["phi_type"], e8["root_span"], e8["root_span_rank"], e8["root_span_index"], e8["root_span_primitive"]) == ("E8", "E8", 8, 1, "yes")
-    # The roots of Z^10 are the vectors +-e_i and +-e_i +-e_j: type B10. The vectors with b(r, r) = 2 alone are of type D10.
-    z10 = rows["0120"]
-    assert (z10["root_system"], z10["phi_type"], z10["root_span"], z10["root_span_index"]) == ("D10", "B10", "Z^10", 1)
+    # The roots of I_{10,0} are the vectors +-e_i and +-e_i +-e_j: type B10. The vectors with b(r, r) = 2 alone are of type D10.
+    i10 = rows["0120"]
+    assert (i10["root_system"], i10["phi_type"], i10["root_span"], i10["root_span_index"]) == ("D10", "B10", "I_{10,0}", 1)
     # E8(2) has the roots of E8, with b(r, r) = 4, and no vector with b(r, r) = 2.
     doubled_e8 = rows["0095"]
     assert (doubled_e8["root_system"], doubled_e8["phi_type"], doubled_e8["root_span"]) == ("", "E8", "E8(2)")

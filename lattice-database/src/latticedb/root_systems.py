@@ -84,13 +84,13 @@ def root_count(root_type: str) -> int:
 def root_lattice(root_type: str) -> tuple[str, int, Fraction]:
     """Return `(letter, rank, k)` such that the lattice `Q` that the simple roots generate is isometric to the standard lattice of that letter and rank with the form `k b`.
 
-    The letter is `A`, `D`, `E` or `Z`; `Z` is the lattice `Z^n` with the form
-    `sum_i x_i y_i`. In the realisations of SageMath's
-    `RootSystem(type).ambient_space()`, with the form scaled so that a short
-    root has norm 2:
+    The letter is `A`, `D`, `E` or `I`; `I` is the lattice `I_{n,0}`: the
+    module `Z^n` with the Euclidean form `sum_i x_i y_i`. In the realisations
+    of SageMath's `RootSystem(type).ambient_space()`, with the form scaled so
+    that a short root has norm 2:
 
     - `B_n`: the roots are the `e_i` and the `e_i + e_j`, `e_i - e_j`, and they
-      generate `Z^n`; `(e_i, e_i) = 1`, so `Q = Z^n(2)`.
+      generate `Z^n`; `(e_i, e_i) = 1`, so `Q = I_{n,0}(2)`.
     - `C_n`: the roots are the `2 e_i` and the `e_i + e_j`, `e_i - e_j`, and
       they generate `D_n`; `D_3 = A_3`.
     - `F_4`: the roots are those of `B_4` and the `(e_1 + e_2 + e_3 + e_4) / 2`
@@ -102,7 +102,7 @@ def root_lattice(root_type: str) -> tuple[str, int, Fraction]:
     letter, rank = _parts(root_type)
     match letter:
         case "B":
-            return "Z", rank, Fraction(2)
+            return "I", rank, Fraction(2)
         case "C":
             return ("A", 3, Fraction(1)) if rank == 3 else ("D", rank, Fraction(1))
         case "F":

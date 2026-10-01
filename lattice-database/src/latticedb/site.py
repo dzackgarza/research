@@ -159,20 +159,20 @@ def component_lattice(component: RootSystemComponent) -> tuple[str, int, Fractio
 
 
 def component_lattice_tex(component: RootSystemComponent) -> str:
-    """`E_{8}`, `D_{4}(2)`, `\\mathbb{Z}^{10}`, and `\\langle 4 \\rangle` for `A_1(2)`."""
+    """`E_{8}`, `D_{4}(2)`, `\\mathrm{I}_{10,0}`, and `\\langle 4 \\rangle` for `A_1(2)`."""
     letter, rank, scale = component_lattice(component)
     if (letter, rank) == ("A", 1):
         return f"\\langle {rational_tex(2 * scale)} \\rangle"
-    name = f"\\mathbb{{Z}}^{{{rank}}}" if letter == "Z" else f"{letter}_{{{rank}}}"
+    name = f"\\mathrm{{I}}_{{{rank},0}}" if letter == "I" else f"{letter}_{{{rank}}}"
     return name if scale == 1 else f"{name}({rational_tex(scale)})"
 
 
 def component_lattice_text(component: RootSystemComponent) -> str:
-    """`E8`, `D4(2)`, `Z^10`, and `<4>` for `A1(2)`."""
+    """`E8`, `D4(2)`, `I_{10,0}`, and `<4>` for `A1(2)`."""
     letter, rank, scale = component_lattice(component)
     if (letter, rank) == ("A", 1):
         return f"<{2 * scale}>"
-    name = f"Z^{rank}" if letter == "Z" else f"{letter}{rank}"
+    name = f"I_{{{rank},0}}" if letter == "I" else f"{letter}{rank}"
     return name if scale == 1 else f"{name}({scale})"
 
 
