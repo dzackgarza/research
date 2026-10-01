@@ -49,7 +49,8 @@ The *hyperbolic index* of a nondegenerate integral lattice $L$ is the largest $n
 :::
 
 ::: {.proposition}
-Let $L$ be integral and let $M \subseteq L$ be a unimodular sublattice. Then $L = M \oplus M^{\perp}$.
+Let $L$ be integral and let $M \subseteq L$ be a unimodular sublattice.
+Then $L = M \oplus M^{\perp}$.
 So the hyperbolic index of $L$ is also the largest $n$ with an embedding $U^n \hookrightarrow L$.
 :::
 
@@ -73,3 +74,6 @@ A lattice in the genus of $U$ is even, unimodular and binary with determinant $-
 So $L \cong U^n \oplus L'$ for some $L'$ exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of signature $(n_+ - n, n_- - n)$, and the hyperbolic index depends only on the genus of $L$.
 `latticedb certify` computes it so: for $n$ from $\min(n_+, n_-)$ down to 1, it searches the genera of that signature with determinant $(-1)^n \det L$ and the parity of $L$, with `genera` and `Genus.direct_sum` of SageMath.
 A definite lattice has hyperbolic index 0.
+
+A morphism file that embeds $U^n$ into $L$ is a lower bound $n$ for the hyperbolic index of $L$.
+`latticedb check` refuses a stored hyperbolic index that is less than such a bound, and the page of a lattice without a stored value states the bound.

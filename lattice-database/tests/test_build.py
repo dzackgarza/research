@@ -1,6 +1,7 @@
 """The site that `build` writes from the corpus of this repository."""
 
 import json
+from html import escape
 from pathlib import Path
 
 import pytest
@@ -157,7 +158,7 @@ def test_the_fields_page_lists_every_family_with_its_meaning_and_its_number_of_l
         count = sum(family in entry.lattice.families for entry in loaded.entries)
         assert f'<th scope="row"><code>{family}</code></th>' in html
         assert f'href="./database.html?family={family}">{count}</a>' in html
-        assert meaning.split("$")[0].split("`")[0].strip() in html
+        assert escape(meaning.split("$")[0].split("`")[0].strip()) in html
 
 
 def test_the_fields_page_documents_every_field_of_a_record(built: Path) -> None:

@@ -15,6 +15,7 @@ lattice with tag `T`: YAML front matter, a `Morphisms` record, and notes in
 Markdown. `records.morphism_problems` checks a morphism when it is written.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -112,10 +113,38 @@ def problems(entries: list[Entry], families: Families, retired: Retired) -> list
     return found
 
 
+def hyperbolic_planes(lattice: Lattice) -> int | None:
+    """The n with `lattice` isometric to U^n: the n >= 1 for an even unimodular lattice of signature (n, n), else None.
+
+    The even unimodular lattice of signature (n, n) is U^n (the theory page `overlattices`, section `hyperbolic-index`).
+    """
+    positive, negative = lattice.signature
+    if lattice.integral is None or lattice.integral.parity != "even" or abs(lattice.determinant) != 1 or positive != negative or positive == 0:
+        return None
+    return positive
+
+
+def hyperbolic_index_bounds(morphisms: Sequence[MorphismEntry], entries: Sequence[Entry]) -> dict[Tag, int]:
+    """For each target of a morphism U^n -> T of scale 1, the largest such n: a lower bound for the hyperbolic index of T.
+
+    A morphism of scale 1 from the nondegenerate U^n is an embedding, and the hyperbolic index of an integral T is the largest n with an embedding U^n -> T.
+    """
+    by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
+    bounds: dict[Tag, int] = {}
+    for entry in morphisms:
+        record = entry.morphisms
+        source = by_tag.get(record.source)
+        planes = hyperbolic_planes(source) if source is not None else None
+        if planes is not None and any(morphism.scale == 1 for morphism in record.morphisms):
+            bounds[record.target] = max(planes, bounds.get(record.target, 0))
+    return bounds
+
+
 def morphism_problems(morphisms: list[MorphismEntry], entries: list[Entry], retired: Retired) -> list[str]:
     """The problems of the morphism files.
 
-    A file name that is not `<source>-<target>`, a tag that is not in the corpus or is retired, and two files for one pair.
+    A file name that is not `<source>-<target>`, a tag that is not in the corpus or is retired, two files for one pair,
+    and a stored hyperbolic index that is less than the n of an embedding U^n -> T.
     """
     found = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
@@ -131,6 +160,11 @@ def morphism_problems(morphisms: list[MorphismEntry], entries: list[Entry], reti
         missing = [tag for tag in pair if tag not in by_tag]
         found.extend(f"{entry.path}: the tag {tag} is retired ({retired[tag]})" for tag in missing if tag in retired)
         found.extend(f"{entry.path}: the tag {tag} is not in the corpus" for tag in missing if tag not in retired)
+    for tag, bound in hyperbolic_index_bounds(morphisms, entries).items():
+        target = by_tag.get(tag)
+        stored = target.integral.hyperbolic_index if target is not None and target.integral is not None else None
+        if stored is not None and stored < bound:
+            found.append(f"{tag}: integral.hyperbolic_index is {stored}, and a morphism file embeds U^{bound} into it")
     return found
 
 

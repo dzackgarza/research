@@ -140,6 +140,23 @@ def test_the_identity_and_the_exchange_of_e_and_f_are_morphisms_of_u(tmp_path: P
     assert [morphism.name for morphism in loaded.morphisms.morphisms] == ["identity", "exchange"]
 
 
+def test_an_embedding_of_u_bounds_the_hyperbolic_index_from_below(tmp_path: Path) -> None:
+    identity: list[dict[str, Yaml]] = [{"name": "identity", "matrix": [[1, 0], [0, 1]]}]
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), hyperbolic_plane(VALID_U)), "0016", "0016", identity)
+    loaded = corpus.load(directory)
+    assert corpus.hyperbolic_index_bounds(loaded.morphisms, loaded.entries) == {"0016": 1}
+
+
+def test_a_hyperbolic_index_below_an_embedding_of_u_is_refused(tmp_path: Path) -> None:
+    plane = hyperbolic_plane(VALID_U)
+    plane["integral"] = {"parity": "even", "discriminant_group": [], "overlattice_count": 1, "delta": 0, "hyperbolic_index": 0}
+    identity: list[dict[str, Yaml]] = [{"name": "identity", "matrix": [[1, 0], [0, 1]]}]
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), plane), "0016", "0016", identity)
+    with pytest.raises(corpus.CorpusInvalid) as raised:
+        corpus.load(directory)
+    assert raised.value.problems == ("0016: integral.hyperbolic_index is 0, and a morphism file embeds U^1 into it",)
+
+
 def test_the_inclusion_of_a_summand_is_a_morphism_whose_lines_cut_orthogonal_summands(tmp_path: Path) -> None:
     morphisms: list[dict[str, Yaml]] = [{"name": "first summand", "matrix": [[1], [0]], "row_subdivisions": [1]}]
     directory = write_morphisms(write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", morphisms)

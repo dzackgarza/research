@@ -29,7 +29,7 @@ from pydantic import BaseModel, Field
 
 from latticedb import root_systems
 from latticedb.arithmetic import Vector
-from latticedb.corpus import Entry, load
+from latticedb.corpus import Entry, hyperbolic_index_bounds, load
 from latticedb.model import (
     DefiniteData,
     HyperbolicData,
@@ -575,6 +575,7 @@ def build(root: Path, target: Path) -> int:
         [entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms] + [page.prose for page in theory]
     )
     lattice_page = environment.get_template("lattice.html.j2")
+    bounds = hyperbolic_index_bounds(corpus.morphisms, entries)
     for index, entry in enumerate(entries):
         lattice = entry.lattice
         components = json.dumps([[int(value) if value.denominator == 1 else str(value) for value in components_row] for components_row in lattice.gram_tensor])
@@ -589,6 +590,7 @@ def build(root: Path, target: Path) -> int:
                 span_summands=span_summands(lattice, lattices),
                 span_images=summand_images(lattice, lattices),
                 blocks=orthogonal_blocks(lattice),
+                hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
                 morphism_files=[file for file in morphism_files if lattice.tag in (file.source, file.target)],
                 previous=entries[index - 1].lattice if index > 0 else None,

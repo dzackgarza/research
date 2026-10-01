@@ -78,8 +78,8 @@
         {% if lattice.integral.genus_class_count is not none %}
         <tr><th scope="row">{{ theory("overlattices", "class-number", "Class number of the genus") }}</th><td>{{ lattice.integral.genus_class_count }}</td></tr>
         {% endif %}
-        {% if lattice.integral.hyperbolic_index is not none %}
-        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{{ lattice.integral.hyperbolic_index }}</td></tr>
+        {% if lattice.integral.hyperbolic_index is not none or hyperbolic_bound is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{% if lattice.integral.hyperbolic_index is not none %}{{ lattice.integral.hyperbolic_index }}{% else %}\(\geq {{ hyperbolic_bound }}\), by an embedding of \(U^{ {{- hyperbolic_bound -}} }\) in the morphism files{% endif %}</td></tr>
         {% endif %}
       </tbody>
     </table>
