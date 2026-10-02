@@ -59,7 +59,7 @@ This argument is presented as the program's intended route, not as a completed p
 
 The statement above is finiteness of $\phi\colon \normalize{B}\to\ksbacpt{\fentwo}$, a morphism of KSBA compactifications, and its proposed proof is the semifan comparison just described.
 It is a different statement from the finiteness of the period map $\fco\to \fen$ established in the normalization theorem (@thm:normalization).
-The two share the criterion -- a proper morphism with finite fibres is finite ([Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS)) -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
+The two share the criterion -- a proper morphism with finite fibres is finite [@stacks-02LS] -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
 The no-coarsening statement is moreover the same phenomenon as the no-moduli-loss conjecture (@conj:no_moduli_loss), which is itself open.
 :::
 
