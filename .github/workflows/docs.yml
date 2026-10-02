@@ -28,6 +28,7 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/dzackgarza/pandoc-config "$HOME/.pandoc"
           echo "revision=$(git -C "$HOME/.pandoc" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "sources=$(git rev-parse HEAD:writing HEAD:scripts HEAD:.github/workflows/docs.yml | sha256sum | cut -d " " -f 1)" >> "$GITHUB_OUTPUT"
         id: pandoc-config
       # A push that changes only the lattice database reuses the book rendered from the same
       # writing/ tree and the same pandoc-config revision, so it skips TeX and Quarto.
@@ -36,7 +37,7 @@ jobs:
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: writing/.book/_site
-          key: book-${{ steps.pandoc-config.outputs.revision }}-${{ hashFiles('writing/**', 'scripts/**', '.github/workflows/docs.yml') }}
+          key: book-${{ steps.pandoc-config.outputs.revision }}-${{ steps.pandoc-config.outputs.sources }}
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
         if: steps.book.outputs.cache-hit != 'true'
       - name: Install TikZ rendering dependencies
