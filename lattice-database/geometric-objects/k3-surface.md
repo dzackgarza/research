@@ -22,4 +22,5 @@ references:
   url: https://www.math.uni-bonn.de/people/huybrech/K3Global.pdf
 ---
 
-The Hodge numbers and the intersection lattice are constant for complex projective K3 surfaces. The linked lattice is the integral second cohomology with its cup-product form.
+The Hodge numbers and the intersection lattice are constant for complex projective K3 surfaces.
+The linked lattice is the integral second cohomology with its cup-product form.

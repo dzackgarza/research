@@ -40,9 +40,14 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 
 ## Geometric objects
 
-Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its file name is its permanent slug. `hodge_numbers[p][q]` is $h^{p,q} = \dim_{\mathbb C} H^q(X, \Omega_X^p)$; the matrix has side `dimension + 1`. The record validates nonnegative entries, $h^{0,0}=1$, Hodge symmetry and Serre duality.
+Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant.
+Its file name is its permanent slug.
+`hodge_numbers[p][q]` is $h^{p,q} = \dim_{\mathbb C} H^q(X, \Omega_X^p)$; the matrix has side `dimension + 1`. The record validates nonnegative entries, $h^{0,0}=1$, Hodge symmetry and Serre duality.
 
-An optional `cohomology_lattices` entry identifies $H^k(X;\mathbb Z)$ modulo torsion with a tagged lattice, under the named pairing and integer scale. The build checks that the tag exists and that its rank is $b_k = \sum_{p+q=k} h^{p,q}$. The pairing names the form: the Hodge numbers alone do not determine it. The geometric object page links to the lattice page, and the lattice page links back.
+An optional `cohomology_lattices` entry identifies $H^k(X;\mathbb Z)$ modulo torsion with a tagged lattice, under the named pairing and integer scale.
+The build checks that the tag exists and that its rank is $b_k = \sum_{p+q=k} h^{p,q}$.
+The pairing names the form: the Hodge numbers alone do not determine it.
+The geometric object page links to the lattice page, and the lattice page links back.
 
 ```yaml
 slug: k3-surface
@@ -59,7 +64,9 @@ cohomology_lattices:
   scale: 1
 ```
 
-The body of the file is Pandoc Markdown. `references` uses the same citation and URL fields as a lattice record. The site lists these records at `geometric-objects.html` and serves each one at `geometric-objects/<slug>.html`.
+The body of the file is Pandoc Markdown.
+`references` uses the same citation and URL fields as a lattice record.
+The site lists these records at `geometric-objects.html` and serves each one at `geometric-objects/<slug>.html`.
 
 ## A record
 
@@ -354,10 +361,22 @@ The work that remains, in order:
 The other online sources that state lattices the record schema can hold, surveyed on 2026-10-02:
 
 - **Watson's single-class genera**, `Classi/watson` on the catalogue site: 3494 primitive lattices of one class per genus, in machine-readable rows of the lower-triangular Gram entries, dimension by dimension; Lorch's completion is arXiv:1208.5638. A module `latticedb watson` reads it, and each genus's stored `integral.genus_class_count = 1` checks the table's claim.
+
 - **The Brandt-Intrau-Schiemann tables** of odd and even primitive positive ternary forms of discriminant at most 1000, `Brandt_1.html` and `Brandt_2.html` on the catalogue site, as recomputed by Schiemann: rank-3 integral records with genus data.
+
 - **Jagy's table** of positive ternary forms that are spinor regular but not regular, `Jagy.txt` on the catalogue site: sextuples $(a, b, c, d, e, f)$ of a form's coefficients, so the Gram tensor is their symmetric matrix divided by 2.
-- **Kirschmer's tables of genera of small class number**, <https://www.math.uni-bielefeld.de/~mkirschm/forms/>: `res_orth.tar.bz2` (fetched on 2026-10-02) holds one Magma file of genera of indefinite integral lattices of class number 1 and 2, each genus with Gram tensors of its representatives — the natural source of indefinite records, which the catalogue does not supply. The hermitian tables of the same page are out of the record's type: a hermitian form is not a symmetric bilinear form over $\mathbb{Z}$.
-- **LMFDB's lattices collection**, <https://beta.lmfdb.org/Lattice/>: 39,293 positive definite integral lattices, dimensions at most 24, the largest class number 56. Its <https://beta.lmfdb.org/Lattice/Source> states the Gram matrices are the Catalogue's — the collection adds no lattice the Catalogue lacks, and the corpus reads lattices at the Catalogue. What it adds: `class_number` and `aut`, computed in Magma and PARI by the code of Haensch and Anni, which check the stored `integral.genus_class_count` and `definite.automorphism_group_order` the way the tables of Hashimoto do; `genus_reps`, the Gram tensors of every class of the genus (a row of class number 2 lists both representatives, as read on 2026-10-02), and `level`, which no entry page of the Catalogue states — absorbing those two is a schema change with a computation of the corpus's own behind each field. The other stored fields are not new mathematics: `det`, `dim`, `minimum` and `kissing` the Gram tensor determines, `density` and `hermite` functions of `minimum` and `det`, `shortest` coordinates in the printed basis. The Source page confirms the class number one lattices complete by the computation of Kirschmer and Lorch, arXiv:1208.5638, the citation of the Watson table above. The API route is <https://beta.lmfdb.org/api/lat_lattices/?_format=json>, read on 2026-10-02: it answers only for a client that first loads a page of the site and returns its `human=1` cookie, the beta gate; a request without it is redirected. A module reading this source needs that two-step fetch.
+
+- **Kirschmer's tables of genera of small class number**, <https://www.math.uni-bielefeld.de/~mkirschm/forms/>: `res_orth.tar.bz2` (fetched on 2026-10-02) holds one Magma file of genera of indefinite integral lattices of class number 1 and 2, each genus with Gram tensors of its representatives — the natural source of indefinite records, which the catalogue does not supply.
+  The hermitian tables of the same page are out of the record's type: a hermitian form is not a symmetric bilinear form over $\mathbb{Z}$.
+
+- **LMFDB's lattices collection**, <https://beta.lmfdb.org/Lattice/>: 39,293 positive definite integral lattices, dimensions at most 24, the largest class number 56. Its <https://beta.lmfdb.org/Lattice/Source> states the Gram matrices are the Catalogue's — the collection adds no lattice the Catalogue lacks, and the corpus reads lattices at the Catalogue.
+  What it adds: `class_number` and `aut`, computed in Magma and PARI by the code of Haensch and Anni, which check the stored `integral.genus_class_count` and `definite.automorphism_group_order` the way the tables of Hashimoto do; `genus_reps`, the Gram tensors of every class of the genus (a row of class number 2 lists both representatives, as read on 2026-10-02), and `level`, which no entry page of the Catalogue states — absorbing those two is a schema change with a computation of the corpus's own behind each field.
+  The other stored fields are not new mathematics: `det`, `dim`, `minimum` and `kissing` the Gram tensor determines, `density` and `hermite` functions of `minimum` and `det`, `shortest` coordinates in the printed basis.
+  The Source page confirms the class number one lattices complete by the computation of Kirschmer and Lorch, arXiv:1208.5638, the citation of the Watson table above.
+  The API route is <https://beta.lmfdb.org/api/lat_lattices/?_format=json>, read on 2026-10-02: it answers only for a client that first loads a page of the site and returns its `human=1` cookie, the beta gate; a request without it is redirected.
+  A module reading this source needs that two-step fetch.
+
 - **Martinet's perfect lattices**, <http://jamartin.perso.math.cnrs.fr/Lattices/index.html>: the perfect lattices of dimensions at most 7 in `perf2to7` and the dimension-8 sets in PARI/GP files (`p8.gp.gz` and siblings), readable by `cypari2`; perfectness is a property a record states in its prose, and the Grams are definite integral records.
 
-Sources checked and not absorbed: Borcherds's page <http://math.berkeley.edu/~reb/lattices/> lists the 25- and 26-dimensional unimodular latties by root system, kissing number and group order, with no Gram tensor — it gives identifications for records, not records. Cohn's kissing-number table, <https://cohn.mit.edu/kissing-numbers>, is the citation for `definite.kissing_number`, and its lattices are the catalogue's. The lattice-packing tables at Sloane's page and the Scholl and Schiemann pages the catalogue links did not answer as data sources on 2026-10-02.
+Sources checked and not absorbed: Borcherds's page <http://math.berkeley.edu/~reb/lattices/> lists the 25- and 26-dimensional unimodular latties by root system, kissing number and group order, with no Gram tensor — it gives identifications for records, not records.
+Cohn's kissing-number table, <https://cohn.mit.edu/kissing-numbers>, is the citation for `definite.kissing_number`, and its lattices are the catalogue's. The lattice-packing tables at Sloane's page and the Scholl and Schiemann pages the catalogue links did not answer as data sources on 2026-10-02.

@@ -11,7 +11,17 @@ import frontmatter
 from cyclopts import App, Parameter
 from pydantic import ValidationError
 
-from latticedb import certificates, corpus, genus, hashimoto, hoehn_mason, nebe_sloane, records, site, summands
+from latticedb import (
+    certificates,
+    corpus,
+    genus,
+    hashimoto,
+    hoehn_mason,
+    nebe_sloane,
+    records,
+    site,
+    summands,
+)
 from latticedb.model import Lattice, Morphisms, Yaml
 
 SERVED = Path("/var/www/static-sites/lattice-database")
@@ -194,7 +204,11 @@ def check(root: Root = Path(), seconds: Annotated[int, Parameter(help="Time limi
         sys.exit(1)
     pending = _pending(root, loaded, certificates.load(root), seconds)
     print("\n".join(pending))
-    print(f"{len(loaded.entries)} lattices, {len(loaded.morphisms)} morphism files and {len(loaded.geometric)} geometric objects, all records valid; {len(pending)} computations without a certificate")
+    print(
+        f"{len(loaded.entries)} lattices, {len(loaded.morphisms)} morphism files and "
+        f"{len(loaded.geometric)} geometric objects, all records valid; "
+        f"{len(pending)} computations without a certificate"
+    )
 
 
 @app.command
