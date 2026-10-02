@@ -16,6 +16,12 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
 | `geometric-objects/<slug>.md` | One geometric object, its Hodge–Poincaré series, optional cohomology lattice links and cited prose |
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
+| `orthogonal-subgroups/`, `vector-orbits/`, `chambers/` | Named lattice group actions, primitive-vector orbits and hyperbolic chambers |
+| `genera/` | Genus records with representative isometry classes and mass |
+| `lattice-polytopes/`, `toric-varieties/` | Based lattice polytopes, polar duals and normal-fan toric varieties |
+| `geometric-maps/`, `moduli-problems/` | Geometric maps, fibrations and specified moduli problems |
+| `integral-local-systems/`, `picard-fuchs-operators/` | Integral monodromy and period operators with geometric realizations |
+| `morphisms/dual/` | Isometries $L\to L^*(k)$ in the basis dual to the lattice record |
 | `geometric-bibliography.bib` | BibTeX entries cited by geometric object and family prose |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
 | `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
@@ -24,6 +30,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
 | `src/latticedb/geometric.py` | The schema of geometric families, objects and their Hodge–Poincaré series |
+| `src/latticedb/catalogues.py` | Schemas of group actions, genera, polytopes, toric varieties, maps, local systems and operators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
@@ -85,6 +92,29 @@ cohomology_lattices:
 The body of each geometric file is Pandoc Markdown.
 Cite BibTeX keys from `geometric-bibliography.bib` with Pandoc citation syntax such as `[@Huybrechts2016K3]`. The site lists families and objects at `geometric-objects.html` and serves their pages under `geometric-families/` and `geometric-objects/`.
 
+## Related mathematical records
+
+Each additional catalogue uses one Markdown file per permanent slug. Its front matter is validated by `latticedb check`; its body states the source and mathematical identification. These records remain distinct from the lattice, geometric object and geometric family records they link.
+
+| Catalogue | Defining data and links |
+| --- | --- |
+| `orthogonal-subgroups/` | A lattice tag, a defining property or named self-isometry generators, optional relators, abstract structure, order, index and parent subgroup. A stabilizer names its vector orbit, chamber or geometric object. `O+` means the kernel of the real spinor norm. |
+| `vector-orbits/` | A primitive vector in the record basis, its square and optional divisibility, the acting subgroup, and optional geometric polarization link. The Gram tensor checks the square and divisibility. |
+| `chambers/` | A hyperbolic lattice, interior vector and oriented wall normals, with an optional reflection subgroup. |
+| `genera/` | Signature, determinant, parity, genus symbol, representative lattice tags, class number, completeness and rational mass. A complete list with known group orders checks $\sum 1/|O(L_i)|$. |
+| `lattice-polytopes/` | Vertices in a based free abelian group, ambient rank, source identifier, reflexivity, polar dual, and optional Delaunay sphere tied to a quadratic lattice. A toric ambient lattice is not the quadratic lattice of a lattice record. |
+| `toric-varieties/` | A polytope and its normal fan, with optional subdivision rays. |
+| `geometric-maps/` | Source and target geometric records; a fibration also names its generic fiber and can state its singular locus. |
+| `moduli-problems/` | A family, moduli dimension, optional polarization orbit and arithmetic subgroup. |
+| `integral-local-systems/` | A fibration over a smooth base, its source family, cohomological degree and rank; optional integral fiber lattice and matrices of monodromy around named loops. |
+| `picard-fuchs-operators/` | Exact rational polynomial coefficients of $\sum_i a_i(x)(x\,d/dx)^i$, coordinate, normalization, singularities and exponents; each realization names a family, period and relation to the operator. |
+
+`morphisms/dual/<slug>.md` records a matrix $M$ for $L\to L^*(k)$ in the dual basis. Its validator checks $M\in GL_n(\mathbb Z)$ and $M^{\mathsf T}(kG^{-1})M=G$. The lattice's `integral.modular_scale` names the same $k$ and requires such a morphism. `integral.level` is the least $k$ for which $k b(x,x)$ is even on $L^*$; the validator computes it from $G^{-1}$. They are different invariants.
+
+`definite.minimal_vectors` is a complete shell in the record basis and must match the minimum and kissing number. `definite.perfect` is checked by the span of their rank-one tensors. `definite.regular` and `definite.spinor_regular` apply to integral ternary lattices. The Hermite invariant and packing density are exact functions of rank, determinant and minimum; source decimals are checked against those formulas rather than stored as exact values.
+
+Geometric objects can also store Pontryagin numbers, a Beauville–Bogomolov Riemann–Roch polynomial, $\operatorname{Aut}^0$, homotopy groups, Fano and surface data, and a homogeneous, horospherical, Calabi–Yau complete-intersection or toric anticanonical construction. A complete-intersection configuration stores its projective factors and equation multidegrees; the schema checks the Calabi–Yau degree and dimension equations.
+
 ## A record
 
 ```yaml
@@ -140,8 +170,8 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 
 | Block | Hypothesis on the lattice | Fields |
 | --- | --- | --- |
-| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `discriminant_group`, `discriminant_sequence`, `overlattice_count`, `delta`, `bad_reduction_primes`, `quadratic_character`, `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`, `primitive_orbits` |
-| `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
+| `integral` | every $b(e_i, e_j)$ is an integer | `parity`, `level`, `modular_scale`, `discriminant_group`, `discriminant_sequence`, `overlattice_count`, `delta`, `bad_reduction_primes`, `quadratic_character`, `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`, `primitive_orbits` |
+| `definite` | $b$ is positive or negative definite | `minimum`, `kissing_number`, `minimal_vectors`, `perfect`, `regular`, `spinor_regular`, `automorphism_group_order`, `theta_series`, `root_system`, `roots` |
 | `root_span` | $b$ is not definite | `roots`, `norms`, `summands`, `embedding` |
 | `root_sublattice` | $b$ is definite, or the record has `root_span` | `invariant_factors`, `norms` |
 | `indefinite` | $b(x, x)$ takes both signs | `isotropic` |
@@ -391,7 +421,7 @@ The survey of 2026-10-02 read these by the test the corpus uses everywhere: a so
 - **Kirschmer's tables of genera of small class number**, <https://www.math.uni-bielefeld.de/~mkirschm/forms/>: a survey misread first, and now corrected. The page's own notation section states what each file holds: `res_orth.tar.bz2` is genera of *definite* quadratic lattices over *totally real number fields*, rank 3 to 16, class number 1 or 2, each genus printed as a diagonal matrix over $K$ with a $\mathbb{Z}_K$-module; `unimod.m` and the hermitian, quaternionic-hermitian and binary-form tables are likewise over number fields, and `maxgen.m` is one-class genera of maximal integral lattices over number fields. These are exact claims about lattices — over $\mathbb{Z}_K$, which the corpus has no record kind for. Absorbing them is the schema gaining that kind, an owner decision of some size, not a reason to discard the data; reading them for the $\mathbb{Z}$-lattice the $\mathbb{Z}$-trace or norm gives is a construction that would also need its place. The page is the citation the corpus already uses: the completeness of the class-number-one $\mathbb{Z}$-lattices rests on it (Watson, Kirschmer-Lorch arXiv:1208.5638), and it is the reference for a genus's class number stated in prose.
   Indefinite records over $\mathbb{Z}$ arrive meanwhile from the rank-3 Lorentzian database above and from papers (Nikulin's tables, Hashimoto, Gritsenko–Hulek–Scholsche, the K3 and Leech coinvariant lattices).
 
-- **LMFDB's lattices collection**, <https://beta.lmfdb.org/Lattice/>: 39,293 positive definite integral lattices, dimensions at most 24, the largest class number 56. The Source page states the Gram matrices come from the Catalogue and its tables — the same lattices named twice, which is the point: over each of them the code of Haensch and Anni (<https://github.com/annahaensch/lattice_data>, Magma and PARI) computed `class_number`, the order of the automorphism group, `level`, a theta series to 151 coefficients, and `genus_reps`, the Gram tensor of every class of the genus. Every one of those claims checks a stored field of any record of the same lattice: `integral.genus_class_count`, `definite.automorphism_group_order`, `definite.theta_series` — the Hashimoto role, extended to the 430 records and to every record the Catalogue absorption will write, thirty-nine thousand lattices instead of the handful that name a table. `level` states an invariant no field of the schema holds; under the rule that the schema gains a place for a computed claim, its absorption adds one. The genus decomposition meets the tables where they agree: the two representatives of genus `3.11.22` are the forms `1 2 6 2 0 0` and `1 1 11 0 0 0` that Brandt-Intrau-Schiemann prints under discriminant $-44$ — the same statement machine-keyed by genus. The Source page cites Kirschmer and Lorch, arXiv:1208.5638, for the completeness of the class-number-one lattices, the same citation as the Watson table.
+- **LMFDB's lattices collection**, <https://beta.lmfdb.org/Lattice/>: 39,293 positive definite integral lattices, dimensions at most 24, the largest class number 56. The Source page states the Gram matrices come from the Catalogue and its tables. The data of Haensch and Anni (<https://github.com/annahaensch/lattice_data>, Magma and PARI) include `class_number`, automorphism-group order and generators, `level`, theta coefficients and `genus_reps`. The record fields hold class number, group order, level and theta data; named subgroup morphisms and `genera/` hold the group and genus claims when entries are identified. The two representatives of genus `3.11.22` are the forms `1 2 6 2 0 0` and `1 1 11 0 0 0` that Brandt–Intrau–Schiemann prints under discriminant $-44$. The Source page cites Kirschmer and Lorch, arXiv:1208.5638, for the completeness of class-number-one lattices.
   The stored `density` and `hermite` are exact mathematics printed as decimals, the schema's standing case of it: the Hermite invariant $\gamma_n(L)=\lambda_1/\det^{1/n}$ and the packing density $\Delta(L)=V_n(\sqrt{\lambda_1}/2)/\sqrt{\det}=\pi^{n/2}\lambda_1^{n/2}/\bigl(2^n\,\Gamma(\tfrac n2+1)\sqrt{\det}\bigr)$ — $\pi/4$ for $\mathbb{Z}^2$, $\pi^4/384$ for $E_8$.   Sampled against the API on 2026-10-02 at rows of dimensions 2 to 24: both formulas reproduce the stored values to the full printed precision except the last one or two digits, whose rounding mode varies by row — a rendering choice, which is why the absorption takes the formula and never the decimal. The values lie in $\mathbb{Q}(\pi^{n/2}, \sqrt{\det})$, a symbolic real a record can hold exactly. `shortest` gives coordinates in the printed basis and is the row's choice of basis, not a claim.
   The API route is <https://beta.lmfdb.org/api/lat_lattices/?_format=json>, read on 2026-10-02: it answers only for a client that first loads a page of the site and returns its `human=1` cookie, the beta gate; a request without it is redirected.
   A module reading this source needs that two-step fetch.
@@ -402,7 +432,7 @@ The survey of 2026-10-02 read these by the test the corpus uses everywhere: a so
 
 - **Cohn's kissing-number table**, <https://cohn.mit.edu/kissing-numbers>: the best known bounds per dimension, its lower bounds originally the Catalogue's table and later improvements naming their lattices — a citation for `definite.kissing_number` and, where a record attains a bound stated elsewhere, an outside table the field checks against.
 
-- **Dutour-Sikiric's Delaunay polytopes of the Niemeier lattices**, <https://github.com/MathieuDutSik/delaunaypolytopeniemeier.github.io>: statements about records the corpus holds — the polytope of each Niemeier lattice computed from its data, the page citing the Catalogue for the Gram tensors. The schema has no place for a Delaunay polytope; absorbing the computation would give one (AGENTS.md), and until then the pages are a `references` entry and prose of the Niemeier records.
+- **Dutour-Sikiric's Delaunay polytopes of the Niemeier lattices**, <https://github.com/MathieuDutSik/delaunaypolytopeniemeier.github.io>: the `lattice-polytopes/` schema can record their vertices and Delaunay sphere in the basis of each Niemeier lattice. The source values and coordinate identifications remain to be imported.
 
 - **Sloane's packing tables**, <https://neilsloane.com/packings/>: the best known sphere packings by dimension, one file per configuration. The lattice files are exact: `E8.8.240.txt` (read on 2026-10-02) prints the 240 minimal vectors of $E_8$ as integer rows in an orthonormal coordinate system, with a comment citing SPLAG page 120 — that is $\Phi(L)$ for a record the corpus holds, landing as `definite.roots` and the kissing count of the $E_8$ record, an identification and a check, the same kind of claim the Catalogue's entry carries. The non-lattice files are point configurations — the 3-simplex file is four rows of $\pm 1/\sqrt{3}$, verified to be the correctly-rounded exact values — objects the schema has no place for; under the rule that a claim with no place gains one, that placement is a schema question, and the decimals are a rendering of it, not a reason the data is discarded.
 

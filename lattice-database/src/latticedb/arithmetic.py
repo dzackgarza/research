@@ -119,6 +119,39 @@ def delta(gram_tensor: GramTensor) -> int:
     return 0 if all(inverse[i, i].q == 1 for i in range(len(gram_tensor))) else 1
 
 
+def level(gram_tensor: GramTensor) -> int:
+    """Least k for which k times the dual quadratic form takes values in 2Z.
+
+    In the dual basis the Gram matrix is G^-1. The diagonal entries of
+    k G^-1 must be even and its off-diagonal entries must be integral.
+    """
+    inverse = _components(gram_tensor).inv()
+    rank = len(gram_tensor)
+    denominators = [int((inverse[i, i] / 2).q) for i in range(rank)]
+    denominators.extend(int(inverse[i, j].q) for i in range(rank) for j in range(i + 1, rank))
+    return lcm(*denominators)
+
+
+def is_perfect(rank: int, minimal_vectors: list[list[int]]) -> bool:
+    """Whether the rank-one tensors of the minimal shell span Sym^2(Q^rank)."""
+    rows = [[vector[i] * vector[j] for i in range(rank) for j in range(i, rank)] for vector in minimal_vectors]
+    return fmpq_mat(rows).rank() == rank * (rank + 1) // 2
+
+
+def is_dual_isometry(gram_tensor: GramTensor, scale: int, matrix: list[list[int]]) -> bool:
+    """Whether M gives L isometric to L*(scale) in the dual basis."""
+    rank = len(gram_tensor)
+    if len(matrix) != rank or any(len(row) != rank for row in matrix):
+        return False
+    integral = fmpz_mat(matrix)
+    if abs(int(integral.det())) != 1:
+        return False
+    gram = _components(gram_tensor)
+    dual = fmpq(scale) * gram.inv()
+    morphism = fmpq_mat(matrix)
+    return morphism.transpose() * dual * morphism == gram
+
+
 def bad_reduction_primes(determinant: int) -> tuple[int, ...]:
     """Return the primes that divide `2 det`, in increasing order: the primes `p` at which `Q(x) = b(x, x)` is degenerate modulo `p`.
 

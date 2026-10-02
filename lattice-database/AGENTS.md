@@ -17,6 +17,7 @@ change:
 | An invariant of one lattice: a genus symbol, a class number, the order of $O(L)$, a root system | A field of the record, in the block of its hypothesis |
 | A relation between two records: a twist, a dual, an orthogonal complement, a gluing | A `related` entry of each record, and the prose |
 | A map between lattices: an embedding, an isometry, a generator of a group action | A morphism file `morphisms/<S>-<T>.md` |
+| An isometry from a tagged lattice to its scaled dual, whose dual has no separate tag | A morphism file `morphisms/dual/<slug>.md`, with the dual basis and scale stated |
 | What a source states: a table, a list of Gram tensors, a basis in other coordinates | `sources/<source>/`, read by a module `src/latticedb/<source>.py` with a `check` that compares the source with the records |
 | An identification of a record with an entry of a source | The reference of the record, with the locator of the entry, and the prose that states the argument |
 

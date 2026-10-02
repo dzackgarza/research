@@ -49,15 +49,15 @@ A status describes only the inspection completed by 2026-10-03. Keep an entry wh
 | --- | --- |
 | Hodge–Poincaré series, Hodge diamond, Betti numbers and Euler characteristic | Sparse series is stored on geometric objects; the other values are derived from it. |
 | Diamond symmetry group | `V4` or `D4` is checked against the stored coefficients. Further claimed group actions require their own representation. |
-| Geometric families and instances | Parameterized K3 Hilbert schemes and generalized Kummer varieties have family records and linked dimension-four instances. Other construction types remain to be defined. |
+| Geometric families and instances | Parameterized K3 Hilbert schemes and generalized Kummer varieties have family records and linked dimension-four instances. Homogeneous, horospherical, complete-intersection and toric constructions have typed fields for future intake. |
 | Theoretical Hodge formulas | Göttsche and Göttsche–Soergel are cited for the two hyperkähler families. A general family-level series computation has not been authored. |
 | Complex dimension and local deformation dimension | Both are object fields. A polarized or global moduli-space dimension needs its own moduli problem and source. |
 | $H^2(X;\mathbb Z)$ and Beauville–Bogomolov–Fujiki form | Tagged lattice links name the degree, pairing and scale for entered examples. |
-| Chern and other characteristic numbers | Top-degree Chern products are stored and checked for degree; a stated top Chern number is checked against Euler characteristic. Other characteristic-class products need their class type and normalization. |
-| $\operatorname{Aut}^0(X)$, homotopy groups and other group invariants | Group-valued records need the group, its action or degree, and a cited identification. No such values have been imported. |
-| Reflexive lattice polytopes and polar duals | A polytope catalogue needs ambient lattice, vertices and polar relation. Reflexivity belongs to that record, not to a Hodge diamond. |
-| Toric varieties and Calabi–Yau hypersurfaces | Construction maps must link each polytope, ambient toric variety and hypersurface family. A shared Hodge pair does not identify any of them. |
-| Fibrations, Picard–Fuchs operators and monodromy groups | A fibration needs its total space, base and map; an operator needs a coordinate and period; monodromy needs the local system and representation. The source links remain to be authored. |
+| Chern and other characteristic numbers | Top-degree Chern and Pontryagin products are stored and checked for degree; a stated top Chern number is checked against Euler characteristic. Riemann–Roch polynomials have exact rational coefficients. Other characteristic-class conventions need source-specific normalization. |
+| $\operatorname{Aut}^0(X)$, homotopy groups and other group invariants | The geometric schema names the algebraic group and each homotopy degree; a cohomology action can link to a named lattice subgroup. No such values have been imported. |
+| Reflexive lattice polytopes and polar duals | `lattice-polytopes/` names ambient rank, vertices, reflexivity and a polar record. Reflexivity belongs to that record, not to a Hodge diamond. |
+| Toric varieties and Calabi–Yau hypersurfaces | `toric-varieties/` and typed geometric constructions link a polytope, toric ambient variety and anticanonical hypersurface. A shared Hodge pair does not identify any of them. |
+| Fibrations, Picard–Fuchs operators and monodromy groups | `geometric-maps/` names the map, `picard-fuchs-operators/` names coordinate and period realizations, and `integral-local-systems/` names the monodromy matrices. Source links remain to be authored. |
 | Source tools and visualizations | Hodge plots and interactive source pages are retained as discovery and presentation leads. Their numerical claims require the same cited identification as a table row. |
 
 The Hodge series determines Betti numbers and the topological Euler characteristic.
@@ -81,7 +81,4 @@ A Picard–Fuchs operator is attached to a period of a variation of Hodge struct
 Different families can realize the same operator; a Riemann symbol gives local exponents and does not by itself specify the global monodromy representation.
 The source relation must identify the family, map, local system and operator before a monodromy group can be attached to a geometric record.
 
-The recommended extension is a separate lattice-polytope catalogue linked by typed construction maps to toric varieties and hypersurface families.
-An operator catalogue should link to families through cited Picard–Fuchs realizations.
-A single geometric-object row with `reflexive`, fibration and monodromy fields would put invariants on the wrong mathematical owner.
-This choice changes the database architecture and needs the owner's decision before implementation.
+`lattice-polytopes/` stores polytope vertices and polar links separately from `toric-varieties/` and geometric objects. `geometric-maps/` stores fibrations, while `picard-fuchs-operators/` links an operator to each cited family realization. `integral-local-systems/` stores monodromy on a specified cohomology group. Source entries still need intake and verification.

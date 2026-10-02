@@ -53,6 +53,7 @@ def rational(value: Yaml | Fraction) -> Fraction:
 
 Rational = Annotated[Fraction, BeforeValidator(rational)]
 Tag = Annotated[str, Field(pattern=r"^[0-9A-Z]{4}$")]
+Slug = Annotated[str, Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")]
 Family = Annotated[str, Field(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$")]
 AdeType = Annotated[str, Field(pattern=r"^(A[1-9]\d*|D[4-9]|D[1-9]\d+|E[678])$")]
 RootType = Annotated[str, Field(pattern=root_systems.TYPE_PATTERN)]
@@ -193,18 +194,20 @@ class DiscriminantSequenceData(Record):
     discriminant_factors: list[int]
     discriminant_basis_lifts: list[list[str]]
     discriminant_quadratic_gram: list[list[str]]
-    lattice_group_order: int = Field(gt=0)
-    lattice_generator_morphisms: list[str]
+    lattice_group_order: Annotated[int, Field(gt=0)] | None = None
+    lattice_generator_morphisms: list[str] | None = None
     discriminant_group_order: int = Field(gt=0)
     discriminant_generators: list[list[list[int]]]
     image_generators: list[list[list[int]]]
     image_order: int = Field(gt=0)
-    kernel_order: int = Field(gt=0)
+    kernel_order: Annotated[int, Field(gt=0)] | None = None
     coset_representatives: list[list[list[int]]]
     mm_trivial: bool
     image_normal: bool
     quotient_generator_cosets: list[int] | None = None
     quotient_multiplication: list[list[int]] | None = None
+    quotient_invariant_factors: list[Annotated[int, Field(gt=1)]] | None = None
+    mm_f2_dimension: Annotated[int, Field(ge=0)] | None = None
 
     @model_validator(mode="after")
     def _sequence(self) -> Self:
@@ -214,9 +217,11 @@ class DiscriminantSequenceData(Record):
             raise ValueError("discriminant isometry matrices must be square in the stated basis")
         if len(self.discriminant_basis_lifts) != size or len(self.discriminant_quadratic_gram) != size:
             raise ValueError("the discriminant basis and quadratic Gram matrix must match the invariant factors")
-        if len(self.lattice_generator_morphisms) != len(self.image_generators):
+        if self.lattice_generator_morphisms is not None and len(self.lattice_generator_morphisms) != len(self.image_generators):
             raise ValueError("each lattice generator must have one induced discriminant isometry")
-        if self.lattice_group_order != self.kernel_order * self.image_order:
+        if (self.lattice_group_order is None) != (self.kernel_order is None):
+            raise ValueError("the lattice and kernel orders are stated together")
+        if self.lattice_group_order is not None and self.kernel_order is not None and self.lattice_group_order != self.kernel_order * self.image_order:
             raise ValueError("the lattice group order must equal the kernel order times the image order")
         if self.discriminant_group_order != self.image_order * len(self.coset_representatives):
             raise ValueError("the discriminant group order must equal the image order times the coset count")
@@ -228,6 +233,19 @@ class DiscriminantSequenceData(Record):
             count = len(self.coset_representatives)
             if len(self.quotient_multiplication) != count or any(len(row) != count for row in self.quotient_multiplication):
                 raise ValueError("the quotient multiplication table must index the cosets")
+            if any(value < 0 or value >= count for row in self.quotient_multiplication for value in row):
+                raise ValueError("quotient products must index the stated cosets")
+            if any(self.quotient_multiplication[0][i] != i or self.quotient_multiplication[i][0] != i for i in range(count)):
+                raise ValueError("the distinguished coset is the quotient identity")
+        if self.quotient_invariant_factors is not None:
+            factors = self.quotient_invariant_factors
+            table = self.quotient_multiplication
+            if table is None or math.prod(factors) != len(self.coset_representatives) or any(second % first for first, second in zip(factors, factors[1:], strict=False)) or any(table[i][j] != table[j][i] for i in range(len(table)) for j in range(i)):
+                raise ValueError("quotient invariant factors require an abelian quotient group of the stated size")
+        if self.mm_f2_dimension is not None:
+            table = self.quotient_multiplication
+            if table is None or 2**self.mm_f2_dimension != len(self.coset_representatives) or any(table[i][i] != 0 for i in range(len(table))):
+                raise ValueError("the F2 dimension requires an elementary abelian quotient of the stated size")
         return self
 
 
@@ -235,6 +253,14 @@ class IntegralData(Record):
     """Invariants of a lattice whose form takes integer values. Required when every $b(e_i, e_j)$ is an integer."""
 
     parity: Literal["even", "odd"] = Field(description="`even` when $b(x, x)$ is even for every $x$, `odd` otherwise.")
+    level: Annotated[int, Field(gt=0)] | None = Field(
+        default=None,
+        description="Least positive $k$ for which $k b(x,x)$ is even for every $x$ in the dual lattice. Requires nonzero determinant.",
+    )
+    modular_scale: Annotated[int, Field(gt=0)] | None = Field(
+        default=None,
+        description="The $k$ of an isometry $L\\cong L^*(k)$ recorded by a dual-isometry morphism.",
+    )
     discriminant_group: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
@@ -245,8 +271,8 @@ class IntegralData(Record):
     discriminant_sequence: DiscriminantSequenceData | None = Field(
         default=None,
         description=(
-            "For a nondegenerate even lattice, generators of $O(L)$ as named self-isometry morphisms, generators of $O(A_L,q_L)$ "
-            "and their images in the stated discriminant basis, and representatives of the pointed coset set "
+            "For a nondegenerate even lattice, generators of $O(A_L,q_L)$, the image of the discriminant action in the stated basis, "
+            "and representatives of the pointed coset set; full generators of $O(L)$ are named self-isometry morphisms when available. "
             "$MM(L)=O(A_L,q_L)/\\operatorname{im}\\rho_L$. A multiplication table and generator cosets are present when the image is normal."
         ),
     )
@@ -382,6 +408,10 @@ class DefiniteData(Record):
     minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$.")
     kissing_number: int = Field(description="Number of $x$ with $b(x, x)$ equal to the minimum; finite because $b$ is definite.")
     automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$, computed by `latticedb certify` with `qfauto` of PARI/GP.")
+    minimal_vectors: list[list[int]] | None = Field(default=None, description="A complete minimal shell in the record basis; its size equals `kissing_number`.")
+    perfect: bool | None = Field(default=None, description="Whether the rank-one tensors $v v^T$ of minimal vectors span $\\operatorname{Sym}^2(\\mathbb Q^n)$.")
+    regular: bool | None = Field(default=None, description="For an integral ternary form: every positive integer represented by its genus is represented by this lattice.")
+    spinor_regular: bool | None = Field(default=None, description="For an integral ternary form: every positive integer represented by its spinor genus is represented by this lattice.")
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
@@ -638,6 +668,8 @@ class Lattice(Record):
             yield _problem("integral_requires_integer_values", "the `integral` block requires every b(e_i, e_j) to be an integer", ("integral",))
             return
         if self.determinant == 0:
+            if self.integral.level is not None or self.integral.modular_scale is not None:
+                yield _problem("dual_invariants_nondegenerate", "level and modularity require a nonzero determinant", ("integral",))
             if self.integral.discriminant_group is not None:
                 message = "the discriminant group is finite only when the determinant is not zero"
                 yield _problem("discriminant_group_requires_nondegenerate", message, ("integral", "discriminant_group"))
@@ -657,6 +689,8 @@ class Lattice(Record):
                 yield _problem("primitive_orbits_requires_nondegenerate", message, ("integral", "primitive_orbits"))
         elif self.integral.discriminant_group is None:
             yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", ("integral", "discriminant_group"))
+        if self.integral.level is not None and self.determinant != 0 and self.integral.level != arithmetic.level(self.gram_tensor):
+            yield _problem("level_value", "the stated level does not equal the level of the dual quadratic form", ("integral", "level"))
         if self.integral.discriminant_sequence is not None:
             if self.determinant == 0 or self.integral.parity != "even":
                 yield _problem("discriminant_sequence_hypothesis", "the discriminant sequence requires a nondegenerate even lattice", ("integral", "discriminant_sequence"))
@@ -758,6 +792,20 @@ class Lattice(Record):
             )
         if any(len(component.simple_roots) != component.rank or any(len(row) != self.rank for row in component.simple_roots) for component in data.roots):
             yield _problem("roots_shape", "a component of rank m has m simple roots, each with {rank} coordinates", ("definite", "roots"), {"rank": self.rank})
+        if data.minimal_vectors is not None:
+            vectors = data.minimal_vectors
+            if len(vectors) != data.kissing_number or len({tuple(v) for v in vectors}) != len(vectors) or any(len(v) != self.rank for v in vectors):
+                yield _problem("minimal_shell_shape", "the complete minimal shell has distinct vectors of the lattice rank and the kissing number", ("definite", "minimal_vectors"))
+            else:
+                sign = 1 if self.definiteness == "positive_definite" else -1
+                if any(sign * sum((v[i] * self.gram_tensor[i][j] * v[j] for i in range(self.rank) for j in range(self.rank)), Fraction()) != data.minimum for v in vectors):
+                    yield _problem("minimal_shell_norm", "each minimal vector has the stated minimum norm", ("definite", "minimal_vectors"))
+                if data.perfect is not None and data.perfect != arithmetic.is_perfect(self.rank, vectors):
+                    yield _problem("perfectness_value", "minimal-vector tensors give a different perfectness value", ("definite", "perfect"))
+        elif data.perfect is not None:
+            yield _problem("perfectness_witness", "perfectness requires the complete minimal shell", ("definite", "perfect"))
+        if (data.regular is not None or data.spinor_regular is not None) and (self.rank != 3 or self.integral is None):
+            yield _problem("ternary_regularity", "regularity and spinor regularity require an integral ternary lattice", ("definite",))
 
     def _indefinite_problems(self) -> Iterator[InitErrorDetails]:
         indefinite = self.definiteness == "indefinite"

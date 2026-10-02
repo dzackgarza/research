@@ -6,7 +6,7 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, ValidationError, model_validator
 from pydantic_core import PydanticCustomError
 
-from latticedb.model import Record, Tag
+from latticedb.model import Rational, Record, Slug, Tag
 
 
 class HodgeTerm(Record):
@@ -24,6 +24,80 @@ class ChernNumber(Record):
     value: int
 
 
+class PontryaginNumber(Record):
+    """The integral of a top-degree product of Pontryagin classes of the real tangent bundle."""
+
+    indices: list[Annotated[int, Field(ge=1)]]
+    value: int
+
+
+class RiemannRochPolynomial(Record):
+    """Coefficients of the Euler characteristic polynomial in the BBF square of a line bundle."""
+
+    coefficients: list[Rational] = Field(min_length=1)
+
+
+class AlgebraicGroup(Record):
+    """A cited identification of the identity component of an automorphism group."""
+
+    name: str = Field(min_length=1)
+    dimension: Annotated[int, Field(ge=0)]
+    structure: str = Field(min_length=1)
+    cohomology_action: Slug | None = None
+
+
+class HomotopyGroup(Record):
+    degree: Annotated[int, Field(ge=1)]
+    name: str = Field(min_length=1)
+    free_rank: Annotated[int, Field(ge=0)] | None = None
+    torsion_factors: list[Annotated[int, Field(gt=1)]] | None = None
+
+
+class FanoData(Record):
+    picard_rank: Annotated[int, Field(gt=0)]
+    index: Annotated[int, Field(gt=0)]
+    anticanonical_degree: Annotated[int, Field(gt=0)]
+
+
+class SurfaceData(Record):
+    kodaira_dimension: Literal["minus_infinity", 0, 1, 2]
+
+
+class HomogeneousConstruction(Record):
+    kind: Literal["homogeneous"] = "homogeneous"
+    group: str = Field(min_length=1)
+    parabolic_nodes: list[Annotated[int, Field(gt=0)]] = Field(min_length=1)
+
+
+class HorosphericalConstruction(Record):
+    kind: Literal["horospherical"] = "horospherical"
+    group: str = Field(min_length=1)
+    parameters: str = Field(min_length=1)
+
+
+class CompleteIntersectionConstruction(Record):
+    kind: Literal["calabi_yau_complete_intersection"] = "calabi_yau_complete_intersection"
+    ambient_projective_dimensions: list[Annotated[int, Field(ge=0)]] = Field(min_length=1)
+    equation_multidegrees: list[list[Annotated[int, Field(ge=0)]]] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def check_calabi_yau(self) -> Self:
+        count = len(self.ambient_projective_dimensions)
+        if any(len(degrees) != count for degrees in self.equation_multidegrees):
+            raise PydanticCustomError("configuration_shape", "each equation has one degree in each projective factor")
+        if any(sum(degrees[i] for degrees in self.equation_multidegrees) != dimension + 1 for i, dimension in enumerate(self.ambient_projective_dimensions)):
+            raise PydanticCustomError("calabi_yau_degree", "the equation degrees sum to n_i + 1 in each projective factor")
+        return self
+
+
+class ToricHypersurfaceConstruction(Record):
+    kind: Literal["toric_anticanonical_hypersurface"] = "toric_anticanonical_hypersurface"
+    toric_variety: Slug
+
+
+type GeometricConstruction = HomogeneousConstruction | HorosphericalConstruction | CompleteIntersectionConstruction | ToricHypersurfaceConstruction
+
+
 class GeometricFamily(Record):
     """A parameterized deformation family whose instances have their own Hodge series."""
 
@@ -31,6 +105,7 @@ class GeometricFamily(Record):
     name: str = Field(min_length=1)
     parameter: str = Field(min_length=1)
     minimum: Annotated[int, Field(ge=0)]
+    construction: GeometricConstruction | None = Field(default=None, discriminator="kind")
 
 
 class CohomologyLattice(Record):
@@ -56,6 +131,13 @@ class GeometricObject(Record):
     symmetry_group: Literal["V4", "D4"] | None = Field(default=None, description="The full subgroup of square symmetries preserving the Hodge diamond.")
     local_deformation_dimension: Annotated[int, Field(ge=0)] | None = Field(default=None, description="The dimension of the local complex deformation space when unobstructed.")
     chern_numbers: Annotated[tuple[ChernNumber, ...], Field(strict=False)] = ()
+    pontryagin_numbers: list[PontryaginNumber] = Field(default_factory=list)
+    riemann_roch_polynomial: RiemannRochPolynomial | None = None
+    automorphism_identity_component: AlgebraicGroup | None = None
+    homotopy_groups: list[HomotopyGroup] = Field(default_factory=list)
+    fano: FanoData | None = None
+    surface: SurfaceData | None = None
+    construction: GeometricConstruction | None = Field(default=None, discriminator="kind")
     family: str | None = None
     family_parameter: int | None = None
     cohomology_lattices: Annotated[tuple[CohomologyLattice, ...], Field(strict=False)] = ()
@@ -87,6 +169,20 @@ class GeometricObject(Record):
             chern_indices.add(number.indices)
             if number.indices == (n,) and number.value != self.euler_characteristic():
                 raise PydanticCustomError("chern_euler", "the top Chern number equals the Euler characteristic")
+        if self.pontryagin_numbers and n % 2 != 0:
+            raise PydanticCustomError("pontryagin_degree", "Pontryagin numbers require even complex dimension")
+        if any(sum(number.indices) * 2 != n for number in self.pontryagin_numbers):
+            raise PydanticCustomError("pontryagin_degree", "Pontryagin class products must have real degree twice the complex dimension")
+        if len({tuple(number.indices) for number in self.pontryagin_numbers}) != len(self.pontryagin_numbers):
+            raise PydanticCustomError("pontryagin_duplicate", "a Pontryagin number occurs more than once")
+        if self.surface is not None and n != 2:
+            raise PydanticCustomError("surface_dimension", "surface data require complex dimension two")
+        if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
+            raise PydanticCustomError("homotopy_duplicate", "a homotopy degree occurs more than once")
+        if isinstance(self.construction, CompleteIntersectionConstruction):
+            expected = sum(self.construction.ambient_projective_dimensions) - len(self.construction.equation_multidegrees)
+            if expected != n:
+                raise PydanticCustomError("configuration_dimension", "the complete-intersection configuration must have the stated dimension")
         degrees = [link.degree for link in self.cohomology_lattices]
         if len(degrees) != len(set(degrees)):
             raise PydanticCustomError("cohomology_degree", "a cohomology degree has more than one lattice")
