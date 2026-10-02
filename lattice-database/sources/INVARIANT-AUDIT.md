@@ -1,0 +1,53 @@
+# Lattice invariant intake audit
+
+This audit compares the source leads in [README.md](../README.md#sources-to-absorb) and [geometric intake](geometric/INTAKE.md) with the current lattice schema in [`model.py`](../src/latticedb/model.py). It records source claims that need a typed home before intake. A source's group order is only meaningful after its group and action are identified.
+
+## Orthogonal groups and their subgroups
+
+The schema stores `definite.automorphism_group_order = |O(L)|` for a definite lattice. It also stores primitive-vector orbit counts for `O`, `SO`, `O+`, `SO+`, `Otilde` and their stated intersections. It stores neither the orders of these subgroups nor their indices in `O(L)`. Its `O+` is the kernel of the **real spinor norm**; sources that use `O+` for a cone-preserving group need an explicit comparison. For an indefinite lattice, `O(L)` can be infinite. An index, finite image or stabilizer action can then be meaningful even when `|O(L)|` is not a finite number.
+
+| Group or action | Stored result |
+| --- | --- |
+| `O(L)` for definite `L` | Its finite order, when known. |
+| `SO(L)`, `O+(L)`, `Otilde(L)` and their intersections | Primitive-vector orbit series, but no order, index, generators or subgroup inclusion. |
+| Reflection subgroup `W(L)` | The `hyperbolic.reflective` Boolean, but no subgroup, order or index. |
+| Discriminant action `O(L) -> O(A_L,q_L)` for even `L` | No finite quadratic module, image, kernel or image index. |
+| A group fixing a vector, chamber, embedding or geometric polarization | Source-specific generators or checks can exist; the lattice schema has no typed action record. |
+
+The first missing datum is the finite discriminant **form**, not another scalar. `integral.discriminant_group` holds only invariant factors of `A_L = L*/L`. For an integral lattice one needs its induced bilinear form, and for an even lattice its quadratic form `q_L`. Hashimoto's [Table 10.2](https://arxiv.org/abs/1012.2682) states discriminant-form symbols, but the current [checker](../src/latticedb/hashimoto.py) compares their underlying abelian groups. For even `L`, the form supports `O(A_L,q_L)`, the action `rho_L: O(L) -> O(A_L,q_L)`, its image and its kernel `Otilde(L)`. For definite `L`, `|Otilde(L)| = |O(L)| / |im(rho_L)|`. The orders of `SO`, `O+` and their intersections depend on the **joint** determinant, spinor and discriminant action; multiplying separate indices is not generally valid.
+
+| Intake source | Source claim | Current coverage and missing datum |
+| --- | --- | --- |
+| [Nebe–Sloane catalogue, `A14`](https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/A14.html); [Barnes–Wall `BW16`](https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/BW16.html) | `GROUP_ORDER`, `GROUP_NAME`, generator matrices; `BW16` also states `MODULAR = 2`. | `|O(L)|` has a definite-lattice field, and the Barnes–Wall record already holds its order. The [reader](../src/latticedb/nebe_sloane.py) transcribes none of these source group fields. Group structure, generators as isometries, and an identified scaled-dual isometry for modularity need homes. Modularity is distinct from level. |
+| [LMFDB lattice data](https://github.com/annahaensch/lattice_data) and its [level definition](https://www.lmfdb.org/knowledge/show/lattice.level) | Automorphism-group order, generators and structure; level; genus representatives; Hermite invariant and packing density. | The full group order, class count and theta series have fields. The group action, level, representative classes and exact Hermite and density values do not. The level is the least positive `k` for which `k b(x,x)` is even for every `x` in `L*`. A list of genus representatives belongs to a genus with links to its lattice classes. |
+| [Höhn–Mason, §2 and Table 1](https://arxiv.org/pdf/1505.06420); [Hashimoto, Table 10.2](https://arxiv.org/abs/1012.2682) | Orders and generators of finite actions; orders of full pointwise stabilizers; indices of discriminant-action images; a normalizer quotient and its index in the fixed lattice's orthogonal group. | The [Höhn–Mason checker](../src/latticedb/hoehn_mason.py) computes a stabilizer order but does not persist the group action. For an even unimodular ambient lattice, Höhn–Mason Lemma 2.2 identifies the **full pointwise stabilizer** of the fixed lattice with `Otilde` of the coinvariant lattice. The order of a chosen smaller group, and normalizer data for its embedding, belong to an action record. |
+| [Borcherds, Table −2](https://math.berkeley.edu/~reb/lattices/table2.html) and [Table −4](https://math.berkeley.edu/~reb/lattices/table4.html) | A stabilizer `G` of a vector in the Conway chamber, the root-reflection group `R`, and the group structure of `O(L)` in the stated cases. | Root type and sometimes `|O(L)|` can be stored; `|R|`, the quotient or chamber-stabilizer order, and the specified action cannot. Table −2 states that `O(L)` is a split extension of `R` by `G` for the even determinant-2 case. Table −4 states that `O(L)` has the form `2 × R.G` for its odd unimodular rank-25 lattice. The latter requires the factor `2` when deriving the full order. The blanket product stated in README's Borcherds intake row is therefore incorrect for Table −4. |
+| [Allcock rank-3 source header](https://github.com/MathieuDutSik/GeometryDatabase_Rank3_Lorentzian_lattices/blob/main/rk3.tex#L18-L33) | Gram forms, simple roots and enumeration fields `W` and `L`. | The simple-root and chamber data require a representation tied to the lattice. `W` numbers a Weyl group in the source list; `L` numbers a lattice within that group. They are identifiers, **not** `|W|` or `[O(L):W(L)]`. The current `hyperbolic.reflective` Boolean stores neither a reflection subgroup nor its index. |
+
+The group record should identify `Gamma <= O(L)` by its action and inclusion. It can then carry generators, a finite order when defined, an index when finite, and the source's group-structure claim. A vector, polarization, chamber or primitive embedding has its own stabilizer and must name the object stabilized. A bare `#Gamma` field on a lattice would merge different groups that happen to have the same order.
+
+## Other source claims
+
+| Intake source | Missing mathematical home |
+| --- | --- |
+| [Watson](https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/) and [Brandt–Intrau–Schiemann](https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/) | The class count is stored. A cited list of genus representatives and their isometry classes needs a genus relation, as in LMFDB. |
+| [Jagy](https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/) | Regularity and spinor regularity are properties of the represented integers of a positive ternary form; the schema has no such predicates. |
+| [Kirschmer's tables](https://www.math.uni-bielefeld.de/~mkirschm/forms/) | Their lattices over rings of integers of number fields require a lattice kind over that base ring. They are not entries of the present integer-lattice kind without a named trace construction. |
+| [King via Borcherds](https://math.berkeley.edu/~reb/lattices/) | The mass $\sum_{[M]\in\operatorname{Gen}(L)}1/|O(M)|$ belongs to a definite genus, not an individual lattice. |
+| [Martinet's perfect lattices](http://jamartin.perso.math.cnrs.fr/Lattices/index.html) | Perfectness and the minimal-vector configuration have no typed fields. |
+| [Cohn's kissing bounds](https://cohn.mit.edu/kissing-numbers) | A bound is a claim about the kissing-number problem in a dimension. A lattice's kissing number already has a field. |
+| [Delaunay polytopes of Niemeier lattices](https://github.com/MathieuDutSik/delaunaypolytopeniemeier.github.io) and [Sloane's packing files](https://neilsloane.com/packings/) | The Delaunay polytope and a source's minimal-vector coordinates need their own objects or basis-aware configurations. `definite.roots` covers the norm-2 root system, not every minimal shell. |
+| [Hyperkähler and surface sources](geometric/INTAKE.md#source-detail) | Beauville–Bogomolov forms can link `H^2(X;Z)` to a lattice. Monodromy, automorphisms and polarization stabilizers require actions on that cohomology lattice and the geometric object or family that defines them. Hodge, Chern and moduli data belong to the geometric object. |
+| [Kreuzer–Skarke and ReflexivePolytopesDB](geometric/INTAKE.md#source-detail) | Their ambient lattices, vertex matrices and polar duals define lattice **polytopes**. Reflexivity and polytope counts are not invariants of the ambient lattice alone. |
+| [Mainz and CYCluster](geometric/INTAKE.md#source-detail) | Monodromy acts on a specified integral local system of a family. An operator or Hodge pair alone does not identify a lattice or its monodromy subgroup. The other geometric leads have not supplied a further lattice invariant in the inspected intake. |
+
+Scholl's and Schiemann's unavailable pages yield no further inspected claim in the present [source survey](../README.md#sources-to-absorb).
+
+## Order of extension
+
+1. Represent finite discriminant forms and the homomorphism from `O(L)` to their orthogonal groups. This gives a mathematical referent for stable orthogonal groups and the image indices in the source tables.
+2. Represent groups acting on lattices, their inclusions and stabilizers. Store orders and indices only with the named action. Reuse the existing isometry morphisms for generator matrices.
+3. Attach reflection groups and chambers to hyperbolic lattices, and genus mass and representative classes to genera. Keep the distinct Borcherds formulas and Allcock identifiers as source-specific intake rules.
+4. Add the exact single-lattice quantities exposed by the catalogue and LMFDB: level, modularity with its isometry, exact packing and Hermite values, and perfectness with its minimal-vector witness.
+
+These are proposed mathematical owners. No source number has been imported into a new field by this audit.
