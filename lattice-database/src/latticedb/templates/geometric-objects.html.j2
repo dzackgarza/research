@@ -5,6 +5,13 @@
   <h1>Geometric objects</h1>
   <p class="lede">Hodge diamonds and integral cohomology lattices of smooth connected projective complex varieties.</p>
 </header>
+<h2>Parameterized families</h2>
+<ul class="collection-list">
+  {% for entry in geometric_families %}
+  <li><a href="{{ root }}geometric-families/{{ entry.family.slug }}.html">{{ entry.family.name }}</a></li>
+  {% endfor %}
+</ul>
+<h2>Objects and instances</h2>
 <ul class="collection-list">
   {% for entry in geometric %}
   <li><a href="{{ root }}geometric-objects/{{ entry.geometric.slug }}.html">{{ entry.geometric.name }}</a></li>

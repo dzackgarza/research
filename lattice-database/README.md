@@ -14,14 +14,16 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | Path | Contents |
 | --- | --- |
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
-| `geometric-objects/<slug>.md` | One geometric object, its Hodge diamond, optional cohomology lattice links, sources and prose |
+| `geometric-objects/<slug>.md` | One geometric object, its Hodge–Poincaré series, optional cohomology lattice links and cited prose |
+| `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
+| `geometric-bibliography.bib` | BibTeX entries cited by geometric object and family prose |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
 | `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
 | `morphisms/<S>-<T>.md` | Morphisms from the lattice `S` to the lattice `T`, as matrices, and prose |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
-| `src/latticedb/geometric.py` | The schema of a geometric object and its Hodge numbers |
+| `src/latticedb/geometric.py` | The schema of geometric families, objects and their Hodge–Poincaré series |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
@@ -42,7 +44,9 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 
 Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant.
 Its file name is its permanent slug.
-`hodge_numbers[p][q]` is $h^{p,q} = \dim_{\mathbb C} H^q(X, \Omega_X^p)$; the matrix has side `dimension + 1`. The record validates nonnegative entries, $h^{0,0}=1$, Hodge symmetry and Serre duality.
+`hodge_poincare` stores the nonzero terms of $H_X(u,v)=\sum_{p,q}h^{p,q}u^pv^q$, where $h^{p,q}=\dim_{\mathbb C}H^q(X,\Omega_X^p)$. Each term has `p`, `q` and a positive `coefficient`; omitted terms have coefficient zero. The record checks unique terms, exponents at most `dimension`, $h^{0,0}=1$, Hodge symmetry and Serre duality. It derives Betti numbers and the Euler characteristic from the series. The optional `symmetry_group` declares the full square symmetry group of the Hodge diamond: `V4` or `D4`. The record checks this declaration against the coefficients.
+
+`geometric-families/` holds parameterized families. An instance names its `family` slug and integer `family_parameter`; the corpus checks that the family exists and that the parameter meets its minimum. Each instance retains its own Hodge series. `local_deformation_dimension` records the dimension of an unobstructed local complex deformation space. `chern_numbers` stores top-degree products of tangent-bundle Chern classes as ordered `indices` and an integral `value`; the record checks their degree and checks a stated top Chern number against the Euler characteristic.
 
 An optional `cohomology_lattices` entry identifies $H^k(X;\mathbb Z)$ modulo torsion with a tagged lattice, under the named pairing and integer scale.
 The build checks that the tag exists and that its rank is $b_k = \sum_{p+q=k} h^{p,q}$.
@@ -53,10 +57,16 @@ The geometric object page links to the lattice page, and the lattice page links 
 slug: k3-surface
 name: Complex projective K3 surface
 dimension: 2
-hodge_numbers:
-- [1, 0, 1]
-- [0, 20, 0]
-- [1, 0, 1]
+hodge_poincare:
+- {p: 0, q: 0, coefficient: 1}
+- {p: 0, q: 2, coefficient: 1}
+- {p: 1, q: 1, coefficient: 20}
+- {p: 2, q: 0, coefficient: 1}
+- {p: 2, q: 2, coefficient: 1}
+symmetry_group: D4
+local_deformation_dimension: 20
+chern_numbers:
+- {indices: [2], value: 24}
 cohomology_lattices:
 - degree: 2
   pairing: the cup-product intersection form
@@ -64,9 +74,8 @@ cohomology_lattices:
   scale: 1
 ```
 
-The body of the file is Pandoc Markdown.
-`references` uses the same citation and URL fields as a lattice record.
-The site lists these records at `geometric-objects.html` and serves each one at `geometric-objects/<slug>.html`.
+The body of each geometric file is Pandoc Markdown. Cite BibTeX keys from `geometric-bibliography.bib` with Pandoc citation syntax such as `[@Huybrechts2016K3]`.
+The site lists families and objects at `geometric-objects.html` and serves their pages under `geometric-families/` and `geometric-objects/`.
 
 ## A record
 

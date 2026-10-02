@@ -553,11 +553,14 @@ def database_query(collection: Collection) -> str | None:
     return urlencode(parameters) if len(parameters) == len(collection.where) else None
 
 
-def markdown_to_html(texts: list[str]) -> list[Markup]:
+def markdown_to_html(texts: list[str], bibliography: Path | None = None) -> list[Markup]:
     """HTML for each Markdown text. TeX stays as `\\(...\\)` for MathJax."""
 
     def convert(text: str) -> Markup:
-        done = subprocess.run(["pandoc", "--from=markdown", "--to=html", "--mathjax"], input=text, capture_output=True, text=True, check=True)
+        command = ["pandoc", "--from=markdown", "--to=html", "--mathjax"]
+        if bibliography is not None:
+            command += ["--citeproc", "--fail-if-warnings", f"--bibliography={bibliography}"]
+        done = subprocess.run(command, input=text, capture_output=True, text=True, check=True)
         return Markup(done.stdout)
 
     with ThreadPoolExecutor() as pool:
@@ -627,6 +630,7 @@ def build(root: Path, target: Path) -> int:
     by_rank = {rank: [entry for entry in entries if entry.lattice.rank == rank] for rank in ranks}
     morphism_files = [entry.morphisms for entry in corpus.morphisms]
     geometric = corpus.geometric
+    geometric_families = corpus.geometric_families
     prose = markdown_to_html(
         [entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms] + [page.prose for page in theory]
     )
@@ -676,18 +680,37 @@ def build(root: Path, target: Path) -> int:
     (target / "theory.html").write_text(environment.get_template("theory.html.j2").render(root="./"))
     (target / "morphisms.html").write_text(environment.get_template("morphisms.html.j2").render(root="./", files=morphism_files, lattices=lattices))
     (target / "geometric-objects").mkdir()
-    geometric_prose = markdown_to_html([entry.prose for entry in geometric])
+    bibliography = root / "geometric-bibliography.bib"
+    geometric_prose = markdown_to_html([entry.prose for entry in geometric], bibliography)
     geometric_page = environment.get_template("geometric-object.html.j2")
     for geometric_entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
         record = geometric_entry.geometric
         rows = [
-            [record.hodge_numbers[p][degree - p] for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
+            [record.hodge_number(p, degree - p) for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
             for degree in range(2 * record.dimension + 1)
         ]
         (target / "geometric-objects" / f"{record.slug}.html").write_text(
-            geometric_page.render(root="../", geometric=record, rows=rows, lattices=lattices, prose=rendered_prose)
+            geometric_page.render(
+                root="../",
+                geometric=record,
+                rows=rows,
+                lattices=lattices,
+                families={entry.family.slug: entry.family for entry in geometric_families},
+                prose=rendered_prose,
+            )
         )
-    (target / "geometric-objects.html").write_text(environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric))
+    (target / "geometric-families").mkdir()
+    family_prose = markdown_to_html([entry.prose for entry in geometric_families], bibliography)
+    family_page = environment.get_template("geometric-family.html.j2")
+    for family_entry, rendered_prose in zip(geometric_families, family_prose, strict=True):
+        family = family_entry.family
+        instances = [entry.geometric for entry in geometric if entry.geometric.family == family.slug]
+        (target / "geometric-families" / f"{family.slug}.html").write_text(
+            family_page.render(root="../", family=family, instances=instances, prose=rendered_prose)
+        )
+    (target / "geometric-objects.html").write_text(
+        environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric, geometric_families=geometric_families)
+    )
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))

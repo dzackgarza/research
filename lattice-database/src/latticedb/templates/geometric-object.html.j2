@@ -6,6 +6,7 @@
     <p class="kicker">Geometric object</p>
     <h1>{{ geometric.name }}</h1>
     <p class="lede">Complex dimension {{ geometric.dimension }}.</p>
+    {% if geometric.family %}<p><a href="{{ root }}geometric-families/{{ geometric.family }}.html">{{ families[geometric.family].name }}</a>, {{ families[geometric.family].parameter }} = {{ geometric.family_parameter }}.</p>{% endif %}
   </header>
 
   <section aria-labelledby="hodge-diamond">
@@ -18,6 +19,22 @@
       </div>
       {% endfor %}
     </div>
+    {% if geometric.symmetry_group %}<p>Symmetry group: {{ geometric.symmetry_group }}.</p>{% endif %}
+  </section>
+
+  <section aria-labelledby="numerical-invariants">
+    <h2 id="numerical-invariants">Numerical invariants</h2>
+    <p>Euler characteristic: {{ geometric.euler_characteristic() }}.</p>
+    {% if geometric.local_deformation_dimension is not none %}<p>Dimension of the local deformation space: {{ geometric.local_deformation_dimension }}.</p>{% endif %}
+    <p>Betti numbers: {% for degree in range(2 * geometric.dimension + 1) %}{% if not loop.first %}, {% endif %}<i>b</i><sub>{{ degree }}</sub> = {{ geometric.betti_number(degree) }}{% endfor %}.</p>
+    {% if geometric.chern_numbers %}
+    <h3>Chern numbers</h3>
+    <ul>
+      {% for number in geometric.chern_numbers %}
+      <li>∫{% for index in number.indices %}<i>c</i><sub>{{ index }}</sub>{% endfor %} = {{ number.value }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </section>
 
   {% if geometric.cohomology_lattices %}
@@ -39,11 +56,5 @@
     {{ prose }}
   </section>
 
-  {% if geometric.references %}
-  <section aria-labelledby="references">
-    <h2 id="references">References</h2>
-    <ul>{% for reference in geometric.references %}<li>{% if reference.url %}<a href="{{ reference.url }}">{{ reference.citation }}</a>{% else %}{{ reference.citation }}{% endif %}</li>{% endfor %}</ul>
-  </section>
-  {% endif %}
 </article>
 {% endblock %}

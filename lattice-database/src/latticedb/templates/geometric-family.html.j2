@@ -1,0 +1,19 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ family.name }} · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker">Parameterized family</p>
+    <h1>{{ family.name }}</h1>
+    <p class="lede">Parameter {{ family.parameter }} ≥ {{ family.minimum }}.</p>
+  </header>
+  <section aria-labelledby="instances">
+    <h2 id="instances">Instances</h2>
+    <ul>{% for instance in instances %}<li><a href="{{ root }}geometric-objects/{{ instance.slug }}.html">{{ instance.name }}</a></li>{% endfor %}</ul>
+  </section>
+  <section aria-labelledby="notes">
+    <h2 id="notes">Notes</h2>
+    {{ prose }}
+  </section>
+</article>
+{% endblock %}

@@ -24,7 +24,7 @@ import yaml
 from pydantic import TypeAdapter, ValidationError
 
 from latticedb.arithmetic import GramTensor
-from latticedb.geometric import GeometricObject
+from latticedb.geometric import GeometricFamily, GeometricObject
 from latticedb.model import Family, Lattice, Morphisms, Tag, Yaml
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -68,12 +68,20 @@ class GeometricEntry:
 
 
 @dataclass(frozen=True)
+class GeometricFamilyEntry:
+    family: GeometricFamily
+    prose: str
+    path: Path
+
+
+@dataclass(frozen=True)
 class Corpus:
     entries: tuple[Entry, ...]
     families: Families
     retired: Retired
     morphisms: tuple[MorphismEntry, ...]
     geometric: tuple[GeometricEntry, ...]
+    geometric_families: tuple[GeometricFamilyEntry, ...]
 
 
 Matrix = tuple[tuple[int, ...], ...]
@@ -234,6 +242,19 @@ def load(root: Path) -> Corpus:
             geometric.append(GeometricEntry(GeometricObject.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
+    geometric_families: list[GeometricFamilyEntry] = []
+    for path in sorted((root / "geometric-families").glob("*.md")):
+        document = frontmatter.load(str(path))
+        try:
+            geometric_families.append(GeometricFamilyEntry(GeometricFamily.model_validate(document.metadata), document.content, path))
+        except ValidationError as error:
+            found.extend(_record_problems(path, error))
+    by_family: dict[str, GeometricFamily] = {}
+    for entry in geometric_families:
+        family = entry.family
+        if entry.path.stem != family.slug or family.slug in by_family:
+            found.append(f"{entry.path}: geometric family slug must be unique and match its file name")
+        by_family[family.slug] = family
     seen_slugs: set[str] = set()
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
     for entry in geometric:
@@ -241,6 +262,12 @@ def load(root: Path) -> Corpus:
         if entry.path.stem != record.slug or record.slug in seen_slugs:
             found.append(f"{entry.path}: geometric object slug must be unique and match its file name")
         seen_slugs.add(record.slug)
+        if record.family is not None:
+            family = by_family.get(record.family)
+            if family is None:
+                found.append(f"{entry.path}: geometric family {record.family} is not in the corpus")
+            elif record.family_parameter is not None and record.family_parameter < family.minimum:
+                found.append(f"{entry.path}: family parameter is below {family.minimum}")
         for link in record.cohomology_lattices:
             lattice = by_tag.get(link.tag)
             if lattice is None:
@@ -249,7 +276,7 @@ def load(root: Path) -> Corpus:
                 found.append(f"{entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}")
     if found:
         raise CorpusInvalid(tuple(found))
-    return Corpus(tuple(entries), families, retired, tuple(morphisms), tuple(geometric))
+    return Corpus(tuple(entries), families, retired, tuple(morphisms), tuple(geometric), tuple(geometric_families))
 
 
 def next_tag(corpus: Corpus) -> str:
