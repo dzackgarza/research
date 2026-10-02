@@ -4,10 +4,9 @@ from pathlib import Path
 
 import frontmatter
 import pytest
-from pydantic import ValidationError
-
 from latticedb import corpus, site
 from latticedb.geometric import GeometricObject
+from pydantic import ValidationError
 
 ROOT = Path(__file__).parent.parent
 

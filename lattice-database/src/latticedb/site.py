@@ -705,9 +705,7 @@ def build(root: Path, target: Path) -> int:
     for family_entry, rendered_prose in zip(geometric_families, family_prose, strict=True):
         family = family_entry.family
         instances = [entry.geometric for entry in geometric if entry.geometric.family == family.slug]
-        (target / "geometric-families" / f"{family.slug}.html").write_text(
-            family_page.render(root="../", family=family, instances=instances, prose=rendered_prose)
-        )
+        (target / "geometric-families" / f"{family.slug}.html").write_text(family_page.render(root="../", family=family, instances=instances, prose=rendered_prose))
     (target / "geometric-objects.html").write_text(
         environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric, geometric_families=geometric_families)
     )

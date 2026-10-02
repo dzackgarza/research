@@ -52,13 +52,9 @@ class GeometricObject(Record):
     slug: Annotated[str, Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")]
     name: str = Field(min_length=1)
     dimension: Annotated[int, Field(ge=0)]
-    hodge_poincare: Annotated[tuple[HodgeTerm, ...], Field(strict=False)] = Field(
-        description="Nonzero coefficients of H_X(u,v) = sum h^(p,q) u^p v^q."
-    )
+    hodge_poincare: Annotated[tuple[HodgeTerm, ...], Field(strict=False)] = Field(description="Nonzero coefficients of H_X(u,v) = sum h^(p,q) u^p v^q.")
     symmetry_group: Literal["V4", "D4"] | None = Field(default=None, description="The full subgroup of square symmetries preserving the Hodge diamond.")
-    local_deformation_dimension: Annotated[int, Field(ge=0)] | None = Field(
-        default=None, description="The dimension of the local complex deformation space when unobstructed."
-    )
+    local_deformation_dimension: Annotated[int, Field(ge=0)] | None = Field(default=None, description="The dimension of the local complex deformation space when unobstructed.")
     chern_numbers: Annotated[tuple[ChernNumber, ...], Field(strict=False)] = ()
     family: str | None = None
     family_parameter: int | None = None
