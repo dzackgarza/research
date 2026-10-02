@@ -40,6 +40,8 @@ jobs:
           key: book-${{ steps.pandoc-config.outputs.revision }}-${{ steps.pandoc-config.outputs.sources }}
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
         if: steps.book.outputs.cache-hit != 'true'
+      # texlive-full, because a partial install diverges the moment a figure reaches
+      # for a package nobody listed.
       - name: Install TikZ rendering dependencies
         # texlive-full, the same TeX the figures are authored against locally.
         # A partial install diverges the moment a figure reaches for a package
@@ -47,6 +49,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes pdf2svg poppler-utils texlive-full
+        if: steps.book.outputs.cache-hit != 'true'
+      # The inline Dynkin figures of the shared tikzcd filter use luahyperbolic, which
+      # is newer than the TeX Live that Ubuntu ships; CTAN supplies it.
+      - name: Install TeX packages newer than Ubuntu TeX Live
+        run: |
+          mkdir -p "$HOME/texmf/tex/lualatex"
+          curl --fail --location --output luahyperbolic.zip https://mirrors.ctan.org/macros/luatex/latex/luahyperbolic.zip
+          unzip -q luahyperbolic.zip -d "$HOME/texmf/tex/lualatex"
+          kpsewhich luahyperbolic.sty
         if: steps.book.outputs.cache-hit != 'true'
       - name: Fetch shared bibliography and MathJax macros
         # From the pandoc-config clone above, the same way `just docs-assets`
