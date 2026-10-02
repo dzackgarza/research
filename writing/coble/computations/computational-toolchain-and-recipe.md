@@ -43,7 +43,7 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
 5. **Enumerate maximal elliptic subdiagrams up to symmetry.** All vertex subsets, filtered to connected with definite Gram; maximal under inclusion via `Poset(subgraphs, subset).maximal_elements()`; then `Aut(Gamma).orbit(vertices, action="OnSets")`, canonicalizing each orbit as a sorted tuple of tuples in a set; label the representative by `M.is_similar(M_type)` against `get_all_rank_n_types(n)`, joining components with direct sums.
    The definiteness tests that decide each type, and the monotonicity that prunes the subset search, are in [lattice algorithms by signature](#sec-lattice-algorithms-by-signature).
 
-6. **Enumerate isotropic orbits** with `INDEF_FORM_GetOrbitRepresentative` from `polyhedral_common` via GAP, using $\div(v)$ and $v^\perp/v$ as separating invariants, matched against the `two_elementary_lattices` registry.
+6. **Enumerate isotropic orbits** with the capability `lattice.indefinite_orbit_representative` of `sage-indefinite-port`, using $\div(v)$ and $v^\perp/v$ as separating invariants, matched against the `two_elementary_lattices` registry.
    The algorithm this invokes, its hypotheses, and the Tits building it computes are in [isotropic orbits and Tits buildings](#sec-isotropic-orbits-and-tits-buildings).
 
 7. **Build the integral-affine structure** by the polygon-walking procedure in [Sterk integral-affine data](#sec-sterk-integral-affine-data).
