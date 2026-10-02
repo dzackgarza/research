@@ -4,6 +4,29 @@ Each geometric record cites a primary mathematical source through `geometric-bib
 An online catalogue can supply candidate values and source leads.
 Record its locator, verify the value against the cited theorem or computation, and retain the source citation in the record.
 
+## Entry-point audit
+
+These are the exact entry points supplied for this workstream.
+A status describes only the inspection completed by 2026-10-03. Keep an entry when its data or mathematical interpretation is still unresolved.
+
+| Entry point | Inspection status | Next audit |
+| --- | --- | --- |
+| <https://hyperkaehler.info/hodge/> | Hodge symmetry and family formula references inspected; sample K3 and hyperkähler records entered. | Check each further invariant against its cited theorem. |
+| <https://www.grassmannian.info/> | HTML title and periodic-table content reached; no entries imported. | Inspect individual variety pages and their references. |
+| <https://www.grassmannian.info/horospherical> | HTML content reached; no entries imported. | Resolve each construction and parameter set. |
+| <https://superficie.info/> | Surface-geography tools and invariants surveyed; no entries imported. | Identify cited surface families and numerical sources. |
+| <https://fanography.info/> | Fano-threefold catalogue fields surveyed; no entries imported. | Identify families by their constructions and source references. |
+| <https://ahuchala.com/hodge/> | Page reached, but the browser-rendered mathematical content was not inspected. | Inspect the interactive content and its references. |
+| <https://www.researchgate.net/publication/231022806_All_the_Hodge_numbers_for_all_Calabi-Yau_complete_intersections> | Paper identified through its [publisher DOI](https://doi.org/10.1088/0264-9381/6/2/006); configuration rows not imported. | Extract configuration matrices and the corresponding Hodge series from the paper. |
+| <https://benjaminjurke.com/academia-and-research/calabi-yau-explorer/> | Manual inspected; explorer deactivated. The named Davies source list remains available. | Check further archives or author releases for the former MySQL tables. |
+| <https://www.nikhef.nl/~t58/Site/Hodge_Numbers.html> | Hodge-pair positions and physical spectrum fields identified; no geometric objects imported. | Match a pair to a cited algebraic construction before intake. |
+| <https://hep.itp.tuwien.ac.at/~kreuzer/CY/CYhome.html> | Catalogue navigation inspected; the [CY/4d page](https://hep.itp.tuwien.ac.at/~kreuzer/CY/CYcy.html) identifies raw polytope and Hodge files. | Preserve source identifiers while testing a small polytope specimen. |
+| <https://cydb.mathematik.uni-mainz.de/about.php> | Operator and geometric-realization definitions inspected; no operator imported. | Link a specific operator to a sourced family and period. |
+| <https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/ReflexivePolytopesDB/html/index.html> | Package access method and entry format inspected; no entry imported. | Compare a returned vertex matrix with the Kreuzer–Skarke source. |
+| <https://cycluster.mpim-bonn.mpg.de/aesz.html> | Search page and [documented API](https://cycluster.mpim-bonn.mpg.de/api.html) inspected; one API record examined, none imported. | Reconcile its operator ID, formula and references with Mainz and primary literature. |
+
+## Source detail
+
 | Source | Observed material | Intake unit |
 | --- | --- | --- |
 | [Hyperkaehler.info](https://hyperkaehler.info/) and its [Hodge page](https://hyperkaehler.info/hodge/) | Hodge diamonds, the additional hyperkähler reflection, (K3^{[n]}) and (mathrm{Kum}^{n}) formula references, BBF forms, Chern numbers, Betti numbers, local deformation dimensions, automorphism groups, monodromy, Riemann–Roch polynomials and polarization data | Cite the original results for each instance. Add characteristic numbers and group-valued invariants at their mathematical type before importing more values. |
@@ -19,6 +42,23 @@ Record its locator, verify the value against the cited theorem or computation, a
 | [Macaulay2 ReflexivePolytopesDB](https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/ReflexivePolytopesDB/html/index.html) | `kreuzerSkarke(h11,h21)` returns Kreuzer–Skarke entries with descriptions and vertex matrices; a small subset ships for offline use. | Use the package as a reader and specimen source for the original polytope list. Check the returned vertex matrix and header against the source entry before linking its associated Hodge pair. |
 | [Mainz Calabi–Yau operator database](https://cydb.mathematik.uni-mainz.de/about.php) | Fourth-order differential operators, Riemann symbols and descriptions of geometric realizations. Its B-incarnation is a one-parameter family whose Picard–Fuchs operator has the listed operator as a factor. | Record an operator and its coordinate/normalization separately from each realized family. A proposed geometric origin is a cited relation with its own evidence. |
 | [CYCluster AESZ catalogue and API](https://cycluster.mpim-bonn.mpg.de/api.html) | A machine-readable `operators` table gives operator coefficients, singularities, exponents, characteristic numbers, descriptions and references. The documented query `nn=eq.4.3.1` returns one entry. | Cross-reference operator identifiers with Mainz and primary sources. Keep the operator, family, variation of Hodge structure and monodromy representation as distinct records or relations. |
+
+## Mathematical lead audit
+
+| Lead | Present record or outstanding owner |
+| --- | --- |
+| Hodge–Poincaré series, Hodge diamond, Betti numbers and Euler characteristic | Sparse series is stored on geometric objects; the other values are derived from it. |
+| Diamond symmetry group | `V4` or `D4` is checked against the stored coefficients. Further claimed group actions require their own representation. |
+| Geometric families and instances | Parameterized K3 Hilbert schemes and generalized Kummer varieties have family records and linked dimension-four instances. Other construction types remain to be defined. |
+| Theoretical Hodge formulas | Göttsche and Göttsche–Soergel are cited for the two hyperkähler families. A general family-level series computation has not been authored. |
+| Complex dimension and local deformation dimension | Both are object fields. A polarized or global moduli-space dimension needs its own moduli problem and source. |
+| $H^2(X;\mathbb Z)$ and Beauville–Bogomolov–Fujiki form | Tagged lattice links name the degree, pairing and scale for entered examples. |
+| Chern and other characteristic numbers | Top-degree Chern products are stored and checked for degree; a stated top Chern number is checked against Euler characteristic. Other characteristic-class products need their class type and normalization. |
+| $\operatorname{Aut}^0(X)$, homotopy groups and other group invariants | Group-valued records need the group, its action or degree, and a cited identification. No such values have been imported. |
+| Reflexive lattice polytopes and polar duals | A polytope catalogue needs ambient lattice, vertices and polar relation. Reflexivity belongs to that record, not to a Hodge diamond. |
+| Toric varieties and Calabi–Yau hypersurfaces | Construction maps must link each polytope, ambient toric variety and hypersurface family. A shared Hodge pair does not identify any of them. |
+| Fibrations, Picard–Fuchs operators and monodromy groups | A fibration needs its total space, base and map; an operator needs a coordinate and period; monodromy needs the local system and representation. The source links remain to be authored. |
+| Source tools and visualizations | Hodge plots and interactive source pages are retained as discovery and presentation leads. Their numerical claims require the same cited identification as a table row. |
 
 The Hodge series determines Betti numbers and the topological Euler characteristic.
 A BBF form or another bilinear form requires its own named pairing and lattice link.
