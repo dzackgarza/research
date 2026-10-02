@@ -683,7 +683,7 @@ These consumers follow required acceptance and never block it. Each extension re
   **Goal:** Add a research database adapter only for a concrete mathematical query whose data materially benefits a live research workflow.
   Select a concrete mathematical query before provisioning an adapter.
 
-- [ ] **`optional-engine`**. **Needs:** `extended-mathematics-session`. Extend private engine integrations when a named construction benefits: Sage/Singular for local and polynomial algebra, libGAP for group actions, persistent `sage-julia-bridge` for OSCAR/Hecke, optional Macaulay2 for its exact algebra strengths, and `py_polyhedral` for required polyhedral binaries.
+- [ ] **`optional-engine`**. **Needs:** `extended-mathematics-session`. Extend private engine integrations when a named construction benefits: Sage/Singular for local and polynomial algebra, libGAP for group actions, persistent `sage-julia-bridge` for OSCAR/Hecke, optional Macaulay2 for its exact algebra strengths, and `sage-indefinite-port` for the indefinite and Lorentzian lattice algorithms.
   **Goal:** Extend private CAS/engine integrations only for a named mathematical construction that benefits from that engine, returning owned objects and maps at the public boundary.
   Maxima stays within its symbolic-calculus domain.
   **Decision:** search existing interfaces first; provision only the needed dependency; put reusable codecs and bridge defects at their actual owner.

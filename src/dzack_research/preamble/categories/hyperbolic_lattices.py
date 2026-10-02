@@ -54,11 +54,6 @@ _VINAL_PROVISIONING = (
     "`sage -pip install git+https://github.com/dzackgarza/vinal`"
 )
 
-_EDGEWALK_PROVISIONING = (
-    "build polyhedral_common (github.com/MathieuDutSik/polyhedral_common) and "
-    "put LORENTZ_ReflectiveEdgewalk on PATH"
-)
-
 _VINBERG_NF_PROJECT = (
     Path(__file__).resolve().parents[4]
     / "src.bak"
@@ -458,104 +453,12 @@ def _vinal_vinberg_roots(gram, controlling_vector, max_roots, max_decompositions
     return bool(complete), tuple(tuple(root) for root in algorithm.roots)
 
 
-def _edgewalk_is_available() -> bool:
-    from py_polyhedral.binaries import binary_available
-
-    return binary_available("LORENTZ_ReflectiveEdgewalk")
-
-
-def _polyhedral_common_edgewalk(gram):
-    r"""Run Allcock's edgewalk and normalize its full fundamental-domain record.
-
-    ``LORENTZ_ReflectiveEdgewalk`` calls ``StandardEdgewalkAnalysis`` and its
-    Python serializer returns the simple roots, orbit representatives of the
-    polyhedron vertices, the reflectivity decision, and generators of the
-    finite isometry group of the Coxeter polyhedron.  This adapter verifies
-    the integral root/isometry data against ``gram`` before it crosses into
-    owned lattice objects.
-    """
-    from py_polyhedral.binaries import lorentzian_reflective_edgewalk
-
-    record = lorentzian_reflective_edgewalk([list(row) for row in gram.rows()])
-    reflective = bool(record["is_reflective"])
-    match reflective:
-        case True:
-            simple_root_rows = tuple(
-                tuple(SageZZ(entry) for entry in row)
-                for row in record["ListSimpleRoots"]
-            )
-        case False:
-            simple_root_rows = ()
-    for row in simple_root_rows:
-        root = engine_matrix(SageZZ, [row])
-        square = (root * gram * root.transpose())[0, 0]
-        match square == 0:
-            case True:
-                raise ArithmeticError(
-                    f"Allcock's edgewalk returned the simple root {row} for the Gram matrix "
-                    f"{gram.rows()}, but it is isotropic, and a root must have nonzero square"
-                )
-            case False:
-                pass
-        pairings = gram * root.transpose()
-        match any((2 * entry[0]) % square != 0 for entry in pairings.rows()):
-            case True:
-                raise ArithmeticError(
-                    f"Allcock's edgewalk returned the simple root {row} of square {square} "
-                    f"for the Gram matrix {gram.rows()}, but its reflection does not "
-                    f"preserve the lattice: 2 b(x, r) / q(r) is not an integer for every "
-                    f"basis vector x"
-                )
-            case False:
-                pass
-
-    vertices = tuple(
-        (
-            tuple(SageZZ(entry) for entry in vertex["gen"]),
-            tuple(
-                tuple(SageZZ(entry) for entry in row)
-                for row in vertex["l_roots"]
-            ),
-        )
-        for vertex in record["ListVertices"]
-    )
-    isometry_rows = tuple(
-        tuple(tuple(SageZZ(entry) for entry in row) for row in generator)
-        for generator in record["GrpIsomCoxMatr"]
-    )
-    for rows in isometry_rows:
-        generator = engine_matrix(SageZZ, rows)
-        match generator * gram * generator.transpose() == gram:
-            case True:
-                pass
-            case False:
-                raise ArithmeticError(
-                    f"Allcock's edgewalk returned {rows} as an isometry of the Coxeter "
-                    f"polyhedron, but it does not preserve the form with Gram matrix "
-                    f"{gram.rows()}"
-                )
-    return {
-        "simple_root_rows": simple_root_rows,
-        "vertices": vertices,
-        "is_reflective": reflective,
-        "isometry_generator_rows": isometry_rows,
-    }
-
-
 engine_capabilities.register(
     "vinberg_root_enumeration",
     "vinal",
     _vinal_vinberg_roots,
     available=_vinal_is_available,
     provisioning=_VINAL_PROVISIONING,
-)
-
-engine_capabilities.register(
-    "lorentzian_edgewalk_fundamental_domain",
-    "polyhedral-common-via-py-polyhedral",
-    _polyhedral_common_edgewalk,
-    available=_edgewalk_is_available,
-    provisioning=_EDGEWALK_PROVISIONING,
 )
 
 

@@ -18,22 +18,16 @@ intersections, transport along isometries and stabilizers.  The records below
 join cells into the complex: an oriented adjacency, a face incidence, a marked
 cell, and the finite explorations and completed traversals built from them.
 
-None of this is computed here, and no registered provider of the capability
-layer supplies it.  The exact reduction is owned upstream by
-polyhedral_common, which reaches the Lorentzian perfect domain only as the
-``h = 1`` branch inside its combined indefinite algorithm and exposes no
-entry point that traverses the complex; what the layer currently offers is
-the automorphism group, the vector and isotropic-subspace equivalence
-witnesses, their stabilizers and orbit representatives.  The port that would
-supply the traversal is ``sage-indefinite-port``, whose capability manifest
-records that dispatch, and it would arrive here as one further capability
-name rather than as an implementation in this file.
+None of this is computed here.  The traversal is the capability
+``lattice.lorentzian_perfect_domain_traversal``, which ``sage-indefinite-port``
+owns, and it arrives here through that capability rather than as an
+implementation in this file.
 
 What *is* owned, so that a caller does not reach here for it:
 
 - generators of ``O(L)`` for an indefinite lattice, through
-  ``L.O().framing().group_generators()``, whose explicit framing crossing goes to polyhedral_common's
-  automorphism group and so does not need the cell traversal;
+  ``L.O().framing().group_generators()``, whose explicit framing crossing goes to the indefinite
+  automorphism group of ``sage-indefinite-port`` and so does not need the cell traversal;
 - the ``O(L)``-orbits of vectors of a given square, their stabilizers and
   their equivalence witnesses, through the exact indefinite backend;
 - the Lorentzian component character in signature ``(1, n)``, through

@@ -28,15 +28,9 @@ issue — do not quietly patch the working copy.
 Third-party *dependencies* still need installing —
 `sage -pip install <dep>` — path magic only finds code, not its deps.
 
-Executables are not vendored here.  The `py_polyhedral` wrapper in `src/`
-resolves the `polyhedral_common` programs it wraps from `PATH` at call time;
-build them from a clone of github.com/MathieuDutSik/polyhedral_common and link
-them into a directory on `PATH`.
-
-`sage-indefinite-port` is replacing those programs: it ports the `INDEF_FORM_*`
-kernels onto the owned formed-lattice category, and the capability layer offers
-it before the `polyhedral_common` route for every indefinite-lattice operation.
-It is a clone whose package sits under `src/`, so it is not vendored here either;
+`sage-indefinite-port` owns every indefinite and Lorentzian lattice algorithm
+on the owned formed-lattice category, and the capability layer offers it as the
+only provider of those operations.  It is a clone whose package sits under `src/`, so it is not vendored here either;
 install it with `sage -pip install --no-deps -e <clone>`.  It depends on this
 package, which is why the preamble reaches it lazily rather than importing it.
 

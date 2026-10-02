@@ -11,8 +11,8 @@ sublattice the family frames, because the family is a basis of it.
 So the pairing graph turns a configuration-isometry question into a labelled
 graph-isomorphism question, which Sage answers exactly with its bliss/nauty
 backend (``Graph.automorphism_group``).  This is the standard reduction; the
-same one is what CoxIter and polyhedral_common use for the automorphism group
-of a Coxeter polytope's facet configuration.
+same one is what CoxIter uses for the automorphism group of a Coxeter
+polytope's facet configuration.
 
 The graph is a private encoding and never leaves this module.  A session
 receives an owned permutation group of the framing positions, owned isometries

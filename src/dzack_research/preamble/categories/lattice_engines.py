@@ -6,7 +6,6 @@ from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
 
-from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -22,18 +21,6 @@ from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_component_matrix,
     tensor,
-)
-from py_polyhedral.binaries import (
-    binary_available,
-    indefinite_form_automorphism_group,
-    indefinite_form_get_orbit_representative,
-    indefinite_form_isotropic_k_stuff,
-    indefinite_form_stabilizer_isotropic_subspace,
-    indefinite_form_stabilizer_vector,
-    indefinite_form_test_equivalence,
-    indefinite_form_test_equivalence_isotropic_k_plane,
-    indefinite_form_test_equivalence_vector,
-    lorentzian_perfect_domain_traversal,
 )
 
 
@@ -929,28 +916,18 @@ def _integral_isometry_witness(source_gram, target_gram):
 
 
 # ---------------------------------------------------------------------------
-# The indefinite-lattice algorithms, in the order the layer offers them.
+# The indefinite and Lorentzian lattice algorithms, in the order the layer
+# offers them.
 #
-# ``sage-indefinite-port`` is where these algorithms are going: it ports the
-# ``INDEF_FORM_*`` kernels onto the owned formed-lattice category, so a ported
-# operation computes in the session instead of through a file protocol.  It is
-# the first provider of every capability below.
-#
-# ``polyhedral_common``, reached through the ``py_polyhedral`` wrapper, is the
-# realization being replaced, and it is what computes today.  The wrapper owns
-# that boundary: it writes the matrix files the programs read and resolves each
-# program from ``PATH`` at call time, so nothing here names a build directory
-# or an absolute executable.
-#
-# The second entry is not a fallback.  It is the realization the layer reaches
-# while the port of that operation is outstanding, and when neither provider is
-# available the refusal carries both absences with both remedies.
+# ``sage-indefinite-port`` owns every one of them: it carries each algorithm
+# onto the owned formed-lattice category, so an operation computes in the
+# session.  It is the only provider of every capability below.
 #
 # The port depends on this package, so it is imported lazily, inside the
 # availability predicate, the same way the OSCAR adapter reaches the Julia
 # bridge.  A capability the port does not expose yet names its own module and
-# attribute as ``None``; filling those in is what turns the port on for that
-# operation.
+# attribute as ``None``, and its refusal names the port as the remedy; filling
+# those in is what turns the port on for that operation.
 # ---------------------------------------------------------------------------
 
 _PORT_PROVIDER = "sage-indefinite-port"
@@ -981,12 +958,7 @@ def _port_operation(module_name, attribute, /, *args, **kwargs):
     return vars(import_module(module_name))[attribute](*args, **kwargs)
 
 
-# Capability, the kernel the port carries it under, module, attribute.  The
-# kernel names are the ones declared in `src_indefinite/CombinedAlgorithms.h`,
-# except INDEF_FORM_Invariant, which is in `src_indefinite/IndefiniteFormFundamental.h`.
-# They are not the driver names: the driver INDEF_FORM_TestEquivalenceVector
-# calls the kernel INDEF_FORM_EquivalenceVector, and INDEF_FORM_StabilizerIsotropicPlane
-# calls INDEF_FORM_Stabilizer_IsotropicKplane.
+# Capability, the algorithm the port carries it under, module, attribute.
 _PORT_REALIZATIONS = (
     (
         "lattice.indefinite_isometry_prefilter",
@@ -1038,6 +1010,18 @@ _PORT_REALIZATIONS = (
         "sage_indefinite_port.groups.integral_structures",
         "integral_structure_action_for_group",
     ),
+    (
+        "lattice.lorentzian_perfect_domain_traversal",
+        "the traversal of the Lorentzian perfect-domain complex",
+        None,
+        None,
+    ),
+    (
+        "lorentzian_edgewalk_fundamental_domain",
+        "Allcock's reflective edgewalk",
+        None,
+        None,
+    ),
 )
 
 for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
@@ -1047,150 +1031,6 @@ for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
         partial(_port_operation, _module, _attribute),
         available=partial(_port_available, _module, _attribute),
         provisioning=_port_provisioning(_kernel, _module is not None),
-    )
-
-
-_POLYHEDRAL_PROVIDER = "polyhedral-common-via-py-polyhedral"
-
-_POLYHEDRAL_BUILD = (
-    "clone github.com/MathieuDutSik/polyhedral_common, build the indefinite-form "
-    "programs with `make -C src_indefinite`, and link them into a directory on PATH"
-)
-
-_POLYHEDRAL_LORENTZIAN_BUILD = (
-    "clone github.com/MathieuDutSik/polyhedral_common, build "
-    "LORENTZ_MPI_PerfectLorentzian from src_lorentzian, and expose the binary on PATH"
-)
-
-
-def _lorentzian_perfect_domain_records(gram, option="total"):
-    r"""Cross polyhedral_common's GAP traversal records to plain exact data."""
-    output = lorentzian_perfect_domain_traversal(gram, option)
-    expression = output.strip()
-    if expression.startswith("return "):
-        expression = expression[len("return ") :]
-    if expression.endswith(";"):
-        expression = expression[:-1]
-    records = libgap.eval(expression)
-    result = []
-    for record in records:
-        obj = record["x"]
-        ext = obj["EXT"].sage()
-        group = obj["GRP"]
-        degree = len(ext)
-        permutations = []
-        for generator in group.GeneratorsOfGroup():
-            permutations.append(
-                [
-                    int(libgap.OnPoints(point, generator).sage()) - 1
-                    for point in range(1, degree + 1)
-                ]
-            )
-        adjacencies = []
-        for adjacency in record["ListAdj"]:
-            data = adjacency["x"]
-            selected_face_positions = {
-                int(position) for position in data["eInc"].sage()
-            }
-            adjacencies.append(
-                {
-                    "x": {
-                        "eInc": [
-                            int(position in selected_face_positions)
-                            for position in range(1, degree + 1)
-                        ],
-                        "eBigMat": data["eBigMat"].sage(),
-                    },
-                    "iOrb": int(adjacency["iOrb"].sage()),
-                }
-            )
-        result.append(
-            {
-                "x": {"EXT": ext, "GRP": permutations},
-                "ListAdj": adjacencies,
-            }
-        )
-    return tuple(result)
-
-
-def _polyhedral_no_program(kernel):
-    r"""State that this operation has no program, and where it comes from instead.
-
-    ``src_indefinite/Makefile`` lists the drivers polyhedral_common compiles and
-    these are not among them, so no build or install produces them.  The kernel
-    exists in ``src_indefinite/CombinedAlgorithms.h``, and the operation reaches
-    the session through the port of that kernel.
-    """
-    return (
-        "polyhedral_common builds no program of this name, so the operation "
-        f"arrives with sage-indefinite-port's port of {kernel}"
-    )
-
-
-_POLYHEDRAL_REALIZATIONS = (
-    (
-        "lattice.indefinite_automorphism_group",
-        "INDEF_FORM_AutomorphismGroup",
-        indefinite_form_automorphism_group,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_isometry_witness",
-        "INDEF_FORM_TestEquivalence",
-        indefinite_form_test_equivalence,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_vector_isometry_witness",
-        "INDEF_FORM_TestEquivalenceVector",
-        indefinite_form_test_equivalence_vector,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_orbit_representative",
-        "INDEF_FORM_GetOrbitRepresentative",
-        indefinite_form_get_orbit_representative,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_orbits",
-        "INDEF_FORM_GetOrbit_IsotropicKplane",
-        indefinite_form_isotropic_k_stuff,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_stabilizer",
-        "INDEF_FORM_StabilizerIsotropicPlane",
-        indefinite_form_stabilizer_isotropic_subspace,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_vector_stabilizer",
-        "INDEF_FORM_StabilizerVector",
-        indefinite_form_stabilizer_vector,
-        _polyhedral_no_program("INDEF_FORM_StabilizerVector"),
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_isometry_witness",
-        "INDEF_FORM_TestEquivalenceIsotropicKplane",
-        indefinite_form_test_equivalence_isotropic_k_plane,
-        _polyhedral_no_program("INDEF_FORM_Equivalence_IsotropicKplane"),
-    ),
-    (
-        "lattice.lorentzian_perfect_domain_traversal",
-        "LORENTZ_MPI_PerfectLorentzian",
-        _lorentzian_perfect_domain_records,
-        _POLYHEDRAL_LORENTZIAN_BUILD,
-    ),
-)
-
-for _capability, _binary, _operation, _provisioning in _POLYHEDRAL_REALIZATIONS:
-    engine_capabilities.register(
-        _capability,
-        _POLYHEDRAL_PROVIDER,
-        _operation,
-        available=partial(binary_available, _binary),
-        provisioning=_provisioning,
     )
 
 
