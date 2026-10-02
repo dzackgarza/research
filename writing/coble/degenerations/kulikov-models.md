@@ -80,10 +80,7 @@ For Type $\latII$ the non-trivial graded pieces sit at weights $1, 2, 3$, with $
 The even-weight pieces at $0, 2, 4$ occur instead for Type $\mathrm{III}$, which is of Hodge--Tate type.
 :::
 
-::: {.remark title="Source notes carried no citations"}
-:::
-
-::: {.warning}
+::: {.warning title="Source notes carried no citations"}
 The underlying notes on Kulikov models and limiting mixed Hodge structures contained no inline citations.
 The attributions above (Kul77, PP81, Sch73, FS86) were supplied from verified bibliography keys as standard attributions of the concepts the notes name; the author should confirm the intended primary sources.
 The notes contained no Clemens--Schmid statement, no explicit semistable-reduction theorem, and no $N^k$ nilpotent-orbit computation beyond the trichotomy reproduced above.

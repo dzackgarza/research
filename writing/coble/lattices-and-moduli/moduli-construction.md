@@ -37,16 +37,16 @@ We note, as in [@DK13], that $T_{\Co} \cong v^{\perp \ten}$ for some $v^2=-2$, w
 %%| filename: moduli-tower
 %%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}[column sep=large, row sep=large]
-F_{\Co,2}
+F_{\mathrm{Co},2}
   \arrow[r]
   \arrow[d, "?"'] &
 F_{\mathrm{En},2}
   \arrow[r]
   \arrow[d] &
-\fttz
+F_{(2,2,0)}
   \arrow[r, hook] &
 F_4 \\
-F_{\Co}
+F_{\mathrm{Co}}
   \arrow[r] &
 F_{\mathrm{En}}
 \end{tikzcd}
