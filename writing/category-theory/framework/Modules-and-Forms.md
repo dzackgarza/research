@@ -77,8 +77,8 @@ Fix a set $I$.
 A *basis* of an $R$-module $M$ indexed by $I$ is an isomorphism $e\colon R^{(I)}\xrightarrow{\ \sim\ }M$, and a *based* module is a pair $(M,e)$.
 Write $\operatorname{Bas}_I(M)$ for the set of such isomorphisms.
 
-The group $\operatorname{Aut}_R(R^{(I)})$ acts on $\operatorname{Bas}_I(M)$ by precomposition, and the action is simply transitive whenever the set is nonempty: for $e,e'\in\operatorname{Bas}_I(M)$ the automorphism $e^{-1}e'$ is the unique one taking $e$ to $e'$.
-So $\operatorname{Bas}_I(M)$ is either empty or a torsor under $\operatorname{Aut}_R(R^{(I)})$, and it is nonempty exactly when $M\cong R^{(I)}$.
+The group $\Aut_R(R^{(I)})$ acts on $\operatorname{Bas}_I(M)$ by precomposition, and the action is simply transitive whenever the set is nonempty: for $e,e'\in\operatorname{Bas}_I(M)$ the automorphism $e^{-1}e'$ is the unique one taking $e$ to $e'$.
+So $\operatorname{Bas}_I(M)$ is either empty or a torsor under $\Aut_R(R^{(I)})$, and it is nonempty exactly when $M\cong R^{(I)}$.
 
 Let $R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I$ be the category whose objects are based modules $(M,e)$ with index set $I$ and whose morphisms $(M,e)\to(N,f)$ are the $R$-linear maps $u\colon M\to N$ satisfying $ue=f$.
 Since $e$ and $f$ are isomorphisms, such a $u$ both exists and is forced to be $fe^{-1}$, so every hom-set is a singleton and the category is equivalent to the terminal category.
@@ -98,7 +98,7 @@ An object of that fibre is a pair $\bigl((N,f),\varphi\bigr)$ with $\varphi\colo
 Sending $\bigl((N,f),\varphi\bigr)$ to the basis $\varphi f\in\operatorname{Bas}_I(M)$ identifies the objects of the fibre with $\operatorname{Bas}_I(M)$, and the condition $\varphi'u=\varphi$ together with $u=f'f^{-1}$ reads $\varphi'f'=\varphi f$, so a morphism of the fibre exists exactly between objects with equal associated basis, and is then unique.
 
 By @def:property-structure-stuff a faithful functor with discrete fibres presents structure: a basis is a chosen object of the fibre, while freeness of @def:module-subcategories is the property that the fibre be nonempty for some $I$.
-The simply transitive $\operatorname{Aut}_R(R^{(I)})$-action above is the action on that fibre, and a construction defined on a based module is stated together with its transformation rule under that action.
+The simply transitive $\Aut_R(R^{(I)})$-action above is the action on that fibre, and a construction defined on a based module is stated together with its transformation rule under that action.
 
 Dropping the requirement that $e$ be an isomorphism and asking only that it be surjective gives the generating frames of @def:generating-frame, for which the same argument runs and reaches the same conclusion by @prop:generating-frame-is-structure.
 A basis is the case of a generating frame whose structure map is an isomorphism.

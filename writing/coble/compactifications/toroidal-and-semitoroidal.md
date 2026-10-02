@@ -159,7 +159,7 @@ in its own right, recorded among the open problems.
 
 ::: {.definition #def:recognizable-divisor title="Recognizable divisors"}
 
-A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if, for any quasipolarized Kulikov degeneration $\mathcal{X} \to \Delta$, the divisor $R$ extends unambiguously to a flat limit $R_0 \subset \mathcal{X}_0$, unique up to $\operatorname{Aut}^0(\tilde{\mathcal{X}}_0)$ in any other smoothing.
+A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if, for any quasipolarized Kulikov degeneration $\mathcal{X} \to \Delta$, the divisor $R$ extends unambiguously to a flat limit $R_0 \subset \mathcal{X}_0$, unique up to $\Aut^0(\tilde{\mathcal{X}}_0)$ in any other smoothing.
 :::
 
 ::: {.theorem #thm:recognizable-semitoroidal title="Recognizable divisors produce semitoroidal KSBA normalizations"}

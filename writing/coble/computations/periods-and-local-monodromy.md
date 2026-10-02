@@ -36,7 +36,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    \;\in\; \Mat_{p \times k}(\CC).
    $$
    Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\operatorname{GL}_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\operatorname{Gr}(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \operatorname{Gr}(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group $\Gamma \le \operatorname{Aut}(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
+   Modulo the global monodromy group $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
    $$
    \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
    $$

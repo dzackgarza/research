@@ -74,7 +74,7 @@ These types are naturally stratified by the rank of isotropic subspaces in the b
 :::{.definition title="Picard–Lefschetz Transformation" #def:picard-lefschetz-transformation}
 Let $p\colon \mcx \to \Delta$ be a Kulikov model (or a semistable degeneration) with central fiber $\mcx_0$. The sheaf $\RR^2 p_*\underline{\ZZ}_{\Delta}$ restricts to a locally constant system over the punctured disk $\Delta^*$, whose fiber over $t \in \Delta^*$ is $H^2(\mcx_t; \ZZ)$.
 After trivializing the pullback of this local system to the universal cover $\widetilde{\Delta^*}$, the fundamental group $\pi_1(\Delta^*, t)$ acts via monodromy
-$\pi_1(\Delta^*, t) \longrightarrow \operatorname{Aut}(H^2(\mcx_t; \ZZ)).$
+$\pi_1(\Delta^*, t) \longrightarrow \Aut(H^2(\mcx_t; \ZZ)).$
 The image of a simple closed loop $\gamma$ generating $\pi_1(\Delta^*, t)$ is the **Picard–Lefschetz transformation**:
 $$
 T_\gamma \colon H^2(\mcx_t; \ZZ) \to H^2(\mcx_t; \ZZ)

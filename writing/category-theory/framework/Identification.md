@@ -3,15 +3,15 @@
 ## Spaces of equivalences {#sec-equivalence-spaces}
 
 For objects $X,Y$ of an $\infty$-category $C$, let $\operatorname{Eq}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ be the union of the components consisting of equivalences.
-The automorphism space is $\operatorname{Aut}_C(X)=\operatorname{Eq}_C(X,X)$.
+The automorphism space is $\Aut_C(X)=\operatorname{Eq}_C(X,X)$.
 
 For an ordinary category, the corresponding set is $\operatorname{Iso}_C(X,Y)$.
 Its nonemptiness asserts $X\cong Y$; a chosen element $f\in\operatorname{Iso}_C(X,Y)$ is additional data.
 
 ## Isomorphisms as data {#sec-witnesses}
 
-If $\operatorname{Iso}_C(X,Y)$ is nonempty, postcomposition gives a free and transitive left action of $\operatorname{Aut}_C(Y)$ and precomposition gives a free and transitive right action of $\operatorname{Aut}_C(X)$.
-These actions commute, so $\operatorname{Iso}_C(X,Y)$ is an $(\operatorname{Aut}_C(Y),\operatorname{Aut}_C(X))$-bitorsor [@nlab:torsor].
+If $\operatorname{Iso}_C(X,Y)$ is nonempty, postcomposition gives a free and transitive left action of $\Aut_C(Y)$ and precomposition gives a free and transitive right action of $\Aut_C(X)$.
+These actions commute, so $\operatorname{Iso}_C(X,Y)$ is an $(\Aut_C(Y),\Aut_C(X))$-bitorsor [@nlab:torsor].
 
 A construction that transports data from $X$ to $Y$ therefore names the isomorphism it uses unless the relevant comparison is uniquely determined.
 

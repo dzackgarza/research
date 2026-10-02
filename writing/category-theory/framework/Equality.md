@@ -33,13 +33,13 @@ Inside it,
 $$
 \operatorname{Way}(C, D) \hookrightarrow \operatorname{Eq}(C, D)
 $$
-is the subcategory of equivalences that count as *literal identifications* of $C$ and $D$, stable under pre- and post-composition by the internal automorphism categories $\operatorname{Aut}(C) = \operatorname{Eq}(C, C)$ and $\operatorname{Aut}(D) = \operatorname{Eq}(D, D)$.
+is the subcategory of equivalences that count as *literal identifications* of $C$ and $D$, stable under pre- and post-composition by the internal automorphism categories $\Aut(C) = \operatorname{Eq}(C, C)$ and $\Aut(D) = \operatorname{Eq}(D, D)$.
 
 ## The equality predicate {#sec-equality-predicate}
 
 Form the homotopy double quotient
 $$
-Q(C, D) := \operatorname{Aut}(C) \,\backslash\, \operatorname{Way}(C, D) \,/\, \operatorname{Aut}(D).
+Q(C, D) := \Aut(C) \,\backslash\, \operatorname{Way}(C, D) \,/\, \Aut(D).
 $$
 The first approximation, $C = D \iff Q(C, D) \simeq *$, says that modulo the automorphisms of the endpoints there is an essentially unique orbit of identifications.
 It is refined to enforce compatibility with reflexivity: composition gives endpoint maps
@@ -55,7 +55,7 @@ $$
 $$
 \boxed{\; C = D \iff Q^0(C, D) \simeq *. \;}
 $$
-Equality thus means: there is an essentially unique $\operatorname{Aut}(C)$–$\operatorname{Aut}(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
+Equality thus means: there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
 ## Presentation by the walking equivalence {#sec-walking-equivalence}
 

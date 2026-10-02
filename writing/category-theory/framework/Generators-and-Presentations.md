@@ -136,12 +136,12 @@ A chosen partial resolution finitely generated through degree $n$ is structure o
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}
 
-The endomorphism monoid $\operatorname{Hom}_{\mathcal C}(X,X)$ and the automorphism group $\operatorname{Aut}_{\mathcal C}(X)$ of an object are defined at @def:endomorphism-monoid; for a lattice $L$ the instance $O(L)=\operatorname{Aut}(L)$ is in @sec-isometry-groups.
+The endomorphism monoid $\operatorname{Hom}_{\mathcal C}(X,X)$ and the automorphism group $\Aut_{\mathcal C}(X)$ of an object are defined at @def:endomorphism-monoid; for a lattice $L$ the instance $O(L)=\Aut(L)$ is in @sec-isometry-groups.
 
 ::: {.proposition #prop:automorphisms-act-on-frames title="The action on the fibre"}
 
 Let $I$ be a set and let $M$ be an $R$-module.
-Precomposition, $(M,s)\cdot u=(M,su)$ for $u\in\operatorname{Aut}_R\bigl(R^{(I)}\bigr)$, is a right action of $\operatorname{Aut}_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prop:generating-frame-is-structure, and the action is free.
+Precomposition, $(M,s)\cdot u=(M,su)$ for $u\in\Aut_R\bigl(R^{(I)}\bigr)$, is a right action of $\Aut_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prop:generating-frame-is-structure, and the action is free.
 If $s$ and $s'$ are both isomorphisms, then $u=s^{-1}s'$ is the unique element with $su=s'$.
 
 *Proof.*

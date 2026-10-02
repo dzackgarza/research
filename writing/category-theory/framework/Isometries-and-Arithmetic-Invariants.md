@@ -9,7 +9,7 @@ $$
 \operatorname{Iso}(L,M)
 =\operatorname{Hom}_{\mathbf{Lat}_R^{\simeq}}(L,M),
 \qquad
-O(L)=\operatorname{Aut}(L).
+O(L)=\Aut(L).
 $$
 When nonempty, $\operatorname{Iso}(L,M)$ is an $(O(M),O(L))$-bitorsor: $O(M)$ acts on the left by postcomposition and $O(L)$ acts on the right by precomposition.
 
@@ -156,7 +156,7 @@ that is, $2b(x,v)/q(v)\in R$ for every $x\in L$.
 Since $s_v$ is an involution, $s_v(L)\subseteq L$ already gives $s_v\in O(L)$.
 
 Base change along $R\hookrightarrow K$ gives an injective homomorphism $O(L)\to O(L_K)$, and $s_v$ lies in its image exactly under the displayed condition.
-When the condition fails, $s_v$ is an automorphism of $L_K$ in $\mathbf{Lat}_K$ and has no preimage in $\operatorname{Aut}(L)$: the two automorphism groups belong to lattices over different rings.
+When the condition fails, $s_v$ is an automorphism of $L_K$ in $\mathbf{Lat}_K$ and has no preimage in $\Aut(L)$: the two automorphism groups belong to lattices over different rings.
 
 For $R=\mathbb Z$ and $L$ integral the condition holds whenever $q(v)\in\{1,-1,2,-2\}$, since then $2b(x,v)/q(v)$ is $\pm2b(x,v)$ or $\pm b(x,v)$.
 The reflections in the roots of a root lattice, which have $q(v)=-2$ in the sign convention of @def:definiteness, are therefore isometries of the lattice itself.
@@ -174,7 +174,7 @@ For a finite module with mixed invariant factors, choose a decomposition $A=\big
 An endomorphism is a matrix $(a_{ij})$ in which $a_{ij}$ represents a homomorphism $\mathbb Z/d_j\mathbb Z\to\mathbb Z/d_i\mathbb Z$, equivalently $d_j a_{ij}=0$ in $\mathbb Z/d_i\mathbb Z$; the automorphisms are exactly the invertible endomorphisms in this matrix ring.
 In the homocyclic case this gives
 $$
-\operatorname{Aut}\bigl((\mathbb Z/d\mathbb Z)^n\bigr)
+\Aut\bigl((\mathbb Z/d\mathbb Z)^n\bigr)
 \cong\operatorname{GL}_n(\mathbb Z/d\mathbb Z).
 $$
 :::
@@ -190,7 +190,7 @@ In block form with respect to that splitting an isometry is
 $$
 \begin{pmatrix}a&\varphi\\0&d\end{pmatrix},
 \qquad
-a\in\operatorname{Aut}_R(\operatorname{rad}(M)),\quad
+a\in\Aut_R(\operatorname{rad}(M)),\quad
 \varphi\in\operatorname{Hom}_R(N,\operatorname{rad}(M)),\quad
 d\in O(N),
 $$
@@ -198,7 +198,7 @@ with no condition relating the three, because every pairing involving $\operator
 Hence
 $$
 O(M)\;\cong\;\operatorname{Hom}_R\bigl(N,\operatorname{rad}(M)\bigr)
-\rtimes\bigl(\operatorname{Aut}_R(\operatorname{rad}(M))\times O(N)\bigr),
+\rtimes\bigl(\Aut_R(\operatorname{rad}(M))\times O(N)\bigr),
 $$
 and the subgroup fixing $\operatorname{rad}(M)$ pointwise is the preimage of $\{1\}\times O(N)$.
 :::
