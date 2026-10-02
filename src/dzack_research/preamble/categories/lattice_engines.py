@@ -999,6 +999,18 @@ _PORT_REALIZATIONS = (
     ),
     ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector", None, None),
     (
+        "lattice.indefinite_isotropic_flag_orbits",
+        "INDEF_FORM_GetOrbit_IsotropicKflag",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_isotropic_flag_stabilizer",
+        "INDEF_FORM_Stabilizer_IsotropicKflag",
+        None,
+        None,
+    ),
+    (
         "lattice.indefinite_isotropic_subspace_isometry_witness",
         "INDEF_FORM_Equivalence_IsotropicKplane",
         None,
