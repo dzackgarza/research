@@ -16,6 +16,14 @@ For a subgroup $\Gamma$ of $O(L)$, $\Gamma^+ = \Gamma \cap O^+(L)$, $S\Gamma = \
 
 A record names the eight groups $O$, $SO$, $O^+$, $SO^+$, $\widetilde{O}$, $S\widetilde{O}$, $\widetilde{O}^+$ and $S\widetilde{O}^+$ with the keys `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+`.
 
+## Cokernel of the discriminant action {#mm-cokernel}
+
+Let $L$ be nondegenerate, even and indefinite, with $\operatorname{rank}L>3$, and let $\rho_L\colon O(L)\to O(A_L,q_L)$ be its discriminant action. Define $MM(L):=\operatorname{coker}\rho_L$. The [Miranda–Morrison exact sequence](https://webdoc.sub.gwdg.de/ebook/serien/e/mpi_mathematik/2013/63.pdf), stated in Akyol–Degtyarev, Theorem 3.8, is
+$$O(L)\xrightarrow{\rho_L}O(A_L,q_L)\longrightarrow E(L)\longrightarrow\mathfrak g(L)\longrightarrow 1,$$
+where $E(L)$ is the Miranda–Morrison group and $\mathfrak g(L)$ is the genus group. Hence $MM(L)\cong\ker(E(L)\to\mathfrak g(L))$ is an $\mathbb F_2$-vector space. Its isomorphism class as a torsion $\mathbb Z$-module is determined by $d=\dim_{\mathbb F_2}MM(L)$: it is $(\mathbb Z/2\mathbb Z)^d$. Define *MM-triviality* by $d=0$; this is equivalent to surjectivity of $\rho_L$. Theorem 3.12 gives a local formula for the cokernel. The full group $E(L)$ equals $MM(L)$ only when $\mathfrak g(L)=1$.
+
+For a lattice outside these hypotheses, surjectivity of $\rho_L$ remains a well-defined predicate. A torsion-module-valued cokernel requires a separate result that its image is normal and that the quotient is abelian.
+
 The reflection in $w \in L \otimes \mathbb{R}$ with $b(w, w) \neq 0$ is $\sigma_w(x) = x - \frac{2 b(x, w)}{b(w, w)} w$.
 Every element of $O(L \otimes \mathbb{R})$ is a product $\sigma_{w_1} \cdots \sigma_{w_m}$ of reflections, and $$\operatorname{sn}_\mathbb{R}(\sigma_{w_1} \cdots \sigma_{w_m}) = \prod_{i=1}^m \left(-\frac{b(w_i, w_i)}{2}\right) \in \mathbb{R}^*/(\mathbb{R}^*)^2$$ ([Dawes 2022](https://arxiv.org/abs/2205.10601), (4)).
 
