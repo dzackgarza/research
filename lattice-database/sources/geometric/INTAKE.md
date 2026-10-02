@@ -1,6 +1,7 @@
 # Geometric source intake
 
-Each geometric record cites a primary mathematical source through `geometric-bibliography.bib`. Citation keys below use that file. An online catalogue can supply candidate values and source leads.
+Each geometric record cites a primary mathematical source through `geometric-bibliography.bib`. Citation keys below use that file.
+An online catalogue can supply candidate values and source leads.
 Record its locator, verify the value against the cited theorem or computation, and retain the source citation in the record.
 
 | Source | Observed material | Intake unit |
@@ -27,8 +28,20 @@ An automorphism group, monodromy group or homotopy group needs a group-valued re
 
 ## Polytope and family boundary
 
-A lattice polytope is a bounded convex hull of finitely many points in a lattice $M$. A full-dimensional lattice polytope with the origin in its interior is reflexive when its polar is a lattice polytope in $M^\vee$. The vertex matrix, ambient lattice and polar relation are its defining data. Dimension, lattice-point counts and reflexivity belong to the polytope. A toric variety and a smooth Calabi–Yau hypersurface obtained from it are other objects, with their own construction and Hodge data. Kreuzer and Skarke classified 473,800,776 four-dimensional reflexive polytopes; this is a count of polytope classes, not of pairwise distinct Calabi–Yau threefolds [@KreuzerSkarke2002Classification].
+A lattice polytope is a bounded convex hull of finitely many points in a lattice $M$.
+A full-dimensional lattice polytope with the origin in its interior is reflexive when its polar is a lattice polytope in $M^\vee$.
+The vertex matrix, ambient lattice and polar relation are its defining data.
+Dimension, lattice-point counts and reflexivity belong to the polytope.
+A toric variety and a smooth Calabi–Yau hypersurface obtained from it are other objects, with their own construction and Hodge data.
+Kreuzer and Skarke classified 473,800,776 four-dimensional reflexive polytopes; this is a count of polytope classes, not of pairwise distinct Calabi–Yau threefolds [@KreuzerSkarke2002Classification].
 
-A fibration is a map from a total space to a base, with a stated generic fiber and singular locus. Its monodromy acts on a specified local system over the smooth base. A Picard–Fuchs operator is attached to a period of a variation of Hodge structure, with a coordinate and normalization. Different families can realize the same operator; a Riemann symbol gives local exponents and does not by itself specify the global monodromy representation. The source relation must identify the family, map, local system and operator before a monodromy group can be attached to a geometric record.
+A fibration is a map from a total space to a base, with a stated generic fiber and singular locus.
+Its monodromy acts on a specified local system over the smooth base.
+A Picard–Fuchs operator is attached to a period of a variation of Hodge structure, with a coordinate and normalization.
+Different families can realize the same operator; a Riemann symbol gives local exponents and does not by itself specify the global monodromy representation.
+The source relation must identify the family, map, local system and operator before a monodromy group can be attached to a geometric record.
 
-The recommended extension is a separate lattice-polytope catalogue linked by typed construction maps to toric varieties and hypersurface families. An operator catalogue should link to families through cited Picard–Fuchs realizations. A single geometric-object row with `reflexive`, fibration and monodromy fields would put invariants on the wrong mathematical owner. This choice changes the database architecture and needs the owner's decision before implementation.
+The recommended extension is a separate lattice-polytope catalogue linked by typed construction maps to toric varieties and hypersurface families.
+An operator catalogue should link to families through cited Picard–Fuchs realizations.
+A single geometric-object row with `reflexive`, fibration and monodromy fields would put invariants on the wrong mathematical owner.
+This choice changes the database architecture and needs the owner's decision before implementation.
