@@ -316,12 +316,23 @@ The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane
 
 The work that remains, in order:
 
-1. Find the indefinite entries.
-   The index page, read on 2026-10-01, contains none of the words "indefinite", "hyperbolic", "Lorentzian" and "signature"; its sections are ordered by dimension and by class (root, laminated, modular, unimodular, perfect, Niemeier, the tables of quaternary and quinary forms).
-   The entry pages were not read, so the signature of each entry is not known: read every entry page and compute the signature from its Gram tensor.
+1. Absorb the entries of the bulk archive.
+   The whole archive, read on 2026-10-02 from <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz>, holds 823 named entries; 754 give a parseable single Gram tensor, 25 of those have rational components (the dual lattices $A_n^*$, $D_n^*$, $E_6^*$, $E_7^*$ and their relatives), and exactly one of the parseable Gram tensors is indefinite: `Shimada_86`, of signature $(85, 1)$.
+   The indefinite material of the corpus therefore does not come from the catalogue; the entries to absorb are definite, plus `Shimada_86`.
 
 2. Make `just nebe-sloane` admit an indefinite entry.
    `nebe_sloane.check` compares the minimum and the kissing number that the catalogue states, which an indefinite lattice does not have.
 
-3. Absorb the indefinite entries, then the definite ones.
+3. Absorb the entries, `Shimada_86` included.
    The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
+
+The other online sources that state lattices the record schema can hold, surveyed on 2026-10-02:
+
+- **Watson's single-class genera**, `Classi/watson` on the catalogue site: 3494 primitive lattices of one class per genus, in machine-readable rows of the lower-triangular Gram entries, dimension by dimension; Lorch's completion is arXiv:1208.5638. A module `latticedb watson` reads it, and each genus's stored `integral.genus_class_count = 1` checks the table's claim.
+- **The Brandt-Intrau-Schiemann tables** of odd and even primitive positive ternary forms of discriminant at most 1000, `Brandt_1.html` and `Brandt_2.html` on the catalogue site, as recomputed by Schiemann: rank-3 integral records with genus data.
+- **Jagy's table** of positive ternary forms that are spinor regular but not regular, `Jagy.txt` on the catalogue site: sextuples $(a, b, c, d, e, f)$ of a form's coefficients, so the Gram tensor is their symmetric matrix divided by 2.
+- **Kirschmer's tables of genera of small class number**, <https://www.math.uni-bielefeld.de/~mkirschm/forms/>: `res_orth.tar.bz2` (fetched on 2026-10-02) holds one Magma file of genera of indefinite integral lattices of class number 1 and 2, each genus with Gram tensors of its representatives — the natural source of indefinite records, which the catalogue does not supply. The hermitian tables of the same page are out of the record's type: a hermitian form is not a symmetric bilinear form over $\mathbb{Z}$.
+- **LMFDB's lattices collection**, <https://www.lmfdb.org/Lattice/>: positive-definite integral lattices, one per label, with the Gram matrix, determinant, minimum, class number and the order of the automorphism group as stored fields. Its stored class number and automorphism order are independent of the corpus's own computations, so a reader of the per-label JSON gives `genus_class_count` and `automorphism_group_order` a check from outside. The site gates non-browser clients, and `data.lmfdb.org` did not answer from this host on 2026-10-02; the dump or the gated API needs a route decided when the module is written.
+- **Martinet's perfect lattices**, <http://jamartin.perso.math.cnrs.fr/Lattices/index.html>: the perfect lattices of dimensions at most 7 in `perf2to7` and the dimension-8 sets in PARI/GP files (`p8.gp.gz` and siblings), readable by `cypari2`; perfectness is a property a record states in its prose, and the Grams are definite integral records.
+
+Sources checked and not absorbed: Borcherds's page <http://math.berkeley.edu/~reb/lattices/> lists the 25- and 26-dimensional unimodular latties by root system, kissing number and group order, with no Gram tensor — it gives identifications for records, not records. Cohn's kissing-number table, <https://cohn.mit.edu/kissing-numbers>, is the citation for `definite.kissing_number`, and its lattices are the catalogue's. The lattice-packing tables at Sloane's page and the Scholl and Schiemann pages the catalogue links did not answer as data sources on 2026-10-02.
