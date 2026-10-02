@@ -12,7 +12,7 @@ It defines the *duality functor*
 $$
 (-)^{*}\colon A\text{-}\mathbf{Mod}\longrightarrow A\text{-}\mathbf{Mod},
 \qquad
-M^{*}=\operatorname{Hom}_A(M,A),
+M^{*}=\Hom_A(M,A),
 $$
 where $M^{*}$ is an $A$-module by $(a\cdot f)(x)=f(x)\,\bar a$, and where the dual of $f\colon M\to N$ is $f^{*}\colon N^{*}\to M^{*}$, $g\mapsto g\circ f$.
 For a finitely generated projective $A$-module $M$ the map
@@ -45,7 +45,7 @@ M^{**} \arrow[d,"\epsilon\,\phi^{*}"]
 
 commute.
 The form is *nonsingular* if $\phi$ is an isomorphism.
-An *$\epsilon$-quadratic form* $(M,\psi)$ is a finitely generated projective $A$-module $M$ together with a class of morphisms $\psi\colon M\to M^{*}$ modulo the relation $\psi\sim\psi+\chi-\epsilon\chi^{*}$ for $\chi\in\operatorname{Hom}_A(M,M^{*})$; its *$\epsilon$-symmetrization* is $(M,\psi+\epsilon\psi^{*})$ [@Ran98, Def. 20.1].
+An *$\epsilon$-quadratic form* $(M,\psi)$ is a finitely generated projective $A$-module $M$ together with a class of morphisms $\psi\colon M\to M^{*}$ modulo the relation $\psi\sim\psi+\chi-\epsilon\chi^{*}$ for $\chi\in\Hom_A(M,M^{*})$; its *$\epsilon$-symmetrization* is $(M,\psi+\epsilon\psi^{*})$ [@Ran98, Def. 20.1].
 In both formulas the dual $\chi^{*}\colon M^{**}\to M^{*}$ of a morphism $M\to M^{*}$ is precomposed with $\operatorname{can}_M$, as in the triangle above.
 :::
 

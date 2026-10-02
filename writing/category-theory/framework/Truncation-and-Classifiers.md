@@ -86,8 +86,8 @@ $$
 For fixed $X$, these morphisms form the arity-$n$ term of the cartesian endomorphism operad $\operatorname{End}_{\mathcal C}(X)$.
 Composition is substitution of operations, and the symmetric-group action permutes the factors.
 
-For an arbitrary morphism $X\to Y$, neither precomposition nor postcomposition defines a map $\operatorname{Hom}(X^n,X)\to\operatorname{Hom}(Y^n,Y)$.
-Consequently the assignment $X\mapsto\operatorname{Hom}(X^n,X)$ is not a presheaf on $\mathcal C$.
+For an arbitrary morphism $X\to Y$, neither precomposition nor postcomposition defines a map $\Hom(X^n,X)\to\Hom(Y^n,Y)$.
+Consequently the assignment $X\mapsto\Hom(X^n,X)$ is not a presheaf on $\mathcal C$.
 Categories of algebras instead use operations and structure-preserving morphisms, as in [Algebraic categories from operations](Mathematical-Framework.md).
 
 ## Equations and coherence {#sec-filled-diagrams}

@@ -107,7 +107,7 @@ and $f$ is a quasi-isomorphism if and only if $\operatorname{cone}(f)$ is exact 
 ## Forms on a chain complex {#sec-complex-forms}
 
 Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
-A $W$-valued bilinear form on an $R$-module $M$ is an element of $\operatorname{Hom}_R(M\otimes_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def:form-categories are the categories of elements of the presheaves so obtained.
+A $W$-valued bilinear form on an $R$-module $M$ is an element of $\Hom_R(M\otimes_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def:form-categories are the categories of elements of the presheaves so obtained.
 At the level of complexes the tensor square is the tensor product complex and the value module is placed in a chosen degree.
 
 ::: {.definition #def:complex-tensor-product title="The tensor product of complexes"}
@@ -163,7 +163,7 @@ $$
 
 ::: {.proposition #prop:complex-form-adjoint title="The adjoint chain map and the $n$-dual"}
 
-Let $W=R$ with the identity involution, and let $C^{n-*}$ be the $n$-dual complex of @def:n-dual-complex, so that $(C^{n-*})_r=\operatorname{Hom}_R(C_{n-r},R)$ with differential $(-1)^r(d^C)^{*}$.
+Let $W=R$ with the identity involution, and let $C^{n-*}$ be the $n$-dual complex of @def:n-dual-complex, so that $(C^{n-*})_r=\Hom_R(C_{n-r},R)$ with differential $(-1)^r(d^C)^{*}$.
 For a bilinear form $\beta$ of degree $n$ on $C$ set
 $$
 \beta^{\sharp}_r\colon C_r\longrightarrow(C^{n-*})_r,
@@ -172,7 +172,7 @@ $$
 $$
 Then $\beta\mapsto\beta^{\sharp}$ is a bijection from the bilinear forms of degree $n$ on $C$ to the chain maps $C\to C^{n-*}$.
 
-*Proof.* For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\operatorname{Hom}_R(C_{n-r},R)$, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
+*Proof.* For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\Hom_R(C_{n-r},R)$, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
 It remains to match the two conditions.
 For $x\in C_r$ and $y\in C_{n-r+1}$,
 $$
@@ -293,15 +293,15 @@ A second projective resolution gives a canonically isomorphic object, and the li
 
 For $R$-modules $A$ and $B$,
 $$
-\operatorname{Ext}^i_R(A,B)=R^i\operatorname{Hom}_R(A,-)(B),
+\operatorname{Ext}^i_R(A,B)=R^i\Hom_R(A,-)(B),
 \qquad
 \operatorname{Tor}^R_n(A,B)=L_n(-\otimes_RB)(A)
 $$
-[@Wei94, Def. 2.5.2, Def. 2.6.4]. Then $\operatorname{Ext}^0_R(A,B)=\operatorname{Hom}_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6]. Resolving either variable gives the same result:
+[@Wei94, Def. 2.5.2, Def. 2.6.4]. Then $\operatorname{Ext}^0_R(A,B)=\Hom_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6]. Resolving either variable gives the same result:
 $$
 L_*(A\otimes_R-)(B)\cong L_*(-\otimes_RB)(A)
 $$
 [@Wei94, §2.7]. For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
-These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\operatorname{Hom}_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
+These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
 :::

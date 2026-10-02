@@ -7,7 +7,7 @@ Lattices, unimodularity, dual lattices, and discriminant modules are those of @s
 
 ::: {.definition #def:hyperbolic-form title="Hyperbolic forms"}
 
-Let $M$ be an $R$-module and write $M^{*}=\operatorname{Hom}_R(M,R)$.
+Let $M$ be an $R$-module and write $M^{*}=\Hom_R(M,R)$.
 The *hyperbolic form* on $M\oplus M^{*}$ is
 $$
 h_M\bigl((x,\varphi),(y,\psi)\bigr)=\psi(x)+\varphi(y).

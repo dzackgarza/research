@@ -136,7 +136,7 @@ A chosen partial resolution finitely generated through degree $n$ is structure o
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}
 
-The endomorphism monoid $\operatorname{Hom}_{\mathcal C}(X,X)$ and the automorphism group $\Aut_{\mathcal C}(X)$ of an object are defined at @def:endomorphism-monoid; for a lattice $L$ the instance $O(L)=\Aut(L)$ is in @sec-isometry-groups.
+The endomorphism monoid $\Hom_{\mathcal C}(X,X)$ and the automorphism group $\Aut_{\mathcal C}(X)$ of an object are defined at @def:endomorphism-monoid; for a lattice $L$ the instance $O(L)=\Aut(L)$ is in @sec-isometry-groups.
 
 ::: {.proposition #prop:automorphisms-act-on-frames title="The action on the fibre"}
 
@@ -162,9 +162,9 @@ R^{(-)}\dashv U.
 $$
 The unit $\eta_I\colon I\to U\bigl(R^{(I)}\bigr)$ sends $i$ to $e_i$, and the adjunction states that composition with $\eta_I$ is a bijection
 $$
-\operatorname{Hom}_{R\text{-}\mathbf{Mod}}\bigl(R^{(I)},M\bigr)
+\Hom_{R\text{-}\mathbf{Mod}}\bigl(R^{(I)},M\bigr)
 \xrightarrow{\ \sim\ }
-\operatorname{Hom}_{\mathbf{Set}}\bigl(I,U(M)\bigr).
+\Hom_{\mathbf{Set}}\bigl(I,U(M)\bigr).
 $$
 Under this bijection a generating frame indexed by $I$ (@def:generating-frame) is a family $(x_i)_{i\in I}$ of elements of $M$ whose associated $R$-linear map is surjective.
 :::

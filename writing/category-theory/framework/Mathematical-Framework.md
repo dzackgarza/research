@@ -103,9 +103,9 @@ F\dashv U.
 $$
 The unit $\eta_X\colon X\to U(F(X))$ sends a variable to its class, and the adjunction states that composition with $\eta_X$ is a bijection
 $$
-\operatorname{Hom}_{\Sigma\text{-}\mathbf{Alg}_E}(F(X),A)
+\Hom_{\Sigma\text{-}\mathbf{Alg}_E}(F(X),A)
 \xrightarrow{\ \sim\ }
-\operatorname{Hom}_{\mathbf{Set}}(X,U(A)),
+\Hom_{\mathbf{Set}}(X,U(A)),
 $$
 so a homomorphism out of $F(X)$ is an assignment of a value in $A$ to each variable.
 :::

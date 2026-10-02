@@ -7,7 +7,7 @@ Its morphisms are isometries.
 For lattices $L$ and $M$,
 $$
 \operatorname{Iso}(L,M)
-=\operatorname{Hom}_{\mathbf{Lat}_R^{\simeq}}(L,M),
+=\Hom_{\mathbf{Lat}_R^{\simeq}}(L,M),
 \qquad
 O(L)=\Aut(L).
 $$
@@ -37,14 +37,14 @@ Then $f$ is injective: if $f(x)=0$ then $b_L(x,y)=b_M(fx,fy)=0$ for every $y\in 
 
 Every object of $\mathbf{Lat}_R$ is nondegenerate, so on $\mathbf{Lat}_R$ the morphisms and the injective morphisms are the same maps, and the hierarchy of morphism sets is
 $$
-\operatorname{PrimEmb}(L,M)\subseteq\operatorname{Hom}_{\mathbf{Lat}_R}(L,M)\subseteq\operatorname{Hom}_R(L,M).
+\operatorname{PrimEmb}(L,M)\subseteq\Hom_{\mathbf{Lat}_R}(L,M)\subseteq\Hom_R(L,M).
 $$
 :::
 
 ::: {.definition #def:primitive-embedding title="Primitive embeddings"}
 
 A morphism $f\colon L\to M$ of $\mathbf{Lat}_R$ is a *primitive embedding* if $\operatorname{coker}(f)$ is torsion-free.
-Primitivity is a property of the morphism, and $\operatorname{PrimEmb}(L,M)$ is the subset of $\operatorname{Hom}_{\mathbf{Lat}_R}(L,M)$ it cuts out; a subobject of $M$ (@def:subobject-relation) is called primitive when a representing monomorphism has this property.
+Primitivity is a property of the morphism, and $\operatorname{PrimEmb}(L,M)$ is the subset of $\Hom_{\mathbf{Lat}_R}(L,M)$ it cuts out; a subobject of $M$ (@def:subobject-relation) is called primitive when a representing monomorphism has this property.
 
 Identities are primitive, and primitivity is closed under composition.
 For primitive $f\colon L\to M$ and $g\colon M\to P$ the inclusions $gf(L)\subseteq g(M)\subseteq P$ give the exact sequence
@@ -66,7 +66,7 @@ Its image is $2U$ and its cokernel is $\mathbb Zw\oplus(\mathbb Z/2\mathbb Z)^{2
 
 ::: {.definition #def:adjoint-morphism title="The adjoint of a morphism"}
 
-Let $f\colon(M,b_M)\to(N,b_N)$ be $R$-linear between modules with $W$-valued forms, and write $f^{\vee}\colon\operatorname{Hom}_R(N,W)\to\operatorname{Hom}_R(M,W)$ for the induced map.
+Let $f\colon(M,b_M)\to(N,b_N)$ be $R$-linear between modules with $W$-valued forms, and write $f^{\vee}\colon\Hom_R(N,W)\to\Hom_R(M,W)$ for the induced map.
 An *adjoint* of $f$ is an $R$-linear map $f^{*}\colon N\to M$ with
 $$
 b_M^{\sharp}\circ f^{*}=f^{\vee}\circ b_N^{\sharp},
@@ -191,13 +191,13 @@ $$
 \begin{pmatrix}a&\varphi\\0&d\end{pmatrix},
 \qquad
 a\in\Aut_R(\operatorname{rad}(M)),\quad
-\varphi\in\operatorname{Hom}_R(N,\operatorname{rad}(M)),\quad
+\varphi\in\Hom_R(N,\operatorname{rad}(M)),\quad
 d\in O(N),
 $$
 with no condition relating the three, because every pairing involving $\operatorname{rad}(M)$ vanishes.
 Hence
 $$
-O(M)\;\cong\;\operatorname{Hom}_R\bigl(N,\operatorname{rad}(M)\bigr)
+O(M)\;\cong\;\Hom_R\bigl(N,\operatorname{rad}(M)\bigr)
 \rtimes\bigl(\Aut_R(\operatorname{rad}(M))\times O(N)\bigr),
 $$
 and the subgroup fixing $\operatorname{rad}(M)$ pointwise is the preimage of $\{1\}\times O(N)$.

@@ -29,7 +29,7 @@ Nondegeneracy of $b_M$ is injectivity of $b_M^{\sharp}$, and the lattices of @de
 
 ::: {.proposition #prop:sum-of-form-morphisms title="The pullback of a form along a sum"}
 
-Let $f,g\colon(M,b_M)\to(N,b_N)$ be morphisms of $\mathcal B_{R,W}$ and let $f+g$ be their sum in $\operatorname{Hom}_R(M,N)$.
+Let $f,g\colon(M,b_M)\to(N,b_N)$ be morphisms of $\mathcal B_{R,W}$ and let $f+g$ be their sum in $\Hom_R(M,N)$.
 Then
 $$
 (f+g)^{*}b_N(x,y)
@@ -55,7 +55,7 @@ so $f+g$ is not a morphism of $\mathcal B_{\mathbb Z,\mathbb Z}$.
 ::: {.proposition #prop:form-initial-object title="The zero form module is initial"}
 
 The pair $(0,0)$, with $0$ the zero $R$-module and its unique bilinear form, is an initial object of $\mathcal B_{R,W}$.
-For an object $(M,b_M)$, the set $\operatorname{Hom}_{\mathcal B_{R,W}}\bigl((M,b_M),(0,0)\bigr)$ has one element if $b_M=0$ and is empty otherwise.
+For an object $(M,b_M)$, the set $\Hom_{\mathcal B_{R,W}}\bigl((M,b_M),(0,0)\bigr)$ has one element if $b_M=0$ and is empty otherwise.
 :::
 
 Let $j\colon 0\to M$ and $k\colon M\to0$ be the unique $R$-linear maps.
@@ -70,7 +70,7 @@ For $R$ a Dedekind domain and $M$ an $R$-lattice the same holds for $F_M$ on $\m
 :::
 
 By @prop:form-initial-object the pair $(0,0)$ is initial in $\mathcal B_{R,W}$, and it is an $R$-lattice, so it is also initial in the full subcategory $\mathbf{Lat}_R$.
-Now $F_M(0,0)=M$, and $\operatorname{Hom}\bigl(M,(0,0)\bigr)$ is empty by @prop:form-initial-object, since $b_M\neq0$.
+Now $F_M(0,0)=M$, and $\Hom\bigl(M,(0,0)\bigr)$ is empty by @prop:form-initial-object, since $b_M\neq0$.
 An initial object admits a morphism to every object, so $M$ is not initial.
 A left adjoint preserves colimits, and an initial object is the colimit of the empty diagram; an equivalence preserves initial objects as well.
 For $S$ the hypothesis holds because $h_R\neq0$.
@@ -101,7 +101,7 @@ Write $\langle1\rangle$ for the object $(R,b)$ with $b(x,y)=xy$; it lies in $\ma
 An $R$-linear map $u\colon R\to P$ is determined by $p=u(1)$, and $u$ is a morphism $\langle1\rangle\to(P,c)$ exactly when $c(p,p)=1$.
 Hence
 $$
-\operatorname{Hom}\bigl(\langle1\rangle,(P,c)\bigr)\;\cong\;\{p\in P\mid c(p,p)=1\},
+\Hom\bigl(\langle1\rangle,(P,c)\bigr)\;\cong\;\{p\in P\mid c(p,p)=1\},
 $$
 and this set is stable under $p\mapsto-p$.
 If $(P,c)$ were terminal the set would be a singleton, forcing $p=-p$ and hence $2p=0$, so

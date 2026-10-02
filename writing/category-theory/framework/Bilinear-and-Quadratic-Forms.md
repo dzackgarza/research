@@ -55,7 +55,7 @@ When $2W=W$, every bilinear form satisfies the evenness condition; quadratic ref
 
 ::: {.definition #def:polarization title="The adjoint maps and the radicals"}
 
-The bilinear form $b$ determines two $R$-linear maps to $\operatorname{Hom}_R(M,W)$,
+The bilinear form $b$ determines two $R$-linear maps to $\Hom_R(M,W)$,
 $$
 b^\sharp(x)(y)=b(x,y),
 \qquad
@@ -399,4 +399,4 @@ $$
 followed by polarization gives the bilinearization functor from $\mathbb Q/2\mathbb Z$-valued quadratic forms to $\mathbb Q/\mathbb Z$-valued symmetric bilinear forms.
 :::
 
-Bilinear forms on the underlying module of an associative unital $R$-algebra are treated in @sec-algebra-module-forms: module bilinear forms are $\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$, and algebra bilinear forms are $\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$ with the tensor product taken in $R\text{-}\mathbf{Alg}$.
+Bilinear forms on the underlying module of an associative unital $R$-algebra are treated in @sec-algebra-module-forms: module bilinear forms are $\Hom_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$, and algebra bilinear forms are $\Hom_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$ with the tensor product taken in $R\text{-}\mathbf{Alg}$.

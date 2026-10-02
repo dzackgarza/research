@@ -7,7 +7,7 @@ The main case is $R=\mathbb Z$ and $K=\mathbb Q$.
 
 An $R$-*lattice* is a finitely generated projective $R$-module $L$ equipped with a symmetric bilinear form $b\colon L\times L\to R$ whose adjoint map
 $$
-b^\sharp\colon L\longrightarrow L^*:=\operatorname{Hom}_R(L,R)
+b^\sharp\colon L\longrightarrow L^*:=\Hom_R(L,R)
 $$
 is injective.
 The category $\mathbf{Lat}_R$ is the replete full subcategory of $\mathcal B_{R,R}$ on these objects [@Nik80].
@@ -209,7 +209,7 @@ b|_{N}\ \text{nondegenerate},
 $$
 and the projection $N\to M/\operatorname{rad}(M)$ is an isometry onto the radical quotient of @prop:quotient-form.
 
-The adjoint $b^{\sharp}$ induces an injection $M/\operatorname{rad}(M)\hookrightarrow\operatorname{Hom}_R(M,R)$, whose target is finitely generated projective and therefore torsion-free; so $M/\operatorname{rad}(M)$ is finitely generated and torsion-free, hence projective over the Dedekind domain $R$, and
+The adjoint $b^{\sharp}$ induces an injection $M/\operatorname{rad}(M)\hookrightarrow\Hom_R(M,R)$, whose target is finitely generated projective and therefore torsion-free; so $M/\operatorname{rad}(M)$ is finitely generated and torsion-free, hence projective over the Dedekind domain $R$, and
 $$
 0\longrightarrow\operatorname{rad}(M)\longrightarrow M\longrightarrow M/\operatorname{rad}(M)\longrightarrow0
 $$
@@ -233,10 +233,10 @@ $$
 0\longrightarrow L\longrightarrow L_K
 \longrightarrow L\otimes_R(K/R)\longrightarrow0,
 $$
-and applying $\operatorname{Hom}_R(L,-)$ gives
+and applying $\Hom_R(L,-)$ gives
 $$
-0\longrightarrow L^*\longrightarrow\operatorname{Hom}_R(L,K)
-\longrightarrow\operatorname{Hom}_R(L,K/R)\longrightarrow0.
+0\longrightarrow L^*\longrightarrow\Hom_R(L,K)
+\longrightarrow\Hom_R(L,K/R)\longrightarrow0.
 $$
 The second sequence is exact because $L$ is projective.
 :::
@@ -255,8 +255,8 @@ L\otimes_R(K/R) \arrow[r] \arrow[d,"\bar b"] &
 0\\
 0 \arrow[r] &
 L^* \arrow[r] &
-\operatorname{Hom}_R(L,K) \arrow[r] &
-\operatorname{Hom}_R(L,K/R) \arrow[r] &
+\Hom_R(L,K) \arrow[r] &
+\Hom_R(L,K/R) \arrow[r] &
 0
 \end{tikzcd}
 ```
@@ -268,7 +268,7 @@ $$
 and gives
 $$
 0\longrightarrow A_L\longrightarrow L\otimes_R(K/R)
-\longrightarrow\operatorname{Hom}_R(L,K/R)\longrightarrow0.
+\longrightarrow\Hom_R(L,K/R)\longrightarrow0.
 $$
 :::
 

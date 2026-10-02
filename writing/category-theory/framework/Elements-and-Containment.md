@@ -8,7 +8,7 @@ If $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)
 ::: {.definition #def:element-functor title="Elements represented by morphisms"}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
 $$
-U\cong\operatorname{Hom}_C(P,-)
+U\cong\Hom_C(P,-)
 $$
 identifies an element of $U(X)$ with a morphism $P\to X$.
 The corepresenting objects are a singleton for $\mathbf{Set}$, $\mathbb Z$ for $\mathbf{Grp}$, $R$ for $R\text{-}\mathbf{Mod}$, and $\mathbb Z[x]$ for $\mathbf{CommRing}$.
@@ -79,7 +79,7 @@ $$
 \operatorname{Sol}:=\operatorname{Eq}(\alpha,\beta)
 $$
 is the presheaf of solutions of the corresponding equations.
-If $\operatorname{Sol}\cong\operatorname{Hom}_C(-,X)$, the identity of $X$ determines its universal solution.
+If $\operatorname{Sol}\cong\Hom_C(-,X)$, the identity of $X$ determines its universal solution.
 :::
 
 ## Disjunction and cases {#sec-disjunction-and-cases}

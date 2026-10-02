@@ -32,7 +32,7 @@ The algebra $A$ is already an $R$-module; $U$ names that functor.
 
 A *module bilinear form* on an $R$-module $M$, with values in $R$, is an element of
 $$
-\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R).
+\Hom_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R).
 $$
 The tensor product is the tensor product of $R$-modules.
 By the tensor-hom adjunction this Hom-module is $\operatorname{Bil}_{R,R}(M)$ (@def:form-presheaves).
@@ -47,7 +47,7 @@ $$
 $$
 [@nlab:associative_algebra]. An *algebra bilinear form* on $A$, with values in $R$, is an element of
 $$
-\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R).
+\Hom_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R).
 $$
 The tensor product in this Hom is the tensor product of $R$-algebras.
 :::
@@ -117,7 +117,7 @@ Given (2), $B(xy,z)=\varepsilon((xy)z)=\varepsilon(x(yz))=B(x,yz)$.
 The identification $\varepsilon(x)=B(x,1_A)$ uses the unit of $A$.
 
 ::: {.definition #def:frobenius-form title="Frobenius forms"}
-A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def:polarization: both adjoint maps $A\to\operatorname{Hom}_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
+A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def:polarization: both adjoint maps $A\to\Hom_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 
 ::: {.proposition #prop:structure-constants title="Structure constants"}
@@ -159,11 +159,11 @@ Let $A$ be an object of $R\text{-}\mathbf{CAlg}$.
 The tensor product $A\otimes_R A$ of @def:algebra-bilinear-form is the coproduct of $A$ with itself in $R\text{-}\mathbf{CAlg}$, with inclusions $a\mapsto a\otimes_R 1_A$ and $b\mapsto 1_A\otimes_R b$.
 The coproduct universal property is
 $$
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A\otimes_R A,R)
+\Hom_{R\text{-}\mathbf{CAlg}}(A\otimes_R A,R)
 \cong
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A,R)
+\Hom_{R\text{-}\mathbf{CAlg}}(A,R)
 \times
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A,R).
+\Hom_{R\text{-}\mathbf{CAlg}}(A,R).
 $$
 An algebra bilinear form $\phi\colon A\otimes_R A\to R$ is therefore $\phi(a\otimes_R b)=\chi_L(a)\chi_R(b)$ for the pair of $R$-algebra homomorphisms $\chi_L,\chi_R\colon A\to R$ given by $\chi_L(a)=\phi(a\otimes_R 1_A)$ and $\chi_R(b)=\phi(1_A\otimes_R b)$.
 
@@ -183,18 +183,18 @@ The codomain $R$ is commutative.
 
 For objects $A,B,C$ of $R\text{-}\mathbf{CAlg}$, the product $A\times B$ and the coproduct $A\otimes_R B$ give
 $$
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(C,A\times B)
+\Hom_{R\text{-}\mathbf{CAlg}}(C,A\times B)
 \cong
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(C,A)
+\Hom_{R\text{-}\mathbf{CAlg}}(C,A)
 \times
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(C,B),
+\Hom_{R\text{-}\mathbf{CAlg}}(C,B),
 $$
 $$
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A\otimes_R B,C)
+\Hom_{R\text{-}\mathbf{CAlg}}(A\otimes_R B,C)
 \cong
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(A,C)
+\Hom_{R\text{-}\mathbf{CAlg}}(A,C)
 \times
-\operatorname{Hom}_{R\text{-}\mathbf{CAlg}}(B,C).
+\Hom_{R\text{-}\mathbf{CAlg}}(B,C).
 $$
 :::
 

@@ -42,7 +42,7 @@ For $W=A$ the isomorphism $B\otimes_AA\cong B$ rewrites this as $b_B(c\otimes_A 
 Let $\mathcal A$ be an abelian category.
 A *torsion pair* on $\mathcal A$ is a pair $(\mathcal T,\mathcal F)$ of replete full subcategories such that
 $$
-\operatorname{Hom}_{\mathcal A}(T,F)=0
+\Hom_{\mathcal A}(T,F)=0
 \qquad
 (T\in\mathcal T,\ F\in\mathcal F),
 $$
@@ -87,7 +87,7 @@ $$
 U_{\mathrm{bas}}\colon R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I\longrightarrow R\text{-}\mathbf{Mod}
 $$
 is faithful.
-It is not full: the hom-set from $(R,\operatorname{id})$ to itself is $\{\operatorname{id}\}$, while $\operatorname{Hom}_R(R,R)=R$.
+It is not full: the hom-set from $(R,\operatorname{id})$ to itself is $\{\operatorname{id}\}$, while $\Hom_R(R,R)=R$.
 :::
 
 ::: {.proposition #prop:basis-is-structure title="A basis is structure"}
