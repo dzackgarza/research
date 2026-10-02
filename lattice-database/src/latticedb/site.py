@@ -678,8 +678,8 @@ def build(root: Path, target: Path) -> int:
     (target / "geometric-objects").mkdir()
     geometric_prose = markdown_to_html([entry.prose for entry in geometric])
     geometric_page = environment.get_template("geometric-object.html.j2")
-    for entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
-        record = entry.geometric
+    for geometric_entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
+        record = geometric_entry.geometric
         rows = [
             [record.hodge_numbers[p][degree - p] for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
             for degree in range(2 * record.dimension + 1)
@@ -687,9 +687,7 @@ def build(root: Path, target: Path) -> int:
         (target / "geometric-objects" / f"{record.slug}.html").write_text(
             geometric_page.render(root="../", geometric=record, rows=rows, lattices=lattices, prose=rendered_prose)
         )
-    (target / "geometric-objects.html").write_text(
-        environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric)
-    )
+    (target / "geometric-objects.html").write_text(environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric))
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))
