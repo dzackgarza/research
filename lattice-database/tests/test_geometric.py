@@ -16,6 +16,7 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     html = (target / "geometric-objects" / "k3-surface.html").read_text()
     assert 'href="../tag/027E.html"' in html
     assert 'href="../tag/027E.html">U^3 + E8(-1)^2</a>' in html
+    assert "H<sup>2</sup>(X; ℤ)/tors" in html
     assert '<div class="hodge-row">' in html
     assert "<span>1</span><span>20</span><span>1</span>" in html
     assert 'href="../geometric-objects/k3-surface.html"' in (target / "tag" / "027E.html").read_text()
