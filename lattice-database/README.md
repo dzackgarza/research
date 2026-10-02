@@ -14,12 +14,14 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | Path | Contents |
 | --- | --- |
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
+| `geometric-objects/<slug>.md` | One geometric object, its Hodge diamond, optional cohomology lattice links, sources and prose |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
 | `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
 | `morphisms/<S>-<T>.md` | Morphisms from the lattice `S` to the lattice `T`, as matrices, and prose |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
+| `src/latticedb/geometric.py` | The schema of a geometric object and its Hodge numbers |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
@@ -35,6 +37,29 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `sources/hashimoto/table_10_2.json`, `table_10_3.json` | Tables 10.2 and 10.3 of K. Hashimoto, arXiv:1012.2682, as printed, each row linked to the records of $\Lambda_G$ and $\Lambda^G$ by a twist and a change of basis |
 | `sources/hoehn_mason/leech.json`, `lattices_<i>_<j>.json` | The Leech lattice and the 40 entries `lattices[i,j]` of the Magma file of G. Höhn and G. Mason, arXiv:1505.06420, whose coinvariant lattice is $\Lambda_G(-1)$ for a row of Table 10.2 of Hashimoto: the bases and the stabilizer generators as printed, each linked to its record by a twist and a change of basis |
 | `tests/` | Tests of the validators, of the record commands and of the built site |
+
+## Geometric objects
+
+Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its file name is its permanent slug. `hodge_numbers[p][q]` is (h^{p,q} = \dim_{\mathbb C} H^q(X, \Omega_X^p)); the matrix has side `dimension + 1`. The record validates nonnegative entries, (h^{0,0}=1), Hodge symmetry and Serre duality.
+
+An optional `cohomology_lattices` entry identifies (H^k(X;\mathbb Z)) modulo torsion with a tagged lattice, under the named pairing and integer scale. The build checks that the tag exists and that its rank is (b_k = \sum_{p+q=k} h^{p,q}). The pairing names the form: the Hodge numbers alone do not determine it. The geometric object page links to the lattice page, and the lattice page links back.
+
+```yaml
+slug: k3-surface
+name: Complex projective K3 surface
+dimension: 2
+hodge_numbers:
+- [1, 0, 1]
+- [0, 20, 0]
+- [1, 0, 1]
+cohomology_lattices:
+- degree: 2
+  pairing: the cup-product intersection form
+  tag: 027E
+  scale: 1
+```
+
+The body of the file is Pandoc Markdown. `references` uses the same citation and URL fields as a lattice record. The site lists these records at `geometric-objects.html` and serves each one at `geometric-objects/<slug>.html`.
 
 ## A record
 
@@ -332,7 +357,7 @@ The other online sources that state lattices the record schema can hold, surveye
 - **The Brandt-Intrau-Schiemann tables** of odd and even primitive positive ternary forms of discriminant at most 1000, `Brandt_1.html` and `Brandt_2.html` on the catalogue site, as recomputed by Schiemann: rank-3 integral records with genus data.
 - **Jagy's table** of positive ternary forms that are spinor regular but not regular, `Jagy.txt` on the catalogue site: sextuples $(a, b, c, d, e, f)$ of a form's coefficients, so the Gram tensor is their symmetric matrix divided by 2.
 - **Kirschmer's tables of genera of small class number**, <https://www.math.uni-bielefeld.de/~mkirschm/forms/>: `res_orth.tar.bz2` (fetched on 2026-10-02) holds one Magma file of genera of indefinite integral lattices of class number 1 and 2, each genus with Gram tensors of its representatives — the natural source of indefinite records, which the catalogue does not supply. The hermitian tables of the same page are out of the record's type: a hermitian form is not a symmetric bilinear form over $\mathbb{Z}$.
-- **LMFDB's lattices collection**, <https://www.lmfdb.org/Lattice/>: positive-definite integral lattices, one per label, with the Gram matrix, determinant, minimum, class number and the order of the automorphism group as stored fields. Its stored class number and automorphism order are independent of the corpus's own computations, so a reader of the per-label JSON gives `genus_class_count` and `automorphism_group_order` a check from outside. The site gates non-browser clients, and `data.lmfdb.org` did not answer from this host on 2026-10-02; the dump or the gated API needs a route decided when the module is written.
+- **LMFDB's lattices collection**, <https://beta.lmfdb.org/Lattice/>: 39,293 positive definite integral lattices, dimensions at most 24, the largest class number 56. Its <https://beta.lmfdb.org/Lattice/Source> states the Gram matrices are the Catalogue's — the collection adds no lattice the Catalogue lacks, and the corpus reads lattices at the Catalogue. What it adds: `class_number` and `aut`, computed in Magma and PARI by the code of Haensch and Anni, which check the stored `integral.genus_class_count` and `definite.automorphism_group_order` the way the tables of Hashimoto do; `genus_reps`, the Gram tensors of every class of the genus (a row of class number 2 lists both representatives, as read on 2026-10-02), and `level`, which no entry page of the Catalogue states — absorbing those two is a schema change with a computation of the corpus's own behind each field. The other stored fields are not new mathematics: `det`, `dim`, `minimum` and `kissing` the Gram tensor determines, `density` and `hermite` functions of `minimum` and `det`, `shortest` coordinates in the printed basis. The Source page confirms the class number one lattices complete by the computation of Kirschmer and Lorch, arXiv:1208.5638, the citation of the Watson table above. The API route is <https://beta.lmfdb.org/api/lat_lattices/?_format=json>, read on 2026-10-02: it answers only for a client that first loads a page of the site and returns its `human=1` cookie, the beta gate; a request without it is redirected. A module reading this source needs that two-step fetch.
 - **Martinet's perfect lattices**, <http://jamartin.perso.math.cnrs.fr/Lattices/index.html>: the perfect lattices of dimensions at most 7 in `perf2to7` and the dimension-8 sets in PARI/GP files (`p8.gp.gz` and siblings), readable by `cypari2`; perfectness is a property a record states in its prose, and the Grams are definite integral records.
 
 Sources checked and not absorbed: Borcherds's page <http://math.berkeley.edu/~reb/lattices/> lists the 25- and 26-dimensional unimodular latties by root system, kissing number and group order, with no Gram tensor — it gives identifications for records, not records. Cohn's kissing-number table, <https://cohn.mit.edu/kissing-numbers>, is the citation for `definite.kissing_number`, and its lattices are the catalogue's. The lattice-packing tables at Sloane's page and the Scholl and Schiemann pages the catalogue links did not answer as data sources on 2026-10-02.
