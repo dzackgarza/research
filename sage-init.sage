@@ -31,6 +31,7 @@ import sys
 from pathlib import Path
 
 import IPython.core.ultratb
+from IPython.core.interactiveshell import InteractiveShell
 from sage.env import SAGE_STARTUP_FILE
 from sage.libs.gap.libgap import libgap
 from sage.misc.latex import latex
@@ -61,8 +62,10 @@ def latex_if_typesettable(obj):
     return "$\\displaystyle " + str(latex(obj)) + "$"
 
 
-def install_implicit_typesetting(shell):
-    formatter = shell.display_formatter.formatters["text/latex"]
+def install_implicit_typesetting(shell: InteractiveShell) -> None:
+    display_formatter = shell.display_formatter
+    assert display_formatter is not None, "an IPython shell has a display formatter"
+    formatter = display_formatter.formatters["text/latex"]
     formatter.enabled = True
     formatter.for_type(object, latex_if_typesettable)
 
@@ -76,8 +79,8 @@ from dzack_research.preamble.all import *
 Σ = sum
 Π = prod
 
-libgap.LoadPackage("PackageManager")
-IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
+libgap.load_package("PackageManager")
+IPython.core.ultratb.VerboseTB.tb_highlight = "bg:ansired"
 
 # Before the Julia bridge, because a session that cannot reach Julia is still
 # a session and should still typeset.  The bridge is a computational backend
