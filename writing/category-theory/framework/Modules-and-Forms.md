@@ -107,7 +107,7 @@ A basis is the case of a generating frame whose structure map is an isomorphism.
 ::: {.definition #def:free-module-orientation title="Orientation of a free module"}
 
 Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.
-The top exterior power $\det(M)\coloneqq\bigwedge^n M$ is a free $R$-module of rank $1$.
+The top exterior power $\det(M)\da\bigwedge^n M$ is a free $R$-module of rank $1$.
 An *orientation* of $M$ is an isomorphism of $R$-modules
 $$
 \omega\colon R\xrightarrow{\ \sim\ }\det(M).

@@ -24,7 +24,7 @@ A **rational polyhedral fan** $\Sigma_I$ in $\bdlattice{T}{I, \RR}$ is a collect
 
 Let $T$ be an integral lattice and $\Gamma \leq O(T)$ an arithmetic subgroup. For a primitive isotropic sublattice $I \subset T$, consider a fan $\Sigma_I$ in the associated real vector space $\bdlattice{T}{I, \RR}$. The **support** of $\Sigma_I$ is defined as
 $$
-|\Sigma_I| \coloneqq \bigcup_{\sigma \in \Sigma_I} \sigma.
+|\Sigma_I| \da \bigcup_{\sigma \in \Sigma_I} \sigma.
 $$
 
 Let $\Stab_{\Gamma}(I) \leq \Gamma$ denote the stabilizer of $I$ in $\Gamma$. The fan $\Sigma_I$ is said to be **$\Gamma$-admissible at the cusp determined by $I$** if the following conditions are satisfied:
@@ -37,7 +37,7 @@ Let $\Stab_{\Gamma}(I) \leq \Gamma$ denote the stabilizer of $I$ in $\Gamma$. Th
 
 - **(iv) Full support:** $|\Sigma_I| = \thecone{C}_{I, \QQ}$, where $\thecone{C}_{I, \QQ}$ is the rational closure of the relevant positive cone associated to $I$;
 
-- **(v) Compatibility under projection:** For every inclusion of primitive isotropic sublattices $I \subset J \subset T$, let $W \coloneqq (J^\perp/J) \otimes_\ZZ \RR$ and denote by $\pi_{IJ}\colon T_{\RR} \to W$ the canonical projection. Then the fan at $J$ is given by
+- **(v) Compatibility under projection:** For every inclusion of primitive isotropic sublattices $I \subset J \subset T$, let $W \da (J^\perp/J) \otimes_\ZZ \RR$ and denote by $\pi_{IJ}\colon T_{\RR} \to W$ the canonical projection. Then the fan at $J$ is given by
 $$
 \Sigma_J = \ts{
   \pi_{IJ}(\sigma) \st \sigma \in \Sigma_I,\ \pi_{IJ}(\sigma)\ \text{is a cone of positive dimension}

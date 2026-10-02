@@ -28,7 +28,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
 1. **The general period matrix and period map:**
    The *period matrix* of the fiber $X_t$ with respect to the chosen bases is the $p \times k$ matrix of period integrals
    $$
-   \Pi(t) \;\coloneqq\; \begin{pmatrix}
+   \Pi(t) \;\da\; \begin{pmatrix}
    \ds\int_{\Sigma_0(t)} \omega_1(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_1(t) \\
    \vdots & \ddots & \vdots \\
    \ds\int_{\Sigma_0(t)} \omega_p(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_p(t)

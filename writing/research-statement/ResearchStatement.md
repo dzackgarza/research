@@ -63,7 +63,7 @@ The semifan data \( {\mathcal{F}} \) can be combinatorially described in terms o
 ### Compact moduli spaces of Enriques surfaces
 
 An **Enriques surface** is a non-rational minimal algebraic surface \( Y \) of Kodaira dimension \( \kappa(Y) = 0 \) for which \( h^1({\mathcal{O}}_Y) = h^2({\mathcal{O}}_Y) = 0 \) and \( K_Y \) is nontrivial 2-torsion.
-[@Enr07] originally constructed such surfaces, motivated by relating the rationality of a surface to its irregularity \( q_Y \coloneqq h^1({\mathcal{O}}_Y) \). There has been a resurgence of interest in moduli spaces of Enriques surfaces, c.f. [@Vie95; @Lie13; @GH15; @CDGK18; @Knu20; @CDL25; @For20].
+[@Enr07] originally constructed such surfaces, motivated by relating the rationality of a surface to its irregularity \( q_Y \da h^1({\mathcal{O}}_Y) \). There has been a resurgence of interest in moduli spaces of Enriques surfaces, c.f. [@Vie95; @Lie13; @GH15; @CDGK18; @Knu20; @CDL25; @For20].
 
 Away from characteristic 2, deformations of (numerically polarized) Enriques surfaces are unobstructed by [@Ill79; @Lan83], yielding a quasi-separated 10-dimensional Artin stack of finite type over \( {\mathbf{C}} \) by [@CDL25, Thm. 5.11.6]. By [@Kon94], the coarse moduli space is known to be rational.
 As for K3 surfaces, Enriques surfaces admit a global Torelli theorem and thus a coarse space \( F_{\operatorname{En}} \) of unpolarized surfaces birational to a Shimura variety \( D/\Gamma \) of orthogonal type, yielding a type IV Hermitian symmetric domain.
@@ -79,7 +79,7 @@ Leveraging and extending the theory of ADE surfaces in [@AT17] to Dynkin diagram
 ::: {.remark title="Coble surfaces and their moduli"}
 A Coble surface is a smooth projective rational surface \( S \) with \( {\left\lvert {-K_S} \right\rvert} = \emptyset \) but \( {\left\lvert {-2K_X} \right\rvert}\neq \emptyset \). Such surfaces arise from the work of [@Cob19] and [@Cob29] on Cremona transformations of \( {\mathbf{P}}^2 \) preserving an irreducible rational sextic \( C \) with ten nodal singularities. The blowup \( S \) of these nodes yields a Coble surface. Coble surfaces occur as degenerations of Enriques surfaces and were ultimately classified in [@DZ99]. As such, they are closely tied to the theory of algebraic K3 surfaces with nonsymplectic involutions, which were classified by [@Nik79]. For a reduced sextic \( C \), the double cover of \( S \) branched along the proper transform of \( C \) is a K3 surface \( X \) which can be realized as a degeneration of the universal double cover of an Enriques surface, where \( X \) is allowed to acquire an \( A_1 \) singularity fixed by the Enriques involution.
 
-Denote by \( F_{\Co, n} \) the moduli space of Coble surfaces with \( n \) boundary components. It is well-known that \( 1\leq n\leq 10 \), and the case \( n=1 \) corresponds to the surfaces originally studied by Coble. By [@DK13], the moduli space \( F_{\Co} \coloneqq F_{\Co, 1} \) is known to be rational, but very little else is known about these moduli spaces. In particular, compactifications of \( F_{\Co, n} \) have not yet appeared in the literature, despite their close relation to Enriques surfaces.
+Denote by \( F_{\Co, n} \) the moduli space of Coble surfaces with \( n \) boundary components. It is well-known that \( 1\leq n\leq 10 \), and the case \( n=1 \) corresponds to the surfaces originally studied by Coble. By [@DK13], the moduli space \( F_{\Co} \da F_{\Co, 1} \) is known to be rational, but very little else is known about these moduli spaces. In particular, compactifications of \( F_{\Co, n} \) have not yet appeared in the literature, despite their close relation to Enriques surfaces.
 :::
 
 ::: {#rmk:divisors-for-coble-compactification .remark title="The period-domain model of the Coble moduli space"}
@@ -89,9 +89,9 @@ These divisors in \( X \) generate a sublattice \( S_{\Co} \) of \( \operatornam
 \[
 S_{\Co} ={\rm{I}}_{1, 10}(2) \cong \left\langle{-2}\right\rangle \oplus E_{10}(2), \qquad T_{\Co}\cong \left\langle{2}\right\rangle \oplus E_{10}(2)
 \]
-where \( E_{10} \coloneqq U \oplus E_8 \) with \( U \) the hyperbolic lattice and \( E_8 \) the lattice associated to the \( E_8 \) Dynkin diagram. I construct the period domain
+where \( E_{10} \da U \oplus E_8 \) with \( U \) the hyperbolic lattice and \( E_8 \) the lattice associated to the \( E_8 \) Dynkin diagram. I construct the period domain
 \[
-F_{\Co} \coloneqq D_{T_\Co}/{\operatorname{O}}(T_\Co),\qquad D_{T_\Co} \subseteq \left\{{ [\sigma] \in {\mathbf{P}}\qty{T_{\Co}\otimes_{{\mathbf{Z}}} {\mathbf{C}}} {~\mathrel{\Big\vert}~}\sigma^2 = 0,\, \sigma\overline{\sigma }>0 }\right\}
+F_{\Co} \da D_{T_\Co}/{\operatorname{O}}(T_\Co),\qquad D_{T_\Co} \subseteq \left\{{ [\sigma] \in {\mathbf{P}}\qty{T_{\Co}\otimes_{{\mathbf{Z}}} {\mathbf{C}}} {~\mathrel{\Big\vert}~}\sigma^2 = 0,\, \sigma\overline{\sigma }>0 }\right\}
 ,\]
 which is birational to the moduli space of Coble surfaces with \( n=1 \) boundary component constructed as a GIT quotient \( ({\mathbf{P}}^2)^{10}{ \mathbin{/\mkern-6mu/}}\operatorname{PGL}_3 \). The moduli space \( F_{\Co} \) is an arithmetic quotient of a Hermitian symmetric domain of Type IV, and thus admits semitoroidal compactifications, including the canonically defined Baily-Borel compactification \( \overline{ F_{\Co} }^{\operatorname{BB}} \).
 :::
@@ -210,14 +210,14 @@ S_{\Nod} = \left\langle{-4}\right\rangle \oplus U \oplus E_8(2)
 \]
 is the generic Picard lattice of the K3 cover \( X \) of \( Y \) and
 \[
-T_{\Nod} \coloneqq S^{\perp} \cong \left\langle{4}\right\rangle \oplus U \oplus E_8(2)
+T_{\Nod} \da S^{\perp} \cong \left\langle{4}\right\rangle \oplus U \oplus E_8(2)
 \]
 is its transcendental lattice.
 It is known that \( F_{\operatorname{En}, \Nod} \) forms an irreducible hypersurface in \( F_{\operatorname{En}} \), and that a generic Enriques surface is unnodal.
 Similar to the case of Coble surfaces, \( F_{\Nod} \) can also be realized as a divisor \( \cH_{-4}/{\operatorname{O}}(T_{\operatorname{En}}) \), yielding an 9-dimensional irreducible quasiprojective variety.
 By [@CDL25, Def. 5.6.3], there is a primitive embedding of lattices
 \[
-\begin{aligned} S_{\operatorname{En}} \coloneqq E_{10}(2) \coloneqq U(2) \oplus E_8(2) &\to S_{\Nod} \coloneqq\left\langle{-4}\right\rangle \oplus U \oplus E_8(2) \\ ((e_1, f_1), x) &\mapsto (f_2, 2e_2 + f_2 + h , x)  \end{aligned}
+\begin{aligned} S_{\operatorname{En}} \da E_{10}(2) \da U(2) \oplus E_8(2) &\to S_{\Nod} \da\left\langle{-4}\right\rangle \oplus U \oplus E_8(2) \\ ((e_1, f_1), x) &\mapsto (f_2, 2e_2 + f_2 + h , x)  \end{aligned}
 \]
 (where \( h \) is a generator of \( \left\langle{-4}\right\rangle \)) which exhibits \( F_{\Nod}\hookrightarrow F_{\operatorname{En}} \) as a divisor in the moduli space of unpolarized Enriques surfaces.
 
@@ -245,7 +245,7 @@ Open subsets of these moduli spaces are referenced in the literature, e.g. in [
 
 Halphen surfaces of index 2 are special classes of elliptic surfaces without a global section, and are double-covered by K3 surfaces cf.
 [@Kim18]. [@ABE22] and [@AT17] introduce stable pair compactifications for special classes of elliptic fibrations.
-In particular, there is a starting point for this study provided by [@AE22], for which the case \( S = (10, 10, 1) \) corresponds to K3 surfaces \( X \) with nonsymplectic involution \( \iota \) such that \( Y \coloneqq X/\iota \) is an index 2 Halphen pencil.
+In particular, there is a starting point for this study provided by [@AE22], for which the case \( S = (10, 10, 1) \) corresponds to K3 surfaces \( X \) with nonsymplectic involution \( \iota \) such that \( Y \da X/\iota \) is an index 2 Halphen pencil.
 More generally, by [@AE22, §4C], the lattices \( S = (10+n, 12-n, \delta) \) for \( 1\leq n\leq 9 \) yield index 2 Halphen K3 surfaces \( X \) with \( I_{2k} \) fiber, and the surfaces \( \overline{Y} \) obtained from contracting the \( (-1) \)-curves in the special fiber are index 2 Halphen pencils with an \( I_k \) fiber.
 
 In particular, these are precisely the lattices that appear in @fig:coble-boundary-components-table. I conjecture that these lattices can be used to construct period domains of such pencils, yielding moduli spaces \( M_{H, 2, k} \) of Halphen surfaces of index 2 with an \( I_{2k} \) fiber, and that the matching of these lattices arises from a geometric comparison to Coble surfaces.
@@ -253,7 +253,7 @@ Consequently, their KSBA compactifications can be studied, much as was done for 
 In particular, I conjecture that the normalizations of the stable pair compactifications \( \overline{M_{H, 2, k}}^R \) are isomorphic to semitoroidal compactifications of the corresponding period domains, where \( R \) is a suitably canonical choice of divisor.
 In particular, a Halphen surface of index \( m\geq 2 \) has a unique multiple fiber of multiplicity \( m \), and I conjecture that such a fiber can be used to construct a recognizable divisor \( R \).
 
-As a starting point, the Coxeter diagram for \( S \coloneqq(10, 10, 1) \) is well-known, and the moduli theory for the corresponding K3 surfaces is well-developed.
+As a starting point, the Coxeter diagram for \( S \da(10, 10, 1) \) is well-known, and the moduli theory for the corresponding K3 surfaces is well-developed.
 Further study would include
 
 - Constructing the period domain \( F_{S} \),
