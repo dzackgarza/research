@@ -18,10 +18,8 @@ intersections, transport along isometries and stabilizers.  The records below
 join cells into the complex: an oriented adjacency, a face incidence, a marked
 cell, and the finite explorations and completed traversals built from them.
 
-None of this is computed here.  The traversal is the capability
-``lattice.lorentzian_perfect_domain_traversal``, which ``sage-indefinite-port``
-owns, and it arrives here through that capability rather than as an
-implementation in this file.
+None of this is computed here.  ``sage-indefinite-port`` computes the
+traversal, in ``sage_indefinite_port.indefinite.lorentzian_cells``.
 
 What *is* owned, so that a caller does not reach here for it:
 
@@ -49,7 +47,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
@@ -63,9 +60,13 @@ class ReductionCellAdjacency(SageObject):
 
     def __init__(self, source, target, common_face, transporter) -> None:
         if source.ambient_lattice() is not target.ambient_lattice():
-            raise ValueError(f"the reduction cells {source} and {target} cannot be adjacent: they lie in different lattices, {source.ambient_lattice()} and {target.ambient_lattice()}")
+            raise ValueError(
+                f"the reduction cells {source} and {target} cannot be adjacent: they lie in different lattices, {source.ambient_lattice()} and {target.ambient_lattice()}"
+            )
         if common_face.ambient_lattice() is not source.ambient_lattice():
-            raise ValueError(f"{common_face} cannot be the common face of {source} and {target}: it lies in {common_face.ambient_lattice()}, not in the lattice {source.ambient_lattice()} of the cells")
+            raise ValueError(
+                f"{common_face} cannot be the common face of {source} and {target}: it lies in {common_face.ambient_lattice()}, not in the lattice {source.ambient_lattice()} of the cells"
+            )
         if not source.is_adjacent_to(target):
             raise ValueError(f"the reduction cells {source} and {target} are not adjacent: they do not share a facet")
         if not common_face.is_equal_to(source.intersection(target)):
@@ -142,9 +143,7 @@ class ReductionFaceIncidence(SageObject):
         return ReductionFaceIncidence(
             transported_face,
             transported_cell,
-            transported_cell.face_stabilizer(
-                transported_face, self.stabilizer().supergroup()
-            ),
+            transported_cell.face_stabilizer(transported_face, self.stabilizer().supergroup()),
         )
 
     def _repr_(self):
@@ -164,9 +163,7 @@ class MarkedReductionCell(SageObject):
         assert cell in RationalPolyhedralCones(cell.ambient_lattice()), (
             f"{cell} cannot be marked as a reduction cell: a reduction cell must be a rational polyhedral cone, but {cell} is in {cell.category()}"
         )
-        assert marked_vectors.cardinality().is_finite(), (
-            f"cannot mark the reduction cell {cell} with {marked_vectors}: the family of marked vectors must be finite"
-        )
+        assert marked_vectors.cardinality().is_finite(), f"cannot mark the reduction cell {cell} with {marked_vectors}: the family of marked vectors must be finite"
         lattice = cell.ambient_lattice()
         for vector in marked_vectors:
             if vector.parent() is not lattice:
@@ -221,7 +218,9 @@ class MarkedReductionCell(SageObject):
     def stabilizer(self, group):
         r"""Return the subgroup preserving both the cell and every labelled mark."""
         if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
-            raise ValueError(f"{group} cannot stabilize the marked cell {self}: it must be a group of isometries of {self.lattice()}, but it acts from {group.domain()} to {group.codomain()}")
+            raise ValueError(
+                f"{group} cannot stabilize the marked cell {self}: it must be a group of isometries of {self.lattice()}, but it acts from {group.domain()} to {group.codomain()}"
+            )
 
         def preserves_marked_cell(isometry):
             return self.transported_by(isometry).is_equal_to(self)
@@ -239,10 +238,7 @@ class MarkedReductionCell(SageObject):
         return MarkedReductionCellAdjacency(self, other, underlying, transporter)
 
     def _repr_(self):
-        return (
-            f"Marked {self.cell()} with {self.marked_vectors().cardinality()} "
-            "labelled vectors"
-        )
+        return f"Marked {self.cell()} with {self.marked_vectors().cardinality()} labelled vectors"
 
 
 class MarkedReductionCellAdjacency(SageObject):
@@ -250,7 +246,9 @@ class MarkedReductionCellAdjacency(SageObject):
 
     def __init__(self, source, target, cell_adjacency, transporter) -> None:
         if cell_adjacency.source() is not source.cell() or cell_adjacency.target() is not target.cell():
-            raise ValueError(f"{cell_adjacency} cannot underlie an adjacency of the marked cells {source} and {target}: it joins {cell_adjacency.source()} to {cell_adjacency.target()}, not {source.cell()} to {target.cell()}")
+            raise ValueError(
+                f"{cell_adjacency} cannot underlie an adjacency of the marked cells {source} and {target}: it joins {cell_adjacency.source()} to {cell_adjacency.target()}, not {source.cell()} to {target.cell()}"
+            )
         if not source.transported_by(transporter).is_equal_to(target):
             raise ValueError(f"the isometry {transporter} does not carry the marked cell {source} onto {target}")
         self._source = source
@@ -319,15 +317,15 @@ class RationalReductionComplexExploration(SageObject):
             if adjacency.lattice() is not lattice:
                 raise ValueError(f"the adjacency {adjacency} cannot be part of a reduction complex of {lattice}: it lies in {adjacency.lattice()}")
             if adjacency.source() not in cells or adjacency.target() not in cells:
-                raise ValueError(f"the adjacency {adjacency} cannot be part of this reduction complex of {lattice}: it joins {adjacency.source()} to {adjacency.target()}, and not both are cells of the complex")
+                raise ValueError(
+                    f"the adjacency {adjacency} cannot be part of this reduction complex of {lattice}: it joins {adjacency.source()} to {adjacency.target()}, and not both are cells of the complex"
+                )
         self._lattice = lattice
         self._cells = cells
         self._adjacencies = adjacencies
         self._complete = bool(complete)
         if self._complete and self.unpaired_facets().cardinality() != 0:
-            raise ValueError(
-                f"the reduction complex of {lattice} is declared complete, but {self.unpaired_facets().cardinality()} facets of its cells have no adjacent cell"
-            )
+            raise ValueError(f"the reduction complex of {lattice} is declared complete, but {self.unpaired_facets().cardinality()} facets of its cells have no adjacent cell")
 
     def lattice(self):
         return self._lattice
@@ -345,11 +343,7 @@ class RationalReductionComplexExploration(SageObject):
         r"""Return the retained cell facets not represented by an adjacency."""
         return _unpaired_facets(
             self.cells(),
-            lambda cell: tuple(
-                adjacency.common_face()
-                for adjacency in self.adjacencies()
-                if adjacency.source() is cell or adjacency.target() is cell
-            ),
+            lambda cell: tuple(adjacency.common_face() for adjacency in self.adjacencies() if adjacency.source() is cell or adjacency.target() is cell),
         )
 
     def adjacency_transporters(self):
@@ -369,11 +363,11 @@ class RationalReductionComplexExploration(SageObject):
         incomplete prefix is not a group-generation certificate.
         """
         if not self.is_complete():
-            raise ValueError(
-                f"cannot conclude that the cell stabilizers and adjacencies generate {group}: the reduction complex of {self.lattice()} is not complete"
-            )
+            raise ValueError(f"cannot conclude that the cell stabilizers and adjacencies generate {group}: the reduction complex of {self.lattice()} is not complete")
         if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
-            raise ValueError(f"{group} cannot act on the reduction complex of {self.lattice()}: it must be a group of isometries of {self.lattice()}, but it acts from {group.domain()} to {group.codomain()}")
+            raise ValueError(
+                f"{group} cannot act on the reduction complex of {self.lattice()}: it must be a group of isometries of {self.lattice()}, but it acts from {group.domain()} to {group.codomain()}"
+            )
         assert group.cardinality().is_finite(), (
             f"cannot compute generators of {group} from the reduction complex of {self.lattice()}: this is done only for a finite group, and {group} has cardinality {group.cardinality()}"
         )
@@ -391,10 +385,7 @@ class RationalReductionComplexExploration(SageObject):
 
     def _repr_(self):
         status = "complete" if self.is_complete() else "finite-prefix"
-        return (
-            f"{status} rational reduction-complex exploration with "
-            f"{self.cells().cardinality()} cells in {self.lattice()}"
-        )
+        return f"{status} rational reduction-complex exploration with {self.cells().cardinality()} cells in {self.lattice()}"
 
 
 class PerfectDomainOrbitAdjacency(SageObject):
@@ -417,7 +408,9 @@ class PerfectDomainOrbitAdjacency(SageObject):
     ) -> None:
         lattice = source.ambient_lattice()
         if any(cell.ambient_lattice() is not lattice for cell in (target, neighbor, common_face)):
-            raise ValueError(f"the perfect domains {source}, {target}, {neighbor} and the face {common_face} cannot form an adjacency: they do not all lie in the lattice {lattice}")
+            raise ValueError(
+                f"the perfect domains {source}, {target}, {neighbor} and the face {common_face} cannot form an adjacency: they do not all lie in the lattice {lattice}"
+            )
         if not common_face.is_face_of(source) or not common_face.is_face_of(neighbor):
             raise ValueError(f"{common_face} is not a common face of the perfect domains {source} and {neighbor}")
         if not target.transport(target_to_neighbor).is_equal_to(neighbor):
@@ -467,10 +460,7 @@ class LorentzianPerfectDomainTraversal(SageObject):
             raise ValueError(f"cannot decompose {lattice} into the perfect domains {self._cells}: some domain lies in a different lattice")
         if any(adjacency.source() not in self._cells for adjacency in self._adjacencies):
             raise ValueError(f"the perfect-domain decomposition of {lattice} has an adjacency starting at a domain that is not one of its orbit representatives {self._cells}")
-        if any(
-            adjacency.target_representative() not in self._cells
-            for adjacency in self._adjacencies
-        ):
+        if any(adjacency.target_representative() not in self._cells for adjacency in self._adjacencies):
             raise ValueError(f"the perfect-domain decomposition of {lattice} has an adjacency ending at an orbit whose representative is not one of {self._cells}")
         if self.unpaired_facets().cardinality() != 0:
             raise ValueError(
@@ -500,11 +490,7 @@ class LorentzianPerfectDomainTraversal(SageObject):
         """
         return _unpaired_facets(
             self.cells(),
-            lambda cell: tuple(
-                adjacency.common_face()
-                for adjacency in self.adjacencies()
-                if adjacency.source() is cell
-            ),
+            lambda cell: tuple(adjacency.common_face() for adjacency in self.adjacencies() if adjacency.source() is cell),
         )
 
     def cell_stabilizer_generators(self, cell):
@@ -516,9 +502,7 @@ class LorentzianPerfectDomainTraversal(SageObject):
         generators = []
         for cell in self.cells():
             generators.extend(self.cell_stabilizer_generators(cell))
-        generators.extend(
-            adjacency.target_to_neighbor() for adjacency in self.adjacencies()
-        )
+        generators.extend(adjacency.target_to_neighbor() for adjacency in self.adjacencies())
         return finite_ordered_set(tuple(generators))
 
     def generation_subgroup(self):
@@ -568,11 +552,10 @@ def _row_action_from_ray_permutation(rays, permutation):
     if ext * action != permuted:
         raise ArithmeticError(f"the permutation {permutation} of the rays of a perfect domain is not induced by a linear map")
     if any(entry.denominator() != 1 for entry in action.list()):
-        raise ArithmeticError(f"the permutation {permutation} of the rays of a perfect domain is induced by the matrix {action}, which is not integral, so it is not an isometry of the lattice")
-    return tuple(
-        tuple(SageZZ(entry) for entry in action.row(index))
-        for index in range(action.nrows())
-    )
+        raise ArithmeticError(
+            f"the permutation {permutation} of the rays of a perfect domain is induced by the matrix {action}, which is not integral, so it is not an isometry of the lattice"
+        )
+    return tuple(tuple(SageZZ(entry) for entry in action.row(index)) for index in range(action.nrows()))
 
 
 def _perfect_domain_traversal_from_records(lattice, records):
@@ -581,24 +564,13 @@ def _perfect_domain_traversal_from_records(lattice, records):
     if not records:
         raise ArithmeticError(f"the perfect-domain decomposition of {lattice} was computed with no orbit representatives")
     cones = RationalPolyhedralCones(lattice)
-    raw_rays = tuple(
-        tuple(tuple(SageZZ(entry) for entry in row) for row in record["x"]["EXT"])
-        for record in records
-    )
+    raw_rays = tuple(tuple(tuple(SageZZ(entry) for entry in row) for row in record["x"]["EXT"]) for record in records)
     cells = tuple(cones.from_rays(tuple(lattice(row) for row in rays)) for rays in raw_rays)
     orthogonal_group = lattice.O()
     stabilizer_by_cell = {}
     for cell, rays, record in zip(cells, raw_rays, records, strict=True):
         stabilizer_by_cell[cell] = finite_ordered_set(
-            tuple(
-                orthogonal_group(
-                    tuple(
-                        lattice(tuple(row))
-                        for row in _row_action_from_ray_permutation(rays, permutation)
-                    )
-                )
-                for permutation in record["x"]["GRP"]
-            )
+            tuple(orthogonal_group(tuple(lattice(tuple(row)) for row in _row_action_from_ray_permutation(rays, permutation))) for permutation in record["x"]["GRP"])
         )
     stabilizers = finite_indexed_family(
         finite_ordered_set(cells),
@@ -615,21 +587,16 @@ def _perfect_domain_traversal_from_records(lattice, records):
                 raise ArithmeticError(f"the perfect-domain decomposition of {lattice} has an adjacency to orbit {target_index}, but there are only {len(cells)} orbits")
             target = cells[target_index]
             target_rays = raw_rays[target_index]
-            row_action = tuple(
-                tuple(SageZZ(entry) for entry in row)
-                for row in adjacency_record["x"]["eBigMat"]
-            )
-            target_to_neighbor = orthogonal_group(
-                tuple(lattice(tuple(row)) for row in row_action)
-            )
+            row_action = tuple(tuple(SageZZ(entry) for entry in row) for row in adjacency_record["x"]["eBigMat"])
+            target_to_neighbor = orthogonal_group(tuple(lattice(tuple(row)) for row in row_action))
             neighbor_rays = tuple(target_to_neighbor(lattice(row)) for row in target_rays)
             neighbor = cones.from_rays(neighbor_rays)
             incidence = tuple(int(value) for value in adjacency_record["x"]["eInc"])
             if len(incidence) != len(source_rays):
-                raise ArithmeticError(f"a facet of the perfect domain {source} of {lattice} has an incidence vector of length {len(incidence)}, but the domain has {len(source_rays)} rays")
-            face_rays = tuple(
-                lattice(ray) for ray, selected in zip(source_rays, incidence, strict=True) if selected
-            )
+                raise ArithmeticError(
+                    f"a facet of the perfect domain {source} of {lattice} has an incidence vector of length {len(incidence)}, but the domain has {len(source_rays)} rays"
+                )
+            face_rays = tuple(lattice(ray) for ray, selected in zip(source_rays, incidence, strict=True) if selected)
             common_face = cones.from_rays(face_rays)
             adjacencies.append(
                 PerfectDomainOrbitAdjacency(
@@ -672,11 +639,11 @@ def _lorentzian_reduction_complex(lattice, marked_vectors=None):
             engine_gram = -gram
         case _:
             raise ValueError(f"{lattice} has no Lorentzian perfect-domain decomposition: it must have signature (1, n) or (n, 1), but its signature is {signature}")
-    records = engine_capabilities.compute(
-        "lattice.lorentzian_perfect_domain_traversal",
-        [list(row) for row in engine_gram.rows()],
-        "total",
+    from sage_indefinite_port.indefinite.lorentzian_cells import (
+        perfect_domain_traversal,
     )
+
+    records = perfect_domain_traversal([list(row) for row in engine_gram.rows()])
     return _perfect_domain_traversal_from_records(lattice, records)
 
 

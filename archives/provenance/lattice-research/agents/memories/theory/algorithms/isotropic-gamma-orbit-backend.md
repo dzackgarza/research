@@ -4,7 +4,7 @@
 
 This plan adds subgroup-aware isotropic orbit computation to the existing lattice
 API by following the Dutour-Sikirić/Hulek method from arXiv:2302.01679 and the
-isotropic orbit and stabilizer capabilities of sage-indefinite-port, rather than
+isotropic orbit and stabilizer functions of sage-indefinite-port, rather than
 extending the non-isotropic Dawes backend.
 
 The key idea is:
@@ -109,16 +109,16 @@ At the end of this work:
   `theory/references/literature/aegs_2023.md#L164`,
   `theory/references/literature/aegs_2023.md#L274`
 
-### sage-indefinite-port capabilities
+### sage-indefinite-port functions
 
-- `lattice.indefinite_isotropic_subspace_orbits`: orbits of primitive totally
+- `isotropic_sublattice_orbit_representatives`: orbits of primitive totally
   isotropic sublattices of rank `k`
-- `lattice.indefinite_isotropic_flag_orbits`: orbits of isotropic flags
-- `lattice.indefinite_isotropic_subspace_stabilizer`: stabilizer of an
+- `isotropic_flag_orbit_representatives`: orbits of isotropic flags
+- `isotropic_sublattice_stabilizer_generators`: stabilizer of an
   isotropic line or plane
-- `lattice.indefinite_isotropic_flag_stabilizer`: stabilizer of an isotropic
+- `isotropic_flag_stabilizer_generators`: stabilizer of an isotropic
   flag
-- `lattice.indefinite_isotropic_subspace_isometry_witness`: an isometry carrying
+- `isotropic_sublattice_equivalence_witness`: an isometry carrying
   one isotropic sublattice to another
 
 ### Existing repo integration points
@@ -200,7 +200,7 @@ The existing `dawes_orbit_backend` remains non-isotropic.
 
 ### Regime 1: ambient full-group orbit computation
 
-Use Dutour Sikirić's algorithms, through the sage-indefinite-port capabilities
+Use Dutour Sikirić's algorithms, through the sage-indefinite-port functions
 above, for:
 
 - ambient isotropic line orbits,
@@ -208,7 +208,7 @@ above, for:
 - ambient isotropic flag orbits,
 - ambient stabilizers of isotropic lines, planes, or flags.
 
-Each of these is a capability of sage-indefinite-port.
+Each of these is a function of sage-indefinite-port.
 
 ### Regime 2: subgroup splitting by finite quotient
 
@@ -289,7 +289,7 @@ Reason:
 
 If GAP word extraction or double-coset handling proves insufficient for a needed
 case, request the double-coset and orbit-splitting algorithms of Dutour Sikirić as
-capabilities of sage-indefinite-port, but only after the GAP route is shown to be
+functions of sage-indefinite-port, but only after the GAP route is shown to be
 the blocker.
 
 ## Generator policy

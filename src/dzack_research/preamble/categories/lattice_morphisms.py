@@ -40,13 +40,14 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
     ModuleEmbeddingMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -54,36 +55,23 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
 )
 
 
-def _engine_gram_rows(lattice):
-    r"""Return the Gram entries as plain integer rows, the shape the programs read."""
-    rank = int(lattice.module_rank())
-    gram = lattice.gram_tensor()
-    return [[int(gram[i, j]) for j in range(rank)] for i in range(rank)]
-
-
 def _framing_tuple(element):
     r"""Return ordered framing coefficients only at a private engine boundary."""
     parent = element.parent()
     coordinates = element.to_vector()
-    return tuple(
-        coordinates(label)
-        for label in parent.module_generating_set()
-    )
+    return tuple(coordinates(label) for label in parent.module_generating_set())
 
 
 def _module_matrix(morphism):
     r"""Return the finite-free underlying module Mor element for computation."""
-    linear = morphism.domain().module_category().Mor(
-        morphism.domain(), morphism.codomain()
-    )(morphism)
+    linear = morphism.domain().module_category().Mor(morphism.domain(), morphism.codomain())(morphism)
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
@@ -150,16 +138,12 @@ def _proper_reduced_binary_equivalence_matrix(source, target):
                 candidates.append(step)
         if not candidates:
             raise ArithmeticError(
-                f"no matrix [[0,-1],[1,s]] or [[0,1],[-1,s]] in SL_2(ZZ) carries the reduced "
-                f"binary form {current} to the next form {following} of its proper cycle"
+                f"no matrix [[0,-1],[1,s]] or [[0,1],[-1,s]] in SL_2(ZZ) carries the reduced binary form {current} to the next form {following} of its proper cycle"
             )
         step = candidates[0]
         transformation = transformation * step
     if source.matrix_action_right(transformation) != target:
-        raise ArithmeticError(
-            f"the product {transformation} of the reduction-cycle steps does not carry the "
-            f"binary form {source} to {target}; the proper equivalence is wrong"
-        )
+        raise ArithmeticError(f"the product {transformation} of the reduction-cycle steps does not carry the binary form {source} to {target}; the proper equivalence is wrong")
     return transformation
 
 
@@ -167,25 +151,19 @@ def _rho_step_matrix(current, following):
     r"""Return the exact ``SL_2(ZZ)`` matrix carrying ``current`` to ``following=current._Rho()``."""
     denominator = SageZZ(2) * SageZZ(current[2])
     if denominator == 0:
-        raise ArithmeticError(
-            f"the reduction step Rho is undefined on the binary form {current}: its c-coefficient is 0"
-        )
+        raise ArithmeticError(f"the reduction step Rho is undefined on the binary form {current}: its c-coefficient is 0")
     numerator = SageZZ(following[1]) + SageZZ(current[1])
     step_parameter = numerator // denominator
     if denominator * step_parameter != numerator:
         raise ArithmeticError(
-            f"the reduction step from the binary form {current} to {following} has "
-            f"non-integral parameter {numerator}/{denominator}, so it is not in SL_2(ZZ)"
+            f"the reduction step from the binary form {current} to {following} has non-integral parameter {numerator}/{denominator}, so it is not in SL_2(ZZ)"
         )
     step = engine_matrix(
         SageZZ,
         ((0, -1), (1, step_parameter)),
     )
     if current.matrix_action_right(step) != following:
-        raise ArithmeticError(
-            f"the matrix {step} carries the binary form {current} to "
-            f"{current.matrix_action_right(step)}, not to its reduction step {following}"
-        )
+        raise ArithmeticError(f"the matrix {step} carries the binary form {current} to {current.matrix_action_right(step)}, not to its reduction step {following}")
     return step
 
 
@@ -201,10 +179,7 @@ def _split_binary_reduction_to_zero_c(form):
         transformation = transformation * _rho_step_matrix(current, following)
         current = following
     if form.matrix_action_right(transformation) != current:
-        raise ArithmeticError(
-            f"the reduction matrix {transformation} does not carry the split binary form "
-            f"{form} to its reduced form {current} with c = 0"
-        )
+        raise ArithmeticError(f"the reduction matrix {transformation} does not carry the split binary form {form} to its reduced form {current} with c = 0")
     return current, transformation
 
 
@@ -217,8 +192,7 @@ def _proper_split_binary_equivalence_matrix(source, target):
     b = SageZZ(source_reduced[1])
     if b == 0:
         raise ArithmeticError(
-            f"the reduced form {source_reduced} of the split indefinite binary form {source} "
-            f"has b = c = 0, so its discriminant is 0 and the form is not indefinite"
+            f"the reduced form {source_reduced} of the split indefinite binary form {source} has b = c = 0, so its discriminant is 0 and the form is not indefinite"
         )
     difference = SageZZ(target_reduced[0]) - SageZZ(source_reduced[0])
     shear_parameter = difference // b
@@ -229,16 +203,10 @@ def _proper_split_binary_equivalence_matrix(source, target):
         ((1, 0), (shear_parameter, 1)),
     )
     if source_reduced.matrix_action_right(shear) != target_reduced:
-        raise ArithmeticError(
-            f"the shear {shear} does not carry the reduced binary form {source_reduced} "
-            f"to {target_reduced}"
-        )
+        raise ArithmeticError(f"the shear {shear} does not carry the reduced binary form {source_reduced} to {target_reduced}")
     transformation = source_reduction * shear * target_reduction.inverse()
     if source.matrix_action_right(transformation) != target:
-        raise ArithmeticError(
-            f"the matrix {transformation} does not carry the split binary form {source} to "
-            f"{target}; the proper equivalence is wrong"
-        )
+        raise ArithmeticError(f"the matrix {transformation} does not carry the split binary form {source} to {target}; the proper equivalence is wrong")
     return transformation
 
 
@@ -273,8 +241,7 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
             transformation = improper_twist * proper_after_twist
         if codomain_form.matrix_action_right(transformation) != domain_form:
             raise ArithmeticError(
-                f"the matrix {transformation} does not carry the binary form {codomain_form} "
-                f"to {domain_form}, so it is not an isometry between the two rank-2 lattices"
+                f"the matrix {transformation} does not carry the binary form {codomain_form} to {domain_form}, so it is not an isometry between the two rank-2 lattices"
             )
         return transformation
     domain_reduced, domain_reduction = domain_form.reduced_form(
@@ -299,17 +266,12 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
         if proper_after_swap is None:
             return False
         reduced_transport = swap * proper_after_swap
-    transformation = (
-        codomain_reduction
-        * reduced_transport
-        * domain_reduction.inverse()
-    )
+    transformation = codomain_reduction * reduced_transport * domain_reduction.inverse()
     if transformation.base_ring() is not SageZZ:
         transformation = transformation.change_ring(SageZZ)
     if codomain_form.matrix_action_right(transformation) != domain_form:
         raise ArithmeticError(
-            f"the matrix {transformation} does not carry the binary form {codomain_form} "
-            f"to {domain_form}, so it is not an isometry between the two rank-2 lattices"
+            f"the matrix {transformation} does not carry the binary form {codomain_form} to {domain_form}, so it is not an isometry between the two rank-2 lattices"
         )
     return transformation
 
@@ -330,7 +292,7 @@ def _rational_spinor_norm_representative(isometry):
     class and not only its sign.  The owning morphism applies its multiplier.
     """
     space = isometry.domain()
-    value = lattice_engines._rational_spinor_norm(
+    value = lattice_engines._oscar_lattices.rational_spinor_norm_class(
         space.gram_tensor(),
         _tensor_view(isometry),
     )
@@ -341,7 +303,7 @@ def _number_field_spinor_norm_representative(isometry):
     r"""Return the untwisted spinor-norm representative of an automorphism over an owned number field."""
     space = isometry.domain()
     field = space.base_ring()
-    return lattice_engines._number_field_spinor_norm(
+    return lattice_engines._oscar_lattices.number_field_spinor_norm_class(
         field,
         space.gram_tensor(),
         _tensor_view(isometry),
@@ -358,10 +320,7 @@ def _labelled_generator_images(domain, images):
     layer sees the actual labels.
     """
     labels = domain.module_generating_set()
-    return {
-        (labels(key) if key in labels else labels[int(key)]): value
-        for key, value in images.items()
-    }
+    return {(labels(key) if key in labels else labels[int(key)]): value for key, value in images.items()}
 
 
 class LatticeMorphismMethods:
@@ -371,18 +330,11 @@ class LatticeMorphismMethods:
         domain = parent.domain()
         codomain = parent.codomain()
         module_mor = domain.module_category().Mor(domain, codomain)
-        module_morphism = (
-            module_mor.elementwise(images)
-            if elementwise
-            else module_mor(images)
-        )
+        module_morphism = module_mor.elementwise(images) if elementwise else module_mor(images)
         values = _represented_value_module(domain)
         target_values = _represented_value_module(codomain)
         if target_values is not values:
-            raise TypeError(
-                f"a lattice morphism {domain} -> {codomain} needs both forms valued in one module, "
-                f"but they take values in {values} and {target_values}"
-            )
+            raise TypeError(f"a lattice morphism {domain} -> {codomain} needs both forms valued in one module, but they take values in {values} and {target_values}")
         super().__init__(
             parent,
             module_morphism,
@@ -395,9 +347,7 @@ class LatticeMorphismMethods:
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
-        return source.Mor(self.codomain())(
-            lambda label: self(other(source.module_generator(label)))
-        )
+        return source.Mor(self.codomain())(lambda label: self(other(source.module_generator(label))))
 
 
 class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
@@ -406,20 +356,13 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
     def __init__(self, parent, images, *, elementwise=False) -> None:
         ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
         if self.linearity_decision() is not True:
-            raise ValueError(
-                f"{self} is not a lattice morphism: the map from {self.domain()} to "
-                f"{self.codomain()} is not known to be {self.domain().base_ring()}-linear"
-            )
+            raise ValueError(f"{self} is not a lattice morphism: the map from {self.domain()} to {self.codomain()} is not known to be {self.domain().base_ring()}-linear")
         domain = self.domain()
         codomain = self.codomain()
         if domain.module_rank().is_finite() and codomain.module_rank().is_finite():
             pulled_back = codomain.gram_tensor().pullback(self)
             if not pulled_back.is_equal_tensor(domain.gram_tensor()):
-                raise ValueError(
-                    f"{self} is not a lattice morphism from {domain} to {codomain}: the "
-                    f"pullback of the form of {codomain} is not the form of {domain}"
-                )
-
+                raise ValueError(f"{self} is not a lattice morphism from {domain} to {codomain}: the pullback of the form of {codomain} is not the form of {domain}")
 
 
 class LatticeEmbeddingMethods:
@@ -431,9 +374,7 @@ class LatticeEmbeddingMethods:
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
-        return source.Emb(self.codomain())(
-            lambda label: self(other(source.module_generator(label)))
-        )
+        return source.Emb(self.codomain())(lambda label: self(other(source.module_generator(label))))
 
     def isotropic_reduction(self):
         r"""Return \(K_I=I^\perp/I\) for this totally isotropic embedding \(\iota:I\hookrightarrow L\).
@@ -473,24 +414,11 @@ class LatticeEmbeddingMethods:
         """
         source = self.domain()
         target = self.codomain()
-        assert (
-            _engine_ring(source.base_ring()) is SageZZ
-            and _engine_ring(target.base_ring()) is SageZZ
-        ), (
-            f"the discriminant inclusion of {self} is computed only for ZZ-lattices, but "
-            f"{source} is over {source.base_ring()} and {target} is over {target.base_ring()}"
+        assert _engine_ring(source.base_ring()) is SageZZ and _engine_ring(target.base_ring()) is SageZZ, (
+            f"the discriminant inclusion of {self} is computed only for ZZ-lattices, but {source} is over {source.base_ring()} and {target} is over {target.base_ring()}"
         )
-        if not (
-            source.module_rank().is_finite()
-            and target.module_rank().is_finite()
-            and source.is_nondegenerate()
-            and target.is_nondegenerate()
-        ):
-            raise ValueError(
-                f"{self} has no discriminant inclusion: {source} and {target} must both be "
-                f"nondegenerate lattices of finite rank"
-            )
-
+        if not (source.module_rank().is_finite() and target.module_rank().is_finite() and source.is_nondegenerate() and target.is_nondegenerate()):
+            raise ValueError(f"{self} has no discriminant inclusion: {source} and {target} must both be nondegenerate lattices of finite rank")
 
         target_discriminant = target.discriminant_module()
         target_dual = target_discriminant.projection().domain()
@@ -516,28 +444,19 @@ class LatticeEmbeddingMethods:
                 rationals,
                 (),
                 (source_rank,),
-                [
-                    rationals.one()
-                    if index == source_position
-                    else rationals.zero()
-                    for index in range(source_rank)
-                ],
+                [rationals.one() if index == source_position else rationals.zero() for index in range(source_rank)],
             )
             source_vector = source_dual_form * basis_covector
             target_vector = inclusion_tensor * source_vector
             extended_covector = target_form_tensor * target_vector
-            if any(
-                coefficient not in target_ring for coefficient in extended_covector
-            ):
+            if any(coefficient not in target_ring for coefficient in extended_covector):
                 raise ValueError(
                     f"{self} has no discriminant inclusion: {source} is not an orthogonal "
                     f"direct summand of {target}, since extending by zero the dual vector "
                     f"of {source} at discriminant generator {label} gives a covector with coefficients "
                     f"outside {target_ring}"
                 )
-            integral_coefficients = tuple(
-                target_ring(coefficient) for coefficient in extended_covector
-            )
+            integral_coefficients = tuple(target_ring(coefficient) for coefficient in extended_covector)
             dual_element = target_dual.linear_combination(
                 {
                     target_label: coefficient
@@ -566,15 +485,9 @@ class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
         if decision is None:
             decision = ModuleMorphism.is_injective(self)
         if decision is False:
-            raise ValueError(
-                f"{self} is not a lattice embedding of {self.domain()} into "
-                f"{self.codomain()}: it is not injective"
-            )
+            raise ValueError(f"{self} is not a lattice embedding of {self.domain()} into {self.codomain()}: it is not injective")
         if decision is not True:
-            raise ValueError(
-                f"{self} is not known to be a lattice embedding of {self.domain()} into "
-                f"{self.codomain()}: injectivity could not be decided"
-            )
+            raise ValueError(f"{self} is not known to be a lattice embedding of {self.domain()} into {self.codomain()}: injectivity could not be decided")
 
     def is_injective(self) -> bool:
         return True
@@ -601,10 +514,7 @@ class LatticeIsometryMethods:
     def __init__(self, parent, images) -> None:
         super().__init__(parent, images)
         if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
-            raise ValueError(
-                f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: "
-                f"it is not surjective"
-            )
+            raise ValueError(f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: it is not surjective")
 
     def is_surjective(self) -> bool:
         return True
@@ -621,10 +531,7 @@ class LatticeIsometryMethods:
         if self is other:
             return True
         return (
-            isinstance(other, LatticeIsometryMethods)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and _tensor_view(other) == _tensor_view(self)
+            isinstance(other, LatticeIsometryMethods) and other.domain() is self.domain() and other.codomain() is self.codomain() and _tensor_view(other) == _tensor_view(self)
         )
 
     def __ne__(self, other) -> bool:
@@ -642,10 +549,7 @@ class LatticeIsometryMethods:
     def determinant(self):
         r"""Return the determinant of this automorphism/isometry tensor."""
         if self.domain().module_rank() != self.codomain().module_rank():
-            raise ValueError(
-                f"{self} has no determinant: its domain has rank {self.domain().module_rank()} "
-                f"and its codomain has rank {self.codomain().module_rank()}"
-            )
+            raise ValueError(f"{self} has no determinant: its domain has rank {self.domain().module_rank()} and its codomain has rank {self.codomain().module_rank()}")
         return _module_matrix(self).determinant()
 
     def __mul__(self, other):
@@ -653,9 +557,7 @@ class LatticeIsometryMethods:
             if self.domain() is self.codomain() and other.parent() is self.parent():
                 return self.parent().compose(self, other)
             source = other.domain()
-            return source.Isom(self.codomain())(
-                lambda label: self(other(source.module_generator(label)))
-            )
+            return source.Isom(self.codomain())(lambda label: self(other(source.module_generator(label))))
         return super().__mul__(other)
 
     def transport_isotropic_object(self, obj):
@@ -682,10 +584,7 @@ class LatticeIsometryMethods:
     def invariant_lattice(self):
         r"""Return ``ker(self-id)`` as a formed subobject of the lattice."""
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"{self} has no invariant lattice: it is an isometry from {self.domain()} to "
-                f"{self.codomain()}, not an automorphism of one lattice"
-            )
+            raise ValueError(f"{self} has no invariant lattice: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice")
         lattice = self.domain()
 
         difference = lattice.module_category().Mor(lattice, lattice)(tuple(self(generator) - generator for generator in lattice.module_generators()))
@@ -711,10 +610,7 @@ class LatticeIsometryMethods:
         complement; it is not the module quotient ``L/(self-id)L``.
         """
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"{self} cuts out no primitive extension: it is an isometry from "
-                f"{self.domain()} to {self.codomain()}, not an automorphism of one lattice"
-            )
+            raise ValueError(f"{self} cuts out no primitive extension: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice")
         from dzack_research.preamble.categories.lattice_centralizers import (
             IsometryPrimitiveExtension,
         )
@@ -736,8 +632,7 @@ class LatticeIsometryMethods:
         """
         if self.domain() is not self.codomain():
             raise ValueError(
-                f"{self} has no cyclotomic summand ker Phi_{order}: it is an isometry from "
-                f"{self.domain()} to {self.codomain()}, not an automorphism of one lattice"
+                f"{self} has no cyclotomic summand ker Phi_{order}: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
             )
         from sage.rings.polynomial.cyclotomic import cyclotomic_coeffs
 
@@ -753,9 +648,7 @@ class LatticeIsometryMethods:
                 iterate = self(iterate)
             return total
 
-        evaluated = lattice.module_category().Mor(lattice, lattice)(
-            {label: image(label) for label in lattice.module_generating_set()}
-        )
+        evaluated = lattice.module_category().Mor(lattice, lattice)({label: image(label) for label in lattice.module_generating_set()})
         return evaluated.kernel()
 
     @cached_method
@@ -866,10 +759,7 @@ class LatticeIsometryMethods:
 
         flags = tuple(flags)
         if any(flag.isometry() != self for flag in flags):
-            raise ValueError(
-                f"the flags {flags} are not all stable flags of {self}: some flag belongs to "
-                f"a different automorphism"
-            )
+            raise ValueError(f"the flags {flags} are not all stable flags of {self}: some flag belongs to a different automorphism")
         return _equivariant_finite_orbit_decomposition(
             self,
             flags,
@@ -924,13 +814,10 @@ class LatticeIsometryMethods:
         r"""Return ``Disc(self)`` parented by ``O(A_L)`` for an automorphism."""
         if self.domain() is not self.codomain():
             raise ValueError(
-                f"{self} induces no automorphism of a discriminant form: it is an isometry "
-                f"from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
+                f"{self} induces no automorphism of a discriminant form: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
             )
         form = self.domain().discriminant_group()
-        return form.orthogonal_group().from_morphism(
-            self._discriminant_forward_morphism()
-        )
+        return form.orthogonal_group().from_morphism(self._discriminant_forward_morphism())
 
     def is_involution(self) -> bool:
         r"""Return whether this lattice automorphism satisfies ``self^2 = 1``."""
@@ -943,10 +830,7 @@ class LatticeIsometryMethods:
     def cyclic_subgroup(self):
         r"""Return the literal subgroup ``<self> <= O(L)``."""
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"{self} generates no cyclic subgroup of an orthogonal group: it is an "
-                f"isometry from {self.domain()} to {self.codomain()}, not an automorphism"
-            )
+            raise ValueError(f"{self} generates no cyclic subgroup of an orthogonal group: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism")
 
         return CyclicGroups()(self)
 
@@ -960,8 +844,7 @@ class LatticeIsometryMethods:
         """
         if self.domain() is not self.codomain():
             raise ValueError(
-                f"cannot ask whether {self} preserves the positive cone: it is an isometry "
-                f"from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
+                f"cannot ask whether {self} preserves the positive cone: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
             )
         lattice = self.domain()
         _signature = lattice.signature_pair()
@@ -980,10 +863,7 @@ class LatticeIsometryMethods:
         image = _tensor_view(self).change_ring(rationals) * vector
         pairing = gram.contract(vector, image)
         if pairing == rationals.zero():
-            raise ArithmeticError(
-                f"the positive vector {vector} of {lattice} is orthogonal to its image {image} "
-                f"under {self}, which is impossible in signature (1,n)"
-            )
+            raise ArithmeticError(f"the positive vector {vector} of {lattice} is orthogonal to its image {image} under {self}, which is impossible in signature (1,n)")
         return bool(pairing > rationals.zero())
 
     @cached_method
@@ -998,31 +878,20 @@ class LatticeIsometryMethods:
         """
         if self.domain() is not self.codomain():
             raise ValueError(
-                f"{self} has no centralizer in an orthogonal group: it is an isometry from "
-                f"{self.domain()} to {self.codomain()}, not an automorphism of one lattice"
+                f"{self} has no centralizer in an orthogonal group: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
             )
         lattice = self.domain()
         assert _engine_ring(lattice.base_ring()) is SageZZ, (
-            f"the image of the centralizer of {self} in O(A_L) is computed only for "
-            f"ZZ-lattices, but {lattice} is over {lattice.base_ring()}"
+            f"the image of the centralizer of {self} in O(A_L) is computed only for ZZ-lattices, but {lattice} is over {lattice.base_ring()}"
         )
         if not lattice.is_even():
-            raise ValueError(
-                f"the image of the centralizer of {self} in O(A_L) is computed by hermitian "
-                f"Miranda--Morrison theory only for even lattices, but {lattice} is odd"
-            )
+            raise ValueError(f"the image of the centralizer of {self} in O(A_L) is computed by hermitian Miranda--Morrison theory only for even lattices, but {lattice} is odd")
         if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
-            raise ValueError(
-                f"the image of the centralizer of {self} in O(A_L) requires {lattice} to be "
-                f"a nondegenerate lattice of finite rank"
-            )
+            raise ValueError(f"the image of the centralizer of {self} in O(A_L) requires {lattice} to be a nondegenerate lattice of finite rank")
 
-
-        engine_generators, expected_order, invariant_rank, coinvariant_rank = (
-            lattice_engines._centralizer_discriminant_image(
-                lattice.gram_tensor(),
-                _tensor_view(self),
-            )
+        engine_generators, expected_order, invariant_rank, coinvariant_rank = lattice_engines._oscar_lattices.centralizer_discriminant_image(
+            lattice.gram_tensor(),
+            _tensor_view(self),
         )
         if self.invariant_lattice().module_rank() != invariant_rank:
             raise ArithmeticError(
@@ -1043,24 +912,19 @@ class LatticeIsometryMethods:
                 orthogonal_group,
                 # Both OSCAR's finite discriminant group and Sage's FQF
                 # engine act on their Smith generators on the right.
-                _engine_component_matrix(engine_generator)
+                _engine_component_matrix(engine_generator),
             )
             for engine_generator in engine_generators
         )
         induced = self.discriminant_morphism()
-        if any(
-            generator * induced != induced * generator
-            for generator in generators
-        ):
+        if any(generator * induced != induced * generator for generator in generators):
             raise ArithmeticError(
-                f"a generator OSCAR returned for the image of the centralizer of {self} in "
-                f"O(A_L) does not commute with the induced discriminant automorphism {induced}"
+                f"a generator OSCAR returned for the image of the centralizer of {self} in O(A_L) does not commute with the induced discriminant automorphism {induced}"
             )
         image = orthogonal_group.subgroup_on(generators)
         if image.order() != expected_order:
             raise ArithmeticError(
-                f"the subgroup of O(A_L) generated by OSCAR's centralizer-image generators "
-                f"for {self} has order {image.order()}, but OSCAR reports order {expected_order}"
+                f"the subgroup of O(A_L) generated by OSCAR's centralizer-image generators for {self} has order {image.order()}, but OSCAR reports order {expected_order}"
             )
         return image
 
@@ -1077,8 +941,7 @@ class LatticeMor(CategoricalMor):
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
             raise TypeError(
-                f"no lattice morphisms from {domain} to {codomain}: both must be objects of "
-                f"{lattices}, but they lie in {domain.category()} and {codomain.category()}"
+                f"no lattice morphisms from {domain} to {codomain}: both must be objects of {lattices}, but they lie in {domain.category()} and {codomain.category()}"
             )
         CategoricalMor.__init__(
             self,
@@ -1098,18 +961,12 @@ class LatticeMor(CategoricalMor):
             if images.parent() is self:
                 return images
             if images.linearity_decision() is not True:
-                raise ValueError(
-                    f"{images} is not a lattice morphism from {self.domain()} to "
-                    f"{self.codomain()}: it is not known to be "
-                    f"{self.domain().base_ring()}-linear"
-                )
+                raise ValueError(f"{images} is not a lattice morphism from {self.domain()} to {self.codomain()}: it is not known to be {self.domain().base_ring()}-linear")
             return self.elementwise(lambda element: images(element))
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
-                    f"the morphism {images} goes from {images.domain()} to "
-                    f"{images.codomain()}, so it is not a lattice morphism from "
-                    f"{self.domain()} to {self.codomain()}"
+                    f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice morphism from {self.domain()} to {self.codomain()}"
                 )
             return self.elementwise(lambda element: images(element))
         if isinstance(images, dict):
@@ -1118,10 +975,7 @@ class LatticeMor(CategoricalMor):
 
     def elementwise(self, function):
         if not callable(function):
-            raise TypeError(
-                f"{function} cannot define a lattice morphism from {self.domain()} to "
-                f"{self.codomain()}: it is not a function of the elements of {self.domain()}"
-            )
+            raise TypeError(f"{function} cannot define a lattice morphism from {self.domain()} to {self.codomain()}: it is not a function of the elements of {self.domain()}")
         source = self.domain()
         return self.element_class(
             self,
@@ -1130,10 +984,7 @@ class LatticeMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"there is no identity morphism from {self.domain()} to {self.codomain()}: "
-                f"they are different lattices"
-            )
+            raise ValueError(f"there is no identity morphism from {self.domain()} to {self.codomain()}: they are different lattices")
         return self.elementwise(lambda element: element)
 
     def _repr_(self):
@@ -1147,8 +998,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
             raise TypeError(
-                f"no lattice embeddings from {domain} to {codomain}: both must be objects of "
-                f"{lattices}, but they lie in {domain.category()} and {codomain.category()}"
+                f"no lattice embeddings from {domain} to {codomain}: both must be objects of {lattices}, but they lie in {domain.category()} and {codomain.category()}"
             )
         CategoricalMor.__init__(
             self,
@@ -1162,10 +1012,7 @@ class LatticeEmbeddingMor(CategoricalMor):
 
     def _element_constructor_(self, images):
         if isinstance(images, ModuleEmbeddingMethods):
-            if (
-                images.domain() is not self.domain()
-                or images.codomain() is not self.codomain()
-            ):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the module embedding {images} goes from {images.domain()} to "
                     f"{images.codomain()}, so it is not a lattice embedding of "
@@ -1173,10 +1020,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                 )
             return _TransportedLatticeEmbedding(self, images)
         if isinstance(images, ModuleMorphismMethods):
-            if (
-                images.domain() is not self.domain()
-                or images.codomain() is not self.codomain()
-            ):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the module morphism {images} goes from {images.domain()} to "
                     f"{images.codomain()}, so it is not a lattice embedding of "
@@ -1185,11 +1029,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             if images.parent() is self:
                 return images
             if images.linearity_decision() is not True:
-                raise ValueError(
-                    f"{images} is not a lattice embedding of {self.domain()} into "
-                    f"{self.codomain()}: it is not known to be "
-                    f"{self.domain().base_ring()}-linear"
-                )
+                raise ValueError(f"{images} is not a lattice embedding of {self.domain()} into {self.codomain()}: it is not known to be {self.domain().base_ring()}-linear")
             source = self.domain()
             return self.element_class(
                 self,
@@ -1198,9 +1038,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
-                    f"the morphism {images} goes from {images.domain()} to "
-                    f"{images.codomain()}, so it is not a lattice embedding of "
-                    f"{self.domain()} into {self.codomain()}"
+                    f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice embedding of {self.domain()} into {self.codomain()}"
                 )
             return self.elementwise(lambda element: images(element))
         if isinstance(images, dict):
@@ -1209,10 +1047,7 @@ class LatticeEmbeddingMor(CategoricalMor):
 
     def elementwise(self, function):
         if not callable(function):
-            raise TypeError(
-                f"{function} cannot define a lattice embedding of {self.domain()} into "
-                f"{self.codomain()}: it is not a function of the elements of {self.domain()}"
-            )
+            raise TypeError(f"{function} cannot define a lattice embedding of {self.domain()} into {self.codomain()}: it is not a function of the elements of {self.domain()}")
         source = self.domain()
         return self.element_class(
             self,
@@ -1223,11 +1058,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
-        inherited = [
-            superpacket.Monos().Of(source, target)
-            for superpacket in packet.super_packets()
-            if source in superpacket.C() and target in superpacket.C()
-        ]
+        inherited = [superpacket.Monos().Of(source, target) for superpacket in packet.super_packets() if source in superpacket.C() and target in superpacket.C()]
         return [packet.Mors().Of(source, target), *inherited]
 
     def _repr_(self):
@@ -1239,12 +1070,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             return False
         _signature = target.signature_pair()
         positive, negative = _signature.first(), _signature.second()
-        return (
-            positive > 0
-            and negative > 0
-            and target.is_even()
-            and target.is_unimodular()
-        )
+        return positive > 0 and negative > 0 and target.is_even() and target.is_unimodular()
 
     def even_overlattice_inclusions(self):
         r"""Return the finite even-overlattice sweep used by Nikulin existence."""
@@ -1265,9 +1091,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             or target.is_definite()
         ):
             return None
-        if not engine_capabilities.is_available("lattice.target_primitive_embedding"):
-            return None
-        return lattice_engines._target_primitive_embedding(
+        return lattice_engines._oscar_lattices.target_primitive_embedding(
             source.gram_tensor(),
             target.gram_tensor(),
         )
@@ -1277,12 +1101,10 @@ class LatticeEmbeddingMor(CategoricalMor):
         assert data is not None, (
             f"no primitive embedding of {self.domain()} into {self.codomain()} can be "
             f"constructed: this requires nondegenerate ZZ-lattices of finite rank with "
-            f"the source of smaller rank, an indefinite target, and OSCAR installed"
+            f"the source of smaller rank and an indefinite target"
         )
         if data is False:
-            raise ValueError(
-                f"there is no primitive embedding of {self.domain()} into {self.codomain()}"
-            )
+            raise ValueError(f"there is no primitive embedding of {self.domain()} into {self.codomain()}")
         return self._reconstruct_target_primitive_embedding(data)
 
     def _reconstruct_target_primitive_embedding(self, data):
@@ -1314,17 +1136,9 @@ class LatticeEmbeddingMor(CategoricalMor):
             )
         )
         composed = target_prime_to_target * inclusion * source_to_prime
-        embedding = self(
-            tuple(
-                composed(source.module_generator(label))
-                for label in source.module_generating_set()
-            )
-        )
+        embedding = self(tuple(composed(source.module_generator(label)) for label in source.module_generating_set()))
         if not embedding.is_primitive():
-            raise ArithmeticError(
-                f"the embedding {embedding} of {source} into {target} built from OSCAR's "
-                f"primitive embedding is not primitive"
-            )
+            raise ArithmeticError(f"the embedding {embedding} of {source} into {target} built from OSCAR's primitive embedding is not primitive")
         return embedding
 
     def primitive_embedding_class_representatives(self, classification="emb"):
@@ -1338,8 +1152,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         """
         if classification not in ("sub", "emb"):
             raise ValueError(
-                f"classification={classification!r} is not a classification of primitive "
-                f"embeddings: use 'sub' (sublattices up to O(source)) or 'emb' (embeddings)"
+                f"classification={classification!r} is not a classification of primitive embeddings: use 'sub' (sublattices up to O(source)) or 'emb' (embeddings)"
             )
         source = self.domain()
         target = self.codomain()
@@ -1356,21 +1169,13 @@ class LatticeEmbeddingMor(CategoricalMor):
             f"nondegenerate ZZ-lattices of finite rank with rank(source) <= rank(target); "
             f"here the base rings are {source.base_ring()} and {target.base_ring()}"
         )
-        assert engine_capabilities.is_available("lattice.target_primitive_embedding_classes"), (
-            f"primitive embeddings of {source} into {target} are classified by OSCAR, "
-            f"which is not installed"
-        )
-        data = lattice_engines._target_primitive_embedding_classes(
+        data = lattice_engines._oscar_lattices.target_primitive_embedding_classes(
             source.gram_tensor(),
             target.gram_tensor(),
             classification,
         )
-        assert data is not None, (
-            f"OSCAR returned no classification of primitive embeddings of {source} into {target}"
-        )
-        return finite_ordered_set(
-            tuple(self._reconstruct_target_primitive_embedding(record) for record in data)
-        )
+        assert data is not None, f"OSCAR returned no classification of primitive embeddings of {source} into {target}"
+        return finite_ordered_set(tuple(self._reconstruct_target_primitive_embedding(record) for record in data))
 
     def __iter__(self):
         r"""Enumerate all embeddings when the target lattice is definite.
@@ -1386,22 +1191,15 @@ class LatticeEmbeddingMor(CategoricalMor):
         source = self.domain()
         target = self.codomain()
         assert target.module_rank().is_finite() and target.is_definite(), (
-            f"the embeddings of {source} into {target} are enumerated only when {target} "
-            f"is definite of finite rank"
+            f"the embeddings of {source} into {target} are enumerated only when {target} is definite of finite rank"
         )
-        assert source.module_rank().is_finite(), (
-            f"the embeddings of {source} into {target} are enumerated only when {source} "
-            f"has finite rank"
-        )
+        assert source.module_rank().is_finite(), f"the embeddings of {source} into {target} are enumerated only when {source} has finite rank"
         match source.is_nondegenerate():
             case False:
                 return
         source_generators = tuple(source.module_generators())
         source_gram = source.gram_tensor()
-        pools = tuple(
-            tuple(target.vectors_of_square(source_gram[index, index]))
-            for index in range(len(source_generators))
-        )
+        pools = tuple(tuple(target.vectors_of_square(source_gram[index, index])) for index in range(len(source_generators)))
 
         def assign(placed):
             position = len(placed)
@@ -1409,11 +1207,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                 yield self(tuple(placed))
                 return
             for candidate in pools[position]:
-                if all(
-                    target.b(placed[index], candidate)
-                    == source_gram[index, position]
-                    for index in range(position)
-                ):
+                if all(target.b(placed[index], candidate) == source_gram[index, position] for index in range(position)):
                     yield from assign((*placed, candidate))
 
         yield from assign(())
@@ -1425,11 +1219,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             return True
         source = self.domain()
         target = self.codomain()
-        if (
-            source.module_rank().is_finite()
-            and target.module_rank().is_finite()
-            and source.module_rank() == target.module_rank()
-        ):
+        if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
             return source.Isom(target).is_empty()
         target_embedding_data = self._target_primitive_embedding_data()
         if target_embedding_data is False:
@@ -1441,12 +1231,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                 return True
             _signature = self.codomain().signature_pair()
             positive, negative = _signature.first(), _signature.second()
-            return not any(
-                inclusion.codomain().embeds_in_even_unimodular(
-                    positive, negative
-                )
-                for inclusion in self.even_overlattice_inclusions()
-            )
+            return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
         return Unknown
 
     def an_element(self):
@@ -1456,18 +1241,9 @@ class LatticeEmbeddingMor(CategoricalMor):
             raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
         source = self.domain()
         target = self.codomain()
-        if (
-            source.module_rank().is_finite()
-            and target.module_rank().is_finite()
-            and source.module_rank() == target.module_rank()
-        ):
+        if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
             isometry = source.Isom(target).an_element()
-            return self(
-                tuple(
-                    isometry(source.module_generator(label))
-                    for label in source.module_generating_set()
-                )
-            )
+            return self(tuple(isometry(source.module_generator(label)) for label in source.module_generating_set()))
         target_embedding_data = self._target_primitive_embedding_data()
         if target_embedding_data is not None:
             return self._target_primitive_embedding()
@@ -1480,18 +1256,11 @@ class LatticeEmbeddingMor(CategoricalMor):
                 overlattice = inclusion.codomain()
                 if not overlattice.embeds_in_even_unimodular(positive, negative):
                     continue
-                primitive = overlattice.embed_in_even_unimodular(
-                    positive, negative
-                )
+                primitive = overlattice.embed_in_even_unimodular(positive, negative)
                 constructed = primitive.codomain()
                 transport = constructed.Isom(self.codomain()).an_element()
                 composed = transport * primitive * inclusion
-                return self(
-                    tuple(
-                        composed(self.domain().module_generator(label))
-                        for label in self.domain().module_generating_set()
-                    )
-                )
+                return self(tuple(composed(self.domain().module_generator(label)) for label in self.domain().module_generating_set()))
             raise ArithmeticError(
                 f"Nikulin's criterion says {self.domain()} embeds into the even unimodular "
                 f"lattice {self.codomain()}, but no even overlattice of {self.domain()} "
@@ -1512,11 +1281,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         categories = []
         if domain is codomain:
             categories.append(OwnedGroups())
-            if (
-                _engine_ring(domain.base_ring()) is SageZZ
-                and domain.module_rank().is_finite()
-                and domain.is_definite()
-            ):
+            if _engine_ring(domain.base_ring()) is SageZZ and domain.module_rank().is_finite() and domain.is_definite():
                 categories.append(OwnedFiniteGroups())
         LatticeEmbeddingMor.__init__(
             self,
@@ -1525,24 +1290,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             codomain,
             category=Cat().meet(tuple(categories)) if categories else None,
         )
-        if (
-            domain is codomain
-            and _engine_ring(domain.base_ring()) is SageZZ
-            and domain.module_rank().is_finite()
-            and domain.is_definite()
-        ):
+        if domain is codomain and _engine_ring(domain.base_ring()) is SageZZ and domain.module_rank().is_finite() and domain.is_definite():
             self._retain_group_framing(self._computed_group_generators())
 
     def _element_constructor_(self, images):
         if isinstance(images, LatticeIsometryMethods):
-            if (
-                images.domain() is not self.domain()
-                or images.codomain() is not self.codomain()
-            ):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
-                    f"the isometry {images} goes from {images.domain()} to "
-                    f"{images.codomain()}, so it is not an isometry from "
-                    f"{self.domain()} to {self.codomain()}"
+                    f"the isometry {images} goes from {images.domain()} to {images.codomain()}, so it is not an isometry from {self.domain()} to {self.codomain()}"
                 )
             if images.parent() is self:
                 return images
@@ -1559,11 +1314,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
-        inherited = [
-            superpacket.Isos().Of(source, target)
-            for superpacket in packet.super_packets()
-            if source in superpacket.C() and target in superpacket.C()
-        ]
+        inherited = [superpacket.Isos().Of(source, target) for superpacket in packet.super_packets() if source in superpacket.C() and target in superpacket.C()]
         supers = [
             packet.Mors().Of(source, target),
             packet.Monos().Of(source, target),
@@ -1572,19 +1323,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         ]
         if self.aut_family() is not None:
             supers.append(packet.Ends().Of(source))
-            supers.extend(
-                superpacket.Auts().Of(source)
-                for superpacket in packet.super_packets()
-                if source in superpacket.C()
-            )
+            supers.extend(superpacket.Auts().Of(source) for superpacket in packet.super_packets() if source in superpacket.C())
         return supers
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"there is no identity isometry from {self.domain()} to {self.codomain()}: "
-                f"they are different lattices"
-            )
+            raise ValueError(f"there is no identity isometry from {self.domain()} to {self.codomain()}: they are different lattices")
         return self(lambda label: self.domain().module_generator(label))
 
     def one(self):
@@ -1629,15 +1373,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             )
         if element_parent(isometry) is not self:
             raise ValueError(
-                f"{automorphism} acts by postcomposition only on isometries "
-                f"{self.domain()} -> {self.codomain()}, but {isometry} lies in "
-                f"{element_parent(isometry)}"
+                f"{automorphism} acts by postcomposition only on isometries {self.domain()} -> {self.codomain()}, but {isometry} lies in {element_parent(isometry)}"
             )
-        return self(
-            lambda label: automorphism(
-                isometry(self.domain().module_generator(label))
-            )
-        )
+        return self(lambda label: automorphism(isometry(self.domain().module_generator(label))))
 
     def transporter(self, source, target):
         r"""Return an orthogonal transporter.
@@ -1647,11 +1385,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         ``g ∘ source = target``.
         """
         lattice = self.codomain()
-        if (
-            self.domain() is lattice
-            and element_parent(source) is lattice
-            and element_parent(target) is lattice
-        ):
+        if self.domain() is lattice and element_parent(source) is lattice and element_parent(target) is lattice:
             return self.vector_equivalence_witness(source, target)
         for candidate in (source, target):
             if element_parent(candidate) is not self:
@@ -1661,26 +1395,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                     f"{self.domain()} -> {self.codomain()}"
                 )
         codomain = self.codomain()
-        return self.acting_group()(
-            lambda label: target(
-                source.lift(codomain.module_generator(label))
-            )
-        )
+        return self.acting_group()(lambda label: target(source.lift(codomain.module_generator(label))))
 
     def discriminant_image(self):
         r"""Return the subgroup of ``O(A_L)`` generated by the known ``O(L)`` generators."""
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the isometries {self.domain()} -> {self.codomain()} form no group, so they "
-                f"have no image in the orthogonal group of a discriminant form"
-            )
+            raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no group, so they have no image in the orthogonal group of a discriminant form")
         target = self.domain().discriminant_group().orthogonal_group()
-        return target.subgroup_on(
-            tuple(
-                generator.discriminant_morphism()
-                for generator in self.framing().group_generators()
-            )
-        )
+        return target.subgroup_on(tuple(generator.discriminant_morphism() for generator in self.framing().group_generators()))
 
     def discriminant_lift(self, automorphism):
         r"""Return ``g in O(L)`` inducing ``automorphism`` on ``A_L``, or ``None``.
@@ -1707,18 +1429,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def discriminant_preimage(self, subgroup):
         r"""Return ``rho_L^{-1}(subgroup)`` as a predicate subgroup of ``O(L)``."""
         if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the isometries {self.domain()} -> {self.codomain()} form no orthogonal "
-                f"group O(L), so {subgroup} has no preimage under O(L) -> O(A_L)"
-            )
+            raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no orthogonal group O(L), so {subgroup} has no preimage under O(L) -> O(A_L)")
         target = self.domain().discriminant_group().orthogonal_group()
         # A subgroup of the finite orthogonal group is a subcategory of it: its
         # declared supercategory is the group it was cut out of.
         if not (subgroup is target or subgroup.is_subcategory(target)):
-            raise ValueError(
-                f"{subgroup} has no preimage under O(L) -> O(A_L) for L = {self.domain()}: "
-                f"it is not a subgroup of {target}"
-            )
+            raise ValueError(f"{subgroup} has no preimage under O(L) -> O(A_L) for L = {self.domain()}: it is not a subgroup of {target}")
 
         if int(subgroup.cardinality()) == 1:
             form = target.domain()
@@ -1727,8 +1443,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             def predicate(automorphism):
                 return automorphism._discriminant_forward_morphism() == identity
         else:
+
             def predicate(automorphism):
                 return automorphism.discriminant_morphism() in subgroup
+
         return self.discriminant_representation().preimage_subgroup(
             subgroup,
             predicate=predicate,
@@ -1747,19 +1465,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def preimage(self, morphism, subgroup):
         r"""Return the subgroup ``morphism^{-1}(subgroup)`` of this group."""
         if morphism.domain() is not self:
-            raise ValueError(
-                f"cannot take the preimage of {subgroup} in {self} under {morphism}: its "
-                f"domain is {morphism.domain()}, not {self}"
-            )
+            raise ValueError(f"cannot take the preimage of {subgroup} in {self} under {morphism}: its domain is {morphism.domain()}, not {self}")
         return morphism.preimage_subgroup(subgroup)
 
     def kernel(self, morphism):
         r"""Return the kernel subgroup of a represented group morphism."""
         if morphism.domain() is not self:
-            raise ValueError(
-                f"the kernel of {morphism} is not a subgroup of {self}: its domain is "
-                f"{morphism.domain()}, not {self}"
-            )
+            raise ValueError(f"the kernel of {morphism} is not a subgroup of {self}: its domain is {morphism.domain()}, not {self}")
         return morphism.kernel()
 
     def stable_subgroup(self):
@@ -1785,8 +1497,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def lattice(self):
         r"""Return \(L\), the lattice this orthogonal group acts on."""
         assert self.domain() is self.codomain(), (
-            f"the isometries {self.domain()} -> {self.codomain()} are not an orthogonal "
-            f"group O(L): domain and codomain are different lattices"
+            f"the isometries {self.domain()} -> {self.codomain()} are not an orthogonal group O(L): domain and codomain are different lattices"
         )
         return self.domain()
 
@@ -1805,26 +1516,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if target in ModuleSubobjects(lattice.base_ring()):
             embedding = target.inclusion()
             if embedding.codomain() is not lattice:
-                raise ValueError(
-                    f"{target} has no stabilizer in O({lattice}): it is a sublattice of "
-                    f"{embedding.codomain()}, not of {lattice}"
-                )
+                raise ValueError(f"{target} has no stabilizer in O({lattice}): it is a sublattice of {embedding.codomain()}, not of {lattice}")
             if action == "setwise":
                 return self.setwise_stabilizer(embedding)
             if action == "pointwise":
                 return self.pointwise_stabilizer(embedding)
-            raise ValueError(
-                f"action={action!r} is not a stabilizer of the sublattice {target}: use "
-                f"'setwise' (g(I) = I) or 'pointwise' (g fixes I elementwise)"
-            )
+            raise ValueError(f"action={action!r} is not a stabilizer of the sublattice {target}: use 'setwise' (g(I) = I) or 'pointwise' (g fixes I elementwise)")
         if action != "setwise":
-            raise ValueError(
-                f"action={action!r} applies only to sublattices; {target} is not a "
-                f"sublattice of {lattice}, and a vector is always fixed pointwise"
-            )
+            raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector is always fixed pointwise")
         assert target.parent() is lattice, (
-            f"{target} has no stabilizer in O({lattice}): it is neither a vector nor a "
-            f"sublattice of {lattice}, but an element of {target.parent()}"
+            f"{target} has no stabilizer in O({lattice}): it is neither a vector nor a sublattice of {lattice}, but an element of {target.parent()}"
         )
         return StabilizerSubgroups(self)(
             target,
@@ -1844,15 +1545,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             f"{embedding} does not embed into {lattice}, so its image has no stabilizer in O({lattice}); its codomain is {embedding.codomain()}"
         )
         source = embedding.domain()
-        embedded = tuple(
-            embedding(generator) for generator in source.module_generators()
-        )
+        embedded = tuple(embedding(generator) for generator in source.module_generators())
         return StabilizerSubgroups(self)(
             source,
             "pointwise",
-            lambda automorphism: all(
-                automorphism(vector) == vector for vector in embedded
-            ),
+            lambda automorphism: all(automorphism(vector) == vector for vector in embedded),
             description=f"g fixes {source} pointwise",
         )
 
@@ -1874,17 +1571,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             f"{embedding} does not embed into {lattice}, so its image has no stabilizer in O({lattice}); its codomain is {embedding.codomain()}"
         )
         source = embedding.domain()
-        embedded = tuple(
-            embedding(generator) for generator in source.module_generators()
-        )
+        embedded = tuple(embedding(generator) for generator in source.module_generators())
 
         def preserves_image(automorphism):
             inverse = automorphism.inverse()
-            return all(
-                embedding.is_in_image(automorphism(vector))
-                and embedding.is_in_image(inverse(vector))
-                for vector in embedded
-            )
+            return all(embedding.is_in_image(automorphism(vector)) and embedding.is_in_image(inverse(vector)) for vector in embedded)
 
         return StabilizerSubgroups(self)(
             source,
@@ -1904,23 +1595,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         """
         lattice = self.domain()
         if lattice is not self.codomain():
-            raise ValueError(
-                f"the isometries {lattice} -> {self.codomain()} are not an orthogonal group "
-                f"O(L): domain and codomain are different lattices"
-            )
-        assert _engine_ring(lattice.base_ring()) is SageZZ, (
-            f"O({lattice}) is computed only for ZZ-lattices, but {lattice} is over "
-            f"{lattice.base_ring()}"
-        )
+            raise ValueError(f"the isometries {lattice} -> {self.codomain()} are not an orthogonal group O(L): domain and codomain are different lattices")
+        assert _engine_ring(lattice.base_ring()) is SageZZ, f"O({lattice}) is computed only for ZZ-lattices, but {lattice} is over {lattice.base_ring()}"
         assert lattice.module_rank().is_finite() and lattice.is_definite(), (
-            f"O({lattice}) is computed as a finite group only for definite lattices of "
-            f"finite rank, and {lattice} is not one"
+            f"O({lattice}) is computed as a finite group only for definite lattices of finite rank, and {lattice} is not one"
         )
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-        return IntegralLattice(
-            _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
-        ).orthogonal_group()
+        return IntegralLattice(_engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)).orthogonal_group()
 
     def _from_engine(self, _engine_element):
         r"""Transport one backend row-action isometry to a live automorphism."""
@@ -1943,9 +1625,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                             _owned_engine_element(ring, SageZZ(coefficient)),
                             generator,
                         )
-                        for coefficient, generator in zip(
-                            row, generators, strict=True
-                        )
+                        for coefficient, generator in zip(row, generators, strict=True)
                         if coefficient
                     ),
                     codomain.zero(),
@@ -1956,10 +1636,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def _row_action_matrix(self, automorphism):
         r"""Return the private row-action matrix of one live lattice isometry."""
         if element_parent(automorphism) is not self:
-            raise ValueError(
-                f"{automorphism} has no matrix in {self}: it lies in "
-                f"{element_parent(automorphism)}"
-            )
+            raise ValueError(f"{automorphism} has no matrix in {self}: it lies in {element_parent(automorphism)}")
         # Publicly the linear map acts on columns. Sage matrix groups act on
         # coordinate rows on the right, hence one transpose at this boundary.
         return _engine_matrix(_module_matrix(automorphism)).transpose()
@@ -1998,17 +1675,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
         lattice = self.domain()
         if not lattice.is_definite():
-            backend_generators = engine_capabilities.compute(
-                "lattice.indefinite_automorphism_group", _engine_gram_rows(lattice)
+            from sage_indefinite_port.indefinite.recursive import (
+                orthogonal_group_generators,
             )
-            positions = Sets.Δ[len(backend_generators) - 1]
-            return FiniteOrderedSets().from_indexed(
-                positions,
-                lambda position: self._from_backend_row_action(
-                    backend_generators[int(position)]
-                ),
-                name=f"Orthogonal-group generators of {lattice}",
-            )
+
+            return orthogonal_group_generators(self)
         backend_generators = self._engine_group().gens()
         positions = Sets.Δ[len(backend_generators) - 1]
         return FiniteOrderedSets().from_indexed(
@@ -2021,9 +1692,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Retain one computed exact generating family as this group's framing."""
         source = Groups.Free(index_set=generators)
         generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-        _fix_selected_group_resolution_data(
-            self, source, generators, generator_morphism
-        )
+        _fix_selected_group_resolution_data(self, source, generators, generator_morphism)
 
     def framing(self):
         r"""Explicitly select and retain the represented generator framing of ``O(L)``."""
@@ -2042,10 +1711,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         owned layer depends on it.
         """
         lattice = self.domain()
-        assert lattice.is_definite(), (
-            f"O({lattice}) has a structure description only when it is finite, i.e. "
-            f"when {lattice} is definite, and {lattice} is indefinite"
-        )
+        assert lattice.is_definite(), f"O({lattice}) has a structure description only when it is finite, i.e. when {lattice} is definite, and {lattice} is indefinite"
         return str(self._engine_group().structure_description())
 
     def __iter__(self):
@@ -2060,10 +1726,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         """
         lattice = self.domain()
         if lattice is not self.codomain():
-            raise ValueError(
-                f"{left} and {right} cannot be compared under the isometries "
-                f"{lattice} -> {self.codomain()}: these form no orthogonal group O(L)"
-            )
+            raise ValueError(f"{left} and {right} cannot be compared under the isometries {lattice} -> {self.codomain()}: these form no orthogonal group O(L)")
         left = left if element_parent(left) is lattice else lattice(left)
         right = right if element_parent(right) is lattice else lattice(right)
         if left == right:
@@ -2071,21 +1734,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if lattice.q(left) != lattice.q(right):
             return None
         if not lattice.is_definite():
-            witness = engine_capabilities.compute(
-                "lattice.indefinite_vector_isometry_witness",
-                _engine_gram_rows(lattice),
-                [int(entry) for entry in _framing_tuple(left)],
-                [int(entry) for entry in _framing_tuple(right)],
+            from sage_indefinite_port.indefinite.recursive import (
+                vector_equivalence_witness,
             )
-            if witness is None:
-                return None
-            result = self._from_backend_row_action(witness)
-            if result(left) != right:
-                raise ArithmeticError(
-                    f"the isometry {result} of {lattice} returned as carrying {left} to "
-                    f"{right} sends {left} to {result(left)}"
-                )
-            return result
+
+            return vector_equivalence_witness(self, left, right)
         for automorphism in self:
             if automorphism(left) == right:
                 return automorphism
@@ -2104,33 +1757,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         lattice = self.domain()
         element = element if element_parent(element) is lattice else lattice(element)
         if not lattice.is_definite():
-            isometries = finite_ordered_set(
-                tuple(
-                    self._from_backend_row_action(engine_isometry)
-                    for engine_isometry in engine_capabilities.compute(
-                        "lattice.indefinite_vector_stabilizer",
-                        _engine_gram_rows(lattice),
-                        [int(entry) for entry in _framing_tuple(element)],
-                    )
-                )
+            from sage_indefinite_port.indefinite.recursive import (
+                vector_stabilizer_generators,
             )
-            if any(isometry(element) != element for isometry in isometries):
-                raise ArithmeticError(
-                    f"an isometry returned as a generator of the stabilizer of {element} in "
-                    f"O({lattice}) does not fix {element}"
-                )
-            return isometries
-        stabilizer_elements = tuple(
-            automorphism
-            for automorphism in self
-            if automorphism(element) == element
-        )
-        engine_subgroup = self._engine_group().subgroup(
-            tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements)
-        )
-        return finite_ordered_set(
-            tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens())
-        )
+
+            return vector_stabilizer_generators(self, element)
+        stabilizer_elements = tuple(automorphism for automorphism in self if automorphism(element) == element)
+        engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements))
+        return finite_ordered_set(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
 
     def vector_orbit_representatives(self, square):
         r"""Return one representative of each ``O(L)``-orbit of square ``square``.
@@ -2140,37 +1774,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         """
         lattice = self.domain()
         if not lattice.is_definite():
-            gram = _engine_gram_rows(lattice)
-            lattice_generators = tuple(lattice.module_generators())
-            representatives = tuple(
-                sum(
-                    (
-                        lattice.scalar_multiple(
-                            lattice.base_ring()(int(coefficient)), generator
-                        )
-                        for coefficient, generator in zip(
-                            row,
-                            lattice_generators,
-                            strict=True,
-                        )
-                        if coefficient
-                    ),
-                    lattice.zero(),
-                )
-                for row in engine_capabilities.compute(
-                    "lattice.indefinite_orbit_representative", gram, int(square)
-                )
+            from sage_indefinite_port.indefinite.recursive import (
+                vector_orbit_representatives,
             )
-            if any(lattice.q(representative) != square for representative in representatives):
-                raise ArithmeticError(
-                    f"a vector returned as an O({lattice})-orbit representative of square "
-                    f"{square} has a different square"
-                )
-            return finite_ordered_set(representatives)
-        remaining = {
-            _framing_tuple(vector): vector
-            for vector in lattice.vectors_of_square(square)
-        }
+
+            return vector_orbit_representatives(self, square)
+        remaining = {_framing_tuple(vector): vector for vector in lattice.vectors_of_square(square)}
         representatives = []
         while remaining:
             _coordinates, representative = next(iter(remaining.items()))
@@ -2188,12 +1797,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return the ``O(L)``-orbits of primitive isotropic rank-``rank`` subobjects."""
         from dzack_research.preamble.categories.isotropic_orbits import _cusp
 
-        return finite_ordered_set(
-            tuple(
-                _cusp(representative)
-                for representative in self.isotropic_orbit_representatives(rank)
-            )
-        )
+        return finite_ordered_set(tuple(_cusp(representative) for representative in self.isotropic_orbit_representatives(rank)))
 
     def tits_building_incidence(self):
         r"""Return the line/plane incidence in the full orthogonal-group quotient building."""
@@ -2233,9 +1837,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                     self.isotropic_stabilizer_generators(flag, flag=True),
                 )
             )
-        assert all(incidence.lattice() is lattice for incidence in incidences), (
-            f"an incidence of cusps of O({lattice}) belongs to a different lattice than {lattice}"
-        )
+        assert all(incidence.lattice() is lattice for incidence in incidences), f"an incidence of cusps of O({lattice}) belongs to a different lattice than {lattice}"
         return finite_ordered_set(tuple(incidences))
 
     def orbit_decomposition(self, locus):
@@ -2262,21 +1864,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def compose(self, second, first):
         r"""Return ``second ∘ first`` as an isometry."""
         if first.codomain() is not second.domain():
-            raise ValueError(
-                f"cannot compose {second} after {first}: the codomain {first.codomain()} of "
-                f"{first} is not the domain {second.domain()} of {second}"
-            )
+            raise ValueError(f"cannot compose {second} after {first}: the codomain {first.codomain()} of {first} is not the domain {second.domain()} of {second}")
         return first.domain().Isom(second.codomain())(lambda label: second(first(first.domain().module_generator(label))))
 
     def is_empty(self):
         r"""Decide emptiness through exact obstructions and proved classifiers.
 
         Passing an obstruction never proves isometry by itself.  Definite
-        survivors are decided by Sage's exact equivalence engine.  Indefinite
-        survivors are declared nonempty only in theorem-backed uniqueness
-        regimes (Nikulin's indefinite even 2-elementary classification, or
-        Eichler when the common genus has one improper spinor genus).  All
-        remaining indefinite cases retain Sage's three-valued ``Unknown``.
+        survivors are decided by Sage's exact equivalence engine, binary
+        indefinite survivors by reduction of binary forms where it decides,
+        and the remaining indefinite survivors by ``sage-indefinite-port``.
         """
         return self._isometry_decision()[0]
 
@@ -2289,12 +1886,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             tuple(
                 sum(
                     (
-                        codomain.scalar_multiple(
-                            _owned_engine_element(ring, coefficient), generator
-                        )
-                        for coefficient, generator in zip(
-                            column, codomain_generators, strict=True
-                        )
+                        codomain.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
+                        for coefficient, generator in zip(column, codomain_generators, strict=True)
                         if coefficient
                     ),
                     codomain.zero(),
@@ -2329,7 +1922,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         domain_gram = _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ)
         codomain_gram = _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ)
         if domain_gram == codomain_gram:
-            return (False, self._isometry_from_column_matrix(domain_gram.parent().one()), None)
+            return (
+                False,
+                self._isometry_from_column_matrix(domain_gram.parent().one()),
+                None,
+            )
         rank = domain.module_rank()
         if int(rank.finite_value()) <= 1:
             return (True, None, None)
@@ -2341,13 +1938,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             return (True, None, None)
         if domain.discriminant() != codomain.discriminant():
             return (True, None, None)
-        if (
-            domain.discriminant_module().invariant_factors()
-            != codomain.discriminant_module().invariant_factors()
-        ):
+        if domain.discriminant_module().invariant_factors() != codomain.discriminant_module().invariant_factors():
             return (True, None, None)
 
-        from sage.quadratic_forms.genera.genus import Genus as SageGenus
         from sage.quadratic_forms.genera.genus import LocalGenusSymbol
         from sage.rings.rational_field import QQ as SageQQ
 
@@ -2360,9 +1953,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
         determinant = abs(SageZZ(domain_gram.det()))
         for prime in (2 * determinant).prime_divisors():
-            if LocalGenusSymbol(domain_engine, prime) != LocalGenusSymbol(
-                codomain_engine, prime
-            ):
+            if LocalGenusSymbol(domain_engine, prime) != LocalGenusSymbol(codomain_engine, prime):
                 return (True, None, None)
 
         domain_discriminant = domain.discriminant_group()
@@ -2375,9 +1966,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         positive, negative = _signature.first(), _signature.second()
         if not (positive and negative):
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
-            transformation = QuadraticForm(
-                SageZZ, 2 * sign * codomain_engine
-            ).is_globally_equivalent_to(
+            transformation = QuadraticForm(SageZZ, 2 * sign * codomain_engine).is_globally_equivalent_to(
                 QuadraticForm(SageZZ, 2 * sign * domain_engine),
                 return_matrix=True,
             )
@@ -2385,8 +1974,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 return (True, None, None)
             if transformation.transpose() * codomain_gram * transformation != domain_gram:
                 raise ArithmeticError(
-                    f"the matrix {transformation} returned as an isometry from {domain} to "
-                    f"{codomain} does not carry the form of {codomain} to the form of {domain}"
+                    f"the matrix {transformation} returned as an isometry from {domain} to {codomain} does not carry the form of {codomain} to the form of {domain}"
                 )
             return (False, self._isometry_from_column_matrix(transformation), None)
 
@@ -2400,77 +1988,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             if binary_witness is not Unknown:
                 return (False, self._isometry_from_column_matrix(binary_witness), None)
 
-        # The absence of this program is not fatal here: the classification
-        # theorems below still decide some pairs, so the capability is asked
-        # for first rather than demanded.
-        if engine_capabilities.is_available("lattice.indefinite_isometry_witness"):
-            witness_rows = engine_capabilities.compute(
-                "lattice.indefinite_isometry_witness",
-                _engine_gram_rows(codomain),
-                _engine_gram_rows(domain),
-            )
-            if witness_rows is None:
-                return (True, None, None)
-            return (False, self._from_backend_row_action(witness_rows), None)
+        from sage_indefinite_port.indefinite.recursive import isometry
 
-        if engine_capabilities.is_available("lattice.oscar_isometry_witness"):
-            witness_rows = lattice_engines._integral_isometry_witness(
-                domain.gram_tensor(),
-                codomain.gram_tensor(),
-            )
-            if witness_rows is None:
-                return (True, None, None)
-            witness = self._from_backend_row_action(witness_rows)
-            if any(
-                witness(domain.module_generator(label)).parent() is not codomain
-                for label in domain.module_generating_set()
-            ):
-                raise ArithmeticError(
-                    f"the isometry OSCAR returned from {domain} to {codomain} sends a "
-                    f"generator of {domain} outside {codomain}"
-                )
-            return (False, witness, None)
-
-        if (
-            domain.is_even()
-            and domain.is_p_elementary(2)
-            and codomain.is_p_elementary(2)
-            and domain.two_elementary_invariants()
-            == codomain.two_elementary_invariants()
-        ):
-            return (
-                False,
-                None,
-                "Nikulin's classification of indefinite even 2-elementary lattices",
-            )
-
-        rank = domain.module_rank()
-        if rank >= rank.parent()(3):
-            spinor_generators = SageGenus(domain_engine).spinor_generators(proper=False)
-            if not spinor_generators:
-                return (
-                    False,
-                    None,
-                    "Eichler's theorem and uniqueness of the improper spinor genus",
-                )
-        return (Unknown, None, None)
+        witness = isometry(domain, codomain)
+        if witness is None:
+            return (True, None, None)
+        return (False, witness, None)
 
     def an_element(self):
         r"""Return an explicit isometry when the exact decision exhibits one."""
         empty, witness, reason = self._isometry_decision()
-        assert empty is not Unknown, (
-            f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, "
-            f"so no isometry between them can be returned"
-        )
+        assert empty is not Unknown, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
         if empty:
-            raise ValueError(
-                f"there is no isometry from {self.domain()} to {self.codomain()}: the "
-                f"lattices are not isometric"
-            )
-        assert witness is not None, (
-            f"{self.domain()} and {self.codomain()} are isometric by {reason}, but no "
-            f"explicit isometry between them can be constructed"
-        )
+            raise ValueError(f"there is no isometry from {self.domain()} to {self.codomain()}: the lattices are not isometric")
+        assert witness is not None, f"{self.domain()} and {self.codomain()} are isometric by {reason}, but no explicit isometry between them can be constructed"
         return witness
 
     def _repr_(self):
@@ -2483,10 +2014,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 def _lattice_mor(domain, codomain) -> LatticeMor:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
-        raise ValueError(
-            f"no lattice morphisms from {domain} to {codomain}: {domain} is over {ring} "
-            f"and {codomain} is over {codomain.base_ring()}, not the same base ring"
-        )
+        raise ValueError(f"no lattice morphisms from {domain} to {codomain}: {domain} is over {ring} and {codomain} is over {codomain.base_ring()}, not the same base ring")
     return domain.lattice_category().Mor(domain, codomain)
 
 
@@ -2494,10 +2022,7 @@ def _lattice_mor(domain, codomain) -> LatticeMor:
 def _lattice_embedding_mor(domain, codomain) -> LatticeEmbeddingMor:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
-        raise ValueError(
-            f"no lattice embeddings of {domain} into {codomain}: {domain} is over {ring} "
-            f"and {codomain} is over {codomain.base_ring()}, not the same base ring"
-        )
+        raise ValueError(f"no lattice embeddings of {domain} into {codomain}: {domain} is over {ring} and {codomain} is over {codomain.base_ring()}, not the same base ring")
     return domain.lattice_category().Mono(domain, codomain)
 
 
@@ -2505,10 +2030,7 @@ def _lattice_embedding_mor(domain, codomain) -> LatticeEmbeddingMor:
 def _lattice_isometry_mor(domain, codomain) -> LatticeIsometryMor:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
-        raise ValueError(
-            f"no lattice isometries from {domain} to {codomain}: {domain} is over {ring} "
-            f"and {codomain} is over {codomain.base_ring()}, not the same base ring"
-        )
+        raise ValueError(f"no lattice isometries from {domain} to {codomain}: {domain} is over {ring} and {codomain} is over {codomain.base_ring()}, not the same base ring")
     category = domain.lattice_category()
     return category.Aut(domain) if domain is codomain else category.Iso(domain, codomain)
 

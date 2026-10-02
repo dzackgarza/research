@@ -13,7 +13,7 @@ from src.backends.dawes_orbit_backend import (
     induced_discriminant_action,
     real_spinor_norm_sign,
 )
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from sage_indefinite_port.indefinite import isotropic_flags, recursive
 
 _LOGGER = logging.getLogger(__name__)
 _CACHE_ENV_VAR = "COBLE_RESEARCH_CACHE_DIR"
@@ -518,8 +518,7 @@ def _compute_ambient_equivalence_witness(lattice, orbit_kind, left, right):
         left_vec = vector(ZZ, list(_normalize_primitive_line(left)))
         right_vec = vector(ZZ, list(_normalize_primitive_line(right)))
         for target in (right_vec, -right_vec):
-            raw = engine_capabilities.compute("lattice.indefinite_vector_isometry_witness",
-                lattice._gram_rows(),
+            raw = recursive.vector_equivalence_witness(lattice._gram_rows(),
                 [int(entry) for entry in left_vec],
                 [int(entry) for entry in target],
             )
@@ -529,11 +528,9 @@ def _compute_ambient_equivalence_witness(lattice, orbit_kind, left, right):
         return None
     left_rows = _object_basis_rows(left)
     right_rows = _object_basis_rows(right)
-    raw = engine_capabilities.compute("lattice.indefinite_isotropic_subspace_isometry_witness",
-        lattice._gram_rows(),
+    raw = isotropic_flags.isotropic_sublattice_equivalence_witness(lattice._gram_rows(),
         left_rows,
-        right_rows,
-        choice="plane",
+        right_rows
     )
     if raw is None:
         return None

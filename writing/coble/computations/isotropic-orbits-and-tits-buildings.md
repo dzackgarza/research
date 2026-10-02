@@ -153,7 +153,7 @@ The resulting orbit counts are not part of the record.
 ::: {.remark}
 ### The implementation named in the recipe
 
-Step 6 of the recipe in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe) asks for orbit representatives through the capability `lattice.indefinite_orbit_representative`, which `sage-indefinite-port` owns. That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the two-elementary registry, are the invariants under which the orbit representatives it returns are recognized.
+Step 6 of the recipe in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe) asks for orbit representatives through the function `vector_orbit_representatives`, which `sage-indefinite-port` owns. That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the two-elementary registry, are the invariants under which the orbit representatives it returns are recognized.
 :::
 
 ## What remains for the Coble lattices

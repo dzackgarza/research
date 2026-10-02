@@ -8,12 +8,8 @@ nothing an engine returns leaves this module unverified over $\mathbb Z$.
   lattice algorithms.  It decides isometry of indefinite lattices with an
   exact witness, enumerates the $O(L)$-orbits of the primitive totally
   isotropic sublattices of rank $k$ and of the flags of them, and produces
-  generating sets for $O(L)$ and for stabilizers of those sublattices.  Each
-  algorithm is a capability, reached through
-  ``engine_capabilities.compute``.  When the port does not provide a
-  capability, the registry says so by name; emptiness questions answer the
-  three-valued ``Unknown`` at their own surface instead.  The capability
-  ``lorentzian_edgewalk_fundamental_domain`` walks a fundamental polyhedron
+  generating sets for $O(L)$ and for stabilizers of those sublattices.  Its
+  function ``edgewalk_fundamental_domain`` walks a fundamental polyhedron
   of the reflection subgroup of a Lorentzian lattice (Allcock's edgewalk),
   deciding reflectivity.
 
@@ -49,7 +45,7 @@ from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from sage_indefinite_port.indefinite import edgewalk, isotropic_flags, recursive
 
 if TYPE_CHECKING:
     from sage.matrix.matrix_integer_dense import Matrix_integer_dense
@@ -74,9 +70,7 @@ def indefinite_isometry_witness(
     (``lattice.indefinite_isometry_witness``); a returned witness is verified over
     $\mathbb Z$ here before it leaves the seam.
     """
-    raw = engine_capabilities.compute(
-        "lattice.indefinite_isometry_witness",
-        _integer_rows(codomain_gram),
+    raw = recursive.isometry(_integer_rows(codomain_gram),
         _integer_rows(domain_gram),
     )
     if raw is None:
@@ -101,8 +95,7 @@ def indefinite_orthogonal_group_generator_matrices(
     gram_z = matrix(SageZZ, gram)
     generators = tuple(
         matrix(SageZZ, rows)
-        for rows in engine_capabilities.compute(
-            "lattice.indefinite_automorphism_group", _integer_rows(gram)
+        for rows in recursive.orthogonal_group_generators(_integer_rows(gram)
         )
     )
     assert all(
@@ -131,11 +124,11 @@ def isotropic_sublattice_orbit_representative_rows(
     )
     match isotropic_object:
         case "plane":
-            capability = "lattice.indefinite_isotropic_subspace_orbits"
+            compute = isotropic_flags.isotropic_sublattice_orbit_representatives
         case "flag":
-            capability = "lattice.indefinite_isotropic_flag_orbits"
+            compute = isotropic_flags.isotropic_flag_orbit_representatives
     return tuple(
-        engine_capabilities.compute(capability, _integer_rows(gram), int(rank))
+        compute(_integer_rows(gram), int(rank))
     )
 
 
@@ -155,9 +148,7 @@ def indefinite_vector_orbit_representative_rows(
     gram_z = matrix(SageZZ, gram)
     rows = tuple(
         tuple(SageZZ(entry) for entry in row)
-        for row in engine_capabilities.compute(
-            "lattice.indefinite_orbit_representative",
-            _integer_rows(gram),
+        for row in recursive.vector_orbit_representatives(_integer_rows(gram),
             int(square),
         )
     )
@@ -187,14 +178,13 @@ def isotropic_sublattice_stabilizer_generator_matrices(
     )
     match isotropic_object:
         case "plane":
-            capability = "lattice.indefinite_isotropic_subspace_stabilizer"
+            compute = isotropic_flags.isotropic_sublattice_stabilizer_generators
         case "flag":
-            capability = "lattice.indefinite_isotropic_flag_stabilizer"
+            compute = isotropic_flags.isotropic_flag_stabilizer_generators
     gram_z = matrix(SageZZ, gram)
     generators = tuple(
         matrix(SageZZ, rows)
-        for rows in engine_capabilities.compute(
-            capability, _integer_rows(gram), basis_rows
+        for rows in compute(_integer_rows(gram), basis_rows
         )
     )
     assert all(
@@ -219,9 +209,7 @@ def vector_equivalence_witness(
     Any two vectors: the engine's decision does not ask for isotropy, and
     the non-isotropic case is the one Dawes' vector-orbit theory consumes.
     """
-    raw = engine_capabilities.compute(
-        "lattice.indefinite_vector_isometry_witness",
-        _integer_rows(gram),
+    raw = recursive.vector_equivalence_witness(_integer_rows(gram),
         [int(entry) for entry in source_row],
         [int(entry) for entry in target_row],
     )
@@ -256,9 +244,7 @@ def vector_stabilizer_generator_matrices(
     row = matrix(SageZZ, [[int(entry) for entry in vector_row]])
     generators = tuple(
         matrix(SageZZ, rows)
-        for rows in engine_capabilities.compute(
-            "lattice.indefinite_vector_stabilizer",
-            _integer_rows(gram),
+        for rows in recursive.vector_stabilizer_generators(_integer_rows(gram),
             [int(entry) for entry in vector_row],
         )
     )
@@ -291,9 +277,7 @@ def isotropic_sublattice_equivalence_witness(
     assert isotropic_object in ("plane", "flag"), (
         "the engine compares isotropic sublattices or flags of them"
     )
-    raw = engine_capabilities.compute(
-        "lattice.indefinite_isotropic_subspace_isometry_witness",
-        _integer_rows(gram),
+    raw = isotropic_flags.isotropic_sublattice_equivalence_witness(_integer_rows(gram),
         source_rows,
         target_rows,
         choice=isotropic_object,
@@ -526,7 +510,7 @@ def oscar_centralizer_discriminant_image(
 def lorentz_edgewalk_fundamental_domain(gram: "Matrix_integer_dense") -> dict:
     r"""Return the edgewalk's fundamental-domain data for a Lorentzian Gram.
 
-    The capability ``lorentzian_edgewalk_fundamental_domain``
+    The function ``edgewalk_fundamental_domain``
     (sage-indefinite-port) walks the edges of a fundamental polyhedron for
     the reflection subgroup $W(L)\le O(L)$, per Allcock's edgewalk method --
     unlike Vinberg root enumeration it terminates on every input, so
@@ -543,8 +527,7 @@ def lorentz_edgewalk_fundamental_domain(gram: "Matrix_integer_dense") -> dict:
     verified to preserve the form).
     """
     gram_z = matrix(SageZZ, gram)
-    record = engine_capabilities.compute(
-        "lorentzian_edgewalk_fundamental_domain", gram_z
+    record = edgewalk.edgewalk_fundamental_domain(gram_z
     )
 
     simple_root_rows = tuple(

@@ -80,12 +80,11 @@ old_lattice_repr
 from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric, FreeQuadraticModule_submodule_with_basis_pid    
 from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from sage_indefinite_port.indefinite import recursive
 
 def getOrbitRepresentatives(L, Xnorm):
     eGram = L.gram_matrix()
-    rows = engine_capabilities.compute(
-        "lattice.indefinite_orbit_representative", eGram, Xnorm
+    rows = recursive.vector_orbit_representatives(eGram, Xnorm
     )
     orbs = [ vector(ZZ, list(x)) for x in rows]
     isotrops = [ (v, L.q(v)) for v in orbs]

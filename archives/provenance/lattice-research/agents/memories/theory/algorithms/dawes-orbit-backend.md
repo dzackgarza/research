@@ -18,8 +18,8 @@ The current repo already has:
 The missing pieces are:
 
 - the vector equivalence witness `INDEF_FORM_TestEquivalenceVector`, which
-  sage-indefinite-port provides as the capability
-  `lattice.indefinite_vector_isometry_witness`,
+  sage-indefinite-port provides as the function
+  `vector_equivalence_witness`,
 - a private backend that composes Dawes Algorithms 2.1-2.3 with the existing
   `LatticeOrthogonalGroup` / `LatticeOrthogonalSubgroup` objects,
 - first-class subgroup constructors matching Dawes's arithmetic subgroup notation,
@@ -46,7 +46,7 @@ condition-set model.
 
 At the end of this work:
 
-- the capability `lattice.indefinite_vector_isometry_witness` of
+- the function `vector_equivalence_witness` of
   sage-indefinite-port decides vector equivalence under the full `O(L)`,
 - the repo has a private `dawes_orbit_backend` module that dispatches between:
   - the full `O(L)` algorithm of Dutour Sikirić, through that capability,
@@ -90,7 +90,7 @@ At the end of this work:
 ### Online backend docs
 
 - sage-indefinite-port, `README.md` and `capabilities.toml`
-  - `lattice.indefinite_vector_isometry_witness`
+  - `vector_equivalence_witness`
 - `MathieuDutSik/Indefinite.jl`
 - OSCAR docs, `NumberTheory/QuadFormAndIsom/latwithisom`
   - `image_centralizer_in_Oq`
@@ -181,8 +181,8 @@ start from `L.orthogonal_group()`.
 
 The implementation should touch exactly three layers.
 
-- the capability `lattice.indefinite_vector_isometry_witness` of
-  sage-indefinite-port, reached through `engine_capabilities.compute`
+- the function `vector_equivalence_witness` of
+  sage-indefinite-port, called directly
   - the full-`O(L)` witness only
 - `src/research/dawes_orbit_backend.py`
   - all backend dispatch, subgroup-spec compilation, and Dawes logic
@@ -355,8 +355,7 @@ and fail there if they are false. It should not weaken the problem to ambient
 
 Work:
 
-- call `engine_capabilities.compute("lattice.indefinite_vector_isometry_witness",
-  M, v1, v2)`,
+- call `recursive.vector_equivalence_witness(M, v1, v2)`,
 - state the matrix/vector conventions of the returned witness explicitly in the
   docstring.
 
@@ -490,7 +489,7 @@ Validation:
 
 ### Capability tests
 
-- ambient positive case for `lattice.indefinite_vector_isometry_witness`
+- ambient positive case for `vector_equivalence_witness`
 - ambient negative case
 - regression on output parsing and matrix convention
 

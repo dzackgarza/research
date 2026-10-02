@@ -56,7 +56,7 @@ Critical backend limitations:
 - Oscar automorphism group generators, `is_isometric`, root-lattice recognition, shortest vectors, and many short-vector routines require definite input. Use Indefinite.jl for indefinite isometry/orbits.
 - Indefinite.jl locally works through Julia `1.6.7` with an isolated `HOME`; user `~/.gap/pkg/JuliaInterface` can break the pinned stack. A subprocess bridge must isolate `HOME`.
 - Direct GAP-in-Sage loading of Indefinite.jl internals is not a drop-in route because upstream calls Julia/Oscar bridge helpers.
-- sage-indefinite-port carries the indefinite isometry and orbit algorithms of Dutour Sikirić as capabilities, for example `lattice.indefinite_isometry_witness` and `lattice.indefinite_orbit_representative`.
+- sage-indefinite-port carries the indefinite isometry and orbit algorithms of Dutour Sikirić as functions, for example `isometry` and `vector_orbit_representatives`.
 
 Gap protocol: if a needed method is not listed here, stop implementation and create/update a backend-gap research card with the exact operation, mathematical objects, candidate software, docs checked, and blocker.
 

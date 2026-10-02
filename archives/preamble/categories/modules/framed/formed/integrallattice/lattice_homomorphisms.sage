@@ -396,7 +396,6 @@ class IsometryHomsets(Category):
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
                 indefinite_isometry_witness,
             )
-            from dzack_research.preamble.engine_capabilities import engine_capabilities
 
             left, right = self.domain(), self.codomain()
             if left.rank() != right.rank():
@@ -457,10 +456,6 @@ class IsometryHomsets(Category):
                 # remaining question is the spinor-genus count (Eichler).
                 if not _sage_genus(gram_left).spinor_generators(proper=False):
                     return False
-            if not engine_capabilities.is_available(
-                "lattice.indefinite_isometry_witness"
-            ):
-                return Unknown
             witness = indefinite_isometry_witness(gram_left, gram_right)
             if witness is None:
                 return True
@@ -486,7 +481,6 @@ class IsometryHomsets(Category):
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
                 indefinite_isometry_witness,
             )
-            from dzack_research.preamble.engine_capabilities import engine_capabilities
             from dzack_research.preamble.utilities import zipsum
 
             empty = self.is_empty()
@@ -501,13 +495,6 @@ class IsometryHomsets(Category):
             if positive != 0 and negative != 0:
                 witness_rows = self._engine_witness_rows
                 if witness_rows is None:
-                    assert engine_capabilities.is_available(
-                        "lattice.indefinite_isometry_witness"
-                    ), (
-                        "an explicit indefinite isometry witness is the "
-                        "capability lattice.indefinite_isometry_witness of "
-                        "sage-indefinite-port, which is not available"
-                    )
                     witness = indefinite_isometry_witness(
                         matrix(SageZZ, left.gram_matrix()),
                         matrix(SageZZ, right.gram_matrix()),

@@ -103,10 +103,10 @@ old_lattice_repr
 from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric, FreeQuadraticModule_submodule_with_basis_pid    
 from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from sage_indefinite_port.indefinite import recursive
 
 def getOrbitRepresentatives(L, Xnorm):
-    raw_orbs = engine_capabilities.compute("lattice.indefinite_orbit_representative", L.gram_matrix(), Xnorm)
+    raw_orbs = recursive.vector_orbit_representatives(L.gram_matrix(), Xnorm)
     orbs = [ vector(ZZ, list(x)) for x in raw_orbs]
     isotrops = [ (v, L.q(v)) for v in orbs]
     return isotrops
@@ -273,9 +273,9 @@ out
 
 ```python
 # sage-indefinite-port capabilities used below:
-# lattice.indefinite_vector_isometry_witness
-# lattice.indefinite_orbit_representative
-# lattice.indefinite_vector_stabilizer
+# vector_equivalence_witness
+# vector_orbit_representatives
+# vector_stabilizer_generators
 ```
 
 ----------------------------------------
@@ -341,7 +341,7 @@ L.<e,f,ep,fp,a1,...,a8> = U @ U_2 @ E8_2
 Lat = L
 vec = e
 
-U = engine_capabilities.compute("lattice.indefinite_vector_stabilizer", Lat.gram_matrix(), vec)
+U = recursive.vector_stabilizer_generators(Lat.gram_matrix(), vec)
 stab_v_subgroup = GL(Lat.rank(), ZZ).subgroup(U)
 ```
 

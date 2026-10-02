@@ -29,10 +29,10 @@ Third-party *dependencies* still need installing —
 `sage -pip install <dep>` — path magic only finds code, not its deps.
 
 `sage-indefinite-port` owns every indefinite and Lorentzian lattice algorithm
-on the owned formed-lattice category, and the capability layer offers it as the
-only provider of those operations.  It is a clone whose package sits under `src/`, so it is not vendored here either;
+on the owned formed-lattice category.  The preamble calls its functions directly;
+when the package or a function is missing, the call fails.  It is a clone whose package sits under `src/`, so it is not vendored here either;
 install it with `sage -pip install --no-deps -e <clone>`.  It depends on this
-package, which is why the preamble reaches it lazily rather than importing it.
+package, so the preamble imports it at the call rather than at module level.
 
 ## Current clones
 

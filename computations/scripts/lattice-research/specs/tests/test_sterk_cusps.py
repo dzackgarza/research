@@ -29,7 +29,7 @@ import math
 import os
 
 import pytest
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from sage_indefinite_port.indefinite import isotropic_flags
 from src.lattices.lattices import Lattice
 
 # ---------------------------------------------------------------------------
@@ -195,7 +195,7 @@ class TestSterkZeroCuspOrbits:
 
     @pytest.fixture(scope="class")
     def zero_cusp_reps(self, G):
-        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_orbits", G, 1)
+        return isotropic_flags.isotropic_sublattice_orbit_representatives(G, 1)
 
     def test_exactly_two_zero_cusps(self, zero_cusp_reps):
         assert len(zero_cusp_reps) == 2
@@ -240,7 +240,7 @@ class TestSterkZeroCuspStabilizers:
 
     @pytest.fixture(scope="class")
     def gens_div2(self, G, div2_rep):
-        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", G, [div2_rep])
+        return isotropic_flags.isotropic_sublattice_stabilizer_generators(G, [div2_rep])
 
     def test_stabilizer_nonempty(self, gens_div2):
         assert len(gens_div2) > 0
@@ -281,7 +281,7 @@ class TestSterkZeroCuspStabilizerSlow:
 
     @pytest.fixture(scope="class")
     def gens_div1(self, G, div1_rep):
-        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", G, [div1_rep])
+        return isotropic_flags.isotropic_sublattice_stabilizer_generators(G, [div1_rep])
 
     def test_stabilizer_nonempty(self, gens_div1):
         assert len(gens_div1) > 0
@@ -311,7 +311,7 @@ class TestSterkOneCuspOrbits:
 
     @pytest.fixture(scope="class")
     def one_cusp_reps(self, G):
-        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_orbits", G, 2)
+        return isotropic_flags.isotropic_sublattice_orbit_representatives(G, 2)
 
     def test_exactly_two_one_cusps(self, one_cusp_reps):
         assert len(one_cusp_reps) == 2
@@ -347,7 +347,7 @@ class TestSterkOneCuspStabilizers:
 
     @pytest.fixture(scope="class")
     def all_stabilizers(self, G, one_cusp_fixture_reps):
-        return [engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", G, [rep[0], rep[1]]) for rep in one_cusp_fixture_reps]
+        return [isotropic_flags.isotropic_sublattice_stabilizer_generators(G, [rep[0], rep[1]]) for rep in one_cusp_fixture_reps]
 
     def test_stabilizers_nonempty(self, all_stabilizers):
         for i, gens in enumerate(all_stabilizers):

@@ -48,15 +48,14 @@ What this proves:
 ### sage-indefinite-port
 
 Capabilities:
-- `lattice.indefinite_isometry_witness`: Dutour Sikirić's
+- `isometry`: Dutour Sikirić's
   `INDEF_FORM_TestEquivalence`, an isometry between two indefinite forms or
   `None`
-- `lattice.indefinite_automorphism_group`: Dutour Sikirić's
+- `orthogonal_group_generators`: Dutour Sikirić's
   `INDEF_FORM_AutomorphismGroup`, generators of `O(L)` for an indefinite `L`
 
 What this proves:
-- indefinite form equivalence and the automorphism group are reached through
-  `engine_capabilities.compute`
+- indefinite form equivalence and the automorphism group are, called directly
 
 ## Local experiments
 

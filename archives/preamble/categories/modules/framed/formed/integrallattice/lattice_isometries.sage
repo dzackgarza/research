@@ -147,17 +147,10 @@ def _isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
         indefinite_orthogonal_group_generator_matrices,
     )
-    from dzack_research.preamble.engine_capabilities import engine_capabilities
 
     positive, negative = lattice.signature_pair()
     if 0 in (positive, negative):
         return _definite_isometry_group_generator_matrices(lattice)
-    assert engine_capabilities.is_available("lattice.indefinite_automorphism_group"), (
-        f"O({lattice}) is indefinite; its generating set is the capability "
-        "lattice.indefinite_automorphism_group of sage-indefinite-port, which "
-        "is not available.  Name a subgroup by its generators, or cut one out "
-        "by a membership predicate"
-    )
     return indefinite_orthogonal_group_generator_matrices(
         matrix(SageZZ, lattice.gram_matrix())
     )

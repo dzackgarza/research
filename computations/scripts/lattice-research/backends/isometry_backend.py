@@ -11,7 +11,7 @@ isometry route.
 Definite lattices then defer to Sage's quadratic-form equivalence. Indefinite
 even two-elementary lattices use the signature plus Nikulin's ``(r, a,
 delta)`` classification invariants. The remaining indefinite cases delegate to
-the capability ``lattice.indefinite_isometry_witness``, which
+the function ``isometry``, which
 ``sage-indefinite-port`` owns, and require an exact witness matrix before
 returning ``True``.
 
@@ -27,7 +27,7 @@ Sources:
 from __future__ import annotations
 
 from sage.all import ZZ, IntegralLattice
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from sage_indefinite_port.indefinite import recursive
 
 
 class LatticeIsometryBackend:
@@ -118,7 +118,7 @@ class LatticeIsometryBackend:
 
     def _isometric_indefinite_general(self, left, right):
         """
-        General indefinite branch through ``lattice.indefinite_isometry_witness``.
+        General indefinite branch through ``isometry``.
 
         Asks ``sage-indefinite-port`` for a witness matrix and verifies it
         over ``ZZ``.
@@ -135,7 +135,7 @@ class LatticeIsometryBackend:
     def _compute_general_indefinite_isometry(self, left, right):
         M1 = left.inner_product_matrix()
         M2 = right.inner_product_matrix()
-        witness_data = engine_capabilities.compute("lattice.indefinite_isometry_witness", M1.rows(), M2.rows())
+        witness_data = recursive.isometry(M1.rows(), M2.rows())
         if witness_data is None:
             return False
         from sage.all import matrix
