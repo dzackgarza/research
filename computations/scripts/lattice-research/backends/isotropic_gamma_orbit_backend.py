@@ -13,10 +13,7 @@ from src.backends.dawes_orbit_backend import (
     induced_discriminant_action,
     real_spinor_norm_sign,
 )
-from src.backends.external.py_polyhedral import (
-    indefinite_form_test_equivalence_isotropic_k_plane,
-    indefinite_form_test_equivalence_vector,
-)
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 _LOGGER = logging.getLogger(__name__)
 _CACHE_ENV_VAR = "COBLE_RESEARCH_CACHE_DIR"
@@ -521,7 +518,7 @@ def _compute_ambient_equivalence_witness(lattice, orbit_kind, left, right):
         left_vec = vector(ZZ, list(_normalize_primitive_line(left)))
         right_vec = vector(ZZ, list(_normalize_primitive_line(right)))
         for target in (right_vec, -right_vec):
-            raw = indefinite_form_test_equivalence_vector(
+            raw = engine_capabilities.compute("lattice.indefinite_vector_isometry_witness",
                 lattice._gram_rows(),
                 [int(entry) for entry in left_vec],
                 [int(entry) for entry in target],
@@ -532,7 +529,7 @@ def _compute_ambient_equivalence_witness(lattice, orbit_kind, left, right):
         return None
     left_rows = _object_basis_rows(left)
     right_rows = _object_basis_rows(right)
-    raw = indefinite_form_test_equivalence_isotropic_k_plane(
+    raw = engine_capabilities.compute("lattice.indefinite_isotropic_subspace_isometry_witness",
         lattice._gram_rows(),
         left_rows,
         right_rows,

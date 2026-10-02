@@ -20,11 +20,7 @@ from sage.all import (
     vector,
 )
 from sage.structure.sequence import Sequence
-from src.backends.external.py_polyhedral import (
-    indefinite_form_get_orbit_representative,
-    indefinite_form_stabilizer_vector,
-    indefinite_form_test_equivalence_vector,
-)
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 
 def find_vector_isometry_in_group(group, v1, v2):
@@ -311,7 +307,7 @@ def _normalize_nonisotropic_pair(lattice, v1, v2):
 
 
 def _test_full_orthogonal_equivalence(lattice, w1, w2):
-    raw_witness = indefinite_form_test_equivalence_vector(
+    raw_witness = engine_capabilities.compute("lattice.indefinite_vector_isometry_witness",
         lattice._gram_rows(),
         [int(entry) for entry in w1],
         [int(entry) for entry in w2],
@@ -603,7 +599,7 @@ def _stable_complement_reflections(lattice, decomposition, norm):
 def _candidate_root_vectors(lattice, norm):
     seen = set()
     candidates = []
-    raw_candidates = indefinite_form_get_orbit_representative(
+    raw_candidates = engine_capabilities.compute("lattice.indefinite_orbit_representative",
         lattice._gram_rows(),
         norm,
     )
@@ -649,7 +645,7 @@ def _find_finite_black_box_witness(group, w2, ambient_witness):
 
 
 def _stabilizer_generators(lattice, w):
-    raw_generators = indefinite_form_stabilizer_vector(
+    raw_generators = engine_capabilities.compute("lattice.indefinite_vector_stabilizer",
         lattice._gram_rows(),
         [int(entry) for entry in w],
     )

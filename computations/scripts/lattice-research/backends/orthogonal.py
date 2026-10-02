@@ -143,13 +143,13 @@ class _LatticeOrthogonalSet:
 
     def stabilizer(self, value):
         from sage.all import vector as sage_vector
-        from src.backends.external.py_polyhedral import indefinite_form_stabilizer_vector
+        from dzack_research.preamble.engine_capabilities import engine_capabilities
 
         target = sage_vector(ZZ, list(_as_coordinate_vector(value)))
         raw_value = [int(entry) for entry in target]
 
         def _stab_vec_gens():
-            return self._lattice._matrices_from_raw(indefinite_form_stabilizer_vector(self._lattice._gram_rows(), raw_value))
+            return self._lattice._matrices_from_raw(engine_capabilities.compute("lattice.indefinite_vector_stabilizer", self._lattice._gram_rows(), raw_value))
 
         return self.subgroup(
             gens_fn=_stab_vec_gens,
@@ -158,7 +158,7 @@ class _LatticeOrthogonalSet:
 
     def stabilizer_of_isotropic_line(self, value):
         from sage.all import vector as sage_vector
-        from src.backends.external.py_polyhedral import indefinite_form_stabilizer_isotropic_line
+        from dzack_research.preamble.engine_capabilities import engine_capabilities
 
         target = sage_vector(ZZ, list(_as_coordinate_vector(value)))
         line = self._lattice._sage_like().ambient_module().span([target])
@@ -166,7 +166,7 @@ class _LatticeOrthogonalSet:
 
         def _stab_line_gens():
             return self._lattice._matrices_from_raw(
-                indefinite_form_stabilizer_isotropic_line(self._lattice._gram_rows(), raw_value)
+                engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", self._lattice._gram_rows(), [raw_value])
             )
 
         return self.subgroup(
@@ -176,17 +176,19 @@ class _LatticeOrthogonalSet:
 
     def stabilizer_of_isotropic_plane(self, left, right):
         from sage.all import vector as sage_vector
-        from src.backends.external.py_polyhedral import indefinite_form_stabilizer_isotropic_plane_2d
+        from dzack_research.preamble.engine_capabilities import engine_capabilities
 
         left_vector = sage_vector(ZZ, list(_as_coordinate_vector(left)))
         right_vector = sage_vector(ZZ, list(_as_coordinate_vector(right)))
         plane = self._lattice._sage_like().ambient_module().span([left_vector, right_vector])
         return self.subgroup(
             gens_fn=lambda: self._lattice._matrices_from_raw(
-                indefinite_form_stabilizer_isotropic_plane_2d(
+                engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer",
                     self._lattice._gram_rows(),
-                    [int(entry) for entry in left_vector],
-                    [int(entry) for entry in right_vector],
+                    [
+                        [int(entry) for entry in left_vector],
+                        [int(entry) for entry in right_vector],
+                    ],
                 )
             ),
             predicate=lambda M, _l=left_vector, _r=right_vector, _p=plane: M * _l in _p and M * _r in _p,
@@ -194,7 +196,7 @@ class _LatticeOrthogonalSet:
 
     def stabilizer_of_isotropic_flag(self, ordered_basis):
         from sage.all import vector as sage_vector
-        from src.backends.external.py_polyhedral import indefinite_form_stabilizer_isotropic_flag
+        from dzack_research.preamble.engine_capabilities import engine_capabilities
 
         columns = [sage_vector(ZZ, list(_as_coordinate_vector(value))) for value in ordered_basis]
         strata = [self._lattice._sage_like().ambient_module().span(columns[: index + 1]) for index in range(len(columns))]
@@ -205,7 +207,7 @@ class _LatticeOrthogonalSet:
 
         def _flag_gens():
             return self._lattice._matrices_from_raw(
-                indefinite_form_stabilizer_isotropic_flag(self._lattice._gram_rows(), basis_rows)
+                engine_capabilities.compute("lattice.indefinite_isotropic_flag_stabilizer", self._lattice._gram_rows(), basis_rows)
             )
 
         return self.subgroup(gens_fn=_flag_gens, predicate=predicate)

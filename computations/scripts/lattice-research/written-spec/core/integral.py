@@ -5,11 +5,7 @@ import re
 
 from sage.all import QQ, ZZ, Integer, IntegralLattice, QuadraticForm, identity_matrix, matrix, vector
 from sage.misc.cachefunc import cached_method
-from src.backends.external.py_polyhedral import (
-    indefinite_form_automorphism_group,
-    indefinite_form_isotropic_k_flag,
-    indefinite_form_isotropic_k_plane,
-)
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 from src.backends.isometry_backend import ISOMETRY_BACKEND
 from src.lattices.core.elements import LatticeElement
 from src.lattices.core.rational import DualLattice, RationalLattice
@@ -315,21 +311,21 @@ class Lattice(RationalLattice):
         else:
 
             def gens_fn():
-                return self._matrices_from_raw(indefinite_form_automorphism_group(self._gram_rows()))
+                return self._matrices_from_raw(engine_capabilities.compute("lattice.indefinite_automorphism_group", self._gram_rows()))
 
         return LatticeOrthogonalGroup.from_lattice(self, gens_fn)
 
     def isotropic_line_orbits(self):
-        return [self.element_from(row) for rows in indefinite_form_isotropic_k_plane(self._gram_rows(), 1) for row in rows]
+        return [self.element_from(row) for rows in engine_capabilities.compute("lattice.indefinite_isotropic_subspace_orbits", self._gram_rows(), 1) for row in rows]
 
     def isotropic_plane_orbits(self):
         return [
             (self.element_from(rows[0]), self.element_from(rows[1]))
-            for rows in indefinite_form_isotropic_k_plane(self._gram_rows(), 2)
+            for rows in engine_capabilities.compute("lattice.indefinite_isotropic_subspace_orbits", self._gram_rows(), 2)
         ]
 
     def isotropic_flag_orbits(self, depth: int):
-        return [[self.element_from(row) for row in rows] for rows in indefinite_form_isotropic_k_flag(self._gram_rows(), depth)]
+        return [[self.element_from(row) for row in rows] for rows in engine_capabilities.compute("lattice.indefinite_isotropic_flag_orbits", self._gram_rows(), depth)]
 
     def _eigenspace_sublattice(self, involution_matrix, eigenvalue: int):
         kernel = (matrix(ZZ, involution_matrix) - Integer(eigenvalue) * identity_matrix(ZZ, self.rank())).right_kernel()

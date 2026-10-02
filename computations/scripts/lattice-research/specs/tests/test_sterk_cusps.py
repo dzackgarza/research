@@ -29,11 +29,7 @@ import math
 import os
 
 import pytest
-from src.backends.external.py_polyhedral.binaries import (
-    indefinite_form_isotropic_k_plane,
-    indefinite_form_stabilizer_isotropic_line,
-    indefinite_form_stabilizer_isotropic_plane_2d,
-)
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 from src.lattices.lattices import Lattice
 
 # ---------------------------------------------------------------------------
@@ -77,7 +73,7 @@ def _div(G, v):
 
 
 def _check_preserves_gram(gens, G, label):
-    """All generators satisfy M G M^T = G (polyhedral_common row-vector convention)."""
+    """All generators satisfy M G M^T = G (row-vector convention)."""
     n = len(G)
     for idx, M in enumerate(gens):
         MGMt = [[sum(M[i][k] * G[k][m] * M[j][m] for k in range(n) for m in range(n)) for j in range(n)] for i in range(n)]
@@ -199,7 +195,7 @@ class TestSterkZeroCuspOrbits:
 
     @pytest.fixture(scope="class")
     def zero_cusp_reps(self, G):
-        return indefinite_form_isotropic_k_plane(G, 1)
+        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_orbits", G, 1)
 
     def test_exactly_two_zero_cusps(self, zero_cusp_reps):
         assert len(zero_cusp_reps) == 2
@@ -244,7 +240,7 @@ class TestSterkZeroCuspStabilizers:
 
     @pytest.fixture(scope="class")
     def gens_div2(self, G, div2_rep):
-        return indefinite_form_stabilizer_isotropic_line(G, div2_rep)
+        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", G, [div2_rep])
 
     def test_stabilizer_nonempty(self, gens_div2):
         assert len(gens_div2) > 0
@@ -285,7 +281,7 @@ class TestSterkZeroCuspStabilizerSlow:
 
     @pytest.fixture(scope="class")
     def gens_div1(self, G, div1_rep):
-        return indefinite_form_stabilizer_isotropic_line(G, div1_rep)
+        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", G, [div1_rep])
 
     def test_stabilizer_nonempty(self, gens_div1):
         assert len(gens_div1) > 0
@@ -315,7 +311,7 @@ class TestSterkOneCuspOrbits:
 
     @pytest.fixture(scope="class")
     def one_cusp_reps(self, G):
-        return indefinite_form_isotropic_k_plane(G, 2)
+        return engine_capabilities.compute("lattice.indefinite_isotropic_subspace_orbits", G, 2)
 
     def test_exactly_two_one_cusps(self, one_cusp_reps):
         assert len(one_cusp_reps) == 2
@@ -351,7 +347,7 @@ class TestSterkOneCuspStabilizers:
 
     @pytest.fixture(scope="class")
     def all_stabilizers(self, G, one_cusp_fixture_reps):
-        return [indefinite_form_stabilizer_isotropic_plane_2d(G, rep[0], rep[1]) for rep in one_cusp_fixture_reps]
+        return [engine_capabilities.compute("lattice.indefinite_isotropic_subspace_stabilizer", G, [rep[0], rep[1]]) for rep in one_cusp_fixture_reps]
 
     def test_stabilizers_nonempty(self, all_stabilizers):
         for i, gens in enumerate(all_stabilizers):

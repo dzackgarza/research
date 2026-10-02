@@ -29,13 +29,6 @@ the citable reference for the hand-rolled parts.
 | `oscar_centralizer/` | Invariant and coinvariant sublattices of an isometry; generators and order of the image of $Z_{O(L)}(f)$ in $O(A_L, D_f)$, by hermitian Miranda–Morrison theory. | The OSCAR seam in `engines.sage`. |
 | `foliation_backend.py` | Milnor number, Picard–Fuchs operator, indicial polynomial, and the multiplicative Jordan decomposition of the local monodromy of a one-parameter hypersurface family. | **No owner.** The pipeline is written out in `notes/computations/hypersurface-family-monodromy.md`, which also states why: the preamble has no variation-of-Hodge-structure surface for it to be a method of. |
 
-`backends/external/` holds two files about `polyhedral_common`
-(Mathieu Dutour Sikirić): the capability table and build recipe for its
-binaries, and `INDEF_FORM_TestEquivalenceIsotropicKplane.cpp`, a locally
-authored adapter exposing the isotropic $k$-plane and $k$-flag equivalence
-that upstream ships only as a library API. The vendored wrapper, the binaries
-themselves, and the CARAT submodule are third-party and were not migrated.
-
 ## `specs/` — executable specifications
 
 Assertion corpora written against an intended interface rather than an
@@ -113,6 +106,6 @@ by `setattr` (module base rings, ideals as submodules, $\mathbb Q/\mathbb Z$
 quotients, free and torsion parts, `End`/`Aut`, completions). The preamble owns
 all of it through owned categories and override-refine, and monkey-patching
 Sage's classes is banned outright. `category_specs/` is standing prior art,
-already harvested. Third-party code (the `py_polyhedral` wrapper, CARAT,
+already harvested. Third-party code (CARAT,
 Movasati's `foliation.lib`, Dawes's `buildings.sage`, the conda installers) was
 never absorbed.
