@@ -34,7 +34,7 @@ Among the entries of $\semifans{F}$, the even-indexed entries $\torfan_2, \torfa
 :::: {.proof}
 
 The proof reduces to the recognizable-divisor theorem of Alexeev--Engel [@AE23]: for a recognizable divisor $R$, the normalization of the KSBA compactification of stable K3 pairs $(X, \varepsilon R)$ is isomorphic to a semitoroidal compactification (@thm:recognizable-semitoroidal, and the more general tower criterion of @thm:tower-semitoroidal). The relevant polarizing divisor here is the ramification divisor $R_\iota$ of the nonsymplectic Enriques involution, which is recognizable (@ex:recognizable-divisors). Applying the theorem produces a semitoroidal compactification on the normalization of $\ksbacpt{\fentwo}$, and identifying the resulting semifan cusp-by-cusp gives the explicit collection $\semifans{F}$, one semifan per $0$-cusp.
-The passage from the ambient K3 picture to the Enriques space is @conj:descent_semitoroidal_data_En2, which supplies the folded semifans $\mathcal{F}_k$ and their boundary stratification.
+The passage from the ambient K3 picture to the Enriques space is @conj:descent_semitoroidal_data_En2, which supplies the folded semifans $\semifan{F}_k$ and their boundary stratification.
 
 ::::
 

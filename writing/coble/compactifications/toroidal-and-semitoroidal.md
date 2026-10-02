@@ -25,7 +25,7 @@ There is a proper $\Gamma$-equivariant morphism $\torcpt{\FG} \to \bbcpt{\FG}$.
 
 ::: {.definition #def:semitoroidal-compactification title="Semitoroidal compactifications from semifans"}
 
-Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
+Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\semifan{F}_I$.
 
 A semifan relaxes the conditions of a fan by not requiring local finiteness or full support.
 This allows "partial" toroidalization at selected cusps while leaving others untouched or less refined.
@@ -70,7 +70,7 @@ For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots
 
 - **Relevant roots** ($\Phi^{\relevant}$): the active walls where combinatorial types of stable models change.
 
-The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
+The **generalized Coxeter semifan** $\semifan{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
 :::
 
 ::: {.remark title="Toroidal versus strictly semitoroidal"}
@@ -164,7 +164,7 @@ A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if,
 
 ::: {.theorem #thm:recognizable-semitoroidal title="Recognizable divisors produce semitoroidal KSBA normalizations"}
 
-If $R$ is recognizable, then the normalization of the KSBA compactification $\overline{F}^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mathcal{F}_R}$, defined by a specific semifan $\mathcal{F}_R$ [@AE23].
+If $R$ is recognizable, then the normalization of the KSBA compactification $\overline{F}^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\semifan{F}_R}$, defined by a specific semifan $\semifan{F}_R$ [@AE23].
 :::
 
 ::: {.example #ex:recognizable-divisors title="Basic recognizable divisors"}

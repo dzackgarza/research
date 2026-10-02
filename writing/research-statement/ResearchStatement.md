@@ -51,11 +51,11 @@ In [@AEGS25], we prove the following:
 ::: {.theorem #thm:aegs-normalization-comparison-morphism title="Theorem 1.1 of AEGS23"}
 There is an isomorphism
 \[
-\qty{ \overline{F_{\operatorname{En}, 2}} }^\nu \cong \overline{F_{\operatorname{En}, 2}}^{{\mathcal{F}}}
+\qty{ \overline{F_{\operatorname{En}, 2}} }^\nu \cong \overline{F_{\operatorname{En}, 2}}^{\semifans{F}}
 \]
-between the normalization of the KSBA compactification of \( F_{\operatorname{En}, 2} \), the moduli space of degree two numerically polarized Enriques surfaces, and a semitoroidal compactification associated to an explicit collection of semifans \( {\mathcal{F}} \).
+between the normalization of the KSBA compactification of \( F_{\operatorname{En}, 2} \), the moduli space of degree two numerically polarized Enriques surfaces, and a semitoroidal compactification associated to an explicit collection of semifans \( \semifans{F} \).
 
-The semifan data \( {\mathcal{F}} \) can be combinatorially described in terms of tilings of hyperbolic spaces by polytopes, Coxeter diagrams, and integral affine spheres with involutions. There is a complete classification of KSBA stable limits of such Enriques surfaces in terms of ADE+BC surfaces. Furthermore, the structure of \( \partial \overline{F_{\mathrm{En}, 2}} \) can be read off of Coxeter diagrams in a straightforward manner.
+The semifan data \( \semifans{F} \) can be combinatorially described in terms of tilings of hyperbolic spaces by polytopes, Coxeter diagrams, and integral affine spheres with involutions. There is a complete classification of KSBA stable limits of such Enriques surfaces in terms of ADE+BC surfaces. Furthermore, the structure of \( \partial \overline{F_{\mathrm{En}, 2}} \) can be read off of Coxeter diagrams in a straightforward manner.
 :::
 
 ## Past Work
