@@ -7,7 +7,7 @@ The form can be definite, indefinite or degenerate, and its values need not be i
 Each lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it.
 The build validates every record, writes one page for each lattice, and writes one table, with one row per record, that the database page filters, sorts and exports.
 
-The site is served at <http://lattice-database.localhost/>.
+The site is served locally at <http://lattice-database.localhost/>, and published at <https://dzackgarza.github.io/research/lattice-database/> by `.github/workflows/docs.yml`, which deploys it beside the docs book.
 
 ## Layout
 

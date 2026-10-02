@@ -780,13 +780,13 @@ linked in. Edit the real file under `writing/`; the symlink is only how Quarto r
   refuses to start while it is running, because the two renders write the same
   intermediate paths and corrupt each other.
 
-- **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`).
+- **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`). The same deployment publishes the lattice database at https://dzackgarza.github.io/research/lattice-database/: a deployment replaces the whole site, so the workflow builds both and uploads one artifact, and a cache keyed on `writing/` lets a database-only push reuse the rendered book.
 
 - **GitHub wiki** — the repo's native GitHub wiki is **disabled** (no `wiki/` ref exists; `hasWiki: true` in API but no commits).
   Do not conflate "the wiki" (historical name for the docs book, migrated via PR #272 "wiki-book-migration") with the GitHub wiki feature.
   The book under `writing/` is the wiki's successor.
 
-A push of `main` that changes `writing/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
+A push of `main` that changes `writing/` or `lattice-database/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
 
 ## Annotation feedback loop
 
