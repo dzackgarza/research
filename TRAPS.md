@@ -336,3 +336,30 @@ placed in fields. Over `Zmod(n)` the question reduces to `ZZ`, because
 after the field's generator, which is `3`. With `names=('u',)` it returns the
 zero ring. Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route
 chosen: a field engine's quotient is built with an explicit private name.
+
+## mypy
+
+### A star import that rebinds a name is rejected, and the first binding wins
+
+A Sage session file that loads the preamble rebinds Sage names on purpose: the
+lowered file starts with `from sage.all_cmdline import *`, and
+`from dzack_research.preamble.all import *` then rebinds `Integer` and
+`RealNumber` to the preamble's own constructors. Python binds the later import.
+mypy 2.4.0 reports `Incompatible import of "Integer"` at the second import, and
+`reveal_type(Integer)` after it is still the first module's class, so every
+later use is checked against the wrong type. Neither `--allow-redefinition` nor
+`--allow-redefinition-new --local-partial-types` changes either result. This is
+upstream python/mypy#16972, open on 2026-10-02; Pyright takes the later binding.
+Three-file specimen:
+
+```bash
+printf 'class Integer: ...\n' > a.py
+printf 'def Integer(value: int = 0) -> int:\n    return value\n' > b.py
+printf 'from a import *\nfrom b import *\nreveal_type(Integer)\n' > c.py
+uvx mypy@2.4.0 --no-incremental c.py
+```
+
+Route chosen: none in this repository. The rebinding is the design of the
+session, and a suppression would hide the wrong inferred type as well as the
+error. The two errors stay on the lowered `sage-init.sage` until mypy models
+the later binding.
