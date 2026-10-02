@@ -179,7 +179,7 @@ def _pending(root: Path, loaded: corpus.Corpus, held: certificates.Certificates,
     checked = {f"source {source}": _source_inputs(root, loaded, directories) for source, (_, directories) in SOURCES.items()}
     corpus_wide = {summands.CERTIFICATE: _corpus_inputs(loaded)}
     names = [name for name, inputs in (derived | checked | corpus_wide).items() if not certificates.is_certified(held, name, inputs)]
-    names += [genus.name(str(request["tag"]), str(field)) for request in genus.requests(loaded, held, (), seconds) for field in request["fields"]]
+    names += [genus.name(request["tag"], field) for request in genus.requests(loaded, held, (), seconds) for field in request["fields"]]
     return names
 
 
@@ -219,7 +219,7 @@ def certify(
             continue
         text = entry.path.read_text()
         document = frontmatter.loads(text)
-        updated = records.record_text(records.derive(document.metadata), document.content)
+        updated = records.record_text(records.derive(corpus.front_matter(document)), document.content)
         if updated != text:
             entry.path.write_text(updated)
             print(f"{entry.path}: derived values written")

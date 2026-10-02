@@ -668,9 +668,9 @@ def build(root: Path, target: Path) -> int:
         )
         (target / "morphism" / f"{file.source}-{file.target}.html").write_text(html)
     article_page = environment.get_template("article.html.j2")
-    for index, page in enumerate(theory):
-        html = article_page.render(root="../", page=page, prose=prose[len(entries) + len(pages) + len(morphism_files) + index])
-        (target / "theory" / f"{page.slug}.html").write_text(html)
+    for index, article in enumerate(theory):
+        html = article_page.render(root="../", page=article, prose=prose[len(entries) + len(pages) + len(morphism_files) + index])
+        (target / "theory" / f"{article.slug}.html").write_text(html)
     (target / "theory.html").write_text(environment.get_template("theory.html.j2").render(root="./"))
     (target / "morphisms.html").write_text(environment.get_template("morphisms.html.j2").render(root="./", files=morphism_files, lattices=lattices))
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]

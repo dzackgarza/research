@@ -156,7 +156,7 @@ def _orbit_equality_problems(first: PrimitiveOrbitSeries, second: PrimitiveOrbit
         a, b = first.coefficient(n), second.coefficient(n)
         if a is not None and b is not None and a != b:
             message = "{first} and {second} are one group on this lattice, but c({n}) is {a} and {b}"
-            context = {"first": first_name, "second": second_name, "n": n, "a": a, "b": b}
+            context: dict[str, str | int] = {"first": first_name, "second": second_name, "n": n, "a": a, "b": b}
             yield _problem("primitive_orbit_same_group", message, ("integral", "primitive_orbits", first_name), context)
 
 
@@ -621,7 +621,7 @@ class Lattice(Record):
         determinant = int(self.determinant)
         primes = arithmetic.bad_reduction_primes(determinant) if determinant != 0 else None
         if self.integral.bad_reduction_primes != primes:
-            context = {"stated": str(self.integral.bad_reduction_primes), "computed": str(primes)}
+            context: dict[str, str | int] = {"stated": str(self.integral.bad_reduction_primes), "computed": str(primes)}
             yield _problem("bad_reduction_primes", "`bad_reduction_primes` is {stated}, and the determinant gives {computed}", ("integral", "bad_reduction_primes"), context)
         character = arithmetic.quadratic_character(self.rank, determinant) if determinant != 0 and self.rank % 2 == 0 else None
         if self.integral.quadratic_character != character:

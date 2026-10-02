@@ -14,6 +14,7 @@ import subprocess
 import sys
 from collections.abc import Iterator
 from pathlib import Path
+from typing import TypedDict
 
 import frontmatter
 from pydantic import BaseModel
@@ -57,6 +58,15 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
 SAGE_MODULE = Path(__file__).with_name("sage_genus.py")
 
 
+class Request(TypedDict):
+    """One lattice of the task that `SAGE_MODULE` reads as its `Request`: the tag, the Gram matrix, the sign of `_sign` and the pending fields."""
+
+    tag: str
+    gram: list[list[int]]
+    sign: int
+    fields: list[str]
+
+
 def name(tag: str, field: str) -> str:
     """The name of the certificate of `field` of the record `tag`."""
     return f"{tag} {BLOCKS[field][0]}.{field}"
@@ -72,9 +82,9 @@ def _sign(lattice: Lattice) -> int:
             return 0
 
 
-def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int) -> list[dict[str, Yaml]]:
+def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int) -> list[Request]:
     """For each integral record with a nonzero determinant, among `tags` when it is not empty, the fields that are pending with the time limit `seconds`."""
-    chosen: list[dict[str, Yaml]] = []
+    chosen: list[Request] = []
     bounds = corpus.hyperbolic_index_bounds(loaded.morphisms, loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
@@ -82,14 +92,14 @@ def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], s
             continue
         inputs = certificates.gram_digest(lattice)
         applicable = [field for field in BLOCKS if applies(field, lattice, bounds.get(lattice.tag, 0))]
-        fields: list[Yaml] = [field for field in applicable if certificates.is_pending(held, name(lattice.tag, field), inputs, seconds)]
+        fields = [field for field in applicable if certificates.is_pending(held, name(lattice.tag, field), inputs, seconds)]
         if fields:
-            gram: list[Yaml] = [[int(x) for x in row] for row in lattice.gram_tensor]
+            gram = [[int(x) for x in row] for row in lattice.gram_tensor]
             chosen.append({"tag": lattice.tag, "gram": gram, "sign": _sign(lattice), "fields": fields})
     return chosen
 
 
-def computed(chosen: list[dict[str, Yaml]], seconds: int) -> Iterator[dict[str, Yaml]]:
+def computed(chosen: list[Request], seconds: int) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
     task = json.dumps({"seconds": seconds, "lattices": chosen})
     # `sage -python` runs the first `python` on PATH, and `uv run` puts the environment of latticedb first.
@@ -142,7 +152,7 @@ def merged(stored: Yaml, value: Yaml, location: str) -> tuple[Yaml, list[str]]:
 def store(path: Path, values: dict[str, Yaml]) -> dict[str, str]:
     """Write into the record at `path` each computed value that it does not hold; for each field whose stored value differs from the computed one, the problem."""
     document = frontmatter.load(str(path))
-    metadata: dict[str, Yaml] = dict(document.metadata)
+    metadata = corpus.front_matter(document)
     found: dict[str, str] = {}
     for field, (block_name, model) in BLOCKS.items():
         value = values.get(field)

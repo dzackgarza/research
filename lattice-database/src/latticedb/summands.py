@@ -24,6 +24,7 @@ from pathlib import Path
 
 import cypari2
 import frontmatter
+from pydantic import TypeAdapter
 
 from latticedb import records
 from latticedb.arithmetic import GramTensor
@@ -186,7 +187,8 @@ def store(root: Path, loaded: Corpus) -> list[str]:
         path = root / "morphisms" / f"{source}-{target}.md"
         if (source, target) in files:
             document = frontmatter.load(str(path))
-            path.write_text(records.morphisms_text(source, target, list(document.metadata["morphisms"]) + morphisms, document.content))
+            stored = TypeAdapter(list[dict[str, Yaml]]).validate_python(document.metadata["morphisms"])
+            path.write_text(records.morphisms_text(source, target, stored + morphisms, document.content))
         else:
             path.write_text(records.morphisms_text(source, target, morphisms, PROSE))
     print(f"{sum(len(m) for m in new.values())} embeddings of orthogonal summands written to {len(new)} morphism files")

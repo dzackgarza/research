@@ -12,6 +12,8 @@ dependencies = [
     "tree-sitter-sage",
     "vinal @ git+https://github.com/dzackgarza/vinal",
     "z3-solver>=4.16.0.0",
+    "python-flint>=0.9",
+    "python-frontmatter>=1.1",
 ]
 
 [build-system]

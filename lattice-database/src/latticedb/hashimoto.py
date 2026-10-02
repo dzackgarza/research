@@ -158,10 +158,10 @@ def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], la
                 found.append(f"Table 10.3 row {invariant.n}: P is not an isometry from the printed Gram tensor to {printed.record}({printed.twist})")
             assert row.discriminant_form is not None
             rank = K3_RANK - row.rank
-            computed = (len(tensor), arithmetic.inertia(tensor)[:2], abs(arithmetic.determinant(tensor)), prime_powers(tensor))
-            stated = (rank, (3, rank - 3), row.discriminant_order, symbol_group(row.discriminant_form))
-            if computed != stated:
-                found.append(f"Table 10.3 row {invariant.n}: (rank, signature, |q|, group of q) is {stated}, the printed Gram tensor gives {computed}")
+            printed_invariants = (len(tensor), arithmetic.inertia(tensor)[:2], abs(arithmetic.determinant(tensor)), prime_powers(tensor))
+            stated_invariants = (rank, (3, rank - 3), row.discriminant_order, symbol_group(row.discriminant_form))
+            if printed_invariants != stated_invariants:
+                found.append(f"Table 10.3 row {invariant.n}: (rank, signature, |q|, group of q) is {stated_invariants}, the printed Gram tensor gives {printed_invariants}")
             assert row.coinvariant is not None
             if not complements((printed.record, printed.twist), (row.coinvariant.record, row.coinvariant.twist), lattices[K3_RECORD], morphisms):
                 pair = f"{printed.record}({printed.twist}) and {row.coinvariant.record}({row.coinvariant.twist})"
