@@ -4,8 +4,8 @@
 
 This plan adds subgroup-aware isotropic orbit computation to the existing lattice
 API by following the Dutour-Sikirić/Hulek method from arXiv:2302.01679 and the
-vendored `polyhedral_common` backend, rather than extending the non-isotropic
-Dawes backend.
+isotropic orbit and stabilizer capabilities of sage-indefinite-port, rather than
+extending the non-isotropic Dawes backend.
 
 The key idea is:
 
@@ -74,7 +74,7 @@ At the end of this work:
   model.
 - Do not require explicit generators of the infinite subgroup `\Gamma` unless a
   specific constructor can already supply them lazily.
-- Do not reimplement algorithms already present in `polyhedral_common`, GAP,
+- Do not reimplement algorithms already present in sage-indefinite-port, GAP,
   Sage, or OSCAR.
 - Do not add `just` recipes or task-local command-surface pollution.
 - Do not use manual `raise` statements in the affected mathematical code. Branch
@@ -109,19 +109,21 @@ At the end of this work:
   `theory/references/literature/aegs_2023.md#L164`,
   `theory/references/literature/aegs_2023.md#L274`
 
-### Vendored backend docs and code
+### sage-indefinite-port capabilities
 
-- [polyhedral_common binary targets](../external/dutsik_polyhedral/polyhedral_common/BINARIES)
-- `src/external/dutsik_polyhedral/polyhedral_common/src_indefinite/INDEF_FORM_GetOrbit_IsotropicKplane.cpp`
-- `src/external/dutsik_polyhedral/polyhedral_common/src_indefinite/INDEF_FORM_StabilizerIsotropicPlane.cpp`
-- `src/external/dutsik_polyhedral/polyhedral_common/src_group/GRP_DoubleCoset.h`
-- `src/external/dutsik_polyhedral/polyhedral_common/src_group/GRP_OrbitSplitting.cpp`
-- `src/external/dutsik_polyhedral/polyhedral_common/src_group/GRP_LinearSpace_Stabilizer_DoubleCoset.cpp`
+- `lattice.indefinite_isotropic_subspace_orbits`: orbits of primitive totally
+  isotropic sublattices of rank `k`
+- `lattice.indefinite_isotropic_flag_orbits`: orbits of isotropic flags
+- `lattice.indefinite_isotropic_subspace_stabilizer`: stabilizer of an
+  isotropic line or plane
+- `lattice.indefinite_isotropic_flag_stabilizer`: stabilizer of an isotropic
+  flag
+- `lattice.indefinite_isotropic_subspace_isometry_witness`: an isometry carrying
+  one isotropic sublattice to another
 
 ### Existing repo integration points
 
 - `src/coble_geometry_foundation.py`
-- `src/external/py_polyhedral/binaries.py`
 - `src/research/dawes_orbit_backend.py`
 - `computations/oscar_centralizer.py`
 - `tests/test_sterk_cusps.py`
@@ -198,14 +200,15 @@ The existing `dawes_orbit_backend` remains non-isotropic.
 
 ### Regime 1: ambient full-group orbit computation
 
-Use existing Dutour-Sikirić binaries for:
+Use Dutour Sikirić's algorithms, through the sage-indefinite-port capabilities
+above, for:
 
 - ambient isotropic line orbits,
 - ambient isotropic plane orbits,
 - ambient isotropic flag orbits,
 - ambient stabilizers of isotropic lines, planes, or flags.
 
-These are already exposed or directly available in `polyhedral_common`.
+Each of these is a capability of sage-indefinite-port.
 
 ### Regime 2: subgroup splitting by finite quotient
 
@@ -285,8 +288,9 @@ Reason:
 ### Optional backend expansion
 
 If GAP word extraction or double-coset handling proves insufficient for a needed
-case, add thin wrappers for the relevant `src_group` binaries from
-`polyhedral_common`, but only after the GAP route is shown to be the blocker.
+case, request the double-coset and orbit-splitting algorithms of Dutour Sikirić as
+capabilities of sage-indefinite-port, but only after the GAP route is shown to be
+the blocker.
 
 ## Generator policy
 
@@ -334,7 +338,6 @@ Replace manual error raising in the affected modules with assertions.
 ### Files to clean
 
 - `src/coble_geometry_foundation.py`
-- `src/external/py_polyhedral/binaries.py`
 - `computations/oscar_centralizer.py`
 - the new isotropic backend module
 
@@ -484,7 +487,6 @@ Validation:
 Where:
 
 - `src/coble_geometry_foundation.py`
-- `src/external/py_polyhedral/binaries.py`
 - `computations/oscar_centralizer.py`
 - `src/research/isotropic_gamma_orbit_backend.py`
 

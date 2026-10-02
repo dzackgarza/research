@@ -45,20 +45,18 @@ What this proves:
 - it is not standalone GAP in the current upstream layout, because core helpers
   route through Julia/Oscar bridge symbols
 
-### C++ CLI backend: `polyhedral_common/src_indefinite`
+### sage-indefinite-port
 
-Repository:
-`https://github.com/MathieuDutSik/polyhedral_common/tree/master/src_indefinite`
-
-Verified entry points:
-- `src_indefinite/INDEF_FORM_TestEquivalence.cpp`
-- `src_indefinite/INDEF_FORM_AutomorphismGroup.cpp`
-- `src_indefinite/CombinedAlgorithms.h`
+Capabilities:
+- `lattice.indefinite_isometry_witness`: Dutour Sikirić's
+  `INDEF_FORM_TestEquivalence`, an isometry between two indefinite forms or
+  `None`
+- `lattice.indefinite_automorphism_group`: Dutour Sikirić's
+  `INDEF_FORM_AutomorphismGroup`, generators of `O(L)` for an indefinite `L`
 
 What this proves:
-- there is a real compiled CLI/backend route for indefinite form equivalence
-- the executable `INDEF_FORM_TestEquivalence` is a first-class upstream target,
-  not an inferred possibility
+- indefinite form equivalence and the automorphism group are reached through
+  `engine_capabilities.compute`
 
 ## Local experiments
 
@@ -161,27 +159,6 @@ What this means:
 - a pure GAP route would require either:
   - a compatibility bridge that recreates the Julia/Oscar calls, or
   - a local port/refactor of those bridge-dependent pieces
-
-### C++ backend exists but does not currently build here
-
-Commands run:
-
-```bash
-git -C /tmp/indefinite-research-ZtnrdW/polyhedral_common submodule update --init --recursive
-cd /tmp/indefinite-research-ZtnrdW/polyhedral_common/src_indefinite
-make INDEF_FORM_TestEquivalence
-```
-
-Observed result:
-- after submodule initialization, the build advanced past the earlier missing-header
-  problem
-- compilation then failed on
-  `boost/archive/tmpdir.hpp: No such file or directory`
-
-What this means:
-- the C++ route is real
-- it is not immediately usable in this environment without additional Boost
-  development headers or a containerized build setup
 
 ## Current conclusion
 

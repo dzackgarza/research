@@ -12,8 +12,6 @@ Visible `theory/` is for human-facing review windows, references, decisions, map
 
 [Foundation Spec Memories](foundations/index)
 
-[External Polyhedral Tool Memories](external/dutsik_polyhedral/polyhedral_common/index)
-
 ## Compact Root Summaries
 
 [Theory Stored Claim Facts](../theory-source-routing)

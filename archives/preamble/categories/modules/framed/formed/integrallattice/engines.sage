@@ -4,20 +4,18 @@ Three engines live behind this boundary, per the hidden-backend ruling: an
 engine is an implementation detail of an owned homset or group surface, and
 nothing an engine returns leaves this module unverified over $\mathbb Z$.
 
-* **polyhedral_common** (Mathieu Dutour Sikirić) decides isometry of
-  indefinite lattices with an exact witness, enumerates the $O(L)$-orbits
-  of the primitive totally isotropic sublattices of rank $k$ and of the
-  flags of them, and produces generating sets for $O(L)$ and for stabilizers
-  of those sublattices.  It is reached
-  through the vendored ``py_polyhedral`` wrapper
-  (github.com/MathieuDutSik/py_polyhedral, the reference implementation this
-  seam's marshalling follows): drop that clone into ``computations/vendor/``
-  and build the ``INDEF_FORM_*`` binaries per the upstream README.  When the
-  wrapper is absent the seam says so by name; emptiness questions answer the
-  three-valued ``Unknown`` at their own surface instead.  The same package's
-  ``LORENTZ_FundDomain_AllcockEdgewalk`` binary walks a fundamental
-  polyhedron of the reflection subgroup of a Lorentzian lattice (Allcock's
-  edgewalk), deciding reflectivity.
+* **sage-indefinite-port** carries Mathieu Dutour Sikirić's indefinite
+  lattice algorithms.  It decides isometry of indefinite lattices with an
+  exact witness, enumerates the $O(L)$-orbits of the primitive totally
+  isotropic sublattices of rank $k$ and of the flags of them, and produces
+  generating sets for $O(L)$ and for stabilizers of those sublattices.  Each
+  algorithm is a capability, reached through
+  ``engine_capabilities.compute``.  When the port does not provide a
+  capability, the registry says so by name; emptiness questions answer the
+  three-valued ``Unknown`` at their own surface instead.  The capability
+  ``lorentzian_edgewalk_fundamental_domain`` walks a fundamental polyhedron
+  of the reflection subgroup of a Lorentzian lattice (Allcock's edgewalk),
+  deciding reflectivity.
 
 * **OSCAR/Hecke** computes the rational spinor norm of an isometry
   (``rational_spinor_norm`` on a lattice with isometry), Nikulin's
@@ -40,8 +38,6 @@ below asserts its convention on the returned data rather than trusting the
 engine's documentation.
 """
 
-import importlib
-import importlib.util
 import shutil
 import subprocess
 import tempfile
@@ -53,31 +49,12 @@ from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-if TYPE_CHECKING:
-    from types import ModuleType
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
+if TYPE_CHECKING:
     from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 
     IntegerRows = list[list[int]]
-
-
-_POLYHEDRAL_PROVISIONING = (
-    "the polyhedral_common engine is not provisioned: clone "
-    "github.com/MathieuDutSik/py_polyhedral into computations/vendor/ and "
-    "build the INDEF_FORM_* binaries it wraps (polyhedral_common)"
-)
-
-
-def polyhedral_engine() -> "ModuleType | None":
-    r"""Return the vendored ``py_polyhedral`` wrapper, or ``None`` when absent.
-
-    Absence is a fact about provisioning, not about the mathematics: callers
-    with an ``Unknown`` channel answer ``Unknown``, callers without one
-    assert with :data:`_POLYHEDRAL_PROVISIONING`.
-    """
-    if importlib.util.find_spec("py_polyhedral") is None:
-        return None
-    return importlib.import_module("py_polyhedral.binaries")
 
 
 def _integer_rows(gram: "Matrix_integer_dense") -> "IntegerRows":
@@ -94,13 +71,13 @@ def indefinite_isometry_witness(
     codomain's framing, so $W$ *is* the matrix of an isometry
     $L_{\mathrm{dom}}\to L_{\mathrm{cod}}$ in the preamble's row convention.
     ``None`` is the engine's decision that no isometry exists
-    (``INDEF_FORM_TestEquivalence``); a returned witness is verified over
+    (``lattice.indefinite_isometry_witness``); a returned witness is verified over
     $\mathbb Z$ here before it leaves the seam.
     """
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
-    raw = engine.indefinite_form_test_equivalence(
-        _integer_rows(codomain_gram), _integer_rows(domain_gram)
+    raw = engine_capabilities.compute(
+        "lattice.indefinite_isometry_witness",
+        _integer_rows(codomain_gram),
+        _integer_rows(domain_gram),
     )
     if raw is None:
         return None
@@ -117,16 +94,16 @@ def indefinite_orthogonal_group_generator_matrices(
 ) -> tuple:
     r"""Return matrices generating $O(L)$ for an indefinite $L$, row convention.
 
-    ``INDEF_FORM_AutomorphismGroup``: a finite generating set, which $O(L)$
+    ``lattice.indefinite_automorphism_group``: a finite generating set, which $O(L)$
     has by Borel and Harish-Chandra; the engine exhibits one.  Each generator
     is verified to satisfy $MGM^{\mathsf T}=G$ before it leaves the seam.
     """
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
     gram_z = matrix(SageZZ, gram)
     generators = tuple(
         matrix(SageZZ, rows)
-        for rows in engine.indefinite_form_automorphism_group(_integer_rows(gram))
+        for rows in engine_capabilities.compute(
+            "lattice.indefinite_automorphism_group", _integer_rows(gram)
+        )
     )
     assert all(
         generator * gram_z * generator.transpose() == gram_z
@@ -140,7 +117,8 @@ def isotropic_sublattice_orbit_representative_rows(
 ) -> tuple:
     r"""Return one $k\times n$ basis-row block per $O(L)$-orbit.
 
-    ``INDEF_FORM_GetOrbit_IsotropicKplane``: representatives of the
+    ``lattice.indefinite_isotropic_subspace_orbits`` and
+    ``lattice.indefinite_isotropic_flag_orbits``: representatives of the
     $O(L)$-orbits of the primitive totally isotropic sublattices of rank
     ``rank`` (``isotropic_object="plane"``), or of the flags of such
     sublattices whose top term has that rank
@@ -151,12 +129,13 @@ def isotropic_sublattice_orbit_representative_rows(
     assert isotropic_object in ("plane", "flag"), (
         "the engine enumerates isotropic sublattices or flags of them"
     )
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
+    match isotropic_object:
+        case "plane":
+            capability = "lattice.indefinite_isotropic_subspace_orbits"
+        case "flag":
+            capability = "lattice.indefinite_isotropic_flag_orbits"
     return tuple(
-        engine.indefinite_form_isotropic_k_stuff(
-            _integer_rows(gram), int(rank), isotropic_object
-        )
+        engine_capabilities.compute(capability, _integer_rows(gram), int(rank))
     )
 
 
@@ -165,7 +144,7 @@ def indefinite_vector_orbit_representative_rows(
 ) -> tuple:
     r"""Return one coordinate row per $O(L)$-orbit of vectors of the given square.
 
-    ``INDEF_FORM_GetOrbitRepresentative``: representatives of the
+    ``lattice.indefinite_orbit_representative``: representatives of the
     $O(L)$-orbits of vectors $v$ with $b(v,v)=\text{square}$ -- finitely
     many for an indefinite lattice (the migrated finiteness note is
     ``notes/topics/coble-enriques-lattice-theory/``
@@ -173,13 +152,13 @@ def indefinite_vector_orbit_representative_rows(
     verified here to have the requested square before it leaves the seam;
     reading rows as lattice elements is the owned caller's step.
     """
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
     gram_z = matrix(SageZZ, gram)
     rows = tuple(
         tuple(SageZZ(entry) for entry in row)
-        for row in engine.indefinite_form_get_orbit_representative(
-            _integer_rows(gram), int(square)
+        for row in engine_capabilities.compute(
+            "lattice.indefinite_orbit_representative",
+            _integer_rows(gram),
+            int(square),
         )
     )
     for row in rows:
@@ -195,7 +174,8 @@ def isotropic_sublattice_stabilizer_generator_matrices(
 ) -> tuple:
     r"""Return generators of the setwise stabilizer of an isotropic sublattice or flag.
 
-    ``INDEF_FORM_StabilizerIsotropicPlane``: for
+    ``lattice.indefinite_isotropic_subspace_stabilizer`` and
+    ``lattice.indefinite_isotropic_flag_stabilizer``: for
     ``isotropic_object="plane"`` the stabilizer of the sublattice
     ``basis_rows`` spans; for ``isotropic_object="flag"`` the stabilizer of
     the full chain the rows generate, term by term.  Form preservation is
@@ -205,13 +185,16 @@ def isotropic_sublattice_stabilizer_generator_matrices(
     assert isotropic_object in ("plane", "flag"), (
         "the engine stabilizes isotropic sublattices or flags of them"
     )
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
+    match isotropic_object:
+        case "plane":
+            capability = "lattice.indefinite_isotropic_subspace_stabilizer"
+        case "flag":
+            capability = "lattice.indefinite_isotropic_flag_stabilizer"
     gram_z = matrix(SageZZ, gram)
     generators = tuple(
         matrix(SageZZ, rows)
-        for rows in engine.indefinite_form_stabilizer_isotropic_subspace(
-            _integer_rows(gram), basis_rows, choice=isotropic_object
+        for rows in engine_capabilities.compute(
+            capability, _integer_rows(gram), basis_rows
         )
     )
     assert all(
@@ -228,7 +211,7 @@ def vector_equivalence_witness(
 ) -> "Matrix_integer_dense | None":
     r"""Return $W$ with $WGW^{\mathsf T}=G$ and $vW=w$, or ``None``.
 
-    ``INDEF_FORM_TestEquivalenceVector`` answers in the transposed-inverse
+    ``lattice.indefinite_vector_isometry_witness`` answers in the transposed-inverse
     orientation (recorded by the source corpus's validated normalizer); the
     seam inverts once and asserts the row-convention identities on the
     result, so a convention drift upstream fails loudly here.
@@ -236,9 +219,8 @@ def vector_equivalence_witness(
     Any two vectors: the engine's decision does not ask for isotropy, and
     the non-isotropic case is the one Dawes' vector-orbit theory consumes.
     """
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
-    raw = engine.indefinite_form_test_equivalence_vector(
+    raw = engine_capabilities.compute(
+        "lattice.indefinite_vector_isometry_witness",
         _integer_rows(gram),
         [int(entry) for entry in source_row],
         [int(entry) for entry in target_row],
@@ -263,21 +245,21 @@ def vector_stabilizer_generator_matrices(
 ) -> tuple:
     r"""Return generators of $\operatorname{Stab}_{O(L)}(v)$, row convention.
 
-    ``INDEF_FORM_StabilizerVector``: a generating set for the *pointwise*
+    ``lattice.indefinite_vector_stabilizer``: a generating set for the *pointwise*
     stabilizer of one vector -- the group whose finite-quotient image turns
     an $O(L)$-equivalence witness into a decision about a subgroup
     containing $\ker\varphi$.  Each generator is verified here to preserve the form and to
     fix the vector; that the set generates the whole stabilizer is the
     engine's contract, stated and not re-derived.
     """
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
     gram_z = matrix(SageZZ, gram)
     row = matrix(SageZZ, [[int(entry) for entry in vector_row]])
     generators = tuple(
         matrix(SageZZ, rows)
-        for rows in engine.indefinite_form_stabilizer_vector(
-            _integer_rows(gram), [int(entry) for entry in vector_row]
+        for rows in engine_capabilities.compute(
+            "lattice.indefinite_vector_stabilizer",
+            _integer_rows(gram),
+            [int(entry) for entry in vector_row],
         )
     )
     assert all(
@@ -298,7 +280,7 @@ def isotropic_sublattice_equivalence_witness(
 ) -> "Matrix_integer_dense | None":
     r"""Return $W$ with $WGW^{\mathsf T}=G$ carrying one isotropic sublattice (or flag) to another.
 
-    ``INDEF_FORM_TestEquivalenceIsotropicKplane``.  For a sublattice the
+    ``lattice.indefinite_isotropic_subspace_isometry_witness``.  For a sublattice the
     check is equality of the row modules of ``source_rows``$\cdot W$ and
     ``target_rows``; for a flag the *chain* is checked term by term -- span
     equality of every initial segment, which is strictly finer than the
@@ -309,10 +291,12 @@ def isotropic_sublattice_equivalence_witness(
     assert isotropic_object in ("plane", "flag"), (
         "the engine compares isotropic sublattices or flags of them"
     )
-    engine = polyhedral_engine()
-    assert engine is not None, _POLYHEDRAL_PROVISIONING
-    raw = engine.indefinite_form_test_equivalence_isotropic_k_plane(
-        _integer_rows(gram), source_rows, target_rows, choice=isotropic_object
+    raw = engine_capabilities.compute(
+        "lattice.indefinite_isotropic_subspace_isometry_witness",
+        _integer_rows(gram),
+        source_rows,
+        target_rows,
+        choice=isotropic_object,
     )
     if raw is None:
         return None
@@ -536,75 +520,36 @@ def oscar_centralizer_discriminant_image(
     return generators, order, invariant_rank, coinvariant_rank
 
 
-# ---- the polyhedral_common Lorentzian seam ----
-
-
-_EDGEWALK_PROVISIONING = (
-    "the Allcock edgewalk engine is not provisioned: build polyhedral_common "
-    "(github.com/MathieuDutSik/polyhedral_common) and put "
-    "LORENTZ_FundDomain_AllcockEdgewalk on PATH"
-)
+# ---- the Lorentzian edgewalk seam ----
 
 
 def lorentz_edgewalk_fundamental_domain(gram: "Matrix_integer_dense") -> dict:
     r"""Return the edgewalk's fundamental-domain data for a Lorentzian Gram.
 
-    ``LORENTZ_FundDomain_AllcockEdgewalk`` (polyhedral_common) walks the
-    edges of a fundamental polyhedron for the reflection subgroup
-    $W(L)\le O(L)$, per Allcock's edgewalk method -- unlike Vinberg root
-    enumeration it terminates on every input, so reflectivity is a decision
-    here rather than a wait.  The engine's convention is signature
-    $(n, 1)$; the owned caller performs the twist transport.
+    The capability ``lorentzian_edgewalk_fundamental_domain``
+    (sage-indefinite-port) walks the edges of a fundamental polyhedron for
+    the reflection subgroup $W(L)\le O(L)$, per Allcock's edgewalk method --
+    unlike Vinberg root enumeration it terminates on every input, so
+    reflectivity is a decision here rather than a wait.  The engine's
+    convention is signature $(n, 1)$; the owned caller performs the twist
+    transport.
 
     Returned dict keys: ``simple_root_rows`` (one integer row per simple
     root, verified here to define an integral reflection preserving the
     form), ``vertices`` (triples of generator row, incident root rows, and
-    the vertex norm -- ideal vertices have norm $0$), ``is_reflective``,
-    and ``isometry_generator_rows`` (generators of the finite isometry
-    group of the polyhedron the engine reports, each verified to preserve
-    the form).
+    the vertex norm $v G v^{\mathsf T}$ -- ideal vertices have norm $0$),
+    ``is_reflective``, and ``isometry_generator_rows`` (generators of the
+    finite isometry group of the polyhedron the engine reports, each
+    verified to preserve the form).
     """
-    assert shutil.which("LORENTZ_FundDomain_AllcockEdgewalk") is not None, (
-        _EDGEWALK_PROVISIONING
-    )
-    from sage.libs.gap.libgap import libgap
-
     gram_z = matrix(SageZZ, gram)
-    with tempfile.TemporaryDirectory() as scratch:
-        gram_path = Path(scratch) / "lorentzian_gram.txt"
-        rows = _integer_rows(gram_z)
-        gram_path.write_text(
-            f"{len(rows)} {len(rows[0])}\n"
-            + "\n".join(" ".join(str(entry) for entry in row) for row in rows)
-            + "\n"
-        )
-        out_path = Path(scratch) / "edgewalk.gap"
-        namelist_path = Path(scratch) / "edgewalk.nml"
-        namelist_path.write_text(
-            "&PROC\n"
-            f' FileLorMat = "{gram_path}"\n'
-            ' OptionInitialVertex = "isotropic_vinberg"\n'
-            ' OutFormat = "GAP"\n'
-            f' FileOut = "{out_path}"\n'
-            ' OptionNorms = "all"\n'
-            " EarlyTerminationIfNotReflective = T\n"
-            " ComputeAllSimpleRoots = T\n"
-            "/\n"
-        )
-        run = subprocess.run(
-            ["LORENTZ_FundDomain_AllcockEdgewalk", str(namelist_path)],
-            capture_output=True,
-            text=True,
-        )
-        assert run.returncode == 0, run.stderr
-        # The engine writes a GAP function body ("return rec(...);").
-        record = dict(
-            libgap.eval("(function() " + out_path.read_text() + " end)()")
-        )
+    record = engine_capabilities.compute(
+        "lorentzian_edgewalk_fundamental_domain", gram_z
+    )
 
     simple_root_rows = tuple(
         tuple(SageZZ(entry) for entry in row)
-        for row in record["ListSimpleRoots"].sage()
+        for row in record["simple_root_rows"]
     )
     for row in simple_root_rows:
         root = matrix(SageZZ, [row])
@@ -616,19 +561,21 @@ def lorentz_edgewalk_fundamental_domain(gram: "Matrix_integer_dense") -> dict:
         )
     vertices = tuple(
         (
-            tuple(SageZZ(entry) for entry in vertex["gen"].sage()),
+            tuple(SageZZ(entry) for entry in generator_row),
             tuple(
                 tuple(SageZZ(entry) for entry in root)
-                for root in vertex["l_roots"].sage()
+                for root in incident_rows
             ),
-            vertex["norm"].sage(),
+            (
+                matrix(SageZZ, [generator_row])
+                * gram_z
+                * matrix(SageZZ, [generator_row]).transpose()
+            )[0, 0],
         )
-        for vertex in record["ListVertices"]
+        for generator_row, incident_rows in record["vertices"]
     )
     isometry_generators = tuple(
-        matrix(SageZZ, generator.sage())
-        for generator in libgap.GeneratorsOfGroup(record["GrpIsomCoxMatr"])
-        if not bool(libgap.IsOne(generator))
+        matrix(SageZZ, rows) for rows in record["isometry_generator_rows"]
     )
     assert all(
         generator * gram_z * generator.transpose() == gram_z
@@ -637,7 +584,7 @@ def lorentz_edgewalk_fundamental_domain(gram: "Matrix_integer_dense") -> dict:
     return {
         "simple_root_rows": simple_root_rows,
         "vertices": vertices,
-        "is_reflective": bool(record["is_reflective"].sage()),
+        "is_reflective": bool(record["is_reflective"]),
         "isometry_generator_rows": isometry_generators,
     }
 

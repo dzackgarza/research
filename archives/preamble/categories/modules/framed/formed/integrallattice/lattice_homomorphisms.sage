@@ -381,11 +381,11 @@ class IsometryHomsets(Category):
               carries a single improper spinor genus, the homset is nonempty.
             * Remaining indefinite regimes (rank $2$; a genus splitting into
               several improper spinor genera): the exact witness engine
-              (polyhedral_common ``INDEF_FORM_TestEquivalence`` behind
-              :mod:`engines`), whose returned matrix is verified over
-              $\mathbb Z$ at the seam and stored for :meth:`an_element`.  With
-              the engine unprovisioned the answer is the three-valued
-              ``Unknown``.
+              (the capability ``lattice.indefinite_isometry_witness`` of
+              sage-indefinite-port, behind :mod:`engines`), whose returned
+              matrix is verified over $\mathbb Z$ at the seam and stored for
+              :meth:`an_element`.  When the capability is unavailable the
+              answer is the three-valued ``Unknown``.
             """
             from sage.misc.unknown import Unknown
             from sage.quadratic_forms.genera.genus import Genus as _sage_genus
@@ -395,8 +395,8 @@ class IsometryHomsets(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
                 indefinite_isometry_witness,
-                polyhedral_engine,
             )
+            from dzack_research.preamble.engine_capabilities import engine_capabilities
 
             left, right = self.domain(), self.codomain()
             if left.rank() != right.rank():
@@ -457,7 +457,9 @@ class IsometryHomsets(Category):
                 # remaining question is the spinor-genus count (Eichler).
                 if not _sage_genus(gram_left).spinor_generators(proper=False):
                     return False
-            if polyhedral_engine() is None:
+            if not engine_capabilities.is_available(
+                "lattice.indefinite_isometry_witness"
+            ):
                 return Unknown
             witness = indefinite_isometry_witness(gram_left, gram_right)
             if witness is None:
@@ -471,19 +473,20 @@ class IsometryHomsets(Category):
 
             The identity when the ends are one object.  On the definite regime
             the witness is the engine's transformation (PARI ``qfisom``).  On
-            the indefinite regime it is polyhedral_common's
-            ``INDEF_FORM_TestEquivalence`` witness behind :mod:`engines`,
-            verified over $\mathbb Z$ at the seam -- and re-used when
-            :meth:`is_empty` already ran the engine.  With that engine
-            unprovisioned the absence is stated by name, never padded over.
+            the indefinite regime it is the witness of the capability
+            ``lattice.indefinite_isometry_witness`` (sage-indefinite-port)
+            behind :mod:`engines`, verified over $\mathbb Z$ at the seam --
+            and re-used when :meth:`is_empty` already ran the engine.  When
+            that capability is unavailable the absence is stated by name,
+            never padded over.
             """
             from sage.quadratic_forms.quadratic_form import QuadraticForm
 
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
                 indefinite_isometry_witness,
-                polyhedral_engine,
             )
+            from dzack_research.preamble.engine_capabilities import engine_capabilities
             from dzack_research.preamble.utilities import zipsum
 
             empty = self.is_empty()
@@ -498,10 +501,12 @@ class IsometryHomsets(Category):
             if positive != 0 and negative != 0:
                 witness_rows = self._engine_witness_rows
                 if witness_rows is None:
-                    assert polyhedral_engine() is not None, (
+                    assert engine_capabilities.is_available(
+                        "lattice.indefinite_isometry_witness"
+                    ), (
                         "an explicit indefinite isometry witness is the "
-                        "polyhedral_common engine's (INDEF_FORM_TestEquivalence); "
-                        "the engine is not provisioned -- see engines.sage"
+                        "capability lattice.indefinite_isometry_witness of "
+                        "sage-indefinite-port, which is not available"
                     )
                     witness = indefinite_isometry_witness(
                         matrix(SageZZ, left.gram_matrix()),
@@ -629,8 +634,8 @@ class EmbeddingHomsets(Category):
         satisfies Nikulin's primitive-embedding criterion
         (:meth:`IntegralLattices.ObjectType.embeds_in_even_unimodular`,
         Nik80 Thm 1.12.2) -- and the distinguished element is produced by the
-        OSCAR/Hecke construction composed with a polyhedral_common isometry
-        witness carrying its codomain onto this one (the even unimodular
+        OSCAR/Hecke construction composed with an isometry witness
+        (``lattice.indefinite_isometry_witness``, sage-indefinite-port) carrying its codomain onto this one (the even unimodular
         indefinite genus holds one class).  Enumeration there is still absent:
         the homset is infinite, a stated absence at this boundary.  Other
         indefinite codomains remain issue #24's residue, asserted by name.
@@ -756,8 +761,8 @@ class EmbeddingHomsets(Category):
 
             The witness chain: an even overlattice $L'$ of $L$ satisfying
             Nikulin's criterion, its engine-built primitive embedding
-            $L'\hookrightarrow M'$, and a polyhedral_common isometry witness
-            $M'\to M$ (one class in the genus, so it exists); the composite is
+            $L'\hookrightarrow M'$, and an isometry witness $M'\to M$
+            (``lattice.indefinite_isometry_witness``, sage-indefinite-port) (one class in the genus, so it exists); the composite is
             an element of this homset, verified by the same form-preservation
             check every morphism construction runs.
             """

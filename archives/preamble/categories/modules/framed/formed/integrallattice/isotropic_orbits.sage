@@ -27,7 +27,7 @@ is here.
 Two layers:
 
 * **The $O(L)$ layer** -- $O(L)$-orbits and $O(L)$-equivalence, delegated to
-  polyhedral_common behind :mod:`engines`, every representative and witness
+  sage-indefinite-port behind :mod:`engines`, every representative and witness
   verified over $\mathbb Z$ against the owned lattice before it leaves.
 
 * **The subgroup layer** -- a subgroup $\Gamma\le O(L)$ cut out by character
