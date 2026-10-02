@@ -6168,6 +6168,14 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: measure the Sage route first; if a shipped backend answers, select it through Sage's own keyword and record that; if nothing inside the ecosystem answers, record the gap with its measurement, then adopt the outside library under `ENG-05` with the record cited at the crossing.
 
+#### `ENG-09`: An Engine Is Called, Never Registered; Its Absence Fails at the Call
+
+- **Rule**: The preamble operation imports the engine that computes it and calls it. There is no registry of operations, providers or availability, no availability predicate, no provisioning message, and no ordered list of providers to try. If the engine is not installed, or does not yet define the operation, the call raises `ImportError` or `AttributeError` at the site that needs it, and the tests that reach that site fail. Those failures are the record of what is missing. One operation has one engine; a branch that asks whether an engine is present and takes another route when it is not is a fallback, and it is deleted.
+- **Rationale**: A failing call already is the stated absence: it names the module and the attribute, at the operation that needed them, and the test suite lists every such site. A registry restates that fact in a second place, where it is maintained by hand and goes stale: it reports "unavailable" for an operation that an engine has never defined, so a missing implementation reads as a provisioning state instead of as missing code. It also invites the fallback, because a caller that can ask "is it available" will take another route when the answer is no.
+- **Observed**: 2026-09-06, commits `599128fa5` and `0b6e9ad78` built `engine_capabilities`: named capabilities, providers with availability predicates and provisioning strings, and consumers that branched on `is_available`. On 2026-10-02 the operations of `sage-indefinite-port` were registered there with module `None`, so each one reported itself unavailable although the port had never defined it.
+- **Violation Example**: `engine_capabilities.compute("lattice.isometry_witness", gram_1, gram_2)`; `if engine_capabilities.is_available(...): ... else: <another route>`; a table row `(capability, kernel, None, None)` for an operation the engine lacks.
+- **Correct Example**: inside the preamble method, `from sage_indefinite_port.indefinite.recursive import isometry` and `return isometry(L_1, L_2)`. While the port lacks `isometry`, every caller raises `ImportError` and the tests that reach it fail.
+
 
 
 * * *
