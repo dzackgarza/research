@@ -1,0 +1,13 @@
+{% extends "base.html.j2" %}
+{% block title %}Geometric objects · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <h1>Geometric objects</h1>
+  <p class="lede">Hodge diamonds and integral cohomology lattices of smooth connected projective complex varieties.</p>
+</header>
+<ul class="collection-list">
+  {% for entry in geometric %}
+  <li><a href="{{ root }}geometric-objects/{{ entry.geometric.slug }}.html">{{ entry.geometric.name }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

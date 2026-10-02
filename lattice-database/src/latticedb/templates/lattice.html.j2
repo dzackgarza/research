@@ -20,6 +20,17 @@
     </ul>
   </header>
 
+  {% if geometric_objects %}
+  <section aria-labelledby="geometric-objects">
+    <h2 id="geometric-objects">Geometric objects</h2>
+    <ul>
+      {% for geometric in geometric_objects %}
+      <li><a href="{{ root }}geometric-objects/{{ geometric.slug }}.html">{{ geometric.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
   <section aria-labelledby="invariants">
     <h2 id="invariants">Invariants</h2>
     <table class="facts">

@@ -626,6 +626,7 @@ def build(root: Path, target: Path) -> int:
     ranks = sorted({entry.lattice.rank for entry in entries})
     by_rank = {rank: [entry for entry in entries if entry.lattice.rank == rank] for rank in ranks}
     morphism_files = [entry.morphisms for entry in corpus.morphisms]
+    geometric = corpus.geometric
     prose = markdown_to_html(
         [entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms] + [page.prose for page in theory]
     )
@@ -648,6 +649,7 @@ def build(root: Path, target: Path) -> int:
                 hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
                 morphism_files=[file for file in morphism_files if lattice.tag in (file.source, file.target)],
+                geometric_objects=[entry.geometric for entry in geometric if any(link.tag == lattice.tag for link in entry.geometric.cohomology_lattices)],
                 previous=entries[index - 1].lattice if index > 0 else None,
                 following=entries[index + 1].lattice if index + 1 < len(entries) else None,
             )
@@ -673,6 +675,21 @@ def build(root: Path, target: Path) -> int:
         (target / "theory" / f"{article.slug}.html").write_text(html)
     (target / "theory.html").write_text(environment.get_template("theory.html.j2").render(root="./"))
     (target / "morphisms.html").write_text(environment.get_template("morphisms.html.j2").render(root="./", files=morphism_files, lattices=lattices))
+    (target / "geometric-objects").mkdir()
+    geometric_prose = markdown_to_html([entry.prose for entry in geometric])
+    geometric_page = environment.get_template("geometric-object.html.j2")
+    for entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
+        record = entry.geometric
+        rows = [
+            [record.hodge_numbers[p][degree - p] for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
+            for degree in range(2 * record.dimension + 1)
+        ]
+        (target / "geometric-objects" / f"{record.slug}.html").write_text(
+            geometric_page.render(root="../", geometric=record, rows=rows, lattices=lattices, prose=rendered_prose)
+        )
+    (target / "geometric-objects.html").write_text(
+        environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric)
+    )
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))

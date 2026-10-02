@@ -66,6 +66,25 @@ body {
   background: var(--paper);
 }
 
+.hodge-diamond {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin: 1.5rem 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hodge-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.hodge-row span {
+  min-width: 2rem;
+  text-align: center;
+}
+
 a {
   color: var(--accent);
   text-decoration-thickness: 0.08em;

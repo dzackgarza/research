@@ -194,7 +194,7 @@ def check(root: Root = Path(), seconds: Annotated[int, Parameter(help="Time limi
         sys.exit(1)
     pending = _pending(root, loaded, certificates.load(root), seconds)
     print("\n".join(pending))
-    print(f"{len(loaded.entries)} lattices and {len(loaded.morphisms)} morphism files, all records valid; {len(pending)} computations without a certificate")
+    print(f"{len(loaded.entries)} lattices, {len(loaded.morphisms)} morphism files and {len(loaded.geometric)} geometric objects, all records valid; {len(pending)} computations without a certificate")
 
 
 @app.command

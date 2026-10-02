@@ -24,6 +24,7 @@ import yaml
 from pydantic import TypeAdapter, ValidationError
 
 from latticedb.arithmetic import GramTensor
+from latticedb.geometric import GeometricObject
 from latticedb.model import Family, Lattice, Morphisms, Tag, Yaml
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -60,11 +61,19 @@ class MorphismEntry:
 
 
 @dataclass(frozen=True)
+class GeometricEntry:
+    geometric: GeometricObject
+    prose: str
+    path: Path
+
+
+@dataclass(frozen=True)
 class Corpus:
     entries: tuple[Entry, ...]
     families: Families
     retired: Retired
     morphisms: tuple[MorphismEntry, ...]
+    geometric: tuple[GeometricEntry, ...]
 
 
 Matrix = tuple[tuple[int, ...], ...]
@@ -218,9 +227,29 @@ def load(root: Path) -> Corpus:
             found.extend(_record_problems(path, error))
     found.extend(problems(entries, families, retired))
     found.extend(morphism_problems(morphisms, entries, retired))
+    geometric: list[GeometricEntry] = []
+    for path in sorted((root / "geometric-objects").glob("*.md")):
+        document = frontmatter.load(str(path))
+        try:
+            geometric.append(GeometricEntry(GeometricObject.model_validate(document.metadata), document.content, path))
+        except ValidationError as error:
+            found.extend(_record_problems(path, error))
+    seen_slugs: set[str] = set()
+    by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
+    for entry in geometric:
+        record = entry.geometric
+        if entry.path.stem != record.slug or record.slug in seen_slugs:
+            found.append(f"{entry.path}: geometric object slug must be unique and match its file name")
+        seen_slugs.add(record.slug)
+        for link in record.cohomology_lattices:
+            lattice = by_tag.get(link.tag)
+            if lattice is None:
+                found.append(f"{entry.path}: cohomology lattice tag {link.tag} is not in the corpus")
+            elif lattice.rank != record.betti_number(link.degree):
+                found.append(f"{entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}")
     if found:
         raise CorpusInvalid(tuple(found))
-    return Corpus(tuple(entries), families, retired, tuple(morphisms))
+    return Corpus(tuple(entries), families, retired, tuple(morphisms), tuple(geometric))
 
 
 def next_tag(corpus: Corpus) -> str:

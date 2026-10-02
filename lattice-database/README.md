@@ -40,9 +40,9 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 
 ## Geometric objects
 
-Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its file name is its permanent slug. `hodge_numbers[p][q]` is (h^{p,q} = \dim_{\mathbb C} H^q(X, \Omega_X^p)); the matrix has side `dimension + 1`. The record validates nonnegative entries, (h^{0,0}=1), Hodge symmetry and Serre duality.
+Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its file name is its permanent slug. `hodge_numbers[p][q]` is $h^{p,q} = \dim_{\mathbb C} H^q(X, \Omega_X^p)$; the matrix has side `dimension + 1`. The record validates nonnegative entries, $h^{0,0}=1$, Hodge symmetry and Serre duality.
 
-An optional `cohomology_lattices` entry identifies (H^k(X;\mathbb Z)) modulo torsion with a tagged lattice, under the named pairing and integer scale. The build checks that the tag exists and that its rank is (b_k = \sum_{p+q=k} h^{p,q}). The pairing names the form: the Hodge numbers alone do not determine it. The geometric object page links to the lattice page, and the lattice page links back.
+An optional `cohomology_lattices` entry identifies $H^k(X;\mathbb Z)$ modulo torsion with a tagged lattice, under the named pairing and integer scale. The build checks that the tag exists and that its rank is $b_k = \sum_{p+q=k} h^{p,q}$. The pairing names the form: the Hodge numbers alone do not determine it. The geometric object page links to the lattice page, and the lattice page links back.
 
 ```yaml
 slug: k3-surface
