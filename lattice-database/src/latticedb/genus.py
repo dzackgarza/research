@@ -1,7 +1,7 @@
 """The genus symbol, the class number, the spinor genera, the hyperbolic index, the order of O(L) and the series of orbits of primitive vectors, from SageMath.
 
 `certify` sends the Gram tensor of each integral record with a nonzero determinant, with the values that
-have no certificate for that Gram tensor, to `sage_genus.py` under `sage -python`, and stores each value as
+have no certificate for that Gram tensor, to `sage_genus.py` under SageMath, and stores each value as
 soon as SageMath returns it: a value that the record does not hold is written into it, and a stored value
 that differs from the computed one is a problem. A series of orbits merges with the stored one: each coefficient
 that the record does not state is written, and the stated ones must agree. A value that agrees with the record is certified; a value
@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import TypedDict
 
 import frontmatter
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 from latticedb import certificates, corpus, records
 from latticedb.certificates import Certificate, Certificates
@@ -30,6 +30,7 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "spinor_genera": ("integral", IntegralData),
     "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
+    "discriminant_sequence": ("integral", IntegralData),
     "primitive_orbits": ("integral", IntegralData),
 }
 """Each computed field, with the block of the record that holds it and the model of that block."""
@@ -46,6 +47,8 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
     match field:
         case "automorphism_group_order":
             return lattice.definite is not None
+        case "discriminant_sequence":
+            return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":
             return lattice.rank >= 3
         case "primitive_orbits":
@@ -102,11 +105,11 @@ def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], s
 def computed(chosen: list[Request], seconds: int) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
     task = json.dumps({"seconds": seconds, "lattices": chosen})
-    # `sage -python` runs the first `python` on PATH, and `uv run` puts the environment of latticedb first.
+    # Keep the host SageMath environment separate from the project environment.
     environment = {variable: value for variable, value in os.environ.items() if variable != "VIRTUAL_ENV"}
     own = str(Path(sys.prefix) / "bin")
     environment["PATH"] = os.pathsep.join(entry for entry in environment["PATH"].split(os.pathsep) if entry != own)
-    command = [environment["SAGE_BIN"], "-python", str(SAGE_MODULE)]
+    command = [environment["SAGE_BIN"], "-c", f"import runpy; runpy.run_path({str(SAGE_MODULE)!r}, run_name='__main__')"]
     with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=environment) as process:
         assert process.stdin is not None and process.stdout is not None
         process.stdin.write(task)
@@ -149,13 +152,45 @@ def merged(stored: Yaml, value: Yaml, location: str) -> tuple[Yaml, list[str]]:
             return stored, [f"{location} is {stored}, and SageMath computes {value}"]
 
 
+def _sequence_morphisms(path: Path, value: dict[str, Yaml]) -> tuple[dict[str, Yaml], Path, list[dict[str, Yaml]], str]:
+    """Place full lattice isometry generators in the self-morphism file and refer to them by name."""
+    tag = path.stem
+    morphism_path = path.parent.parent / "morphisms" / f"{tag}-{tag}.md"
+    if morphism_path.exists():
+        document = frontmatter.load(str(morphism_path))
+        morphisms = TypeAdapter(list[dict[str, Yaml]]).validate_python(document.metadata["morphisms"])
+        prose = document.content
+    else:
+        morphisms = []
+        prose = "Generators of the integral orthogonal group in the basis of the lattice record."
+    names: list[str] = []
+    matrices = value["lattice_generators"]
+    assert isinstance(matrices, list)
+    for index, matrix in enumerate(matrices, start=1):
+        existing = next((morphism for morphism in morphisms if morphism["matrix"] == matrix and morphism.get("scale", 1) == 1), None)
+        if existing is None:
+            name = f"O(L) generator {index} from PARI qfauto"
+            morphisms.append({"name": name, "matrix": matrix})
+        else:
+            assert isinstance(existing["name"], str)
+            name = existing["name"]
+        names.append(name)
+    stored = {key: item for key, item in value.items() if key != "lattice_generators"}
+    stored["lattice_generator_morphisms"] = names
+    return stored, morphism_path, morphisms, prose
+
+
 def store(path: Path, values: dict[str, Yaml]) -> dict[str, str]:
     """Write into the record at `path` each computed value that it does not hold; for each field whose stored value differs from the computed one, the problem."""
     document = frontmatter.load(str(path))
     metadata = corpus.front_matter(document)
     found: dict[str, str] = {}
+    sequence_morphisms: tuple[Path, list[dict[str, Yaml]], str] | None = None
     for field, (block_name, model) in BLOCKS.items():
         value = values.get(field)
+        if field == "discriminant_sequence" and isinstance(value, dict):
+            value, morphism_path, morphisms, prose = _sequence_morphisms(path, value)
+            sequence_morphisms = morphism_path, morphisms, prose
         match metadata.get(block_name):
             case dict() as block if value is not None:
                 union, problems = merged(block.get(field), value, f"{path}: {block_name}.{field}")
@@ -164,6 +199,11 @@ def store(path: Path, values: dict[str, Yaml]) -> dict[str, str]:
                     continue
                 block[field] = union
                 metadata[block_name] = {key: block[key] for key in model.model_fields if key in block}
+                if field == "discriminant_sequence" and sequence_morphisms is not None:
+                    morphism_path, morphisms, prose = sequence_morphisms
+                    morphism_text = records.morphisms_text(path.stem, path.stem, morphisms, prose)
+                    if not morphism_path.exists() or morphism_path.read_text() != morphism_text:
+                        morphism_path.write_text(morphism_text)
     text = records.record_text(metadata, document.content)
     if text != path.read_text():
         path.write_text(text)

@@ -187,6 +187,50 @@ class PrimitiveOrbitSeries(Record):
         return range(-len(self.w), len(self.z) + 1)
 
 
+class DiscriminantSequenceData(Record):
+    """A finite discriminant action, its kernel order, and its pointed coset quotient."""
+
+    discriminant_factors: list[int]
+    discriminant_basis_lifts: list[list[str]]
+    discriminant_quadratic_gram: list[list[str]]
+    lattice_group_order: int = Field(gt=0)
+    lattice_generator_morphisms: list[str]
+    discriminant_group_order: int = Field(gt=0)
+    discriminant_generators: list[list[list[int]]]
+    image_generators: list[list[list[int]]]
+    image_order: int = Field(gt=0)
+    kernel_order: int = Field(gt=0)
+    coset_representatives: list[list[list[int]]]
+    mm_trivial: bool
+    image_normal: bool
+    quotient_generator_cosets: list[int] | None = None
+    quotient_multiplication: list[list[int]] | None = None
+
+    @model_validator(mode="after")
+    def _sequence(self) -> Self:
+        size = len(self.discriminant_factors)
+        matrices = [*self.discriminant_generators, *self.image_generators, *self.coset_representatives]
+        if any(len(rows) != size or any(len(row) != size for row in rows) for rows in matrices):
+            raise ValueError("discriminant isometry matrices must be square in the stated basis")
+        if len(self.discriminant_basis_lifts) != size or len(self.discriminant_quadratic_gram) != size:
+            raise ValueError("the discriminant basis and quadratic Gram matrix must match the invariant factors")
+        if len(self.lattice_generator_morphisms) != len(self.image_generators):
+            raise ValueError("each lattice generator must have one induced discriminant isometry")
+        if self.lattice_group_order != self.kernel_order * self.image_order:
+            raise ValueError("the lattice group order must equal the kernel order times the image order")
+        if self.discriminant_group_order != self.image_order * len(self.coset_representatives):
+            raise ValueError("the discriminant group order must equal the image order times the coset count")
+        if self.mm_trivial != (len(self.coset_representatives) == 1):
+            raise ValueError("MM-triviality means that the pointed coset set has one element")
+        if self.image_normal != (self.quotient_multiplication is not None and self.quotient_generator_cosets is not None):
+            raise ValueError("quotient group data are present exactly when the image is normal")
+        if self.quotient_multiplication is not None:
+            count = len(self.coset_representatives)
+            if len(self.quotient_multiplication) != count or any(len(row) != count for row in self.quotient_multiplication):
+                raise ValueError("the quotient multiplication table must index the cosets")
+        return self
+
+
 class IntegralData(Record):
     """Invariants of a lattice whose form takes integer values. Required when every $b(e_i, e_j)$ is an integer."""
 
@@ -196,6 +240,14 @@ class IntegralData(Record):
         description=(
             "Invariant factors $d_1 \\mid d_2 \\mid \\dots$, each greater than 1, of the cokernel of the correlation $L \\to \\operatorname{Hom}(L, \\mathbb{Z})$. "
             "The empty list is the trivial group. Required when the determinant is not zero."
+        ),
+    )
+    discriminant_sequence: DiscriminantSequenceData | None = Field(
+        default=None,
+        description=(
+            "For a nondegenerate even lattice, generators of $O(L)$ as named self-isometry morphisms, generators of $O(A_L,q_L)$ "
+            "and their images in the stated discriminant basis, and representatives of the pointed coset set "
+            "$MM(L)=O(A_L,q_L)/\\operatorname{im}\\rho_L$. A multiplication table and generator cosets are present when the image is normal."
         ),
     )
     overlattice_count: int | None = Field(
@@ -605,6 +657,11 @@ class Lattice(Record):
                 yield _problem("primitive_orbits_requires_nondegenerate", message, ("integral", "primitive_orbits"))
         elif self.integral.discriminant_group is None:
             yield _problem("discriminant_group_missing", "the determinant is not zero, so `discriminant_group` is required", ("integral", "discriminant_group"))
+        if self.integral.discriminant_sequence is not None:
+            if self.determinant == 0 or self.integral.parity != "even":
+                yield _problem("discriminant_sequence_hypothesis", "the discriminant sequence requires a nondegenerate even lattice", ("integral", "discriminant_sequence"))
+            elif tuple(self.integral.discriminant_sequence.discriminant_factors) != self.integral.discriminant_group:
+                yield _problem("discriminant_sequence_factors", "the discriminant sequence must use the stated invariant factors", ("integral", "discriminant_sequence", "discriminant_factors"))
         defined = self.is_two_elementary_even
         if defined and self.integral.delta is None:
             yield _problem("delta_missing", "the lattice is even with 2 A_L = 0, so `delta` is required", ("integral", "delta"))

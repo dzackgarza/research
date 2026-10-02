@@ -1,9 +1,9 @@
-"""The genus invariants of integral lattices, computed by SageMath: run by `latticedb certify` under `sage -python`.
+"""The genus invariants of integral lattices, computed by SageMath: run by `latticedb certify` under SageMath.
 
 Reads from standard input a JSON object `{"seconds": s, "lattices": [{"tag", "gram", "sign", "fields"}, ...]}`,
 where `sign` is 1 for a positive definite lattice, -1 for a negative definite one and 0 otherwise, and
 `fields` names the values to compute among `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`,
-`automorphism_group_order` and `primitive_orbits`. Writes one JSON line per lattice to standard output, as soon as it is
+`automorphism_group_order`, `discriminant_sequence` and `primitive_orbits`. Writes one JSON line per lattice to standard output, as soon as it is
 computed: the tag, the version of SageMath as `by`, and each value of `fields`. A value that is not
 computed within `s` seconds is null.
 
@@ -23,6 +23,7 @@ from cysignals.signals import AlarmInterrupt
 from sage.all import QQ, ZZ, Integer, gcd, matrix
 from sage.groups.fqf_orthogonal import FqfIsometry
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
+from sage.matrix.matrix_rational_dense import Matrix_rational_dense
 from sage.matrix.special import block_diagonal_matrix
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.modules.torsion_quadratic_module import TorsionQuadraticModuleElement
@@ -149,7 +150,27 @@ ORBIT_NORM_BOUND = 4
 Series = dict[str, int | list[int]]
 """The coefficients of a series F_{L,Gamma}: `constant`, and the lists `z` and `w` of the coefficients of z^n and w^n for n = 1, 2, ..."""
 
-Value = int | str | list[int] | dict[str, Series]
+class DiscriminantSequence(TypedDict):
+    """A finite discriminant action and its pointed coset quotient."""
+
+    discriminant_factors: list[int]
+    discriminant_basis_lifts: list[list[str]]
+    discriminant_quadratic_gram: list[list[str]]
+    lattice_group_order: int
+    lattice_generators: list[list[list[int]]]
+    discriminant_group_order: int
+    discriminant_generators: list[list[list[int]]]
+    image_generators: list[list[list[int]]]
+    image_order: int
+    kernel_order: int
+    coset_representatives: list[list[list[int]]]
+    mm_trivial: bool
+    image_normal: bool
+    quotient_generator_cosets: list[int] | None
+    quotient_multiplication: list[list[int]] | None
+
+
+Value = int | str | list[int] | dict[str, Series] | DiscriminantSequence
 
 
 def _discriminant_actions(gram: Matrix_integer_dense, generators: list[Matrix_integer_dense]) -> tuple[list[int], list[Matrix_integer_dense]]:
@@ -332,6 +353,73 @@ def automorphism_group_order(gram: Matrix_integer_dense) -> int:
     return int(pari(gram).qfauto()[0])
 
 
+def discriminant_sequence(gram: Matrix_integer_dense, sign: int) -> DiscriminantSequence:
+    """The discriminant action of a definite even lattice and its pointed left-coset set.
+
+    SageMath fixes generators of the finite quadratic module. Matrix entries in row i
+    are reduced modulo the order of its i-th generator, since an integral matrix
+    representing an isometry of this module is not unique.
+    """
+    definite = sign * gram
+    automorphisms = pari(definite).qfauto()
+    lattice_generators = [matrix(ZZ, generator) for generator in automorphisms[1]]
+    module = IntegralLattice(gram).discriminant_group()
+    factors = [int(order) for order in module.invariants()]
+    group = module.orthogonal_group()
+    basis = module.gens()
+
+    def rows(action: Matrix_integer_dense) -> list[list[int]]:
+        return [[int(action[i, j]) % factors[i] for j in range(len(factors))] for i in range(len(factors))]
+
+    def rational_rows(value: Matrix_rational_dense) -> list[list[str]]:
+        return [[str(entry) for entry in row] for row in value.rows()]
+
+    images = []
+    for generator in lattice_generators:
+        columns = [[int(coordinate) for coordinate in module(generator * x.lift())] for x in basis]
+        action = matrix(ZZ, columns).transpose() if columns else matrix(ZZ, 0, 0)
+        images.append(group(action))
+    image = group.subgroup(images)
+    image_elements = list(image)
+    group_elements = list(group)
+    identity = group.one()
+    remaining = set(group_elements)
+    representatives = [identity]
+    remaining.difference_update(identity * element for element in image_elements)
+    while remaining:
+        representative = min(remaining, key=lambda element: rows(element.matrix()))
+        representatives.append(representative)
+        remaining.difference_update(representative * element for element in image_elements)
+    normal = all(conjugator * element * ~conjugator in image for conjugator in group.gens() for element in images)
+    coset_index = {
+        frozenset(representative * element for element in image_elements): index
+        for index, representative in enumerate(representatives)
+    }
+
+    def coset_of(element: FqfIsometry) -> int:
+        return coset_index[frozenset(element * member for member in image_elements)]
+
+    order = int(automorphisms[0])
+    image_order = int(image.order())
+    return {
+        "discriminant_factors": factors,
+        "discriminant_basis_lifts": [[str(coordinate) for coordinate in x.lift()] for x in basis],
+        "discriminant_quadratic_gram": rational_rows(module.gram_matrix_quadratic()),
+        "lattice_group_order": order,
+        "lattice_generators": [[[int(entry) for entry in row] for row in generator.rows()] for generator in lattice_generators],
+        "discriminant_group_order": int(group.order()),
+        "discriminant_generators": [rows(generator.matrix()) for generator in group.gens()],
+        "image_generators": [rows(element.matrix()) for element in images],
+        "image_order": image_order,
+        "kernel_order": order // image_order,
+        "coset_representatives": [rows(element.matrix()) for element in representatives],
+        "mm_trivial": len(representatives) == 1,
+        "image_normal": normal,
+        "quotient_generator_cosets": [coset_of(generator) for generator in group.gens()] if normal else None,
+        "quotient_multiplication": [[coset_of(left * right) for right in representatives] for left in representatives] if normal else None,
+    }
+
+
 def main() -> None:
     task = json.load(sys.stdin)
     seconds: int = task["seconds"]
@@ -346,6 +434,7 @@ def main() -> None:
             "spinor_genera": partial(spinor_genera, gram, lattice["sign"]),
             "hyperbolic_index": partial(hyperbolic_index, gram),
             "automorphism_group_order": partial(automorphism_group_order, positive),
+            "discriminant_sequence": partial(discriminant_sequence, gram, lattice["sign"]),
             "primitive_orbits": partial(primitive_orbits, positive, lattice["sign"]),
         }
         line: dict[str, Value | None] = {"tag": lattice["tag"], "by": f"SageMath {version}"}

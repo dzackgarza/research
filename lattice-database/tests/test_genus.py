@@ -5,7 +5,7 @@ from pathlib import Path
 
 import frontmatter
 from latticedb import certificates, corpus, genus
-from latticedb.model import Yaml
+from latticedb.model import Lattice, Morphisms, Yaml
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 LOADED = corpus.load(REPOSITORY)
@@ -20,13 +20,47 @@ def test_sagemath_computes_the_invariants_of_a2() -> None:
     one = {"constant": 0, "z": [0, 1, 0, 0], "w": [0, 0, 0, 0]}
     two = {"constant": 0, "z": [0, 2, 0, 0], "w": [0, 0, 0, 0]}
     [values] = genus.computed(genus.requests(LOADED, {}, ("0012",), seconds=60), seconds=60)
-    assert {field: values[field] for field in genus.BLOCKS if field in values} == {
+    assert {field: values[field] for field in genus.BLOCKS if field in values and field != "discriminant_sequence"} == {
         "genus_symbol": "II_{2,0} (2: 1^-2; 3: 1^-1 3^-1)",
         "automorphism_group_order": 12,
         "genus_class_count": 1,
         "hyperbolic_index": 0,
         "primitive_orbits": {"O": one, "SO": one, "Otilde": one, "SOtilde": two, "O+": one, "SO+": one, "Otilde+": two, "SOtilde+": two},
     }
+
+
+def test_discriminant_sequence_keeps_the_pointed_coset_quotient(tmp_path: Path) -> None:
+    # For A2, O(L) has order 12 and surjects onto O(q_L) = C2. For <2> + <10>,
+    # O(L) consists of the two independent sign changes, while O(q_L) has order 4;
+    # the image has order 2, so the pointed coset set has two elements.
+    chosen: list[dict[str, Yaml]] = [
+        {"tag": "A2", "gram": [[2, -1], [-1, 2]], "sign": 1, "fields": ["discriminant_sequence"]},
+        {"tag": "<2>+<10>", "gram": [[2, 0], [0, 10]], "sign": 1, "fields": ["discriminant_sequence"]},
+    ]
+    found = {str(result["tag"]): result["discriminant_sequence"] for result in genus.computed(chosen, seconds=60)}
+    assert found["A2"]["lattice_group_order"] == 12
+    assert found["A2"]["discriminant_group_order"] == 2
+    assert found["A2"]["image_order"] == 2
+    assert len(found["A2"]["coset_representatives"]) == 1
+    assert found["A2"]["mm_trivial"] is True
+    assert found["<2>+<10>"]["discriminant_factors"] == [2, 10]
+    assert found["<2>+<10>"]["discriminant_group_order"] == 4
+    assert found["<2>+<10>"]["image_order"] == 2
+    assert len(found["<2>+<10>"]["coset_representatives"]) == 2
+    assert found["<2>+<10>"]["mm_trivial"] is False
+    assert found["<2>+<10>"]["quotient_multiplication"] == [[0, 1], [1, 0]]
+    (tmp_path / "lattices").mkdir()
+    (tmp_path / "morphisms").mkdir()
+    path = tmp_path / "lattices" / "0012.md"
+    shutil.copy(REPOSITORY / "lattices" / "0012.md", path)
+    assert genus.store(path, {"discriminant_sequence": found["A2"]}) == {}
+    stored = frontmatter.load(str(path)).metadata["integral"]["discriminant_sequence"]
+    assert len(stored["lattice_generator_morphisms"]) == len(found["A2"]["lattice_generators"])
+    assert "lattice_generators" not in stored
+    morphism_path = tmp_path / "morphisms" / "0012-0012.md"
+    assert morphism_path.exists()
+    Lattice.model_validate(frontmatter.load(str(path)).metadata)
+    Morphisms.model_validate(frontmatter.load(str(morphism_path)).metadata)
 
 
 def test_a_computed_series_of_orbits_fills_the_coefficients_that_a_record_does_not_state(tmp_path: Path) -> None:
