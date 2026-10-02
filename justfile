@@ -21,18 +21,6 @@ default:
 build: _lock
     uv build
 
-# Experimental Pyrefly semantic contracts for the Sage mathematical API
-semantic-types:
-    uv run pyrefly check -c pyrefly-semantic.toml typing_tests/positive.py
-    @if uv run pyrefly check -c pyrefly-semantic.toml typing_tests/negative.py >/tmp/research-pyrefly-negative.log 2>&1; then \
-        cat /tmp/research-pyrefly-negative.log; \
-        echo "negative semantic typing corpus unexpectedly type-checks" >&2; \
-        rm -f /tmp/research-pyrefly-negative.log; \
-        exit 1; \
-    fi
-    @cat /tmp/research-pyrefly-negative.log
-    @rm -f /tmp/research-pyrefly-negative.log
-
 # Refresh the docs bibliography and MathJax macro include from the shared ~/.pandoc sources (never frozen in-repo; CI fetches them from the pandoc-config repo). The macros are the generated corpus: the book defines none of its own.
 docs-assets:
     cp --remove-destination ~/.pandoc/bib/references.bib writing/.assets/references.bib

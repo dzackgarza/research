@@ -36,6 +36,8 @@ from sage.env import SAGE_STARTUP_FILE
 from sage.libs.gap.libgap import libgap
 from sage.misc.latex import latex
 
+from dzack_research.static_types import DisplayedValue
+
 # Sage loads this file with ``run_cell(source)``, so ``__file__`` is never
 # set.  ``SAGE_STARTUP_FILE`` is the symlink (or the file itself); resolve
 # it to the tracked copy in the repo.
@@ -46,7 +48,7 @@ if _VENDOR_DIR.is_dir():
         sys.path.append(_vendor)
 
 
-def typesets_itself(obj):
+def typesets_itself(obj: DisplayedValue) -> bool:
     if hasattr(type(obj), "_latex_"):
         return True
     if isinstance(obj, (list, tuple, set, frozenset)):
@@ -56,7 +58,7 @@ def typesets_itself(obj):
     return False
 
 
-def latex_if_typesettable(obj):
+def latex_if_typesettable(obj: DisplayedValue) -> str | None:
     if not typesets_itself(obj):
         return None
     return "$\\displaystyle " + str(latex(obj)) + "$"
