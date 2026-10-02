@@ -250,30 +250,30 @@ def load(root: Path) -> Corpus:
         except ValidationError as error:
             found.extend(_record_problems(path, error))
     by_family: dict[str, GeometricFamily] = {}
-    for entry in geometric_families:
-        family = entry.family
-        if entry.path.stem != family.slug or family.slug in by_family:
-            found.append(f"{entry.path}: geometric family slug must be unique and match its file name")
+    for family_entry in geometric_families:
+        family = family_entry.family
+        if family_entry.path.stem != family.slug or family.slug in by_family:
+            found.append(f"{family_entry.path}: geometric family slug must be unique and match its file name")
         by_family[family.slug] = family
     seen_slugs: set[str] = set()
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
-    for entry in geometric:
-        record = entry.geometric
-        if entry.path.stem != record.slug or record.slug in seen_slugs:
-            found.append(f"{entry.path}: geometric object slug must be unique and match its file name")
+    for geometric_entry in geometric:
+        record = geometric_entry.geometric
+        if geometric_entry.path.stem != record.slug or record.slug in seen_slugs:
+            found.append(f"{geometric_entry.path}: geometric object slug must be unique and match its file name")
         seen_slugs.add(record.slug)
         if record.family is not None:
-            family = by_family.get(record.family)
-            if family is None:
-                found.append(f"{entry.path}: geometric family {record.family} is not in the corpus")
-            elif record.family_parameter is not None and record.family_parameter < family.minimum:
-                found.append(f"{entry.path}: family parameter is below {family.minimum}")
+            owning_family = by_family.get(record.family)
+            if owning_family is None:
+                found.append(f"{geometric_entry.path}: geometric family {record.family} is not in the corpus")
+            elif record.family_parameter is not None and record.family_parameter < owning_family.minimum:
+                found.append(f"{geometric_entry.path}: family parameter is below {owning_family.minimum}")
         for link in record.cohomology_lattices:
             lattice = by_tag.get(link.tag)
             if lattice is None:
-                found.append(f"{entry.path}: cohomology lattice tag {link.tag} is not in the corpus")
+                found.append(f"{geometric_entry.path}: cohomology lattice tag {link.tag} is not in the corpus")
             elif lattice.rank != record.betti_number(link.degree):
-                found.append(f"{entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}")
+                found.append(f"{geometric_entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}")
     if found:
         raise CorpusInvalid(tuple(found))
     return Corpus(tuple(entries), families, retired, tuple(morphisms), tuple(geometric), tuple(geometric_families))
