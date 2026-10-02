@@ -41,6 +41,7 @@ from dzack_research.static_types import DisplayedValue
 # Sage loads this file with ``run_cell(source)``, so ``__file__`` is never
 # set.  ``SAGE_STARTUP_FILE`` is the symlink (or the file itself); resolve
 # it to the tracked copy in the repo.
+assert SAGE_STARTUP_FILE is not None, "Sage runs this file only as its startup file"
 _VENDOR_DIR = Path(SAGE_STARTUP_FILE).resolve().parent / "computations" / "vendor"
 if _VENDOR_DIR.is_dir():
     _vendor = str(_VENDOR_DIR)

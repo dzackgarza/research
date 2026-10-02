@@ -17,9 +17,10 @@ from functools import partial
 from itertools import chain, combinations
 from typing import TypedDict
 
+import cypari2
 from cysignals.alarm import alarm, cancel_alarm
 from cysignals.signals import AlarmInterrupt
-from sage.all import QQ, ZZ, Integer, gcd, matrix, pari
+from sage.all import QQ, ZZ, Integer, gcd, matrix
 from sage.groups.fqf_orthogonal import FqfIsometry
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.matrix.special import block_diagonal_matrix
@@ -31,6 +32,9 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.quadratic_forms.quadratic_form__neighbors import neighbor_iteration
 from sage.sets.primes import Primes
 from sage.version import version
+
+# The PARI instance of cypari2, which is the one SageMath initialized: a second `Pari()` in a process does not initialize PARI again.
+pari = cypari2.Pari()
 
 
 class Request(TypedDict):

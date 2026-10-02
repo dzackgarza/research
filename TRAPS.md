@@ -363,3 +363,24 @@ Route chosen: none in this repository. The rebinding is the design of the
 session, and a suppression would hide the wrong inferred type as well as the
 error. The two errors stay on the lowered `sage-init.sage` until mypy models
 the later binding.
+
+### mypy cannot see `sageparse` through a default editable install
+
+`tree-sitter-sage` maps two package roots in `setup.py`: `bindings/python` for
+`tree_sitter_sage` and `src/sageparse` for `sageparse`. The default editable
+install of setuptools puts an import-hook finder in site-packages; Python
+imports `sageparse` through it, but mypy reads only the paths of `.pth` files
+and reports `Cannot find implementation or library stub for module named
+"sageparse"`. `editable_mode=compat` writes one `.pth` line, the first root
+`bindings/python`, so `sageparse` is not importable at all after it. Checked
+with setuptools in the Sage venv on 2026-10-02 by
+`sage -pip show -f tree-sitter-sage` and the `.pth` contents.
+
+Route chosen: `editable_mode=strict`, which builds a tree of symbolic links
+under `build/__editable__.*` and puts that tree on a `.pth` line. Edits to
+existing files are live; a new module needs the install again.
+
+```bash
+direnv exec ~/research "$SAGE_BIN" -pip install --no-deps \
+  --config-settings editable_mode=strict -e ~/gitclones/tree-sitter-sage
+```
