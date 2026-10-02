@@ -27,7 +27,7 @@
       {% for link in geometric.cohomology_lattices %}
       <li>
         (H^{ {{- link.degree -}} }(X;\mathbb Z)/\mathrm{tors}), with {{ link.pairing }}:
-        <a href="{{ root }}tag/{{ link.tag }}.html">\({{ lattices[link.tag].latex }}{% if link.scale != 1 %}({{ link.scale }}){% endif %}\)</a>.
+        <a href="{{ root }}tag/{{ link.tag }}.html">{{ lattices[link.tag].name }}{% if link.scale != 1 %}({{ link.scale }}){% endif %}</a>.
       </li>
       {% endfor %}
     </ul>
