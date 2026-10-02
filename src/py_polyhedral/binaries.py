@@ -39,17 +39,7 @@ type ParsedFaces = list[list[int]]
 # The value set of ast.literal_eval, for an output whose format the program
 # does not define for the invocation made here.
 type PythonLiteral = (
-    int
-    | float
-    | complex
-    | str
-    | bytes
-    | bool
-    | None
-    | list[PythonLiteral]
-    | tuple[PythonLiteral, ...]
-    | dict[PythonLiteral, PythonLiteral]
-    | set[PythonLiteral]
+    int | float | complex | str | bytes | bool | None | list[PythonLiteral] | tuple[PythonLiteral, ...] | dict[PythonLiteral, PythonLiteral] | set[PythonLiteral]
 )
 
 
@@ -111,19 +101,15 @@ def binary_available(the_bin: str) -> bool:
 
 def get_binary_path(the_bin: str) -> str:
     binary_path = shutil.which(the_bin)
-    assert binary_path is not None, (
-        f"Binary {the_bin} is not available on PATH. "
-        "Install or expose the corresponding polyhedral_common executable "
-        "before calling this backend."
-    )
+    assert binary_path is not None, f"Binary {the_bin} is not available on PATH. Install or expose the corresponding polyhedral_common executable before calling this backend."
     return binary_path
 
 
 def write_matrix_file(file_name: str, M: RationalMatrix) -> None:
     n_row = len(M)
     n_col = len(M[0])
-    f = open(file_name, 'w')
-    f.write(str(n_row) + " " + str(n_col) + '\n')
+    f = open(file_name, "w")
+    f.write(str(n_row) + " " + str(n_col) + "\n")
     for i_row in range(n_row):
         for i_col in range(n_col):
             f.write(" " + str(M[i_row][i_col]))
@@ -135,10 +121,10 @@ def write_list_matrix_file(file_name: str, ListM: Sequence[IntegerMatrix]) -> No
     n_mat = len(ListM)
     n_row = len(ListM[0])
     n_col = len(ListM[0][0])
-    f = open(file_name, 'w')
-    f.write(str(n_mat) + '\n')
+    f = open(file_name, "w")
+    f.write(str(n_mat) + "\n")
     for i_mat in range(n_mat):
-        f.write(str(n_row) + " " + str(n_col) + '\n')
+        f.write(str(n_row) + " " + str(n_col) + "\n")
         for i_row in range(n_row):
             for i_col in range(n_col):
                 f.write(" " + str(ListM[i_mat][i_row][i_col]))
@@ -146,9 +132,7 @@ def write_list_matrix_file(file_name: str, ListM: Sequence[IntegerMatrix]) -> No
     f.close()
 
 
-def write_group_file(
-    file_name: str, l_gen: Sequence[PermutationImages], n_act: int
-) -> None:
+def write_group_file(file_name: str, l_gen: Sequence[PermutationImages], n_act: int) -> None:
     r"""Write a permutation group of degree ``n_act`` in the format of ``ReadGroup``.
 
     ``src_group/GRP_GroupFct.h``: ``ReadGroup`` reads the header ``n nbGen``,
@@ -156,8 +140,8 @@ def write_group_file(
     images of ``0, ..., n - 1``.
     """
     n_gen = len(l_gen)
-    f = open(file_name, 'w')
-    f.write(str(n_act) + " " + str(n_gen) + '\n')
+    f = open(file_name, "w")
+    f.write(str(n_act) + " " + str(n_gen) + "\n")
     for e_gen in l_gen:
         for i_act in range(n_act):
             f.write(" " + str(e_gen[i_act]))
@@ -181,9 +165,7 @@ def run_and_check(list_comm: list[str]) -> str:
     list_comm_call.append("PYTHON")
     list_comm_call.append(output_file)
     result = subprocess.run(list_comm_call, capture_output=True, text=True)
-    assert result.returncode == 0, (
-        f"Command {list_comm} failed: {result.stderr[:500]}"
-    )
+    assert result.returncode == 0, f"Command {list_comm} failed: {result.stderr[:500]}"
     return read_output(output_file)
 
 
@@ -193,9 +175,7 @@ def compute_isotropic_vector(M: RationalMatrix) -> ParsedVector | None:
     input_file = arr_input.name
     write_matrix_file(input_file, M)
     # src_isotropy/LATT_FindIsotropic.cpp: a vector, or None.
-    vector: ParsedVector | None = ast.literal_eval(
-        run_and_check([binary_path, "rational", input_file])
-    )
+    vector: ParsedVector | None = ast.literal_eval(run_and_check([binary_path, "rational", input_file]))
     return vector
 
 
@@ -204,9 +184,7 @@ def compute_canonical_form(M: IntegerMatrix) -> CanonicalForm:
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
-    form: CanonicalForm = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    form: CanonicalForm = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return form
 
 
@@ -215,9 +193,7 @@ def test_copositivity(M: RationalMatrix) -> CopositivityTestResult:
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
-    result: CopositivityTestResult = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    result: CopositivityTestResult = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return result
 
 
@@ -226,9 +202,7 @@ def test_complete_positivity(M: RationalMatrix) -> StrictPositivityResult:
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
-    result: StrictPositivityResult = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    result: StrictPositivityResult = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return result
 
 
@@ -238,15 +212,11 @@ def indefinite_form_automorphism_group(M: IntegerMatrix) -> list[ParsedMatrix]:
     input_file = arr_input.name
     write_matrix_file(input_file, M)
     # src_indefinite/INDEF_FORM_AutomorphismGroup.cpp: WriteListMatrixPYTHON.
-    generators: list[ParsedMatrix] = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    generators: list[ParsedMatrix] = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return generators
 
 
-def indefinite_form_test_equivalence(
-    M1: IntegerMatrix, M2: IntegerMatrix
-) -> ParsedMatrix | None:
+def indefinite_form_test_equivalence(M1: IntegerMatrix, M2: IntegerMatrix) -> ParsedMatrix | None:
     binary_path = get_binary_path("INDEF_FORM_TestEquivalence")
     arr_input1 = tempfile.NamedTemporaryFile()
     arr_input2 = tempfile.NamedTemporaryFile()
@@ -255,15 +225,11 @@ def indefinite_form_test_equivalence(
     write_matrix_file(input1_file, M1)
     write_matrix_file(input2_file, M2)
     # src_indefinite/INDEF_FORM_TestEquivalence.cpp: a matrix, or None.
-    witness: ParsedMatrix | None = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input1_file, input2_file])
-    )
+    witness: ParsedMatrix | None = ast.literal_eval(run_and_check([binary_path, "gmp", input1_file, input2_file]))
     return witness
 
 
-def indefinite_form_test_equivalence_vector(
-    M: IntegerMatrix, v1: IntegerVector, v2: IntegerVector
-) -> ParsedMatrix | None:
+def indefinite_form_test_equivalence_vector(M: IntegerMatrix, v1: IntegerVector, v2: IntegerVector) -> ParsedMatrix | None:
     """Return a witness in O(M) sending the first integral vector to the second.
 
     M:
@@ -283,9 +249,7 @@ def indefinite_form_test_equivalence_vector(
     write_vector_file(arr_v1.name, v1)
     write_vector_file(arr_v2.name, v2)
     # src_indefinite/INDEF_FORM_TestEquivalenceVector.cpp: a matrix, or None.
-    witness: ParsedMatrix | None = ast.literal_eval(
-        run_and_check([binary_path, "gmp", arr_Q.name, arr_v1.name, arr_v2.name])
-    )
+    witness: ParsedMatrix | None = ast.literal_eval(run_and_check([binary_path, "gmp", arr_Q.name, arr_v1.name, arr_v2.name]))
     return witness
 
 
@@ -329,58 +293,44 @@ def indefinite_form_test_equivalence_isotropic_k_plane(
     return witness
 
 
-def indefinite_form_get_orbit_representative(
-    M: IntegerMatrix, eNorm: ExactInteger
-) -> ParsedMatrix:
+def indefinite_form_get_orbit_representative(M: IntegerMatrix, eNorm: ExactInteger) -> ParsedMatrix:
     binary_path = get_binary_path("INDEF_FORM_GetOrbitRepresentative")
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
     # src_indefinite/INDEF_FORM_GetOrbitRepresentative.cpp: the matrix whose
     # rows are the representatives, ``[]`` when there are none.
-    representatives: ParsedMatrix = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file, str(eNorm)])
-    )
+    representatives: ParsedMatrix = ast.literal_eval(run_and_check([binary_path, "gmp", input_file, str(eNorm)]))
     return representatives
 
 
-def indefinite_form_isotropic_k_stuff(
-    M: IntegerMatrix, k: ExactInteger, nature: str
-) -> list[ParsedMatrix]:
+def indefinite_form_isotropic_k_stuff(M: IntegerMatrix, k: ExactInteger, nature: str) -> list[ParsedMatrix]:
     binary_path = get_binary_path("INDEF_FORM_GetOrbit_IsotropicKplane")
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
     # src_indefinite/INDEF_FORM_GetOrbit_IsotropicKplane.cpp:
     # WriteListMatrixPYTHON, one basis matrix per orbit.
-    bases: list[ParsedMatrix] = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file, str(k), nature])
-    )
+    bases: list[ParsedMatrix] = ast.literal_eval(run_and_check([binary_path, "gmp", input_file, str(k), nature]))
     return bases
 
 
-def indefinite_form_isotropic_k_plane(
-    M: IntegerMatrix, k: ExactInteger
-) -> list[ParsedMatrix]:
+def indefinite_form_isotropic_k_plane(M: IntegerMatrix, k: ExactInteger) -> list[ParsedMatrix]:
     return indefinite_form_isotropic_k_stuff(M, k, "plane")
 
 
-def indefinite_form_isotropic_k_flag(
-    M: IntegerMatrix, k: ExactInteger
-) -> list[ParsedMatrix]:
+def indefinite_form_isotropic_k_flag(M: IntegerMatrix, k: ExactInteger) -> list[ParsedMatrix]:
     return indefinite_form_isotropic_k_stuff(M, k, "flag")
 
 
 def write_vector_file(file_name: str, v: IntegerVector) -> None:
     n = len(v)
-    with open(file_name, 'w') as f:
-        f.write(str(n) + '\n')
-        f.write(' '.join(str(x) for x in v) + '\n')
+    with open(file_name, "w") as f:
+        f.write(str(n) + "\n")
+        f.write(" ".join(str(x) for x in v) + "\n")
 
 
-def indefinite_form_stabilizer_vector(
-    M: IntegerMatrix, v: IntegerVector
-) -> list[ParsedMatrix]:
+def indefinite_form_stabilizer_vector(M: IntegerMatrix, v: IntegerVector) -> list[ParsedMatrix]:
     """Compute generators of Stab_{O(M)}(v) for any integer vector v.
 
     v: list of n integers (column vector)
@@ -393,15 +343,11 @@ def indefinite_form_stabilizer_vector(
     arr_v = tempfile.NamedTemporaryFile()
     write_matrix_file(arr_Q.name, M)
     write_vector_file(arr_v.name, v)
-    generators: list[ParsedMatrix] = ast.literal_eval(
-        run_and_check([binary_path, "gmp", arr_Q.name, arr_v.name])
-    )
+    generators: list[ParsedMatrix] = ast.literal_eval(run_and_check([binary_path, "gmp", arr_Q.name, arr_v.name]))
     return generators
 
 
-def indefinite_form_stabilizer_isotropic_subspace(
-    M: IntegerMatrix, basis: IntegerMatrix, choice: str = "plane"
-) -> list[ParsedMatrix]:
+def indefinite_form_stabilizer_isotropic_subspace(M: IntegerMatrix, basis: IntegerMatrix, choice: str = "plane") -> list[ParsedMatrix]:
     """Compute generators of the stabilizer of an isotropic subspace.
 
     M: n×n Gram matrix (list of lists of ints)
@@ -421,15 +367,11 @@ def indefinite_form_stabilizer_isotropic_subspace(
     write_matrix_file(arr_Q.name, M)
     write_matrix_file(arr_P.name, basis)
     # src_indefinite/INDEF_FORM_StabilizerIsotropicPlane.cpp: WriteListMatrixPYTHON.
-    generators: list[ParsedMatrix] = ast.literal_eval(
-        run_and_check([binary_path, "gmp", arr_Q.name, arr_P.name, choice])
-    )
+    generators: list[ParsedMatrix] = ast.literal_eval(run_and_check([binary_path, "gmp", arr_Q.name, arr_P.name, choice]))
     return generators
 
 
-def indefinite_form_stabilizer_isotropic_line(
-    M: IntegerMatrix, v: IntegerVector
-) -> list[ParsedMatrix]:
+def indefinite_form_stabilizer_isotropic_line(M: IntegerMatrix, v: IntegerVector) -> list[ParsedMatrix]:
     """Compute generators of Stab_{O(M)}(span(v)) for an isotropic line.
 
     v: list of n integers — a primitive isotropic vector.
@@ -440,16 +382,12 @@ def indefinite_form_stabilizer_isotropic_line(
     return indefinite_form_stabilizer_isotropic_subspace(M, [v], "plane")
 
 
-def indefinite_form_stabilizer_isotropic_plane_2d(
-    M: IntegerMatrix, v1: IntegerVector, v2: IntegerVector
-) -> list[ParsedMatrix]:
+def indefinite_form_stabilizer_isotropic_plane_2d(M: IntegerMatrix, v1: IntegerVector, v2: IntegerVector) -> list[ParsedMatrix]:
     """Compute generators of Stab_{O(M)}(span(v1,v2)) for an isotropic 2-plane."""
     return indefinite_form_stabilizer_isotropic_subspace(M, [v1, v2], "plane")
 
 
-def indefinite_form_stabilizer_isotropic_flag(
-    M: IntegerMatrix, basis: IntegerMatrix
-) -> list[ParsedMatrix]:
+def indefinite_form_stabilizer_isotropic_flag(M: IntegerMatrix, basis: IntegerMatrix) -> list[ParsedMatrix]:
     """Compute generators of Stab_{O(M)} for the isotropic flag defined by basis.
 
     basis: k×n matrix where row[i] extends the flag at each step.
@@ -457,9 +395,7 @@ def indefinite_form_stabilizer_isotropic_flag(
     return indefinite_form_stabilizer_isotropic_subspace(M, basis, "flag")
 
 
-def dual_description(
-    EXT: RationalMatrix, GRP: Sequence[PermutationImages]
-) -> ParsedFaces:
+def dual_description(EXT: RationalMatrix, GRP: Sequence[PermutationImages]) -> ParsedFaces:
     r"""Return orbit representatives of the facets of the cone on the rows of ``EXT``.
 
     ``GRP`` generates a group of permutations of the rows of ``EXT``.
@@ -472,9 +408,7 @@ def dual_description(
     inpGRP_file = arr_inpGRP.name
     write_matrix_file(inpEXT_file, EXT)
     write_group_file(inpGRP_file, GRP, len(EXT))
-    facets: ParsedFaces = ast.literal_eval(
-        run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file])
-    )
+    facets: ParsedFaces = ast.literal_eval(run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file]))
     return facets
 
 
@@ -483,9 +417,7 @@ def lorentzian_reflective_edgewalk(M: IntegerMatrix) -> EdgewalkRecord:
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
-    record: EdgewalkRecord = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    record: EdgewalkRecord = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return record
 
 
@@ -512,17 +444,17 @@ def lorentzian_perfect_domain_traversal(M: IntegerMatrix, option: str = "total")
         with open(namelist_file, "w", encoding="utf-8") as stream:
             stream.write(
                 "&DATA\n"
-                "  arithmetic = \"gmp\"\n"
-                f"  LorMatFile = \"{matrix_file}\"\n"
-                f"  Option = \"{option}\"\n"
-                "  FileDualDescription = \"unset\"\n"
+                '  arithmetic = "gmp"\n'
+                f'  LorMatFile = "{matrix_file}"\n'
+                f'  Option = "{option}"\n'
+                '  FileDualDescription = "unset"\n'
                 "/\n\n"
                 "&SYSTEM\n"
                 "  Saving = F\n"
-                f"  Prefix = \"{storage_prefix}\"\n"
+                f'  Prefix = "{storage_prefix}"\n'
                 "  max_runtime_second = 0\n"
-                "  OutFormat = \"ObjectFullAdjacencyGAP\"\n"
-                f"  OutFile = \"{output_file}\"\n"
+                '  OutFormat = "ObjectFullAdjacencyGAP"\n'
+                f'  OutFile = "{output_file}"\n'
                 "/\n"
             )
         result = subprocess.run(
@@ -530,16 +462,12 @@ def lorentzian_perfect_domain_traversal(M: IntegerMatrix, option: str = "total")
             capture_output=True,
             text=True,
         )
-        assert result.returncode == 0, (
-            "LORENTZ_MPI_PerfectLorentzian failed: " + result.stderr[:500]
-        )
+        assert result.returncode == 0, "LORENTZ_MPI_PerfectLorentzian failed: " + result.stderr[:500]
         with open(output_file, encoding="utf-8") as stream:
             return stream.read()
 
 
-def polytope_face_lattice(
-    EXT: RationalMatrix, GRP: Sequence[PermutationImages], LevSearch: int
-) -> list[ParsedFaces]:
+def polytope_face_lattice(EXT: RationalMatrix, GRP: Sequence[PermutationImages], LevSearch: int) -> list[ParsedFaces]:
     r"""Return, for each level up to ``LevSearch``, orbit representatives of faces.
 
     ``GRP`` generates a group of permutations of the rows of ``EXT``, so the
@@ -554,9 +482,7 @@ def polytope_face_lattice(
     inpGRP_file = arr_inpGRP.name
     write_matrix_file(inpEXT_file, EXT)
     write_group_file(inpGRP_file, GRP, len(EXT))
-    levels: list[ParsedFaces] = ast.literal_eval(
-        run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch)])
-    )
+    levels: list[ParsedFaces] = ast.literal_eval(run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch)]))
     return levels
 
 
@@ -565,9 +491,7 @@ def lattice_compute_delaunay(M: IntegerMatrix) -> PythonLiteral:
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_matrix_file(input_file, M)
-    value: PythonLiteral = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    value: PythonLiteral = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return value
 
 
@@ -576,7 +500,5 @@ def lattice_iso_delaunay_domains(ListM: Sequence[IntegerMatrix]) -> PythonLitera
     arr_input = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     write_list_matrix_file(input_file, ListM)
-    value: PythonLiteral = ast.literal_eval(
-        run_and_check([binary_path, "gmp", input_file])
-    )
+    value: PythonLiteral = ast.literal_eval(run_and_check([binary_path, "gmp", input_file]))
     return value

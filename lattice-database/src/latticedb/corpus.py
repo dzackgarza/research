@@ -33,6 +33,7 @@ def front_matter(document: frontmatter.Post) -> dict[str, Yaml]:
     """The YAML mapping at the head of a record file, validated as YAML data."""
     return TypeAdapter(dict[str, Yaml]).validate_python(document.metadata)
 
+
 Families = dict[Family, str]
 """Each family that a record may name, with one line of its meaning."""
 
