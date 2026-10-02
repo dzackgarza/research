@@ -23,6 +23,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Hashable
+
     from sage.graphs.digraph import DiGraph
     from sage.graphs.graph import Graph
 
@@ -462,7 +464,7 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
     # A strongly connected component with more than one category is a set of
     # categories each declared to lie under the others.
     cycles = [
-        ", ".join(sorted(component))
+        ", ".join(sorted(_name(vertex) for vertex in component))
         for component in _digraph(_declared_edges(declarations)).strongly_connected_components()
         if len(component) > 1
     ]
@@ -583,11 +585,11 @@ def _axiom_edges(
         targets = [
             _vertex(base, tuple(a for a in axioms if a != dropped)) for dropped in axioms
         ]
-        for stated, over, over_axioms in written.get(base, ()):
+        for stated, over, written_over_axioms in written.get(base, ()):
             if not stated <= set(axioms):
                 continue
             carried = {a for a in axioms if a not in stated and a in defined.get(over, ())}
-            target_axioms = tuple(over_axioms | carried)
+            target_axioms = tuple(written_over_axioms | carried)
             if target_axioms and (stated or carried):
                 targets.append(_vertex(over, target_axioms))
         for target in targets:
@@ -613,6 +615,16 @@ def _graph(edges: set[tuple[str, str]]) -> Graph:
     return Graph(sorted(edges))
 
 
+def _name(vertex: Hashable) -> str:
+    """A vertex of a graph built here, which is a category name.
+
+    Sage types a vertex as any hashable object; ``_graph`` and ``_digraph``
+    build every graph on the strings of ``_all_edges``.
+    """
+    assert isinstance(vertex, str)
+    return vertex
+
+
 def _digraph(edges: set[tuple[str, str]]) -> DiGraph:
     from sage.graphs.digraph import DiGraph
 
@@ -628,7 +640,7 @@ def _shortcuts(declarations: list[CategoryDeclaration]) -> list[tuple[str, str]]
     """
     declared = _declared_edges(declarations)
     reduction = set(_digraph(_all_edges(declarations)).transitive_reduction().edges(labels=False))
-    return sorted(declared - reduction)
+    return sorted(edge for edge in declared if edge not in reduction)
 
 
 def _chains_above(directed: DiGraph) -> dict[str, int]:
@@ -640,9 +652,9 @@ def _chains_above(directed: DiGraph) -> dict[str, int]:
     default; see ``TRAPS.md``.
     """
     return {
-        name: level
-        for level, names in enumerate(directed.reverse().level_sets())
-        for name in names
+        _name(vertex): level
+        for level, vertices in enumerate(directed.reverse().level_sets())
+        for vertex in vertices
     }
 
 
@@ -653,7 +665,7 @@ def _in_cyclic_order(graph: Graph, cycle: list[str]) -> list[str]:
     cyclic order (``sage.graphs.base.boost_graph.min_cycle_basis``).
     """
     induced = graph.subgraph(cycle).cycle_basis()
-    return induced[0] if len(induced) == 1 else sorted(cycle)
+    return [_name(vertex) for vertex in induced[0]] if len(induced) == 1 else sorted(cycle)
 
 
 def _minimum_cycle_basis(graph: Graph) -> list[list[str]]:
@@ -663,7 +675,7 @@ def _minimum_cycle_basis(graph: Graph) -> list[list[str]]:
     """
     relabelled = graph.copy()
     names = relabelled.relabel(return_map=True)
-    back = {integer: name for name, integer in names.items()}
+    back = {integer: _name(name) for name, integer in names.items()}
     return [
         _in_cyclic_order(graph, [back[v] for v in cycle])
         for cycle in relabelled.minimum_cycle_basis()
@@ -677,14 +689,18 @@ def _blocks(graph: Graph) -> list[list[str]]:
     generator lies inside one block.  A near-tree has only small blocks.
     """
     blocks, _ = graph.blocks_and_cut_vertices()
-    return sorted((sorted(b) for b in blocks if len(b) >= 3), key=len, reverse=True)
+    return sorted(
+        (sorted(_name(vertex) for vertex in b) for b in blocks if len(b) >= 3),
+        key=len,
+        reverse=True,
+    )
 
 
 def render_shape(declarations: list[CategoryDeclaration]) -> str:
     """Breadth, depth and shortcuts.  The intended shape is deep and narrow."""
     edges = _all_edges(declarations)
     directed = _digraph(edges)
-    breadth = directed.in_degree(labels=True)
+    breadth = {_name(vertex): d for vertex, d in directed.in_degree(labels=True).items()}
     depth = _chains_above(directed)
 
     lines = [
@@ -714,7 +730,11 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
     for value in sorted(histogram):
         lines.append(f"  depth {value:2d}: {histogram[value]:4d} categories")
 
-    pieces = sorted(_graph(edges).connected_components(sort=True), key=len, reverse=True)
+    pieces = sorted(
+        ([_name(vertex) for vertex in piece] for piece in _graph(edges).connected_components(sort=True)),
+        key=len,
+        reverse=True,
+    )
     lines += [
         "",
         f"## Pieces apart from the largest ({len(pieces) - 1})",

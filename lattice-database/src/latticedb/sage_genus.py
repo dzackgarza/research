@@ -77,8 +77,11 @@ def spinor_genus_count(gram: Matrix_integer_dense) -> int:
     return count
 
 
-def _neighbour(form: QuadraticForm, p: Integer) -> QuadraticForm:
-    return form.find_p_neighbor_from_vec(p, form.find_primitive_p_divisible_vector__next(p))
+def _neighbour(form: QuadraticForm[Integer], p: Integer) -> QuadraticForm[Integer]:
+    # From no previous vector, the search returns the first primitive vector of (Z/pZ)^n with Q(v) = 0 mod p, and None only when there is none.
+    vector = form.find_primitive_p_divisible_vector__next(p)
+    assert vector is not None, f"the form has no primitive vector of norm divisible by {p}"
+    return form.find_p_neighbor_from_vec(p, vector)
 
 
 def spinor_genera(gram: Matrix_integer_dense, sign: int) -> list[int]:
@@ -102,7 +105,7 @@ def spinor_genera(gram: Matrix_integer_dense, sign: int) -> list[int]:
     p = ZZ(2)
     while p.divides(genus.determinant()) or spinor_operators.delta(p) not in kernel:
         p = Primes().next(p)
-    classes: list[list[QuadraticForm]] = []
+    classes: list[list[QuadraticForm[Integer]]] = []
     for chosen in chain.from_iterable(combinations(primes, size) for size in range(len(primes) + 1)):
         seed = form
         for q in chosen:
@@ -154,10 +157,11 @@ def _discriminant_actions(gram: Matrix_integer_dense, generators: list[Matrix_in
     smith, left, _ = gram.smith_form()
     kept = [index for index in range(gram.nrows()) if abs(smith[index, index]) > 1]
     factors = [abs(int(smith[index, index])) for index in kept]
-    left_inverse = left.inverse()
+    # U and the isometries g are unimodular, so their inverses are integer matrices.
+    left_inverse = left.inverse_of_unit()
     actions = []
     for g in generators:
-        action = left * g.inverse().transpose() * left_inverse
+        action = left * g.inverse_of_unit().transpose() * left_inverse
         actions.append(action.matrix_from_rows_and_columns(kept, kept))
     return factors, actions
 
