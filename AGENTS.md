@@ -192,7 +192,10 @@ There is one line of work, `origin/main`, one DAG, and one `TODO.md`.  This
 repository is cloned on more than one host (this workstation and `rack`),
 and each clone's local `main` is only a copy.  So:
 
-- Push on milestones, through the push gate.
+- For work outside the preamble, commit and push with `--no-verify`.
+  Preamble gate failures do not hold unrelated work on this repository's
+  single line of record.
+- For preamble work, follow the preamble execution rules below.
 - While work is split between machines, sync by hand without the gate:
   `git push --no-verify origin main` from the host that committed, then
   `git pull origin main` on the other, before either selects its next
