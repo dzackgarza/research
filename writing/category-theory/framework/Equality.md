@@ -12,7 +12,7 @@ The right notion sits between, and it must be compatible with reflexivity, $a = 
 
 ## The identification space {#sec-identification-space}
 
-Work in $\mathbf{Cat}_{\infty,\infty}$ (@def:infinity-category-universe); the subcategory, quotient, and fiber constructions below use the [suspension, loop, and homotopy-fiber constructions](#sec-loops-suspension).
+Work in $\mathbf{Cat}_{\infty,\infty}$ (@def:infinity-category-universe); the subcategory, quotient, and fiber constructions below use @sec-loops-suspension.
 For objects $C,D$, the internal hom
 $$
 [C,D]_{\mathbf{Cat}_{\infty,\infty}}
@@ -70,7 +70,7 @@ $$
 F\longmapsto(F(0),F(1)),
 $$
 and the fiber of $\operatorname{ev}_{0,1}$ over $(C,D)$ is the higher category of adjoint-equivalence data from $C$ to $D$.
-Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Eq}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by [Inverse data and coherence](#sec-inverse-data) is contractible for an equivalence and empty otherwise.
+Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Eq}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by @sec-inverse-data is contractible for an equivalence and empty otherwise.
 The two presentations of $\operatorname{Eq}(C,D)$ may therefore be used interchangeably, and $\operatorname{Way}$, $Q$, and $Q^0$ may be computed from either.
 
 ## Properties of the predicate {#sec-equality-properties}

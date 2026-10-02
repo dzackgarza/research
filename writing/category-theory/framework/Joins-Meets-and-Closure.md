@@ -31,8 +31,10 @@ Its universal property is the greatest lower bound in $\operatorname{RFull}(C)$.
 The join of $A$ and $B$ is the replete full subcategory on the objects lying in $A$ or $B$.
 It is the least upper bound in $\operatorname{RFull}(C)$.
 Thus disjunction of two object properties is a valid property and defines a full subcategory.
+:::
 
-**Remark.** The categorical coproduct $A\sqcup B$ remembers which summand supplied an object.
+::: {.remark}
+The categorical coproduct $A\sqcup B$ remembers which summand supplied an object.
 Its universal property differs from the least-upper-bound property of the join.
 :::
 

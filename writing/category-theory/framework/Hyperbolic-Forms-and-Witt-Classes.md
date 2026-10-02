@@ -1,6 +1,6 @@
 # Hyperbolic forms and Witt classes {#sec-hyperbolic-witt}
 
-Fix a commutative ring $R$ and take the value module $W=R$, so that the form category of @def:form-categories is $\mathcal B_{R,R}$ and its objects are pairs $(M,b)$ with $b\colon M\times M\to R$ bilinear.
+Fix a commutative ring $R$ and take the value module $W=R$, so that the form category is $\mathcal B_{R,R}$ as in @def:form-categories, and its objects are pairs $(M,b)$ with $b\colon M\times M\to R$ bilinear.
 Lattices, unimodularity, dual lattices, and discriminant modules are those of @sec-lattices-discriminant.
 
 ## The hyperbolic form on a module and its dual {#sec-hyperbolic-form}
@@ -86,8 +86,10 @@ N^{\perp}=\{x\in M\mid b(x,y)=0\text{ for all }y\in N\}.
 $$
 A *lagrangian* of $(M,b)$ is a direct summand $N\subseteq M$ with $N=N^{\perp}$.
 The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98, Def. 20.1].
+:::
 
-**Remark.** [@MH73] writes *split* for this condition and attributes the term *metabolic* to Knebusch.
+::: {.remark}
+[@MH73] writes *split* for this condition and attributes the term *metabolic* to Knebusch.
 :::
 
 ::: {.proposition #prop:hyperbolic-metabolic title="Hyperbolic forms are metabolic"}
@@ -132,6 +134,8 @@ Since $b_{L\perp L'}^{\sharp}$ is identified with $b_L^{\sharp}\oplus b_{L'}^{\s
 ::: {.proposition #prop:stabilization-discriminant title="Stabilization preserves the discriminant"}
 
 Let $R$ be a Dedekind domain with fraction field $K$, and let $L$ be an $R$-lattice.
+
+
 The canonical isomorphism $(L\oplus H(R))^{*}\cong L^{*}\oplus H(R)^{*}$ identifies
 $$
 b_{S(L)}^{\sharp}=b_L^{\sharp}\oplus h_R^{\sharp},
@@ -236,7 +240,7 @@ $$
 \qquad
 \sigma\bigl[\langle1\rangle\bigr]=1,
 $$
-with $\langle1\rangle$ as in @ex:rank-one-forms [@MH73, Ch. II §4].
+with $\langle1\rangle$ as in @ex:rank-one-forms and [@MH73, Ch. II §4].
 :::
 
 ::: {.example #ex:witt-classes-over-z title="Witt classes over $\mathbb Z$"}

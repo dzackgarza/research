@@ -274,7 +274,7 @@ A point of the family over $s$ is a point
 $$
 x\colon *\longrightarrow\int_*(F^{\sharp}\circ s).
 $$
-For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def:higher-category [@nlab:grothendieck_construction].
+For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def:higher-category and [@nlab:grothendieck_construction].
 :::
 
 ::: {.definition #def:internal-hom title="Local hom-objects"}
@@ -379,15 +379,15 @@ since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
 
 ::: {.definition #def:equivalence-of-categories title="Equivalences"}
 
-A *structure of reversibility* is a family $\mathscr R$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
+A *structure of reversibility* is a family $\mcr$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
 f\colon *\longrightarrow[x,y]_C
 $$
-in $\mathscr R$, there is a cell
+in $\mcr$, there is a cell
 $$
 g\colon *\longrightarrow[y,x]_C
 $$
-in $\mathscr R$ and cells
+in $\mcr$ and cells
 $$
 \eta\colon
 *
@@ -399,7 +399,7 @@ $$
 \longrightarrow
 [f\circ g,\operatorname{id}_y]_{[y,y]_C}
 $$
-in $\mathscr R$.
+in $\mcr$.
 A cell is *invertible* if it belongs to a structure of reversibility [@OR23, Definition 1.5.1].
 
 An equivalence between higher categories $C$ and $D$ is an invertible point
@@ -731,5 +731,5 @@ An equivalence is a morphism satisfying @def:equivalence-of-categories.
 
 The notation $a=b$, $a\cong b$, and $a\simeq b$ records these three claims.
 No univalence principle is assumed.
-Chosen comparison maps are treated in [Equivalences and witnesses](#sec-identification).
+Chosen comparison maps are treated in @sec-identification.
 :::

@@ -36,6 +36,7 @@ A one-parameter family $\mcx \to C$ of surfaces over a curve $C \iscontainedin \
 
 The following is a representation of a Type II degeneration -- it is a chain of surfaces whose dual complex is an interval $\bD^1$, where the ends $V_1$ and $V_n$ are rational and the remaining $V_i$ are isomorphic to $E\times \PP^1$ for a fixed elliptic curve $E$.
 The intersections $V_i \intersect V_{i+1}$ are double curves isomorphic to $E$.
+:::
 
 ::: {#fig-typeiikdg .figure}
 \input{tikz/type_ii_kulikov_degeneration.tikz}
@@ -43,18 +44,20 @@ The intersections $V_i \intersect V_{i+1}$ are double curves isomorphic to $E$.
 A Type II Kulikov degeneration.
 :::
 
+::: {.remark}
 A Type III degeneration can be represented by a triangulation of $S^2$ with singularities, depicted as follows:
+:::
 
 ::: {#fig-triangulated-sphere-fan .figure}
 \input{tikz/triangulated_sphere_fan.tikz}
 
 A triangulated integral affine sphere.
 :::
-:::
 
 ::: {.remark}
 
 The following is a combinatorial representation of the Kulikov model of $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
+:::
 
 ::: {#fig-ias-sterk3-kulikov-model .figure}
 \begin{tikzpicture}[scale=1.4]
@@ -62,7 +65,6 @@ The following is a combinatorial representation of the Kulikov model of $B_3(\el
 \end{tikzpicture}
 
 A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
-:::
 :::
 
 ## The integral affine structure $B_3(\ell)$ at Sterk cusp 3

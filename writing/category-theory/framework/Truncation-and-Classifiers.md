@@ -5,7 +5,7 @@ Each category of structured objects comes with a specified forgetful functor.
 
 ## Properties and structures {#sec-property-structure}
 
-::: {.definition #def:property-structure-stuff}
+::: {.definition #def:property-structure-stuff title="Property, structure, and stuff"}
 Let $U\colon\mathcal S\to\mathcal C$ be a forgetful functor.
 
 - If $U$ is fully faithful, it describes at most a property of objects of $\mathcal C$.
@@ -24,7 +24,7 @@ The definitions of truncated spaces and morphisms are in @def:truncated.
 
 ## Chosen structure
 
-::: {.definition #def:chosen-structure}
+::: {.definition #def:chosen-structure title="Chosen structure as a homotopy fiber"}
 A structure on $X\in\mathcal C$ is a chosen object of the homotopy fiber of $U\colon\mathcal S\to\mathcal C$ over $X$.
 Several nonisomorphic choices may lie over the same $X$.
 A morphism in $\mathcal S$ must preserve the chosen structure.
@@ -39,7 +39,7 @@ Hence $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full.
 Let $U\colon\mathcal S\to\mathcal C$ and $F\colon\mathcal D\to\mathcal C$ be specified functors.
 The structured objects of $\mathcal D$ obtained from $U$ are given by the pseudo-pullback $\mathcal P$ in the square
 
-::: {.definition #def:axiom-through-functor}
+::: {.definition #def:axiom-through-functor title="Pulling back structured objects"}
 ```{.tikz}
 %%| filename: structured-object-pullback
 %%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
@@ -58,7 +58,7 @@ Its objects are exactly the $D\in\mathcal D$ for which $F(D)$ satisfies the stat
 
 ## Classifying objects and families {#sec-axiom-classifiers-general}
 
-::: {.definition #def:classifying-object}
+::: {.definition #def:classifying-object title="Classifying objects and universal families"}
 A functor $H\colon\mathcal C^{\mathrm{op}}\to\mathcal S$ is *represented* by $B\in\mathcal C$ when there is a natural equivalence
 $$
 \eta\colon H(-)\simeq\operatorname{Map}_{\mathcal C}(-,B).
@@ -71,7 +71,9 @@ Naturality identifies pullback of $p$ along $f\colon X\to B$ with the family cor
 Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property.
 :::
 
-**Remark.** A property, equation, or forgetful functor acquires classifying terminology only from such a represented functor or universal property.
+::: {.remark}
+A property, equation, or forgetful functor acquires classifying terminology only from such a represented functor or universal property.
+:::
 
 ## Operations and endomorphism operads {#sec-operations}
 
@@ -85,7 +87,7 @@ Composition is substitution of operations, and the symmetric-group action permut
 
 For an arbitrary morphism $X\to Y$, neither precomposition nor postcomposition defines a map $\operatorname{Hom}(X^n,X)\to\operatorname{Hom}(Y^n,Y)$.
 Consequently the assignment $X\mapsto\operatorname{Hom}(X^n,X)$ is not a presheaf on $\mathcal C$.
-Categories of algebras instead use operations and structure-preserving morphisms, as in [Algebraic categories from operations](#sec-named-categories).
+Categories of algebras instead use operations and structure-preserving morphisms, as in @sec-named-categories.
 
 ## Equations and coherence {#sec-filled-diagrams}
 

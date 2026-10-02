@@ -6,7 +6,7 @@ Conventions:
 
 2. Black vertices: $v^2 = -4$.
 
-### Classical and affine Dynkin diagrams
+## Classical and affine Dynkin diagrams
 
 The table below lists the labelled classical and affine Dynkin diagrams.
 
@@ -19,7 +19,7 @@ The table below lists the labelled classical and affine Dynkin diagrams.
 ::: {#fig-appendix-1 .figure}
 \input{tikz/fig_Coxeter_Diagram_L_Co_1.tex}
 
-Coxeter diagrams for $T_\Co$ and $T_\En$ parabolics.
+Coxeter diagrams for $T_\Co$ and $\ten$ parabolics.
 :::
 
 * * *

@@ -37,7 +37,7 @@ The quadratic category uses the same convention.
 
 ## Properties of bilinear forms {#sec-form-properties}
 
-::: {.definition #def:form-axioms}
+::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness"}
 For $b\colon M\times M\to W$:
 
 - $b$ is *symmetric* if $b(x,y)=b(y,x)$;
@@ -77,8 +77,8 @@ In both cases the two radicals coincide, are written $\operatorname{rad}(M)$, an
 In [@MH73] a module equipped with a perfect form is called an *inner product space*.
 :::
 
-::: {.example #ex:two-radicals}
-**Example.** Let $b$ be the form on $R^{2}$ with Gram matrix $\left(\begin{smallmatrix}1&2\\3&4\end{smallmatrix}\right)$ in the basis $e_1,e_2$.
+::: {.example #ex:two-radicals title="Left and right radicals can differ"}
+Let $b$ be the form on $R^{2}$ with Gram matrix $\left(\begin{smallmatrix}1&2\\3&4\end{smallmatrix}\right)$ in the basis $e_1,e_2$.
 Then $b(e_1,w)=w_1+2w_2$ while $b(w,e_1)=w_1+3w_2$, so the two conditions $b(e_1,w)=0$ and $b(w,e_1)=0$ cut out different submodules of $R^{2}$.
 :::
 
@@ -123,7 +123,7 @@ Then $M=N\oplus N^{\perp}$ and the sum is orthogonal, so
 $$
 (M,b)\cong(N,b|_N)\perp(N^{\perp},b|_{N^{\perp}})
 $$
-in the sense of @def:orthogonal-sum [@MH73, I §3.1].
+in the sense of @def:orthogonal-sum; see [@MH73, I §3.1].
 If $x_1,\dots,x_k\in M$ have invertible Gram matrix $\bigl(b(x_i,x_j)\bigr)$, then they are linearly independent and this applies to the free submodule they span [@MH73, I §3.2].
 :::
 
@@ -221,7 +221,10 @@ b(x,x)=\sum_i x_i^{2}\,b(e_i,e_i)+\sum_{i<j}x_ix_j\bigl(b(e_i,e_j)+b(e_j,e_i)\bi
 $$
 and skew-symmetry kills the second sum.
 
-**Remark.** The symmetric form on $\mathbb Z^{2}$ with Gram matrix $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$ has vanishing diagonal and $b(e_1+e_2,e_1+e_2)=2$.
+:::
+
+::: {.remark}
+The symmetric form on $\mathbb Z^{2}$ with Gram matrix $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$ has vanishing diagonal and $b(e_1+e_2,e_1+e_2)=2$.
 :::
 
 ## Tensor product and twisting {#sec-form-tensor}
@@ -231,13 +234,13 @@ and skew-symmetry kills the second sum.
 Let $b_M$ have value module $W_M$ and $b_N$ have value module $W_N$.
 There is exactly one bilinear map
 $$
-b_M\otimes b_N\colon (M\otimes_RN)\times(M\otimes_RN)\longrightarrow W_M\otimes_RW_N
+b_M\otimes_R b_N\colon (M\otimes_RN)\times(M\otimes_RN)\longrightarrow W_M\otimes_RW_N
 $$
 with
 $$
-(b_M\otimes b_N)(x\otimes u,\;y\otimes v)=b_M(x,y)\otimes b_N(u,v),
+(b_M\otimes_R b_N)(x\otimes_R u,\;y\otimes_R v)=b_M(x,y)\otimes_R b_N(u,v),
 $$
-obtained by factoring the four-linear map $(x,u,y,v)\mapsto b_M(x,y)\otimes b_N(u,v)$ through the tensor products [@MH73, I §5.1].
+obtained by factoring the four-linear map $(x,u,y,v)\mapsto b_M(x,y)\otimes_R b_N(u,v)$ through the tensor products [@MH73, I §5.1].
 For $W_M=W_N=R$ the value module is $R$.
 
 Call a form $\varepsilon$-symmetric when $b(x,y)=\varepsilon\,b(y,x)$, so that $1$-symmetric means symmetric and $(-1)$-symmetric means skew-symmetric.
@@ -247,9 +250,9 @@ If both forms are perfect and both modules are finitely generated projective, th
 
 ::: {.proposition #prop:tensor-gram title="Gram matrix and determinant of a tensor product"}
 
-If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\otimes b_N$ in the product basis is the Kronecker product $G_M\otimes G_N$, and
+If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\otimes_R b_N$ in the product basis is the Kronecker product $G_M\otimes_R G_N$, and
 $$
-\det(b_M\otimes b_N)=\det(b_M)^{\,n}\det(b_N)^{\,m}.
+\det(b_M\otimes_R b_N)=\det(b_M)^{\,n}\det(b_N)^{\,m}.
 $$
 :::
 
@@ -307,7 +310,10 @@ Then $b$ is
 
 - *parabolic* if $n\geq2$ and $(p,q,r)=(0,n-1,1)$.
 
-**Convention.** Root lattices are taken negative definite here, so the forms on $A_n$, $D_n$ and $E_n$ are negative definite and the hyperbolic signature is $(1,n-1,0)$.
+:::
+
+::: {.convention}
+Root lattices are taken negative definite here, so the forms on $A_n$, $D_n$ and $E_n$ are negative definite and the hyperbolic signature is $(1,n-1,0)$.
 :::
 
 ## Isotropy and Witt decomposition {#sec-witt}
@@ -357,8 +363,8 @@ The form $x^{2}+y^{2}-3z^{2}$ has signature $(2,1,0)$, so $\min(p,q)=1$, and it 
 For a primitive integral solution of $x^{2}+y^{2}=3z^{2}$, reduction modulo $3$ forces $3\mid x$ and $3\mid y$ because $-1$ is not a square modulo $3$; then $9\mid3z^{2}$ gives $3\mid z$, contradicting primitivity.
 :::
 
-::: {.remark #rmk:three-integers}
-**Remark.** Three integers are attached to a nondegenerate symmetric form over an ordered field, and they are distinct invariants.
+::: {.remark #rmk:three-integers title="Signature, signature difference, and Witt index"}
+Three integers are attached to a nondegenerate symmetric form over an ordered field, and they are distinct invariants.
 The pair $(p,q)$ is the signature of @def:signature.
 The integer $p-q$ is called the signature of the form in [@MH73, III §2.5], where it is the value of a ring homomorphism from the Witt ring to $\mathbb Z$.
 The Witt index of @def:witt-index is a third quantity, equal to $\min(p,q)$ over a real closed field and smaller over $\mathbb Q$ in the case above.
@@ -366,7 +372,7 @@ The Witt index of @def:witt-index is a third quantity, equal to $\min(p,q)$ over
 
 ## Diagonal and polarization {#sec-polarization-functors}
 
-::: {.definition #def:polarization-functors}
+::: {.definition #def:polarization-functors title="Diagonal and polarization functors"}
 Diagonal and polarization define natural transformations
 $$
 \operatorname{diag}\colon\operatorname{SymBil}_{R,W}

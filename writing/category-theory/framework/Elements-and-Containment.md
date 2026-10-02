@@ -5,7 +5,7 @@
 A generalized element with domain $T$ is defined in @def:generalized-element; it is a morphism $T\to X$.
 If $F\colon C^{\mathrm{op}}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def:category-of-elements.
 
-::: {.definition #def:element-functor}
+::: {.definition #def:element-functor title="Elements as maps from a corepresenting object"}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
 $$
 U\cong\operatorname{Hom}_C(P,-)
@@ -20,7 +20,7 @@ Categories of objects with chosen structure are instead described by their forge
 
 ## Subobjects {#sec-containment}
 
-::: {.definition #def:subobject-relation}
+::: {.definition #def:subobject-relation title="Subobjects as monomorphisms up to isomorphism"}
 A *subobject* of $M\in C$ is an isomorphism class of monomorphisms $i\colon N\hookrightarrow M$.
 A representative of the subobject is a specific monomorphism.
 Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\xrightarrow{\sim}N'$ with $i=i'\circ u$ [@MM12, I.5].
@@ -72,7 +72,7 @@ A relation or morphism involving the images is formed in $E$ and does not identi
 
 ## Solution functors {#sec-solution-functors}
 
-::: {.definition #def:solution-presheaf}
+::: {.definition #def:solution-presheaf title="Solution presheaves as equalizers"}
 Let $A,B\colon C^{\mathrm{op}}\to\mathbf{Set}$ be presheaves and let $\alpha,\beta\colon A\Rightarrow B$ be natural transformations.
 Their equalizer
 $$

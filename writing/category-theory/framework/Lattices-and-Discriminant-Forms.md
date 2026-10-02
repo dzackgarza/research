@@ -1,7 +1,6 @@
 # Lattices and discriminant forms {#sec-lattices-discriminant}
 
-Let $R$ be a Dedekind domain with fraction field $K$.
-The main case is $R=\mathbb Z$ and $K=\mathbb Q$.
+Let $R$ be a Dedekind domain with fraction field $K$; the main case is $R=\mathbb Z$ and $K=\mathbb Q$.
 
 ::: {.definition #def:lattice title="Lattices"}
 
@@ -11,13 +10,15 @@ b^\sharp\colon L\longrightarrow L^*:=\operatorname{Hom}_R(L,R)
 $$
 is injective.
 The category $\mathbf{Lat}_R$ is the replete full subcategory of $\mathcal B_{R,R}$ on these objects [@Nik80].
+:::
 
-**Remark.** Positive definiteness and unimodularity are additional properties.
+::: {.remark}
+Positive definiteness and unimodularity are additional properties.
 Freeness holds over a principal ideal domain; a basis is chosen data.
 :::
 
-::: {.example #ex:subobject-base-change}
-**Example.** Let $L$ be an integral lattice and let $0\ne v\in L$.
+::: {.example #ex:subobject-base-change title="Subobjects under extension of scalars"}
+Let $L$ be an integral lattice and let $0\ne v\in L$.
 The inclusion $\mathbb Zv\hookrightarrow L$ represents a subobject of the underlying $\mathbb Z$-module.
 Since $\mathbb R$ is flat over $\mathbb Z$, extension of scalars from @def:module-base-change gives the monomorphism
 $$
@@ -58,8 +59,8 @@ The twist of @def:form-twist by $-1$ sends $\mathbf{Def}^{+}_R$ to $\mathbf{Def}
 Under the sign convention of @def:definiteness the root lattices lie in $\mathbf{Def}^{-}_{\mathbb Z}$.
 :::
 
-::: {.example #ex:parabolic-objects}
-**Example.** A parabolic form has signature $(0,n-1,1)$, so its radical is nonzero and it is an object of $\mathcal B_{R,R}$ lying outside $\mathbf{Lat}_R$.
+::: {.example #ex:parabolic-objects title="Parabolic forms and their radicals"}
+A parabolic form has signature $(0,n-1,1)$, so its radical is nonzero and it is an object of $\mathcal B_{R,R}$ lying outside $\mathbf{Lat}_R$.
 Take the forms on $\mathbb Z^{2}$ and $\mathbb Z^{3}$ with Gram matrices
 $$
 G_2=\begin{pmatrix}-2&2\\2&-2\end{pmatrix},
@@ -163,8 +164,8 @@ Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$ in the sense of @def:signature
 The genus of an even 2-elementary lattice is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and if $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine its isometry class [@Nik80, Thm. 3.6.2].
 :::
 
-::: {.example #ex:a3-not-two-elementary}
-**Example.** Membership is a condition on the group $A_S$, which the order $|{\operatorname{disc}}\,S|$ alone leaves open.
+::: {.example #ex:a3-not-two-elementary title="Determinant order does not imply 2-elementarity"}
+Membership is a condition on the group $A_S$, which the order $|{\operatorname{disc}}\,S|$ alone leaves open.
 In the sign convention of @def:definiteness the root lattice $A_3$ has Gram matrix
 $$
 G=\begin{pmatrix}-2&1&0\\1&-2&1\\0&1&-2\end{pmatrix},
@@ -179,7 +180,7 @@ So $A_3$ is not 2-elementary although $|{\operatorname{disc}}\,A_3|=2^{2}$.
 
 ## Radical and unimodularity {#sec-radical-unimodularity}
 
-::: {.definition #def:two-witnesses}
+::: {.definition #def:two-witnesses title="Radical and discriminant as kernel and cokernel"}
 For any symmetric bilinear form on a finitely generated projective module, define
 $$
 \operatorname{rad}(L)=\ker(b^\sharp),
@@ -222,7 +223,7 @@ So a degenerate form over a Dedekind domain is the orthogonal sum of a zero form
 
 ## Localization and comparison {#sec-discriminant}
 
-::: {.theorem #thm:localization-les}
+::: {.theorem #thm:localization-les title="Localization exact sequences for lattices"}
 For an $R$-module $M$, tensoring $0\to R\to K\to K/R\to0$ begins the exact sequence
 $$
 0\longrightarrow\operatorname{Tor}_1^R(M,K/R)\longrightarrow M
@@ -241,7 +242,7 @@ $$
 The second sequence is exact because $L$ is projective.
 :::
 
-::: {.theorem #thm:double-complex}
+::: {.theorem #thm:double-complex title="Discriminant comparison via localization"}
 For nondegenerate $L$, the extension $b_K^\sharp$ is an isomorphism and the form gives the commutative diagram
 
 ```{.tikz}

@@ -13,7 +13,7 @@ By [@DK25 Prop. 9.1.4], any terminal Coble surface of K3 type is isomorphic to o
 This is used in [@DK25 Cor. 9.1.5] to show that $K_S^2 \geq -10$, and since $K_S^2 = -n$, this shows that such Coble surfaces have at most ten boundary components.
 
 Of most immediate relevance to us is the case considered in [@Cob19] where $n=1$.
-Following [@DK25 Ex. 9.1.7], the image $W \da V(f_6) \da \eta(C)$ is an irreducible plane sextic with 10 $A_1$ singularities[^5]. One can find a cubic $V(f_3)$ passing through nine of them and form a pencil $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints is a Halphen surface of index 2. The proof of [@DK25 Prop. 9.1.8] indicates that the moduli space of general Halphen surfaces of index 2 has dimension 9.
+Following [@DK25 Ex. 9.1.7], the image $W \definedas V(f_6) \definedas \eta(C)$ is an irreducible plane sextic with 10 $A_1$ singularities (or $A_2$ singularities in the indicated variant). One can find a cubic $V(f_3)$ passing through nine of them and form a pencil $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints is a Halphen surface of index 2. The proof of [@DK25 Prop. 9.1.8] indicates that the moduli space of general Halphen surfaces of index 2 has dimension 9.
 :::
 
 ::: {.warning}
@@ -24,8 +24,7 @@ Locate the intended source.
 
 The following is [@CD12 Prop. 3.1]:
 
-::: {.lemma #lem:coble_halphen_blowdown}
-### Cobles to Halphens
+::: {.lemma #lem:coble_halphen_blowdown title="Cobles to Halphens"}
 
 Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of a (-1)-curve E. Then
 
@@ -42,8 +41,7 @@ Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 
 Why introduce Halphen surfaces?
 I conjecture that the geometric construction(s) above yield some kind of correspondence between moduli spaces of Coble surfaces with $n$ boundary components and the various moduli spaces of index 2 Halphen pencils on the $g=0$ line of Nikulin's triangle diagram of 2-elementary lattices.
-Regarding the coarse spaces as period domains attached to lattices, the lattices match up precisely; see [the Coble lattice table](#sec-coble-lattice-table).
+Regarding the coarse spaces as period domains attached to lattices, the lattices match up precisely; see [[coble-lattice-table|the Coble lattice table]].
 Applications of mirror moves indicate that the cusp diagrams would correspondingly coincide as well.
 :::
 
-[^5]: $A_1$ or $A_2$ singularities.

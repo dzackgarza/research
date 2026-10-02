@@ -55,8 +55,8 @@ Its left term is isomorphic to $\operatorname{coker}(f)$ because $g$ is injectiv
 So the primitive embeddings form a subcategory of $\mathbf{Lat}_R$ with the same objects.
 :::
 
-::: {.example #ex:primitive-and-scaled}
-**Example.** Let $U$ be the hyperbolic plane of @def:hyperbolic-plane on $e,f$, let $\langle1\rangle$ be the rank one lattice on $w$ with $b(w,w)=1$, and let $M=U\perp\langle1\rangle$.
+::: {.example #ex:primitive-and-scaled title="Primitive and nonprimitive embeddings"}
+Let $U$ be the hyperbolic plane of @def:hyperbolic-plane on $e,f$, let $\langle1\rangle$ be the rank one lattice on $w$ with $b(w,w)=1$, and let $M=U\perp\langle1\rangle$.
 The morphism $e\mapsto e$, $f\mapsto f$ has cokernel $\mathbb Zw$, which is torsion-free, so it is a primitive embedding.
 The map $e\mapsto2e$, $f\mapsto2f$ multiplies pairings by $4$, so it is a morphism $U(4)\to M$ for the twist $U(4)$ of @def:form-twist.
 Its image is $2U$ and its cokernel is $\mathbb Zw\oplus(\mathbb Z/2\mathbb Z)^{2}$, which has torsion, so it fails primitivity.
@@ -164,7 +164,7 @@ The reflections in the roots of a root lattice, which have $q(v)=-2$ in the sign
 
 ## Matrix realizations
 
-::: {.proposition #prop:matrix-realizations}
+::: {.proposition #prop:matrix-realizations title="Matrix realizations of isometry and automorphism groups"}
 If $L$ is free and a basis has been chosen, its Gram matrix $B$ identifies
 $$
 O(L)=\{g\in\operatorname{GL}_n(R)\mid g^{\mathsf T}Bg=B\}.
@@ -205,7 +205,7 @@ and the subgroup fixing $\operatorname{rad}(M)$ pointwise is the preimage of $\{
 
 ## Index
 
-::: {.definition #def:index}
+::: {.definition #def:index title="Index of a subgroup"}
 For a subgroup $H\le G$, the *index* $[G:H]$ is the cardinality of the set of left cosets $G/H$.
 If $G$ is finite, $[G:H]=|G|/|H|$.
 In an abelian category, the analogous cardinality of a cokernel is used only after the relevant monomorphism and finiteness hypotheses have been stated.
@@ -213,7 +213,7 @@ In an abelian category, the analogous cardinality of a cokernel is used only aft
 
 ## The Miranda--Morrison sequence
 
-::: {.theorem #thm:miranda-morrison}
+::: {.theorem #thm:miranda-morrison title="The Miranda–Morrison exact sequence"}
 For an even indefinite lattice $L$ of rank at least $3$, the discriminant representation fits into the Miranda--Morrison exact sequence
 $$
 1\to\widetilde O(L)\to O(L)\to O(A_L,q_L)
@@ -226,8 +226,7 @@ The last group measures the failure of the discriminant representation to be sur
 It is distinct from $\operatorname{SO}(L)=\ker(\det)$.
 :::
 
-::: {.definition #def:genus title="Genus"}
-[]{#sec-genus-sec}
+::: {.definition #def:genus title="Genus of a lattice"}
 
 Two integral lattices lie in the same genus if they are isometric over $\mathbb R$ and over $\mathbb Z_p$ for every prime $p$.
 Extension of scalars induces the map

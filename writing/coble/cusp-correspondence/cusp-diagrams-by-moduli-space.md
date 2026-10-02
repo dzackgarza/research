@@ -1,6 +1,6 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces
 
-The mirror move algorithm of [Cusp Diagrams](#sec:mirror-moves) is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fentwo$.
+The mirror move algorithm of @sec:mirror-moves is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fentwo$.
 Each section records the cusp diagram, the Coxeter diagrams of its 0-cusps, and the maximal parabolic subdiagrams that determine the adjacent 1-cusps.
 
 ## The Enriques moduli space
@@ -34,13 +34,13 @@ The maximal parabolic subdiagrams for $\EnriquesInvariants$ and $(10, 8, 0)$ are
 ::: {#fig-enriques-maximal-parabolics-10-10-0 .figure}
 \input{tikz/fig_Maximal_Parabolic_E8_2_En_10_10_0.tex}
 
-The unique maximal parabolic $\widetilde{E}_8(2)$ in $\EnriquesInvariants_1$, corresponding to the one-cusp $(8, 8, 0)_0$ in $\fen$.
+The unique maximal parabolic $\wE_8(2)$ in $\EnriquesInvariants_1$, corresponding to the one-cusp $(8, 8, 0)_0$ in $\fen$.
 :::
 
 ::: {#fig-enriques-maximal-parabolics-10-8-0 .figure}
 \input{tikz/fig_Maximal_Parabolics_E8_B8_En_10_8_0.tex}
 
-The two maximal parabolics $\widetilde{E}_8$, $\widetilde{B}_8$ in $(10, 8, 0)_1$ corresponding to the 1-cusps $(8, 8, 0)_0$ and $(8, 6, 0)_0$ respectively.
+The two maximal parabolics $\wE_8$, $\wB_8$ in $(10, 8, 0)_1$ corresponding to the 1-cusps $(8, 8, 0)_0$ and $(8, 6, 0)_0$ respectively.
 :::
 
 ## The Coble moduli space
@@ -67,7 +67,7 @@ The Coxeter diagram $G_{(9,9,1)_1} = G_{\generators{2} \oplus E_8(2)}$.
 ::: {#fig-coble-cusp-9-9-1-parabolics .figure}
 \input{tikz/fig_Maximal_Parabolic_B7_2_Co_9_9_1.tex}
 
-The unique maximal parabolic subdiagram $\widetilde{B}_7(2)$ of $(9, 9, 1)_1$, corresponding to single one-cusp $(7, 7, 1)_0$ in $\fco$.
+The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, corresponding to single one-cusp $(7, 7, 1)_0$ in $\fco$.
 :::
 
 We note that $G_{(9, 9, 1)_1}$ has precisely one maximal parabolic subdiagram of the form $\tilde B_7(2)$, verifying that there is only one adjacent 1-cusp to the unique 0-cusp in $\fco$.
@@ -79,6 +79,7 @@ This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_
 ::: {.remark}
 
 We recall Sterk's cusp diagram for $\fentwo$:
+:::
 
 ::: {#fig-sterk-cusp-diagram .figure}
 \begin{tikzpicture}
@@ -88,6 +89,7 @@ We recall Sterk's cusp diagram for $\fentwo$:
 Sterk's cusp diagram for $\fentwo$.
 :::
 
+::: {.remark}
 We have the following divisibilities in various lattices:
 
 | Sterk Cusp | Vector | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
@@ -103,13 +105,13 @@ We have the following divisibilities in various lattices:
 
 ::: {.remark}
 
-We recall the cusp diagram for $F_{(2,2,0)}$:
+We recall the cusp diagram for $\fttz$:
+:::
 
 ::: {#fig-220-cusp-diagram .figure}
 \begin{tikzpicture}
 \pic {object=bb-cusps/f220};
 \end{tikzpicture}
 
-Cusp diagram for $F_{(2,2,0)}$.
-:::
+Cusp diagram for $\fttz$.
 :::

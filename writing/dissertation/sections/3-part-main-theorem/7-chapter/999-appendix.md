@@ -1,8 +1,8 @@
 ## Appendix: Root Systems
 
-#### Examples of Specific Root Systems {#sec:root-lattice-conventions}
+### Examples of Specific Root Systems {#sec:root-lattice-conventions}
 
-##### $A_4$
+#### $A_4$
 
 The relevant Euclidean space is $\EE_{A_4} = \{ x \in \RR^5 : x_1+x_2+x_3+x_4+x_5=0 \}$ with
 $$
@@ -30,7 +30,7 @@ A_4:\quad \dynkin[mark=o,scale=3]{A}{4}
 .\end{align*}
 
 
-##### $B_4$
+#### $B_4$
 
 Roots live in $\EE_{B_4} = \RR^4$, and
 $$
@@ -68,7 +68,7 @@ B_4: \quad
 .\end{align*}
 
 
-##### $C_4$
+#### $C_4$
 
 Set $\EE_{C_4} = \RR^4$, then
 $$
@@ -95,7 +95,7 @@ C_4:\quad \dynkin[arrows=false,scale=3]{C}{ooo*}
 .\end{align*}
 
 
-##### $D_4$
+#### $D_4$
 
 Roots live in $\EE_{D_4} = \RR^4$ and
 $$
@@ -121,7 +121,7 @@ We take $D_n$ to mean $D_n(-1)$, and identify the Coxeter diagram as:
 D_4:\quad \dynkin[mark=o,scale=3]{D}{4}
 .\end{align*}
 
-##### $E_6$
+#### $E_6$
 
 Roots live in $\EE_{E_6} = \{ x \in \RR^8 : x_1+\cdots+x_8=0 \}$ with 
 $$
@@ -150,7 +150,7 @@ E_6: \dynkin[mark=o,scale=2.5]{E}{6}
 .\end{align*}
 
 
-##### $F_4$
+#### $F_4$
 
 We take the simple roots
 
@@ -193,7 +193,7 @@ F_4: \quad
 .\end{align*}
 
 
-##### $G_2$
+#### $G_2$
 
 Roots live in $\EE_{G_2} = \{ x \in \RR^3 \st x_1 + x_2 + x_3 = 0 \}$ with simple roots and Gram matrix
 $$

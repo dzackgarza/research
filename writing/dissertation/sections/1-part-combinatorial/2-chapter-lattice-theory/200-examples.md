@@ -2,7 +2,7 @@
 
 #### The Hyperbolic Plane $U$ {#sec:hyperbolic-plane}
 
-The **hyperbolic plane** $U$ is the unique even, unimodular lattice of signature $(1,1)$, with a standard basis  given by vectors $\{e, f\}$ satisfying
+The **hyperbolic plane** $U$ is the unique even, unimodular lattice of signature $(1,1)$, with a standard basis given by vectors $\{e, f\}$ satisfying
 
 \begin{align*}
 e^2 = f^2 = 0, \quad e \cdot f = 1, \qquad
@@ -12,12 +12,13 @@ G_U = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}.
 A vector $v \in U$ is called **isotropic** if $v^2 = 0$.
 We have $\disc(U) = -1$, and thus $U \cong \dualof{U}$, hence $U$ is unimodular and $A_U = 0$.
 This can also be computed directly: if $v\in \dualof{U}$, then $v = ae + bf$ where $a,b\in \QQ$.
-We then must have $vw\in \ZZ$ for all $w\in U$, and in particular this must hold for $w=e$ and $w=f$. 
+We then must have $vw\in \ZZ$ for all $w\in U$, and in particular this must hold for $w=e$ and $w=f$.
 We compute $ev = b$ and $fv = a$, so $a,b\in \ZZ$.
 Both $e$ and $f$ are primitive -- for examples, the embedding $\genus{e}\injects U$ is primitive, since $U/\generators{e} \iso \generators{f}$ is free.
 The full set of primitive isotropic vectors is $\theset{\pm e, \pm f}$.
 To see this, let $v=ae + bf$ and compute $v^2 = (a e + b f)^2 = 2ab$.
-Thus, $v$ is isotropic if and only if $ab = 0$, implying $v = a e$ or $v = b f$ for some $a,b \in \ZZ$. For $v$ to additionally be primitive, we must have $a = \pm 1$ or $b = \pm 1$.
+Thus, $v$ is isotropic if and only if $ab = 0$, implying $v = a e$ or $v = b f$ for some $a,b \in \ZZ$.
+For $v$ to additionally be primitive, we must have $a = \pm 1$ or $b = \pm 1$.
 
 The scaled hyperbolic plane $U(2)$ has basis $\{e' , f'\}$ such that
 
@@ -38,7 +39,9 @@ Explicitly, we have the following elements, closed under composition, each of or
 & \sigma_3: \quad e \mapsto -f,\ f \mapsto -e; \quad A_3 &= \begin{pmatrix} 0 & -1 \\ -1 & 0 \end{pmatrix}.
 \end{align*}
 
-To see why this is true, since $g$ must preserve primitive isotropic vectors and $ef = 1$, the images $g(e), g(f)$ must lie in $\{\pm e, \pm f\}$ and have the same pairing. Only four such transformations preserve $ef = 1$, as listed above. Direct computation verifies the relation $A_i^T G_U A_i = G_U$ for each $i$.
+To see why this is true, since $g$ must preserve primitive isotropic vectors and $ef = 1$, the images $g(e), g(f)$ must lie in $\{\pm e, \pm f\}$ and have the same pairing.
+Only four such transformations preserve $ef = 1$, as listed above.
+Direct computation verifies the relation $A_i^T G_U A_i = G_U$ for each $i$.
 Note however that the *rational* orthogonal group $\Orth(U_\QQ)$ is much larger: it contains the one-parameter subgroups:
 
 \begin{align*}
@@ -48,68 +51,76 @@ j_b = \begin{pmatrix} 0 & b \\ b^{-1} & 0 \end{pmatrix}
 .
 .\end{align*}
 
-Finally, we note that the lattices $U$ and $\I_{1,1} \definedas \generators{1, -1}$ are not isometric over $\ZZ$, since $U$ is even and $\I_{1,1}$ is odd. However, both have signature $(1,1)$ and discriminant $-1$, so they become isometric over $\QQ$ and $\RR$.
+Finally, we note that the lattices $U$ and $\I_{1,1} \definedas \generators{1, -1}$ are not isometric over $\ZZ$, since $U$ is even and $\I_{1,1}$ is odd.
+However, both have signature $(1,1)$ and discriminant $-1$, so they become isometric over $\QQ$ and $\RR$.
 It is true, however, that $U$ and $\II_{1, 1}$ are isometric, where the latter is the unique *even* unimodular lattice discussed later in this section.
 
 #### Root Lattices {#sec:root-lattices}
 
-We present here the classical definitions of the *positive-definite* root lattices of $A,D,E$ types, noting that in applications in later chapters, we will typically choose the negative-definite variations of these lattices, as is the typical convention in algebraic geometry. We maintain the positive-definite convention until @sec:lattice-folding, where we give more precise constructions and critically use the positive-definite convention to carry out folding calculations in Euclidean spaces using standard linear algebra. After this, we will switch to the negative-definite convention that is typically more convenient for applications in algebraic geometry. We refer to Appendix~@sec:root-lattice-conventions for explicit computations, diagrams, and labeling conventions.
+We present here the classical definitions of the *positive-definite* root lattices of $A,D,E$ types, noting that in applications in later chapters, we will typically choose the negative-definite variations of these lattices, as is the typical convention in algebraic geometry.
+We maintain the positive-definite convention until @sec:lattice-folding, where we give more precise constructions and critically use the positive-definite convention to carry out folding calculations in Euclidean spaces using standard linear algebra.
+After this, we will switch to the negative-definite convention that is typically more convenient for applications in algebraic geometry.
+We refer to Appendix~@sec:root-lattice-conventions for explicit computations, diagrams, and labeling conventions.
 
 We summarize below all of the relevant information for the simply-laced $\ADE$ types, as well as the exceptional types $E_6, E_7, E_8, F_4$, and $G_2$.
-In all cases, the lattices $L$ can be realized by a primitive embedding $L\injects \QQ^n$ for some $n$, where we identify $\ZZ^n \iscontainedin \QQ^n$ with the abstract diagonal lattice $\generators{1,1,\cdots, 1}$. In these Euclidean embeddings, one can explicitly compute the Gram matrices $G_L$, the duals $\dualof{L}$ and discriminant groups $A_L$, and invariants such as $\disc(L)$ using standard linear algebra. 
+In all cases, the lattices $L$ can be realized by a primitive embedding $L\injects \QQ^n$ for some $n$, where we identify $\ZZ^n \iscontainedin \QQ^n$ with the abstract diagonal lattice $\generators{1,1,\cdots, 1}$.
+In these Euclidean embeddings, one can explicitly compute the Gram matrices $G_L$, the duals $\dualof{L}$ and discriminant groups $A_L$, and invariants such as $\disc(L)$ using standard linear algebra.
 We let $R(L) \iscontainedin L$ denote the set of *roots* in each lattice (vectors $v\in L$ with $v^2=2$), $\Phi(L)\iscontainedin R(L)$ its corresponding *simple root system* -- a subset of roots $\alpha_i$ such that, without loss of generality, $\ZZ_{\geq 0} \Phi(L) = R(L)$, i.e. every $v\in R(L)$ can be written as $v=\Sum_{\alpha_i \in \Phi(L)} c_i \alpha_i$ with all $c_i \geq 0$ integral.
-This defines a sublattice $\ZZ\Phi(L) \injects L$, and we say $L$ is a **root lattice** if this is index 1. In any case, one can define a *Weyl group* $W(L) \leq \Orth(L)$ of reflections generated in by hyperplanes $H_{\alpha_i} \definedas \alpha_i^{\perp L}$ for $\alpha_i\in \Phi(L)$. For root lattices, we can identify $G_L$ with $G_{\ZZ \Phi(L)}$, the Gram matrix of intersections between the simple roots; these agree up to similarity since $\Phi(L)$ generates $L$.
+This defines a sublattice $\ZZ\Phi(L) \injects L$, and we say $L$ is a **root lattice** if this is index 1. In any case, one can define a *Weyl group* $W(L) \leq \Orth(L)$ of reflections generated in by hyperplanes $H_{\alpha_i} \definedas \alpha_i^{\perp L}$ for $\alpha_i\in \Phi(L)$.
+For root lattices, we can identify $G_L$ with $G_{\ZZ \Phi(L)}$, the Gram matrix of intersections between the simple roots; these agree up to similarity since $\Phi(L)$ generates $L$.
 
 ##### Type $A$
 
-Let $\ZZ^{n}$ denote the standard diagonal lattice $\generators{1,1,\cdot, 1}$ with generators $\theset{e_1,\cdots, e_n}$. The root lattice $A_n$ is isometric to a root lattice in $v_{n+1}^{\perp \ZZ^{n+1}}$ where $v_{n+1} \definedas \Sum_{i=1}^{n+1} e_i$, and thus concretely identified as a primitively embedded sublattice
+Let $\ZZ^{n}$ denote the standard diagonal lattice $\generators{1,1,\cdot, 1}$ with generators $\theset{e_1,\cdots, e_n}$.
+The root lattice $A_n$ is isometric to a root lattice in $v_{n+1}^{\perp \ZZ^{n+1}}$ where $v_{n+1} \definedas \Sum_{i=1}^{n+1} e_i$, and thus concretely identified as a primitively embedded sublattice
 
 \begin{align*}
 A_n \injects \theset{x\in \ZZ^{n+1} \st \sum_{i=1}^{n+1} x_i = 0 }
 .
 .\end{align*}
 
-One defines $R(A_n)$ to consist of the roots $r_{i,j} \definedas e_i - e_j$ in $v_{n+1}^\perp$ for $1\leq i \neq j \leq n+1$, and so $|R(A_n)| = n\cdot(n+1)$. There are $n$ simple roots forming $\Phi(A_n)$, which can be chosen as $\alpha_i \definedas e_i - e_{i+1}$ for $1\leq i \leq n$.
-
+One defines $R(A_n)$ to consist of the roots $r_{i,j} \definedas e_i - e_j$ in $v_{n+1}^\perp$ for $1\leq i \neq j \leq n+1$, and so $|R(A_n)| = n\cdot(n+1)$.
+There are $n$ simple roots forming $\Phi(A_n)$, which can be chosen as $\alpha_i \definedas e_i - e_{i+1}$ for $1\leq i \leq n$.
 
 ##### Type $D$
  
-For any lattice $L$, one can consider the lattice $dL\definedas \theset{d\cdot v\st v\in L}$, noting that this differs from the twist $L(d)$. In particular, $d\ZZ^n$ forms a lattice for any $n$, and one can produce interesting lattices by taking the kernels of *reduced augmentation* morphisms $\eps_d: L\to \ZZ \to \ZZ/d\ZZ$ given by $v\mapsto \Sum v_i\pmod{d\ZZ}$.
+For any lattice $L$, one can consider the lattice $dL\definedas \theset{d\cdot v\st v\in L}$, noting that this differs from the twist $L(d)$.
+In particular, $d\ZZ^n$ forms a lattice for any $n$, and one can produce interesting lattices by taking the kernels of *reduced augmentation* morphisms $\eps_d: L\to \ZZ \to \ZZ/d\ZZ$ given by $v\mapsto \Sum v_i\pmod{d\ZZ}$.
 In particular, for $L = \ZZ^n$, we define $\ZZ^n_{\ev} = \ker(\ZZ^n\mapsvia{\eps_2}\ZZ_2)$, which can be realized as
 $$
 \ZZ^n_{\ev} \definedas \theset{ x = (x_1, \ldots, x_n) \in \ZZ^n \st \Sum_{i=1}^n x_i \equiv 0 \pmod{2\ZZ} } \injects \ZZ^n
 $$
-The $D_n$ root lattice is the root sublattice $\ZZ^n_{\ev}$ whose roots $R(D_n)$ consist of all vectors $r_{i,j} \definedas \pm e_i \pm e_j$ in $\ZZ^n_{\ev}$ for all $1 \leq i < j \leq n$. There are $n(n-1)/2$ unordered pairs of distinct indices, and for each such pair, four roots corresponding to all sign choices, and thus 
+The $D_n$ root lattice is the root sublattice $\ZZ^n_{\ev}$ whose roots $R(D_n)$ consist of all vectors $r_{i,j} \definedas \pm e_i \pm e_j$ in $\ZZ^n_{\ev}$ for all $1 \leq i < j \leq n$.
+There are $n(n-1)/2$ unordered pairs of distinct indices, and for each such pair, four roots corresponding to all sign choices, and thus
 $$
 |R(D_n)| = 4 \cdot \binom{n}{2} = 4 \cdot \frac{n(n-1)}{2} = 2n(n-1)
 .$$
 A set of simple roots for $\Phi(D_n)$ can be chosen as $\alpha_i \definedas e_i - e_{i+1}$ for $1 \leq i \leq n-1$ and $\alpha_n \definedas e_{n-1} + e_n$.
 
-####### Type $E$
+###### Type $E$
 
-The root lattice $E_8$ is the unique, even, unimodular, positive-definite lattice of rank 8, and admits an isometry 
+The root lattice $E_8$ is the unique, even, unimodular, positive-definite lattice of rank 8, and admits an isometry
 $$
 E_8 \iso \theset{ x \in \ZZ^8 \union \qty{\ZZ^8 + {1\over 2}v_8} \st \Sum_{i=1}^8 x_i \equiv 0\pmod{2\ZZ}} \injects \QQ^8
 $$
-where $v_8 = (1,\cdots, 1)$. 
+where $v_8 = (1,\cdots, 1)$.
 It contains exactly $2^4\cdot 3\cdot 5 = 240$ roots:
 
 - The difference vectors $r_{i, j}^{\pm, \pm} \definedas \pm e_i \pm e_j$ for $1\leq i\neq j\leq 8$, of which there are $\binom{8}{2}\cdot 4 = 112$, and
-  
+
 - The half-sum vectors $r_{\pm^8} \definedas {1\over 2} \Sum_{i=1}^8 \eps_i e_i$ with $\eps_i = \pm 1$ and $\prod \eps_i = 1$, i.e. vectors of the form ${1\over 2}(\pm e_1 \pm e_2 \cdots \pm e_8)$ where the number of minus signs is even, of which there are $2^8/2 = 128$.
 
-Of these, there are 8 simple roots comprising $\Phi(E_8)$, and there is a transitive action $W(E_8)\actson \Phi(E_8)$. 
-The root lattice $E_{7}$ can be constructed as $\Ann_{E_{8}}\left(L_{1}\right)$ for any sublattice $L_{1} \leq E_{8}$ isometric to $A_{1}$, usually taken to be generated by a specific vector denoted $v_8$. Similarly, $E_{6}=\Ann_{E_{8}}\left(L_{2}\right)$ for any sublattice $L_{2}$ isometric to $A_{2}$, usually chosen to be generated by a specific vector $v_7$. 
-
+Of these, there are 8 simple roots comprising $\Phi(E_8)$, and there is a transitive action $W(E_8)\actson \Phi(E_8)$.
+The root lattice $E_{7}$ can be constructed as $\Ann_{E_{8}}\left(L_{1}\right)$ for any sublattice $L_{1} \leq E_{8}$ isometric to $A_{1}$, usually taken to be generated by a specific vector denoted $v_8$.
+Similarly, $E_{6}=\Ann_{E_{8}}\left(L_{2}\right)$ for any sublattice $L_{2}$ isometric to $A_{2}$, usually chosen to be generated by a specific vector $v_7$.
 
 ##### Types $B, C, F_4, G_2$.
 
-
 The root system $R(B_n) \subset \ZZ^n$ consists of all vectors of the form $r_i \definedas \pm e_i$ for $q\leq i \leq n$ and $r_{ij}\definedas \pm e_i \pm e_j$ for $1\leq i < j \leq n$, of which there are $2n + 2n\cdot(n-1) = 2n^2$; of these, one can choose $\Phi(B_n)$ to consist of roots $\alpha_i \definedas e_i - e_{i+1}$ for $1\leq i \leq n-1$ and $\alpha_n = e_n$.
-For type $C$, the root system $R(C_n)$ consists of the roots $2r_i$ and $r_{ij}$ as in type $B$, again yielding $2n^2$, and one can choose all $\alpha_i$ in the same way, only replacing $\alpha_n$ with $2e_n$. It is worth pointing out the duality here: for $B_n$, there are $2n$ short roots $r_i$ and $2n\cdot(n-1)$ long roots $r_{ij}$; in $C_n$, these switch roles, and there are $2n$ long roots $2r_i$ and $2n\cdot(n-1)$ short roots $r_{ij}$.
+For type $C$, the root system $R(C_n)$ consists of the roots $2r_i$ and $r_{ij}$ as in type $B$, again yielding $2n^2$, and one can choose all $\alpha_i$ in the same way, only replacing $\alpha_n$ with $2e_n$.
+It is worth pointing out the duality here: for $B_n$, there are $2n$ short roots $r_i$ and $2n\cdot(n-1)$ long roots $r_{ij}$; in $C_n$, these switch roles, and there are $2n$ long roots $2r_i$ and $2n\cdot(n-1)$ short roots $r_{ij}$.
 
-
-The root lattice $F_4$ is realized as a root system in $\ZZ^4$ with  $R(F_4)$ consisting of vectors $\pm e_i$ for $1\leq i \leq 4$, $\pm e_i \pm e_j$ for $1\leq i < j \leq 4$, and those of the form ${1\over 2}(\Sum \pm e_i)$ where the number of minus signs is even.
+The root lattice $F_4$ is realized as a root system in $\ZZ^4$ with $R(F_4)$ consisting of vectors $\pm e_i$ for $1\leq i \leq 4$, $\pm e_i \pm e_j$ for $1\leq i < j \leq 4$, and those of the form ${1\over 2}(\Sum \pm e_i)$ where the number of minus signs is even.
 A system of simple roots can be taken to be
 $$
 \begin{aligned}
@@ -154,8 +165,7 @@ If $n$ is even, then $D_n^{+} \not\iso D_n^{-}$, and both contain $D_n$ as an in
 Both $D_n^{+}$ and $D_n^{-}$ are unimodular lattices, and are even integral lattices if and only if $n \equiv 0 \pmod{8}$.
 For $n=8$, we have $D_8^+ \iso E_8$.
 
-We also recall that if $R \definedas \ZZ \Phi$ is a lattice generated by a root system $\Phi$, the dual lattice $\dualof{R}$ is referred to as the **weight lattice** associated to $R$, and the dual basis elements $w_i$ defined by $w_i(\alpha_j) = \delta_{ij}$ are referred to as **weights** or **coroots**.
-For unimodular lattices such as $E_8$, it is often useful to identify $\dualof{E_8} \cong E_8$ and work in a basis of coroots $w_{1}, \cdots, w_{8}\definedas\alpha_{1}{ }^{\vee}, \cdots, \alpha_{8}{ }^{\vee}$.
+We also recall that if $R \definedas \ZZ \Phi$ is a lattice generated by a root system $\Phi$, the dual lattice $\dualof{R}$ is referred to as the **weight lattice** associated to $R$, and the dual basis elements $w_i$ defined by $w_i(\alpha_j) = \delta_{ij}$ are referred to as **weights** or **coroots**. For unimodular lattices such as $E_8$, it is often useful to identify $\dualof{E_8} \cong E_8$ and work in a basis of coroots $w_{1}, \cdots, w_{8}\definedas\alpha_{1}{ }^{\vee}, \cdots, \alpha_{8}{ }^{\vee}$.
 The coordinates of each $w_i$ in terms of the original roots $\alpha_i$ can be found explicitly; for example, note that
 $$
 \inverseof{G_{E_{8}}}=\left[\begin{array}{rrrrrrrr}
@@ -177,7 +187,7 @@ $$
 \end{aligned}
 ,$$
 and so on.
-Finally, the lattice $E_8(2)$ frequently appears in moduli-theoretic applications.A direct determinant computation shows that $\disc(E_8(2)) = 2^8$, and using the exact sequences of the previous chapter, we can write 
+Finally, the lattice $E_8(2)$ frequently appears in moduli-theoretic applications.A direct determinant computation shows that $\disc(E_8(2)) = 2^8$, and using the exact sequences of the previous chapter, we can write
 $$
 \dualof{E_8(2)} \iso {1\over 2}E_8 \implies A_{E_8(2)} \cong E_8/2E_8 \cong {1\over 2}E_8/E_8 \cong \ZZ_2^8
 ,$$
@@ -215,8 +225,8 @@ By the classification theorem of such lattices, if $L$ is any odd indefinite uni
 
 For $p, q \in \ZZ_{\geq 0}$, define
 $$
-\II_{p, q} = 
-\II_{p, q} = 
+\II_{p, q} =
+\II_{p, q} =
 \begin{cases}
   E_{8}^{\frac{p-q}{8}} \oplus U^{q}, & p-q \geq 0 \textand 8|(p-q) \\
   E_{8}^{\frac{q-p}{8}} \oplus U^{p}, & p-q < 0 \textand 8|(q-p)
@@ -229,12 +239,14 @@ The following can be found in [@Mil58; @Ser73]: if $L$ is an even indefinite uni
 
 We conclude with the major classification theorems:
 
-:::{.theorem title="Classification of indefinite unimodular lattices"}
-Any indefinite unimodular lattice is determined up to isometry by its rank, index, and parity. The same is true for *definite* unimodular lattices $L$ with $\rank L \leq 8$.
+::: {.theorem title="Classification of indefinite unimodular lattices"}
+Any indefinite unimodular lattice is determined up to isometry by its rank, index, and parity.
+The same is true for *definite* unimodular lattices $L$ with $\rank L \leq 8$.
 :::
 
-:::{.theorem title="Classification of small unimodular lattices"}
-Let $L$ be *any* unimodular integral lattice, definite or indefinite, with $\rank_{\ZZ} L \leq 4$. Then either
+::: {.theorem title="Classification of small unimodular lattices"}
+Let $L$ be *any* unimodular integral lattice, definite or indefinite, with $\rank_{\ZZ} L \leq 4$.
+Then either
 
 - $L$ is odd and $L \iso I_{p, q}$ for some $p, q$, or
 
@@ -254,10 +266,11 @@ is the unique even unimodular lattice of rank $22$ and signature $(3,19)$ modeli
 We define
 $$
 \lkttd^{(m)}
-\definedas 
+\definedas
 \generators{-2 d} \oplus U^{2} \oplus E_{8}^{ m}, \qquad \lkttd \definedas \lkttd^{(2)}
 ,$$
-the degree 2d K3 lattices that appear in the study the moduli spaces $\ftd$ of K3 surfaces with a polarization of degree $2d$ and similar moduli problems. The lattice $\lkttd$, corresponding to the $m=2$ case, models the orthogonal complement in $\lkt$ of a polarization $h$ of degree $2d$.
+the degree 2d K3 lattices that appear in the study the moduli spaces $\ftd$ of K3 surfaces with a polarization of degree $2d$ and similar moduli problems.
+The lattice $\lkttd$, corresponding to the $m=2$ case, models the orthogonal complement in $\lkt$ of a polarization $h$ of degree $2d$.
 We also recall that the Enriques lattice is defined as
 
 \begin{align*}
@@ -269,7 +282,7 @@ the unique even unimodular lattice of rank $10$ and signature $(1,9)$, modeling 
 
 #### Nikulin's Lattices
 
-Let $\ZZtwoadic$ denote the 2-adic integers. 
+Let $\ZZtwoadic$ denote the 2-adic integers.
 For $k \geq 0$, define
 $$
 V_{k}\definedas \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
@@ -277,7 +290,8 @@ V_{k}\definedas \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
 2^{k} & 2^{k+1}
 \end{array}\right]\right)
 $$
-For $k=1$, we write $V \definedas V_1$. This is an even, nondegenerate lattice of 2-adic rank $2$ and signature $(2, 0)$ that we write as $V$.
+For $k=1$, we write $V \definedas V_1$.
+This is an even, nondegenerate lattice of 2-adic rank $2$ and signature $(2, 0)$ that we write as $V$.
 Similarly, we define
 $$
 U_{k}\definedas \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
@@ -287,4 +301,3 @@ U_{k}\definedas \left(\ZZtwoadic^{2},\left[\begin{array}{cc}
 $$
 over the 2 -adic integers and write $U \definedas U_1$.
 These lattices contribute to the indecomposable factors of general 2-elementary lattices, which we discuss in the next section.
-

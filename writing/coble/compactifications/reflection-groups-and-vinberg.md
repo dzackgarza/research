@@ -1,7 +1,6 @@
 # Hyperbolic reflection groups and Vinberg's algorithm {#sec-reflection-groups-and-vinberg}
 
-::: {.remark}
-### Orientation and sign convention
+::: {.remark title="Orientation and sign convention"}
 
 The Baily--Borel and semitoroidal compactifications of the period domains attached to Coble and Enriques surfaces are governed by the action of arithmetic reflection groups on hyperbolic space.
 This section collects the reflection-group and hyperbolic-polytope combinatorics used elsewhere in the monograph, culminating in Vinberg's algorithm for a fundamental chamber and the Coxeter--Vinberg diagram that encodes it.
@@ -77,8 +76,7 @@ For a short root, $2\beta_L(v,L)\iscontainedin 2\ZZ = v^2\ZZ$ holds automaticall
 For a norm $-4$ vector, integrality requires $\beta_L(v,L)\iscontainedin 2\ZZ$, which is precisely the condition $\div_L(v) = 2$; then $s_v(x) = x + \tfrac12\beta_L(v,x)\,v$ lies in $\Orth(L)$.
 :::
 
-::: {.theorem #thm:2elementary-roots-characterization}
-### The two root types exhaust the roots
+::: {.theorem #thm:2elementary-roots-characterization title="The two root types exhaust the roots"}
 
 Let $L$ be an even $2$-elementary lattice and let $v\in L$ satisfy $v^2 < 0$.
 Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and $\div_L(v) = 2$.
@@ -245,8 +243,7 @@ The bijection is the vertex correspondence of @prop:polytope-vertex-subdiagram: 
 
 ## Vinberg's algorithm
 
-::: {.theorem #thm:vinberg-algorithm}
-### Vinberg's algorithm for a fundamental chamber
+::: {.theorem #thm:vinberg-algorithm title="Vinberg’s algorithm for a fundamental chamber"}
 
 Let $\Gamma\iscontainedin\Orth(L)$ be an arithmetic reflection subgroup of a hyperbolic lattice $L$.
 Vinberg's algorithm constructs a fundamental chamber $P\iscontainedin\HH^n$ for $\Gamma$ as follows [@Vin75].
@@ -275,14 +272,12 @@ The algorithm terminates in finitely many steps if and only if $\Gamma$ has fini
 The source note states step 3 as "discard those roots whose hyperplanes do not intersect $\tilde P$ transversely"; the explicit inequality $v\cdot r_i\geq 0$ recorded above is Vinberg's acceptance criterion for that condition in the algebraic-geometry sign convention [@Vin75].
 :::
 
-::: {.definition #def:lanner-subgraph}
-### Lannér subgraph
+::: {.definition #def:lanner-subgraph title="Lannér subgraph"}
 
 A **Lannér subgraph** of a Coxeter--Vinberg diagram is a minimal non-parabolic subdiagram whose Coxeter group acts on hyperbolic space with a fundamental polyhedron of finite volume; equivalently, a diagram all of whose proper subdiagrams are elliptic but which is not itself elliptic or parabolic.
 :::
 
-::: {.theorem #thm:vinberg-completeness-criterion}
-### A sufficient criterion for completeness
+::: {.theorem #thm:vinberg-completeness-criterion title="A sufficient criterion for completeness"}
 
 Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a run of @thm:vinberg-algorithm.
 If $\Gamma$ contains no Lannér subgraph, and every connected parabolic subdiagram of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then $\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the algorithm may be stopped.
@@ -301,8 +296,7 @@ It applies only in the absence of dotted edges, that is when no two walls of the
 
 ## Root-system conventions and tables
 
-::: {.remark}
-### Bourbaki conventions and twists
+::: {.remark title="Bourbaki conventions and twists"}
 
 The classical root systems are taken with the Bourbaki labeling, in the negative-definite twists appropriate to the algebraic-geometry convention:
 $$

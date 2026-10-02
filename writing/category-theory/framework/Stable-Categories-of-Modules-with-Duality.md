@@ -95,7 +95,7 @@ $$
 
 ::: {.definition #def:poincare-complex title="Algebraic Poincaré complexes and $L$-groups"}
 
-An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\otimes_AC$ given by $x\otimes y\mapsto(-1)^{pq}\epsilon\,y\otimes x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, §20].
+An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\otimes_AC$ given by $x\otimes_A y\mapsto(-1)^{pq}\epsilon\,y\otimes_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, §20].
 For a $*$-invariant subgroup $U\subseteq\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
 :::
 
@@ -219,10 +219,16 @@ A stabilization of $\mathbf{Lat}_R$ by an endofunctor $F_M$ of @def:hyperbolic-s
 @thm:invertible-summand shows that on $\mathbf{Lat}_R$ these two demands are incompatible: an $M$ with $[M]\neq0$ has $b_M\neq0$ and so $F_M$ is not an equivalence, while an $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$.
 The three statements below are not proved in this book.
 
-**Question.** Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def:hyperbolic-stabilization).
+::: {.question}
+Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def:hyperbolic-stabilization).
 Is there a pointed $\infty$-category $\mathcal C$, a functor $\iota\colon\mathbf{Lat}_R^{\simeq}\to\mathcal C^{\simeq}$, and an equivalence $\iota\circ S\simeq\Sigma\circ\iota$ with $\Sigma$ the suspension of @def:loops-suspension?
+:::
 
-**Question.** Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def:orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?
+::: {.question}
+Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def:orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?
 @thm:invertible-summand answers this for $(\mathbf{Lat}_R,\perp,0)$ itself.
+:::
 
-**Question.** Does the discriminant construction of @sec-lattices-discriminant factor through the $\epsilon$-quadratic Poincaré complexes of @def:poincare-complex over $\mathbb Z$, and through which functor?
+::: {.question}
+Does the discriminant construction of @sec-lattices-discriminant factor through the $\epsilon$-quadratic Poincaré complexes of @def:poincare-complex over $\mathbb Z$, and through which functor?
+:::

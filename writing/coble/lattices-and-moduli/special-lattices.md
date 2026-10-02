@@ -4,14 +4,13 @@
 
 The lattice-theoretic study of moduli of Coble and Enriques surfaces is carried out on a small stock of recurring lattices and on the group-theoretic transformations that move vectors within them.
 This section collects those lattices together with their discriminant data, and records the Eichler--Siegel transvections that generate the arithmetic groups acting on the associated period domains.
-Throughout we use the notions of the Lattice Theory section: the dual lattice $\dualof{L}$, the discriminant group $A_L = \dualof{L}/L$, the discriminant quadratic form $q_L$, the twist $L(n)$, the rank-one lattice $\gens{n}$, the hyperbolic lattice $U$, the negative-definite root lattices $A_n, D_n, E_n$, and the $2$-elementary invariants $(r, a, \delta)$.
+Throughout we use the notions of the Lattice Theory section: the dual lattice $\dualof{L}$, the discriminant group $A_L = \dualof{L}/L$, the discriminant quadratic form $q_L$, the twist $L(n)$, the rank-one lattice $\generators{n}$, the hyperbolic lattice $U$, the negative-definite root lattices $A_n, D_n, E_n$, and the $2$-elementary invariants $(r, a, \delta)$.
 The discriminant computations below are instances of the general exact sequence for scaled lattices, the scaled-discriminant exact sequence (@prop:scaled-discriminant-ses).
 :::
 
 ## The hyperbolic plane and its orthogonal group
 
-::: {.remark}
-### The hyperbolic plane
+::: {.remark title="The hyperbolic plane"}
 
 Recall that the **hyperbolic plane** $U = \latII_{1, 1}$ is the unique even unimodular lattice of signature $(1, 1)$, realized as $U = \ZZ e\oplus \ZZ f$ with $e^2 = f^2 = 0$ and $ef = 1$, and Gram matrix
 $$
@@ -21,7 +20,7 @@ $$
 Since $U$ is unimodular, $\dualof{U} = U$ and the discriminant group $A_U$ is trivial.
 The set of primitive isotropic vectors of $U$ is exactly
 $$
-\ts{\pm e, \pm f}
+\theset{\pm e, \pm f}
 .
 $$
 :::
@@ -30,7 +29,7 @@ $$
 
 The orthogonal group of $U$ is a Klein four-group,
 $$
-\Orth(U) = \ts{\pm\id,\ \pm\begin{bmatrix}0&1\\1&0\end{bmatrix}}
+\Orth(U) = \theset{\pm\id,\ \pm\begin{bmatrix}0&1\\1&0\end{bmatrix}}
 \cong C_2\times C_2
 ,
 $$
@@ -48,7 +47,7 @@ written in the basis $(e, f)$.
 
 ::: {.proof}
 
-An isometry of $U$ permutes the four primitive isotropic vectors $\ts{\pm e, \pm f}$ and is determined by its action on the ordered isotropic frame $(e, f)$.
+An isometry of $U$ permutes the four primitive isotropic vectors $\theset{\pm e, \pm f}$ and is determined by its action on the ordered isotropic frame $(e, f)$.
 Preservation of $ef = 1$ forces the image frame to be one of $(e, f), (-e, -f), (f, e), (-f, -e)$, giving the four listed matrices.
 Over $\QQ$ the vectors $ae$ and $\inverseof{a} f$ are again isotropic with $(ae)(\inverseof{a} f) = ef = 1$, so $i_a\in\Orth(U_\QQ)$, and likewise $j_b(e) = \inverseof{b} f$, $j_b(f) = be$ satisfy $(\inverseof{b} f)(be) = fe = 1$, so $j_b\in\Orth(U_\QQ)$.
 :::
@@ -108,20 +107,18 @@ The scaled-lattice sequence of the scaled-discriminant exact sequence (@prop:sca
 
 ## The Enriques lattice $E_{10}$ and its twist
 
-::: {.definition #def:enriques-lattice}
-### The Enriques lattice
+::: {.definition #def:enriques-lattice title="The Enriques lattice"}
 
 The **Enriques lattice** is
 $$
-E_{10} \da U\oplus E_8 \iso \latII_{1, 9}
+E_{10} \definedas U\oplus E_8 \iso \latII_{1, 9}
 ,
 $$
 the orthogonal direct sum of the hyperbolic plane and the negative-definite $E_8$ lattice.
 It is even, unimodular, of signature $(1, 9)$, and is the unique even unimodular lattice of that signature up to isometry.
 :::
 
-::: {.remark}
-### Role in Enriques moduli
+::: {.remark title="Role in Enriques moduli"}
 
 For an Enriques surface $Z$ the second integral cohomology carries a torsion summand,
 $$
@@ -133,8 +130,7 @@ There is an isometry $H^2(Z; \ZZ)_f\iso E_{10}$, and a **marking** of $Z$ is a c
 The lattice $E_{10}$ is thus the numerical incarnation of the Enriques surface, while its twist governs the period map.
 :::
 
-::: {.remark}
-### The twisted Enriques lattice
+::: {.remark title="The twisted Enriques lattice"}
 
 The relevant period lattice is the twist
 $$
@@ -143,19 +139,18 @@ E_{10}(2) = U(2)\oplus E_8(2)
 $$
 which is even of signature $(1, 9)$ and, being the twist by $2$ of a rank-$10$ unimodular lattice, is $2$-elementary with $A_{E_{10}(2)}\cong E_{10}/2E_{10}\cong(\ZZ/2\ZZ)^{10}$ by the scaled-discriminant exact sequence (@prop:scaled-discriminant-ses).
 In the invariant notation of the Lattice Theory section it has $2$-elementary type $(r, a, \delta) = \EnriquesInvariants$.
-This is the lattice denoted $\sen = E_{10}(2)$ in the lattice summary, and it recurs throughout the Coble tables as the base summand $E_{10}(2)$ appearing alongside $U(2)$ and the root lattices; compare [the Coble lattice table](#sec-coble-lattice-table).
+This is the lattice denoted $\sen = E_{10}(2)$ in the lattice summary, and it recurs throughout the Coble tables as the base summand $E_{10}(2)$ appearing alongside $U(2)$ and the root lattices; compare [[coble-lattice-table|the Coble lattice table]].
 :::
 
 ## Degree $2d$ K3 lattices
 
-::: {.definition #def:degree-2d-k3-lattice}
-### Degree $2d$ K3 lattices
+::: {.definition #def:degree-2d-k3-lattice title="Degree $2d$ K3 lattices"}
 
 For a positive integer $d$ and an integer $m\geq 0$, define the lattices
 $$
-L_{\Kthree, 2d}^{(m)} \da \gens{-2d}\oplus U^{2}\oplus E_8^{m},
+L_{\Kthree, 2d}^{(m)} \definedas \generators{-2d}\oplus U^{2}\oplus E_8^{m},
 \qquad
-L_{\Kthree, 2d} \da L_{\Kthree, 2d}^{(2)}
+L_{\Kthree, 2d} \definedas L_{\Kthree, 2d}^{(2)}
 .
 $$
 The distinguished case $m = 2$ gives a lattice of signature $(2, 19)$, which we call the **degree $2d$ K3 lattice**.
@@ -164,11 +159,11 @@ The distinguished case $m = 2$ gives a lattice of signature $(2, 19)$, which we 
 ::: {.remark}
 
 The K3 lattice is $\lkt = U^3\oplus E_8^2 = \latII_{3, 19}$, of signature $(3, 19)$.
-Take a primitive vector $h = e + d f$ in one hyperbolic summand $U = \gens{e, f}$, so that $h^2 = 2d$; it spans a sublattice isometric to $\gens{2d}$.
-Its orthogonal complement within that $U$ is spanned by $e - d f$, which has $(e - d f)^2 = -2d$, so $h^{\perp U} = \gens{e - d f}\cong\gens{-2d}$.
+Take a primitive vector $h = e + d f$ in one hyperbolic summand $U = \generators{e, f}$, so that $h^2 = 2d$; it spans a sublattice isometric to $\generators{2d}$.
+Its orthogonal complement within that $U$ is spanned by $e - d f$, which has $(e - d f)^2 = -2d$, so $h^{\perp U} = \generators{e - d f}\cong\generators{-2d}$.
 Taking the orthogonal complement of $h$ in all of $\lkt = U^3\oplus E_8^2$ then realizes the orthogonal complement of a degree-$2d$ polarization as
 $$
-h^{\perp\lkt} \cong \gens{-2d}\oplus U^{2}\oplus E_8^{2} = L_{\Kthree, 2d}
+h^{\perp\lkt} \cong \generators{-2d}\oplus U^{2}\oplus E_8^{2} = L_{\Kthree, 2d}
 .
 $$
 The lattice $L_{\Kthree, 2d}$ therefore models the transcendental-type lattice governing the moduli space $\ftd$ of K3 surfaces carrying a polarization of degree $2d$; its period domain has signature $(2, 19)$ [@Sca87].
@@ -177,18 +172,17 @@ The auxiliary lattices $L_{\Kthree, 2d}^{(m)}$ with other values of $m$ arise wh
 
 ## Nikulin's $2$-adic lattices $V_k$ and $U_k$
 
-::: {.definition #def:nikulin-Vk-Uk}
-### Nikulin's lattices $V_k$ and $U_k$
+::: {.definition #def:nikulin-Vk-Uk title="Nikulin's lattices $V_k$ and $U_k$"}
 
 Let $\ZZ_2$ denote the ring of $2$-adic integers.
 For an integer $k\geq 0$ define the rank-two $\ZZ_2$-lattices
 $$
-V_k \da \left(\ZZ_2^2,\ \begin{bmatrix} 2^{k+1} & 2^{k} \\ 2^{k} & 2^{k+1} \end{bmatrix}\right),
+V_k \definedas \left(\ZZ_2^2,\ \begin{bmatrix} 2^{k+1} & 2^{k} \\ 2^{k} & 2^{k+1} \end{bmatrix}\right),
 \qquad
-U_k \da \left(\ZZ_2^2,\ \begin{bmatrix} 0 & 2^{k} \\ 2^{k} & 0 \end{bmatrix}\right)
+U_k \definedas \left(\ZZ_2^2,\ \begin{bmatrix} 0 & 2^{k} \\ 2^{k} & 0 \end{bmatrix}\right)
 .
 $$
-We abbreviate $V \da V_1$.
+We abbreviate $V \definedas V_1$.
 Each of $V_k$ and $U_k$ is even, nondegenerate, and of $2$-adic rank $2$.
 :::
 
@@ -202,10 +196,9 @@ These lattices are the local building blocks out of which the indecomposable fac
 
 ## Eichler--Siegel transvections
 
-::: {.definition #def:eichler-siegel}
-### Eichler--Siegel transvection
+::: {.definition #def:eichler-siegel title="Eichler--Siegel transvection"}
 
-Let $L$ be a lattice, let $e\in L_\QQ$ be an isotropic vector, and let $a\in \gens{e}^{\perp L_\QQ}$ be a vector orthogonal to $e$, i.e. $ae = 0$.
+Let $L$ be a lattice, let $e\in L_\QQ$ be an isotropic vector, and let $a\in \generators{e}^{\perp L_\QQ}$ be a vector orthogonal to $e$, i.e. $ae = 0$.
 The **Eichler--Siegel transvection** associated to the pair $(e, a)$ is the isometry $E_{e, a}\in\Orth(L_\QQ)$ defined by
 $$
 E_{e, a}(v) = v + (ev)\,a - \left( av + \tfrac{1}{2}(aa)(ev) \right) e
@@ -219,22 +212,20 @@ $$
 The construction is due to Eichler [@Eic74].
 :::
 
-::: {.definition #def:eichler-group}
-### The Eichler transvection group
+::: {.definition #def:eichler-group title="The Eichler transvection group"}
 
-The **Eichler transvection group** $E(L)\leq\Orth(L)$ is generated by all transvections $E_{e, a}$ for which $e\in L$ is a primitive isotropic vector of divisibility $\operatorname{div}_L(e) = 1$ and $a\in\gens{e}^{\perp L}$.
+The **Eichler transvection group** $E(L)\leq\Orth(L)$ is generated by all transvections $E_{e, a}$ for which $e\in L$ is a primitive isotropic vector of divisibility $\div_L(e) = 1$ and $a\in\generators{e}^{\perp L}$.
 For lattices containing two orthogonal hyperbolic planes it acts transitively on primitive vectors of fixed norm and divisibility, and coincides with the stable orthogonal group up to finite index; see [@GHS08].
 :::
 
-::: {.theorem #thm:eichler-criterion}
-### The Eichler criterion
+::: {.theorem #thm:eichler-criterion title="The Eichler criterion"}
 
 Let $L$ be a lattice containing an orthogonal direct summand isometric to $U^{\oplus 2}$, and let $v_1, v_2\in L$ be primitive vectors.
 Then there exists $g\in\widetilde{\SO}^+(L)$ with $g v_1 = v_2$ if and only if
 
 1. $v_1^2 = v_2^2$, and
 
-2. $v_1^{*}\equiv v_2^{*}$ in $A_L$, where $v_i^{*}\da v_i/\operatorname{div}_L(v_i)\in \dualof{L}$.
+2. $v_1^{*}\equiv v_2^{*}$ in $A_L$, where $v_i^{*}\definedas v_i/\div_L(v_i)\in \dualof{L}$.
 
 Thus for such $L$ the $\widetilde{\SO}^+(L)$-orbit of a primitive vector is determined by the pair $\bigl(v^2,\ v^{*}\bmod L\bigr)$, and the classification of orbits becomes a finite computation in the discriminant group.
 :::
@@ -244,17 +235,15 @@ Thus for such $L$ the $\widetilde{\SO}^+(L)$-orbit of a primitive vector is dete
 The criterion is due to Eichler [@Eic74]; see [@GHS08] for the formulation used here, where the transvections of the Eichler transvection-group definition (@def:eichler-group) supplied by the two hyperbolic planes are what move a primitive vector into normal form.
 :::
 
-::: {.remark}
-### The hypothesis is genuine
+::: {.remark title="The hypothesis is genuine"}
 
-The hypothesis $U^{\oplus 2}\containedin L$ cannot be dropped.
-A lattice all of whose pairings are even contains no copy of $U$ at all, since $U$ requires two vectors pairing to $1$; this is the case for every twist $M(2)$, and in particular for $\sen = E_{10}(2)$, for $S_\Co = \gens{-2}\oplus E_{10}(2)$ and for $T_\Co = \gens{2}\oplus E_{10}(2)$.
-Among the lattices of [Period domain embeddings and normalization](#sec-lattices) only $\ten$ and $\tdp$ contain a unimodular hyperbolic summand, and each contains exactly one.
+The hypothesis $U^{\oplus 2}\iscontainedin L$ cannot be dropped.
+A lattice all of whose pairings are even contains no copy of $U$ at all, since $U$ requires two vectors pairing to $1$; this is the case for every twist $M(2)$, and in particular for $\sen = E_{10}(2)$, for $S_\Co = \generators{-2}\oplus E_{10}(2)$ and for $T_\Co = \generators{2}\oplus E_{10}(2)$.
+Among the lattices of @sec-lattices only $\ten$ and $\tdp$ contain a unimodular hyperbolic summand, and each contains exactly one.
 Orbit statements for the Coble lattices therefore have to come from elsewhere; the alternatives used below are the transitivity results for split maximal lattices and the algorithms of [@Daw22] for a subgroup prescribed by its image in $\Orth(q_L)$.
 :::
 
-::: {.theorem #thm:eichler-U-U}
-### Eichler transvections on $U\oplus U$
+::: {.theorem #thm:eichler-U-U title="Eichler transvections on $U\oplus U$"}
 
 There is an isometry
 $$
@@ -263,7 +252,7 @@ $$
 $$
 identifying the rank-four even lattice $U\oplus U$ with the lattice of integer $2\times 2$ matrices equipped with the determinant as its quadratic form (so that the associated bilinear form is $2\det$). Under $\phi$ the group generated by the Eichler--Siegel transvections of $U\oplus U$ corresponds to the image of $\SL_2(\ZZ)\times\SL_2(\ZZ)$ acting on a matrix $X\in\Mat_{2\times 2}(\ZZ)$ by
 $$
-(A, B)\cdot X \da A X \inverseof{B}
+(A, B)\cdot X \definedas A X \inverseof{B}
 .
 $$
 :::
@@ -277,8 +266,7 @@ Since $\det(AX\inverseof{B}) = \det X$ for $A, B\in\SL_2$, each pair $(A, B)$ ac
 
 ## Decomposability of even $2$-elementary lattices
 
-::: {.theorem #thm:2elementary-decomposition}
-### Decomposition of $2$-elementary discriminant forms
+::: {.theorem #thm:2elementary-decomposition title="Decomposition of $2$-elementary discriminant forms"}
 
 Let $L$ be an even $2$-elementary lattice.
 Then the discriminant quadratic form on $A_L$ is an orthogonal direct sum of the four elementary discriminant forms $p$, $q$, $u$, $v$, subject only to the relations
@@ -293,7 +281,7 @@ v\oplus q &= p^{\oplus 3}
 .
 \end{aligned}
 $$
-Here $p$ and $q$ are the two rank-one forms on $\ZZ/2\ZZ$, realized as the discriminant forms of $\gens{2}$ and $\gens{-2}$, while $u$ and $v$ are the two rank-two forms on $(\ZZ/2\ZZ)^2$, realized as the discriminant forms of $U(2)$ and of $V = V_1$ respectively.
+Here $p$ and $q$ are the two rank-one forms on $\ZZ/2\ZZ$, realized as the discriminant forms of $\generators{2}$ and $\generators{-2}$, while $u$ and $v$ are the two rank-two forms on $(\ZZ/2\ZZ)^2$, realized as the discriminant forms of $U(2)$ and of $V = V_1$ respectively.
 :::
 
 ::: {.remark}
@@ -302,13 +290,12 @@ The relations record the coincidences among finite $2$-adic quadratic forms esta
 Together they present the semigroup of $2$-elementary discriminant forms under orthogonal sum, so that every $A_L$ has a normal form in the generators $p, q, u, v$.
 :::
 
-::: {.theorem #thm:2elementary-building-blocks}
-### Building blocks of K3-embeddable $2$-elementary lattices
+::: {.theorem #thm:2elementary-building-blocks title="Building blocks of K3-embeddable $2$-elementary lattices"}
 
 The even $2$-elementary lattices admitting a primitive embedding into the K3 lattice $\lkt$ decompose as orthogonal direct sums of basic lattices, such as
 $$
 A_1,\quad D_4,\quad D_6,\quad D_8,\quad E_7,\quad E_8,\quad E_8(2),\quad
-\gens{2},\quad U,\quad U(2)
+\generators{2},\quad U,\quad U(2)
 .
 $$
 This standard building-block list is not asserted to be exhaustive.
@@ -317,5 +304,5 @@ This standard building-block list is not asserted to be exhaustive.
 ::: {.remark}
 
 This building-block list is drawn from Nikulin's study of the even $2$-elementary hyperbolic lattices embedding into $\lkt$ [@Nik80], the same theory that underlies the invariant triple $(r, a, \delta)$ of the Lattice Theory section.
-The Coble lattices of [that table](#sec-coble-lattice-table) are exactly of this form: each $2$-elementary lattice $M$ appearing there is assembled from these blocks --- for example $M = E_8(2)\oplus U\oplus A_1^{\oplus 2}$ at $n = 2$ and $M = E_8\oplus D_8\oplus U(2)$ at $n = 8$ --- so the table is a concrete census of the decomposition in the range relevant to Coble surfaces.
+The Coble lattices of [[coble-lattice-table|that table]] are exactly of this form: each $2$-elementary lattice $M$ appearing there is assembled from these blocks --- for example $M = E_8(2)\oplus U\oplus A_1^{\oplus 2}$ at $n = 2$ and $M = E_8\oplus D_8\oplus U(2)$ at $n = 8$ --- so the table is a concrete census of the decomposition in the range relevant to Coble surfaces.
 :::

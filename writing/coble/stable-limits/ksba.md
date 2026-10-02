@@ -6,7 +6,7 @@
 
 A KSBA stable limit here is never constructed directly.
 The pair is $(Z, \varepsilon R_Z)$ for an Enriques or Coble surface $Z$ and $0 < \varepsilon \ll 1$, and $Z$ is a quotient of its K3 cover; the stable limits are correspondingly the *quotients of the stable limits of the K3 pairs $(X, \varepsilon R)$ by the involution* [@AEGS25 §7.3].
-So the work happens upstairs, on the K3 side, where Kulikov models and their dual complexes are available (the singular-IAS definition (@def:singular_ias)), and the Enriques or Coble limit is read off by descending along $\iota_\En$.
+So the work happens upstairs, on the K3 side, where Kulikov models and their dual complexes are available (the singular-IAS definition (@def:singular_ias)), and the Enriques or Coble limit is read off by descending along $\ien$.
 :::
 
 ::: {.remark}
@@ -18,7 +18,7 @@ Over a $0$-cusp the semifan is a generalized Coxeter fan, and its cones are inde
   Each relevant connected component contributes an ADE surface, and the limit is their union glued along the double curves [@AEGS25 §7.1].
 
 - a **Type II** limit corresponds to a *maximal parabolic* subdiagram.
-  After the irrelevant components are discarded, each remaining component is an $\widetilde{A}\widetilde{D}\widetilde{E}$ diagram [@AEGS25 §7.2].
+  After the irrelevant components are discarded, each remaining component is an $\wA\wD\wE$ diagram [@AEGS25 §7.2].
 
 The irrelevant roots are exactly those the generalized Coxeter semifan collapses, which is why the compactification is toroidal over some cusps and strictly semitoroidal over the rest.
 :::
@@ -27,13 +27,12 @@ The irrelevant roots are exactly those the generalized Coxeter semifan collapses
 
 For the Coble locus one further restriction applies, and it is the content of the rest of this chapter.
 A polarized Coble surface is an Enriques surface whose period lies on the Heegner divisor cut by an admissible root $\delta$, so its stable limits are those Enriques limits lying over $\delta^{\perp}$.
-Making that precise means restricting the semifan $\semifan{F}_{\mathrm{ram}}$ along $\bD(\delta^{\perp})$, which is the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan), and identifying the resulting singularity type, which is the quarter-singularity conjecture (@conj:coble_quarter_singularity).
+Making that precise means restricting the semifan $\semifan{F}_{\ram}$ along $\bD(\delta^{\perp})$, which is the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan), and identifying the resulting singularity type, which is the quarter-singularity conjecture (@conj:coble_quarter_singularity).
 :::
 
 ## A worked integral affine structure
 
-::: {.example #ex:type-ii-ias-41}
-### The Type II ray at the $1$-cusp $41$
+::: {.example #ex:type-ii-ias-41 title="The Type II ray at the $1$-cusp $41$"}
 
 Take the monodromy invariant with barycentric coordinates
 $$
@@ -42,16 +41,16 @@ $$
 at $0$-cusp $4$.
 The resulting integral affine sphere agrees with the one built at $0$-cusp $1$ from $(0, 0, 1, 0^7, 1, 0^9, 2, 2)$, which is what it means for this ray to be shared: it is the Type II ray corresponding to the $1$-cusp labelled $41$, and it occurs as a limit of $\ias$ at either of the two $0$-cusps it joins [@AEGS25 Ex. 4.16].
 
-Being Type II, the dual complex $\Gamma(\cX_0)$ is a segment rather than a sphere, here of length one, and the central fiber is
+Being Type II, the dual complex $\Gamma(\mcx_0)$ is a segment rather than a sphere, here of length one, and the central fiber is
 $$
-\cX_0 = \widetilde{V}_1 \union_E \widetilde{V}_2 ,
+\mcx_0 = \wV_1 \union_E \wV_2 ,
 $$
-two copies of the same $\widetilde{D}_8$ involution pair glued along the elliptic curves $E \in \abs{-K_{\widetilde{V}_1}}$ with a twist by $2$-torsion.
+two copies of the same $\wD_8$ involution pair glued along the elliptic curves $E \in \abs{-K_{\wV_1}}$ with a twist by $2$-torsion.
 :::
 
 ::: {.warning}
 The Enriques involution *flips* this segment.
-So the Enriques equator is not a subcomplex of $\Gamma(\cX_0)$, which is what the equivariant-triangulation machinery usually assumes: this ray is one of the cases where that hypothesis has to be dropped [@AEGS25 Ex. 4.16].
+So the Enriques equator is not a subcomplex of $\Gamma(\mcx_0)$, which is what the equivariant-triangulation machinery usually assumes: this ray is one of the cases where that hypothesis has to be dropped [@AEGS25 Ex. 4.16].
 Compare the equivariant-triangulation question (@qst:equivariant_triangulation).
 :::
 
@@ -74,33 +73,32 @@ $$
 equivariant.
 Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], this refines the arithmetic group $\Gamma_{\Co, 2}$ of the moduli summary, and the two descriptions agree exactly when the polarized root orbit is unique.
 
-::: {.remark #rmk:gamma-co-2-two-definitions}
-### The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors
+:::
+::: {.remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
 
-The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](#sec-moduli-construction) defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
+The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; @sec-moduli-construction defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
 These agree, and the bridge is $T_\Co \cong \delta^{\perp \ten}$ above.
 
-An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \containedin \Stab(T_\Co)$.
-Conversely an isometry preserving $T_\Co$ preserves its orthogonal complement in $\ten$, which is the rank-one lattice $\gens{\delta}$, so it sends $\delta \mapsto \pm\delta$.
+An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \iscontainedin \Stab(T_\Co)$.
+Conversely an isometry preserving $T_\Co$ preserves its orthogonal complement in $\ten$, which is the rank-one lattice $\generators{\delta}$, so it sends $\delta \mapsto \pm\delta$.
 Hence
 $$
-\Stab_{\Orth(\ten)}(T_\Co) \;=\; \Stab_{\Orth(\ten)}(\gens{\delta})
-\;\supseteq\; \Stab_{\Orth(\ten)}(\delta)
+\Stab_{\Orth(\ten)}(T_\Co) \;=\; \Stab_{\Orth(\ten)}(\generators{\delta})
+\;\containing\; \Stab_{\Orth(\ten)}(\delta)
 $$
-with index at most $2$, the two differing exactly by whether $-1$ on $\gens{\delta}$ is admitted.
+with index at most $2$, the two differing exactly by whether $-1$ on $\generators{\delta}$ is admitted.
 The stabilizer of the *line* is the right object: it is what acts on the period domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
-:::
 :::
 
 ::: {.question #qst:coble_root_orbit_uniqueness}
 
 Is the orbit of admissible Coble roots under $\gent$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
-Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
+Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\gent$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
+:::
 
 ::: {.warning}
 The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full Enriques group $\Gamma_\En$.
-It does not settle the corresponding question for the finite-index subgroup $\Gamma_{\En,2}$, which is what the polarized problem needs.
-:::
+It does not settle the corresponding question for the finite-index subgroup $\gent$, which is what the polarized problem needs.
 :::
 
 ## The KSBA stable pair
@@ -132,13 +130,13 @@ The divisor is identified; establishing that this pair is KSBA stable remains a 
 
 ::: {.conjecture #conj:coble_quarter_singularity}
 
-On the stable quotient $\bar S$, an $A_1$-node of the K3 cover fixed by $\iota_\En$ descends to a cyclic quotient singularity of type $\frac{1}{4}(1,1)$, and the anti-bicanonical $(-4)$-curve on the smooth Coble resolution is the curve contracted to this point.
+On the stable quotient $\bar S$, an $A_1$-node of the K3 cover fixed by $\ien$ descends to a cyclic quotient singularity of type $\frac{1}{4}(1,1)$, and the anti-bicanonical $(-4)$-curve on the smooth Coble resolution is the curve contracted to this point.
 In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@Hor77], the local input producing the $A_1$-node on the double cover is a $\tau$-invariant $(4,4)$-curve passing through a $\tau$-fixed point with nondegenerate quadratic term.
 :::
 
 ::: {.remark}
 
-The local singularity package of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program, but it is currently a migrated research claim rather than a proven statement; it is precisely the input awaited by the slc and ampleness verifications above.
+The local singularity package of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program but remains unproved; it is precisely the input awaited by the slc and ampleness verifications above.
 :::
 
 ## The restricted ramification semifan
@@ -158,7 +156,7 @@ Proving that this restriction defines the semitoroidal fan requires showing that
 
 ::: {.remark}
 
-The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via the Baily--Borel embedding lemma (@lem:locally_closed_embedding_BB). The proposed comparison proceeds by restricting the universal K3 stable-pair family over $F_{(2,2,0)}$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan).
+The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via the Baily--Borel embedding lemma (@lem:locally_closed_embedding_BB). The proposed comparison proceeds by restricting the universal K3 stable-pair family over $\fttz$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan).
 :::
 
 ::: {.conjecture #conj:ksba_semitoroidal_comparison}

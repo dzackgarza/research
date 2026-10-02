@@ -1,10 +1,9 @@
 # K3 covers
 
-::: {.remark #rmk:k3-cover-invariants}
-### On relation to K3s
+::: {.remark #rmk:k3-cover-invariants title="On relation to K3s"}
 
-Let $\cL \da \OO_S(-K_S) \in \Pic(S)$.
-By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
+Let $\mcl \definedas \OO_S(-K_S) \in \Pic(S)$.
+By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\mcl ^{\tensor_{\OO_S} 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
 Let $\sigma$ be the involution generating the deck transformations of this cover.
 Then the fixed locus $\Fix(\sigma)$ is a union of $n$ smooth rational curves which are precisely the reduced preimages $(\inverseof{f}(C_i))_{\mathrm{red}}$, where $C_i$ are the irreducible components of $C$ in $S$.
 By [@CDL25 Def. 5.4.3], the preimages $\inverseof{f}(C_i)$ are disjoint $(-2)$-curves and $\Pic(S)$ is a 2-elementary lattice with invariants of the form
@@ -23,23 +22,22 @@ By [@CDL25 Def. 5.4.3, Eqn. 5.3.1], the ramification divisor $R$ is explicitly o
 It is also known that $\delta=1$ unless $n=8$, cf. [@CDL25 Table 5.1].
 Thus if $S$ is a terminal Coble surface of K3 type with $n=1$, the ramification locus of the K3 cover is a single smooth rational curve, and we obtain a lattice with invariants
 $$
-S_{\Co} \da (11, 11, 1)_1 \cong \gens{-2} \oplus E_{10}(2)
+S_{\Co} \definedas (11, 11, 1)_1 \cong \generators{-2} \oplus E_{10}(2)
 $$
 with orthogonal complement
 $$
-T_{\Co} \da S_{\Co}^{\perp \lkt} = (11, 11, 1)_2 \cong \latI_{2, 9}(2) \cong \gens{2} \oplus E_{10}(2)
+T_{\Co} \definedas S_{\Co}^{\perp \lkt} = (11, 11, 1)_2 \cong \latI_{2, 9}(2) \cong \generators{2} \oplus E_{10}(2)
 .
 $$
 The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
 :::
 
-::: {.proposition #prop:double-cover-is-k3}
-### The branched double cover is a K3 surface
+::: {.proposition #prop:double-cover-is-k3 title="The branched double cover is a K3 surface"}
 
-Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let $s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
+Let $S$ be a smooth rational surface, let $\mcl\definedas\OO_S(-K_S)$, and let $s\in H^0(S, \mcl^{\tensor_{\OO_S} 2})$ have smooth divisor $B\in\abs{-2K_S}$.
 Let
 $$
-\pi\colon X \da \Spec_S\bigl(\OO_S\oplus\inverseof{\cL}\bigr)\to S
+\pi\colon X \definedas \Spec_S\bigl(\OO_S\oplus\inverseof{\mcl}\bigr)\to S
 $$
 be the double cover determined by $s$, branched along $B$.
 Then $X$ is a K3 surface, and for divisors $D, D'$ on $S$,
@@ -51,13 +49,13 @@ $$
 
 ::: {.proof}
 
-The canonical bundle formula for a cyclic double cover branched along $B\in\abs{\cL^{\tensor 2}}$ gives
+The canonical bundle formula for a cyclic double cover branched along $B\in\abs{\mcl^{\tensor_{\OO_S} 2}}$ gives
 $$
-K_X = \pi^{*}(K_S + \cL) = \pi^{*}(K_S - K_S) = 0
+K_X = \pi^{*}(K_S + \mcl) = \pi^{*}(K_S - K_S) = 0
 ,
 $$
 so $\omega_X\cong\OO_X$.
-Pushing forward, $\pi_*\OO_X = \OO_S\oplus\inverseof{\cL} = \OO_S\oplus\OO_S(K_S)$, and $\pi$ is finite, so
+Pushing forward, $\pi_*\OO_X = \OO_S\oplus\inverseof{\mcl} = \OO_S\oplus\OO_S(K_S)$, and $\pi$ is finite, so
 $$
 H^i(X, \OO_X) = H^i(S, \OO_S)\oplus H^i(S, K_S)
 \qquad\text{for all } i
@@ -87,30 +85,30 @@ Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rationa
 ::: {.proposition #prop:coble-invariant-lattice}
 
 Let $f: X\to S$ be the K3 double cover of a terminal Coble surface of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
-Write $\Pic(S) = \gens{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
+Write $\Pic(S) = \generators{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
 Then $f^*: \Pic(S)\to \Pic(X)$ is injective, its image
 $$
-S_\Co \da f^*\Pic(S) = \gens{f^*H, f^*E_1, \ldots, f^*E_{10}}
+S_\Co \definedas f^*\Pic(S) = \generators{f^*H, f^*E_1, \ldots, f^*E_{10}}
 $$
 is the invariant lattice $H^2(X, \bZ)^\sigma$, and
 $$
-S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2) = (11, 11, 1)_1
+S_\Co \cong \generators{2}\oplus\generators{-2}^{10} = \latI_{1, 10}(2) = (11, 11, 1)_1
 .
 $$
 :::
 
 ::: {.proof}
 
-**Injectivity and the twist by $2$.** If $f^*D = 0$ then $2D = f_* f^* D = 0$, and $\Pic(S)\cong\latI_{1, 10}$ is torsion-free, so $D = 0$; thus $f^*$ is injective.
+First, If $f^*D = 0$ then $2D = f_* f^* D = 0$, and $\Pic(S)\cong\latI_{1, 10}$ is torsion-free, so $D = 0$; thus $f^*$ is injective.
 As $f$ has degree $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
 $$
 \qty{f^*D \cdot f^*D'} = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
 .
 $$
-Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\diag(2, -2, \ldots, -2)$, so that $S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
+Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\diag(2, -2, \ldots, -2)$, so that $S_\Co \cong \generators{2}\oplus\generators{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
 This recovers, by the projection formula, the twist-by-$2$ described geometrically in @rmk:k3-cover-twist.
 
-**Rank of the invariant lattice via Lefschetz.** The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\containedin H^2(X, \bZ)^\sigma$.
+Next, The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\iscontainedin H^2(X, \bZ)^\sigma$.
 The fixed locus $\Fix(\sigma) = R$ is a single smooth rational curve (the case $n = 1$), so $\chi(R) = 2$.
 On the K3 surface $X$, both $H^0$ and $H^4$ are $\sigma$-invariant of rank $1$ and $H^1 = H^3 = 0$, so the topological Lefschetz fixed-point formula reads
 $$
@@ -120,20 +118,20 @@ $$
 Since $\chi(R) = 2$, we obtain $\trace(\sigma^* \mid H^2(X, \bZ)) = 0$.
 As $H^2(X, \bZ)$ has rank $22$ and $\sigma^*$ is an involution, the invariant lattice has rank $\tfrac{1}{2}(22 + 0) = 11$ and the coinvariant lattice rank $\tfrac{1}{2}(22 - 0) = 11$, so that $11 + 11 = 22$; cf. @prop:involution_eigenspaces. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
 
-**The Nikulin invariants and equality.** The lattice $S_\Co \cong \gens{2}\oplus\gens{-2}^{10}$ has
+Finally, The lattice $S_\Co \cong \generators{2}\oplus\generators{-2}^{10}$ has
 $$
 \abs{\det S_\Co} = 2\cdot 2^{10} = 2^{11},
 \qquad
 A_{S_\Co} \cong (\bZ/2\bZ)^{11},
 \qquad
-q_{S_\Co} \cong \gens{\tfrac{1}{2}}\oplus\gens{-\tfrac{1}{2}}^{10}
+q_{S_\Co} \cong \generators{\tfrac{1}{2}}\oplus\generators{-\tfrac{1}{2}}^{10}
 ,
 $$
 so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$ [@CDL25 Def. 5.4.3, Eqn. 5.3.1], so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
-Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @prop:invariant_coinvariant_primitive the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
-That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80].
+Since $S_\Co \iscontainedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @prop:invariant_coinvariant_primitive the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
+That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80].
 This derivation makes explicit the invariants stated by citation in @rmk:k3-cover-invariants.
 :::
 
@@ -142,7 +140,7 @@ This derivation makes explicit the invariants stated by citation in @rmk:k3-cove
 Following [@CD12], we note that this computation is a special case of a general construction.
 Let $S$ be any basic rational surface and write $S$ as the blowup of $\PP^2$ at $N$ points $p_1,\cdots, p_N$ with $N\geq 9$.
 It is a fact that $\Pic(S) \cong \latI_{1, N}$, since one can construct a **geometric basis** in the following way: let $e_0$ be the class of the total transform of a hyperplane class in $\PP^2$ and for $1\leq i\leq N$, let $e_i$ be the class of the total transform of the exceptional divisor over $p_i$.
-Then $\Pic(S) = \gens{e_0,e_1,\cdots, e_N}$ and $\rho(S) = N+1$; one verifies that $e_0^2 = 1$, and for $i\geq 1$, that $e_i^2 = -1$.
+Then $\Pic(S) = \generators{e_0,e_1,\cdots, e_N}$ and $\rho(S) = N+1$; one verifies that $e_0^2 = 1$, and for $i\geq 1$, that $e_i^2 = -1$.
 Moreover $e_ie_j = 0$ for $i\neq j$, making this an orthogonal basis with respect to the intersection pairing, yielding $\latI_{1, N}$.
 In the case of Coble surfaces, the effect of taking the K3 double cover is to twist this lattice by 2, yielding $\Pic(X) = \latI_{1, N}(2)$, generated by preimages of the $e_i$.
 We remark that

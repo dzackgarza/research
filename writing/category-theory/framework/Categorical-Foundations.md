@@ -151,7 +151,7 @@ Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c
 ::: {.definition #def:endomorphism-monoid title="The endomorphism monoid and the automorphism group"}
 
 For an object $X$ of a category $\mathcal C$, composition makes $\operatorname{Hom}_{\mathcal C}(X,X)$ a monoid with unit $\operatorname{id}_X$.
-Its group of invertible elements is $\operatorname{Aut}_{\mathcal C}(X)$, the automorphism group of $X$, which is $\operatorname{Iso}_{\mathcal C}(X,X)$ in the notation of [Equivalences and witnesses](#sec-equivalence-spaces).
+Its group of invertible elements is $\operatorname{Aut}_{\mathcal C}(X)$, the automorphism group of $X$, which is $\operatorname{Iso}_{\mathcal C}(X,X)$ in the notation of @sec-equivalence-spaces.
 When $\mathcal C$ is preadditive, $\operatorname{Hom}_{\mathcal C}(X,X)$ is a ring under composition and the group addition, and $\operatorname{Aut}_{\mathcal C}(X)$ is its group of units.
 :::
 
@@ -275,16 +275,16 @@ The fibered product $U \times_X U$ encodes the scheme-theoretic intersections of
 ::: {.definition #def:grothendieck-topology-generalization title="Generalization by Grothendieck topology"}
 
 The formulation of @def:smooth-manifold and @def:scheme-as-lrs admits a uniform generalization.
-Fix a category $\mathcal{C}$ of locally ringed spaces, a class $\mathscr{L}$ of local models, and a class $\mathscr{A}$ of admissible morphisms.
-A *$\mathscr{A}$-atlas* for $X \in \mathcal{C}$ is an effective epimorphism $p\colon \coprod_{i \in I} L_i \to X$ with each $L_i \in \mathscr{L}$ and each component an $\mathscr{A}$-morphism.
-Different choices of $\mathscr{A}$ yield different Grothendieck topologies and geometric objects:
+Fix a category $\mathcal{C}$ of locally ringed spaces, a class $\mcl$ of local models, and a class $\mca$ of admissible morphisms.
+A *$\mca$-atlas* for $X \in \mathcal{C}$ is an effective epimorphism $p\colon \coprod_{i \in I} L_i \to X$ with each $L_i \in \mcl$ and each component an $\mca$-morphism.
+Different choices of $\mca$ yield different Grothendieck topologies and geometric objects:
 
-| Admissible morphisms $\mathscr{A}$ | Topology | Geometric objects |
+| Admissible morphisms $\mca$ | Topology | Geometric objects |
 | --- | --- | --- |
 | Open immersions | Zariski | Schemes |
 | Étale morphisms | Étale | Algebraic spaces, Deligne–Mumford stacks |
 | Faithfully flat morphisms of finite presentation | fppf | Artin stacks |
 | Faithfully flat quasi-compact morphisms | fpqc | fpqc sheaves |
 
-The smooth manifold case uses $\mathscr{L} = \{M_n\}_{n \geq 0}$ and $\mathscr{A} =$ open immersions in $\mathsf{LRS}_{\mathbb{R}}$.
+The smooth manifold case uses $\mcl = \{M_n\}_{n \geq 0}$ and $\mca =$ open immersions in $\mathsf{LRS}_{\mathbb{R}}$.
 :::

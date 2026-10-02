@@ -10,7 +10,7 @@ Let $\cpt{\fttz}$ be the KSBA compactification of the moduli space of degree-4 p
 \pi: (\mcx, \epsilon\mcr) \to \cpt{\fttz}
 .\end{align*}
 
-satisfying:
+with the following properties:
 
 - The total space $\mcx$ is flat and proper over $\cpt{\fttz}$, specializing to smooth K3 surfaces over a dense open locus and possibly degenerating to semi-log-canonical surfaces in the boundary.
 - The divisor $\mcr \subset \mcx$ is the ramification locus of $\idp$, defined as the fixed locus of the involution.

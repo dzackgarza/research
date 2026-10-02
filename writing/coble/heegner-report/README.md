@@ -1,6 +1,6 @@
 # Building the research report
 
-The source is `coble_heegner_research_report.md`.  It uses ordinary Pandoc Markdown, citation keys from `coble_references.bib`, fenced-div identifiers, and Pandoc-crossref section/table/equation labels.
+The source is [[coble-heegner-research-report|the Coble--Heegner research report]]. It uses ordinary Pandoc Markdown, citation keys from `coble_references.bib`, fenced-div identifiers, and Pandoc-crossref section/table/equation labels.
 
 A typical PDF build is:
 

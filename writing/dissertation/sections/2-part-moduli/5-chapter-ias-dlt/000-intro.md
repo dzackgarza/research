@@ -10,7 +10,7 @@ Given a one-parameter degeneration of K3 or Enriques surfaces, a **Kulikov model
 
   - $V_0$ and $V_k$ are rational and $V_1,\cdots, V_{k-1}$ are birational to $E\times \PP^1$ and thus elliptically ruled,
 
-  - The chain consists of components $V_0,\ldots,V_k$ glued along elliptic curves $E_i = V_{i-1} \cap V_i$ $(1 \leq i \leq k)$, all isomorphic to the same elliptic curve $E$, satisfying a compatibility condition on normal bundles, $\mcn_{E/V_i} \otimes \mcn_{E/V_{i+1}} \cong \OO_E$
+  - The chain consists of components $V_0,\ldots,V_k$ glued along elliptic curves $E_i = V_{i-1} \cap V_i$ $(1 \leq i \leq k)$, all isomorphic to the same elliptic curve $E$, satisfying a compatibility condition on normal bundles, $\mcn_{E/V_i} \otimes_{\OO_E} \mcn_{E/V_{i+1}} \cong \OO_E$
 
   - The dual complex $\Gamma(\mcx_0)$ is a simplicial$\DD^1$, corresponding to a partition of the closed unit interval $[0, 1]$.
 
@@ -24,8 +24,8 @@ More general singularities arise as products of such shears, corresponding to co
 
 By taking the star to obtain a fan, each vertex $v$ in $\Delta$ yields an **anticanonical pair** $(V, D)$, where $V$ is a rational surface and $D = \sum_{j} D_j \in |-K_V|$ is a cycle of rational curves in the anticanonical linear system.
 The dual polytope of this fan encodes a *semitoric* variety: varieties which arise from toric varieties via sequences of blowups and blowdowns.
-The data of these blowups is encoded in the following way: the **charge** at a vertex $v$, for the anticanonical pair $(V, D)$, is defined by $Q(V, D) \da  {1\over 2}\sum_j D_j^2 + 3$, where $D = \sum_j D_j$ is the (possibly reducible) anticanonical cycle, and $D_j^2$ is the self-intersection of component $D_j$ in $V$.
-The charge  is precisely designed to measures the defect from being toric: $Q(V, D) = 0$ precisely when $(V, D)$ is toric.
+The data of these blowups is encoded in the following way: the **charge** at a vertex $v$, for the anticanonical pair $(V, D)$, is defined by $Q(V, D) \definedas  {1\over 2}\sum_j D_j^2 + 3$, where $D = \sum_j D_j$ is the (possibly reducible) anticanonical cycle, and $D_j^2$ is the self-intersection of component $D_j$ in $V$.
+The charge is precisely designed to measures the defect from being toric: $Q(V, D) = 0$ precisely when $(V, D)$ is toric.
 More fundamentally, [@FS86, Prop. 2.11] asserts that $\sum_{v \in \Delta} Q(V_v, D_v) = 24$ for any Type $\III$ Kulikov model of a K3 surface, see [@FM83; @FS86].
 
 **Symington surgeries** are local modifications of $\IAS^2$ structures that manipulate the placement and type of singularities, and there are two main types: performing a *toric blowup* corresponds to the standard blowup in toric geometry attained by inserting rays into a fan or deleting triangles from its dual polytope.
@@ -52,9 +52,9 @@ T(x) = x + (x, \delta) \lambda - (\lambda, x) \delta, \qquad x\in H^2(\mcx_t; \Z
 $$
 where $\lambda^2$ counts the number of triple points (see [@PP81; @Sca87]).
 
-Recall that a divisor $R$ is **recognizable** [@AE23a; @AEH24] for $\FG$ if, for any K3 surface $X = \mcx_0$ and any smooth $\mcx$ to a Kulikov model, the flat limit $R_0$ on $\mcx_0$ is uniquely determined up  to automorphism.
+Recall that a divisor $R$ is **recognizable** [@AE23a; @AEH24] for $\FG$ if, for any K3 surface $X = \mcx_0$ and any smooth $\mcx$ to a Kulikov model, the flat limit $R_0$ on $\mcx_0$ is uniquely determined up to automorphism.
 Given a recognizable divisor $R$, the KSBA compactification $\cpt{F}_\Gamma^R$ can be formed, as well as a the corresponding normalizing semitoroidal compactification $\semifancpt{\FG}{\semifan{F}_R}$.
-By way of the strata functions $\SS(\lambda)$ from [Chapter 4](#sec:chapter-4) for decorated intersection complexes $B(\lambda)$ constructed from monodromy invariants $\lambda$, boundary strata on both sides correspond to possible $\IAS^2$ with singularities.
+By way of the strata functions $\SS(\lambda)$ from [[000-ksba|Chapter 4]] for decorated intersection complexes $B(\lambda)$ constructed from monodromy invariants $\lambda$, boundary strata on both sides correspond to possible $\IAS^2$ with singularities.
 
 Mirror symmetry supplies a *Lagrangian torus fibration* over $B(\lambda)$, and the intersection complex $\Gamma(\mcx_0)$ of a Kulikov model coincides with the $\IAS^2$ $B(\lambda)$ constructed from the monodromy data.
 The smoothability of the singularities then produces a family $\mcx \to \Delta$, whose general fiber is smooth, and an explicit contraction algorithm (mirroring the MMP) yields the KSBA stable model.
@@ -72,7 +72,7 @@ To build the intersection complex $\Gamma(\mcx_0)$(for a degeneration with monod
 
 - Obtain the full $\IAS^2$ by gluing $B_1(\lambda)$ to its opposite:$B(\lambda) = B_1(\lambda) \cup -B_1(\lambda)$, yielding an $\IAS^2$.
 
-We summarize this process in the following algorithm to construct Type $\III$ degenerations for $\FG$, which we in turn specialize to $\fttz$ and $\fent$ to construct dlt models for KSBA stable limits:
+We summarize this process in the following algorithm to construct Type $\III$ degenerations for $\FG$, which we in turn specialize to $\fttz$ and $\fentwo$ to construct dlt models for KSBA stable limits:
 
 1. **Build the Coxeter polygon $P(\Gamma_\eta)$** from the Coxeter–Vinberg diagram, using the configuration of simple roots $\alpha_i$.
 
@@ -87,7 +87,7 @@ We summarize this process in the following algorithm to construct Type $\III$ de
 6. **Contract** $\mcx$ to the KSBA stable model $\bar\mcx$.
 
 For Enriques surfaces, the above theory must be quotiented by a fixed-point-free involution on $\IAS^2$, reflecting the covering $K3$ surface structure.
-This mandates working with "half-divisor" models ([definition](#hdm-halfdivisor)) and searching for $\IAS^2$s invariant under a group generated by two commuting involutions, one corresponding to $\idp$, corresponding to K3 surfaces $X$ in $\fttz$, and another fixed-point-free involution corresponding to $\ien$, coming from the embedded locus $\fent$, those $X$ arising as K3 covers $X\to Z$ of Enriques surfaces.
+This mandates working with "half-divisor" models ([[400-ksba-functor|definition]]) and searching for $\IAS^2$s invariant under a group generated by two commuting involutions, one corresponding to $\idp$, corresponding to K3 surfaces $X$ in $\fttz$, and another fixed-point-free involution corresponding to $\ien$, coming from the embedded locus $\fentwo$, those $X$ arising as K3 covers $X\to Z$ of Enriques surfaces.
 We impose the condition that the periods and dual complex of $(X_0, R_0)$ are involution invariant – then the Torelli theorem for anticanonical pairs shows that $(V_i, D_i, R_i)$ admits an involution $\iota_{\En, i}$ and the quotient $(V_i, D_i, R_i)/\iota_{\En,i}$ is a log Calabi–Yau pair.
 We note that $\ien$ is only a birational involution in general, and so we obtain half-divisor models for generic degenerations with a given monodromy invariant $\lambda$.
 

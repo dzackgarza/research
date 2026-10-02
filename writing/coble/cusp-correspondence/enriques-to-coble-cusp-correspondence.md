@@ -2,20 +2,20 @@
 
 ::: {.theorem #thm:cusp_correspondence}
 
-The embedding $\eta: F_\Co\to F_\En$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
+The embedding $\eta: \fco\to \fen$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
 :::
 
 ::: {#fig-enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
-Cusp correspondence $F_\Co \to F_\En$.
+Cusp correspondence $\fco \to \fen$.
 :::
 
 We prove the cusp correspondence by comparing divisibilities of isotropic vectors at the corresponding 0-cusps and 1-cusps in both moduli spaces.
 
 ::: {.lemma #lem:divisibilityAlwaysTwoTco}
 
-Any $v\in T_\Co$ satisfies $\di_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co$ for which $v\cdot v' \neq 0$.
+Any $v\in T_\Co$ satisfies $\div_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co$ for which $v\cdot v' \neq 0$.
 :::
 
 ::: {.proof}
@@ -23,7 +23,7 @@ Any $v\in T_\Co$ satisfies $\di_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co
 Let $M_{T_\Co}$ be the Gram matrix for $T_\Co$, and note that since
 
 $$
-T_\Co = \gens{2} \oplus E_{10}(2) = \qty{\gens{1} \oplus E_{10}}(2)
+T_\Co = \generators{2} \oplus E_{10}(2) = \qty{\generators{1} \oplus E_{10}}(2)
 ,
 $$
 
@@ -38,7 +38,7 @@ v\cdot v' = \inner{v}{M_{T_\Co}v'} = \inner{v}{2 Av'}
 $$
 
 where $\inner{\cdot}{\cdot}$ is the standard Euclidean inner product.
-Thus 2 divides $v\cdot v'$, and since $\di_{T_\Co}(v) \in \ts{1, 2}$ for any $v \in T_\Co$, the result follows.
+Thus 2 divides $v\cdot v'$, and since $\div_{T_\Co}(v) \in \theset{1, 2}$ for any $v \in T_\Co$, the result follows.
 :::
 
 ::: {.lemma #lem:divisibilityTcoOne}
@@ -47,32 +47,32 @@ Fixing notation,
 
 $$
 \begin{aligned}
-v_1 &\da e' & w_1 &\da \eta(v_1) = \tilde e' \\
-v_2 &\da 2h + \alpha_1 + \alpha_2 & w_2 &\da \eta(v_2) = 2\tilde e + 2\tilde f + \tilde\alpha_1 + \tilde\alpha_2 \\
-J &\da \gens{v_1, v_2} & \tilde J &\da \gens{w_1, w_2}
+v_1 &\definedas e' & w_1 &\definedas \eta(v_1) = \tilde e' \\
+v_2 &\definedas 2h + \alpha_1 + \alpha_2 & w_2 &\definedas \eta(v_2) = 2\tilde e + 2\tilde f + \tilde\alpha_1 + \tilde\alpha_2 \\
+J &\definedas \generators{v_1, v_2} & \tilde J &\definedas \generators{w_1, w_2}
 \end{aligned}
 $$
 
-We then have $\di_{T_\En}(w_1) = 2$.
+We then have $\div_{\ten}(w_1) = 2$.
 :::
 
 ::: {.proof}
 
 By the divisibility lemma (@lem:divisibilityAlwaysTwoTco), we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
-The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them (the unpolarized-cusp theorem (@thm:unpolarized-cusps), the split maximal hypothesis being the split-maximal proposition (@prop:tco-split-maximal)), so $v_1$ represents the unique full-group $0$-cusp of $F_\Co$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \gens{2} \oplus E_8(2).$$ Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
+The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them (the unpolarized-cusp theorem (@thm:unpolarized-cusps), the split maximal hypothesis being the split-maximal proposition (@prop:tco-split-maximal)), so $v_1$ represents the unique full-group $0$-cusp of $\fco$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
 
-Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $T_\En$, we have
+Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
 $$
-\di_{\ten}(w_1) \da \di_{\ten}(\eta(e'))
-= \di_{T_\En}(\tilde e') = 2.
+\div_{\ten}(w_1) \definedas \div_{\ten}(\eta(e'))
+= \div_{\ten}(\tilde e') = 2.
 $$
 
 Explicitly, writing $\ten = U \oplus U(2) \oplus E_8(2)$, one can check the pairing of $\tilde e'$ against an arbitrary vector.
 Write $x+y+z\in U \oplus U(2)\oplus E_8(2)$; then
 
 $$
-\tilde e'\cdot(x+y+z) = \tilde e'\cdot y\in \ts{0, 2}
+\tilde e'\cdot(x+y+z) = \tilde e'\cdot y\in \theset{0, 2}
 $$
 
 since $y\in U(2)$ and $\tilde e'\in (U\oplus E_8(2))^{\perp \ten}$.
@@ -89,15 +89,15 @@ The 0-cusp $(9,9,1)_1$ in $\fco$ maps to the 0-cusp $(10, 8, 0)_1$ in $\fen$.
 The cusp correspondence follows from computing the lattice $w_1^{\perp \ten}/w_1$ under the primitive embedding $\eta$, since $\eta(v_1) = w_1$ and $v_1$ is the isotropic vector corresponding to $(9,9,1)_1$ in $\fco$:
 
 $$
-{(\tilde e')^{\perp \ten} \over \gens{\tilde e'}} =
+{(\tilde e')^{\perp \ten} \over \generators{\tilde e'}} =
 {
-\gens{\tilde{e}, \tilde{f}}
+\generators{\tilde{e}, \tilde{f}}
 \oplus
-\gens{\tilde{e}'}
+\generators{\tilde{e}'}
 \oplus
-\gens{\tilde{\alpha}_1, \dots, \tilde{\alpha}_8}
+\generators{\tilde{\alpha}_1, \dots, \tilde{\alpha}_8}
 \over
-\gens{ \tilde{e}' }}\cong\gens{\tilde{e}, \tilde{f}} \oplus\gens{
+\generators{ \tilde{e}' }}\cong\generators{\tilde{e}, \tilde{f}} \oplus\generators{
 \tilde{\alpha}_{1}, \dots, \tilde{\alpha}_{8}
 } \cong U \oplus E_{8}(2) \cong (10,8,0)_1.
 $$
@@ -108,21 +108,21 @@ Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0
 
 ::: {.lemma #lem:1_cusp_correspondence}
 
-The 1-cusp $(7,7,1)_0$ in $F_\Co$ maps to the 1-cusp $(8, 6, 0)_0$ in $F_\En$.
+The 1-cusp $(7,7,1)_0$ in $\fco$ maps to the 1-cusp $(8, 6, 0)_0$ in $\fen$.
 :::
 
 ::: {.proof}
 
-The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$ (the unpolarized-cusp theorem (@thm:unpolarized-cusps) and the split-maximal proposition (@prop:tco-split-maximal)). It remains to identify the isomorphism type of the image $\tilde J^{\perp T_\En}/\tilde J$ in $T_\En$.
-One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $T_\En$ respectively.
+The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$ (the unpolarized-cusp theorem (@thm:unpolarized-cusps) and the split-maximal proposition (@prop:tco-split-maximal)). It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
+One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $\ten$ respectively.
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show
 
 $$
-\di_{w_1^{\perp T_\En} /w_1}(w_2) \da \di_{U \oplus E_8(2)}(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2)= 2
+\div_{w_1^{\perp \ten} /w_1}(w_2) \definedas \div_{U \oplus E_8(2)}(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2)= 2
 ,
 $$
 
-since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined by the isomorphism type of $w_2^{\perp T_\En}/w_2$ in $w_1^{\perp T_\En}/w_1$, which is in turn uniquely determined by the characterization of $w_2$ as odd, even ordinary, or even characteristic in $w_1^{\perp T_\En}/w_1$, which by the $w_1^\perp$ calculation (@lem:w1_perp_calculation) is isomorphic to $U \oplus E_8(2)$.
+since the isomorphism type of $\tilde J^\perp/\tilde J$ is uniquely determined by the isomorphism type of $w_2^{\perp \ten}/w_2$ in $w_1^{\perp \ten}/w_1$, which is in turn uniquely determined by the characterization of $w_2$ as odd, even ordinary, or even characteristic in $w_1^{\perp \ten}/w_1$, which by the $w_1^\perp$ calculation (@lem:w1_perp_calculation) is isomorphic to $U \oplus E_8(2)$.
 One checks directly in coordinates: let $x+y\in U \oplus E_8(2)$ and consider its pairing with $w_2$:
 
 $$
@@ -138,12 +138,12 @@ We note that the first term is evidently even, while the second term is even bec
 
 ::: {.remark}
 
-This can also be proved by considering the divisorial presentation of $\fco$ as $\cH_{-2}/\Orth^+(\ten)^*$.
-If $J'$ is an isotropic plane in $\ten$ generated by $x_1, x_2$ where both $x_i$ are orthogonal to a $(-2)$-vector in $\ten$, then the 1-cusp corresponding to $J'$ will be contained in the closure of $\cH_{-2}$.
+This can also be proved by considering the divisorial presentation of $\fco$ as $\mch_{-2}/\Orth^+(\ten)^*$.
+If $J'$ is an isotropic plane in $\ten$ generated by $x_1, x_2$ where both $x_i$ are orthogonal to a $(-2)$-vector in $\ten$, then the 1-cusp corresponding to $J'$ will be contained in the closure of $\mch_{-2}$.
 One checks that cusp $(8, 6, 0)_0$ is associated to the isotropic plane
 
 $$
-J' = \gens{e', 2e + 2f + 2\bar\alpha_1} \subset \ten
+J' = \generators{e', 2e + 2f + 2\bar\alpha_1} \subset \ten
 $$
 
 where both $e'$ and $2e + 2f + 2\bar\alpha_1$ are orthogonal to the $(-2)$-vector $e-f\in \ten$.
@@ -152,7 +152,7 @@ On the other hand, cusp $(8,8,0)$ does not satisfy this property -- the vector $
 
 ::: {.remark}
 
-The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $\fen$ are isomorphic to the modular curves $X_0(2)$ and $X \da \overline{\bH / \SL_2(\bZ)}$ respectively, and by [@CDL25 Cor. 5.9.10] the 1-cusp $(7,7,1)$ in $\fco$ is isomorphic to $X$.
+The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $\fen$ are isomorphic to the modular curves $X_0(2)$ and $X \definedas \overline{\bH / \SL_2(\bZ)}$ respectively, and by [@CDL25 Cor. 5.9.10] the 1-cusp $(7,7,1)$ in $\fco$ is isomorphic to $X$.
 This can additionally be verified by [@AE22 Prop. 5.13]: the 1-cusp $(7,7,1)$ in $T_\Co$ is incident to exactly one 0-cusp, as is the 1-cusp $(8,6,0)$ in $\ten$, and thus the corresponding modular curves are both isomorphic to $X$.
 We conjecture that general correspondences on 1-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of the one-cusp correspondence lemma (@lem:1_cusp_correspondence).
 :::
@@ -171,7 +171,7 @@ $$
 The first identification is forced: $(18,0,0)_1$ is the unique even unimodular lattice of its (indefinite) signature.
 The second lattice is even, unimodular, and negative-definite of rank $16$, and is thus determined only up to the two such isometry classes.
 
-Thus the embedding $\fco \injects F_{(2,2,0)}$ induces the following maps on cusps:
+Thus the embedding $\fco \injects \fttz$ induces the following maps on cusps:
 
 $$
 \begin{aligned}
@@ -183,19 +183,19 @@ $$
 
 ::: {.proof}
 
-The map on 0-cusps follows from identifying $\tilde w_1 = e' \in \tdp = \gens{e,f} \oplus \gens{e', f'}\oplus \gens{\alpha_1,\cdots,\alpha_8}\oplus \gens{\tilde \alpha_1,\cdots, \tilde \alpha_8}$ and noting
+The map on 0-cusps follows from identifying $\tilde w_1 = e' \in \tdp = \generators{e,f} \oplus \generators{e', f'}\oplus \generators{\alpha_1,\cdots,\alpha_8}\oplus \generators{\tilde \alpha_1,\cdots, \tilde \alpha_8}$ and noting
 
 $$
 \begin{aligned}
-{ (e')^{\perp \tdp} \over e'} &\cong {\gens{e,f}
-\oplus \gens{e'}\oplus \gens{\alpha_1,\dots,\alpha_8}\oplus \gens{\tilde
-\alpha_1,\dots, \tilde \alpha_8} \over e'} \\ &\cong \gens{e,f} \oplus
-\gens{\alpha_1,\dots,\alpha_8}\oplus \gens{\tilde \alpha_1,\dots, \tilde
+{ (e')^{\perp \tdp} \over e'} &\cong {\generators{e,f}
+\oplus \generators{e'}\oplus \generators{\alpha_1,\dots,\alpha_8}\oplus \generators{\tilde
+\alpha_1,\dots, \tilde \alpha_8} \over e'} \\ &\cong \generators{e,f} \oplus
+\generators{\alpha_1,\dots,\alpha_8}\oplus \generators{\tilde \alpha_1,\dots, \tilde
 \alpha_8} \\ &\cong U \oplus E_8^2.
 \end{aligned}
 $$
 
-To determine the map on 1-cusps, it suffices to determine $$\di_{U\oplus E_8^2}(\tilde w_2), \qquad \tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde \alpha_1 + \tilde \alpha_2.$$
+To determine the map on 1-cusps, it suffices to determine $$\div_{U\oplus E_8^2}(\tilde w_2), \qquad \tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde \alpha_1 + \tilde \alpha_2.$$
 
 However, observing that $\tilde w_2\cdot \alpha_3 = 1$, we immediately obtain that the divisibility is one.
 Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
@@ -203,14 +203,14 @@ Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
 
 ::: {.proposition #prop:rank_16_cusp_D16}
 
-The negative-definite lattice $\tilde w_2^{\perp T_\dP}/\tilde w_2 \cong (16,0,0)_0$ of the del Pezzo cusp-map lemma (@lem:cusp_map_dP) is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
+The negative-definite lattice $\tilde w_2^{\perp \tdp}/\tilde w_2 \cong (16,0,0)_0$ of the del Pezzo cusp-map lemma (@lem:cusp_map_dP) is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
 :::
 
 ::: {.proof}
 
 The invariants $(r,a,\delta) = (16,0,0)$ do not by themselves determine the isometry class, since the even negative-definite unimodular lattices of rank $16$ are exactly $E_8^{\oplus 2}$ and $D_{16}^+$.
 The root system of $E_8^{\oplus 2}$ has two orthogonal components, each of rank $8$; the root system of $D_{16}^+$ is the irreducible system $D_{16}$.
-So it suffices to exhibit a chain of roots of $\tilde J^\perp/\tilde J$, where $\tilde J = \gens{\tilde w_1, \tilde w_2}$, in which consecutive roots are not orthogonal and which spans a sublattice of rank greater than $8$.
+So it suffices to exhibit a chain of roots of $\tilde J^\perp/\tilde J$, where $\tilde J = \generators{\tilde w_1, \tilde w_2}$, in which consecutive roots are not orthogonal and which spans a sublattice of rank greater than $8$.
 
 Label the simple roots of each $E_8$ summand as in Bourbaki, so that $\alpha_1 \perp \alpha_2$, as $\tilde w_2^2 = 0$ requires, and $\alpha_3$ meets $\alpha_1$, as in the proof above.
 Put $s = \alpha_3 + \alpha_4$ and $\tilde s = \tilde\alpha_3 + \tilde\alpha_4$.

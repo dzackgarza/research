@@ -9,14 +9,14 @@ It is the unique even unimodular lattice of signature $(3, 19)$ up to isometry, 
 For any K3 surface $X$, there exists a **marking** $H^2(X,\ZZ) \iso \lkt$ that identifies the cohomology lattice with this fixed reference lattice. We refer to a K3 surface with a marking as a **marked** K3 surface.
 Moduli spaces of polarized and marked K3 surfaces are typically governed by the following two lattices:
 $$
-S_X \da \NS(X) \cong \Pic(X) \injects H^2(X; \ZZ), \qquad 
-T_X \da S_X^{\perp_{H^2(X; \ZZ)}}
+S_X \definedas \NS(X) \cong \Pic(X) \injects H^2(X; \ZZ), \qquad 
+T_X \definedas S_X^{\perp_{H^2(X; \ZZ)}}
 ,$$
-where $\NS(X) \da \Pic(X)/\Pic^0(X)$ is the Neron-Severi lattice, and we take the orthogonal complement with respect to the bilinear form induced by the intersection pairing in cohomology.
+where $\NS(X) \definedas \Pic(X)/\Pic^0(X)$ is the Neron-Severi lattice, and we take the orthogonal complement with respect to the bilinear form induced by the intersection pairing in cohomology.
 If the signature of $H^2(X; \ZZ)$ is $(p, q)$, then we must have $\signature(S_X) + \signature(T_X) = (p, q)$  since $T_X \oplus S_X \injects H^2(X;\ZZ)$ embeds as a finite-index submodule. In particular, if one chooses $S$ such that $\signature(S_X) = (1, \rho(X) - 1)$, this forces $\signature(T_X) = (p-1, q-\rho(X)-1)$.
 When $p=3$ on obtains a lattice $T_X$ of signature $(2, n)$. For such lattices, there is a well-defined Type $\IV$ Hermitian symmetric domain $\halfpd{T_X}$, and for any choice of neat arithmetic subgroup $\Gamma \leq \OStab(T_X)$ of the *stable orthogonal group* of $T_X$, there is a well-defined arithmetic quotient
 $$
-F_{\Gamma} \da \dmodgamma{ \halfpd{T_X} }{\Gamma}, \qquad \Gamma \leq \OStab(T_X)
+F_{\Gamma} \definedas \dmodgamma{ \halfpd{T_X} }{\Gamma}, \qquad \Gamma \leq \OStab(T_X)
 .$$
 The $S$ and $T$ lattices are dual in many senses -- for projective surfaces, $S_X$ contains ample line bundles, and hence the algebraic/projective structure of $X$ (as determined by its polarizations) are governed by $S_X$, while its complement $T_X$ governs transcendental data such as periods and variations of Hodge structure, which are typically orthogonal to the polarization.
 For K3 surfaces, by the global Torelli theorem, its isomorphism is determined by its polarized weight 2 Hodge structure on $H^2(X;\CC)$, and since period domains of the form $\halfpd{T_X}$ classify such Hodge structures, they can be used to construct coarse moduli spaces of $S_X$-polarized marked K3 surfaces.
@@ -31,7 +31,7 @@ $$
 .$$
 Let $H^2(Z; \ZZ)_f$ denote the free part. The intersection pairing endows $H^2(Z; \ZZ)_f$ with the structure of a lattice, i.e. a free $\ZZ$-module with a integral symmetric bilinear form, and there are isometries
 $$
-\lEn \da H^2(Z; \ZZ)_f \iso U \oplus E_8 \iso \II_{1, 9}
+\lEn \definedas H^2(Z; \ZZ)_f \iso U \oplus E_8 \iso \II_{1, 9}
 ,$$
 the unique even unimodular lattice up to isometry (see @sec:unimodular-lattices), where $U$ and $E_8$ are as above.
 We similarly define a **marking** for an Enriques surface $Y$ as an isometry $H^2(Y,\ZZ)_f \cong \lEn$, and refer to an Enriques surface with a marking as a **marked** Enriques surface.
@@ -56,10 +56,10 @@ execute at end picture={
 \end{tikzcd}
 
 In particular, $h^{1,1}(Z) = 10$, $h^{2,0}(Z) = h^{0,2}(Z) = 0$, confirming $p_g(Z) = 0$, and all other Hodge numbers vanish except $h^{0,0}(Z) = h^{2,2}(Z) = 1$.
-Conversely, any K3 surface $X$ with a fixed-point-free involution $\ien$ is said to have an *Enriques involution*, gives rise to an Enriques surface $Y \da X/\ien$ as its quotient.
+Conversely, any K3 surface $X$ with a fixed-point-free involution $\ien$ is said to have an *Enriques involution*, gives rise to an Enriques surface $Y \definedas X/\ien$ as its quotient.
 The pullback $\pi^* H^2(Z; \ZZ)$ under the covering map can be identified with the lattice $\lEn(2)$, i.e., $\lEn$ with the intersection form multiplied by 2. There is a unique primitive embedding $\lEn(2) \injects \lkt$ up to isometry, and so we regard it as a primitive sublattice and set
 $$
-\sen \da \lEn(2) = U(2)\oplus E_8(2),
+\sen \definedas \lEn(2) = U(2)\oplus E_8(2),
 \quad
 \ten \cong \sen^{\perp \lkt} = U \oplus U(2) \oplus E_8(2) \cong U \oplus \sen
 ,$$
@@ -71,24 +71,24 @@ $$
 realizing these as the invariant and coinvariant lattices respectively.^[We note that there are mixed conventions in the literature regarding whether $S$ or $T$ should be the invariant sublattice -- we choose here the convention used in @AEGS25.]
 This similarly determines a Type $\IV$ period domain $\halfpd{\ten}$, and the quotient
 $$
-\fen \da \dmodgamma{ \halfpd{\ten}}{\Gamma_{\En} }, \qquad 
-\Gamma_{\En} \da \Orth(\ten) 
+\fen \definedas \dmodgamma{ \halfpd{\ten}}{\Gamma_{\En} }, \qquad 
+\Gamma_{\En} \definedas \Orth(\ten) 
 $$
 is a 10-dimensional rational quasi-projective variety. The global Torelli theorem for Enriques surfaces (see [@Hor78; @Nam85]) states that two Enriques surfaces $Z_1, Z_2$ are isomorphic if and only if there exists an isometry $\phi: H^2(Z_1;\ZZ) \to H^2(Z_2;\ZZ)$ preserving the intersection pairing and Hodge structure. This implies that the natural map from the set $\mcm_{\En}$ of isomorphism classes of Enriques surfaces to $\fen$ is injective on the open subset parameterizing smooth surfaces. Thus, $\fen$ serves as the coarse moduli space of (unpolarized) Enriques surfaces.
 
 
-#### Numerically Polarized Enriques Surfaces and $\fent$
+#### Numerically Polarized Enriques Surfaces and $\fentwo$
 
 Let $Z$ be an Enriques surface. The first Chern class induces an isomorphism
 $$
 c_1\colon\Pic(Z) \iso H^2(Z; \ZZ)
 $$
-so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical divisor classes, $\Num(Z)$. A **numerical polarization** $[h]$ on $Z$ is the numerical class of $h \da c_1(\mcl)$ for an ample line bundle $\mcl \in \Pic(Z)$, which we often write $[\mcl]$. For a fixed degree $2d$, one considers the moduli space $F_{\En,h}$ of numerically polarized Enriques surfaces of degree $2d$.
-The set of primitive classes $h$ with $h^2 = 2d$, up to the action of $\Orth(\lEn)$, may consist of more than one orbit, except in the case $d = 1$, where the orbit is unique. Therefore, the moduli space $\fent$ of numerically polarized Enriques surfaces of degree 2 is distinguished by this uniqueness property.
-The moduli space $\fent$ parameterizes pairs $(Z, [\mcl_Z])$, where $Z$ is an Enriques surface, possibly with ADE singularities, and $[\mcl_Z] \in \Pic(Z)/\ZZ_2 \cong \Num(Z)$ is the numerical class of an ample polarization of degree 2.
-Equivalently, $\fent$ may be described as the moduli space of pairs $(Z, \mcm)$, where $\mcm = \mcl_Z^{\tensor 2} \in \Pic(Z)$ is a 2-divisible polarization of degree 8.
-Given an ample line bundle $\mcl$ on $Z$, set $\mcm = \mcl^{\tensor 2}$, which has degree 8. By the classification of big and nef linear systems on Enriques surfaces (see [@Cos83]), the linear system $|\mcm|$ is basepoint-free and defines a morphism $\rho\colon Z \to W$ where $W$ is a quartic del Pezzo surface with singularities of type $4A_1$ or $A_3 + 2A_1$. The morphism $\rho$ is a double cover of $W$ which is branched along a divisor $B \subset W$ where the corresponding ramification divisor $R_Z = \inverseof{\rho}(B)$ is ample, $\QQ$-Cartier, and in the linear system $|\mcm|$.
-The pair $(Z, \eps R_Z)$ is log-canonical for sufficiently small $\eps > 0$, and thus $\fent$ admits a KSBA compactification by stable pairs, which we will simply denote $\cpt{\fent}$ throughout this work.
+so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical divisor classes, $\Num(Z)$. A **numerical polarization** $[h]$ on $Z$ is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl \in \Pic(Z)$, which we often write $[\mcl]$. For a fixed degree $2d$, one considers the moduli space $F_{\En,h}$ of numerically polarized Enriques surfaces of degree $2d$.
+The set of primitive classes $h$ with $h^2 = 2d$, up to the action of $\Orth(\lEn)$, may consist of more than one orbit, except in the case $d = 1$, where the orbit is unique. Therefore, the moduli space $\fentwo$ of numerically polarized Enriques surfaces of degree 2 is distinguished by this uniqueness property.
+The moduli space $\fentwo$ parameterizes pairs $(Z, [\mcl_Z])$, where $Z$ is an Enriques surface, possibly with ADE singularities, and $[\mcl_Z] \in \Pic(Z)/\ZZ_2 \cong \Num(Z)$ is the numerical class of an ample polarization of degree 2.
+Equivalently, $\fentwo$ may be described as the moduli space of pairs $(Z, \mcm)$, where $\mcm = \mcl_Z^{\tensor_{\OO_Z} 2} \in \Pic(Z)$ is a 2-divisible polarization of degree 8.
+Given an ample line bundle $\mcl$ on $Z$, set $\mcm = \mcl^{\tensor_{\OO_Z} 2}$, which has degree 8. By the classification of big and nef linear systems on Enriques surfaces (see [@Cos83]), the linear system $|\mcm|$ is basepoint-free and defines a morphism $\rho\colon Z \to W$ where $W$ is a quartic del Pezzo surface with singularities of type $4A_1$ or $A_3 + 2A_1$. The morphism $\rho$ is a double cover of $W$ which is branched along a divisor $B \subset W$ where the corresponding ramification divisor $R_Z = \inverseof{\rho}(B)$ is ample, $\QQ$-Cartier, and in the linear system $|\mcm|$.
+The pair $(Z, \eps R_Z)$ is log-canonical for sufficiently small $\eps > 0$, and thus $\fentwo$ admits a KSBA compactification by stable pairs, which we will simply denote $\cpt{\fentwo}$ throughout this work.
 
 To put us in the setting of the main theorem, fix a basis of $\lkt$ in the decomposition above, so in coordinates we have $(u_1, u_2, u_3, \alpha_1, \alpha_2) \in U^3 \oplus E_8^2$, where each $u_i$ is in a copy of $U$ and each $\alpha_i$ is in a copy of $E_8$.
 Consider three morphisms on $\lkt$, acting on vectors $(u_1, u_2, u_3, \alpha_1, \alpha_2) \in U^3 \oplus E_8^2$ in this basis in the following way:
@@ -102,11 +102,11 @@ $$
 $$ {#eq:three-lattice-involutions}
 
 These arise as the lattice involutions on $\lkt$ induced by three types of geometric involutions, $\idp, \ien$, and $\inik$ respectively, on a K3 surface $X$.
-A direct computation shows that the group $\gens{\Idp, \Ien, \Inik}$ is isomorphic to $\ZZ_2^2$, and thus these involutions mutually commute.
-For each such involution $I_\star$, we write $S_\star \da \lkt^{I_\star = 1}$ and $T_\star = \lkt^{I_\star = -1}$ for the invariant and co-invariant sublattices under the group actions $\gens{ I_\star } \actson \lkt$.
+A direct computation shows that the group $\generators{\Idp, \Ien, \Inik}$ is isomorphic to $\ZZ_2^2$, and thus these involutions mutually commute.
+For each such involution $I_\star$, we write $S_\star \definedas \lkt^{I_\star = 1}$ and $T_\star = \lkt^{I_\star = -1}$ for the invariant and co-invariant sublattices under the group actions $\generators{ I_\star } \actson \lkt$.
 Similarly direct computations yield the invariant and coinvariant sublattices shown in the table below,
 where the triples $(r, a, \delta)_{n_+}$ are the invariants shown by @Nik80 to classify 2-elementary lattices $T$ which admit a primitive embedding $T\injects \lkt$.
-Concretely, $r \da \rank_\ZZ(T)$ is the rank, $a$ is the *length* of $L$, which can be expressed as $\dim_{\FF_2}(A_T)$ where $A_T\da \dualof{T}/T$ is the *discriminant group* of $T$, the integer $\delta\in \ts{0, 1}$ is the *coparity*, and the subscript $n$ is used to track the rank of a maximal positive-definite sublattice, which can be used to recover the signature as $(n_+, r-n_+)$.
+Concretely, $r \definedas \rank_\ZZ(T)$ is the rank, $a$ is the *length* of $L$, which can be expressed as $\dim_{\FF_2}(A_T)$ where $A_T\definedas \dualof{T}/T$ is the *discriminant group* of $T$, the integer $\delta\in \theset{0, 1}$ is the *coparity*, and the subscript $n$ is used to track the rank of a maximal positive-definite sublattice, which can be used to recover the signature as $(n_+, r-n_+)$.
 
 | $L$ | Isometry Class | $\rank_\ZZ(L)$ | $\signature(L)$ | $(r,a,\delta)_n$ | $A_L$ |
 |---|---|---:|---|---|---|

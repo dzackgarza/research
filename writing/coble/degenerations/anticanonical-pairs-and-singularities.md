@@ -1,7 +1,6 @@
 # Anticanonical pairs, charge, and MMP singularities
 
-::: {.remark}
-### Orientation
+::: {.remark title="Orientation"}
 
 The components of a Type III degeneration are anticanonical pairs, and the combinatorics of such degenerations is controlled by a single additive invariant, the *charge*. We collect the definitions here, together with the singularity classes of the minimal model program that govern which limits are admissible in KSBA moduli.
 :::
@@ -23,7 +22,7 @@ Anticanonical pairs are also known as **log Calabi--Yau surfaces**.
 The **charge** of an anticanonical pair $(V, D)$, with $D = \Sum_j D_j$ its decomposition into irreducible components, measures the deviation of $(V, D)$ from being toric.
 It is defined by
 $$
-Q(V, D) \da 12 - \Sum_j \left( D_j^2 + 3 \right)
+Q(V, D) \definedas 12 - \Sum_j \left( D_j^2 + 3 \right)
 .
 $$
 For a toric surface $V$ with $D = \partial V$ its toric boundary, the charge vanishes:
@@ -33,8 +32,7 @@ Q(V, \partial V) = 0
 $$
 :::
 
-::: {.proposition #prop:charge-under-blowup}
-### Charge under blowup
+::: {.proposition #prop:charge-under-blowup title="Charge under blowup"}
 
 The charge behaves as follows under blowups of an anticanonical pair:
 
@@ -45,17 +43,16 @@ The charge behaves as follows under blowups of an anticanonical pair:
 This is [@Fri15 Lem. 2.2(iii)]; the charge itself is [@Fri15 Def. 1.1].
 :::
 
-::: {.theorem #thm:friedman-miranda-charge}
-### Friedman--Miranda charge theorem
+::: {.theorem #thm:friedman-miranda-charge title="Friedman--Miranda charge theorem"}
 
-Let $\cX \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
+Let $\mcx \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
 $$
-\cX_0 = \Union_{i=1}^n V_i
+\mcx_0 = \Union_{i=1}^n V_i
 ,
 $$
 and for each component set
 $$
-D_i \da V_i \intersect \overline{\left( \cX_0 \sm V_i \right)}
+D_i \definedas V_i \intersect \overline{\left( \mcx_0 \sm V_i \right)}
 ,
 $$
 so that each $(V_i, D_i)$ is an anticanonical pair.
@@ -82,7 +79,7 @@ $$
 
 ::: {.definition #def:mmp-singularities}
 
-With discrepancies as in [the discrepancy definition](#def:discrepancy), the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
+With discrepancies as in the discrepancy definition (@def:discrepancy), the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
 
 - **Terminal**: $a(E, X, D) > 0$.
 
@@ -108,5 +105,5 @@ Being slc is the condition required for limits in KSBA moduli spaces.
 :::
 
 ::: {.warning}
-The migrated note lists "dlt" among its aliases but its body gives no definition of dlt (divisorial log terminal); definition omitted here rather than invented.
+The source material uses “dlt” without defining divisorial log terminal; no definition is supplied here beyond what is stated explicitly below.
 :::

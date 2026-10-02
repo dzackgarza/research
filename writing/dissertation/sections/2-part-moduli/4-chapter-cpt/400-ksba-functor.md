@@ -4,7 +4,7 @@
 
 For higher-dimensional varieties, GIT, toroidal, and semitoroidal compactifcations are often inadequate, producing boundary points that lack modular interpretations and possibly corresponding to degenerations with excessively severe singularities. For instance, GIT compactification $F_2$ result in boundary strata containing highly singular, non-separated, or even non-reduced curves.
 Such limiting surfaces may not be uniquely determined by one-parameter degenerations, violating the valuative criterion for properness and separatedness. Moreover, GIT boundaries often allow non-slc singularities, which are more severe than those typically permitted by the MMP (see e.g., [@Sha81], [@Loo86]).
-In contrast, for curves of genus $g \geq 2$, Deligne and Mumford compactify $\Mg$ using **stable curves**: a (connected, reduced, projective) curve $C$ over an algebraically closed field is **stable** if all singularities of $C$ are nodes and every rational component of $C$ meets the rest of $C$ (including the marked points) in at least $3$ points. The moduli functor $\Mg^{\operatorname{DM}}$ assigning to each connected base $S$ the groupoid of flat, proper families $\mcc \to S$ whose fibers are stable curves, is represented by a proper Deligne–Mumford stack. The boundary $\bd\Mg$ parameterizes connected, nodal curves with finite automorphism groups, and every family $\open{C}$ over $\open{S} = S \setminus \ts{0}$ admits, after a ramified base change, a unique stable limit by semistable reduction and relative abundance of $\omega_{C/S}$ (see [@DM69], [@KM98]).
+In contrast, for curves of genus $g \geq 2$, Deligne and Mumford compactify $\Mg$ using **stable curves**: a (connected, reduced, projective) curve $C$ over an algebraically closed field is **stable** if all singularities of $C$ are nodes and every rational component of $C$ meets the rest of $C$ (including the marked points) in at least $3$ points. The moduli functor $\Mg^{\operatorname{DM}}$ assigning to each connected base $S$ the groupoid of flat, proper families $\mcc \to S$ whose fibers are stable curves, is represented by a proper Deligne–Mumford stack. The boundary $\bd\Mg$ parameterizes connected, nodal curves with finite automorphism groups, and every family $\open{C}$ over $\open{S} = S \setminus \theset{0}$ admits, after a ramified base change, a unique stable limit by semistable reduction and relative abundance of $\omega_{C/S}$ (see [@DM69], [@KM98]).
 The **boundary strata** of $\bd\Mg$ are indexed by **dual graphs** recording the incidence data of components and their intersections -- each stable degeneration's combinatorial "type" corresponds to the dual graph of its $\mcx_0$, and each such graph describes a distinct boundary stratum.
 
 To generalize this to higher dimension, one introduces **stable pairs** $(X, B)$, following @KS88, @Ale96.
@@ -28,7 +28,7 @@ However, unlike the case of curves, where all stable curves are smoothable, not 
 Thus, boundary components can include non-smoothable varieties, yielding compactifications that potentially have multiple irreducible components.
 Fixing discrete invariants -- the dimension $d$, a Hilbert polynomial $h$, boundary coefficients $\{b_i\}$, and the **volume** $(K_X + B)^d$ --, the **KSBA moduli functor**
 $\cpt{\mcm}_{d, \vec{b}, v}:
-\Sch^{\opop} \to \Set$
+\Sch^{\opop} \to \Sets$
 assigns to $S$ the set of isomorphism classes of flat families $(\mcx, \mcb) \to S$ of KSBA stable pairs with these invariants. This functor is represented by a proper, separated Deligne–Mumford stack $\mcm$, whose coarse moduli space $M$ is a projective scheme [@KS88, Thm. 1.1]. The closure of the locus of smooth pairs in $\mcm$ provides a geometrically meaningful compactification by stable pairs.
 
 For K3 or Enriques surfaces, $K_X \equiv 0$ is numerically trivial, so to ensure ampleness one considers **pairs** $(X, \eps R)$ for $0 < \eps \ll 1$, $R$ ample divisor, and studies the stable pair locus for these data. The divisor $R$ is typically chosen to be the ramification divisor of an automorphism, and the compactification is independent of $\eps$ for $\eps$ sufficiently small ([@KS88, §5], [@Ale96a, §6], [@Kol23, Lemma VI.1.1], [@AET23]).
@@ -63,7 +63,7 @@ for some $k \leq n$, i.e., $X$ locally looks like $k$ coordinate hyperplanes.
 
 :::{.definition title="Gorenstein and $\QQ$-Gorenstein Varieties" #sing-gor-qgor}
 A scheme $X$ of pure dimension is **Gorenstein** if it is Cohen–Macaulay and its dualizing sheaf $\omega_X$ is invertible.
-$X$ is **$\QQ$-Gorenstein** if $\omega_X$ is $\QQ$-Cartier, i.e., some positive tensor power $\omega_X^{\otimes m}$ is invertible for $m > 0$.
+$X$ is **$\QQ$-Gorenstein** if $\omega_X$ is $\QQ$-Cartier, i.e., some positive tensor power $\omega_X^{\otimes_{\OO_X} m}$ is invertible for $m > 0$.
 :::
 
 :::{.definition title="ADE Singularities (Du Val, Rational Double Points)" #pairs-ade}
@@ -198,7 +198,7 @@ Let $X$ be a demi-normal scheme and $R = \sum r_i R_i$ an effective $\QQ$-diviso
 2. $(\normalize{X}, R^\nu)$ is log canonical, where $\nu\colon \normalize{X} \to X$ is the normalization of $X$ and
    
 \begin{align*}
-R^\nu \da  D + \sum r_i\, \nu^*(R_i).
+R^\nu \definedas  D + \sum r_i\, \nu^*(R_i).
 \end{align*}
 
    where $D$ be the conductor divisor on $\normalize{X}$.
@@ -224,7 +224,7 @@ Let $D$ be a $\QQ$-Cartier divisor on a projective surface $X$:
 - $D$ is **big** if its volume is positive,
 
   \begin{align*}
-  \operatorname{vol}_X(D) \da  \limsup_{m \to \infty} \frac{h^0(X, \OO_X(mD))}{m^{\dim X}/\dim X!} > 0
+  \operatorname{vol}_X(D) \definedas  \limsup_{m \to \infty} \frac{h^0(X, \OO_X(mD))}{m^{\dim X}/\dim X!} > 0
   .\end{align*}
 
 :::
@@ -272,7 +272,7 @@ Let $\mcx^* \to \Delta^*$ be a family of varieties over a punctured disk and let
 :::{.proposition title="Existence and Uniqueness of Stable Limits via Divisor Models" #hdm-exuniq-prop}
 Let $(\mcx^*, \mcr^*)$ be a flat family of smooth pairs over $\Delta^*$. After finite base change, there exists a divisor model $(\mcx, \mcr)$ as above. The associated **stable model** is the pair $(\cpt{\mcx}, \cpt{\mcr} )$, where
 $$
-(\cpt{\mcx}, \cpt{\mcr}) \da  \Proj_\Delta \left(\bigoplus_{n \geq 0} H^0(\mcx, \OO_{\mcx}(n \mcr))\right)
+(\cpt{\mcx}, \cpt{\mcr}) \definedas  \Proj_\Delta \left(\bigoplus_{n \geq 0} H^0(\mcx, \OO_{\mcx}(n \mcr))\right)
 .$$
 For $0 < \eps \ll 1$, the pair $(\cpt{\mcx}, \eps \cpt{\mcr})$ is KSBA-stable: $\cpt{\mcx}$ has slc singularities and $K_{\cpt{\mcx}} + \eps \cpt{\mcr}$ is ample.
 
@@ -323,7 +323,7 @@ The dual complex $\Gamma(\bar{X})$ thus encodes precisely the combinatorics of h
 :::{.definition title="KSBA Moduli Functor" #moduli-functor}
 Fix numerical invariants (such as dimension $d$, Hilbert polynomial $h$, coefficients $\{a_j\}$, and volume $v = (K_X+D)^d$). The **KSBA moduli functor** is
 $$
-\mcm\uksba_{d,\vec{a},v} \colon (\Sch/k)^{\opop} \to \Set
+\mcm\uksba_{d,\vec{a},v} \colon (\Sch/k)^{\opop} \to \Sets
 $$
 assigning to each $S$ the set of isomorphism classes of families of KSBA stable pairs $(\mcx, \mcd ) \to S$ with the fixed invariants.
 :::
@@ -397,17 +397,17 @@ Thus $\mcm_e\uktriv(\eps)$ is a locus in a general KSBA moduli stack cut out by 
 #### Boundaries of KSBA compactifications
 
 :::{.remark title="Combinatorial Organization of the Boundary" #boundary-organization-remark}
-For moduli spaces such as $F_S$ of $S$-polarized K3 surfaces, and thus for spaces like $\fttz$ and $\fent$, the boundary of the KSBA compactification is stratified by SLC combinatorial type. Each stratum corresponds to a distinct type of geometric degeneration, classified via monodromy and combinatorial invariants which are encoded in dual complexes, fans, or semifans in related semitoroidal compactifications.
+For moduli spaces such as $F_S$ of $S$-polarized K3 surfaces, and thus for spaces like $\fttz$ and $\fentwo$, the boundary of the KSBA compactification is stratified by SLC combinatorial type. Each stratum corresponds to a distinct type of geometric degeneration, classified via monodromy and combinatorial invariants which are encoded in dual complexes, fans, or semifans in related semitoroidal compactifications.
 :::
 
 :::{.definition title="Boundary Strata and Combinatorial Types" #boundary-stratum}
-A **boundary stratum** in a KSBA compactification $\cpt{X}$ of $X$ is a locally closed subset parameterizing stable pairs $(X, R)$ that are not smoot, i.e., those lying in the boundary $\bd\cpt{X} \da \cpt{X} \setminus X$, where $X$ is the locus of smooth KSBA stable pairs.
+A **boundary stratum** in a KSBA compactification $\cpt{X}$ of $X$ is a locally closed subset parameterizing stable pairs $(X, R)$ that are not smoot, i.e., those lying in the boundary $\bd\cpt{X} \definedas \cpt{X} \setminus X$, where $X$ is the locus of smooth KSBA stable pairs.
 The **slc combinatorial type** of a stable KSBA limit $(\cpt{X}, \eps \cpt{R})$ is the discrete data given by the simplicial complex $\Gamma(\cpt{X})$, along with the deformation type of the quasi-polarized minimal resolution $(V_i, D_i, L_i)$ of each irreducible component $\cpt{V}_i$ of $\cpt{X}$, where $L_i = \OO_{V_i}(R_i)$ is the line bundle associated to the pullback $R_i$ of the boundary divisor to the resolution.
 An **slc stratum** is a boundary stratum of $\cpt{X}$ consisting of all stable pairs $(X, R)$ with the same slc combinatorial type.
 :::
 
 
-Given a nonzero vector $\lambda$ in a lattice $T$, its **projective class** is $[\lambda] \da \ts{ a\lambda \st a\in \RR_{>0}}$, i.e. the ray it generates in $T_\RR$.
+Given a nonzero vector $\lambda$ in a lattice $T$, its **projective class** is $[\lambda] \definedas \theset{ a\lambda \st a\in \RR_{>0}}$, i.e. the ray it generates in $T_\RR$.
 Letting $T$ be the polarization lattice for a polarized moduli problem $\FG$ of K3 surfaces, we consider degenerations at a cusp $I$ in $\bd\bbcpt{\FG}$. 
 The logarithmic mondromy $N$ at $I$ determines, up to the monodromy group and scaling, elements $\eta\in T$ and $\lambda\in \eta^{\perp T}$ by the explicit formula
 $$
@@ -422,7 +422,7 @@ t = 0 & \text{if $I$ is a type $\II$ $1$-cusp }
 ,$$
 where $t$ is the number of triple points in $\mcx_0$ in the type $\III$ case.
 Arcs in $\bbcpt{\FG}$ approaching a 0-cusp $\eta$ are asymptotic to translates of co-characters determined by the class of $\lambda \in \bdlattice{T}{\eta} = \eta^{\perp T}/\eta$, and thus $\lambda$ called the "monodromy invariant" of the degeneration.
-We finally arrive at the key results that make our combinatorial analysis of $\fent$ possible:
+We finally arrive at the key results that make our combinatorial analysis of $\fentwo$ possible:
 
 :::{.theorem
    title="Dependence of boundary strata on monodromy invariants [@AE23, Cor. 8.13]"
@@ -448,7 +448,7 @@ from a semitoroidal compactification realizing it as the normalization of $\cpt{
 For each cusp $I\in \bbcpt{F_S}$, writing $\bdlattice{T}{I}$ for the corresponding stable boundary lattice and $\thecone{C}_I$ for the corresponding positive cone, let
 
 \begin{align*}
-\thecone{C}_S^{\BB} \da \coprod_{I\in \bd\bbcpt{F_S} }\qty{ \thecone{C}_I \intersect \bdlattice{T}{I} }
+\thecone{C}_S^{\BB} \definedas \coprod_{I\in \bd\bbcpt{F_S} }\qty{ \thecone{C}_I \intersect \bdlattice{T}{I} }
 .\end{align*}
 
 and let $D$ be the polyhedral decomposition of $\thecone{C}_S^{\BB}$ induced by the level sets of $\SS$, i.e. whose tiles are the loci of all monodromy invariants $\lambda$ on which $\SS(\lambda)$ is constant.
@@ -458,7 +458,7 @@ Then the *maximal* cones of $D$ and $\semifan{F}_R$ are in bijection, and $\Psi_
 
 #### Conclusion
 
-The main takeaway of this section is that the boundary of the KSBA compactifications of moduli spaces such as $F_S$ of $S$-polarized K3 surfaces and related spaces like $\fttz$ and $\fent$ admit a precise, combinatorial description:
+The main takeaway of this section is that the boundary of the KSBA compactifications of moduli spaces such as $F_S$ of $S$-polarized K3 surfaces and related spaces like $\fttz$ and $\fentwo$ admit a precise, combinatorial description:
 
 - The boundary $\cpt{F}_S^R$ is stratified according by slc combinatorial type, which encodes both the deformation type of the minimal resolution (with its corresponding divisor) of a stable pair $(X, R)$ and its simplicial dual complex,
 

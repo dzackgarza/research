@@ -1,16 +1,14 @@
 # Foldings of Dynkin diagrams
 
-::: {.remark}
-### Orientation
+::: {.remark title="Orientation"}
 
-This section collects the folding constructions that produce non-simply-laced root systems from simply-laced ones by summing the roots in each orbit of a diagram automorphism, together with the specific root-folding criterion governing the involution $I = -I_\En$ on $T_\dP$ and the *mirror moves* used to navigate the pyramid of $2$-elementary lattices.
+This section collects the folding constructions that produce non-simply-laced root systems from simply-laced ones by summing the roots in each orbit of a diagram automorphism, together with the specific root-folding criterion governing the involution $I = -\Ien$ on $\tdp$ and the *mirror moves* used to navigate the pyramid of $2$-elementary lattices.
 As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see @def:root-lattice).
 :::
 
 ## Foldings of simply-laced diagrams
 
-::: {.remark #rmk:classical-foldings}
-### Classical foldings of Dynkin diagrams
+::: {.remark #rmk:classical-foldings title="Classical foldings of Dynkin diagrams"}
 
 The process of folding by nontrivial diagram automorphisms produces non-simply-laced root systems from simply-laced diagrams.
 The roots in the same orbit under the folding group must be orthogonal.
@@ -31,8 +29,7 @@ The orbit-sum construction of @def:folded-root instead produces the **Langlands-
 
 ## Folded roots and folded root systems
 
-::: {.definition #def:folded-root}
-### Folded root systems
+::: {.definition #def:folded-root title="Folded root systems"}
 
 Let $L$ be a lattice containing a root system $\Phi$ and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
 Given a simple root $\alpha_i \in \Phi$, let $[\alpha_i] \subset \Phi$ denote its $G$-orbit.
@@ -51,8 +48,7 @@ For an involution $I$, $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i) \in L^G$.
 
 ## Examples
 
-::: {.example #ex:classical-foldings}
-### Examples of classical foldings
+::: {.example #ex:classical-foldings title="Examples of classical foldings"}
 
 Folding produces scaled root systems in the invariant lattice $L^G$.
 Explicit examples computed via @def:folded-root:
@@ -69,40 +65,38 @@ Here the scaling notation $B_3(2)$ and $F_4(2)$ records that the invariant-latti
 (These Gram matrices are written in the standard positive-definite normalization; negate for the AG convention of @def:root-lattice.)
 :::
 
-## The root-folding criterion for $T_\dP$
+## The root-folding criterion for $\tdp$
 
-The criterion below is stated in terms of the short and long roots of $T_\dP$: $\Phi^2$ denotes the **short roots** (norm $-2$) and $\Phi^4$ the **long roots** (norm $-4$ with divisor $2$), in the $k$-root sense of the root systems material.
+The criterion below is stated in terms of the short and long roots of $\tdp$: $\Phi^2$ denotes the **short roots** (norm $-2$) and $\Phi^4$ the **long roots** (norm $-4$ with divisor $2$), in the $k$-root sense of the root systems material.
 
-::: {.lemma #lem:root-folding-tdp}
-### Root folding criterion
+::: {.lemma #lem:root-folding-tdp title="Root folding criterion"}
 
-Let $\Phi(T_\dP)$ be the root system of $T_\dP$ and $I = -I_\En$ the induced involution on $T_\dP$ whose fixed lattice is $\ten$.
+Let $\Phi(\tdp)$ be the root system of $\tdp$ and $I = -\Ien$ the induced involution on $\tdp$ whose fixed lattice is $\ten$.
 
-The folded roots $\beta_{[v]} \in \Phi\left( T_\dP^{\generators{I}} \right)$ arise in exactly one of the following ways:
+The folded roots $\beta_{[v]} \in \Phi\left( \tdp^{\generators{I}} \right)$ arise in exactly one of the following ways:
 
-1. $v \in \Phi^2(T_\dP)$ and $\beta_{[v]} \in \Phi(\ten)$;
+1. $v \in \Phi^2(\tdp)$ and $\beta_{[v]} \in \Phi(\ten)$;
 
-2. $v \in \Phi^4(T_\dP)$ and $\beta_{[v]} \in \Phi(\ten)$; or
+2. $v \in \Phi^4(\tdp)$ and $\beta_{[v]} \in \Phi(\ten)$; or
 
-3. $v \in \Phi^2(T_\dP) \intersect I(v)^{\perp T_\dP}$, and so $\beta_{[v]} \definedas v + I(v) \in \Phi^4(\ten)$ is the sum of orthogonal roots in $\Phi^2(T_\dP)$.
+3. $v \in \Phi^2(\tdp) \intersect I(v)^{\perp \tdp}$, and so $\beta_{[v]} \definedas v + I(v) \in \Phi^4(\ten)$ is the sum of orthogonal roots in $\Phi^2(\tdp)$.
 :::
 
-This criterion governs how roots in the boundary lattices at the $0$-cusps of $F_{(2,2,0)}$ descend or combine when passing to the $I$-invariant sublattices corresponding to $\fentwo$.
+This criterion governs how roots in the boundary lattices at the $0$-cusps of $\fttz$ descend or combine when passing to the $I$-invariant sublattices corresponding to $\fentwo$.
 
 ## Mirror moves
 
-::: {.definition #def:mirror-move}
-### Mirror moves
+::: {.definition #def:mirror-move title="Mirror moves"}
 
 A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting:
 
-- **Odd/simple:** $\operatorname{div}_T(\eta) = 1$, splitting as $T \cong U \oplus K$.
+- **Odd/simple:** $\div_T(\eta) = 1$, splitting as $T \cong U \oplus K$.
   The new invariants are $(r-2, a, 1)$.
 
-- **Even, ordinary:** $\operatorname{div}_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
+- **Even, ordinary:** $\div_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
   The new invariants are $(r-2, a-2, 1)$.
 
-- **Even, characteristic:** $\operatorname{div}_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
+- **Even, characteristic:** $\div_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
   The new invariants are $(r-2, a-2, 0)$.
 
 The move replaces $T$ with $\overline{T}_\eta = \eta^{\perp T}/\eta$, navigating Nikulin's pyramid of $2$-elementary lattices to compute cusp diagrams when $\Gamma = \Orth^+(T)$.

@@ -4,6 +4,7 @@
 
 We recall the mirror move algorithm from [@AE22].
 We have Nikulin's 2-elementary diagram:
+:::
 
 ::: {#fig-nikulin-table .figure}
 \begin{tikzpicture}[x=0.6cm, y=0.6cm]
@@ -12,11 +13,10 @@ We have Nikulin's 2-elementary diagram:
 
 White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 0,1$.
 :::
-:::
 
-### Mirror moves {#sec:mirror-moves}
+## Mirror moves {#sec:mirror-moves}
 
-Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can apply the mirror move algorithm of [@AE22 Thm. 5.10] to determine the 0-cusps and 1-cusps of $F_\Co$.
+Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can apply the mirror move algorithm of [@AE22 Thm. 5.10] to determine the 0-cusps and 1-cusps of $\fco$.
 The outcome of the algorithm is summarized by the following tree:
 
 ::: {#fig-mirror-moves-coble .figure}
@@ -27,7 +27,7 @@ The outcome of the algorithm is summarized by the following tree:
 Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.
 :::
 
-Thus $F_\Co$ has one 0-cusp corresponding to an isotropic vector $v_0$ with
+Thus $\fco$ has one 0-cusp corresponding to an isotropic vector $v_0$ with
 
 $$
 v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus E_{8}(2)
@@ -62,7 +62,7 @@ Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/
 We further note that $\div_{T_{\Co}}(v_0) = \div_{T_{\Co}}(v_1) = 2$, which will be an important invariant for establishing a correspondence to cusps of other moduli spaces.
 For an isotropic plane $J$, we denote the divisibilities of the constituent generating vectors as a tuple $(d_1, d_2)$, and in this convention we have $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
 
-By [@CDL25 Prop. 5.4.6], there is an open embedding $F_{(11, 11, 1)} \injects F_{(10,10,0)}$, i.e. $\fco \injects \fen$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
+By [@CDL25 Prop. 5.4.6], there is an open embedding $F_{(11, 11, 1)} \injects F_{\EnriquesInvariants}$, i.e. $\fco \injects \fen$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
 The image is an open subset of a closed irreducible subset of $\mch_{-2}/\Gamma_\En$.
 By [@CDL25 Thm. 5.8.2], the coarse space of $\fco$ is a rational variety, and since $\fen$ is quasiprojective, so too is $\fco$.
 Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\mch_{-2}$ contains the modular curve $X$.

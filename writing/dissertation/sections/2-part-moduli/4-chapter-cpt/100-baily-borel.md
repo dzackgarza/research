@@ -10,11 +10,11 @@ Let $G$ be a connected, simple linear algebraic group defined over $\QQ$ and fix
 .\end{align*}
 
 where $\liep$ is the orthogonal complement to $\liek$ for an invariant symmetric bilinear form $\beta$ on $\lieg$. 
-These spaces frequently arise in moduli problems: for an arithmetic subgroup $\Gamma \subset G(\QQ)$ acting properly discontinuously on $D \da G/K$, the quotient $\dmodgamma{ D }{ \Gamma }$ is a locally symmetric space.
+These spaces frequently arise in moduli problems: for an arithmetic subgroup $\Gamma \subset G(\QQ)$ acting properly discontinuously on $D \definedas G/K$, the quotient $\dmodgamma{ D }{ \Gamma }$ is a locally symmetric space.
 It can be expressed as the double coset space
 $$
-\FG \da \dmodgamma{ D }{ \Gamma } \cong \Gamma \backslash G / K
-= \ts{ \Gamma g K \st g \in G } 
+\FG \definedas \dmodgamma{ D }{ \Gamma } \cong \Gamma \backslash G / K
+= \theset{ \Gamma g K \st g \in G } 
 ,$$
 which is a typically a non-proper, quasi-projective complex variety parameterizing representation-theoretic data such as Hodge structures of a fixed type.
 Such symmetric spaces $(G,K)$ are classified by the restriction of $\beta$:
@@ -65,7 +65,7 @@ gives rise to the **modular curves** $Y_\Gamma = \Gamma \backslash \HH$, which a
 
 Type $\III$ domains take the form $D_g^{\III} = \Sp_g(\CC)/\U_g$ and consist of $g\times g$ symmetric complex matrices $Z$ whose imaginary part is positive definite -- otherwise known as the **Siegel upper half space**,
 $$
-\HH_g = \ts{ Z \in M_{g\times g}(\CC)\st  Z^t = Z,\, \Im(Z) > 0 }
+\HH_g = \theset{ Z \in M_{g\times g}(\CC)\st  Z^t = Z,\, \Im(Z) > 0 }
 ,$$ 
 where $\Im(Z)$ denotes the imaginary part of the matrix $Z$.
 The group $\Sp_{2g}(\ZZ)$ acts by
@@ -83,18 +83,18 @@ producing a coarse moduli space for complex principally polarized abelian variet
 Type $\IV$domains are open subsets of quadric surfaces defined as
 
 \begin{align*}
-\halfpd{T} \da\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }^\circ
+\halfpd{T} \definedas\theset{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }^\circ
 .\end{align*}
 
-where $L$ is a lattice of signature $(2,n)$ and $(\cdot,\cdot)$ denotes the complex *bilinear* extension of the intersection pairing to $L_\CC$. These domains can be realized as open subsets of quadric hypersurfaces in projective space, $Q = \ts{ [\omega] \in \PP^{n+1} \st (\omega, \omega) = 0 }$, and the boundary components of their Baily-Borel compactifications encode possible limiting mixed Hodge structures of varieties.
+where $L$ is a lattice of signature $(2,n)$ and $(\cdot,\cdot)$ denotes the complex *bilinear* extension of the intersection pairing to $L_\CC$. These domains can be realized as open subsets of quadric hypersurfaces in projective space, $Q = \theset{ [\omega] \in \PP^{n+1} \st (\omega, \omega) = 0 }$, and the boundary components of their Baily-Borel compactifications encode possible limiting mixed Hodge structures of varieties.
 
 #### Cusps Parabolic Subgroups
 
-To compactify $\FG$, one must analyze the boundary of $D$. This is achieved via the **Borel embedding**, a $G(\RR)$-equivariant holomorphic open immersion $D \injects \dualof{D}$, where $\dualof{D}$ is the **compact dual**. $\dualof{D}$ can be realized as $\widetilde{G}/K$, where $\widetilde{G}$ is the simply connected complex Lie group with Lie algebra $\widetilde{\lieg} \da  \liek + i\liep \subset \lieg \tensor_{\RR} \CC$.
+To compactify $\FG$, one must analyze the boundary of $D$. This is achieved via the **Borel embedding**, a $G(\RR)$-equivariant holomorphic open immersion $D \injects \dualof{D}$, where $\dualof{D}$ is the **compact dual**. $\dualof{D}$ can be realized as $\widetilde{G}/K$, where $\widetilde{G}$ is the simply connected complex Lie group with Lie algebra $\widetilde{\lieg} \definedas  \liek + i\liep \subset \lieg \tensor_{\RR} \CC$.
 The boundary of the closure of $D$ in $\dualof{D}$, denoted $\bd D$, decomposes as a disjoint union of maximal connected complex-analytic subsets, known as **boundary components** or **cusps**, $\bd D = \Disjoint F_i$.
 For each such component $F$, its stabilizer in $G(\RR)$ is the parabolic subgroup
 $$
-N_F \da  \ts{ g \in G(\RR) \st  g F = F }
+N_F \definedas  \theset{ g \in G(\RR) \st  g F = F }
 .$$
 The maximal parabolic subgroups of $G(\RR)$ are precisely those arising as stabilizers $N_F$ of boundary components $F$, and thus there is a bijective correspondence
 
@@ -109,54 +109,54 @@ $$
 
 #### The Rational Closure
 
-The Baily–Borel compactification of $\FG \da \dmodgamma{ D }{ \Gamma }$, denoted $\bbcpt{\FG}$, is constructed from the **rational closure** of $D$:
+The Baily–Borel compactification of $\FG \definedas \dmodgamma{ D }{ \Gamma }$, denoted $\bbcpt{\FG}$, is constructed from the **rational closure** of $D$:
 
 \begin{align*}
-D^* \da  D \cup \bd D \da D\cup \Disjoint_{F \in B(D)} F
+D^* \definedas  D \cup \bd D \definedas D\cup \Disjoint_{F \in B(D)} F
 .\end{align*}
 
 The arithmetic group $\Gamma$ acts naturally on $D^*$ with only finitely many orbits of boundary strata. The compactification is the quotient space, which can also be expressed as the quotient of $D$ with its boundary adjoined:
 
 \begin{align*}
-\bbcpt{\FG} \da \dmodgamma{D^*}{ \Gamma } 
+\bbcpt{\FG} \definedas \dmodgamma{D^*}{ \Gamma } 
 = \dmodgamma{(D \cup \bd D)}{ \Gamma }
 .
 .\end{align*}
 
-By the main theorem of Baily and Borel, $\bbcpt{\FG}$ is a compact and Hausdorff space that contains $\FG$ as a dense open subset whose boundary $\bd \bbcpt{\FG} \da \bbcpt{\FG} \setminus \FG$ is a finite disjoint union of closed, locally symmetric varieties:
+By the main theorem of Baily and Borel, $\bbcpt{\FG}$ is a compact and Hausdorff space that contains $\FG$ as a dense open subset whose boundary $\bd \bbcpt{\FG} \definedas \bbcpt{\FG} \setminus \FG$ is a finite disjoint union of closed, locally symmetric varieties:
 $\bbcpt{\FG} \setminus \FG = \Disjoint{[F] \in \dmodgamma{B(D)}{\Gamma} } V_F$
 where the indices $[F]$ run over $\Gamma$-orbits rational boundary components. Each component $F$ is itself a Hermitian symmetric domain (or possibly a point), and the stratum $V_F$ is its arithmetic quotient, and we can write
 \begin{align*}
 V_F &= F / N_\Gamma(F) \where
-N_\Gamma(F) \da \Stab_\Gamma(F) / \Fix_\Gamma(F),
+N_\Gamma(F) \definedas \Stab_\Gamma(F) / \Fix_\Gamma(F),
 \\
-\Aut(V_F) &= G_F \da \Stab_{G(\RR)}(F) / \Fix_{G(\RR)}(F)
+\Aut(V_F) &= G_F \definedas \Stab_{G(\RR)}(F) / \Fix_{G(\RR)}(F)
 .\end{align*}
 Since $F$ is rational, $N_\Gamma(F)$ is a discrete arithmetic subgroup of the Lie group $G_F$. As $F$ is an HSD, the quotient $V_F$ inherits the structure of a locally symmetric variety.
 
 #### Projectivity via Automorphic Forms
 
 A foundational result of @BB66 is that $\bbcpt{\FG}$ can alternatively be constructed from the space of automorphic forms for $\Gamma$ and a canonical automorphic line bundle, showing it is a normal projective variety.
-Letting $D = G(\RR)/K$ be a Hermitian symmetric domain associated to a symmetric pair $(G, K)$, and $\Gamma \subset G(\QQ)$  be an arithmetic subgroup acting properly discontinuously on $D$ as above, there is a distinguished $G(\RR)$-equivariant ample line bundle $\mcl = \mcl_\chi$ on $D$ defined by a particular character $\chi: K\to \CCstar$. In cases of interest, such as the Siegel and Type $\IV$ cases $D = \Sp_g(\RR)/\U_g$ or $D = \Orth_{2,n}(\RR)/(\Orth_2(\RR)\times\Orth_n(\RR))$, the bundle $\mcl$ is the determinant of the Hodge bundle or the inverse tautological bundle, respectively, where for a smooth, proper family of $n$-dimensional varieties $\pi: X \to S$, the **Hodge bundle** is the vector bundle $\EE \da  \pi_*\Omega^n_{X/S}$ whose fiber over $s \in S$ is $H^0(\Omega^n_{X_s})$, the space of global holomorphic $n$-forms on the fiber $X_s$. For $\Mg$, this reduces to the pushforward $\pi_* \omega_{\mcc/\Mg}$ of the relative dualizing sheaf of the universal curve $\pi: \mcc \to \Mg$, and for $\Ag$ one often passes to its determinant, the **Hodge line bundle**.
+Letting $D = G(\RR)/K$ be a Hermitian symmetric domain associated to a symmetric pair $(G, K)$, and $\Gamma \subset G(\QQ)$  be an arithmetic subgroup acting properly discontinuously on $D$ as above, there is a distinguished $G(\RR)$-equivariant ample line bundle $\mcl = \mcl_\chi$ on $D$ defined by a particular character $\chi: K\to \CCstar$. In cases of interest, such as the Siegel and Type $\IV$ cases $D = \Sp_g(\RR)/\U_g$ or $D = \Orth_{2,n}(\RR)/(\Orth_2(\RR)\times\Orth_n(\RR))$, the bundle $\mcl$ is the determinant of the Hodge bundle or the inverse tautological bundle, respectively, where for a smooth, proper family of $n$-dimensional varieties $\pi: X \to S$, the **Hodge bundle** is the vector bundle $\EE \definedas  \pi_*\Omega^n_{X/S}$ whose fiber over $s \in S$ is $H^0(\Omega^n_{X_s})$, the space of global holomorphic $n$-forms on the fiber $X_s$. For $\Mg$, this reduces to the pushforward $\pi_* \omega_{\mcc/\Mg}$ of the relative dualizing sheaf of the universal curve $\pi: \mcc \to \Mg$, and for $\Ag$ one often passes to its determinant, the **Hodge line bundle**.
 
-For arithmetic groups $\Gamma$ as above, an **automorphic form of weight $k$ for $\Gamma$** (with *factor of automorphy* $j$) is a holomorphic section $f \in H^0( \mcl^{\tensor k})$ of the $k$th tensor power of $\mcl$ such that the $\gamma^* f = f$ for all $\gamma \in \Gamma$.
+For arithmetic groups $\Gamma$ as above, an **automorphic form of weight $k$ for $\Gamma$** (with *factor of automorphy* $j$) is a holomorphic section $f \in H^0( \mcl^{\tensor_{\OO_D} k})$ of the $k$th tensor power of $\mcl$ such that the $\gamma^* f = f$ for all $\gamma \in \Gamma$.
 Locally, this recovers the familiar automorphy condition
 $$
 f(\gamma \cdot z) = j(\gamma, z)^k \cdot f(z) \qquad \text{for all } \gamma \in \Gamma, z\in D
 .$$
-We define the space of weight $k$ $\Gamma$-automorphic forms as the invariants sections of $\mcl^{\tensor k}$, which assemble to a graded ring:
+We define the space of weight $k$ $\Gamma$-automorphic forms as the invariants sections of $\mcl^{\tensor_{\OO_D} k}$, which assemble to a graded ring:
 $$
-A_k(\Gamma) \da  H^0(D, \mcl^{\tensor k})^\Gamma,
+A_k(\Gamma) \definedas  H^0(D, \mcl^{\tensor_{\OO_D} k})^\Gamma,
 \qquad
-R_\Gamma \da \bigoplus_{k \geq 0} A_k(\Gamma)
+R_\Gamma \definedas \bigoplus_{k \geq 0} A_k(\Gamma)
 .$$
 @BB66 shows that that $R_\Gamma$ is a finitely generated $\CC$-algebra, and there is an identification $\bbcpt{\FG} \cong \Proj(R_\Gamma)$.
-Moreover, $\mcl$ descends to an ample line bundle on $\bbcpt{\FG}$ and the sections of $\mcl^{\tensor k}$ satisfy the analytic growth conditions at cusps of $\FG$ in analogy to classical modular forms for $\SL_{2}(\ZZ)$.
+Moreover, $\mcl$ descends to an ample line bundle on $\bbcpt{\FG}$ and the sections of $\mcl^{\tensor_{\OO_{\bbcpt{\FG}}} k}$ satisfy the analytic growth conditions at cusps of $\FG$ in analogy to classical modular forms for $\SL_{2}(\ZZ)$.
 This construction is canonical and functorial: any $(\Gamma_1, \Gamma_2)$-equivariant morphism $F_{\Gamma_1} \to F_{\Gamma_2}$ compatible with $\mcl_1$ and $\mcl_2$ extends uniquely to a morphism between their Baily–Borel compactifications. However, this typically introduces singularities on $\bd\bbcpt{\FG}$, motivating further refinements, e.g., semitoroidal or KSBA compactifications.
 
 #### Cusps and Boundary Strata
 
-Let $T$ be an even lattice of signature $(2, n)$, let $\Gamma\leq \Orth(L)$ be a (neat) arithmetic subgroup, and let $D \da \halfpd{T}$ be the corresponding period domain with arithmetic quotient $\FG \da \dmodgamma{ \halfpd{T} }{ \Gamma }$.
+Let $T$ be an even lattice of signature $(2, n)$, let $\Gamma\leq \Orth(L)$ be a (neat) arithmetic subgroup, and let $D \definedas \halfpd{T}$ be the corresponding period domain with arithmetic quotient $\FG \definedas \dmodgamma{ \halfpd{T} }{ \Gamma }$.
 The rational boundary components of $D$ have dimensions $0$ ("Type $\III$") or $1$ ("Type $\II$"). There are canonical bijections between $\Gamma$-orbits of the following sets:
 
 - Rational boundary components of $D$,
@@ -169,16 +169,16 @@ These bijections are compatible with the natural poset structures: inclusion $I_
 The above bijection then extends to an isomorphism of $\ZZ$-graded posets, up to a shift: rank $k$ isotropic sublattices correspond to boundary components of dimension $k-1$.
 This is the fundamental bijection which makes $\bbcpt{\FG}$ accessible by lattice-theoretic methods.
 
-To conclude, let $\eta \in T$ be a primitive isotropic vector and set $\bdlattice{T}{\eta} \da  \eta^{\perp T}/\langle\eta\rangle$, which is an even lattice of signature $(1, n-1)$. Recall that the **stable boundary group** is defined as $\Gamma_\eta \da  \Stab_\Gamma(\eta)/U_\eta$, where $\Stab_\Gamma(\eta)$ is the stabilizer of $\eta$ in $\Gamma$ and $U_\eta$ is its unipotent radical. Associated to $\Gamma_\eta$ is its **stable reflection group** $W(\Gamma_\eta) \subseteq \Orth(\bdlattice{T}{\eta})$, generated by reflections in roots of $\bdlattice{T}{\eta}$ contained in $\Gamma_\eta$. Denote by $\thecone{C}(\Gamma_\eta)$ the *fundamental chamber*, which is the convex polyhedral cone in $\bdlattice{T}{\eta, \RR}$ consisting of those vectors $v$ satisfying $(\alpha, v) \geq 0$ for each simple root $\alpha$ corresponding to the chosen system of reflections.
+To conclude, let $\eta \in T$ be a primitive isotropic vector and set $\bdlattice{T}{\eta} \definedas  \eta^{\perp T}/\langle\eta\rangle$, which is an even lattice of signature $(1, n-1)$. Recall that the **stable boundary group** is defined as $\Gamma_\eta \definedas  \Stab_\Gamma(\eta)/U_\eta$, where $\Stab_\Gamma(\eta)$ is the stabilizer of $\eta$ in $\Gamma$ and $U_\eta$ is its unipotent radical. Associated to $\Gamma_\eta$ is its **stable reflection group** $W(\Gamma_\eta) \subseteq \Orth(\bdlattice{T}{\eta})$, generated by reflections in roots of $\bdlattice{T}{\eta}$ contained in $\Gamma_\eta$. Denote by $\thecone{C}(\Gamma_\eta)$ the *fundamental chamber*, which is the convex polyhedral cone in $\bdlattice{T}{\eta, \RR}$ consisting of those vectors $v$ satisfying $(\alpha, v) \geq 0$ for each simple root $\alpha$ corresponding to the chosen system of reflections.
 The local data for a toroidal compactification at the $0$-cusp $F_\eta$ comes from attaching a toric variety constructed from the positive cone and its rational closure,
 
 \begin{align*}
-\thecone{C}_\eta \da  \ts{
+\thecone{C}_\eta \definedas  \theset{
 v \in \bdlattice{T}{\eta, \RR} \st v^2 > 0
 }
 \qquad
-\thecone{C}_{\eta,\QQ} \da  
-\thecone{C}_{\eta, \RR} \union \ts{ v\in \bdlattice{T}{\eta, \QQ} \st v^2 = 0}
+\thecone{C}_{\eta,\QQ} \definedas  
+\thecone{C}_{\eta, \RR} \union \theset{ v\in \bdlattice{T}{\eta, \QQ} \st v^2 = 0}
 ,
 .\end{align*}
 

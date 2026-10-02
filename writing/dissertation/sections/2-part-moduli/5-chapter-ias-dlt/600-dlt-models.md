@@ -42,14 +42,13 @@ $$
 $$
 specifies gluing the vectors $(3, -3), (2, 2), (-3, 3), (-2, -2)$ in a sequence, forming a rectangular polygon, and then performing Symington surgeries of sizes $1,2,3,2$ respectively.
 The resulting polygon is as follows:
-
-::: {#fig-dlt-third-cusp-polygon .figure}
-
-The full polygon $B(\lambda)$ is then obtained by gluing together two copies of this polygon along the blue equator, where a representation of the doubled polygon is depicted in [@AEGS25, Fig. 13]. Taking the star at each vertex yields a semitoric surface.
 :::
 
+::: {#fig-dlt-third-cusp-polygon .figure}
 \input{tikz/ias_eta3_polygon.tex}
 
 The integral-affine polygon associated to the third cusp $\eta_3$ after the indicated Symington surgeries.
-
 :::
+
+The full polygon $B(\lambda)$ is then obtained by gluing together two copies of this polygon along the blue equator, where a representation of the doubled polygon is depicted in [@AEGS25, Fig. 13].
+Taking the star at each vertex yields a semitoric surface.

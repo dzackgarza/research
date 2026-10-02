@@ -28,9 +28,9 @@ header-includes:
     \newtheorem{warning}[theorem]{Warning}
 ---
 
-# Introduction and logical status {#sec-introduction}
+## Introduction and logical status {#sec-introduction}
 
-## Purpose {#sec-purpose}
+### Purpose {#sec-purpose}
 
 This report fixes a common mathematical language for the study of the degree-2 Coble locus associated with the $(-2)$-Heegner arrangement in the period space of numerically degree-$2$ polarized Enriques surfaces.
 It has four purposes.
@@ -50,7 +50,7 @@ The report is not a proof of the final Coble compactification theorem.
 It is a mathematical specification of the objects and the exact statements that a proof must establish.
 This distinction is essential because several plausible computations discussed below are computations of finite quadratic spaces or hyperplane slices, not yet computations of arithmetic cusps or Vinberg chambers.
 
-## Convention on logical status {#sec-status-convention}
+### Convention on logical status {#sec-status-convention}
 
 The following convention is used throughout.
 
@@ -68,7 +68,7 @@ The following convention is used throughout.
 
 Thus the report uses formal mathematical language without disguising the logical status of unfinished comparison statements.
 
-## Central compactification problem {#sec-central-problem}
+### Central compactification problem {#sec-central-problem}
 
 Let $T_{\mathrm{En}} \cong U\oplus U(2)\oplus E_8(2)$ be the Enriques anti-invariant lattice in the AEGS degree-$2$ construction, and let $\alpha\in T_{\mathrm{En}}$ be a primitive vector with $\alpha^2=-2$.
 The hyperplane $\mathbb D(T_{\mathrm{En}})\cap\alpha^\perp$ is the period domain of the Coble Heegner locus.
@@ -77,7 +77,7 @@ The final problem is to identify the normalization of the KSBA closure of that l
 The ambient AEGS theorem supplies the model for the required level of specificity: the compactification is meaningful only after the lattices, groups, divisors, cusp data, Coxeter data, and stable-pair contractions have all been identified.
 The research prompt explicitly treats those data as part of the theorem rather than optional consequences.
 
-## Principal distinction between the two strategies {#sec-two-strategies}
+### Principal distinction between the two strategies {#sec-two-strategies}
 
 There are two conceptually different ways to organize the proof.
 
@@ -91,9 +91,9 @@ There are two conceptually different ways to organize the proof.
 The second strategy avoids using the Enriques compactification as a black box, but it creates a separate comparison theorem at the end.
 The first strategy uses more existing geometry, but it requires careful normalization and monodromy arguments that cannot be replaced by the phrase “restrict the semifan.”
 
-# Terminology, notation, and standard background {#sec-terminology}
+## Terminology, notation, and standard background {#sec-terminology}
 
-## General conventions {#sec-general-conventions}
+### General conventions {#sec-general-conventions}
 
 The ground field is $\mathbb C$.
 All lattices are free abelian groups of finite rank equipped with a nondegenerate symmetric bilinear form.
@@ -106,7 +106,7 @@ For an even lattice $M$, its discriminant group and discriminant quadratic form 
 A primitive embedding is an embedding whose cokernel is torsion free.
 The classification and gluing theory of even $2$-elementary lattices are used in the sense of Nikulin [@Nik79].
 
-## Surface singularities and covers {#sec-surface-terminology}
+### Surface singularities and covers {#sec-surface-terminology}
 
 A **rational double point** or **ADE singularity** is a Du Val surface singularity.
 An **$A_1$-singularity** is analytically $\{xy-z^2=0\}\subset\mathbb A^3$.
@@ -131,7 +131,7 @@ Nonnormal surfaces can nevertheless occur at the KSBA boundary through conductor
 The terms **index-one cover**, **reflexive power**, **deminormal**, **semi-log-canonical**, and **divisorially log terminal** are used in the standard MMP sense [@KM98; @Kol23; @Stacks].
 In particular, an slc pair is tested by requiring the normalized pair with conductor to be log canonical, not klt.
 
-## K3, Enriques, and Coble terminology {#sec-surface-classes}
+### K3, Enriques, and Coble terminology {#sec-surface-classes}
 
 A K3 surface is a smooth projective surface $X$ with $K_X\sim0$ and $H^1(X,\mathcal O_X)=0$.
 An Enriques surface is a smooth projective surface $Z$ with $2K_Z\sim0$, $K_Z\not\sim0$, and $q(Z)=0$; see [@CD89; @CDL24].
@@ -139,13 +139,13 @@ An Enriques surface is a smooth projective surface $Z$ with $2K_Z\sim0$, $K_Z\no
 The word **Coble surface** is used in two closely related senses in the literature.
 To remove ambiguity, this report uses the following notation.
 
-::: {.definition #def:singular-coble}
-**Definition (singular Coble quotient).** A *singular Coble quotient* is a normal rational surface $V^\sharp$ obtained as the quotient of a K3 surface $X^\sharp$ with one $A_1$-singularity by a nonsymplectic involution that fixes the singular point and is otherwise free in codimension one.
+::: {.definition #def:singular-coble title="singular Coble quotient"}
+A *singular Coble quotient* is a normal rational surface $V^\sharp$ obtained as the quotient of a K3 surface $X^\sharp$ with one $A_1$-singularity by a nonsymplectic involution that fixes the singular point and is otherwise free in codimension one.
 The quotient has one singularity of type $\frac{1}{4}(1,1)$.
 :::
 
-::: {.definition #def:resolved-coble}
-**Definition (resolved Coble surface).** The *resolved Coble surface* $\widetilde V$ is the minimal resolution of $V^\sharp$.
+::: {.definition #def:resolved-coble title="resolved Coble surface"}
+The *resolved Coble surface* $\widetilde V$ is the minimal resolution of $V^\sharp$.
 It is a smooth rational surface satisfying
 
 \[
@@ -160,21 +160,21 @@ on the classical one-node locus.
 The resolved surface is the object traditionally called a classical Coble surface.
 The singular quotient is the natural $K$-trivial object for the small-coefficient KSBA problem.
 
-## Polarizations {#sec-polarization-terminology}
+### Polarizations {#sec-polarization-terminology}
 
 A **quasipolarization** is a nef and big line bundle.
 A polarization is ample.
 This distinction is essential in the Coble setting: the natural class on $\widetilde V$ is orthogonal to the anti-bicanonical $(-4)$-curve and is therefore not ample.
 It becomes ample after contracting the complete null locus.
 
-## Period domains and Heegner divisors {#sec-period-terminology}
+### Period domains and Heegner divisors {#sec-period-terminology}
 
 For a lattice $T$ of signature $(2,n)$, a connected type-IV domain is
 
 \[
 \mathbb D(T)
  =\left\{
- [\omega]\in\mathbb P(T\otimes\mathbb C)
+ [\omega]\in\mathbb P(T\otimes_\ZZ\mathbb C)
  : (\omega,\omega)=0,
    (\omega,\overline\omega)>0
  \right\}^{+}.
@@ -186,7 +186,7 @@ See [@BB66; @Loo03] for the compactification theory and [@Nik79; @Nam85] for the
 
 A primitive isotropic line in $T$ determines a zero-dimensional Baily--Borel boundary component, called a **$0$-cusp**. A primitive isotropic plane determines a one-dimensional boundary component, called a **$1$-cusp**. The arithmetic orbit, not merely the rational isotropic subspace, is part of the cusp datum.
 
-## Reflection theory {#sec-reflection-terminology}
+### Reflection theory {#sec-reflection-terminology}
 
 Let $M$ be hyperbolic.
 For a negative vector $r\in M$, the reflection is
@@ -203,7 +203,7 @@ A maximal parabolic subdiagram determines an isotropic ray and hence a Type II d
 An elliptic subdiagram determines a Type III cone.
 The terminology and algorithms are those of Vinberg [@Vin72; @Vin75].
 
-## Degenerations and integral-affine structures {#sec-degeneration-terminology}
+### Degenerations and integral-affine structures {#sec-degeneration-terminology}
 
 A **Kulikov model** is a semistable $K$-trivial model of a degeneration of K3 surfaces [@Kul77; @PP81].
 Type II degenerations have dual complex a segment; Type III degenerations have dual complex a $2$-sphere.
@@ -214,7 +214,7 @@ Its integral-affine polarization is a weighted balanced graph on the dual comple
 A **visible curve** is a curve class represented by a path joining affine singularities with parallel monodromy.
 Collapsing such a path can merge two $I_1$ affine singularities into an $I_2$ singularity.
 
-## KSBA and semitoroidal compactifications {#sec-compactification-terminology}
+### KSBA and semitoroidal compactifications {#sec-compactification-terminology}
 
 A KSBA stable pair $(X,B)$ is a projective deminormal pair such that $(X,B)$ is slc and $K_X+B$ is ample and $\mathbb Q$-Cartier [@Kol23].
 For small-coefficient polarized Calabi--Yau pairs, boundedness and independence of sufficiently small $\epsilon$ are used in the form of [@KX20; @Bir23].
@@ -223,9 +223,9 @@ A toroidal compactification is defined by compatible rational polyhedral fans at
 A semitoroidal compactification is defined by compatible semifans; cones may have infinitely many rational generators [@Loo03; @AE23].
 A generalized Coxeter semifan is obtained from a Coxeter fan by removing the walls generated entirely by roots that are invisible to the stable-pair combinatorics [@AET23; @AEGS25].
 
-# The ambient AEGS framework {#sec-aegs-framework}
+## The ambient AEGS framework {#sec-aegs-framework}
 
-## The projective Klein-four diagram {#sec-aegs-projective}
+### The projective Klein-four diagram {#sec-aegs-projective}
 
 Let $Y=\mathbb P^1\times\mathbb P^1$ and $\tau(x,y)=(-x,-y)$ on the dense torus.
 Let $B\in|-2K_Y|=|\mathcal O_Y(4,4)|$ be $\tau$-invariant, with at worst ADE singularities, and assume that $B$ avoids the four fixed points of $\tau$.
@@ -249,7 +249,7 @@ The first two are nonsymplectic and the product is symplectic.
 The quotient $Z=X/\iota_{\mathrm{En}}$ is generically Enriques, while $X/\iota_{\mathrm{Nik}}$ is a K3 surface with eight $A_1$ singularities.
 The ramification divisor used in the AEGS stable-pair problem is the ramification of the **del Pezzo involution**, not the fixed locus of the Enriques involution.
 
-## The AEGS lattice package {#sec-aegs-lattices}
+### The AEGS lattice package {#sec-aegs-lattices}
 
 The involutions act on $L_{K3}=U^3\oplus E_8^2$ with eigenspaces
 
@@ -267,8 +267,8 @@ T_{\mathrm{En}}\cong U\oplus U(2)\oplus E_8(2).
 
 The degree-$4$ K3 polarization is a vector $H\in S_{\mathrm{dP}}\subset S_{\mathrm{En}}$ with $H^2=4$.
 
-::: {.theorem #thm:aegs-rigidity}
-**Theorem (AEGS embedding rigidity).** The primitive embedding chain
+::: {.theorem #thm:aegs-rigidity title="AEGS embedding rigidity"}
+The primitive embedding chain
 
 \[
 T_{\mathrm{En}}\hookrightarrow T_{\mathrm{dP}}
@@ -281,7 +281,7 @@ is unique up to $O(L_{K3})$.
 This theorem is the model for the stronger labeled rigidity statement needed for the Coble problem.
 It prevents later constructions from depending on a hidden coordinate choice.
 
-## AEGS arithmetic groups and period maps {#sec-aegs-groups}
+### AEGS arithmetic groups and period maps {#sec-aegs-groups}
 
 AEGS define
 
@@ -300,7 +300,7 @@ Consequently the period-domain inclusion gives a finite generically injective ma
 The group definition is geometric: it is taken from the common K3 lattice, the involution, and the polarization.
 This is the standard that any direct Coble group must meet.
 
-## The AEGS compactification theorem {#sec-aegs-main-theorem}
+### The AEGS compactification theorem {#sec-aegs-main-theorem}
 
 AEGS define stable pairs $(Z,\epsilon R_Z)$, where $R_Z$ is the divisorial ramification of the descended del Pezzo involution.
 Their main theorem identifies the normalization of the KSBA closure with a semitoroidal compactification described by five explicit semifans.
@@ -328,9 +328,9 @@ The proof has the following indispensable stages.
 
 This architecture will be used repeatedly below as a list of theorem types, not as a black-box proof of the Coble case.
 
-# Direct Coble geometry from invariant $(4,4)$ curves {#sec-projective-coble}
+## Direct Coble geometry from invariant $(4,4)$ curves {#sec-projective-coble}
 
-## The invariant linear system {#sec-invariant-system}
+### The invariant linear system {#sec-invariant-system}
 
 The vector space $H^0\bigl(Y,\mathcal O_Y(4,4)\bigr)^\tau$ has basis the monomials whose two affine exponents have even sum.
 It has dimension $13$, so its projectivization is $\mathbb P^{12}$.
@@ -347,11 +347,12 @@ f(x,y)
 
 There are no linear terms.
 
-::: {.lemma #lem:node-condition}
-**Lemma (node condition).** The curve $B=(f=0)$ has an ordinary node at $p$ if and only if $a_{00}=0$ and $a_{11}^2-4a_{20}a_{02}\ne0$.
+::: {.lemma #lem:node-condition title="node condition"}
+The curve $B=(f=0)$ has an ordinary node at $p$ if and only if $a_{00}=0$ and $a_{11}^2-4a_{20}a_{02}\ne0$.
 :::
 
-**Proof sketch.** The first condition says that $p\in B$.
+::: {.proof}
+The first condition says that $p\in B$.
 Invariance kills the linear part.
 The second condition says that the quadratic tangent cone is nondegenerate.
 This is the analytic criterion for an ordinary plane node.
@@ -359,8 +360,9 @@ This is the analytic criterion for an ordinary plane node.
 A general member satisfying these conditions is smooth away from $p$.
 This is an open condition, and it is enough to exhibit one member having no other singularities.
 A symbolic example is recorded in @sec-computational-record.
+:::
 
-## Toric interpretation {#sec-coble-toric-model}
+### Toric interpretation {#sec-coble-toric-model}
 
 Let $Q$ be the square polytope of $\mathcal O_Y(4,4)$.
 The quotient $W=Y/\tau$ is the toric surface defined by the same rational polygon but with cocharacter lattice $\mathbb Z^2_{\mathrm{ev}} =\{(a,b)\in\mathbb Z^2:a+b\in2\mathbb Z\}$.
@@ -377,7 +379,7 @@ The quotient by the sign involution uses the lattice
 Passing through a chosen torus-fixed point is the vanishing of the coefficient of the corresponding vertex monomial.
 The nondegeneracy of the quadratic part is the local node condition of the preceding lemma.
 
-## The nodal K3 cover and the Coble quotient {#sec-cover-quotient}
+### The nodal K3 cover and the Coble quotient {#sec-cover-quotient}
 
 Let $X^\sharp=\{z^2=f(x,y)\}\longrightarrow Y$.
 
@@ -394,11 +396,12 @@ commute.
 The first is the del Pezzo deck involution.
 The second fixes the $A_1$-point.
 
-::: {.proposition #prop:local-quarter}
-**Proposition (local Coble quotient).** The quotient $X^\sharp/\iota_{\mathrm{Co}}$ has a singularity of type $\frac{1}{4}(1,1)$ at the image of the node.
+::: {.proposition #prop:local-quarter title="local Coble quotient"}
+The quotient $X^\sharp/\iota_{\mathrm{Co}}$ has a singularity of type $\frac{1}{4}(1,1)$ at the image of the node.
 :::
 
-**Proof.** Write
+::: {.proof}
+Write
 
 \[
 X^\sharp_{\mathrm{an}}
@@ -409,22 +412,23 @@ X^\sharp_{\mathrm{an}}
 using $x=u^2$, $y=v^2$, and $z=uv$.
 The involution on the node lifts to $(u,v)\mapsto(iu,iv)$.
 The composite quotient is therefore $\mathbb A^2/\mu_4$ with scalar weights $(1,1)$.
+:::
 
-## Equivariant smoothing {#sec-equivariant-smoothing}
+### Equivariant smoothing {#sec-equivariant-smoothing}
 
 Vary the constant coefficient $a_{00}$ in a one-parameter family.
 For $a_{00}\ne0$, the branch curve avoids the fixed point $p$, the K3 cover is smooth near the corresponding fiber, and the involution $\iota_{\mathrm{Co}}$ has no point over $p$.
 If the branch curve avoids all four $\tau$-fixed points, then the same fixed-point calculation shows that $\iota_{\mathrm{Co}}$ is fixed-point free.
 Its quotient is an Enriques surface.
 
-::: {.proposition #prop:explicit-smoothing}
-**Proposition (explicit Coble-to-Enriques smoothing).** The invariant $(4,4)$ family obtained by varying $a_{00}$ gives an explicit equivariant smoothing of the singular Coble quotient to Enriques quotients.
+::: {.proposition #prop:explicit-smoothing title="explicit Coble-to-Enriques smoothing"}
+The invariant $(4,4)$ family obtained by varying $a_{00}$ gives an explicit equivariant smoothing of the singular Coble quotient to Enriques quotients.
 :::
 
 This proposition proves existence of one smoothing mechanism.
 It does not imply that every abstract smoothing of the K3 cover carries an extension of the node-fixing involution.
 
-## Dimension and coverage {#sec-projective-coverage}
+### Dimension and coverage {#sec-projective-coverage}
 
 The projective invariant linear system has dimension $12$.
 Imposing $a_{00}=0$ gives a hyperplane, and the connected centralizer of $\tau$ in $\operatorname{Aut}(Y)$ has dimension $2$.
@@ -432,17 +436,17 @@ Thus the expected moduli dimension is $12-1-2=9$.
 
 The finite symmetry group permutes the four fixed points.
 
-::: {.problem #prob:projective-coverage}
-**Required theorem (projective coverage and intrinsic reconstruction).** The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer of $\tau$ is the complete direct moduli stack of generic degree-$2$ Coble data.
+::: {.problem #prob:projective-coverage title="Required theorem (projective coverage and intrinsic reconstruction)"}
+The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer of $\tau$ is the complete direct moduli stack of generic degree-$2$ Coble data.
 Equivalently, the projective diagram can be reconstructed intrinsically from the Coble pair, and the resulting period map has image the full relevant period-domain component.
 :::
 
 A dimension count and one explicit family do not prove this theorem.
 A proof must establish irreducibility at the level of the actual arithmetic group and recover the K3 cover, the two involutions, and the degree-$4$ class from the Coble datum.
 
-# The Coble lattice package {#sec-coble-lattices}
+## The Coble lattice package {#sec-coble-lattices}
 
-## The orthogonal complement lattice {#sec-orthogonal-complement}
+### The orthogonal complement lattice {#sec-orthogonal-complement}
 
 Write $T_{\mathrm{En}} \cong U\oplus E(2)$ and $E=U\oplus E_8$.
 
@@ -452,8 +456,8 @@ Then $\alpha^2=-2$, $\eta^2=2$, and $(\alpha,\eta)=0$.
 
 The notation $\eta$ is deliberately used here: the letter $H$ is reserved for the degree-$4$ K3 polarization in the AEGS construction.
 
-::: {.proposition #prop:coble-transcendental}
-**Proposition (Coble anti-invariant lattice).** The orthogonal complement of $\alpha$ in $T_{\mathrm{En}}$ is
+::: {.proposition #prop:coble-transcendental title="Coble anti-invariant lattice"}
+The orthogonal complement of $\alpha$ in $T_{\mathrm{En}}$ is
 
 \[
 T_{\mathrm{Co}}
@@ -465,17 +469,19 @@ It has signature $(2,9)$, rank $11$, discriminant group $(\mathbb Z/2)^{11}$, an
 Equivalently, $T_{\mathrm{Co}}\cong I_{2,9}(2)$.
 :::
 
-**Proof.** The first copy of $U$ decomposes over the sublattice $\mathbb Z\alpha\oplus\mathbb Z\eta$, and the orthogonal complement of $\alpha$ there is $\mathbb Z\eta\cong\langle2\rangle$.
+::: {.proof}
+The first copy of $U$ decomposes over the sublattice $\mathbb Z\alpha\oplus\mathbb Z\eta$, and the orthogonal complement of $\alpha$ there is $\mathbb Z\eta\cong\langle2\rangle$.
 The remaining summand is $E(2)=U(2)\oplus E_8(2)$.
 The stated invariants follow directly.
+:::
 
-## The invariant lattice and the reflection twist {#sec-reflection-twist}
+### The invariant lattice and the reflection twist {#sec-reflection-twist}
 
 Let $I_{\mathrm{En}}$ be the Enriques involution on the K3 lattice, acting as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$.
 Let $w_\alpha$ be the reflection in the root $\alpha$.
 
-::: {.construction #cons:reflection-twist}
-**Construction (reflection twist).** Define
+::: {.construction #cons:reflection-twist title="reflection twist"}
+Define
 
 \[
 I_{\mathrm{Co}}:=w_\alpha I_{\mathrm{En}}.
@@ -484,8 +490,8 @@ I_{\mathrm{Co}}:=w_\alpha I_{\mathrm{En}}.
 
 Since $I_{\mathrm{En}}(\alpha)=-\alpha$, the two factors commute.
 
-::: {.proposition #prop:coble-eigenspaces}
-**Proposition (eigenspaces of the reflection twist).** One has
+::: {.proposition #prop:coble-eigenspaces title="eigenspaces of the reflection twist"}
+One has
 
 \[
 L_{K3}^{I_{\mathrm{Co}}=1}
@@ -510,13 +516,15 @@ S_{\mathrm{Co}}
 \]
 :::
 
-**Proof.** The reflection fixes $\alpha^\perp$ and sends $\alpha$ to $-\alpha$.
+::: {.proof}
+The reflection fixes $\alpha^\perp$ and sends $\alpha$ to $-\alpha$.
 The formula follows by separating $S_{\mathrm{En}}$, $\mathbb Z\alpha$, and $\alpha^\perp_{T_{\mathrm{En}}}$.
 
 The abstract eigenspace computation agrees with the lattice type appearing in the period theory of classical Coble surfaces [@DK13].
 It does not, by itself, prove that every family of direct Coble data realizes the same labeled embedding in $L_{K3}$.
+:::
 
-## The local geometric meaning of the root {#sec-root-geometry}
+### The local geometric meaning of the root {#sec-root-geometry}
 
 Let $\widetilde X\longrightarrow X^\sharp$ be the minimal resolution of the $A_1$-point, and let $E\subset\widetilde X$ be the exceptional $(-2)$-curve.
 In the explicit local model, the lift of $\iota_{\mathrm{Co}}$ fixes $E$ pointwise, while the lift of $\iota_{\mathrm{dP}}$ acts nontrivially on $E$ with two fixed points.
@@ -525,7 +533,7 @@ The cohomology class $[E]$ is the geometric realization of $\alpha$ after a choi
 The involution $I_{\mathrm{Co}}$ is therefore the expected cohomological involution on the resolved cover.
 Turning this expectation into a global statement in families requires a simultaneous resolution and a rigidity theorem; see @sec-labeled-lattice-data.
 
-## Labeled lattice data {#sec-labeled-lattice-data}
+### Labeled lattice data {#sec-labeled-lattice-data}
 
 The abstract isomorphism type of $T_{\mathrm{Co}}$ does not determine the geometric moduli problem.
 The relevant datum is a labeled tuple
@@ -538,7 +546,7 @@ The relevant datum is a labeled tuple
  I_{\mathrm{dP}},
  H,
  \alpha,
- \mathscr C
+ \mcc
  \bigr),
 \]
 
@@ -550,18 +558,18 @@ where
 
 - $\alpha^2=-2$, $H\cdot\alpha=0$, and $\alpha$ is fixed by $I_{\mathrm{Co}}$;
 
-- $\mathscr C$ is the chosen positive/nef chamber in which $\alpha$ is effective and $H$ is nef and big;
+- $\mcc$ is the chosen positive/nef chamber in which $\alpha$ is effective and $H$ is nef and big;
 
 - the product $I_{\mathrm{Co}}I_{\mathrm{dP}}$ has the required symplectic character.
 
-::: {.problem #prob:coble-rigidity}
-**Required theorem (labeled Coble rigidity).** Any two tuples $\mathfrak L_{\mathrm{Co},2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
+::: {.problem #prob:coble-rigidity title="Required theorem (labeled Coble rigidity)"}
+Any two tuples $\mathfrak L_{\mathrm{Co},2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
 :::
 
 This is stronger than uniqueness of a primitive embedding of $S_{\mathrm{Co}}$ into $L_{K3}$.
 It is the Coble analogue of the AEGS embedding-rigidity lemma and is needed before any direct period quotient can be declared coordinate independent.
 
-## The embedded comparison chain {#sec-embedded-chain}
+### The embedded comparison chain {#sec-embedded-chain}
 
 The Heegner strategy uses the chain
 
@@ -576,9 +584,9 @@ T_{\mathrm{Co}}
 The autonomous strategy begins with the leftmost lattice as the anti-invariant lattice of $I_{\mathrm{Co}}$ and must later construct and identify the two larger lattices.
 The comparison theorem must show that the two chains are conjugate as **labeled embedded chains**, not merely termwise isometric.
 
-# The resolved surface, the quasipolarization, and the stable divisor {#sec-surface-divisors}
+## The resolved surface, the quasipolarization, and the stable divisor {#sec-surface-divisors}
 
-## The resolved quotient diagram {#sec-resolved-diagram}
+### The resolved quotient diagram {#sec-resolved-diagram}
 
 Let $\psi:\widetilde X\longrightarrow\widetilde V$ be the quotient of the resolved K3 cover by $\iota_{\mathrm{Co}}$.
 Let $E\subset\widetilde X$ be the fixed exceptional curve and let $C:=\psi(E)\subset\widetilde V$.
@@ -590,8 +598,8 @@ The class $H$ satisfies $H^2=4$ and $H\cdot E=0$.
 
 With the natural descent linearization, there is a class $L\in\operatorname{Pic}(\widetilde V)$ such that $\psi^*L=H$.
 
-::: {.proposition #prop:quasipolarization}
-**Proposition (degree-$2$ quasipolarization).** The class $L$ satisfies $L^2=2$ and $L\cdot C=0$.
+::: {.proposition #prop:quasipolarization title="degree-$2$ quasipolarization"}
+The class $L$ satisfies $L^2=2$ and $L\cdot C=0$.
 
 Hence $L$ is not ample on $\widetilde V$.
 On a general one-node member it is nef and big and its only null curve is $C$.
@@ -600,7 +608,7 @@ After contracting the full $L$-null configuration, its descent is ample.
 
 The final sentence must be interpreted with care on intersections with other Heegner divisors: additional curves can become $L$-trivial.
 
-## The anti-bicanonical curve {#sec-anti-bicanonical}
+### The anti-bicanonical curve {#sec-anti-bicanonical}
 
 Riemann--Hurwitz for the double cover $\psi$ gives
 
@@ -613,8 +621,8 @@ Since $K_{\widetilde X}\sim0$ and $\widetilde V$ is rational, $C\sim-2K_{\wideti
 
 Moreover, $2C^2=(2E)^2=-8$ and $C^2=-4$.
 
-::: {.proposition #prop:antibicanonical-system}
-**Proposition (anti-bicanonical system on the one-node locus).** For the resolved one-node Coble surface,
+::: {.proposition #prop:antibicanonical-system title="anti-bicanonical system on the one-node locus"}
+For the resolved one-node Coble surface,
 
 \[
 |-K_{\widetilde V}|=\varnothing,
@@ -623,7 +631,8 @@ Moreover, $2C^2=(2E)^2=-8$ and $C^2=-4$.
 \]
 :::
 
-**Proof.** If $D\in|-2K_{\widetilde V}|$, then $\psi^*D\in|2E|$.
+::: {.proof}
+If $D\in|-2K_{\widetilde V}|$, then $\psi^*D\in|2E|$.
 Since $E^2=-2$, every effective divisor linearly equivalent to $2E$ contains $E$; iterating gives $|2E|=\{2E\}$.
 Thus $D=C$.
 If $D\in|-K_{\widetilde V}|$, then $\psi^*D\in|E|=\{E\}$.
@@ -631,8 +640,9 @@ The pullback of a divisor from the quotient has even multiplicity along a branch
 
 If the invariant branch curve has ordinary nodes at $k$ distinct fixed points, the same argument gives $|-2K_{\widetilde V}| =\{C_1+\cdots+C_k\}$, where the $C_i$ are disjoint rational $(-4)$-curves.
 Thus $n=1$ on the generic Heegner divisor but not on its higher-codimension multiple-node loci.
+:::
 
-## The del Pezzo ramification divisor {#sec-ramification-divisor}
+### The del Pezzo ramification divisor {#sec-ramification-divisor}
 
 Let $\widetilde R\subset\widetilde X$ be the strict transform of the fixed curve of $\iota_{\mathrm{dP}}$.
 At the node, the total ramification divisor contains the exceptional curve with multiplicity one, and $\widetilde R+E\sim2H$.
@@ -640,8 +650,8 @@ At the node, the total ramification divisor contains the exceptional curve with 
 Let $R_{\widetilde V}$ be the quotient divisor on $\widetilde V$.
 Then $\psi^*R_{\widetilde V}=\widetilde R$.
 
-::: {.proposition #prop:ramification-numerics}
-**Proposition (ramification class and numerical invariants).** One has
+::: {.proposition #prop:ramification-numerics title="ramification class and numerical invariants"}
+One has
 
 \[
 R_{\widetilde V}\sim2L+K_{\widetilde V},
@@ -660,14 +670,16 @@ p_a(R_{\widetilde V})=4.
 \]
 :::
 
-**Proof sketch.** Pulling back $2L+K_{\widetilde V}$ gives $2H-E=\widetilde R$.
+::: {.proof}
+Pulling back $2L+K_{\widetilde V}$ gives $2H-E=\widetilde R$.
 Moreover, $\widetilde R^2=(2H-E)^2=14$, so $R_{\widetilde V}^2=7$.
 The remaining formulas follow from $C=-2K_{\widetilde V}$, $R_{\widetilde V}\cdot C=2$, and adjunction.
 
 The divisor $R_{\widetilde V}$ is not the anti-bicanonical curve $C$.
 It is the divisor relevant to the KSBA polarization.
+:::
 
-## Contraction to the singular Coble surface {#sec-canonical-contraction}
+### Contraction to the singular Coble surface {#sec-canonical-contraction}
 
 Let $\mu:\widetilde V\longrightarrow V^\sharp$ contract $C$.
 The discrepancy formula is
@@ -693,8 +705,8 @@ It follows that $(R^\sharp)^2=8$.
 Locally, $R^\sharp$ is the image of the union of the coordinate axes $(uv=0)$ in the quotient singularity $\frac{1}{4}(1,1)$.
 Its local class is $2$ in $\operatorname{Cl}(\frac{1}{4}(1,1))\cong\mathbb Z/4$, so it is $\mathbb Q$-Cartier of index $2$.
 
-::: {.definition #def:open-stable-coble-pair}
-**Definition (open stable Coble pair).** An open degree-$2$ stable Coble pair is
+::: {.definition #def:open-stable-coble-pair title="open stable Coble pair"}
+An open degree-$2$ stable Coble pair is
 
 \[
 (V^\sharp,\epsilon R^\sharp),
@@ -718,20 +730,20 @@ For a general member, $C+R_{\widetilde V}$ is simple normal crossing and the coe
 Thus the resolved pair is klt, and so is the singular pair.
 If the descent of $L$ is ample, then $K_{V^\sharp}+\epsilon R^\sharp$ is ample.
 
-::: {.warning #warn:index-one-cover}
-**Warning (index-one cover).** The canonical index-one cover of the local surface singularity $\frac{1}{4}(1,1)$ is the $A_1$ singularity.
+::: {.warning #warn:index-one-cover title="index-one cover"}
+The canonical index-one cover of the local surface singularity $\frac{1}{4}(1,1)$ is the $A_1$ singularity.
 Pulling back further to $\mathbb A^2$ is useful for local log calculations, but it is not the index-one cover.
 :::
 
-# Direct moduli functors, arithmetic groups, and period spaces {#sec-moduli-groups}
+## Direct moduli functors, arithmetic groups, and period spaces {#sec-moduli-groups}
 
-## The resolved-cover moduli problem {#sec-cover-moduli}
+### The resolved-cover moduli problem {#sec-cover-moduli}
 
 The autonomous strategy should begin with a stack of labeled K3-cover data.
 The following definition is a mathematical specification; representability and equivalence with the singular pair moduli are required theorems.
 
-::: {.definition #def:direct-cover-datum}
-**Definition (direct resolved Coble cover datum).** Over a scheme $S$, a direct resolved degree-$2$ Coble cover datum consists of
+::: {.definition #def:direct-cover-datum title="direct resolved Coble cover datum"}
+Over a scheme $S$, a direct resolved degree-$2$ Coble cover datum consists of
 
 \[
 (\widetilde{\mathcal X}/S,
@@ -739,7 +751,7 @@ The following definition is a mathematical specification; representability and e
  \iota_{\mathrm{Co}},
  \iota_{\mathrm{dP}},
  \mathcal H,
- \mathscr C)
+ \mcc)
 \]
 
 with the following properties.
@@ -754,17 +766,17 @@ with the following properties.
 
 5. $\mathcal H$ is a relatively nef and big line bundle with $\mathcal H_s^2=4$ and $\mathcal H_s\cdot\mathcal E_s=0$.
 
-6. $\mathscr C$ specifies the positive/nef chamber in which $\mathcal E$ is effective and $\mathcal H$ gives the desired contraction.
+6. $\mcc$ specifies the positive/nef chamber in which $\mathcal E$ is effective and $\mathcal H$ gives the desired contraction.
 
 7. Fiberwise contraction of $\mathcal E$ gives an $A_1$-surface on which the Coble involution descends and fixes the node.
 :::
 
 The chamber and the effective root are part of the data because an abstract lattice marking does not determine which root is represented by the exceptional curve or which degree-$4$ class gives the projective model.
 
-## The singular-pair moduli problem {#sec-singular-moduli}
+### The singular-pair moduli problem {#sec-singular-moduli}
 
-::: {.definition #def:direct-singular-datum}
-**Definition (direct singular Coble datum).** Over $S$, a direct singular Coble datum consists of
+::: {.definition #def:direct-singular-datum title="direct singular Coble datum"}
+Over $S$, a direct singular Coble datum consists of
 
 \[
 (\mathcal V^\sharp/S,
@@ -788,25 +800,25 @@ such that each geometric fiber has the following properties.
 6. The canonical index-one cover is a K3 surface with one $A_1$ singularity.
 :::
 
-::: {.problem #prob:cover-singular-equivalence}
-**Required theorem (equivalence of the two open moduli problems).** After accounting for the Weyl ambiguity of the exceptional root, contraction, canonical cover, and quotient define inverse equivalences between the direct resolved-cover stack and the direct singular-pair stack.
+::: {.problem #prob:cover-singular-equivalence title="Required theorem (equivalence of the two open moduli problems)"}
+After accounting for the Weyl ambiguity of the exceptional root, contraction, canonical cover, and quotient define inverse equivalences between the direct resolved-cover stack and the direct singular-pair stack.
 The equivalence is compatible with base change and automorphisms.
 :::
 
 This theorem is the direct replacement for silently identifying a Heegner period point with a geometric Coble pair.
 
-## Four arithmetic groups that must not be conflated {#sec-four-groups}
+### Four arithmetic groups that must not be conflated {#sec-four-groups}
 
 Fix an embedded root $\alpha\in T_{\mathrm{En}}$ and put $T_{\mathrm{Co}}=\alpha^\perp$.
 There are at least four natural groups.
 
-::: {.definition #def:unpolarized-direct-group}
-**Definition (direct unpolarized Coble group).** Dropping the degree-$4$ polarization and the del Pezzo involution from the labeled datum gives the candidate direct unpolarized group
+::: {.definition #def:unpolarized-direct-group title="direct unpolarized Coble group"}
+Dropping the degree-$4$ polarization and the del Pezzo involution from the labeled datum gives the candidate direct unpolarized group
 
 \[
 \Gamma_{\mathrm{Co}}^{\mathrm{dir}}
  :=\operatorname{im}\left(
- Z_{O(L_{K3})}(I_{\mathrm{Co}})_{\alpha,\mathscr C}
+ Z_{O(L_{K3})}(I_{\mathrm{Co}})_{\alpha,\mcc}
  \longrightarrow O^+(T_{\mathrm{Co}})
  \right).
 \]
@@ -815,8 +827,7 @@ The corresponding geometric monodromy group is defined from the direct unpolariz
 The expected equality $\Gamma_{\mathrm{Co}}^{\mathrm{dir}}=O^+(T_{\mathrm{Co}})$ is compatible with the full stabilizer lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
 :::
 
-::: {.definition #def:hodge-group}
-**Definition (Hodge-theoretic Heegner group).**
+::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group"}
 
 \[
 \Gamma_{\mathrm{Co},2}^{\mathrm{Hdg}}
@@ -829,13 +840,12 @@ The expected equality $\Gamma_{\mathrm{Co}}^{\mathrm{dir}}=O^+(T_{\mathrm{Co}})$
 
 This group is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
 
-::: {.definition #def:direct-group}
-**Definition (direct labeled centralizer group).**
+::: {.definition #def:direct-group title="direct labeled centralizer group"}
 
 \[
 \Gamma_{\mathrm{Co},2}^{\mathrm{dir}}
  :=\operatorname{im}\left(
- Z_{O(L_{K3})}(I_{\mathrm{Co}},I_{\mathrm{dP}})_{H,\alpha,\mathscr C}
+ Z_{O(L_{K3})}(I_{\mathrm{Co}},I_{\mathrm{dP}})_{H,\alpha,\mcc}
  \longrightarrow O^+(T_{\mathrm{Co}})
  \right).
 \]
@@ -843,8 +853,8 @@ This group is the natural group of a fixed normalized Heegner component once the
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
 
-::: {.definition #def:geometric-monodromy}
-**Definition (geometric monodromy group).** $\Gamma_{\mathrm{Co},2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation of the connected direct moduli stack of polarized Coble data on the local system $T_{\mathrm{Co}}$.
+::: {.definition #def:geometric-monodromy title="geometric monodromy group"}
+$\Gamma_{\mathrm{Co},2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation of the connected direct moduli stack of polarized Coble data on the local system $T_{\mathrm{Co}}$.
 :::
 
 Finally, the degree-$2$ marking gives an orthogonal decomposition $A_{T_{\mathrm{En}}} \cong A_{U(2)}\perp A_{E_8(2)}$, and hence the finite subgroup $P:=O(q_{U(2)})\times O(q_{E_8(2)})$.
@@ -856,8 +866,8 @@ Using the characteristic class $\eta/2$ to identify the remaining finite quadrat
  :=\rho_{T_{\mathrm{Co}}}^{-1}(P).
 \]
 
-::: {.problem #prob:group-identification}
-**Required theorem (arithmetic and monodromy identification).** Prove
+::: {.problem #prob:group-identification title="Required theorem (arithmetic and monodromy identification)"}
+Prove
 
 \[
 \Gamma_{\mathrm{Co},2}^{\mathrm{geom}}
@@ -871,7 +881,7 @@ Each equality requires a separate argument: global Torelli and parallel transpor
 
 Defining one of these groups to be “the group for which the desired semifan works” is circular.
 
-## A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
+### A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
 
 There is a useful pure lattice calculation.
 Let $L_0=\mathbb Z\alpha\oplus T_{\mathrm{Co}}$.
@@ -885,8 +895,8 @@ The gluing subgroup in $A_{\mathbb Z\alpha}\oplus A_{T_{\mathrm{Co}}}$ is genera
 
 The class $\eta/2$ is the characteristic element of the discriminant form of $T_{\mathrm{Co}}\cong I_{2,9}(2)$ and is fixed by every isometry.
 
-::: {.lemma #lem:full-stabilizer}
-**Lemma (full orthogonal stabilizer).** Restriction gives an exact sequence
+::: {.lemma #lem:full-stabilizer title="full orthogonal stabilizer"}
+Restriction gives an exact sequence
 
 \[
 1\longrightarrow\langle w_\alpha\rangle
@@ -898,13 +908,15 @@ O^+(T_{\mathrm{Co}})
 \]
 :::
 
-**Proof sketch.** Every isometry of $T_{\mathrm{Co}}$ fixes the characteristic class $\eta/2$, hence preserves the gluing subgroup and extends to the index-$2$ overlattice.
+::: {.proof}
+Every isometry of $T_{\mathrm{Co}}$ fixes the characteristic class $\eta/2$, hence preserves the gluing subgroup and extends to the index-$2$ overlattice.
 The two extensions differ by the root reflection $w_\alpha$.
 
 This lemma is a lattice statement.
 It does not identify the degree-$2$ monodromy group and does not solve the integral isotropic-subspace lifting problem.
+:::
 
-## Period domains {#sec-coble-period-domains}
+### Period domains {#sec-coble-period-domains}
 
 Define $\mathbb D_{\mathrm{Co}}:=\mathbb D(T_{\mathrm{Co}})$.
 
@@ -934,7 +946,7 @@ and
 The period theorem for classical Coble surfaces identifies an open subset of an orthogonal modular variety of this lattice type [@DK13].
 The direct polarized period theorem and the equality of the two polarized quotients are required results, not consequences of the abstract lattice isomorphism.
 
-## The required diagram of period quotients {#sec-period-diagram}
+### The required diagram of period quotients {#sec-period-diagram}
 
 At the level of fixed embedded period domains, one has inclusions
 
@@ -967,13 +979,13 @@ A diagram of rational domains is not automatically a diagram of arithmetic quoti
 To construct each arrow, one must prove that the relevant group acts through a compatible subgroup of a common $O(L_{K3})$, and one must identify the image group.
 The direct arrow to $\mathcal F_{(2,2,0)}$ must later be shown to factor through the Enriques Heegner component.
 
-::: {.problem #prob:period-diagram}
-**Required theorem (commuting period diagram).** The direct and Heegner arithmetic groups are compatible with the common labeled embedding chain; all arrows in the displayed diagram are well defined on quotients; and the direct Coble construction factors through the normalized $(-2)$-Heegner divisor in $\mathcal F_{\mathrm{En},2}$.
+::: {.problem #prob:period-diagram title="Required theorem (commuting period diagram)"}
+The direct and Heegner arithmetic groups are compatible with the common labeled embedding chain; all arrows in the displayed diagram are well defined on quotients; and the direct Coble construction factors through the normalized $(-2)$-Heegner divisor in $\mathcal F_{\mathrm{En},2}$.
 :::
 
-# Baily--Borel boundary and integral cusp problems {#sec-cusps}
+## Baily--Borel boundary and integral cusp problems {#sec-cusps}
 
-## Standard cusp data {#sec-standard-cusps}
+### Standard cusp data {#sec-standard-cusps}
 
 Let $T$ have signature $(2,n)$ and let $\Gamma\subset O^+(T)$ be arithmetic.
 A $0$-cusp is a $\Gamma$-orbit of primitive isotropic lines $\mathbb Ze\subset T$.
@@ -994,14 +1006,14 @@ For a fixed line $e$, the stabilizer has an exact sequence
 where $U_e$ is the unipotent radical and $\Gamma_e$ acts on $\overline{T}_e$.
 The arithmetic group $\Gamma_e$, not the full orthogonal group of $\overline{T}_e$, is the group relevant to the cusp reflection problem.
 
-## The unpolarized Coble boundary {#sec-unpolarized-cusps}
+### The unpolarized Coble boundary {#sec-unpolarized-cusps}
 
 Since scaling a form does not change its integral orthogonal group, $O(T_{\mathrm{Co}})=O(I_{2,9})$.
 
 Standard transitivity results for indefinite odd unimodular forms imply the following [@Wall62; @DK13].
 
-::: {.theorem #thm:unpolarized-cusps}
-**Theorem (unpolarized Coble cusps).** The quotient $O^+(T_{\mathrm{Co}})\backslash\mathbb D_{\mathrm{Co}}$ has one orbit of primitive isotropic lines and one orbit of primitive isotropic planes.
+::: {.theorem #thm:unpolarized-cusps title="unpolarized Coble cusps"}
+The quotient $O^+(T_{\mathrm{Co}})\backslash\mathbb D_{\mathrm{Co}}$ has one orbit of primitive isotropic lines and one orbit of primitive isotropic planes.
 For representatives $e$ and $J$,
 
 \[
@@ -1014,7 +1026,7 @@ J^\perp/J\cong I_{0,7}(2).
 This theorem concerns the full orthogonal group.
 It does not determine the cusps for the polarized subgroup.
 
-## Reduction to the discriminant form {#sec-finite-shadow}
+### Reduction to the discriminant form {#sec-finite-shadow}
 
 For a $2$-elementary lattice, a primitive isotropic vector of divisibility $2$ determines a nonzero isotropic class in the discriminant group.
 Thus reduction modulo the lattice gives maps
@@ -1031,8 +1043,8 @@ Thus reduction modulo the lattice gives maps
 
 and analogous maps for isotropic planes and incident flags.
 
-::: {.warning #warn:finite-shadow}
-**Warning (finite shadow versus integral cusp).** These maps need not be bijective.
+::: {.warning #warn:finite-shadow title="finite shadow versus integral cusp"}
+These maps need not be bijective.
 The integral parabolic stabilizer can have a proper image in the finite stabilizer of the reduced flag.
 Consequently, an orbit calculation in $O(A_{T_{\mathrm{Co}}})$ does not classify Baily--Borel cusps without a separate integral lifting theorem.
 :::
@@ -1045,7 +1057,7 @@ The standard ways to solve this problem are:
 
 3. a certified integral orbit algorithm, for example of the type developed in [@Dawes22].
 
-## Computational record in the finite quadratic space {#sec-finite-orbits}
+### Computational record in the finite quadratic space {#sec-finite-orbits}
 
 A finite calculation was carried out in a $10$-dimensional plus-type quadratic space over $\mathbb F_2$ for the subgroup associated with the proposed degree-$2$ congruence condition.
 It produced four orbits of nonzero singular vectors and five orbits of totally singular planes.
@@ -1074,8 +1086,8 @@ A later enhanced calculation decorated a finite plane by one of eight ``stars'' 
 For a prescribed $S_7$ subgroup it produced seven enhanced plane orbits and thirteen enhanced flag orbits.
 This remains a computational record only: the required identification of that $S_7$ with the image of the integral plane stabilizer has not been proved.
 
-::: {.problem #prob:cusp-lifting}
-**Required theorem (integral cusp lifting).** Determine the exact images of the integral isotropic-line and isotropic-plane stabilizers in the finite orthogonal group and use them to classify
+::: {.problem #prob:cusp-lifting title="Required theorem (integral cusp lifting)"}
+Determine the exact images of the integral isotropic-line and isotropic-plane stabilizers in the finite orthogonal group and use them to classify
 
 \[
 \Gamma_{\mathrm{Co},2}\backslash
@@ -1091,7 +1103,7 @@ and the incident flags.
 Give explicit integral representatives and stabilizers.
 :::
 
-## Necessary restrictions on maps to Enriques cusps {#sec-possible-cusp-images}
+### Necessary restrictions on maps to Enriques cusps {#sec-possible-cusp-images}
 
 Suppose the comparison map to the Enriques period quotient has been constructed.
 Let $e$ be a Coble isotropic line.
@@ -1105,15 +1117,15 @@ Reading the border types in AEGS Figure 4, the double-rectangle cusps $12,\ 13,\
 The only possible Enriques $1$-cusp images are therefore $34,\ 35,\ 45,\ 55$.
 
 ::: {.remark #rmk:cusp-images}
-**Remark.** This is a necessary-condition argument, not an integral orbit classification.
+This is a necessary-condition argument, not an integral orbit classification.
 It does not determine how many Coble cusps lie above any of the four possible image cusps.
 :::
 
 An earlier finite-orbit calibration that assigned a Coble branch to cusp $245$ is therefore not compatible with the embedded root criterion and must not be used.
 
-# Reflection theory and Coxeter data {#sec-coxeter}
+## Reflection theory and Coxeter data {#sec-coxeter}
 
-## The unpolarized cusp chamber {#sec-unpolarized-coxeter}
+### The unpolarized cusp chamber {#sec-unpolarized-coxeter}
 
 Write
 
@@ -1146,8 +1158,8 @@ r_0^2=\cdots=r_7^2=-4,
 r_8^2=-2.
 \]
 
-::: {.theorem #thm:unpolarized-coxeter}
-**Theorem (unpolarized Coble Coxeter chamber).** A fundamental chamber for the reflection group of $I_{1,8}(2)$ is defined, for
+::: {.theorem #thm:unpolarized-coxeter title="unpolarized Coble Coxeter chamber"}
+A fundamental chamber for the reflection group of $I_{1,8}(2)$ is defined, for
 
 \[
 x=aH_0-\sum_{i=1}^8b_iE_i,
@@ -1171,7 +1183,8 @@ r_1-r_2-r_3-r_4-r_5-r_6-r_7\Rightarrow r_8
 with $r_0$ attached to $r_3$ by a single edge.
 :::
 
-**Proof sketch.** Signed permutations of the $E_i$ reduce to the ordered region, and the Cremona reflection in $r_0$ reduces the final inequality.
+::: {.proof}
+Signed permutations of the $E_i$ reduce to the ordered region, and the Cremona reflection in $r_0$ reduces the final inequality.
 This is the standard Vinberg chamber for $I_{1,8}$, with the form scaled by $2$.
 
 The unique maximal parabolic subdiagram is obtained by deleting $r_1$ and has type $\widetilde B_7$.
@@ -1189,14 +1202,15 @@ The rank-$8$ elliptic subdiagrams are listed in @tbl-unpolarized-elliptic.
 | $r_8$ | $E_8$ |
 
 : Rank-$8$ elliptic subdiagrams of the unpolarized chamber. {#tbl-unpolarized-elliptic}
+:::
 
-## Orthogonal wall links {#sec-orthogonal-link}
+### Orthogonal wall links {#sec-orthogonal-link}
 
 Let $a$ be a $(-2)$ root in a hyperbolic lattice $M$, and let $b$ be another negative wall normal.
 The normal inside $a^\perp$ to the intersection $b^\perp\cap a^\perp$ is the primitive vector proportional to the orthogonal projection of $b$ to $a^\perp$.
 
-::: {.construction #cons:wall-link}
-**Construction (orthogonal wall link).** Define
+::: {.construction #cons:wall-link title="orthogonal wall link"}
+Define
 
 \[
 b_{\operatorname{link}}
@@ -1208,14 +1222,14 @@ The formula is integral and defines the correct hyperplane in $a^\perp$.
 It is a linear-algebra statement.
 It does not imply that $b_{\operatorname{link}}$ is a root of the orthogonal lattice.
 
-::: {.warning #warn:wall-root}
-**Warning (restricted wall versus reflection wall).** A hyperplane obtained by slicing an ambient Coxeter chamber can fail to be the mirror of an integral reflection in the sublattice.
+::: {.warning #warn:wall-root title="restricted wall versus reflection wall"}
+A hyperplane obtained by slicing an ambient Coxeter chamber can fail to be the mirror of an integral reflection in the sublattice.
 Conversely, the orthogonal sublattice can have reflective roots whose mirrors are invisible in the ambient root system.
 :::
 
 A Coble analogue of the AEGS root-folding theorem must prove both directions: that every relevant restricted wall is a Coble root wall and that every Coble root wall meeting the chamber is obtained in the prescribed way.
 
-## Candidate reflection twist at a cusp {#sec-cusp-reflection-twist}
+### Candidate reflection twist at a cusp {#sec-cusp-reflection-twist}
 
 At the full K3-lattice level one has the reflection twist $I_{\mathrm{Co}}=w_\alpha I_{\mathrm{En}}$.
 If a primitive isotropic line $e$ is orthogonal to $\alpha$, the involutions induce actions on the cusp quotient $e^\perp/e$.
@@ -1224,7 +1238,7 @@ This suggests the cusp-level candidate $J_{\mathrm{Co}}=w_{\bar\alpha}J_{\mathrm
 This formula is not yet a direct folding theorem.
 One must prove that the cusp action lifts through the full discriminant gluing and corresponds to the geometric involution, just as AEGS separately prove their lifting lemma.
 
-## Corrected ambient square Gram data {#sec-gram-correction}
+### Corrected ambient square Gram data {#sec-gram-correction}
 
 In the square ambient K3 cusp diagram, the two black roots $\alpha_{20}$ and $\alpha_{21}$ both have square $-4$.
 The edge joining them is thick.
@@ -1233,7 +1247,7 @@ Therefore $(\alpha_{20},\alpha_{21})=4$.
 The previously used value $2$ gives a Gram matrix of rank $20$, incompatible with the rank-$18$ cusp lattice.
 The value $4$ gives the correct rank $18$.
 
-## Candidate wall-slice diagrams {#sec-wall-slices}
+### Candidate wall-slice diagrams {#sec-wall-slices}
 
 Correcting the Gram entry above, one can intersect selected Enriques chambers with selected white-root hyperplanes.
 This produces four explicit hyperplane arrangements, denoted
@@ -1257,8 +1271,8 @@ The raw numbers of maximal parabolic faces in the four sliced arrangements were 
 These counts are diagnostic data only.
 They disagree with some finite-shadow orbit counts, which indicates that chamber completeness, arithmetic diagram automorphisms, and the calibration of finite orbits must all be resolved before boundary strata are enumerated.
 
-::: {.problem #prob:coxeter-completeness}
-**Required theorem (Coble Vinberg and root completeness).** For every polarized Coble $0$-cusp:
+::: {.problem #prob:coxeter-completeness title="Required theorem (Coble Vinberg and root completeness)"}
+For every polarized Coble $0$-cusp:
 
 1. determine the arithmetic cusp lattice and the image of its stabilizer;
 
@@ -1273,9 +1287,9 @@ They disagree with some finite-shadow orbit counts, which indicates that chamber
 
 A list of vectors or a finite Gram-matrix computation is not a Coxeter theorem without these steps.
 
-# Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
+## Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
 
-## The AEGS dictionary {#sec-aegs-dictionary}
+### The AEGS dictionary {#sec-aegs-dictionary}
 
 AEGS relate five forms of degeneration data:
 
@@ -1291,7 +1305,7 @@ AEGS relate five forms of degeneration data:
 \text{KSBA stable pair}.
 \]
 
-For a primitive isotropic line $e$, a Type III monodromy invariant is a vector $\lambda\in\overline{T}_e\otimes\mathbb R$ in the closure of a positive chamber.
+For a primitive isotropic line $e$, a Type III monodromy invariant is a vector $\lambda\in\overline{T}_e\otimes_\ZZ\mathbb R$ in the closure of a positive chamber.
 If $\{r_i\}$ is a simple-root system, the root coordinates are $\ell_i=(\lambda,r_i)\ge0$.
 
 They become edge lengths, internal blowup parameters, and nodal-surgery sizes in a moment or Symington polygon.
@@ -1300,10 +1314,10 @@ If the wall corresponds to a visible curve, the zero can collapse a path joining
 
 The direct Coble theory should preserve this dictionary but must add the data of the fixed exceptional root and its quotient branch curve.
 
-## The Coble integral-affine package {#sec-coble-affine-package}
+### The Coble integral-affine package {#sec-coble-affine-package}
 
-::: {.definition #def:coble-affine-package}
-**Definition (candidate polarized Coble integral-affine package).** A Coble integral-affine package is a tuple
+::: {.definition #def:coble-affine-package title="candidate polarized Coble integral-affine package"}
+A Coble integral-affine package is a tuple
 
 \[
 \bigl(B(\lambda),R_{\mathrm{IA}},E_{\mathrm{IA}},
@@ -1327,7 +1341,7 @@ The notation $E_{\mathrm{IA}}$ is schematic.
 Depending on the cusp, the exceptional root can be represented by a visible path, a collapsed edge, an $I_2$ affine singularity, or equivalent marked data in the triangulation.
 A direct theory must specify the correct object cusp by cusp.
 
-## Heegner-wall specialization of an ambient model {#sec-heegner-affine-specialization}
+### Heegner-wall specialization of an ambient model {#sec-heegner-affine-specialization}
 
 Suppose a degeneration lies in the $\alpha$-Heegner locus and approaches a Type III cusp represented by $e$.
 After a suitable marking and base change, one expects $(\alpha,e)=0$ and $(\alpha,\lambda)=0$.
@@ -1337,14 +1351,14 @@ The corresponding pair of parallel $I_1$ singularities coalesces to an $I_2$ sin
 This is the same local operation used by AEGS for crossed nodes, but in the Coble problem it records the persistent $A_1$ singularity of the K3 cover.
 
 ::: {.remark #rmk:affine-local}
-**Remark.** The local collision picture is reliable once the relevant root has been identified in the genuine cusp lattice.
+The local collision picture is reliable once the relevant root has been identified in the genuine cusp lattice.
 It cannot be used to prove that a candidate wall slice is the full Coxeter chamber.
 :::
 
-## Required realization theorem {#sec-affine-realization}
+### Required realization theorem {#sec-affine-realization}
 
-::: {.problem #prob:affine-realization}
-**Required theorem (direct integral-affine realization).** For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mathcal X,\mathcal R,\mathcal E)\longrightarrow(C,0)$ whose dual complex is the prescribed Coble integral-affine package.
+::: {.problem #prob:affine-realization title="Required theorem (direct integral-affine realization)"}
+For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mathcal X,\mathcal R,\mathcal E)\longrightarrow(C,0)$ whose dual complex is the prescribed Coble integral-affine package.
 Conversely, show that every direct Coble degeneration admits such a model after finite base change and allowed dlt modification.
 :::
 
@@ -1356,8 +1370,8 @@ An affine symmetry is not automatically an algebraic involution.
 AEGS use limiting-period conditions and invariant component/gluing parameters to extend their involution over a general divisor model.
 The Coble version must also retain the exceptional root.
 
-::: {.problem #prob:algebraic-extension}
-**Required theorem (algebraic extension of the Coble package).** A general divisor model with direct Coble monodromy admits commuting regular involutions $\iota_{\mathrm{Co}}$ and $\iota_{\mathrm{dP}}$ such that
+::: {.problem #prob:algebraic-extension title="Required theorem (algebraic extension of the Coble package)"}
+A general divisor model with direct Coble monodromy admits commuting regular involutions $\iota_{\mathrm{Co}}$ and $\iota_{\mathrm{dP}}$ such that
 
 \[
 \iota_{\mathrm{Co}}(\mathcal E)=\mathcal E,
@@ -1387,8 +1401,8 @@ The natural crepant pair is
 \right).
 \]
 
-::: {.problem #prob:dlt-quotient}
-**Required theorem (direct dlt quotient).** After the prescribed dlt modification, the above pair is dlt over the base; its fibers are slc; the boundary contains no prohibited log canonical center; and
+::: {.problem #prob:dlt-quotient title="Required theorem (direct dlt quotient)"}
+After the prescribed dlt modification, the above pair is dlt over the base; its fibers are slc; the boundary contains no prohibited log canonical center; and
 
 \[
 K_{\widetilde{\mathcal V}}
@@ -1422,8 +1436,8 @@ H^0\!\left(
 
 After contracting $\mathcal C$ to the singular Coble family, this is expected to agree with the relative Proj for a sufficiently divisible multiple of $\mathcal R^\sharp$.
 
-::: {.problem #prob:stable-proj}
-**Required theorem (stable contraction).** Determine exactly which curves, components, and conductor strata are contracted by the above relative Proj, and prove that the resulting family is the KSBA stable family of pairs $(V^\sharp,\epsilon R^\sharp)$.
+::: {.problem #prob:stable-proj title="Required theorem (stable contraction)"}
+Determine exactly which curves, components, and conductor strata are contracted by the above relative Proj, and prove that the resulting family is the KSBA stable family of pairs $(V^\sharp,\epsilon R^\sharp)$.
 :::
 
 ## Component classification problem {#sec-component-classification}
@@ -1438,8 +1452,8 @@ D+\frac{1+\epsilon}{2}C+\epsilon R
 \right).
 \]
 
-::: {.problem #prob:component-classification}
-**Required theorem (Coble component classification).** Classify all finite Type III and affine Type II component pairs arising in direct Coble stable limits.
+::: {.problem #prob:component-classification title="Required theorem (Coble component classification)"}
+Classify all finite Type III and affine Type II component pairs arising in direct Coble stable limits.
 Give explicit equations or toric models, involutions, quotient singularities, branch allocation, decorations, and stable contractions; prove that every component occurs in the list and every listed type occurs.
 :::
 
@@ -1459,9 +1473,9 @@ Several candidate recipes were identified:
 These are recipes, not completed examples.
 A complete example must specify the integral root, the visible path, the compatible triangulation, the component periods and gluings, the two algebraic involutions, all quotient singularities, and the final $R^\sharp$-trivial contraction.
 
-# Fans, semifans, and semitoroidal compactifications {#sec-semifans}
+## Fans, semifans, and semitoroidal compactifications {#sec-semifans}
 
-## Coxeter fans and generalized Coxeter semifans {#sec-generalized-coxeter}
+### Coxeter fans and generalized Coxeter semifans {#sec-generalized-coxeter}
 
 Let $M$ be a hyperbolic cusp lattice, $W$ a reflection group, and $C$ a fundamental chamber.
 The Coxeter fan consists of the $W$-translates of $C$ in the rational closure of the positive cone.
@@ -1479,12 +1493,12 @@ C_{\mathrm{gen}}
 Its $W$-translates form the generalized Coxeter semifan.
 Geometrically, a root is relevant only if crossing its wall changes the stable pair after the relative Proj.
 
-::: {.warning #warn:relevance}
-**Warning (relevance is geometric).** In the autonomous Coble theory, a root cannot be declared relevant merely because it lies on the boundary of an ambient Enriques or K3 diagram.
+::: {.warning #warn:relevance title="relevance is geometric"}
+In the autonomous Coble theory, a root cannot be declared relevant merely because it lies on the boundary of an ambient Enriques or K3 diagram.
 Relevance must be characterized by the Coble package $(R_{\mathrm{IA}},E_{\mathrm{IA}})$ and the resulting stable contraction.
 :::
 
-## Direct Coble semifans {#sec-direct-semifans}
+### Direct Coble semifans {#sec-direct-semifans}
 
 Assume that the direct cusp groups and Coxeter chambers have been computed.
 For each direct Coble $0$-cusp, define a root to be relevant if a general crossing of its wall changes at least one of the following stable data:
@@ -1499,25 +1513,25 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 
 5. the isomorphism class of the relative Proj.
 
-::: {.problem #prob:direct-semifan}
-**Required theorem (direct Coble semifan).** The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the verified direct Coble Coxeter diagram and the intrinsic relevance marking.
+::: {.problem #prob:direct-semifan title="Required theorem (direct Coble semifan)"}
+The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the verified direct Coble Coxeter diagram and the intrinsic relevance marking.
 :::
 
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 
-## Normalized closure of a subtorus {#sec-subtorus-lemma}
+### Normalized closure of a subtorus {#sec-subtorus-lemma}
 
 The Heegner-restriction strategy uses the following standard toric fact.
 
-::: {.lemma #lem:subtorus-normalization}
-**Lemma (normalization of a subtorus closure).** Let $N\subset M$ be a saturated sublattice of cocharacter lattices, let $T_N\subset T_M$ be the corresponding subtorus, and let $X_\Sigma$ be a toric variety for a fan $\Sigma\subset M_\mathbb R$.
+::: {.lemma #lem:subtorus-normalization title="normalization of a subtorus closure"}
+Let $N\subset M$ be a saturated sublattice of cocharacter lattices, let $T_N\subset T_M$ be the corresponding subtorus, and let $X_\Sigma$ be a toric variety for a fan $\Sigma\subset M_\mathbb R$.
 The normalization of the closure of $T_N$ in $X_\Sigma$ is the toric variety associated with the induced fan $\Sigma|_{N_\mathbb R} =\{\sigma\cap N_\mathbb R:\sigma\in\Sigma\}$, with the induced lattices saturated.
 :::
 
 This lemma is local and toric.
 It does not by itself identify the normalized closure of a Heegner divisor in a semitoroidal arithmetic quotient.
 
-## Why semitoroidal restriction is not formal {#sec-restriction-not-formal}
+### Why semitoroidal restriction is not formal {#sec-restriction-not-formal}
 
 To apply the subtorus lemma to the Coble Heegner locus, one must prove all of the following.
 
@@ -1535,15 +1549,15 @@ To apply the subtorus lemma to the Coble Heegner locus, one must prove all of th
 
 7. No additional coarsening occurs after passing to Coble stable pairs.
 
-::: {.problem #prob:restricted-semifan}
-**Required theorem (semitoroidal restriction).** After passage to a common toroidal refinement, the normalization of the Heegner closure is obtained by saturated intersection with the Coble cusp subspaces, and the induced semitoroidal contractions coincide with combinatorial constancy for the Coble stable-pair family.
+::: {.problem #prob:restricted-semifan title="Required theorem (semitoroidal restriction)"}
+After passage to a common toroidal refinement, the normalization of the Heegner closure is obtained by saturated intersection with the Coble cusp subspaces, and the induced semitoroidal contractions coincide with combinatorial constancy for the Coble stable-pair family.
 :::
 
 Without this theorem, “intersect the AEGS semifans” is a candidate construction rather than a compactification theorem.
 
-# The KSBA moduli space and the two target theorems {#sec-ksba-targets}
+## The KSBA moduli space and the two target theorems {#sec-ksba-targets}
 
-## The open KSBA moduli functor {#sec-open-ksba}
+### The open KSBA moduli functor {#sec-open-ksba}
 
 Let $\mathfrak M_{\mathrm{Co},2}^{\circ}$ denote the direct open moduli stack of singular Coble data for which the pair $(V^\sharp,\epsilon R^\sharp)$ is klt and $K_{V^\sharp}+\epsilon R^\sharp$ is ample.
 Define $\overline{\mathfrak M}_{\mathrm{Co},2}^{\mathrm{KSBA}}$ to be its closure in the appropriate KSBA stack with fixed coefficient and volume.
@@ -1551,10 +1565,10 @@ Define $\overline{\mathfrak M}_{\mathrm{Co},2}^{\mathrm{KSBA}}$ to be its closur
 The divisor $R^\sharp$ must be defined universally as the divisorial fixed locus of the descended del Pezzo involution.
 Choosing a divisor separately on each fiber does not define a moduli problem.
 
-## Autonomous target theorem {#sec-autonomous-target}
+### Autonomous target theorem {#sec-autonomous-target}
 
-::: {.problem #prob:autonomous-theorem}
-**Target theorem A (autonomous Coble compactification).** The direct open period map identifies
+::: {.problem #prob:autonomous-theorem title="Target theorem A (autonomous Coble compactification)"}
+The direct open period map identifies
 
 \[
 \mathfrak M_{\mathrm{Co},2}^{\circ}
@@ -1571,12 +1585,12 @@ All cusps, Coxeter diagrams, Type II and Type III strata, and fan-versus-semifan
 This theorem is logically independent of the Enriques Heegner comparison.
 It requires direct analogues of the entire AEGS proof architecture.
 
-## Heegner comparison target {#sec-heegner-target}
+### Heegner comparison target {#sec-heegner-target}
 
 Let $\Delta_\alpha$ be the $(-2)$-Heegner divisor in the degree-$2$ Enriques period quotient, defined using a fixed embedded root.
 
-::: {.problem #prob:comparison-theorem}
-**Target theorem B (comparison with the Enriques Heegner divisor).** The direct Coble period quotient is canonically isomorphic to the normalization of $\Delta_\alpha$.
+::: {.problem #prob:comparison-theorem title="Target theorem B (comparison with the Enriques Heegner divisor)"}
+The direct Coble period quotient is canonically isomorphic to the normalization of $\Delta_\alpha$.
 Under this isomorphism:
 
 1. the direct and Heegner arithmetic groups agree;
@@ -1595,14 +1609,14 @@ Under this isomorphism:
 Target theorem B is the theorem requested by the original problem.
 Target theorem A is a substantial independent theorem and an intermediate strategy, but it becomes a proof of the Heegner statement only after Target theorem B is established.
 
-# Proof strategies and research programs {#sec-strategies}
+## Proof strategies and research programs {#sec-strategies}
 
 This section records the proof strategies that emerged, the precise theorem chains each requires, and the points at which earlier attempts failed.
 It is not an attempt to advance any of the proofs.
 
-## Strategy A: normalize the Heegner closure inside the AEGS compactification {#sec-strategy-heegner}
+### Strategy A: normalize the Heegner closure inside the AEGS compactification {#sec-strategy-heegner}
 
-### Outline {#sec-strategy-heegner-outline}
+#### Outline {#sec-strategy-heegner-outline}
 
 Fix a root $\alpha\in T_{\mathrm{En}}$ and let $\Delta_\alpha$ be the corresponding degree-$2$ Heegner component.
 Let
@@ -1618,47 +1632,47 @@ be the AEGS normalization map.
 Take the normalization $H_\alpha$ of the closure of $\Delta_\alpha$ in the source.
 The strategy is to identify $H_\alpha$ with the normalization of the Coble KSBA closure and compute its local semitoroidal structure.
 
-### Required chain of results {#sec-strategy-heegner-chain}
+#### Required chain of results {#sec-strategy-heegner-chain}
 
 The strategy requires the following sequence.
 
-::: {.problem #prob:A1}
-**A1. Root-orbit and embedded-component lemma.** The relevant roots form one orbit under the actual degree-$2$ Enriques group, or the chosen component is otherwise specified intrinsically.
+::: {.problem #prob:A1 title="A1. Root-orbit and embedded-component lemma"}
+The relevant roots form one orbit under the actual degree-$2$ Enriques group, or the chosen component is otherwise specified intrinsically.
 The stabilizer image on $T_{\mathrm{Co}}$ is computed.
 :::
 
-::: {.problem #prob:A2}
-**A2. Root-marked universal-family lemma.** Over the stack-theoretic normalization of the Heegner component, there is a universal family in which the fixed $A_1$ point, its simultaneous resolution after the required Weyl cover, the exceptional root, and the ambient ramification divisor are compatible with base change.
+::: {.problem #prob:A2 title="A2. Root-marked universal-family lemma"}
+Over the stack-theoretic normalization of the Heegner component, there is a universal family in which the fixed $A_1$ point, its simultaneous resolution after the required Weyl cover, the exceptional root, and the ambient ramification divisor are compatible with base change.
 :::
 
-::: {.problem #prob:A3}
-**A3. Coble-pair identification lemma.** The restriction of the AEGS stable pair to the generic Heegner point is precisely $(V^\sharp,\epsilon R^\sharp)$ of @sec-canonical-contraction, with the same universal divisor.
+::: {.problem #prob:A3 title="A3. Coble-pair identification lemma"}
+The restriction of the AEGS stable pair to the generic Heegner point is precisely $(V^\sharp,\epsilon R^\sharp)$ of @sec-canonical-contraction, with the same universal divisor.
 :::
 
-::: {.problem #prob:A4}
-**A4. Generic reconstruction lemma.** A general stable Coble pair recovers its canonical K3 cover, the distinguished $A_1$ point, the degree-$4$ class, the del Pezzo involution, and the Heegner period point.
+::: {.problem #prob:A4 title="A4. Generic reconstruction lemma"}
+A general stable Coble pair recovers its canonical K3 cover, the distinguished $A_1$ point, the degree-$4$ class, the del Pezzo involution, and the Heegner period point.
 Consequently the restricted finite map is generically injective.
 :::
 
-::: {.problem #prob:A5}
-**A5. Arithmetic cusp-lifting theorem.** The Coble cusp orbits, stabilizers, and maps to Enriques cusps are computed integrally.
+::: {.problem #prob:A5 title="A5. Arithmetic cusp-lifting theorem"}
+The Coble cusp orbits, stabilizers, and maps to Enriques cusps are computed integrally.
 :::
 
-::: {.problem #prob:A6}
-**A6. Local toroidal normalization theorem.** In every cusp chart, the normalized Heegner closure is the saturated toric subvariety associated with the actual Coble unipotent-center lattice and the induced arithmetic action.
+::: {.problem #prob:A6 title="A6. Local toroidal normalization theorem"}
+In every cusp chart, the normalized Heegner closure is the saturated toric subvariety associated with the actual Coble unipotent-center lattice and the induced arithmetic action.
 :::
 
-::: {.problem #prob:A7}
-**A7. Semitoroidal compatibility theorem.** The local normalized toric closures glue along the Type II boundary and are compatible with the AEGS semitoroidal contractions.
+::: {.problem #prob:A7 title="A7. Semitoroidal compatibility theorem"}
+The local normalized toric closures glue along the Type II boundary and are compatible with the AEGS semitoroidal contractions.
 :::
 
-::: {.problem #prob:A8}
-**A8. No-further-coarsening theorem.** Every wall retained by the induced Coble semifan changes the Coble stable pair; equivalently, the classifying map from the normalized Heegner closure to the Coble KSBA closure is finite and has no positive-dimensional fibers.
+::: {.problem #prob:A8 title="A8. No-further-coarsening theorem"}
+Every wall retained by the induced Coble semifan changes the Coble stable pair; equivalently, the classifying map from the normalized Heegner closure to the Coble KSBA closure is finite and has no positive-dimensional fibers.
 :::
 
 With A1--A8, the conclusion follows by normality and finite birationality.
 
-### What worked {#sec-strategy-heegner-worked}
+#### What worked {#sec-strategy-heegner-worked}
 
 The following ingredients are useful and survive scrutiny.
 
@@ -1672,7 +1686,7 @@ The following ingredients are useful and survive scrutiny.
 
 - Parent charts that are honest fans remain rational polyhedral after intersection with a rational subspace.
 
-### What failed {#sec-strategy-heegner-failed}
+#### What failed {#sec-strategy-heegner-failed}
 
 The earlier restriction argument failed at the following points.
 
@@ -1690,110 +1704,110 @@ The earlier restriction argument failed at the following points.
 
 These failures do not discredit Strategy A. They identify the exact new lemmas it needs.
 
-## Strategy B: autonomous Coble theory in the style of AEGS {#sec-strategy-autonomous}
+### Strategy B: autonomous Coble theory in the style of AEGS {#sec-strategy-autonomous}
 
-### Outline {#sec-strategy-autonomous-outline}
+#### Autonomous outline {#sec-strategy-autonomous-outline}
 
 This strategy never defines the direct Coble objects as a locus in Enriques moduli.
 It begins with the direct cover datum of Definition (direct resolved Coble cover datum) (@def:direct-cover-datum), computes its period theory, and reproduces Coble analogues of the AEGS constructions.
 Only after the autonomous compactification theorem is proved does one compare it with the Heegner divisor.
 
-### Section 2 analogue: open moduli and periods {#sec-strategy-B-section2}
+#### Open moduli and periods {#sec-strategy-B-section2}
 
 The following results are required in order.
 
-::: {.problem #prob:B21}
-**B2.1. Direct projective-model theorem.** The nodal invariant $(4,4)$ construction defines the complete generic direct Coble family and its universal divisors.
+::: {.problem #prob:B21 title="B2.1. Direct projective-model theorem"}
+The nodal invariant $(4,4)$ construction defines the complete generic direct Coble family and its universal divisors.
 :::
 
-::: {.problem #prob:B22}
-**B2.2. Intrinsic reconstruction theorem.** The singular Coble pair recovers the quartic del Pezzo quotient, the two double-cover algebras, the nodal K3 cover, both involutions, and the degree-$4$ class.
+::: {.problem #prob:B22 title="B2.2. Intrinsic reconstruction theorem"}
+The singular Coble pair recovers the quartic del Pezzo quotient, the two double-cover algebras, the nodal K3 cover, both involutions, and the degree-$4$ class.
 :::
 
-::: {.problem #prob:B23}
-**B2.3. Labeled lattice classification theorem.** Compute the simultaneous eigenspaces of the Klein-four action, their primitive closures and discriminant forms, and prove the labeled rigidity theorem of @sec-labeled-lattice-data.
+::: {.problem #prob:B23 title="B2.3. Labeled lattice classification theorem"}
+Compute the simultaneous eigenspaces of the Klein-four action, their primitive closures and discriminant forms, and prove the labeled rigidity theorem of @sec-labeled-lattice-data.
 :::
 
-::: {.problem #prob:B24}
-**B2.4. Direct global Torelli theorem.** The marked direct Coble moduli stack is an explicit arrangement complement $\mathbb D_{\mathrm{Co}}^\circ$, with the ample/nef chamber and exceptional root correctly encoded.
+::: {.problem #prob:B24 title="B2.4. Direct global Torelli theorem"}
+The marked direct Coble moduli stack is an explicit arrangement complement $\mathbb D_{\mathrm{Co}}^\circ$, with the ample/nef chamber and exceptional root correctly encoded.
 :::
 
-::: {.problem #prob:B25}
-**B2.5. Direct monodromy theorem.** The deck group of the marking cover and the geometric monodromy group equal the labeled centralizer group $\Gamma_{\mathrm{Co},2}^{\mathrm{dir}}$.
+::: {.problem #prob:B25 title="B2.5. Direct monodromy theorem"}
+The deck group of the marking cover and the geometric monodromy group equal the labeled centralizer group $\Gamma_{\mathrm{Co},2}^{\mathrm{dir}}$.
 :::
 
-::: {.problem #prob:B26}
-**B2.6. Direct stable-pair theorem.** The universal divisor $R^\sharp$ is flat, uniformly $\mathbb Q$-Cartier and ample, and the pairs $(V^\sharp,\epsilon R^\sharp)$ define a separated bounded KSBA moduli problem for $0<\epsilon\ll1$.
+::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
+The universal divisor $R^\sharp$ is flat, uniformly $\mathbb Q$-Cartier and ample, and the pairs $(V^\sharp,\epsilon R^\sharp)$ define a separated bounded KSBA moduli problem for $0<\epsilon\ll1$.
 :::
 
-### Section 3 analogue: cusps and reflection chambers {#sec-strategy-B-section3}
+#### Cusps and reflection chambers {#sec-strategy-B-section3}
 
-::: {.problem #prob:B31}
-**B3.1. Integral Baily--Borel classification.** Classify all primitive isotropic lines, planes, and flags under $\Gamma_{\mathrm{Co},2}^{\mathrm{dir}}$, with explicit representatives and stabilizers.
+::: {.problem #prob:B31 title="B3.1. Integral Baily--Borel classification"}
+Classify all primitive isotropic lines, planes, and flags under $\Gamma_{\mathrm{Co},2}^{\mathrm{dir}}$, with explicit representatives and stabilizers.
 :::
 
-::: {.problem #prob:B32}
-**B3.2. Vinberg theorem at each $0$-cusp.** Run Vinberg's algorithm for each actual cusp lattice and arithmetic reflection group.
+::: {.problem #prob:B32 title="B3.2. Vinberg theorem at each $0$-cusp"}
+Run Vinberg's algorithm for each actual cusp lattice and arithmetic reflection group.
 Prove termination, completeness of the simple roots, and compute the chamber automorphism group.
 :::
 
-::: {.problem #prob:B33}
-**B3.3. Full-lattice lift theorem.** Lift every cusp-lattice involution or reflection-twist description through the discriminant gluing to the labeled K3 lattice datum.
+::: {.problem #prob:B33 title="B3.3. Full-lattice lift theorem"}
+Lift every cusp-lattice involution or reflection-twist description through the discriminant gluing to the labeled K3 lattice datum.
 :::
 
-::: {.problem #prob:B34}
-**B3.4. Parabolic and elliptic exhaustion theorem.** Enumerate all maximal parabolic and relevant elliptic subdiagrams modulo the arithmetic chamber automorphism group and verify agreement with the independently computed isotropic-plane orbits.
+::: {.problem #prob:B34 title="B3.4. Parabolic and elliptic exhaustion theorem"}
+Enumerate all maximal parabolic and relevant elliptic subdiagrams modulo the arithmetic chamber automorphism group and verify agreement with the independently computed isotropic-plane orbits.
 :::
 
-### Section 4 analogue: integral-affine and dlt models {#sec-strategy-B-section4}
+#### Integral-affine and dlt models {#sec-strategy-B-section4}
 
-::: {.problem #prob:B41}
-**B4.1. Mirror and polygon theorem.** Construct, for every direct Coble cusp, the mirror anticanonical pair, moment polygons, Symington surgeries, and root-coordinate formulas.
+::: {.problem #prob:B41 title="B4.1. Mirror and polygon theorem"}
+Construct, for every direct Coble cusp, the mirror anticanonical pair, moment polygons, Symington surgeries, and root-coordinate formulas.
 :::
 
-::: {.problem #prob:B42}
-**B4.2. Integral-affine realization theorem.** Realize every sufficiently divisible chamber point by a divisor model carrying the full Coble affine package.
+::: {.problem #prob:B42 title="B4.2. Integral-affine realization theorem"}
+Realize every sufficiently divisible chamber point by a divisor model carrying the full Coble affine package.
 :::
 
-::: {.problem #prob:B43}
-**B4.3. Affine-symmetry characterization theorem.** Characterize the direct Coble period locus exactly by the presence of the prescribed affine involutions and exceptional-root data.
+::: {.problem #prob:B43 title="B4.3. Affine-symmetry characterization theorem"}
+Characterize the direct Coble period locus exactly by the presence of the prescribed affine involutions and exceptional-root data.
 :::
 
-::: {.problem #prob:B44}
-**B4.4. Algebraic involution theorem.** Promote the affine symmetries to commuting regular involutions on general divisor models and control the birational-to-regular modification for special models.
+::: {.problem #prob:B44 title="B4.4. Algebraic involution theorem"}
+Promote the affine symmetries to commuting regular involutions on general divisor models and control the birational-to-regular modification for special models.
 :::
 
-::: {.problem #prob:B45}
-**B4.5. dlt quotient and relative-Proj theorem.** Prove the dlt and slc properties, canonical bundle formula, positivity, and exact stable contractions.
+::: {.problem #prob:B45 title="B4.5. dlt quotient and relative-Proj theorem"}
+Prove the dlt and slc properties, canonical bundle formula, positivity, and exact stable contractions.
 :::
 
-### Sections 5--7 analogues: semifans and boundary classification {#sec-strategy-B-section5}
+#### Sections 5--7 analogues: semifans and boundary classification {#sec-strategy-B-section5}
 
-::: {.problem #prob:B51}
-**B5.1. Coble recognizability theorem.** Prove that the direct divisor package is recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
+::: {.problem #prob:B51 title="B5.1. Coble recognizability theorem"}
+Prove that the direct divisor package is recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
 :::
 
-::: {.problem #prob:B52}
-**B5.2. Geometric relevance theorem.** Determine exactly which direct Coxeter walls change the stable pair and hence which roots are relevant.
+::: {.problem #prob:B52 title="B5.2. Geometric relevance theorem"}
+Determine exactly which direct Coxeter walls change the stable pair and hence which roots are relevant.
 :::
 
-::: {.problem #prob:B53}
-**B5.3. Generalized Coxeter semifan theorem.** Prove that the direct regions of combinatorial constancy are the generalized Coxeter semifans of the verified direct chambers.
+::: {.problem #prob:B53 title="B5.3. Generalized Coxeter semifan theorem"}
+Prove that the direct regions of combinatorial constancy are the generalized Coxeter semifans of the verified direct chambers.
 :::
 
-::: {.problem #prob:B54}
-**B5.4. Direct KSBA normalization theorem.** Construct the classifying map, prove properness, finiteness, generic injectivity, and absence of further coarsening.
+::: {.problem #prob:B54 title="B5.4. Direct KSBA normalization theorem"}
+Construct the classifying map, prove properness, finiteness, generic injectivity, and absence of further coarsening.
 :::
 
-::: {.problem #prob:B61}
-**B6.1. Coble component classification.** Classify all finite and affine component pairs, including equations, quotient involutions, branch curves, ramification divisors, and contractions.
+::: {.problem #prob:B61 title="B6.1. Coble component classification"}
+Classify all finite and affine component pairs, including equations, quotient involutions, branch curves, ramification divisors, and contractions.
 :::
 
-::: {.problem #prob:B71}
-**B7.1. Complete boundary theorem.** List every Type II and Type III stable Coble surface and prove compatibility with the Baily--Borel and semitoroidal incidence diagrams.
+::: {.problem #prob:B71 title="B7.1. Complete boundary theorem"}
+List every Type II and Type III stable Coble surface and prove compatibility with the Baily--Borel and semitoroidal incidence diagrams.
 :::
 
-### Advantages and principal difficulties {#sec-strategy-B-assessment}
+#### Advantages and principal difficulties {#sec-strategy-B-assessment}
 
 The autonomous strategy has three advantages.
 
@@ -1805,46 +1819,46 @@ The autonomous strategy has three advantages.
 
 Its principal difficulties are equally clear: direct monodromy, complete Vinberg calculations, algebraic realization of the fixed exceptional curve in degenerations, and a Coble-specific recognizable-divisor theorem.
 
-## Strategy C: direct K3-to-Coble folding or reflection twisting {#sec-strategy-folding}
+### Strategy C: direct K3-to-Coble folding or reflection twisting {#sec-strategy-folding}
 
-### Candidate mechanism {#sec-strategy-C-mechanism}
+#### Candidate mechanism {#sec-strategy-C-mechanism}
 
 The identity $I_{\mathrm{Co}}=w_\alpha I_{\mathrm{En}}$ suggests that the Coble theory can be obtained from the ambient K3 involution space by a direct reflection-twisted folding, rather than by first folding to Enriques and then slicing by $\alpha^\perp$.
 
 At a cusp, the candidate operation is $J_{\mathrm{Co}}=w_{\bar\alpha}J_{\mathrm{En}}$.
 
-### Required chain {#sec-strategy-C-chain}
+#### Required chain {#sec-strategy-C-chain}
 
-::: {.problem #prob:C1}
-**C1. Classification of admissible ambient actions.** Classify involutions of the two reflective K3 cusp lattices whose fixed lattices have the Coble cusp types and whose full-lattice lifts preserve the labeled direct Coble data.
+::: {.problem #prob:C1 title="C1. Classification of admissible ambient actions"}
+Classify involutions of the two reflective K3 cusp lattices whose fixed lattices have the Coble cusp types and whose full-lattice lifts preserve the labeled direct Coble data.
 :::
 
-::: {.problem #prob:C2}
-**C2. Direct root-folding theorem.** Classify all ambient root orbits under the direct Coble involution and prove that every negative folded vector is a Coble root and every Coble root arises in this way.
+::: {.problem #prob:C2 title="C2. Direct root-folding theorem"}
+Classify all ambient root orbits under the direct Coble involution and prove that every negative folded vector is a Coble root and every Coble root arises in this way.
 :::
 
-::: {.problem #prob:C3}
-**C3. Chamber-intersection theorem.** Prove that intersection of an ambient K3 chamber with the direct Coble fixed subspace is a fundamental chamber for the direct Coble reflection group.
+::: {.problem #prob:C3 title="C3. Chamber-intersection theorem"}
+Prove that intersection of an ambient K3 chamber with the direct Coble fixed subspace is a fundamental chamber for the direct Coble reflection group.
 :::
 
-::: {.problem #prob:C4}
-**C4. Full-lattice and geometric realization theorem.** Lift the cusp action to $L_{K3}$ and identify it with the geometric pair of involutions on divisor models.
+::: {.problem #prob:C4 title="C4. Full-lattice and geometric realization theorem"}
+Lift the cusp action to $L_{K3}$ and identify it with the geometric pair of involutions on divisor models.
 :::
 
-::: {.problem #prob:C5}
-**C5. Comparison with the wall-link construction.** Prove that the direct folded chamber agrees with the orthogonal link of the corresponding Enriques root wall after the comparison of labeled embeddings.
+::: {.problem #prob:C5 title="C5. Comparison with the wall-link construction"}
+Prove that the direct folded chamber agrees with the orthogonal link of the corresponding Enriques root wall after the comparison of labeled embeddings.
 :::
 
-### Failure mode in the earlier attempt {#sec-strategy-C-failure}
+#### Failure mode in the earlier attempt {#sec-strategy-C-failure}
 
 The previous argument verified only the orthogonal-projection formula for selected walls.
 It did not prove the root converse, chamber completeness, or full-lattice lifting.
 Thus it produced wall-slice diagrams rather than Coxeter diagrams.
 Strategy C remains viable only if C1--C5 are proved.
 
-## Strategy D: computation-first arithmetic and Vinberg analysis {#sec-strategy-computational}
+### Strategy D: computation-first arithmetic and Vinberg analysis {#sec-strategy-computational}
 
-### Legitimate uses {#sec-strategy-D-legitimate}
+#### Legitimate uses {#sec-strategy-D-legitimate}
 
 Computation is well suited to the following tasks.
 
@@ -1862,7 +1876,7 @@ Computation is well suited to the following tasks.
 
 - computing local invariant rings, divisor classes, and intersection numbers.
 
-### Invalid substitutions {#sec-strategy-D-invalid}
+#### Invalid substitutions {#sec-strategy-D-invalid}
 
 Computation does not replace the following parametric statements.
 
@@ -1878,7 +1892,7 @@ Computation does not replace the following parametric statements.
 
 Each script must therefore state a verification contract: the exact finite or symbolic assertion it certifies and the theorem it does not prove.
 
-## Strategy E: hybrid direct-open and inherited-boundary approach {#sec-strategy-hybrid}
+### Strategy E: hybrid direct-open and inherited-boundary approach {#sec-strategy-hybrid}
 
 A potentially efficient hybrid is to prove the direct open period and monodromy theorem first, then use the AEGS ambient stable family only to construct boundary models.
 The comparison with the Heegner divisor is made at the open level before the boundary is analyzed.
@@ -1902,157 +1916,157 @@ The required chain is:
 This strategy reduces duplication of integral-affine existence theorems but still requires all arithmetic and comparison steps.
 It is not equivalent to simply declaring the Coble compactification to be a closed subspace of the AEGS compactification.
 
-# Common errors, caveats, and dependency-sensitive warnings {#sec-footguns}
+## Common errors, caveats, and dependency-sensitive warnings {#sec-footguns}
 
 The following warnings are stated in self-contained form and cross-reference the constructions they affect.
 
-## Surface-theoretic warnings {#sec-surface-footguns}
+### Surface-theoretic warnings {#sec-surface-footguns}
 
-::: {.warning #warn:coble-enriques}
-**Warning (Coble is not Enriques).** The smooth resolution $\widetilde V$ is rational and has non-torsion canonical class.
+::: {.warning #warn:coble-enriques title="Coble is not Enriques"}
+The smooth resolution $\widetilde V$ is rational and has non-torsion canonical class.
 The singular surface $V^\sharp$ is $\mathbb Q$-Calabi--Yau only after contracting the anti-bicanonical $(-4)$-curve.
 Arguments using $K_Z$ torsion on an Enriques surface cannot be transferred to $\widetilde V$.
 :::
 
-::: {.warning #warn:singularity-index}
-**Warning (order versus canonical index).** The notation $\frac{1}{4}(1,1)$ records a quotient group of order $4$.
+::: {.warning #warn:singularity-index title="order versus canonical index"}
+The notation $\frac{1}{4}(1,1)$ records a quotient group of order $4$.
 The Cartier index of the canonical class is $2$.
 :::
 
-::: {.warning #warn:normality}
-**Warning (normality versus boundary nonnormality).** The generic $\frac{1}{4}(1,1)$ Coble quotient is normal.
+::: {.warning #warn:normality title="normality versus boundary nonnormality"}
+The generic $\frac{1}{4}(1,1)$ Coble quotient is normal.
 Irreducible nonnormal stable surfaces can occur only through conductor self-identifications or other boundary phenomena.
 :::
 
-::: {.warning #warn:anticanonical-ramification}
-**Warning (anti-bicanonical curve versus stable divisor).** The divisor $C\in|-2K_{\widetilde V}|$ is the branch curve of the Coble cover on the resolution.
+::: {.warning #warn:anticanonical-ramification title="anti-bicanonical curve versus stable divisor"}
+The divisor $C\in|-2K_{\widetilde V}|$ is the branch curve of the Coble cover on the resolution.
 The stable divisor is $R^\sharp$, the descended del Pezzo ramification divisor.
 The two are related by the crepant formula in @sec-canonical-contraction but are not equal.
 :::
 
-::: {.warning #warn:quasi-ample}
-**Warning (quasipolarization versus polarization).** The natural degree-$2$ class on $\widetilde V$ is orthogonal to $C$ and is not ample.
+::: {.warning #warn:quasi-ample title="quasipolarization versus polarization"}
+The natural degree-$2$ class on $\widetilde V$ is orthogonal to $C$ and is not ample.
 It becomes ample only after contracting the complete null locus.
 Any moduli group that purports to remember an ample class on $\widetilde V$ is using the wrong object.
 :::
 
-::: {.warning #warn:special-null}
-**Warning (special Heegner intersections).** On the generic one-node locus, $C$ is the only null curve.
+::: {.warning #warn:special-null title="special Heegner intersections"}
+On the generic one-node locus, $C$ is the only null curve.
 On higher Heegner intersections additional curves may be null and must also be contracted before the singular degree-$2$ polarization becomes ample.
 :::
 
-::: {.warning #warn:two-heegner}
-**Warning (Coble versus unigonal Heegner divisors).** The Coble locus is the $(-2)$-Heegner arrangement associated with a fixed node and a $\frac{1}{4}(1,1)$ quotient.
+::: {.warning #warn:two-heegner title="Coble versus unigonal Heegner divisors"}
+The Coble locus is the $(-2)$-Heegner arrangement associated with a fixed node and a $\frac{1}{4}(1,1)$ quotient.
 The unigonal locus is a distinct $(-4)$-Heegner divisor whose projective model uses $\mathbb P(1,1,2)$.
 The two constructions must not be interchanged.
 :::
 
-::: {.warning #warn:ramification-source}
-**Warning (which involution defines the stable divisor).** In AEGS and in the proposed Coble theory, the stable divisor is the divisorial fixed locus of the del Pezzo involution.
+::: {.warning #warn:ramification-source title="which involution defines the stable divisor"}
+In AEGS and in the proposed Coble theory, the stable divisor is the divisorial fixed locus of the del Pezzo involution.
 The Enriques involution is fixed-point free on the generic Enriques K3 cover, and the Coble involution fixes the exceptional curve only on the resolution.
 Neither of these is the source of $R^\sharp$.
 :::
 
-::: {.warning #warn:quarter-not-ade}
-**Warning (the Coble singularity is not ADE).** The singularity $\frac{1}{4}(1,1)$ is a non-Gorenstein cyclic quotient singularity.
+::: {.warning #warn:quarter-not-ade title="the Coble singularity is not ADE"}
+The singularity $\frac{1}{4}(1,1)$ is a non-Gorenstein cyclic quotient singularity.
 ADE arguments apply only after passing to the canonical $A_1$ cover or to the resolution, and the boundary coefficients must be tracked through that passage.
 :::
 
-## Group and period warnings {#sec-group-footguns}
+### Group and period warnings {#sec-group-footguns}
 
-::: {.warning #warn:group-fiat}
-**Warning (group by fiat).** The Hodge stabilizer image, centralizer image, congruence inverse image, and geometric monodromy group are distinct definitions; see @sec-four-groups.
+::: {.warning #warn:group-fiat title="group by fiat"}
+The Hodge stabilizer image, centralizer image, congruence inverse image, and geometric monodromy group are distinct definitions; see @sec-four-groups.
 Equality must be proved.
 Choosing one definition because it makes the desired compactification statement true is circular.
 :::
 
-::: {.warning #warn:isometry-rigidity}
-**Warning (abstract isometry is not labeled rigidity).** An isomorphism $T_{\mathrm{Co}}\cong I_{2,9}(2)$ does not determine the embedding into $L_{K3}$, the degree-$4$ class, the exceptional root, the second involution, or the chamber.
+::: {.warning #warn:isometry-rigidity title="abstract isometry is not labeled rigidity"}
+An isomorphism $T_{\mathrm{Co}}\cong I_{2,9}(2)$ does not determine the embedding into $L_{K3}$, the degree-$4$ class, the exceptional root, the second involution, or the chamber.
 Strategy B requires the labeled rigidity theorem of @sec-labeled-lattice-data.
 :::
 
-::: {.warning #warn:domain-quotient}
-**Warning (domain inclusion versus quotient morphism).** An inclusion of type-IV domains does not by itself descend to arithmetic quotients.
+::: {.warning #warn:domain-quotient title="domain inclusion versus quotient morphism"}
+An inclusion of type-IV domains does not by itself descend to arithmetic quotients.
 The groups must arise from compatible subgroups of a common orthogonal group.
 This issue controls the diagram in @sec-period-diagram.
 :::
 
-::: {.warning #warn:direct-factorization}
-**Warning (direct construction versus Heegner theorem).** A direct Coble period quotient inside the K3 involution space is a separate theorem until its group, labeled embedding, and universal family are shown to factor through the Enriques Heegner construction.
+::: {.warning #warn:direct-factorization title="direct construction versus Heegner theorem"}
+A direct Coble period quotient inside the K3 involution space is a separate theorem until its group, labeled embedding, and universal family are shown to factor through the Enriques Heegner construction.
 Strategy B must be followed by Target theorem B.
 :::
 
-::: {.warning #warn:cover-smoothing}
-**Warning (smoothing the cover versus smoothing the quotient).** An arbitrary smoothing of the nodal K3 cover need not carry the node-fixing involution.
+::: {.warning #warn:cover-smoothing title="smoothing the cover versus smoothing the quotient"}
+An arbitrary smoothing of the nodal K3 cover need not carry the node-fixing involution.
 The explicit invariant $(4,4)$ family of @sec-equivariant-smoothing does give an equivariant smoothing; no general conclusion should be drawn without a family-level extension theorem.
 :::
 
-## Cusp and Coxeter warnings {#sec-cusp-footguns}
+### Cusp and Coxeter warnings {#sec-cusp-footguns}
 
-::: {.warning #warn:orbit-groups}
-**Warning (four orbit problems).** Orbits under $O(T_{\mathrm{Co}})$, $O^+(T_{\mathrm{Co}})$, $\Gamma_{\mathrm{Co},2}$, and $O(A_{T_{\mathrm{Co}}})$ can all differ.
+::: {.warning #warn:orbit-groups title="four orbit problems"}
+Orbits under $O(T_{\mathrm{Co}})$, $O^+(T_{\mathrm{Co}})$, $\Gamma_{\mathrm{Co},2}$, and $O(A_{T_{\mathrm{Co}}})$ can all differ.
 A claim about one group cannot be transferred to another without an exact sequence, a stabilizer-image calculation, or an integral transitivity theorem.
 :::
 
-::: {.warning #warn:cusp-map}
-**Warning (cusp maps require embedded representatives).** A permutation of cusp labels is not a proof of a Baily--Borel map.
+::: {.warning #warn:cusp-map title="cusp maps require embedded representatives"}
+A permutation of cusp labels is not a proof of a Baily--Borel map.
 One must exhibit an isotropic line or plane inside the common embedded lattice chain and compute its divisibility and arithmetic orbit in both groups.
 :::
 
-::: {.warning #warn:rectangles}
-**Warning (AEGS Figure 4 border types).** The double-rectangle Enriques $1$-cusps are $12,13,14,15,245$; the single-rectangle cusps are $34,35,45,55$.
+::: {.warning #warn:rectangles title="AEGS Figure 4 border types"}
+The double-rectangle Enriques $1$-cusps are $12,13,14,15,245$; the single-rectangle cusps are $34,35,45,55$.
 The former map to the segment-flipping quotient lattice $E_8(2)$ and cannot contain a $(-2)$ Coble root in the negative quotient.
 Earlier assignments that treated $245$ as a Coble image are incompatible with this lattice obstruction.
 :::
 
-::: {.warning #warn:wall-slice}
-**Warning (wall slice is not Coxeter diagram).** The construction in @sec-orthogonal-link gives an arrangement of restricted hyperplanes.
+::: {.warning #warn:wall-slice title="wall slice is not Coxeter diagram"}
+The construction in @sec-orthogonal-link gives an arrangement of restricted hyperplanes.
 It becomes a Coxeter chamber only after root integrality, simplicity, completeness, and arithmetic-index statements are proved.
 :::
 
-::: {.warning #warn:parabolic-exhaustion}
-**Warning (parabolic inspection is not exhaustion).** Type II rays are arithmetic orbits of maximal parabolic subdiagrams of the complete chamber.
+::: {.warning #warn:parabolic-exhaustion title="parabolic inspection is not exhaustion"}
+Type II rays are arithmetic orbits of maximal parabolic subdiagrams of the complete chamber.
 Listing visually apparent affine subdiagrams is insufficient unless a Vinberg computation or classification proves that no others occur.
 :::
 
-::: {.warning #warn:gram}
-**Warning (square-diagram Gram entry).** The black nodes $\alpha_{20}$ and $\alpha_{21}$ are joined by a thick edge and have inner product $4$, not $2$.
+::: {.warning #warn:gram title="square-diagram Gram entry"}
+The black nodes $\alpha_{20}$ and $\alpha_{21}$ are joined by a thick edge and have inner product $4$, not $2$.
 Any computation based on the latter value has the wrong rank.
 :::
 
-::: {.warning #warn:correct-ambient}
-**Warning (the correct reflective ambient space).** The reflective cusp diagrams used by AEGS belong to the hyperelliptic degree-$4$ K3 involution space $\mathcal F_{(2,2,0)}$, not to the full quartic K3 moduli space $\mathcal F_4$.
+::: {.warning #warn:correct-ambient title="the correct reflective ambient space"}
+The reflective cusp diagrams used by AEGS belong to the hyperelliptic degree-$4$ K3 involution space $\mathcal F_{(2,2,0)}$, not to the full quartic K3 moduli space $\mathcal F_4$.
 Any direct folding strategy must explain its relation to $\mathcal F_{(2,2,0)}$ before using the ambient diagrams.
 :::
 
-## Integral-affine and stable-pair warnings {#sec-affine-footguns}
+### Integral-affine and stable-pair warnings {#sec-affine-footguns}
 
-::: {.warning #warn:affine-algebraic}
-**Warning (affine symmetry versus algebraic involution).** An involution of a dual complex predicts but does not prove an involution of the degeneration.
+::: {.warning #warn:affine-algebraic title="affine symmetry versus algebraic involution"}
+An involution of a dual complex predicts but does not prove an involution of the degeneration.
 One must impose the correct limiting-period condition and choose invariant component and gluing moduli; see @sec-algebraic-extension.
 :::
 
-::: {.warning #warn:crossed-node}
-**Warning (crossed node).** A crossed Coxeter node is not merely a diagram symmetry.
+::: {.warning #warn:crossed-node title="crossed node"}
+A crossed Coxeter node is not merely a diagram symmetry.
 It includes a root reflection, forces the corresponding root coordinate to vanish, and is realized by an $I_1$--$I_1$ collision to an $I_2$ affine singularity.
 :::
 
-::: {.warning #warn:fixed-edge}
-**Warning (fixed affine edge need not support ramification).** In the non-simple AEGS cusp, a fixed bottom edge has no support in the ramification polarization.
+::: {.warning #warn:fixed-edge title="fixed affine edge need not support ramification"}
+In the non-simple AEGS cusp, a fixed bottom edge has no support in the ramification polarization.
 Coble relevance must likewise be read from the divisor package, not from fixed loci alone.
 :::
 
-::: {.warning #warn:dlt-stable}
-**Warning (dlt model versus stable model).** The quotient dlt model can contain $R^\sharp$-trivial curves, components, and conductor strata.
+::: {.warning #warn:dlt-stable title="dlt model versus stable model"}
+The quotient dlt model can contain $R^\sharp$-trivial curves, components, and conductor strata.
 The KSBA model is obtained only after the relative Proj of @sec-relative-proj.
 :::
 
-::: {.warning #warn:restrict-semifan}
-**Warning (restriction versus compactification of the restriction).** The intersection of an ambient semifan with a Heegner subspace is not automatically the semitoroidal normalization of the Heegner closure.
+::: {.warning #warn:restrict-semifan title="restriction versus compactification of the restriction"}
+The intersection of an ambient semifan with a Heegner subspace is not automatically the semitoroidal normalization of the Heegner closure.
 The arithmetic, normalization, gluing, and no-further-coarsening statements of @sec-restriction-not-formal are indispensable.
 :::
 
-# Dependency graph for further work {#sec-dependency-graph}
+## Dependency graph for further work {#sec-dependency-graph}
 
 The following diagram records the logical order of the autonomous strategy.
 An arrow means that the lower statement uses the upper statement.
@@ -2121,7 +2135,7 @@ The arithmetic cusp classification precedes the Coxeter theorem because the latt
 The stable-model analysis precedes the relevance marking because relevance is defined by the relative Proj.
 Any proof order that reverses either dependency risks classifying the wrong objects.
 
-# Consolidated status ledger {#sec-status-ledger}
+## Consolidated status ledger {#sec-status-ledger}
 
 The following table summarizes the present mathematical status.
 
@@ -2154,11 +2168,11 @@ The following table summarizes the present mathematical status.
 
 : Consolidated status of the Coble compactification project. {#tbl-status-ledger}
 
-# Computational record and verification contracts {#sec-computational-record}
+## Computational record and verification contracts {#sec-computational-record}
 
 This section records calculations that may be reused after the corresponding parametric theorems are proved.
 
-## Explicit invariant branch curve {#sec-explicit-curve}
+### Explicit invariant branch curve {#sec-explicit-curve}
 
 On the affine chart $x_0=y_0=1$, one checked the invariant polynomial
 
@@ -2174,10 +2188,12 @@ f(x,y)={}&29x^4y^4+23x^4y^2+19x^4
 Its quadratic part is $x^2+xy+2y^2$, with discriminant $-7$.
 Gr\"obner-basis calculations on the four standard affine charts give one singular point, at $(0,0)$ on the displayed chart, and no singularities on the other charts.
 
-**Verification contract.** This calculation proves nonemptiness of the open one-node invariant family.
+::: {.remark title="Verification contract"}
+This calculation proves nonemptiness of the open one-node invariant family.
 It does not prove that the family is the complete Coble moduli space.
+:::
 
-## Lattice calculations {#sec-computational-lattices}
+### Lattice calculations {#sec-computational-lattices}
 
 Symbolic Gram-matrix computations verify:
 
@@ -2187,26 +2203,32 @@ Symbolic Gram-matrix computations verify:
 
 - the rank correction for the ambient square diagram when $(\alpha_{20},\alpha_{21})$ is changed from $2$ to $4$.
 
-**Verification contract.** These computations certify explicit lattice models.
+::: {.remark title="Verification contract"}
+These computations certify explicit lattice models.
 They do not prove labeled embedding uniqueness or geometric monodromy.
+:::
 
-## Finite cusp computations {#sec-computational-cusps}
+### Finite cusp computations {#sec-computational-cusps}
 
 The finite-orbit data of @sec-finite-orbits and the enhanced star calculation are reproducible.
 They are inputs to, not substitutes for, the integral cusp-lifting theorem.
 
-**Verification contract.** The scripts compute orbits under explicitly specified finite matrix groups.
+::: {.remark title="Verification contract"}
+The scripts compute orbits under explicitly specified finite matrix groups.
 They do not identify those groups with the images of integral parabolic stabilizers.
+:::
 
-## Wall-slice computations {#sec-computational-slices}
+### Wall-slice computations {#sec-computational-slices}
 
 The corrected ambient Gram matrix reproduces the selected wall-link roots and the four candidate arrangements.
 The scripts test root integrality for the displayed vectors and enumerate parabolic and elliptic subgraphs of the candidate graphs.
 
-**Verification contract.** The scripts verify the finite graph calculations for the input root list.
+::: {.remark title="Verification contract"}
+The scripts verify the finite graph calculations for the input root list.
 They do not prove that the list is a complete Vinberg simple system or that graph automorphisms equal arithmetic chamber automorphisms.
+:::
 
-# Appendix: corrected candidate wall-slice arrangements {#sec-appendix-wall-slices}
+## Appendix: corrected candidate wall-slice arrangements {#sec-appendix-wall-slices}
 
 This appendix records the finite arrangements obtained by slicing selected AEGS Enriques chambers by selected white-root hyperplanes.
 The data are retained because they are useful starting points for a direct Vinberg calculation.
@@ -2215,7 +2237,7 @@ They are not asserted to be complete Coxeter diagrams.
 White vertices below have square $-2$ and black vertices have square $-4$.
 A double arrow denotes the non-simply-laced Coxeter edge between roots of unequal length; $==$ denotes a thick edge; and $\cdots$ denotes a dotted edge.
 
-## Slice over the triangular ambient cusp {#sec-slice-2}
+### Slice over the triangular ambient cusp {#sec-slice-2}
 
 The arrangement $G_{\mathrm{slice}}^2$ has nine vertices.
 The vertices $c_0,\ldots,c_7$ are black and $c_8$ is white.
@@ -2229,7 +2251,7 @@ c_1-c_2-c_3-c_4-c_5-c_6-c_7\Rightarrow c_8.
 
 This arrangement agrees with the standard unpolarized chamber after a relabelling, but its identification with a polarized cusp requires the integral cusp theorem.
 
-## First square-cusp slice {#sec-slice-3}
+### First square-cusp slice {#sec-slice-3}
 
 The white vertices are $c_0,c_7,c_8$ and the black vertices are $c_1,\ldots,c_6,c_9,c_{10}$.
 The nonzero edges are
@@ -2252,7 +2274,7 @@ c_7\Rightarrow c_{10},
 c_8\cdots c_{10}.
 \]
 
-## Second square-cusp slice {#sec-slice-4}
+### Second square-cusp slice {#sec-slice-4}
 
 The white vertices are $c_5,c_7$ and all other displayed vertices are black.
 The edges are
@@ -2269,7 +2291,7 @@ c_0-c_8,
 c_4-c_9.
 \]
 
-## Third square-cusp slice {#sec-slice-5}
+### Third square-cusp slice {#sec-slice-5}
 
 The white vertices are $c_0,c_8,c_9,c_{10},c_{11}$ and the black vertices are $c_1,\ldots,c_7,c_{12}$.
 The edges are
@@ -2304,7 +2326,7 @@ c_9==c_{11},
 c_{11}\cdots c_{12}.
 \]
 
-## Discarded cusp calibration {#sec-discarded-cusp-calibration}
+### Discarded cusp calibration {#sec-discarded-cusp-calibration}
 
 One later finite calculation decorated each totally singular plane by one of eight stars and assigned the resulting seven finite orbits the labels
 
@@ -2318,7 +2340,7 @@ This calibration is not retained.
 The integral parabolic image used to define the star action was not proved, and the label $245$ is incompatible with the necessary $(-2)$-class condition in @sec-possible-cusp-images.
 The finite enhanced orbit calculation can still be reused after the actual integral stabilizer image is known, but the displayed labels have no current arithmetic meaning.
 
-# Appendix: adversarial consistency audit {#sec-adversarial-audit}
+## Appendix: adversarial consistency audit {#sec-adversarial-audit}
 
 The report was checked against the principal failure modes identified in the research discussions.
 The purpose of this appendix is not to add new mathematics, but to make explicit where each ambiguity is resolved or retained as an open theorem.
@@ -2357,7 +2379,7 @@ Two residual points are intentionally left as research problems rather than sile
 2. The family-theoretic construction of the canonical cover and simultaneous resolution is not used as a formal black box.
    It is isolated in the cover--singular equivalence theorem and in the root-marked universal-family lemma of Strategy A.
 
-# Source map {#sec-source-map}
+## Source map {#sec-source-map}
 
 The following references indicate where the standard theories used in this report may be consulted.
 
@@ -2379,7 +2401,7 @@ The following references indicate where the standard theories used in this repor
 
 - The Stacks Project [@Stacks] is a general reference for relative spectra, finite morphisms, normalization, descent, and family-theoretic language.
 
-# Conclusion {#sec-conclusion}
+## Conclusion {#sec-conclusion}
 
 The Coble compactification problem now has a precise mathematical ontology.
 The open geometry is governed by invariant nodal $(4,4)$ curves, a nodal K3 cover with two commuting involutions, the lattice $T_{\mathrm{Co}} \cong \langle2\rangle\oplus U(2)\oplus E_8(2)$, and the singular stable pair $(V^\sharp,\epsilon R^\sharp)$.
@@ -2397,7 +2419,7 @@ The autonomous strategy organizes these issues into direct Coble analogues of th
 The Heegner strategy organizes them into arithmetic normalization, universal-family, and no-further-coarsening statements.
 A complete proof may combine the two, but it must eventually identify their lattices, groups, divisors, cusp structures, semifans, and KSBA families as the same mathematical objects.
 
-# References {.unnumbered}
+## References {.unnumbered}
 
 ::: {#refs}
 :::
