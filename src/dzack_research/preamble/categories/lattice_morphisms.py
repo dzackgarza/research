@@ -13,6 +13,7 @@ from sage.structure.element import parent as element_parent
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalIsomorphism,
     CategoricalMor,
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
@@ -599,6 +600,32 @@ class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
     def __init__(self, parent, images) -> None:
+        if isinstance(images, CategoricalIsomorphism):
+            domain = parent.domain()
+            codomain = parent.codomain()
+            forward = domain.module_category().Mor(domain, codomain)(images.forward())
+            inverse = codomain.module_category().Mor(codomain, domain)(images.inverse())
+            forward_matrix = _engine_matrix(_module_matrix(forward))
+            domain_gram = _engine_component_matrix(domain.gram_tensor())
+            codomain_gram = _engine_component_matrix(codomain.gram_tensor())
+            if forward_matrix.transpose() * codomain_gram * forward_matrix != domain_gram:
+                raise ValueError(
+                    f"the module map {forward} does not preserve the lattice form from "
+                    f"{domain} to {codomain}"
+                )
+
+            values = _represented_value_module(domain)
+            target_values = _represented_value_module(codomain)
+            if target_values is not values:
+                raise TypeError(
+                    f"a lattice isometry {domain} -> {codomain} needs both forms valued in one module, "
+                    f"but they take values in {values} and {target_values}"
+                )
+            self._value_morphism = values.module_category().Mor(values, values).identity()
+            ModuleMorphismMethods.__init__(self, parent, forward)
+            self._underlying_module_isomorphism = images
+            return
+
         super().__init__(parent, images)
         if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
             raise ValueError(
@@ -612,6 +639,17 @@ class LatticeIsometryMethods:
     def inverse(self):
         r"""Return the inverse isometry."""
         codomain = self.codomain()
+        module_isomorphism = getattr(self, "_underlying_module_isomorphism", None)
+        if module_isomorphism is not None:
+            target = codomain.Isom(self.domain())
+            reverse = codomain.module_category().Core().Mor(
+                codomain,
+                self.domain(),
+            )._from_known_inverse_pair(
+                module_isomorphism.inverse(),
+                module_isomorphism.forward(),
+            )
+            return target.element_class(target, reverse)
         return codomain.Isom(self.domain())(lambda label: self.lift(codomain.module_generator(label)))
 
     def __invert__(self):
@@ -2282,10 +2320,28 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
     def _isometry_from_column_matrix(self, transformation):
         r"""The isometry whose \(j\)-th generator image has the \(j\)-th column of ``transformation`` as coordinates."""
+        domain = self.domain()
         codomain = self.codomain()
         codomain_generators = tuple(codomain.module_generators())
         ring = codomain.base_ring()
-        return self(
+        domain_rank = int(domain.module_rank())
+        codomain_rank = int(codomain.module_rank())
+        if transformation.nrows() != codomain_rank or transformation.ncols() != domain_rank:
+            raise ValueError(
+                f"the matrix of an isometry {domain} -> {codomain} must have shape "
+                f"({codomain_rank}, {domain_rank}), but {transformation} has shape "
+                f"({transformation.nrows()}, {transformation.ncols()})"
+            )
+        if domain_rank != codomain_rank:
+            raise ValueError(
+                f"there is no matrix isometry {domain} -> {codomain}: the ranks "
+                f"{domain_rank} and {codomain_rank} differ"
+            )
+
+        inverse_transformation = transformation.inverse()
+        domain_generators = tuple(domain.module_generators())
+
+        forward = domain.module_category().Mor(domain, codomain)(
             tuple(
                 sum(
                     (
@@ -2302,6 +2358,29 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 for column in transformation.columns()
             )
         )
+        inverse_ring = domain.base_ring()
+        inverse = codomain.module_category().Mor(codomain, domain)(
+            tuple(
+                sum(
+                    (
+                        domain.scalar_multiple(
+                            _owned_engine_element(inverse_ring, coefficient), generator
+                        )
+                        for coefficient, generator in zip(
+                            column, domain_generators, strict=True
+                        )
+                        if coefficient
+                    ),
+                    domain.zero(),
+                )
+                for column in inverse_transformation.columns()
+            )
+        )
+        module_isomorphism = domain.module_category().Core().Mor(domain, codomain)(
+            forward,
+            inverse,
+        )
+        return self.element_class(self, module_isomorphism)
 
     @cached_method
     def _isometry_decision(self):
