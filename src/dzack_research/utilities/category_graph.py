@@ -121,13 +121,7 @@ def _axiom_calls(expression: str) -> tuple[ast.expr, tuple[str, ...]]:
     except SyntaxError:
         return ast.Name(id=expression), ()
     axioms: list[str] = []
-    while (
-        isinstance(node, ast.Call)
-        and not node.args
-        and not node.keywords
-        and isinstance(node.func, ast.Attribute)
-        and node.func.attr[:1].isupper()
-    ):
+    while isinstance(node, ast.Call) and not node.args and not node.keywords and isinstance(node.func, ast.Attribute) and node.func.attr[:1].isupper():
         axioms.append(node.func.attr)
         node = node.func.value
     return node, tuple(reversed(axioms))
@@ -143,9 +137,7 @@ def _axioms(expression: str) -> tuple[str, ...]:
     return axioms
 
 
-def _category_parameters(
-    expression: str, imported: dict[str, tuple[str, str]], known: set[str]
-) -> tuple[str, ...]:
+def _category_parameters(expression: str, imported: dict[str, tuple[str, str]], known: set[str]) -> tuple[str, ...]:
     """The arguments of a declaration that are themselves categories, as vertices.
 
     ``GObjects(G, Sets())`` and ``DirectSumObjects(Lattices(R))`` are
@@ -232,11 +224,7 @@ def _module_level_names(tree: ast.Module) -> set[str]:
 def _declarations(node: ast.ClassDef) -> list[ast.FunctionDef]:
     """The methods declaring supercategories: ``super_categories`` and, on an
     axiom class, ``extra_super_categories`` (Sage adds the rest itself)."""
-    return [
-        statement
-        for statement in node.body
-        if isinstance(statement, ast.FunctionDef) and statement.name in DECLARATIONS
-    ]
+    return [statement for statement in node.body if isinstance(statement, ast.FunctionDef) and statement.name in DECLARATIONS]
 
 
 def _is_category(node: ast.ClassDef, known: set[str]) -> bool:
@@ -252,9 +240,7 @@ def _resolved(head: str, imported: dict[str, tuple[str, str]]) -> str:
     return binding[1] if binding is not None else head
 
 
-def _origin(
-    head: str, imported: dict[str, tuple[str, str]], known: set[str]
-) -> str:
+def _origin(head: str, imported: dict[str, tuple[str, str]], known: set[str]) -> str:
     """Say where a declared supercategory's name comes from."""
     binding = imported.get(head)
     if binding is not None and binding[0].split(".")[0] == "sage":
@@ -313,9 +299,7 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                             resolved=_resolved(_head(expression), imported),
                             origin=_origin(_head(expression), imported, known),
                             axioms=_axioms(expression),
-                            parameters=_category_parameters(
-                                expression, imported, category_classes
-                            ),
+                            parameters=_category_parameters(expression, imported, category_classes),
                         )
                         for declaration in declaring
                         for expression in _returned_supercategories(declaration)
@@ -418,7 +402,7 @@ def _defined_names(declarations: list[CategoryDeclaration]) -> set[str]:
         for path in root.glob("*.py"):
             try:
                 tree = ast.parse(path.read_text(encoding="utf-8"))
-            except (SyntaxError, OSError):
+            except SyntaxError, OSError:
                 continue
             bound |= _module_level_names(tree)
     return bound
@@ -433,11 +417,7 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
     is a contradiction outright.  What a declaration *means* is read by a
     mathematician against the category's own definition, not decided here.
     """
-    declared = (
-        {d.name for d in declarations}
-        | {d.qualified_name for d in declarations}
-        | _defined_names(declarations)
-    )
+    declared = {d.name for d in declarations} | {d.qualified_name for d in declarations} | _defined_names(declarations)
 
     missing: dict[str, list[str]] = {}
     unstated: dict[str, list[str]] = {}
@@ -445,16 +425,9 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
         for supercategory in declaration.supercategories:
             if supercategory.origin == "expression":
                 if supercategory.resolved not in declared:
-                    unstated.setdefault(supercategory.expression, []).append(
-                        declaration.qualified_name
-                    )
-            elif (
-                supercategory.origin == "owned"
-                and supercategory.resolved not in declared
-            ):
-                missing.setdefault(supercategory.resolved, []).append(
-                    declaration.qualified_name
-                )
+                    unstated.setdefault(supercategory.expression, []).append(declaration.qualified_name)
+            elif supercategory.origin == "owned" and supercategory.resolved not in declared:
+                missing.setdefault(supercategory.resolved, []).append(declaration.qualified_name)
 
     # A category declaring its own name over other data (`Modules(R)` declaring
     # `Modules(S)`) is a restriction-of-scalars edge, ruled out on 2026-09-16
@@ -464,9 +437,7 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
     # A strongly connected component with more than one category is a set of
     # categories each declared to lie under the others.
     cycles = [
-        ", ".join(sorted(_name(vertex) for vertex in component))
-        for component in _digraph(_declared_edges(declarations)).strongly_connected_components()
-        if len(component) > 1
+        ", ".join(sorted(_name(vertex) for vertex in component)) for component in _digraph(_declared_edges(declarations)).strongly_connected_components() if len(component) > 1
     ]
 
     lines = [
@@ -511,16 +482,9 @@ def _declared_edges(
     # A construction whose own declaration is its parameter (``return
     # [self.base_category()]``) declares nothing the reader can name at the
     # class; each instance ``H(P)`` declares ``P``.
-    parameterized = {
-        d.name
-        for d in declarations
-        if d.supercategories and all(s.origin == "expression" for s in d.supercategories)
-    }
+    parameterized = {d.name for d in declarations if d.supercategories and all(s.origin == "expression" for s in d.supercategories)}
     edges = {
-        (d.vertex, supercategory.vertex)
-        for d in declarations
-        for supercategory in d.supercategories
-        if supercategory.resolved in names and supercategory.vertex != d.vertex
+        (d.vertex, supercategory.vertex) for d in declarations for supercategory in d.supercategories if supercategory.resolved in names and supercategory.vertex != d.vertex
     }
     edges |= {
         (supercategory.vertex, parameter)
@@ -532,9 +496,7 @@ def _declared_edges(
     return edges
 
 
-def _axiom_edges(
-    declarations: list[CategoryDeclaration], declared: set[tuple[str, str]]
-) -> set[tuple[str, str]]:
+def _axiom_edges(declarations: list[CategoryDeclaration], declared: set[tuple[str, str]]) -> set[tuple[str, str]]:
     """The edges Sage's join supplies, computed rather than written.
 
     Each axiom vertex declares every vertex with one axiom fewer, down to the
@@ -555,9 +517,7 @@ def _axiom_edges(
     for below, over in declared:
         below_base, *below_axioms = below.split(".")
         over_base, *over_axioms = over.split(".")
-        written.setdefault(below_base, set()).add(
-            (frozenset(below_axioms), over_base, frozenset(over_axioms))
-        )
+        written.setdefault(below_base, set()).add((frozenset(below_axioms), over_base, frozenset(over_axioms)))
         if not below_axioms and not over_axioms:
             above.setdefault(below, set()).add(over)
 
@@ -575,16 +535,12 @@ def _axiom_edges(
                 defined[base] = gathered
                 changed = True
 
-    pending = {v for edge in declared for v in edge if "." in v} | {
-        d.vertex for d in declarations if d.axiom_of
-    }
+    pending = {v for edge in declared for v in edge if "." in v} | {d.vertex for d in declarations if d.axiom_of}
     edges: set[tuple[str, str]] = set()
     while pending:
         vertex = pending.pop()
         base, *axioms = vertex.split(".")
-        targets = [
-            _vertex(base, tuple(a for a in axioms if a != dropped)) for dropped in axioms
-        ]
+        targets = [_vertex(base, tuple(a for a in axioms if a != dropped)) for dropped in axioms]
         for stated, over, written_over_axioms in written.get(base, ()):
             if not stated <= set(axioms):
                 continue
@@ -651,11 +607,7 @@ def _chains_above(directed: DiGraph) -> dict[str, int]:
     ``DiGraph.level_sets``, linear time).  ``longest_path()`` is a MILP by
     default; see ``TRAPS.md``.
     """
-    return {
-        _name(vertex): level
-        for level, vertices in enumerate(directed.reverse().level_sets())
-        for vertex in vertices
-    }
+    return {_name(vertex): level for level, vertices in enumerate(directed.reverse().level_sets()) for vertex in vertices}
 
 
 def _in_cyclic_order(graph: Graph, cycle: list[str]) -> list[str]:
@@ -676,10 +628,7 @@ def _minimum_cycle_basis(graph: Graph) -> list[list[str]]:
     relabelled = graph.copy()
     names = relabelled.relabel(return_map=True)
     back = {integer: _name(name) for name, integer in names.items()}
-    return [
-        _in_cyclic_order(graph, [back[v] for v in cycle])
-        for cycle in relabelled.minimum_cycle_basis()
-    ]
+    return [_in_cyclic_order(graph, [back[v] for v in cycle]) for cycle in relabelled.minimum_cycle_basis()]
 
 
 def _blocks(graph: Graph) -> list[list[str]]:
@@ -706,11 +655,7 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
     lines = [
         "The declared graph as numbers.  Intended shape: near-tree, deep and narrow.",
         "",
-        (
-            f"categories {directed.order()}   "
-            f"declarations {directed.size()}   "
-            f"pieces {_graph(edges).connected_components_number()}"
-        ),
+        (f"categories {directed.order()}   declarations {directed.size()}   pieces {_graph(edges).connected_components_number()}"),
         f"longest chain of declarations = {max(depth.values(), default=0)}",
         "",
         "## Breadth: categories declared directly by the most others",
@@ -758,6 +703,7 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
 def render_cells(declarations: list[CategoryDeclaration]) -> str:
     r"""Graph homology and cycle witnesses for inspection, not coherence verdicts."""
     from sage.topology.simplicial_complex import SimplicialComplex
+
     edges = _all_edges(declarations)
     graph = _graph(edges)
     homology = SimplicialComplex([list(edge) for edge in edges]).homology(reduced=False)
@@ -775,9 +721,7 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
         # and a cycle with at most one written edge closes through edges Sage
         # computes; either way the two routes are the same functor.
         one_base = len({_base_of(v) for v in cycle}) == 1
-        written_edges = sum(
-            frozenset(pair) in written for pair in zip(cycle, cycle[1:] + cycle[:1])
-        )
+        written_edges = sum(frozenset(pair) in written for pair in zip(cycle, cycle[1:] + cycle[:1]))
         return one_base or written_edges <= 1
 
     lines = [
@@ -849,9 +793,12 @@ def render_json(declarations: list[CategoryDeclaration]) -> str:
             "abstract": d.abstract,
             "supercategories": [
                 {
-                    "expression": s.expression, "head": s.head,
-                    "resolved": s.resolved, "origin": s.origin,
-                    "vertex": s.vertex, "axioms": list(s.axioms),
+                    "expression": s.expression,
+                    "head": s.head,
+                    "resolved": s.resolved,
+                    "origin": s.origin,
+                    "vertex": s.vertex,
+                    "axioms": list(s.axioms),
                     "parameters": list(s.parameters),
                 }
                 for s in d.supercategories
@@ -868,8 +815,11 @@ def _default_root() -> Path:
 
 
 def select_vertices(
-    declarations: list[CategoryDeclaration], patterns: list[str], direction: str,
-    between: list[str], remove: list[str],
+    declarations: list[CategoryDeclaration],
+    patterns: list[str],
+    direction: str,
+    between: list[str],
+    remove: list[str],
 ) -> tuple[set[str], set[tuple[str, str]]]:
     """Slice declared reachability; conditional declarations remain a union.
 
@@ -912,27 +862,34 @@ def select_vertices(
 
 def render_slice(declarations: list[CategoryDeclaration], vertices: set[str], edges: set[tuple[str, str]]) -> str:
     declared = _declared_edges(declarations)
-    return json.dumps({
-        "basis": "source declarations plus computed axiom edges; conditional branches are unioned",
-        "orientation": "subcategory -> supercategory",
-        "vertices": sorted(vertices),
-        "edges": sorted(edges),
-        "edge_evidence": [
-            {
-                "from": a, "to": b,
-                "kind": "declared or parameter projection" if (a, b) in declared else "computed axiom edge",
-                "declaration_sources": [f"{d.path}:{d.line}" for d in declarations if d.vertex == a],
-            }
-            for a, b in sorted(edges)
-        ],
-        "declarations": json.loads(render_json([d for d in declarations if d.vertex in vertices])),
-        "boundary": "Parameters, dynamic returns and aliases require source review; absent paths are not proofs of missing mathematics.",
-    }, indent=2)
+    return json.dumps(
+        {
+            "basis": "source declarations plus computed axiom edges; conditional branches are unioned",
+            "orientation": "subcategory -> supercategory",
+            "vertices": sorted(vertices),
+            "edges": sorted(edges),
+            "edge_evidence": [
+                {
+                    "from": a,
+                    "to": b,
+                    "kind": "declared or parameter projection" if (a, b) in declared else "computed axiom edge",
+                    "declaration_sources": [f"{d.path}:{d.line}" for d in declarations if d.vertex == a],
+                }
+                for a, b in sorted(edges)
+            ],
+            "declarations": json.loads(render_json([d for d in declarations if d.vertex in vertices])),
+            "boundary": "Parameters, dynamic returns and aliases require source review; absent paths are not proofs of missing mathematics.",
+        },
+        indent=2,
+    )
 
 
 def render_topology(
-    vertices: set[str], edges: set[tuple[str, str]], complex_kind: str,
-    max_vertices: int, fundamental_group: bool,
+    vertices: set[str],
+    edges: set[tuple[str, str]],
+    complex_kind: str,
+    max_vertices: int,
+    fundamental_group: bool,
 ) -> str:
     """Delegate explicitly chosen complexes to Sage, retaining all isolated vertices.
 
@@ -958,12 +915,14 @@ def render_topology(
         case _:
             raise ValueError(complex_kind)
     lines = [
-        f"# {complex_kind} complex of the selected category relation", "",
+        f"# {complex_kind} complex of the selected category relation",
+        "",
         "These invariants describe this complex; they are not architecture scores.",
         "A clique fills a simplex in the flag complex. An order complex uses chains.",
         "A global top or bottom makes the order complex contractible; inspect proper intervals when appropriate.",
         f"Vertices: {', '.join(sorted(vertices))}",
-        f"Facets: {complex_.facets()}", f"f-vector: {complex_.f_vector()}",
+        f"Facets: {complex_.facets()}",
+        f"f-vector: {complex_.f_vector()}",
         f"Integral unreduced homology: {complex_.homology(reduced=False)}",
         f"Connected components: {graph.connected_components(sort=True)}",
     ]
@@ -974,9 +933,7 @@ def render_topology(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="List every declared category and its declared supercategories, without importing the tree."
-    )
+    parser = argparse.ArgumentParser(description="List every declared category and its declared supercategories, without importing the tree.")
     parser.add_argument("root", nargs="?", type=Path, default=_default_root())
     parser.add_argument(
         "--format",
@@ -1008,7 +965,8 @@ def main() -> None:
     if arguments.format in {"slice", "topology"}:
         vertices, edges = select_vertices(declarations, arguments.select, arguments.direction, arguments.between, arguments.remove)
         rendered = (
-            render_slice(declarations, vertices, edges) if arguments.format == "slice"
+            render_slice(declarations, vertices, edges)
+            if arguments.format == "slice"
             else render_topology(vertices, edges, arguments.complex, arguments.max_vertices, arguments.fundamental_group)
         )
         if arguments.output:
