@@ -13,6 +13,7 @@ from cyclopts import App, Parameter
 from pydantic import ValidationError
 
 from latticedb import (
+    bulk_index,
     bulk_sources,
     certificates,
     corpus,
@@ -125,6 +126,13 @@ def bulk_source_fetch(root: Root = Path()) -> None:
     """Store the published Nipp, Brandt–Intrau, and Watson bulk source tables."""
     for path in bulk_sources.fetch(root):
         print(f"sources/{path}")
+
+
+@app.command(name="bulk-index")
+def bulk_index_write(root: Root = Path()) -> None:
+    """Store parsed bulk source rows with their exact Gram tensors and determinants."""
+    for source, count in bulk_index.write(root).items():
+        print(f"sources/normalized/{source}.jsonl.gz: {count} rows")
 
 
 @app.command

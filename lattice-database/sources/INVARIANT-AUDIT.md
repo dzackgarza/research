@@ -11,6 +11,7 @@ The [`Shimada_86` entry in the Nebe–Sloane union archive](https://www.math.rwt
 ## Bulk catalogue source tables
 
 These are source rows, including repeated presentations and twists. They are not a count of distinct isometry classes or of lattice records. The stored source files are read by `nipp.py`, `brandt_intrau.py`, `watson.py`, and `nebe_sloane.py`.
+`latticedb bulk-index` writes the parsed Nipp, Brandt–Intrau–Schiemann, and Watson forms to `sources/normalized/`, with exact Gram determinants and source locators. These source rows still need identification with the corpus's lattice records.
 
 | Published source | Source rows |
 | --- | ---: |
