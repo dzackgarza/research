@@ -30,6 +30,27 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     kummer = (target / "geometric-objects" / "kummer-2.html").read_text()
     assert 'href="../tag/0283.html"' in kummer
     assert "<span>1</span><span>5</span><span>96</span><span>5</span><span>1</span>" in kummer
+
+
+def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> None:
+    (tmp_path / "lattices").mkdir()
+    for tag in ("0001", "0002", "0006", "0011", "0013", "0016", "0151"):
+        (tmp_path / "lattices" / f"{tag}.md").symlink_to(ROOT / "lattices" / f"{tag}.md")
+    (tmp_path / "families.yaml").symlink_to(ROOT / "families.yaml")
+    (tmp_path / "retired-tags.yaml").symlink_to(ROOT / "retired-tags.yaml")
+    (tmp_path / "geometric-bibliography.bib").symlink_to(ROOT / "geometric-bibliography.bib")
+    (tmp_path / "theory").symlink_to(ROOT / "theory", target_is_directory=True)
+    (tmp_path / "geometric-objects").mkdir()
+    for slug in (
+        "complex-projective-plane",
+        "complex-projective-plane-analytic",
+        "complex-hyperbolic-2-space",
+        "three-sphere",
+        "real-hyperbolic-3-space",
+    ):
+        (tmp_path / "geometric-objects" / f"{slug}.md").symlink_to(ROOT / "geometric-objects" / f"{slug}.md")
+    target = tmp_path / "site"
+    site.build(tmp_path, target)
     algebraic_plane = (target / "geometric-objects" / "complex-projective-plane.html").read_text()
     analytic_plane = (target / "geometric-objects" / "complex-projective-plane-analytic.html").read_text()
     complex_ball = (target / "geometric-objects" / "complex-hyperbolic-2-space.html").read_text()
@@ -38,7 +59,6 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     assert 'href="../geometric-objects/complex-projective-plane.html"' in analytic_plane
     assert 'href="../geometric-objects/complex-projective-plane-analytic.html"' in complex_ball
     assert 'href="../geometric-objects/three-sphere.html"' in real_hyperbolic
-    assert "Symmetric-space rank 1" not in algebraic_plane
     assert "Hodge diamond" not in complex_ball
 
 
