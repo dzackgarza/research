@@ -302,7 +302,16 @@ def _correlation_isomorphism(metric):
     )
     modules = Modules(metric.base_ring())
     result = modules.Core().Mor(metric, dual)(forward, inverse)
-    if result not in modules.Iso(metric, dual):
+    forward_inverse = all(
+        inverse(forward(metric.module_generator(label)))
+        == metric.module_generator(label)
+        for label in metric.module_generating_set()
+    )
+    inverse_forward = all(
+        forward(inverse(dual.module_generator(label))) == dual.module_generator(label)
+        for label in dual.module_generating_set()
+    )
+    if not (forward_inverse and inverse_forward):
         raise ArithmeticError(
             f"the correlation of the unimodular form on {metric} and its computed inverse are not mutually inverse"
         )
