@@ -23,6 +23,7 @@ from latticedb import (
     nebe_sloane,
     records,
     site,
+    source_cards,
     summands,
 )
 from latticedb.model import Lattice, Morphisms, Yaml
@@ -133,6 +134,12 @@ def bulk_index_write(root: Root = Path()) -> None:
     """Store parsed bulk source rows with their exact Gram tensors and determinants."""
     for source, count in bulk_index.write(root).items():
         print(f"sources/normalized/{source}.jsonl.gz: {count} rows")
+
+
+@app.command(name="bulk-cards")
+def bulk_cards(root: Root = Path()) -> None:
+    """Seed permanent Markdown cards for every indexed source item."""
+    print(f"lattices/source: {source_cards.seed(root)} new cards")
 
 
 @app.command
