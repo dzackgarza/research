@@ -10,7 +10,7 @@
     <h1>\({{ lattice.latex }}\)</h1>
     <p class="names">{{ lattice.name }}{% for alias in lattice.aliases %}<span class="separator">·</span>{{ alias }}{% endfor %}</p>
     <ul class="chips" aria-label="Properties and families">
-      <li><a href="{{ root }}database.html?definiteness={{ definiteness_label[lattice.definiteness] | urlencode }}">{{ definiteness_label[lattice.definiteness] }}</a></li>
+      {% if lattice.definiteness %}<li><a href="{{ root }}database.html?definiteness={{ definiteness_label[lattice.definiteness] | urlencode }}">{{ definiteness_label[lattice.definiteness] }}</a></li>{% endif %}
       {% for property in properties(lattice) %}
       <li><a href="{{ root }}database.html?property={{ property | urlencode }}">{{ property }}</a></li>
       {% endfor %}
@@ -35,17 +35,17 @@
     <h2 id="invariants">Invariants</h2>
     <table class="facts">
       <tbody>
-        <tr><th scope="row">Rank</th><td>{{ lattice.rank }}</td></tr>
-        <tr><th scope="row">{{ theory("lattices", "signature", "Signature") }} \((n_+, n_-)\)</th><td>({{ lattice.signature[0] }}, {{ lattice.signature[1] }})</td></tr>
+        {% if lattice.rank is not none %}<tr><th scope="row">Rank</th><td>{{ lattice.rank }}</td></tr>{% endif %}
+        {% if lattice.signature %}<tr><th scope="row">{{ theory("lattices", "signature", "Signature") }} \((n_+, n_-)\)</th><td>({{ lattice.signature[0] }}, {{ lattice.signature[1] }})</td></tr>{% endif %}
         {% if lattice.nullity %}
         <tr><th scope="row">Rank of the {{ theory("lattices", "degenerate", "radical") }}</th><td>{{ lattice.nullity }}</td></tr>
         {% endif %}
-        <tr><th scope="row">{{ theory("lattices", "signature", "Determinant") }}</th><td>\({{ rational_tex(lattice.determinant) }}\)</td></tr>
+        {% if lattice.determinant is not none %}<tr><th scope="row">{{ theory("lattices", "signature", "Determinant") }}</th><td>\({{ rational_tex(lattice.determinant) }}\)</td></tr>{% endif %}
       </tbody>
     </table>
   </section>
 
-  <section aria-labelledby="gram-tensor">
+  {% if lattice.gram_tensor is not none and lattice.rank is not none %}<section aria-labelledby="gram-tensor">
     <h2 id="gram-tensor">Gram tensor</h2>
     <p>The components \(b(e_i, e_j)\) of the {{ theory("lattices", "gram-tensor", "Gram tensor") }} \(b\) in the {{ theory("lattices", "gram-tensor", "chosen basis") }} \({{ block_tex(range(1, lattice.rank + 1) | list) }}\).</p>
     {% if blocks | length > 1 %}
@@ -67,7 +67,7 @@
       <pre id="components-text">{{ components_text }}</pre>
       <button type="button" data-copy="components-text">Copy</button>
     </div>
-  </section>
+  </section>{% endif %}
 
   {% if lattice.integral %}
   <section aria-labelledby="integral">

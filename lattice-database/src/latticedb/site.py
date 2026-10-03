@@ -380,7 +380,7 @@ def properties(lattice: Lattice) -> list[str]:
             found.append("root lattice")
         case False:
             found.append("not a root lattice")
-    if not lattice.is_nondegenerate:
+    if lattice.determinant == 0:
         found.append("degenerate")
     if lattice.is_hyperbolic:
         found.append("hyperbolic")
@@ -437,12 +437,12 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "latex": lattice.latex,
         "aliases": list(lattice.aliases),
         "rank": lattice.rank,
-        "n_plus": lattice.signature[0],
-        "n_minus": lattice.signature[1],
-        "signature": f"({lattice.signature[0]}, {lattice.signature[1]})",
-        "determinant": str(lattice.determinant),
-        "determinant_value": float(lattice.determinant),
-        "definiteness": DEFINITENESS_LABEL[lattice.definiteness],
+        "n_plus": lattice.signature[0] if lattice.signature else None,
+        "n_minus": lattice.signature[1] if lattice.signature else None,
+        "signature": f"({lattice.signature[0]}, {lattice.signature[1]})" if lattice.signature else None,
+        "determinant": str(lattice.determinant) if lattice.determinant is not None else None,
+        "determinant_value": float(lattice.determinant) if lattice.determinant is not None else None,
+        "definiteness": DEFINITENESS_LABEL[lattice.definiteness] if lattice.definiteness else None,
         "properties": properties(lattice),
         "discriminant_group": group_text(group) if group is not None else None,
         "discriminant_group_tex": group_tex(group) if group is not None else None,
@@ -625,7 +625,9 @@ def build(root: Path, target: Path) -> int:
     (target / "theory").mkdir()
     shutil.copytree(str(files("latticedb") / "assets"), target / "assets")
 
-    ranks = sorted({entry.lattice.rank for entry in entries})
+    ranks = sorted({entry.lattice.rank for entry in entries if entry.lattice.rank is not None})
+    if any(entry.lattice.rank is None for entry in entries):
+        ranks.append(None)
     by_rank = {rank: [entry for entry in entries if entry.lattice.rank == rank] for rank in ranks}
     morphism_files = [entry.morphisms for entry in corpus.morphisms]
     geometric = corpus.geometric
@@ -638,7 +640,7 @@ def build(root: Path, target: Path) -> int:
     bounds = hyperbolic_index_bounds(corpus.morphisms, entries)
     for index, entry in enumerate(entries):
         lattice = entry.lattice
-        components = json.dumps([[int(value) if value.denominator == 1 else str(value) for value in components_row] for components_row in lattice.gram_tensor])
+        components = json.dumps([[int(value) if value.denominator == 1 else str(value) for value in components_row] for components_row in lattice.gram_tensor or ()])
         (target / "tag" / f"{lattice.tag}.html").write_text(
             lattice_page.render(
                 root="../",
@@ -649,7 +651,7 @@ def build(root: Path, target: Path) -> int:
                 span_name=root_span_name(lattice, lattices),
                 span_summands=span_summands(lattice, lattices),
                 span_images=summand_images(lattice, lattices),
-                blocks=orthogonal_blocks(lattice),
+                blocks=orthogonal_blocks(lattice) if lattice.gram_tensor is not None else (),
                 hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
                 morphism_files=[file for file in morphism_files if lattice.tag in (file.source, file.target)],

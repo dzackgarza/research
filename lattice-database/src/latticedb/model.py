@@ -530,21 +530,24 @@ class Lattice(Record):
     name: str = Field(description="Name as plain text, for search.")
     latex: str = Field(description="Name as TeX, without math delimiters.")
     aliases: Annotated[tuple[str, ...], Field(strict=False)] = Field(default=(), description="Other names, as plain text.")
-    rank: int = Field(ge=1, description="Rank of the underlying free module.")
-    gram_tensor: Annotated[tuple[Annotated[tuple[Rational, ...], Field(strict=False)], ...], Field(strict=False)] = Field(
+    rank: int | None = Field(default=None, ge=1, description="Rank of the underlying free module, when the source states it.")
+    gram_tensor: Annotated[tuple[Annotated[tuple[Rational, ...], Field(strict=False)], ...], Field(strict=False)] | None = Field(
+        default=None,
         description=(
             "Components of the Gram tensor, the symmetric (0,2)-tensor $b$, in a basis $e_1, \\dots, e_n$: "
             "row $i$ lists $b(e_i, e_1), \\dots, b(e_i, e_n)$. Values are integers or strings `p/q`."
         )
     )
-    signature: Annotated[tuple[int, int], Field(strict=False)] = Field(
+    signature: Annotated[tuple[int, int], Field(strict=False)] | None = Field(
+        default=None,
         description=(
             "`[n_plus, n_minus]`: the numbers of $v$ with $b(v, v) > 0$ and with $b(v, v) < 0$ in a $b$-orthogonal basis of $L \\otimes \\mathbb{Q}$. "
             "They do not depend on the basis (Sylvester's law of inertia)."
         )
     )
-    determinant: Rational = Field(description="$\\det(b(e_i, e_j))$. It is the same for every basis of $L$.")
-    definiteness: Definiteness = Field(
+    determinant: Rational | None = Field(default=None, description="$\\det(b(e_i, e_j))$. It is the same for every basis of $L$.")
+    definiteness: Definiteness | None = Field(
+        default=None,
         description=(
             "`positive_definite` or `negative_definite` when $b(x, x)$ has one sign on nonzero $x$; `indefinite` when it takes both signs; "
             "`positive_semidefinite` when $b(x, x) \\geq 0$ for all $x$, $b \\neq 0$ and the determinant is zero, "
@@ -562,12 +565,12 @@ class Lattice(Record):
     root_sublattice: RootSublattice | None = Field(default=None, description=RootSublattice.__doc__)
 
     @property
-    def nullity(self) -> int:
-        return self.rank - self.signature[0] - self.signature[1]
+    def nullity(self) -> int | None:
+        return None if self.rank is None or self.signature is None else self.rank - self.signature[0] - self.signature[1]
 
     @property
     def is_nondegenerate(self) -> bool:
-        return self.nullity == 0
+        return self.nullity is not None and self.nullity == 0
 
     @property
     def is_definite(self) -> bool:
@@ -575,7 +578,7 @@ class Lattice(Record):
 
     @property
     def is_unimodular(self) -> bool:
-        return self.integral is not None and abs(self.determinant) == 1
+        return self.integral is not None and self.determinant is not None and abs(self.determinant) == 1
 
     @property
     def is_two_elementary_even(self) -> bool:
@@ -587,11 +590,11 @@ class Lattice(Record):
 
     @property
     def is_hyperbolic(self) -> bool:
-        return self.is_nondegenerate and self.rank >= 2 and min(self.signature) == 1
+        return self.is_nondegenerate and self.rank is not None and self.rank >= 2 and self.signature is not None and min(self.signature) == 1
 
     @property
     def is_integer_valued(self) -> bool:
-        return all(entry.denominator == 1 for row in self.gram_tensor for entry in row)
+        return self.gram_tensor is not None and all(entry.denominator == 1 for row in self.gram_tensor for entry in row)
 
     @property
     def root_count(self) -> int:
@@ -648,6 +651,8 @@ class Lattice(Record):
         return self
 
     def _shape_problems(self) -> Iterator[InitErrorDetails]:
+        if self.rank is None or self.gram_tensor is None or self.signature is None or self.determinant is None or self.definiteness is None:
+            return
         if len(self.gram_tensor) != self.rank or any(len(row) != self.rank for row in self.gram_tensor):
             yield _problem(
                 "gram_tensor_shape",
