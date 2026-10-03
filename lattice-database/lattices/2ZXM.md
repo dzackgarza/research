@@ -1,0 +1,21 @@
+---
+tag: 2ZXM
+name: brandt_intrau Brandt_2.html:11788
+latex: brandt_intrau Brandt_2.html:11788
+aliases: []
+rank: 3
+gram_tensor:
+- [4, 2, 2]
+- [2, 10, 1]
+- [2, 1, 34]
+signature: [3, 0]
+determinant: 1188
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:11788.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+---
+
+Source entry `brandt_intrau:Brandt_2.html:11788` gives this Gram tensor.

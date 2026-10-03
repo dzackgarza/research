@@ -1,0 +1,21 @@
+---
+tag: 2TDG
+name: brandt_intrau Brandt_2.html:3275
+latex: brandt_intrau Brandt_2.html:3275
+aliases: []
+rank: 3
+gram_tensor:
+- [4, 2, 2]
+- [2, 8, 1]
+- [2, 1, 22]
+signature: [3, 0]
+determinant: 588
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:3275.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+---
+
+Source entry `brandt_intrau:Brandt_2.html:3275` gives this Gram tensor.
