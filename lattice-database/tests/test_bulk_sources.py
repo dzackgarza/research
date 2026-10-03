@@ -5,7 +5,8 @@ from pathlib import Path
 
 from flint import fmpz_mat
 
-from latticedb import brandt_intrau, nebe_sloane, nipp, watson
+from latticedb import brandt_intrau, nebe_sloane, nipp, records, watson
+from latticedb.model import Lattice
 
 SOURCES = Path(__file__).resolve().parent.parent / "sources"
 
@@ -37,3 +38,16 @@ def test_union_archive_retains_repeated_names_at_distinct_positions() -> None:
     assert len(entries) == 823
     assert [entry.ordinal for entry in entries] == list(range(1, 824))
     assert len({entry.name for entry in entries}) < len(entries)
+
+
+def test_brandt_and_watson_source_forms_seed_valid_lattice_records() -> None:
+    odd = brandt_intrau.table(SOURCES / "brandt_intrau" / "Brandt_1.html", odd_form=True)[0]
+    even = brandt_intrau.table(SOURCES / "brandt_intrau" / "Brandt_2.html", odd_form=False)[0]
+    watson_entry = watson.stored(SOURCES / "watson" / "watson.txt")[0]
+    for entry, declared in (
+        (odd, brandt_intrau.record(odd)[0]),
+        (even, brandt_intrau.record(even)[0]),
+        (watson_entry, watson.record(watson_entry)[0]),
+    ):
+        lattice = Lattice.model_validate(records.derive({"tag": "ZZZZ", **declared}))
+        assert lattice.gram_tensor == entry.gram_tensor

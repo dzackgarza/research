@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from html import unescape
 from pathlib import Path
 
+from latticedb.model import Yaml
+
 _PRE = re.compile(r"<pre[^>]*>(.*?)</pre>", re.IGNORECASE | re.DOTALL)
 _DISCRIMINANT = re.compile(r"B\.-I\.discr\s*=\s*(-\d+)")
 _FORM = re.compile(r"\s*(\d+):\s*(-?\d+)\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)\s*")
@@ -52,3 +54,22 @@ def table(path: Path, *, odd_form: bool) -> list[BrandtIntrauEntry]:
 def stored(directory: Path) -> list[BrandtIntrauEntry]:
     """Read both parity tables from the stored source pages."""
     return table(directory / "Brandt_1.html", odd_form=True) + table(directory / "Brandt_2.html", odd_form=False)
+
+
+def record(entry: BrandtIntrauEntry, scale: int = 1) -> tuple[dict[str, Yaml], str]:
+    """State one numbered ternary form as a lattice record's declared fields."""
+    locator = f"{entry.source_file}:{entry.source_number}"
+    name = f"Brandt–Intrau–Schiemann form {locator}"
+    declared: dict[str, Yaml] = {
+        "name": name,
+        "latex": name,
+        "aliases": [],
+        "gram_tensor": [[value // scale for value in row] for row in entry.gram_tensor],
+        "families": [],
+        "related": [],
+        "references": [{"citation": f"Brandt–Intrau–Schiemann ternary form table, {locator}.", "url": f"https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/{entry.source_file}"}],
+    }
+    prose = f"The Gram tensor is the integral bilinear form of form {entry.source_number} in `{entry.source_file}`."
+    if scale != 1:
+        prose += f" The source form is the twist of this lattice by {scale}."
+    return declared, prose

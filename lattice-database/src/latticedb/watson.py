@@ -4,6 +4,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from latticedb.model import Yaml
+
 _DIMENSION = re.compile(r"// dimension (\d+): (\d+) lattices")
 
 
@@ -41,3 +43,23 @@ def stored(path: Path) -> list[WatsonEntry]:
         entries.append(WatsonEntry(line_number, dimension, ordinal, values))
     assert ordinal == expected, f"dimension {dimension}: found {ordinal} rows, expected {expected}"
     return entries
+
+
+def record(entry: WatsonEntry, scale: int = 1) -> tuple[dict[str, Yaml], str]:
+    """State one single-class genus representative as a lattice record's declared fields."""
+    locator = f"rank {entry.dimension}, row {entry.ordinal}"
+    name = f"Watson lattice {locator}"
+    declared: dict[str, Yaml] = {
+        "name": name,
+        "latex": name,
+        "aliases": [],
+        "gram_tensor": [[value // scale for value in row] for row in entry.gram_tensor],
+        "families": [],
+        "related": [],
+        "references": [{"citation": f"Watson, primitive lattices of class number one, {locator}.", "url": "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson"}],
+        "integral": {"genus_class_count": 1},
+    }
+    prose = f"Watson's table gives this representative of a genus with one isometry class at line {entry.source_line}."
+    if scale != 1:
+        prose += f" The source form is the twist of this lattice by {scale}."
+    return declared, prose
