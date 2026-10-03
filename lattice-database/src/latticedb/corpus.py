@@ -50,6 +50,7 @@ from latticedb.geometric import (
     RiemannianSymmetricSpace,
     ToricHypersurfaceConstruction,
 )
+from latticedb.graphs import WeightedGraph
 from latticedb.model import Family, Lattice, Morphisms, Tag, Yaml
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -100,6 +101,13 @@ class GeometricFamilyEntry:
 
 
 @dataclass(frozen=True)
+class GraphEntry:
+    graph: WeightedGraph
+    prose: str
+    path: Path
+
+
+@dataclass(frozen=True)
 class CatalogueEntry[Value: CatalogueRecord]:
     value: Value
     prose: str
@@ -114,6 +122,7 @@ class Corpus:
     morphisms: tuple[MorphismEntry, ...]
     geometric: tuple[GeometricEntry, ...]
     geometric_families: tuple[GeometricFamilyEntry, ...]
+    graphs: tuple[GraphEntry, ...]
     orthogonal_subgroups: tuple[CatalogueEntry[OrthogonalSubgroup], ...]
     vector_orbits: tuple[CatalogueEntry[VectorOrbit], ...]
     chambers: tuple[CatalogueEntry[Chamber], ...]
@@ -429,7 +438,7 @@ def catalogue_problems(loaded: Corpus) -> list[str]:
     return found
 
 
-def load(root: Path) -> Corpus:
+def load(root: Path, *, verify: bool = True) -> Corpus:
     """The families, the retired tags, every entry of `root/lattices` in tag order, and every file of `root/morphisms`.
 
     Raises `CorpusInvalid` with all problems when a record or the corpus is not well defined.
@@ -451,7 +460,7 @@ def load(root: Path) -> Corpus:
         found.extend(_record_problems(retired_path, error))
     directory = root / "lattices"
     paths = sorted(directory.glob("*.md"))
-    source_tags = {path.stem for path in (directory / "source").glob("*.md")}
+    source_tags = {path.stem for path in (directory / "source").glob("*.md")} if verify else set()
     if not paths:
         found.append(f"{directory}: no records")
     for path in paths:
@@ -459,7 +468,10 @@ def load(root: Path) -> Corpus:
         if path.stem in source_tags:
             found.append(f"{path}: the tag is also assigned to a source card")
         try:
-            entries.append(Entry(Lattice.model_validate(document.metadata), document.content, path))
+            lattice = Lattice.model_validate(document.metadata)
+            if verify:
+                lattice._well_defined()
+            entries.append(Entry(lattice, document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
     morphisms: list[MorphismEntry] = []
@@ -470,8 +482,9 @@ def load(root: Path) -> Corpus:
             morphisms.append(MorphismEntry(Morphisms.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
-    found.extend(problems(entries, families, retired))
-    found.extend(morphism_problems(morphisms, entries, retired))
+    if verify:
+        found.extend(problems(entries, families, retired))
+        found.extend(morphism_problems(morphisms, entries, retired))
     geometric: list[GeometricEntry] = []
     geometric_adapter = TypeAdapter(GeometricObject)
     for path in sorted((root / "geometric-objects").glob("*.md")):
@@ -487,6 +500,18 @@ def load(root: Path) -> Corpus:
             geometric_families.append(GeometricFamilyEntry(GeometricFamily.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
+    graphs: list[GraphEntry] = []
+    for path in sorted((root / "graphs").glob("*.md")):
+        document = frontmatter.load(str(path))
+        try:
+            graphs.append(GraphEntry(WeightedGraph.model_validate(document.metadata), document.content, path))
+        except ValidationError as error:
+            found.extend(_record_problems(path, error))
+    by_graph: dict[str, WeightedGraph] = {}
+    for entry in graphs:
+        if entry.path.stem != entry.graph.slug or entry.graph.slug in by_graph:
+            found.append(f"{entry.path}: graph slug must be unique and match its file name")
+        by_graph[entry.graph.slug] = entry.graph
     by_family: dict[str, GeometricFamily] = {}
     for family_entry in geometric_families:
         family = family_entry.family
@@ -526,12 +551,16 @@ def load(root: Path) -> Corpus:
             dual = by_geometric.get(record.compact_dual)
             if not isinstance(dual, RiemannianSymmetricSpace) or dual.noncompact_dual != record.slug or dual.real_dimension != record.real_dimension:
                 found.append(f"{geometric_entry.path}: compact dual must be a symmetric space of the same dimension and name this space back")
+        if isinstance(record, RiemannianSymmetricSpace):
+            for diagram in record.diagrams:
+                if diagram not in by_graph:
+                    found.append(f"{geometric_entry.path}: diagram {diagram} is not in the corpus")
         if isinstance(record, RiemannianSymmetricSpace) and record.noncompact_dual is not None:
             dual = by_geometric.get(record.noncompact_dual)
             if not isinstance(dual, RiemannianSymmetricSpace) or dual.compact_dual != record.slug or dual.real_dimension != record.real_dimension:
                 found.append(f"{geometric_entry.path}: noncompact dual must be a symmetric space of the same dimension and name this space back")
     loaded = Corpus(
-        tuple(entries), families, retired, tuple(morphisms), tuple(geometric), tuple(geometric_families),
+        tuple(entries), families, retired, tuple(morphisms), tuple(geometric), tuple(geometric_families), tuple(graphs),
         _catalogue(root, "orthogonal-subgroups", OrthogonalSubgroup, found),
         _catalogue(root, "vector-orbits", VectorOrbit, found),
         _catalogue(root, "chambers", Chamber, found),
@@ -544,7 +573,8 @@ def load(root: Path) -> Corpus:
         _catalogue(root, "moduli-problems", ModuliProblem, found),
         _catalogue(root, "morphisms/dual", DualIsometry, found),
     )
-    found.extend(catalogue_problems(loaded))
+    if verify:
+        found.extend(catalogue_problems(loaded))
     if found:
         raise CorpusInvalid(tuple(found))
     return loaded

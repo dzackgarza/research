@@ -368,9 +368,7 @@ PROPERTY_MEANINGS = {
 def properties(lattice: Lattice) -> list[str]:
     """The properties of a lattice that the database filters by. Each one follows from the record."""
     found = []
-    if lattice.integral is None:
-        found.append("not integral")
-    else:
+    if lattice.integral is not None:
         found.extend(["integral", lattice.integral.parity])
         if lattice.is_unimodular:
             found.append("unimodular")
@@ -586,7 +584,7 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
 
 def build(root: Path, target: Path) -> int:
     """Write the site for the corpus under `root` to `target`. Returns the number of lattices."""
-    corpus = load(root)
+    corpus = load(root, verify=False)
     entries = corpus.entries
     pages = collections(root / "pages", entries)
     theory = articles(root / "theory")
