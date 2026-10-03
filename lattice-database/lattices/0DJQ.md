@@ -1,0 +1,45 @@
+---
+tag: 0DJQ
+name: Nipp form d893.html:1144
+latex: Nipp form d893.html:1144
+aliases: []
+rank: 4
+gram_tensor:
+- [4, 2, 0, 2]
+- [2, 6, 1, 1]
+- [0, 1, 6, 0]
+- [2, 1, 0, 8]
+signature: [4, 0]
+determinant: 812
+definiteness: positive_definite
+integral:
+  parity: even
+  discriminant_group: [2, 406]
+  overlattice_count: 2
+  bad_reduction_primes: [2, 7, 29]
+  quadratic_character: 812
+definite:
+  minimum: 4
+  kissing_number: 2
+  automorphism_group_order: 8
+  theta_series: [1, 0, 0, 0, 2, 0, 6, 0, 4, 0, 8, 0, 4]
+  root_system: []
+  roots:
+  - type: A1
+    scale: 14
+    simple_roots:
+    - [1, 0, 0, -2]
+  - type: A1
+    scale: 2
+    simple_roots:
+    - [1, 0, 0, 0]
+root_sublattice:
+  invariant_factors: [1, 2]
+families: []
+related: []
+references:
+- citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, d893.html:1144.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/d893.html
+---
+
+The Gram tensor is the integral bilinear form of the quadratic form at line 1144 of Nipp's table `d893.html`.
