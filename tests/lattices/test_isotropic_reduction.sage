@@ -8,6 +8,8 @@ isotropic line is the smallest specimen of that statement:
 \(U\oplus X\) reduces along a generator of the first plane to \(X\).
 """
 
+import pytest
+
 from dzack_research.preamble.all import *
 
 
@@ -35,6 +37,21 @@ def test_the_reduction_drops_one_from_each_side_of_the_signature() -> None:
     assert reduction.signature_pair() == signature_pair(0, 2)
     assert reduction.determinant() == 3
     assert reduction.is_isometric(root_lattice)
+
+
+def test_nonprimitive_isotropic_vectors_keep_their_torsion_in_the_formed_quotient() -> None:
+    plane = Lattices(ZZ)("U")
+    isotropic = plane.module_generators()[0]
+    nonprimitive = 2 * isotropic
+
+    with pytest.raises(NotPrimitiveError):
+        nonprimitive.isotropic_reduction()
+
+    quotient = nonprimitive.isotropic_quotient()
+
+    assert quotient in FormModules(ZZ)
+    assert not quotient.is_free()
+    assert tuple(quotient.invariant_factors()) == (ZZ(2),)
 
 
 def test_coordinate_frame_is_excluded_from_isotropic_reduction_equality() -> None:

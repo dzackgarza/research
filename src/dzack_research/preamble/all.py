@@ -251,6 +251,7 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     Genus,
     IsotropicReductions,
     Lattices,
+    NotPrimitiveError,
     NoncrystallographicRootLattices,
     NondegenerateLattices,
     RootLattices,  # noqa: F401

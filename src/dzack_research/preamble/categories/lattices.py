@@ -382,6 +382,10 @@ class LocalGenusSymbol:
         return f"Local genus at {self.prime()} with Jordan blocks {self.jordan_blocks()}"
 
 
+class NotPrimitiveError(ValueError):
+    r"""Raised when an operation requiring a primitive lattice vector is given a nonprimitive one."""
+
+
 class Genus:
     r"""The genus determined by signature and discriminant quadratic form."""
 
@@ -3448,8 +3452,59 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.orthogonal_complement()
 
         def isotropic_reduction(self):
-            r"""Return \(v^\perp/Rv\) for an isotropic vector, with its parabolic data."""
+            r"""Return \(v^\perp/Rv\) as a lattice for a primitive isotropic vector.
+
+            For nonprimitive isotropic vectors the cokernel has torsion, so it
+            is not an object of :class:`Lattices`; use
+            :meth:`isotropic_quotient` for that formed-module quotient.
+            """
+            if not self.is_isotropic():
+                raise ValueError(
+                    f"cannot form the isotropic reduction of {self!r}: "
+                    f"q(v) = {self.q()} is nonzero"
+                )
+            if not self.is_primitive():
+                raise NotPrimitiveError(
+                    f"cannot form the lattice v^perp/Rv for {self!r}: "
+                    "the vector is not primitive; use isotropic_quotient() "
+                    "to retain the torsion quotient"
+                )
             return self.sublattice().inclusion().isotropic_reduction()
+
+        def isotropic_quotient(self):
+            r"""Return the formed module \(v^\perp/Rv\), retaining torsion.
+
+            The rank-one subobject \(Rv\) is not saturated.  For isotropic
+            \(v\), its image in \(v^\perp\) lies in the radical of the
+            restricted form, so that form descends along the literal cokernel
+            \(v^\perp/Rv\).  In particular, nonprimitive input is not
+            silently replaced by its primitive line.
+            """
+            if not self.is_isotropic():
+                raise ValueError(
+                    f"cannot form the isotropic quotient of {self!r}: "
+                    f"q(v) = {self.q()} is nonzero"
+                )
+            line = self.sublattice()
+            line_in_ambient = line.inclusion()
+            perpendicular = line_in_ambient.orthogonal_complement()
+            perpendicular_in_ambient = perpendicular.inclusion()
+            line_in_perpendicular = line.Mono(perpendicular)(
+                {
+                    label: perpendicular_in_ambient.lift(
+                        line_in_ambient(line.module_generator(label))
+                    )
+                    for label in line.module_generating_set()
+                }
+            )
+            value_module = perpendicular.value_module()
+            value_identity = value_module.module_category().Mor(
+                value_module, value_module
+            ).identity()
+            descended = perpendicular._formed_form().descend_along(
+                line_in_perpendicular, value_identity
+            )
+            return FormModules(descended.module().base_ring())(descended)
 
         def e_perp_mod_e(self):
             r"""Return ``v^perp/Rv``; archived synonym for :meth:`isotropic_reduction`."""
