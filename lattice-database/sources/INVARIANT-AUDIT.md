@@ -4,6 +4,10 @@ This audit compares the source leads in [README.md](../README.md#sources-to-abso
 
 The [group-data inventory](GROUP-DATA-INVENTORY.md) records the generator matrices, orders, indices, source locators and present coverage of the inspected Nebe–Sloane, LMFDB and Höhn–Mason material.
 
+## `Shimada_86` source conflict
+
+The [`Shimada_86` entry in the Nebe–Sloane union archive](https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz) prints a lower-triangular `GRAM` and a full `GRAM_MATRIX (in Maple)`. Exact arithmetic gives signature $(85,1)$ and determinant $-32571295334400$ for `GRAM`. The full matrix gives signature $(86,0)$ and determinant $196608=2^{16}3$, which agrees with the entry's `DET` field. The matrices first differ at $b(e_1,e_{11})$: `GRAM` prints $-8$, and `GRAM_MATRIX` prints $8$. The entry also states minimum $8$ and kissing number $109421928$; neither is an invariant of the indefinite form. The archive reader uses `GRAM_MATRIX` for this entry. Its lattice record and minimum and kissing-number checks remain to be added.
+
 ## Orthogonal groups and their subgroups
 
 The schema stores `definite.automorphism_group_order = |O(L)|` for a definite lattice and primitive-vector orbit counts for eight standard groups. `orthogonal-subgroups/` can name their generators, orders, indices, inclusions and stabilizers; source values still need intake. Its `O+` is the kernel of the **real spinor norm**; sources that use `O+` for a cone-preserving group need an explicit comparison. For an indefinite lattice, `O(L)` can be infinite. An index, finite image or stabilizer action can then be meaningful even when `|O(L)|` is not a finite number.

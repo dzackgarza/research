@@ -11,6 +11,7 @@ from `union.gz`. `sources/nebe_sloane/<NAME>.json` stores it.
 catalogue states with the computed ones.
 """
 
+import ast
 import gzip
 import re
 from decimal import Decimal
@@ -28,7 +29,7 @@ CATALOGUE = "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES"
 ARCHIVE = f"{CATALOGUE}/union.gz"
 FAMILY = "nebe-sloane-catalogue"
 _SECTION = re.compile(r'<a NAME="([^"]+)"><STRONG>[^<]*</STRONG></a><br>\n(.*?)(?=<p><li>|</ul>)', re.DOTALL)
-_ARCHIVE_SECTION = re.compile(r"^%([A-Z_]+)[ \t]*\r?\n", re.MULTILINE)
+_ARCHIVE_SECTION = re.compile(r"^%([A-Z_]+)[^\n]*\r?\n", re.MULTILINE)
 
 
 class Entry(BaseModel):
@@ -40,9 +41,9 @@ class Entry(BaseModel):
     title: str
     url: str
     dimension: int
-    determinant: int
-    minimal_norm: int
-    kissing_number: int
+    determinant: int | None
+    minimal_norm: int | None
+    kissing_number: int | None
     references: tuple[str, ...]
     gram_tensor: tuple[tuple[int, ...], ...]
 
@@ -59,6 +60,19 @@ def integer(token: str) -> int:
     return value.numerator
 
 
+def determinant(token: str) -> int:
+    """Read an integer or a product of prime powers in the catalogue's DET field."""
+    expression = token.split("=", 1)[0].strip()
+    if re.fullmatch(r"\d+(?:\^\d+)?(?:\s*\*\s*\d+(?:\^\d+)?)*", expression):
+        # The catalogue's standard-format union.gz writes determinants such as 2^16*3.
+        value = 1
+        for factor in re.split(r"\s*\*\s*", expression):
+            base, separator, exponent = factor.partition("^")
+            value *= int(base) ** int(exponent) if separator else int(base)
+        return value
+    return integer(expression)
+
+
 def components(lines: list[str]) -> tuple[tuple[int, ...], ...]:
     """The full symmetric array of components from the `GRAM` section."""
     rank = int(lines[0].split()[0])
@@ -72,6 +86,15 @@ def components(lines: list[str]) -> tuple[tuple[int, ...], ...]:
     return tuple(tuple(lower[max(i, j)][min(i, j)] for j in range(rank)) for i in range(rank))
 
 
+def maple_components(lines: list[str], rank: int) -> tuple[tuple[int, ...], ...]:
+    """Read the catalogue's full Maple matrix as integer components."""
+    matrix = ast.literal_eval("\n".join(lines).strip().rstrip(";"))
+    assert len(matrix) == rank and all(len(row) == rank for row in matrix)
+    assert all(isinstance(value, int) for row in matrix for value in row)
+    assert all(matrix[i][j] == matrix[j][i] for i in range(rank) for j in range(i))
+    return tuple(tuple(row) for row in matrix)
+
+
 def fetch(name: str) -> Entry:
     """Read the entry page of the catalogue."""
     url = f"{CATALOGUE}/{name}.html"
@@ -82,9 +105,9 @@ def fetch(name: str) -> Entry:
         title=" ".join(found["NAME"]),
         url=url,
         dimension=int(found["DIMENSION"][0]),
-        determinant=integer(found["DET" if "DET" in found else "DETERMINANT"][0]),
-        minimal_norm=integer(found["MINIMAL_NORM"][0]),
-        kissing_number=integer(found["KISSING_NUMBER"][0]),
+        determinant=determinant(found["DET" if "DET" in found else "DETERMINANT"][0]) if "DET" in found or "DETERMINANT" in found else None,
+        minimal_norm=integer(found["MINIMAL_NORM"][0]) if "MINIMAL_NORM" in found else None,
+        kissing_number=integer(found["KISSING_NUMBER"][0]) if "KISSING_NUMBER" in found else None,
         references=tuple(found.get("REFERENCES", [])),
         gram_tensor=components(found["GRAM"]),
     )
@@ -104,16 +127,17 @@ def archive_entry(archive: Path, name: str) -> Entry:
             matches.append(sections)
     assert len(matches) == 1, f"expected one archive entry named {name}, found {len(matches)}"
     found = matches[0]
+    dimension = int(found["DIMENSION" if "DIMENSION" in found else "DIM"][0])
     return Entry(
         name=name,
         title=name,
         url=ARCHIVE,
-        dimension=int(found["DIMENSION" if "DIMENSION" in found else "DIM"][0]),
-        determinant=integer(found["DET"][0]),
-        minimal_norm=integer(found["MINIMAL_NORM"][0]),
-        kissing_number=integer(found["KISSING_NUMBER"][0]),
+        dimension=dimension,
+        determinant=determinant(found["DET"][0]) if "DET" in found else None,
+        minimal_norm=integer(found["MINIMAL_NORM"][0]) if "MINIMAL_NORM" in found else None,
+        kissing_number=integer(found["KISSING_NUMBER"][0]) if "KISSING_NUMBER" in found else None,
         references=tuple(line.strip() for line in found.get("REFERENCES", []) if line.strip()),
-        gram_tensor=components(found["GRAM"]),
+        gram_tensor=maple_components(found["GRAM_MATRIX"], dimension) if "GRAM_MATRIX" in found else components(found["GRAM"]),
     )
 
 
@@ -147,14 +171,20 @@ def record(entry: Entry, name: str, latex: str, aliases: tuple[str, ...], famili
 
 def check(entry: Entry, derived: dict[str, Yaml]) -> None:
     """Assert that the invariants the catalogue states are the computed ones."""
-    definite = derived["definite"]
-    match definite:
-        case dict():
-            pass
-        case _:
-            raise AssertionError(f"the entry {entry.name} is not definite")
-    stated = {"rank": entry.dimension, "determinant": entry.determinant, "minimum": entry.minimal_norm, "kissing_number": entry.kissing_number}
-    computed = {"rank": derived["rank"], "determinant": derived["determinant"], "minimum": definite["minimum"], "kissing_number": definite["kissing_number"]}
+    stated: dict[str, Yaml] = {"rank": entry.dimension}
+    computed: dict[str, Yaml] = {"rank": derived["rank"]}
+    if entry.determinant is not None:
+        stated["determinant"] = entry.determinant
+        computed["determinant"] = derived["determinant"]
+    definite = derived.get("definite")
+    if entry.minimal_norm is not None or entry.kissing_number is not None:
+        assert isinstance(definite, dict), f"the entry {entry.name} states definite invariants for a lattice that is not definite"
+        if entry.minimal_norm is not None:
+            stated["minimum"] = entry.minimal_norm
+            computed["minimum"] = definite["minimum"]
+        if entry.kissing_number is not None:
+            stated["kissing_number"] = entry.kissing_number
+            computed["kissing_number"] = definite["kissing_number"]
     assert stated == computed, f"the entry {entry.name} states {stated}, the Gram tensor gives {computed}"
 
 
@@ -178,10 +208,9 @@ def stored_problems(root: Path, loaded: Corpus) -> list[str]:
         if (
             lattice.gram_tensor != entry.gram_tensor
             or lattice.rank != entry.dimension
-            or lattice.determinant != entry.determinant
-            or definite is None
-            or definite.minimum != entry.minimal_norm
-            or definite.kissing_number != entry.kissing_number
+            or (entry.determinant is not None and lattice.determinant != entry.determinant)
+            or (entry.minimal_norm is not None and (definite is None or definite.minimum != entry.minimal_norm))
+            or (entry.kissing_number is not None and (definite is None or definite.kissing_number != entry.kissing_number))
         ):
             problems.append(f"{path}: source invariants differ from record {lattice.tag}")
     return problems

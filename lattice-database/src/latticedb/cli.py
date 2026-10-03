@@ -1,5 +1,6 @@
 """Command line of the lattice database: add records, validate the corpus, build the site, deploy it."""
 
+import hashlib
 import json
 import sys
 from importlib.metadata import version
@@ -172,7 +173,7 @@ LATTICEDB = f"latticedb {version('latticedb')}"
 def _source_inputs(root: Path, loaded: corpus.Corpus, directories: tuple[str, ...]) -> str:
     """The digest of the files of `directories` under `sources/`, the Gram tensors of the records and the morphism files: the inputs of a source check."""
     files = sorted(path for directory in directories for path in (root / "sources" / directory).rglob("*") if path.is_file())
-    parts = [path.read_text() for path in files]
+    parts = [hashlib.sha256(path.read_bytes()).hexdigest() if path.suffix == ".gz" else path.read_text() for path in files]
     parts += [certificates.gram_digest(entry.lattice) for entry in loaded.entries]
     parts += [entry.path.read_text() for entry in loaded.morphisms]
     return certificates.digest("\n".join(parts))

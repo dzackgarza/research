@@ -390,20 +390,13 @@ The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a
 
 ## Sources to absorb
 
-The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane), <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/>, with its indefinite lattices first.
+The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane), <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/>.
 `sources/nebe_sloane/` holds the absorbed entries and the catalogue's `union.gz` archive. The definite records include the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$, $BW_{16}$, the Leech lattice $\Lambda_{24}$, the 23 other Niemeier lattices, and `BGF.2.2112`.
 
 The work that remains, in order:
 
 1. Absorb the remaining entries of the bulk archive.
-   The whole archive, read on 2026-10-02 from <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz>, holds 823 named entries; 754 give a parseable single Gram tensor, 25 of those have rational components (the dual lattices $A_n^*$, $D_n^*$, $E_6^*$, $E_7^*$ and their relatives), and exactly one of the parseable Gram tensors is indefinite: `Shimada_86`, of signature $(85, 1)$.
-   The indefinite material of the corpus therefore does not come from the catalogue; the entries to absorb are definite, plus `Shimada_86`.
-
-2. Make `just nebe-sloane` admit an indefinite entry.
-   `nebe_sloane.check` compares the minimum and the kissing number that the catalogue states, which an indefinite lattice does not have.
-
-3. Absorb the entries, `Shimada_86` included.
-   The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
+   The archive is stored at `sources/nebe_sloane/union.gz`. Its `D_n*` entries print exact halves, while `Bring8` and `mcc` print rounded decimal Gram components that require source-specific exact data. The `Shimada_86` entry has two conflicting matrices: its full `GRAM_MATRIX` is positive definite with the stated determinant, while its lower-triangular `GRAM` is indefinite and has a different determinant. The [source audit](sources/INVARIANT-AUDIT.md#shimada_86-source-conflict) records the exact comparison. The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
 
 The survey of 2026-10-02 read these by the test the corpus uses everywhere: a source contributes the claims it states — Gram tensors, identifications, invariants, relations — and every claim lands as a field, a `related` entry, a morphism or a check of a record. Two sources stating a claim about the same lattice is not redundancy, it is convergence, and it is how a stored value gets checked; the modules of Hashimoto and of Höhn and Mason check records no other source supplies the lattice for. Nothing about a lattice being named elsewhere demotes a source. The reasons that do apply are stated at each entry: a claim the schema has no place for gains that place (AGENTS.md), and a displayed decimal is not inexact data where theory states the exact quantity it rounds — the exact value is then absorbed, as a formula evaluated in a symbolic ring, never discarded for its printing. What yields nothing is a number with no exact recovery known, or a page that is not there.
 

@@ -8,7 +8,7 @@ import frontmatter
 import pytest
 import yaml
 
-from latticedb import corpus, nebe_sloane, records, root_systems, site
+from latticedb import arithmetic, corpus, nebe_sloane, records, root_systems, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Morphism, Yaml
 
@@ -203,6 +203,35 @@ def test_nebe_sloane_intakes_a_named_entry_from_the_union_archive(tmp_path: Path
     assert (lattice.definite.minimum, lattice.definite.kissing_number) == (2, 2)
     assert lattice.references[0].url == "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz"
     assert nebe_sloane.stored_problems(root, corpus.load(root)) == []
+    run("check", "--root", str(root))
+
+
+def test_nebe_sloane_accepts_an_indefinite_entry_without_definite_invariants(tmp_path: Path) -> None:
+    root = write_corpus(tmp_path)
+    source = root / "sources" / "nebe_sloane"
+    source.mkdir(parents=True)
+    entry = nebe_sloane.Entry(
+        name="IndefiniteSpecimen",
+        title="IndefiniteSpecimen",
+        url="https://example.org/IndefiniteSpecimen",
+        dimension=2,
+        determinant=-5,
+        minimal_norm=None,
+        kissing_number=None,
+        references=(),
+        gram_tensor=((2, 1), (1, -2)),
+    )
+    (source / "IndefiniteSpecimen.json").write_text(entry.model_dump_json() + "\n")
+    run("nebe-sloane", "IndefiniteSpecimen", "--name", "IndefiniteSpecimen", "--latex", "S", "--root", str(root))
+    lattice = corpus.load(root).entries[1].lattice
+    assert (lattice.signature, lattice.determinant, lattice.definite) == ((1, 1), -5, None)
+
+
+def test_nebe_sloane_reads_the_full_matrix_of_shimada_86() -> None:
+    entry = nebe_sloane.archive_entry(REPOSITORY / "sources" / "nebe_sloane" / "union.gz", "Shimada_86")
+    assert (entry.dimension, entry.determinant, entry.minimal_norm, entry.kissing_number) == (86, 196608, 8, 109421928)
+    assert arithmetic.inertia(entry.gram_tensor) == (86, 0, 0)
+    assert arithmetic.determinant(entry.gram_tensor) == entry.determinant
 
 
 def test_certify_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:
