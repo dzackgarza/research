@@ -30,6 +30,7 @@ from pydantic import BaseModel, Field
 from latticedb import root_systems
 from latticedb.arithmetic import Vector
 from latticedb.corpus import Entry, hyperbolic_index_bounds, load
+from latticedb.geometric import ProjectiveComplexVariety
 from latticedb.model import (
     DefiniteData,
     HyperbolicData,
@@ -653,7 +654,7 @@ def build(root: Path, target: Path) -> int:
                 hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
                 morphism_files=[file for file in morphism_files if lattice.tag in (file.source, file.target)],
-                geometric_objects=[entry.geometric for entry in geometric if any(link.tag == lattice.tag for link in entry.geometric.cohomology_lattices)],
+                geometric_objects=[entry.geometric for entry in geometric if isinstance(entry.geometric, ProjectiveComplexVariety) and any(link.tag == lattice.tag for link in entry.geometric.cohomology_lattices)],
                 previous=entries[index - 1].lattice if index > 0 else None,
                 following=entries[index + 1].lattice if index + 1 < len(entries) else None,
             )
@@ -682,23 +683,22 @@ def build(root: Path, target: Path) -> int:
     (target / "geometric-objects").mkdir()
     bibliography = root / "geometric-bibliography.bib"
     geometric_prose = markdown_to_html([entry.prose for entry in geometric], bibliography)
-    geometric_page = environment.get_template("geometric-object.html.j2")
+    variety_page = environment.get_template("geometric-object.html.j2")
+    space_page = environment.get_template("geometric-space.html.j2")
     for geometric_entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
         record = geometric_entry.geometric
-        rows = [
-            [record.hodge_number(p, degree - p) for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
-            for degree in range(2 * record.dimension + 1)
-        ]
-        (target / "geometric-objects" / f"{record.slug}.html").write_text(
-            geometric_page.render(
-                root="../",
-                geometric=record,
-                rows=rows,
-                lattices=lattices,
-                families={entry.family.slug: entry.family for entry in geometric_families},
-                prose=rendered_prose,
+        if isinstance(record, ProjectiveComplexVariety):
+            rows = [
+                [record.hodge_number(p, degree - p) for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
+                for degree in range(2 * record.dimension + 1)
+            ]
+            html = variety_page.render(
+                root="../", geometric=record, rows=rows, lattices=lattices,
+                families={entry.family.slug: entry.family for entry in geometric_families}, prose=rendered_prose,
             )
-        )
+        else:
+            html = space_page.render(root="../", geometric=record, prose=rendered_prose)
+        (target / "geometric-objects" / f"{record.slug}.html").write_text(html)
     (target / "geometric-families").mkdir()
     family_prose = markdown_to_html([entry.prose for entry in geometric_families], bibliography)
     family_page = environment.get_template("geometric-family.html.j2")

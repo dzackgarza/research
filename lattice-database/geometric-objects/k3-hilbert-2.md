@@ -59,6 +59,7 @@ cohomology_lattices:
   pairing: the Beauville–Bogomolov–Fujiki form
   tag: 027Z
   scale: 1
+kind: projective_complex_variety
 ---
 
 The Hodge series is the n = 2 case of Göttsche's formula [@Goettsche1994].

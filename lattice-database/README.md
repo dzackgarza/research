@@ -14,7 +14,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | Path | Contents |
 | --- | --- |
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
-| `geometric-objects/<slug>.md` | One geometric object, its Hodge–Poincaré series, optional cohomology lattice links and cited prose |
+| `geometric-objects/<slug>.md` | One locally ringed geometric space, its specialized data and cited prose |
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
 | `orthogonal-subgroups/`, `vector-orbits/`, `chambers/` | Named lattice group actions, primitive-vector orbits and hyperbolic chambers |
 | `genera/` | Genus records with representative isometry classes and mass |
@@ -29,7 +29,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
-| `src/latticedb/geometric.py` | The schema of geometric families, objects and their Hodge–Poincaré series |
+| `src/latticedb/geometric.py` | The schema of geometric families, projective varieties, manifolds and symmetric spaces |
 | `src/latticedb/catalogues.py` | Schemas of group actions, genera, polytopes, toric varieties, maps, local systems and operators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
@@ -53,9 +53,13 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 
 ## Geometric objects
 
-Each file in `geometric-objects/` describes a smooth connected projective complex variety or a class whose stated invariants are constant.
-Its file name is its permanent slug.
-`hodge_poincare` stores the nonzero terms of $H_X(u,v)=\sum_{p,q}h^{p,q}u^pv^q$, where $h^{p,q}=\dim_{\mathbb C}H^q(X,\Omega_X^p)$.
+Each file in `geometric-objects/` has one permanent slug and a `kind` that names its mathematical category. The current card kinds are `projective_complex_variety`, `complex_manifold`, `riemannian_symmetric_space` and `hermitian_symmetric_space`. They share a locally ringed-space record identity; fields belong to the category in which they are defined.
+
+The category relations are refinements and structure-changing functors. Schemes over $\mathbb C$ include smooth projective complex varieties. Complex analytic spaces include complex manifolds. Topological manifolds admit PL or differentiable refinements; a $C^\infty$ manifold has a sheaf of smooth functions and can carry a Riemannian metric. A Hermitian symmetric space is both a Riemannian symmetric space and a complex manifold with a compatible Hermitian structure. Analytification sends a finite-type complex scheme to a complex analytic space. Its source and result are separate linked cards through `analytic_space` and `algebraic_model`. Forgetting a metric or changing a structure sheaf is a functor between categories.
+
+A `projective_complex_variety` card describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its `dimension` is complex dimension; its required `hodge_poincare` is the Hodge–Poincaré series. Symmetric-space cards give the connected group quotient, isotropy group, defining involution and metric normalization. Their `rank` is symmetric-space rank. A Hermitian card also gives complex dimension and can state its bounded realization and the parabolic presentation of its compact dual. A compact dual is another symmetric-space card; a projective algebraic model of its analytic space has its own card.
+
+On projective variety cards, `hodge_poincare` stores the nonzero terms of $H_X(u,v)=\sum_{p,q}h^{p,q}u^pv^q$, where $h^{p,q}=\dim_{\mathbb C}H^q(X,\Omega_X^p)$.
 Each term has `p`, `q` and a positive `coefficient`; omitted terms have coefficient zero.
 The record checks unique terms, exponents at most `dimension`, $h^{0,0}=1$, Hodge symmetry and Serre duality.
 It derives Betti numbers and the Euler characteristic from the series.
@@ -75,6 +79,7 @@ The geometric object page links to the lattice page, and the lattice page links 
 ```yaml
 slug: k3-surface
 name: Complex projective K3 surface
+kind: projective_complex_variety
 dimension: 2
 hodge_poincare:
 - {p: 0, q: 0, coefficient: 1}
@@ -117,7 +122,7 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 
 `definite.minimal_vectors` is a complete shell in the record basis and must match the minimum and kissing number. `definite.perfect` is checked by the span of their rank-one tensors. `definite.regular` and `definite.spinor_regular` apply to integral ternary lattices. The Hermite invariant and packing density are exact functions of rank, determinant and minimum; source decimals are checked against those formulas rather than stored as exact values.
 
-Geometric objects can also store Pontryagin numbers, a Beauville–Bogomolov Riemann–Roch polynomial, $\operatorname{Aut}^0$, homotopy groups, Fano and surface data, and a homogeneous, horospherical, Calabi–Yau complete-intersection or toric anticanonical construction. A complete-intersection configuration stores its projective factors and equation multidegrees; the schema checks the Calabi–Yau degree and dimension equations.
+Projective complex variety cards can also store Pontryagin numbers, a Beauville–Bogomolov Riemann–Roch polynomial, $\operatorname{Aut}^0$, homotopy groups, Fano and surface data, and a homogeneous, horospherical, Calabi–Yau complete-intersection or toric anticanonical construction. A complete-intersection configuration stores its projective factors and equation multidegrees; the schema checks the Calabi–Yau degree and dimension equations.
 
 ## A record
 

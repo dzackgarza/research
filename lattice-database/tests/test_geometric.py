@@ -5,7 +5,7 @@ from pathlib import Path
 import frontmatter
 import pytest
 from latticedb import corpus, site
-from latticedb.geometric import GeometricObject
+from latticedb.geometric import ProjectiveComplexVariety
 from pydantic import ValidationError
 
 ROOT = Path(__file__).parent.parent
@@ -30,6 +30,16 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     kummer = (target / "geometric-objects" / "kummer-2.html").read_text()
     assert 'href="../tag/0283.html"' in kummer
     assert "<span>1</span><span>5</span><span>96</span><span>5</span><span>1</span>" in kummer
+    algebraic_plane = (target / "geometric-objects" / "complex-projective-plane.html").read_text()
+    analytic_plane = (target / "geometric-objects" / "complex-projective-plane-analytic.html").read_text()
+    complex_ball = (target / "geometric-objects" / "complex-hyperbolic-2-space.html").read_text()
+    real_hyperbolic = (target / "geometric-objects" / "real-hyperbolic-3-space.html").read_text()
+    assert 'href="../geometric-objects/complex-projective-plane-analytic.html"' in algebraic_plane
+    assert 'href="../geometric-objects/complex-projective-plane.html"' in analytic_plane
+    assert 'href="../geometric-objects/complex-projective-plane-analytic.html"' in complex_ball
+    assert 'href="../geometric-objects/three-sphere.html"' in real_hyperbolic
+    assert "Symmetric-space rank 1" not in algebraic_plane
+    assert "Hodge diamond" not in complex_ball
 
 
 def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> None:
@@ -47,16 +57,16 @@ def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> No
 
 def test_hodge_series_determines_symmetry_and_chern_number() -> None:
     source = frontmatter.load(str(ROOT / "geometric-objects" / "k3-surface.md"))
-    record = GeometricObject.model_validate(source.metadata)
+    record = ProjectiveComplexVariety.model_validate(source.metadata)
     assert record.betti_number(2) == 22
     assert record.euler_characteristic() == 24
     assert record.hodge_number(1, 1) == 20
 
     source.metadata["symmetry_group"] = "V4"
     with pytest.raises(ValidationError, match="declared symmetry group"):
-        GeometricObject.model_validate(source.metadata)
+        ProjectiveComplexVariety.model_validate(source.metadata)
 
     source.metadata["symmetry_group"] = "D4"
     source.metadata["chern_numbers"][0]["value"] = 25
     with pytest.raises(ValidationError, match="top Chern number"):
-        GeometricObject.model_validate(source.metadata)
+        ProjectiveComplexVariety.model_validate(source.metadata)

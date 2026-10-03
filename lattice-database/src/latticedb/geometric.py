@@ -1,4 +1,6 @@
-"""Records of smooth connected projective complex varieties and their Hodge numbers."""
+"""Geometric records, including projective varieties and symmetric spaces."""
+
+from __future__ import annotations
 
 from pathlib import Path
 from typing import Annotated, Literal, Self
@@ -51,6 +53,24 @@ class HomotopyGroup(Record):
     name: str = Field(min_length=1)
     free_rank: Annotated[int, Field(ge=0)] | None = None
     torsion_factors: list[Annotated[int, Field(gt=1)]] | None = None
+
+
+class ClassificationLabel(Record):
+    convention: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+
+
+class IwasawaDecomposition(Record):
+    positive_restricted_roots: str = Field(min_length=1)
+    k: str = Field(min_length=1)
+    a: str = Field(min_length=1)
+    n: str = Field(min_length=1)
+
+
+class CohomologyGroup(Record):
+    degree: Annotated[int, Field(ge=0)]
+    coefficients: str = Field(min_length=1)
+    group: str = Field(min_length=1)
 
 
 class FanoData(Record):
@@ -121,11 +141,26 @@ class CohomologyLattice(Record):
         return self
 
 
-class GeometricObject(Record):
-    """One smooth connected projective complex variety or a class with constant stated invariants."""
+class LocallyRingedSpace(Record):
+    """The shared record identity for geometric spaces with a structure sheaf."""
 
     slug: Annotated[str, Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")]
     name: str = Field(min_length=1)
+
+
+class ComplexManifold(LocallyRingedSpace):
+    """A connected complex manifold, including an analytification when named."""
+
+    kind: Literal["complex_manifold"]
+    complex_dimension: Annotated[int, Field(ge=0)]
+    algebraic_model: Slug | None = None
+
+
+class ProjectiveComplexVariety(LocallyRingedSpace):
+    """One smooth connected projective complex variety or a class with constant stated invariants."""
+
+    kind: Literal["projective_complex_variety"]
+    analytic_space: Slug | None = None
     dimension: Annotated[int, Field(ge=0)]
     hodge_poincare: Annotated[tuple[HodgeTerm, ...], Field(strict=False)] = Field(description="Nonzero coefficients of H_X(u,v) = sum h^(p,q) u^p v^q.")
     symmetry_group: Literal["V4", "D4"] | None = Field(default=None, description="The full subgroup of square symmetries preserving the Hodge diamond.")
@@ -198,6 +233,70 @@ class GeometricObject(Record):
 
     def euler_characteristic(self) -> int:
         return sum((-1) ** (term.p + term.q) * term.coefficient for term in self.hodge_poincare)
+
+
+class RiemannianSymmetricSpace(LocallyRingedSpace):
+    """A connected Riemannian symmetric space with a specified symmetric presentation."""
+
+    kind: Literal["riemannian_symmetric_space"]
+    real_dimension: Annotated[int, Field(gt=0)]
+    group: str = Field(min_length=1)
+    isotropy_group: str = Field(min_length=1)
+    involution: str = Field(min_length=1)
+    metric_normalization: str = Field(min_length=1)
+    curvature_type: Literal["euclidean", "compact", "noncompact"]
+    compact: bool
+    rank: Annotated[int, Field(gt=0)]
+    classification: Annotated[tuple[ClassificationLabel, ...], Field(strict=False)] = ()
+    lie_algebra: str | None = None
+    restricted_roots: str | None = None
+    root_multiplicities: str | None = None
+    diagram: str | None = None
+    diagram_convention: str | None = None
+    holonomy: str | None = None
+    iwasawa: IwasawaDecomposition | None = None
+    compact_dual: Slug | None = None
+    noncompact_dual: Slug | None = None
+    homotopy_groups: Annotated[tuple[HomotopyGroup, ...], Field(strict=False)] = ()
+    cohomology_groups: Annotated[tuple[CohomologyGroup, ...], Field(strict=False)] = ()
+
+    @model_validator(mode="after")
+    def check_symmetric_data(self) -> Self:
+        if self.rank > self.real_dimension:
+            raise PydanticCustomError("symmetric_rank", "symmetric-space rank exceeds real dimension")
+        if self.compact_dual is not None and self.curvature_type != "noncompact":
+            raise PydanticCustomError("compact_dual_type", "a compact dual belongs to a space of noncompact type")
+        if self.noncompact_dual is not None and self.curvature_type != "compact":
+            raise PydanticCustomError("noncompact_dual_type", "a noncompact dual belongs to a space of compact type")
+        if (self.diagram is None) != (self.diagram_convention is None):
+            raise PydanticCustomError("diagram_convention", "a diagram needs its named convention")
+        if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
+            raise PydanticCustomError("homotopy_duplicate", "a homotopy degree occurs more than once")
+        if len({(group.degree, group.coefficients) for group in self.cohomology_groups}) != len(self.cohomology_groups):
+            raise PydanticCustomError("cohomology_duplicate", "a cohomology degree and coefficient ring occur more than once")
+        return self
+
+
+class HermitianSymmetricSpace(RiemannianSymmetricSpace, ComplexManifold):
+    """A Riemannian symmetric space with an invariant complex and Hermitian structure."""
+
+    kind: Literal["hermitian_symmetric_space"]
+    hermitian_classification: Annotated[tuple[ClassificationLabel, ...], Field(strict=False)] = ()
+    tube_type: bool | None = None
+    bounded_realization: str | None = None
+    compact_dual_parabolic: str | None = None
+
+    @model_validator(mode="after")
+    def check_complex_dimension(self) -> Self:
+        if self.real_dimension != 2 * self.complex_dimension:
+            raise PydanticCustomError("hermitian_dimension", "real dimension must be twice complex dimension")
+        return self
+
+
+type GeometricObject = Annotated[
+    ProjectiveComplexVariety | ComplexManifold | RiemannianSymmetricSpace | HermitianSymmetricSpace,
+    Field(discriminator="kind"),
+]
 
 
 def problems(path: Path, error: ValidationError) -> list[str]:

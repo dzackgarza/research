@@ -29,6 +29,7 @@ cohomology_lattices:
   pairing: the cup-product intersection form
   tag: 027E
   scale: 1
+kind: projective_complex_variety
 ---
 
 The Hodge series and the intersection lattice are constant for complex K3 surfaces [@Huybrechts2016K3].

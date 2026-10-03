@@ -41,7 +41,15 @@ from latticedb.catalogues import (
     ToricVariety,
     VectorOrbit,
 )
-from latticedb.geometric import GeometricFamily, GeometricObject, ToricHypersurfaceConstruction
+from latticedb.geometric import (
+    ComplexManifold,
+    GeometricFamily,
+    GeometricObject,
+    HermitianSymmetricSpace,
+    ProjectiveComplexVariety,
+    RiemannianSymmetricSpace,
+    ToricHypersurfaceConstruction,
+)
 from latticedb.model import Family, Lattice, Morphisms, Tag, Yaml
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -367,12 +375,14 @@ def catalogue_problems(loaded: Corpus) -> list[str]:
         if entry.value.polytope not in polytopes:
             found.append(f"{entry.path}: polytope {entry.value.polytope} is not in the corpus")
     for entry in loaded.geometric:
-        construction = entry.geometric.construction
-        if isinstance(construction, ToricHypersurfaceConstruction) and construction.toric_variety not in toric:
-            found.append(f"{entry.path}: toric variety {construction.toric_variety} is not in the corpus")
-        group = entry.geometric.automorphism_identity_component
-        if group is not None and group.cohomology_action is not None and group.cohomology_action not in groups:
-            found.append(f"{entry.path}: cohomology action {group.cohomology_action} is not in the corpus")
+        record = entry.geometric
+        if isinstance(record, ProjectiveComplexVariety):
+            construction = record.construction
+            if isinstance(construction, ToricHypersurfaceConstruction) and construction.toric_variety not in toric:
+                found.append(f"{entry.path}: toric variety {construction.toric_variety} is not in the corpus")
+            group = record.automorphism_identity_component
+            if group is not None and group.cohomology_action is not None and group.cohomology_action not in groups:
+                found.append(f"{entry.path}: cohomology action {group.cohomology_action} is not in the corpus")
     for entry in loaded.geometric_families:
         construction = entry.family.construction
         if isinstance(construction, ToricHypersurfaceConstruction) and construction.toric_variety not in toric:
@@ -463,10 +473,11 @@ def load(root: Path) -> Corpus:
     found.extend(problems(entries, families, retired))
     found.extend(morphism_problems(morphisms, entries, retired))
     geometric: list[GeometricEntry] = []
+    geometric_adapter = TypeAdapter(GeometricObject)
     for path in sorted((root / "geometric-objects").glob("*.md")):
         document = frontmatter.load(str(path))
         try:
-            geometric.append(GeometricEntry(GeometricObject.model_validate(document.metadata), document.content, path))
+            geometric.append(GeometricEntry(geometric_adapter.validate_python(document.metadata), document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
     geometric_families: list[GeometricFamilyEntry] = []
@@ -484,23 +495,41 @@ def load(root: Path) -> Corpus:
         by_family[family.slug] = family
     seen_slugs: set[str] = set()
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
+    by_geometric = {entry.geometric.slug: entry.geometric for entry in geometric}
     for geometric_entry in geometric:
         record = geometric_entry.geometric
         if geometric_entry.path.stem != record.slug or record.slug in seen_slugs:
             found.append(f"{geometric_entry.path}: geometric object slug must be unique and match its file name")
         seen_slugs.add(record.slug)
-        if record.family is not None:
+        if isinstance(record, ProjectiveComplexVariety) and record.family is not None:
             owning_family = by_family.get(record.family)
             if owning_family is None:
                 found.append(f"{geometric_entry.path}: geometric family {record.family} is not in the corpus")
             elif record.family_parameter is not None and record.family_parameter < owning_family.minimum:
                 found.append(f"{geometric_entry.path}: family parameter is below {owning_family.minimum}")
-        for link in record.cohomology_lattices:
-            lattice = by_tag.get(link.tag)
-            if lattice is None:
-                found.append(f"{geometric_entry.path}: cohomology lattice tag {link.tag} is not in the corpus")
-            elif lattice.rank != record.betti_number(link.degree):
-                found.append(f"{geometric_entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}")
+        if isinstance(record, ProjectiveComplexVariety):
+            for link in record.cohomology_lattices:
+                lattice = by_tag.get(link.tag)
+                if lattice is None:
+                    found.append(f"{geometric_entry.path}: cohomology lattice tag {link.tag} is not in the corpus")
+                elif lattice.rank != record.betti_number(link.degree):
+                    found.append(f"{geometric_entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}")
+            if record.analytic_space is not None:
+                analytic = by_geometric.get(record.analytic_space)
+                if not isinstance(analytic, ComplexManifold) or analytic.algebraic_model != record.slug or analytic.complex_dimension != record.dimension:
+                    found.append(f"{geometric_entry.path}: analytic space must name this variety back and have the same complex dimension")
+        if isinstance(record, ComplexManifold) and record.algebraic_model is not None:
+            algebraic = by_geometric.get(record.algebraic_model)
+            if not isinstance(algebraic, ProjectiveComplexVariety) or algebraic.analytic_space != record.slug or algebraic.dimension != record.complex_dimension:
+                found.append(f"{geometric_entry.path}: algebraic model must name this analytic space back and have the same complex dimension")
+        if isinstance(record, RiemannianSymmetricSpace) and record.compact_dual is not None:
+            dual = by_geometric.get(record.compact_dual)
+            if not isinstance(dual, RiemannianSymmetricSpace) or dual.noncompact_dual != record.slug or dual.real_dimension != record.real_dimension:
+                found.append(f"{geometric_entry.path}: compact dual must be a symmetric space of the same dimension and name this space back")
+        if isinstance(record, RiemannianSymmetricSpace) and record.noncompact_dual is not None:
+            dual = by_geometric.get(record.noncompact_dual)
+            if not isinstance(dual, RiemannianSymmetricSpace) or dual.compact_dual != record.slug or dual.real_dimension != record.real_dimension:
+                found.append(f"{geometric_entry.path}: noncompact dual must be a symmetric space of the same dimension and name this space back")
     loaded = Corpus(
         tuple(entries), families, retired, tuple(morphisms), tuple(geometric), tuple(geometric_families),
         _catalogue(root, "orthogonal-subgroups", OrthogonalSubgroup, found),

@@ -3,9 +3,10 @@
 {% block main %}
 <article>
   <header class="page-heading">
-    <p class="kicker">Geometric object</p>
+    <p class="kicker">Smooth projective complex variety</p>
     <h1>{{ geometric.name }}</h1>
     <p class="lede">Complex dimension {{ geometric.dimension }}.</p>
+    {% if geometric.analytic_space %}<p>Analytic space: <a href="{{ root }}geometric-objects/{{ geometric.analytic_space }}.html">{{ geometric.analytic_space }}</a>.</p>{% endif %}
     {% if geometric.family %}<p><a href="{{ root }}geometric-families/{{ geometric.family }}.html">{{ families[geometric.family].name }}</a>, {{ families[geometric.family].parameter }} = {{ geometric.family_parameter }}.</p>{% endif %}
   </header>
 
