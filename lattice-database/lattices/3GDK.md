@@ -1,0 +1,21 @@
+---
+tag: 3GDK
+name: watson 3:531
+latex: watson 3:531
+aliases: []
+rank: 3
+gram_tensor:
+- [5, -2, 1]
+- [-2, 20, -10]
+- [1, -10, 29]
+signature: [3, 0]
+determinant: 2304
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Watson, primitive lattices of class number one, 3:531.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+---
+
+Source entry `watson:3:531` gives this Gram tensor.

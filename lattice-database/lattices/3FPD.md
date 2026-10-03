@@ -1,0 +1,20 @@
+---
+tag: 3FPD
+name: watson 2:1269
+latex: watson 2:1269
+aliases: []
+rank: 2
+gram_tensor:
+- [23, 6]
+- [6, 27]
+signature: [2, 0]
+determinant: 585
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Watson, primitive lattices of class number one, 2:1269.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+---
+
+Source entry `watson:2:1269` gives this Gram tensor.

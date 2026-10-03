@@ -1,0 +1,23 @@
+---
+tag: 3GZD
+name: watson 5:41
+latex: watson 5:41
+aliases: []
+rank: 5
+gram_tensor:
+- [4, 0, 2, -2, 0]
+- [0, 4, 2, -2, 0]
+- [2, 2, 7, -3, -2]
+- [-2, -2, -3, 7, -2]
+- [0, 0, -2, -2, 20]
+signature: [5, 0]
+determinant: 6912
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Watson, primitive lattices of class number one, 5:41.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+---
+
+Source entry `watson:5:41` gives this Gram tensor.

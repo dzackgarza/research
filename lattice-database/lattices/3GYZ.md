@@ -1,0 +1,23 @@
+---
+tag: 3GYZ
+name: watson 5:27
+latex: watson 5:27
+aliases: []
+rank: 5
+gram_tensor:
+- [4, 1, 1, 1, 0]
+- [1, 4, -1, -1, 0]
+- [1, -1, 4, -1, 0]
+- [1, -1, -1, 4, 0]
+- [0, 0, 0, 0, 10]
+signature: [5, 0]
+determinant: 1250
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Watson, primitive lattices of class number one, 5:27.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+---
+
+Source entry `watson:5:27` gives this Gram tensor.
