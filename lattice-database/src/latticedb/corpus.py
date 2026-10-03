@@ -441,10 +441,13 @@ def load(root: Path) -> Corpus:
         found.extend(_record_problems(retired_path, error))
     directory = root / "lattices"
     paths = sorted(directory.glob("*.md"))
+    source_tags = {path.stem for path in (directory / "source").glob("*.md")}
     if not paths:
         found.append(f"{directory}: no records")
     for path in paths:
         document = frontmatter.load(str(path))
+        if path.stem in source_tags:
+            found.append(f"{path}: the tag is also assigned to a source card")
         try:
             entries.append(Entry(Lattice.model_validate(document.metadata), document.content, path))
         except ValidationError as error:
@@ -519,9 +522,11 @@ def load(root: Path) -> Corpus:
 
 
 def next_tag(corpus: Corpus) -> str:
-    """The tag after the greatest tag of the corpus, retired tags counted, in the order 0-9 then A-Z."""
+    """The tag after the greatest corpus, source-card, or retired tag."""
     value = 0
-    for character in max(*(entry.lattice.tag for entry in corpus.entries), *corpus.retired):
+    source_directory = corpus.entries[0].path.parent / "source"
+    source_tags = (path.stem for path in source_directory.glob("*.md"))
+    for character in max(*(entry.lattice.tag for entry in corpus.entries), *corpus.retired, *source_tags):
         value = value * len(TAG_ALPHABET) + TAG_ALPHABET.index(character)
     value += 1
     digits = []

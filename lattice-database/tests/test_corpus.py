@@ -100,6 +100,19 @@ def test_a_record_cannot_take_a_retired_tag_and_the_next_tag_counts_the_retired_
     assert [problem for problem in raised.value.problems if "000Z" in problem and "retired" in problem]
 
 
+def test_source_cards_reserve_their_tags_for_new_records(tmp_path: Path) -> None:
+    directory = write(tmp_path, rank_one("0001"))
+    source = directory / "lattices" / "source"
+    source.mkdir()
+    (source / "0010.md").write_text("---\ntag: '0010'\nkind: source\n---\n")
+    assert corpus.next_tag(corpus.load(directory)) == "0011"
+
+    (source / "0001.md").write_text("---\ntag: '0001'\nkind: source\n---\n")
+    with pytest.raises(corpus.CorpusInvalid) as raised:
+        corpus.load(directory)
+    assert any("also assigned to a source card" in problem for problem in raised.value.problems)
+
+
 def test_the_families_file_is_read_as_one_line_of_meaning_per_family(tmp_path: Path) -> None:
     directory = write(tmp_path, rank_one("0002"))
     assert corpus.load(directory).families == FAMILIES

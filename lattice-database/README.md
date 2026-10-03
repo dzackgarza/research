@@ -126,6 +126,7 @@ Geometric objects can also store Pontryagin numbers, a Beauville–Bogomolov Rie
 The bulk source tables seed `lattices/source/<TAG>.md` with `latticedb bulk-cards`.
 Each card has a permanent four-character tag, a source and row ID, and the full indexed source data.
 The cards record source presentations. Repeated presentations have separate source cards until an isometry identifies their lattice records. The established `lattices/<TAG>.md` files are the corpus's identified lattice records.
+New record tags follow both the source cards and the identified records; a tag cannot name both.
 
 ```yaml
 ---
