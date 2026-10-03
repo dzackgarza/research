@@ -633,9 +633,8 @@ class Lattice(Record):
         """A set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$, for a root lattice; `None` for another lattice."""
         return None if self.root_sublattice is None else self.root_sublattice.norms
 
-    @model_validator(mode="after")
     def _well_defined(self) -> Self:
-        """The fields have the shapes of the schema, and each block is present exactly when the stored fields state its hypothesis."""
+        """Verify the mathematical fields of a parsed card when the check workflow runs."""
         problems = list(self._shape_problems())
         if not problems:
             problems = [
@@ -661,8 +660,6 @@ class Lattice(Record):
 
     def _integral_problems(self) -> Iterator[InitErrorDetails]:
         if self.integral is None:
-            if self.is_integer_valued:
-                yield _problem("integral_block_missing", "every b(e_i, e_j) is an integer, so the `integral` block is required", ("integral",))
             return
         if not self.is_integer_valued:
             yield _problem("integral_requires_integer_values", "the `integral` block requires every b(e_i, e_j) to be an integer", ("integral",))
@@ -770,8 +767,6 @@ class Lattice(Record):
 
     def _definite_problems(self) -> Iterator[InitErrorDetails]:
         if self.definite is None:
-            if self.is_definite:
-                yield _problem("definite_block_missing", "the form is definite, so the `definite` block is required", ("definite",))
             return
         if not self.is_definite:
             yield _problem("definite_requires_definite", "the `definite` block requires a positive definite or negative definite form", ("definite",))
@@ -809,8 +804,6 @@ class Lattice(Record):
 
     def _indefinite_problems(self) -> Iterator[InitErrorDetails]:
         indefinite = self.definiteness == "indefinite"
-        if self.indefinite is None and indefinite:
-            yield _problem("indefinite_block_missing", "b(x, x) takes both signs, so the `indefinite` block is required", ("indefinite",))
         if self.indefinite is not None and not indefinite:
             yield _problem("indefinite_requires_indefinite", "the `indefinite` block requires a form that takes both signs", ("indefinite",))
         if self.hyperbolic is not None and not self.is_hyperbolic:
@@ -829,7 +822,7 @@ class Lattice(Record):
             if (span.summands is None) != (span.embedding is None):
                 yield _problem("root_span_representative_incomplete", "`summands` and `embedding` are stated together", ("root_span",))
         sublattice = self.root_sublattice
-        decided = self.is_definite or span is not None
+        decided = self.definite is not None or span is not None
         if sublattice is None:
             if decided:
                 yield _problem("root_sublattice_missing", "the roots of the lattice are stated, so the `root_sublattice` block is required", ("root_sublattice",))

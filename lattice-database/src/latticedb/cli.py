@@ -25,6 +25,7 @@ from latticedb import (
     nipp,
     nipp_intake,
     records,
+    seed,
     site,
     summands,
 )
@@ -142,6 +143,13 @@ def bulk_index_write(root: Root = Path()) -> None:
     """Store parsed bulk source rows with their exact Gram tensors and determinants."""
     for source, count in bulk_index.write(root).items():
         print(f"sources/normalized/{source}.jsonl.gz: {count} rows")
+
+
+@app.command(name="seed")
+def seed_cards(*, limit: int | None = None, root: Root = Path()) -> None:
+    """Write permanent lattice cards from stored source rows without verification or enrichment."""
+    seeded, without_gram = seed.run(root, limit)
+    print(f"{seeded} lattice cards written; {len(without_gram)} source rows need a defining Gram tensor")
 
 
 @app.command(name="nipp-entry")
