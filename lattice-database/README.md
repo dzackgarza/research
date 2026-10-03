@@ -43,6 +43,9 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
 | `sources/nebe_sloane/union.gz`, `<ENTRY>.json` | The catalogue's standard-format union archive and stored entries read from it or from individual pages |
+| `sources/nipp/` | Nipp's quaternary and quinary source tables, read by `src/latticedb/nipp.py` |
+| `sources/brandt_intrau/` | Brandt–Intrau–Schiemann's odd and even ternary form tables, read by `src/latticedb/brandt_intrau.py` |
+| `sources/watson/watson.txt` | Watson's single-class genus representatives, read by `src/latticedb/watson.py` |
 | `sources/hashimoto/table_10_2.json`, `table_10_3.json` | Tables 10.2 and 10.3 of K. Hashimoto, arXiv:1012.2682, as printed, each row linked to the records of $\Lambda_G$ and $\Lambda^G$ by a twist and a change of basis |
 | `sources/hoehn_mason/leech.json`, `lattices_<i>_<j>.json` | The Leech lattice and the 40 entries `lattices[i,j]` of the Magma file of G. Höhn and G. Mason, arXiv:1505.06420, whose coinvariant lattice is $\Lambda_G(-1)$ for a row of Table 10.2 of Hashimoto: the bases and the stabilizer generators as printed, each linked to its record by a twist and a change of basis |
 | `tests/` | Tests of the validators, of the record commands and of the built site |

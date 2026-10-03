@@ -13,6 +13,7 @@ from cyclopts import App, Parameter
 from pydantic import ValidationError
 
 from latticedb import (
+    bulk_sources,
     certificates,
     corpus,
     genus,
@@ -117,6 +118,13 @@ def nebe_sloane_entry(
     declared, prose = nebe_sloane.record(stored, name, latex, alias, family)
     nebe_sloane.check(stored, records.derive({"tag": "0000", **declared}))
     print(_admit(root, declared, prose))
+
+
+@app.command(name="bulk-source-fetch")
+def bulk_source_fetch(root: Root = Path()) -> None:
+    """Store the published Nipp, Brandt–Intrau, and Watson bulk source tables."""
+    for path in bulk_sources.fetch(root):
+        print(f"sources/{path}")
 
 
 @app.command
