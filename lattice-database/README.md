@@ -4,7 +4,7 @@ A catalogue of lattices.
 A *lattice* here is a free module $L$ of finite rank over $\mathbb{Z}$ with a symmetric bilinear form $b \colon L \times L \to \mathbb{Q}$.
 The form can be definite, indefinite or degenerate, and its values need not be integers.
 
-Each lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it.
+Each identified lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it. Each published source item has a permanent tagged Markdown card in `lattices/source/`.
 The build validates every record, writes one page for each lattice, and writes one table, with one row per record, that the database page filters, sorts and exports.
 
 The site is served locally at <http://lattice-database.localhost/>, and published at <https://dzackgarza.github.io/research/lattice-database/> by `.github/workflows/docs.yml`, which deploys it beside the docs book.
