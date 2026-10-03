@@ -551,29 +551,41 @@ nothing in it survives — not into the next session, not to the next agent,
 and not to you an hour from now once the context is compacted.
 
 
-**The model to retain**
+> **The model to retain**
+>
+> `lean-categories` verifies and designs the mathematical API, including its abstract computational obligations. The kernel interprets and composes that API. Leaves declare implementations and supply computations under the published contracts. Acceptance tests their observed answers against independent mathematics.
+>
+> A verified specification is not a verified backend. Contract conformance is not functional correctness. Computational data may be used without becoming proof. A well-formed wrong answer is possible and must not redefine mathematical meaning.
+>
+> Interfaces follow formal constructions and selected structural maps, not backend classes or forwarding lists. Selected forms, parameters, inclusions, and actions are data; category membership does not reconstruct them.
+>
+> Each owner must complete its responsibility and may redesign inadequate implementation means. Existing code, schemas, gates, and assistant-authored plans are not mathematical facts or immutable requirements.
+>
+> When repairs multiply, inspect the prerequisite generating them. It may be an invented obligation. Removing that obligation is different from weakening the intended product.
+>
+> Judge progress by functioning required operations, their compositions, and the growth mechanism. Counts, local probes, accurate gap reports, and completed administrative machinery cannot substitute for that judgment.
+>
+> Preserve corrections and their causal examples in the existing owning documents. Do not assume conversational acknowledgment survives. Recording a settled correction is ordinary maintenance, not another approval transaction.
 
-`lean-categories` verifies and designs the mathematical API, including its abstract
-computational obligations. The kernel interprets and composes that API. Leaves
-declare implementations and supply computations under published contracts.
-Acceptance tests observed answers against independent mathematics.
-
-A verified specification is not a verified backend. Contract conformance is not
-functional correctness. Computational data may be used without becoming proof;
-a well-formed wrong answer must not redefine mathematical meaning.
-
-Interfaces follow formal constructions and selected structural maps. Selected
-forms, parameters, inclusions and actions are data; category membership does not
-reconstruct them. Each owner must complete its responsibility and may redesign
-inadequate means. Existing code, schemas, gates and assistant-authored plans are
-not mathematical facts or immutable requirements.
-
-When repairs multiply, inspect the prerequisite generating them: it may be an
-invented obligation. Judge progress by functioning required operations, their
-compositions and the extension mechanism, not counts, local probes, gap reports
-or administrative machinery. Preserve corrections with their causal examples in
-the existing owning documents; recording a settled correction is ordinary
-maintenance, not another approval transaction.
+> ### Touch grass: this agent is inside the failure history
+>
+> Assume that you can repeat the documented mistakes even after reading, explaining, or correcting them. This applies when planning, implementing, reviewing, assessing progress, and writing new policy.
+>
+> Before judging progress, ask what the intended user can now do through the intended interface, and whether it works by the intended general mechanism. Correct helpers, successful builds, precise gap reports, and completed review machinery do not compensate for failure to deliver that mechanism.
+>
+> At session resumption, before plans or progress verdicts, and at least once per hour of active work, step outside the current subtask: what is the actual goal, how long has this obstacle consumed across workers and branches, what capability has become usable, and why does the remaining work exist?
+>
+> Inspect the prerequisite generating repeated repairs. It may have been invented by this agent, its planner, or an earlier assistant. Existing code, plans, gates, and reviewer statements do not make that prerequisite valid.
+>
+> A verified mathematical API is not a verified backend. Contract-compliant wrong answers remain possible. Do not recreate a runtime certification burden to protect against a failure the computational model explicitly allows.
+>
+> When a loop is found, correct its cause and complete the substantive obligation. Do not respond with another checklist, approval transaction, smaller completion claim, or easier specimen.
+>
+> Missing repository or execution evidence means the corresponding judgment is unknown. No push does not mean no work.
+>
+> Use this shared process text and the causal history in these existing instructions when a plan or repair begins accumulating dependencies. Challenge your current reasoning—not merely previous agents. Role-specific authors do not inspect downstream diagnostics to obtain this guidance.
+>
+> Acknowledgment in chat is not durable correction. Record material changes in their existing owning documents through ordinary maintenance, without creating a separate documentation approval cycle.
 
 So **"understood", "you're right", "noted", "I'll keep that in mind"**, and
 restating a correction back to the person who just made it are not responses
