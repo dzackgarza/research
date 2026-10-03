@@ -47,6 +47,12 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
         "complex-hyperbolic-2-space",
         "three-sphere",
         "real-hyperbolic-3-space",
+        "complex-quadric-q-5",
+        "bdi-25-compact",
+        "bdi-25-noncompact",
+        "complex-cayley-plane",
+        "eiii-compact",
+        "eiii-noncompact",
     ):
         (tmp_path / "geometric-objects" / f"{slug}.md").symlink_to(ROOT / "geometric-objects" / f"{slug}.md")
     target = tmp_path / "site"
@@ -60,6 +66,12 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     assert 'href="../geometric-objects/complex-projective-plane-analytic.html"' in complex_ball
     assert 'href="../geometric-objects/three-sphere.html"' in real_hyperbolic
     assert "Hodge diamond" not in complex_ball
+    quadric = (target / "geometric-objects" / "complex-quadric-q-5.html").read_text()
+    bdi = (target / "geometric-objects" / "bdi-25-compact.html").read_text()
+    exceptional = (target / "geometric-objects" / "eiii-noncompact.html").read_text()
+    assert 'href="../geometric-objects/bdi-25-compact.html"' in quadric
+    assert 'href="../geometric-objects/complex-quadric-q-5.html"' in bdi
+    assert 'href="../geometric-objects/eiii-compact.html"' in exceptional
 
 
 def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> None:
