@@ -8,7 +8,7 @@ import frontmatter
 import pytest
 import yaml
 
-from latticedb import arithmetic, corpus, nebe_sloane, records, root_systems, site
+from latticedb import arithmetic, checks, corpus, nebe_sloane, records, root_systems, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Morphism, Yaml
 
@@ -133,7 +133,7 @@ def write_corpus(directory: Path) -> Path:
     return directory
 
 
-def test_new_writes_a_valid_record_under_the_next_tag(tmp_path: Path) -> None:
+def test_new_writes_a_sparse_record_and_enrich_fills_derived_fields(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     declared = ("--name", "A2", "--latex", "A_2", "--family", "irreducible-root-lattice", "--alias", "Hexagonal lattice", "--reference", "A citation.")
     run("new", "--gram", "[[2, 1], [1, 2]]", *declared, "--prose", "The root lattice of type A2.", "--root", str(root))
@@ -142,53 +142,61 @@ def test_new_writes_a_valid_record_under_the_next_tag(tmp_path: Path) -> None:
     lattice = entries[1].lattice
     assert (lattice.name, lattice.aliases, lattice.families) == ("A2", ("Hexagonal lattice",), ("irreducible-root-lattice",))
     assert [reference.citation for reference in lattice.references] == ["A citation."]
-    assert lattice.definite is not None
-    assert (lattice.definite.minimum, lattice.definite.kissing_number, lattice.definite.root_system) == (2, 6, ("A2",))
+    assert (lattice.rank, lattice.signature, lattice.determinant, lattice.definite) == (None, None, None, None)
     assert entries[1].prose == "The root lattice of type A2."
 
+    run("enrich", "--tag", "0002", "--root", str(root))
+    lattice = corpus.load(root).entries[1].lattice
+    assert lattice.definite is not None
+    assert (lattice.definite.minimum, lattice.definite.kissing_number, lattice.definite.root_system) == (2, 6, ("A2",))
 
-def test_new_refuses_a_lattice_whose_components_are_those_of_a_record_of_the_corpus(tmp_path: Path) -> None:
+
+def test_verify_reports_a_new_card_whose_components_duplicate_a_record(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
-    with pytest.raises(SystemExit):
-        run("new", "--gram", "[[1]]", "--name", "I_{1,0} again", "--latex", r"\mathrm{I}_{1,0}", "--root", str(root))
-    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
+    run("new", "--gram", "[[1]]", "--name", "I_{1,0} again", "--latex", r"\mathrm{I}_{1,0}", "--root", str(root))
+    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md", "0002.md"]
+    assert any("same components" in problem for problem in checks.report(root))
 
 
-def test_new_refuses_a_twist_of_a_lattice(tmp_path: Path) -> None:
+def test_verify_reports_a_new_card_that_is_a_twist(tmp_path: Path) -> None:
     # A1 = <1>(2), and the corpus records <1>.
     root = write_corpus(tmp_path)
-    with pytest.raises(SystemExit):
-        run("new", "--gram", "[[2]]", "--name", "A1", "--latex", "A_1", "--root", str(root))
-    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
+    run("new", "--gram", "[[2]]", "--name", "A1", "--latex", "A_1", "--root", str(root))
+    run("enrich", "--tag", "0002", "--root", str(root))
+    assert any("M(2)" in problem for problem in checks.report(root))
 
 
-def test_new_refuses_a_definite_lattice_that_is_isometric_to_a_record_of_the_corpus(tmp_path: Path) -> None:
+def test_verify_reports_a_definite_card_isometric_to_an_existing_record(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--root", str(root))
     # A2 in the basis e_1, -e_2 has b(e_1, e_2) = -1.
-    with pytest.raises(SystemExit):
-        run("new", "--gram", "[[2, -1], [-1, 2]]", "--name", "A2 in another basis", "--latex", "A_2", "--root", str(root))
-    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md", "0002.md"]
+    run("new", "--gram", "[[2, -1], [-1, 2]]", "--name", "A2 in another basis", "--latex", "A_2", "--root", str(root))
+    run("enrich", "--tag", "0002", "--tag", "0003", "--root", str(root))
+    assert any("isometric to 0002" in problem for problem in checks.report(root))
 
 
-def test_new_refuses_a_family_that_families_yaml_does_not_list(tmp_path: Path) -> None:
+def test_verify_reports_a_family_that_families_yaml_does_not_list(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
-    with pytest.raises(SystemExit):
-        run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--family", "hexagonal", "--root", str(root))
-    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md"]
+    run("new", "--gram", "[[2, 1], [1, 2]]", "--name", "A2", "--latex", "A_2", "--family", "hexagonal", "--root", str(root))
+    assert any("family 'hexagonal'" in problem for problem in checks.report(root))
 
 
 def test_nebe_sloane_writes_the_record_of_a_stored_entry_with_its_reference(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
-    (root / "sources" / "nebe_sloane").mkdir(parents=True)
-    shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "K12.json", root / "sources" / "nebe_sloane" / "K12.json")
-    run("nebe-sloane", "K12", "--name", "K12", "--latex", "K_{12}", "--alias", "Coxeter-Todd lattice", "--root", str(root))
-    lattice = corpus.load(root).entries[1].lattice
+    source = root / "sources" / "nebe_sloane"
+    source.mkdir(parents=True)
+    shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "K12.json", source / "K12.json")
+    entry = nebe_sloane.stored(source, "K12")
+    declared, prose = nebe_sloane.record(entry, "K12", "K_{12}", ("Coxeter-Todd lattice",), ())
+    derived = records.derive(declared | {"tag": "0002"})
+    nebe_sloane.check(entry, derived)
+    lattice = Lattice.model_validate(derived)
     assert (lattice.name, lattice.aliases, lattice.families) == ("K12", ("K12", "Coxeter-Todd lattice"), ("nebe-sloane-catalogue",))
     assert (lattice.rank, lattice.determinant) == (12, 729)
     assert lattice.definite is not None
     assert (lattice.definite.minimum, lattice.definite.kissing_number) == (4, 756)
     assert [reference.url for reference in lattice.references] == ["https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/K12.html"]
+    assert "section `GRAM`" in prose
 
 
 def test_nebe_sloane_intakes_a_named_entry_from_the_union_archive(tmp_path: Path) -> None:
@@ -196,20 +204,22 @@ def test_nebe_sloane_intakes_a_named_entry_from_the_union_archive(tmp_path: Path
     source = root / "sources" / "nebe_sloane"
     source.mkdir(parents=True)
     shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "union.gz", source / "union.gz")
-    run("nebe-sloane", "BGF.2.2112", "--name", "BGF.2.2112", "--latex", r"\mathrm{BGF.2.2112}", "--root", str(root))
+    entry = nebe_sloane.archive_entry(source / "union.gz", "BGF.2.2112")
+    (source / "BGF.2.2112.json").write_text(entry.model_dump_json() + "\n")
+    declared, prose = nebe_sloane.record(entry, "BGF.2.2112", r"\mathrm{BGF.2.2112}", (), ())
+    derived = records.derive(declared | {"tag": "0002"})
+    nebe_sloane.check(entry, derived)
+    (root / "lattices" / "0002.md").write_text(records.record_text(derived, prose))
     lattice = corpus.load(root).entries[1].lattice
     assert (lattice.gram_tensor, lattice.determinant) == (((2, 1), (1, 12)), 23)
     assert lattice.definite is not None
     assert (lattice.definite.minimum, lattice.definite.kissing_number) == (2, 2)
     assert lattice.references[0].url == "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz"
     assert nebe_sloane.stored_problems(root, corpus.load(root)) == []
-    run("check", "--root", str(root))
+    run("verify", "--root", str(root))
 
 
 def test_nebe_sloane_accepts_an_indefinite_entry_without_definite_invariants(tmp_path: Path) -> None:
-    root = write_corpus(tmp_path)
-    source = root / "sources" / "nebe_sloane"
-    source.mkdir(parents=True)
     entry = nebe_sloane.Entry(
         name="IndefiniteSpecimen",
         title="IndefiniteSpecimen",
@@ -221,9 +231,10 @@ def test_nebe_sloane_accepts_an_indefinite_entry_without_definite_invariants(tmp
         references=(),
         gram_tensor=((2, 1), (1, -2)),
     )
-    (source / "IndefiniteSpecimen.json").write_text(entry.model_dump_json() + "\n")
-    run("nebe-sloane", "IndefiniteSpecimen", "--name", "IndefiniteSpecimen", "--latex", "S", "--root", str(root))
-    lattice = corpus.load(root).entries[1].lattice
+    declared, _ = nebe_sloane.record(entry, "IndefiniteSpecimen", "S", (), ())
+    derived = records.derive(declared | {"tag": "0002"})
+    nebe_sloane.check(entry, derived)
+    lattice = Lattice.model_validate(derived)
     assert (lattice.signature, lattice.determinant, lattice.definite) == ((1, 1), -5, None)
 
 
@@ -234,7 +245,7 @@ def test_nebe_sloane_reads_the_full_matrix_of_shimada_86() -> None:
     assert arithmetic.determinant(entry.gram_tensor) == entry.determinant
 
 
-def test_certify_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:
+def test_enrich_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     path = root / "lattices" / "0001.md"
     document = frontmatter.loads(path.read_text())
@@ -242,26 +253,32 @@ def test_certify_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> No
     stale["signature"] = [0, 1]
     stale_text = "---\n" + yaml.safe_dump(stale, sort_keys=False) + "---\n\n" + document.content + "\n"
     path.write_text(stale_text)
-    run("certify", "--tag", "0001", "--root", str(root))
+    run("enrich", "--tag", "0001", "--root", str(root))
     assert Lattice.model_validate(frontmatter.loads(path.read_text()).metadata).signature == (1, 0)
     # The certificate of the derived values names the Gram tensor, which has not changed: they are not computed again.
     path.write_text(stale_text)
-    run("certify", "--tag", "0001", "--root", str(root))
+    run("enrich", "--tag", "0001", "--root", str(root))
     assert path.read_text() == stale_text
 
 
-def test_morphism_appends_each_morphism_that_preserves_the_forms_up_to_its_scale_and_refuses_one_that_does_not(tmp_path: Path) -> None:
+def test_morphism_authors_maps_and_verify_checks_the_form_equation(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
     run("morphism", "0001", "0001", "--name", "identity", "--matrix", "[[1]]", "--prose", "Automorphisms of Z.", "--root", str(root))
     run("morphism", "0001", "0001", "--name", "negation", "--matrix", "[[-1]]", "--root", str(root))
-    with pytest.raises(SystemExit):
-        run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--root", str(root))
+    run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--root", str(root))
+    assert any(
+        "doubling: the matrix does not preserve the forms" in problem
+        for problem in checks.report(root)
+    )
+
+    scaled = tmp_path / "scaled"
+    scaled.mkdir()
+    scaled_root = write_corpus(scaled)
     # x -> 2x takes b(x, x) = 1 to b(2x, 2x) = 4: a morphism Z(4) -> Z.
-    run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--scale", "4", "--root", str(root))
-    (entry,) = corpus.load(root).morphisms
+    run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--scale", "4", "--root", str(scaled_root))
+    (entry,) = corpus.load(scaled_root).morphisms
     found = [(morphism.name, morphism.matrix, morphism.scale) for morphism in entry.morphisms.morphisms]
-    assert found == [("identity", ((1,),), 1), ("negation", ((-1,),), 1), ("doubling", ((2,),), 4)]
-    assert entry.prose.strip() == "Automorphisms of Z."
+    assert found == [("doubling", ((2,),), 4)]
 
 
 def gram(rows: list[list[int]]) -> tuple[tuple[Fraction, ...], ...]:

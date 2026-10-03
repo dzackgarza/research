@@ -29,7 +29,7 @@ from pydantic import BaseModel, Field
 
 from latticedb import root_systems
 from latticedb.arithmetic import Vector
-from latticedb.corpus import Entry, hyperbolic_index_bounds, load
+from latticedb.corpus import Entry, load
 from latticedb.geometric import ProjectiveComplexVariety, RiemannianSymmetricSpace
 from latticedb.model import (
     DefiniteData,
@@ -47,6 +47,7 @@ from latticedb.model import (
     RootSpan,
     RootSystemComponent,
 )
+from latticedb.relations import hyperbolic_index_bounds
 
 type Cell = str | int | float | bool | None | list[str]
 type Row = dict[str, Cell]
@@ -59,7 +60,12 @@ DEFINITENESS_LABEL = {
     "negative_semidefinite": "negative semidefinite",
     "zero": "zero",
 }
-PANES = {"rank": "rank", "definiteness": "definiteness", "property": "properties", "family": "families"}
+PANES = {
+    "rank": "rank",
+    "definiteness": "definiteness",
+    "property": "properties",
+    "family": "families",
+}
 """Query parameter of the database page -> the row key whose filter pane it selects."""
 
 
@@ -67,7 +73,9 @@ class Collection(Record):
     """A page that lists the lattices whose database row satisfies `where`."""
 
     title: str = Field(description="Title of the page. Dollar signs mark TeX.")
-    summary: str = Field(description="One sentence that says which lattices the page lists. Dollar signs mark TeX.")
+    summary: str = Field(
+        description="One sentence that says which lattices the page lists. Dollar signs mark TeX."
+    )
     where: dict[str, int | str | bool | list[str]] = Field(
         description=(
             "Key of a row of `lattices.json` -> required value. A lattice is listed when every condition holds. "
@@ -80,7 +88,9 @@ class Article(Record):
     """A page of `theory/`: the one place where the site explains a part of the theory, which the other pages link to."""
 
     title: str = Field(description="Title of the page. Dollar signs mark TeX.")
-    summary: str = Field(description="One sentence that says what the page explains. Dollar signs mark TeX.")
+    summary: str = Field(
+        description="One sentence that says what the page explains. Dollar signs mark TeX."
+    )
     order: int = Field(description="Position of the page in the list of theory pages.")
 
 
@@ -108,12 +118,26 @@ def rational_tex(value: Fraction) -> str:
 def group_text(factors: tuple[int, ...]) -> str:
     """`Z/2^3 + Z/4` for the invariant factors (2, 2, 2, 4); `0` for the trivial group."""
     runs = [(factor, factors.count(factor)) for factor in dict.fromkeys(factors)]
-    return " + ".join(f"(Z/{factor})^{count}" if count > 1 else f"Z/{factor}" for factor, count in runs) or "0"
+    return (
+        " + ".join(
+            f"(Z/{factor})^{count}" if count > 1 else f"Z/{factor}"
+            for factor, count in runs
+        )
+        or "0"
+    )
 
 
 def group_tex(factors: tuple[int, ...]) -> str:
     runs = [(factor, factors.count(factor)) for factor in dict.fromkeys(factors)]
-    return " \\oplus ".join(f"(\\mathbb{{Z}}/{factor})^{{{count}}}" if count > 1 else f"\\mathbb{{Z}}/{factor}" for factor, count in runs) or "0"
+    return (
+        " \\oplus ".join(
+            f"(\\mathbb{{Z}}/{factor})^{{{count}}}"
+            if count > 1
+            else f"\\mathbb{{Z}}/{factor}"
+            for factor, count in runs
+        )
+        or "0"
+    )
 
 
 def elementary_prime(factors: tuple[int, ...]) -> int | None:
@@ -124,14 +148,21 @@ def elementary_prime(factors: tuple[int, ...]) -> int | None:
 
 
 def factorisation_tex(value: int) -> str:
-    return " \\cdot ".join(f"{int(prime)}^{{{int(exponent)}}}" if exponent > 1 else str(int(prime)) for prime, exponent in fmpz(value).factor())
+    return " \\cdot ".join(
+        f"{int(prime)}^{{{int(exponent)}}}" if exponent > 1 else str(int(prime))
+        for prime, exponent in fmpz(value).factor()
+    )
 
 
 def orbit_group_tex(group: OrbitGroup) -> str:
     """TeX for a key of `integral.primitive_orbits`, such as `\\widetilde{SO}^+(L)` for `SOtilde+`."""
     name, plus = group.removesuffix("+"), "^+" if group.endswith("+") else ""
     letters = name.removesuffix("tilde")
-    return f"\\widetilde{{{letters}}}{plus}(L)" if name.endswith("tilde") else f"\\mathrm{{{letters}}}{plus}(L)"
+    return (
+        f"\\widetilde{{{letters}}}{plus}(L)"
+        if name.endswith("tilde")
+        else f"\\mathrm{{{letters}}}{plus}(L)"
+    )
 
 
 def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
@@ -141,9 +172,17 @@ def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
         count = series.coefficient(n)
         if count == 0:
             continue
-        variable = "" if n == 0 else ("z" if n > 0 else "w") + (f"^{{{abs(n)}}}" if abs(n) > 1 else "")
+        variable = (
+            ""
+            if n == 0
+            else ("z" if n > 0 else "w") + (f"^{{{abs(n)}}}" if abs(n) > 1 else "")
+        )
         coefficient = "?" if count is None else str(count)
-        terms.append(coefficient if not variable else (variable if coefficient == "1" else f"{coefficient}\\,{variable}"))
+        terms.append(
+            coefficient
+            if not variable
+            else (variable if coefficient == "1" else f"{coefficient}\\,{variable}")
+        )
     order = f"O(z^{{{len(series.z) + 1}}}, w^{{{len(series.w) + 1}}})"
     return " + ".join([*terms, order])
 
@@ -168,7 +207,13 @@ def zeta_tex(lattice: Lattice, cone: bool) -> str:
         if cone:
             return _l_tex(2 * m, "1")
         coefficient = (-1) ** m * int(lattice.determinant)
-        discriminant = "n" if coefficient == 1 else "-n" if coefficient == -1 else f"{coefficient}n"
+        discriminant = (
+            "n"
+            if coefficient == 1
+            else "-n"
+            if coefficient == -1
+            else f"{coefficient}n"
+        )
         return f"{_l_tex(2 * m, '1')}\\, {_l_tex(m, discriminant)}"
     character = str(lattice.integral.quadratic_character)
     if cone:
@@ -194,8 +239,14 @@ def genus_tex(symbol: str) -> str:
 
 def root_system_tex(components: tuple[str, ...]) -> str:
     """`D_{4} \\oplus A_{1}^{3}` for the irreducible components (D4, A1, A1, A1)."""
-    runs = [(component, components.count(component)) for component in dict.fromkeys(components)]
-    return " \\oplus ".join(f"{component[0]}_{{{component[1:]}}}" + (f"^{{{count}}}" if count > 1 else "") for component, count in runs)
+    runs = [
+        (component, components.count(component))
+        for component in dict.fromkeys(components)
+    ]
+    return " \\oplus ".join(
+        f"{component[0]}_{{{component[1:]}}}" + (f"^{{{count}}}" if count > 1 else "")
+        for component, count in runs
+    )
 
 
 def set_tex(values: tuple[Fraction, ...]) -> str:
@@ -215,7 +266,11 @@ def combination_tex(coordinates: Vector, symbol: str = "e") -> str:
     if not terms:
         return "0"
     first_sign, first = terms[0]
-    return ("-" if first_sign == "-" else "") + first + "".join(f" {sign} {term}" for sign, term in terms[1:])
+    return (
+        ("-" if first_sign == "-" else "")
+        + first
+        + "".join(f" {sign} {term}" for sign, term in terms[1:])
+    )
 
 
 def _runs(names: list[str]) -> list[tuple[str, int]]:
@@ -249,12 +304,20 @@ def component_lattice_text(component: RootSystemComponent) -> str:
 def root_span_tex(components: tuple[RootSystemComponent, ...]) -> str:
     """`D_{4}(2)^{2} \\oplus \\langle 4 \\rangle`: the orthogonal sum of the root lattices of the components; `0` for no component."""
     runs = _runs([component_lattice_tex(component) for component in components])
-    return " \\oplus ".join(f"{name}^{{{count}}}" if count > 1 else name for name, count in runs) or "0"
+    return (
+        " \\oplus ".join(
+            f"{name}^{{{count}}}" if count > 1 else name for name, count in runs
+        )
+        or "0"
+    )
 
 
 def root_span_text(components: tuple[RootSystemComponent, ...]) -> str:
     runs = _runs([component_lattice_text(component) for component in components])
-    return " + ".join(f"{name}^{count}" if count > 1 else name for name, count in runs) or "0"
+    return (
+        " + ".join(f"{name}^{count}" if count > 1 else name for name, count in runs)
+        or "0"
+    )
 
 
 def component_norms(component: RootSystemComponent) -> tuple[Fraction, ...]:
@@ -271,8 +334,14 @@ def orthogonal_blocks(lattice: Lattice) -> list[list[int]]:
     """
     blocks: list[list[int]] = []
     for index, components_row in enumerate(lattice.gram_tensor, start=1):
-        linked = [block for block in blocks if any(components_row[other - 1] != 0 for other in block)]
-        blocks = [block for block in blocks if block not in linked] + [sorted([*(other for block in linked for other in block), index])]
+        linked = [
+            block
+            for block in blocks
+            if any(components_row[other - 1] != 0 for other in block)
+        ]
+        blocks = [block for block in blocks if block not in linked] + [
+            sorted([*(other for block in linked for other in block), index])
+        ]
     return sorted(blocks)
 
 
@@ -287,13 +356,19 @@ def matrix_tex(morphism: Morphism) -> str:
     """The matrix as a TeX `array`, with a vertical line at each column subdivision and `\\hline` at each row subdivision."""
     columns = len(morphism.matrix[0])
     bounds = (0, *morphism.column_subdivisions, columns)
-    alignment = "|".join("r" * (high - low) for low, high in zip(bounds, bounds[1:], strict=False))
+    alignment = "|".join(
+        "r" * (high - low) for low, high in zip(bounds, bounds[1:], strict=False)
+    )
     lines = []
     for index, matrix_row in enumerate(morphism.matrix):
         if index in morphism.row_subdivisions:
             lines.append("\\hline")
         lines.append(" & ".join(str(value) for value in matrix_row) + " \\\\")
-    return f"\\left(\\begin{{array}}{{{alignment}}}\n" + "\n".join(lines) + "\n\\end{array}\\right)"
+    return (
+        f"\\left(\\begin{{array}}{{{alignment}}}\n"
+        + "\n".join(lines)
+        + "\n\\end{array}\\right)"
+    )
 
 
 def matrix_text(morphism: Morphism) -> str:
@@ -314,21 +389,35 @@ def summand_name(record: Lattice, scale: int) -> tuple[str, str]:
     return f"{record.name}({scale})", f"{record.latex}({scale})"
 
 
-def span_summands(lattice: Lattice, lattices: dict[str, Lattice]) -> list[tuple[Lattice, str]]:
+def span_summands(
+    lattice: Lattice, lattices: dict[str, Lattice]
+) -> list[tuple[Lattice, str]]:
     """`(M, name of M(k) as TeX)` for each summand $M(k)$ of `root_span.summands`."""
     span = lattice.root_span
     if span is None or span.summands is None:
         return []
-    return [(lattices[summand.tag], summand_name(lattices[summand.tag], summand.scale)[1]) for summand in span.summands]
+    return [
+        (lattices[summand.tag], summand_name(lattices[summand.tag], summand.scale)[1])
+        for summand in span.summands
+    ]
 
 
-def summand_images(lattice: Lattice, lattices: dict[str, Lattice]) -> list[tuple[Lattice, str, int, Vector]]:
+def summand_images(
+    lattice: Lattice, lattices: dict[str, Lattice]
+) -> list[tuple[Lattice, str, int, Vector]]:
     """`(M, name of M(k) as TeX, j, x)` for each row `x` of `root_span.embedding`: the embedding sends the basis vector $e_j$ of the summand $M(k)$ to `x`."""
     span = lattice.root_span
     if span is None or span.summands is None or span.embedding is None:
         return []
-    sources = [(record, name, j) for record, name in span_summands(lattice, lattices) for j in range(1, record.rank + 1)]
-    return [(record, name, j, image) for (record, name, j), image in zip(sources, span.embedding, strict=True)]
+    sources = [
+        (record, name, j)
+        for record, name in span_summands(lattice, lattices)
+        for j in range(1, record.rank + 1)
+    ]
+    return [
+        (record, name, j, image)
+        for (record, name, j), image in zip(sources, span.embedding, strict=True)
+    ]
 
 
 def inline_markup(text: str) -> Markup:
@@ -338,7 +427,14 @@ def inline_markup(text: str) -> Markup:
 
 
 def theta_tex(theta: tuple[int, ...]) -> str:
-    terms = ["1", *(f"{count}q^{{{power}}}" if power > 1 else f"{count}q" for power, count in enumerate(theta) if power > 0 and count > 0)]
+    terms = [
+        "1",
+        *(
+            f"{count}q^{{{power}}}" if power > 1 else f"{count}q"
+            for power, count in enumerate(theta)
+            if power > 0 and count > 0
+        ),
+    ]
     return " + ".join([*terms, f"O(q^{{{len(theta)}}})"])
 
 
@@ -357,10 +453,22 @@ PROPERTY_MEANINGS = {
     "not a root lattice": ("roots", "roots", "$L \\neq \\mathbb{Z}\\Phi(L)$."),
     "degenerate": ("lattices", "degenerate", "$L$ is degenerate."),
     "hyperbolic": ("indefinite-lattices", "hyperbolic", "$L$ is hyperbolic."),
-    "isotropic": ("indefinite-lattices", "isotropic", "$L$ is indefinite and isotropic."),
-    "anisotropic": ("indefinite-lattices", "isotropic", "$L$ is indefinite and not isotropic."),
+    "isotropic": (
+        "indefinite-lattices",
+        "isotropic",
+        "$L$ is indefinite and isotropic.",
+    ),
+    "anisotropic": (
+        "indefinite-lattices",
+        "isotropic",
+        "$L$ is indefinite and not isotropic.",
+    ),
     "reflective": ("indefinite-lattices", "reflective", "$L$ is reflective."),
-    "not reflective": ("indefinite-lattices", "reflective", "$L$ is hyperbolic and not reflective."),
+    "not reflective": (
+        "indefinite-lattices",
+        "reflective",
+        "$L$ is hyperbolic and not reflective.",
+    ),
 }
 """Property label of the database -> (theory page, anchor of the definition, the condition). `p-elementary` stands for the labels that state a prime."""
 
@@ -387,11 +495,15 @@ def properties(lattice: Lattice) -> list[str]:
     if lattice.indefinite is not None:
         found.append("isotropic" if lattice.indefinite.isotropic else "anisotropic")
     if lattice.hyperbolic is not None:
-        found.append("reflective" if lattice.hyperbolic.reflective else "not reflective")
+        found.append(
+            "reflective" if lattice.hyperbolic.reflective else "not reflective"
+        )
     return found
 
 
-def root_span_name(lattice: Lattice, lattices: dict[str, Lattice]) -> tuple[str, str] | None:
+def root_span_name(
+    lattice: Lattice, lattices: dict[str, Lattice]
+) -> tuple[str, str] | None:
     """A lattice isometric to $\\mathbb{Z}\\Phi(L)$, as text and as TeX; `None` when the record does not state one.
 
     Definite lattice: the orthogonal sum of the root lattices of the components
@@ -400,13 +512,20 @@ def root_span_name(lattice: Lattice, lattices: dict[str, Lattice]) -> tuple[str,
     rows of `root_span.roots` generate `L`.
     """
     if lattice.definite is not None and lattice.definite.roots is not None:
-        return root_span_text(lattice.definite.roots), root_span_tex(lattice.definite.roots)
+        return root_span_text(lattice.definite.roots), root_span_tex(
+            lattice.definite.roots
+        )
     span = lattice.root_span
     if span is None:
         return None
     if span.summands is not None:
-        names = [summand_name(lattices[summand.tag], summand.scale) for summand in span.summands]
-        return " + ".join(text for text, _ in names), " \\oplus ".join(tex for _, tex in names)
+        names = [
+            summand_name(lattices[summand.tag], summand.scale)
+            for summand in span.summands
+        ]
+        return " + ".join(text for text, _ in names), " \\oplus ".join(
+            tex for _, tex in names
+        )
     if not span.roots:
         return "0", "0"
     return ("L", "L") if lattice.is_root_lattice else None
@@ -428,7 +547,11 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
     integral, definite = lattice.integral, lattice.definite
     group = integral.discriminant_group if integral else None
     order = definite.automorphism_group_order if definite else None
-    phi = tuple(component.type for component in definite.roots) if definite and definite.roots is not None else None
+    phi = (
+        tuple(component.type for component in definite.roots)
+        if definite and definite.roots is not None
+        else None
+    )
     span_name = root_span_name(lattice, lattices)
     return {
         "tag": lattice.tag,
@@ -439,10 +562,18 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "rank": lattice.rank,
         "n_plus": lattice.signature[0] if lattice.signature else None,
         "n_minus": lattice.signature[1] if lattice.signature else None,
-        "signature": f"({lattice.signature[0]}, {lattice.signature[1]})" if lattice.signature else None,
-        "determinant": str(lattice.determinant) if lattice.determinant is not None else None,
-        "determinant_value": float(lattice.determinant) if lattice.determinant is not None else None,
-        "definiteness": DEFINITENESS_LABEL[lattice.definiteness] if lattice.definiteness else None,
+        "signature": f"({lattice.signature[0]}, {lattice.signature[1]})"
+        if lattice.signature
+        else None,
+        "determinant": str(lattice.determinant)
+        if lattice.determinant is not None
+        else None,
+        "determinant_value": float(lattice.determinant)
+        if lattice.determinant is not None
+        else None,
+        "definiteness": DEFINITENESS_LABEL[lattice.definiteness]
+        if lattice.definiteness
+        else None,
         "properties": properties(lattice),
         "discriminant_group": group_text(group) if group is not None else None,
         "discriminant_group_tex": group_tex(group) if group is not None else None,
@@ -456,14 +587,22 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "kissing_number": definite.kissing_number if definite else None,
         "automorphism_group_order": str(order) if order is not None else None,
         "automorphism_group_order_value": float(order) if order is not None else None,
-        "root_system": " ".join(definite.root_system) if definite and definite.root_system is not None else None,
-        "root_system_tex": root_system_tex(definite.root_system) if definite and definite.root_system else None,
+        "root_system": " ".join(definite.root_system)
+        if definite and definite.root_system is not None
+        else None,
+        "root_system_tex": root_system_tex(definite.root_system)
+        if definite and definite.root_system
+        else None,
         "phi_type": " ".join(phi) if phi is not None else None,
-        "phi_type_tex": (root_system_tex(phi) or "\\varnothing") if phi is not None else None,
+        "phi_type_tex": (root_system_tex(phi) or "\\varnothing")
+        if phi is not None
+        else None,
         "root_span": span_name[0] if span_name else None,
         "root_span_tex": span_name[1] if span_name else None,
         "root_span_rank": lattice.root_span_rank,
-        "root_span_index": lattice.root_span_index if lattice.root_span_rank == lattice.rank else None,
+        "root_span_index": lattice.root_span_index
+        if lattice.root_span_rank == lattice.rank
+        else None,
         "root_span_primitive": root_span_primitive(lattice),
         "families": list(lattice.families),
     }
@@ -479,7 +618,9 @@ def _satisfies(record: Row, key: str, required: int | str | bool | list[str]) ->
             return value == required
 
 
-def collections(directory: Path, entries: tuple[Entry, ...]) -> tuple[CollectionPage, ...]:
+def collections(
+    directory: Path, entries: tuple[Entry, ...]
+) -> tuple[CollectionPage, ...]:
     lattices = {entry.lattice.tag: entry.lattice for entry in entries}
     rows = {tag: row(lattice, lattices) for tag, lattice in lattices.items()}
     keys = set(next(iter(rows.values())))
@@ -487,8 +628,17 @@ def collections(directory: Path, entries: tuple[Entry, ...]) -> tuple[Collection
     for path in sorted(directory.glob("*.md")):
         document = frontmatter.load(str(path))
         collection = Collection.model_validate(document.metadata)
-        assert set(collection.where) <= keys, f"{path}: unknown row keys {sorted(set(collection.where) - keys)}"
-        members = tuple(entry for entry in entries if all(_satisfies(rows[entry.lattice.tag], key, value) for key, value in collection.where.items()))
+        assert set(collection.where) <= keys, (
+            f"{path}: unknown row keys {sorted(set(collection.where) - keys)}"
+        )
+        members = tuple(
+            entry
+            for entry in entries
+            if all(
+                _satisfies(rows[entry.lattice.tag], key, value)
+                for key, value in collection.where.items()
+            )
+        )
         assert members, f"{path}: no lattice satisfies the conditions"
         pages.append(CollectionPage(path.stem, collection, document.content, members))
     return tuple(pages)
@@ -498,9 +648,15 @@ def articles(directory: Path) -> tuple[ArticlePage, ...]:
     pages = []
     for path in directory.glob("*.md"):
         document = frontmatter.load(str(path))
-        pages.append(ArticlePage(path.stem, Article.model_validate(document.metadata), document.content))
+        pages.append(
+            ArticlePage(
+                path.stem, Article.model_validate(document.metadata), document.content
+            )
+        )
     orders = [page.article.order for page in pages]
-    assert len(set(orders)) == len(orders), f"{directory}: two theory pages have one order"
+    assert len(set(orders)) == len(orders), (
+        f"{directory}: two theory pages have one order"
+    )
     return tuple(sorted(pages, key=lambda page: page.article.order))
 
 
@@ -533,7 +689,9 @@ def broken_links(target: Path) -> list[str]:
         for link in parser.links:
             parts = urlsplit(link)
             destination = (path.parent / parts.path).resolve() if parts.path else path
-            if not destination.exists() or (parts.fragment and parts.fragment not in pages[destination].ids):
+            if not destination.exists() or (
+                parts.fragment and parts.fragment not in pages[destination].ids
+            ):
                 broken.append(f"{path.relative_to(target.resolve())}: {link}")
     return broken
 
@@ -552,17 +710,27 @@ def database_query(collection: Collection) -> str | None:
     return urlencode(parameters) if len(parameters) == len(collection.where) else None
 
 
-def markdown_to_html(texts: list[str], bibliography: Path | None = None) -> list[Markup]:
+def markdown_to_html(
+    texts: list[str], bibliography: Path | None = None
+) -> list[Markup]:
     """HTML for each Markdown text. TeX stays as `\\(...\\)` for MathJax."""
     local_markdown = MarkdownIt("commonmark")
 
     def convert(text: str) -> Markup:
-        if bibliography is None and text.startswith(("Source entry `", "Catalogue of Lattices archive entry `")):
+        if bibliography is None and text.startswith(
+            ("Source entry `", "Catalogue of Lattices archive entry `")
+        ):
             return Markup(local_markdown.render(text))
         command = ["pandoc", "--from=markdown", "--to=html", "--mathjax"]
         if bibliography is not None:
-            command += ["--citeproc", "--fail-if-warnings", f"--bibliography={bibliography}"]
-        done = subprocess.run(command, input=text, capture_output=True, text=True, check=True)
+            command += [
+                "--citeproc",
+                "--fail-if-warnings",
+                f"--bibliography={bibliography}",
+            ]
+        done = subprocess.run(
+            command, input=text, capture_output=True, text=True, check=True
+        )
         return Markup(done.stdout)
 
     return [convert(text) for text in texts]
@@ -572,9 +740,17 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     """The models of the schema: heading, block key, model."""
     yield "Every lattice", None, Lattice
     yield "Integral lattice", "integral", IntegralData
-    yield "Series of orbits of primitive vectors", "integral.primitive_orbits.<group>", PrimitiveOrbitSeries
+    yield (
+        "Series of orbits of primitive vectors",
+        "integral.primitive_orbits.<group>",
+        PrimitiveOrbitSeries,
+    )
     yield "Definite lattice", "definite", DefiniteData
-    yield "Component of the root system of a definite lattice", "definite.roots[]", RootSystemComponent
+    yield (
+        "Component of the root system of a definite lattice",
+        "definite.roots[]",
+        RootSystemComponent,
+    )
     yield "Indefinite lattice", "indefinite", IndefiniteData
     yield "Hyperbolic lattice", "hyperbolic", HyperbolicData
     yield "Roots of a lattice that is not definite", "root_span", RootSpan
@@ -586,13 +762,19 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
 
 def build(root: Path, target: Path) -> int:
     """Write the site for the corpus under `root` to `target`. Returns the number of lattices."""
-    corpus = load(root, verify=False)
+    corpus = load(root)
     entries = corpus.entries
     pages = collections(root / "pages", entries)
     theory = articles(root / "theory")
     by_tag = {entry.lattice.tag: entry for entry in entries}
     lattices = {tag: entry.lattice for tag, entry in by_tag.items()}
-    environment = Environment(loader=PackageLoader("latticedb"), autoescape=select_autoescape(["html", "j2"]), undefined=StrictUndefined, trim_blocks=True, lstrip_blocks=True)
+    environment = Environment(
+        loader=PackageLoader("latticedb"),
+        autoescape=select_autoescape(["html", "j2"]),
+        undefined=StrictUndefined,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
     environment.filters["inline_markup"] = inline_markup
     environment.globals.update(
         rational_tex=rational_tex,
@@ -619,7 +801,9 @@ def build(root: Path, target: Path) -> int:
     )
 
     if target.exists():
-        assert (target / "lattices.json").exists(), f"{target} exists and is not a site that this command built"
+        assert (target / "lattices.json").exists(), (
+            f"{target} exists and is not a site that this command built"
+        )
         shutil.rmtree(target)
     (target / "tag").mkdir(parents=True)
     (target / "collection").mkdir()
@@ -627,44 +811,84 @@ def build(root: Path, target: Path) -> int:
     (target / "theory").mkdir()
     shutil.copytree(str(files("latticedb") / "assets"), target / "assets")
 
-    ranks = sorted({entry.lattice.rank for entry in entries if entry.lattice.rank is not None})
+    ranks = sorted(
+        {entry.lattice.rank for entry in entries if entry.lattice.rank is not None}
+    )
     if any(entry.lattice.rank is None for entry in entries):
         ranks.append(None)
-    by_rank = {rank: [entry for entry in entries if entry.lattice.rank == rank] for rank in ranks}
+    by_rank = {
+        rank: [entry for entry in entries if entry.lattice.rank == rank]
+        for rank in ranks
+    }
     morphism_files = [entry.morphisms for entry in corpus.morphisms]
     geometric = corpus.geometric
     geometric_families = corpus.geometric_families
     graphs = corpus.graphs
     prose = markdown_to_html(
-        [entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms] + [page.prose for page in theory]
+        [entry.prose for entry in entries]
+        + [page.prose for page in pages]
+        + [entry.prose for entry in corpus.morphisms]
+        + [page.prose for page in theory]
     )
     lattice_page = environment.get_template("lattice.html.j2")
     bounds = hyperbolic_index_bounds(corpus.morphisms, entries)
     for index, entry in enumerate(entries):
         lattice = entry.lattice
-        components = json.dumps([[int(value) if value.denominator == 1 else str(value) for value in components_row] for components_row in lattice.gram_tensor or ()])
+        components = json.dumps(
+            [
+                [
+                    int(value) if value.denominator == 1 else str(value)
+                    for value in components_row
+                ]
+                for components_row in lattice.gram_tensor or ()
+            ]
+        )
         (target / "tag" / f"{lattice.tag}.html").write_text(
             lattice_page.render(
                 root="../",
                 lattice=lattice,
                 prose=prose[index],
                 components_text=components.replace('"', ""),
-                related=[(by_tag[related.tag].lattice, related.relation) for related in lattice.related],
+                related=[
+                    (by_tag[related.tag].lattice, related.relation)
+                    for related in lattice.related
+                ],
                 span_name=root_span_name(lattice, lattices),
                 span_summands=span_summands(lattice, lattices),
                 span_images=summand_images(lattice, lattices),
-                blocks=orthogonal_blocks(lattice) if lattice.gram_tensor is not None else (),
+                blocks=orthogonal_blocks(lattice)
+                if lattice.gram_tensor is not None
+                else (),
                 hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
-                morphism_files=[file for file in morphism_files if lattice.tag in (file.source, file.target)],
-                geometric_objects=[entry.geometric for entry in geometric if isinstance(entry.geometric, ProjectiveComplexVariety) and any(link.tag == lattice.tag for link in entry.geometric.cohomology_lattices)],
+                morphism_files=[
+                    file
+                    for file in morphism_files
+                    if lattice.tag in (file.source, file.target)
+                ],
+                geometric_objects=[
+                    entry.geometric
+                    for entry in geometric
+                    if isinstance(entry.geometric, ProjectiveComplexVariety)
+                    and any(
+                        link.tag == lattice.tag
+                        for link in entry.geometric.cohomology_lattices
+                    )
+                ],
                 previous=entries[index - 1].lattice if index > 0 else None,
-                following=entries[index + 1].lattice if index + 1 < len(entries) else None,
+                following=entries[index + 1].lattice
+                if index + 1 < len(entries)
+                else None,
             )
         )
     collection_page = environment.get_template("collection.html.j2")
     for index, page in enumerate(pages):
-        html = collection_page.render(root="../", page=page, prose=prose[len(entries) + index], query=database_query(page.collection))
+        html = collection_page.render(
+            root="../",
+            page=page,
+            prose=prose[len(entries) + index],
+            query=database_query(page.collection),
+        )
         (target / "collection" / f"{page.slug}.html").write_text(html)
     morphism_page = environment.get_template("morphism.html.j2")
     for index, file in enumerate(morphism_files):
@@ -674,60 +898,136 @@ def build(root: Path, target: Path) -> int:
             source=lattices[file.source],
             target=lattices[file.target],
             prose=prose[len(entries) + len(pages) + index],
-            morphisms=[(morphism, matrix_tex(morphism), matrix_text(morphism)) for morphism in file.morphisms],
+            morphisms=[
+                (morphism, matrix_tex(morphism), matrix_text(morphism))
+                for morphism in file.morphisms
+            ],
         )
         (target / "morphism" / f"{file.source}-{file.target}.html").write_text(html)
     article_page = environment.get_template("article.html.j2")
     for index, article in enumerate(theory):
-        html = article_page.render(root="../", page=article, prose=prose[len(entries) + len(pages) + len(morphism_files) + index])
+        html = article_page.render(
+            root="../",
+            page=article,
+            prose=prose[len(entries) + len(pages) + len(morphism_files) + index],
+        )
         (target / "theory" / f"{article.slug}.html").write_text(html)
-    (target / "theory.html").write_text(environment.get_template("theory.html.j2").render(root="./"))
-    (target / "morphisms.html").write_text(environment.get_template("morphisms.html.j2").render(root="./", files=morphism_files, lattices=lattices))
+    (target / "theory.html").write_text(
+        environment.get_template("theory.html.j2").render(root="./")
+    )
+    (target / "morphisms.html").write_text(
+        environment.get_template("morphisms.html.j2").render(
+            root="./", files=morphism_files, lattices=lattices
+        )
+    )
     (target / "geometric-objects").mkdir()
     bibliography = root / "geometric-bibliography.bib"
-    geometric_prose = markdown_to_html([entry.prose for entry in geometric], bibliography)
+    geometric_prose = markdown_to_html(
+        [entry.prose for entry in geometric], bibliography
+    )
     variety_page = environment.get_template("geometric-object.html.j2")
     space_page = environment.get_template("geometric-space.html.j2")
     for geometric_entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
         record = geometric_entry.geometric
         if isinstance(record, ProjectiveComplexVariety):
             rows = [
-                [record.hodge_number(p, degree - p) for p in range(max(0, degree - record.dimension), min(degree, record.dimension) + 1)]
+                [
+                    record.hodge_number(p, degree - p)
+                    for p in range(
+                        max(0, degree - record.dimension),
+                        min(degree, record.dimension) + 1,
+                    )
+                ]
                 for degree in range(2 * record.dimension + 1)
             ]
             html = variety_page.render(
-                root="../", geometric=record, rows=rows, lattices=lattices,
-                families={entry.family.slug: entry.family for entry in geometric_families}, prose=rendered_prose,
+                root="../",
+                geometric=record,
+                rows=rows,
+                lattices=lattices,
+                families={
+                    entry.family.slug: entry.family for entry in geometric_families
+                },
+                prose=rendered_prose,
             )
         else:
             html = space_page.render(root="../", geometric=record, prose=rendered_prose)
         (target / "geometric-objects" / f"{record.slug}.html").write_text(html)
     (target / "geometric-families").mkdir()
-    family_prose = markdown_to_html([entry.prose for entry in geometric_families], bibliography)
+    family_prose = markdown_to_html(
+        [entry.prose for entry in geometric_families], bibliography
+    )
     family_page = environment.get_template("geometric-family.html.j2")
-    for family_entry, rendered_prose in zip(geometric_families, family_prose, strict=True):
+    for family_entry, rendered_prose in zip(
+        geometric_families, family_prose, strict=True
+    ):
         family = family_entry.family
-        instances = [entry.geometric for entry in geometric if entry.geometric.family == family.slug]
-        (target / "geometric-families" / f"{family.slug}.html").write_text(family_page.render(root="../", family=family, instances=instances, prose=rendered_prose))
+        instances = [
+            entry.geometric
+            for entry in geometric
+            if entry.geometric.family == family.slug
+        ]
+        (target / "geometric-families" / f"{family.slug}.html").write_text(
+            family_page.render(
+                root="../", family=family, instances=instances, prose=rendered_prose
+            )
+        )
     (target / "geometric-objects.html").write_text(
-        environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric, geometric_families=geometric_families)
+        environment.get_template("geometric-objects.html.j2").render(
+            root="./", geometric=geometric, geometric_families=geometric_families
+        )
     )
     (target / "graphs").mkdir()
     graph_prose = markdown_to_html([entry.prose for entry in graphs], bibliography)
     graph_page = environment.get_template("graph.html.j2")
     for graph_entry, rendered_prose in zip(graphs, graph_prose, strict=True):
         graph = graph_entry.graph
-        objects = [entry.geometric for entry in geometric if isinstance(entry.geometric, RiemannianSymmetricSpace) and graph.slug in entry.geometric.diagrams]
-        (target / "graphs" / f"{graph.slug}.html").write_text(graph_page.render(root="../", graph=graph, objects=objects, prose=rendered_prose))
-    (target / "graphs.html").write_text(environment.get_template("graphs.html.j2").render(root="./", graphs=graphs))
-    models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
-    (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
-    (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))
-    (target / "database.html").write_text(environment.get_template("database.html.j2").render(root="./"))
-    family_counts = {family: sum(family in entry.lattice.families for entry in entries) for family in corpus.families}
+        objects = [
+            entry.geometric
+            for entry in geometric
+            if isinstance(entry.geometric, RiemannianSymmetricSpace)
+            and graph.slug in entry.geometric.diagrams
+        ]
+        (target / "graphs" / f"{graph.slug}.html").write_text(
+            graph_page.render(
+                root="../", graph=graph, objects=objects, prose=rendered_prose
+            )
+        )
+    (target / "graphs.html").write_text(
+        environment.get_template("graphs.html.j2").render(root="./", graphs=graphs)
+    )
+    models = [
+        (heading, key, model.__doc__, list(model.model_fields.items()))
+        for heading, key, model in fields()
+    ]
+    (target / "index.html").write_text(
+        environment.get_template("index.html.j2").render(root="./", by_rank=by_rank)
+    )
+    (target / "tags.html").write_text(
+        environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank)
+    )
+    (target / "database.html").write_text(
+        environment.get_template("database.html.j2").render(root="./")
+    )
+    family_counts = {
+        family: sum(family in entry.lattice.families for entry in entries)
+        for family in corpus.families
+    }
     fields_page = environment.get_template("fields.html.j2")
-    (target / "fields.html").write_text(fields_page.render(root="./", models=models, property_meanings=PROPERTY_MEANINGS, family_counts=family_counts))
-    (target / "lattices.json").write_text(json.dumps({"rows": [row(entry.lattice, lattices) for entry in entries]}, separators=(",", ":")))
+    (target / "fields.html").write_text(
+        fields_page.render(
+            root="./",
+            models=models,
+            property_meanings=PROPERTY_MEANINGS,
+            family_counts=family_counts,
+        )
+    )
+    (target / "lattices.json").write_text(
+        json.dumps(
+            {"rows": [row(entry.lattice, lattices) for entry in entries]},
+            separators=(",", ":"),
+        )
+    )
     broken = broken_links(target)
     assert not broken, "links to a missing page or anchor:\n" + "\n".join(broken)
     return len(entries)

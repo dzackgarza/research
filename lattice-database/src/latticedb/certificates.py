@@ -5,7 +5,7 @@ record is `<tag> <computation>`: `<tag> derive` for the fields that `records.der
 tensor, and `<tag> <block>.<field>` for a value that SageMath computes. The name of a check of a source
 against the corpus is `source <name>`, and that of a computation over every record is `corpus <name>`.
 
-A computation is carried out once. `latticedb certify` carries out only the computations without a
+A computation is carried out once. `latticedb enrich` carries out only the computations without a
 certificate for their present inputs, and writes the certificate when the computation agrees with the
 stored values. A certificate with `seconds` records a computation that did not finish within that many
 seconds; it is carried out again only with a larger time limit. To carry out a computation again, remove

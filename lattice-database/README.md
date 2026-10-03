@@ -41,7 +41,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, checks every equation they state against the records, and checks that the morphism files embed each $\Lambda^G$ and its $\Lambda_G$ in the K3 lattice as orthogonal primitive sublattices |
 | `src/latticedb/hoehn_mason.py` | Reads the coinvariant lattices of the Leech lattice of Höhn and Mason, computes their inclusions in the Leech lattice and the actions of their stabilizers, and checks them against the records, Table 10.2 of Hashimoto and the morphism files |
 | `src/latticedb/genus.py`, `sage_genus.py` | Computes the genus symbol, the class number of the genus and the order of $O(L)$ with SageMath, and stores them in the records |
-| `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
+| `src/latticedb/corpus.py` | Reads every stored record and validates only the shape of each file |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
 | `sources/nebe_sloane/union.gz`, `<ENTRY>.json` | The catalogue's standard-format union archive and stored entries read from it or from individual pages |
@@ -70,13 +70,13 @@ It derives Betti numbers and the Euler characteristic from the series.
 The optional `symmetry_group` declares the full square symmetry group of the Hodge diamond: `V4` or `D4`. The record checks this declaration against the coefficients.
 
 `geometric-families/` holds parameterized families.
-An instance names its `family` slug and integer `family_parameter`; the corpus checks that the family exists and that the parameter meets its minimum.
+An instance names its `family` slug and integer `family_parameter`; verification checks that the family exists and that the parameter meets its minimum.
 Each instance retains its own Hodge series.
 `local_deformation_dimension` records the dimension of an unobstructed local complex deformation space.
 `chern_numbers` stores top-degree products of tangent-bundle Chern classes as ordered `indices` and an integral `value`; the record checks their degree and checks a stated top Chern number against the Euler characteristic.
 
 An optional `cohomology_lattices` entry identifies $H^k(X;\mathbb Z)$ modulo torsion with a tagged lattice, under the named pairing and integer scale.
-The build checks that the tag exists and that its rank is $b_k = \sum_{p+q=k} h^{p,q}$.
+Verification checks that the tag exists and that its rank is $b_k = \sum_{p+q=k} h^{p,q}$.
 The pairing names the form: the Hodge numbers alone do not determine it.
 The geometric object page links to the lattice page, and the lattice page links back.
 
@@ -107,7 +107,7 @@ Cite BibTeX keys from `geometric-bibliography.bib` with Pandoc citation syntax s
 
 ## Related mathematical records
 
-Each additional catalogue uses one Markdown file per permanent slug. Its front matter is validated by `latticedb check`; its body states the source and mathematical identification. These records remain distinct from the lattice, geometric object and geometric family records they link.
+Each additional catalogue uses one Markdown file per permanent slug. Its front matter is parsed when the corpus is read, and `latticedb verify` checks its mathematical and relational claims; its body states the source and mathematical identification. These records remain distinct from the lattice, geometric object and geometric family records they link.
 
 | Catalogue | Defining data and links |
 | --- | --- |
@@ -161,11 +161,11 @@ A component is an integer or a string `p/q`. Floats are refused.
 
 The corpus records a lattice once, up to twist and sign.
 For an integer $n$, the twist $L(n)$ is the module of $L$ with the form $nb$.
-A Gram tensor that is $n$ times a Gram tensor with integer components for some $n \geq 2$, or that is zero, is refused: the lattice is $M(n)$ for the lattice $M$ with Gram tensor $b/n$, and the corpus records $M$.
+A Gram tensor that is $n$ times a Gram tensor with integer components for some $n \geq 2$, or that is zero, is not an admitted permanent record: the lattice is $M(n)$ for the lattice $M$ with Gram tensor $b/n$, and the corpus records $M$. Authoring may write such a sparse card; verification reports the admission error.
 So $\langle 1 \rangle$ is a record and $A_1 = \langle 1 \rangle(2)$ is not; $E_8$ is a record and $E_8(2)$ is not.
 The one exception is the 13 rows $a = r$ of Table 1 of Nikulin (J. Soviet Math.
 22 (1983)), the family `nikulin-two-elementary`: each row is a twist $M(2)$ of a unimodular record $M$, and each is a record, because the classification names the twist and not $M$.
-`latticedb new` admits a twist by 2 in that family and no other twist.
+Verification admits a twist by 2 in that family and no other twist.
 Of $L$ and $L(-1)$ the corpus records one: the one with $b(x, x) \geq 0$ for all $x$ when $b$ is definite or semidefinite, and the one with signature $(n_+, n_-)$, $n_+ \leq n_-$, when $b$ is indefinite.
 So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature $(1, 9)$, is a record.
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
@@ -174,8 +174,8 @@ The fields of a record are of two kinds.
 The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `integral.bad_reduction_primes`, `integral.quadratic_character`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. Enrichment computes additional fields. Verification compares stored claims with their mathematical and source obligations.
 The build reads the stored values and renders every card.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-`latticedb certify` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, `integral.spinor_genus_count` and `integral.spinor_genera` of a lattice of rank at least 3 with `Genus` and the neighbour method of SageMath (`theory/overlattices.md`), `definite.automorphism_group_order` with `qfauto` of PARI/GP, and `integral.primitive_orbits` through $z^4$ and $w^4$, of a definite lattice with `qfauto` and `qfminim` and of an even lattice of hyperbolic index at least 2 from its discriminant form (`theory/orbits.md`), under SageMath. For a definite even lattice it also computes `integral.discriminant_sequence`: PARI `qfauto` supplies generators of $O(L)$, SageMath supplies generators of $O(A_L,q_L)$, and the induced matrices determine the image, kernel order, and pointed coset quotient. The lattice generators are stored as self-isometries in `morphisms/<tag>-<tag>.md`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a series of orbits merges coefficient by coefficient with the stored one, and a person states the coefficients of any other indefinite lattice with a `reference` that proves them; a value that SageMath does not compute within the time limit is not written.
-`hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
+`latticedb enrich --genus-data` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, `integral.spinor_genus_count` and `integral.spinor_genera` of a lattice of rank at least 3 with `Genus` and the neighbour method of SageMath (`theory/overlattices.md`), `definite.automorphism_group_order` with `qfauto` of PARI/GP, and `integral.primitive_orbits` through $z^4$ and $w^4$, of a definite lattice with `qfauto` and `qfminim` and of an even lattice of hyperbolic index at least 2 from its discriminant form (`theory/orbits.md`), under SageMath. For a definite even lattice it also computes `integral.discriminant_sequence`: PARI `qfauto` supplies generators of $O(L)$, SageMath supplies generators of $O(A_L,q_L)$, and the induced matrices determine the image, kernel order, and pointed coset quotient. The lattice generators are stored as self-isometries in `morphisms/<tag>-<tag>.md`. It writes each value that a record does not hold, and reports a stored value that differs from the computed one; a series of orbits merges coefficient by coefficient with the stored one, and a person states the coefficients of any other indefinite lattice with a `reference` that proves them; a value that SageMath does not compute within the time limit is not written.
+`hyperbolic.reflective` and a `root_span` block that enrichment does not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
 A block on a lattice that does not satisfy the hypothesis is a validation error, and so is a field whose own hypothesis fails.
@@ -197,7 +197,7 @@ The `integral`, `definite`, `indefinite` and `root_sublattice` blocks are requir
 A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.
 It counts subgroups, not their orbits under the isometries of $L$, and it counts every integral $M$: for an even $L$ some $M$ can be odd.
 For $U(2)$ the count is 4, and 3 of the 4 lattices are even.
-The record commands enumerate the subgroups of $A_L$, so the field is stated exactly when the determinant is not zero and $A_L$ has at most 100000 subgroups.
+Enrichment enumerates the subgroups of $A_L$, so the field is stated exactly when the determinant is not zero and $A_L$ has at most 100000 subgroups.
 A record without it is not decided, and its page says so: $(\mathbb{Z}/2)^8$ has 417199 subgroups.
 
 `integral.delta` is Nikulin's invariant $\delta$ of an even lattice with $2 A_L = 0$, and it is required for exactly those lattices, $A_L = 0$ included: 0 when $b(x, x)$ is an integer for every $x$ in $L^*$, and 1 otherwise.
@@ -217,7 +217,7 @@ The fields that a person writes follow these conventions:
 | `name` | Plain text, as the lattice is written on a blackboard: `+` for the orthogonal sum, `^n` for a power, `*` for the dual lattice, `(k)` for the form scaled by $k$, `<a>` for the rank-one lattice with $b(e, e) = a$ | `E8`, `A3*`, `U + E8(-1)`, `E8^2 + A1`, `<2> + <-2>`, `I_{1,3}`, `I_{11,0}`, `affine D5`, `Lambda10` |
 | `latex` | The same name as TeX, without `$` | `E_{8}`, `A_{3}^{*}`, `U \oplus E_{8}(-1)`, `\langle 2 \rangle`, `\mathrm{I}_{1,3}`, `\mathrm{I}_{11,0}`, `\widetilde{D}_{5}`, `\Lambda_{10}` |
 | `aliases` | Other names in the literature and the names of the same lattice in other conventions, each as plain text; the name of the entry when the source is a catalogue | `II_{4,4}`; `LAMBDA16`, `BW16`, `Barnes-Wall lattice`; `(r, a, delta) = (15, 7, 1)` |
-| `families` | Keys of `families.yaml`. A family is a class of lattices that a definition cuts out, not a property that the build derives from the record: `even-unimodular` is a family because its members are a named series, and *unimodular* is a property. To add a family, add its key and one line of meaning to `families.yaml` in the same change as its first member; the build rejects a record whose family is not listed | `irreducible-root-lattice`, `laminated`, `r-plus-a-22` |
+| `families` | Keys of `families.yaml`. A family is a class of lattices that a definition cuts out, not a property that the build derives from the record: `even-unimodular` is a family because its members are a named series, and *unimodular* is a property. To add a family, add its key and one line of meaning to `families.yaml` in the same change as its first member; verification reports a record whose family is not listed | `irreducible-root-lattice`, `laminated`, `r-plus-a-22` |
 | `related.relation` | One sentence that states the related lattice in terms of \(L\): the map or the change of form; TeX between `\(` and `\)` | `The dual lattice \(L^*\).`; `The same module with the form \(-b\).`; `The same module with the form \(2b\).` |
 | `references.citation` | Author initials and surnames, the title, and the locator that the source uses; with `url` when the source is on the web | `G. Nebe and N. J. A. Sloane, Catalogue of Lattices, entry LAMBDA9.`; `V. Alexeev, "Reflective hyperbolic 2-elementary lattices, K3 surfaces and hyperkahler manifolds", arXiv:2209.09110v4, Theorem 1.1.` |
 
@@ -387,7 +387,7 @@ The `justfile` calls it.
 The check of `sources/hashimoto/` checks the records against Tables 10.2 and 10.3 of Hashimoto, and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices.
 The check of `sources/hoehn_mason/` checks that the morphism files hold the maps that the source determines.
 
-The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. The record commands compute with PARI/GP through `cypari2` and with `python-flint`. `latticedb certify` needs SageMath at `$SAGE_BIN`.
+The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. Enrichment computes with PARI/GP through `cypari2` and with `python-flint`. `latticedb enrich --genus-data` needs SageMath at `$SAGE_BIN`.
 
 ## Sources to absorb
 

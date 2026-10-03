@@ -1,4 +1,4 @@
-"""`latticedb certify` computes the pending genus invariants with SageMath, writes the missing ones and refuses a stored value that differs."""
+"""`latticedb enrich --genus-data` computes pending Sage invariants and writes missing values while reporting disagreements."""
 
 import shutil
 from pathlib import Path

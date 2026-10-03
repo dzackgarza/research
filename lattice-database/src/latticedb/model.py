@@ -173,7 +173,7 @@ class PrimitiveOrbitSeries(Record):
     constant: Annotated[int, Field(ge=0)] | None = Field(default=None, description="$c_\\Gamma(0)$, the number of orbits of primitive isotropic vectors.")
     z: OrbitCounts = Field(default=(), description="$c_\\Gamma(1), c_\\Gamma(2), \\dots$: the coefficients of $z, z^2, \\dots$")
     w: OrbitCounts = Field(default=(), description="$c_\\Gamma(-1), c_\\Gamma(-2), \\dots$: the coefficients of $w, w^2, \\dots$")
-    reference: Reference | None = Field(default=None, description="The source of the coefficients; absent when `latticedb certify` computes them.")
+    reference: Reference | None = Field(default=None, description="The source of the coefficients; absent when `latticedb enrich --genus-data` computes them.")
 
     def coefficient(self, n: int) -> int | None:
         """$c_\\Gamma(n)$, or None when it is not stated."""
@@ -322,7 +322,7 @@ class IntegralData(Record):
         gt=0,
         description=(
             "The class number of the genus of $L$: the number of isometry classes of lattices in the genus, $L$ counted. "
-            "Computed by `latticedb certify` with `Genus(G).representatives()` of SageMath; for an indefinite binary form, the representatives counted up to equivalence. "
+            "Computed by `latticedb enrich --genus-data` with `Genus(G).representatives()` of SageMath; for an indefinite binary form, the representatives counted up to equivalence. "
             "Requires a nonzero determinant; absent when it is not computed."
         ),
     )
@@ -333,7 +333,7 @@ class IntegralData(Record):
             "The number of spinor genera in the genus of $L$, a power of 2 (Conway and Sloane, SPLAG, Chapter 15, Section 9.1): "
             "the order of the quotient of the spinor operators by the spinor kernel of Theorems 16 and 17 there, enlarged by the spinor operator of one improper "
             "isometry, so that a spinor genus is a union of isometry classes. "
-            "Computed by `latticedb certify` with `Genus(G).spinor_generators(proper=False)` of SageMath. Requires a nonzero determinant and rank at least 3."
+            "Computed by `latticedb enrich --genus-data` with `Genus(G).spinor_generators(proper=False)` of SageMath. Requires a nonzero determinant and rank at least 3."
         ),
     )
     spinor_genera: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
@@ -341,7 +341,7 @@ class IntegralData(Record):
         description=(
             "The number of isometry classes in each spinor genus of the genus of $L$: first in the spinor genus of $L$, then in the others in decreasing order. "
             "The first entry is the class number of the spinor genus of $L$, and the sum is the class number of the genus. "
-            "An indefinite $L$ has one class in each spinor genus (Eichler; SPLAG, Chapter 15, Theorem 14). For a definite $L$, `latticedb certify` iterates "
+            "An indefinite $L$ has one class in each spinor genus (Eichler; SPLAG, Chapter 15, Theorem 14). For a definite $L$, `latticedb enrich --genus-data` iterates "
             "$p$-neighbours from one lattice of each spinor genus at a prime $p$ whose spinor operator is in the spinor kernel, so that each neighbour stays in its "
             "spinor genus (SPLAG, Chapter 15, Theorem 15), and stores the counts only when the masses $\\sum 1/|O(M)|$ of the classes found add up to the mass "
             "of the genus. Requires a nonzero determinant and rank at least 3."
@@ -354,7 +354,7 @@ class IntegralData(Record):
             "The largest $n$ with $L \\cong U^n \\oplus L'$ for a lattice $L'$, where $U$ is the hyperbolic plane. "
             "For an integral $L$ this is the largest $n$ with an embedding $U^n \\hookrightarrow L$, because a unimodular sublattice $M$ of $L$ "
             "satisfies $L = M \\oplus M^{\\perp}$. "
-            "Computed by `latticedb certify`: $L \\cong U^n \\oplus L'$ holds exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of "
+            "Computed by `latticedb enrich --genus-data`: $L \\cong U^n \\oplus L'$ holds exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of "
             "signature $(n_+ - n, n_- - n)$, since a lattice $U \\oplus L'$ of rank at least 3 is alone in its genus "
             "(Nikulin 1980, Theorem 1.13.1*). Requires a nonzero determinant; absent when it is not computed."
         ),
@@ -365,7 +365,7 @@ class IntegralData(Record):
             "For a group $\\Gamma \\subseteq O(L)$, the series $F_{L,\\Gamma}(z, w)$ whose coefficient $c_\\Gamma(n)$ is the number of $\\Gamma$-orbits of primitive "
             "vectors $v$ with $b(v, v) = n$. The keys are `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+`: $S$ is the kernel of the determinant, "
             "$+$ the kernel of the real spinor norm, and $\\widetilde{O}(L)$ the kernel of $O(L) \\to O(A_L)$. "
-            "Computed by `latticedb certify` through $z^4$ and $w^4$ for a definite lattice, and from $(A_L, q_L)$ for an even lattice of hyperbolic index at least 2 "
+            "Computed by `latticedb enrich --genus-data` through $z^4$ and $w^4$ for a definite lattice, and from $(A_L, q_L)$ for an even lattice of hyperbolic index at least 2 "
             "(Gritsenko, Hulek and Sankaran 2009, Proposition 3.3(i); Nikulin 1980, Theorem 1.14.2); stated with a reference otherwise. Requires a nonzero determinant."
         ),
     )
@@ -407,7 +407,7 @@ class DefiniteData(Record):
 
     minimum: Rational = Field(description="Least value of $b(x, x)$ over nonzero $x$.")
     kissing_number: int = Field(description="Number of $x$ with $b(x, x)$ equal to the minimum; finite because $b$ is definite.")
-    automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$, computed by `latticedb certify` with `qfauto` of PARI/GP.")
+    automorphism_group_order: int | None = Field(default=None, description="Order of $O(L)$, computed by `latticedb enrich --genus-data` with `qfauto` of PARI/GP.")
     minimal_vectors: list[list[int]] | None = Field(default=None, description="A complete minimal shell in the record basis; its size equals `kissing_number`.")
     perfect: bool | None = Field(default=None, description="Whether the rank-one tensors $v v^T$ of minimal vectors span $\\operatorname{Sym}^2(\\mathbb Q^n)$.")
     regular: bool | None = Field(default=None, description="For an integral ternary form: every positive integer represented by its genus is represented by this lattice.")

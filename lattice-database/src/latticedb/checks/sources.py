@@ -8,10 +8,23 @@ from latticedb.corpus import Corpus
 
 def problems(root: Path, loaded: Corpus) -> list[str]:
     found: list[str] = []
-    for source, check in (
-        ("hashimoto", hashimoto.stored_problems),
-        ("hoehn_mason", hoehn_mason.stored_problems),
-        ("nebe_sloane_archive", nebe_sloane.stored_problems),
+    for source, directory, check in (
+        ("hashimoto", root / "sources" / "hashimoto", hashimoto.stored_problems),
+        (
+            "hoehn_mason",
+            root / "sources" / "hoehn_mason",
+            hoehn_mason.stored_problems,
+        ),
+        (
+            "nebe_sloane_archive",
+            root / "sources" / "nebe_sloane",
+            nebe_sloane.stored_problems,
+        ),
     ):
-        found.extend(f"{source}: {problem}" for problem in check(root, loaded))
+        if not directory.exists():
+            continue
+        try:
+            found.extend(f"{source}: {problem}" for problem in check(root, loaded))
+        except FileNotFoundError as error:
+            found.append(f"{source}: missing stored source file {error.filename}")
     return found

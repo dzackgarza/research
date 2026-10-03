@@ -22,6 +22,7 @@ from pydantic import BaseModel, TypeAdapter
 from latticedb import certificates, corpus, records
 from latticedb.certificates import Certificate, Certificates
 from latticedb.model import DefiniteData, IntegralData, Lattice, Yaml
+from latticedb.relations import hyperbolic_index_bounds
 
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_symbol": ("integral", IntegralData),
@@ -88,7 +89,7 @@ def _sign(lattice: Lattice) -> int:
 def requests(loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int) -> list[Request]:
     """For each integral record with a nonzero determinant, among `tags` when it is not empty, the fields that are pending with the time limit `seconds`."""
     chosen: list[Request] = []
-    bounds = corpus.hyperbolic_index_bounds(loaded.morphisms, loaded.entries)
+    bounds = hyperbolic_index_bounds(loaded.morphisms, loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
         if lattice.integral is None or lattice.determinant == 0 or (tags and lattice.tag not in tags):

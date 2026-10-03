@@ -2,7 +2,7 @@
 
 `derive` computes every field that the Gram tensor determines and keeps the
 other stored fields: the names, the families, the references, the values
-that `latticedb certify` computes with SageMath, and the
+that `latticedb enrich --genus-data` computes with SageMath, and the
 `root_span` block of a lattice that is not definite when the search for roots
 does not decide it. A record that is not definite and has no `root_span`
 block after `derive` is not decided.
@@ -311,14 +311,8 @@ def isometry_invariants(lattice: Lattice) -> IsometryInvariants:
     return (lattice.rank, lattice.definiteness, lattice.determinant, definite.minimum, definite.kissing_number, definite.root_system, definite.theta_series, discriminant_group)
 
 
-def admission_problems(lattice: Lattice, written: Mapping[str, Lattice]) -> list[str]:
-    """The problems of a new record against its declared values and the records already written.
-
-    A declared order of $O(L)$ that is not even and positive; a row of `root_span.roots` that is not a root;
-    rows of `root_span.embedding` that are not a basis of the sublattice the roots generate, or that do not have
-    the Gram tensor of the orthogonal sum of the summands; and a written definite record isometric to the new one,
-    decided by `qfisom` when the stated invariants agree. Whether two indefinite lattices are isometric is not decided.
-    """
+def local_admission_problems(lattice: Lattice) -> list[str]:
+    """Admission problems whose truth depends only on one lattice record."""
     found = []
     gram = lattice.gram_tensor
     definite = lattice.definite
@@ -327,23 +321,54 @@ def admission_problems(lattice: Lattice, written: Mapping[str, Lattice]) -> list
     span = lattice.root_span
     if span is not None:
         found.extend(f"root_span.roots: {list(row)} is not a root of L" for row in span.roots if not arithmetic.is_root(gram, row))
-        if span.embedding is not None and span.summands is not None:
+        if span.embedding is not None:
             basis = arithmetic.span_basis(list(span.embedding))
             if len(basis) != len(span.embedding) or basis != arithmetic.span_basis(list(span.roots)):
                 found.append("root_span.embedding: the rows are not a basis of the sublattice that the rows of `roots` generate")
-            missing = [summand.tag for summand in span.summands if summand.tag not in written]
-            found.extend(f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing)
-            summands = tuple(arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale) for summand in span.summands if summand.tag in written)
-            if not missing and arithmetic.restriction(gram, span.embedding) != arithmetic.orthogonal_sum(summands):
-                found.append("root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands")
+    return found
+
+
+def relational_admission_problems(
+    lattice: Lattice,
+    written: Mapping[str, Lattice],
+    *,
+    isometry_records: Mapping[str, Lattice] | None = None,
+) -> list[str]:
+    """Admission problems that compare one lattice with other lattice records."""
+    found = []
+    gram = lattice.gram_tensor
+    definite = lattice.definite
+    span = lattice.root_span
+    if span is not None and span.embedding is not None and span.summands is not None:
+        missing = [summand.tag for summand in span.summands if summand.tag not in written]
+        found.extend(f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing)
+        summands = tuple(arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale) for summand in span.summands if summand.tag in written)
+        if not missing and arithmetic.restriction(gram, span.embedding) != arithmetic.orthogonal_sum(summands):
+            found.append("root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands")
     if definite is not None:
         invariants = isometry_invariants(lattice)
+        compared = written if isometry_records is None else isometry_records
         found.extend(
             f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
-            for other in written.values()
+            for other in compared.values()
             if other.definite is not None and isometry_invariants(other) == invariants and other.gram_tensor != gram and arithmetic.is_isometric(other.gram_tensor, gram)
         )
     return found
+
+
+def admission_problems(
+    lattice: Lattice,
+    written: Mapping[str, Lattice],
+    *,
+    isometry_records: Mapping[str, Lattice] | None = None,
+) -> list[str]:
+    """All local and relational admission problems of a lattice record."""
+    return [
+        *local_admission_problems(lattice),
+        *relational_admission_problems(
+            lattice, written, isometry_records=isometry_records
+        ),
+    ]
 
 
 def _crosses_parts(gram: GramTensor, lines: tuple[int, ...]) -> bool:

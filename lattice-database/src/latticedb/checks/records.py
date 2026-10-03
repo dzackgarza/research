@@ -2,6 +2,7 @@
 
 from pydantic import ValidationError
 
+from latticedb import records
 from latticedb.corpus import Corpus
 
 
@@ -16,4 +17,15 @@ def problems(loaded: Corpus) -> list[str]:
             entry.lattice._well_defined()
         except ValidationError as error:
             found.extend(f"{entry.path}: {'.'.join(str(part) for part in problem['loc'])}: {problem['msg']}" for problem in error.errors())
+            continue
+        found.extend(
+            f"{entry.path}: {problem}"
+            for problem in records.gram_problems(
+                entry.lattice.gram_tensor, entry.lattice.families
+            )
+        )
+        found.extend(
+            f"{entry.path}: {problem}"
+            for problem in records.local_admission_problems(entry.lattice)
+        )
     return found
