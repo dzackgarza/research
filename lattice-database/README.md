@@ -403,6 +403,8 @@ The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a
 
 ## Sources to absorb
 
+For source intake, search the local Zotero library first. Read the source's attached extraction and PDF before searching outside Zotero.
+
 The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane), <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/>.
 `sources/nebe_sloane/` holds the absorbed entries and the catalogue's `union.gz` archive. The definite records include the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$, $BW_{16}$, the Leech lattice $\Lambda_{24}$, the 23 other Niemeier lattices, and the binary `BGF.2.2112`, `BGF.2.213`, `BGF.2.214`, and `BGF.2.216` entries.
 
@@ -421,6 +423,8 @@ The survey of 2026-10-02 read these by the test the corpus uses everywhere: a so
   This is the source of indefinite records the Catalogue does not give (it supplies one, `Shimada_86`): rank-3 indefinite integral lattices with their roots, which is exactly what `root_span` and the `hyperbolic` block ask for, and `RK3_explicit` (704) and `RK3_implicit` (715) split the reflective and non-reflective lists of Allcock's 1989 Bielefeld preprint.
   A module `latticedb allcock` reads `RK3_all`, and the corpus absorbs the entries that are not a twist or a sign of a record already present.
   Reached from Martinet's page of links to those working on lattices, <http://jamartin.perso.math.cnrs.fr/>.
+
+- **AN06 — Alexeev and Nikulin, *Del Pezzo and K3 Surfaces* (2006)**, <https://arxiv.org/abs/math/0406536>: start with the Zotero item `RYAAK5WJ`, its attached extraction and PDF. Absorb every Coxeter diagram printed in its tables, including the reflection-chamber diagrams of Table 1 and the extremal K3 diagrams of Table 2, as weighted graph cards. Keep each table and row label, page, vertex marking, and edge weight with its source citation.
 
 - **Jagy's table** of positive ternary forms that are spinor regular but not regular, `Jagy.txt` on the catalogue site: sextuples $(a, b, c, d, e, f)$ of a form's coefficients, so the Gram tensor is their symmetric matrix divided by 2.
 
