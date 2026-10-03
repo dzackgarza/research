@@ -251,8 +251,7 @@ class RiemannianSymmetricSpace(LocallyRingedSpace):
     lie_algebra: str | None = None
     restricted_roots: str | None = None
     root_multiplicities: str | None = None
-    diagram: str | None = None
-    diagram_convention: str | None = None
+    diagrams: Annotated[tuple[Slug, ...], Field(strict=False)] = ()
     holonomy: str | None = None
     iwasawa: IwasawaDecomposition | None = None
     compact_dual: Slug | None = None
@@ -268,8 +267,8 @@ class RiemannianSymmetricSpace(LocallyRingedSpace):
             raise PydanticCustomError("compact_dual_type", "a compact dual belongs to a space of noncompact type")
         if self.noncompact_dual is not None and self.curvature_type != "compact":
             raise PydanticCustomError("noncompact_dual_type", "a noncompact dual belongs to a space of compact type")
-        if (self.diagram is None) != (self.diagram_convention is None):
-            raise PydanticCustomError("diagram_convention", "a diagram needs its named convention")
+        if len(set(self.diagrams)) != len(self.diagrams):
+            raise PydanticCustomError("diagram_duplicate", "diagram links must be unique")
         if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
             raise PydanticCustomError("homotopy_duplicate", "a homotopy degree occurs more than once")
         if len({(group.degree, group.coefficients) for group in self.cohomology_groups}) != len(self.cohomology_groups):

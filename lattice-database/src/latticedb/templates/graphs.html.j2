@@ -1,0 +1,13 @@
+{% extends "base.html.j2" %}
+{% block title %}Weighted graphs · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading"><p class="kicker">Catalogue</p><h1>Weighted graphs</h1></header>
+  <p>Each card stores vertices, edges and their weights. Diagram names are checked properties of that data.</p>
+  <ul>
+  {% for entry in graphs %}
+    <li><a href="{{ root }}graphs/{{ entry.graph.slug }}.html">{{ entry.graph.name }}</a> — {{ entry.graph.properties()|join(", ") }}</li>
+  {% endfor %}
+  </ul>
+</article>
+{% endblock %}

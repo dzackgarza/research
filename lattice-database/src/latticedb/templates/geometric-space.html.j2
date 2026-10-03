@@ -22,7 +22,7 @@
     <p>Curvature type: {{ geometric.curvature_type }}. Compact: {{ "yes" if geometric.compact else "no" }}.</p>
     {% if geometric.lie_algebra %}<p>Lie algebra: {{ geometric.lie_algebra }}.</p>{% endif %}
     {% if geometric.classification %}<p>Classification: {% for label in geometric.classification %}{% if not loop.first %}; {% endif %}{{ label.convention }} {{ label.label }}{% endfor %}.</p>{% endif %}
-    {% if geometric.diagram %}<p>{{ geometric.diagram_convention }} diagram: {{ geometric.diagram }}.</p>{% endif %}
+    {% if geometric.diagrams %}<p>Diagrams: {% for diagram in geometric.diagrams %}{% if not loop.first %}; {% endif %}<a href="{{ root }}graphs/{{ diagram }}.html">{{ diagram }}</a>{% endfor %}.</p>{% endif %}
     {% if geometric.restricted_roots %}<p>Restricted roots: {{ geometric.restricted_roots }}{% if geometric.root_multiplicities %}; multiplicities: {{ geometric.root_multiplicities }}{% endif %}.</p>{% endif %}
     {% if geometric.holonomy %}<p>Holonomy: {{ geometric.holonomy }}.</p>{% endif %}
     {% if geometric.compact_dual %}<p>Compact dual: <a href="{{ root }}geometric-objects/{{ geometric.compact_dual }}.html">{{ geometric.compact_dual }}</a>.</p>{% endif %}

@@ -16,6 +16,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
 | `geometric-objects/<slug>.md` | One locally ringed geometric space, its specialized data and cited prose |
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
+| `graphs/<slug>.md` | One weighted graph with derived diagram properties and cited prose |
 | `orthogonal-subgroups/`, `vector-orbits/`, `chambers/` | Named lattice group actions, primitive-vector orbits and hyperbolic chambers |
 | `genera/` | Genus records with representative isometry classes and mass |
 | `lattice-polytopes/`, `toric-varieties/` | Based lattice polytopes, polar duals and normal-fan toric varieties |
@@ -30,6 +31,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
 | `src/latticedb/geometric.py` | The schema of geometric families, projective varieties, manifolds and symmetric spaces |
+| `src/latticedb/graphs.py` | Weighted vertices and edges; Coxeter, Dynkin, Satake and rational Coxeter–Vinberg predicates |
 | `src/latticedb/catalogues.py` | Schemas of group actions, genera, polytopes, toric varieties, maps, local systems and operators |
 | `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
@@ -58,6 +60,8 @@ Each file in `geometric-objects/` has one permanent slug and a `kind` that names
 The category relations are refinements and structure-changing functors. Schemes over $\mathbb C$ include smooth projective complex varieties. Complex analytic spaces include complex manifolds. Topological manifolds admit PL or differentiable refinements; a $C^\infty$ manifold has a sheaf of smooth functions and can carry a Riemannian metric. A Hermitian symmetric space is both a Riemannian symmetric space and a complex manifold with a compatible Hermitian structure. Analytification sends a finite-type complex scheme to a complex analytic space. Its source and result are separate linked cards through `analytic_space` and `algebraic_model`. Forgetting a metric or changing a structure sheaf is a functor between categories.
 
 A `projective_complex_variety` card describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its `dimension` is complex dimension; its required `hodge_poincare` is the Hodge–Poincaré series. Symmetric-space cards give the connected group quotient, isotropy group, defining involution and metric normalization. Their `rank` is symmetric-space rank. A Hermitian card also gives complex dimension and can state its bounded realization and the parabolic presentation of its compact dual. A compact dual is another symmetric-space card; a projective algebraic model of its analytic space has its own card.
+
+The `diagrams` field on a symmetric-space card links to graph cards. A graph card stores arbitrary YAML vertex and edge weights, edge direction, and a named edge relation. Parallel edges and loops are permitted. For a Coxeter projection, `bond` edges are undirected, unique between two vertices, and carry `order` at least 3 or `infinity`; an absent bond has order 2. A bond can also carry ordered negative `cartan` integers, with the first integer giving the row of its source vertex. A finite-type, symmetrizable Cartan matrix gives the Dynkin property. The simply laced property requires a finite-type Cartan matrix with only single bonds. `satake` vertex marks (`black` or `white`) and `satake_pair` edges give the finite-type admissible-pair predicate. These are properties of one graph, not card kinds: a Satake card can also be Coxeter, Dynkin and simply laced. A graph with positive rational `norm_squared` vertex weights and rational negative `gram` bond weights is a rational Coxeter–Vinberg presentation when its angle data agree with the Coxeter orders and its Gram form has Lorentzian signature. That rational predicate covers orders 3, 4, 6 and `infinity`; graphs with other weights remain valid graph cards.
 
 On projective variety cards, `hodge_poincare` stores the nonzero terms of $H_X(u,v)=\sum_{p,q}h^{p,q}u^pv^q$, where $h^{p,q}=\dim_{\mathbb C}H^q(X,\Omega_X^p)$.
 Each term has `p`, `q` and a positive `coefficient`; omitted terms have coefficient zero.

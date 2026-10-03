@@ -30,7 +30,7 @@ from pydantic import BaseModel, Field
 from latticedb import root_systems
 from latticedb.arithmetic import Vector
 from latticedb.corpus import Entry, hyperbolic_index_bounds, load
-from latticedb.geometric import ProjectiveComplexVariety
+from latticedb.geometric import ProjectiveComplexVariety, RiemannianSymmetricSpace
 from latticedb.model import (
     DefiniteData,
     HyperbolicData,
@@ -630,6 +630,7 @@ def build(root: Path, target: Path) -> int:
     morphism_files = [entry.morphisms for entry in corpus.morphisms]
     geometric = corpus.geometric
     geometric_families = corpus.geometric_families
+    graphs = corpus.graphs
     prose = markdown_to_html(
         [entry.prose for entry in entries] + [page.prose for page in pages] + [entry.prose for entry in corpus.morphisms] + [page.prose for page in theory]
     )
@@ -707,6 +708,14 @@ def build(root: Path, target: Path) -> int:
     (target / "geometric-objects.html").write_text(
         environment.get_template("geometric-objects.html.j2").render(root="./", geometric=geometric, geometric_families=geometric_families)
     )
+    (target / "graphs").mkdir()
+    graph_prose = markdown_to_html([entry.prose for entry in graphs], bibliography)
+    graph_page = environment.get_template("graph.html.j2")
+    for graph_entry, rendered_prose in zip(graphs, graph_prose, strict=True):
+        graph = graph_entry.graph
+        objects = [entry.geometric for entry in geometric if isinstance(entry.geometric, RiemannianSymmetricSpace) and graph.slug in entry.geometric.diagrams]
+        (target / "graphs" / f"{graph.slug}.html").write_text(graph_page.render(root="../", graph=graph, objects=objects, prose=rendered_prose))
+    (target / "graphs.html").write_text(environment.get_template("graphs.html.j2").render(root="./", graphs=graphs))
     models = [(heading, key, model.__doc__, list(model.model_fields.items())) for heading, key, model in fields()]
     (target / "index.html").write_text(environment.get_template("index.html.j2").render(root="./", by_rank=by_rank))
     (target / "tags.html").write_text(environment.get_template("tags.html.j2").render(root="./", by_rank=by_rank))

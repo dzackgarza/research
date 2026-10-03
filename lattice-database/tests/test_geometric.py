@@ -4,9 +4,11 @@ from pathlib import Path
 
 import frontmatter
 import pytest
+from pydantic import ValidationError
+
 from latticedb import corpus, site
 from latticedb.geometric import ProjectiveComplexVariety
-from pydantic import ValidationError
+from latticedb.graphs import WeightedGraph
 
 ROOT = Path(__file__).parent.parent
 
@@ -41,6 +43,7 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     (tmp_path / "geometric-bibliography.bib").symlink_to(ROOT / "geometric-bibliography.bib")
     (tmp_path / "theory").symlink_to(ROOT / "theory", target_is_directory=True)
     (tmp_path / "geometric-objects").mkdir()
+    (tmp_path / "graphs").symlink_to(ROOT / "graphs", target_is_directory=True)
     for slug in (
         "complex-projective-plane",
         "complex-projective-plane-analytic",
@@ -65,6 +68,13 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     assert 'href="../geometric-objects/complex-projective-plane.html"' in analytic_plane
     assert 'href="../geometric-objects/complex-projective-plane-analytic.html"' in complex_ball
     assert 'href="../geometric-objects/three-sphere.html"' in real_hyperbolic
+    assert 'href="../graphs/restricted-a1.html"' in real_hyperbolic
+    assert 'href="../graphs/a2-su21-satake.html"' in complex_ball
+    graph = (target / "graphs" / "a2-su21-satake.html").read_text()
+    assert "Coxeter, Dynkin, simply laced, Satake" in graph
+    assert 'href="../geometric-objects/complex-hyperbolic-2-space.html"' in graph
+    vinberg = (target / "graphs" / "hyperbolic-triangle-2-3-infinity.html").read_text()
+    assert "rational Coxeter–Vinberg" in vinberg
     assert "Hodge diamond" not in complex_ball
     quadric = (target / "geometric-objects" / "complex-quadric-q-5.html").read_text()
     bdi = (target / "geometric-objects" / "bdi-25-compact.html").read_text()
@@ -72,6 +82,33 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     assert 'href="../geometric-objects/bdi-25-compact.html"' in quadric
     assert 'href="../geometric-objects/complex-quadric-q-5.html"' in bdi
     assert 'href="../geometric-objects/eiii-compact.html"' in exceptional
+
+
+def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
+    def card(slug: str) -> WeightedGraph:
+        return WeightedGraph.model_validate(frontmatter.load(ROOT / "graphs" / f"{slug}.md").metadata)
+
+    b2 = card("b2-root-diagram")
+    c2 = card("c2-root-diagram")
+    assert b2.properties() == c2.properties() == ("Coxeter", "Dynkin")
+    assert b2.cartan_matrix() != c2.cartan_matrix()
+    assert card("a2-su21-satake").properties() == ("Coxeter", "Dynkin", "simply laced", "Satake")
+    assert card("hyperbolic-triangle-2-3-infinity").properties() == ("Coxeter", "rational Coxeter–Vinberg")
+    invalid_satake = card("a2-su21-satake").model_dump()
+    invalid_satake["vertices"][0]["weight"]["satake"] = "black"
+    invalid_satake["edges"] = invalid_satake["edges"][:1]
+    assert not WeightedGraph.model_validate(invalid_satake).is_satake()
+    arbitrary = WeightedGraph.model_validate({
+        "slug": "arbitrary", "name": "Weighted directed multigraph",
+        "vertices": [{"id": "a", "weight": {"colour": ["red", 2]}}, {"id": "b", "weight": "blue"}],
+        "edges": [
+            {"id": "loop", "source": "a", "target": "a", "relation": "map", "directed": True, "weight": [1, "x"]},
+            {"id": "first", "source": "a", "target": "b", "relation": "map", "directed": True},
+            {"id": "second", "source": "a", "target": "b", "relation": "map", "directed": True},
+        ],
+    })
+    assert len(arbitrary.edges) == 3
+    assert arbitrary.properties() == ()
 
 
 def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> None:
