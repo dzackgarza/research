@@ -14,6 +14,7 @@ from pydantic import ValidationError
 
 from latticedb import (
     bulk_index,
+    bulk_sources_intake,
     bulk_sources,
     certificates,
     corpus,
@@ -161,6 +162,20 @@ def nipp_entry(source_file: str, source_line: int, tag: str, root: Root = Path()
 def nipp_batch(source_file: str, *, start_line: int = 1, limit: int, root: Root = Path()) -> None:
     """Admit pending entries of one Nipp table as validated lattice records."""
     admitted, repeated = nipp_intake.admit(root, source_file, start_line, limit)
+    print(f"{admitted} lattice records written; {repeated} repeated forms linked")
+
+
+@app.command(name="brandt-batch")
+def brandt_batch(source_file: str, *, start_line: int = 1, limit: int, root: Root = Path()) -> None:
+    """Admit a range of one Brandt–Intrau–Schiemann table as lattice cards."""
+    admitted, repeated = bulk_sources_intake.brandt(root, source_file, start_line, limit)
+    print(f"{admitted} lattice records written; {repeated} repeated forms linked")
+
+
+@app.command(name="watson-batch")
+def watson_batch(*, start_line: int = 1, limit: int, root: Root = Path()) -> None:
+    """Admit a range of Watson's table as lattice cards."""
+    admitted, repeated = bulk_sources_intake.watson_rows(root, start_line, limit)
     print(f"{admitted} lattice records written; {repeated} repeated forms linked")
 
 
