@@ -42,16 +42,84 @@ Keep the structure-functor graph distinct from a property-inclusion poset. Prese
 
 Constructor alignment is part of the current discovery and API-freeze work; the full core replacement remains the separately scheduled integration node. Before freezing constructors, trace a module, a formed module and a subgroup through the core's actual APIs, recording any missing public core operation at its owner. A missing operation is core work, not permission to add a second preamble framework. Preserve mathematical specimens across the rewrite and compare retained data and map equations, not old class identities.
 
-## What the history requires
+## Failure mechanisms this model was learned from
 
-| Inspected change | Concrete lesson for this design |
-| --- | --- |
-| `7bbf7e60c` added a `BiproductLattices.ParentMethods.__init__` that forwarded `summands` and `biproduct_factors`; `d59eb8ef0` removed it and ordered providers by `_derived_construction_parameters` in `_owned_implementation_bases` | A leaf forwarding constructor duplicated a dependency that belonged in the shared construction chain. Discover and display the existing producer/consumer order rather than registering another forwarding route. |
-| `70104eaf6` changed localized-module construction from `Category.join(placement)` to `owned_category_join(placement)` | Having all constructor names was insufficient: the selected implementation had to preserve the provider order. Current `_object_of` normalizes joins through `_owned_realization_of_join`; retain that common entry. |
-| `144ba1883` removed the explicit `ModuleMorphism` base, stored lower arrow and repeated methods from `MultiplicativeAlgebraMorphism`, then declared it through `ElementMethods` | Arrow inheritance belongs to the Mor category graph. A constructor decorator must not manufacture a parallel Python inheritance graph or register a concrete arrow class as the public constructor. |
-| `09215fd7e` separated algebra framing from module framing; `e8866fb1f` repaired resolution-refactor losses involving selected lifts, bilinear pullbacks and framed-module queries | Similar names and category membership cannot identify the selected datum. Inspection must follow actual retained modules, forms, resolutions and maps. A registry entry cannot certify this. |
+These cases explain the construction principles; they are teaching history rather
+than a new incident ledger. They concern inspected diffs, some of which explicitly
+left execution pending. Their messages do not establish a passing current session.
+The successor stack consumes their lessons, not their Python runtime arrangements;
+research's separately assigned construction and integration work remains in force.
 
-These are statements about inspected diffs. Several commits explicitly leave execution pending; their messages are not evidence of a passing current session.
+### Forwarding duplicated a shared construction responsibility
+
+`7bbf7e60c` added a `BiproductLattices.ParentMethods.__init__` forwarding `summands`
+and `biproduct_factors`. That leaf constructor duplicated a dependency of the
+shared construction chain. `d59eb8ef0` removed it and ordered providers by
+`_derived_construction_parameters` in `_owned_implementation_bases`. Likewise,
+`70104eaf6` replaced `Category.join(placement)` with `owned_category_join(placement)`
+for localized modules: possessing all constructor names had not preserved their
+producer/consumer order. The correction was shared construction at its owner,
+not one forwarding accommodation per leaf. Those provider mechanisms are evidence
+about this runtime, not a prescribed successor implementation.
+
+### Placement without construction prompted retrospective recovery
+
+Interfaces became visible before their required construction data existed.
+`09215fd7e` separated algebra framing from module framing; `e8866fb1f` repaired
+resolution-refactor losses involving selected lifts, bilinear pullbacks and
+framed-module queries. Similar names and category membership had erased the
+identity of the selected datum, leaving consumers to recover missing state.
+Construct and retain the actual module, form, resolution, inclusion and action at
+their owner and thread them through composition. A registry entry or graph path
+cannot reconstruct them. The successor must expose required computational data;
+that requirement is not a proof of its backend's correctness.
+
+Arrow construction suffered the same substitution of placement for data.
+`144ba1883` removed the explicit `ModuleMorphism` base, stored lower arrow and
+repeated methods from `MultiplicativeAlgebraMorphism`, declaring it through
+`ElementMethods` instead. Arrow inheritance belongs to the Mor construction,
+not a parallel Python graph manufactured by decorators. Merely changing a base
+while retaining the old mechanism does not complete that semantic repair.
+
+### Invented law checking generated an escape framework
+
+In `sage-categories`, `27b3e507` required an Equifier constructor to decide its
+defining equation before admitting a value. Turning a mathematical specification
+into a runtime admission burden generated a `certified_structures` escape route;
+`96054a58` removed that route and returned consumers to ordinary constructors.
+Before improving an exception framework, inspect whether its prerequisite belongs
+at that boundary. Formal definitions and genuinely proof-producing computations
+have proof obligations; an external realization is not automatically required to
+prove its universal correctness. Preserve defining data and protocol checks
+without promoting unchecked data to theorems.
+
+### Role labels did not prevent implementation-shaped mathematics
+
+The supplied binder history used separate authors while the orchestrator prescribed
+row choices, obligation shapes and proof goals until a downstream tactic succeeded.
+An authorship gate admitted nominally separate roles while the implementation
+still determined the upstream question. Authority concerns who determines meaning,
+not who signs a file. Independently motivated upstream computational API improvement
+is necessary; tailoring mathematics to a failing implementation is not that work.
+
+### Verification activity displaced the required construction
+
+The research postmortem records selection by availability, throughput mistaken for
+progress, verification becoming the target, and literal compliance with a
+structural task. On 2026-09-26, 402 single-surface test commits accompanied about
+sixteen lines of source change to architecture nodes and one closed node. A base
+class swap retaining the stored lower arrow similarly satisfied task wording
+without generating arrow types from the Mor graph. The consequence was churn
+around an unchanged cause. Judge the required operation and its compositions by
+what they now do. Counts and local checks cannot make that judgment, and this
+lesson does not authorize detectors, hooks or mandatory checklists.
+
+The supplied B0 intervention repeated the prerequisite error by prescribing
+runtime reconstruction and independent proof obligations for computed results,
+then treating reconstruction and approval machinery as progress. Remediation
+plans are fallible engineering designs. Remove an invented responsibility and
+its dependent machinery when they obstruct the intended capability; do not
+weaken the capability or retain the machinery merely because a plan named it.
 
 ## Evidence from the current research runtime
 

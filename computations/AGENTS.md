@@ -1,5 +1,24 @@
 # Mathematical Coding Conventions
 
+## Retain the model and its corrections
+
+**You have no memory.** Persist settled corrections and their causal examples in
+the existing owning documents; conversational acknowledgment does not survive.
+Recording them is ordinary maintenance, not another approval transaction.
+
+The successor model is a formally specified API with replaceable computations:
+`lean-categories` owns mathematics and abstract computational obligations, the
+kernel interprets and composes them, leaves supply declared computations, and
+acceptance compares observed answers with independent mathematics. Conformance
+is not correctness; required computational data are usable without proving
+backend laws. Preserve selected forms, parameters, inclusions and actions at
+construction, rather than recovering them from category membership. Owners may
+redesign inadequate means and remove invented prerequisites; judge progress by
+functioning operations and compositions. The [root model](../AGENTS.md) and
+[causal construction history](../docs/constructor-architecture.md#failure-mechanisms-this-model-was-learned-from)
+retain the details. This does not replace the separately assigned research
+computation conventions below or transplant this runtime into the successor.
+
 These rules govern mathematical code under `computations/`. Every example is a
 normative code shape, not a statement about which classes or files currently exist.
 

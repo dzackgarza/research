@@ -143,6 +143,13 @@ Computation uses maintained implementations: [Sage finite posets and order compl
 
 ## Questions grounded in this repository's history
 
+Read the causal cases in [constructor architecture](constructor-architecture.md#failure-mechanisms-this-model-was-learned-from)
+with these questions. Source surveys expose construction routes, not proofs of
+backend laws. Follow retained selected forms, inclusions and actions through the
+actual construction rather than inferring them from category membership. These
+research specimens motivate successor API design without prescribing its legacy
+provider MRO, initializer or runtime reconstruction mechanisms.
+
 | Evidence | Review question | Useful slice |
 | --- | --- | --- |
 | `6005c4c58` removed repeated finiteness methods from finite and infinite group refinements | Is a refinement repeating the general operation, or providing a needed algorithm case? | Same-name source definitions and live introductions against their up-sets |
