@@ -931,6 +931,9 @@
 02BT derive:
   inputs: 9e4bb6fc475f3ef1501e6b32f8fe76bd2459008e25705c56e810ddca9ef1016a
   by: latticedb 0.1.0
+05S4 derive:
+  inputs: 476697e697069b627d739ff6a14fbce3c3e70fb131794f23ff54f202f0a62908
+  by: latticedb 0.1.0
 corpus summands:
   inputs: 39d13220034c8914e270f83bde7fdcd29087eb445f9dae5be92e4eee174af9ed
   by: latticedb 0.1.0

@@ -21,6 +21,7 @@ from latticedb import (
     hashimoto,
     hoehn_mason,
     nebe_sloane,
+    nipp,
     records,
     site,
     source_cards,
@@ -50,10 +51,10 @@ def _refuse(found: list[str]) -> None:
         sys.exit(1)
 
 
-def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
+def _admit(root: Root, declared: dict[str, Yaml], prose: str, *, tag: str | None = None, seed_path: Path | None = None) -> Path:
     """Compute the values of a new record once, check it against its declared values and the corpus, and write it under the next tag."""
     loaded = corpus.load(root)
-    tag = corpus.next_tag(loaded)
+    tag = corpus.next_tag(loaded) if tag is None else tag
     match declared["families"]:
         case list() as families:
             _refuse(records.gram_problems(records.gram_tensor(declared["gram_tensor"]), tuple(str(family) for family in families)))
@@ -67,9 +68,15 @@ def _admit(root: Root, declared: dict[str, Yaml], prose: str) -> Path:
         _refuse(_record_problems(error))
         sys.exit(1)
     path = root / "lattices" / f"{tag}.md"
+    assert not path.exists(), f"{path} already exists"
     _refuse(records.admission_problems(lattice, {entry.lattice.tag: entry.lattice for entry in loaded.entries}))
     _refuse(corpus.problems([*loaded.entries, corpus.Entry(lattice, prose, path)], loaded.families, loaded.retired))
-    path.write_text(records.record_text(record, prose))
+    if seed_path is None:
+        path.write_text(records.record_text(record, prose))
+    else:
+        assert seed_path.parent == root / "lattices" / "source" and seed_path.stem == tag
+        seed_path.write_text(records.record_text(record, prose))
+        seed_path.rename(path)
     held = certificates.load(root)
     held[f"{tag} derive"] = certificates.Certificate(inputs=certificates.gram_digest(lattice), by=LATTICEDB)
     certificates.save(root, held)
@@ -140,6 +147,20 @@ def bulk_index_write(root: Root = Path()) -> None:
 def bulk_cards(root: Root = Path()) -> None:
     """Seed permanent Markdown cards for every indexed source item."""
     print(f"lattices/source: {source_cards.seed(root)} new cards")
+
+
+@app.command(name="nipp-entry")
+def nipp_entry(source_file: str, source_line: int, tag: str, root: Root = Path()) -> None:
+    """Write one Nipp source form as a validated lattice record under its existing tag."""
+    matches = [entry for entry in nipp.stored(root / "sources" / "nipp") if entry.source_file == source_file and entry.source_line == source_line]
+    assert len(matches) == 1, f"expected one Nipp form at {source_file}:{source_line}"
+    entry = matches[0]
+    seed_path = root / "lattices" / "source" / f"{tag}.md"
+    assert seed_path.exists(), f"{seed_path} does not exist"
+    seed = frontmatter.load(str(seed_path))
+    assert seed["source"] == "nipp" and seed["id"] == f"{source_file}:{source_line}"
+    declared, prose = nipp.record(entry)
+    print(_admit(root, declared, prose, tag=tag, seed_path=seed_path))
 
 
 @app.command

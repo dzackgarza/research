@@ -7,6 +7,7 @@ from html import unescape
 from pathlib import Path
 
 from latticedb.bulk_sources import NIPP_QUATERNARY, NIPP_QUINARY
+from latticedb.model import Yaml
 
 QUATERNARY_PAIRS = ((0, 1), (0, 2), (1, 2), (0, 3), (1, 3), (2, 3))
 QUINARY_PAIRS = (*QUATERNARY_PAIRS, (0, 4), (1, 4), (2, 4), (3, 4))
@@ -90,3 +91,22 @@ def quinary(path: Path) -> list[NippEntry]:
 def stored(directory: Path) -> list[NippEntry]:
     """Read the complete stored Nipp source tables."""
     return [entry for name in NIPP_QUATERNARY for entry in quaternary(directory / name)] + [entry for name in NIPP_QUINARY for entry in quinary(directory / name)]
+
+
+def record(entry: NippEntry) -> tuple[dict[str, Yaml], str]:
+    """State one Nipp form as the declared fields of a lattice record."""
+    locator = f"{entry.source_file}:{entry.source_line}"
+    name = f"Nipp form {locator}"
+    url = f"https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/{entry.source_file}"
+    declared: dict[str, Yaml] = {
+        "name": name,
+        "latex": name,
+        "aliases": [],
+        "gram_tensor": [list(row) for row in entry.gram_tensor],
+        "families": [],
+        "related": [],
+        "references": [{"citation": f"G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, {locator}.", "url": url}],
+        "definite": {"automorphism_group_order": entry.automorphism_group_order},
+    }
+    prose = f"The Gram tensor is the integral bilinear form of the quadratic form at line {entry.source_line} of Nipp's table `{entry.source_file}`."
+    return declared, prose
