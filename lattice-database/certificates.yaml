@@ -919,6 +919,9 @@
 0283 integral.primitive_orbits:
   inputs: 2b709d4d2cf3bec26ba6e9257250863f01bb8cf83e350af82f491f72f07425a5
   by: SageMath 10.10.beta8
+02BQ derive:
+  inputs: 6606c4ac41d030dd082bc4508b448e477afbca41783d5126ea972e74751987d1
+  by: latticedb 0.1.0
 corpus summands:
   inputs: 39d13220034c8914e270f83bde7fdcd29087eb445f9dae5be92e4eee174af9ed
   by: latticedb 0.1.0

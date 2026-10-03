@@ -7,7 +7,8 @@ from pathlib import Path
 import frontmatter
 import pytest
 import yaml
-from latticedb import corpus, records, root_systems, site
+
+from latticedb import corpus, nebe_sloane, records, root_systems, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Morphism, Yaml
 
@@ -188,6 +189,20 @@ def test_nebe_sloane_writes_the_record_of_a_stored_entry_with_its_reference(tmp_
     assert lattice.definite is not None
     assert (lattice.definite.minimum, lattice.definite.kissing_number) == (4, 756)
     assert [reference.url for reference in lattice.references] == ["https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/K12.html"]
+
+
+def test_nebe_sloane_intakes_a_named_entry_from_the_union_archive(tmp_path: Path) -> None:
+    root = write_corpus(tmp_path)
+    source = root / "sources" / "nebe_sloane"
+    source.mkdir(parents=True)
+    shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "union.gz", source / "union.gz")
+    run("nebe-sloane", "BGF.2.2112", "--name", "BGF.2.2112", "--latex", r"\mathrm{BGF.2.2112}", "--root", str(root))
+    lattice = corpus.load(root).entries[1].lattice
+    assert (lattice.gram_tensor, lattice.determinant) == (((2, 1), (1, 12)), 23)
+    assert lattice.definite is not None
+    assert (lattice.definite.minimum, lattice.definite.kissing_number) == (2, 2)
+    assert lattice.references[0].url == "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz"
+    assert nebe_sloane.stored_problems(root, corpus.load(root)) == []
 
 
 def test_certify_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:

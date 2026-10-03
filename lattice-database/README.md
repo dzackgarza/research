@@ -42,7 +42,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `src/latticedb/corpus.py` | Reads all records and checks the statements that concern more than one record |
 | `src/latticedb/site.py` | Builds the site |
 | `src/latticedb/templates/`, `assets/` | Page templates, styles and the database script |
-| `sources/nebe_sloane/<ENTRY>.json` | An entry of the Catalogue of Lattices as fetched, the source of the record that cites it |
+| `sources/nebe_sloane/union.gz`, `<ENTRY>.json` | The catalogue's standard-format union archive and stored entries read from it or from individual pages |
 | `sources/hashimoto/table_10_2.json`, `table_10_3.json` | Tables 10.2 and 10.3 of K. Hashimoto, arXiv:1012.2682, as printed, each row linked to the records of $\Lambda_G$ and $\Lambda^G$ by a twist and a change of basis |
 | `sources/hoehn_mason/leech.json`, `lattices_<i>_<j>.json` | The Leech lattice and the 40 entries `lattices[i,j]` of the Magma file of G. Höhn and G. Mason, arXiv:1505.06420, whose coinvariant lattice is $\Lambda_G(-1)$ for a row of Table 10.2 of Hashimoto: the bases and the stabilizer generators as printed, each linked to its record by a twist and a change of basis |
 | `tests/` | Tests of the validators, of the record commands and of the built site |
@@ -244,7 +244,7 @@ To add a lattice:
 
 2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
    `--alias`, `--family`, `--reference` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
-   For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`, fetches it first when it does not exist, checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference of the entry.
+   For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`. When the entry is absent, it reads the local `union.gz` archive, or fetches its individual page if the archive is absent. It checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference of the entry.
    The command refuses a record that does not validate, that is a twist $M(n)$ with $n \neq 1$ of the lattice the corpus records (other than a twist by 2 in the family `nikulin-two-elementary`), that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
 
 3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
@@ -391,11 +391,11 @@ The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a
 ## Sources to absorb
 
 The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane), <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/>, with its indefinite lattices first.
-`sources/nebe_sloane/` holds the 41 entries absorbed so far, all definite: the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$, $BW_{16}$, the Leech lattice $\Lambda_{24}$ and the 23 other Niemeier lattices.
+`sources/nebe_sloane/` holds the absorbed entries and the catalogue's `union.gz` archive. The definite records include the laminated lattices $\Lambda_9$ to $\Lambda_{20}$, $K_{12}$, $\kappa_7$ to $\kappa_9$, $BW_{16}$, the Leech lattice $\Lambda_{24}$, the 23 other Niemeier lattices, and `BGF.2.2112`.
 
 The work that remains, in order:
 
-1. Absorb the entries of the bulk archive.
+1. Absorb the remaining entries of the bulk archive.
    The whole archive, read on 2026-10-02 from <https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz>, holds 823 named entries; 754 give a parseable single Gram tensor, 25 of those have rational components (the dual lattices $A_n^*$, $D_n^*$, $E_6^*$, $E_7^*$ and their relatives), and exactly one of the parseable Gram tensors is indefinite: `Shimada_86`, of signature $(85, 1)$.
    The indefinite material of the corpus therefore does not come from the catalogue; the entries to absorb are definite, plus `Shimada_86`.
 

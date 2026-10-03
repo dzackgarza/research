@@ -163,7 +163,7 @@ def morphism(
     print(path)
 
 
-SOURCES = {"hashimoto": (hashimoto.stored_problems, ("hashimoto",)), "hoehn_mason": (hoehn_mason.stored_problems, ("hashimoto", "hoehn_mason"))}
+SOURCES = {"hashimoto": (hashimoto.stored_problems, ("hashimoto",)), "hoehn_mason": (hoehn_mason.stored_problems, ("hashimoto", "hoehn_mason")), "nebe_sloane_archive": (nebe_sloane.stored_problems, ("nebe_sloane",))}
 """Each source checked against the corpus, with its check and the directories under `sources/` that it reads."""
 
 LATTICEDB = f"latticedb {version('latticedb')}"

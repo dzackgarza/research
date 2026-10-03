@@ -4,12 +4,14 @@ Each entry page lists sections `NAME`, `DIMENSION`, `DET` (the entries of the
 Niemeier lattices name it `DETERMINANT`), `MINIMAL_NORM`, `KISSING_NUMBER`,
 `REFERENCES` and `GRAM`. The `GRAM` section gives the rank
 and then the components `b(e_i, e_j)`, row by row, for all `j` or for `j <= i`.
-`fetch` reads an entry page into an `Entry`; `sources/nebe_sloane/<NAME>.json`
-stores it. `record` writes the entry as the declared fields of a record, and
+`fetch` reads an entry page into an `Entry`; `archive_entry` reads a named entry
+from `union.gz`. `sources/nebe_sloane/<NAME>.json` stores it.
+`record` writes the entry as the declared fields of a record, and
 `records.derive` computes the rest; `check` compares the invariants that the
 catalogue states with the computed ones.
 """
 
+import gzip
 import re
 from decimal import Decimal
 from fractions import Fraction
@@ -19,11 +21,14 @@ from urllib.request import urlopen
 
 from pydantic import BaseModel, ConfigDict
 
+from latticedb.corpus import Corpus
 from latticedb.model import Yaml
 
 CATALOGUE = "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES"
+ARCHIVE = f"{CATALOGUE}/union.gz"
 FAMILY = "nebe-sloane-catalogue"
 _SECTION = re.compile(r'<a NAME="([^"]+)"><STRONG>[^<]*</STRONG></a><br>\n(.*?)(?=<p><li>|</ul>)', re.DOTALL)
+_ARCHIVE_SECTION = re.compile(r"^%([A-Z_]+)[ \t]*\r?\n", re.MULTILINE)
 
 
 class Entry(BaseModel):
@@ -85,12 +90,41 @@ def fetch(name: str) -> Entry:
     )
 
 
+def archive_entry(archive: Path, name: str) -> Entry:
+    """Read one named standard-format entry from the catalogue's union archive."""
+    source = gzip.decompress(archive.read_bytes()).decode("latin-1")
+    matches: list[dict[str, list[str]]] = []
+    for block in source.split("%LAST_LINE"):
+        boundaries = list(_ARCHIVE_SECTION.finditer(block))
+        sections = {
+            match.group(1): block[match.end() : boundaries[index + 1].start() if index + 1 < len(boundaries) else len(block)].strip().splitlines()
+            for index, match in enumerate(boundaries)
+        }
+        if sections.get("NAME", [None])[0] == name:
+            matches.append(sections)
+    assert len(matches) == 1, f"expected one archive entry named {name}, found {len(matches)}"
+    found = matches[0]
+    return Entry(
+        name=name,
+        title=name,
+        url=ARCHIVE,
+        dimension=int(found["DIMENSION" if "DIMENSION" in found else "DIM"][0]),
+        determinant=integer(found["DET"][0]),
+        minimal_norm=integer(found["MINIMAL_NORM"][0]),
+        kissing_number=integer(found["KISSING_NUMBER"][0]),
+        references=tuple(line.strip() for line in found.get("REFERENCES", []) if line.strip()),
+        gram_tensor=components(found["GRAM"]),
+    )
+
+
 def stored(directory: Path, name: str) -> Entry:
-    """The entry from `directory/<name>.json`, fetched and stored there first when the file does not exist."""
+    """The stored entry, read from the local union archive or its HTML page when absent."""
     path = directory / f"{name}.json"
     if not path.exists():
         directory.mkdir(parents=True, exist_ok=True)
-        path.write_text(fetch(name).model_dump_json(indent=1) + "\n")
+        archive = directory / "union.gz"
+        entry = archive_entry(archive, name) if archive.exists() else fetch(name)
+        path.write_text(entry.model_dump_json(indent=1) + "\n")
     return Entry.model_validate_json(path.read_text())
 
 
@@ -122,3 +156,32 @@ def check(entry: Entry, derived: dict[str, Yaml]) -> None:
     stated = {"rank": entry.dimension, "determinant": entry.determinant, "minimum": entry.minimal_norm, "kissing_number": entry.kissing_number}
     computed = {"rank": derived["rank"], "determinant": derived["determinant"], "minimum": definite["minimum"], "kissing_number": definite["kissing_number"]}
     assert stated == computed, f"the entry {entry.name} states {stated}, the Gram tensor gives {computed}"
+
+
+def stored_problems(root: Path, loaded: Corpus) -> list[str]:
+    """Compare archive entries with their stored transcriptions and lattice records."""
+    directory = root / "sources" / "nebe_sloane"
+    archive = directory / "union.gz"
+    by_name = {name: entry.lattice for entry in loaded.entries for name in (entry.lattice.name, *entry.lattice.aliases)}
+    problems: list[str] = []
+    for path in sorted(directory.glob("*.json")):
+        entry = Entry.model_validate_json(path.read_text())
+        if entry.url != ARCHIVE:
+            continue
+        if entry != archive_entry(archive, entry.name):
+            problems.append(f"{path}: differs from union.gz entry {entry.name}")
+        lattice = by_name.get(entry.name)
+        if lattice is None:
+            problems.append(f"{path}: no lattice record for {entry.name}")
+            continue
+        definite = lattice.definite
+        if (
+            lattice.gram_tensor != entry.gram_tensor
+            or lattice.rank != entry.dimension
+            or lattice.determinant != entry.determinant
+            or definite is None
+            or definite.minimum != entry.minimal_norm
+            or definite.kissing_number != entry.kissing_number
+        ):
+            problems.append(f"{path}: source invariants differ from record {lattice.tag}")
+    return problems
