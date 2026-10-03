@@ -4411,6 +4411,14 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return embedding.codomain().O().pointwise_stabilizer(embedding)
 
         @cached_method
+        def pointwise_perpendicular_kernel(self):
+            r"""Return the kernel of isometries acting identically on \(I^\perp\)."""
+            return lattice_engines.engine_capabilities.compute(
+                "lattice.pointwise_perpendicular_kernel",
+                self,
+            )
+
+        @cached_method
         def levi_action(self):
             r"""Return \(P_I\to O(K_I)\), \(g\mapsto\bar g\), the action on \(I^\perp/I\).
 

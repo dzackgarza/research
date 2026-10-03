@@ -1038,6 +1038,12 @@ _PORT_REALIZATIONS = (
         "sage_indefinite_port.groups.integral_structures",
         "integral_structure_action_for_group",
     ),
+    (
+        "lattice.pointwise_perpendicular_kernel",
+        "GetOrthogonalTotallyIsotropicKernelSubspace",
+        "sage_indefinite_port.indefinite.isotropic_lifts",
+        "pointwise_perpendicular_kernel",
+    ),
 )
 
 for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
