@@ -5,7 +5,7 @@ from pathlib import Path
 
 from flint import fmpz_mat
 
-from latticedb import brandt_intrau, nipp, watson
+from latticedb import brandt_intrau, nebe_sloane, nipp, watson
 
 SOURCES = Path(__file__).resolve().parent.parent / "sources"
 
@@ -30,3 +30,10 @@ def test_watson_table_reads_lower_triangular_gram_components() -> None:
     entries = watson.stored(SOURCES / "watson" / "watson.txt")
     assert (entries[0].dimension, entries[0].gram_tensor) == (1, ((1,),))
     assert (entries[1].dimension, entries[1].gram_tensor) == (2, ((5, 1), (1, 23)))
+
+
+def test_union_archive_retains_repeated_names_at_distinct_positions() -> None:
+    entries = nebe_sloane.archive_rows(SOURCES / "nebe_sloane" / "union.gz")
+    assert len(entries) == 823
+    assert [entry.ordinal for entry in entries] == list(range(1, 824))
+    assert len({entry.name for entry in entries}) < len(entries)

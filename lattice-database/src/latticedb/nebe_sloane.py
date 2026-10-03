@@ -14,6 +14,7 @@ catalogue states with the computed ones.
 import ast
 import gzip
 import re
+from dataclasses import dataclass
 from decimal import Decimal
 from fractions import Fraction
 from html import unescape
@@ -46,6 +47,13 @@ class Entry(BaseModel):
     kissing_number: int | None
     references: tuple[str, ...]
     gram_tensor: tuple[tuple[int, ...], ...]
+
+
+@dataclass(frozen=True)
+class ArchiveRow:
+    ordinal: int
+    name: str
+    sections: dict[str, list[str]]
 
 
 def sections(page: str) -> dict[str, list[str]]:
@@ -113,18 +121,26 @@ def fetch(name: str) -> Entry:
     )
 
 
-def archive_entry(archive: Path, name: str) -> Entry:
-    """Read one named standard-format entry from the catalogue's union archive."""
+def archive_rows(archive: Path) -> list[ArchiveRow]:
+    """Read every source entry with its position in the union archive."""
     source = gzip.decompress(archive.read_bytes()).decode("latin-1")
-    matches: list[dict[str, list[str]]] = []
-    for block in source.split("%LAST_LINE"):
+    rows: list[ArchiveRow] = []
+    for block in re.split(r"(?=^%NAME[ \t]*\r?$)", source, flags=re.MULTILINE):
         boundaries = list(_ARCHIVE_SECTION.finditer(block))
+        if not boundaries or boundaries[0].group(1) != "NAME":
+            continue
         sections = {
             match.group(1): block[match.end() : boundaries[index + 1].start() if index + 1 < len(boundaries) else len(block)].strip().splitlines()
             for index, match in enumerate(boundaries)
         }
-        if sections.get("NAME", [None])[0] == name:
-            matches.append(sections)
+        assert sections.get("NAME"), f"union archive entry {len(rows) + 1} has no name"
+        rows.append(ArchiveRow(len(rows) + 1, sections["NAME"][0].strip(), sections))
+    return rows
+
+
+def archive_entry(archive: Path, name: str) -> Entry:
+    """Read one uniquely named standard-format entry from the catalogue's union archive."""
+    matches = [row.sections for row in archive_rows(archive) if row.name == name]
     assert len(matches) == 1, f"expected one archive entry named {name}, found {len(matches)}"
     found = matches[0]
     dimension = int(found["DIMENSION" if "DIMENSION" in found else "DIM"][0])

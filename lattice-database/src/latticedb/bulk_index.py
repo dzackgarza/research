@@ -8,7 +8,7 @@ from pathlib import Path
 
 from flint import fmpz_mat
 
-from latticedb import brandt_intrau, nipp, watson
+from latticedb import brandt_intrau, nebe_sloane, nipp, watson
 from latticedb.model import Yaml
 
 
@@ -77,6 +77,16 @@ def _watson_rows(path: Path) -> Iterable[dict[str, Yaml]]:
         }
 
 
+def _nebe_sloane_rows(path: Path) -> Iterable[dict[str, Yaml]]:
+    for entry in nebe_sloane.archive_rows(path):
+        yield {
+            "source": "nebe_sloane",
+            "id": f"union:{entry.ordinal}",
+            "name": entry.name,
+            "sections": entry.sections,
+        }
+
+
 def write(root: Path) -> dict[str, int]:
     """Store every parsed source form and its exact Gram determinant."""
     sources = root / "sources"
@@ -85,4 +95,5 @@ def write(root: Path) -> dict[str, int]:
         "nipp": _write(target / "nipp.jsonl.gz", _nipp_rows(sources / "nipp")),
         "brandt_intrau": _write(target / "brandt_intrau.jsonl.gz", _brandt_intrau_rows(sources / "brandt_intrau")),
         "watson": _write(target / "watson.jsonl.gz", _watson_rows(sources / "watson" / "watson.txt")),
+        "nebe_sloane": _write(target / "nebe_sloane.jsonl.gz", _nebe_sloane_rows(sources / "nebe_sloane" / "union.gz")),
     }
