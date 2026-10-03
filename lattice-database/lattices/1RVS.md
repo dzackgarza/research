@@ -1,0 +1,23 @@
+---
+tag: 1RVS
+name: nipp tbl.256.html:6565
+latex: nipp tbl.256.html:6565
+aliases: []
+rank: 5
+gram_tensor:
+- [2, 0, 0, 0, 0]
+- [0, 2, 0, 0, 0]
+- [0, 0, 4, 0, 2]
+- [0, 0, 0, 6, 2]
+- [0, 0, 2, 2, 6]
+signature: [5, 0]
+determinant: 416
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, tbl.256.html:6565.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/tbl.256.html
+---
+
+Source entry `nipp:tbl.256.html:6565` gives this Gram tensor.
