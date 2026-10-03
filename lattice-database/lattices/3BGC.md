@@ -1,0 +1,21 @@
+---
+tag: 3BGC
+name: brandt_intrau Brandt_2.html:26691
+latex: brandt_intrau Brandt_2.html:26691
+aliases: []
+rank: 3
+gram_tensor:
+- [8, 0, 4]
+- [0, 12, 3]
+- [4, 3, 22]
+signature: [3, 0]
+determinant: 1848
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:26691.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+---
+
+Source entry `brandt_intrau:Brandt_2.html:26691` gives this Gram tensor.
