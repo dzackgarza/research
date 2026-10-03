@@ -37,6 +37,37 @@ def test_the_reduction_drops_one_from_each_side_of_the_signature() -> None:
     assert reduction.is_isometric(root_lattice)
 
 
+def test_coordinate_frame_is_excluded_from_isotropic_reduction_equality() -> None:
+    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
+    isotropic = lattice.module_generators()[0]
+    reduction = isotropic.isotropic_reduction()
+    labels = tuple(reduction.module_generating_set())
+    frame = reduction.coordinate_frame()
+    line = reduction.isotropic_sublattice()
+    isotropic_in_perpendicular = reduction.isotropic_inclusion()(
+        line.module_generators()[0]
+    )
+    shifted = {
+        label: frame[label] + isotropic_in_perpendicular
+        if label == labels[0]
+        else frame[label]
+        for label in labels
+    }
+
+    reframed = reduction.with_coordinate_frame(shifted)
+
+    assert reframed is not reduction
+    assert reframed == reduction
+    assert hash(reframed) == hash(reduction)
+    assert reframed.coordinate_frame()[labels[0]] != frame[labels[0]]
+    for label in labels:
+        assert reduction.projection()(frame[label]) == reduction.module_generator(label)
+        assert (
+            reframed.projection()(reframed.coordinate_frame()[label])
+            == reframed.module_generator(label)
+        )
+
+
 
 
 

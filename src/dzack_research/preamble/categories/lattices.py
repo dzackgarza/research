@@ -4059,7 +4059,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Lattices(self.base_ring())]
 
-    def _call_(self, isotropic_embedding):
+    def _call_(self, isotropic_embedding, *, coordinate_frame=None):
         r"""Return \(K_I=I^\perp/I\) for the totally isotropic embedding \(\iota:I\hookrightarrow L\).
 
         \(I\) pairs to zero against \(I^\perp\), so the form of \(L\)
@@ -4105,11 +4105,39 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
-        lifts = finite_indexed_family(
-            labels,
-            lift,
-            name="Isotropic-reduction lifts",
-        )
+        match coordinate_frame:
+            case None:
+                lifts = finite_indexed_family(
+                    labels,
+                    lift,
+                    name="Isotropic-reduction coordinate frame",
+                )
+            case _:
+                normalized = normalization.codomain()
+                normalized_labels = normalized.module_generating_set()
+                presentation_projection = quotient.presentation_projection()
+
+                def selected_lift(position):
+                    candidate = perpendicular(coordinate_frame[position])
+                    normalized_image = normalization.forward()(
+                        presentation_projection(candidate)
+                    )
+                    expected = normalized.module_generator(
+                        normalized_labels[int(position)]
+                    )
+                    if normalized_image != expected:
+                        raise ValueError(
+                            f"{candidate!r} is not a lift of quotient generator "
+                            f"{position!r} for the isotropic reduction of "
+                            f"{isotropic_embedding!r}"
+                        )
+                    return candidate
+
+                lifts = finite_indexed_family(
+                    labels,
+                    selected_lift,
+                    name="Isotropic-reduction coordinate frame",
+                )
         module = ring._fresh_free_module_on(labels)
         match rank:
             case 0:
@@ -4134,7 +4162,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 "isotropic_embedding": isotropic_embedding,
                 "orthogonal_complement": perpendicular,
                 "isotropic_inclusion": into_perpendicular,
-                "reduction_lifts": lifts,
+                "coordinate_frame": lifts,
                 "reduction_normalization": normalization,
             },
         )
@@ -4145,16 +4173,38 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             isotropic_embedding,
             orthogonal_complement,
             isotropic_inclusion,
-            reduction_lifts,
+            coordinate_frame,
             reduction_normalization,
             **rest,
         ) -> None:
             self._preamble_isotropic_embedding = isotropic_embedding
             self._preamble_orthogonal_complement = orthogonal_complement
             self._preamble_isotropic_inclusion = isotropic_inclusion
-            self._preamble_reduction_lifts = reduction_lifts
+            self._preamble_coordinate_frame = coordinate_frame
             self._preamble_reduction_normalization = reduction_normalization
             super().__init__(**rest)
+
+        def __eq__(self, other) -> bool:
+            r"""Compare reductions by their defining isotropic embedding, not their coordinate frame."""
+            if self is other:
+                return True
+            return (
+                hasattr(other, "base_ring")
+                and other.base_ring() is self.base_ring()
+                and other in IsotropicReductions(self.base_ring())
+                and other.isotropic_embedding() is self.isotropic_embedding()
+            )
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __hash__(self) -> int:
+            return hash(
+                (
+                    IsotropicReductions(self.base_ring()),
+                    id(self.isotropic_embedding()),
+                )
+            )
 
         def isotropic_embedding(self):
             r"""Return \(\iota:I\hookrightarrow L\), the embedding this reduces."""
@@ -4251,9 +4301,20 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 orthogonal_summand,
             )
 
-        def reduction_lifts(self):
+        def coordinate_frame(self):
             r"""Return the chosen lifts of the framing of \(K_I\) into \(I^\perp\)."""
-            return self._preamble_reduction_lifts
+            return self._preamble_coordinate_frame
+
+        def with_coordinate_frame(self, coordinate_frame):
+            r"""Return this reduction with another lift frame of the same quotient generators."""
+            return IsotropicReductions(self.base_ring())(
+                self.isotropic_embedding(),
+                coordinate_frame=coordinate_frame,
+            )
+
+        def reduction_lifts(self):
+            r"""Archived name for :meth:`coordinate_frame`."""
+            return self.coordinate_frame()
 
         def quotient_lattice(self):
             r"""Return \(K_I=I^\perp/I\), which is this lattice."""
