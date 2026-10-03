@@ -4,7 +4,7 @@ A catalogue of lattices.
 A *lattice* here is a free module $L$ of finite rank over $\mathbb{Z}$ with a symmetric bilinear form $b \colon L \times L \to \mathbb{Q}$.
 The form can be definite, indefinite or degenerate, and its values need not be integers.
 
-Each identified lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it. Each published source item has a permanent tagged Markdown card in `lattices/source/`.
+Each lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it.
 The build validates every record, writes one page for each lattice, and writes one table, with one row per record, that the database page filters, sorts and exports.
 
 The site is served locally at <http://lattice-database.localhost/>, and published at <https://dzackgarza.github.io/research/lattice-database/> by `.github/workflows/docs.yml`, which deploys it beside the docs book.
@@ -14,7 +14,6 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | Path | Contents |
 | --- | --- |
 | `lattices/<TAG>.md` | One record and its prose for each lattice |
-| `lattices/source/<TAG>.md` | Permanent Markdown card for each published source item, with a tag, locator, and its stated data |
 | `geometric-objects/<slug>.md` | One geometric object, its Hodge–Poincaré series, optional cohomology lattice links and cited prose |
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
 | `orthogonal-subgroups/`, `vector-orbits/`, `chambers/` | Named lattice group actions, primitive-vector orbits and hyperbolic chambers |
@@ -48,7 +47,6 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `sources/brandt_intrau/` | Brandt–Intrau–Schiemann's odd and even ternary form tables, read by `src/latticedb/brandt_intrau.py` |
 | `sources/watson/watson.txt` | Watson's single-class genus representatives, read by `src/latticedb/watson.py` |
 | `sources/normalized/*.jsonl.gz` | Reproducible source-row index: Nipp, Brandt–Intrau–Schiemann, and Watson forms with exact Gram determinants, plus every named Nebe–Sloane archive entry with its source sections and ordinal |
-| `src/latticedb/source_cards.py` | Seeds source item cards from the normalized index and retains their tags on later runs |
 | `sources/hashimoto/table_10_2.json`, `table_10_3.json` | Tables 10.2 and 10.3 of K. Hashimoto, arXiv:1012.2682, as printed, each row linked to the records of $\Lambda_G$ and $\Lambda^G$ by a twist and a change of basis |
 | `sources/hoehn_mason/leech.json`, `lattices_<i>_<j>.json` | The Leech lattice and the 40 entries `lattices[i,j]` of the Magma file of G. Höhn and G. Mason, arXiv:1505.06420, whose coinvariant lattice is $\Lambda_G(-1)$ for a row of Table 10.2 of Hashimoto: the bases and the stabilizer generators as printed, each linked to its record by a twist and a change of basis |
 | `tests/` | Tests of the validators, of the record commands and of the built site |
@@ -122,11 +120,6 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 Geometric objects can also store Pontryagin numbers, a Beauville–Bogomolov Riemann–Roch polynomial, $\operatorname{Aut}^0$, homotopy groups, Fano and surface data, and a homogeneous, horospherical, Calabi–Yau complete-intersection or toric anticanonical construction. A complete-intersection configuration stores its projective factors and equation multidegrees; the schema checks the Calabi–Yau degree and dimension equations.
 
 ## A record
-
-The bulk source tables seed `lattices/source/<TAG>.md` with `latticedb bulk-cards`.
-Each card has a permanent four-character tag, a source and row ID, and the full indexed source data.
-The cards record source presentations. Repeated presentations have separate source cards until an isometry identifies their lattice records. The established `lattices/<TAG>.md` files are the corpus's identified lattice records.
-New record tags follow both the source cards and the identified records; a tag cannot name both.
 
 ```yaml
 ---

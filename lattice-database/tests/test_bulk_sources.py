@@ -1,13 +1,11 @@
 """The published bulk tables present exact lattice forms in distinct conventions."""
 
-import gzip
-import json
 from fractions import Fraction
 from pathlib import Path
 
 from flint import fmpz_mat
 
-from latticedb import brandt_intrau, nebe_sloane, nipp, source_cards, watson
+from latticedb import brandt_intrau, nebe_sloane, nipp, watson
 
 SOURCES = Path(__file__).resolve().parent.parent / "sources"
 
@@ -39,21 +37,3 @@ def test_union_archive_retains_repeated_names_at_distinct_positions() -> None:
     assert len(entries) == 823
     assert [entry.ordinal for entry in entries] == list(range(1, 824))
     assert len({entry.name for entry in entries}) < len(entries)
-
-
-def test_source_rows_seed_permanent_markdown_cards(tmp_path: Path) -> None:
-    lattices = tmp_path / "lattices"
-    lattices.mkdir()
-    (lattices / "0001.md").write_text("---\ntag: '0001'\n---\n")
-    (tmp_path / "retired-tags.yaml").write_text("{}\n")
-    index = tmp_path / "sources" / "normalized"
-    index.mkdir(parents=True)
-    for source in source_cards.SOURCES:
-        row = {"source": source, "id": "row-1", "gram_tensor": [[1]]}
-        with gzip.open(index / f"{source}.jsonl.gz", "wt") as stream:
-            stream.write(json.dumps(row) + "\n")
-    assert source_cards.seed(tmp_path) == 4
-    assert source_cards.seed(tmp_path) == 0
-    cards = sorted((lattices / "source").glob("*.md"))
-    assert [path.stem for path in cards] == ["0002", "0003", "0004", "0005"]
-    assert all("gram_tensor:\n- - 1" in path.read_text() for path in cards)
