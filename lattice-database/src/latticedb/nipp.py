@@ -93,7 +93,7 @@ def stored(directory: Path) -> list[NippEntry]:
     return [entry for name in NIPP_QUATERNARY for entry in quaternary(directory / name)] + [entry for name in NIPP_QUINARY for entry in quinary(directory / name)]
 
 
-def record(entry: NippEntry) -> tuple[dict[str, Yaml], str]:
+def record(entry: NippEntry, scale: int = 1) -> tuple[dict[str, Yaml], str]:
     """State one Nipp form as the declared fields of a lattice record."""
     locator = f"{entry.source_file}:{entry.source_line}"
     name = f"Nipp form {locator}"
@@ -102,11 +102,13 @@ def record(entry: NippEntry) -> tuple[dict[str, Yaml], str]:
         "name": name,
         "latex": name,
         "aliases": [],
-        "gram_tensor": [list(row) for row in entry.gram_tensor],
+        "gram_tensor": [[value // scale for value in row] for row in entry.gram_tensor],
         "families": [],
         "related": [],
         "references": [{"citation": f"G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, {locator}.", "url": url}],
         "definite": {"automorphism_group_order": entry.automorphism_group_order},
     }
     prose = f"The Gram tensor is the integral bilinear form of the quadratic form at line {entry.source_line} of Nipp's table `{entry.source_file}`."
+    if scale != 1:
+        prose += f" The source form is the twist of this lattice by {scale}."
     return declared, prose

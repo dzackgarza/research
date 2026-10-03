@@ -931,6 +931,12 @@
 02BT derive:
   inputs: 9e4bb6fc475f3ef1501e6b32f8fe76bd2459008e25705c56e810ddca9ef1016a
   by: latticedb 0.1.0
+05S2 derive:
+  inputs: a049efc5d983fb0439bc2387f233f43da1e69de19cbd7d52ac861c466785df69
+  by: latticedb 0.1.0
+05S3 derive:
+  inputs: 74a38e117cb7ac0e8f900459a580b01d9f1a7a987725544db1e7419e2e4891f8
+  by: latticedb 0.1.0
 05S4 derive:
   inputs: 476697e697069b627d739ff6a14fbce3c3e70fb131794f23ff54f202f0a62908
   by: latticedb 0.1.0

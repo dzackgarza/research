@@ -22,6 +22,7 @@ from latticedb import (
     hoehn_mason,
     nebe_sloane,
     nipp,
+    nipp_intake,
     records,
     site,
     summands,
@@ -154,6 +155,13 @@ def nipp_entry(source_file: str, source_line: int, tag: str, root: Root = Path()
     assert seed["source"] == "nipp" and seed["id"] == f"{source_file}:{source_line}"
     declared, prose = nipp.record(entry)
     print(_admit(root, declared, prose, tag=tag, seed_path=seed_path))
+
+
+@app.command(name="nipp-batch")
+def nipp_batch(source_file: str, *, start_line: int = 1, limit: int, root: Root = Path()) -> None:
+    """Admit pending entries of one Nipp table as validated lattice records."""
+    admitted, repeated = nipp_intake.admit(root, source_file, start_line, limit)
+    print(f"{admitted} lattice records written; {repeated} repeated forms linked")
 
 
 @app.command

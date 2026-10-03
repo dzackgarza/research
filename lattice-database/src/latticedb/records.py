@@ -303,7 +303,7 @@ IsometryInvariants = tuple[int, Definiteness, Fraction, Fraction, int, tuple[Ade
 """Rank, definiteness, determinant, minimum, kissing number, root system, theta series and discriminant group of a definite record."""
 
 
-def _isometry_invariants(lattice: Lattice) -> IsometryInvariants:
+def isometry_invariants(lattice: Lattice) -> IsometryInvariants:
     definite = lattice.definite
     assert definite is not None, "only a definite record is compared by isometry class"
     integral = lattice.integral
@@ -337,11 +337,11 @@ def admission_problems(lattice: Lattice, written: Mapping[str, Lattice]) -> list
             if not missing and arithmetic.restriction(gram, span.embedding) != arithmetic.orthogonal_sum(summands):
                 found.append("root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands")
     if definite is not None:
-        invariants = _isometry_invariants(lattice)
+        invariants = isometry_invariants(lattice)
         found.extend(
             f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
             for other in written.values()
-            if other.definite is not None and _isometry_invariants(other) == invariants and other.gram_tensor != gram and arithmetic.is_isometric(other.gram_tensor, gram)
+            if other.definite is not None and isometry_invariants(other) == invariants and other.gram_tensor != gram and arithmetic.is_isometric(other.gram_tensor, gram)
         )
     return found
 
