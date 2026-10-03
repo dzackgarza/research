@@ -1,0 +1,38 @@
+---
+tag: 1AKP
+kind: source
+name: nipp d1549.html:3801
+automorphism_group_order: 4
+determinant: 1540
+discriminant: 1540
+genus: 12
+gram_tensor:
+- - 2
+  - 0
+  - 1
+  - 0
+- - 0
+  - 6
+  - 1
+  - 2
+- - 1
+  - 1
+  - 8
+  - 4
+- - 0
+  - 2
+  - 4
+  - 20
+hasse_symbols:
+- -1
+- 1
+- -1
+- 1
+id: d1549.html:3801
+level: 770
+mass: 213/32
+rank: 4
+source: nipp
+source_file: d1549.html
+source_line: 3801
+---

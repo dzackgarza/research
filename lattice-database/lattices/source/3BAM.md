@@ -1,0 +1,31 @@
+---
+tag: 3BAM
+kind: source
+name: brandt_intrau Brandt_2.html:26515
+coefficients:
+- 3
+- 7
+- 11
+- 1
+- 0
+- 0
+determinant: 1842
+discriminant: -921
+gram_tensor:
+- - 6
+  - 0
+  - 0
+- - 0
+  - 14
+  - 1
+- - 0
+  - 1
+  - 22
+id: Brandt_2.html:26515
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 34383
+source_number: 26515
+---

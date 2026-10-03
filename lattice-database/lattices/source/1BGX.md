@@ -1,0 +1,36 @@
+---
+tag: 1BGX
+kind: source
+name: nipp d1604.html:472
+automorphism_group_order: 16
+determinant: 1556
+discriminant: 1556
+genus: 2
+gram_tensor:
+- - 2
+  - 0
+  - 1
+  - 1
+- - 0
+  - 2
+  - 1
+  - 1
+- - 1
+  - 1
+  - 18
+  - 7
+- - 1
+  - 1
+  - 7
+  - 26
+hasse_symbols:
+- -1
+- -1
+id: d1604.html:472
+level: 778
+mass: 755/96
+rank: 4
+source: nipp
+source_file: d1604.html
+source_line: 472
+---

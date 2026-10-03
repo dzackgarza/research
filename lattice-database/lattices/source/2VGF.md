@@ -1,0 +1,31 @@
+---
+tag: 2VGF
+kind: source
+name: brandt_intrau Brandt_2.html:5973
+coefficients:
+- 1
+- 5
+- 22
+- 5
+- 1
+- 0
+determinant: 820
+discriminant: -410
+gram_tensor:
+- - 2
+  - 0
+  - 1
+- - 0
+  - 10
+  - 5
+- - 1
+  - 5
+  - 44
+id: Brandt_2.html:5973
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 9015
+source_number: 5973
+---

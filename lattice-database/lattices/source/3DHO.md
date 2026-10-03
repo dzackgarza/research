@@ -1,0 +1,31 @@
+---
+tag: 3DHO
+kind: source
+name: brandt_intrau Brandt_2.html:29350
+coefficients:
+- 1
+- 11
+- 23
+- 4
+- 0
+- 1
+determinant: 1946
+discriminant: -973
+gram_tensor:
+- - 2
+  - 1
+  - 0
+- - 1
+  - 22
+  - 4
+- - 0
+  - 4
+  - 46
+id: Brandt_2.html:29350
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 37750
+source_number: 29350
+---

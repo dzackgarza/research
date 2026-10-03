@@ -1,0 +1,31 @@
+---
+tag: 3AHD
+kind: source
+name: brandt_intrau Brandt_2.html:25468
+coefficients:
+- 4
+- 8
+- 9
+- -6
+- 1
+- 3
+determinant: 1802
+discriminant: -901
+gram_tensor:
+- - 8
+  - 3
+  - 1
+- - 3
+  - 16
+  - -6
+- - 1
+  - -6
+  - 18
+id: Brandt_2.html:25468
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 33136
+source_number: 25468
+---

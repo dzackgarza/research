@@ -1,0 +1,31 @@
+---
+tag: 3DJF
+kind: source
+name: brandt_intrau Brandt_2.html:29397
+coefficients:
+- 1
+- 4
+- 66
+- 4
+- 1
+- 1
+determinant: 1948
+discriminant: -974
+gram_tensor:
+- - 2
+  - 1
+  - 1
+- - 1
+  - 8
+  - 4
+- - 1
+  - 4
+  - 132
+id: Brandt_2.html:29397
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 37821
+source_number: 29397
+---

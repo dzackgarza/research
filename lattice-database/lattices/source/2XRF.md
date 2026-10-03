@@ -1,0 +1,31 @@
+---
+tag: 2XRF
+kind: source
+name: brandt_intrau Brandt_2.html:8970
+coefficients:
+- 2
+- 3
+- 23
+- 3
+- 1
+- 1
+determinant: 1022
+discriminant: -511
+gram_tensor:
+- - 4
+  - 1
+  - 1
+- - 1
+  - 6
+  - 3
+- - 1
+  - 3
+  - 46
+id: Brandt_2.html:8970
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 12913
+source_number: 8970
+---

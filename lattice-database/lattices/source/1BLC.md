@@ -1,0 +1,37 @@
+---
+tag: 1BLC
+kind: source
+name: nipp d1604.html:631
+automorphism_group_order: 4
+determinant: 1557
+discriminant: 1557
+genus: 3
+gram_tensor:
+- - 4
+  - 1
+  - 0
+  - 2
+- - 1
+  - 6
+  - 3
+  - 1
+- - 0
+  - 3
+  - 6
+  - 3
+- - 2
+  - 1
+  - 3
+  - 18
+hasse_symbols:
+- -1
+- -1
+- 1
+id: d1604.html:631
+level: 519
+mass: 65/16
+rank: 4
+source: nipp
+source_file: d1604.html
+source_line: 631
+---

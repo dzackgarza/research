@@ -69,12 +69,15 @@ def seed(root: Path) -> int:
         key = (source, source_id)
         assert key not in seen, f"repeated source item {key}"
         seen.add(key)
-        if key in existing:
-            continue
-        tag = _tag(next_number)
-        next_number += 1
+        tag = existing.get(key)
+        if tag is None:
+            tag = _tag(next_number)
+            next_number += 1
+            written += 1
         card = {"tag": tag, "kind": "source", "name": row.get("name", f"{source} {source_id}"), **row}
-        (directory / f"{tag}.md").write_text("---\n" + yaml.safe_dump(card, sort_keys=False, allow_unicode=True, width=100000) + "---\n\n")
-        written += 1
+        path = directory / f"{tag}.md"
+        content = "---\n" + yaml.safe_dump(card, sort_keys=False, allow_unicode=True, width=100000) + "---\n"
+        if not path.exists() or path.read_text() != content:
+            path.write_text(content)
     assert set(existing) <= seen, "a stored source card is absent from the source index"
     return written

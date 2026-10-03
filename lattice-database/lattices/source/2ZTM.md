@@ -1,0 +1,31 @@
+---
+tag: 2ZTM
+kind: source
+name: brandt_intrau Brandt_2.html:11644
+coefficients:
+- 2
+- 5
+- 16
+- 5
+- 0
+- 0
+determinant: 1180
+discriminant: -590
+gram_tensor:
+- - 4
+  - 0
+  - 0
+- - 0
+  - 10
+  - 5
+- - 0
+  - 5
+  - 32
+id: Brandt_2.html:11644
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 16308
+source_number: 11644
+---

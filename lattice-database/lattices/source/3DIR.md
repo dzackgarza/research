@@ -1,0 +1,31 @@
+---
+tag: 3DIR
+kind: source
+name: brandt_intrau Brandt_2.html:29384
+coefficients:
+- 5
+- 7
+- 8
+- 4
+- 1
+- 3
+determinant: 1946
+discriminant: -973
+gram_tensor:
+- - 10
+  - 3
+  - 1
+- - 3
+  - 14
+  - 4
+- - 1
+  - 4
+  - 16
+id: Brandt_2.html:29384
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 37792
+source_number: 29384
+---

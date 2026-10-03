@@ -1,0 +1,36 @@
+---
+tag: 0JHF
+kind: source
+name: nipp d992.html:4391
+automorphism_group_order: 16
+determinant: 992
+discriminant: 992
+genus: 5
+gram_tensor:
+- - 4
+  - 2
+  - 2
+  - -1
+- - 2
+  - 4
+  - 0
+  - 1
+- - 2
+  - 0
+  - 4
+  - -1
+- - -1
+  - 1
+  - -1
+  - 32
+hasse_symbols:
+- -1
+- -1
+id: d992.html:4391
+level: 496
+mass: 21/8
+rank: 4
+source: nipp
+source_file: d992.html
+source_line: 4391
+---

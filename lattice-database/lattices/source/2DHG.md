@@ -1,0 +1,45 @@
+---
+tag: 2DHG
+kind: source
+name: nipp tbl.480.html:2109
+automorphism_group_order: 12
+determinant: 904
+discriminant: 452
+genus: 4
+gram_tensor:
+- - 2
+  - 1
+  - 1
+  - 0
+  - 0
+- - 1
+  - 2
+  - 0
+  - 1
+  - 0
+- - 1
+  - 0
+  - 4
+  - 0
+  - 1
+- - 0
+  - 1
+  - 0
+  - 8
+  - -3
+- - 0
+  - 0
+  - 1
+  - -3
+  - 14
+hasse_symbols:
+- -1
+- -1
+id: tbl.480.html:2109
+level: null
+mass: 133/12
+rank: 5
+source: nipp
+source_file: tbl.480.html
+source_line: 2109
+---

@@ -1,0 +1,31 @@
+---
+tag: 2SSW
+kind: source
+name: brandt_intrau Brandt_2.html:2534
+coefficients:
+- 2
+- 4
+- 9
+- 3
+- 2
+- 0
+determinant: 508
+discriminant: -254
+gram_tensor:
+- - 4
+  - 0
+  - 2
+- - 0
+  - 8
+  - 3
+- - 2
+  - 3
+  - 18
+id: Brandt_2.html:2534
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 4249
+source_number: 2534
+---

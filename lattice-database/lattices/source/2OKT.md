@@ -1,0 +1,31 @@
+---
+tag: 2OKT
+kind: source
+name: brandt_intrau Brandt_1.html:2530
+coefficients:
+- 5
+- 6
+- 7
+- 2
+- 4
+- 4
+determinant: 161
+discriminant: -644
+gram_tensor:
+- - 5
+  - 2
+  - 2
+- - 2
+  - 6
+  - 1
+- - 2
+  - 1
+  - 7
+id: Brandt_1.html:2530
+odd_form: true
+rank: 3
+source: brandt_intrau
+source_file: Brandt_1.html
+source_line: 4153
+source_number: 2530
+---

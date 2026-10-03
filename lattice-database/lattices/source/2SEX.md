@@ -1,0 +1,31 @@
+---
+tag: 2SEX
+kind: source
+name: brandt_intrau Brandt_2.html:2026
+coefficients:
+- 1
+- 1
+- 75
+- 0
+- 0
+- 1
+determinant: 450
+discriminant: -225
+gram_tensor:
+- - 2
+  - 1
+  - 0
+- - 1
+  - 2
+  - 0
+- - 0
+  - 0
+  - 150
+id: Brandt_2.html:2026
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 3511
+source_number: 2026
+---

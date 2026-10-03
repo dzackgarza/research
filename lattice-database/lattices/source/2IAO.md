@@ -1,0 +1,45 @@
+---
+tag: 2IAO
+kind: source
+name: nipp tbl.500.html:930
+automorphism_group_order: 8
+determinant: 972
+discriminant: 486
+genus: 8
+gram_tensor:
+- - 4
+  - 2
+  - 1
+  - 0
+  - 0
+- - 2
+  - 4
+  - 0
+  - 0
+  - 0
+- - 1
+  - 0
+  - 4
+  - 1
+  - 2
+- - 0
+  - 0
+  - 1
+  - 6
+  - 3
+- - 0
+  - 0
+  - 2
+  - 3
+  - 6
+hasse_symbols:
+- -1
+- -1
+id: tbl.500.html:930
+level: null
+mass: 27/64
+rank: 5
+source: nipp
+source_file: tbl.500.html
+source_line: 930
+---

@@ -1,0 +1,36 @@
+---
+tag: 1IFT
+kind: source
+name: nipp d1705.html:528
+automorphism_group_order: 4
+determinant: 1664
+discriminant: 1664
+genus: 5
+gram_tensor:
+- - 2
+  - 1
+  - 1
+  - 1
+- - 1
+  - 6
+  - 0
+  - 3
+- - 1
+  - 0
+  - 8
+  - 1
+- - 1
+  - 3
+  - 1
+  - 22
+hasse_symbols:
+- -1
+- -1
+id: d1705.html:528
+level: 1664
+mass: 25/3
+rank: 4
+source: nipp
+source_file: d1705.html
+source_line: 528
+---

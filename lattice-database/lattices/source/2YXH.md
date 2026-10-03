@@ -1,0 +1,31 @@
+---
+tag: 2YXH
+kind: source
+name: brandt_intrau Brandt_2.html:10476
+coefficients:
+- 1
+- 3
+- 51
+- 2
+- 0
+- 1
+determinant: 1114
+discriminant: -557
+gram_tensor:
+- - 2
+  - 1
+  - 0
+- - 1
+  - 6
+  - 2
+- - 0
+  - 2
+  - 102
+id: Brandt_2.html:10476
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 14846
+source_number: 10476
+---

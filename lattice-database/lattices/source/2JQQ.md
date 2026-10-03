@@ -1,0 +1,45 @@
+---
+tag: 2JQQ
+kind: source
+name: nipp tbl.500.html:2866
+automorphism_group_order: 12
+determinant: 992
+discriminant: 496
+genus: 7
+gram_tensor:
+- - 2
+  - 1
+  - 1
+  - 0
+  - 0
+- - 1
+  - 2
+  - 0
+  - 1
+  - 1
+- - 1
+  - 0
+  - 4
+  - 1
+  - 0
+- - 0
+  - 1
+  - 1
+  - 8
+  - 3
+- - 0
+  - 1
+  - 0
+  - 3
+  - 16
+hasse_symbols:
+- 1
+- 1
+id: tbl.500.html:2866
+level: null
+mass: 40/3
+rank: 5
+source: nipp
+source_file: tbl.500.html
+source_line: 2866
+---

@@ -1,0 +1,31 @@
+---
+tag: 2UZH
+kind: source
+name: brandt_intrau Brandt_2.html:5352
+coefficients:
+- 2
+- 4
+- 13
+- 3
+- 0
+- 1
+determinant: 770
+discriminant: -385
+gram_tensor:
+- - 4
+  - 1
+  - 0
+- - 1
+  - 8
+  - 3
+- - 0
+  - 3
+  - 26
+id: Brandt_2.html:5352
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 8190
+source_number: 5352
+---

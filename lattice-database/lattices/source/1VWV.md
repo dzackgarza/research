@@ -1,0 +1,45 @@
+---
+tag: 1VWV
+kind: source
+name: nipp tbl.300.html:674
+automorphism_group_order: 4
+determinant: 556
+discriminant: 278
+genus: 1
+gram_tensor:
+- - 2
+  - 1
+  - 0
+  - 0
+  - 0
+- - 1
+  - 4
+  - 1
+  - 0
+  - 0
+- - 0
+  - 1
+  - 4
+  - 1
+  - 0
+- - 0
+  - 0
+  - 1
+  - 4
+  - 1
+- - 0
+  - 0
+  - 0
+  - 1
+  - 6
+hasse_symbols:
+- 1
+- 1
+id: tbl.300.html:674
+level: null
+mass: 805/192
+rank: 5
+source: nipp
+source_file: tbl.300.html
+source_line: 674
+---

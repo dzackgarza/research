@@ -1,0 +1,38 @@
+---
+tag: 1BPG
+kind: source
+name: nipp d1604.html:779
+automorphism_group_order: 2
+determinant: 1560
+discriminant: 1560
+genus: 5
+gram_tensor:
+- - 4
+  - 1
+  - 2
+  - 1
+- - 1
+  - 4
+  - 0
+  - 1
+- - 2
+  - 0
+  - 6
+  - 2
+- - 1
+  - 1
+  - 2
+  - 22
+hasse_symbols:
+- -1
+- -1
+- -1
+- -1
+id: d1604.html:779
+level: 1560
+mass: 193/48
+rank: 4
+source: nipp
+source_file: d1604.html
+source_line: 779
+---

@@ -1,0 +1,37 @@
+---
+tag: 0WBZ
+kind: source
+name: nipp d1308.html:3179
+automorphism_group_order: 24
+determinant: 1288
+discriminant: 1288
+genus: 2
+gram_tensor:
+- - 2
+  - 1
+  - 1
+  - 0
+- - 1
+  - 2
+  - 0
+  - 0
+- - 1
+  - 0
+  - 16
+  - 0
+- - 0
+  - 0
+  - 0
+  - 28
+hasse_symbols:
+- -1
+- -1
+- 1
+id: d1308.html:3179
+level: 1288
+mass: 107/16
+rank: 4
+source: nipp
+source_file: d1308.html
+source_line: 3179
+---

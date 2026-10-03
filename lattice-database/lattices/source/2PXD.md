@@ -1,0 +1,31 @@
+---
+tag: 2PXD
+kind: source
+name: brandt_intrau Brandt_1.html:4259
+coefficients:
+- 4
+- 5
+- 12
+- -2
+- 2
+- 2
+determinant: 217
+discriminant: -868
+gram_tensor:
+- - 4
+  - 1
+  - 1
+- - 1
+  - 5
+  - -1
+- - 1
+  - -1
+  - 12
+id: Brandt_1.html:4259
+odd_form: true
+rank: 3
+source: brandt_intrau
+source_file: Brandt_1.html
+source_line: 6632
+source_number: 4259
+---

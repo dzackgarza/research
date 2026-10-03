@@ -1,0 +1,37 @@
+---
+tag: 3GZK
+kind: source
+name: watson 5:48
+determinant: 12
+genus_class_count: 1
+gram_tensor:
+- - 1
+  - 0
+  - 0
+  - 0
+  - 0
+- - 0
+  - 1
+  - 0
+  - 0
+  - 0
+- - 0
+  - 0
+  - 2
+  - 1
+  - 1
+- - 0
+  - 0
+  - 1
+  - 3
+  - 1
+- - 0
+  - 0
+  - 1
+  - 1
+  - 3
+id: '5:48'
+rank: 5
+source: watson
+source_line: 2939
+---

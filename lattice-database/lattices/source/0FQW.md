@@ -1,0 +1,36 @@
+---
+tag: 0FQW
+kind: source
+name: nipp d893.html:3994
+automorphism_group_order: 4
+determinant: 881
+discriminant: 881
+genus: 1
+gram_tensor:
+- - 2
+  - 1
+  - 0
+  - 0
+- - 1
+  - 6
+  - 3
+  - 2
+- - 0
+  - 3
+  - 8
+  - -1
+- - 0
+  - 2
+  - -1
+  - 14
+hasse_symbols:
+- -1
+- -1
+id: d893.html:3994
+level: 881
+mass: 205/12
+rank: 4
+source: nipp
+source_file: d893.html
+source_line: 3994
+---

@@ -1,0 +1,37 @@
+---
+tag: 0ZVR
+kind: source
+name: nipp d1373.html:3262
+automorphism_group_order: 4
+determinant: 1356
+discriminant: 1356
+genus: 4
+gram_tensor:
+- - 2
+  - 0
+  - 0
+  - 0
+- - 0
+  - 8
+  - 4
+  - 3
+- - 0
+  - 4
+  - 10
+  - 3
+- - 0
+  - 3
+  - 3
+  - 12
+hasse_symbols:
+- -1
+- -1
+- 1
+id: d1373.html:3262
+level: 1356
+mass: 219/32
+rank: 4
+source: nipp
+source_file: d1373.html
+source_line: 3262
+---

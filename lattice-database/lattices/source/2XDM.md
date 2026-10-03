@@ -1,0 +1,31 @@
+---
+tag: 2XDM
+kind: source
+name: brandt_intrau Brandt_2.html:8457
+coefficients:
+- 2
+- 5
+- 15
+- 5
+- 1
+- 2
+determinant: 990
+discriminant: -495
+gram_tensor:
+- - 4
+  - 2
+  - 1
+- - 2
+  - 10
+  - 5
+- - 1
+  - 5
+  - 30
+id: Brandt_2.html:8457
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 12279
+source_number: 8457
+---

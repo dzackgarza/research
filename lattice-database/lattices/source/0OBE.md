@@ -1,0 +1,37 @@
+---
+tag: 0OBE
+kind: source
+name: nipp d1161.html:1756
+automorphism_group_order: 12
+determinant: 1116
+discriminant: 1116
+genus: 1
+gram_tensor:
+- - 2
+  - 1
+  - 1
+  - 0
+- - 1
+  - 2
+  - 0
+  - 1
+- - 1
+  - 0
+  - 12
+  - 5
+- - 0
+  - 1
+  - 5
+  - 36
+hasse_symbols:
+- 1
+- 1
+- 1
+id: d1161.html:1756
+level: 1116
+mass: '5'
+rank: 4
+source: nipp
+source_file: d1161.html
+source_line: 1756
+---

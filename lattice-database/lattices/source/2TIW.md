@@ -1,0 +1,31 @@
+---
+tag: 2TIW
+kind: source
+name: brandt_intrau Brandt_2.html:3460
+coefficients:
+- 1
+- 5
+- 16
+- 1
+- 0
+- 1
+determinant: 606
+discriminant: -303
+gram_tensor:
+- - 2
+  - 1
+  - 0
+- - 1
+  - 10
+  - 1
+- - 0
+  - 1
+  - 32
+id: Brandt_2.html:3460
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 5593
+source_number: 3460
+---

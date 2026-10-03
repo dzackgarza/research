@@ -1,0 +1,31 @@
+---
+tag: 2WVU
+kind: source
+name: brandt_intrau Brandt_2.html:7825
+coefficients:
+- 1
+- 5
+- 25
+- 5
+- 0
+- 0
+determinant: 950
+discriminant: -475
+gram_tensor:
+- - 2
+  - 0
+  - 0
+- - 0
+  - 10
+  - 5
+- - 0
+  - 5
+  - 50
+id: Brandt_2.html:7825
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 11443
+source_number: 7825
+---

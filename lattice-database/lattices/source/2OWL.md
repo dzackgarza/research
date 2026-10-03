@@ -1,0 +1,31 @@
+---
+tag: 2OWL
+kind: source
+name: brandt_intrau Brandt_1.html:2926
+coefficients:
+- 1
+- 11
+- 16
+- 0
+- 0
+- 0
+determinant: 176
+discriminant: -704
+gram_tensor:
+- - 1
+  - 0
+  - 0
+- - 0
+  - 11
+  - 0
+- - 0
+  - 0
+  - 16
+id: Brandt_1.html:2926
+odd_form: true
+rank: 3
+source: brandt_intrau
+source_file: Brandt_1.html
+source_line: 4768
+source_number: 2926
+---

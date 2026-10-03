@@ -1,0 +1,37 @@
+---
+tag: 0IED
+kind: source
+name: nipp d992.html:2985
+automorphism_group_order: 8
+determinant: 960
+discriminant: 960
+genus: 23
+gram_tensor:
+- - 2
+  - 0
+  - 1
+  - 1
+- - 0
+  - 6
+  - 3
+  - 3
+- - 1
+  - 3
+  - 8
+  - 0
+- - 1
+  - 3
+  - 0
+  - 16
+hasse_symbols:
+- 1
+- 1
+- 1
+id: d992.html:2985
+level: 240
+mass: 3/4
+rank: 4
+source: nipp
+source_file: d992.html
+source_line: 2985
+---

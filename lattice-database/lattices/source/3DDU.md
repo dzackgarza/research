@@ -1,0 +1,31 @@
+---
+tag: 3DDU
+kind: source
+name: brandt_intrau Brandt_2.html:29198
+coefficients:
+- 3
+- 8
+- 11
+- 5
+- 0
+- 1
+determinant: 1940
+discriminant: -970
+gram_tensor:
+- - 6
+  - 1
+  - 0
+- - 1
+  - 16
+  - 5
+- - 0
+  - 5
+  - 22
+id: Brandt_2.html:29198
+odd_form: false
+rank: 3
+source: brandt_intrau
+source_file: Brandt_2.html
+source_line: 37587
+source_number: 29198
+---

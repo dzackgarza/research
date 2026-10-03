@@ -1,0 +1,28 @@
+---
+tag: 3GTP
+kind: source
+name: watson 4:318
+determinant: 1728
+genus_class_count: 1
+gram_tensor:
+- - 5
+  - -1
+  - -2
+  - 0
+- - -1
+  - 5
+  - -2
+  - 0
+- - -2
+  - -2
+  - 8
+  - 0
+- - 0
+  - 0
+  - 0
+  - 12
+id: 4:318
+rank: 4
+source: watson
+source_line: 2727
+---
