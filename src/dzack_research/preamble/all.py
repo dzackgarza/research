@@ -8,6 +8,7 @@ an ordinary Python support object deliberately selected by the preamble.
 """
 
 import sys as _sys
+from typing import cast as _cast
 
 # The session's numeric vocabulary and its parser are one contract: decimal
 # literals remain explicit MPFR approximations even though ``RealNumber`` now
@@ -479,6 +480,9 @@ from dzack_research.preamble.categories.vector_configurations import (  # noqa: 
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _OwnedRingParent,
+)
 from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F401
     VinbergInvariantMatrices,
     reflection_cosines,
@@ -539,6 +543,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     UnitInterval,
     ZariskiClosedSubobjects,
     _restore_session_ring_bindings,  # noqa: F401
+    session_ring_objects as _session_ring_objects,
 )
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
 from dzack_research.preamble.utilities import (
@@ -568,6 +573,9 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
 # they load; the public session receives only owned scalar objects, owned
 # constructors, and the owned runtime names emitted by the research dialect.
 _restore_session_ring_bindings(globals())
+_session_rings = _session_ring_objects()
+ZZ: _OwnedRingParent = _cast(_OwnedRingParent, _session_rings["ZZ"])
+QQ: _OwnedRingParent = _cast(_OwnedRingParent, _session_rings["QQ"])
 Integer = _language_runtime.Integer
 RealNumber = _language_runtime.RealNumber
 ComplexNumber = _language_runtime.ComplexNumber
