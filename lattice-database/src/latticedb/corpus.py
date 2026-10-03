@@ -580,12 +580,12 @@ def load(root: Path, *, verify: bool = True) -> Corpus:
     return loaded
 
 
-def next_tag(corpus: Corpus) -> str:
-    """The tag after the greatest corpus, source-card, or retired tag."""
+def next_tag(root: Path) -> str:
+    """The tag after the greatest card filename or retired tag."""
     value = 0
-    source_directory = corpus.entries[0].path.parent / "source"
-    source_tags = (path.stem for path in source_directory.glob("*.md"))
-    for character in max(*(entry.lattice.tag for entry in corpus.entries), *corpus.retired, *source_tags):
+    tags = [path.stem for path in (root / "lattices").glob("*.md")]
+    retired = yaml.safe_load((root / RETIRED_FILE).read_text()) or {}
+    for character in max(*tags, *retired):
         value = value * len(TAG_ALPHABET) + TAG_ALPHABET.index(character)
     value += 1
     digits = []

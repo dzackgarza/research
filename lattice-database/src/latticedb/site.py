@@ -13,7 +13,6 @@ import re
 import shutil
 import subprocess
 from collections.abc import Iterator
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from fractions import Fraction
 from html.parser import HTMLParser
@@ -24,6 +23,7 @@ from urllib.parse import urlencode, urlsplit
 import frontmatter
 from flint import fmpz
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
+from markdown_it import MarkdownIt
 from markupsafe import Markup, escape
 from pydantic import BaseModel, Field
 
@@ -554,16 +554,18 @@ def database_query(collection: Collection) -> str | None:
 
 def markdown_to_html(texts: list[str], bibliography: Path | None = None) -> list[Markup]:
     """HTML for each Markdown text. TeX stays as `\\(...\\)` for MathJax."""
+    local_markdown = MarkdownIt("commonmark")
 
     def convert(text: str) -> Markup:
+        if bibliography is None and text.startswith(("Source entry `", "Catalogue of Lattices archive entry `")):
+            return Markup(local_markdown.render(text))
         command = ["pandoc", "--from=markdown", "--to=html", "--mathjax"]
         if bibliography is not None:
             command += ["--citeproc", "--fail-if-warnings", f"--bibliography={bibliography}"]
         done = subprocess.run(command, input=text, capture_output=True, text=True, check=True)
         return Markup(done.stdout)
 
-    with ThreadPoolExecutor() as pool:
-        return list(pool.map(convert, texts))
+    return [convert(text) for text in texts]
 
 
 def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:

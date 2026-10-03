@@ -11,6 +11,7 @@ dependencies = [
     "python-flint>=0.9",
     "cyclopts>=3",
     "cypari2>=2.2.4",
+    "markdown-it-py>=4.2.0",
 ]
 
 [project.scripts]

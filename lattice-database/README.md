@@ -5,7 +5,7 @@ A *lattice* here is a free module $L$ of finite rank over $\mathbb{Z}$ with a sy
 The form can be definite, indefinite or degenerate, and its values need not be integers.
 
 Each lattice has one Markdown file, `lattices/<TAG>.md`. The YAML front matter of the file is the record of the lattice; the body is prose about it.
-The build validates every record, writes one page for each lattice, and writes one table, with one row per record, that the database page filters, sorts and exports.
+The build reads the cards, writes one page for each lattice, and writes one table, with one row per record, that the database page filters, sorts and exports.
 
 The site is served locally at <http://lattice-database.localhost/>, and published at <https://dzackgarza.github.io/research/lattice-database/> by `.github/workflows/docs.yml`, which deploys it beside the docs book.
 
@@ -171,9 +171,8 @@ So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature 
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
 The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `integral.bad_reduction_primes`, `integral.quadratic_character`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. `latticedb new` and `latticedb nebe-sloane` compute them once, with exact arithmetic, when they write the record.
-`latticedb new` refuses a Gram tensor that is not symmetric or is a twist, a declared value that is false, and a definite lattice isometric to a record of the corpus.
-The build reads the stored values and computes nothing again.
+The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `integral.bad_reduction_primes`, `integral.quadratic_character`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. Enrichment computes additional fields. Verification compares stored claims with their mathematical and source obligations.
+The build reads the stored values and renders every card.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
 `latticedb certify` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, `integral.spinor_genus_count` and `integral.spinor_genera` of a lattice of rank at least 3 with `Genus` and the neighbour method of SageMath (`theory/overlattices.md`), `definite.automorphism_group_order` with `qfauto` of PARI/GP, and `integral.primitive_orbits` through $z^4$ and $w^4$, of a definite lattice with `qfauto` and `qfminim` and of an even lattice of hyperbolic index at least 2 from its discriminant form (`theory/orbits.md`), under SageMath. For a definite even lattice it also computes `integral.discriminant_sequence`: PARI `qfauto` supplies generators of $O(L)$, SageMath supplies generators of $O(A_L,q_L)$, and the induced matrices determine the image, kernel order, and pointed coset quotient. The lattice generators are stored as self-isometries in `morphisms/<tag>-<tag>.md`. It writes each value that a record does not hold, and refuses a stored value that differs from the computed one; a series of orbits merges coefficient by coefficient with the stored one, and a person states the coefficients of any other indefinite lattice with a `reference` that proves them; a value that SageMath does not compute within the time limit is not written.
 `hyperbolic.reflective` and a `root_span` block that `latticedb new` could not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
@@ -247,26 +246,18 @@ A record that is not definite and has no `root_span` block is not decided, and i
 
 A tag is four characters from `0-9` and `A-Z`. The file name is the tag.
 A tag is permanent: it never moves to another lattice, and a record is never renumbered.
-When a record leaves the corpus, its tag goes to `retired-tags.yaml` with the lattice that was there and why it is not a record; the build rejects a record under a retired tag, and the next tag is after every tag, retired or not.
+When a record leaves the corpus, its tag goes to `retired-tags.yaml` with the lattice that was there and why it is not a record. Verification reports a reused tag.
 The address of a lattice is `tag/<TAG>.html`.
 
-To add a lattice:
+## Workflows
 
-1. Search the database page for the lattice, by name and by its invariants (rank, determinant, minimum, kissing number), so that a lattice already in the corpus under another name is not added twice.
-   For a definite lattice the command below decides isometry with a record of the corpus (PARI `qfisom`) and refuses a lattice that is already there in another basis; for an indefinite lattice the search is the only check.
+**Seed:** `just seed` converts stored source rows into `lattices/<TAG>.md`. Each card keeps its permanent tag, defining Gram tensor, source identity and citation. Seeding reads the source rows and writes cards.
 
-2. `just new --gram '[[2, 1], [1, 2]]' --name A2 --latex A_2` writes `lattices/<TAG>.md` under the next tag, with every field that the Gram tensor determines computed.
-   `--alias`, `--family`, `--reference` and `--prose` give the other fields; `uv run latticedb new --help` lists them.
-   For an entry of the Catalogue of Lattices, `just nebe-sloane LAMBDA10 --name Lambda10 --latex '\Lambda_{10}' --family laminated` reads `sources/nebe_sloane/LAMBDA10.json`. When the entry is absent, it reads the local `union.gz` archive, or fetches its individual page if the archive is absent. It checks the rank, determinant, minimum and kissing number that the catalogue states against the Gram tensor, and writes the record with the reference of the entry.
-   The command refuses a record that does not validate, that is a twist $M(n)$ with $n \neq 1$ of the lattice the corpus records (other than a twist by 2 in the family `nikulin-two-elementary`), that repeats the name or the components of a record in the corpus, that is definite and isometric to a record in the corpus, or that names a family not in `families.yaml`, and writes nothing.
+**Author:** Write or edit `lattices/<TAG>.md` for a lattice without a stored source row. The tag names its permanent page. State only data and claims that the card can support.
 
-3. Edit the file: add `related` entries, the prose, and the declared fields with their sources.
-   For a record that is not definite whose `root_span` block the command could not decide, write the block and its proof by hand.
+**Enrich:** `just enrich` computes additional fields on existing cards and records computation certificates. A sparse card remains a site card while it awaits enrichment.
 
-4. `just build` validates the corpus and builds the site.
-   It prints each problem of each record with the path of the file and the field.
-
-The corpus is also checked as a whole: two records cannot have the same name or the same components, two definite records cannot be isometric, a `related` entry must name a tag in the corpus, and a family must be a key of `families.yaml`. Isometry is decided by `qfisom` only for the pairs whose rank, determinant, minimum, kissing number, root system, theta series and discriminant group agree.
+**Verify:** `just verify` runs the independent checks in `src/latticedb/checks/`. The scheduled CI job reports errors in card fields, relations and source claims. It does not change cards. `just build` reads cards and renders the site.
 
 ## Certificates
 
@@ -277,16 +268,13 @@ Each computation is carried out once.
 | --- | --- | --- |
 | `<tag> derive` | The fields that the Gram tensor determines | The Gram tensor |
 | `<tag> <block>.<field>` | A value that SageMath computes, such as `0012 integral.genus_symbol` | The Gram tensor |
-| `source <name>` | The check of `sources/<name>/` against the records and the morphism files | The files of the source, the Gram tensors and the morphism files |
 | `corpus summands` | The embeddings between records that are orthogonal sums, of `latticedb.summands` | The Gram tensors of every record |
 
-`latticedb certify` carries out each computation without a certificate for its present inputs, stores its values, and writes its certificate; a check of a source is certified only when it finds no problem.
+`latticedb enrich` carries out computations without certificates for their present inputs and stores the resulting values and certificates.
 A computation that did not finish within the time limit is carried out again only with a larger `--seconds`. To carry out a computation again, after a change to the computation, remove its certificate.
-`latticedb new` and `latticedb nebe-sloane` certify the derived values of the record that they write.
 
-The computations are heavy for a large lattice, so they run in the nightly job `.github/workflows/lattice-database-certify.yml`, which opens a pull request with the new values and certificates.
-Locally, run `just certify --tag <tag>` for one new record at most.
-`latticedb check` validates the records and lists the computations without a certificate; it computes nothing.
+Run enrichment for selected cards with `just enrich --tag <tag>`. Use `--genus-data` or `--summand-maps` for the corresponding calculations.
+The nightly `.github/workflows/lattice-database-verify.yml` job reports errors without changing cards.
 
 ## Morphisms
 
@@ -312,9 +300,9 @@ The matrix is in the bases of the two records, with rank $T$ rows and rank $S$ c
 A morphism with `scale: c` is a morphism $S(c) \to T$ from the twist of $S$: $b_T(\varphi x, \varphi y) = c \, b_S(x, y)$.
 The corpus records a lattice once up to twist and sign, so a lattice that a source names as $M(c)$ maps through the record $M$ with scale $c$: the coinvariant lattice $\Lambda_G = M(-1)$ of a symplectic K3 group embeds in the K3 lattice with scale $-1$.
 The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
-The build checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
+Verification checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
 
-`latticedb certify` writes the embeddings into each record $T$ that is an orthogonal sum.
+`latticedb enrich --summand-maps` writes the embeddings into each record $T$ that is an orthogonal sum.
 The orthogonal summands of $T$ are the connected components of the graph on its basis in which $e_i$ and $e_j$ are adjacent when $b(e_i, e_j) \neq 0$; group them by their Gram matrix, $T = \bigoplus_M M^{n_M}$.
 The diagonal $x \mapsto (x, \ldots, x)$ embeds $M(k)$ into $M^k$.
 For each $M$, a partition $\lambda$ of an integer $m \leq n_M$, with its parts placed on consecutive summands, gives an embedding $\bigoplus_M \bigoplus_j M(\lambda_j) \to T$; with $g = \gcd_j \lambda_j$, it is a morphism of scale $g$ from the record with the summands $M(\lambda_j / g)$, when the corpus holds one.
@@ -322,7 +310,7 @@ Up to the permutations of isometric summands there are $\prod_M \sum_{m \leq n_M
 
 Each file has the page `morphism/<S>-<T>.html`, which draws each matrix with its lines; `morphisms.html` lists the files, and the page of each lattice links the files that name it.
 
-`just morphism S T --name ... --matrix ...` checks a morphism and appends it to the file.
+`just morphism S T --name ... --matrix ...` appends a morphism to the file. Scheduled verification checks its equations.
 From SageMath, for a matrix `M` whose columns are the images (a morphism `phi` gives `M = phi.matrix().transpose()`, because SageMath lists the images in rows):
 
 ```python
@@ -381,17 +369,17 @@ The query string selects filters, so a filtered view has an address:
 
 ## Commands
 
-The `latticedb` command line owns validation, the build and deployment.
+The `latticedb` command line owns the four workflows, the build and deployment.
 The `justfile` calls it.
 
 | Recipe | Effect |
 | --- | --- |
-| `just new ...` | Write the record of a new lattice from its Gram tensor and the options |
-| `just nebe-sloane ENTRY ...` | Write the record of an entry of the Catalogue of Lattices |
-| `just morphism S T ...` | Check a morphism of lattices and append it to `morphisms/<S>-<T>.md` |
-| `just check` | Validate every record and list the computations without a certificate |
-| `just certify ...` | Carry out the computations without a certificate, store their values and certify them |
-| `just build` | Validate every record and build the site into `_site/` |
+| `just seed` | Convert stored source rows into permanent lattice cards |
+| `just new ...` | Author a lattice card from a Gram tensor and supplied fields |
+| `just morphism S T ...` | Author a morphism in `morphisms/<S>-<T>.md` |
+| `just enrich ...` | Compute and store additional fields on existing cards |
+| `just verify` | Report card, relation and source errors in CI |
+| `just build` | Render every lattice card into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
