@@ -2967,11 +2967,23 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             f"to have a chosen finite presentation over {ring}, but it is only known to be in "
             f"{morphism.codomain().category()}"
         )
+        subobject_ambient = construction_data.pop("subobject_ambient", None)
+        subobject_generator_images = construction_data.pop(
+            "subobject_generator_images", None
+        )
+        subobject_lift = construction_data.pop("subobject_lift", None)
+        subobject_inclusion_factory = construction_data.pop(
+            "subobject_inclusion_factory", None
+        )
         return _presented_module_from_morphism(
             morphism,
             _cokernel_morphism=morphism,
             _extra_categories=() if category is None else (category,),
             _extra_construction_data=construction_data or None,
+            _subobject_ambient=subobject_ambient,
+            _subobject_generator_images=subobject_generator_images,
+            _subobject_lift=subobject_lift,
+            _subobject_inclusion_factory=subobject_inclusion_factory,
         )
 
     def super_categories(self):
