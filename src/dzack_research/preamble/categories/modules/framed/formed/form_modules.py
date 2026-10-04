@@ -1415,6 +1415,26 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             return Lattices(self.base_ring())("U")
 
         class ParentMethods:
+            def signature_pair(self):
+                r"""Return the Sylvester inertia pair of a finite symmetric form."""
+                assert self.module_rank().is_finite(), (
+                    f"the signature of {self} is computed here only at finite rank, "
+                    f"but it has rank {self.module_rank()}"
+                )
+                assert self.value_module() in OwnedRings(), (
+                    f"the signature of {self} needs scalar values in an ordered ring, "
+                    f"but its values lie in {self.value_module()}"
+                )
+                from dzack_research.preamble.categories._lattice import (
+                    _signature_pair_of_gram,
+                )
+
+                return _signature_pair_of_gram(self.gram_tensor())
+
+            def signature(self):
+                r"""Return the Sylvester inertia pair of this symmetric form."""
+                return self.signature_pair()
+
             def to_quadratic_module(self):
                 r"""Return ``q(v)=b(v,v)/2`` when this symmetric form is even.
 

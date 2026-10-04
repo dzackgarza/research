@@ -30,6 +30,7 @@ from latticedb.model import AdeType, Definiteness, Lattice, Morphism, Yaml
 
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
+QQ = _SESSION_RINGS["QQ"]
 
 KEYS = (
     "tag",
@@ -336,16 +337,17 @@ def derive(
     """
     gram = gram_tensor(record["gram_tensor"])
     rank = len(gram)
+    formed = ZZ.free_module(rank).equip_bilinear_form(QQ, gram)
+    signature = formed.signature_pair()
+    n_plus = int(signature.first())
+    n_minus = int(signature.second())
+    n_zero = rank - n_plus - n_minus
+    formed_determinant = formed.determinant()
+    determinant = Fraction(
+        int(formed_determinant.numerator()),
+        int(formed_determinant.denominator()),
+    )
     integral_lattice = Lattices(ZZ)(gram) if arithmetic.is_integer_valued(gram) else None
-    if integral_lattice is None:
-        n_plus, n_minus, n_zero = arithmetic.inertia(gram)
-        determinant = arithmetic.determinant(gram)
-    else:
-        signature = integral_lattice.signature_pair()
-        n_plus = int(signature.first())
-        n_minus = int(signature.second())
-        n_zero = rank - n_plus - n_minus
-        determinant = Fraction(int(integral_lattice.determinant()))
     definiteness = model.definiteness(n_plus, n_minus, n_zero)
     derived: dict[str, Yaml] = {
         **record,
@@ -404,6 +406,7 @@ def gram_problems(gram: GramTensor, families: tuple[str, ...]) -> list[str]:
         ]
     if any(gram[i][j] != gram[j][i] for i in range(rank) for j in range(i)):
         return ["gram_tensor: b(e_i, e_j) differs from b(e_j, e_i) for some i, j"]
+    formed = ZZ.free_module(rank).equip_bilinear_form(QQ, gram)
     scale = arithmetic.scale(gram)
     if scale == 0:
         return [
@@ -414,7 +417,9 @@ def gram_problems(gram: GramTensor, families: tuple[str, ...]) -> list[str]:
         found.append(
             f"gram_tensor: the lattice is M({scale.numerator}) for the lattice M with Gram tensor b/{scale.numerator}; the corpus records M and not its twist"
         )
-    n_plus, n_minus, _ = arithmetic.inertia(gram)
+    signature = formed.signature_pair()
+    n_plus = int(signature.first())
+    n_minus = int(signature.second())
     if (n_plus == 0 and n_minus > 0) or (n_plus > n_minus > 0):
         found.append(
             f"gram_tensor: the lattice is M(-1) for the lattice M with Gram tensor -b and signature ({n_minus}, {n_plus}); "
