@@ -10,9 +10,15 @@ from collections.abc import Sequence
 from fractions import Fraction
 from math import gcd
 
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.rings import session_ring_objects
+
 from latticedb import arithmetic
 from latticedb.corpus import CatalogueEntry, Corpus
 from latticedb.geometric import ProjectiveComplexVariety, ToricHypersurfaceConstruction
+
+_SESSION_RINGS = session_ring_objects()
+ZZ = _SESSION_RINGS["ZZ"]
 
 
 def slug_problems(entries: Sequence[CatalogueEntry]) -> list[str]:
@@ -318,15 +324,17 @@ def reference_problems(loaded: Corpus) -> list[str]:
                     f"{entry.path}: fiber lattice must have the local system rank {system.rank}"
                 )
             else:
+                owned_lattice = Lattices(ZZ)(lattice.gram_tensor)
                 for generator in system.monodromy_generators:
                     columns = tuple(
                         tuple(row[i] for row in generator.matrix)
                         for i in range(system.rank)
                     )
-                    if (
-                        arithmetic.restriction(lattice.gram_tensor, columns)
-                        != lattice.gram_tensor
-                    ):
+                    try:
+                        owned_lattice.Aut()(
+                            tuple(owned_lattice(column) for column in columns)
+                        )
+                    except ValueError:
                         found.append(
                             f"{entry.path}: monodromy around {generator.loop} does not preserve the fiber lattice"
                         )
