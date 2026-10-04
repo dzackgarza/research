@@ -40,22 +40,3 @@ def test_overlattice_count_is_the_number_of_subgroups_on_which_the_discriminant_
 def test_overlattice_count_is_not_decided_above_the_subgroup_bound() -> None:
     # The discriminant group of <2>^8 is (Z/2)^8, which has more than `SUBGROUP_BOUND` subgroups.
     assert arithmetic.overlattice_count(gram([[2 if i == j else 0 for j in range(8)] for i in range(8)])) is None
-
-
-@pytest.mark.parametrize(
-    ("rows", "expected"),
-    [
-        # U: L^* = L and b(x, x) is even for every x.
-        ([[0, 1], [1, 0]], 0),
-        # U(2): x = e/2 and y = f/2 have b(x, x) = b(y, y) = 0 and b(x + y, x + y) = 1: (2, 2, 0).
-        ([[0, 2], [2, 0]], 0),
-        # <2>: x = e/2 has b(x, x) = 1/2: (1, 1, 1).
-        ([[2]], 1),
-        # D4: every class of D4^*/D4 has b(x, x) = 1: (4, 2, 0).
-        (D4, 0),
-        # U + <-2>: x = g/2 has b(x, x) = -1/2: (3, 1, 1).
-        ([[0, 1, 0], [1, 0, 0], [0, 0, -2]], 1),
-    ],
-)
-def test_delta_is_zero_exactly_when_the_dual_lattice_takes_integer_norms(rows: list[list[int]], expected: int) -> None:
-    assert arithmetic.delta(gram(rows)) == expected

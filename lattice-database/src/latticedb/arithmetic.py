@@ -109,64 +109,6 @@ def is_definite(gram_tensor: GramTensor) -> bool:
     return n_zero == 0 and (n_plus == 0 or n_minus == 0)
 
 
-def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
-    """Return the invariant factors `d_1 | d_2 | ...`, each greater than 1, of the discriminant group.
-
-    `b` must be integer valued with nonzero determinant. The correlation
-    `c: L -> Hom(L, Z)`, `x -> b(x, -)`, is then an injective morphism of free
-    modules of the same rank, and the discriminant group is its cokernel, the
-    finite abelian group `Z/d_1 + Z/d_2 + ...`. In the basis `e_i` of `L` and
-    the basis of `Hom(L, Z)` dual to it, the matrix of `c` has the entries
-    `b(e_i, e_j)`; its Smith normal form gives the `d_i`.
-    """
-    assert is_integer_valued(gram_tensor), (
-        "the correlation has values in Hom(L, Z) only for an integer-valued form"
-    )
-    correlation = fmpz_mat([[int(value) for value in row] for row in gram_tensor])
-    smith = correlation.snf()
-    diagonal = [abs(int(smith[index, index])) for index in range(len(gram_tensor))]
-    assert all(factor != 0 for factor in diagonal), (
-        "the cokernel of the correlation is finite only for a nonzero determinant"
-    )
-    return tuple(factor for factor in diagonal if factor > 1)
-
-
-def delta(gram_tensor: GramTensor) -> int:
-    """Return Nikulin's `delta` of an even lattice `L` with `2 A_L = 0`: 0 when `b(x, x)` is an integer for every `x` in `L^*`, else 1.
-
-    The basis of `L^*` dual to `e_i` has the Gram tensor `G^{-1}`, the inverse
-    of the Gram tensor `G` of `L`. `2 A_L = 0` says `2 L^* <= L`, so every
-    `2 G^{-1}_ij` is an integer. For `x = sum_i c_i f_i` in `L^*`,
-    `b(x, x) = sum_i c_i^2 G^{-1}_ii + sum_{i < j} 2 c_i c_j G^{-1}_ij`, whose
-    second sum is an integer: `b(x, x)` is an integer for every `x` exactly
-    when every `G^{-1}_ii` is. Nikulin, Math. USSR-Izv. 14 (1980), §3.6, defines
-    `delta` by the values of the discriminant quadratic form `q(x + L) = b(x, x) + 2Z`.
-    """
-    assert all(factor == 2 for factor in discriminant_invariants(gram_tensor)), (
-        "delta is defined for a lattice with 2 A_L = 0"
-    )
-    assert all(gram_tensor[i][i] % 2 == 0 for i in range(len(gram_tensor))), (
-        "delta is defined for an even lattice"
-    )
-    inverse = _components(gram_tensor).inv()
-    return 0 if all(inverse[i, i].q == 1 for i in range(len(gram_tensor))) else 1
-
-
-def level(gram_tensor: GramTensor) -> int:
-    """Least k for which k times the dual quadratic form takes values in 2Z.
-
-    In the dual basis the Gram matrix is G^-1. The diagonal entries of
-    k G^-1 must be even and its off-diagonal entries must be integral.
-    """
-    inverse = _components(gram_tensor).inv()
-    rank = len(gram_tensor)
-    denominators = [int((inverse[i, i] / 2).q) for i in range(rank)]
-    denominators.extend(
-        int(inverse[i, j].q) for i in range(rank) for j in range(i + 1, rank)
-    )
-    return lcm(*denominators)
-
-
 def is_perfect(rank: int, minimal_vectors: list[list[int]]) -> bool:
     """Whether the rank-one tensors of the minimal shell span Sym^2(Q^rank)."""
     rows = [
@@ -521,42 +463,6 @@ def definite_roots(gram_tensor: GramTensor) -> dict[Vector, Fraction]:
     return roots
 
 
-def invariant_factors(vectors: list[Vector], rank: int) -> tuple[int, ...]:
-    """Return the nonzero invariant factors `d_1 | d_2 | ...` of the morphism `Z^m -> L` that sends the basis to the vectors.
-
-    Let `M` be the image, and `M'` the primitive sublattice `L cap (M tensor Q)`.
-    The number of factors is the rank of `M`, and `M' / M` is
-    `Z/d_1 + Z/d_2 + ...`: the product of the factors is `[M' : M]`.
-    """
-    if not vectors:
-        return ()
-    smith = fmpz_mat(vectors).snf()
-    diagonal = (
-        abs(int(smith[index, index])) for index in range(min(len(vectors), rank))
-    )
-    return tuple(factor for factor in diagonal if factor != 0)
-
-
-def generate(vectors: list[Vector], rank: int) -> bool:
-    """Whether the vectors generate `L`: whether the morphism `Z^m -> L` has `rank` invariant factors, all equal to 1."""
-    return invariant_factors(vectors, rank) == (1,) * rank
-
-
-def span_basis(vectors: list[Vector]) -> tuple[Vector, ...]:
-    """Return the basis in Hermite normal form of the sublattice that the vectors generate.
-
-    Two lists of vectors generate the same sublattice exactly when they have the same result.
-    """
-    if not vectors:
-        return ()
-    hermite = fmpz_mat(vectors).hnf()
-    rows = (
-        tuple(int(hermite[i, j]) for j in range(hermite.ncols()))
-        for i in range(hermite.nrows())
-    )
-    return tuple(row for row in rows if any(row))
-
-
 def generating_norms(roots: dict[Vector, Fraction], rank: int) -> tuple[Fraction, ...]:
     """Return a set `S` such that the given roots `r` with `b(r, r)` in `S` generate `L`. The given roots must generate `L`.
 
@@ -569,8 +475,19 @@ def generating_norms(roots: dict[Vector, Fraction], rank: int) -> tuple[Fraction
         for size in range(1, len(norms) + 1)
         for subset in combinations(norms, size)
     )
+    from dzack_research.preamble.rings import session_ring_objects
+
+    integers = session_ring_objects()["ZZ"]
+    ambient = integers.free_module(rank)
+    ambient_basis = tuple(ambient.module_generators())
     return next(
         subset
         for subset in subsets
-        if generate([r for r, norm in roots.items() if norm in subset], rank)
+        if all(
+            generator
+            in ambient.subobject_on(
+                tuple(ambient(root) for root, norm in roots.items() if norm in subset)
+            )
+            for generator in ambient_basis
+        )
     )
