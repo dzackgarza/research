@@ -3140,6 +3140,21 @@ class Lattices(OwnedCategoryOverBaseRing):
                 target, square_bound
             )
 
+        def _first_close_vector_scale(
+            self,
+            target,
+            square_bound,
+            max_multiplier,
+            *,
+            exact_distance=False,
+        ):
+            return self._exact_cvp_engine().first_close_vector_scale(
+                target,
+                square_bound,
+                max_multiplier,
+                exact_distance=exact_distance,
+            )
+
         def close_vectors(self, target, square_bound):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
             return _close_vectors(self, target, square_bound)

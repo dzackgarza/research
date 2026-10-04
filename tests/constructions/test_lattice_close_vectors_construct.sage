@@ -29,3 +29,19 @@ def test_close_vectors_is_invariant_under_large_integral_target_translation() ->
     assert lattice.closest_vector(target) in close.index_set()
     assert lattice._has_close_vector(target, ZZ(1))
     assert not lattice._has_close_vector(target, QQ(1) / 4)
+
+
+def test_affine_cvp_scale_search_finds_first_feasible_multiplier_exactly() -> None:
+    lattice = Lattices(ZZ)([[2]])
+
+    assert lattice._first_close_vector_scale(
+        (QQ(1) / 3,),
+        QQ(1) / 10,
+        5,
+    ) == 2
+    assert lattice._first_close_vector_scale(
+        (QQ(1) / 2,),
+        QQ(1) / 2,
+        5,
+        exact_distance=True,
+    ) == 1

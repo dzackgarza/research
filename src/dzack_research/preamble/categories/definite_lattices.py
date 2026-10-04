@@ -3,7 +3,9 @@ r"""Exact algorithms for finite definite integral lattices."""
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cache
 
+from sage.libs.pari import pari
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.modules.free_module_element import vector as engine_vector
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
@@ -342,6 +344,29 @@ def _target_coordinates(lattice, target):
     return point
 
 
+@cache
+def _pari_first_affine_cvp():
+    return pari(
+        r"""
+        (G,a,r,M,exact)->{
+          my(n=#a);
+          for(m=1,M,
+            my(s=vector(n,i,round(m*a[i])));
+            my(c=m*a-s);
+            my(z=qfcvp(G,Col(c),m^2*r+1/2)[3]);
+            my(sz=matsize(z));
+            for(j=1,sz[2],
+              my(d=z[,j]-Col(c));
+              my(q=d~*G*d);
+              if(if(exact,q==m^2*r,q<=m^2*r),return(m));
+            );
+          );
+          return(0);
+        }
+        """
+    )
+
+
 class _ExactCVPEngine:
     r"""Cached exact closest-vector backend for one definite lattice."""
 
@@ -423,6 +448,29 @@ class _ExactCVPEngine:
                 centered, positive_bound
             )
         )
+
+    def first_close_vector_scale(
+        self,
+        target,
+        square_bound,
+        max_multiplier,
+        *,
+        exact_distance=False,
+    ):
+        coordinates = self._engine_target_coordinates(target)
+        positive_bound = self.engine_sign * self._engine_scalar(square_bound)
+        if positive_bound < 0:
+            return None
+        multiplier = int(
+            _pari_first_affine_cvp()(
+                self.pari_gram,
+                pari(list(coordinates)),
+                pari(positive_bound),
+                int(max_multiplier),
+                int(bool(exact_distance)),
+            )
+        )
+        return None if multiplier == 0 else multiplier
 
     def closest_vector(self, target):
         _point, translation, centered = self._center(target)
