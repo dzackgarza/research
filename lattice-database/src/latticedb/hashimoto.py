@@ -101,43 +101,32 @@ def symbol_group(symbol: str) -> list[int]:
     return sorted(int(match[1]) for match in found if match for _ in range(int(match[3])))
 
 
-def prime_powers(gram_tensor: arithmetic.GramTensor) -> list[int]:
-    """The orders of the cyclic factors of prime-power order of the discriminant group."""
-    discriminant = Lattices(ZZ)(gram_tensor).discriminant_group()
-    factors = (
-        abs(int(factor))
-        for factor in discriminant.invariant_factors()
-        if abs(int(factor)) > 1
-    )
-    return sorted(
-        int(p) ** int(e) for factor in factors for p, e in fmpz(factor).factor()
-    )
-
-
-def twisted(lattice: Lattice, twist: int) -> arithmetic.GramTensor:
-    return arithmetic.scaled(lattice.gram_tensor, twist)
-
-
 def _tensor(rows: tuple[tuple[int, ...], ...]) -> arithmetic.GramTensor:
     return tuple(tuple(map(Fraction, row)) for row in rows)
 
 
-def _primitive(matrix: corpus.Matrix) -> bool:
-    """Whether the columns of `matrix` are a basis of a primitive sublattice."""
-    columns = [tuple(row[j] for row in matrix) for j in range(len(matrix[0]))]
-    ambient = ZZ.free_module(len(matrix))
-    subobject = ambient.subobject_on(tuple(ambient(column) for column in columns))
-    return int(subobject.module_rank()) == len(columns) and subobject.is_primitive()
-
-
 def complements(invariant: tuple[Tag, int], coinvariant: tuple[Tag, int], k3: Lattice, morphisms: corpus.Held) -> bool:
     """Whether the morphism files hold embeddings of `invariant` $= R(s)$ and `coinvariant` $= C(t)$ into the K3 lattice whose images are primitive and orthogonal."""
-    gram = fmpz_mat([[int(x) for x in row] for row in k3.gram_tensor])
+    k3_lattice = Lattices(ZZ)(k3.gram_tensor)
+    ambient_module = ZZ.free_module(K3_RANK)
     for first, scale in morphisms.get((invariant[0], K3_RECORD), ()):
         for second, other in morphisms.get((coinvariant[0], K3_RECORD), ()):
             if (scale, other) != (invariant[1], coinvariant[1]) or len(first[0]) + len(second[0]) != K3_RANK:
                 continue
-            if (fmpz_mat([list(r) for r in first]).transpose() * gram * fmpz_mat([list(r) for r in second])).is_zero() and _primitive(first) and _primitive(second):
+            first_columns = tuple(tuple(row[j] for row in first) for j in range(len(first[0])))
+            second_columns = tuple(tuple(row[j] for row in second) for j in range(len(second[0])))
+            first_span = ambient_module.subobject_on(tuple(ambient_module(column) for column in first_columns))
+            second_span = ambient_module.subobject_on(tuple(ambient_module(column) for column in second_columns))
+            first_vectors = tuple(k3_lattice(column) for column in first_columns)
+            second_vectors = tuple(k3_lattice(column) for column in second_columns)
+            orthogonal = all(left.b(right) == 0 for left in first_vectors for right in second_vectors)
+            if (
+                orthogonal
+                and int(first_span.module_rank()) == len(first_columns)
+                and int(second_span.module_rank()) == len(second_columns)
+                and first_span.is_primitive()
+                and second_span.is_primitive()
+            ):
                 return True
     return False
 
@@ -158,8 +147,19 @@ def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], la
             continue
         assert row.coinvariant is not None and row.discriminant_form is not None, f"Table 10.2 row {row.n} names no record"
         lattice = lattices[row.coinvariant.record]
-        coinvariant = twisted(lattice, row.coinvariant.twist)
-        computed = (lattice.rank, arithmetic.inertia(coinvariant)[0], abs(arithmetic.determinant(coinvariant)), prime_powers(coinvariant))
+        coinvariant = Lattices(ZZ)(lattice.gram_tensor).twist(row.coinvariant.twist)
+        signature = coinvariant.signature_pair()
+        discriminant_factors = (
+            abs(int(factor))
+            for factor in coinvariant.discriminant_group().invariant_factors()
+            if abs(int(factor)) > 1
+        )
+        prime_powers = sorted(
+            int(p) ** int(e)
+            for factor in discriminant_factors
+            for p, e in fmpz(factor).factor()
+        )
+        computed = (lattice.rank, int(signature.first()), abs(int(coinvariant.determinant())), prime_powers)
         stated = (row.rank, 0, row.discriminant_order, symbol_group(row.discriminant_form))
         if computed != stated:
             found.append(f"Table 10.2 row {row.n}: (c, n_+, |q|, group of q) is {stated}, {row.coinvariant.record}({row.coinvariant.twist}) gives {computed}")
@@ -170,11 +170,34 @@ def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], la
             basis = fmpz_mat([list(r) for r in printed.basis])
             images = tuple(tuple(int(basis[i, j]) for i in range(basis.nrows())) for j in range(basis.ncols()))
             tensor = _tensor(printed.gram_tensor)
-            if abs(basis.det()) != 1 or arithmetic.restriction(twisted(lattice, printed.twist), images) != tensor:
+            printed_lattice = Lattices(ZZ)(printed.gram_tensor)
+            target_lattice = Lattices(ZZ)(lattice.gram_tensor).twist(printed.twist)
+            try:
+                printed_lattice.Mor(target_lattice)(tuple(target_lattice(image) for image in images))
+                preserves_form = True
+            except ValueError:
+                preserves_form = False
+            if abs(basis.det()) != 1 or not preserves_form:
                 found.append(f"Table 10.3 row {invariant.n}: P is not an isometry from the printed Gram tensor to {printed.record}({printed.twist})")
             assert row.discriminant_form is not None
             rank = K3_RANK - row.rank
-            printed_invariants = (len(tensor), arithmetic.inertia(tensor)[:2], abs(arithmetic.determinant(tensor)), prime_powers(tensor))
+            printed_signature = printed_lattice.signature_pair()
+            printed_discriminant_factors = (
+                abs(int(factor))
+                for factor in printed_lattice.discriminant_group().invariant_factors()
+                if abs(int(factor)) > 1
+            )
+            printed_prime_powers = sorted(
+                int(p) ** int(e)
+                for factor in printed_discriminant_factors
+                for p, e in fmpz(factor).factor()
+            )
+            printed_invariants = (
+                len(tensor),
+                (int(printed_signature.first()), int(printed_signature.second())),
+                abs(int(printed_lattice.determinant())),
+                printed_prime_powers,
+            )
             stated_invariants = (rank, (3, rank - 3), row.discriminant_order, symbol_group(row.discriminant_form))
             if printed_invariants != stated_invariants:
                 found.append(f"Table 10.3 row {invariant.n}: (rank, signature, |q|, group of q) is {stated_invariants}, the printed Gram tensor gives {printed_invariants}")

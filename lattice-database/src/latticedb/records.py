@@ -516,17 +516,35 @@ def relational_admission_problems(
         found.extend(
             f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing
         )
-        summands = tuple(
-            arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale)
-            for summand in span.summands
-            if summand.tag in written
-        )
-        if not missing and arithmetic.restriction(
-            gram, span.embedding
-        ) != arithmetic.orthogonal_sum(summands):
-            found.append(
-                "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
-            )
+        if not missing:
+            if lattice.is_integer_valued and all(
+                written[summand.tag].is_integer_valued for summand in span.summands
+            ):
+                target_lattice = Lattices(ZZ)(gram)
+                summand_lattices = tuple(
+                    Lattices(ZZ)(written[summand.tag].gram_tensor).twist(summand.scale)
+                    for summand in span.summands
+                )
+                source_lattice = Lattices(ZZ).biproduct(summand_lattices)
+                try:
+                    source_lattice.Mor(target_lattice)(
+                        tuple(target_lattice(row) for row in span.embedding)
+                    )
+                except ValueError:
+                    found.append(
+                        "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
+                    )
+            else:
+                summands = tuple(
+                    arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale)
+                    for summand in span.summands
+                )
+                if arithmetic.restriction(
+                    gram, span.embedding
+                ) != arithmetic.orthogonal_sum(summands):
+                    found.append(
+                        "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
+                    )
     if definite is not None:
         invariants = isometry_invariants(lattice)
         compared = written if isometry_records is None else isometry_records
@@ -582,7 +600,18 @@ def morphism_problems(
             f"{morphism.name}: the matrix has {target.rank} rows and {source.rank} columns, the ranks of the target and the source"
         ]
     found = []
-    if arithmetic.restriction(target.gram_tensor, morphism.images) != arithmetic.scaled(
+    if source.is_integer_valued and target.is_integer_valued:
+        source_lattice = Lattices(ZZ)(source.gram_tensor).twist(morphism.scale)
+        target_lattice = Lattices(ZZ)(target.gram_tensor)
+        try:
+            source_lattice.Mor(target_lattice)(
+                tuple(target_lattice(image) for image in morphism.images)
+            )
+        except ValueError:
+            found.append(
+                f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source"
+            )
+    elif arithmetic.restriction(target.gram_tensor, morphism.images) != arithmetic.scaled(
         source.gram_tensor, morphism.scale
     ):
         found.append(
