@@ -3,6 +3,21 @@
 `README.md` owns the schema, the commands and the conventions. This file states the purpose that
 governs every change to the database.
 
+## The preamble owns lattice mathematics
+
+`latticedb` consumes the lattice mathematics presented by
+`dzack_research.preamble`.  It does not define an independent determinant,
+signature, discriminant form, genus, root, isometry, theta-series, overlattice,
+or other lattice invariant.  A missing shared operation is repaired at its
+preamble owner and then consumed here; it is never implemented as a leaf-local
+algorithm.  This is the cross-repository contract recorded by
+`HANDOFF.md` and by the corresponding foundational complaint in the research
+repository.
+
+All lattice-database workflows therefore run under the repository's Sage Python
+with both `../src` and this package's `src` on `PYTHONPATH`.  A plain CPython
+environment is not a supported execution path for the database.
+
 ## Four independent workflows
 
 Seeding reads a stored source and writes a permanent `lattices/<TAG>.md` card from its defining

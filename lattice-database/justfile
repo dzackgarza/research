@@ -6,38 +6,45 @@
 default:
     @just --list
 
+# Run the lattice database in the repository's Sage Python, with both source
+# trees visible.  The database consumes the preamble's lattice mathematics, so
+# plain CPython is not a supported runtime.
+[private]
+_latticedb *ARGS:
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m latticedb {{ARGS}}
+
 # Author a lattice card from its Gram tensor: `just new --gram '[[2,1],[1,2]]' --name A2 --latex A_2`
 new *ARGS:
-    uv run latticedb new {{ARGS}}
+    just _latticedb new {{ARGS}}
 
 # Author a morphism in morphisms/<S>-<T>.md: `just morphism 0016 0016 --name exchange --matrix '[[0,1],[1,0]]'`
 morphism SOURCE TARGET *ARGS:
-    uv run latticedb morphism {{SOURCE}} {{TARGET}} {{ARGS}}
+    just _latticedb morphism {{SOURCE}} {{TARGET}} {{ARGS}}
 
 # Convert stored source rows into permanent lattice cards
 seed *ARGS:
-    uv run latticedb seed {{ARGS}}
+    just _latticedb seed {{ARGS}}
 
 # Compute and store derived fields on existing cards
 enrich *ARGS:
-    uv run latticedb enrich {{ARGS}}
+    just _latticedb enrich {{ARGS}}
 
 # Report errors in the cards, relations, and sources
 verify:
-    uv run latticedb verify
+    just _latticedb verify
 
 # Build the site into _site/
 build:
-    uv run latticedb build
+    just _latticedb build
 
 # Build the site and serve it at http://lattice-database.localhost/
 deploy:
-    uv run latticedb deploy
+    just _latticedb deploy
 
 # Print the tag for the next new record
 tag:
-    uv run latticedb next-tag
+    just _latticedb next-tag
 
 # Run the tests of the schema and of the build
 test:
-    uv run pytest
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest

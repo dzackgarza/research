@@ -25,6 +25,8 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError, model_validator
 from pydantic_core import InitErrorDetails, PydanticCustomError
 
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0, cardinal
+
 from latticedb import arithmetic, root_systems
 from latticedb.arithmetic import Vector
 
@@ -58,6 +60,25 @@ Family = Annotated[str, Field(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$")]
 AdeType = Annotated[str, Field(pattern=r"^(A[1-9]\d*|D[4-9]|D[1-9]\d+|E[678])$")]
 RootType = Annotated[str, Field(pattern=root_systems.TYPE_PATTERN)]
 IntegerVector = Annotated[tuple[int, ...], Field(strict=False)]
+
+def group_cardinality(value: object) -> Cardinal:
+    """Read a card's finite or countably infinite group cardinality."""
+    if isinstance(value, Cardinal):
+        return value
+    match value:
+        case "aleph0":
+            return aleph0
+        case bool():
+            pass
+        case int() if value > 0:
+            return cardinal(value)
+    raise PydanticCustomError(
+        "cardinality_type",
+        "a group cardinality is a positive integer or 'aleph0'",
+    )
+
+
+Cardinality = Annotated[Cardinal, BeforeValidator(group_cardinality)] | None
 Definiteness = Literal[
     "positive_definite",
     "negative_definite",
@@ -73,7 +94,7 @@ def _problem(kind: str, message: str, location: tuple[str, ...], context: dict[s
 
 
 class Record(BaseModel):
-    model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
 
 class Related(Record):
