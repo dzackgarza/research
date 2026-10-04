@@ -26,3 +26,6 @@ def test_close_vectors_is_invariant_under_large_integral_target_translation() ->
     assert Set(close.index_set()) == Set((left, right))
     assert close[left] == QQ(1) / 2
     assert close[right] == QQ(1) / 2
+    assert lattice.closest_vector(target) in close.index_set()
+    assert lattice._has_close_vector(target, ZZ(1))
+    assert not lattice._has_close_vector(target, QQ(1) / 4)

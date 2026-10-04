@@ -66,6 +66,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _center_density,
     _close_vectors,
     _closest_vector,
+    _exact_cvp_engine,
     _contact_polytope,
     _covering_radius,
     _gaussian_heuristic,
@@ -3129,6 +3130,15 @@ class Lattices(OwnedCategoryOverBaseRing):
         def closest_vector(self, target):
 
             return _closest_vector(self, target)
+
+        @cached_method
+        def _exact_cvp_engine(self):
+            return _exact_cvp_engine(self)
+
+        def _has_close_vector(self, target, square_bound) -> bool:
+            return self._exact_cvp_engine().has_close_vector(
+                target, square_bound
+            )
 
         def close_vectors(self, target, square_bound):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""

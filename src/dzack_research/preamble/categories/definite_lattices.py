@@ -342,54 +342,160 @@ def _target_coordinates(lattice, target):
     return point
 
 
-def _closest_vector(lattice, target):
-    r"""Return the exact closest lattice vector to a rational target."""
-    from itertools import product
+class _ExactCVPEngine:
+    r"""Cached exact closest-vector backend for one definite lattice."""
 
-    from sage.functions.other import ceil, floor, sqrt
+    def __init__(self, lattice) -> None:
+        self.lattice = lattice
+        self.sign, positive_gram = _positive_gram(lattice)
+        self.ring = lattice.base_ring()
+        self.rationals = self.ring.fraction_field()
+        self.engine_sign = SageQQ(_engine_element(self.ring, self.sign))
+        self.engine_gram = _engine_component_matrix(positive_gram)
+        self.engine_gram_q = self.engine_gram.change_ring(SageQQ)
+        self.pari_gram = self.engine_gram.__pari__()
 
-    point = _target_coordinates(lattice, target)
-    rationals = point.base_ring()
-    _sign, gram = _positive_gram(lattice)
-    gram = gram.change_ring(rationals)
-    rank = gram.tensor_shape()[0]
-    if rank == 0:
-        return lattice.zero()
+    def _engine_scalar(self, value):
+        parent = element_parent(value)
+        if parent is SageQQ:
+            return value
+        if parent is self.rationals:
+            return SageQQ(_engine_element(self.rationals, value))
+        if parent is self.ring:
+            return SageQQ(_engine_element(self.ring, value))
+        owned = self.rationals(value)
+        return SageQQ(_engine_element(self.rationals, owned))
 
-    def distance_squared(coordinates):
-        delta = tensor.vector(rationals, coordinates) - point
-        return gram.contract(delta, delta)
+    def _engine_target_coordinates(self, target):
+        if element_parent(target) is self.lattice:
+            coordinates = target.to_vector()
+            return tuple(
+                SageQQ(
+                    _engine_element(
+                        self.ring,
+                        coordinates(label),
+                    )
+                )
+                for label in self.lattice.module_generating_set()
+            )
+        coordinates = tuple(target)
+        if len(coordinates) != int(self.lattice.module_rank()):
+            raise ValueError(
+                f"{target} is not a point of {self.lattice} tensor QQ: it must have "
+                f"{self.lattice.module_rank()} coordinates, one per basis vector, but has "
+                f"{len(coordinates)}"
+            )
+        return tuple(self._engine_scalar(coordinate) for coordinate in coordinates)
 
-    best_coordinates = tuple(
-        lattice.base_ring()(
-            int(_engine_element(rationals, entry).round())
+    def _center(self, target):
+        point = self._engine_target_coordinates(target)
+        translation = tuple(coordinate.round() for coordinate in point)
+        centered = engine_vector(
+            SageQQ,
+            tuple(
+                coordinate - SageQQ(translate)
+                for coordinate, translate in zip(point, translation, strict=True)
+            ),
         )
-        for entry in point
-    )
-    best_distance = distance_squared(best_coordinates)
-    dual_gram = gram.dual_tensor()
-    coordinate_ranges = []
-    for index in range(rank):
-        radius = sqrt(
-            _engine_element(
-                rationals, best_distance * dual_gram[index, index]
+        return point, translation, centered
+
+    def _filtered_candidates(self, centered, positive_bound):
+        _count, _largest, raw_coordinates = self.pari_gram.qfcvp(
+            centered.__pari__().Col(),
+            positive_bound + SageQQ(1) / 2,
+        )
+        for column in engine_matrix(SageQQ, raw_coordinates).columns():
+            displacement = column - centered
+            positive_square = (
+                displacement * self.engine_gram_q * displacement
+            )
+            if positive_square <= positive_bound:
+                yield column, positive_square
+
+    def has_close_vector(self, target, square_bound) -> bool:
+        _point, _translation, centered = self._center(target)
+        positive_bound = self.engine_sign * self._engine_scalar(square_bound)
+        if positive_bound < 0:
+            return False
+        return any(
+            True
+            for _column, _square in self._filtered_candidates(
+                centered, positive_bound
             )
         )
-        center = _engine_element(rationals, point[index])
-        lower = int(floor(center - radius)) - 1
-        upper = int(ceil(center + radius)) + 1
-        coordinate_ranges.append(range(lower, upper + 1))
-    for raw_coordinates in product(*coordinate_ranges):
-        candidate = tuple(lattice.base_ring()(entry) for entry in raw_coordinates)
-        distance = distance_squared(candidate)
-        if distance < best_distance or (
-            distance == best_distance
-            and tuple(int(x) for x in candidate)
-            < tuple(int(x) for x in best_coordinates)
+
+    def closest_vector(self, target):
+        _point, translation, centered = self._center(target)
+        zero = engine_vector(SageQQ, [0] * len(translation))
+        displacement = zero - centered
+        best_distance = displacement * self.engine_gram_q * displacement
+        best_coordinates = tuple(translation)
+        for column, positive_square in self._filtered_candidates(
+            centered,
+            best_distance,
         ):
-            best_coordinates = candidate
-            best_distance = distance
-    return _element_from_coordinates(lattice, best_coordinates)
+            coordinates = tuple(
+                self.ring(int(entry) + int(translate))
+                for entry, translate in zip(column, translation, strict=True)
+            )
+            if positive_square < best_distance or (
+                positive_square == best_distance
+                and tuple(int(entry) for entry in coordinates)
+                < tuple(int(entry) for entry in best_coordinates)
+            ):
+                best_distance = positive_square
+                best_coordinates = coordinates
+        return _element_from_coordinates(self.lattice, best_coordinates)
+
+    def close_vectors(self, target, square_bound):
+        point, translation, centered = self._center(target)
+        positive_bound = self.engine_sign * self._engine_scalar(square_bound)
+        if positive_bound < 0:
+            raise ValueError(
+                f"no vectors of {self.lattice} can satisfy the bound {square_bound} on "
+                f"q(x - target): the bound must have the sign of the form, which is "
+                f"{'positive' if self.sign > 0 else 'negative'} definite"
+            )
+        candidates = {}
+        for column, positive_square in self._filtered_candidates(
+            centered, positive_bound
+        ):
+            coordinates = tuple(
+                self.ring(int(entry) + int(translate))
+                for entry, translate in zip(column, translation, strict=True)
+            )
+            vector = _element_from_coordinates(self.lattice, coordinates)
+            signed_square = _owned_engine_element(
+                self.rationals,
+                self.engine_sign * positive_square,
+            )
+            candidates[_coordinate_tuple(self.lattice, vector)] = (
+                vector,
+                signed_square,
+            )
+        vectors = finite_ordered_set(
+            tuple(vector for vector, _square in candidates.values())
+        )
+        by_coordinates = {
+            coordinates: square
+            for coordinates, (_vector, square) in candidates.items()
+        }
+        return finite_indexed_family(
+            vectors,
+            lambda vector: by_coordinates[
+                _coordinate_tuple(self.lattice, vector)
+            ],
+            name=f"Vectors of {self.lattice} close to {target}",
+        )
+
+
+def _exact_cvp_engine(lattice):
+    return _ExactCVPEngine(lattice)
+
+
+def _closest_vector(lattice, target):
+    r"""Return the exact closest lattice vector to a rational target."""
+    return lattice._exact_cvp_engine().closest_vector(target)
 
 
 def _close_vectors(lattice, target, square_bound):
@@ -408,67 +514,7 @@ def _close_vectors(lattice, target, square_bound):
     every candidate is filtered again against the exact rational quadratic
     form before it crosses back into the owned lattice.
     """
-    point = _target_coordinates(lattice, target)
-    sign, positive_gram = _positive_gram(lattice)
-    ring = lattice.base_ring()
-    rationals = ring.fraction_field()
-    bound = rationals(square_bound)
-    positive_bound = rationals(sign) * bound
-    if positive_bound < rationals.zero():
-        raise ValueError(
-            f"no vectors of {lattice} can satisfy the bound {square_bound} on "
-            f"q(x - target): the bound must have the sign of the form, which is "
-            f"{'positive' if sign > 0 else 'negative'} definite"
-        )
-
-    engine_gram = _engine_component_matrix(positive_gram)
-    translation = tuple(
-        ring(int(_engine_element(rationals, coordinate).round()))
-        for coordinate in point
-    )
-    centered_point = tuple(
-        coordinate - rationals(translate)
-        for coordinate, translate in zip(point, translation, strict=True)
-    )
-    engine_point = engine_vector(
-        SageQQ,
-        tuple(
-            _engine_element(rationals, coordinate)
-            for coordinate in centered_point
-        ),
-    )
-    _count, _largest, raw_coordinates = engine_gram.__pari__().qfcvp(
-        engine_point.__pari__().Col(),
-        _engine_element(rationals, positive_bound) + SageQQ(1) / 2,
-    )
-    positive_gram_q = engine_gram.change_ring(SageQQ)
-    candidates = {}
-    for column in engine_matrix(SageQQ, raw_coordinates).columns():
-        displacement = column - engine_point
-        positive_square = displacement * positive_gram_q * displacement
-        if positive_square > _engine_element(rationals, positive_bound):
-            continue
-        coordinates = tuple(
-            ring(int(entry)) + translate
-            for entry, translate in zip(column, translation, strict=True)
-        )
-        vector = _element_from_coordinates(lattice, coordinates)
-        signed_square = _owned_engine_element(rationals,
-            SageQQ(_engine_element(ring, sign)) * positive_square
-        )
-        candidates[_coordinate_tuple(lattice, vector)] = (vector, signed_square)
-
-    vectors = finite_ordered_set(
-        tuple(vector for vector, _square in candidates.values())
-    )
-    by_coordinates = {
-        coordinates: square for coordinates, (_vector, square) in candidates.items()
-    }
-    return finite_indexed_family(
-        vectors,
-        lambda vector: by_coordinates[_coordinate_tuple(lattice, vector)],
-        name=f"Vectors of {lattice} close to {point}",
-    )
+    return lattice._exact_cvp_engine().close_vectors(target, square_bound)
 
 
 def _babai(lattice, target):
