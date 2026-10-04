@@ -6,6 +6,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoryPacketMethods,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -71,7 +74,7 @@ class MagmaMorCategoryConstruction(MorCategoryConstruction):
         return MagmaMor
 
 
-class Magmas(OwnedCategory):
+class Magmas(CategoryPacketMethods, OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
     def an_object(self):
@@ -141,7 +144,7 @@ class MonoidMorCategoryConstruction(MorCategoryConstruction):
         return MonoidMor
 
 
-class Semigroups(OwnedCategory):
+class Semigroups(CategoryPacketMethods, OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
     def an_object(self):
@@ -151,7 +154,7 @@ class Semigroups(OwnedCategory):
         return [Magmas()]
 
 
-class Monoids(OwnedCategory):
+class Monoids(CategoryPacketMethods, OwnedCategory):
     def an_object(self):
         return Magmas().an_object()
 
@@ -230,7 +233,7 @@ class Monoids(OwnedCategory):
 
 
 
-class AdditiveMagmas(OwnedCategory):
+class AdditiveMagmas(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (
@@ -263,7 +266,7 @@ class AdditiveMagmas(OwnedCategory):
             return self._with_axiom("AdditiveCommutative")
 
 
-class AdditiveSemigroups(OwnedCategory):
+class AdditiveSemigroups(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (
@@ -279,7 +282,7 @@ class AdditiveSemigroups(OwnedCategory):
         return [AdditiveMagmas()]
 
 
-class AdditiveMonoids(OwnedCategory):
+class AdditiveMonoids(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (
@@ -303,7 +306,7 @@ class AdditiveMonoids(OwnedCategory):
             return self.zero()
 
 
-class AdditiveGroups(OwnedCategory):
+class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (

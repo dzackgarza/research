@@ -1654,7 +1654,6 @@ def _module_invariant_factor_form(module):
     """
     presentation_iso = module.invariant_factor_presentation()
     diagonal_presentation = presentation_iso.codomain().arrow()
-    full_normalized = diagonal_presentation.cokernel()
     invariants = module._invariants_with_units()
 
     invariant_positions = finite_ordered_set(Sets.Δ[len(invariants) - 1])
@@ -1682,6 +1681,55 @@ def _module_invariant_factor_form(module):
     )
     reduced = reduced_presentation.cokernel()
 
+    if all(
+        invariants[int(retained_positions[int(position)])] == ring.zero()
+        for position in reduced_labels
+    ):
+        target_forward = presentation_iso.forward().right()
+        target_inverse = presentation_iso.inverse().right()
+        original_target = module.presentation().codomain()
+        normalized_target = diagonal_presentation.codomain()
+        normalized_labels = tuple(normalized_target.module_generating_set())
+        normalized_framing = normalized_target.framing_morphism()
+        original_projection = module.presentation_projection()
+        reduced_generator_labels = tuple(reduced.module_generating_set())
+
+        forward_images = {}
+        for label in module.module_generating_set():
+            coordinates = normalized_framing.lift(
+                target_forward(original_target.module_generator(label))
+            )
+            forward_images[label] = reduced.linear_combination(
+                {
+                    reduced_label: coordinates(
+                        normalized_labels[
+                            int(retained_positions[int(reduced_label)])
+                        ]
+                    )
+                    for reduced_label in reduced_generator_labels
+                }
+            )
+        forward = module.module_category().Mor(module, reduced)(forward_images)
+        inverse = reduced.module_category().Mor(reduced, module)(
+            {
+                reduced_label: original_projection(
+                    target_inverse(
+                        normalized_target.module_generator(
+                            normalized_labels[
+                                int(retained_positions[int(reduced_label)])
+                            ]
+                        )
+                    )
+                )
+                for reduced_label in reduced_generator_labels
+            }
+        )
+        return module.module_category().Core().Mor(module, reduced)(
+            forward,
+            inverse,
+        )
+
+    full_normalized = diagonal_presentation.cokernel()
     full_labels = full_normalized.module_generating_set()
     full_to_reduced = full_normalized.module_category().Mor(full_normalized, reduced)(
         {

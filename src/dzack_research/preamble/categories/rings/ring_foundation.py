@@ -2626,7 +2626,7 @@ def OwnedFields():
     return OwnedRings().Division().Commutative()
 
 
-class OwnedOrders(OwnedCategory):
+class OwnedOrders(CategoryPacketMethods, OwnedCategory):
     r"""Orders: integral domains finitely generated as ``ZZ``-modules (Neukirch I §12).
 
     The number field is ``Frac(O) = O (x) QQ``, determined by the ring, and
@@ -2635,6 +2635,12 @@ class OwnedOrders(OwnedCategory):
     The class is the home of the operations of orders (their embeddings, the
     adjunction with number fields, maximality); it adds no condition.
     """
+
+    class _MorCategory(MorCategoryConstruction):
+        def fixed_category_class(self):
+            from dzack_research.preamble.categories.rings.embeddings import OrderMor
+
+            return OrderMor
 
     def an_object(self):
         r"""The integers, the ring of integers of the rationals."""

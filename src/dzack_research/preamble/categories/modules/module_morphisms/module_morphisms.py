@@ -17,10 +17,12 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    CommutativeRings,
     LocalizationRings,
     LocalRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    _OwnedRingParent,
     _engine_ring,
     _enumerated_ring_elements,
     _owned_ring,
@@ -93,7 +95,10 @@ def _integral_left_solver(system, ring):
     assert system.parent() in MatrixSpaces(ring), f"cannot solve the linear system {system} over {ring}: its matrix must have entries in {ring}, but it lies in {system.parent()}"
 
     transposed = system.transpose()
-    smith, left, right = transposed.smith_form()
+    smith_data = transposed.smith_form()
+    smith = smith_data["diagonal"]
+    left = smith_data["left_change"]
+    right = smith_data["right_change"]
     # smith_form() names the two maps by the sides of the presentation
     # square: left is the codomain change applied to the target, while
     # right is the inverse domain change applied after diagonal solving.
@@ -208,7 +213,7 @@ class ModuleMorphismMethods:
         ring = domain.base_ring()
         match ring.is_commutative():
             case True:
-                scalar_map = ring.Mor(ring).identity()
+                scalar_map = CommutativeRings().Mor(ring, ring).identity()
                 super().__init__(
                     parent,
                     scalar_map,
@@ -2286,8 +2291,13 @@ class _ModuleMorCommonMethods:
         """
         from sage.misc.unknown import Unknown
 
-        ring = self.base_ring()
-        match ring in OwnedRings().Commutative():
+        ring = self.domain().base_ring()
+        match ring:
+            case _OwnedRingParent():
+                commutative = ring._commutativity_decision()
+            case _:
+                commutative = ring.is_commutative()
+        match commutative:
             case True if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
                 return True
             case _:

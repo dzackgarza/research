@@ -15,7 +15,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import ModuleElement
+from sage.structure.element import Element, ModuleElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbeddingMor,
     ModuleMor,
     ModuleMorphism,
+    ModuleMorphismMethods,
     SubFramingMorphism,
     TensorProductModuleMor,
     _framing_morphism,
@@ -1022,7 +1023,13 @@ class Modules(OwnedCategoryOverBaseRing):
         return self.base_ring().free_module(1)
 
     def super_categories(self):
-        match self.base_ring().is_commutative():
+        base_ring = self.base_ring()
+        match base_ring:
+            case _OwnedRingParent():
+                commutative = base_ring._commutativity_decision()
+            case _:
+                commutative = base_ring.is_commutative()
+        match commutative:
             case True:
                 from dzack_research.preamble.categories.modules.fibered_modules import (
                     ModulesOverCommutativeRings,
@@ -1114,6 +1121,8 @@ class Modules(OwnedCategoryOverBaseRing):
     _EndCategory = ModuleEndCategoryConstruction
 
     class ElementMethods:
+        __add__ = Element.__add__
+
         def __rmul__(self, scalar):
             r"""Return ring multiplication or the left module scalar action.
 
@@ -3563,6 +3572,10 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Return the unchanged additive group of the extension-ring module."""
             return self.module_over_extension().underlying_additive_group()
 
+        def is_zero(self) -> bool:
+            r"""Return whether the unchanged underlying additive group is zero."""
+            return self.module_over_extension().is_zero()
+
         def _underlying_additive_element(self, element):
             element = self(element)
             extension = self.module_over_extension()
@@ -3633,6 +3646,63 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                         scalar_coordinates(scalar_label)
                     )
             return coefficients
+
+        def _represented_kernel_of_morphism(self, morphism):
+            r"""Compute a finite-free source kernel in a restricted fraction-field module.
+
+            If ``W`` is finitely framed over ``Frac(R)``, the images of a
+            finite basis of ``F`` in ``Res(W)`` have finitely many rational
+            coordinates.  Multiplying every coordinate by one common
+            denominator embeds the same kernel problem in a finite free
+            ``R``-module, where the ordinary matrix-kernel owner applies.
+            """
+            if morphism.codomain() is not self:
+                return NotImplemented
+            domain = morphism.domain()
+            ring = self.base_ring()
+            if not _coordinate_framed_free_module(domain, ring):
+                return NotImplemented
+            fractions = self.extension_ring()
+            if fractions is not ring.fraction_field():
+                return NotImplemented
+            extension = self.module_over_extension()
+            if not (
+                extension.has_selected_module_resolution()
+                and extension in FinitelyGeneratedModules(fractions)
+            ):
+                return NotImplemented
+
+            framing = extension.framing_morphism()
+            image_coordinates = {
+                label: framing.lift(
+                    morphism(domain.module_generator(label)).underlying_element()
+                )
+                for label in domain.module_generating_set()
+            }
+            denominator = ring.one()
+            for coordinates in image_coordinates.values():
+                for label in coordinates.support().domain():
+                    denominator = denominator.lcm(coordinates(label).denominator())
+            scale = self.ring_map()(denominator)
+            cleared_module = ring._fresh_free_module_on(
+                extension.module_generating_set()
+            )
+
+            def cleared(coordinates):
+                return cleared_module.linear_combination(
+                    {
+                        label: ring(scale * coordinates(label))
+                        for label in coordinates.support().domain()
+                    }
+                )
+
+            cleared_morphism = domain.Mor(cleared_module)(
+                {
+                    label: cleared(coordinates)
+                    for label, coordinates in image_coordinates.items()
+                }
+            )
+            return cleared_morphism.kernel()
 
         def zero(self):
             return self.element_class(self, self.module_over_extension().zero())

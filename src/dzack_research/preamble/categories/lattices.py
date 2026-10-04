@@ -15,8 +15,8 @@ constructed by calling that category.
 
 from __future__ import annotations
 
-from collections.abc import Hashable, Sequence
-from typing import overload
+from collections.abc import Hashable, Mapping, Sequence
+from typing import TYPE_CHECKING, overload
 
 from sage.arith.misc import gcd
 from sage.categories.morphism import SetMorphism
@@ -26,6 +26,7 @@ from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import RingElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
@@ -1041,6 +1042,12 @@ class Lattices(OwnedCategoryOverBaseRing):
         and that module are the datum of ``FormModules(R)``, which the
         construction computes from the presentation.
         """
+
+        if TYPE_CHECKING:
+            def linear_combination(
+                self,
+                coefficients: Mapping[Hashable, RingElement | int],
+            ) -> "Lattices.ElementMethods": ...
 
         def base_ring(self) -> _OwnedRingParent:
             return super().base_ring()
@@ -3318,6 +3325,16 @@ class Lattices(OwnedCategoryOverBaseRing):
         this level adds the lattice notation and the lattice invariants of a
         vector.
         """
+
+        if TYPE_CHECKING:
+            def __add__(
+                self,
+                other: "Lattices.ElementMethods",
+            ) -> "Lattices.ElementMethods": ...
+            def __sub__(
+                self,
+                other: "Lattices.ElementMethods",
+            ) -> "Lattices.ElementMethods": ...
 
         def _lattice_terms(self):
             r"""The nonzero coefficients of this vector, in the order of the framing's enumeration."""

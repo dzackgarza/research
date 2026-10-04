@@ -5,7 +5,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def _isotropic_line_flag():
     lattice = NamedLattices.U
-    isotropic_vector = lattice.module_generator(0)
+    isotropic_vector = lattice.module_generators()[0]
     flag = IsotropicFlag(lattice, (isotropic_vector,))
     return lattice, isotropic_vector, flag
 
@@ -15,6 +15,8 @@ def test_isotropic_line_flag_retains_its_lattice_and_basis() -> None:
 
     assert flag.lattice() is lattice
     assert tuple(flag.isotropic_basis()) == (isotropic_vector,)
+    assert tuple(flag.basis()) == (isotropic_vector,)
+    assert flag.rank() == cardinal(1)
 
 
 def test_isotropic_line_flag_has_one_nested_term() -> None:

@@ -1627,7 +1627,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             )
         return supers
 
-    def identity(self):
+    def identity(self) -> LatticeIsometryMethods:
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"there is no identity isometry from {self.domain()} to {self.codomain()}: "

@@ -324,7 +324,7 @@ class AdditiveMor(CategoricalMor):
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         self._base_ring = _own_ring(SageZZ)
-        self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
+        self._preamble_base_ring = self._base_ring
         category = AdditiveEndomorphismRings(self._base_ring) if domain is codomain else AdditiveMorGroups()
         super().__init__(family, domain, codomain, category=category)
 
@@ -359,7 +359,8 @@ class AdditiveMor(CategoricalMor):
         return self.element_class(self, function)
 
     def _apply_pointwise_scalar(self, scalar, element):
-        return self._integer_action(int(self._base_ring(scalar)), element)
+        action = IntegerMulAction(SageZZ, self.codomain(), m=self.codomain().zero())
+        return action(int(self._base_ring(scalar)), element)
 
     def _scalar_identity(self, scalar):
         return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
@@ -370,4 +371,6 @@ class AdditiveMor(CategoricalMor):
         if coefficient is not None:
             return self._scalar_identity(self._base_ring(scalar) * coefficient)
         integer = int(self._base_ring(scalar))
-        return self.elementwise(lambda element: self._integer_action(integer, morphism(element)))
+        return self.elementwise(
+            lambda element: self._apply_pointwise_scalar(integer, morphism(element))
+        )

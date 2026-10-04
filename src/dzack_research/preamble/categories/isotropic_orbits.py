@@ -406,6 +406,14 @@ class IsotropicFlag:
     def isotropic_basis(self):
         return self._basis
 
+    def basis(self):
+        r"""Return the ordered isotropic basis defining the flag."""
+        return self.isotropic_basis()
+
+    def rank(self):
+        r"""Return the rank of the top isotropic sublattice."""
+        return self.top().module_rank()
+
     def terms(self):
         return finite_ordered_set(self._terms)
 

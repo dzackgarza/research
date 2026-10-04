@@ -35,6 +35,9 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoryPacketMethods,
+)
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
@@ -653,7 +656,7 @@ def _set_mor_category(domain, codomain):
     return SetMorCategoryConstruction(Sets()).Of(domain, codomain)
 
 
-class Sets(OwnedCategory):
+class Sets(CategoryPacketMethods, OwnedCategory):
     r"""The owned category of sets.
 
     All Sage set objects are admitted.  The category owns the mathematical
@@ -1438,6 +1441,10 @@ class Sets(OwnedCategory):
                 PredicateSubrings,
             )
 
+            construction_cardinality = self._cardinality_decision()
+            if construction_cardinality is not Unknown:
+                return cardinal(construction_cardinality)
+
             match self:
                 case _ if self in OrderedEnumeratedSets():
                     return cardinal(self.index_set().cardinality())
@@ -1468,9 +1475,6 @@ class Sets(OwnedCategory):
                         lambda index: cardinal(self.factor(index).cardinality()),
                     )
                 case _ if self in CoproductsOfSets():
-                    construction_cardinality = self._cardinality_decision()
-                    if construction_cardinality is not Unknown:
-                        return cardinal(construction_cardinality)
                     return _cardinalities().indexed_sum(
                         self.index_set(),
                         lambda index: cardinal(self.cofactor(index).cardinality()),
@@ -1501,12 +1505,6 @@ class Sets(OwnedCategory):
                                     )
                                     return _aleph0()
                 case _:
-                    construction_cardinality = self._cardinality_decision()
-                    match construction_cardinality is Unknown:
-                        case False:
-                            return cardinal(construction_cardinality)
-                        case True:
-                            pass
                     match self:
                         case _ if self in Sets().Finite():
                             return cardinal(sum(1 for _point in self))
