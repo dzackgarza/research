@@ -8,15 +8,18 @@ capability and what would provision it, which is the owned behaviour until a
 provider arrives.
 """
 
+from dataclasses import dataclass
+
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
-from dzack_research.preamble.owned_category import _object_of
-
 from dzack_research.preamble.engine_capabilities import engine_capabilities
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _held(lattice, element):
@@ -346,6 +349,44 @@ def _isotropic_flag_locus(lattice, ranks):
     )
 
 
+@dataclass(frozen=True)
+class FlagType:
+    r"""The strictly increasing ranks of the terms of a nonempty flag."""
+
+    dimensions: tuple[int, ...]
+
+    def __post_init__(self) -> None:
+        dimensions = tuple(int(dimension) for dimension in self.dimensions)
+        match dimensions:
+            case ():
+                raise ValueError("a flag type needs at least one positive dimension")
+            case _ if any(dimension <= 0 for dimension in dimensions):
+                raise ValueError(f"flag dimensions must be positive, got {dimensions}")
+            case _ if any(
+                dimensions[index] >= dimensions[index + 1]
+                for index in range(len(dimensions) - 1)
+            ):
+                raise ValueError(f"flag dimensions must be strictly increasing, got {dimensions}")
+            case _:
+                object.__setattr__(self, "dimensions", dimensions)
+
+    @classmethod
+    def plane(cls, rank: int) -> FlagType:
+        r"""Return the type of a one-term flag of rank ``rank``."""
+        return cls((int(rank),))
+
+    @classmethod
+    def complete(cls, rank: int) -> FlagType:
+        r"""Return the complete flag type ``1 < 2 < ... < rank``."""
+        return cls(tuple(range(1, int(rank) + 1)))
+
+    @property
+    def block_sizes(self) -> tuple[int, ...]:
+        r"""Return the successive rank increments of the flag."""
+        previous = (0, *self.dimensions[:-1])
+        return tuple(right - left for left, right in zip(previous, self.dimensions, strict=True))
+
+
 class IsotropicFlag:
     r"""A primitive totally isotropic flag, recorded by its nested lattice subobjects."""
 
@@ -379,6 +420,10 @@ class IsotropicFlag:
 
     def top(self):
         return self._terms[-1]
+
+    def flag_type(self) -> FlagType:
+        r"""Return the ranks of the nested primitive isotropic terms."""
+        return FlagType(tuple(int(term.module_rank()) for term in self._terms))
 
     def __repr__(self) -> str:
         return (
@@ -884,5 +929,6 @@ def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 __all__ = [
     "ArithmeticCuspIncidence",
     "CuspIncidence",
+    "FlagType",
     "IsotropicFlag",
 ]
