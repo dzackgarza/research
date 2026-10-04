@@ -1238,7 +1238,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.special_orthogonal_group(*args, **kwargs)
 
         @cached_method(key=lambda self, ring_map: id(ring_map))
-        def base_change(self, ring_map):
+        def base_change(self, ring_map) -> "Lattices.ParentMethods":
             r"""Return \(L\otimes_R S\) along ``ring_map`` \(\varphi\colon R\to S\), a lattice over \(S\).
 
             The scalar extension of the underlying free module is the free
