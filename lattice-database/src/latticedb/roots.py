@@ -17,8 +17,13 @@ of `L` when the greedy choice gives one. When they do not generate `L`,
 from fractions import Fraction
 from itertools import combinations, product
 
+from dzack_research.preamble.rings import session_ring_objects
+
 from latticedb import arithmetic, root_systems
 from latticedb.arithmetic import GramTensor, Vector
+
+_SESSION_RINGS = session_ring_objects()
+ZZ = _SESSION_RINGS["ZZ"]
 
 type Component = tuple[str, Fraction, tuple[Vector, ...]]
 """An irreducible component of a root system: its type, its scale, and its simple roots in the numbering of the type."""
@@ -127,14 +132,17 @@ def generating_roots(roots: list[Vector], rank: int) -> list[Vector]:
     of a primitive sublattice. The other choice takes a root when it is not in
     the sublattice that the roots taken generate.
     """
+    ambient = ZZ.free_module(rank)
     basis: list[Vector] = []
     for r in roots:
-        if arithmetic.invariant_factors([*basis, r], rank) == (1,) * (len(basis) + 1):
+        candidate = ambient.subobject_on(tuple(ambient(vector) for vector in (*basis, r)))
+        if int(candidate.module_rank()) == len(basis) + 1 and candidate.is_primitive():
             basis.append(r)
     if len(basis) == rank:
         return basis
     taken: list[Vector] = []
     for r in roots:
-        if arithmetic.span_basis([*taken, r]) != arithmetic.span_basis(taken):
+        span = ambient.subobject_on(tuple(ambient(vector) for vector in taken))
+        if ambient(r) not in span:
             taken.append(r)
     return taken

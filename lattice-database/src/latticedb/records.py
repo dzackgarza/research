@@ -297,7 +297,8 @@ def _root_sublattice(
 ) -> dict[str, Yaml]:
     """The invariant factors of $R(L)$ in $L$, for roots that generate $R(L)$; for a root lattice, also a set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$."""
     rank = len(gram)
-    factors = arithmetic.invariant_factors(list(spanning), rank)
+    matrix = ZZ.matrix_space(len(spanning), rank).from_rows(tuple(spanning))
+    factors = tuple(abs(int(factor)) for factor in matrix.invariant_factors())
     block: dict[str, Yaml] = {"invariant_factors": list(factors)}
     if factors == (1,) * rank:
         block["norms"] = [
@@ -451,15 +452,26 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         )
     span = lattice.root_span
     if span is not None:
+        owned_lattice = Lattices(ZZ)(gram) if lattice.is_integer_valued else None
         found.extend(
             f"root_span.roots: {list(row)} is not a root of L"
             for row in span.roots
-            if not arithmetic.is_root(gram, row)
+            if not (
+                owned_lattice(row).is_root()
+                if owned_lattice is not None
+                else arithmetic.is_root(gram, row)
+            )
         )
         if span.embedding is not None:
-            basis = arithmetic.span_basis(list(span.embedding))
-            if len(basis) != len(span.embedding) or basis != arithmetic.span_basis(
-                list(span.roots)
+            ambient = ZZ.free_module(lattice.rank)
+            embedding_elements = tuple(ambient(row) for row in span.embedding)
+            root_elements = tuple(ambient(row) for row in span.roots)
+            embedding_span = ambient.subobject_on(embedding_elements)
+            root_span = ambient.subobject_on(root_elements)
+            if (
+                int(embedding_span.module_rank()) != len(span.embedding)
+                or any(element not in root_span for element in embedding_elements)
+                or any(element not in embedding_span for element in root_elements)
             ):
                 found.append(
                     "root_span.embedding: the rows are not a basis of the sublattice that the rows of `roots` generate"

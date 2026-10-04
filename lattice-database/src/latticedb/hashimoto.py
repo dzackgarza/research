@@ -27,8 +27,14 @@ from pathlib import Path
 from flint import fmpz, fmpz_mat
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.rings import session_ring_objects
+
 from latticedb import arithmetic, corpus
 from latticedb.model import Lattice, Tag
+
+_SESSION_RINGS = session_ring_objects()
+ZZ = _SESSION_RINGS["ZZ"]
 
 K3_RANK = 22
 K3_RECORD = "027E"
@@ -97,7 +103,15 @@ def symbol_group(symbol: str) -> list[int]:
 
 def prime_powers(gram_tensor: arithmetic.GramTensor) -> list[int]:
     """The orders of the cyclic factors of prime-power order of the discriminant group."""
-    return sorted(int(p) ** int(e) for factor in arithmetic.discriminant_invariants(gram_tensor) for p, e in fmpz(factor).factor())
+    discriminant = Lattices(ZZ)(gram_tensor).discriminant_group()
+    factors = (
+        abs(int(factor))
+        for factor in discriminant.invariant_factors()
+        if abs(int(factor)) > 1
+    )
+    return sorted(
+        int(p) ** int(e) for factor in factors for p, e in fmpz(factor).factor()
+    )
 
 
 def twisted(lattice: Lattice, twist: int) -> arithmetic.GramTensor:
@@ -111,7 +125,9 @@ def _tensor(rows: tuple[tuple[int, ...], ...]) -> arithmetic.GramTensor:
 def _primitive(matrix: corpus.Matrix) -> bool:
     """Whether the columns of `matrix` are a basis of a primitive sublattice."""
     columns = [tuple(row[j] for row in matrix) for j in range(len(matrix[0]))]
-    return arithmetic.invariant_factors(columns, len(matrix)) == (1,) * len(columns)
+    ambient = ZZ.free_module(len(matrix))
+    subobject = ambient.subobject_on(tuple(ambient(column) for column in columns))
+    return int(subobject.module_rank()) == len(columns) and subobject.is_primitive()
 
 
 def complements(invariant: tuple[Tag, int], coinvariant: tuple[Tag, int], k3: Lattice, morphisms: corpus.Held) -> bool:
