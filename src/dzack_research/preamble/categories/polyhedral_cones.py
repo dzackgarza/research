@@ -570,11 +570,12 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
         def facet_covectors(self):
             if self._engine.dim() <= 0:
                 return finite_ordered_set(())
-            facets = []
-            for covector in self._halfspace_covectors:
-                if self.face_on_covector(covector).dimension() == self.dimension() - 1:
-                    facets.append(covector)
-            return finite_ordered_set(tuple(facets))
+            return finite_ordered_set(
+                tuple(
+                    self._covector_from_engine_hrepresentation(inequality)
+                    for inequality in self._engine.inequalities()
+                )
+            )
 
         def facets(self):
             from dzack_research.preamble.categories.sets.indexed_families import (
