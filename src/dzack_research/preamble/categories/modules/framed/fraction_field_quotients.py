@@ -73,9 +73,8 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                         + parent._lift_backend(other._backend())
                     )
                 case _:
-                    return _owned_engine_element(
-                        parent,
-                        self._backend() + other._backend(),
+                    return parent._from_engine_element(
+                        self._backend() + other._backend()
                     )
 
         def _neg_(self):
@@ -84,7 +83,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 case None:
                     return parent._from_engine_element(-parent._lift_backend(self._backend()))
                 case _:
-                    return _owned_engine_element(parent, -self._backend())
+                    return parent._from_engine_element(-self._backend())
 
         def _lmul_(self, scalar):
             parent = self.parent()
@@ -95,8 +94,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                         field(parent.base_ring()(scalar)) * parent._lift_backend(self._backend())
                     )
                 case _:
-                    return _owned_engine_element(
-                        parent,
+                    return parent._from_engine_element(
                         _engine_element(parent.base_ring(), scalar) * self._backend(),
                     )
 

@@ -37,6 +37,8 @@ def test_the_invariants_of_u() -> None:
     assert plane.is_unimodular()
     assert not plane.is_definite()
     assert plane.discriminant_group().cardinality() == 1
+    assert plane.delta() == 0
+    assert plane.level() == 1
     assert plane.dual_lattice().is_isometric(plane)
 
 
