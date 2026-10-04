@@ -14,6 +14,7 @@ import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
+    _distinct_supercategories,
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
@@ -1324,7 +1325,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if self.aut_family() is not None:
             supers.append(packet.Ends().Of(source))
             supers.extend(superpacket.Auts().Of(source) for superpacket in packet.super_packets() if source in superpacket.C())
-        return supers
+        return _distinct_supercategories(supers)
 
     def identity(self):
         if self.domain() is not self.codomain():

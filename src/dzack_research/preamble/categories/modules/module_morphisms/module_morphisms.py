@@ -13,6 +13,7 @@ from sage.structure.element import parent as element_parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     CategoricalIsomorphism,
+    _distinct_supercategories,
     _precomposable,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -2907,7 +2908,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
         ]
         if self.aut_family() is not None:
             supers.append(packet.Ends().Of(module))
-        return supers
+        return _distinct_supercategories(supers)
 
     def _repr_(self):
         return f"Aut_{self.base_category()}({self.module()})"
