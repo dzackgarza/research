@@ -13,7 +13,6 @@ from math import gcd
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.rings import session_ring_objects
 
-from latticedb import arithmetic
 from latticedb.corpus import CatalogueEntry, Corpus
 from latticedb.geometric import ProjectiveComplexVariety, ToricHypersurfaceConstruction
 
@@ -190,14 +189,25 @@ def reference_problems(loaded: Corpus) -> list[str]:
     for entry in loaded.dual_isometries:
         dual = entry.value
         lattice = lattices.get(dual.lattice)
+        valid = False
         if (
-            lattice is None
-            or lattice.integral is None
-            or lattice.integral.modular_scale != dual.scale
-            or not arithmetic.is_dual_isometry(
-                lattice.gram_tensor, dual.scale, dual.matrix
-            )
+            lattice is not None
+            and lattice.integral is not None
+            and lattice.integral.modular_scale == dual.scale
         ):
+            source = Lattices(ZZ)(lattice.gram_tensor)
+            twisted_dual = source.dual_lattice().twist(dual.scale)
+            try:
+                target = Lattices(ZZ)(twisted_dual.gram_tensor())
+                images = tuple(
+                    target(vector)
+                    for vector in zip(*dual.matrix, strict=True)
+                )
+                source.Isom(target)(images)
+                valid = True
+            except (AssertionError, TypeError, ValueError):
+                valid = False
+        if not valid:
             found.append(
                 f"{entry.path}: matrix must give the stated isometry L -> L*(k) for lattice {dual.lattice}"
             )

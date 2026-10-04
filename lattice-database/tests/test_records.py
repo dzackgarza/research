@@ -8,6 +8,8 @@ import frontmatter
 import pytest
 import yaml
 
+from dzack_research.preamble.rings import session_ring_objects
+
 from latticedb import arithmetic, checks, corpus, nebe_sloane, records, root_systems, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Morphism, Yaml
@@ -241,8 +243,11 @@ def test_nebe_sloane_accepts_an_indefinite_entry_without_definite_invariants(tmp
 def test_nebe_sloane_reads_the_full_matrix_of_shimada_86() -> None:
     entry = nebe_sloane.archive_entry(REPOSITORY / "sources" / "nebe_sloane" / "union.gz", "Shimada_86")
     assert (entry.dimension, entry.determinant, entry.minimal_norm, entry.kissing_number) == (86, 196608, 8, 109421928)
-    assert arithmetic.inertia(entry.gram_tensor) == (86, 0, 0)
-    assert arithmetic.determinant(entry.gram_tensor) == entry.determinant
+    rings = session_ring_objects()
+    formed = rings["ZZ"].free_module(entry.dimension).equip_bilinear_form(rings["QQ"], entry.gram_tensor)
+    signature = formed.signature_pair()
+    assert (int(signature.first()), int(signature.second()), 0) == (86, 0, 0)
+    assert int(formed.determinant()) == entry.determinant
 
 
 def test_enrich_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:

@@ -272,7 +272,8 @@ def _definite(
 def _indefinite(gram: GramTensor, lattice=None) -> dict[str, Yaml]:
     # The radical of a degenerate form is nonzero and isotropic; `qfsolve` decides a nondegenerate rational form.
     if lattice is None:
-        isotropic = arithmetic.determinant(gram) == 0 or arithmetic.is_isotropic(gram)
+        formed = ZZ.free_module(len(gram)).equip_bilinear_form(QQ, gram)
+        isotropic = formed.determinant() == 0 or arithmetic.is_isotropic(gram)
     else:
         isotropic = lattice.determinant() == 0 or int(lattice.witt_index()) > 0
     return {"isotropic": isotropic}
@@ -622,12 +623,17 @@ def morphism_problems(
             found.append(
                 f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source"
             )
-    elif arithmetic.restriction(target.gram_tensor, morphism.images) != arithmetic.scaled(
-        source.gram_tensor, morphism.scale
-    ):
-        found.append(
-            f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source"
-        )
+    else:
+        source_formed = ZZ.free_module(source.rank).equip_bilinear_form(QQ, source.gram_tensor).twist(morphism.scale)
+        target_formed = ZZ.free_module(target.rank).equip_bilinear_form(QQ, target.gram_tensor)
+        try:
+            source_formed.Mor(target_formed)(
+                tuple(target_formed(image) for image in morphism.images)
+            )
+        except ValueError:
+            found.append(
+                f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source"
+            )
     if _crosses_parts(target.gram_tensor, morphism.row_subdivisions):
         found.append(
             f"{morphism.name}: the parts of row_subdivisions are not orthogonal summands of the target"

@@ -39,76 +39,6 @@ def is_integer_valued(gram_tensor: GramTensor) -> bool:
     return all(value.denominator == 1 for row in gram_tensor for value in row)
 
 
-def determinant(gram_tensor: GramTensor) -> Fraction:
-    """Return `det(b(e_i, e_j))`.
-
-    Another basis of `L` has components `b(e'_i, e'_j) = sum_kl P_ik b(e_k, e_l) P_jl`
-    with `P` invertible over the integers, so the determinant changes by
-    `det(P)^2 = 1`: it is an invariant of the lattice.
-    """
-    value = _components(gram_tensor).det()
-    return Fraction(int(value.p), int(value.q))
-
-
-def inertia(gram_tensor: GramTensor) -> tuple[int, int, int]:
-    """Return `(n_plus, n_minus, n_zero)` for the form `b` on the rational vector space `V` that `L` spans.
-
-    `V` has a basis `v_1, ..., v_n` with `b(v_i, v_j) = 0` for `i != j`, and
-    the numbers of `i` with `b(v_i, v_i)` positive, negative and zero do not
-    depend on that basis (Sylvester's law of inertia). Both statements:
-    https://en.wikipedia.org/wiki/Symmetric_bilinear_form#Orthogonal_basis
-
-    The loop is the induction that proves the first statement. It takes `v`
-    with `b(v, v) != 0`, replaces each other vector `w` by
-    `w - (b(w, v) / b(v, v)) v`, which is orthogonal to `v`, and continues in
-    the span of the replaced vectors. When `b(x, x) = 0` for every remaining
-    `x` and `b(x, y) != 0` for some pair, `v = x + y` has
-    `b(v, v) = 2 b(x, y) != 0`. When no such pair exists, `b` vanishes on the
-    span of the remaining vectors, and they complete the orthogonal basis.
-    """
-    rank = len(gram_tensor)
-    components = _components(gram_tensor)
-
-    def b(x: fmpq_mat, y: fmpq_mat) -> fmpq:
-        return (x.transpose() * components * y)[0, 0]
-
-    remaining = [
-        fmpq_mat(rank, 1, [int(i == j) for i in range(rank)]) for j in range(rank)
-    ]
-    values: list[fmpq] = []
-    while remaining:
-        position = next((i for i, x in enumerate(remaining) if b(x, x) != 0), None)
-        if position is None:
-            pair = next(
-                (
-                    (i, j)
-                    for i, j in combinations(range(len(remaining)), 2)
-                    if b(remaining[i], remaining[j]) != 0
-                ),
-                None,
-            )
-            if pair is None:
-                break
-            position = pair[0]
-            remaining[position] = remaining[pair[0]] + remaining[pair[1]]
-        v = remaining.pop(position)
-        values.append(b(v, v))
-        remaining = [w - v * (b(w, v) / values[-1]) for w in remaining]
-    n_plus = sum(1 for value in values if value > 0)
-    return n_plus, len(values) - n_plus, len(remaining)
-
-
-def is_definite(gram_tensor: GramTensor) -> bool:
-    """Whether `b(x, x)` has one sign on the nonzero vectors of `L`.
-
-    `b` is positive or negative definite exactly when its inertia `(n_plus,
-    n_minus, n_zero)` has `n_zero = 0` and one of `n_plus`, `n_minus` is zero
-    (Sylvester's law of inertia).
-    """
-    n_plus, n_minus, n_zero = inertia(gram_tensor)
-    return n_zero == 0 and (n_plus == 0 or n_minus == 0)
-
-
 def is_perfect(rank: int, minimal_vectors: list[list[int]]) -> bool:
     """Whether the rank-one tensors of the minimal shell span Sym^2(Q^rank)."""
     rows = [
@@ -116,22 +46,6 @@ def is_perfect(rank: int, minimal_vectors: list[list[int]]) -> bool:
         for vector in minimal_vectors
     ]
     return fmpq_mat(rows).rank() == rank * (rank + 1) // 2
-
-
-def is_dual_isometry(
-    gram_tensor: GramTensor, scale: int, matrix: list[list[int]]
-) -> bool:
-    """Whether M gives L isometric to L*(scale) in the dual basis."""
-    rank = len(gram_tensor)
-    if len(matrix) != rank or any(len(row) != rank for row in matrix):
-        return False
-    integral = fmpz_mat(matrix)
-    if abs(int(integral.det())) != 1:
-        return False
-    gram = _components(gram_tensor)
-    dual = fmpq(scale) * gram.inv()
-    morphism = fmpq_mat(matrix)
-    return morphism.transpose() * dual * morphism == gram
 
 
 def bad_reduction_primes(determinant: int) -> tuple[int, ...]:
