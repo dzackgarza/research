@@ -268,14 +268,17 @@ def _definite(
     return _ordered(block, tuple(model.DefiniteData.model_fields))
 
 
-def _indefinite(gram: GramTensor) -> dict[str, Yaml]:
+def _indefinite(gram: GramTensor, lattice=None) -> dict[str, Yaml]:
     # The radical of a degenerate form is nonzero and isotropic; `qfsolve` decides a nondegenerate rational form.
-    isotropic = arithmetic.determinant(gram) == 0 or arithmetic.is_isotropic(gram)
+    if lattice is None:
+        isotropic = arithmetic.determinant(gram) == 0 or arithmetic.is_isotropic(gram)
+    else:
+        isotropic = lattice.determinant() == 0 or int(lattice.witt_index()) > 0
     return {"isotropic": isotropic}
 
 
 def _root_span(
-    record: dict[str, Yaml], gram: GramTensor
+    record: dict[str, Yaml], gram: GramTensor, lattice=None
 ) -> tuple[dict[str, Yaml], list[Vector]] | None:
     """The declared `root_span` block, else the roots found when they generate `L`, with the norms of the roots; else `None`."""
     if "root_span" in record:
@@ -283,12 +286,20 @@ def _root_span(
         spanning = _vectors(block["roots"])
     else:
         rank = len(gram)
-        found: list[Vector] = roots.small_roots(gram)
-        if not arithmetic.generate(found, rank):
+        found: list[Vector] = roots.small_roots(gram, lattice=lattice)
+        ambient = ZZ.free_module(rank)
+        found_span = ambient.subobject_on(tuple(ambient(vector) for vector in found))
+        if any(
+            ambient.module_generator(label) not in found_span
+            for label in ambient.module_generating_set()
+        ):
             return None
         spanning = list(roots.generating_roots(found, rank))
         block = {"roots": [list(r) for r in spanning]}
-    block["norms"] = [rational(arithmetic.pairing(gram, r, r)) for r in spanning]
+    block["norms"] = [
+        rational(Fraction(int(lattice(r).q())) if lattice is not None else arithmetic.pairing(gram, r, r))
+        for r in spanning
+    ]
     return _ordered(block, tuple(model.RootSpan.model_fields)), spanning
 
 
@@ -352,15 +363,23 @@ def derive(
         derived["definite"] = _definite(record, gram, positive_roots, integral_lattice)
         derived["root_sublattice"] = _root_sublattice(gram, positive_roots)
     else:
-        found = _root_span(record, gram)
+        found = _root_span(record, gram, integral_lattice)
         if found is not None:
             span, spanning = found
             derived["root_span"] = span
             derived["root_sublattice"] = _root_sublattice(
-                gram, {r: arithmetic.pairing(gram, r, r) for r in spanning}
+                gram,
+                {
+                    r: (
+                        Fraction(int(integral_lattice(r).q()))
+                        if integral_lattice is not None
+                        else arithmetic.pairing(gram, r, r)
+                    )
+                    for r in spanning
+                },
             )
     if definiteness == "indefinite":
-        derived["indefinite"] = _indefinite(gram)
+        derived["indefinite"] = _indefinite(gram, integral_lattice)
     return {key: derived[key] for key in KEYS if key in derived}
 
 

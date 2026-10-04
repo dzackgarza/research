@@ -111,7 +111,7 @@ def norm_two_types(gram_tensor: GramTensor, positive_roots: dict[Vector, Fractio
     return tuple(types)
 
 
-def small_roots(gram_tensor: GramTensor) -> list[Vector]:
+def small_roots(gram_tensor: GramTensor, lattice=None) -> list[Vector]:
     """Return the roots with coordinates in `{-1, 0, 1}`, at most three of them nonzero and the first of those equal to 1."""
     rank = len(gram_tensor)
     roots = []
@@ -120,7 +120,7 @@ def small_roots(gram_tensor: GramTensor) -> list[Vector]:
             for signs in product((1, -1), repeat=size - 1):
                 coefficients = dict(zip(support, (1, *signs), strict=True))
                 r = tuple(coefficients.get(index, 0) for index in range(rank))
-                if arithmetic.is_root(gram_tensor, r):
+                if lattice(r).is_root() if lattice is not None else arithmetic.is_root(gram_tensor, r):
                     roots.append(r)
     return roots
 
