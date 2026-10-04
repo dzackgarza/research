@@ -201,8 +201,54 @@ The **class group** $\cl(L)$ is the set of isometry classes of lattices in the g
 
 ::: {.remark}
 
-For indefinite even lattices $L$ of rank $\geq 3$ the class number is $1$, so that the genus determines the isometry class; this is Eichler's theorem on the spinor genus of indefinite forms (see [@CS10] for a general reference).
-For definite lattices the situation is reversed: class number $1$ is comparatively rare.
+Eichler's theorem does **not** say that every indefinite genus of rank at least $3$ has class number $1$.
+It says that an indefinite spinor genus of rank at least $3$ contains a single isometry class [@CS10, Ch. 15, Thm. 14].
+Thus the class number of an indefinite genus equals the number of spinor genera in that genus; it is $1$ only when the genus consists of one spinor genus.
+For definite lattices a spinor genus can itself contain several isometry classes, and class number $1$ is comparatively rare.
+:::
+
+## Spinor genera and their class counts
+
+::: {.definition #def:spinor-genus-partition title="Spinor genera and their class numbers"}
+
+Let $V=L_\QQ$, and for every prime $p$ write $V_p=V\tensor_\QQ\QQ_p$ and $L_p=L\tensor\ZZ_p$.
+Let
+$$
+\theta_p\colon \Orth(V_p)\too \QQ_p^\times/(\QQ_p^\times)^2
+$$
+be the local spinor norm and put $\Theta(V_p)=\ker\theta_p$.
+Two lattices $L$ and $M$ in the same rational quadratic space lie in the same **spinor genus** if there is a rational isometry $g\in O(V)$ and elements $\sigma_p\in\Theta(V_p)$ for every prime $p$, with $\sigma_p$ equal to the identity for almost all $p$, such that
+$$
+g(M_p)=\sigma_p(L_p)
+$$
+for every $p$.
+This is the improper spinor-genus convention; replacing $O(V)$ by $\SO(V)$ gives the proper spinor genus.
+Equivalently one may use the spinor operators of [@CS10, Ch. 15, §9].
+Thus every genus is a disjoint union of spinor genera, and each spinor genus is a union of isometry classes.
+
+Write
+$$
+s(L)=\#\theset{\text{spinor genera contained in }\operatorname{Gen}(L)}
+$$
+and, for a spinor genus $\mathfrak s$, write
+$$
+h(\mathfrak s)=\#\theset{\text{isometry classes contained in }\mathfrak s}.
+$$
+The number $s(L)$ is a power of $2$ [@CS10, Ch. 15, §9.1], and
+$$
+h(\operatorname{Gen}(L))
+=
+\sum_{\mathfrak s\subset\operatorname{Gen}(L)}h(\mathfrak s).
+$$
+For indefinite lattices of rank at least $3$, Eichler's theorem gives one isometry class in each spinor genus under the improper-isometry convention used here [@CS10, Ch. 15, Thm. 14].
+:::
+
+::: {.remark title="Database ordering convention for spinor genera"}
+
+The field `integral.spinor_genus_count` stores the standard number $s(L)$.
+The field `integral.spinor_genera` stores the class numbers $h(\mathfrak s)$ of the individual spinor genera, with the spinor genus containing $L$ first and the remaining class numbers written in decreasing order.
+Only this ordering of the tuple is a database convention; the spinor genera and their class numbers are standard arithmetic invariants.
+The database uses isometry rather than proper-isometry classes, matching `proper=False` in the SageMath spinor-genus computation.
 :::
 
 ::: {.proposition #prop:scattone-bound}
@@ -232,10 +278,15 @@ One has $\mathfrak{n}(L)\iscontainedin\mathfrak{s}(L)$, and $L$ is integral exac
 Under the twist of the Lattice Theory section, $\mathfrak{s}(L(m)) = m\,\mathfrak{s}(L)$, $\mathfrak{n}(L(m)) = m\,\mathfrak{n}(L)$ and $\mathfrak{v}(L(m)) = m^{r}\,\mathfrak{v}(L)$ for $r = \rank(L)$.
 :::
 
-::: {.definition #def:modular-lattice title="Modular lattices"}
+::: {.definition #def:local-modular-lattice title="Local modular Jordan constituents"}
 
-A lattice $L$ is **$m$-modular** if $m \dualof{L} = L$; equivalently, $L$ is similar to its dual.
-A unimodular lattice is the case $m = 1$, and $L(m)$ is $m$-modular whenever $L$ is unimodular.
+Let $M$ be a nondegenerate $\ZZ_p$-lattice.
+It is **$p^s$-modular** when, under the natural identification of $M^\vee$ with a lattice in $M\tensor_{\ZZ_p}\QQ_p$,
+$$
+p^s M^\vee=M.
+$$
+This is the local homothetic notion used in a Jordan decomposition.
+It should not be confused with the global notion of an $N$-modular integral lattice in the global modularity definition (@def:modular-lattice-global), where one asks for a similarity $L\iso L^\vee(N)$ rather than literal equality inside a fixed rational realization.
 :::
 
 ::: {.theorem #thm:jordan-decomposition title="Jordan decomposition"}
@@ -254,6 +305,79 @@ Such a decomposition exists and is unique up to isometry, and the scales $p^{s_i
 
 The Jordan invariants at every prime are exactly the data compared in the genus definition (@def:coble-genus): two lattices lie in the same genus precisely when they have isometric Jordan decompositions at every prime and the same signature.
 For a $2$-elementary lattice only the primes $2$ and the archimedean place carry information, and the Jordan decomposition at $2$ is assembled from the rank-two $2$-adic lattices $V_k$ and $U_k$ from Nikulin's $V_k,U_k$ definition (@def:nikulin-Vk-Uk) together with rank-one summands.
+:::
+
+## Conway--Sloane genus symbols
+
+::: {.definition #def:conway-sloane-genus-symbol title="Conway--Sloane genus symbol"}
+
+For each prime $p$, write a Jordan decomposition of $L_p=L\tensor\ZZ_p$ as an orthogonal direct sum
+$$
+L_p\iso\bigoplus_j p^j L_{p,j},
+$$
+with each $L_{p,j}$ unimodular over $\ZZ_p$.
+The **Conway--Sloane $p$-adic symbol** is the canonical symbol encoding the isometry classes of these Jordan constituents: for odd $p$ it records their scales, ranks, and determinant square classes, and for $p=2$ it additionally records the type-I/type-II and oddity data together with the canonical compartment conventions.
+The **Conway--Sloane genus symbol** combines the real signature and parity of $L$ with these local symbols.
+Only the primes dividing $2\disc L$ carry nontrivial local data beyond the unimodular constituent determined by the global invariants.
+See [@CS10, Ch. 15, §§7.5--7.8].
+:::
+
+::: {.remark title="What `integral.genus_symbol` stores"}
+
+The genus symbol is standard terminology, not a new database invariant.
+The field `integral.genus_symbol` is a serialization of this Conway--Sloane symbol in the canonical notation printed by SageMath: the leading $\mathrm I$ or $\mathrm{II}$ records odd or even parity, the subscript records the signature, and the remaining factors are the nontrivial local symbols.
+The exact character string is therefore a presentation of the genus, not an extra invariant in addition to the local isometry classes.
+:::
+
+## The discriminant representation and its stored finite data
+
+::: {.definition #def:discriminant-representation-image title="Kernel and image of the discriminant representation"}
+
+Let $L$ be a nondegenerate even lattice and let
+$$
+\rho_L\colon\Orth(L)\too\Orth(A_L,q_L)
+$$
+be the natural discriminant representation.
+Set
+$$
+\widetilde\Orth(L)\definedas\ker\rho_L,
+\qquad
+I_L\definedas\im\rho_L.
+$$
+Then there is always a short exact sequence of groups
+$$
+1\too\widetilde\Orth(L)
+\too\Orth(L)
+\xrightarrow{\rho_L}
+I_L
+\too1.
+$$
+The finite set
+$$
+\mathcal C_L
+\definedas
+\Orth(A_L,q_L)/I_L
+$$
+is the pointed set of left cosets, pointed by $I_L$.
+It is a quotient **group** exactly when $I_L\trianglelefteq\Orth(A_L,q_L)$.
+:::
+
+::: {.remark title="The database's `discriminant_sequence` package"}
+
+The name `integral.discriminant_sequence` is project terminology for a concrete finite presentation of the standard map $\rho_L$ and its fibers; it is not a second exact sequence beyond @def:discriminant-representation-image.
+In a chosen invariant-factor basis of $A_L$, the record stores:
+
+- the invariant factors, chosen basis lifts, and Gram data for $q_L$;
+- generators of $\Orth(A_L,q_L)$;
+- named generators of $\Orth(L)$ when a full generating family is known, together with their images under $\rho_L$;
+- generators and the order $\abs{I_L}$ of the image;
+- $\abs{\widetilde\Orth(L)}$ when $\abs{\Orth(L)}$ is known, so that $\abs{\Orth(L)}=\abs{\widetilde\Orth(L)}\abs{I_L}$;
+- representatives of the pointed coset set $\mathcal C_L$, whose cardinality is the index $[\Orth(A_L,q_L):I_L]$;
+- whether $I_L$ is normal; and, only in that case, generators and a multiplication table for the quotient group $\Orth(A_L,q_L)/I_L$, together with invariant factors when that quotient is abelian.
+- when that quotient is elementary abelian of exponent $2$, its $\FF_2$-dimension.
+
+The stored flag `mm_trivial` means only that $\mathcal C_L$ has one element, equivalently that $\rho_L$ is surjective.
+It must not be confused with the Miranda--Morrison obstruction group of [@MM09, Thm. V.5.1], whose definition uses the local spinor-norm groups and has additional hypotheses.
 :::
 
 ## The mass formula as a class-number criterion
