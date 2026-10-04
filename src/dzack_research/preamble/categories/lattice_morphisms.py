@@ -1,5 +1,7 @@
 r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
+from typing import TYPE_CHECKING
+
 from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix as engine_matrix
@@ -61,6 +63,9 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
 )
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.lattices import Lattices
 
 
 def _engine_gram_rows(lattice):
@@ -367,6 +372,10 @@ def _labelled_generator_images(domain, images):
 
 class LatticeMorphismMethods:
     r"""A module morphism preserving the lattice form."""
+
+    if TYPE_CHECKING:
+        def domain(self) -> Lattices.ParentMethods: ...
+        def codomain(self) -> Lattices.ParentMethods: ...
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
         domain = parent.domain()
