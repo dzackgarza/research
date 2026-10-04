@@ -325,9 +325,24 @@ def _category_parameter_signature(category: Category):
     Named implementation classes may legitimately be shared by categories with
     the same method graph, but C3 category merging still needs a strict order
     on distinct semantic parameters.  Mor families are parameterized by their
-    base category, while categories over scalars expose ``base``.  Record those
-    parameters structurally without using object identity or ``repr``.
+    base category, while fixed Mor categories are additionally parameterized by
+    the owning Mor family: ``Mono_C(A,B)`` and ``Epi_C(A,B)`` can have the same
+    runtime class and base category without being the same category.  Categories
+    over scalars expose ``base``.  Record those parameters structurally without
+    using object identity or ``repr``.
     """
+    mor_family = getattr(category, "mor_family", None)
+    if callable(mor_family):
+        try:
+            family = mor_family()
+        except (AttributeError, TypeError, ValueError):
+            family = None
+        if isinstance(family, Category):
+            return (
+                "mor_family",
+                _category_graph_signature(family),
+                _category_parameter_signature(family),
+            )
     for accessor in ("base_category", "base"):
         method = getattr(category, accessor, None)
         if not callable(method):

@@ -327,6 +327,10 @@ def _labelled_generator_images(domain, images):
 class LatticeMorphismMethods:
     r"""A module morphism preserving the lattice form."""
 
+    _derived_construction_parameters = frozenset(
+        {"module_morphism", "value_morphism"}
+    )
+
     def __init__(self, parent, images, *, elementwise=False) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
@@ -513,7 +517,13 @@ class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
     def __init__(self, parent, images) -> None:
-        super().__init__(parent, images)
+        if parent.aut_family() is not None:
+            module = parent.domain()
+            module_mor = module.module_category().Mor(module, module)
+            forward = module_mor(images)
+            super().__init__(parent, forward, forward.inverse())
+        else:
+            super().__init__(parent, images)
         if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
             raise ValueError(f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: it is not surjective")
 
@@ -1965,7 +1975,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         _signature = domain.signature_pair()
 
         positive, negative = _signature.first(), _signature.second()
-        if not (positive and negative):
+        if positive == 0 or negative == 0:
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
             transformation = QuadraticForm(SageZZ, 2 * sign * codomain_engine).is_globally_equivalent_to(
                 QuadraticForm(SageZZ, 2 * sign * domain_engine),
