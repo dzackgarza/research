@@ -149,6 +149,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
     PrimeFields,
+    _OwnedRingParent,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -1040,6 +1041,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         and that module are the datum of ``FormModules(R)``, which the
         construction computes from the presentation.
         """
+
+        def base_ring(self) -> _OwnedRingParent:
+            return super().base_ring()
 
         def __init__(self, gram_tensor, **rest) -> None:
             self._preamble_gram_tensor = gram_tensor
