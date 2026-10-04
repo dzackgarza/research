@@ -26,7 +26,12 @@ _PARI = Pari(sizemax=2**30)
 
 
 def _components(gram_tensor: GramTensor) -> fmpq_mat:
-    return fmpq_mat([[fmpq(value.numerator, value.denominator) for value in row] for row in gram_tensor])
+    return fmpq_mat(
+        [
+            [fmpq(value.numerator, value.denominator) for value in row]
+            for row in gram_tensor
+        ]
+    )
 
 
 def is_integer_valued(gram_tensor: GramTensor) -> bool:
@@ -67,12 +72,21 @@ def inertia(gram_tensor: GramTensor) -> tuple[int, int, int]:
     def b(x: fmpq_mat, y: fmpq_mat) -> fmpq:
         return (x.transpose() * components * y)[0, 0]
 
-    remaining = [fmpq_mat(rank, 1, [int(i == j) for i in range(rank)]) for j in range(rank)]
+    remaining = [
+        fmpq_mat(rank, 1, [int(i == j) for i in range(rank)]) for j in range(rank)
+    ]
     values: list[fmpq] = []
     while remaining:
         position = next((i for i, x in enumerate(remaining) if b(x, x) != 0), None)
         if position is None:
-            pair = next(((i, j) for i, j in combinations(range(len(remaining)), 2) if b(remaining[i], remaining[j]) != 0), None)
+            pair = next(
+                (
+                    (i, j)
+                    for i, j in combinations(range(len(remaining)), 2)
+                    if b(remaining[i], remaining[j]) != 0
+                ),
+                None,
+            )
             if pair is None:
                 break
             position = pair[0]
@@ -82,6 +96,17 @@ def inertia(gram_tensor: GramTensor) -> tuple[int, int, int]:
         remaining = [w - v * (b(w, v) / values[-1]) for w in remaining]
     n_plus = sum(1 for value in values if value > 0)
     return n_plus, len(values) - n_plus, len(remaining)
+
+
+def is_definite(gram_tensor: GramTensor) -> bool:
+    """Whether `b(x, x)` has one sign on the nonzero vectors of `L`.
+
+    `b` is positive or negative definite exactly when its inertia `(n_plus,
+    n_minus, n_zero)` has `n_zero = 0` and one of `n_plus`, `n_minus` is zero
+    (Sylvester's law of inertia).
+    """
+    n_plus, n_minus, n_zero = inertia(gram_tensor)
+    return n_zero == 0 and (n_plus == 0 or n_minus == 0)
 
 
 def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
@@ -94,11 +119,15 @@ def discriminant_invariants(gram_tensor: GramTensor) -> tuple[int, ...]:
     the basis of `Hom(L, Z)` dual to it, the matrix of `c` has the entries
     `b(e_i, e_j)`; its Smith normal form gives the `d_i`.
     """
-    assert is_integer_valued(gram_tensor), "the correlation has values in Hom(L, Z) only for an integer-valued form"
+    assert is_integer_valued(gram_tensor), (
+        "the correlation has values in Hom(L, Z) only for an integer-valued form"
+    )
     correlation = fmpz_mat([[int(value) for value in row] for row in gram_tensor])
     smith = correlation.snf()
     diagonal = [abs(int(smith[index, index])) for index in range(len(gram_tensor))]
-    assert all(factor != 0 for factor in diagonal), "the cokernel of the correlation is finite only for a nonzero determinant"
+    assert all(factor != 0 for factor in diagonal), (
+        "the cokernel of the correlation is finite only for a nonzero determinant"
+    )
     return tuple(factor for factor in diagonal if factor > 1)
 
 
@@ -113,8 +142,12 @@ def delta(gram_tensor: GramTensor) -> int:
     when every `G^{-1}_ii` is. Nikulin, Math. USSR-Izv. 14 (1980), §3.6, defines
     `delta` by the values of the discriminant quadratic form `q(x + L) = b(x, x) + 2Z`.
     """
-    assert all(factor == 2 for factor in discriminant_invariants(gram_tensor)), "delta is defined for a lattice with 2 A_L = 0"
-    assert all(gram_tensor[i][i] % 2 == 0 for i in range(len(gram_tensor))), "delta is defined for an even lattice"
+    assert all(factor == 2 for factor in discriminant_invariants(gram_tensor)), (
+        "delta is defined for a lattice with 2 A_L = 0"
+    )
+    assert all(gram_tensor[i][i] % 2 == 0 for i in range(len(gram_tensor))), (
+        "delta is defined for an even lattice"
+    )
     inverse = _components(gram_tensor).inv()
     return 0 if all(inverse[i, i].q == 1 for i in range(len(gram_tensor))) else 1
 
@@ -128,17 +161,24 @@ def level(gram_tensor: GramTensor) -> int:
     inverse = _components(gram_tensor).inv()
     rank = len(gram_tensor)
     denominators = [int((inverse[i, i] / 2).q) for i in range(rank)]
-    denominators.extend(int(inverse[i, j].q) for i in range(rank) for j in range(i + 1, rank))
+    denominators.extend(
+        int(inverse[i, j].q) for i in range(rank) for j in range(i + 1, rank)
+    )
     return lcm(*denominators)
 
 
 def is_perfect(rank: int, minimal_vectors: list[list[int]]) -> bool:
     """Whether the rank-one tensors of the minimal shell span Sym^2(Q^rank)."""
-    rows = [[vector[i] * vector[j] for i in range(rank) for j in range(i, rank)] for vector in minimal_vectors]
+    rows = [
+        [vector[i] * vector[j] for i in range(rank) for j in range(i, rank)]
+        for vector in minimal_vectors
+    ]
     return fmpq_mat(rows).rank() == rank * (rank + 1) // 2
 
 
-def is_dual_isometry(gram_tensor: GramTensor, scale: int, matrix: list[list[int]]) -> bool:
+def is_dual_isometry(
+    gram_tensor: GramTensor, scale: int, matrix: list[list[int]]
+) -> bool:
     """Whether M gives L isometric to L*(scale) in the dual basis."""
     rank = len(gram_tensor)
     if len(matrix) != rank or any(len(row) != rank for row in matrix):
@@ -159,7 +199,9 @@ def bad_reduction_primes(determinant: int) -> tuple[int, ...]:
     `det`. Modulo 2, `Q(x) = sum_i b(e_i, e_i) x_i^2` is the square of a linear
     form, so 2 is always among them.
     """
-    assert determinant != 0, "the reduction of a degenerate form is degenerate at every prime"
+    assert determinant != 0, (
+        "the reduction of a degenerate form is degenerate at every prime"
+    )
     return tuple(int(prime) for prime in _PARI.factor(2 * abs(determinant))[0])
 
 
@@ -192,8 +234,10 @@ _ISOTROPIC_SUBGROUPS = _PARI(
 )
 
 
-def overlattice_count(gram_tensor: GramTensor) -> int | None:
-    """Return the number of integral lattices `M` with `L <= M <= L^*`, or `None` when the discriminant group has more than `SUBGROUP_BOUND` subgroups.
+def overlattice_count(
+    gram_tensor: GramTensor, bound: int = SUBGROUP_BOUND
+) -> int | None:
+    """Return the number of integral lattices `M` with `L <= M <= L^*`, or `None` when the discriminant group has more than `bound` subgroups.
 
     `b` must be integer valued with nonzero determinant. `L^*` is the set of
     `x` in `L (x) Q` with `b(x, L)` in `Z`, and `b` extends to it with rational
@@ -208,6 +252,12 @@ def overlattice_count(gram_tensor: GramTensor) -> int | None:
     counted: a unimodular lattice has the count 1. The count is of subgroups,
     not of their orbits under the isometries of `L`.
 
+    `bound` is the budget of subgroups to enumerate. The count costs about 4
+    microseconds for each subgroup, so `(Z/2)^8` (417199 subgroups) takes
+    seconds and `(Z/2)^9` (8283458) minutes; a larger `bound` decides a larger
+    group, at the cost of that time. The default `SUBGROUP_BOUND` leaves a
+    value above it undecided (`None`).
+
     Computation. With `G` the matrix of the `b(e_i, e_j)`, `u -> G^-1 u` maps
     `Z^n` onto `L^*` (the columns of `G^-1` are the basis dual to the `e_i`)
     and `G Z^n` onto `L`, and `b(G^-1 u, G^-1 v) = u^T G^-1 v`. PARI's `matsnf`
@@ -219,24 +269,38 @@ def overlattice_count(gram_tensor: GramTensor) -> int | None:
     columns of `H` generate exactly when `H^T N H` is `0` modulo `e`, because
     `b_A` is bilinear.
     """
-    assert is_integer_valued(gram_tensor), "the dual lattice contains L only for an integer-valued form"
+    assert is_integer_valued(gram_tensor), (
+        "the dual lattice contains L only for an integer-valued form"
+    )
     rank = len(gram_tensor)
-    form = _PARI.matrix(rank, rank, [int(value) for row in gram_tensor for value in row])
+    form = _PARI.matrix(
+        rank, rank, [int(value) for row in gram_tensor for value in row]
+    )
     left, _, smith = form.matsnf(1)
     diagonal = [abs(int(smith[index, index])) for index in range(rank)]
-    assert all(factor != 0 for factor in diagonal), "the discriminant group is finite only for a nonzero determinant"
+    assert all(factor != 0 for factor in diagonal), (
+        "the discriminant group is finite only for a nonzero determinant"
+    )
     cyclic_factors = [factor for factor in diagonal if factor > 1]
-    assert diagonal[: len(cyclic_factors)] == cyclic_factors, "matsnf puts the factors greater than 1 first"
+    assert diagonal[: len(cyclic_factors)] == cyclic_factors, (
+        "matsnf puts the factors greater than 1 first"
+    )
     if not cyclic_factors:
         return 1
     exponent = cyclic_factors[0]
-    assert all(exponent % factor == 0 for factor in cyclic_factors), "matsnf puts the largest factor first"
+    assert all(exponent % factor == 0 for factor in cyclic_factors), (
+        "matsnf puts the largest factor first"
+    )
     lift = left**-1
     scaled_form = exponent * (lift.mattranspose() * form**-1 * lift)
     size = len(cyclic_factors)
-    form_on_generators = _PARI.matrix(size, size, [scaled_form[i, j] for i in range(size) for j in range(size)])
-    subgroups, isotropic = _ISOTROPIC_SUBGROUPS(cyclic_factors, form_on_generators, exponent, SUBGROUP_BOUND)
-    return None if int(subgroups) > SUBGROUP_BOUND else int(isotropic)
+    form_on_generators = _PARI.matrix(
+        size, size, [scaled_form[i, j] for i in range(size) for j in range(size)]
+    )
+    subgroups, isotropic = _ISOTROPIC_SUBGROUPS(
+        cyclic_factors, form_on_generators, exponent, bound
+    )
+    return None if int(subgroups) > bound else int(isotropic)
 
 
 def scale(gram_tensor: GramTensor) -> Fraction:
@@ -253,12 +317,22 @@ def scale(gram_tensor: GramTensor) -> Fraction:
 def _integer_components(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...]]:
     """Return `(k, components of k b)` for the least positive integer `k` such that `k b` is integer valued."""
     scale = lcm(*(value.denominator for row in gram_tensor for value in row))
-    return scale, tuple(tuple(int(value * scale) for value in row) for row in gram_tensor)
+    return scale, tuple(
+        tuple(int(value * scale) for value in row) for row in gram_tensor
+    )
 
 
 def pairing(gram_tensor: GramTensor, x: Vector, y: Vector) -> Fraction:
     """Return `b(x, y)`."""
-    return sum((x[i] * gram_tensor[i][j] * y[j] for i in range(len(x)) for j in range(len(y)) if x[i] and y[j]), Fraction(0))
+    return sum(
+        (
+            x[i] * gram_tensor[i][j] * y[j]
+            for i in range(len(x))
+            for j in range(len(y))
+            if x[i] and y[j]
+        ),
+        Fraction(0),
+    )
 
 
 def restriction(gram_tensor: GramTensor, vectors: tuple[Vector, ...]) -> GramTensor:
@@ -273,7 +347,10 @@ def scaled(gram_tensor: GramTensor, k: Fraction | int) -> GramTensor:
 
 def orthogonal_sum(summands: tuple[GramTensor, ...]) -> GramTensor:
     """Return the components of the form of the orthogonal sum, in the union of the bases of the summands."""
-    offsets = [sum(len(summand) for summand in summands[:index]) for index in range(len(summands))]
+    offsets = [
+        sum(len(summand) for summand in summands[:index])
+        for index in range(len(summands))
+    ]
     rank = sum(len(summand) for summand in summands)
     rows = [[Fraction(0)] * rank for _ in range(rank)]
     for offset, summand in zip(offsets, summands, strict=True):
@@ -296,7 +373,9 @@ def _root_norm(components: tuple[Vector, ...], r: Vector) -> int | None:
         return None
     pairings = [sum(row[i] * r[i] for i in range(len(r))) for row in components]
     norm = sum(pairings[i] * r[i] for i in range(len(r)))
-    return norm if norm != 0 and all(2 * value % norm == 0 for value in pairings) else None
+    return (
+        norm if norm != 0 and all(2 * value % norm == 0 for value in pairings) else None
+    )
 
 
 def is_root(gram_tensor: GramTensor, r: Vector) -> bool:
@@ -304,15 +383,28 @@ def is_root(gram_tensor: GramTensor, r: Vector) -> bool:
     return _root_norm(_integer_components(gram_tensor)[1], r) is not None
 
 
-def _positive_integer_form(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...], Gen]:
+def _positive_integer_form(
+    gram_tensor: GramTensor,
+) -> tuple[int, tuple[Vector, ...], Gen]:
     """Return `(k, components of k b, PARI matrix of B)` for a definite `b`, where `B = k b` or `B = -k b` is positive definite and integer valued.
 
     `k` is the least positive integer for which `k b` is integer valued.
+
+    The form must be definite: `B` is a positive definite integer matrix only
+    then, and the algorithms that consume it decide an isometry or a minimal
+    vector of a definite form.
     """
+    assert is_definite(gram_tensor), (
+        "this operation decides a definite form, and b is indefinite"
+    )
     rank = len(gram_tensor)
     sign = 1 if gram_tensor[0][0] > 0 else -1
     scale, components = _integer_components(gram_tensor)
-    return scale, components, _PARI.matrix(rank, rank, [sign * value for row in components for value in row])
+    return (
+        scale,
+        components,
+        _PARI.matrix(rank, rank, [sign * value for row in components for value in row]),
+    )
 
 
 def minimum_and_kissing_number(gram_tensor: GramTensor) -> tuple[Fraction, int]:
@@ -323,6 +415,9 @@ def minimum_and_kissing_number(gram_tensor: GramTensor) -> tuple[Fraction, int]:
     `|b(x, x)|` is the least value of `B` divided by `k`, and the number of
     vectors counts both `x` and `-x`.
     """
+    assert is_definite(gram_tensor), (
+        "the minimum and kissing number decide a definite form, and b is indefinite"
+    )
     scale, _, form = _positive_integer_form(gram_tensor)
     count, least, _ = form.qfminim(None, 0)
     return Fraction(int(least), scale), int(count)
@@ -333,7 +428,12 @@ def theta_coefficients(gram_tensor: GramTensor, bound: int) -> tuple[int, ...]:
 
     PARI's `qfrep` counts, for `k = 1, ..., bound`, the pairs `x, -x` with `B(x, x) = k`.
     """
-    assert is_integer_valued(gram_tensor), "the coefficients of the theta series are indexed by integers only for an integer-valued form"
+    assert is_definite(gram_tensor), (
+        "the theta series decides a definite form, and b is indefinite"
+    )
+    assert is_integer_valued(gram_tensor), (
+        "the coefficients of the theta series are indexed by integers only for an integer-valued form"
+    )
     _, _, form = _positive_integer_form(gram_tensor)
     return (1, *(2 * int(pairs) for pairs in form.qfrep(bound)))
 
@@ -345,9 +445,19 @@ def is_isometric(gram_tensor: GramTensor, other: GramTensor) -> bool:
     are isometric exactly when the positive definite integer forms `k |b|`
     and `k |b'|` are. PARI's `qfisom` decides that by the algorithm of
     Plesken and Souvignier, and returns `0` when they are not.
+
+    Both forms must be definite: `qfisom` decides the isometry of positive
+    definite integer forms, and `_positive_integer_form` supplies it one only
+    then. The isometry class of an indefinite lattice is decided instead by
+    its genus invariants and spinor genus, not here.
     """
+    assert is_definite(gram_tensor) and is_definite(other), (
+        "isometry by `qfisom` is decided for definite forms; b or b' is indefinite"
+    )
     assert len(gram_tensor) == len(other), "isometric lattices have the same rank"
-    assert (gram_tensor[0][0] > 0) == (other[0][0] > 0), "isometric lattices have the same sign"
+    assert (gram_tensor[0][0] > 0) == (other[0][0] > 0), (
+        "isometric lattices have the same sign"
+    )
     scale, _, form = _positive_integer_form(gram_tensor)
     other_scale, _, other_form = _positive_integer_form(other)
     if scale != other_scale:
@@ -363,8 +473,12 @@ def is_isotropic(gram_tensor: GramTensor) -> bool:
     when none does. A rational solution clears to an element of `L`.
     """
     rank = len(gram_tensor)
-    assert determinant(gram_tensor) != 0, "`qfsolve` decides isotropy of a nondegenerate form; a degenerate form is isotropic on its radical"
-    solution = _PARI.matrix(rank, rank, [str(value) for row in gram_tensor for value in row]).qfsolve()
+    assert determinant(gram_tensor) != 0, (
+        "`qfsolve` decides isotropy of a nondegenerate form; a degenerate form is isotropic on its radical"
+    )
+    solution = _PARI.matrix(
+        rank, rank, [str(value) for row in gram_tensor for value in row]
+    ).qfsolve()
     return solution.type() == "t_COL"
 
 
@@ -385,6 +499,9 @@ def definite_roots(gram_tensor: GramTensor) -> dict[Vector, Fraction]:
     `B x` is in `d Z^n` exactly when each `D_i y_i` is in `d Z`, so the
     columns of `V diag(d / gcd(d, D_i))` are a basis of `L_d`.
     """
+    assert is_definite(gram_tensor), (
+        "the roots of a definite form are listed; b is indefinite"
+    )
     rank = len(gram_tensor)
     scale, components, form = _positive_integer_form(gram_tensor)
     _, right, smith = form.matsnf(1)
@@ -398,7 +515,9 @@ def definite_roots(gram_tensor: GramTensor) -> dict[Vector, Fraction]:
             r = tuple(int(short[i, column]) for i in range(rank))
             norm = _root_norm(components, r)
             if norm is not None:
-                roots[r if next(c for c in r if c) > 0 else tuple(-c for c in r)] = Fraction(norm, scale)
+                roots[r if next(c for c in r if c) > 0 else tuple(-c for c in r)] = (
+                    Fraction(norm, scale)
+                )
     return roots
 
 
@@ -412,7 +531,9 @@ def invariant_factors(vectors: list[Vector], rank: int) -> tuple[int, ...]:
     if not vectors:
         return ()
     smith = fmpz_mat(vectors).snf()
-    diagonal = (abs(int(smith[index, index])) for index in range(min(len(vectors), rank)))
+    diagonal = (
+        abs(int(smith[index, index])) for index in range(min(len(vectors), rank))
+    )
     return tuple(factor for factor in diagonal if factor != 0)
 
 
@@ -429,7 +550,10 @@ def span_basis(vectors: list[Vector]) -> tuple[Vector, ...]:
     if not vectors:
         return ()
     hermite = fmpz_mat(vectors).hnf()
-    rows = (tuple(int(hermite[i, j]) for j in range(hermite.ncols())) for i in range(hermite.nrows()))
+    rows = (
+        tuple(int(hermite[i, j]) for j in range(hermite.ncols()))
+        for i in range(hermite.nrows())
+    )
     return tuple(row for row in rows if any(row))
 
 
@@ -440,5 +564,13 @@ def generating_norms(roots: dict[Vector, Fraction], rank: int) -> tuple[Fraction
     the fewest elements, and then the least absolute values.
     """
     norms = sorted(set(roots.values()), key=lambda norm: (abs(norm), norm))
-    subsets = (subset for size in range(1, len(norms) + 1) for subset in combinations(norms, size))
-    return next(subset for subset in subsets if generate([r for r, norm in roots.items() if norm in subset], rank))
+    subsets = (
+        subset
+        for size in range(1, len(norms) + 1)
+        for subset in combinations(norms, size)
+    )
+    return next(
+        subset
+        for subset in subsets
+        if generate([r for r, norm in roots.items() if norm in subset], rank)
+    )

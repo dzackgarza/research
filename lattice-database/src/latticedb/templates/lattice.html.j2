@@ -120,6 +120,29 @@
       </tbody>
     </table>
     {% endif %}
+    {% if lattice.integral.discriminant_orbits %}
+    <h3 id="discriminant-orbits">{{ theory("orbits", "discriminant-orbits", "Orbits on the discriminant group") }} \(F_{A_L,\Gamma}(z, w) = \sum_n c_\Gamma(n)\, z^n\), with \(w^n\) for \(z^{-n}\)</h3>
+    <table class="facts">
+      <tbody>
+        {% for group, series in lattice.integral.discriminant_orbits.items() %}
+        <tr><th scope="row">\(\Gamma = {{ orbit_group_tex(group) }}\)</th><td>\({{ orbit_series_tex(series) }}\){% if series.reference %}, by {% if series.reference.url %}<a href="{{ series.reference.url }}">{{ series.reference.citation }}</a>{% else %}{{ series.reference.citation }}{% endif %}{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% if lattice.groups %}
+    <h3 id="groups">Subgroups of \(O(L)\)</h3>
+    <table class="facts">
+      <tbody>
+        {% for key, group in lattice.groups.items() %}
+        <tr>
+          <th scope="row">\(\Gamma = {{ subgroup_tex(key) }}\)</th>
+          <td>{% if group.cardinality is not none %}\(|{{ subgroup_tex(key) }}| = {{ cardinality_tex(group.cardinality) }}\){% else %}order not decided{% endif %}{% if group.index_in_orthogonal_group is not none %}, \([O(L) : \Gamma] = {{ group.index_in_orthogonal_group }}\){% endif %}{% if group.parent %}, {{ subgroup_tex(group.parent) }} \leq \Gamma{% endif %}{% if group.abstract_structure %} &mdash; {{ group.abstract_structure }}{% endif %}{% if group.reference %}, by {% if group.reference.url %}<a href="{{ group.reference.url }}">{{ group.reference.citation }}</a>{% else %}{{ group.reference.citation }}{% endif %}{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
   </section>
   {% endif %}
 

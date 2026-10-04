@@ -1,6 +1,6 @@
 ---
 title: Orbits of primitive vectors
-summary: The series $F_{L,\Gamma}(z, w)$ of the numbers of $\Gamma$-orbits of primitive vectors of each norm, for eight subgroups $\Gamma$ of $O(L)$.
+summary: The series $F_{L,\Gamma}(z, w)$ of $\Gamma$-orbits of primitive vectors of each norm, and the series $F_{A_L,\Gamma}(z, w)$ of $\Gamma$-orbits on the discriminant group, for eight subgroups $\Gamma$ of $O(L)$.
 order: 10
 ---
 
@@ -83,7 +83,11 @@ For $SO$, $\widetilde{O}$ and $S\widetilde{O}$, $Q$ is the image of $O(L)$ under
 $O^+$ and its subgroups are then given by the [proposition on definite lattices](#groups).
 
 For an indefinite lattice the sets are infinite.
-Dawes gives algorithms for the orbits of vectors under subgroups of $O(L)$ ([Dawes 2022](https://arxiv.org/abs/2205.10601), Algorithms 2.1 to 2.3). When $L$ is even and contains two orthogonal hyperbolic planes, the coefficients come from $A_L$ and its finite quadratic form $q_L\colon A_L \to \mathbb{Q}/2\mathbb{Z}$.
+Dawes gives algorithms for the orbits of vectors under subgroups of $O(L)$ ([Dawes 2022](https://arxiv.org/abs/2205.10601), Algorithms 2.1 to 2.3). When $L$ is even and contains two orthogonal hyperbolic planes, the coefficients of $F_{L,\Gamma}$ are given by the discriminant group $A_L$ and its finite quadratic form $q_L\colon A_L \to \mathbb{Q}/2\mathbb{Z}$, through the proposition below.
+
+Define, for a subgroup $\Gamma$ of $O(L)$, the *series of orbits on the discriminant group* $$F_{A_L,\Gamma}(z, w) = c_\Gamma(0) + \sum_{n \geq 1} c_\Gamma(n) z^n + \sum_{n \geq 1} c_\Gamma(-n) w^n,$$ where $c_\Gamma(n)$ is the number of $\Gamma$-orbits on the classes $\alpha \in A_L$ with $q_L(\alpha) = n / \operatorname{ord}(\alpha)^2$.
+This is a function of $(A_L, q_L)$ alone, defined for every nondegenerate $L$; it is the object the proposition below computes, and it equals $F_{L,\Gamma}$ on the stated class.
+The two series are different functions in general: $F_{L,\Gamma}$ grades the primitive vectors of $L$, and $F_{A_L,\Gamma}$ grades the classes of $A_L$.
 
 The *divisor* $\operatorname{div}(v)$ of $v \in L$ is the positive generator of the ideal $b(v, L) \subseteq \mathbb{Z}$.
 Then $v^* = v / \operatorname{div}(v)$ is in $L^\vee$, and its image in $A_L$ has order $\operatorname{div}(v)$ when $v$ is primitive ([GHS 2009](https://arxiv.org/abs/0810.1614), Section 3.3).
@@ -122,7 +126,7 @@ Thus $O$, $SO$, $O^+$ and $SO^+$ have one image in $O(q_L)$.
 $L$ is even and indefinite, and $\operatorname{rank} L = 4 + \operatorname{rank} L_0 \geq l(A_L) + 4$, where $l$ is the minimal number of generators; so $O(L) \to O(q_L)$ is surjective ([Nikulin 1980](https://doi.org/10.1070/IM1980v014n01ABEH001060), Theorem 1.14.2).
 :::
 
-`latticedb certify` computes $c_\Gamma(n)$ for $1 \leq |n| \leq 4$ and $n = 0$ by this proposition, for an even lattice whose hyperbolic index, stored or bounded from below by the embeddings of $U^k$ in its morphism files, is at least 2. The class `TorsionQuadraticModule` of SageMath gives $A_L$, $q_L$ and generators of $O(q_L)$, and the orbits on $S_n$ are found by breadth-first search.
+`latticedb certify` computes $F_{L,\Gamma}$ through $z^4$ and $w^4$ for a definite lattice, by enumerating its vectors, and $F_{A_L,\Gamma}$ through $z^4$ and $w^4$ and $n = 0$ for an even lattice whose hyperbolic index, stored or bounded from below by the embeddings of $U^k$ in its morphism files, is at least 2. The two are stored in `integral.primitive_orbits` and `integral.discriminant_orbits`. The class `TorsionQuadraticModule` of SageMath gives $A_L$, $q_L$ and generators of $O(q_L)$, and the orbits on $S_n$ are found by breadth-first search. By the proposition above, $F_{A_L,\Gamma}$ equals $F_{L,\Gamma}$ on that class; outside it the two differ, and $F_{A_L,\Gamma}$ is what this computation yields.
 For an odd lattice the coefficients are stated with a `reference` that proves them.
 
 ::: {.example}

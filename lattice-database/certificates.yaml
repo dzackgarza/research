@@ -916,9 +916,6 @@
 0283 integral.hyperbolic_index:
   inputs: 2b709d4d2cf3bec26ba6e9257250863f01bb8cf83e350af82f491f72f07425a5
   by: SageMath 10.10.beta8
-0283 integral.primitive_orbits:
-  inputs: 2b709d4d2cf3bec26ba6e9257250863f01bb8cf83e350af82f491f72f07425a5
-  by: SageMath 10.10.beta8
 02BQ derive:
   inputs: 6606c4ac41d030dd082bc4508b448e477afbca41783d5126ea972e74751987d1
   by: latticedb 0.1.0
@@ -201946,6 +201943,33 @@
 1I16 derive:
   inputs: b361d876c6ec0633491f6fa14ea68973d9c05d2fc08f60fbab4709e56b5c8d4b
   by: latticedb 0.1.0
+3I21 derive:
+  inputs: e2fafc62400448b8ede45df03bac40fa9fd4ea2fc5abe22bb93396fa2bfd641a
+  by: latticedb 0.1.0
+3I21 integral.genus_class_count:
+  inputs: e2fafc62400448b8ede45df03bac40fa9fd4ea2fc5abe22bb93396fa2bfd641a
+  by: SageMath 10.10.beta8
+3I21 integral.genus_symbol:
+  inputs: e2fafc62400448b8ede45df03bac40fa9fd4ea2fc5abe22bb93396fa2bfd641a
+  by: SageMath 10.10.beta8
+3I21 integral.hyperbolic_index:
+  inputs: e2fafc62400448b8ede45df03bac40fa9fd4ea2fc5abe22bb93396fa2bfd641a
+  by: SageMath 10.10.beta8
+3I21 integral.spinor_genera:
+  inputs: e2fafc62400448b8ede45df03bac40fa9fd4ea2fc5abe22bb93396fa2bfd641a
+  by: SageMath 10.10.beta8
+3I21 integral.spinor_genus_count:
+  inputs: e2fafc62400448b8ede45df03bac40fa9fd4ea2fc5abe22bb93396fa2bfd641a
+  by: SageMath 10.10.beta8
+3I22 derive:
+  inputs: 270616320c605d8964b520a904c788e37263d7bad8b1ceec3b9719349658e7e7
+  by: latticedb 0.1.0
+3I23 derive:
+  inputs: cb8d3ed089cb2ee5654aeb12d8223a447063a3a1598e8e1ee2e2adf4461b9295
+  by: latticedb 0.1.0
 corpus summands:
   inputs: 39d13220034c8914e270f83bde7fdcd29087eb445f9dae5be92e4eee174af9ed
   by: latticedb 0.1.0
+0283 integral.discriminant_orbits:
+  inputs: 2b709d4d2cf3bec26ba6e9257250863f01bb8cf83e350af82f491f72f07425a5
+  by: SageMath 10.10.beta8

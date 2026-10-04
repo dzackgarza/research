@@ -7,70 +7,15 @@ the Markdown prose with BibTeX citations.
 
 from typing import Annotated, Literal, Self
 
+from flint import fmpz_mat
 from pydantic import Field, model_validator
 from pydantic_core import PydanticCustomError
-from flint import fmpz_mat
 
 from latticedb.model import Rational, Record, Slug, Tag
 
 
 class CatalogueRecord(Record):
     slug: Slug
-
-
-class StabilizedObject(Record):
-    kind: Literal["vector_orbit", "chamber", "geometric_object", "geometric_family", "embedding"]
-    identifier: str = Field(min_length=1)
-
-
-class OrthogonalSubgroup(CatalogueRecord):
-    """A named subgroup of the orthogonal group of one lattice."""
-
-    lattice: Tag
-    name: str = Field(min_length=1)
-    defining_property: Literal["O", "SO", "O+", "SO+", "Otilde", "SOtilde", "Otilde+", "SOtilde+", "reflection", "stabilizer", "source_defined"]
-    generator_morphisms: list[str] | None = None
-    order: Annotated[int, Field(gt=0)] | None = None
-    index_in_orthogonal_group: Annotated[int, Field(gt=0)] | None = None
-    parent: Slug | None = None
-    stabilized: StabilizedObject | None = None
-    abstract_structure: str | None = None
-    defining_relators: list[list[int]] | None = None
-
-    @model_validator(mode="after")
-    def check_definition(self) -> Self:
-        if self.defining_property == "stabilizer" and self.stabilized is None:
-            raise PydanticCustomError("subgroup_stabilizer", "a stabilizer must name the object it fixes")
-        if self.defining_property == "source_defined" and self.generator_morphisms is None:
-            raise PydanticCustomError("subgroup_generators", "a source-defined subgroup must list its generators")
-        if self.defining_relators is not None:
-            if self.generator_morphisms is None:
-                raise PydanticCustomError("subgroup_relators", "relators require a generator list")
-            bound = len(self.generator_morphisms)
-            if any(not word or any(position == 0 or abs(position) > bound for position in word) for word in self.defining_relators):
-                raise PydanticCustomError("subgroup_relators", "signed generator indices in a relator must be nonzero and in range")
-        return self
-
-
-class VectorOrbit(CatalogueRecord):
-    """One orbit of primitive vectors under a named subgroup of O(L)."""
-
-    lattice: Tag
-    subgroup: Slug
-    representative: list[int]
-    square: Rational
-    divisibility: Annotated[int, Field(gt=0)] | None = None
-    geometric_object: Slug | None = None
-    geometric_family: Slug | None = None
-
-
-class Chamber(CatalogueRecord):
-    """A chamber in a real hyperbolic lattice, with oriented wall normals."""
-
-    lattice: Tag
-    interior_vector: list[int]
-    wall_normals: list[list[int]] = Field(min_length=1)
-    reflection_group: Slug | None = None
 
 
 class LatticeGenus(CatalogueRecord):
@@ -87,10 +32,19 @@ class LatticeGenus(CatalogueRecord):
 
     @model_validator(mode="after")
     def check_genus(self) -> Self:
-        if self.determinant == 0 or len(set(self.representative_tags)) != len(self.representative_tags):
-            raise PydanticCustomError("genus_members", "a genus has nonzero determinant and distinct representative tags")
-        if self.representatives_complete and self.class_number != len(self.representative_tags):
-            raise PydanticCustomError("genus_complete", "a complete list has exactly its stated class number")
+        if self.determinant == 0 or len(set(self.representative_tags)) != len(
+            self.representative_tags
+        ):
+            raise PydanticCustomError(
+                "genus_members",
+                "a genus has nonzero determinant and distinct representative tags",
+            )
+        if self.representatives_complete and self.class_number != len(
+            self.representative_tags
+        ):
+            raise PydanticCustomError(
+                "genus_complete", "a complete list has exactly its stated class number"
+            )
         if self.mass is not None and self.mass <= 0:
             raise PydanticCustomError("genus_mass", "a genus mass is positive")
         return self
@@ -120,17 +74,43 @@ class LatticePolytope(CatalogueRecord):
     @model_validator(mode="after")
     def check_vertices(self) -> Self:
         coordinates = [tuple(row) for row in self.vertices]
-        if any(len(row) != self.ambient_rank for row in coordinates) or len(set(coordinates)) != len(coordinates):
-            raise PydanticCustomError("polytope_vertices", "polytope vertices must be distinct points of the ambient lattice")
-        differences = [[point[i] - coordinates[0][i] for i in range(self.ambient_rank)] for point in coordinates[1:]]
+        if any(len(row) != self.ambient_rank for row in coordinates) or len(
+            set(coordinates)
+        ) != len(coordinates):
+            raise PydanticCustomError(
+                "polytope_vertices",
+                "polytope vertices must be distinct points of the ambient lattice",
+            )
+        differences = [
+            [point[i] - coordinates[0][i] for i in range(self.ambient_rank)]
+            for point in coordinates[1:]
+        ]
         if fmpz_mat(differences).rank() != self.ambient_rank:
-            raise PydanticCustomError("polytope_dimension", "the vertices must span a full-dimensional polytope")
-        if self.lattice_point_count is not None and self.lattice_point_count < len(self.vertices):
-            raise PydanticCustomError("polytope_points", "a lattice-point count includes every vertex")
-        if (self.delaunay_center is None) != (self.delaunay_radius_squared is None) or (self.delaunay_center is not None and self.metric_lattice is None):
-            raise PydanticCustomError("delaunay_datum", "a Delaunay sphere needs its metric lattice, center and squared radius")
-        if self.delaunay_center is not None and len(self.delaunay_center) != self.ambient_rank:
-            raise PydanticCustomError("delaunay_center", "a Delaunay center has one coordinate per ambient dimension")
+            raise PydanticCustomError(
+                "polytope_dimension",
+                "the vertices must span a full-dimensional polytope",
+            )
+        if self.lattice_point_count is not None and self.lattice_point_count < len(
+            self.vertices
+        ):
+            raise PydanticCustomError(
+                "polytope_points", "a lattice-point count includes every vertex"
+            )
+        if (self.delaunay_center is None) != (self.delaunay_radius_squared is None) or (
+            self.delaunay_center is not None and self.metric_lattice is None
+        ):
+            raise PydanticCustomError(
+                "delaunay_datum",
+                "a Delaunay sphere needs its metric lattice, center and squared radius",
+            )
+        if (
+            self.delaunay_center is not None
+            and len(self.delaunay_center) != self.ambient_rank
+        ):
+            raise PydanticCustomError(
+                "delaunay_center",
+                "a Delaunay center has one coordinate per ambient dimension",
+            )
         return self
 
 
@@ -160,7 +140,9 @@ class GeometricMap(CatalogueRecord):
     @model_validator(mode="after")
     def check_fibration(self) -> Self:
         if self.kind == "fibration" and self.generic_fiber is None:
-            raise PydanticCustomError("fibration_fiber", "a fibration must name its generic fiber")
+            raise PydanticCustomError(
+                "fibration_fiber", "a fibration must name its generic fiber"
+            )
         return self
 
 
@@ -171,7 +153,10 @@ class ModuliProblem(CatalogueRecord):
     geometric_family: Slug
     dimension: Annotated[int, Field(ge=0)]
     polarization_orbit: Slug | None = None
-    arithmetic_subgroup: Slug | None = None
+    arithmetic_subgroup: str | None = Field(
+        default=None,
+        description="A key of the `groups` block of a lattice record, such as `Gamma_En_2`, that acts on the period domain.",
+    )
 
 
 class MonodromyGenerator(Record):
@@ -192,12 +177,26 @@ class IntegralLocalSystem(CatalogueRecord):
 
     @model_validator(mode="after")
     def check_monodromy(self) -> Self:
-        if any(len(g.matrix) != self.rank or any(len(row) != self.rank for row in g.matrix) for g in self.monodromy_generators):
-            raise PydanticCustomError("monodromy_matrix", "monodromy matrices act on the stated rank")
-        if any(abs(int(fmpz_mat(g.matrix).det())) != 1 for g in self.monodromy_generators):
-            raise PydanticCustomError("monodromy_unimodular", "integral monodromy matrices are invertible over the integers")
-        if len({g.loop for g in self.monodromy_generators}) != len(self.monodromy_generators):
-            raise PydanticCustomError("monodromy_loop", "each named loop has one monodromy matrix")
+        if any(
+            len(g.matrix) != self.rank or any(len(row) != self.rank for row in g.matrix)
+            for g in self.monodromy_generators
+        ):
+            raise PydanticCustomError(
+                "monodromy_matrix", "monodromy matrices act on the stated rank"
+            )
+        if any(
+            abs(int(fmpz_mat(g.matrix).det())) != 1 for g in self.monodromy_generators
+        ):
+            raise PydanticCustomError(
+                "monodromy_unimodular",
+                "integral monodromy matrices are invertible over the integers",
+            )
+        if len({g.loop for g in self.monodromy_generators}) != len(
+            self.monodromy_generators
+        ):
+            raise PydanticCustomError(
+                "monodromy_loop", "each named loop has one monodromy matrix"
+            )
         return self
 
 
@@ -226,8 +225,18 @@ class PicardFuchsOperator(CatalogueRecord):
 
     @model_validator(mode="after")
     def check_order(self) -> Self:
-        if len(self.coefficients) != self.order + 1 or not self.coefficients[-1] or all(c == 0 for c in self.coefficients[-1]):
-            raise PydanticCustomError("operator_order", "the highest theta coefficient is a nonzero polynomial of the stated order")
+        if (
+            len(self.coefficients) != self.order + 1
+            or not self.coefficients[-1]
+            or all(c == 0 for c in self.coefficients[-1])
+        ):
+            raise PydanticCustomError(
+                "operator_order",
+                "the highest theta coefficient is a nonzero polynomial of the stated order",
+            )
         if any(not polynomial for polynomial in self.coefficients):
-            raise PydanticCustomError("operator_polynomial", "each polynomial has at least its constant coefficient")
+            raise PydanticCustomError(
+                "operator_polynomial",
+                "each polynomial has at least its constant coefficient",
+            )
         return self

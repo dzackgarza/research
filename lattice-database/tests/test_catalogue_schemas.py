@@ -26,7 +26,7 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
 ) -> None:
     lattices = tmp_path / "lattices"
     lattices.mkdir()
-    for tag in ("0012", "02BG"):
+    for tag in ("0012",):
         (lattices / f"{tag}.md").symlink_to(ROOT / "lattices" / f"{tag}.md")
     morphisms = tmp_path / "morphisms"
     morphisms.mkdir()
@@ -35,30 +35,16 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
         (tmp_path / name).symlink_to(ROOT / name)
     source = frontmatter.load(str(ROOT / "morphisms" / "02BG-02BG.md"))
     generators = [entry["name"] for entry in source.metadata["morphisms"]]
-    group_path = tmp_path / "orthogonal-subgroups" / "leech-q8.md"
-    _record(
-        group_path,
-        {
-            "slug": "leech-q8",
-            "lattice": "02BG",
-            "name": "Leech pointwise stabilizer",
-            "defining_property": "source_defined",
+    # The subgroup data lives on the lattice card itself, in its `groups` block.
+    lattice = frontmatter.load(str(ROOT / "lattices" / "02BG.md"))
+    lattice.metadata["groups"] = {
+        "leech-q8": {
             "generator_morphisms": generators,
-            "order": 8,
-        },
-    )
-    orbit_path = tmp_path / "vector-orbits" / "leech-q8-e1.md"
-    _record(
-        orbit_path,
-        {
-            "slug": "leech-q8-e1",
-            "lattice": "02BG",
-            "subgroup": "leech-q8",
-            "representative": [1] + [0] * 16,
-            "square": 4,
-            "divisibility": 1,
-        },
-    )
+            "cardinality": 8,
+            "orbits": [{"square": 4, "representatives": [[1] + [0] * 16]}],
+        }
+    }
+    (lattices / "02BG.md").write_text(frontmatter.dumps(lattice))
     _record(
         tmp_path / "genera" / "a2.md",
         {
@@ -74,20 +60,15 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
         },
     )
     loaded = corpus.load(tmp_path)
-    assert loaded.orthogonal_subgroups[0].value.order == 8
+    by_tag = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
+    assert by_tag["02BG"].groups["leech-q8"].cardinality == 8
     assert loaded.genera[0].value.mass == Fraction(1, 12)
 
-    _record(
-        orbit_path,
-        {
-            "slug": "leech-q8-e1",
-            "lattice": "02BG",
-            "subgroup": "leech-q8",
-            "representative": [1] + [0] * 16,
-            "square": 6,
-            "divisibility": 1,
-        },
-    )
+    # A representative whose square disagrees with its key is a problem.
+    lattice.metadata["groups"]["leech-q8"]["orbits"] = [
+        {"square": 6, "representatives": [[1] + [0] * 16]}
+    ]
+    (lattices / "02BG.md").write_text(frontmatter.dumps(lattice))
     assert any(
         "representative has square 4, not 6" in problem
         for problem in checks.report(tmp_path)

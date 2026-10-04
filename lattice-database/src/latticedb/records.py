@@ -40,6 +40,7 @@ KEYS = (
     "indefinite",
     "root_span",
     "root_sublattice",
+    "groups",
     "families",
     "related",
     "references",
@@ -52,7 +53,12 @@ class Flow(list[Yaml]):
     """A list that YAML writes on one line."""
 
 
-yaml.add_representer(Flow, lambda dumper, data: dumper.represent_sequence("tag:yaml.org,2002:seq", data, flow_style=True))
+yaml.add_representer(
+    Flow,
+    lambda dumper, data: dumper.represent_sequence(
+        "tag:yaml.org,2002:seq", data, flow_style=True
+    ),
+)
 
 
 def _is_scalar(value: Yaml) -> bool:
@@ -80,7 +86,12 @@ def record_text(record: dict[str, Yaml], prose: str) -> str:
     """Return the text of the file of a record."""
     assert set(record) <= set(KEYS), set(record) - set(KEYS)
     ordered = {key: _styled(record[key]) for key in KEYS if key in record}
-    return "---\n" + yaml.dump(ordered, sort_keys=False, allow_unicode=True, width=100000) + "---\n" + _body(prose)
+    return (
+        "---\n"
+        + yaml.dump(ordered, sort_keys=False, allow_unicode=True, width=100000)
+        + "---\n"
+        + _body(prose)
+    )
 
 
 def _body(prose: str) -> str:
@@ -91,16 +102,33 @@ def _body(prose: str) -> str:
     return "\n" + prose + "\n" if prose else "\n\n"
 
 
-MORPHISM_KEYS = ("name", "description", "matrix", "scale", "row_subdivisions", "column_subdivisions")
+MORPHISM_KEYS = (
+    "name",
+    "description",
+    "matrix",
+    "scale",
+    "row_subdivisions",
+    "column_subdivisions",
+)
 """The keys of a morphism, in the order in which a morphism file lists them."""
 
 
-def morphisms_text(source: str, target: str, morphisms: list[dict[str, Yaml]], prose: str) -> str:
+def morphisms_text(
+    source: str, target: str, morphisms: list[dict[str, Yaml]], prose: str
+) -> str:
     """Return the text of the file `morphisms/<source>-<target>.md`."""
     assert all(set(morphism) <= set(MORPHISM_KEYS) for morphism in morphisms)
-    ordered = [{key: _styled(morphism[key]) for key in MORPHISM_KEYS if key in morphism} for morphism in morphisms]
+    ordered = [
+        {key: _styled(morphism[key]) for key in MORPHISM_KEYS if key in morphism}
+        for morphism in morphisms
+    ]
     document = {"source": source, "target": target, "morphisms": ordered}
-    return "---\n" + yaml.dump(document, sort_keys=False, allow_unicode=True, width=100000) + "---\n" + _body(prose)
+    return (
+        "---\n"
+        + yaml.dump(document, sort_keys=False, allow_unicode=True, width=100000)
+        + "---\n"
+        + _body(prose)
+    )
 
 
 def rational(value: Fraction) -> int | str:
@@ -155,32 +183,48 @@ def _ordered(block: dict[str, Yaml], fields: tuple[str, ...]) -> dict[str, Yaml]
     return {field: block[field] for field in fields if field in block}
 
 
-def _integral(record: dict[str, Yaml], gram: GramTensor) -> dict[str, Yaml]:
+def _integral(
+    record: dict[str, Yaml],
+    gram: GramTensor,
+    subgroup_bound: int = arithmetic.SUBGROUP_BOUND,
+) -> dict[str, Yaml]:
     rank = len(gram)
     declared = _block(record, "integral")
-    block: dict[str, Yaml] = {"parity": "even" if all(gram[i][i] % 2 == 0 for i in range(rank)) else "odd"}
+    block: dict[str, Yaml] = {
+        "parity": "even" if all(gram[i][i] % 2 == 0 for i in range(rank)) else "odd"
+    }
     if arithmetic.determinant(gram) != 0:
         invariants = arithmetic.discriminant_invariants(gram)
         block["discriminant_group"] = list(invariants)
-        count = arithmetic.overlattice_count(gram)
+        count = arithmetic.overlattice_count(gram, subgroup_bound)
         if count is not None:
             block["overlattice_count"] = count
         if block["parity"] == "even" and all(factor == 2 for factor in invariants):
             block["delta"] = arithmetic.delta(gram)
         determinant = int(arithmetic.determinant(gram))
-        block["bad_reduction_primes"] = list(arithmetic.bad_reduction_primes(determinant))
+        block["bad_reduction_primes"] = list(
+            arithmetic.bad_reduction_primes(determinant)
+        )
         if rank % 2 == 0:
-            block["quadratic_character"] = arithmetic.quadratic_character(rank, determinant)
-        for field in ("genus_symbol", "genus_class_count", "spinor_genus_count", "spinor_genera", "hyperbolic_index", "primitive_orbits"):
-            if field in declared:
+            block["quadratic_character"] = arithmetic.quadratic_character(
+                rank, determinant
+            )
+        # A value that the record states is kept: a computation once carried out is not carried out again, and a bound raised later only fills a field that is still absent.
+        for field in model.IntegralData.model_fields:
+            if field not in block and field in declared:
                 block[field] = declared[field]
     return _ordered(block, tuple(model.IntegralData.model_fields))
 
 
-def _definite(record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction]) -> dict[str, Yaml]:
+def _definite(
+    record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction]
+) -> dict[str, Yaml]:
     declared = _block(record, "definite")
     minimum, kissing_number = arithmetic.minimum_and_kissing_number(gram)
-    block: dict[str, Yaml] = {"minimum": rational(minimum), "kissing_number": kissing_number}
+    block: dict[str, Yaml] = {
+        "minimum": rational(minimum),
+        "kissing_number": kissing_number,
+    }
     if "automorphism_group_order" in declared:
         block["automorphism_group_order"] = declared["automorphism_group_order"]
     if arithmetic.is_integer_valued(gram):
@@ -190,7 +234,14 @@ def _definite(record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping
                 bound = max(bound, len(stated) - 1)
         block["theta_series"] = list(arithmetic.theta_coefficients(gram, bound))
         block["root_system"] = list(roots.norm_two_types(gram, dict(positive_roots)))
-    block["roots"] = [{"type": root_type, "scale": rational(scale), "simple_roots": [list(r) for r in simple]} for root_type, scale, simple in roots.root_system(gram)]
+    block["roots"] = [
+        {
+            "type": root_type,
+            "scale": rational(scale),
+            "simple_roots": [list(r) for r in simple],
+        }
+        for root_type, scale, simple in roots.root_system(gram)
+    ]
     return _ordered(block, tuple(model.DefiniteData.model_fields))
 
 
@@ -200,7 +251,9 @@ def _indefinite(gram: GramTensor) -> dict[str, Yaml]:
     return {"isotropic": isotropic}
 
 
-def _root_span(record: dict[str, Yaml], gram: GramTensor) -> tuple[dict[str, Yaml], list[Vector]] | None:
+def _root_span(
+    record: dict[str, Yaml], gram: GramTensor
+) -> tuple[dict[str, Yaml], list[Vector]] | None:
     """The declared `root_span` block, else the roots found when they generate `L`, with the norms of the roots; else `None`."""
     if "root_span" in record:
         block = dict(_block(record, "root_span"))
@@ -216,17 +269,23 @@ def _root_span(record: dict[str, Yaml], gram: GramTensor) -> tuple[dict[str, Yam
     return _ordered(block, tuple(model.RootSpan.model_fields)), spanning
 
 
-def _root_sublattice(gram: GramTensor, spanning: Mapping[Vector, Fraction]) -> dict[str, Yaml]:
+def _root_sublattice(
+    gram: GramTensor, spanning: Mapping[Vector, Fraction]
+) -> dict[str, Yaml]:
     """The invariant factors of $R(L)$ in $L$, for roots that generate $R(L)$; for a root lattice, also a set $S$ with $L = \\mathbb{Z}\\Phi_S(L)$."""
     rank = len(gram)
     factors = arithmetic.invariant_factors(list(spanning), rank)
     block: dict[str, Yaml] = {"invariant_factors": list(factors)}
     if factors == (1,) * rank:
-        block["norms"] = [rational(norm) for norm in arithmetic.generating_norms(dict(spanning), rank)]
+        block["norms"] = [
+            rational(norm) for norm in arithmetic.generating_norms(dict(spanning), rank)
+        ]
     return block
 
 
-def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
+def derive(
+    record: dict[str, Yaml], subgroup_bound: int = arithmetic.SUBGROUP_BOUND
+) -> dict[str, Yaml]:
     """Return the record with every field that the Gram tensor determines computed from it.
 
     The fields `rank`, `signature`, `determinant` and `definiteness`; the
@@ -234,6 +293,11 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     its hypothesis holds; `root_span` when the record has none and the roots
     that `roots.small_roots` finds generate `L`, with the norms of its roots;
     and `root_sublattice` when the roots of `L` are stated.
+
+    `subgroup_bound` is the budget of `L.overlattice_count`: a value whose
+    discriminant group has more subgroups than that is left undecided. A field
+    the record already states is kept, so a later call with a larger bound
+    fills only what is still absent and never changes a value.
     """
     gram = gram_tensor(record["gram_tensor"])
     rank = len(gram)
@@ -249,7 +313,7 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     for key in ("integral", "definite", "indefinite", "root_span", "root_sublattice"):
         derived.pop(key, None)
     if arithmetic.is_integer_valued(gram):
-        derived["integral"] = _integral(record, gram)
+        derived["integral"] = _integral(record, gram, subgroup_bound)
     if definiteness in ("positive_definite", "negative_definite"):
         positive_roots = arithmetic.definite_roots(gram)
         derived["definite"] = _definite(record, gram, positive_roots)
@@ -259,7 +323,9 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
         if found is not None:
             span, spanning = found
             derived["root_span"] = span
-            derived["root_sublattice"] = _root_sublattice(gram, {r: arithmetic.pairing(gram, r, r) for r in spanning})
+            derived["root_sublattice"] = _root_sublattice(
+                gram, {r: arithmetic.pairing(gram, r, r) for r in spanning}
+            )
     if definiteness == "indefinite":
         derived["indefinite"] = _indefinite(gram)
     return {key: derived[key] for key in KEYS if key in derived}
@@ -281,15 +347,21 @@ def gram_problems(gram: GramTensor, families: tuple[str, ...]) -> list[str]:
     """
     rank = len(gram)
     if any(len(row) != rank for row in gram):
-        return [f"gram_tensor: a (0,2)-tensor on a module of rank {rank} has {rank} rows of {rank} components"]
+        return [
+            f"gram_tensor: a (0,2)-tensor on a module of rank {rank} has {rank} rows of {rank} components"
+        ]
     if any(gram[i][j] != gram[j][i] for i in range(rank) for j in range(i)):
         return ["gram_tensor: b(e_i, e_j) differs from b(e_j, e_i) for some i, j"]
     scale = arithmetic.scale(gram)
     if scale == 0:
-        return [f"gram_tensor: b = 0 is M(0) for every lattice M of rank {rank}; the corpus records no zero form"]
+        return [
+            f"gram_tensor: b = 0 is M(0) for every lattice M of rank {rank}; the corpus records no zero form"
+        ]
     found = []
     if scale.numerator != 1 and not (scale.numerator == 2 and TWIST_FAMILY in families):
-        found.append(f"gram_tensor: the lattice is M({scale.numerator}) for the lattice M with Gram tensor b/{scale.numerator}; the corpus records M and not its twist")
+        found.append(
+            f"gram_tensor: the lattice is M({scale.numerator}) for the lattice M with Gram tensor b/{scale.numerator}; the corpus records M and not its twist"
+        )
     n_plus, n_minus, _ = arithmetic.inertia(gram)
     if (n_plus == 0 and n_minus > 0) or (n_plus > n_minus > 0):
         found.append(
@@ -299,7 +371,16 @@ def gram_problems(gram: GramTensor, families: tuple[str, ...]) -> list[str]:
     return found
 
 
-IsometryInvariants = tuple[int, Definiteness, Fraction, Fraction, int, tuple[AdeType, ...] | None, tuple[int, ...] | None, tuple[int, ...] | None]
+IsometryInvariants = tuple[
+    int,
+    Definiteness,
+    Fraction,
+    Fraction,
+    int,
+    tuple[AdeType, ...] | None,
+    tuple[int, ...] | None,
+    tuple[int, ...] | None,
+]
 """Rank, definiteness, determinant, minimum, kissing number, root system, theta series and discriminant group of a definite record."""
 
 
@@ -308,7 +389,16 @@ def isometry_invariants(lattice: Lattice) -> IsometryInvariants:
     assert definite is not None, "only a definite record is compared by isometry class"
     integral = lattice.integral
     discriminant_group = None if integral is None else integral.discriminant_group
-    return (lattice.rank, lattice.definiteness, lattice.determinant, definite.minimum, definite.kissing_number, definite.root_system, definite.theta_series, discriminant_group)
+    return (
+        lattice.rank,
+        lattice.definiteness,
+        lattice.determinant,
+        definite.minimum,
+        definite.kissing_number,
+        definite.root_system,
+        definite.theta_series,
+        discriminant_group,
+    )
 
 
 def local_admission_problems(lattice: Lattice) -> list[str]:
@@ -316,15 +406,32 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
     found = []
     gram = lattice.gram_tensor
     definite = lattice.definite
-    if definite is not None and definite.automorphism_group_order is not None and (definite.automorphism_group_order <= 0 or definite.automorphism_group_order % 2 == 1):
-        found.append("definite.automorphism_group_order: x -> -x is an isometry of order 2, so the order is even")
+    if (
+        definite is not None
+        and definite.automorphism_group_order is not None
+        and (
+            definite.automorphism_group_order <= 0
+            or definite.automorphism_group_order % 2 == 1
+        )
+    ):
+        found.append(
+            "definite.automorphism_group_order: x -> -x is an isometry of order 2, so the order is even"
+        )
     span = lattice.root_span
     if span is not None:
-        found.extend(f"root_span.roots: {list(row)} is not a root of L" for row in span.roots if not arithmetic.is_root(gram, row))
+        found.extend(
+            f"root_span.roots: {list(row)} is not a root of L"
+            for row in span.roots
+            if not arithmetic.is_root(gram, row)
+        )
         if span.embedding is not None:
             basis = arithmetic.span_basis(list(span.embedding))
-            if len(basis) != len(span.embedding) or basis != arithmetic.span_basis(list(span.roots)):
-                found.append("root_span.embedding: the rows are not a basis of the sublattice that the rows of `roots` generate")
+            if len(basis) != len(span.embedding) or basis != arithmetic.span_basis(
+                list(span.roots)
+            ):
+                found.append(
+                    "root_span.embedding: the rows are not a basis of the sublattice that the rows of `roots` generate"
+                )
     return found
 
 
@@ -340,18 +447,33 @@ def relational_admission_problems(
     definite = lattice.definite
     span = lattice.root_span
     if span is not None and span.embedding is not None and span.summands is not None:
-        missing = [summand.tag for summand in span.summands if summand.tag not in written]
-        found.extend(f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing)
-        summands = tuple(arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale) for summand in span.summands if summand.tag in written)
-        if not missing and arithmetic.restriction(gram, span.embedding) != arithmetic.orthogonal_sum(summands):
-            found.append("root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands")
+        missing = [
+            summand.tag for summand in span.summands if summand.tag not in written
+        ]
+        found.extend(
+            f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing
+        )
+        summands = tuple(
+            arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale)
+            for summand in span.summands
+            if summand.tag in written
+        )
+        if not missing and arithmetic.restriction(
+            gram, span.embedding
+        ) != arithmetic.orthogonal_sum(summands):
+            found.append(
+                "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
+            )
     if definite is not None:
         invariants = isometry_invariants(lattice)
         compared = written if isometry_records is None else isometry_records
         found.extend(
             f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
             for other in compared.values()
-            if other.definite is not None and isometry_invariants(other) == invariants and other.gram_tensor != gram and arithmetic.is_isometric(other.gram_tensor, gram)
+            if other.definite is not None
+            and isometry_invariants(other) == invariants
+            and other.gram_tensor != gram
+            and lattice.is_isometric(other)
         )
     return found
 
@@ -374,20 +496,41 @@ def admission_problems(
 def _crosses_parts(gram: GramTensor, lines: tuple[int, ...]) -> bool:
     """Whether $b(e_i, e_j) \\neq 0$ for some $i$, $j$ in different parts of the indices that the lines cut."""
     bounds = (0, *lines, len(gram))
-    part = [index for index, (low, high) in enumerate(zip(bounds, bounds[1:], strict=False)) for _ in range(low, high)]
-    return any(gram[i][j] != 0 for i in range(len(gram)) for j in range(len(gram)) if part[i] != part[j])
+    part = [
+        index
+        for index, (low, high) in enumerate(zip(bounds, bounds[1:], strict=False))
+        for _ in range(low, high)
+    ]
+    return any(
+        gram[i][j] != 0
+        for i in range(len(gram))
+        for j in range(len(gram))
+        if part[i] != part[j]
+    )
 
 
-def morphism_problems(morphism: Morphism, source: Lattice, target: Lattice) -> list[str]:
+def morphism_problems(
+    morphism: Morphism, source: Lattice, target: Lattice
+) -> list[str]:
     """The problems of a new morphism: a matrix whose shape is not (rank of the target) by (rank of the source),
     a matrix that does not preserve the forms, and a subdivision whose parts are not orthogonal summands."""
     if len(morphism.matrix) != target.rank or len(morphism.matrix[0]) != source.rank:
-        return [f"{morphism.name}: the matrix has {target.rank} rows and {source.rank} columns, the ranks of the target and the source"]
+        return [
+            f"{morphism.name}: the matrix has {target.rank} rows and {source.rank} columns, the ranks of the target and the source"
+        ]
     found = []
-    if arithmetic.restriction(target.gram_tensor, morphism.images) != arithmetic.scaled(source.gram_tensor, morphism.scale):
-        found.append(f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source")
+    if arithmetic.restriction(target.gram_tensor, morphism.images) != arithmetic.scaled(
+        source.gram_tensor, morphism.scale
+    ):
+        found.append(
+            f"{morphism.name}: the matrix does not preserve the forms, since M^T G_target M is not {morphism.scale} G_source"
+        )
     if _crosses_parts(target.gram_tensor, morphism.row_subdivisions):
-        found.append(f"{morphism.name}: the parts of row_subdivisions are not orthogonal summands of the target")
+        found.append(
+            f"{morphism.name}: the parts of row_subdivisions are not orthogonal summands of the target"
+        )
     if _crosses_parts(source.gram_tensor, morphism.column_subdivisions):
-        found.append(f"{morphism.name}: the parts of column_subdivisions are not orthogonal summands of the source")
+        found.append(
+            f"{morphism.name}: the parts of column_subdivisions are not orthogonal summands of the source"
+        )
     return found

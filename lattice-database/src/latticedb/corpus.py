@@ -24,17 +24,14 @@ from pydantic import TypeAdapter, ValidationError
 
 from latticedb.catalogues import (
     CatalogueRecord,
-    Chamber,
     DualIsometry,
     GeometricMap,
     IntegralLocalSystem,
     LatticeGenus,
     LatticePolytope,
     ModuliProblem,
-    OrthogonalSubgroup,
     PicardFuchsOperator,
     ToricVariety,
-    VectorOrbit,
 )
 from latticedb.geometric import GeometricFamily, GeometricObject
 from latticedb.graphs import WeightedGraph
@@ -110,9 +107,6 @@ class Corpus:
     geometric: tuple[GeometricEntry, ...]
     geometric_families: tuple[GeometricFamilyEntry, ...]
     graphs: tuple[GraphEntry, ...]
-    orthogonal_subgroups: tuple[CatalogueEntry[OrthogonalSubgroup], ...]
-    vector_orbits: tuple[CatalogueEntry[VectorOrbit], ...]
-    chambers: tuple[CatalogueEntry[Chamber], ...]
     genera: tuple[CatalogueEntry[LatticeGenus], ...]
     polytopes: tuple[CatalogueEntry[LatticePolytope], ...]
     toric_varieties: tuple[CatalogueEntry[ToricVariety], ...]
@@ -264,9 +258,6 @@ def load(root: Path) -> Corpus:
         tuple(geometric),
         tuple(geometric_families),
         tuple(graphs),
-        _catalogue(root, "orthogonal-subgroups", OrthogonalSubgroup, found),
-        _catalogue(root, "vector-orbits", VectorOrbit, found),
-        _catalogue(root, "chambers", Chamber, found),
         _catalogue(root, "genera", LatticeGenus, found),
         _catalogue(root, "lattice-polytopes", LatticePolytope, found),
         _catalogue(root, "toric-varieties", ToricVariety, found),

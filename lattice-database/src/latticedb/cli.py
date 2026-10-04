@@ -224,6 +224,12 @@ def enrich(
     seconds: Annotated[
         int, Parameter(help="Time limit of SageMath for one value of one record.")
     ] = 120,
+    subgroup_bound: Annotated[
+        int,
+        Parameter(
+            help="Budget of subgroups for the count of integral overlattices: a larger bound decides a larger discriminant group, at the cost of about 4 microseconds for each subgroup."
+        ),
+    ] = 100_000,
     root: Root = Path(),
 ) -> None:
     """Compute derived card fields and store their computation certificates."""
@@ -236,12 +242,17 @@ def enrich(
         if lattice.gram_tensor is None or (selected and lattice.tag not in selected):
             continue
         inputs = certificates.gram_digest(lattice)
-        if certificates.is_certified(held, f"{lattice.tag} derive", inputs):
+        certified = certificates.is_certified(held, f"{lattice.tag} derive", inputs)
+        # A certified record that still lacks a field the raised bound could decide is enriched again; one that is complete is not touched.
+        if certified and not (
+            lattice.integral is not None and lattice.integral.overlattice_count is None
+        ):
             continue
         text = entry.path.read_text()
         document = frontmatter.loads(text)
         updated = records.record_text(
-            records.derive(corpus.front_matter(document)), document.content
+            records.derive(corpus.front_matter(document), subgroup_bound),
+            document.content,
         )
         if updated != text:
             entry.path.write_text(updated)

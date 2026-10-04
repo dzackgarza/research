@@ -17,7 +17,6 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `geometric-objects/<slug>.md` | One locally ringed geometric space, its specialized data and cited prose |
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
 | `graphs/<slug>.md` | One weighted graph with derived diagram properties and cited prose |
-| `orthogonal-subgroups/`, `vector-orbits/`, `chambers/` | Named lattice group actions, primitive-vector orbits and hyperbolic chambers |
 | `genera/` | Genus records with representative isometry classes and mass |
 | `lattice-polytopes/`, `toric-varieties/` | Based lattice polytopes, polar duals and normal-fan toric varieties |
 | `geometric-maps/`, `moduli-problems/` | Geometric maps, fibrations and specified moduli problems |
@@ -111,9 +110,7 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 
 | Catalogue | Defining data and links |
 | --- | --- |
-| `orthogonal-subgroups/` | A lattice tag, a defining property or named self-isometry generators, optional relators, abstract structure, order, index and parent subgroup. A stabilizer names its vector orbit, chamber or geometric object. `O+` means the kernel of the real spinor norm. |
-| `vector-orbits/` | A primitive vector in the record basis, its square and optional divisibility, the acting subgroup, and optional geometric polarization link. The Gram tensor checks the square and divisibility. |
-| `chambers/` | A hyperbolic lattice, interior vector and oriented wall normals, with an optional reflection subgroup. |
+| A lattice's `groups` block | One entry for each subgroup $\Gamma \leq O(L)$ of interest, keyed by the standard `OrbitGroup` names (`O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+`, `SOtilde+`), whose primitive-vector series is `integral.primitive_orbits`, or by a further named subgroup such as $\Gamma_{\mathrm{En},2}$. Each entry holds generators (named self-isometries), optional relators, the abstract structure, order, index, parent, a stabilized object, a hyperbolic chamber, and orbit representatives keyed by the square. `O+` means the kernel of the real spinor norm. |
 | `genera/` | Signature, determinant, parity, genus symbol, representative lattice tags, class number, completeness and rational mass. A complete list with known group orders checks $\sum 1/|O(L_i)|$. |
 | `lattice-polytopes/` | Vertices in a based free abelian group, ambient rank, source identifier, reflexivity, polar dual, and optional Delaunay sphere tied to a quadratic lattice. A toric ambient lattice is not the quadratic lattice of a lattice record. |
 | `toric-varieties/` | A polytope and its normal fan, with optional subdivision rays. |

@@ -22,6 +22,8 @@ from urllib.parse import urlencode, urlsplit
 
 import frontmatter
 from flint import fmpz
+
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
 from markdown_it import MarkdownIt
 from markupsafe import Markup, escape
@@ -163,6 +165,22 @@ def orbit_group_tex(group: OrbitGroup) -> str:
         if name.endswith("tilde")
         else f"\\mathrm{{{letters}}}{plus}(L)"
     )
+
+
+ORBIT_GROUP_KEYS = ("O", "SO", "O+", "SO+", "Otilde", "SOtilde", "Otilde+", "SOtilde+")
+"""The eight standard subgroup keys of $O(L)$: the keys of `integral.primitive_orbits`."""
+
+
+def subgroup_tex(key: str) -> str:
+    """TeX for a key of a card's `groups` block: an eight-standard subgroup name, or a named one such as `Gamma_En_2`."""
+    return orbit_group_tex(key) if key in ORBIT_GROUP_KEYS else key.replace("_", "\\_")
+
+
+def cardinality_tex(cardinality: Cardinal) -> str:
+    """TeX for a group cardinality supplied by the preamble."""
+    if cardinality == aleph0:
+        return "\\aleph_0"
+    return str(cardinality.finite_value()) if cardinality.is_finite() else str(cardinality)
 
 
 def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
@@ -745,6 +763,11 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
         "integral.primitive_orbits.<group>",
         PrimitiveOrbitSeries,
     )
+    yield (
+        "Series of orbits on the discriminant group",
+        "integral.discriminant_orbits.<group>",
+        PrimitiveOrbitSeries,
+    )
     yield "Definite lattice", "definite", DefiniteData
     yield (
         "Component of the root system of a definite lattice",
@@ -782,6 +805,8 @@ def build(root: Path, target: Path) -> int:
         factorisation_tex=factorisation_tex,
         genus_tex=genus_tex,
         orbit_group_tex=orbit_group_tex,
+        subgroup_tex=subgroup_tex,
+        cardinality_tex=cardinality_tex,
         orbit_series_tex=orbit_series_tex,
         zeta_tex=zeta_tex,
         theta_tex=theta_tex,
