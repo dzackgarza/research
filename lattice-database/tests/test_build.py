@@ -202,3 +202,29 @@ def test_the_link_check_reports_a_missing_page_and_a_missing_anchor(tmp_path: Pa
     (tmp_path / "theory" / "roots.html").write_text('<h2 id="roots">Roots</h2>')
     (tmp_path / "index.html").write_text('<a href="theory/roots.html#roots">a</a><a href="theory/roots.html#record">b</a><a href="theory/morphisms.html">c</a>')
     assert site.broken_links(tmp_path) == ["index.html: theory/roots.html#record", "index.html: theory/morphisms.html"]
+
+
+def test_the_orthogonal_page_links_a_card_or_marks_a_stub_for_each_signature(built: Path, rows: dict[str, site.Row]) -> None:
+    html = (built / "orthogonal-groups.html").read_text()
+    recorded: dict[tuple[int, int], str] = {}
+    for entry in corpus.load(ROOT).entries:
+        signature = site.orthogonal_signature(entry.lattice)
+        # The table covers 1 <= p, q <= 24; a card I_{p,0} is outside it.
+        if signature is not None and all(1 <= value <= site.ORTHOGONAL_LIMIT for value in signature):
+            recorded.setdefault((min(signature), max(signature)), entry.lattice.tag)
+    assert recorded
+    # Each recorded signature links its card by tag.
+    for tag in recorded.values():
+        assert tag in {row["tag"] for row in rows.values()}
+        assert f'href="./tag/{tag}.html"' in html
+    # Every other unordered pair carries a stub marker, and the page states how many are owed.
+    missing = sum(1 for p in range(1, site.ORTHOGONAL_LIMIT + 1) for q in range(p, site.ORTHOGONAL_LIMIT + 1) if (p, q) not in recorded)
+    assert missing
+    table = html.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
+    assert table.count('class="orthogonal-stub"') == missing
+    assert f"{missing} cards are owed" in html
+    # A missing card is listed by name, with the command that authors it.
+    p, q = next((p, q) for p in range(1, site.ORTHOGONAL_LIMIT + 1) for q in range(p, site.ORTHOGONAL_LIMIT + 1) if (p, q) not in recorded)
+    assert rf"\(\mathrm{{I}}_{{{p},{q}}}\)" in html
+    assert "just new" in html
+    assert "--family diagonal" in html

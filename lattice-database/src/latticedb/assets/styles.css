@@ -35,7 +35,8 @@
   --measure: 68ch;
   --label: 0.875rem;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-family: "ETBook", Charter, "Bitstream Charter", "Iowan Old Style", Georgia, serif;
+  font-family:
+    "ETBook", Charter, "Bitstream Charter", "Iowan Old Style", Georgia, serif;
   font-size: 1.0625rem;
   line-height: 1.6;
   color: var(--ink);
@@ -883,4 +884,85 @@ h2[id^="rank-"] {
 .proof > p:last-child::after {
   content: " \220E";
   float: right;
+}
+
+/* O(p, q) analysis: the signature grid */
+
+.orthogonal-table {
+  width: auto;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.orthogonal-table th,
+.orthogonal-table td {
+  padding: 0;
+  border: 1px solid var(--line);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.orthogonal-table thead th {
+  padding: 0.25rem 0.4rem;
+  font-size: 0.72rem;
+}
+
+.orthogonal-table tbody th {
+  padding: 0.25rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: normal;
+}
+
+.orthogonal-table .orthogonal-corner {
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.orthogonal-table .orthogonal-cell {
+  min-width: 2.9rem;
+  height: 1.7rem;
+}
+
+.orthogonal-table .orthogonal-cell a {
+  display: block;
+  padding: 0.15rem 0.2rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+
+.orthogonal-table .tag {
+  color: var(--ink);
+}
+
+.orthogonal-table .tag:hover {
+  background: var(--wash);
+  color: var(--accent-dark);
+}
+
+.orthogonal-stub,
+.orthogonal-table .orthogonal-stub {
+  color: var(--line);
+  font-size: 0.62rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.orthogonal-table .orthogonal-stub:hover {
+  background: var(--wash);
+  color: var(--accent-dark);
+}
+
+.orthogonal-table .orthogonal-mirror {
+  display: block;
+  padding: 0.15rem 0.2rem;
+  color: var(--line);
+  font-size: 0.7rem;
+}
+
+.orthogonal-owed code {
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
 }

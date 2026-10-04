@@ -21,9 +21,8 @@ from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 
 import frontmatter
-from flint import fmpz
-
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0
+from flint import fmpz
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
 from markdown_it import MarkdownIt
 from markupsafe import Markup, escape
@@ -180,7 +179,9 @@ def cardinality_tex(cardinality: Cardinal) -> str:
     """TeX for a group cardinality supplied by the preamble."""
     if cardinality == aleph0:
         return "\\aleph_0"
-    return str(cardinality.finite_value()) if cardinality.is_finite() else str(cardinality)
+    return (
+        str(cardinality.finite_value()) if cardinality.is_finite() else str(cardinality)
+    )
 
 
 def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
@@ -501,6 +502,8 @@ def properties(lattice: Lattice) -> list[str]:
         prime = elementary_prime(lattice.integral.discriminant_group or ())
         if prime is not None:
             found.append(f"{prime}-elementary")
+    elif not lattice.is_integer_valued:
+        found.append("not integral")
     match lattice.is_root_lattice:
         case True:
             found.append("root lattice")
@@ -783,6 +786,63 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     yield "Morphism", "morphisms[]", Morphism
 
 
+ORTHOGONAL_LIMIT = 24
+"""The largest $p$ and $q$ in the table of orthogonal groups."""
+
+_ORTHOGONAL_NAME = re.compile(r"^I_\{(\d+),(\d+)\}$")
+
+
+def orthogonal_signature(lattice: Lattice) -> tuple[int, int] | None:
+    """The $(p, q)$ of a record named $\\mathrm{I}_{p,q}$; `None` for another name."""
+    match = _ORTHOGONAL_NAME.fullmatch(lattice.name)
+    return (int(match[1]), int(match[2])) if match else None
+
+
+def orthogonal_groups(
+    target: Path, environment: Environment, lattices: dict[str, Lattice]
+) -> None:
+    """Write `orthogonal-groups.html`: the $(p, q)$ table of orthogonal groups.
+
+    A cell links to the card of $\\mathrm{I}_{p,q}$ ($\\mathrm{I}_{q,p}$ when
+    that is the one recorded), or marks the missing card with a stub. The list
+    of cards owed states, for each signature without one, the standard lattice
+    and the command that authors it.
+    """
+    recorded: dict[tuple[int, int], str] = {}
+    for tag, lattice in lattices.items():
+        signature = orthogonal_signature(lattice)
+        if signature is not None:
+            key = (min(signature), max(signature))
+            recorded.setdefault(key, tag)
+    columns = list(range(1, ORTHOGONAL_LIMIT + 1))
+    rows = [
+        (
+            p,
+            [(q, recorded.get((min(p, q), max(p, q)))) for q in columns],
+        )
+        for p in columns
+    ]
+    owed = [
+        (f"\\mathrm{{I}}_{{{p},{q}}}", p, q)
+        for p in columns
+        for q in columns
+        if p <= q and (p, q) not in recorded
+    ]
+    (target / "orthogonal-groups.html").write_text(
+        environment.get_template("orthogonal-groups.html.j2").render(
+            root="./",
+            columns=columns,
+            rows=rows,
+            owed=owed,
+            total_cells=len(columns) * (len(columns) + 1) // 2,
+            recorded=sum(
+                1 for p in columns for q in columns if p <= q and (p, q) in recorded
+            ),
+            missing=len(owed),
+        )
+    )
+
+
 def build(root: Path, target: Path) -> int:
     """Write the site for the corpus under `root` to `target`. Returns the number of lattices."""
     corpus = load(root)
@@ -940,6 +1000,7 @@ def build(root: Path, target: Path) -> int:
     (target / "theory.html").write_text(
         environment.get_template("theory.html.j2").render(root="./")
     )
+    orthogonal_groups(target, environment, lattices)
     (target / "morphisms.html").write_text(
         environment.get_template("morphisms.html.j2").render(
             root="./", files=morphism_files, lattices=lattices

@@ -1,0 +1,67 @@
+{% extends "base.html.j2" %}
+{% block title %}O(p, q) analysis · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <p class="kicker">Groups</p>
+  <h1>\(O(p, q)\) analysis</h1>
+  <p class="lede">
+    The orthogonal group \(O(p, q)\) of a real quadratic space of signature
+    \((p, q)\), for \(1 \leq p, q \leq 24\). \(O(p, q) \cong O(q, p)\), so the
+    table is symmetric. A cell links to the catalogue card of the standard
+    lattice \(\mathrm{I}_{p,q}\); <span class="orthogonal-stub">stub</span>
+    marks a signature whose card is owed and lists it below.
+  </p>
+</header>
+
+<section aria-labelledby="grid">
+  <h2 id="grid">Signatures \(1 \leq p, q \leq 24\)</h2>
+  <p class="form-note">
+    {{ recorded }} of the {{ total_cells }} signatures have a card;
+    {{ missing }} cards are owed.
+  </p>
+  <div class="table-scroll">
+    <table class="member-table orthogonal-table">
+      <thead>
+        <tr>
+          <th scope="col" class="orthogonal-corner">\(p \backslash q\)</th>
+          {% for q in columns %}<th scope="col" class="numeric">{{ q }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for p, cells in rows %}
+        <tr>
+          <th scope="row" class="numeric">{{ p }}</th>
+          {% for q, tag in cells %}
+          <td class="orthogonal-cell">
+            {% if q < p %}<span class="orthogonal-mirror" title="O({{ p }}, {{ q }}) = O({{ q }}, {{ p }})">&middot;</span>
+            {% elif tag %}<a class="tag" href="{{ root }}tag/{{ tag }}.html">{{ tag }}</a>
+            {% else %}<span class="orthogonal-stub" title="\(\mathrm{I}_{ {{- p }},{{ q -}} }\)">stub</span>{% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="owed">
+  <h2 id="owed">Cards owed</h2>
+  <p>
+    Each is the standard lattice \(\mathrm{I}_{p,q}\): a basis
+    \(e_1, \dots, e_{p+q}\) with \(b(e_i, e_i) = 1\) for \(i \leq p\),
+    \(b(e_i, e_i) = -1\) for \(i > p\), and \(b(e_i, e_j) = 0\) for
+    \(i \neq j\). Author one with
+    <code>just new --gram &lt;rows&gt; --name 'I_{p,q}' --family diagonal</code>.
+  </p>
+  {% if owed %}
+  <ul class="collection-list orthogonal-owed">
+    {% for latex, p, q in owed %}
+    <li>\({{ latex }}\)</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>Every signature has a card.</p>
+  {% endif %}
+</section>
+{% endblock %}
