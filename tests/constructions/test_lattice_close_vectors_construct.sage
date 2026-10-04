@@ -10,3 +10,19 @@ def test_square_lattice_close_vectors_at_radius_squared_one_eighth() -> None:
 
     assert close.cardinality() == cardinal(1)
     assert close[first] == QQ(1) / 8
+
+
+def test_close_vectors_is_invariant_under_large_integral_target_translation() -> None:
+    lattice = Lattices(ZZ)([[2]])
+    (generator,) = lattice.module_generators()
+    shift = ZZ(10**6)
+    target = (QQ(shift) + QQ(1) / 2,)
+
+    close = lattice.close_vectors(target, ZZ(1))
+
+    left = lattice.scalar_multiple(shift, generator)
+    right = lattice.scalar_multiple(shift + 1, generator)
+    assert close.cardinality() == cardinal(2)
+    assert Set(close.index_set()) == Set((left, right))
+    assert close[left] == QQ(1) / 2
+    assert close[right] == QQ(1) / 2

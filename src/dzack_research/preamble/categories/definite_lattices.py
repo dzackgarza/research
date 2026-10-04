@@ -422,9 +422,20 @@ def _close_vectors(lattice, target, square_bound):
         )
 
     engine_gram = _engine_component_matrix(positive_gram)
+    translation = tuple(
+        ring(int(_engine_element(rationals, coordinate).round()))
+        for coordinate in point
+    )
+    centered_point = tuple(
+        coordinate - rationals(translate)
+        for coordinate, translate in zip(point, translation, strict=True)
+    )
     engine_point = engine_vector(
         SageQQ,
-        tuple(_engine_element(rationals, coordinate) for coordinate in point),
+        tuple(
+            _engine_element(rationals, coordinate)
+            for coordinate in centered_point
+        ),
     )
     _count, _largest, raw_coordinates = engine_gram.__pari__().qfcvp(
         engine_point.__pari__().Col(),
@@ -437,7 +448,10 @@ def _close_vectors(lattice, target, square_bound):
         positive_square = displacement * positive_gram_q * displacement
         if positive_square > _engine_element(rationals, positive_bound):
             continue
-        coordinates = tuple(ring(int(entry)) for entry in column)
+        coordinates = tuple(
+            ring(int(entry)) + translate
+            for entry, translate in zip(column, translation, strict=True)
+        )
         vector = _element_from_coordinates(lattice, coordinates)
         signed_square = _owned_engine_element(rationals,
             SageQQ(_engine_element(ring, sign)) * positive_square
