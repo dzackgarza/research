@@ -34,11 +34,6 @@ def _components(gram_tensor: GramTensor) -> fmpq_mat:
     )
 
 
-def is_integer_valued(gram_tensor: GramTensor) -> bool:
-    """Whether `b(x, y)` is an integer for all `x`, `y` in `L`: by bilinearity, whether every component is."""
-    return all(value.denominator == 1 for row in gram_tensor for value in row)
-
-
 def is_perfect(rank: int, minimal_vectors: list[list[int]]) -> bool:
     """Whether the rank-one tensors of the minimal shell span Sym^2(Q^rank)."""
     rows = [
@@ -159,60 +154,12 @@ def overlattice_count(
     return None if int(subgroups) > bound else int(isotropic)
 
 
-def scale(gram_tensor: GramTensor) -> Fraction:
-    """The scale of `b`: the positive generator of the subgroup of `Q` that the values `b(e_i, e_j)` generate, and `0` for `b = 0`.
-
-    With `k` the least positive integer such that `k b` is integer valued, the
-    scale is `gcd(k b(e_i, e_j)) / k`. The values `b(x, y)` on all of `L` generate
-    the same subgroup, as they are integer combinations of the `b(e_i, e_j)`.
-    """
-    k, components = _integer_components(gram_tensor)
-    return Fraction(gcd(*(value for row in components for value in row)), k)
-
-
 def _integer_components(gram_tensor: GramTensor) -> tuple[int, tuple[Vector, ...]]:
     """Return `(k, components of k b)` for the least positive integer `k` such that `k b` is integer valued."""
     scale = lcm(*(value.denominator for row in gram_tensor for value in row))
     return scale, tuple(
         tuple(int(value * scale) for value in row) for row in gram_tensor
     )
-
-
-def pairing(gram_tensor: GramTensor, x: Vector, y: Vector) -> Fraction:
-    """Return `b(x, y)`."""
-    return sum(
-        (
-            x[i] * gram_tensor[i][j] * y[j]
-            for i in range(len(x))
-            for j in range(len(y))
-            if x[i] and y[j]
-        ),
-        Fraction(0),
-    )
-
-
-def restriction(gram_tensor: GramTensor, vectors: tuple[Vector, ...]) -> GramTensor:
-    """Return the components `b(v_i, v_j)` for the given vectors `v_1, v_2, ...`."""
-    return tuple(tuple(pairing(gram_tensor, x, y) for y in vectors) for x in vectors)
-
-
-def scaled(gram_tensor: GramTensor, k: Fraction | int) -> GramTensor:
-    """Return the components of `k b`: the form of the twist `L(k)`."""
-    return tuple(tuple(k * value for value in row) for row in gram_tensor)
-
-
-def orthogonal_sum(summands: tuple[GramTensor, ...]) -> GramTensor:
-    """Return the components of the form of the orthogonal sum, in the union of the bases of the summands."""
-    offsets = [
-        sum(len(summand) for summand in summands[:index])
-        for index in range(len(summands))
-    ]
-    rank = sum(len(summand) for summand in summands)
-    rows = [[Fraction(0)] * rank for _ in range(rank)]
-    for offset, summand in zip(offsets, summands, strict=True):
-        for i, row in enumerate(summand):
-            rows[offset + i][offset : offset + len(summand)] = row
-    return tuple(tuple(row) for row in rows)
 
 
 def _root_norm(components: tuple[Vector, ...], r: Vector) -> int | None:

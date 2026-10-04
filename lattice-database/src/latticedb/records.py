@@ -251,13 +251,6 @@ def _definite(
         series = lattice.theta_series(precision=bound + 1)
         block["theta_series"] = [int(series[index]) for index in range(bound + 1)]
         block["root_system"] = list(roots.norm_two_types(formed, dict(positive_roots)))
-    elif arithmetic.is_integer_valued(gram):
-        bound = model.theta_bound(len(gram), minimum)
-        match declared.get("theta_series"):
-            case list() as stated:
-                bound = max(bound, len(stated) - 1)
-        block["theta_series"] = list(arithmetic.theta_coefficients(gram, bound))
-        block["root_system"] = list(roots.norm_two_types(formed, dict(positive_roots)))
     block["roots"] = [
         {
             "type": root_type,
@@ -353,7 +346,11 @@ def derive(
         int(formed_determinant.numerator()),
         int(formed_determinant.denominator()),
     )
-    integral_lattice = Lattices(ZZ)(gram) if arithmetic.is_integer_valued(gram) else None
+    integral_lattice = (
+        Lattices(ZZ)(gram)
+        if all(QQ(value) in ZZ for row in gram for value in row)
+        else None
+    )
     definiteness = model.definiteness(n_plus, n_minus, n_zero)
     derived: dict[str, Yaml] = {
         **record,
@@ -414,7 +411,8 @@ def gram_problems(gram: GramTensor, families: tuple[str, ...]) -> list[str]:
     if any(gram[i][j] != gram[j][i] for i in range(rank) for j in range(i)):
         return ["gram_tensor: b(e_i, e_j) differs from b(e_j, e_i) for some i, j"]
     formed = ZZ.free_module(rank).equip_bilinear_form(QQ, gram)
-    scale = arithmetic.scale(gram)
+    scale_value = formed.scale_submodule().principal_generator()
+    scale = Fraction(int(scale_value.numerator()), int(scale_value.denominator()))
     if scale == 0:
         return [
             f"gram_tensor: b = 0 is M(0) for every lattice M of rank {rank}; the corpus records no zero form"
@@ -547,13 +545,34 @@ def relational_admission_problems(
                         "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
                     )
             else:
-                summands = tuple(
-                    arithmetic.scaled(written[summand.tag].gram_tensor, summand.scale)
-                    for summand in span.summands
-                )
-                if arithmetic.restriction(
-                    gram, span.embedding
-                ) != arithmetic.orthogonal_sum(summands):
+                target_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+                offset = 0
+                image_blocks = []
+                valid = True
+                for summand in span.summands:
+                    source_record = written[summand.tag]
+                    source_formed = ZZ.free_module(source_record.rank).equip_bilinear_form(
+                        QQ, source_record.gram_tensor
+                    ).twist(summand.scale)
+                    block_rows = span.embedding[offset : offset + source_record.rank]
+                    block_images = tuple(target_formed(row) for row in block_rows)
+                    offset += source_record.rank
+                    try:
+                        source_formed.Mor(target_formed)(block_images)
+                    except ValueError:
+                        valid = False
+                    image_blocks.append(block_images)
+                if offset != len(span.embedding):
+                    valid = False
+                if valid and any(
+                    left.b(right) != 0
+                    for left_index, left_block in enumerate(image_blocks)
+                    for right_block in image_blocks[left_index + 1 :]
+                    for left in left_block
+                    for right in right_block
+                ):
+                    valid = False
+                if not valid:
                     found.append(
                         "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
                     )
