@@ -2462,7 +2462,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         _signature = domain.signature_pair()
 
         positive, negative = _signature.first(), _signature.second()
-        if not (positive and negative):
+        if positive == 0 or negative == 0:
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
             transformation = QuadraticForm(
                 SageZZ, 2 * sign * codomain_engine
