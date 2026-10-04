@@ -1,0 +1,2645 @@
+{
+  "metadata": {
+    "sage_version": "10.10.beta0",
+    "axis": "runtime",
+    "measured": "2026-07-18",
+    "source": "full-import class walk, registry dump and instance enumeration; see scripts/sage-inventory/dump_classes.py, dump_categories.py, dump_instances.py",
+    "provenance": "lifted from writing/category-theory/sage/Sage-Category-Classes.md, which held the only committed copy of this measurement",
+    "instance_counts": {
+      "total": 130,
+      "plain": 14,
+      "axiom_refined": 30,
+      "construction_derived": 2,
+      "joins": 84,
+      "dynamic_with_category_classes": 166
+    }
+  },
+  "loaded_at_runtime": {
+    "examples.semigroups_cython.IdempotentSemigroups": false,
+    "algebra_functor.AlgebrasCategory": true,
+    "cartesian_product.CartesianProductsCategory": true,
+    "category.Category": false,
+    "category.CategoryWithParameters": true,
+    "category.JoinCategory": true,
+    "category_singleton.Category_singleton": true,
+    "category_types.AbelianCategory": true,
+    "category_types.Category_ideal": true,
+    "category_types.Category_in_ambient": true,
+    "category_types.Category_module": true,
+    "category_types.Category_over_base": true,
+    "category_types.Category_over_base_ring": true,
+    "category_types.Elements": true,
+    "category_with_axiom.CategoryWithAxiom": true,
+    "category_with_axiom.CategoryWithAxiom_over_base_ring": true,
+    "category_with_axiom.CategoryWithAxiom_singleton": true,
+    "covariant_functorial_construction.CovariantConstructionCategory": true,
+    "covariant_functorial_construction.FunctorialConstructionCategory": true,
+    "covariant_functorial_construction.RegressiveCovariantConstructionCategory": true,
+    "dual.DualObjectsCategory": true,
+    "filtered_modules.FilteredModulesCategory": true,
+    "graded_lie_conformal_algebras.GradedLieConformalAlgebrasCategory": true,
+    "graded_modules.GradedModulesCategory": true,
+    "homsets.HomsetsCategory": true,
+    "homsets.HomsetsOf": true,
+    "isomorphic_objects.IsomorphicObjectsCategory": true,
+    "metric_spaces.MetricSpacesCategory": true,
+    "quotients.QuotientsCategory": true,
+    "realizations.Category_realization_of_parent": true,
+    "realizations.RealizationsCategory": true,
+    "schemes.Schemes_over_base": true,
+    "signed_tensor.SignedTensorProductsCategory": true,
+    "subobjects.SubobjectsCategory": true,
+    "subquotients.SubquotientsCategory": true,
+    "super_modules.SuperModulesCategory": true,
+    "tensor.TensorProductsCategory": true,
+    "topological_spaces.TopologicalSpacesCategory": true,
+    "with_realizations.WithRealizationsCategory": true,
+    "finite_dimensional_bialgebras_with_basis.FiniteDimensionalBialgebrasWithBasis": false,
+    "finite_dimensional_coalgebras_with_basis.FiniteDimensionalCoalgebrasWithBasis": false,
+    "graded_bialgebras.GradedBialgebras": false,
+    "graded_bialgebras_with_basis.GradedBialgebrasWithBasis": false,
+    "graded_hopf_algebras.GradedHopfAlgebras": false,
+    "monoid_algebras.MonoidAlgebras": false,
+    "additive_groups.AdditiveGroups": true,
+    "additive_magmas.AdditiveMagmas": true,
+    "additive_monoids.AdditiveMonoids": true,
+    "additive_semigroups.AdditiveSemigroups": true,
+    "affine_weyl_groups.AffineWeylGroups": true,
+    "algebra_ideals.AlgebraIdeals": true,
+    "algebra_modules.AlgebraModules": true,
+    "algebras.Algebras": true,
+    "algebras_with_basis.AlgebrasWithBasis": true,
+    "aperiodic_semigroups.AperiodicSemigroups": true,
+    "associative_algebras.AssociativeAlgebras": true,
+    "bialgebras.Bialgebras": true,
+    "bialgebras_with_basis.BialgebrasWithBasis": true,
+    "bimodules.Bimodules": true,
+    "chain_complexes.ChainComplexes": true,
+    "classical_crystals.ClassicalCrystals": true,
+    "coalgebras.Coalgebras": true,
+    "coalgebras_with_basis.CoalgebrasWithBasis": true,
+    "commutative_additive_groups.CommutativeAdditiveGroups": true,
+    "commutative_additive_monoids.CommutativeAdditiveMonoids": true,
+    "commutative_additive_semigroups.CommutativeAdditiveSemigroups": true,
+    "commutative_algebra_ideals.CommutativeAlgebraIdeals": true,
+    "commutative_algebras.CommutativeAlgebras": true,
+    "commutative_ring_ideals.CommutativeRingIdeals": true,
+    "commutative_rings.CommutativeRings": true,
+    "complete_discrete_valuation.CompleteDiscreteValuationFields": true,
+    "complete_discrete_valuation.CompleteDiscreteValuationRings": true,
+    "complex_reflection_groups.ComplexReflectionGroups": true,
+    "complex_reflection_or_generalized_coxeter_groups.ComplexReflectionOrGeneralizedCoxeterGroups": true,
+    "coxeter_group_algebras.CoxeterGroupAlgebras": true,
+    "coxeter_groups.CoxeterGroups": true,
+    "crystals.Crystals": true,
+    "cw_complexes.CWComplexes": true,
+    "dedekind_domains.DedekindDomains": true,
+    "discrete_valuation.DiscreteValuationFields": true,
+    "discrete_valuation.DiscreteValuationRings": true,
+    "distributive_magmas_and_additive_magmas.DistributiveMagmasAndAdditiveMagmas": true,
+    "division_rings.DivisionRings": true,
+    "domains.Domains": true,
+    "drinfeld_modules.DrinfeldModules": true,
+    "enumerated_sets.EnumeratedSets": true,
+    "euclidean_domains.EuclideanDomains": true,
+    "facade_sets.FacadeSets": true,
+    "fields.Fields": true,
+    "filtered_algebras.FilteredAlgebras": true,
+    "filtered_algebras_with_basis.FilteredAlgebrasWithBasis": true,
+    "filtered_hopf_algebras_with_basis.FilteredHopfAlgebrasWithBasis": true,
+    "filtered_modules.FilteredModules": true,
+    "filtered_modules_with_basis.FilteredModulesWithBasis": true,
+    "finite_complex_reflection_groups.FiniteComplexReflectionGroups": true,
+    "finite_coxeter_groups.FiniteCoxeterGroups": true,
+    "finite_crystals.FiniteCrystals": true,
+    "finite_dimensional_algebras_with_basis.FiniteDimensionalAlgebrasWithBasis": true,
+    "finite_dimensional_graded_lie_algebras_with_basis.FiniteDimensionalGradedLieAlgebrasWithBasis": true,
+    "finite_dimensional_hopf_algebras_with_basis.FiniteDimensionalHopfAlgebrasWithBasis": true,
+    "finite_dimensional_lie_algebras_with_basis.FiniteDimensionalLieAlgebrasWithBasis": true,
+    "finite_dimensional_modules_with_basis.FiniteDimensionalModulesWithBasis": true,
+    "finite_dimensional_nilpotent_lie_algebras_with_basis.FiniteDimensionalNilpotentLieAlgebrasWithBasis": true,
+    "finite_dimensional_semisimple_algebras_with_basis.FiniteDimensionalSemisimpleAlgebrasWithBasis": true,
+    "finite_enumerated_sets.FiniteEnumeratedSets": true,
+    "finite_fields.FiniteFields": true,
+    "finite_groups.FiniteGroups": true,
+    "finite_lattice_posets.FiniteLatticePosets": true,
+    "finite_monoids.FiniteMonoids": true,
+    "finite_permutation_groups.FinitePermutationGroups": true,
+    "finite_posets.FinitePosets": true,
+    "finite_semigroups.FiniteSemigroups": true,
+    "finite_sets.FiniteSets": true,
+    "finite_weyl_groups.FiniteWeylGroups": true,
+    "finitely_generated_lambda_bracket_algebras.FinitelyGeneratedLambdaBracketAlgebras": true,
+    "finitely_generated_lie_conformal_algebras.FinitelyGeneratedLieConformalAlgebras": true,
+    "finitely_generated_magmas.FinitelyGeneratedMagmas": true,
+    "finitely_generated_semigroups.FinitelyGeneratedSemigroups": true,
+    "function_fields.FunctionFields": true,
+    "g_sets.GSets": true,
+    "gcd_domains.GcdDomains": true,
+    "generalized_coxeter_groups.GeneralizedCoxeterGroups": true,
+    "graded_algebras.GradedAlgebras": true,
+    "graded_algebras_with_basis.GradedAlgebrasWithBasis": true,
+    "graded_coalgebras.GradedCoalgebras": true,
+    "graded_coalgebras_with_basis.GradedCoalgebrasWithBasis": true,
+    "graded_hopf_algebras_with_basis.GradedHopfAlgebrasWithBasis": true,
+    "graded_lie_algebras.GradedLieAlgebras": true,
+    "graded_lie_algebras_with_basis.GradedLieAlgebrasWithBasis": true,
+    "graded_lie_conformal_algebras.GradedLieConformalAlgebras": true,
+    "graded_modules.GradedModules": true,
+    "graded_modules_with_basis.GradedModulesWithBasis": true,
+    "graphs.Graphs": true,
+    "group_algebras.GroupAlgebras": true,
+    "groupoid.Groupoid": true,
+    "groups.Groups": true,
+    "h_trivial_semigroups.HTrivialSemigroups": true,
+    "hecke_modules.HeckeModules": true,
+    "highest_weight_crystals.HighestWeightCrystals": true,
+    "homsets.Homsets": true,
+    "hopf_algebras.HopfAlgebras": true,
+    "hopf_algebras_with_basis.HopfAlgebrasWithBasis": true,
+    "infinite_enumerated_sets.InfiniteEnumeratedSets": true,
+    "integral_domains.IntegralDomains": true,
+    "j_trivial_semigroups.JTrivialSemigroups": true,
+    "kac_moody_algebras.KacMoodyAlgebras": true,
+    "kahler_algebras.KahlerAlgebras": true,
+    "l_trivial_semigroups.LTrivialSemigroups": true,
+    "lambda_bracket_algebras.LambdaBracketAlgebras": true,
+    "lambda_bracket_algebras_with_basis.LambdaBracketAlgebrasWithBasis": true,
+    "lattice_posets.DistributiveLattices": true,
+    "lattice_posets.LatticePosets": true,
+    "left_modules.LeftModules": true,
+    "lie_algebras.LieAlgebras": true,
+    "lie_algebras_with_basis.LieAlgebrasWithBasis": true,
+    "lie_conformal_algebras.LieConformalAlgebras": true,
+    "lie_conformal_algebras_with_basis.LieConformalAlgebrasWithBasis": true,
+    "lie_groups.LieGroups": true,
+    "loop_crystals.KirillovReshetikhinCrystals": true,
+    "loop_crystals.LoopCrystals": true,
+    "loop_crystals.RegularLoopCrystals": true,
+    "magmas.Magmas": true,
+    "magmas_and_additive_magmas.MagmasAndAdditiveMagmas": true,
+    "magmatic_algebras.MagmaticAlgebras": true,
+    "manifolds.ComplexManifolds": true,
+    "manifolds.Manifolds": true,
+    "matrix_algebras.MatrixAlgebras": true,
+    "metric_spaces.MetricSpaces": true,
+    "modular_abelian_varieties.ModularAbelianVarieties": true,
+    "modules.Modules": true,
+    "modules_with_basis.ModulesWithBasis": true,
+    "monoids.Monoids": true,
+    "noetherian_rings.NoetherianRings": true,
+    "number_fields.NumberFields": true,
+    "objects.Objects": true,
+    "ore_modules.OreModules": true,
+    "partially_ordered_monoids.PartiallyOrderedMonoids": true,
+    "permutation_groups.PermutationGroups": true,
+    "pointed_sets.PointedSets": true,
+    "polyhedra.PolyhedralSets": true,
+    "posets.Posets": true,
+    "principal_ideal_domains.PrincipalIdealDomains": true,
+    "quantum_group_representations.QuantumGroupRepresentations": true,
+    "quotient_fields.QuotientFields": true,
+    "r_trivial_semigroups.RTrivialSemigroups": true,
+    "regular_crystals.RegularCrystals": true,
+    "regular_supercrystals.RegularSuperCrystals": true,
+    "right_modules.RightModules": true,
+    "ring_ideals.RingIdeals": true,
+    "rings.Rings": true,
+    "rngs.Rngs": true,
+    "schemes.AbelianVarieties": true,
+    "schemes.Jacobians": true,
+    "schemes.Schemes": true,
+    "semigroups.Semigroups": true,
+    "semirings.Semirings": true,
+    "semisimple_algebras.SemisimpleAlgebras": true,
+    "sets_cat.Sets": true,
+    "sets_with_grading.SetsWithGrading": true,
+    "sets_with_partial_maps.SetsWithPartialMaps": true,
+    "shephard_groups.ShephardGroups": true,
+    "simplicial_complexes.SimplicialComplexes": true,
+    "simplicial_sets.SimplicialSets": true,
+    "super_algebras.SuperAlgebras": true,
+    "super_algebras_with_basis.SuperAlgebrasWithBasis": true,
+    "super_hopf_algebras_with_basis.SuperHopfAlgebrasWithBasis": true,
+    "super_lie_conformal_algebras.SuperLieConformalAlgebras": true,
+    "super_modules.SuperModules": true,
+    "super_modules_with_basis.SuperModulesWithBasis": true,
+    "supercommutative_algebras.SupercommutativeAlgebras": true,
+    "supercrystals.SuperCrystals": true,
+    "topological_spaces.TopologicalSpaces": true,
+    "triangular_kac_moody_algebras.TriangularKacMoodyAlgebras": true,
+    "unique_factorization_domains.UniqueFactorizationDomains": true,
+    "unital_algebras.UnitalAlgebras": true,
+    "vector_bundles.VectorBundles": true,
+    "vector_spaces.VectorSpaces": true,
+    "weyl_groups.WeylGroups": true,
+    "category_with_axiom.Bars": true,
+    "category_with_axiom.Blahs": true,
+    "category_with_axiom.DummyObjectsOverBaseRing": true,
+    "category_with_axiom.TestObjects": true
+  },
+  "axiom_generated_classes": [
+    {
+      "qualname": "AdditiveGroups",
+      "module": "additive_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AdditiveGroups.Finite",
+      "module": "additive_groups",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "AdditiveGroups_with_category",
+      "module": "additive_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveCommutative",
+      "module": "additive_magmas",
+      "axiom": "AdditiveCommutative"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveCommutative_with_category",
+      "module": "additive_magmas",
+      "axiom": "AdditiveCommutative_with_category"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital",
+      "module": "additive_magmas",
+      "axiom": "AdditiveUnital"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.AdditiveInverse",
+      "module": "additive_magmas",
+      "axiom": "AdditiveInverse"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.AdditiveInverse_with_category",
+      "module": "additive_magmas",
+      "axiom": "AdditiveInverse_with_category"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital_with_category",
+      "module": "additive_magmas",
+      "axiom": "AdditiveUnital_with_category"
+    },
+    {
+      "qualname": "AdditiveMonoids",
+      "module": "additive_monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AdditiveMonoids_with_category",
+      "module": "additive_monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AdditiveSemigroups",
+      "module": "additive_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AdditiveSemigroups_with_category",
+      "module": "additive_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Algebras",
+      "module": "algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AlgebrasWithBasis",
+      "module": "algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AperiodicSemigroups",
+      "module": "aperiodic_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AssociativeAlgebras",
+      "module": "associative_algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "BialgebrasWithBasis",
+      "module": "bialgebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Blahs.Commutative",
+      "module": "category_with_axiom",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "Blahs.Connected",
+      "module": "category_with_axiom",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "Blahs.FiniteDimensional",
+      "module": "category_with_axiom",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "Blahs.Flying",
+      "module": "category_with_axiom",
+      "axiom": "Flying"
+    },
+    {
+      "qualname": "Blahs.Unital",
+      "module": "category_with_axiom",
+      "axiom": "Unital"
+    },
+    {
+      "qualname": "Blahs.Unital.Blue",
+      "module": "category_with_axiom",
+      "axiom": "Blue"
+    },
+    {
+      "qualname": "CategoryWithAxiom",
+      "module": "category_with_axiom",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CategoryWithAxiom_over_base_ring",
+      "module": "category_with_axiom",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CategoryWithAxiom_singleton",
+      "module": "category_with_axiom",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.Commutative",
+      "module": "category_with_axiom",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.Commutative.Facade",
+      "module": "category_with_axiom",
+      "axiom": "Facade"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.Commutative.Finite",
+      "module": "category_with_axiom",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.Commutative.FiniteDimensional",
+      "module": "category_with_axiom",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.FiniteDimensional",
+      "module": "category_with_axiom",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.FiniteDimensional.Finite",
+      "module": "category_with_axiom",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.FiniteDimensional.Unital",
+      "module": "category_with_axiom",
+      "axiom": "Unital"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.FiniteDimensional.Unital.Commutative",
+      "module": "category_with_axiom",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "DummyObjectsOverBaseRing.Unital",
+      "module": "category_with_axiom",
+      "axiom": "Unital"
+    },
+    {
+      "qualname": "TestObjects.Commutative",
+      "module": "category_with_axiom",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "TestObjects.Commutative.Facade",
+      "module": "category_with_axiom",
+      "axiom": "Facade"
+    },
+    {
+      "qualname": "TestObjects.Commutative.Finite",
+      "module": "category_with_axiom",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "TestObjects.Commutative.FiniteDimensional",
+      "module": "category_with_axiom",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "TestObjects.FiniteDimensional",
+      "module": "category_with_axiom",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "TestObjects.FiniteDimensional.Finite",
+      "module": "category_with_axiom",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "TestObjects.FiniteDimensional.Unital",
+      "module": "category_with_axiom",
+      "axiom": "Unital"
+    },
+    {
+      "qualname": "TestObjects.FiniteDimensional.Unital.Commutative",
+      "module": "category_with_axiom",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "TestObjects.Unital",
+      "module": "category_with_axiom",
+      "axiom": "Unital"
+    },
+    {
+      "qualname": "Coalgebras.Cocommutative",
+      "module": "coalgebras",
+      "axiom": "Cocommutative"
+    },
+    {
+      "qualname": "Coalgebras.Super.Supercocommutative",
+      "module": "coalgebras",
+      "axiom": "Supercocommutative"
+    },
+    {
+      "qualname": "CoalgebrasWithBasis",
+      "module": "coalgebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAdditiveGroups",
+      "module": "commutative_additive_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAdditiveGroups_with_category",
+      "module": "commutative_additive_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAdditiveMonoids",
+      "module": "commutative_additive_monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAdditiveMonoids_with_category",
+      "module": "commutative_additive_monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAdditiveSemigroups",
+      "module": "commutative_additive_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAdditiveSemigroups_with_category",
+      "module": "commutative_additive_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeAlgebras",
+      "module": "commutative_algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeRings",
+      "module": "commutative_rings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "CommutativeRings.Finite",
+      "module": "commutative_rings",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "CommutativeRings_with_category",
+      "module": "commutative_rings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "ComplexReflectionOrGeneralizedCoxeterGroups.Irreducible",
+      "module": "complex_reflection_or_generalized_coxeter_groups",
+      "axiom": "Irreducible"
+    },
+    {
+      "qualname": "CWComplexes.Connected",
+      "module": "cw_complexes",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "CWComplexes.Finite",
+      "module": "cw_complexes",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "CWComplexes.FiniteDimensional",
+      "module": "cw_complexes",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "AdditiveAssociative"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "AdditiveCommutative"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "AdditiveUnital"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "Associative"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative_with_category",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "Associative_with_category"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative.AdditiveUnital_with_category",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "AdditiveUnital_with_category"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative.AdditiveCommutative_with_category",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "AdditiveCommutative_with_category"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.AdditiveAssociative_with_category",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "AdditiveAssociative_with_category"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas_with_category",
+      "module": "distributive_magmas_and_additive_magmas",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "DivisionRings",
+      "module": "division_rings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "DivisionRings_with_category",
+      "module": "division_rings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Domains",
+      "module": "domains",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Domains_with_category",
+      "module": "domains",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "EnumeratedSets",
+      "module": "enumerated_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "EnumeratedSets_with_category",
+      "module": "enumerated_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FacadeSets",
+      "module": "facade_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Fields",
+      "module": "fields",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Fields_with_category",
+      "module": "fields",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FilteredHopfAlgebrasWithBasis.Connected",
+      "module": "filtered_hopf_algebras_with_basis",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "FilteredModules.Connected",
+      "module": "filtered_modules",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "FilteredModulesWithBasis.FiniteDimensional",
+      "module": "filtered_modules_with_basis",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "FiniteComplexReflectionGroups",
+      "module": "finite_complex_reflection_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteComplexReflectionGroups.Irreducible",
+      "module": "finite_complex_reflection_groups",
+      "axiom": "Irreducible"
+    },
+    {
+      "qualname": "FiniteComplexReflectionGroups.WellGenerated",
+      "module": "finite_complex_reflection_groups",
+      "axiom": "WellGenerated"
+    },
+    {
+      "qualname": "FiniteComplexReflectionGroups.WellGenerated.Irreducible",
+      "module": "finite_complex_reflection_groups",
+      "axiom": "Irreducible"
+    },
+    {
+      "qualname": "FiniteCoxeterGroups",
+      "module": "finite_coxeter_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteCrystals",
+      "module": "finite_crystals",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalAlgebrasWithBasis",
+      "module": "finite_dimensional_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalAlgebrasWithBasis.Cellular",
+      "module": "finite_dimensional_algebras_with_basis",
+      "axiom": "Cellular"
+    },
+    {
+      "qualname": "FiniteDimensionalGradedLieAlgebrasWithBasis",
+      "module": "finite_dimensional_graded_lie_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalGradedLieAlgebrasWithBasis.Stratified",
+      "module": "finite_dimensional_graded_lie_algebras_with_basis",
+      "axiom": "Stratified"
+    },
+    {
+      "qualname": "FiniteDimensionalHopfAlgebrasWithBasis",
+      "module": "finite_dimensional_hopf_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalLieAlgebrasWithBasis",
+      "module": "finite_dimensional_lie_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalModulesWithBasis",
+      "module": "finite_dimensional_modules_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalModulesWithBasis.Homsets.Endset",
+      "module": "finite_dimensional_modules_with_basis",
+      "axiom": "Endset"
+    },
+    {
+      "qualname": "FiniteDimensionalNilpotentLieAlgebrasWithBasis",
+      "module": "finite_dimensional_nilpotent_lie_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalSemisimpleAlgebrasWithBasis",
+      "module": "finite_dimensional_semisimple_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteDimensionalSemisimpleAlgebrasWithBasis.Commutative",
+      "module": "finite_dimensional_semisimple_algebras_with_basis",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "FiniteEnumeratedSets",
+      "module": "finite_enumerated_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteEnumeratedSets_with_category",
+      "module": "finite_enumerated_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteFields",
+      "module": "finite_fields",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteGroups",
+      "module": "finite_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteLatticePosets",
+      "module": "finite_lattice_posets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteMonoids",
+      "module": "finite_monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitePermutationGroups",
+      "module": "finite_permutation_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitePosets",
+      "module": "finite_posets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteSemigroups",
+      "module": "finite_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteSets",
+      "module": "finite_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteSets_with_category",
+      "module": "finite_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FiniteWeylGroups",
+      "module": "finite_weyl_groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitelyGeneratedLambdaBracketAlgebras",
+      "module": "finitely_generated_lambda_bracket_algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitelyGeneratedLieConformalAlgebras",
+      "module": "finitely_generated_lie_conformal_algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitelyGeneratedMagmas",
+      "module": "finitely_generated_magmas",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitelyGeneratedSemigroups",
+      "module": "finitely_generated_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "FinitelyGeneratedSemigroups.Finite",
+      "module": "finitely_generated_semigroups",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "GeneralizedCoxeterGroups.Finite",
+      "module": "generalized_coxeter_groups",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "GradedAlgebrasWithBasis.FiniteDimensional",
+      "module": "graded_algebras_with_basis",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "GradedHopfAlgebrasWithBasis.Connected",
+      "module": "graded_hopf_algebras_with_basis",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "GradedLieAlgebras.Stratified",
+      "module": "graded_lie_algebras",
+      "axiom": "Stratified"
+    },
+    {
+      "qualname": "GradedLieAlgebras.Stratified.FiniteDimensional",
+      "module": "graded_lie_algebras",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "Graphs.Connected",
+      "module": "graphs",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "Groups",
+      "module": "groups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Groups.Commutative",
+      "module": "groups",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "HTrivialSemigroups",
+      "module": "h_trivial_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Homsets.Endset",
+      "module": "homsets",
+      "axiom": "Endset"
+    },
+    {
+      "qualname": "HopfAlgebrasWithBasis",
+      "module": "hopf_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "InfiniteEnumeratedSets",
+      "module": "infinite_enumerated_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "InfiniteEnumeratedSets_with_category",
+      "module": "infinite_enumerated_sets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "IntegralDomains",
+      "module": "integral_domains",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "IntegralDomains_with_category",
+      "module": "integral_domains",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "JTrivialSemigroups",
+      "module": "j_trivial_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "LTrivialSemigroups",
+      "module": "l_trivial_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "LambdaBracketAlgebrasWithBasis",
+      "module": "lambda_bracket_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "LambdaBracketAlgebrasWithBasis.FinitelyGeneratedAsLambdaBracketAlgebra",
+      "module": "lambda_bracket_algebras_with_basis",
+      "axiom": "FinitelyGeneratedAsLambdaBracketAlgebra"
+    },
+    {
+      "qualname": "DistributiveLattices",
+      "module": "lattice_posets",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "DistributiveLattices.Finite",
+      "module": "lattice_posets",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "LatticePosets.ChainGraded",
+      "module": "lattice_posets",
+      "axiom": "ChainGraded"
+    },
+    {
+      "qualname": "LatticePosets.CongruenceUniform",
+      "module": "lattice_posets",
+      "axiom": "CongruenceUniform"
+    },
+    {
+      "qualname": "LatticePosets.Extremal",
+      "module": "lattice_posets",
+      "axiom": "Extremal"
+    },
+    {
+      "qualname": "LatticePosets.Semidistributive",
+      "module": "lattice_posets",
+      "axiom": "Semidistributive"
+    },
+    {
+      "qualname": "LatticePosets.Stone",
+      "module": "lattice_posets",
+      "axiom": "Stone"
+    },
+    {
+      "qualname": "LatticePosets.Trim",
+      "module": "lattice_posets",
+      "axiom": "Trim"
+    },
+    {
+      "qualname": "LieAlgebras.FiniteDimensional",
+      "module": "lie_algebras",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "LieAlgebras.Nilpotent",
+      "module": "lie_algebras",
+      "axiom": "Nilpotent"
+    },
+    {
+      "qualname": "LieAlgebrasWithBasis",
+      "module": "lie_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis",
+      "module": "lie_conformal_algebras_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.FinitelyGeneratedAsLambdaBracketAlgebra",
+      "module": "lie_conformal_algebras_with_basis",
+      "axiom": "FinitelyGeneratedAsLambdaBracketAlgebra"
+    },
+    {
+      "qualname": "Magmas.Commutative",
+      "module": "magmas",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "Magmas.Commutative_with_category",
+      "module": "magmas",
+      "axiom": "Commutative_with_category"
+    },
+    {
+      "qualname": "Magmas.JTrivial",
+      "module": "magmas",
+      "axiom": "JTrivial"
+    },
+    {
+      "qualname": "Magmas.Unital",
+      "module": "magmas",
+      "axiom": "Unital"
+    },
+    {
+      "qualname": "Magmas.Unital.Inverse",
+      "module": "magmas",
+      "axiom": "Inverse"
+    },
+    {
+      "qualname": "Magmas.Unital_with_category",
+      "module": "magmas",
+      "axiom": "Unital_with_category"
+    },
+    {
+      "qualname": "MagmaticAlgebras.WithBasis",
+      "module": "magmatic_algebras",
+      "axiom": "WithBasis"
+    },
+    {
+      "qualname": "MagmaticAlgebras.WithBasis.FiniteDimensional",
+      "module": "magmatic_algebras",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "Manifolds.AlmostComplex",
+      "module": "manifolds",
+      "axiom": "AlmostComplex"
+    },
+    {
+      "qualname": "Manifolds.Analytic",
+      "module": "manifolds",
+      "axiom": "Analytic"
+    },
+    {
+      "qualname": "Manifolds.Connected",
+      "module": "manifolds",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "Manifolds.Differentiable",
+      "module": "manifolds",
+      "axiom": "Differentiable"
+    },
+    {
+      "qualname": "Manifolds.FiniteDimensional",
+      "module": "manifolds",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "Manifolds.Smooth",
+      "module": "manifolds",
+      "axiom": "Smooth"
+    },
+    {
+      "qualname": "MetricSpaces.Complete",
+      "module": "metric_spaces",
+      "axiom": "Complete"
+    },
+    {
+      "qualname": "MetricSpaces.Complete_with_category",
+      "module": "metric_spaces",
+      "axiom": "Complete_with_category"
+    },
+    {
+      "qualname": "ModularAbelianVarieties.Homsets.Endset",
+      "module": "modular_abelian_varieties",
+      "axiom": "Endset"
+    },
+    {
+      "qualname": "Modules.FiniteDimensional",
+      "module": "modules",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "Modules.FinitelyPresented",
+      "module": "modules",
+      "axiom": "FinitelyPresented"
+    },
+    {
+      "qualname": "Modules.Homsets.Endset",
+      "module": "modules",
+      "axiom": "Endset"
+    },
+    {
+      "qualname": "ModulesWithBasis",
+      "module": "modules_with_basis",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Monoids",
+      "module": "monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Monoids.Commutative",
+      "module": "monoids",
+      "axiom": "Commutative"
+    },
+    {
+      "qualname": "Monoids.Commutative_with_category",
+      "module": "monoids",
+      "axiom": "Commutative_with_category"
+    },
+    {
+      "qualname": "Monoids_with_category",
+      "module": "monoids",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Posets.Bounded",
+      "module": "posets",
+      "axiom": "Bounded"
+    },
+    {
+      "qualname": "QuantumGroupRepresentations.WithBasis",
+      "module": "quantum_group_representations",
+      "axiom": "WithBasis"
+    },
+    {
+      "qualname": "RTrivialSemigroups",
+      "module": "r_trivial_semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Rings",
+      "module": "rings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Rings_with_category",
+      "module": "rings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Rngs",
+      "module": "rngs",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Rngs_with_category",
+      "module": "rngs",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "AbelianVarieties.Homsets.Endset",
+      "module": "schemes",
+      "axiom": "Endset"
+    },
+    {
+      "qualname": "Semigroups",
+      "module": "semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Semigroups_with_category",
+      "module": "semigroups",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Semirings",
+      "module": "semirings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "Semirings_with_category",
+      "module": "semirings",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "SemisimpleAlgebras.FiniteDimensional",
+      "module": "semisimple_algebras",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "Sets.Infinite",
+      "module": "sets_cat",
+      "axiom": "Infinite"
+    },
+    {
+      "qualname": "Sets.Infinite_with_category",
+      "module": "sets_cat",
+      "axiom": "Infinite_with_category"
+    },
+    {
+      "qualname": "SimplicialComplexes.Connected",
+      "module": "simplicial_complexes",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "SimplicialComplexes.Finite",
+      "module": "simplicial_complexes",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "SimplicialSets.Finite",
+      "module": "simplicial_sets",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "SimplicialSets.Homsets.Endset",
+      "module": "simplicial_sets",
+      "axiom": "Endset"
+    },
+    {
+      "qualname": "SimplicialSets.Pointed",
+      "module": "simplicial_sets",
+      "axiom": "Pointed"
+    },
+    {
+      "qualname": "SimplicialSets.Pointed.Finite",
+      "module": "simplicial_sets",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "SupercommutativeAlgebras",
+      "module": "supercommutative_algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "SupercommutativeAlgebras.WithBasis",
+      "module": "supercommutative_algebras",
+      "axiom": "WithBasis"
+    },
+    {
+      "qualname": "SuperCrystals.Finite",
+      "module": "supercrystals",
+      "axiom": "Finite"
+    },
+    {
+      "qualname": "TopologicalSpaces.Compact",
+      "module": "topological_spaces",
+      "axiom": "Compact"
+    },
+    {
+      "qualname": "TopologicalSpaces.Connected",
+      "module": "topological_spaces",
+      "axiom": "Connected"
+    },
+    {
+      "qualname": "TriangularKacMoodyAlgebras.FiniteDimensional",
+      "module": "triangular_kac_moody_algebras",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "UnitalAlgebras",
+      "module": "unital_algebras",
+      "axiom": "(framework base)"
+    },
+    {
+      "qualname": "UnitalAlgebras.WithBasis",
+      "module": "unital_algebras",
+      "axiom": "WithBasis"
+    },
+    {
+      "qualname": "VectorBundles.Differentiable",
+      "module": "vector_bundles",
+      "axiom": "Differentiable"
+    },
+    {
+      "qualname": "VectorBundles.Smooth",
+      "module": "vector_bundles",
+      "axiom": "Smooth"
+    },
+    {
+      "qualname": "VectorSpaces.FiniteDimensional",
+      "module": "vector_spaces",
+      "axiom": "FiniteDimensional"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis",
+      "module": "vector_spaces",
+      "axiom": "WithBasis"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis.FiniteDimensional",
+      "module": "vector_spaces",
+      "axiom": "FiniteDimensional"
+    }
+  ],
+  "construction_generated_classes": [
+    {
+      "qualname": "AdditiveGroups.Algebras",
+      "module": "additive_groups",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "AdditiveGroups.Finite.Algebras",
+      "module": "additive_groups",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveCommutative.Algebras",
+      "module": "additive_magmas",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveCommutative.CartesianProducts",
+      "module": "additive_magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.AdditiveInverse.CartesianProducts",
+      "module": "additive_magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.Algebras",
+      "module": "additive_magmas",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.CartesianProducts",
+      "module": "additive_magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.Homsets",
+      "module": "additive_magmas",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "AdditiveMagmas.AdditiveUnital.WithRealizations",
+      "module": "additive_magmas",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "AdditiveMagmas.Algebras",
+      "module": "additive_magmas",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "AdditiveMagmas.CartesianProducts",
+      "module": "additive_magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "AdditiveMagmas.Homsets",
+      "module": "additive_magmas",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "AdditiveMonoids.Homsets",
+      "module": "additive_monoids",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "AdditiveSemigroups.Algebras",
+      "module": "additive_semigroups",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "AdditiveSemigroups.CartesianProducts",
+      "module": "additive_semigroups",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "AdditiveSemigroups.Homsets",
+      "module": "additive_semigroups",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "AlgebrasCategory",
+      "module": "algebra_functor",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "Algebras.CartesianProducts",
+      "module": "algebras",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Algebras.DualObjects",
+      "module": "algebras",
+      "construction": "DualObjects"
+    },
+    {
+      "qualname": "Algebras.Quotients",
+      "module": "algebras",
+      "construction": "Quotients"
+    },
+    {
+      "qualname": "Algebras.TensorProducts",
+      "module": "algebras",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "AlgebrasWithBasis.CartesianProducts",
+      "module": "algebras_with_basis",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "AlgebrasWithBasis.TensorProducts",
+      "module": "algebras_with_basis",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "Bialgebras.Super",
+      "module": "bialgebras",
+      "construction": "Super"
+    },
+    {
+      "qualname": "CartesianProductsCategory",
+      "module": "cartesian_product",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "ClassicalCrystals.TensorProducts",
+      "module": "classical_crystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "Coalgebras.DualObjects",
+      "module": "coalgebras",
+      "construction": "DualObjects"
+    },
+    {
+      "qualname": "Coalgebras.Filtered",
+      "module": "coalgebras",
+      "construction": "Filtered"
+    },
+    {
+      "qualname": "Coalgebras.Realizations",
+      "module": "coalgebras",
+      "construction": "Realizations"
+    },
+    {
+      "qualname": "Coalgebras.Super",
+      "module": "coalgebras",
+      "construction": "Super"
+    },
+    {
+      "qualname": "Coalgebras.TensorProducts",
+      "module": "coalgebras",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "Coalgebras.WithRealizations",
+      "module": "coalgebras",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "CoalgebrasWithBasis.Filtered",
+      "module": "coalgebras_with_basis",
+      "construction": "Filtered"
+    },
+    {
+      "qualname": "CoalgebrasWithBasis.Super",
+      "module": "coalgebras_with_basis",
+      "construction": "Super"
+    },
+    {
+      "qualname": "CommutativeAdditiveGroups.Algebras",
+      "module": "commutative_additive_groups",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "CommutativeAdditiveGroups.CartesianProducts",
+      "module": "commutative_additive_groups",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "CommutativeAlgebras.TensorProducts",
+      "module": "commutative_algebras",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "CommutativeRings.CartesianProducts",
+      "module": "commutative_rings",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "CovariantConstructionCategory",
+      "module": "covariant_functorial_construction",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FunctorialConstructionCategory",
+      "module": "covariant_functorial_construction",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "RegressiveCovariantConstructionCategory",
+      "module": "covariant_functorial_construction",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "CoxeterGroupAlgebras",
+      "module": "coxeter_group_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "Crystals.TensorProducts",
+      "module": "crystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "DistributiveMagmasAndAdditiveMagmas.CartesianProducts",
+      "module": "distributive_magmas_and_additive_magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "DualObjectsCategory",
+      "module": "dual",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "EnumeratedSets.CartesianProducts",
+      "module": "enumerated_sets",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "FilteredAlgebras",
+      "module": "filtered_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FilteredAlgebrasWithBasis",
+      "module": "filtered_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FilteredHopfAlgebrasWithBasis",
+      "module": "filtered_hopf_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FilteredHopfAlgebrasWithBasis.WithRealizations",
+      "module": "filtered_hopf_algebras_with_basis",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "FilteredModules",
+      "module": "filtered_modules",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FilteredModulesCategory",
+      "module": "filtered_modules",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FilteredModulesWithBasis",
+      "module": "filtered_modules_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "FilteredModulesWithBasis.Subobjects",
+      "module": "filtered_modules_with_basis",
+      "construction": "Subobjects"
+    },
+    {
+      "qualname": "FiniteCrystals.TensorProducts",
+      "module": "finite_crystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "FiniteDimensionalAlgebrasWithBasis.Cellular.TensorProducts",
+      "module": "finite_dimensional_algebras_with_basis",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "FiniteDimensionalLieAlgebrasWithBasis.Subobjects",
+      "module": "finite_dimensional_lie_algebras_with_basis",
+      "construction": "Subobjects"
+    },
+    {
+      "qualname": "FiniteDimensionalModulesWithBasis.Homsets",
+      "module": "finite_dimensional_modules_with_basis",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "FiniteDimensionalModulesWithBasis.TensorProducts",
+      "module": "finite_dimensional_modules_with_basis",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "FiniteEnumeratedSets.CartesianProducts",
+      "module": "finite_enumerated_sets",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "FiniteEnumeratedSets.IsomorphicObjects",
+      "module": "finite_enumerated_sets",
+      "construction": "IsomorphicObjects"
+    },
+    {
+      "qualname": "FiniteGroups.Algebras",
+      "module": "finite_groups",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "FiniteSets.Algebras",
+      "module": "finite_sets",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "FiniteSets.Subquotients",
+      "module": "finite_sets",
+      "construction": "Subquotients"
+    },
+    {
+      "qualname": "FinitelyGeneratedLambdaBracketAlgebras.Graded",
+      "module": "finitely_generated_lambda_bracket_algebras",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "FinitelyGeneratedLieConformalAlgebras.Graded",
+      "module": "finitely_generated_lie_conformal_algebras",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "FinitelyGeneratedLieConformalAlgebras.Super",
+      "module": "finitely_generated_lie_conformal_algebras",
+      "construction": "Super"
+    },
+    {
+      "qualname": "FinitelyGeneratedLieConformalAlgebras.Super.Graded",
+      "module": "finitely_generated_lie_conformal_algebras",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "GradedAlgebras",
+      "module": "graded_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedAlgebras.SignedTensorProducts",
+      "module": "graded_algebras",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "GradedAlgebrasWithBasis",
+      "module": "graded_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedAlgebrasWithBasis.SignedTensorProducts",
+      "module": "graded_algebras_with_basis",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "GradedCoalgebras",
+      "module": "graded_coalgebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedCoalgebras.SignedTensorProducts",
+      "module": "graded_coalgebras",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "GradedCoalgebrasWithBasis",
+      "module": "graded_coalgebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedCoalgebrasWithBasis.SignedTensorProducts",
+      "module": "graded_coalgebras_with_basis",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "GradedHopfAlgebrasWithBasis",
+      "module": "graded_hopf_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedHopfAlgebrasWithBasis.WithRealizations",
+      "module": "graded_hopf_algebras_with_basis",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "GradedLieAlgebras",
+      "module": "graded_lie_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedLieAlgebrasWithBasis",
+      "module": "graded_lie_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedLieConformalAlgebras",
+      "module": "graded_lie_conformal_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedLieConformalAlgebrasCategory",
+      "module": "graded_lie_conformal_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedModules",
+      "module": "graded_modules",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedModulesCategory",
+      "module": "graded_modules",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedModulesWithBasis",
+      "module": "graded_modules_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "GradedModulesWithBasis.Quotients",
+      "module": "graded_modules_with_basis",
+      "construction": "Quotients"
+    },
+    {
+      "qualname": "GroupAlgebras",
+      "module": "group_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "Groups.CartesianProducts",
+      "module": "groups",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Groups.Topological",
+      "module": "groups",
+      "construction": "Topological"
+    },
+    {
+      "qualname": "HeckeModules.Homsets",
+      "module": "hecke_modules",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "HighestWeightCrystals.TensorProducts",
+      "module": "highest_weight_crystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "HomsetsCategory",
+      "module": "homsets",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "HomsetsOf",
+      "module": "homsets",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "HomsetsOf_with_category",
+      "module": "homsets",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "HomsetsOf_with_category",
+      "module": "homsets",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "HopfAlgebras.Realizations",
+      "module": "hopf_algebras",
+      "construction": "Realizations"
+    },
+    {
+      "qualname": "HopfAlgebras.Super",
+      "module": "hopf_algebras",
+      "construction": "Super"
+    },
+    {
+      "qualname": "HopfAlgebras.TensorProducts",
+      "module": "hopf_algebras",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "HopfAlgebrasWithBasis.TensorProducts",
+      "module": "hopf_algebras_with_basis",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "IsomorphicObjectsCategory",
+      "module": "isomorphic_objects",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "LambdaBracketAlgebrasWithBasis.FinitelyGeneratedAsLambdaBracketAlgebra.Graded",
+      "module": "lambda_bracket_algebras_with_basis",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.FinitelyGeneratedAsLambdaBracketAlgebra.Graded",
+      "module": "lie_conformal_algebras_with_basis",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.FinitelyGeneratedAsLambdaBracketAlgebra.Super",
+      "module": "lie_conformal_algebras_with_basis",
+      "construction": "Super"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.FinitelyGeneratedAsLambdaBracketAlgebra.Super.Graded",
+      "module": "lie_conformal_algebras_with_basis",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.Graded",
+      "module": "lie_conformal_algebras_with_basis",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.Super",
+      "module": "lie_conformal_algebras_with_basis",
+      "construction": "Super"
+    },
+    {
+      "qualname": "LieConformalAlgebrasWithBasis.Super.Graded",
+      "module": "lie_conformal_algebras_with_basis",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "KirillovReshetikhinCrystals.TensorProducts",
+      "module": "loop_crystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "Magmas.Algebras",
+      "module": "magmas",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "Magmas.CartesianProducts",
+      "module": "magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Magmas.Commutative.Algebras",
+      "module": "magmas",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "Magmas.Commutative.CartesianProducts",
+      "module": "magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Magmas.Realizations",
+      "module": "magmas",
+      "construction": "Realizations"
+    },
+    {
+      "qualname": "Magmas.Subquotients",
+      "module": "magmas",
+      "construction": "Subquotients"
+    },
+    {
+      "qualname": "Magmas.Subquotients_with_category",
+      "module": "magmas",
+      "construction": "Subquotients_with_category"
+    },
+    {
+      "qualname": "Magmas.Unital.Algebras",
+      "module": "magmas",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "Magmas.Unital.CartesianProducts",
+      "module": "magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Magmas.Unital.Inverse.CartesianProducts",
+      "module": "magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Magmas.Unital.Realizations",
+      "module": "magmas",
+      "construction": "Realizations"
+    },
+    {
+      "qualname": "MagmasAndAdditiveMagmas.CartesianProducts",
+      "module": "magmas_and_additive_magmas",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "MetricSpaces",
+      "module": "metric_spaces",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "MetricSpaces.CartesianProducts",
+      "module": "metric_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "MetricSpaces.Complete.CartesianProducts",
+      "module": "metric_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "MetricSpaces.Homsets",
+      "module": "metric_spaces",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "MetricSpaces.WithRealizations",
+      "module": "metric_spaces",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "MetricSpacesCategory",
+      "module": "metric_spaces",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "MetricSpaces_with_category",
+      "module": "metric_spaces",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "ModularAbelianVarieties.Homsets",
+      "module": "modular_abelian_varieties",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "Modules.CartesianProducts",
+      "module": "modules",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Modules.FiniteDimensional.TensorProducts",
+      "module": "modules",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "Modules.Homsets",
+      "module": "modules",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "Modules.TensorProducts",
+      "module": "modules",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "ModulesWithBasis.CartesianProducts",
+      "module": "modules_with_basis",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "ModulesWithBasis.DualObjects",
+      "module": "modules_with_basis",
+      "construction": "DualObjects"
+    },
+    {
+      "qualname": "ModulesWithBasis.Homsets",
+      "module": "modules_with_basis",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "ModulesWithBasis.TensorProducts",
+      "module": "modules_with_basis",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "Monoids.Algebras",
+      "module": "monoids",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "Monoids.CartesianProducts",
+      "module": "monoids",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Monoids.Subquotients",
+      "module": "monoids",
+      "construction": "Subquotients"
+    },
+    {
+      "qualname": "Monoids.Subquotients_with_category",
+      "module": "monoids",
+      "construction": "Subquotients_with_category"
+    },
+    {
+      "qualname": "Monoids.WithRealizations",
+      "module": "monoids",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "QuantumGroupRepresentations.TensorProducts",
+      "module": "quantum_group_representations",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "QuantumGroupRepresentations.WithBasis.TensorProducts",
+      "module": "quantum_group_representations",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "QuotientsCategory",
+      "module": "quotients",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "RealizationsCategory",
+      "module": "realizations",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "RegularCrystals.TensorProducts",
+      "module": "regular_crystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "RegularSuperCrystals.TensorProducts",
+      "module": "regular_supercrystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "AbelianVarieties.Homsets",
+      "module": "schemes",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "Semigroups.Algebras",
+      "module": "semigroups",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "Semigroups.CartesianProducts",
+      "module": "semigroups",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Semigroups.Quotients",
+      "module": "semigroups",
+      "construction": "Quotients"
+    },
+    {
+      "qualname": "Semigroups.Quotients_with_category",
+      "module": "semigroups",
+      "construction": "Quotients_with_category"
+    },
+    {
+      "qualname": "Semigroups.Subquotients",
+      "module": "semigroups",
+      "construction": "Subquotients"
+    },
+    {
+      "qualname": "Semigroups.Subquotients_with_category",
+      "module": "semigroups",
+      "construction": "Subquotients_with_category"
+    },
+    {
+      "qualname": "Sets.Algebras",
+      "module": "sets_cat",
+      "construction": "Algebras"
+    },
+    {
+      "qualname": "Sets.CartesianProducts",
+      "module": "sets_cat",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "Sets.IsomorphicObjects",
+      "module": "sets_cat",
+      "construction": "IsomorphicObjects"
+    },
+    {
+      "qualname": "Sets.Quotients",
+      "module": "sets_cat",
+      "construction": "Quotients"
+    },
+    {
+      "qualname": "Sets.Quotients_with_category",
+      "module": "sets_cat",
+      "construction": "Quotients_with_category"
+    },
+    {
+      "qualname": "Sets.Realizations",
+      "module": "sets_cat",
+      "construction": "Realizations"
+    },
+    {
+      "qualname": "Sets.Subobjects",
+      "module": "sets_cat",
+      "construction": "Subobjects"
+    },
+    {
+      "qualname": "Sets.Subquotients",
+      "module": "sets_cat",
+      "construction": "Subquotients"
+    },
+    {
+      "qualname": "Sets.Subquotients_with_category",
+      "module": "sets_cat",
+      "construction": "Subquotients_with_category"
+    },
+    {
+      "qualname": "Sets.WithRealizations",
+      "module": "sets_cat",
+      "construction": "WithRealizations"
+    },
+    {
+      "qualname": "SignedTensorProductsCategory",
+      "module": "signed_tensor",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SimplicialSets.Homsets",
+      "module": "simplicial_sets",
+      "construction": "Homsets"
+    },
+    {
+      "qualname": "SubobjectsCategory",
+      "module": "subobjects",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SubquotientsCategory",
+      "module": "subquotients",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperAlgebras",
+      "module": "super_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperAlgebras.SignedTensorProducts",
+      "module": "super_algebras",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "SuperAlgebrasWithBasis",
+      "module": "super_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperAlgebrasWithBasis.SignedTensorProducts",
+      "module": "super_algebras_with_basis",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "SuperHopfAlgebrasWithBasis",
+      "module": "super_hopf_algebras_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperLieConformalAlgebras",
+      "module": "super_lie_conformal_algebras",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperLieConformalAlgebras.Graded",
+      "module": "super_lie_conformal_algebras",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "SuperModules",
+      "module": "super_modules",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperModulesCategory",
+      "module": "super_modules",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SuperModulesWithBasis",
+      "module": "super_modules_with_basis",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "SupercommutativeAlgebras.SignedTensorProducts",
+      "module": "supercommutative_algebras",
+      "construction": "SignedTensorProducts"
+    },
+    {
+      "qualname": "SuperCrystals.TensorProducts",
+      "module": "supercrystals",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "TensorProductsCategory",
+      "module": "tensor",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "TopologicalSpaces",
+      "module": "topological_spaces",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "TopologicalSpaces.CartesianProducts",
+      "module": "topological_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "TopologicalSpaces.Compact.CartesianProducts",
+      "module": "topological_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "TopologicalSpaces.Connected.CartesianProducts",
+      "module": "topological_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "TopologicalSpacesCategory",
+      "module": "topological_spaces",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "TopologicalSpaces_with_category",
+      "module": "topological_spaces",
+      "construction": "(framework base)"
+    },
+    {
+      "qualname": "UnitalAlgebras.CartesianProducts",
+      "module": "unital_algebras",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "VectorSpaces.CartesianProducts",
+      "module": "vector_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "VectorSpaces.DualObjects",
+      "module": "vector_spaces",
+      "construction": "DualObjects"
+    },
+    {
+      "qualname": "VectorSpaces.Filtered",
+      "module": "vector_spaces",
+      "construction": "Filtered"
+    },
+    {
+      "qualname": "VectorSpaces.FiniteDimensional.TensorProducts",
+      "module": "vector_spaces",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "VectorSpaces.Graded",
+      "module": "vector_spaces",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "VectorSpaces.TensorProducts",
+      "module": "vector_spaces",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis.CartesianProducts",
+      "module": "vector_spaces",
+      "construction": "CartesianProducts"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis.Filtered",
+      "module": "vector_spaces",
+      "construction": "Filtered"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis.FiniteDimensional.TensorProducts",
+      "module": "vector_spaces",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis.Graded",
+      "module": "vector_spaces",
+      "construction": "Graded"
+    },
+    {
+      "qualname": "VectorSpaces.WithBasis.TensorProducts",
+      "module": "vector_spaces",
+      "construction": "TensorProducts"
+    },
+    {
+      "qualname": "WithRealizationsCategory",
+      "module": "with_realizations",
+      "construction": "(framework base)"
+    }
+  ],
+  "join_categories": [
+    {
+      "join_category_(Sage)": "Join of Category of Dedekind domains and Category of euclidean domains and Category of noetherian rings and Category of infinite enumerated sets and Category of metric spaces",
+      "factors": "Dedekind domains ∧ euclidean domains ∧ infinite enumerated sets ∧ metric spaces ∧ noetherian rings"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive associative distributive magmas and additive magmas and Category of metric spaces",
+      "factors": "additive associative distributive magmas and additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive associative distributive magmas and additive magmas and Category of topological spaces",
+      "factors": "additive associative distributive magmas and additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive commutative additive associative additive unital distributive magmas and additive magmas and Category of metric spaces",
+      "factors": "additive commutative additive associative additive unital distributive magmas and additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive commutative additive associative additive unital distributive magmas and additive magmas and Category of topological spaces",
+      "factors": "additive commutative additive associative additive unital distributive magmas and additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive commutative additive associative distributive magmas and additive magmas and Category of metric spaces",
+      "factors": "additive commutative additive associative distributive magmas and additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive commutative additive associative distributive magmas and additive magmas and Category of topological spaces",
+      "factors": "additive commutative additive associative distributive magmas and additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive commutative additive magmas and Category of metric spaces",
+      "factors": "additive commutative additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive commutative additive magmas and Category of topological spaces",
+      "factors": "additive commutative additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive groups and Category of metric spaces",
+      "factors": "additive groups ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive groups and Category of topological spaces",
+      "factors": "additive groups ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive inverse additive unital additive magmas and Category of metric spaces",
+      "factors": "additive inverse additive unital additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive inverse additive unital additive magmas and Category of topological spaces",
+      "factors": "additive inverse additive unital additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive magmas and Category of metric spaces",
+      "factors": "additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive magmas and Category of topological spaces",
+      "factors": "additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive monoids and Category of metric spaces",
+      "factors": "additive monoids ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive monoids and Category of topological spaces",
+      "factors": "additive monoids ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive semigroups and Category of metric spaces",
+      "factors": "additive semigroups ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive semigroups and Category of topological spaces",
+      "factors": "additive semigroups ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive unital additive magmas and Category of metric spaces",
+      "factors": "additive unital additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of additive unital additive magmas and Category of topological spaces",
+      "factors": "additive unital additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas and Category of metric spaces",
+      "factors": "associative additive commutative additive associative additive unital distributive magmas and additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of associative additive commutative additive associative additive unital distributive magmas and additive magmas and Category of topological spaces",
+      "factors": "associative additive commutative additive associative additive unital distributive magmas and additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative additive groups and Category of metric spaces",
+      "factors": "commutative additive groups ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative additive groups and Category of topological spaces",
+      "factors": "commutative additive groups ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative additive monoids and Category of metric spaces",
+      "factors": "commutative additive monoids ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative additive monoids and Category of topological spaces",
+      "factors": "commutative additive monoids ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative additive semigroups and Category of metric spaces",
+      "factors": "commutative additive semigroups ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative additive semigroups and Category of topological spaces",
+      "factors": "commutative additive semigroups ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative magmas and Category of metric spaces",
+      "factors": "commutative magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative magmas and Category of topological spaces",
+      "factors": "commutative magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative monoids and Category of metric spaces",
+      "factors": "commutative monoids ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative monoids and Category of topological spaces",
+      "factors": "commutative monoids ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative rings and Category of metric spaces",
+      "factors": "commutative rings ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of commutative rings and Category of topological spaces",
+      "factors": "commutative rings ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of distributive magmas and additive magmas and Category of metric spaces",
+      "factors": "distributive magmas and additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of distributive magmas and additive magmas and Category of topological spaces",
+      "factors": "distributive magmas and additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of division rings and Category of metric spaces",
+      "factors": "division rings ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of division rings and Category of topological spaces",
+      "factors": "division rings ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of domains and Category of metric spaces",
+      "factors": "domains ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of domains and Category of topological spaces",
+      "factors": "domains ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of euclidean domains and Category of metric spaces",
+      "factors": "euclidean domains ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of euclidean domains and Category of topological spaces",
+      "factors": "euclidean domains ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of fields and Category of metric spaces",
+      "factors": "fields ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of fields and Category of topological spaces",
+      "factors": "fields ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of gcd domains and Category of metric spaces",
+      "factors": "gcd domains ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of gcd domains and Category of topological spaces",
+      "factors": "gcd domains ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of integral domains and Category of metric spaces",
+      "factors": "integral domains ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of integral domains and Category of topological spaces",
+      "factors": "integral domains ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of magmas and Category of additive magmas and Category of metric spaces",
+      "factors": "additive magmas ∧ magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of magmas and Category of additive magmas and Category of topological spaces",
+      "factors": "additive magmas ∧ magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of magmas and Category of metric spaces",
+      "factors": "magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of magmas and Category of topological spaces",
+      "factors": "magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of magmas and additive magmas and Category of metric spaces",
+      "factors": "magmas and additive magmas ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of magmas and additive magmas and Category of topological spaces",
+      "factors": "magmas and additive magmas ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of monoids and Category of metric spaces",
+      "factors": "metric spaces ∧ monoids"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of monoids and Category of topological spaces",
+      "factors": "monoids ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of noetherian rings and Category of metric spaces",
+      "factors": "metric spaces ∧ noetherian rings"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of noetherian rings and Category of topological spaces",
+      "factors": "noetherian rings ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of number fields and Category of quotient fields and Category of metric spaces",
+      "factors": "metric spaces ∧ number fields ∧ quotient fields"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of principal ideal domains and Category of metric spaces",
+      "factors": "metric spaces ∧ principal ideal domains"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of principal ideal domains and Category of topological spaces",
+      "factors": "principal ideal domains ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of quotient fields and Category of metric spaces",
+      "factors": "metric spaces ∧ quotient fields"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of quotient fields and Category of topological spaces",
+      "factors": "quotient fields ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of rings and Category of metric spaces",
+      "factors": "metric spaces ∧ rings"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of rings and Category of topological spaces",
+      "factors": "rings ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of rngs and Category of metric spaces",
+      "factors": "metric spaces ∧ rngs"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of rngs and Category of topological spaces",
+      "factors": "rngs ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of semigroups and Category of metric spaces",
+      "factors": "metric spaces ∧ semigroups"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of semigroups and Category of topological spaces",
+      "factors": "semigroups ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of semirings and Category of metric spaces",
+      "factors": "metric spaces ∧ semirings"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of semirings and Category of topological spaces",
+      "factors": "semirings ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of unique factorization domains and Category of metric spaces",
+      "factors": "metric spaces ∧ unique factorization domains"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of unique factorization domains and Category of topological spaces",
+      "factors": "topological spaces ∧ unique factorization domains"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of unital magmas and Category of metric spaces",
+      "factors": "metric spaces ∧ unital magmas"
+    },
+    {
+      "join_category_(Sage)": "Join of Category of unital magmas and Category of topological spaces",
+      "factors": "topological spaces ∧ unital magmas"
+    },
+    {
+      "join_category_(Sage)": "commutative semirings",
+      "factors": "commutative monoids ∧ semirings"
+    },
+    {
+      "join_category_(Sage)": "enumerated metric spaces",
+      "factors": "enumerated sets ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "enumerated topological spaces",
+      "factors": "enumerated sets ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "infinite enumerated metric spaces",
+      "factors": "infinite enumerated sets ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "infinite enumerated topological spaces",
+      "factors": "infinite enumerated sets ∧ topological spaces"
+    },
+    {
+      "join_category_(Sage)": "infinite fields",
+      "factors": "fields ∧ infinite sets"
+    },
+    {
+      "join_category_(Sage)": "infinite metric spaces",
+      "factors": "infinite sets ∧ metric spaces"
+    },
+    {
+      "join_category_(Sage)": "infinite topological spaces",
+      "factors": "infinite sets ∧ topological spaces"
+    }
+  ],
+  "framework_classes": [
+    {
+      "qualname": "HopfAlgebras.DualCategory",
+      "module": "hopf_algebras",
+      "note": "framework"
+    },
+    {
+      "qualname": "HopfAlgebras.Morphism",
+      "module": "hopf_algebras",
+      "note": "framework"
+    },
+    {
+      "qualname": "Sets.WithRealizations.ParentMethods.Realizations",
+      "module": "sets_cat",
+      "note": "framework"
+    }
+  ]
+}

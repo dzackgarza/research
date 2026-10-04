@@ -1,0 +1,39 @@
+/* Generated TikZ / tikz-cd diagrams.
+ *
+ * The tikz filter compiles each diagram to a tightly-cropped standalone SVG
+ * and stores it in pandoc's mediabag (rendered under `*_files/mediabag/`), so
+ * that path selects every generated diagram without per-diagram markup. The
+ * crop is at LaTeX point size, which displays small; scale the vector up to a
+ * readable width and center it. Aspect ratio is preserved (height: auto), so
+ * this does not distort taller multi-row diagrams. */
+img[src*="/mediabag/"] {
+  box-sizing: border-box;
+  display: block;
+  margin: 1.5rem auto;
+  height: auto;
+  width: clamp(18rem, 65%, 100%);
+}
+
+body.quarto-dark img[src*="/mediabag/"] {
+  background: #fff;
+  padding: 0.75rem;
+}
+
+/* Keep long display equations inside the reading column on narrow screens. */
+mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Bibliography entries may expose a DOI as one uninterrupted link. */
+#refs a {
+  overflow-wrap: anywhere;
+}
+
+/* Generated reference tables can be wider than the reading column. */
+main table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}

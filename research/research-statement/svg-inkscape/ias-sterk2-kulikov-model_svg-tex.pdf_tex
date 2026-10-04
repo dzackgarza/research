@@ -1,0 +1,96 @@
+%% Creator: Inkscape 1.3.2 (091e20ef0f, 2023-11-25, custom), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'ias-sterk2-kulikov-model_svg-tex.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{763.16015625bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,1.00004925)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{ias-sterk2-kulikov-model_svg-tex.pdf}}%
+    \put(0.3239063,0.53448894){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.32574321,0.45741454){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.21076079,0.34341488){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.32574321,0.21172561){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.45448421,0.3385011){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.54194946,0.34046661){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.65988015,0.45839729){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.65594913,0.53505224){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.78370737,0.66674151){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.78567288,0.33751834){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.65594913,0.2097601){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.53801844,0.66379324){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.65398362,0.77484463){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.21150236,0.66622215){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(-0.00053169,0.49279374){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.49837993,0.00041262){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.99303434,0.49869028){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.49450421,0.99105089){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.3196903,0.75503415){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.65615067,0.75715503){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.65516791,0.55470735){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.55689234,0.66772426){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.75934002,0.66674151){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.96866698,0.49574201){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.02325599,0.48886272){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.65418516,0.43481116){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.56475439,0.33555283){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.76032277,0.3385011){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.65221965,0.23138073){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.32201373,0.23531175){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.32201373,0.43481116){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.22963469,0.34243212){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.42815134,0.34046661){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.32004822,0.5537246){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.23117984,0.66613865){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.43404788,0.66477599){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}-2\end{tabular}}}}%
+    \put(0.32354838,0.78162381){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+    \put(0.45448163,0.66477599){\color[rgb]{1,0,0}\transparent{0.372549}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}0\end{tabular}}}}%
+  \end{picture}%
+\endgroup%

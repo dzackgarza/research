@@ -1,0 +1,20 @@
+<!-- MathJax compiles a page in document order, and one macro table serves the
+     whole pass.  Quarto emits the navigation sidebar and the page table of
+     contents before <main>, while the macro definitions arrive at the top of
+     <main> with the content (they are `include-before-body`).  A single
+     default pass therefore compiles every sidebar and TOC formula against an
+     empty macro table, and a title such as $F_{\En,2}$ reaches the reader as
+     the literal control sequence.  Compile the content column first, so the
+     definitions exist, then the rest of the document. -->
+<script>
+  window.MathJax = {
+    startup: {
+      pageReady() {
+        const content = document.getElementById("quarto-document-content");
+        return MathJax.typesetPromise(
+          content ? [content, document.body] : undefined
+        );
+      },
+    },
+  };
+</script>

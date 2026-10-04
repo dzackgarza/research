@@ -1,0 +1,7 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\tocsection {}{1}{Loops and suspension}}{2}{section.1}%
+\contentsline {subsection}{\tocsubsection {}{1A}{Fibers and cofibers}}{2}{subsection.1.1}%
+\contentsline {subsection}{\tocsubsection {}{1B}{Loops and suspension}}{2}{subsection.1.2}%
+\contentsline {subsection}{\tocsubsection {}{1C}{Arrow categories and path spaces}}{2}{subsection.1.3}%
+\contentsline {subsection}{\tocsubsection {}{1D}{The suspension-loop adjunction}}{2}{subsection.1.4}%
+\contentsline {subsection}{\tocsubsection {}{1E}{Fiber sequences}}{2}{subsection.1.5}%

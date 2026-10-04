@@ -1,0 +1,88 @@
+\providecommand{\bysame}{\leavevmode\hbox to3em{\hrulefill}\thinspace}
+\providecommand{\MR}{\relax\ifhmode\unskip\space\fi MR }
+% \MRhref is called by the amsart/book/proc definition of \MR.
+\providecommand{\MRhref}[2]{%
+  \href{http://www.ams.org/mathscinet-getitem?mr=#1}{#2}
+}
+\providecommand{\href}[2]{#2}
+\begin{thebibliography}{Mum69}
+
+\bibitem[ABE20]{alexeev2020compactifications}
+Valery Alexeev, Adrian Brunyate, and Philip Engel, \emph{Compactifications of
+  moduli of elliptic {K}3 surfaces: stable pair and toroidal}, arXiv:2002.07127
+  (2020).
+
+\bibitem[AE21]{alexeev2021compact}
+Valery Alexeev and Philip Engel, \emph{Compact moduli of {K}3 surfaces},
+  arXiv:2101.12186 (2021).
+
+\bibitem[AEH21]{alexeev2021nonsymplectic}
+Valery Alexeev, Philip Engel, and Changho Han, \emph{Compact moduli of {K}3
+  surfaces with a nonsymplectic automorphisms}, Preprint (2021).
+
+\bibitem[AET19]{alexeev2019stable}
+Valery Alexeev, Philip Engel, and Alan Thompson, \emph{Stable pair
+  compactification of moduli of {K}3 surfaces of degree 2}, arXiv:1903.09742
+  (2019).
+
+\bibitem[Bea99]{beauville1999counting}
+Arnaud Beauville, \emph{Counting rational curves on {K}3 surfaces}, Duke
+  Mathematical Journal \textbf{97} (1999), no.~1, 99--108.
+
+\bibitem[BV04]{beauville2004chow}
+Arnaud Beauville and Claire Voisin, \emph{On the chow ring of a {K}3 surface},
+  Journal of Algebraic Geometry \textbf{13} (2004), no.~3, 417--426.
+
+\bibitem[EG00]{ellingsrud2000hilbert}
+Geir Ellingsrud and Lothar G\"{o}ttsche, \emph{Hilbert schemes of points and
+  {H}eisenberg algebras}, School on {A}lgebraic {G}eometry ({T}rieste, 1999),
+  ICTP Lect. Notes, vol.~1, Abdus Salam Int. Cent. Theoret. Phys., Trieste,
+  2000, pp.~59--100. \MR{1795861}
+
+\bibitem[Ful16]{fulton2016intersection}
+William Fulton, \emph{Intersection theory}, Princeton University Press, 2016.
+
+\bibitem[Gro96]{grojnowski1996instantons}
+I.~Grojnowski, \emph{Instantons and affine algebras. {I}. {T}he {H}ilbert
+  scheme and vertex operators}, Math. Res. Lett. \textbf{3} (1996), no.~2,
+  275--291. \MR{1386846}
+
+\bibitem[Hai98]{haiman1998t}
+Mark Haiman, \emph{(t, q)-catalan numbers and the {H}ilbert scheme}, Discrete
+  Mathematics \textbf{193} (1998), no.~1, 201--224.
+
+\bibitem[Huy14]{huybrechts2013curves}
+Daniel Huybrechts, \emph{Curves and cycles on {K}3 surfaces}, Algebraic
+  Geometry \textbf{1} (2014), 69--106.
+
+\bibitem[LS03]{lehn2003cup}
+Manfred Lehn and Christoph Sorger, \emph{The cup product of {H}ilbert schemes
+  for {K}3 surfaces}, Inventiones Mathematicae \textbf{152} (2003), no.~2,
+  305--329.
+
+\bibitem[Mum69]{mumford1969rational}
+David Mumford, \emph{Rational equivalence of 0-cycles on surfaces}, Journal of
+  Mathematics of {K}yoto {U}niversity \textbf{9} (1969), no.~2, 195--204.
+
+\bibitem[Nak97]{nakajima1997heisenberg}
+Hiraku Nakajima, \emph{Heisenberg algebra and {H}ilbert schemes of points on
+  projective surfaces}, Annals of Mathematics \textbf{145} (1997), no.~2,
+  379--388.
+
+\bibitem[Roj80]{rojtman1980torsion}
+AA~Rojtman, \emph{The torsion of the group of 0-cycles modulo rational
+  equivalence}, Annals of Mathematics \textbf{111} (1980), no.~3, 553--569.
+
+\bibitem[Wel81]{welters1981abel}
+Gerald~E Welters, \emph{Abel-{J}acobi isogenies for certain types of {F}ano
+  threefolds}, Centrum Voor Wiskunde en Informatica, 1981.
+
+\bibitem[Wit14]{witaszek2014geometry}
+Jakub Witaszek, \emph{The geometry of smooth quartics}, Master's thesis, Bonn
+  University, 2014.
+
+\bibitem[YZ96]{yau1996bps}
+Shing-Tung Yau and Eric Zaslow, \emph{B{PS} states, string duality, and nodal
+  curves on {K}3}, Nuclear Physics B \textbf{471} (1996), no.~3, 503--512.
+
+\end{thebibliography}
