@@ -347,7 +347,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring()).Free()]
 
     class ElementMethods:
-        def to_vector(self):
+        def to_vector(self) -> "FramedFreeModules.ElementMethods":
             r"""The coordinates of this element in the chosen basis ``I``.
 
             The finitely supported function \(a_v\colon I\to R\) with
