@@ -87,8 +87,19 @@ class LatticeReduction:
 def _lll_reduction(lattice):
     _sign, positive_gram = _positive_gram(lattice)
     engine_gram = _engine_component_matrix(positive_gram)
-    backend_rows = engine_gram.LLL_gram()
-    return _reduction_from_backend_rows(lattice, backend_rows)
+    transformation = engine_gram.LLL_gram()
+    ring = lattice.base_ring()
+    rank = int(lattice.module_rank())
+    basis_map = ring.matrix_space(rank, rank).from_rows(
+        tuple(
+            tuple(
+                _owned_engine_element(ring, transformation[row, column])
+                for column in range(rank)
+            )
+            for row in range(rank)
+        )
+    )
+    return _reduction_from_transformation(lattice, basis_map)
 
 
 def _reduction_from_backend_rows(lattice, backend_rows):
