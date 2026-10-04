@@ -28,6 +28,7 @@ from pydantic import (
     ConfigDict,
     Field,
     ValidationError,
+    field_validator,
     model_validator,
 )
 from pydantic_core import InitErrorDetails, PydanticCustomError
@@ -77,24 +78,7 @@ AdeType = Annotated[str, Field(pattern=r"^(A[1-9]\d*|D[4-9]|D[1-9]\d+|E[678])$")
 RootType = Annotated[str, Field(pattern=root_systems.TYPE_PATTERN)]
 IntegerVector = Annotated[tuple[int, ...], Field(strict=False)]
 VectorList = Annotated[tuple[IntegerVector, ...], Field(strict=False)]
-def group_cardinality(value: object) -> Cardinal:
-    """Read a card's finite or countably infinite group cardinality."""
-    if isinstance(value, Cardinal):
-        return value
-    match value:
-        case "aleph0":
-            return aleph0
-        case bool():
-            pass
-        case int() if value > 0:
-            return cardinal(value)
-    raise PydanticCustomError(
-        "cardinality_type",
-        "a group cardinality is a positive integer or 'aleph0'",
-    )
-
-
-Cardinality = Annotated[Cardinal, BeforeValidator(group_cardinality)] | None
+Cardinality = Cardinal | None
 Definiteness = Literal[
     "positive_definite",
     "negative_definite",
@@ -349,6 +333,24 @@ class GroupData(Record):
             "$t(c, a) = v \\mapsto v - (a, v) c$ for a primitive isotropic $c$; its subgroups of finite index are infinite too."
         ),
     )
+
+    @field_validator("cardinality", mode="before")
+    @classmethod
+    def _parse_cardinality(cls, value: object) -> Cardinal | None:
+        """Read the YAML spelling of this group's cardinality."""
+        if value is None or isinstance(value, Cardinal):
+            return value
+        match value:
+            case "aleph0":
+                return aleph0
+            case bool():
+                pass
+            case int() if value > 0:
+                return cardinal(value)
+        raise PydanticCustomError(
+            "cardinality_type",
+            "a group cardinality is a positive integer or 'aleph0'",
+        )
     index_in_orthogonal_group: Annotated[int, Field(gt=0)] | None = Field(
         default=None, description="The index $[O(L) : \\Gamma]$."
     )
