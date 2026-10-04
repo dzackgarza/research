@@ -1817,7 +1817,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             generators = tuple(discriminant.module_generators())
             denominators = [discriminant.b(left, right).lift().denominator() for left in generators for right in generators]
             if self.is_even():
-                denominators.extend((discriminant.q(generator).lift() / SageZZ(2)).denominator() for generator in generators)
+                two = self.base_ring()(2)
+                denominators.extend((discriminant.q(generator).lift() / two).denominator() for generator in generators)
             level = SageZZ.one()
             for denominator in denominators:
                 level = level.lcm(SageZZ(denominator))

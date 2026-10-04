@@ -1,6 +1,5 @@
 r"""Discriminant modules and their quotient-valued forms."""
 
-from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from sage.categories.category import Category
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
@@ -55,7 +54,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented().Torsion(), ModuleSubobjects(self.base_ring())]
+        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
