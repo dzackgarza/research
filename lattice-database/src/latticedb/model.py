@@ -33,10 +33,15 @@ from pydantic import (
 )
 from pydantic_core import InitErrorDetails, PydanticCustomError
 
+from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0, cardinal
+from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import arithmetic, root_systems
 from latticedb.arithmetic import Vector
+
+_SESSION_RINGS = session_ring_objects()
+ZZ = _SESSION_RINGS["ZZ"]
 
 type Yaml = None | bool | int | float | str | date | list[Yaml] | dict[str, Yaml]
 """A value that a YAML document can hold."""
@@ -942,6 +947,10 @@ class Lattice(Record):
         assert self.gram_tensor is not None and other.gram_tensor is not None, (
             "isometry needs the Gram tensor of each record"
         )
+        if self.is_integer_valued and other.is_integer_valued:
+            return Lattices(ZZ)(self.gram_tensor).is_isometric(
+                Lattices(ZZ)(other.gram_tensor)
+            )
         return arithmetic.is_isometric(self.gram_tensor, other.gram_tensor)
 
     @property
@@ -1147,7 +1156,7 @@ class Lattice(Record):
         if (
             self.integral.level is not None
             and self.determinant != 0
-            and self.integral.level != arithmetic.level(self.gram_tensor)
+            and self.integral.level != int(Lattices(ZZ)(self.gram_tensor).level())
         ):
             yield _problem(
                 "level_value",

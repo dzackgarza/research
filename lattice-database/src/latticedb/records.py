@@ -21,9 +21,15 @@ from fractions import Fraction
 
 import yaml
 
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.rings import session_ring_objects
+
 from latticedb import arithmetic, model, roots
 from latticedb.arithmetic import GramTensor, Vector
 from latticedb.model import AdeType, Definiteness, Lattice, Morphism, Yaml
+
+_SESSION_RINGS = session_ring_objects()
+ZZ = _SESSION_RINGS["ZZ"]
 
 KEYS = (
     "tag",
@@ -186,22 +192,27 @@ def _ordered(block: dict[str, Yaml], fields: tuple[str, ...]) -> dict[str, Yaml]
 def _integral(
     record: dict[str, Yaml],
     gram: GramTensor,
+    lattice,
     subgroup_bound: int = arithmetic.SUBGROUP_BOUND,
 ) -> dict[str, Yaml]:
     rank = len(gram)
     declared = _block(record, "integral")
     block: dict[str, Yaml] = {
-        "parity": "even" if all(gram[i][i] % 2 == 0 for i in range(rank)) else "odd"
+        "parity": "even" if lattice.is_even() else "odd"
     }
-    if arithmetic.determinant(gram) != 0:
-        invariants = arithmetic.discriminant_invariants(gram)
+    if lattice.determinant() != 0:
+        invariants = tuple(
+            abs(int(factor))
+            for factor in lattice.discriminant_group().invariant_factors()
+            if abs(int(factor)) > 1
+        )
         block["discriminant_group"] = list(invariants)
         count = arithmetic.overlattice_count(gram, subgroup_bound)
         if count is not None:
             block["overlattice_count"] = count
         if block["parity"] == "even" and all(factor == 2 for factor in invariants):
-            block["delta"] = arithmetic.delta(gram)
-        determinant = int(arithmetic.determinant(gram))
+            block["delta"] = int(lattice.delta())
+        determinant = int(lattice.determinant())
         block["bad_reduction_primes"] = list(
             arithmetic.bad_reduction_primes(determinant)
         )
@@ -217,17 +228,29 @@ def _integral(
 
 
 def _definite(
-    record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction]
+    record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction], lattice=None
 ) -> dict[str, Yaml]:
     declared = _block(record, "definite")
-    minimum, kissing_number = arithmetic.minimum_and_kissing_number(gram)
+    if lattice is None:
+        minimum, kissing_number = arithmetic.minimum_and_kissing_number(gram)
+    else:
+        minimum = Fraction(int(abs(lattice.minimum())))
+        kissing_number = int(lattice.kissing_number())
     block: dict[str, Yaml] = {
         "minimum": rational(minimum),
         "kissing_number": kissing_number,
     }
     if "automorphism_group_order" in declared:
         block["automorphism_group_order"] = declared["automorphism_group_order"]
-    if arithmetic.is_integer_valued(gram):
+    if lattice is not None:
+        bound = model.theta_bound(len(gram), minimum)
+        match declared.get("theta_series"):
+            case list() as stated:
+                bound = max(bound, len(stated) - 1)
+        series = lattice.theta_series(precision=bound + 1)
+        block["theta_series"] = [int(series[index]) for index in range(bound + 1)]
+        block["root_system"] = list(roots.norm_two_types(gram, dict(positive_roots)))
+    elif arithmetic.is_integer_valued(gram):
         bound = model.theta_bound(len(gram), minimum)
         match declared.get("theta_series"):
             case list() as stated:
@@ -301,22 +324,31 @@ def derive(
     """
     gram = gram_tensor(record["gram_tensor"])
     rank = len(gram)
-    n_plus, n_minus, n_zero = arithmetic.inertia(gram)
+    integral_lattice = Lattices(ZZ)(gram) if arithmetic.is_integer_valued(gram) else None
+    if integral_lattice is None:
+        n_plus, n_minus, n_zero = arithmetic.inertia(gram)
+        determinant = arithmetic.determinant(gram)
+    else:
+        signature = integral_lattice.signature_pair()
+        n_plus = int(signature.first())
+        n_minus = int(signature.second())
+        n_zero = rank - n_plus - n_minus
+        determinant = Fraction(int(integral_lattice.determinant()))
     definiteness = model.definiteness(n_plus, n_minus, n_zero)
     derived: dict[str, Yaml] = {
         **record,
         "rank": rank,
         "signature": [n_plus, n_minus],
-        "determinant": rational(arithmetic.determinant(gram)),
+        "determinant": rational(determinant),
         "definiteness": definiteness,
     }
     for key in ("integral", "definite", "indefinite", "root_span", "root_sublattice"):
         derived.pop(key, None)
-    if arithmetic.is_integer_valued(gram):
-        derived["integral"] = _integral(record, gram, subgroup_bound)
+    if integral_lattice is not None:
+        derived["integral"] = _integral(record, gram, integral_lattice, subgroup_bound)
     if definiteness in ("positive_definite", "negative_definite"):
         positive_roots = arithmetic.definite_roots(gram)
-        derived["definite"] = _definite(record, gram, positive_roots)
+        derived["definite"] = _definite(record, gram, positive_roots, integral_lattice)
         derived["root_sublattice"] = _root_sublattice(gram, positive_roots)
     else:
         found = _root_span(record, gram)
