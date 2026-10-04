@@ -41,11 +41,16 @@ def simple_roots(positive: list[Vector]) -> list[Vector]:
     return [r for r in positive if r not in sums]
 
 
-def irreducible_components(gram_tensor: GramTensor, base: list[Vector]) -> list[list[Vector]]:
+def irreducible_components(formed, base: list[Vector]) -> list[list[Vector]]:
     """Return the classes of the base under the relation that `b(r, s) != 0` generates."""
     components: list[list[Vector]] = []
     for r in base:
-        linked = [component for component in components if any(arithmetic.pairing(gram_tensor, r, s) != 0 for s in component)]
+        root = formed(r)
+        linked = [
+            component
+            for component in components
+            if any(root.b(formed(s)) != 0 for s in component)
+        ]
         components = [component for component in components if component not in linked]
         components.append([*(s for component in linked for s in component), r])
     return components
@@ -66,36 +71,46 @@ def _numbering(gram: tuple[tuple[Fraction, ...], ...], expected: tuple[tuple[int
     return None
 
 
-def typed_component(gram_tensor: GramTensor, base: list[Vector]) -> Component:
+def typed_component(formed, base: list[Vector]) -> Component:
     """Return the type, the scale and the simple roots, in the numbering of the type, of an irreducible component with the given base.
 
     The types are tried in the order `A`, `B`, ..., `G`, so a component of rank 3 with the Gram matrix of `D3 = A3` has type `A3`.
     """
-    norms = [arithmetic.pairing(gram_tensor, r, r) for r in base]
-    scale = min(norms, key=abs) / 2
-    gram = tuple(tuple(value / scale for value in row) for row in arithmetic.restriction(gram_tensor, tuple(base)))
+    norms = [formed(r).q() for r in base]
+    scale = min(norms, key=abs) / formed.value_module()(2)
+    gram = tuple(
+        tuple(formed(r).b(formed(s)) / scale for s in base)
+        for r in base
+    )
     for letter in "ABCDEFG":
         root_type = f"{letter}{len(base)}"
         if root_systems.is_type(root_type):
             numbering = _numbering(gram, root_systems.simple_root_gram(root_type), ())
             if numbering is not None:
-                return root_type, scale, tuple(base[index] for index in numbering)
+                return (
+                    root_type,
+                    Fraction(int(scale.numerator()), int(scale.denominator())),
+                    tuple(base[index] for index in numbering),
+                )
     raise AssertionError(f"no type for the base {base}")
 
 
-def _components(gram_tensor: GramTensor, positive: list[Vector]) -> tuple[Component, ...]:
+def _components(formed, positive: list[Vector]) -> tuple[Component, ...]:
     """Return the irreducible components of the root system with the positive system `positive`, the greatest rank first."""
     base = simple_roots(positive)
-    components = [typed_component(gram_tensor, component) for component in irreducible_components(gram_tensor, base)]
+    components = [
+        typed_component(formed, component)
+        for component in irreducible_components(formed, base)
+    ]
     return tuple(sorted(components, key=lambda component: (-len(component[2]), component[0], component[2])))
 
 
-def root_system(gram_tensor: GramTensor) -> tuple[Component, ...]:
+def root_system(formed, positive_roots: dict[Vector, Fraction]) -> tuple[Component, ...]:
     """Return `Phi(L)` for a definite lattice as its irreducible components, the greatest rank first."""
-    return _components(gram_tensor, list(arithmetic.definite_roots(gram_tensor)))
+    return _components(formed, list(positive_roots))
 
 
-def norm_two_types(gram_tensor: GramTensor, positive_roots: dict[Vector, Fraction]) -> tuple[str, ...]:
+def norm_two_types(formed, positive_roots: dict[Vector, Fraction]) -> tuple[str, ...]:
     """Return the ADE type of `Phi_{{2}}(L)`, or of `Phi_{{-2}}(L)` for a negative definite `L`, as the types of its components, the greatest rank first.
 
     `positive_roots` is `arithmetic.definite_roots(gram_tensor)`. The roots
@@ -105,7 +120,7 @@ def norm_two_types(gram_tensor: GramTensor, positive_roots: dict[Vector, Fractio
     """
     positive = [r for r, norm in positive_roots.items() if abs(norm) == 2]
     types = []
-    for root_type, scale, _ in _components(gram_tensor, positive):
+    for root_type, scale, _ in _components(formed, positive):
         assert root_type[0] in "ADE" and abs(scale) == 1, f"the roots of norm 2 form a component of type {root_type} at scale {scale}"
         types.append(root_type)
     return tuple(types)

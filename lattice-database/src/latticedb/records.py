@@ -229,7 +229,7 @@ def _integral(
 
 
 def _definite(
-    record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction], lattice=None
+    record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction], formed, lattice=None
 ) -> dict[str, Yaml]:
     declared = _block(record, "definite")
     if lattice is None:
@@ -250,21 +250,21 @@ def _definite(
                 bound = max(bound, len(stated) - 1)
         series = lattice.theta_series(precision=bound + 1)
         block["theta_series"] = [int(series[index]) for index in range(bound + 1)]
-        block["root_system"] = list(roots.norm_two_types(gram, dict(positive_roots)))
+        block["root_system"] = list(roots.norm_two_types(formed, dict(positive_roots)))
     elif arithmetic.is_integer_valued(gram):
         bound = model.theta_bound(len(gram), minimum)
         match declared.get("theta_series"):
             case list() as stated:
                 bound = max(bound, len(stated) - 1)
         block["theta_series"] = list(arithmetic.theta_coefficients(gram, bound))
-        block["root_system"] = list(roots.norm_two_types(gram, dict(positive_roots)))
+        block["root_system"] = list(roots.norm_two_types(formed, dict(positive_roots)))
     block["roots"] = [
         {
             "type": root_type,
             "scale": rational(scale),
             "simple_roots": [list(r) for r in simple],
         }
-        for root_type, scale, simple in roots.root_system(gram)
+        for root_type, scale, simple in roots.root_system(formed, dict(positive_roots))
     ]
     return _ordered(block, tuple(model.DefiniteData.model_fields))
 
@@ -279,7 +279,7 @@ def _indefinite(gram: GramTensor, lattice=None) -> dict[str, Yaml]:
 
 
 def _root_span(
-    record: dict[str, Yaml], gram: GramTensor, lattice=None
+    record: dict[str, Yaml], gram: GramTensor, formed, lattice=None
 ) -> tuple[dict[str, Yaml], list[Vector]] | None:
     """The declared `root_span` block, else the roots found when they generate `L`, with the norms of the roots; else `None`."""
     if "root_span" in record:
@@ -298,7 +298,12 @@ def _root_span(
         spanning = list(roots.generating_roots(found, rank))
         block = {"roots": [list(r) for r in spanning]}
     block["norms"] = [
-        rational(Fraction(int(lattice(r).q())) if lattice is not None else arithmetic.pairing(gram, r, r))
+        rational(
+            Fraction(
+                int(formed(r).q().numerator()),
+                int(formed(r).q().denominator()),
+            )
+        )
         for r in spanning
     ]
     return _ordered(block, tuple(model.RootSpan.model_fields)), spanning
@@ -362,20 +367,21 @@ def derive(
         derived["integral"] = _integral(record, gram, integral_lattice, subgroup_bound)
     if definiteness in ("positive_definite", "negative_definite"):
         positive_roots = arithmetic.definite_roots(gram)
-        derived["definite"] = _definite(record, gram, positive_roots, integral_lattice)
+        derived["definite"] = _definite(
+            record, gram, positive_roots, formed, integral_lattice
+        )
         derived["root_sublattice"] = _root_sublattice(gram, positive_roots)
     else:
-        found = _root_span(record, gram, integral_lattice)
+        found = _root_span(record, gram, formed, integral_lattice)
         if found is not None:
             span, spanning = found
             derived["root_span"] = span
             derived["root_sublattice"] = _root_sublattice(
                 gram,
                 {
-                    r: (
-                        Fraction(int(integral_lattice(r).q()))
-                        if integral_lattice is not None
-                        else arithmetic.pairing(gram, r, r)
+                    r: Fraction(
+                        int(formed(r).q().numerator()),
+                        int(formed(r).q().denominator()),
                     )
                     for r in spanning
                 },
