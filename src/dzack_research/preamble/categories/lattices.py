@@ -2739,18 +2739,25 @@ class Lattices(OwnedCategoryOverBaseRing):
             fraction_field = ring.fraction_field()
             half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
 
-            def image(label):
+            images = []
+            for label in self.module_generating_set():
                 x = self.module_generator(label)
                 half_coefficient = half_norm * fraction_field(x.b(isotropic))
                 assert half_coefficient in ring, f"the Eichler transvection t(e, a) with e = {isotropic!r}, a = {orthogonal!r} does not preserve {self!r}: q(a) b(e, {x})/2 = {half_coefficient} is not in {ring}"
-                return (
+                images.append(
                     x
                     - self.scalar_multiple(x.b(orthogonal), isotropic)
                     + self.scalar_multiple(x.b(isotropic), orthogonal)
                     - self.scalar_multiple(ring(half_coefficient), isotropic)
                 )
-
-            return self.Aut()(image)
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
+            from sage.matrix.constructor import matrix
+            labels = tuple(self.module_generating_set())
+            transformation = matrix(
+                _engine_ring(ring),
+                [[_engine_element(ring, image.to_vector()(target_label)) for image in images] for target_label in labels],
+            )
+            return self.Aut()._isometry_from_column_matrix(transformation)
 
         def is_positive_definite(self) -> bool:
             rank = self.module_rank()

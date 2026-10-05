@@ -28,7 +28,18 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import _matrix_group_element_matrix
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _owned_engine_element
+from sage.matrix.constructor import matrix
+
+
+def _column_matrix_from_images(lattice, images):
+    labels = tuple(lattice.module_generating_set())
+    ring = lattice.base_ring()
+    return matrix(
+        _engine_ring(ring),
+        [[_engine_element(ring, image.to_vector()(label)) for image in images] for label in labels],
+    )
+
 
 class EichlerCoveringOrbitDatum(SageObject):
     r"""One explicit covering vector together with its recursive orbit data.
@@ -375,7 +386,7 @@ class TwoUEichlerModel(SageObject):
             lattice.scalar_multiple(p, e_prime) + lattice.scalar_multiple(r, f),
             lattice.scalar_multiple(s, f_prime) - lattice.scalar_multiple(q, e),
         ) + self._embedded_complement_basis()
-        return lattice.O()(images)
+        return lattice.O()._isometry_from_column_matrix(_column_matrix_from_images(lattice, images))
 
     def _right_isometry(self, element):
         r"""Return the isometry induced by ``X |-> X B^-1`` on the determinant model."""
@@ -388,7 +399,7 @@ class TwoUEichlerModel(SageObject):
             lattice.scalar_multiple(p, e_prime) - lattice.scalar_multiple(r, e),
             lattice.scalar_multiple(s, f_prime) + lattice.scalar_multiple(q, f),
         ) + self._embedded_complement_basis()
-        return lattice.O()(images)
+        return lattice.O()._isometry_from_column_matrix(_column_matrix_from_images(lattice, images))
 
     def left_action(self, element):
         r"""Return the left ``SL_2(ZZ)`` action isometry attached to ``element``."""
