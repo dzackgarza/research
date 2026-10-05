@@ -712,6 +712,19 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
+        def additive_order(self):
+            r"""Return the additive order of a discriminant class.
+
+            The rank-zero discriminant module may be represented by the zero
+            free form module rather than by a presented torsion parent.  Its
+            unique element still has additive order one.  Nonzero modules
+            retain the finitely-presented torsion implementation.
+            """
+            parent = self.parent()
+            if parent.is_zero():
+                return parent.base_ring().one()
+            return super().additive_order()
+
         def is_characteristic(self) -> bool:
             r"""Return whether this class is characteristic for the quadratic form.
 

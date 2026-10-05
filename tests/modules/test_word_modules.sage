@@ -27,3 +27,17 @@ def test_zero_finite_torsion_module_enumerates_only_zero_without_smith_workspace
     elements = zero.elements()
     assert elements.cardinality() == 1
     assert tuple(elements)[0] == zero.zero()
+
+
+def test_rank_zero_discriminant_class_has_additive_order_one() -> None:
+    lattice = Lattices(ZZ)(ZZ.free_module(0))
+    discriminant = lattice.discriminant_group()
+    element = tuple(discriminant.elements())[0]
+    assert element.additive_order() == ZZ.one()
+
+
+def test_nonzero_discriminant_class_keeps_presented_additive_order() -> None:
+    lattice = Lattices(ZZ)("A1")
+    discriminant = lattice.discriminant_group()
+    orders = tuple(element.additive_order() for element in discriminant.elements())
+    assert {int(order) for order in orders} == {1, 2}
