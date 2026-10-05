@@ -298,12 +298,14 @@ class TwoUEichlerModel(SageObject):
         if first.gram_tensor() != Lattices(lattice.base_ring())("U").gram_tensor() or second.gram_tensor() != Lattices(lattice.base_ring())("U").gram_tensor():
             raise ValueError("the first two factors of a represented 2U model must be hyperbolic planes")
         if len(factors) == 2:
-            complement = lattice.module_category()(lattice.base_ring().free_module(0))
+            complement = Lattices(lattice.base_ring())(lattice.base_ring().free_module(0))
+            normalized = lattice.module_category().biproduct((factors[0], factors[1], complement))
         else:
             complement = factors[-1]
+            normalized = lattice
         result = cls.__new__(cls)
         result._orthogonal_complement = complement
-        result._lattice = lattice
+        result._lattice = normalized
         return result
 
     def lattice(self):
