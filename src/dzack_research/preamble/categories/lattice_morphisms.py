@@ -2187,6 +2187,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         is finite, so this is an exact finite quotient with no search bound.
         """
         lattice = self.domain()
+        square = lattice.base_ring()(int(square))
         if not lattice.is_definite():
             gram = _engine_gram_rows(lattice)
             lattice_generators = tuple(lattice.module_generators())

@@ -1015,8 +1015,8 @@ _PORT_REALIZATIONS = (
     (
         "lattice.indefinite_orbit_representative",
         "INDEF_FORM_GetOrbitRepresentative",
-        None,
-        None,
+        "sage_indefinite_port.indefinite.recursive_provider",
+        "indefinite_orbit_representative",
     ),
     (
         "lattice.indefinite_isotropic_subspace_orbits",
