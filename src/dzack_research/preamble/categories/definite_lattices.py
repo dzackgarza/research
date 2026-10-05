@@ -345,7 +345,7 @@ def _target_coordinates(lattice, target):
 
 
 @cache
-def _pari_first_affine_cvp():
+def _pari_first_affine_cvp_shell():
     return pari(
         r"""
         (G,a,r,M,exact)->{
@@ -358,10 +358,10 @@ def _pari_first_affine_cvp():
             for(j=1,sz[2],
               my(d=z[,j]-Col(c));
               my(q=d~*G*d);
-              if(if(exact,q==m^2*r,q<=m^2*r),return(m));
+              if(if(exact,q==m^2*r,q<=m^2*r),return([m,s,z]));
             );
           );
-          return(0);
+          return([]);
         }
         """
     )
@@ -457,20 +457,69 @@ class _ExactCVPEngine:
         *,
         exact_distance=False,
     ):
+        result = self.first_close_vector_scale_coordinates(
+            target,
+            square_bound,
+            max_multiplier,
+            exact_distance=exact_distance,
+        )
+        return None if result is None else result[0]
+
+    def first_close_vector_scale_coordinates(
+        self,
+        target,
+        square_bound,
+        max_multiplier,
+        *,
+        exact_distance=False,
+    ):
+        r"""Return the first feasible scale together with that exact affine shell.
+
+        The shell coordinates are expressed in this lattice's engine basis,
+        with signed squared distances in the lattice's fraction field. The
+        search and returned shell come from one PARI qfcvp computation at the
+        winning multiplier.
+        """
         coordinates = self._engine_target_coordinates(target)
         positive_bound = self.engine_sign * self._engine_scalar(square_bound)
         if positive_bound < 0:
             return None
-        multiplier = int(
-            _pari_first_affine_cvp()(
-                self.pari_gram,
-                pari(list(coordinates)),
-                pari(positive_bound),
-                int(max_multiplier),
-                int(bool(exact_distance)),
-            )
+        raw = _pari_first_affine_cvp_shell()(
+            self.pari_gram,
+            pari(list(coordinates)),
+            pari(positive_bound),
+            int(max_multiplier),
+            int(bool(exact_distance)),
         )
-        return None if multiplier == 0 else multiplier
+        if len(raw) == 0:
+            return None
+        multiplier = int(raw[0])
+        translation = tuple(SageZZ(int(entry)) for entry in raw[1])
+        centered = engine_vector(
+            SageQQ,
+            tuple(
+                multiplier * coordinate - translate
+                for coordinate, translate in zip(coordinates, translation, strict=True)
+            ),
+        )
+        positive_shell_bound = SageQQ(multiplier * multiplier) * positive_bound
+        candidates = {}
+        for column in engine_matrix(SageQQ, raw[2]).columns():
+            displacement = column - centered
+            positive_square = displacement * self.engine_gram_q * displacement
+            admissible = (
+                positive_square == positive_shell_bound
+                if exact_distance
+                else positive_square <= positive_shell_bound
+            )
+            if not admissible:
+                continue
+            shell_coordinates = tuple(
+                SageZZ(int(entry) + int(translate))
+                for entry, translate in zip(column, translation, strict=True)
+            )
+            candidates[shell_coordinates] = self.engine_sign * positive_square
+        return multiplier, tuple(candidates.items())
 
     def closest_vector(self, target):
         _point, translation, centered = self._center(target)

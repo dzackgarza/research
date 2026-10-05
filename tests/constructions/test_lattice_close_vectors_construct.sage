@@ -47,6 +47,14 @@ def test_close_vectors_is_invariant_under_large_integral_target_translation() ->
 def test_affine_cvp_scale_search_finds_first_feasible_multiplier_exactly() -> None:
     lattice = Lattices(ZZ)([[2]])
 
+    scale, shell = lattice._exact_cvp_engine().first_close_vector_scale_coordinates(
+        (QQ(1) / 3,),
+        QQ(1) / 10,
+        5,
+    )
+    assert scale == 2
+    assert tuple(int(entry) for entry in shell[0][0]) == (1,)
+    assert (int(shell[0][1].numerator()), int(shell[0][1].denominator())) == (2, 9)
     assert lattice._first_close_vector_scale(
         (QQ(1) / 3,),
         QQ(1) / 10,
