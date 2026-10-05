@@ -56,6 +56,15 @@ def test_eichler_transvections_in_the_complement_directions_are_stable_isometrie
         assert transvection.discriminant_morphism() == identity_discriminant_action
 
 
+def test_approximate_generating_family_uses_exact_two_u_perpendicular_frames() -> None:
+    model = Lattices(ZZ)("A2").two_u_eichler_model()
+    lattice = model.lattice()
+    family = model.approximate_generating_family()
+
+    assert family.cardinality() == 4 + 4 * (int(lattice.module_rank()) - 1)
+    assert all(family[label] in lattice.O() for label in family.index_set())
+
+
 def test_minus_one_on_A2_extends_by_the_identity_and_acts_nontrivially_on_the_discriminant() -> None:
     r"""\(-1\) acts on \(A_{A_2} \cong \mathbb Z/3\) by \(-1 \ne 1\)."""
     complement = Lattices(ZZ)("A2")

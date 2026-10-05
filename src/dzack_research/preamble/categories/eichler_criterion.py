@@ -529,14 +529,21 @@ class TwoUEichlerModel(SageObject):
 
         special_linear_generators = self.special_linear_group().group_generators()
         isotropic_vectors = self.hyperbolic_basis()
-        perpendiculars = tuple(vector.orthogonal_complement() for vector in isotropic_vectors)
+        complement_basis = self._embedded_complement_basis()
+        e, f, e_prime, f_prime = isotropic_vectors
+        perpendicular_bases = (
+            (e, e_prime, f_prime) + complement_basis,
+            (f, e_prime, f_prime) + complement_basis,
+            (e, f, e_prime) + complement_basis,
+            (e, f, f_prime) + complement_basis,
+        )
         labels = finite_ordered_set(
             tuple(("left-SL2", generator) for generator in special_linear_generators)
             + tuple(("right-SL2", generator) for generator in special_linear_generators)
             + tuple(
-                ("Eichler", position, label)
-                for position, perpendicular in enumerate(perpendiculars)
-                for label in perpendicular.module_generating_set()
+                ("Eichler", position, vector_position)
+                for position, basis in enumerate(perpendicular_bases)
+                for vector_position in range(len(basis))
             )
         )
 
@@ -548,11 +555,8 @@ class TwoUEichlerModel(SageObject):
                 case "right-SL2":
                     return self.right_action(label[1])
                 case "Eichler":
-                    position, perpendicular_label = label[1], label[2]
-                    perpendicular = perpendiculars[position]
-                    orthogonal = perpendicular.inclusion()(
-                        perpendicular.module_generator(perpendicular_label)
-                    )
+                    position, vector_position = label[1], label[2]
+                    orthogonal = perpendicular_bases[position][vector_position]
                     return self.eichler_transvection(isotropic_vectors[position], orthogonal)
                 case _:
                     raise ValueError(
