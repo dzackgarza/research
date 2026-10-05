@@ -299,7 +299,7 @@ class TwoUEichlerModel(SageObject):
             raise ValueError("the first two factors of a represented 2U model must be hyperbolic planes")
         if len(factors) == 2:
             complement = Lattices(lattice.base_ring())(lattice.base_ring().free_module(0))
-            normalized = lattice.module_category().biproduct((factors[0], factors[1], complement))
+            normalized = Lattices(lattice.base_ring()).biproduct((factors[0], factors[1], complement))
         else:
             complement = factors[-1]
             normalized = lattice
