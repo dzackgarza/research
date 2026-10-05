@@ -193,3 +193,11 @@ def test_the_witt_index_of_u_plus_twisted_a1() -> None:
 def test_the_witt_index_of_e8() -> None:
     r"""\(E_8\) is definite, so its quadratic space is anisotropic."""
     assert Lattices(ZZ)("E8").witt_index() == 0
+
+
+def test_two_u_eichler_model_can_wrap_existing_biproduct_without_rebuilding() -> None:
+    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
+    model = lattice.two_u_eichler_model_from_represented_biproduct()
+    assert model.lattice() is lattice
+    assert model.first_hyperbolic_plane() is lattice.biproduct_factor(0)
+    assert model.second_hyperbolic_plane() is lattice.biproduct_factor(1)

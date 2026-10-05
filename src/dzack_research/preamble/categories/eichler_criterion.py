@@ -286,6 +286,26 @@ class TwoUEichlerModel(SageObject):
         self._orthogonal_complement = orthogonal_complement
         self._lattice = category.biproduct((plane, plane, orthogonal_complement))
 
+    @classmethod
+    def from_represented_biproduct(cls, lattice):
+        r"""Wrap an existing represented ``U + U + K`` biproduct without rebuilding it."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        factors = tuple(lattice.biproduct_factors())
+        if len(factors) < 2:
+            raise ValueError("a represented 2U model needs at least two biproduct factors")
+        first, second = factors[0], factors[1]
+        if first.gram_tensor() != Lattices(lattice.base_ring())("U").gram_tensor() or second.gram_tensor() != Lattices(lattice.base_ring())("U").gram_tensor():
+            raise ValueError("the first two factors of a represented 2U model must be hyperbolic planes")
+        if len(factors) == 2:
+            complement = lattice.module_category()(lattice.base_ring().free_module(0))
+        else:
+            complement = factors[-1]
+        result = cls.__new__(cls)
+        result._orthogonal_complement = complement
+        result._lattice = lattice
+        return result
+
     def lattice(self):
         return self._lattice
 

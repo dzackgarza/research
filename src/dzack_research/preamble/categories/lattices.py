@@ -2634,6 +2634,14 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return TwoUEichlerModel(self)
 
+        def two_u_eichler_model_from_represented_biproduct(self):
+            r"""Wrap this existing represented ``U + U + K`` biproduct as an Eichler model."""
+            from dzack_research.preamble.categories.eichler_criterion import (
+                TwoUEichlerModel,
+            )
+
+            return TwoUEichlerModel.from_represented_biproduct(self)
+
         def rational_polyhedral_cone(
             self,
             halfspace_covectors,
