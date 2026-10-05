@@ -2312,6 +2312,12 @@ class Modules(OwnedCategoryOverBaseRing):
                     assert _engine_ring(self.base_ring()) is SageZZ, (
                         f"the elements of the torsion module {self} are enumerated only over ZZ, not over {self.base_ring()}"
                     )
+                    if self.is_zero():
+                        return FiniteOrderedSets().from_indexed(
+                            Sets.Δ[0],
+                            lambda _position: self.zero(),
+                            name="Finite torsion elements",
+                        )
                     engine = self._smith_engine()
                     assert engine is not None, (
                         f"the elements of the finite abelian group {self} cannot be enumerated: its Smith normal form is not available"

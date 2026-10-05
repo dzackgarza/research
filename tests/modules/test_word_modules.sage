@@ -20,3 +20,10 @@ def test_degree_two_of_the_tensor_and_symmetric_algebra_on_z2_plus_z3_has_order_
         assert b * b != algebra.zero()
         assert 3 * (b * b) == algebra.zero()
         assert algebra.graded_piece(2).cardinality() == 6
+
+
+def test_zero_finite_torsion_module_enumerates_only_zero_without_smith_workspace() -> None:
+    zero = Modules(ZZ).FinitelyPresented().Torsion().direct_sum_of_cyclics(())
+    elements = zero.elements()
+    assert elements.cardinality() == 1
+    assert tuple(elements)[0] == zero.zero()
