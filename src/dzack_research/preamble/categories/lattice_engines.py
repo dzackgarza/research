@@ -997,15 +997,20 @@ _PORT_REALIZATIONS = (
     (
         "lattice.indefinite_automorphism_group",
         "INDEF_FORM_AutomorphismGroup",
-        None,
-        None,
+        "sage_indefinite_port.indefinite.recursive_provider",
+        "indefinite_automorphism_group",
     ),
-    ("lattice.indefinite_isometry_witness", "INDEF_FORM_TestEquivalence", None, None),
+    (
+        "lattice.indefinite_isometry_witness",
+        "INDEF_FORM_TestEquivalence",
+        "sage_indefinite_port.indefinite.recursive_provider",
+        "indefinite_isometry_witness",
+    ),
     (
         "lattice.indefinite_vector_isometry_witness",
         "INDEF_FORM_EquivalenceVector",
-        None,
-        None,
+        "sage_indefinite_port.indefinite.recursive_provider",
+        "indefinite_vector_isometry_witness",
     ),
     (
         "lattice.indefinite_orbit_representative",
@@ -1025,7 +1030,7 @@ _PORT_REALIZATIONS = (
         None,
         None,
     ),
-    ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector", None, None),
+    ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector", "sage_indefinite_port.indefinite.recursive_provider", "indefinite_vector_stabilizer"),
     (
         "lattice.indefinite_isotropic_subspace_isometry_witness",
         "INDEF_FORM_Equivalence_IsotropicKplane",
