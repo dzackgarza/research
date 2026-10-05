@@ -55,8 +55,8 @@ _VINAL_PROVISIONING = (
 )
 
 _EDGEWALK_PROVISIONING = (
-    "build polyhedral_common (github.com/MathieuDutSik/polyhedral_common) and "
-    "put LORENTZ_ReflectiveEdgewalk on PATH"
+    "install the native sage-indefinite-port package providing "
+    "sage_indefinite_port.indefinite.edgewalk"
 )
 
 _VINBERG_NF_PROJECT = (
@@ -459,30 +459,28 @@ def _vinal_vinberg_roots(gram, controlling_vector, max_roots, max_decompositions
 
 
 def _edgewalk_is_available() -> bool:
-    from py_polyhedral.binaries import binary_available
-
-    return binary_available("LORENTZ_ReflectiveEdgewalk")
+    return find_spec("sage_indefinite_port.indefinite.edgewalk") is not None
 
 
 def _polyhedral_common_edgewalk(gram):
     r"""Run Allcock's edgewalk and normalize its full fundamental-domain record.
 
-    ``LORENTZ_ReflectiveEdgewalk`` calls ``StandardEdgewalkAnalysis`` and its
-    Python serializer returns the simple roots, orbit representatives of the
-    polyhedron vertices, the reflectivity decision, and generators of the
-    finite isometry group of the Coxeter polyhedron.  This adapter verifies
-    the integral root/isometry data against ``gram`` before it crosses into
-    owned lattice objects.
+    ``sage-indefinite-port`` is the native Sage/Python port of
+    ``StandardEdgewalkAnalysis``.  This adapter verifies its integral
+    root/isometry data against ``gram`` before it crosses into owned lattice
+    objects.
     """
-    from py_polyhedral.binaries import lorentzian_reflective_edgewalk
+    from sage_indefinite_port.indefinite.edgewalk import (
+        edgewalk_fundamental_domain,
+    )
 
-    record = lorentzian_reflective_edgewalk([list(row) for row in gram.rows()])
+    record = edgewalk_fundamental_domain(gram)
     reflective = bool(record["is_reflective"])
     match reflective:
         case True:
             simple_root_rows = tuple(
                 tuple(SageZZ(entry) for entry in row)
-                for row in record["ListSimpleRoots"]
+                for row in record["simple_root_rows"]
             )
         case False:
             simple_root_rows = ()
@@ -511,17 +509,17 @@ def _polyhedral_common_edgewalk(gram):
 
     vertices = tuple(
         (
-            tuple(SageZZ(entry) for entry in vertex["gen"]),
+            tuple(SageZZ(entry) for entry in generator_row),
             tuple(
                 tuple(SageZZ(entry) for entry in row)
-                for row in vertex["l_roots"]
+                for row in incident_rows
             ),
         )
-        for vertex in record["ListVertices"]
+        for generator_row, incident_rows in record["vertices"]
     )
     isometry_rows = tuple(
         tuple(tuple(SageZZ(entry) for entry in row) for row in generator)
-        for generator in record["GrpIsomCoxMatr"]
+        for generator in record["isometry_generator_rows"]
     )
     for rows in isometry_rows:
         generator = engine_matrix(SageZZ, rows)
@@ -552,7 +550,7 @@ engine_capabilities.register(
 
 engine_capabilities.register(
     "lorentzian_edgewalk_fundamental_domain",
-    "polyhedral-common-via-py-polyhedral",
+    "sage-indefinite-port",
     _polyhedral_common_edgewalk,
     available=_edgewalk_is_available,
     provisioning=_EDGEWALK_PROVISIONING,
