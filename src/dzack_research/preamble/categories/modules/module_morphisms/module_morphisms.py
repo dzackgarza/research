@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalIsomorphism,
     _precomposable,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     CommutativeRings,
     LocalizationRings,
@@ -1136,12 +1136,41 @@ class ModuleMorphismMethods:
         r"""Return the saturation of the image of an injective morphism.
 
         For ``i:S -> M`` this is the kernel of
-        ``M -> M/S -> (M/S)/Tor(M/S)``.
+        ``M -> M/S -> (M/S)/Tor(M/S)``.  For finite free ``ZZ``-modules,
+        compute the primitive row lattice directly from the Smith form of the
+        coordinate matrix instead of constructing the quotient object first.
         """
         assert self.is_injective(), (
             f"cannot saturate the image of {self.domain()} -> {self.codomain()}: saturation is defined for an "
             f"injective map, and this map has nonzero kernel"
         )
+        ring = self.domain().base_ring()
+        from sage.rings.integer_ring import ZZ as SageZZ
+        if _engine_ring(ring) is SageZZ and _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
+            from sage.matrix.constructor import matrix
+            from sage.modules.free_module import FreeModule
+            source_labels = tuple(self.domain().module_generating_set())
+            target_labels = tuple(self.codomain().module_generating_set())
+            rows = []
+            for source_label in source_labels:
+                image = self(self.domain().module_generator(source_label))
+                coordinates = image.to_vector()
+                rows.append([_engine_element(ring, coordinates(label)) for label in target_labels])
+            engine = _engine_ring(ring)
+            A = matrix(engine, rows)
+            smith, left, right = A.smith_form()
+            rank = int(A.rank())
+            # D = left * A * right.  The primitive closure of the row lattice of A
+            # is spanned by the first ``rank`` rows of right^{-1}.
+            primitive_rows = tuple(right.inverse().row(i) for i in range(rank))
+            ambient = FreeModule(engine, len(target_labels))
+            primitive = ambient.submodule(primitive_rows)
+            basis_rows = tuple(tuple(row) for row in primitive.basis_matrix().rows())
+            generators = tuple(
+                self.codomain().linear_combination({target_labels[j]: _owned_engine_element(ring, value) for j, value in enumerate(row) if value})
+                for row in basis_rows
+            )
+            return self.codomain().subobject_on(generators)
         quotient = self.cokernel()
         projection = quotient.torsion_free_quotient_projection()
         composite = projection * quotient.presentation_projection()

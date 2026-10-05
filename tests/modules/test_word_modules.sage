@@ -41,3 +41,12 @@ def test_nonzero_discriminant_class_keeps_presented_additive_order() -> None:
     discriminant = lattice.discriminant_group()
     orders = tuple(element.additive_order() for element in discriminant.elements())
     assert {int(order) for order in orders} == {1, 2}
+
+
+def test_finite_free_integer_saturation_returns_primitive_closure() -> None:
+    ambient = Modules(ZZ)(ZZ.free_module(2))
+    e, f = ambient.module_generators()
+    submodule = ambient.subobject_on((ambient.scalar_multiple(ZZ.one() + ZZ.one(), e), f))
+    saturated = submodule.inclusion().saturation()
+    assert saturated.is_primitive()
+    assert saturated.module_rank() == ambient.module_rank()
