@@ -2436,6 +2436,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         ):
             return (True, None, None)
 
+        if engine_capabilities.is_available("lattice.indefinite_isometry_witness"):
+            witness_rows = engine_capabilities.compute(
+                "lattice.indefinite_isometry_witness",
+                _engine_gram_rows(codomain),
+                _engine_gram_rows(domain),
+            )
+            if witness_rows is None:
+                return (True, None, None)
+            return (False, self._from_backend_row_action(witness_rows), None)
+
         from sage.quadratic_forms.genera.genus import Genus as SageGenus
         from sage.quadratic_forms.genera.genus import LocalGenusSymbol
         from sage.rings.rational_field import QQ as SageQQ
@@ -2492,16 +2502,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         # The absence of this program is not fatal here: the classification
         # theorems below still decide some pairs, so the capability is asked
         # for first rather than demanded.
-        if engine_capabilities.is_available("lattice.indefinite_isometry_witness"):
-            witness_rows = engine_capabilities.compute(
-                "lattice.indefinite_isometry_witness",
-                _engine_gram_rows(codomain),
-                _engine_gram_rows(domain),
-            )
-            if witness_rows is None:
-                return (True, None, None)
-            return (False, self._from_backend_row_action(witness_rows), None)
-
         if engine_capabilities.is_available("lattice.oscar_isometry_witness"):
             witness_rows = lattice_engines._integral_isometry_witness(
                 domain.gram_tensor(),
