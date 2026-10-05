@@ -719,7 +719,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_roots,
                 max_decompositions,
             )
-            roots = tuple(self(tuple(row)) for row in rows)
+            roots = tuple(self(tuple(int(entry) for entry in row)) for row in rows)
             return complete, tuple(-root for root in roots) if negated else roots
 
         def vinberg_simple_roots(
@@ -1070,7 +1070,10 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 "lorentzian_edgewalk_fundamental_domain",
                 gram,
             )
-            roots = tuple(self(tuple(row)) for row in record["simple_root_rows"])
+            roots = tuple(
+                self(tuple(int(entry) for entry in row))
+                for row in record["simple_root_rows"]
+            )
             match negated:
                 case True:
                     roots = tuple(-root for root in roots)
@@ -1083,7 +1086,10 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
 
             vertices = []
             for generator_row, incident_rows in record["vertices"]:
-                incident = tuple(self(tuple(row)) for row in incident_rows)
+                incident = tuple(
+                    self(tuple(int(entry) for entry in row))
+                    for row in incident_rows
+                )
                 match negated:
                     case True:
                         incident = tuple(-root for root in incident)
@@ -1091,13 +1097,19 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                         pass
                 vertices.append(
                     RationalPolyhedralCones(self).from_rays(
-                        (self(tuple(generator_row)),), wall_roots=incident
+                        (self(tuple(int(entry) for entry in generator_row)),),
+                        wall_roots=incident,
                     )
                 )
 
             automorphisms = self.O()
             isometry_generators = tuple(
-                automorphisms(tuple(self(tuple(row)) for row in rows))
+                automorphisms(
+                    tuple(
+                        self(tuple(int(entry) for entry in row))
+                        for row in rows
+                    )
+                )
                 for rows in record["isometry_generator_rows"]
             )
             return AllcockEdgewalkReport(
