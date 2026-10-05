@@ -495,8 +495,15 @@ class _ExactCVPEngine:
                 best_coordinates = coordinates
         return _element_from_coordinates(self.lattice, best_coordinates)
 
-    def close_vectors(self, target, square_bound):
-        point, translation, centered = self._center(target)
+    def close_vector_coordinates(self, target, square_bound):
+        r"""Return exact engine-coordinate rows and signed squared distances.
+
+        This is the private lowering primitive beneath :meth:`close_vectors`.
+        It deliberately stays on Sage integer/rational carriers so algorithms
+        that immediately reconstruct their own semantic codomain do not first
+        allocate every intermediate vector as an element of this lattice.
+        """
+        _point, translation, centered = self._center(target)
         positive_bound = self.engine_sign * self._engine_scalar(square_bound)
         if positive_bound < 0:
             raise ValueError(
@@ -509,13 +516,22 @@ class _ExactCVPEngine:
             centered, positive_bound
         ):
             coordinates = tuple(
-                self.ring(int(entry) + int(translate))
+                SageZZ(int(entry) + int(translate))
                 for entry, translate in zip(column, translation, strict=True)
             )
+            candidates[coordinates] = self.engine_sign * positive_square
+        return tuple(candidates.items())
+
+    def close_vectors(self, target, square_bound):
+        candidates = {}
+        for engine_coordinates, engine_square in self.close_vector_coordinates(
+            target, square_bound
+        ):
+            coordinates = tuple(self.ring(int(entry)) for entry in engine_coordinates)
             vector = _element_from_coordinates(self.lattice, coordinates)
             signed_square = _owned_engine_element(
                 self.rationals,
-                self.engine_sign * positive_square,
+                engine_square,
             )
             candidates[_coordinate_tuple(self.lattice, vector)] = (
                 vector,

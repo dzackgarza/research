@@ -30,6 +30,19 @@ def test_close_vectors_is_invariant_under_large_integral_target_translation() ->
     assert lattice._has_close_vector(target, ZZ(1))
     assert not lattice._has_close_vector(target, QQ(1) / 4)
 
+    lowered = lattice._exact_cvp_engine().close_vector_coordinates(target, ZZ(1))
+    payload = tuple(
+        (
+            tuple(int(entry) for entry in coordinates),
+            (int(square.numerator()), int(square.denominator())),
+        )
+        for coordinates, square in lowered
+    )
+    assert tuple(sorted(payload)) == (
+        ((10**6,), (1, 2)),
+        ((10**6 + 1,), (1, 2)),
+    )
+
 
 def test_affine_cvp_scale_search_finds_first_feasible_multiplier_exactly() -> None:
     lattice = Lattices(ZZ)([[2]])
