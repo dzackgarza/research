@@ -252,11 +252,23 @@ class FiniteOrderedSets(OwnedCategory):
 
         Literal ingress: the points are read once, in order.
         """
-        # ``dict.fromkeys`` keeps the first occurrence of each point, in order.
-        distinct = tuple(dict.fromkeys(points))
+        distinct_list = []
+        for point in points:
+            if not any(point == existing for existing in distinct_list):
+                distinct_list.append(point)
+        distinct = tuple(distinct_list)
+
+        def index_of(point):
+            for position, existing in enumerate(distinct):
+                if point == existing:
+                    return position
+            return None
+
         return self.from_indexed(
             finite_ordinal_set(len(distinct)),
             lambda position: distinct[int(position)],
+            index_of=index_of,
+            contains=lambda point: any(point == existing for existing in distinct),
         )
 
     def from_indexed(
