@@ -314,6 +314,12 @@ class TwoUEichlerModel(SageObject):
     def orthogonal_complement(self):
         return self._orthogonal_complement
 
+    def _complement_inclusion(self):
+        complement = self.orthogonal_complement()
+        if int(complement.module_rank()) == 0:
+            return None
+        return self.lattice().injection(2)
+
     def first_hyperbolic_plane(self):
         return self.lattice().biproduct_factor(0)
 
@@ -344,7 +350,8 @@ class TwoUEichlerModel(SageObject):
         complement = self.orthogonal_complement()
         if int(complement.module_rank()) == 0:
             return ()
-        inclusion = lattice.injection(2)
+        inclusion = self._complement_inclusion()
+        assert inclusion is not None
         return tuple(inclusion(generator) for generator in complement.module_generators())
 
     def _sl2_entries(self, element):
@@ -404,10 +411,10 @@ class TwoUEichlerModel(SageObject):
         complement = self.orthogonal_complement()
         isometry = complement.O()(isometry)
         lattice = self.lattice()
-        inclusion = lattice.injection(2)
+        inclusion = self._complement_inclusion()
         images = self.hyperbolic_basis() + tuple(
             inclusion(isometry(generator)) for generator in complement.module_generators()
-        )
+        ) if inclusion is not None else self.hyperbolic_basis()
         return lattice.O()(images)
 
     @cached_method
@@ -480,13 +487,13 @@ class TwoUEichlerModel(SageObject):
 
         lattice = self.lattice()
         complement = self.orthogonal_complement()
-        complement_inclusion = lattice.injection(2)
+        complement_inclusion = self._complement_inclusion()
         isotropic = self.hyperbolic_basis()[0]
         return finite_indexed_family(
             complement.module_generating_set(),
             lambda label: self.eichler_transvection(
                 isotropic,
-                complement_inclusion(complement.module_generator(label)),
+                complement_inclusion(complement.module_generator(label)) if complement_inclusion is not None else lattice.zero(),
             ),
             name=f"K-direction Eichler transvections in {lattice}",
         )
@@ -572,7 +579,7 @@ class TwoUEichlerModel(SageObject):
         discriminant = complement.discriminant_group()
         covering = complement.covering_discriminant_classes(square)
         correlation = complement.correlation_morphism()
-        complement_inclusion = lattice.injection(2)
+        complement_inclusion = self._complement_inclusion()
         e, f, _e_prime, _f_prime = self.hyperbolic_basis()
 
         def representative(discriminant_class):
@@ -593,7 +600,7 @@ class TwoUEichlerModel(SageObject):
             vector = (
                 lattice.scalar_multiple(order, e)
                 + lattice.scalar_multiple(order * coefficient, f)
-                + complement_inclusion(complement_vector)
+                + (complement_inclusion(complement_vector) if complement_inclusion is not None else lattice.zero())
             )
             if vector.q() != square:
                 raise ArithmeticError(
@@ -976,7 +983,7 @@ class TwoUEichlerModel(SageObject):
         target_second = other.second_hyperbolic_plane()
         first_inclusion = target.injection(0)
         second_inclusion = target.injection(1)
-        complement_inclusion = target.injection(2)
+        complement_inclusion = other._complement_inclusion()
         first_labels = target_first.module_generating_set()
         second_labels = target_second.module_generating_set()
         images = (
@@ -987,7 +994,7 @@ class TwoUEichlerModel(SageObject):
                     complement_isometry(
                         self.orthogonal_complement().module_generator(label)
                     )
-                )
+                ) if complement_inclusion is not None else target.zero()
                 for label in self.orthogonal_complement().module_generating_set()
             )
         )
@@ -1007,7 +1014,7 @@ class TwoUEichlerModel(SageObject):
                 f"the isometry {result} of 2U + K does not send the hyperbolic basis "
                 f"{self.hyperbolic_basis()} of {source} to {other.hyperbolic_basis()}"
             )
-        source_complement_inclusion = source.injection(2)
+        source_complement_inclusion = self._complement_inclusion()
         if any(
             result(source_complement_inclusion(generator))
             != complement_inclusion(complement_isometry(generator))
