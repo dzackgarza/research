@@ -10,9 +10,6 @@ edges:
     - -1
     order: 4
 name: C2 root diagram
-properties:
-- Coxeter
-- Dynkin
 slug: c2-root-diagram
 vertices:
 - id: alpha1

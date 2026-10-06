@@ -1,10 +1,4 @@
-"""Finite weighted graph cards.
-
-A graph card stores vertices, edges, arbitrary decorations and any cited
-classification labels. Mathematical recognition of Coxeter, Dynkin, Satake,
-Vinberg or other diagram classes belongs to the research preamble; latticedb
-does not derive those labels from the decorations.
-"""
+"""Finite weighted graph cards with mathematical interpretation delegated to the preamble."""
 
 from __future__ import annotations
 
@@ -31,11 +25,10 @@ class GraphEdge(Record):
 
 
 class WeightedGraph(Record):
-    """One weighted-graph card with stored classification labels."""
+    """One graph card; diagram mathematics is owned by the research preamble."""
 
     slug: Slug
     name: str = Field(min_length=1)
-    properties: Annotated[tuple[str, ...], Field(strict=False)] = ()
     vertices: Annotated[tuple[GraphVertex, ...], Field(strict=False)]
     edges: Annotated[tuple[GraphEdge, ...], Field(strict=False)] = ()
 
@@ -55,8 +48,42 @@ class WeightedGraph(Record):
             raise PydanticCustomError(
                 "graph_endpoint", "each edge endpoint must be a vertex of the graph"
             )
-        if len(self.properties) != len(set(self.properties)):
-            raise PydanticCustomError(
-                "graph_property_duplicate", "graph property labels must be unique"
-            )
         return self
+
+    def _invariants(self):
+        from dzack_research.preamble.categories.weighted_graph_invariants import (
+            WeightedEdgeData,
+            WeightedGraphInvariants,
+            WeightedVertexData,
+        )
+
+        return WeightedGraphInvariants(
+            tuple(WeightedVertexData(v.id, v.weight) for v in self.vertices),
+            tuple(
+                WeightedEdgeData(
+                    e.id, e.source, e.target, e.relation, e.directed, e.weight
+                )
+                for e in self.edges
+            ),
+        )
+
+    def is_coxeter(self) -> bool:
+        return self._invariants().is_coxeter()
+
+    def cartan_matrix(self) -> tuple[tuple[int, ...], ...] | None:
+        return self._invariants().cartan_matrix()
+
+    def is_dynkin(self) -> bool:
+        return self._invariants().is_dynkin()
+
+    def is_simply_laced(self) -> bool:
+        return self._invariants().is_simply_laced()
+
+    def is_rational_coxeter_vinberg(self) -> bool:
+        return self._invariants().is_rational_coxeter_vinberg()
+
+    def is_satake(self) -> bool:
+        return self._invariants().is_satake()
+
+    def properties(self) -> tuple[str, ...]:
+        return self._invariants().properties()

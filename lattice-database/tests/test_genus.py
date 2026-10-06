@@ -15,6 +15,48 @@ from latticedb.model import Lattice
 REPOSITORY = Path(__file__).resolve().parent.parent
 
 
+def test_a_computed_series_of_orbits_replaces_its_prefix_and_preserves_the_authored_tail(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "0012.md"
+    shutil.copy(REPOSITORY / "lattices" / "0012.md", path)
+    document = frontmatter.load(str(path))
+    document.metadata["integral"]["primitive_orbits"] = {
+        "O": {"constant": 0, "z": [None, 1, 9, 9, 7, 8], "reference": {"citation": "source"}}
+    }
+    path.write_text(frontmatter.dumps(document))
+    genus.store(
+        path,
+        {
+            "primitive_orbits": {
+                "O": {"constant": 0, "z": [0, 1, 0, 0], "w": [0, 0, 0, 0]}
+            }
+        },
+    )
+    stored = frontmatter.load(str(path)).metadata["integral"]["primitive_orbits"]["O"]
+    assert stored["z"] == [0, 1, 0, 0, 7, 8]
+    assert stored["w"] == [0, 0, 0, 0]
+    assert stored["reference"] == {"citation": "source"}
+
+
+def test_orbit_certificate_value_excludes_source_only_tail_and_reference() -> None:
+    stored = {
+        "O": {
+            "constant": 0,
+            "z": [0, 1, 0, 0, 7, 8],
+            "w": [0, 0, 0, 0, 9],
+            "reference": {"citation": "A source."},
+        }
+    }
+    assert genus.certified_value("primitive_orbits", stored) == {
+        "O": {
+            "constant": 0,
+            "z": [0, 1, 0, 0],
+            "w": [0, 0, 0, 0],
+        }
+    }
+
+
 def test_a_missing_value_is_written(tmp_path: Path) -> None:
     path = tmp_path / "0012.md"
     shutil.copy(REPOSITORY / "lattices" / "0012.md", path)

@@ -8,6 +8,7 @@ from sage.misc.unknown import Unknown
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
@@ -1293,7 +1294,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         categories = []
         if domain is codomain:
             categories.append(OwnedGroups())
-            if _engine_ring(domain.base_ring()) is SageZZ and domain.module_rank().is_finite() and domain.is_definite():
+            if (
+                _engine_ring(domain.base_ring()) in (SageZZ, SageQQ)
+                and domain.module_rank().is_finite()
+                and domain.is_definite()
+            ):
                 categories.append(OwnedFiniteGroups())
         LatticeEmbeddingMor.__init__(
             self,
@@ -1302,7 +1307,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             codomain,
             category=Cat().meet(tuple(categories)) if categories else None,
         )
-        if domain is codomain and _engine_ring(domain.base_ring()) is SageZZ and domain.module_rank().is_finite() and domain.is_definite():
+        if (
+            domain is codomain
+            and _engine_ring(domain.base_ring()) in (SageZZ, SageQQ)
+            and domain.module_rank().is_finite()
+            and domain.is_definite()
+        ):
             self._retain_group_framing(self._computed_group_generators())
 
     def _element_constructor_(self, images):
@@ -1608,13 +1618,26 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         lattice = self.domain()
         if lattice is not self.codomain():
             raise ValueError(f"the isometries {lattice} -> {self.codomain()} are not an orthogonal group O(L): domain and codomain are different lattices")
-        assert _engine_ring(lattice.base_ring()) is SageZZ, f"O({lattice}) is computed only for ZZ-lattices, but {lattice} is over {lattice.base_ring()}"
         assert lattice.module_rank().is_finite() and lattice.is_definite(), (
             f"O({lattice}) is computed as a finite group only for definite lattices of finite rank, and {lattice} is not one"
         )
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-        gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
+        engine_ring = _engine_ring(lattice.base_ring())
+        match engine_ring is SageZZ, engine_ring is SageQQ:
+            case True, _:
+                gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
+            case False, True:
+                rational_gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ)
+                denominator = SageZZ.one()
+                for entry in rational_gram.list():
+                    denominator = denominator.lcm(SageZZ(entry.denominator()))
+                gram = (denominator * rational_gram).change_ring(SageZZ)
+            case _:
+                raise ValueError(
+                    f"O({lattice}) is computed by the finite definite engine only over ZZ or QQ, "
+                    f"but {lattice} is over {lattice.base_ring()}"
+                )
         signature = lattice.signature_pair()
         if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
             gram = -gram

@@ -22,6 +22,7 @@ from pydantic import BaseModel
 from latticedb import certificates, corpus, records
 from latticedb.certificates import Certificate, Certificates
 from latticedb.model import DefiniteData, IntegralData, Lattice, Yaml
+from latticedb.relations import hyperbolic_index_bounds
 
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_symbol": ("integral", IntegralData),
@@ -32,8 +33,14 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
     "automorphism_group_generator_morphisms": ("definite", DefiniteData),
+    "discriminant_sequence": ("integral", IntegralData),
+    "primitive_orbits": ("integral", IntegralData),
+    "discriminant_orbits": ("integral", IntegralData),
 }
 """Each preamble-computed field, with the card block that stores it."""
+
+ORBIT_CERTIFIED_BOUND = 4
+"""The z/w degree through which the bounded preamble orbit computation certifies a series."""
 
 
 def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> Yaml:
@@ -56,19 +63,41 @@ def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> 
             matrices,
             key=lambda rows: tuple(entry for row in rows for entry in row),
         )
+    if field in {"primitive_orbits", "discriminant_orbits"}:
+        if not isinstance(value, dict):
+            return value
+        projected: dict[str, Yaml] = {}
+        for group, series in value.items():
+            if not isinstance(series, dict):
+                projected[group] = series
+                continue
+            z = series.get("z")
+            w = series.get("w")
+            projected[group] = {
+                "constant": series.get("constant"),
+                "z": z[:ORBIT_CERTIFIED_BOUND] if isinstance(z, list) else z,
+                "w": w[:ORBIT_CERTIFIED_BOUND] if isinstance(w, list) else w,
+            }
+        return projected
     return value
 
 
 def applies(field: str, lattice: Lattice, planes: int) -> bool:
     """Whether the preamble exposes `field` on this stored lattice."""
-    del planes
-    if lattice.integral is None:
-        return False
     match field:
         case "automorphism_group_order" | "automorphism_group_generator_morphisms":
             return lattice.definite is not None
+        case _ if lattice.integral is None:
+            return False
+        case "discriminant_sequence":
+            return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":
             return lattice.rank >= 3
+        case "primitive_orbits":
+            return lattice.definite is not None
+        case "discriminant_orbits":
+            index = max(planes, lattice.integral.hyperbolic_index or 0)
+            return lattice.definite is None and lattice.integral.parity == "even" and index >= 2
         case _:
             return True
 
@@ -77,10 +106,11 @@ SAGE_MODULE = Path(__file__).with_name("sage_genus.py")
 
 
 class Request(TypedDict):
-    """One integral lattice and the preamble-owned fields CI asks it to compute."""
+    """One lattice and the preamble-owned fields CI asks it to compute."""
 
     tag: str
-    gram: list[list[int]]
+    gram: list[list[int | str]]
+    integral: bool
     fields: list[str]
 
 
@@ -92,20 +122,20 @@ def name(tag: str, field: str) -> str:
 def requests(
     loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int
 ) -> list[Request]:
-    """For each nondegenerate integral record, the uncertified preamble computations."""
+    """For each nondegenerate record, the uncertified applicable preamble computations."""
     chosen: list[Request] = []
+    bounds = hyperbolic_index_bounds(loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
         if (
-            lattice.integral is None
-            or lattice.determinant == 0
+            lattice.determinant == 0
             or (tags and lattice.tag not in tags)
         ):
             continue
         applicable = [
             field
             for field in BLOCKS
-            if applies(field, lattice, 0)
+            if applies(field, lattice, bounds.get(lattice.tag, 0))
         ]
         metadata = corpus.front_matter(frontmatter.load(str(entry.path)))
         card_certifications = metadata.get("certifications")
@@ -124,11 +154,15 @@ def requests(
             ):
                 fields.append(field)
         if fields:
-            gram = [[int(value) for value in row] for row in lattice.gram_tensor]
+            gram = [
+                [int(value) if value.denominator == 1 else str(value) for value in row]
+                for row in lattice.gram_tensor
+            ]
             chosen.append(
                 {
                     "tag": lattice.tag,
                     "gram": gram,
+                    "integral": lattice.integral is not None,
                     "fields": fields,
                 }
             )
@@ -224,7 +258,26 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
             value, morphisms = _generator_morphisms(path.stem, morphisms, value)
         match metadata.get(block_name):
             case dict() as block:
-                block[field] = value
+                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
+                    present = block.get(field)
+                    replacement = dict(present) if isinstance(present, dict) else {}
+                    for group, computed_series in value.items():
+                        if not isinstance(computed_series, dict):
+                            replacement[group] = computed_series
+                            continue
+                        old_series = replacement.get(group)
+                        updated_series = dict(old_series) if isinstance(old_series, dict) else {}
+                        for key, computed_part in computed_series.items():
+                            if key in {"z", "w"} and isinstance(computed_part, list):
+                                old_part = updated_series.get(key)
+                                tail = old_part[len(computed_part):] if isinstance(old_part, list) else []
+                                updated_series[key] = [*computed_part, *tail]
+                            else:
+                                updated_series[key] = computed_part
+                        replacement[group] = updated_series
+                    block[field] = replacement
+                else:
+                    block[field] = value
                 metadata[block_name] = {
                     key: block[key] for key in model.model_fields if key in block
                 }

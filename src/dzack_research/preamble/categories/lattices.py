@@ -1030,22 +1030,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             def coordinate_blocks(lattice):
                 rank = int(lattice.module_rank())
                 gram = lattice.gram_tensor()
-                found = []
-                seen = set()
-                for start in range(rank):
-                    if start in seen:
-                        continue
-                    component = [start]
-                    seen.add(start)
-                    for index in component:
-                        for other in range(rank):
-                            if other not in seen and gram[index, other] != self.base_ring().zero():
-                                seen.add(other)
-                                component.append(other)
-                    indices = tuple(sorted(component))
-                    block = tuple(tuple(gram[i, j] for j in indices) for i in indices)
-                    found.append((indices, block))
-                return tuple(found)
+                cuts = tuple(int(cut) for cut in gram.gram_connected_component_cuts())
+                bounds = (0, *cuts, rank)
+                return tuple(
+                    (
+                        tuple(range(start, stop)),
+                        tuple(
+                            tuple(gram[i, j] for j in range(start, stop))
+                            for i in range(start, stop)
+                        ),
+                    )
+                    for start, stop in zip(bounds, bounds[1:])
+                )
 
             def profile(blocks):
                 return frozenset(Counter(block for _indices, block in blocks).items())
@@ -1356,6 +1352,30 @@ class Lattices(OwnedCategoryOverBaseRing):
             :meth:`stable_orthogonal_group`, and \(C_L=O(A_L)/f(O(L))\).
             """
             return DiscriminantReductionSequence(self)
+
+        def discriminant_sequence_data(self):
+            r"""Return the finite discriminant-action/coset data used by catalogue certification."""
+            from dzack_research.preamble.categories.lattice_orbit_invariants import (
+                discriminant_sequence_data,
+            )
+
+            return discriminant_sequence_data(self)
+
+        def primitive_orbit_series(self, bound=4):
+            r"""Return the bounded primitive-vector orbit series for the standard orthogonal subgroups."""
+            from dzack_research.preamble.categories.lattice_orbit_invariants import (
+                primitive_orbit_series,
+            )
+
+            return primitive_orbit_series(self, bound=bound)
+
+        def discriminant_orbit_series(self, bound=4):
+            r"""Return the bounded discriminant-form orbit series used under the Eichler ``U^2`` hypothesis."""
+            from dzack_research.preamble.categories.lattice_orbit_invariants import (
+                discriminant_orbit_series,
+            )
+
+            return discriminant_orbit_series(self, bound=bound)
 
         @cached_method
         def special_orthogonal_group(self):
@@ -2004,6 +2024,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 fundamental_discriminant(_engine_element(ring, signed)),
             )
 
+        def quadratic_hypersurface_zeta_factorization(self, *, cone):
+            r"""Return the partial zeta factorization of the affine quadric level."""
+            from dzack_research.preamble.categories.lattice_zeta_invariants import (
+                quadratic_hypersurface_zeta_factorization,
+            )
+
+            return quadratic_hypersurface_zeta_factorization(self, cone=cone)
+
         def is_voronoi_perfect(self) -> bool:
             r"""Return whether the rank-one tensors of the minimal shell span ``Sym^2(L_Q)``."""
             assert self.is_definite(), (
@@ -2225,6 +2253,24 @@ class Lattices(OwnedCategoryOverBaseRing):
                             case False:
                                 pass
             return ring.zero()
+
+        def hyperbolic_plane_power_if_even_unimodular(self):
+            r"""Return ``n`` when this lattice is the even unimodular lattice of signature ``(n,n)``.
+
+            The indefinite even unimodular lattice of balanced signature is
+            uniquely isometric to ``U^n``. Return ``None`` when those hypotheses
+            do not hold.
+            """
+            signature = self.signature_pair()
+            positive, negative = int(signature.first()), int(signature.second())
+            if (
+                positive > 0
+                and positive == negative
+                and self.is_even()
+                and self.is_unimodular()
+            ):
+                return positive
+            return None
 
         def is_locally_isometric(self, other, prime) -> bool:
             r"""Return whether ``self`` and ``other`` are isometric over ``ZZ_p``."""
@@ -3319,6 +3365,68 @@ class Lattices(OwnedCategoryOverBaseRing):
         def root_sublattice(self):
 
             return _root_sublattice(self)
+
+        def reflective_root_system_components(self):
+            r"""Return the irreducible components of the full reflective root system.
+
+            Each component records its type, scale, and simple roots in the selected
+            basis of this lattice.
+            """
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                reflective_root_system_components,
+            )
+
+            return reflective_root_system_components(self)
+
+        def norm_two_root_types(self):
+            r"""Return the ADE types of the square-two roots (square minus two when negative definite)."""
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                norm_two_root_types,
+            )
+
+            return norm_two_root_types(self)
+
+        def small_coordinate_roots(self, max_support=3):
+            r"""Return roots with coordinates in ``{-1,0,1}`` and support at most ``max_support``."""
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                small_coordinate_roots,
+            )
+
+            return small_coordinate_roots(self, max_support=max_support)
+
+        def generating_root_subset(self, roots):
+            r"""Choose a basis of ``roots`` when possible, otherwise a generating sublist."""
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                generating_root_subset,
+            )
+
+            return generating_root_subset(self, roots)
+
+        def small_root_span(self, max_support=3):
+            r"""Return a generating subset when the bounded coordinate-root search spans this lattice."""
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                small_root_span,
+            )
+
+            return small_root_span(self, max_support=max_support)
+
+        def root_sublattice_data(self, roots_with_norms):
+            r"""Return invariant factors and generating root norms for the stated roots."""
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                root_sublattice_data,
+            )
+
+            return root_sublattice_data(self, roots_with_norms)
+
+        def standard_theta_series_prefix(self, minimum=None, existing_length=0):
+            r"""Return the bounded theta-series prefix used by the lattice catalogue."""
+            from dzack_research.preamble.categories.lattice_root_invariants import (
+                standard_theta_series_prefix,
+            )
+
+            return standard_theta_series_prefix(
+                self, minimum=minimum, existing_length=existing_length
+            )
 
         def reduction_cell(self, inequalities, *, equations=()):
             r"""Return the homogeneous rational cell ``{x : a(x) >= 0, e(x) = 0}`` in this lattice.

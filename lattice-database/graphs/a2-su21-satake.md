@@ -14,11 +14,6 @@ edges:
   source: alpha1
   target: alpha2
 name: Satake diagram of SU(2,1)
-properties:
-- Coxeter
-- Dynkin
-- simply laced
-- Satake
 slug: a2-su21-satake
 vertices:
 - id: alpha1

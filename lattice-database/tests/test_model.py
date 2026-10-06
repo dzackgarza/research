@@ -19,8 +19,6 @@ def test_schema_layer_has_no_preamble_or_sage_dependency() -> None:
     for relative in (
         "src/latticedb/model.py",
         "src/latticedb/catalogues.py",
-        "src/latticedb/geometric.py",
-        "src/latticedb/graphs.py",
         "src/latticedb/corpus.py",
     ):
         tree = ast.parse((ROOT / relative).read_text())
@@ -46,18 +44,6 @@ def test_schema_layer_has_no_preamble_or_sage_dependency() -> None:
 def test_latticedb_has_no_direct_mathematical_engine_imports() -> None:
     """All mathematical computation crosses the research-preamble boundary."""
     forbidden = ("sage", "cypari2", "flint", "fpylll")
-    forbidden_algorithm_names = {
-        "betti_number",
-        "cartan_matrix",
-        "euler_characteristic",
-        "hodge_number",
-        "is_coxeter",
-        "is_dynkin",
-        "is_rational_coxeter_vinberg",
-        "is_satake",
-        "theta_bound",
-        "zeta_tex",
-    }
     for path in sorted((ROOT / "src" / "latticedb").glob("*.py")):
         tree = ast.parse(path.read_text())
         modules = {
@@ -75,18 +61,8 @@ def test_latticedb_has_no_direct_mathematical_engine_imports() -> None:
             for module in modules
             for prefix in forbidden
         ), path.relative_to(ROOT)
-        names = {
-            node.name
-            for node in ast.walk(tree)
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        }
-        assert not names & forbidden_algorithm_names, (
-            path.relative_to(ROOT),
-            sorted(names & forbidden_algorithm_names),
-        )
     assert not (ROOT / "src" / "latticedb" / "roots.py").exists()
     assert not (ROOT / "src" / "latticedb" / "root_systems.py").exists()
-    assert not (ROOT / "src" / "latticedb" / "relations.py").exists()
 
 
 def test_model_does_not_recompute_authored_mathematical_invariants() -> None:

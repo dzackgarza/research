@@ -186,6 +186,40 @@ def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
     return " + ".join([*terms, order])
 
 
+def _argument(shift: int) -> str:
+    return "s" if shift == 0 else f"s - {shift}" if shift > 0 else f"s + {-shift}"
+
+
+def _character_tex(character) -> str:
+    coefficient = int(character.coefficient)
+    if not character.times_norm_parameter:
+        return str(coefficient)
+    return "n" if coefficient == 1 else "-n" if coefficient == -1 else f"{coefficient}n"
+
+
+def _l_factor_tex(factor) -> str:
+    argument = _argument(int(factor.shift))
+    character = factor.character
+    if int(character.coefficient) == 1 and not character.times_norm_parameter:
+        return f"\\zeta^\\Sigma({argument})"
+    return f"L^\\Sigma({argument}, \\chi_{{{_character_tex(character)}}})"
+
+
+def zeta_tex(lattice: Lattice, cone: bool) -> str:
+    """Render the preamble-owned affine-quadric zeta factorization."""
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.rings import session_ring_objects
+
+    integers = session_ring_objects()["ZZ"]
+    owned = Lattices(integers)(lattice.gram_tensor)
+    factorization = owned.quadratic_hypersurface_zeta_factorization(cone=cone)
+    numerator = "\\, ".join(_l_factor_tex(factor) for factor in factorization.numerator)
+    if not factorization.denominator:
+        return numerator
+    denominator = "\\, ".join(_l_factor_tex(factor) for factor in factorization.denominator)
+    return f"\\frac{{{numerator}}}{{{denominator}}}"
+
+
 def genus_tex(symbol: str) -> str:
     """TeX for a stored genus symbol such as `II_{1,9} (2: 2^10)`."""
     head, _, local = symbol.partition(" (")
@@ -734,6 +768,7 @@ def build(root: Path, target: Path) -> int:
         subgroup_tex=subgroup_tex,
         cardinality_tex=cardinality_tex,
         orbit_series_tex=orbit_series_tex,
+        zeta_tex=zeta_tex,
         theta_tex=theta_tex,
         root_system_tex=root_system_tex,
         set_tex=set_tex,
@@ -924,9 +959,20 @@ def build(root: Path, target: Path) -> int:
     for geometric_entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
         record = geometric_entry.geometric
         if isinstance(record, ProjectiveComplexVariety):
+            rows = [
+                [
+                    record.hodge_number(p, degree - p)
+                    for p in range(
+                        max(0, degree - record.dimension),
+                        min(degree, record.dimension) + 1,
+                    )
+                ]
+                for degree in range(2 * record.dimension + 1)
+            ]
             html = variety_page.render(
                 root="../",
                 geometric=record,
+                rows=rows,
                 lattices=lattices,
                 families={
                     entry.family.slug: entry.family for entry in geometric_families

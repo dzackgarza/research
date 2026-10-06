@@ -12,6 +12,9 @@ from fractions import Fraction
 import yaml
 
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.lattice_root_invariants import (
+    integral_reflection_model,
+)
 from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import model
@@ -185,19 +188,88 @@ def _integral(
 def _definite(
     record: dict[str, Yaml],
     gram: GramTensor,
-    integral_lattice,
+    formed,
+    computation_lattice,
+    rescaling: Fraction,
+    integral_lattice=None,
 ) -> dict[str, Yaml]:
     declared = _block(record, "definite")
-    block: dict[str, Yaml] = dict(declared)
+    minimum_value = computation_lattice.minimum()
+    minimum = Fraction(
+        int(abs(minimum_value.numerator())),
+        int(minimum_value.denominator()),
+    ) / rescaling
+    block: dict[str, Yaml] = {
+        "minimum": rational(minimum),
+        "kissing_number": int(computation_lattice.kissing_number()),
+    }
     if integral_lattice is not None:
-        minimum_value = integral_lattice.minimum()
-        minimum = Fraction(
-            int(abs(minimum_value.numerator())),
-            int(minimum_value.denominator()),
+        stored_theta = declared.get("theta_series")
+        existing_length = len(stored_theta) if isinstance(stored_theta, list) else 0
+        block["theta_series"] = list(
+            integral_lattice.standard_theta_series_prefix(
+                minimum=minimum, existing_length=existing_length
+            )
         )
-        block["minimum"] = rational(minimum)
-        block["kissing_number"] = int(integral_lattice.kissing_number())
+        block["root_system"] = list(integral_lattice.norm_two_root_types())
+    components = computation_lattice.reflective_root_system_components()
+    block["roots"] = [
+        {
+            "type": component.type,
+            "scale": rational(component.scale / rescaling),
+            "simple_roots": [list(root) for root in component.simple_roots],
+        }
+        for component in components
+    ]
+    for field in model.DefiniteData.model_fields:
+        if field not in block and field in declared:
+            block[field] = declared[field]
     return _ordered(block, tuple(model.DefiniteData.model_fields))
+
+
+def _root_span(
+    record: dict[str, Yaml], formed, reflection_lattice
+) -> tuple[dict[str, Yaml], tuple[tuple[int, ...], ...]] | None:
+    """Serialize authored or preamble-found roots spanning the root sublattice."""
+    match record.get("root_span"):
+        case dict() as authored:
+            block = dict(authored)
+            roots = tuple(tuple(int(entry) for entry in row) for row in block["roots"])
+        case _:
+            found = reflection_lattice.small_root_span()
+            if found is None:
+                return None
+            roots = found
+            block = {"roots": [list(root) for root in roots]}
+    block["norms"] = [
+        rational(
+            Fraction(
+                int(formed(root).q().numerator()),
+                int(formed(root).q().denominator()),
+            )
+        )
+        for root in roots
+    ]
+    return _ordered(block, tuple(model.RootSpan.model_fields)), roots
+
+
+def _root_sublattice(reflection_lattice, formed, roots) -> dict[str, Yaml]:
+    """Serialize preamble-computed root-sublattice invariant factors and generating norms."""
+    items = tuple(
+        (
+            root,
+            Fraction(
+                int(formed(root).q().numerator()),
+                int(formed(root).q().denominator()),
+            ),
+        )
+        for root in roots
+    )
+    factors, norms = reflection_lattice.root_sublattice_data(items)
+    block: dict[str, Yaml] = {"invariant_factors": list(factors)}
+    if norms is not None:
+        block["norms"] = [rational(norm) for norm in norms]
+    return block
 
 
 def _indefinite(gram: GramTensor) -> dict[str, Yaml]:
@@ -209,8 +281,8 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
 
     The adapter serializes rank, signature, determinant, definiteness, the dual
     Gram tensor, selected integral invariants, definite minimum/kissing number
-    and indefinite isotropy from preamble objects. Root-system/root-span/theta
-    data are preserved when authored but are not produced here.
+    indefinite isotropy, theta prefixes and root-system/root-sublattice data from
+    preamble objects.
 
     A field not returned by these preamble calls is preserved when already present.
     Expensive exact invariants such as `integral.overlattice_count` are requested
@@ -233,6 +305,11 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
         if formed.is_base_ring_valued()
         else None
     )
+    match integral_lattice:
+        case None:
+            reflection_lattice, reflection_multiplier = integral_reflection_model(formed)
+        case _:
+            reflection_lattice, reflection_multiplier = integral_lattice, 1
     definiteness = formed.definiteness()
     dual: dict[str, Yaml] = {}
     if determinant != 0:
@@ -259,12 +336,35 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
         "definiteness": definiteness,
         **dual,
     }
-    for key in ("integral", "definite", "indefinite"):
+    for key in ("integral", "definite", "indefinite", "root_span", "root_sublattice"):
         derived.pop(key, None)
     if integral_lattice is not None:
         derived["integral"] = _integral(record, gram, integral_lattice)
     if definiteness in ("positive_definite", "negative_definite"):
-        derived["definite"] = _definite(record, gram, integral_lattice)
+        derived["definite"] = _definite(
+            record,
+            gram,
+            formed,
+            reflection_lattice,
+            Fraction(reflection_multiplier),
+            integral_lattice,
+        )
+        labels = tuple(reflection_lattice.module_generating_set())
+        reflective_roots = tuple(
+            tuple(int(root.to_vector()(label)) for label in labels)
+            for root in reflection_lattice.reflective_roots()
+        )
+        derived["root_sublattice"] = _root_sublattice(
+            reflection_lattice, formed, reflective_roots
+        )
+    else:
+        found = _root_span(record, formed, reflection_lattice)
+        if found is not None:
+            span, spanning = found
+            derived["root_span"] = span
+            derived["root_sublattice"] = _root_sublattice(
+                reflection_lattice, formed, spanning
+            )
     if definiteness == "indefinite":
         derived["indefinite"] = _indefinite(gram)
     return {key: derived[key] for key in KEYS if key in derived}
@@ -301,7 +401,7 @@ def derived_projection(record: Mapping[str, Yaml]) -> dict[str, Yaml]:
         ),
         (
             "definite",
-            ("minimum", "kissing_number"),
+            ("minimum", "kissing_number", "theta_series", "root_system", "roots"),
         ),
         ("indefinite", ("isotropic",)),
     ):
@@ -310,4 +410,6 @@ def derived_projection(record: Mapping[str, Yaml]) -> dict[str, Yaml]:
             projected[block_name] = {
                 field: block[field] for field in fields if field in block
             }
+    if isinstance(record.get("definite"), dict) and "root_sublattice" in record:
+        projected["root_sublattice"] = record["root_sublattice"]
     return projected

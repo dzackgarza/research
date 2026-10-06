@@ -17,16 +17,19 @@ from cysignals.signals import AlarmInterrupt
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.rings import session_ring_objects
 
-OWNED_ZZ = session_ring_objects()["ZZ"]
+_RINGS = session_ring_objects()
+OWNED_ZZ = _RINGS["ZZ"]
+OWNED_QQ = _RINGS["QQ"]
 
 
 class Request(TypedDict):
     tag: str
-    gram: list[list[int]]
+    gram: list[list[int | str]]
+    integral: bool
     fields: list[str]
 
 
-JsonValue = int | str | list[int] | list[list[list[int]]]
+JsonValue = object
 
 
 def within(seconds: int, compute: Callable[[], JsonValue]) -> JsonValue | None:
@@ -72,7 +75,8 @@ def main() -> None:
     seconds: int = task["seconds"]
     lattices: list[Request] = task["lattices"]
     for request in lattices:
-        lattice = Lattices(OWNED_ZZ)(request["gram"])
+        ring = OWNED_ZZ if request["integral"] else OWNED_QQ
+        lattice = Lattices(ring)(request["gram"])
         requested = set(request["fields"])
         line: dict[str, JsonValue | None] = {
             "tag": request["tag"],
@@ -105,6 +109,9 @@ def main() -> None:
                 int(value) for value in lattice.spinor_genus_class_numbers()
             ],
             "hyperbolic_index": lambda: int(lattice.integral_hyperbolic_index()),
+            "discriminant_sequence": lambda: lattice.discriminant_sequence_data(),
+            "primitive_orbits": lambda: lattice.primitive_orbit_series(),
+            "discriminant_orbits": lambda: lattice.discriminant_orbit_series(),
         }
         for field in request["fields"]:
             if field in {

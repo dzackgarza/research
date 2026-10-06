@@ -74,6 +74,7 @@ def test_derive_serializes_preamble_reduction_fields_when_available() -> None:
     assert lattice.integral is not None
     assert lattice.integral.bad_reduction_primes is not None
     assert lattice.integral.quadratic_character is not None
+    assert site.zeta_tex(lattice, cone=True) == "\\frac{\\zeta^\\Sigma(s - 1)\\, L^\\Sigma(s - 1, \\chi_{-3})}{L^\\Sigma(s, \\chi_{-3})}"
 
 
 def test_derive_does_not_compute_definite_invariants_for_a_rational_valued_form_without_a_preamble_case() -> None:

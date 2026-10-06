@@ -161,24 +161,11 @@ function rational_spinor_norm_class(gram_entries, isometry_entries)
 end
 
 function rational_witt_index(gram_entries)
-    space = quadratic_space(QQ, _qq_matrix(gram_entries))
-    space_class = Oscar.Hecke.isometry_class(space)
-    plane = QQ[0 1; 1 0]
-    index = 0
-    # The Witt index is the number r of hyperbolic planes in a splitting
-    # V = H_1 + ... + H_r + V_0 with V_0 zero or anisotropic (O'Meara 42F), so
-    # it is the largest r with H^r a subspace of V.  Hecke decides whether the
-    # isometry class of V represents that of H^r from local invariants, the
-    # same decision its is_isotropic makes for r = 1.
-    while 2 * (index + 1) <= dim(space)
-        hyperbolic = quadratic_space(
-            QQ,
-            block_diagonal_matrix([plane for _ in 1:(index + 1)]),
-        )
-        Oscar.Hecke.represents(space_class, Oscar.Hecke.isometry_class(hyperbolic)) || break
-        index += 1
-    end
-    return index
+    gram = _qq_matrix(gram_entries)
+    _anisotropic, hyperbolic, radical = Oscar.Hecke._quadratic_form_decomposition(gram)
+    nrows(radical) == 0 || error("Witt index requires a nondegenerate quadratic space")
+    iseven(nrows(hyperbolic)) || error("Hecke returned an odd-dimensional hyperbolic summand")
+    return div(nrows(hyperbolic), 2)
 end
 
 function number_field_spinor_norm_class(defining_coefficients, gram_entries, isometry_entries)

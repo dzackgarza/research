@@ -1494,6 +1494,27 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 r"""Return the Sylvester inertia pair of this symmetric form."""
                 return self.signature_pair()
 
+            def definiteness(self):
+                r"""Return the sign type of this finite-rank symmetric form."""
+                rank = int(self.module_rank())
+                signature = self.signature_pair()
+                positive = int(signature.first())
+                negative = int(signature.second())
+                zero = rank - positive - negative
+                match (positive, negative, zero):
+                    case (0, 0, _):
+                        return "zero"
+                    case (_, 0, 0):
+                        return "positive_definite"
+                    case (0, _, 0):
+                        return "negative_definite"
+                    case (_, 0, _):
+                        return "positive_semidefinite"
+                    case (0, _, _):
+                        return "negative_semidefinite"
+                    case _:
+                        return "indefinite"
+
             def to_quadratic_module(self):
                 r"""Return ``q(v)=b(v,v)/2`` when this symmetric form is even.
 

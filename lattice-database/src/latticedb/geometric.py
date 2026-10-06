@@ -8,6 +8,20 @@ from typing import Annotated, Literal, Self
 from pydantic import Field, ValidationError, model_validator
 from pydantic_core import PydanticCustomError
 
+from dzack_research.preamble.categories.schemes.catalogue_invariants import (
+    HodgePoincareInvariants,
+    HodgeTermData,
+    chern_indices_are_top_degree,
+    cohomology_degree_fits_dimension,
+    complete_intersection_configuration_dimension,
+    complete_intersection_is_calabi_yau,
+    hermitian_dimensions_are_consistent,
+    pontryagin_indices_are_top_degree,
+    surface_data_fits_dimension,
+    symmetric_space_dual_types_are_consistent,
+    symmetric_space_rank_fits_dimension,
+)
+
 from latticedb.model import Rational, Record, Slug, Tag
 
 
@@ -108,6 +122,13 @@ class CompleteIntersectionConstruction(Record):
         count = len(self.ambient_projective_dimensions)
         if any(len(degrees) != count for degrees in self.equation_multidegrees):
             raise PydanticCustomError("configuration_shape", "each equation has one degree in each projective factor")
+        if not complete_intersection_is_calabi_yau(
+            self.ambient_projective_dimensions, self.equation_multidegrees
+        ):
+            raise PydanticCustomError(
+                "calabi_yau_degree",
+                "the equation degrees sum to n_i + 1 in each projective factor",
+            )
         return self
 
 
@@ -178,26 +199,78 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
     family_parameter: int | None = None
     cohomology_lattices: Annotated[tuple[CohomologyLattice, ...], Field(strict=False)] = ()
 
+    def _hodge_invariants(self) -> HodgePoincareInvariants:
+        return HodgePoincareInvariants(
+            self.dimension,
+            tuple(
+                HodgeTermData(term.p, term.q, term.coefficient)
+                for term in self.hodge_poincare
+            ),
+        )
+
     @model_validator(mode="after")
     def check_hodge_poincare(self) -> Self:
-        h = {(term.p, term.q): term.coefficient for term in self.hodge_poincare}
-        if len(h) != len(self.hodge_poincare):
+        invariants = self._hodge_invariants()
+        if not invariants.has_unique_bidegrees():
             raise PydanticCustomError("hodge_duplicate", "a Hodge–Poincaré monomial occurs more than once")
+        if not invariants.exponents_within_dimension():
+            raise PydanticCustomError("hodge_degree", "a Hodge–Poincaré exponent exceeds the dimension")
+        if not invariants.is_connected():
+            raise PydanticCustomError("hodge_connected", "a connected variety has h^(0,0) = 1")
+        if not invariants.satisfies_hodge_symmetry_and_serre_duality():
+            raise PydanticCustomError("hodge_symmetry", "Hodge symmetry and Serre duality must hold")
+        if self.symmetry_group is not None and self.symmetry_group != invariants.symmetry_group():
+            raise PydanticCustomError("hodge_group", "the declared symmetry group does not preserve exactly the Hodge–Poincaré series")
         if (self.family is None) != (self.family_parameter is None):
             raise PydanticCustomError("family_parameter", "family and family_parameter must occur together")
         chern_indices: set[tuple[int, ...]] = set()
         for number in self.chern_numbers:
-            if number.indices in chern_indices:
-                raise PydanticCustomError("chern_number", "a Chern-number index tuple occurs more than once")
+            if (
+                not chern_indices_are_top_degree(number.indices, self.dimension)
+                or number.indices in chern_indices
+            ):
+                raise PydanticCustomError("chern_number", "Chern indices must be ordered, unique and sum to the dimension")
             chern_indices.add(number.indices)
+            if number.indices == (self.dimension,) and number.value != invariants.euler_characteristic():
+                raise PydanticCustomError("chern_euler", "the top Chern number equals the Euler characteristic")
+        if self.pontryagin_numbers and self.dimension % 2 != 0:
+            raise PydanticCustomError("pontryagin_degree", "Pontryagin numbers require even complex dimension")
+        if any(
+            not pontryagin_indices_are_top_degree(number.indices, self.dimension)
+            for number in self.pontryagin_numbers
+        ):
+            raise PydanticCustomError("pontryagin_degree", "Pontryagin class products must have real degree twice the complex dimension")
         if len({tuple(number.indices) for number in self.pontryagin_numbers}) != len(self.pontryagin_numbers):
             raise PydanticCustomError("pontryagin_duplicate", "a Pontryagin number occurs more than once")
+        if self.surface is not None and not surface_data_fits_dimension(self.dimension):
+            raise PydanticCustomError("surface_dimension", "surface data require complex dimension two")
         if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
             raise PydanticCustomError("homotopy_duplicate", "a homotopy degree occurs more than once")
+        if isinstance(self.construction, CompleteIntersectionConstruction):
+            expected = complete_intersection_configuration_dimension(
+                self.construction.ambient_projective_dimensions,
+                self.construction.equation_multidegrees,
+            )
+            if expected != self.dimension:
+                raise PydanticCustomError("configuration_dimension", "the complete-intersection configuration must have the stated dimension")
         degrees = [link.degree for link in self.cohomology_lattices]
         if len(degrees) != len(set(degrees)):
             raise PydanticCustomError("cohomology_degree", "a cohomology degree has more than one lattice")
+        if any(
+            not cohomology_degree_fits_dimension(degree, self.dimension)
+            for degree in degrees
+        ):
+            raise PydanticCustomError("cohomology_degree", "a cohomology degree exceeds twice the dimension")
         return self
+
+    def betti_number(self, degree: int) -> int:
+        return self._hodge_invariants().betti_number(degree)
+
+    def hodge_number(self, p: int, q: int) -> int:
+        return self._hodge_invariants().hodge_number(p, q)
+
+    def euler_characteristic(self) -> int:
+        return self._hodge_invariants().euler_characteristic()
 
 
 class RiemannianSymmetricSpace(LocallyRingedSpace):
@@ -226,6 +299,14 @@ class RiemannianSymmetricSpace(LocallyRingedSpace):
 
     @model_validator(mode="after")
     def check_symmetric_data(self) -> Self:
+        if not symmetric_space_rank_fits_dimension(self.rank, self.real_dimension):
+            raise PydanticCustomError("symmetric_rank", "symmetric-space rank exceeds real dimension")
+        if not symmetric_space_dual_types_are_consistent(
+            self.curvature_type, self.compact_dual, self.noncompact_dual
+        ):
+            if self.compact_dual is not None and self.curvature_type != "noncompact":
+                raise PydanticCustomError("compact_dual_type", "a compact dual belongs to a space of noncompact type")
+            raise PydanticCustomError("noncompact_dual_type", "a noncompact dual belongs to a space of compact type")
         if len(set(self.diagrams)) != len(self.diagrams):
             raise PydanticCustomError("diagram_duplicate", "diagram links must be unique")
         if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
@@ -243,6 +324,14 @@ class HermitianSymmetricSpace(RiemannianSymmetricSpace, ComplexManifold):
     tube_type: bool | None = None
     bounded_realization: str | None = None
     compact_dual_parabolic: str | None = None
+
+    @model_validator(mode="after")
+    def check_complex_dimension(self) -> Self:
+        if not hermitian_dimensions_are_consistent(
+            self.real_dimension, self.complex_dimension
+        ):
+            raise PydanticCustomError("hermitian_dimension", "real dimension must be twice complex dimension")
+        return self
 
 type GeometricObject = Annotated[
     ProjectiveComplexVariety | ComplexManifold | RiemannianSymmetricSpace | HermitianSymmetricSpace,
