@@ -124,6 +124,33 @@ class OrderedEnumeratedSets(OwnedCategory):
             r"""The chosen inverse on this set, with ``None`` allowed off it."""
             return self._index_of_function
 
+        def __iter__(self):
+            r"""Iterate through the chosen enumeration.
+
+            This category already stores the bijection ``I -> X`` as its
+            defining datum.  Iteration therefore evaluates that map on the
+            represented index set directly; the categorical ranking
+            isomorphism is needed when the isomorphism itself is requested,
+            not to read the enumeration it represents.
+
+            The standard finite ordinal is the one self-indexed construction:
+            its index set is literally itself and its selected enumeration is
+            the identity on ``0, ..., n-1``.  Read those positions from its
+            finite cardinality rather than recursively asking it to iterate.
+            """
+            element_at = self.enumeration()
+            index_set = self.index_set()
+            if index_set is self:
+                size = cardinal(self.cardinality())
+                assert size.is_finite(), (
+                    f"the self-indexed ordered enumeration {self} needs a finite cardinality "
+                    "or its defining category must state its own base enumeration"
+                )
+                indices = range(int(size.finite_value()))
+            else:
+                indices = index_set
+            return (element_at(index) for index in indices)
+
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
             r"""The chosen enumeration of this set, as one isomorphism.
