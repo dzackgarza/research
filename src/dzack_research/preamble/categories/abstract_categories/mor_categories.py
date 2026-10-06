@@ -1686,6 +1686,10 @@ class _MorCategoryOf(OwnedCategoryBase):
         # cached parent is reusable only if it still has the selected class.
         fixed_class = self.fixed_category_class_for(domain, codomain)
         cached = self._cached_between(domain, codomain)
+        if cached is not None and (
+            fixed_class is FixedMorCategory or isinstance(cached, fixed_class)
+        ):
+            return cached
         # What decides whether this category needs a Mor parent of its own is
         # whether the Mor it would build differs from one it already inherits,
         # not whether a class was declared somewhere in its Python ancestry: a
