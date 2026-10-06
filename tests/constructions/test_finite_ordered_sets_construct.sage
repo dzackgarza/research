@@ -13,3 +13,8 @@ def test_finite_ordered_set_filter_union_intersection_and_difference() -> None:
     assert tuple(four.intersection(tail)) == (2, 3)
     assert tuple(four.difference(tail)) == (0, 1)
     assert tuple(four.union(tail)) == (0, 1, 2, 3, 4)
+
+
+def test_finite_ordered_set_accepts_unhashable_points() -> None:
+    points = finite_ordered_set(([1], [1], [2]))
+    assert tuple(points) == ([1], [2])

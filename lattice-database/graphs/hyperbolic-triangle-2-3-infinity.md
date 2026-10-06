@@ -15,6 +15,9 @@ edges:
     gram: '-1'
     order: infinity
 name: Hyperbolic triangle (2,3,infinity)
+properties:
+- Coxeter
+- rational Coxeter–Vinberg
 slug: hyperbolic-triangle-2-3-infinity
 vertices:
 - id: wall1

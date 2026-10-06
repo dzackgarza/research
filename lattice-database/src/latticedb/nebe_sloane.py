@@ -169,43 +169,34 @@ def stored(directory: Path, name: str) -> Entry:
 
 
 def record(entry: Entry, name: str, latex: str, aliases: tuple[str, ...], families: tuple[str, ...]) -> tuple[dict[str, Yaml], str]:
-    """The declared fields of the record of an entry, without a tag, and its prose. `records.derive` computes the other fields."""
+    """The source-stated fields of one catalogue entry, without a tag, and its prose."""
     fields: dict[str, Yaml] = {
         "name": name,
         "latex": latex,
         "aliases": [entry.name, *(alias for alias in aliases if alias != entry.name)],
+        "rank": entry.dimension,
         "gram_tensor": [list(row) for row in entry.gram_tensor],
         "families": [FAMILY, *(family for family in families if family != FAMILY)],
         "related": [],
         "references": [{"citation": f"G. Nebe and N. J. A. Sloane, Catalogue of Lattices, entry {entry.name}.", "url": entry.url}],
     }
+    if entry.determinant is not None:
+        fields["determinant"] = entry.determinant
+    if entry.minimal_norm is not None or entry.kissing_number is not None:
+        definite: dict[str, Yaml] = {}
+        if entry.minimal_norm is not None:
+            definite["minimum"] = entry.minimal_norm
+        if entry.kissing_number is not None:
+            definite["kissing_number"] = entry.kissing_number
+        fields["definite"] = definite
     prose = f"The components $b(e_i, e_j)$ are those of the section `GRAM` of the entry `{entry.name}` of the Catalogue of Lattices."
     if entry.references:
         prose += "\n\nThe catalogue entry gives this reference text: " + " ".join(entry.references)
     return fields, prose
 
 
-def check(entry: Entry, derived: dict[str, Yaml]) -> None:
-    """Assert that the invariants the catalogue states are the computed ones."""
-    stated: dict[str, Yaml] = {"rank": entry.dimension}
-    computed: dict[str, Yaml] = {"rank": derived["rank"]}
-    if entry.determinant is not None:
-        stated["determinant"] = entry.determinant
-        computed["determinant"] = derived["determinant"]
-    definite = derived.get("definite")
-    if entry.minimal_norm is not None or entry.kissing_number is not None:
-        assert isinstance(definite, dict), f"the entry {entry.name} states definite invariants for a lattice that is not definite"
-        if entry.minimal_norm is not None:
-            stated["minimum"] = entry.minimal_norm
-            computed["minimum"] = definite["minimum"]
-        if entry.kissing_number is not None:
-            stated["kissing_number"] = entry.kissing_number
-            computed["kissing_number"] = definite["kissing_number"]
-    assert stated == computed, f"the entry {entry.name} states {stated}, the Gram tensor gives {computed}"
-
-
 def stored_problems(root: Path, loaded: Corpus) -> list[str]:
-    """Compare archive entries with their stored transcriptions and lattice records."""
+    """Compare archived source rows with their stored transcriptions and authored card fields."""
     directory = root / "sources" / "nebe_sloane"
     archive = directory / "union.gz"
     by_name = {name: entry.lattice for entry in loaded.entries for name in (entry.lattice.name, *entry.lattice.aliases)}
@@ -228,5 +219,5 @@ def stored_problems(root: Path, loaded: Corpus) -> list[str]:
             or (entry.minimal_norm is not None and (definite is None or definite.minimum != entry.minimal_norm))
             or (entry.kissing_number is not None and (definite is None or definite.kissing_number != entry.kissing_number))
         ):
-            problems.append(f"{path}: source invariants differ from record {lattice.tag}")
+            problems.append(f"{path}: source-stated fields differ from record {lattice.tag}")
     return problems

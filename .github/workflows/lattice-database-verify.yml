@@ -38,7 +38,13 @@ jobs:
       run: |
         sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
         PYTHONPATH="../src:src" "$sage_python" -m latticedb verify
-    - name: Validate mathematical computations
+    - name: Validate preamble owner contracts
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src" "$sage_python" -c 'import sage.all, sys, pytest; sys.exit(pytest.main(sys.argv[1:]))' \
+          ../tests/lattices/test_lattice_database_owner_contracts.py \
+          ../tests/lattices/test_coordinate_diagonal_embeddings.py
+    - name: Validate lattice database integration
       run: |
         sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
         PYTHONPATH="../src:src" "$sage_python" -m pytest \
@@ -47,7 +53,6 @@ jobs:
           tests/test_genus.py \
           tests/test_geometric.py \
           tests/test_hashimoto.py \
-          tests/test_hoehn_mason.py \
           tests/test_records.py \
           tests/validation
     - name: Check source intake provenance

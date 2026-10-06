@@ -1,10 +1,10 @@
-"""Read-only mathematical verification of authored and seeded lattice cards.
+"""Read-only structural/reference/certificate verification of lattice-db.
 
 `corpus.load` reads each file and checks that it has the shape of its schema.
 Every question that needs two records, or a record and the family, the retired
-tags or the catalogues is asked here and reported as a line of text. Archived
-intake sources are provenance for how cards were seeded; they are not
-mathematical oracles for verification. Nothing in this package writes.
+tags or the catalogues is asked here only when it is a storage/reference question.
+Mathematical validity belongs to construction of the corresponding preamble object.
+Archived intake sources are provenance for how cards were seeded. Nothing here writes.
 """
 
 from pathlib import Path
@@ -14,7 +14,7 @@ from latticedb.checks import catalogues, records, relations
 
 
 def run(root: Path) -> tuple[int, list[str]]:
-    """Run mathematical card, relation and catalogue checks without changing cards."""
+    """Run structural/reference/certificate checks without changing cards."""
     loaded = corpus.load(root)
     held = certificates.load(root)
     problems = [

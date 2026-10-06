@@ -10,24 +10,18 @@
     {% if geometric.family %}<p><a href="{{ root }}geometric-families/{{ geometric.family }}.html">{{ families[geometric.family].name }}</a>, {{ families[geometric.family].parameter }} = {{ geometric.family_parameter }}.</p>{% endif %}
   </header>
 
-  <section aria-labelledby="hodge-diamond">
-    <h2 id="hodge-diamond">Hodge diamond</h2>
-    <p>The entries are <i>h</i><sup>p,q</sup> = dim<sub>ℂ</sub> H<sup>q</sup>(X, Ω<sup>p</sup><sub>X</sub>). Row <i>k</i> has <i>p</i> + <i>q</i> = <i>k</i>, with <i>p</i> increasing from left to right.</p>
-    <div class="hodge-diamond" aria-label="Hodge diamond">
-      {% for row in rows %}
-      <div class="hodge-row">
-        {% for value in row %}<span>{{ value }}</span>{% endfor %}
-      </div>
-      {% endfor %}
-    </div>
+  <section aria-labelledby="hodge-data">
+    <h2 id="hodge-data">Stored Hodge numbers</h2>
+    <p>The card stores the nonzero values <i>h</i><sup>p,q</sup> directly.</p>
+    <div class="table-scroll"><table class="member-table"><thead><tr><th><i>p</i></th><th><i>q</i></th><th><i>h</i><sup>p,q</sup></th></tr></thead><tbody>
+      {% for term in geometric.hodge_poincare %}<tr><td>{{ term.p }}</td><td>{{ term.q }}</td><td>{{ term.coefficient }}</td></tr>{% endfor %}
+    </tbody></table></div>
     {% if geometric.symmetry_group %}<p>Symmetry group: {{ geometric.symmetry_group }}.</p>{% endif %}
   </section>
 
   <section aria-labelledby="numerical-invariants">
     <h2 id="numerical-invariants">Numerical invariants</h2>
-    <p>Euler characteristic: {{ geometric.euler_characteristic() }}.</p>
     {% if geometric.local_deformation_dimension is not none %}<p>Dimension of the local deformation space: {{ geometric.local_deformation_dimension }}.</p>{% endif %}
-    <p>Betti numbers: {% for degree in range(2 * geometric.dimension + 1) %}{% if not loop.first %}, {% endif %}<i>b</i><sub>{{ degree }}</sub> = {{ geometric.betti_number(degree) }}{% endfor %}.</p>
     {% if geometric.chern_numbers %}
     <h3>Chern numbers</h3>
     <ul>

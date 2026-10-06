@@ -1,6 +1,10 @@
 ---
 edges: []
 name: Restricted root diagram A1
+properties:
+- Coxeter
+- Dynkin
+- simply laced
 slug: restricted-a1
 vertices:
 - id: alpha

@@ -67,9 +67,6 @@
   {% if lattice.gram_tensor is not none and lattice.rank is not none %}<section aria-labelledby="gram-tensor">
     <h2 id="gram-tensor">Gram tensor</h2>
     <p>The components \(b(e_i, e_j)\) of the {{ theory("lattices", "gram-tensor", "Gram tensor") }} \(b\) in the {{ theory("lattices", "gram-tensor", "chosen basis") }} \({{ block_tex(range(1, lattice.rank + 1) | list) }}\).</p>
-    {% if blocks | length > 1 %}
-    <p>In this basis, \(L = {}\){% for block in blocks %}\(\mathbb{Z}\{ {{- block_tex(block) -}} \}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}, an {{ theory("lattices", "orthogonal-sums", "orthogonal sum") }}.</p>
-    {% endif %}
     <div class="table-scroll">
       <table class="components">
         <thead>
@@ -94,10 +91,10 @@
     <table class="facts">
       <tbody>
         <tr><th scope="row">{{ theory("lattices", "integral", "Parity") }}</th><td>{{ lattice.integral.parity }}</td></tr>
-        {% if lattice.integral.discriminant_group is not none %}
-        <tr><th scope="row">{{ theory("discriminant-forms", "discriminant-group", "Discriminant group") }}</th><td>\({{ group_tex(lattice.integral.discriminant_group) }}\)</td></tr>
-        <tr><th scope="row">{{ theory("discriminant-forms", "unimodular", "Unimodular") }}</th><td>{{ yes_no(lattice.is_unimodular) }}</td></tr>
-        <tr><th scope="row">{{ theory("overlattices", "overlattices", "Integral overlattices") }} \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}{{ theory("records", "not-decided", "not decided") }}{% endif %}</td></tr>
+       {% if lattice.integral.discriminant_group is not none %}
+       <tr><th scope="row">{{ theory("discriminant-forms", "discriminant-group", "Discriminant group") }}</th><td>\({{ group_tex(lattice.integral.discriminant_group) }}\)</td></tr>
+        <tr><th scope="row">{{ theory("discriminant-forms", "unimodular", "Unimodular") }}</th><td>{{ yes_no(lattice.integral.discriminant_group == ()) }}</td></tr>
+       <tr><th scope="row">{{ theory("overlattices", "overlattices", "Integral overlattices") }} \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}{{ theory("records", "not-decided", "not decided") }}{% endif %}</td></tr>
         {% endif %}
         {% if lattice.integral.delta is not none %}
         <tr><th scope="row">{{ theory("discriminant-forms", "two-elementary", "Nikulin invariants") }} \((r, a, \delta)\)</th><td>\(({{ lattice.rank }}, {{ lattice.integral.discriminant_group | length }}, {{ lattice.integral.delta }})\)</td></tr>
@@ -107,10 +104,6 @@
         {% endif %}
         {% if lattice.integral.quadratic_character is not none %}
         <tr><th scope="row">{{ theory("zeta", "character", "Character of the discriminant") }} \(\chi_D\), \(D = (-1)^{ {{- lattice.rank // 2 -}} } \det L\)</th><td>{% if lattice.integral.quadratic_character == 1 %}trivial{% else %}\(\chi_{ {{- lattice.integral.quadratic_character -}} } = \left(\frac{ {{- lattice.integral.quadratic_character -}} }{\cdot}\right)\){% endif %}</td></tr>
-        {% endif %}
-        {% if lattice.integral.bad_reduction_primes is not none %}
-        <tr><th scope="row">{{ theory("zeta", "zeta", "Zeta function") }} of the cone \(X_0 : Q(x) = 0\), \(\Sigma = \Sigma_L\)</th><td>\(\zeta^\Sigma(X_0, s) = {{ zeta_tex(lattice, true) }}\)</td></tr>
-        <tr><th scope="row">{{ theory("zeta", "zeta", "Zeta function") }} of \(X_n : Q(x) = n\), \(n \neq 0\), \(\Sigma = \Sigma_L \cup \{p \mid n\}\)</th><td>\(\zeta^\Sigma(X_n, s) = {{ zeta_tex(lattice, false) }}\)</td></tr>
         {% endif %}
         {% if lattice.integral.genus_symbol %}
         <tr><th scope="row">{{ theory("overlattices", "genus-symbol", "Genus symbol") }}</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
@@ -124,8 +117,8 @@
         {% if lattice.integral.spinor_genera is not none %}
         <tr><th scope="row">{{ theory("overlattices", "spinor-genera", "Classes in each spinor genus") }}, the spinor genus of \(L\) first</th><td>{{ lattice.integral.spinor_genera | join(", ") }}</td></tr>
         {% endif %}
-        {% if lattice.integral.hyperbolic_index is not none or hyperbolic_bound is not none %}
-        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{% if lattice.integral.hyperbolic_index is not none %}{{ lattice.integral.hyperbolic_index }}{% else %}\(\geq {{ hyperbolic_bound }}\), by a stored embedding \(U^{ {{- hyperbolic_bound -}} } \to L\){% endif %}</td></tr>
+        {% if lattice.integral.hyperbolic_index is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{{ lattice.integral.hyperbolic_index }}</td></tr>
         {% endif %}
       </tbody>
     </table>
@@ -161,10 +154,14 @@
     {% endif %}
     <table class="facts">
       <tbody>
+        {% if lattice.definite.minimum is not none %}
         <tr><th scope="row">{{ theory("definite-lattices", "minimum", "Minimum") }} of \({{ form }}(x, x)\), \(x \neq 0\)</th><td>\({{ rational_tex(lattice.definite.minimum) }}\)</td></tr>
+        {% endif %}
+        {% if lattice.definite.kissing_number is not none %}
         <tr><th scope="row">{{ theory("definite-lattices", "minimum", "Kissing number") }}</th><td>{{ lattice.definite.kissing_number }}</td></tr>
+        {% endif %}
         {% if lattice.definite.automorphism_group_order is not none %}
-        <tr><th scope="row">Order of the {{ theory("definite-lattices", "isometry-group", "isometry group") }}</th><td>\({{ lattice.definite.automorphism_group_order }} = {{ factorisation_tex(lattice.definite.automorphism_group_order) }}\)</td></tr>
+        <tr><th scope="row">Order of the {{ theory("definite-lattices", "isometry-group", "isometry group") }}</th><td>\({{ lattice.definite.automorphism_group_order }}\)</td></tr>
         {% endif %}
         {% if lattice.definite.automorphism_group_generator_morphisms %}
         <tr><th scope="row">Generators of \(O(L)\)</th><td>{{ lattice.definite.automorphism_group_generator_morphisms | join(", ") }}</td></tr>
@@ -200,24 +197,21 @@
   </section>
   {% endif %}
 
-  <section aria-labelledby="roots">
-    <h2 id="roots">{{ theory("roots", "roots", "Roots") }}</h2>
-    {% set span = lattice.root_span %}
-    {% set full_rank = lattice.root_span_rank == lattice.rank %}
-    <table class="facts">
-      <tbody>
-        {% if lattice.is_root_lattice is none %}
-        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
-        <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
-        {% else %}
-        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ yes_no(lattice.is_root_lattice) }}</td></tr>
-        {% if lattice.root_norms is not none %}
-        <tr><th scope="row">\(L = \mathbb{Z}\Phi_S(L)\) for</th><td>\(S = {{ set_tex(lattice.root_norms) }}\)</td></tr>
-        {% endif %}
-        {% if lattice.definite %}
-        <tr><th scope="row">Number of roots</th><td>{{ lattice.root_count }}</td></tr>
-        {% endif %}
-        <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>
+ <section aria-labelledby="roots">
+   <h2 id="roots">{{ theory("roots", "roots", "Roots") }}</h2>
+   {% set span = lattice.root_span %}
+    {% set root_sub = lattice.root_sublattice %}
+   <table class="facts">
+     <tbody>
+        {% if root_sub is none and span is none and not (lattice.definite and lattice.definite.roots) %}
+       <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
+       <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
+       {% else %}
+        {% if root_sub and root_sub.norms is not none %}
+        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>yes</td></tr>
+        <tr><th scope="row">\(L = \mathbb{Z}\Phi_S(L)\) for</th><td>\(S = {{ set_tex(root_sub.norms) }}\)</td></tr>
+       {% endif %}
+       <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>
           {%- if span_summands -%}
           \(\cong\) {% for summand, name in span_summands %}<a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ name }}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}
           {%- elif span_name is none -%}
@@ -226,29 +220,19 @@
           \({{ span_name[1] }}\)
           {%- else -%}
           \(\cong {{ span_name[1] }}\)
-          {%- endif -%}
-        </td></tr>
-        <tr><th scope="row">Rank of \(R(L)\)</th><td>{{ lattice.root_span_rank }}</td></tr>
-        <tr><th scope="row">\([L : R(L)]\)</th><td>{% if full_rank %}{{ lattice.root_span_index }}{% else %}infinite: the rank of \(R(L)\) is less than the rank of \(L\){% endif %}</td></tr>
-        <tr><th scope="row">\(R(L)\) is primitive in \(L\)</th><td>
-          {%- if lattice.root_span_is_primitive -%}
-          yes
-          {%- elif full_rank -%}
-          no: \(L / R(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\)
-          {%- else -%}
-          no: \(M / R(L) \cong {{ group_tex(lattice.root_span_factors | reject("equalto", 1) | list) }}\) for \(M = L \cap (R(L) \otimes \mathbb{Q})\)
-          {%- endif -%}
-        </td></tr>
-        {% if not lattice.definite %}
-        <tr><th scope="row">Proof</th><td>
-          {%- if not span.roots -%}
-          The notes prove that \(L\) has no roots.
-          {%- elif lattice.is_root_lattice -%}
-          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is a root, and the \(r_i\) generate \(L\).
-          {%- else -%}
-          Each \(r_i\) in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> is a root. The notes prove that each root of \(L\) is in \(\mathbb{Z}\{r_i\}\).
-          {%- endif -%}
-        </td></tr>
+         {%- endif -%}
+       </td></tr>
+        {% if root_sub %}
+        <tr><th scope="row">Stored invariant factors of \(R(L)\)</th><td>{{ root_sub.invariant_factors | join(", ") }}</td></tr>
+        {% endif %}
+       {% if not lattice.definite %}
+       <tr><th scope="row">Proof</th><td>
+         {%- if not span.roots -%}
+         The notes prove that \(L\) has no roots.
+         {%- else -%}
+          The stored rows in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> are source-stated generating roots; the prose records the completeness argument.
+         {%- endif -%}
+       </td></tr>
         {% endif %}
         {% endif %}
       </tbody>
@@ -259,11 +243,11 @@
     <div class="table-scroll">
       <table class="member-table vector-table">
         <thead>
-          <tr><th scope="col">Component</th><th scope="col">Type</th><th scope="col">Values of \(b(r, r)\)</th><th scope="col" class="numeric">Number of roots</th><th scope="col">\(\mathbb{Z}\Phi_c\)</th></tr>
+          <tr><th scope="col">Component</th><th scope="col">Type</th><th scope="col">Stored scale</th></tr>
         </thead>
         <tbody>
           {% for component in lattice.definite.roots %}
-          <tr><td>\(\Phi_{ {{- loop.index -}} }\)</td><td>\({{ root_system_tex((component.type,)) }}\)</td><td>\({{ set_tex(component_norms(component)) }}\)</td><td class="numeric">{{ root_count(component.type) }}</td><td>\(\cong {{ component_lattice_tex(component) }}\)</td></tr>
+          <tr><td>\(\Phi_{ {{- loop.index -}} }\)</td><td>\({{ root_system_tex((component.type,)) }}\)</td><td>\({{ rational_tex(component.scale) }}\)</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -273,24 +257,22 @@
     <div class="table-scroll">
       <table class="member-table vector-table">
         <thead>
-          <tr><th scope="col">Simple root</th><th scope="col">Coordinates</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
+          <tr><th scope="col">Simple root</th><th scope="col">Coordinates</th></tr>
         </thead>
         <tbody>
           {% for component in lattice.definite.roots %}
           {% set c = loop.index %}
-          {% set norms = component_norms(component) %}
           {% for simple_root in component.simple_roots %}
-          <tr><td>\(\alpha{% if several %}^{({{ c }})}{% endif %}_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(simple_root) }}\)</td><td class="numeric">\({{ rational_tex(norms[loop.index0]) }}\)</td></tr>
+          <tr><td>\(\alpha{% if several %}^{({{ c }})}{% endif %}_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(simple_root) }}\)</td></tr>
           {% endfor %}
           {% endfor %}
         </tbody>
       </table>
     </div>
     {% endif %}
-    {% if span and span.roots %}
-    <h3 id="generating-roots">{{ theory("roots", "not-definite", "Roots that generate") }} \(\mathbb{Z}\Phi(L)\)</h3>
-    {% if lattice.is_root_lattice %}<p>The \(r_i\) are a basis of \(L\).</p>{% endif %}
-    <div class="table-scroll">
+   {% if span and span.roots %}
+   <h3 id="generating-roots">{{ theory("roots", "not-definite", "Roots that generate") }} \(\mathbb{Z}\Phi(L)\)</h3>
+   <div class="table-scroll">
       <table class="member-table vector-table">
         <thead>
           <tr><th scope="col">Root</th><th scope="col">Coordinates</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>

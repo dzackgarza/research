@@ -15,6 +15,7 @@ constructed by calling that category.
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Hashable, Sequence
 from typing import overload
 
@@ -1002,6 +1003,132 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return $\coprod_{i \in I} L_i$, which over a finite index set is the biproduct."""
             return self.biproduct(summands)
 
+        def coordinate_diagonal_embeddings(self, lattices):
+            r"""Return the diagonal embeddings among a finite family of framed lattices.
+
+            For a framed target ``T``, decompose its selected basis into the
+            connected components of the graph with an edge ``i--j`` when
+            ``b(e_i,e_j) != 0``. Equal Gram blocks occur in groups. A part of
+            size ``k`` in one such group gives the diagonal embedding
+            ``M(k) -> M^k``. For a collection of parts, divide their sizes by
+            their common gcd ``g``; whenever an input source has exactly the
+            resulting multiset of Gram blocks, return the represented embedding
+            ``source(g) -> T``.
+
+            Each result is ``(source, target, g, embedding, parts)``. ``source``
+            and ``target`` are the original objects from ``lattices``;
+            ``embedding`` is a live lattice embedding with domain ``source(g)``;
+            ``parts`` numbers the target coordinate blocks from zero. The
+            identity embedding is omitted.
+            """
+            from sage.combinat.partition import Partitions
+
+            values = tuple(lattices)
+            if any(lattice not in self for lattice in values):
+                raise TypeError(f"coordinate diagonal embeddings in {self} require every object to be a lattice of this category")
+
+            def coordinate_blocks(lattice):
+                rank = int(lattice.module_rank())
+                gram = lattice.gram_tensor()
+                found = []
+                seen = set()
+                for start in range(rank):
+                    if start in seen:
+                        continue
+                    component = [start]
+                    seen.add(start)
+                    for index in component:
+                        for other in range(rank):
+                            if other not in seen and gram[index, other] != self.base_ring().zero():
+                                seen.add(other)
+                                component.append(other)
+                    indices = tuple(sorted(component))
+                    block = tuple(tuple(gram[i, j] for j in indices) for i in indices)
+                    found.append((indices, block))
+                return tuple(found)
+
+            def profile(blocks):
+                return frozenset(Counter(block for _indices, block in blocks).items())
+
+            blocks_by_lattice = {lattice: coordinate_blocks(lattice) for lattice in values}
+            by_profile = {}
+            for lattice in values:
+                by_profile.setdefault(profile(blocks_by_lattice[lattice]), []).append(lattice)
+
+            def partitions_through(size):
+                return tuple(
+                    tuple(int(part) for part in partition)
+                    for total in range(size + 1)
+                    for partition in Partitions(total)
+                )
+
+            def choices(groups):
+                match groups:
+                    case ():
+                        return ((),)
+                    case (first, *rest):
+                        tail = choices(tuple(rest))
+                        result = []
+                        for partition in partitions_through(len(first)):
+                            parts = []
+                            start = 0
+                            for size in partition:
+                                parts.append(tuple(first[start:start + size]))
+                                start += size
+                            result.extend((tuple(parts) + others) for others in tail)
+                        return tuple(result)
+
+            result = []
+            for target in values:
+                target_blocks = blocks_by_lattice[target]
+                groups = {}
+                for position, (_indices, block) in enumerate(target_blocks):
+                    groups.setdefault(block, []).append(position)
+                for parts in choices(tuple(tuple(group) for group in groups.values())):
+                    if not parts:
+                        continue
+                    if len(parts) == len(target_blocks) and all(len(part) == 1 for part in parts):
+                        continue
+                    sizes = tuple(len(part) for part in parts)
+                    scale = sizes[0]
+                    for size in sizes[1:]:
+                        scale = gcd(scale, size)
+                    wanted_blocks = tuple(
+                        tuple(
+                            tuple((len(part) // scale) * entry for entry in row)
+                            for row in target_blocks[part[0]][1]
+                        )
+                        for part in parts
+                    )
+                    wanted_profile = frozenset(Counter(wanted_blocks).items())
+                    for source in by_profile.get(wanted_profile, ()):
+                        source_blocks = blocks_by_lattice[source]
+                        free = Counter(range(len(parts)))
+                        images = [None] * int(source.module_rank())
+                        ordered_parts = []
+                        target_labels = tuple(target.module_generating_set())
+                        for indices, block in source_blocks:
+                            chosen = next(
+                                position
+                                for position in free
+                                if free[position] and wanted_blocks[position] == block
+                            )
+                            free[chosen] -= 1
+                            part = parts[chosen]
+                            ordered_parts.append(part)
+                            for local, source_position in enumerate(indices):
+                                image = target.zero()
+                                for block_position in part:
+                                    target_index = target_blocks[block_position][0][local]
+                                    image += target.module_generator(target_labels[target_index])
+                                images[source_position] = image
+                        if any(image is None for image in images):
+                            raise RuntimeError(f"failed to construct every basis image of the diagonal embedding {source} -> {target}")
+                        twisted = source.twist(scale)
+                        embedding = twisted.Emb(target)(tuple(images))
+                        result.append((source, target, int(scale), embedding, tuple(ordered_parts)))
+            return tuple(result)
+
     def _repr_(self):
         r"""Return ``Lattices(R)`` with the session name of the base ring.
 
@@ -1349,6 +1476,22 @@ class Lattices(OwnedCategoryOverBaseRing):
                     assert False, f"the Witt index of {self!r} is computed here over represented absolute number fields, but {self!r} is over {field}"
             integers = _own_ring(SageZZ)
             return _owned_engine_element(integers, SageZZ(index))
+
+        def is_isotropic(self) -> bool:
+            r"""Return whether $L_K$ contains a nonzero isotropic vector.
+
+            Here $K=\operatorname{Frac}(R)$. A nonzero radical already gives
+            an isotropic vector; in the nondegenerate case isotropy is
+            equivalent to positive Witt index.
+            """
+            rank = self.module_rank()
+            if not rank.is_finite():
+                raise ValueError(f"isotropy is defined here for finite-rank lattices, not {self!r}")
+            match self.is_nondegenerate():
+                case False:
+                    return int(rank) > 0
+                case True:
+                    return bool(self.witt_index() > 0)
 
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
@@ -3041,6 +3184,33 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
+
+        def definiteness(self):
+            r"""Return the sign type of this finite-rank real quadratic lattice.
+
+            The result is one of ``positive_definite``, ``negative_definite``,
+            ``positive_semidefinite``, ``negative_semidefinite``, ``indefinite``
+            or ``zero``. It is determined by the owned archimedean signature
+            pair together with the rank, so the radical dimension is retained.
+            """
+            rank = int(self.module_rank())
+            signature = self.signature_pair()
+            positive = int(signature.first())
+            negative = int(signature.second())
+            zero = rank - positive - negative
+            match (positive, negative, zero):
+                case (0, 0, _):
+                    return "zero"
+                case (_, 0, 0):
+                    return "positive_definite"
+                case (0, _, 0):
+                    return "negative_definite"
+                case (_, 0, _):
+                    return "positive_semidefinite"
+                case (0, _, _):
+                    return "negative_semidefinite"
+                case _:
+                    return "indefinite"
 
         def is_elliptic(self) -> bool:
             r"""Return whether this finite-rank lattice is negative definite.

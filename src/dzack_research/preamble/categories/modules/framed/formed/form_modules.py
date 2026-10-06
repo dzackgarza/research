@@ -826,6 +826,29 @@ class PairingObjects(OwnedCategoryOverBaseRing):
             r"""Return the value module of the selected pairing."""
             return self._pairing_value_module()
 
+        def is_base_ring_valued(self) -> bool:
+            r"""Return whether this finite framed pairing takes values in its base ring."""
+            match self.left_module() is self.right_module() and self.left_module() is self:
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        f"base-ring-valuedness here is defined for a formed module pairing itself, but {self} pairs {self.left_module()} and {self.right_module()}"
+                    )
+            match self.module_rank().is_finite():
+                case True:
+                    ring = self.base_ring()
+                    generators = tuple(self.module_generators())
+                    return all(
+                        self.b(left, right) in ring
+                        for left in generators
+                        for right in generators
+                    )
+                case False:
+                    raise ValueError(
+                        f"cannot decide whether the form on {self} is base-ring-valued from a finite framing: the module has infinite rank"
+                    )
+
         @cached_method
         def left_curry(self):
             r"""Return ``X -> Hom_R(Y,W)``, ``x |-> (y |-> b(x,y))``."""

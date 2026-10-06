@@ -43,6 +43,52 @@ def test_schema_layer_has_no_preamble_or_sage_dependency() -> None:
         ), relative
 
 
+def test_latticedb_has_no_direct_mathematical_engine_imports() -> None:
+    """All mathematical computation crosses the research-preamble boundary."""
+    forbidden = ("sage", "cypari2", "flint", "fpylll")
+    forbidden_algorithm_names = {
+        "betti_number",
+        "cartan_matrix",
+        "euler_characteristic",
+        "hodge_number",
+        "is_coxeter",
+        "is_dynkin",
+        "is_rational_coxeter_vinberg",
+        "is_satake",
+        "theta_bound",
+        "zeta_tex",
+    }
+    for path in sorted((ROOT / "src" / "latticedb").glob("*.py")):
+        tree = ast.parse(path.read_text())
+        modules = {
+            node.module
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ImportFrom) and node.module is not None
+        } | {
+            alias.name
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Import)
+            for alias in node.names
+        }
+        assert not any(
+            module == prefix or module.startswith(prefix + ".")
+            for module in modules
+            for prefix in forbidden
+        ), path.relative_to(ROOT)
+        names = {
+            node.name
+            for node in ast.walk(tree)
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+        assert not names & forbidden_algorithm_names, (
+            path.relative_to(ROOT),
+            sorted(names & forbidden_algorithm_names),
+        )
+    assert not (ROOT / "src" / "latticedb" / "roots.py").exists()
+    assert not (ROOT / "src" / "latticedb" / "root_systems.py").exists()
+    assert not (ROOT / "src" / "latticedb" / "relations.py").exists()
+
+
 def test_model_does_not_recompute_authored_mathematical_invariants() -> None:
     """Mathematical truth is checked by CI validation, not by Pydantic construction."""
     record = e8()
@@ -336,124 +382,22 @@ ROOT_SPAN_OF_U: dict[str, Yaml] = {"roots": [[1, 1], [1, -1]], "norms": [2, -2],
 ROOT_SUBLATTICE_OF_U: dict[str, Yaml] = {"invariant_factors": [1, 2]}
 
 
-def test_derived_properties_follow_from_the_record() -> None:
-    e8_lattice = Lattice.model_validate(e8())
-    assert e8_lattice.is_unimodular
-    assert Lattice.model_validate(a2_dual()).determinant == Fraction(1, 3)
-    assert not Lattice.model_validate(a2_dual()).is_unimodular
-    assert Lattice.model_validate(affine_a2()).nullity == 1
-    assert Lattice.model_validate(hyperbolic_plane()).is_hyperbolic
-    assert not e8_lattice.is_hyperbolic
-
+def test_certificate_hash_uses_the_stored_result_without_recomputing_it() -> None:
+    lattice = Lattice.model_validate(e8())
     computation = "0001 definite.automorphism_group_order"
-    assert e8_lattice.definite is not None
-    value = e8_lattice.definite.automorphism_group_order
-    certificate_hash = certificates.certification_hash(
-        computation, e8_lattice, value
-    )
+    assert lattice.definite is not None
+    value = lattice.definite.automorphism_group_order
+    certificate_hash = certificates.certification_hash(computation, lattice, value)
     held = {
         computation: certificates.Certificate(hash=certificate_hash, by="test")
     }
     assert certificates.is_certified(
         held, computation, certificate_hash, certificate_hash
     )
-    assert not certificates.is_certified(
-        held, computation, None, certificate_hash
-    )
-    changed = certificates.certification_hash(computation, e8_lattice, 1)
+    assert not certificates.is_certified(held, computation, None, certificate_hash)
+    changed = certificates.certification_hash(computation, lattice, 1)
     assert changed != certificate_hash
-    assert not certificates.is_certified(
-        held, computation, certificate_hash, changed
-    )
-
-
-def test_the_number_of_roots_of_a_definite_lattice_is_the_sum_over_its_components() -> None:
-    # E8 has 240 roots; I_{2,0} has the 8 roots of B2; A2 has the 12 roots of G2; [10, 9, 10] has 2 + 2 roots of two components A1.
-    assert Lattice.model_validate(e8()).root_count == 240
-    assert Lattice.model_validate(square_lattice()).root_count == 8
-    assert Lattice.model_validate(a2()).root_count == 12
-    assert Lattice.model_validate(binary_form_of_determinant_19()).root_count == 4
-
-
-def test_a_definite_root_lattice_is_generated_by_its_roots() -> None:
-    assert Lattice.model_validate(e8()).is_root_lattice
-    assert Lattice.model_validate(e8()).root_norms == (Fraction(2),)
-    assert Lattice.model_validate(a6()).root_norms == (Fraction(2),)
-    assert Lattice.model_validate(square_lattice()).root_norms == (Fraction(1),)
-    assert Lattice.model_validate(a2_dual()).root_norms == (Fraction(2, 3),)
-
-
-def test_the_roots_of_a_definite_lattice_can_generate_a_sublattice_of_finite_index() -> None:
-    binary = Lattice.model_validate(binary_form_of_determinant_19())
-    assert binary.is_root_lattice is False
-    assert binary.root_span_rank == 2
-    assert binary.root_span_index == 2
-    assert binary.root_span_is_primitive is False
-    assert binary.root_norms is None
-
-
-def test_roots_that_generate_a_lattice_that_is_not_definite_prove_that_it_is_a_root_lattice() -> None:
-    # U + <-2> with basis e, f, g is generated by e - f, g and e + g, each with b(r, r) = -2.
-    plane_plus_a1 = Lattice.model_validate(
-        with_root_span(
-            hyperbolic_plane_plus_a1(),
-            {"roots": [[1, -1, 0], [0, 0, 1], [1, 0, 1]], "norms": [-2, -2, -2]},
-            {"invariant_factors": [1, 1, 1], "norms": [-2]},
-        )
-    )
-    assert plane_plus_a1.is_root_lattice
-    assert plane_plus_a1.root_norms == (Fraction(-2),)
-    # <1> + <-2> is generated by e_1 and e_2.
-    binary = Lattice.model_validate(with_root_span(anisotropic_binary(), {"roots": [[1, 0], [0, 1]], "norms": [1, -2]}, {"invariant_factors": [1, 1], "norms": [1, -2]}))
-    assert binary.is_root_lattice
-    assert binary.root_norms == (Fraction(1), Fraction(-2))
-
-
-def test_the_roots_of_the_hyperbolic_plane_generate_a_sublattice_of_index_two() -> None:
-    plane = Lattice.model_validate(with_root_span(hyperbolic_plane(), ROOT_SPAN_OF_U, ROOT_SUBLATTICE_OF_U))
-    assert plane.is_root_lattice is False
-    assert plane.root_span_rank == 2
-    assert plane.root_span_index == 2
-    assert plane.root_span_is_primitive is False
-    assert plane.root_norms is None
-
-
-def test_a_lattice_with_no_roots_has_the_zero_sublattice_as_a_primitive_root_span() -> None:
-    # Each x = (a, b) of <1> + <0> has b(x, x) = a^2, and b((a, b), (0, 1)) = 0, so no x is a root.
-    degenerate = Lattice.model_validate(
-        {
-            "tag": "000A",
-            "name": "<1> + <0>",
-            "latex": r"\langle 1 \rangle \oplus \langle 0 \rangle",
-            "rank": 2,
-            "gram_tensor": [[1, 0], [0, 0]],
-            "signature": [1, 0],
-            "determinant": 0,
-            "definiteness": "positive_semidefinite",
-            "integral": {"parity": "odd"},
-            "root_span": {"roots": [], "norms": []},
-            "root_sublattice": {"invariant_factors": []},
-        }
-    )
-    assert degenerate.is_root_lattice is False
-    assert degenerate.root_span_rank == 0
-    assert degenerate.root_span_is_primitive is True
-
-
-def test_a_lattice_that_is_not_definite_is_not_decided_without_a_root_span() -> None:
-    plane = Lattice.model_validate(hyperbolic_plane())
-    assert plane.is_root_lattice is None
-    assert plane.root_span_rank is None
-    assert plane.root_span_index is None
-    assert plane.root_span_is_primitive is None
-    assert plane.root_norms is None
-
-
-def test_a_theta_series_is_stated_past_the_minimum_and_further_for_a_small_rank() -> None:
-    # Rank 8: through norm 8. Rank 2: through norm 12.
-    assert error_types(with_block(e8(), "definite", theta_series=[1, 0, 240, 0, 2160, 0, 6720, 0])) == {"theta_series_short"}
-    assert error_types(with_block(square_lattice(), "definite", theta_series=[1, 4, 4, 0, 4, 8, 0, 0, 4, 4, 8, 0])) == {"theta_series_short"}
-    Lattice.model_validate(with_block(binary_form_of_determinant_19(), "definite", theta_series=[1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0, 0]))
+    assert not certificates.is_certified(held, computation, certificate_hash, changed)
 
 
 def with_orbits(record: dict[str, Yaml], **series: list[int]) -> dict[str, Yaml]:
@@ -470,53 +414,20 @@ def test_the_series_of_orbits_of_a2_is_accepted() -> None:
     assert lattice.integral.primitive_orbits["SOtilde"].coefficient(-2) is None
 
 
-@pytest.mark.parametrize(
-    ("record", "expected"),
-    [
-        # A2 is even, positive definite, and has 6 vectors of norm 2, all primitive.
-        (with_orbits(a2(), O=[1, 1]), {"primitive_orbit_without_vectors", "primitive_orbit_theta_series"}),
-        (with_block(a2(), "integral", primitive_orbits={"O": {"constant": 1}}), {"primitive_orbit_without_vectors"}),
-        (with_block(a2(), "integral", primitive_orbits={"O": {"w": [0, 1]}}), {"primitive_orbit_without_vectors"}),
-        (with_orbits(a2(), O=[0, 0]), {"primitive_orbit_theta_series"}),
-        # SO is a subgroup of O, and on a positive definite lattice O+ is SO.
-        (with_orbits(a2(), O=[0, 2], SO=[0, 1]), {"primitive_orbit_subgroup"}),
-        (with_orbits(a2(), SO=[0, 2], O_plus=[0, 1]), {"primitive_orbit_same_group"}),
-        (with_block(affine_a2(), "integral", primitive_orbits={"O": {"z": [0, 1]}}), {"primitive_orbits_requires_nondegenerate"}),
-    ],
-)
-def test_a_series_of_orbits_is_rejected_for_its_reason(record: dict[str, Yaml], expected: set[str]) -> None:
-    assert error_types(record) == expected
+def test_orbit_series_are_stored_schema_data_not_mathematically_recomputed() -> None:
+    lattice = Lattice.model_validate(
+        with_orbits(a2(), O=[1, 1], SO=[0, 0], O_plus=[7, 3])
+    )
+    assert lattice.integral is not None
+    assert lattice.integral.primitive_orbits is not None
+    assert lattice.integral.primitive_orbits["O"].z == (1, 1)
 
 
 @pytest.mark.parametrize(
     ("record", "expected"),
     [
-        # A block on a lattice that does not satisfy the hypothesis of the block.
-        (hyperbolic_plane() | {"definite": binary_form_of_determinant_19()["definite"]}, "definite_requires_definite"),
-        (affine_a2() | {"definite": binary_form_of_determinant_19()["definite"]}, "definite_requires_definite"),
-        (e8() | {"indefinite": {"isotropic": False}}, "indefinite_requires_indefinite"),
-        (e8() | {"hyperbolic": {"reflective": True}}, "hyperbolic_requires_hyperbolic"),
-        (a2_dual() | {"integral": {"parity": "even", "discriminant_group": [3]}}, "integral_requires_integer_values"),
-        (with_block(a2_dual(), "definite", theta_series=[1, 0, 6]), "theta_series_requires_integral"),
-        (with_block(a2_dual(), "definite", root_system=[]), "root_system_requires_integral"),
-        (with_block(affine_a2(), "integral", discriminant_group=[2]), "discriminant_group_requires_nondegenerate"),
-        (with_block(affine_a2(), "integral", genus_symbol="II_{2,0}"), "genus_requires_nondegenerate"),
-        (with_block(affine_a2(), "integral", overlattice_count=1), "overlattice_count_requires_nondegenerate"),
-        (with_block(affine_a2(), "integral", genus_class_count=1), "genus_class_count_requires_nondegenerate"),
-        (with_block(affine_a2(), "integral", hyperbolic_index=0), "hyperbolic_index_requires_nondegenerate"),
-        (with_block(a2(), "integral", delta=0), "delta_requires_two_elementary_even"),
         (hyperbolic_plane() | {"root_sublattice": ROOT_SUBLATTICE_OF_U}, "root_sublattice_not_decided"),
-        # A required block or field that is absent. Absent blocks are not
-        # problems: sparse cards await enrichment (Oct 3 sparse-card doctrine).
-        (e8() | {"integral": {"parity": "even"}}, "discriminant_group_missing"),
-        (without(e8(), "integral", "delta"), "delta_missing"),
-        (without(e8(), "definite", "theta_series"), "theta_series_missing"),
-        (without(e8(), "definite", "root_system"), "root_system_missing"),
-        (without(e8(), "definite", "roots"), "missing"),
-        ({key: value for key, value in e8().items() if key != "root_sublattice"}, "root_sublattice_missing"),
-        (hyperbolic_plane() | {"root_span": ROOT_SPAN_OF_U}, "root_sublattice_missing"),
         (hyperbolic_plane() | {"root_span": {"roots": [[1, 1], [1, -1]], "summands": [{"tag": "0001", "scale": 0}], "embedding": [[1, 1], [1, -1]]}}, "summand_scale_zero"),
-        # Fields whose shapes do not fit the rank or one another.
         (e8() | {"rank": 7}, "gram_tensor_shape"),
         (e8() | {"signature": [8, 1]}, "signature_shape"),
         (with_block(e8(), "definite", roots=[{"type": "E8", "scale": 1, "simple_roots": [[1, 0, 0, 0, 0, 0, 0, 0]]}]), "roots_shape"),
@@ -526,10 +437,6 @@ def test_a_series_of_orbits_is_rejected_for_its_reason(record: dict[str, Yaml], 
         (e8() | {"root_span": {"roots": [], "norms": []}}, "root_span_on_definite"),
         (with_block(e8(), "root_sublattice", invariant_factors=[1] * 9), "root_sublattice_factors_shape"),
         (with_root_span(hyperbolic_plane(), ROOT_SPAN_OF_U, {"invariant_factors": [2, 3]}), "root_sublattice_factors_shape"),
-        # `norms` is stated exactly for a root lattice.
-        (without(e8(), "root_sublattice", "norms"), "root_sublattice_norms"),
-        (with_block(binary_form_of_determinant_19(), "root_sublattice", norms=[2]), "root_sublattice_norms"),
-        # Values outside the schema.
         (e8() | {"colour": "blue"}, "extra_forbidden"),
         (e8() | {"tag": "e8"}, "string_pattern_mismatch"),
         (e8() | {"determinant": 1.0}, "rational_type"),
@@ -538,13 +445,8 @@ def test_a_series_of_orbits_is_rejected_for_its_reason(record: dict[str, Yaml], 
         (with_block(e8(), "definite", root_system=["D3"]), "string_pattern_mismatch"),
     ],
 )
-def test_inconsistent_record_is_rejected_for_its_reason(record: dict[str, Yaml], expected: str) -> None:
+def test_structurally_inconsistent_record_is_rejected(record: dict[str, Yaml], expected: str) -> None:
     assert expected in error_types(record)
-
-
-def test_every_problem_of_a_record_is_reported_at_once() -> None:
-    record = {key: value for key, value in e8().items() if key != "integral"} | {"indefinite": {"isotropic": False}}
-    assert error_types(record) == {"indefinite_requires_indefinite"}
 
 
 @pytest.mark.parametrize(

@@ -1,9 +1,8 @@
-"""Mathematical checks of fields that a lattice card states."""
+"""Certificate-consistency checks for stored lattice cards."""
 
 import frontmatter
-from pydantic import ValidationError
 
-from latticedb import certificates, corpus, genus, records
+from latticedb import certificates, corpus, genus
 from latticedb.certificates import Certificates
 from latticedb.corpus import Corpus
 
@@ -14,15 +13,6 @@ def problems(loaded: Corpus, held: Certificates) -> list[str]:
         missing = [name for name in ("rank", "gram_tensor", "signature", "determinant", "definiteness") if getattr(entry.lattice, name) is None]
         if missing:
             found.append(f"{entry.path}: fields awaiting source transcription or enrichment: {', '.join(missing)}")
-            continue
-        gram_problems = records.gram_problems(entry.lattice.gram_tensor)
-        if gram_problems:
-            found.extend(f"{entry.path}: {problem}" for problem in gram_problems)
-            continue
-        try:
-            entry.lattice._well_defined()
-        except ValidationError as error:
-            found.extend(f"{entry.path}: {'.'.join(str(part) for part in problem['loc'])}: {problem['msg']}" for problem in error.errors())
             continue
         metadata = corpus.front_matter(frontmatter.load(str(entry.path)))
         card_certifications = metadata.get("certifications")
@@ -56,8 +46,4 @@ def problems(loaded: Corpus, held: Certificates) -> list[str]:
                 found.append(
                     f"{entry.path}: {block_name}.{field} contradicts its completed computation certificate"
                 )
-        found.extend(
-            f"{entry.path}: {problem}"
-            for problem in records.local_admission_problems(entry.lattice)
-        )
     return found

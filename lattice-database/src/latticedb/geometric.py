@@ -108,8 +108,6 @@ class CompleteIntersectionConstruction(Record):
         count = len(self.ambient_projective_dimensions)
         if any(len(degrees) != count for degrees in self.equation_multidegrees):
             raise PydanticCustomError("configuration_shape", "each equation has one degree in each projective factor")
-        if any(sum(degrees[i] for degrees in self.equation_multidegrees) != dimension + 1 for i, dimension in enumerate(self.ambient_projective_dimensions)):
-            raise PydanticCustomError("calabi_yau_degree", "the equation degrees sum to n_i + 1 in each projective factor")
         return self
 
 
@@ -182,60 +180,24 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
 
     @model_validator(mode="after")
     def check_hodge_poincare(self) -> Self:
-        n = self.dimension
         h = {(term.p, term.q): term.coefficient for term in self.hodge_poincare}
         if len(h) != len(self.hodge_poincare):
             raise PydanticCustomError("hodge_duplicate", "a Hodge–Poincaré monomial occurs more than once")
-        if any(p > n or q > n for p, q in h):
-            raise PydanticCustomError("hodge_degree", "a Hodge–Poincaré exponent exceeds the dimension")
-        if h.get((0, 0)) != 1:
-            raise PydanticCustomError("hodge_connected", "a connected variety has h^(0,0) = 1")
-        for p in range(n + 1):
-            for q in range(n + 1):
-                if h.get((p, q), 0) != h.get((q, p), 0) or h.get((p, q), 0) != h.get((n - p, n - q), 0):
-                    raise PydanticCustomError("hodge_symmetry", "Hodge symmetry and Serre duality must hold")
-        # The square action and its hyperkähler enlargement are stated at https://hyperkaehler.info/hodge/.
-        group = "D4" if all(h.get((p, q), 0) == h.get((n - p, q), 0) for p in range(n + 1) for q in range(n + 1)) else "V4"
-        if self.symmetry_group is not None and self.symmetry_group != group:
-            raise PydanticCustomError("hodge_group", "the declared symmetry group does not preserve exactly the Hodge–Poincaré series")
         if (self.family is None) != (self.family_parameter is None):
             raise PydanticCustomError("family_parameter", "family and family_parameter must occur together")
         chern_indices: set[tuple[int, ...]] = set()
         for number in self.chern_numbers:
-            if sum(number.indices) != n or tuple(sorted(number.indices)) != number.indices or number.indices in chern_indices:
-                raise PydanticCustomError("chern_number", "Chern indices must be ordered, unique and sum to the dimension")
+            if number.indices in chern_indices:
+                raise PydanticCustomError("chern_number", "a Chern-number index tuple occurs more than once")
             chern_indices.add(number.indices)
-            if number.indices == (n,) and number.value != self.euler_characteristic():
-                raise PydanticCustomError("chern_euler", "the top Chern number equals the Euler characteristic")
-        if self.pontryagin_numbers and n % 2 != 0:
-            raise PydanticCustomError("pontryagin_degree", "Pontryagin numbers require even complex dimension")
-        if any(sum(number.indices) * 2 != n for number in self.pontryagin_numbers):
-            raise PydanticCustomError("pontryagin_degree", "Pontryagin class products must have real degree twice the complex dimension")
         if len({tuple(number.indices) for number in self.pontryagin_numbers}) != len(self.pontryagin_numbers):
             raise PydanticCustomError("pontryagin_duplicate", "a Pontryagin number occurs more than once")
-        if self.surface is not None and n != 2:
-            raise PydanticCustomError("surface_dimension", "surface data require complex dimension two")
         if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
             raise PydanticCustomError("homotopy_duplicate", "a homotopy degree occurs more than once")
-        if isinstance(self.construction, CompleteIntersectionConstruction):
-            expected = sum(self.construction.ambient_projective_dimensions) - len(self.construction.equation_multidegrees)
-            if expected != n:
-                raise PydanticCustomError("configuration_dimension", "the complete-intersection configuration must have the stated dimension")
         degrees = [link.degree for link in self.cohomology_lattices]
         if len(degrees) != len(set(degrees)):
             raise PydanticCustomError("cohomology_degree", "a cohomology degree has more than one lattice")
-        if any(degree > 2 * n for degree in degrees):
-            raise PydanticCustomError("cohomology_degree", "a cohomology degree exceeds twice the dimension")
         return self
-
-    def betti_number(self, degree: int) -> int:
-        return sum(term.coefficient for term in self.hodge_poincare if term.p + term.q == degree)
-
-    def hodge_number(self, p: int, q: int) -> int:
-        return next((term.coefficient for term in self.hodge_poincare if term.p == p and term.q == q), 0)
-
-    def euler_characteristic(self) -> int:
-        return sum((-1) ** (term.p + term.q) * term.coefficient for term in self.hodge_poincare)
 
 
 class RiemannianSymmetricSpace(LocallyRingedSpace):
@@ -264,12 +226,6 @@ class RiemannianSymmetricSpace(LocallyRingedSpace):
 
     @model_validator(mode="after")
     def check_symmetric_data(self) -> Self:
-        if self.rank > self.real_dimension:
-            raise PydanticCustomError("symmetric_rank", "symmetric-space rank exceeds real dimension")
-        if self.compact_dual is not None and self.curvature_type != "noncompact":
-            raise PydanticCustomError("compact_dual_type", "a compact dual belongs to a space of noncompact type")
-        if self.noncompact_dual is not None and self.curvature_type != "compact":
-            raise PydanticCustomError("noncompact_dual_type", "a noncompact dual belongs to a space of compact type")
         if len(set(self.diagrams)) != len(self.diagrams):
             raise PydanticCustomError("diagram_duplicate", "diagram links must be unique")
         if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
@@ -287,13 +243,6 @@ class HermitianSymmetricSpace(RiemannianSymmetricSpace, ComplexManifold):
     tube_type: bool | None = None
     bounded_realization: str | None = None
     compact_dual_parabolic: str | None = None
-
-    @model_validator(mode="after")
-    def check_complex_dimension(self) -> Self:
-        if self.real_dimension != 2 * self.complex_dimension:
-            raise PydanticCustomError("hermitian_dimension", "real dimension must be twice complex dimension")
-        return self
-
 
 type GeometricObject = Annotated[
     ProjectiveComplexVariety | ComplexManifold | RiemannianSymmetricSpace | HermitianSymmetricSpace,

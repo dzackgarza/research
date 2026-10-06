@@ -73,7 +73,7 @@ def _archive_card(row: dict[str, Yaml], source_id: str) -> tuple[dict[str, Yaml]
 
 
 def card(row: dict[str, Yaml]) -> tuple[dict[str, Yaml], str]:
-    """Use a source's defining Gram tensor and identity without deriving invariants."""
+    """Use only fields explicitly carried by the normalized source row."""
     source = row["source"]
     source_id = row["id"]
     if not isinstance(source, str) or not isinstance(source_id, str):
@@ -82,9 +82,8 @@ def card(row: dict[str, Yaml]) -> tuple[dict[str, Yaml], str]:
         return _archive_card(row, source_id)
     gram = row.get("gram_tensor")
     rank = row.get("rank")
-    determinant = row.get("determinant")
-    if not isinstance(gram, list) or not isinstance(rank, int) or not isinstance(determinant, int):
-        raise ValueError(f"{source}:{source_id} has no indexed Gram tensor, rank, and determinant")
+    if not isinstance(gram, list) or not isinstance(rank, int):
+        raise ValueError(f"{source}:{source_id} has no indexed Gram tensor and rank")
     name = f"{source} {source_id}"
     fields: dict[str, Yaml] = {
         "tag": row["tag"],
@@ -93,13 +92,12 @@ def card(row: dict[str, Yaml]) -> tuple[dict[str, Yaml], str]:
         "aliases": [],
         "rank": rank,
         "gram_tensor": gram,
-        "signature": [rank, 0],
-        "determinant": determinant,
-        "definiteness": "positive_definite",
         "families": [],
         "related": [],
         "references": [_reference(source, source_id, row)],
     }
+    if isinstance(row.get("determinant"), int):
+        fields["determinant"] = row["determinant"]
     prose = f"Source entry `{source}:{source_id}` gives this Gram tensor."
     return fields, prose
 

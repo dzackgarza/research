@@ -17,9 +17,10 @@ repository.
 The schema/data-model layer (`model`, `catalogues`, `geometric`, `graphs`, `corpus`)
 is deliberately preamble-free and must parse/validate under ordinary CPython.
 `just test` exercises only that fast coherence layer. Workflows that compute or
-verify mathematical lattice claims (`enrich`, `verify`, certification and CI
-validation) run under the repository's Sage Python with both `../src` and this
-package's `src` on `PYTHONPATH` and consume the preamble operations.
+compute or validate mathematical lattice claims (`enrich`, certification and CI
+construction-validation) run under the repository's Sage Python with both `../src`
+and this package's `src` on `PYTHONPATH` and consume preamble operations. `verify`
+itself is structural/reference/certificate coherence only.
 
 ## Independent workflows
 
@@ -30,17 +31,26 @@ invariants or run verification.
 Authoring writes or edits the same card format without a stored source row. It does not run
 verification. A sparse card is a site card.
 
-Enrichment computes further fields on existing cards without certifying them. It does not decide
-whether a card may enter the site.
+Enrichment requests further fields from preamble-owned operations and writes their returned values
+without certifying them. It contains no lattice algorithm of its own and does not decide whether a
+card may enter the site.
 
-Certification is a separate CI phase. It computes each uncertified value from the card's defining
-mathematical input. If an authored or seeded value disagrees, the computed value replaces it. The
+Certification is a separate CI phase. It asks the preamble to compute each uncertified value from
+the card's defining mathematical input. If an authored or seeded value disagrees, the preamble
+result replaces it. The
 resulting card value then receives a certificate hash, and `certificates.yaml` records that hash
 with computation provenance.
 
 Verification is read-only. The modules in `src/latticedb/checks/` inspect stored cards and relations
-and report structural or certificate-consistency errors. Source-to-card collation is a separate
+and report only structural/reference/certificate-consistency errors. Mathematical validation is not
+a checker phase: CI constructs the corresponding preamble objects and morphisms, whose constructors
+own the validation. Source-to-card collation is a separate
 provenance workflow. The site build reads cards and renders pages.
+
+No module under `src/latticedb` may import Sage, PARI/cypari2, python-flint or another mathematical
+engine directly. Preamble imports are the only computational boundary. Pure-Python reimplementations
+of lattice/root/group/polytope algorithms are equally forbidden: moving an algorithm out of an engine
+call does not make it database code.
 
 ## The database stores every computation
 

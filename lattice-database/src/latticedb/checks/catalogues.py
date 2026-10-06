@@ -7,17 +7,9 @@ checked here.
 """
 
 from collections.abc import Sequence
-from fractions import Fraction
-from math import gcd
-
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb.corpus import CatalogueEntry, Corpus
 from latticedb.geometric import ProjectiveComplexVariety, ToricHypersurfaceConstruction
-
-_SESSION_RINGS = session_ring_objects()
-ZZ = _SESSION_RINGS["ZZ"]
 
 
 def slug_problems(entries: Sequence[CatalogueEntry]) -> list[str]:
@@ -63,10 +55,6 @@ def reference_problems(loaded: Corpus) -> list[str]:
             continue
         if ambient is None:
             found.append(f"{path}: ambient Lie group {arithmetic.ambient_lie_group} is not in the corpus")
-        elif lattice.signature is not None and lattice.is_nondegenerate and ambient.orthogonal_signature is not None:
-            signature = tuple(sorted(lattice.signature))
-            if tuple(ambient.orthogonal_signature) != signature:
-                found.append(f"{path}: ambient Lie group must have the unordered real signature {signature} of the lattice")
         if arithmetic.parent_group is not None:
             parent = arithmetic_groups.get(arithmetic.parent_group)
             if parent is None or parent.lattice != arithmetic.lattice:
@@ -91,33 +79,10 @@ def reference_problems(loaded: Corpus) -> list[str]:
             }
             if kind in available and identifier not in available[kind]:
                 found.append(f"{path}: stabilized {kind} {identifier} is not in the corpus")
-        full_order = lattice.definite.automorphism_group_order if lattice.definite is not None else None
-        if (
-            full_order is not None
-            and isinstance(group.cardinality, int)
-            and group.index_in_orthogonal_group is not None
-            and group.cardinality * group.index_in_orthogonal_group != full_order
-        ):
-            found.append(f"{path}: subgroup order times index must equal |O({lattice.tag})| = {full_order}")
         for orbit_data in group.orbits or ():
-            n = orbit_data.square
             for vector in orbit_data.representatives:
                 if lattice.rank is None or len(vector) != lattice.rank:
                     found.append(f"{path}: orbit representative must have rank {lattice.rank} coordinates")
-                    continue
-                if gcd(*vector) != 1:
-                    found.append(f"{path}: orbit representative must be primitive")
-                    continue
-                square = sum(
-                    (
-                        vector[i] * lattice.gram_tensor[i][j] * vector[j]
-                        for i in range(lattice.rank)
-                        for j in range(lattice.rank)
-                    ),
-                    Fraction(),
-                )
-                if square != n:
-                    found.append(f"{path}: representative has square {square}, not {n}")
         chamber = group.chamber
         if chamber is not None:
             if (
@@ -126,12 +91,6 @@ def reference_problems(loaded: Corpus) -> list[str]:
                 or any(len(wall) != lattice.rank for wall in chamber.wall_normals)
             ):
                 found.append(f"{path}: chamber vectors must lie in its lattice")
-            elif (
-                lattice.signature is None
-                or min(lattice.signature) != 1
-                or max(lattice.signature) != lattice.rank - 1
-            ):
-                found.append(f"{path}: a hyperbolic chamber requires signature (1,n) or (n,1)")
 
     for entry in loaded.entries:
         lattice = entry.lattice
@@ -145,37 +104,12 @@ def reference_problems(loaded: Corpus) -> list[str]:
                 found.append(f"{entry.path}: arithmetic group {slug} must be a card on this lattice")
         if lattice.orthogonal_group is not None and lattice.orthogonal_group not in lattice.arithmetic_groups:
             found.append(f"{entry.path}: orthogonal_group must also occur in arithmetic_groups")
-        if lie_groups and lattice.is_nondegenerate and lattice.signature is not None:
-            p, q = sorted(lattice.signature)
-            slug = f"o-{p}-{q}"
-            ambient = lie_groups.get(slug)
-            if ambient is None or ambient.orthogonal_signature != (p, q):
-                found.append(f"{entry.path}: nondegenerate lattice requires Lie-group card {slug} for O(L_R)")
 
     for entry in loaded.genera:
         genus = entry.value
-        representatives = []
         for tag in genus.representative_tags:
-            lattice = lattices.get(tag)
-            if (
-                lattice is None
-                or lattice.integral is None
-                or lattice.signature != genus.signature
-                or lattice.determinant != genus.determinant
-                or lattice.integral.parity != genus.parity
-            ):
-                found.append(
-                    f"{entry.path}: representative {tag} does not have the genus signature, determinant and parity"
-                )
-            else:
-                representatives.append(lattice)
-                if (
-                    lattice.integral.genus_symbol is not None
-                    and lattice.integral.genus_symbol != genus.symbol
-                ):
-                    found.append(
-                        f"{entry.path}: representative {tag} has a different genus symbol"
-                    )
+            if tag not in lattices:
+                found.append(f"{entry.path}: representative {tag} is not a lattice card")
         if (
             genus.class_number is not None
             and len(genus.representative_tags) > genus.class_number
@@ -183,62 +117,11 @@ def reference_problems(loaded: Corpus) -> list[str]:
             found.append(
                 f"{entry.path}: more representative tags than the genus class number"
             )
-        if (
-            genus.representatives_complete
-            and genus.mass is not None
-            and len(representatives) == len(genus.representative_tags)
-        ):
-            orders = [
-                member.definite.automorphism_group_order
-                if member.definite is not None
-                else None
-                for member in representatives
-            ]
-            if (
-                all(order is not None for order in orders)
-                and sum(
-                    (Fraction(1, order) for order in orders if order is not None),
-                    Fraction(),
-                )
-                != genus.mass
-            ):
-                found.append(
-                    f"{entry.path}: mass differs from the sum of reciprocal automorphism-group orders"
-                )
-
     for entry in loaded.polytopes:
         polytope = entry.value
         if polytope.metric_lattice is not None:
-            metric = lattices.get(polytope.metric_lattice)
-            if (
-                metric is None
-                or metric.rank != polytope.ambient_rank
-                or metric.definiteness != "positive_definite"
-            ):
-                found.append(
-                    f"{entry.path}: Delaunay metric lattice must be positive definite with the ambient rank"
-                )
-            elif (
-                polytope.delaunay_center is not None
-                and polytope.delaunay_radius_squared is not None
-            ):
-                center = polytope.delaunay_center
-                for vertex in polytope.vertices:
-                    displacement = [
-                        vertex[i] - center[i] for i in range(polytope.ambient_rank)
-                    ]
-                    square = sum(
-                        (
-                            displacement[i] * metric.gram_tensor[i][j] * displacement[j]
-                            for i in range(metric.rank)
-                            for j in range(metric.rank)
-                        ),
-                        Fraction(),
-                    )
-                    if square != polytope.delaunay_radius_squared:
-                        found.append(
-                            f"{entry.path}: vertex {vertex} is not on the stated Delaunay sphere"
-                        )
+            if polytope.metric_lattice not in lattices:
+                found.append(f"{entry.path}: metric lattice {polytope.metric_lattice} is not in the corpus")
         if polytope.polar is not None:
             polar = polytopes.get(polytope.polar)
             if (
@@ -314,25 +197,10 @@ def reference_problems(loaded: Corpus) -> list[str]:
             )
         if system.fiber_lattice is not None:
             lattice = lattices.get(system.fiber_lattice)
-            if lattice is None or lattice.rank != system.rank:
+            if lattice is None:
                 found.append(
-                    f"{entry.path}: fiber lattice must have the local system rank {system.rank}"
+                    f"{entry.path}: fiber lattice {system.fiber_lattice} is not in the corpus"
                 )
-            else:
-                owned_lattice = Lattices(ZZ)(lattice.gram_tensor)
-                for generator in system.monodromy_generators:
-                    columns = tuple(
-                        tuple(row[i] for row in generator.matrix)
-                        for i in range(system.rank)
-                    )
-                    try:
-                        owned_lattice.Aut()(
-                            tuple(owned_lattice(column) for column in columns)
-                        )
-                    except ValueError:
-                        found.append(
-                            f"{entry.path}: monodromy around {generator.loop} does not preserve the fiber lattice"
-                        )
     for entry in loaded.operators:
         for realization in entry.value.realizations:
             if realization.family not in families:

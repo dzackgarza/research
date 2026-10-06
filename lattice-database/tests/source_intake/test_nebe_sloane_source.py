@@ -7,8 +7,6 @@ They are provenance/importer checks, not mathematical certification.
 import shutil
 from pathlib import Path
 
-from dzack_research.preamble.rings import session_ring_objects
-
 from latticedb import corpus, nebe_sloane, records
 from latticedb.model import Lattice, Yaml
 
@@ -33,7 +31,7 @@ def _corpus(directory: Path) -> Path:
     lattices.mkdir()
     shutil.copy(REPOSITORY / corpus.FAMILIES_FILE, directory / corpus.FAMILIES_FILE)
     (directory / corpus.RETIRED_FILE).write_text("{}\n")
-    record = records.derive(_declared("I_{1,0}", [[1]]))
+    record = _declared("I_{1,0}", [[1]]) | {"rank": 1}
     (lattices / "0001.md").write_text(records.record_text(record, ""))
     return directory
 
@@ -49,9 +47,7 @@ def test_nebe_sloane_writes_the_record_of_a_stored_entry_with_its_reference(
     declared, prose = nebe_sloane.record(
         entry, "K12", "K_{12}", ("Coxeter-Todd lattice",), ()
     )
-    derived = records.derive(declared | {"tag": "0002"})
-    nebe_sloane.check(entry, derived)
-    lattice = Lattice.model_validate(derived)
+    lattice = Lattice.model_validate(declared | {"tag": "0002"})
     assert (lattice.name, lattice.aliases, lattice.families) == (
         "K12",
         ("K12", "Coxeter-Todd lattice"),
@@ -78,9 +74,8 @@ def test_nebe_sloane_intakes_a_named_entry_from_the_union_archive(
     declared, prose = nebe_sloane.record(
         entry, "BGF.2.2112", r"\mathrm{BGF.2.2112}", (), ()
     )
-    derived = records.derive(declared | {"tag": "0002"})
-    nebe_sloane.check(entry, derived)
-    (root / "lattices" / "0002.md").write_text(records.record_text(derived, prose))
+    authored = declared | {"tag": "0002"}
+    (root / "lattices" / "0002.md").write_text(records.record_text(authored, prose))
     lattice = corpus.load(root).entries[1].lattice
     assert (lattice.gram_tensor, lattice.determinant) == (((2, 1), (1, 12)), 23)
     assert lattice.definite is not None
@@ -105,14 +100,8 @@ def test_nebe_sloane_accepts_an_indefinite_entry_without_definite_invariants() -
         gram_tensor=((2, 1), (1, -2)),
     )
     declared, _ = nebe_sloane.record(entry, "IndefiniteSpecimen", "S", (), ())
-    derived = records.derive(declared | {"tag": "0002"})
-    nebe_sloane.check(entry, derived)
-    lattice = Lattice.model_validate(derived)
-    assert (lattice.signature, lattice.determinant, lattice.definite) == (
-        (1, 1),
-        -5,
-        None,
-    )
+    lattice = Lattice.model_validate(declared | {"tag": "0002"})
+    assert (lattice.rank, lattice.determinant, lattice.definite) == (2, -5, None)
 
 
 def test_nebe_sloane_reads_the_full_matrix_of_shimada_86() -> None:

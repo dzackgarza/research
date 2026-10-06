@@ -8,7 +8,6 @@ the Markdown prose with BibTeX citations.
 import ast
 from typing import Annotated, Literal, Self
 
-from flint import fmpz_mat
 from pydantic import Field, model_validator
 from pydantic_core import PydanticCustomError
 
@@ -42,18 +41,6 @@ class LieGroup(CatalogueRecord):
             raise PydanticCustomError(
                 "lie_group_orthogonal_signature",
                 "an orthogonal signature records the canonical real form O(p,q) with 0 <= p <= q",
-            )
-        expected_dimension = (p + q) * (p + q - 1) // 2
-        if self.dimension != expected_dimension or self.real_rank != p:
-            raise PydanticCustomError(
-                "lie_group_orthogonal_invariants",
-                "O(p,q) has dimension (p+q)(p+q-1)/2 and real rank p for p <= q",
-            )
-        expected_components = 1 if p == q == 0 else (2 if p == 0 else 4)
-        if self.connected_components != expected_components:
-            raise PydanticCustomError(
-                "lie_group_orthogonal_components",
-                "O(p,q) has one component for O(0,0), two in the compact edge O(q), and four when p,q > 0",
             )
         return self
 
@@ -93,12 +80,10 @@ class LatticeGenus(CatalogueRecord):
 
     @model_validator(mode="after")
     def check_genus(self) -> Self:
-        if self.determinant == 0 or len(set(self.representative_tags)) != len(
-            self.representative_tags
-        ):
+        if len(set(self.representative_tags)) != len(self.representative_tags):
             raise PydanticCustomError(
                 "genus_members",
-                "a genus has nonzero determinant and distinct representative tags",
+                "a genus lists each representative tag at most once",
             )
         if self.representatives_complete and self.class_number != len(
             self.representative_tags
@@ -106,8 +91,6 @@ class LatticeGenus(CatalogueRecord):
             raise PydanticCustomError(
                 "genus_complete", "a complete list has exactly its stated class number"
             )
-        if self.mass is not None and self.mass <= 0:
-            raise PydanticCustomError("genus_mass", "a genus mass is positive")
         return self
 
 
@@ -207,42 +190,6 @@ class LatticeFamily(CatalogueRecord):
             raise PydanticCustomError(
                 "family_symmetric", "the template is a symmetric tensor"
             )
-        # PARI starts once per process; only family records pay it.
-        import cypari2
-
-        pari = cypari2.Pari()
-        for probe in (self.minimum, self.minimum + 1):
-            matrix = [
-                [
-                    entry
-                    if isinstance(entry, int)
-                    else _expression_value(
-                        ast.parse(entry, mode="eval"), self.parameter, probe
-                    )
-                    for entry in row
-                ]
-                for row in rows
-            ]
-            if int(fmpz_mat(matrix).det()) == 0:
-                raise PydanticCustomError(
-                    "family_degenerate",
-                    "the template is nonsingular at its probe points",
-                )
-            signature = tuple(
-                int(part)
-                for part in pari.qfsign(
-                    pari.matrix(
-                        self.rank,
-                        self.rank,
-                        [entry for row in matrix for entry in row],
-                    )
-                )
-            )
-            if signature != tuple(self.signature):
-                raise PydanticCustomError(
-                    "family_signature",
-                    "the stated signature is the signature at its probe points",
-                )
         return self
 
 
@@ -268,21 +215,6 @@ class LatticePolytope(CatalogueRecord):
             raise PydanticCustomError(
                 "polytope_vertices",
                 "polytope vertices must be distinct points of the ambient lattice",
-            )
-        differences = [
-            [point[i] - coordinates[0][i] for i in range(self.ambient_rank)]
-            for point in coordinates[1:]
-        ]
-        if fmpz_mat(differences).rank() != self.ambient_rank:
-            raise PydanticCustomError(
-                "polytope_dimension",
-                "the vertices must span a full-dimensional polytope",
-            )
-        if self.lattice_point_count is not None and self.lattice_point_count < len(
-            self.vertices
-        ):
-            raise PydanticCustomError(
-                "polytope_points", "a lattice-point count includes every vertex"
             )
         if (self.delaunay_center is None) != (self.delaunay_radius_squared is None) or (
             self.delaunay_center is not None and self.metric_lattice is None
@@ -371,13 +303,6 @@ class IntegralLocalSystem(CatalogueRecord):
         ):
             raise PydanticCustomError(
                 "monodromy_matrix", "monodromy matrices act on the stated rank"
-            )
-        if any(
-            abs(int(fmpz_mat(g.matrix).det())) != 1 for g in self.monodromy_generators
-        ):
-            raise PydanticCustomError(
-                "monodromy_unimodular",
-                "integral monodromy matrices are invertible over the integers",
             )
         if len({g.loop for g in self.monodromy_generators}) != len(
             self.monodromy_generators

@@ -1,18 +1,14 @@
-"""The genus symbol, class number, spinor genera, hyperbolic index, order and generators of O(L), and the two series of orbits, from SageMath.
+"""CI serialization of lattice invariants computed by the research preamble.
 
 `certify` sends each uncertified applicable computation to `sage_genus.py` under SageMath.
+That module is a thin process/serialization boundary: every mathematical operation it
+calls is owned by `dzack_research.preamble`.
 A completed computation is authoritative for the part of the card that computation owns:
 an authored value that disagrees is replaced by the computed value, and the resulting
 card value is certified. A computation that does not finish remains uncertified.
-
-Two series are computed. `integral.primitive_orbits` is the series $F_{L,\\Gamma}$ of $\\Gamma$-orbits on the
-primitive vectors of $L$, written for a definite lattice by enumerating its vectors. `integral.discriminant_orbits`
-is the series $F_{A_L,\\Gamma}$ of $\\Gamma$-orbits on the discriminant group $A_L$, written for an even lattice
-containing $U^2$; the two agree on that class (Eichler), and only there.
 """
 
 import json
-import math
 import os
 import subprocess
 import sys
@@ -26,7 +22,6 @@ from pydantic import BaseModel
 from latticedb import certificates, corpus, records
 from latticedb.certificates import Certificate, Certificates
 from latticedb.model import DefiniteData, IntegralData, Lattice, Yaml
-from latticedb.relations import hyperbolic_index_bounds
 
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_symbol": ("integral", IntegralData),
@@ -37,24 +32,12 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
     "automorphism_group_generator_morphisms": ("definite", DefiniteData),
-    "discriminant_sequence": ("integral", IntegralData),
-    "primitive_orbits": ("integral", IntegralData),
-    "discriminant_orbits": ("integral", IntegralData),
 }
-"""Each computed field, with the block of the record that holds it and the model of that block."""
-
-ORBIT_CERTIFIED_BOUND = 4
-"""The z/w degree through which the Sage orbit computation certifies a stored series."""
+"""Each preamble-computed field, with the card block that stores it."""
 
 
 def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> Yaml:
-    """The part of a stored field determined by one completed computation.
-
-    The orbit computations determine only the coefficients through degree 4.
-    A card may hold additional source-stated coefficients and a reference; those
-    remain on the card but are not included in this computation's certificate.
-    Every other field in BLOCKS is determined in full by its computation.
-    """
+    """The stored value committed to by one completed preamble computation."""
     if field == "automorphism_group_generator_morphisms":
         if lattice is None or not isinstance(value, list):
             return value
@@ -73,52 +56,19 @@ def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> 
             matrices,
             key=lambda rows: tuple(entry for row in rows for entry in row),
         )
-    if field not in {"primitive_orbits", "discriminant_orbits"}:
-        return value
-    if not isinstance(value, dict):
-        return value
-    projected: dict[str, Yaml] = {}
-    for group, series in value.items():
-        if not isinstance(series, dict):
-            projected[group] = series
-            continue
-        z = series.get("z")
-        w = series.get("w")
-        projected[group] = {
-            "constant": series.get("constant"),
-            "z": z[:ORBIT_CERTIFIED_BOUND] if isinstance(z, list) else z,
-            "w": w[:ORBIT_CERTIFIED_BOUND] if isinstance(w, list) else w,
-        }
-    return projected
+    return value
 
 
 def applies(field: str, lattice: Lattice, planes: int) -> bool:
-    """Whether SageMath computes `field` for `lattice`, of which `planes` is a lower bound of the hyperbolic index.
-
-    Spinor genera are computed for a lattice of rank at least 3, the dimension for which SPLAG, Chapter 15, Theorem 15(b) defines them.
-    The order and a generating set of O(L) are computed for a definite rational lattice with PARI/GP `qfauto`, after multiplying the Gram tensor by a positive common denominator; this does not change O(L).
-    The series $F_{L,\\Gamma}$ of orbits of primitive vectors is computed for a definite lattice, by enumerating its vectors.
-    The series $F_{A_L,\\Gamma}$ of orbits on the discriminant group is computed for an even lattice that contains $U^2$ (theory/orbits.md).
-    """
+    """Whether the preamble exposes `field` on this stored lattice."""
+    del planes
+    if lattice.integral is None:
+        return False
     match field:
         case "automorphism_group_order" | "automorphism_group_generator_morphisms":
             return lattice.definite is not None
-        case _ if lattice.integral is None:
-            return False
-        case "discriminant_sequence":
-            assert lattice.integral is not None
-            return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":
             return lattice.rank >= 3
-        case "primitive_orbits":
-            return lattice.definite is not None
-        case "discriminant_orbits":
-            index = max(planes, lattice.integral.hyperbolic_index or 0)
-            return (
-                lattice.definite is None
-                and lattice.integral.parity == "even"
-                and index >= 2
-            )
         case _:
             return True
 
@@ -127,11 +77,10 @@ SAGE_MODULE = Path(__file__).with_name("sage_genus.py")
 
 
 class Request(TypedDict):
-    """One lattice of the task that `SAGE_MODULE` reads as its `Request`: the tag, the Gram matrix, the sign of `_sign` and the pending fields."""
+    """One integral lattice and the preamble-owned fields CI asks it to compute."""
 
     tag: str
     gram: list[list[int]]
-    sign: int
     fields: list[str]
 
 
@@ -140,33 +89,23 @@ def name(tag: str, field: str) -> str:
     return f"{tag} {BLOCKS[field][0]}.{field}"
 
 
-def _sign(lattice: Lattice) -> int:
-    match lattice.definiteness:
-        case "positive_definite":
-            return 1
-        case "negative_definite":
-            return -1
-        case _:
-            return 0
-
-
 def requests(
     loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int
 ) -> list[Request]:
-    """For each nondegenerate record, the uncertified applicable CI computations."""
+    """For each nondegenerate integral record, the uncertified preamble computations."""
     chosen: list[Request] = []
-    bounds = hyperbolic_index_bounds(loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
         if (
-            lattice.determinant == 0
+            lattice.integral is None
+            or lattice.determinant == 0
             or (tags and lattice.tag not in tags)
         ):
             continue
         applicable = [
             field
             for field in BLOCKS
-            if applies(field, lattice, bounds.get(lattice.tag, 0))
+            if applies(field, lattice, 0)
         ]
         metadata = corpus.front_matter(frontmatter.load(str(entry.path)))
         card_certifications = metadata.get("certifications")
@@ -185,18 +124,11 @@ def requests(
             ):
                 fields.append(field)
         if fields:
-            denominator = math.lcm(
-                *(entry.denominator for row in lattice.gram_tensor for entry in row)
-            )
-            gram = [
-                [int(denominator * entry) for entry in row]
-                for row in lattice.gram_tensor
-            ]
+            gram = [[int(value) for value in row] for row in lattice.gram_tensor]
             chosen.append(
                 {
                     "tag": lattice.tag,
                     "gram": gram,
-                    "sign": _sign(lattice),
                     "fields": fields,
                 }
             )
@@ -263,7 +195,7 @@ def _generator_morphisms(
             None,
         )
         if existing is None:
-            base = f"O(L) generator {index} from PARI qfauto"
+            base = f"O(L) generator {index}"
             name = base
             suffix = 2
             while name in used_self_names:
@@ -292,26 +224,7 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
             value, morphisms = _generator_morphisms(path.stem, morphisms, value)
         match metadata.get(block_name):
             case dict() as block:
-                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
-                    present = block.get(field)
-                    replacement = dict(present) if isinstance(present, dict) else {}
-                    for group, computed_series in value.items():
-                        if not isinstance(computed_series, dict):
-                            replacement[group] = computed_series
-                            continue
-                        old_series = replacement.get(group)
-                        updated_series = dict(old_series) if isinstance(old_series, dict) else {}
-                        for key, computed_part in computed_series.items():
-                            if key in {"z", "w"} and isinstance(computed_part, list):
-                                old_part = updated_series.get(key)
-                                tail = old_part[len(computed_part):] if isinstance(old_part, list) else []
-                                updated_series[key] = [*computed_part, *tail]
-                            else:
-                                updated_series[key] = computed_part
-                        replacement[group] = updated_series
-                    block[field] = replacement
-                else:
-                    block[field] = value
+                block[field] = value
                 metadata[block_name] = {
                     key: block[key] for key in model.model_fields if key in block
                 }

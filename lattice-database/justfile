@@ -33,7 +33,7 @@ enrich *ARGS:
 certify *ARGS:
     just _latticedb certify {{ARGS}}
 
-# Report mathematical errors in the cards and relations
+# Report schema/reference/certificate-coherence errors
 verify:
     just _latticedb verify
 
@@ -53,9 +53,9 @@ tag:
 test:
     PYTHONPATH="src" uv run python -m pytest tests/test_model.py -q
 
-# CI-only mathematical/integration validation. These modules may use the preamble and Sage.
+# CI-only constructor/serialization/publication integration. Mathematical correctness lives in preamble tests.
 test-validation:
-    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/test_catalogue_schemas.py tests/test_corpus.py tests/test_genus.py tests/test_geometric.py tests/test_hashimoto.py tests/test_hoehn_mason.py tests/test_records.py tests/validation
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/test_catalogue_schemas.py tests/test_corpus.py tests/test_genus.py tests/test_geometric.py tests/test_hashimoto.py tests/test_records.py tests/validation
 
 # Exercise archived-source importers and source-to-card collation; provenance only, not mathematical validation
 test-source-intake:

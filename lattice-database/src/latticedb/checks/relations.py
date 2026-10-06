@@ -16,10 +16,8 @@ from latticedb.geometric import (
     ProjectiveComplexVariety,
     RiemannianSymmetricSpace,
 )
-from latticedb import records
 from latticedb.graphs import WeightedGraph
-from latticedb.model import GramTensor, Lattice
-from latticedb.relations import hyperbolic_index_bounds
+from latticedb.model import GramTensor
 
 SOURCE_DIRECTORY = "lattices/source"
 """Where `seed` reads rows that have not yet become permanent cards."""
@@ -44,9 +42,6 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
     )
     by_name: dict[str, Path] = {}
     by_components: dict[GramTensor, Path] = {}
-    by_isometry_invariants: dict[
-        records.IsometryInvariants, dict[str, Lattice]
-    ] = {}
     for entry in entries:
         lattice = entry.lattice
         if entry.path.stem != lattice.tag:
@@ -80,27 +75,11 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
                 found.append(
                     f"{entry.path}: the related tag {related.tag} is not in the corpus"
                 )
-        invariants = (
-            records.isometry_invariants(lattice)
-            if lattice.definite is not None and lattice.gram_tensor is not None
-            else None
-        )
-        candidates = (
-            by_isometry_invariants.get(invariants, {}) if invariants is not None else {}
-        )
-        found.extend(
-            f"{entry.path}: {problem}"
-            for problem in records.relational_admission_problems(
-                lattice, by_tag, isometry_records=candidates
-            )
-        )
-        if invariants is not None:
-            by_isometry_invariants.setdefault(invariants, {})[lattice.tag] = lattice
     return found
 
 
 def morphism_problems(loaded: Corpus) -> list[str]:
-    """The problems of the morphisms stored on their source lattice cards."""
+    """Reference problems of morphisms stored on their source lattice cards."""
     entries = loaded.entries
     retired = loaded.retired
     found: list[str] = []
@@ -116,37 +95,14 @@ def morphism_problems(loaded: Corpus) -> list[str]:
                     )
                 else:
                     found.append(f"{entry.path}: morphism target {morphism.target} is not in the corpus")
-                continue
-            if (
-                source.rank is not None
-                and source.gram_tensor is not None
-                and target.rank is not None
-                and target.gram_tensor is not None
-            ):
-                found.extend(
-                    f"{entry.path}: morphisms.{morphism.name}: {problem}"
-                    for problem in records.morphism_problems(morphism, source, target)
-                )
-    for tag, bound in hyperbolic_index_bounds(entries).items():
-        target = by_tag.get(tag)
-        stored = (
-            target.integral.hyperbolic_index
-            if target is not None and target.integral is not None
-            else None
-        )
-        if stored is not None and stored < bound:
-            found.append(
-                f"{tag}: integral.hyperbolic_index is {stored}, and a stored morphism embeds U^{bound} into it"
-            )
     return found
 
 
 def geometric_problems(loaded: Corpus) -> list[str]:
     """The problems of the graphs, the geometric families and the geometric objects.
 
-    A slug that is not its file name or that is used twice, a family that a variety names but
-    that is not in the corpus, a cohomology lattice whose rank is not the Betti number, and a
-    variety, an analytic space, a compact dual and a noncompact dual that do not name one another.
+    These are storage/reference checks only: slug uniqueness, named targets, and reciprocal
+    links between records. Mathematical validity belongs to the corresponding preamble objects.
     """
     found: list[str] = []
     by_graph: dict[str, WeightedGraph] = {}
@@ -193,10 +149,6 @@ def geometric_problems(loaded: Corpus) -> list[str]:
                 if lattice is None:
                     found.append(
                         f"{geometric_entry.path}: cohomology lattice tag {link.tag} is not in the corpus"
-                    )
-                elif lattice.rank != record.betti_number(link.degree):
-                    found.append(
-                        f"{geometric_entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}"
                     )
             if record.analytic_space is not None:
                 analytic = by_geometric.get(record.analytic_space)

@@ -10,6 +10,9 @@ edges:
     - -2
     order: 4
 name: B2 root diagram
+properties:
+- Coxeter
+- Dynkin
 slug: b2-root-diagram
 vertices:
 - id: alpha1

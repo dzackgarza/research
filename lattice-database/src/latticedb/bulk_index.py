@@ -6,14 +6,8 @@ import json
 from collections.abc import Iterable
 from pathlib import Path
 
-from flint import fmpz_mat
-
 from latticedb import brandt_intrau, nebe_sloane, nipp, watson
 from latticedb.model import Yaml
-
-
-def _determinant(gram: tuple[tuple[int, ...], ...]) -> int:
-    return int(fmpz_mat(gram).det())
 
 
 def _write(path: Path, rows: Iterable[dict[str, Yaml]]) -> int:
@@ -37,7 +31,6 @@ def _nipp_rows(directory: Path) -> Iterable[dict[str, Yaml]]:
             "source_line": entry.source_line,
             "rank": entry.rank,
             "gram_tensor": [list(row) for row in entry.gram_tensor],
-            "determinant": _determinant(entry.gram_tensor),
             "discriminant": entry.discriminant,
             "genus": entry.genus,
             "hasse_symbols": list(entry.hasse_symbols),
@@ -57,7 +50,6 @@ def _brandt_intrau_rows(directory: Path) -> Iterable[dict[str, Yaml]]:
             "source_number": entry.source_number,
             "rank": 3,
             "gram_tensor": [list(row) for row in entry.gram_tensor],
-            "determinant": _determinant(entry.gram_tensor),
             "discriminant": entry.discriminant,
             "coefficients": list(entry.coefficients),
             "odd_form": entry.odd_form,
@@ -72,7 +64,6 @@ def _watson_rows(path: Path) -> Iterable[dict[str, Yaml]]:
             "source_line": entry.source_line,
             "rank": entry.dimension,
             "gram_tensor": [list(row) for row in entry.gram_tensor],
-            "determinant": _determinant(entry.gram_tensor),
             "genus_class_count": 1,
         }
 
@@ -88,7 +79,7 @@ def _nebe_sloane_rows(path: Path) -> Iterable[dict[str, Yaml]]:
 
 
 def write(root: Path) -> dict[str, int]:
-    """Store every parsed source form and its exact Gram determinant."""
+    """Store the parsed source rows without adding mathematical invariants."""
     sources = root / "sources"
     target = sources / "normalized"
     return {

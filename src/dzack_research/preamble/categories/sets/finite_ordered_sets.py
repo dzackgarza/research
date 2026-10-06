@@ -274,8 +274,14 @@ class FiniteOrderedSets(OwnedCategory):
 
         Literal ingress: the points are read once, in order.
         """
-        # ``dict.fromkeys`` keeps the first occurrence of each point, in order.
-        distinct = tuple(dict.fromkeys(points))
+        # Owned mathematical objects need not be hashable.  Equality, not a
+        # Python hash implementation, is the set-theoretic identification here.
+        distinct_list = []
+        for point in points:
+            if any(point is present or point == present for present in distinct_list):
+                continue
+            distinct_list.append(point)
+        distinct = tuple(distinct_list)
         return self.from_indexed(
             finite_ordinal_set(len(distinct)),
             lambda position: distinct[int(position)],
@@ -292,10 +298,9 @@ class FiniteOrderedSets(OwnedCategory):
     ) -> ObjectOfCategory:
         r"""Construct the finite ordered set enumerated by ``element_at`` on ``index_set``.
 
-        When the caller states no membership decision, membership is Sage's
-        enumerated set on the points (``Set``, a hashed ``frozenset``); when it
-        states no inverse, the position of a point is read from a hash map of
-        the points.  Neither searches the enumeration.
+        When the points are hashable, the default inverse and membership maps
+        use hash lookup. Owned mathematical objects are not required to be
+        hashable, so the fallback uses equality in the selected enumeration.
         """
         assert cardinal(index_set.cardinality()).is_finite(), (
             f"a finite ordered set needs a finite index set, but {index_set} is not finite"
@@ -307,9 +312,26 @@ class FiniteOrderedSets(OwnedCategory):
             indices = tuple(index_set)
             points = tuple(element_at(index) for index in indices)
         if index_of is None:
-            index_of = dict(zip(points, indices, strict=True)).get
+            try:
+                lookup = dict(zip(points, indices, strict=True))
+                index_of = lookup.get
+            except TypeError:
+                index_of = lambda point: next(
+                    (
+                        index
+                        for index, present in zip(indices, points, strict=True)
+                        if point is present or point == present
+                    ),
+                    None,
+                )
         if contains is None:
-            contains = SageSet(points).__contains__
+            try:
+                hashed_points = SageSet(points)
+                contains = hashed_points.__contains__
+            except TypeError:
+                contains = lambda point: any(
+                    point is present or point == present for present in points
+                )
         return _object_of(
             self,
             index_set=index_set,

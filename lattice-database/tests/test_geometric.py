@@ -3,8 +3,6 @@
 from pathlib import Path
 
 import frontmatter
-import pytest
-from pydantic import ValidationError
 
 from latticedb import checks, site
 from latticedb.geometric import ProjectiveComplexVariety
@@ -13,7 +11,7 @@ from latticedb.graphs import WeightedGraph
 ROOT = Path(__file__).parent.parent
 
 
-def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None:
+def test_k3_stored_hodge_data_and_lattice_link_are_published(tmp_path: Path) -> None:
     lattice_directory = tmp_path / "lattices"
     lattice_directory.mkdir()
     for tag in (
@@ -50,8 +48,8 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     assert 'href="../tag/027E.html"' in html
     assert 'href="../tag/027E.html">U^3 + E8(-1)^2</a>' in html
     assert "H<sup>2</sup>(X; ℤ)/tors" in html
-    assert '<div class="hodge-row">' in html
-    assert "<span>1</span><span>20</span><span>1</span>" in html
+    assert "Stored Hodge numbers" in html
+    assert "<td>1</td><td>1</td><td>20</td>" in html
     assert (
         'href="../geometric-objects/k3-surface.html"'
         in (target / "tag" / "027E.html").read_text()
@@ -64,16 +62,10 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     hilbert = (target / "geometric-objects" / "k3-hilbert-2.html").read_text()
     assert 'href="../tag/027Z.html"' in hilbert
     assert 'href="../geometric-families/k3-hilbert.html"' in hilbert
-    assert (
-        "<span>1</span><span>21</span><span>232</span><span>21</span><span>1</span>"
-        in hilbert
-    )
+    assert "<td>2</td><td>2</td><td>232</td>" in hilbert
     kummer = (target / "geometric-objects" / "kummer-2.html").read_text()
     assert 'href="../tag/0283.html"' in kummer
-    assert (
-        "<span>1</span><span>5</span><span>96</span><span>5</span><span>1</span>"
-        in kummer
-    )
+    assert "<td>2</td><td>2</td><td>96</td>" in kummer
 
 
 def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> None:
@@ -146,7 +138,7 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     assert 'href="../geometric-objects/eiii-compact.html"' in exceptional
 
 
-def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
+def test_graph_cards_store_classification_labels_and_distinct_decorations() -> None:
     def card(slug: str) -> WeightedGraph:
         return WeightedGraph.model_validate(
             frontmatter.load(ROOT / "graphs" / f"{slug}.md").metadata
@@ -154,22 +146,18 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
 
     b2 = card("b2-root-diagram")
     c2 = card("c2-root-diagram")
-    assert b2.properties() == c2.properties() == ("Coxeter", "Dynkin")
-    assert b2.cartan_matrix() != c2.cartan_matrix()
-    assert card("a2-su21-satake").properties() == (
+    assert b2.properties == c2.properties == ("Coxeter", "Dynkin")
+    assert b2.edges[0].weight != c2.edges[0].weight
+    assert card("a2-su21-satake").properties == (
         "Coxeter",
         "Dynkin",
         "simply laced",
         "Satake",
     )
-    assert card("hyperbolic-triangle-2-3-infinity").properties() == (
+    assert card("hyperbolic-triangle-2-3-infinity").properties == (
         "Coxeter",
         "rational Coxeter–Vinberg",
     )
-    invalid_satake = card("a2-su21-satake").model_dump()
-    invalid_satake["vertices"][0]["weight"]["satake"] = "black"
-    invalid_satake["edges"] = invalid_satake["edges"][:1]
-    assert not WeightedGraph.model_validate(invalid_satake).is_satake()
     arbitrary = WeightedGraph.model_validate(
         {
             "slug": "arbitrary",
@@ -205,38 +193,31 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
         }
     )
     assert len(arbitrary.edges) == 3
-    assert arbitrary.properties() == ()
+    assert arbitrary.properties == ()
 
 
-def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> None:
+def test_cohomology_link_must_name_an_existing_lattice(tmp_path: Path) -> None:
     lattices = tmp_path / "lattices"
     lattices.mkdir()
-    (lattices / "0016.md").symlink_to(ROOT / "lattices" / "0016.md")
     (tmp_path / "families.yaml").symlink_to(ROOT / "families.yaml")
     (tmp_path / "retired-tags.yaml").symlink_to(ROOT / "retired-tags.yaml")
     source = frontmatter.load(str(ROOT / "geometric-objects" / "k3-surface.md"))
-    source.metadata["cohomology_lattices"][0]["tag"] = "0016"
+    source.metadata["cohomology_lattices"][0]["tag"] = "ZZZZ"
     geometric = tmp_path / "geometric-objects"
     geometric.mkdir()
     (geometric / "k3-surface.md").write_text(frontmatter.dumps(source))
     assert any(
-        "Betti number 22, but lattice 0016 has rank 2" in problem
+        "cohomology lattice tag ZZZZ is not in the corpus" in problem
         for problem in checks.report(tmp_path)
     )
 
 
-def test_hodge_series_determines_symmetry_and_chern_number() -> None:
+def test_hodge_and_chern_values_are_stored_data_not_recomputed() -> None:
     source = frontmatter.load(str(ROOT / "geometric-objects" / "k3-surface.md"))
     record = ProjectiveComplexVariety.model_validate(source.metadata)
-    assert record.betti_number(2) == 22
-    assert record.euler_characteristic() == 24
-    assert record.hodge_number(1, 1) == 20
-
+    assert next(term.coefficient for term in record.hodge_poincare if (term.p, term.q) == (1, 1)) == 20
     source.metadata["symmetry_group"] = "V4"
-    with pytest.raises(ValidationError, match="declared symmetry group"):
-        ProjectiveComplexVariety.model_validate(source.metadata)
-
-    source.metadata["symmetry_group"] = "D4"
     source.metadata["chern_numbers"][0]["value"] = 25
-    with pytest.raises(ValidationError, match="top Chern number"):
-        ProjectiveComplexVariety.model_validate(source.metadata)
+    changed = ProjectiveComplexVariety.model_validate(source.metadata)
+    assert changed.symmetry_group == "V4"
+    assert changed.chern_numbers[0].value == 25

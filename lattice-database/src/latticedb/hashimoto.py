@@ -1,48 +1,23 @@
-"""Tables 10.2 and 10.3 of K. Hashimoto, "Finite symplectic actions on the K3 lattice", arXiv:1012.2682, and the records they identify.
+"""Stored transcription of Tables 10.2 and 10.3 of Hashimoto.
 
-Let $\\Lambda = \\mathrm{II}_{3,19}$ be the K3 lattice. Table 10.2 lists the 81 finite groups
-$\\mathfrak{G}_n \\subset O(\\Lambda)$ of symplectic isometries, up to conjugacy: the order, the
-SmallGroup number $i$, the group, the order $|q_n|$ and the genus symbol $q_n$ of the discriminant
-form, and the rank $c(\\mathfrak{G}_n)$ of the coinvariant lattice $\\Lambda_G = (\\Lambda^G)^\\perp$.
-A row printed with $\\sharp m$ in place of $q_n$ has the same invariant lattice as row $m$.
-Table 10.3 gives a Gram tensor of $\\Lambda^G$ for each row $m$ that no other row points to,
-two Gram tensors where the genus of $\\Lambda^G$ has two classes.
-
-`sources/hashimoto/table_10_2.json` stores Table 10.2 as printed, with `shares` for $\\sharp m$ and,
-on each other row, the record $R$ and the twist $t$ with $\\Lambda_G = R(t)$.
-`sources/hashimoto/table_10_3.json` stores each printed Gram tensor $T$ with the record $R$, the
-twist $t$, and the matrix $P$ whose column $j$ holds the coordinates in the basis of $R$ of the
-$j$-th basis vector of $T$, so that $P^{\\top} (t \\, G_R) P = T$.
-`check` asserts every equation that these files state, and that the stored card morphisms hold, for each
-printed lattice $R(s)$ of Table 10.3, an embedding of $R(s)$ in the K3 lattice and an embedding of the
-coinvariant lattice of its row whose images are primitive and orthogonal: the invariant lattice and its
-orthogonal complement.
+K. Hashimoto, "Finite symplectic actions on the K3 lattice", arXiv:1012.2682.
+This module is source intake only: it parses the archived transcription and its
+card/tag locators.  Mathematical verification of the stated lattices, forms,
+embeddings and complements belongs to the research preamble, not to latticedb.
 """
 
 import re
-from collections.abc import Mapping
-from fractions import Fraction
 from pathlib import Path
 
-from flint import fmpz, fmpz_mat
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.rings import session_ring_objects
+from latticedb.model import Tag
 
-from latticedb import corpus
-from latticedb.model import GramTensor, Lattice, Tag
-
-_SESSION_RINGS = session_ring_objects()
-ZZ = _SESSION_RINGS["ZZ"]
-
-K3_RANK = 22
-K3_RECORD = "027E"
 _SYMBOL = re.compile(r"(\d+)(?:_(?:II|\d))?\^\{([+-])(\d+)\}")
 
 
 class Twist(BaseModel):
-    """A record $R$ and a nonzero integer $t$: the lattice is $R(t)$."""
+    """A record ``R`` and nonzero integer ``t`` naming the source lattice ``R(t)``."""
 
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
@@ -51,7 +26,7 @@ class Twist(BaseModel):
 
 
 class GroupRow(BaseModel):
-    """A row of Table 10.2."""
+    """One stored row of Table 10.2."""
 
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
@@ -67,7 +42,7 @@ class GroupRow(BaseModel):
 
 
 class InvariantLattice(BaseModel):
-    """A Gram tensor of Table 10.3, the record $R$ and twist $t$ of the lattice, and the matrix $P$ with $P^{\\top} (t \\, G_R) P = T$."""
+    """One printed Gram tensor of Table 10.3 and its stored card locator."""
 
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
@@ -78,7 +53,7 @@ class InvariantLattice(BaseModel):
 
 
 class InvariantRow(BaseModel):
-    """A row of Table 10.3."""
+    """One stored row of Table 10.3."""
 
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
@@ -87,128 +62,25 @@ class InvariantRow(BaseModel):
 
 
 def stored(directory: Path) -> tuple[tuple[GroupRow, ...], tuple[InvariantRow, ...]]:
-    """Tables 10.2 and 10.3 from `directory`."""
-    groups = TypeAdapter(tuple[GroupRow, ...]).validate_json((directory / "table_10_2.json").read_text())
-    invariants = TypeAdapter(tuple[InvariantRow, ...]).validate_json((directory / "table_10_3.json").read_text())
+    """Return Tables 10.2 and 10.3 exactly as stored under ``directory``."""
+    groups = TypeAdapter(tuple[GroupRow, ...]).validate_json(
+        (directory / "table_10_2.json").read_text()
+    )
+    invariants = TypeAdapter(tuple[InvariantRow, ...]).validate_json(
+        (directory / "table_10_3.json").read_text()
+    )
     return groups, invariants
 
 
 def symbol_group(symbol: str) -> list[int]:
-    """The orders of the cyclic factors of prime-power order of the discriminant group of a genus symbol such as `2_II^{-2}, 8_1^{+1}, 3^{-1}`."""
+    """Parse the prime-power cyclic-factor orders printed in a genus symbol."""
     terms = [term.strip() for term in symbol.split(",")]
     found = [_SYMBOL.fullmatch(term) for term in terms]
-    assert all(found), f"{symbol} is not a genus symbol"
-    return sorted(int(match[1]) for match in found if match for _ in range(int(match[3])))
-
-
-def _tensor(rows: tuple[tuple[int, ...], ...]) -> GramTensor:
-    return tuple(tuple(map(Fraction, row)) for row in rows)
-
-
-def complements(invariant: tuple[Tag, int], coinvariant: tuple[Tag, int], k3: Lattice, morphisms: corpus.Held) -> bool:
-    """Whether the source lattice cards hold embeddings of `invariant` $= R(s)$ and `coinvariant` $= C(t)$ into the K3 lattice whose images are primitive and orthogonal."""
-    k3_lattice = Lattices(ZZ)(k3.gram_tensor)
-    ambient_module = ZZ.free_module(K3_RANK)
-    for first, scale in morphisms.get((invariant[0], K3_RECORD), ()):
-        for second, other in morphisms.get((coinvariant[0], K3_RECORD), ()):
-            if (scale, other) != (invariant[1], coinvariant[1]) or len(first[0]) + len(second[0]) != K3_RANK:
-                continue
-            first_columns = tuple(tuple(row[j] for row in first) for j in range(len(first[0])))
-            second_columns = tuple(tuple(row[j] for row in second) for j in range(len(second[0])))
-            first_span = ambient_module.subobject_on(tuple(ambient_module(column) for column in first_columns))
-            second_span = ambient_module.subobject_on(tuple(ambient_module(column) for column in second_columns))
-            first_vectors = tuple(k3_lattice(column) for column in first_columns)
-            second_vectors = tuple(k3_lattice(column) for column in second_columns)
-            orthogonal = all(left.b(right) == 0 for left in first_vectors for right in second_vectors)
-            if (
-                orthogonal
-                and int(first_span.module_rank()) == len(first_columns)
-                and int(second_span.module_rank()) == len(second_columns)
-                and first_span.is_primitive()
-                and second_span.is_primitive()
-            ):
-                return True
-    return False
-
-
-def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], lattices: Mapping[str, Lattice], morphisms: corpus.Held) -> list[str]:
-    """The equations of Tables 10.2 and 10.3 that the records and stored card morphisms do not satisfy."""
-    found: list[str] = []
-    by_n = {row.n: row for row in groups}
-    assert sorted(by_n) == list(range(1, 82)), "Table 10.2 has the rows 1 to 81"
-    owners = {row.n for row in groups if row.shares is None}
-    if owners != {row.n for row in invariants}:
-        found.append(f"Table 10.3 has the rows {sorted(row.n for row in invariants)}, the rows of Table 10.2 without a sharp sign are {sorted(owners)}")
-    for row in groups:
-        if row.shares is not None:
-            owner = by_n[row.shares]
-            if owner.shares is not None or (owner.discriminant_order, owner.rank) != (row.discriminant_order, row.rank):
-                found.append(f"Table 10.2 row {row.n}: row {row.shares} is not a row with the same |q| and c")
-            continue
-        assert row.coinvariant is not None and row.discriminant_form is not None, f"Table 10.2 row {row.n} names no record"
-        lattice = lattices[row.coinvariant.record]
-        coinvariant = Lattices(ZZ)(lattice.gram_tensor).twist(row.coinvariant.twist)
-        signature = coinvariant.signature_pair()
-        discriminant_factors = (
-            abs(int(factor))
-            for factor in coinvariant.discriminant_group().invariant_factors()
-            if abs(int(factor)) > 1
-        )
-        prime_powers = sorted(
-            int(p) ** int(e)
-            for factor in discriminant_factors
-            for p, e in fmpz(factor).factor()
-        )
-        computed = (lattice.rank, int(signature.first()), abs(int(coinvariant.determinant())), prime_powers)
-        stated = (row.rank, 0, row.discriminant_order, symbol_group(row.discriminant_form))
-        if computed != stated:
-            found.append(f"Table 10.2 row {row.n}: (c, n_+, |q|, group of q) is {stated}, {row.coinvariant.record}({row.coinvariant.twist}) gives {computed}")
-    for invariant in invariants:
-        row = by_n[invariant.n]
-        for printed in invariant.lattices:
-            lattice = lattices[printed.record]
-            basis = fmpz_mat([list(r) for r in printed.basis])
-            images = tuple(tuple(int(basis[i, j]) for i in range(basis.nrows())) for j in range(basis.ncols()))
-            tensor = _tensor(printed.gram_tensor)
-            printed_lattice = Lattices(ZZ)(printed.gram_tensor)
-            target_lattice = Lattices(ZZ)(lattice.gram_tensor).twist(printed.twist)
-            try:
-                printed_lattice.Mor(target_lattice)(tuple(target_lattice(image) for image in images))
-                preserves_form = True
-            except ValueError:
-                preserves_form = False
-            if abs(basis.det()) != 1 or not preserves_form:
-                found.append(f"Table 10.3 row {invariant.n}: P is not an isometry from the printed Gram tensor to {printed.record}({printed.twist})")
-            assert row.discriminant_form is not None
-            rank = K3_RANK - row.rank
-            printed_signature = printed_lattice.signature_pair()
-            printed_discriminant_factors = (
-                abs(int(factor))
-                for factor in printed_lattice.discriminant_group().invariant_factors()
-                if abs(int(factor)) > 1
-            )
-            printed_prime_powers = sorted(
-                int(p) ** int(e)
-                for factor in printed_discriminant_factors
-                for p, e in fmpz(factor).factor()
-            )
-            printed_invariants = (
-                len(tensor),
-                (int(printed_signature.first()), int(printed_signature.second())),
-                abs(int(printed_lattice.determinant())),
-                printed_prime_powers,
-            )
-            stated_invariants = (rank, (3, rank - 3), row.discriminant_order, symbol_group(row.discriminant_form))
-            if printed_invariants != stated_invariants:
-                found.append(f"Table 10.3 row {invariant.n}: (rank, signature, |q|, group of q) is {stated_invariants}, the printed Gram tensor gives {printed_invariants}")
-            assert row.coinvariant is not None
-            if not complements((printed.record, printed.twist), (row.coinvariant.record, row.coinvariant.twist), lattices[K3_RECORD], morphisms):
-                pair = f"{printed.record}({printed.twist}) and {row.coinvariant.record}({row.coinvariant.twist})"
-                found.append(f"Table 10.3 row {invariant.n}: the source lattice cards hold no primitive orthogonal embeddings of {pair} in {K3_RECORD}")
-    return found
-
-
-def stored_problems(root: Path, loaded: corpus.Corpus) -> list[str]:
-    """`check` on the files under `root/sources/hashimoto`, against the lattice records and their stored morphisms."""
-    lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
-    return check(*stored(root / "sources" / "hashimoto"), lattices, corpus.held(loaded))
+    if not all(found):
+        raise ValueError(f"{symbol!r} is not a stored Hashimoto genus symbol")
+    return sorted(
+        int(match[1])
+        for match in found
+        if match is not None
+        for _ in range(int(match[3]))
+    )

@@ -6,7 +6,7 @@
   <p>Each card stores vertices, edges and their weights. Diagram names are checked properties of that data.</p>
   <ul>
   {% for entry in graphs %}
-    <li><a href="{{ root }}graphs/{{ entry.graph.slug }}.html">{{ entry.graph.name }}</a> — {{ entry.graph.properties()|join(", ") }}</li>
+    <li><a href="{{ root }}graphs/{{ entry.graph.slug }}.html">{{ entry.graph.name }}</a> — {{ entry.graph.properties|join(", ") }}</li>
   {% endfor %}
   </ul>
 </article>

@@ -21,13 +21,11 @@ from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 
 import frontmatter
-from flint import fmpz
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
 from markdown_it import MarkdownIt
 from markupsafe import Markup, escape
 from pydantic import BaseModel, Field
 
-from latticedb import root_systems
 from latticedb.catalogues import ArithmeticGroup, LieGroup
 from latticedb.corpus import Entry, load
 from latticedb.geometric import ProjectiveComplexVariety, RiemannianSymmetricSpace
@@ -47,7 +45,6 @@ from latticedb.model import (
     RootSpan,
     RootSystemComponent,
 )
-from latticedb.relations import hyperbolic_index_bounds
 
 type Cell = str | int | float | bool | None | list[str]
 type Row = dict[str, Cell]
@@ -140,20 +137,6 @@ def group_tex(factors: tuple[int, ...]) -> str:
     )
 
 
-def elementary_prime(factors: tuple[int, ...]) -> int | None:
-    """The prime `p` when the group is `(Z/p)^a` with `a >= 1`."""
-    if factors and len(set(factors)) == 1 and fmpz(factors[0]).is_prime():
-        return factors[0]
-    return None
-
-
-def factorisation_tex(value: int) -> str:
-    return " \\cdot ".join(
-        f"{int(prime)}^{{{int(exponent)}}}" if exponent > 1 else str(int(prime))
-        for prime, exponent in fmpz(value).factor()
-    )
-
-
 def orbit_group_tex(group: OrbitGroup) -> str:
     """TeX for a key of `integral.primitive_orbits`, such as `\\widetilde{SO}^+(L)` for `SOtilde+`."""
     name, plus = group.removesuffix("+"), "^+" if group.endswith("+") else ""
@@ -201,40 +184,6 @@ def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
         )
     order = f"O(z^{{{len(series.z) + 1}}}, w^{{{len(series.w) + 1}}})"
     return " + ".join([*terms, order])
-
-
-def _argument(shift: int) -> str:
-    """TeX for $s - k$."""
-    return "s" if shift == 0 else f"s - {shift}" if shift > 0 else f"s + {-shift}"
-
-
-def _l_tex(shift: int, discriminant: str) -> str:
-    """TeX for $L^\\Sigma(s - k, \\chi_d)$, which is $\\zeta^\\Sigma(s - k)$ for the trivial character."""
-    if discriminant == "1":
-        return f"\\zeta^\\Sigma({_argument(shift)})"
-    return f"L^\\Sigma({_argument(shift)}, \\chi_{{{discriminant}}})"
-
-
-def zeta_tex(lattice: Lattice, cone: bool) -> str:
-    """TeX for $\\zeta^\\Sigma(X_n, s)$ of $X_n : Q(x) = n$: for $n = 0$ when `cone`, and for $n \\neq 0$ otherwise (theory page `zeta`)."""
-    assert lattice.integral is not None and lattice.determinant != 0
-    m = lattice.rank // 2
-    if lattice.rank % 2 == 1:
-        if cone:
-            return _l_tex(2 * m, "1")
-        coefficient = (-1) ** m * int(lattice.determinant)
-        discriminant = (
-            "n"
-            if coefficient == 1
-            else "-n"
-            if coefficient == -1
-            else f"{coefficient}n"
-        )
-        return f"{_l_tex(2 * m, '1')}\\, {_l_tex(m, discriminant)}"
-    character = str(lattice.integral.quadratic_character)
-    if cone:
-        return f"\\frac{{{_l_tex(2 * m - 1, '1')}\\, {_l_tex(m, character)}}}{{{_l_tex(m - 1, character)}}}"
-    return f"\\frac{{{_l_tex(2 * m - 1, '1')}}}{{{_l_tex(m - 1, character)}}}"
 
 
 def genus_tex(symbol: str) -> str:
@@ -293,33 +242,13 @@ def _runs(names: list[str]) -> list[tuple[str, int]]:
     return [(name, names.count(name)) for name in dict.fromkeys(names)]
 
 
-def component_lattice(component: RootSystemComponent) -> tuple[str, int, Fraction]:
-    """`(letter, rank, k)`: the root lattice of the component is the standard lattice of that letter and rank with the form `k b`."""
-    letter, rank, factor = root_systems.root_lattice(component.type)
-    return letter, rank, factor * component.scale
-
-
-def component_lattice_tex(component: RootSystemComponent) -> str:
-    """`E_{8}`, `D_{4}(2)`, `\\mathrm{I}_{10,0}`, and `\\langle 4 \\rangle` for `A_1(2)`."""
-    letter, rank, scale = component_lattice(component)
-    if (letter, rank) == ("A", 1):
-        return f"\\langle {rational_tex(2 * scale)} \\rangle"
-    name = f"\\mathrm{{I}}_{{{rank},0}}" if letter == "I" else f"{letter}_{{{rank}}}"
-    return name if scale == 1 else f"{name}({rational_tex(scale)})"
-
-
-def component_lattice_text(component: RootSystemComponent) -> str:
-    """`E8`, `D4(2)`, `I_{10,0}`, and `<4>` for `A1(2)`."""
-    letter, rank, scale = component_lattice(component)
-    if (letter, rank) == ("A", 1):
-        return f"<{2 * scale}>"
-    name = f"I_{{{rank},0}}" if letter == "I" else f"{letter}{rank}"
-    return name if scale == 1 else f"{name}({scale})"
-
-
 def root_span_tex(components: tuple[RootSystemComponent, ...]) -> str:
-    """`D_{4}(2)^{2} \\oplus \\langle 4 \\rangle`: the orthogonal sum of the root lattices of the components; `0` for no component."""
-    runs = _runs([component_lattice_tex(component) for component in components])
+    """Render the stored component types and scales, without deriving another lattice identification."""
+    names = [
+        component.type if component.scale == 1 else f"{component.type}({rational_tex(component.scale)})"
+        for component in components
+    ]
+    runs = _runs(names)
     return (
         " \\oplus ".join(
             f"{name}^{{{count}}}" if count > 1 else name for name, count in runs
@@ -329,36 +258,15 @@ def root_span_tex(components: tuple[RootSystemComponent, ...]) -> str:
 
 
 def root_span_text(components: tuple[RootSystemComponent, ...]) -> str:
-    runs = _runs([component_lattice_text(component) for component in components])
+    names = [
+        component.type if component.scale == 1 else f"{component.type}({component.scale})"
+        for component in components
+    ]
+    runs = _runs(names)
     return (
         " + ".join(f"{name}^{count}" if count > 1 else name for name, count in runs)
         or "0"
     )
-
-
-def component_norms(component: RootSystemComponent) -> tuple[Fraction, ...]:
-    """The values `b(\\alpha_i, \\alpha_i) = k (\\alpha_i, \\alpha_i)` on the simple roots; each root of the component is the image of a simple root under the Weyl group."""
-    gram = root_systems.simple_root_gram(component.type)
-    return tuple(component.scale * gram[i][i] for i in range(component.rank))
-
-
-def orthogonal_blocks(lattice: Lattice) -> list[list[int]]:
-    """The finest partition of the indices $1, \\dots, n$ such that $b(e_i, e_j) = 0$ for $i$, $j$ in different parts.
-
-    The parts are the connected components of the graph on the basis vectors with an edge where $b(e_i, e_j) \\neq 0$.
-    The record fixes the orthogonal decomposition of $L$ into the sublattices that the parts generate.
-    """
-    blocks: list[list[int]] = []
-    for index, components_row in enumerate(lattice.gram_tensor, start=1):
-        linked = [
-            block
-            for block in blocks
-            if any(components_row[other - 1] != 0 for other in block)
-        ]
-        blocks = [block for block in blocks if block not in linked] + [
-            sorted([*(other for block in linked for other in block), index])
-        ]
-    return sorted(blocks)
 
 
 def block_tex(block: list[int], symbol: str = "e") -> str:
@@ -396,10 +304,7 @@ def matrix_text(morphism: Morphism) -> str:
 
 
 def summand_name(record: Lattice, scale: int) -> tuple[str, str]:
-    """The name of $M(k)$ as text and as TeX: `<ka>` for the rank-one record `<a>`, the name of `M` for `k = 1`, and `M(k)` otherwise."""
-    if record.rank == 1:
-        value = scale * record.gram_tensor[0][0]
-        return f"<{value}>", f"\\langle {rational_tex(value)} \\rangle"
+    """The stored card name for $M$, with ``(k)`` appended for a nontrivial twist."""
     if scale == 1:
         return record.name, record.latex
     return f"{record.name}({scale})", f"{record.latex}({scale})"
@@ -490,25 +395,13 @@ PROPERTY_MEANINGS = {
 
 
 def properties(lattice: Lattice) -> list[str]:
-    """The properties of a lattice that the database filters by. Each one follows from the record."""
+    """Property labels explicitly supported by stored card fields."""
     found = []
     if lattice.integral is not None:
         found.extend(["integral", lattice.integral.parity])
-        if lattice.is_unimodular:
-            found.append("unimodular")
-        prime = elementary_prime(lattice.integral.discriminant_group or ())
-        if prime is not None:
-            found.append(f"{prime}-elementary")
-    elif not lattice.is_integer_valued:
-        found.append("not integral")
-    match lattice.is_root_lattice:
-        case True:
-            found.append("root lattice")
-        case False:
-            found.append("not a root lattice")
-    if lattice.determinant == 0:
-        found.append("degenerate")
-    if lattice.is_hyperbolic:
+    if lattice.root_sublattice is not None and lattice.root_sublattice.norms is not None:
+        found.append("root lattice")
+    if lattice.hyperbolic is not None:
         found.append("hyperbolic")
     if lattice.indefinite is not None:
         found.append("isotropic" if lattice.indefinite.isotropic else "anisotropic")
@@ -546,18 +439,7 @@ def root_span_name(
         )
     if not span.roots:
         return "0", "0"
-    return ("L", "L") if lattice.is_root_lattice else None
-
-
-def root_span_primitive(lattice: Lattice) -> str:
-    """Whether $R(L) = \\mathbb{Z}\\Phi(L)$ is primitive in $L$, as the text of a cell."""
-    match lattice.root_span_is_primitive:
-        case True:
-            return "yes"
-        case False:
-            return "no"
-        case None:
-            return "not decided"
+    return None
 
 
 def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
@@ -600,8 +482,8 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         "hyperbolic_index": integral.hyperbolic_index if integral else None,
         "overlattice_count": integral.overlattice_count if integral else None,
         "delta": integral.delta if integral else None,
-        "minimum": str(definite.minimum) if definite else None,
-        "minimum_value": float(definite.minimum) if definite else None,
+        "minimum": str(definite.minimum) if definite and definite.minimum is not None else None,
+        "minimum_value": float(definite.minimum) if definite and definite.minimum is not None else None,
         "kissing_number": definite.kissing_number if definite else None,
         "automorphism_group_order": str(order) if order is not None else None,
         "automorphism_group_order_value": float(order) if order is not None else None,
@@ -617,11 +499,6 @@ def row(lattice: Lattice, lattices: dict[str, Lattice]) -> Row:
         else None,
         "root_span": span_name[0] if span_name else None,
         "root_span_tex": span_name[1] if span_name else None,
-        "root_span_rank": lattice.root_span_rank,
-        "root_span_index": lattice.root_span_index
-        if lattice.root_span_rank == lattice.rank
-        else None,
-        "root_span_primitive": root_span_primitive(lattice),
         "families": list(lattice.families),
     }
 
@@ -789,13 +666,21 @@ def orthogonal_groups(
     environment: Environment,
     lattices: dict[str, Lattice],
     groups: dict[str, LieGroup],
+    arithmetic_groups: dict[str, ArithmeticGroup],
 ) -> None:
-    """Write the Lie-group index, with the recorded real orthogonal groups $O(p,q)$."""
+    """Write the Lie-group index from explicit lattice -> arithmetic -> Lie-group links."""
     counts: dict[tuple[int, int], int] = {}
     for lattice in lattices.values():
-        if lattice.signature is not None and lattice.is_nondegenerate:
-            key = (min(lattice.signature), max(lattice.signature))
-            counts[key] = counts.get(key, 0) + 1
+        if lattice.orthogonal_group is None:
+            continue
+        arithmetic = arithmetic_groups.get(lattice.orthogonal_group)
+        if arithmetic is None:
+            continue
+        ambient = groups.get(arithmetic.ambient_lie_group)
+        if ambient is None or ambient.orthogonal_signature is None:
+            continue
+        key = tuple(ambient.orthogonal_signature)
+        counts[key] = counts.get(key, 0) + 1
     orthogonal = {
         tuple(group.orthogonal_signature): group
         for group in groups.values()
@@ -844,21 +729,16 @@ def build(root: Path, target: Path) -> int:
     environment.globals.update(
         rational_tex=rational_tex,
         group_tex=group_tex,
-        factorisation_tex=factorisation_tex,
         genus_tex=genus_tex,
         orbit_group_tex=orbit_group_tex,
         subgroup_tex=subgroup_tex,
         cardinality_tex=cardinality_tex,
         orbit_series_tex=orbit_series_tex,
-        zeta_tex=zeta_tex,
         theta_tex=theta_tex,
         root_system_tex=root_system_tex,
         set_tex=set_tex,
         combination_tex=combination_tex,
-        component_lattice_tex=component_lattice_tex,
-        component_norms=component_norms,
         block_tex=block_tex,
-        root_count=root_systems.root_count,
         properties=properties,
         definiteness_label=DEFINITENESS_LABEL,
         collections=pages,
@@ -899,7 +779,6 @@ def build(root: Path, target: Path) -> int:
         + [page.prose for page in theory]
     )
     lattice_page = environment.get_template("lattice.html.j2")
-    bounds = hyperbolic_index_bounds(entries)
     incoming_by_tag: dict[str, list[tuple[Lattice, Morphism]]] = {}
     for source in lattices.values():
         for morphism in source.morphisms:
@@ -928,10 +807,6 @@ def build(root: Path, target: Path) -> int:
                 span_name=root_span_name(lattice, lattices),
                 span_summands=span_summands(lattice, lattices),
                 span_images=summand_images(lattice, lattices),
-                blocks=orthogonal_blocks(lattice)
-                if lattice.gram_tensor is not None
-                else (),
-                hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
                 incoming_morphisms=incoming_by_tag.get(lattice.tag, ()),
                 outgoing_morphisms=[
@@ -949,8 +824,9 @@ def build(root: Path, target: Path) -> int:
                     )
                 ],
                 ambient_lie_group=(
-                    lie_groups.get(f"o-{min(lattice.signature)}-{max(lattice.signature)}")
-                    if lattice.signature is not None and lattice.is_nondegenerate
+                    lie_groups.get(arithmetic_groups[lattice.orthogonal_group].ambient_lie_group)
+                    if lattice.orthogonal_group is not None
+                    and lattice.orthogonal_group in arithmetic_groups
                     else None
                 ),
                 orthogonal_group=(
@@ -989,7 +865,7 @@ def build(root: Path, target: Path) -> int:
     (target / "theory.html").write_text(
         environment.get_template("theory.html.j2").render(root="./")
     )
-    orthogonal_groups(target, environment, lattices, lie_groups)
+    orthogonal_groups(target, environment, lattices, lie_groups, arithmetic_groups)
     lie_group_prose = markdown_to_html([entry.prose for entry in corpus.lie_groups])
     lie_group_page = environment.get_template("lie-group.html.j2")
     for entry, rendered_prose in zip(corpus.lie_groups, lie_group_prose, strict=True):
@@ -997,10 +873,9 @@ def build(root: Path, target: Path) -> int:
         member_lattices = [
             lattice
             for lattice in lattices.values()
-            if group.orthogonal_signature is not None
-            and lattice.signature is not None
-            and lattice.is_nondegenerate
-            and tuple(sorted(lattice.signature)) == tuple(group.orthogonal_signature)
+            if lattice.orthogonal_group is not None
+            and lattice.orthogonal_group in arithmetic_groups
+            and arithmetic_groups[lattice.orthogonal_group].ambient_lie_group == group.slug
         ]
         (target / "lie-group" / f"{group.slug}.html").write_text(
             lie_group_page.render(
@@ -1049,20 +924,9 @@ def build(root: Path, target: Path) -> int:
     for geometric_entry, rendered_prose in zip(geometric, geometric_prose, strict=True):
         record = geometric_entry.geometric
         if isinstance(record, ProjectiveComplexVariety):
-            rows = [
-                [
-                    record.hodge_number(p, degree - p)
-                    for p in range(
-                        max(0, degree - record.dimension),
-                        min(degree, record.dimension) + 1,
-                    )
-                ]
-                for degree in range(2 * record.dimension + 1)
-            ]
             html = variety_page.render(
                 root="../",
                 geometric=record,
-                rows=rows,
                 lattices=lattices,
                 families={
                     entry.family.slug: entry.family for entry in geometric_families

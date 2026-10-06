@@ -3,7 +3,7 @@
 {% block main %}
 <article>
   <header class="page-heading"><p class="kicker">Weighted graph</p><h1>{{ graph.name }}</h1></header>
-  <p>Properties: {{ graph.properties()|join(", ") }}.</p>
+  <p>Properties: {{ graph.properties|join(", ") }}.</p>
   <section aria-labelledby="vertices"><h2 id="vertices">Vertices</h2>
     <div class="table-scroll"><table class="member-table"><thead><tr><th>ID</th><th>Weight</th></tr></thead><tbody>
     {% for vertex in graph.vertices %}<tr><td>{{ vertex.id }}</td><td><code>{{ vertex.weight|tojson }}</code></td></tr>{% endfor %}

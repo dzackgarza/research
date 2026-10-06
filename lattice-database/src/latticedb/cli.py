@@ -126,7 +126,7 @@ def bulk_source_fetch(root: Root = Path()) -> None:
 
 @app.command(name="bulk-index")
 def bulk_index_write(root: Root = Path()) -> None:
-    """Store parsed bulk source rows with their exact Gram tensors and determinants."""
+    """Store parsed bulk source rows without deriving mathematical invariants."""
     for source, count in bulk_index.write(root).items():
         print(f"sources/normalized/{source}.jsonl.gz: {count} rows")
 
@@ -202,7 +202,7 @@ LATTICEDB = f"latticedb {version('latticedb')}"
 
 @app.command
 def verify(root: Root = Path()) -> None:
-    """Report mathematical errors without changing lattice cards."""
+    """Report schema/reference/certificate-coherence errors without changing cards."""
     try:
         count, problems = checks.run(root)
     except corpus.CorpusInvalid as invalid:
@@ -210,7 +210,7 @@ def verify(root: Root = Path()) -> None:
         print(f"{len(invalid.problems)} problems", file=sys.stderr)
         sys.exit(1)
     _refuse(problems)
-    print(f"{count} lattice cards verified")
+    print(f"{count} lattice cards structurally verified")
 
 
 @app.command

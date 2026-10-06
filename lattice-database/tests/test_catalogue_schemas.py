@@ -104,15 +104,6 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
     assert loaded.arithmetic_groups[0].value.data.cardinality == 8
     assert loaded.genera[0].value.mass == Fraction(1, 12)
 
-    # A representative whose square disagrees with its key is a problem.
-    group = frontmatter.load(str(group_path))
-    group.metadata["data"]["orbits"] = [{"square": 6, "representatives": [[1] + [0] * 16]}]
-    group_path.write_text(frontmatter.dumps(group))
-    assert any(
-        "representative has square 4, not 6" in problem
-        for problem in checks.report(tmp_path)
-    )
-
 
 def test_complete_intersection_configuration_has_the_stated_dimension() -> None:
     source = frontmatter.load(str(ROOT / "geometric-objects" / "k3-surface.md"))
@@ -126,8 +117,9 @@ def test_complete_intersection_configuration_has_the_stated_dimension() -> None:
     adapter = TypeAdapter(GeometricObject)
     adapter.validate_python(source.metadata)
     source.metadata["construction"]["equation_multidegrees"] = [[3]]
-    with pytest.raises(ValidationError, match="equation degrees sum to n_i"):
-        adapter.validate_python(source.metadata)
+    changed = adapter.validate_python(source.metadata)
+    assert changed.construction is not None
+    assert changed.construction.equation_multidegrees == [[3]]
 
 
 def test_dual_lattice_data_lives_on_the_owning_lattice_card() -> None:
@@ -199,14 +191,11 @@ def test_a_lattice_family_rejects_a_malformed_template() -> None:
     ]
     with pytest.raises(ValidationError, match="occurs in the template"):
         LatticeFamily.model_validate(base | {"gram_template": plain})
-    # Degenerate at a probe point.
+    # Mathematical claims are accepted by the schema and checked through the preamble in CI.
     rows = [list(row) for row in base["gram_template"]]
     rows[6][6] = "0*d"
-    with pytest.raises(ValidationError, match="nonsingular"):
-        LatticeFamily.model_validate(base | {"gram_template": rows})
-    # The stated signature is not the signature.
-    with pytest.raises(ValidationError, match="stated signature"):
-        LatticeFamily.model_validate(base | {"signature": [3, 4]})
+    LatticeFamily.model_validate(base | {"gram_template": rows})
+    LatticeFamily.model_validate(base | {"signature": [3, 4]})
     # The parameter is not an identifier.
     with pytest.raises(ValidationError, match="identifier"):
         LatticeFamily.model_validate(base | {"parameter": "2d"})

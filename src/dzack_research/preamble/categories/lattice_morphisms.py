@@ -517,13 +517,14 @@ class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
     def __init__(self, parent, images) -> None:
-        if parent.aut_family() is not None:
-            module = parent.domain()
-            module_mor = module.module_category().Mor(module, module)
-            forward = module_mor(images)
-            super().__init__(parent, forward, forward.inverse())
-        else:
-            super().__init__(parent, images)
+        match parent.domain() is parent.codomain():
+            case True:
+                module = parent.domain()
+                module_mor = module.module_category().Mor(module, module)
+                forward = module_mor(images)
+                super().__init__(parent, forward, forward.inverse())
+            case False:
+                super().__init__(parent, images)
         if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
             raise ValueError(f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: it is not surjective")
 
@@ -1613,7 +1614,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         )
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-        return IntegralLattice(_engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)).orthogonal_group()
+        gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
+        signature = lattice.signature_pair()
+        if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
+            gram = -gram
+        return IntegralLattice(gram).orthogonal_group()
 
     def _from_engine(self, _engine_element):
         r"""Transport one backend row-action isometry to a live automorphism."""
