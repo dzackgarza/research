@@ -2538,6 +2538,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return module.associated_bilinear_form()
             return module
 
+        @cached_method
         def discriminant_quadratic_form(self):
             r"""Return ``A_L`` with its ``K/2R``-valued quadratic form when ``L`` is even."""
 
@@ -2547,6 +2548,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert module in DiscriminantQuadraticModules(self.base_ring())
             return module
 
+        @cached_method
         def discriminant_group(self):
             r"""Return the ``ZZ`` discriminant group with every form supported by ``L``."""
             if _engine_ring(self.base_ring()) is not SageZZ:
