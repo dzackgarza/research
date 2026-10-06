@@ -53,6 +53,8 @@ change:
 | An invariant of one lattice: a genus symbol, a class number, the order of $O(L)$, a root system | A field of the record, in the block of its hypothesis |
 | A relation between two records: a twist, a dual, an orthogonal complement, a gluing | A `related` entry of each record, and the prose |
 | A map between lattices: an embedding, an isometry, a generator of a group action | A morphism file `morphisms/<S>-<T>.md` |
+| A Lie group such as $O(p,q)$ | A `lie-groups/<slug>.md` card |
+| $O(L)$ or another arithmetic subgroup attached to a lattice | An `arithmetic-groups/<slug>.md` card, referenced by the lattice card |
 | An isometry from a tagged lattice to its scaled dual, whose dual has no separate tag | A morphism file `morphisms/dual/<slug>.md`, with the dual basis and scale stated |
 | What a source states: a table, a list of Gram tensors, a basis in other coordinates | `sources/<source>/`, read by a source module; source-to-card comparison is importer/provenance testing only, never mathematical verification |
 | An identification of a record with an entry of a source | The reference of the record, with the locator of the entry, and the prose that states the argument |

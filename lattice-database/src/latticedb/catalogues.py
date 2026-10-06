@@ -12,11 +12,71 @@ from flint import fmpz_mat
 from pydantic import Field, model_validator
 from pydantic_core import PydanticCustomError
 
-from latticedb.model import Rational, Record, Slug, Tag
+from latticedb.model import GroupData, OrbitGroup, Rational, Record, Reference, Slug, Tag
 
 
 class CatalogueRecord(Record):
     slug: Slug
+
+
+class LieGroup(CatalogueRecord):
+    """A real or complex Lie group recorded independently of any lattice realization."""
+
+    name: str = Field(min_length=1)
+    latex: str = Field(min_length=1)
+    base_field: Literal["real", "complex"]
+    dimension: Annotated[int, Field(ge=0)]
+    real_rank: Annotated[int, Field(ge=0)] | None = None
+    connected_components: Annotated[int, Field(gt=0)] | None = None
+    lie_algebra: str | None = None
+    orthogonal_signature: Annotated[tuple[int, int], Field(strict=False)] | None = None
+    maximal_compact_factors: Annotated[tuple[Slug, ...], Field(strict=False)] = ()
+    references: Annotated[tuple[Reference, ...], Field(strict=False)] = ()
+
+    @model_validator(mode="after")
+    def check_orthogonal_signature(self) -> Self:
+        if self.orthogonal_signature is None:
+            return self
+        p, q = self.orthogonal_signature
+        if self.base_field != "real" or p < 0 or q < p:
+            raise PydanticCustomError(
+                "lie_group_orthogonal_signature",
+                "an orthogonal signature records the canonical real form O(p,q) with 0 <= p <= q",
+            )
+        expected_dimension = (p + q) * (p + q - 1) // 2
+        if self.dimension != expected_dimension or self.real_rank != p:
+            raise PydanticCustomError(
+                "lie_group_orthogonal_invariants",
+                "O(p,q) has dimension (p+q)(p+q-1)/2 and real rank p for p <= q",
+            )
+        expected_components = 1 if p == q == 0 else (2 if p == 0 else 4)
+        if self.connected_components != expected_components:
+            raise PydanticCustomError(
+                "lie_group_orthogonal_components",
+                "O(p,q) has one component for O(0,0), two in the compact edge O(q), and four when p,q > 0",
+            )
+        return self
+
+
+class ArithmeticGroup(CatalogueRecord):
+    """An arithmetic subgroup of the real orthogonal group attached to a lattice."""
+
+    name: str = Field(min_length=1)
+    latex: str = Field(min_length=1)
+    lattice: Tag
+    ambient_lie_group: Slug
+    standard_name: OrbitGroup | None = None
+    parent_group: Slug | None = None
+    data: GroupData = Field(default_factory=GroupData)
+
+    @model_validator(mode="after")
+    def check_parent_location(self) -> Self:
+        if self.data.parent is not None:
+            raise PydanticCustomError(
+                "arithmetic_group_parent",
+                "an arithmetic-group card names its parent by `parent_group`, not by the lattice-local `data.parent` field",
+            )
+        return self
 
 
 class LatticeGenus(CatalogueRecord):
@@ -289,9 +349,9 @@ class ModuliProblem(CatalogueRecord):
     geometric_family: Slug
     dimension: Annotated[int, Field(ge=0)]
     polarization_orbit: Slug | None = None
-    arithmetic_subgroup: str | None = Field(
+    arithmetic_subgroup: Slug | None = Field(
         default=None,
-        description="A key of the `groups` block of a lattice record, such as `Gamma_En_2`, that acts on the period domain.",
+        description="The arithmetic-group card of the group acting on the period domain.",
     )
 
 

@@ -1,0 +1,25 @@
+{% extends "base.html.j2" %}
+{% block title %}Arithmetic groups · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <p class="kicker">Groups</p>
+  <h1>Arithmetic groups</h1>
+  <p class="lede">Arithmetic subgroups attached to lattice cards, with their inclusions into the real Lie groups of the corresponding real quadratic spaces.</p>
+</header>
+<section aria-labelledby="groups">
+  <h2 id="groups">Recorded arithmetic groups</h2>
+  <div class="table-scroll"><table class="member-table">
+    <thead><tr><th>Group</th><th>Lattice</th><th>Ambient Lie group</th><th>Parent</th></tr></thead>
+    <tbody>
+      {% for group in groups %}
+      <tr>
+        <td><a href="{{ root }}arithmetic-group/{{ group.slug }}.html">\({{ group.latex }}\)</a></td>
+        <td><a class="tag" href="{{ root }}tag/{{ group.lattice }}.html">{{ group.lattice }}</a></td>
+        <td><a href="{{ root }}lie-group/{{ group.ambient_lie_group }}.html">\({{ lie_groups[group.ambient_lie_group].latex }}\)</a></td>
+        <td>{% if group.parent_group %}<a href="{{ root }}arithmetic-group/{{ group.parent_group }}.html">\({{ by_slug[group.parent_group].latex }}\)</a>{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+</section>
+{% endblock %}

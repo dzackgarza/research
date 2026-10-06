@@ -325,34 +325,30 @@ def test_the_link_check_reports_a_missing_page_and_a_missing_anchor(
     ]
 
 
-def test_the_orthogonal_page_links_the_lattices_of_each_unordered_signature(
+def test_real_orthogonal_groups_are_first_class_cards_with_lattice_backlinks(
     built: Path, rows: dict[str, site.Row]
 ) -> None:
-    html = (built / "orthogonal-groups.html").read_text()
-    # The upper triangle indexes the groups O(p, q), 0 <= p <= q <= 24, by unordered signature.
-    groups = {}
-    for row in rows.values():
-        if (
-            row["n_plus"] is not None
-            and row["n_plus"] + row["n_minus"] == row["rank"]
-            and row["n_plus"] <= 24
-            and row["n_minus"] <= 24
-        ):
-            key = (
-                min(row["n_plus"], row["n_minus"]),
-                max(row["n_plus"], row["n_minus"]),
-            )
-            groups[key] = groups.get(key, 0) + 1
-    assert groups
-    table = html.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
-    assert table.count('class="orthogonal-count"') == len(groups)
-    assert table.count('class="orthogonal-empty"') == 325 - len(groups)
-    assert table.count('class="orthogonal-blank"') == 300
-    # A cell links the lattices of both signatures of its group in the database.
-    p, q = next((p, q) for p, q in groups if p != q)
-    assert f'href="./database.html?signature={p},{q}&amp;signature={q},{p}"' in html
-    # Definite groups O(n) = O(n, 0) are present at the triangle edge.
-    assert 'href="./database.html?signature=0,8&amp;signature=8,0"' in html
+    html = (built / "lie-groups.html").read_text()
+    signatures = {
+        (min(row["n_plus"], row["n_minus"]), max(row["n_plus"], row["n_minus"]))
+        for row in rows.values()
+        if row["n_plus"] is not None
+        and row["n_minus"] is not None
+        and row["rank"] is not None
+        and row["n_plus"] + row["n_minus"] == row["rank"]
+    }
+    assert signatures
+    for p, q in signatures:
+        slug = f"o-{p}-{q}"
+        assert (built / "lie-group" / f"{slug}.html").exists()
+        assert f'href="./lie-group/{slug}.html"' in html
+
+    lattice_html = (built / "tag" / "029J.html").read_text()
+    assert 'href="../lie-group/o-2-10.html"' in lattice_html
+    assert 'href="../arithmetic-group/o-t-en.html"' in lattice_html
+    arithmetic_html = (built / "arithmetic-group" / "gamma-en-2.html").read_text()
+    assert 'href="../tag/029J.html"' in arithmetic_html
+    assert 'href="../lie-group/o-2-10.html"' in arithmetic_html
     # No card is named for a group: O(p, q) attaches to the signature.
     assert "I_{" not in table
 

@@ -45,6 +45,25 @@
     </table>
   </section>
 
+  {% if ambient_lie_group %}
+  <section aria-labelledby="orthogonal-group">
+    <h2 id="orthogonal-group">Orthogonal group</h2>
+    <p>
+      The integral orthogonal group \(O(L)\) embeds by base change as
+      \(O(L) \hookrightarrow O(L_{\mathbb R}) \cong\)
+      <a href="{{ root }}lie-group/{{ ambient_lie_group.slug }}.html">\({{ ambient_lie_group.latex }}\)</a>.
+      {% if orthogonal_group %}The stored arithmetic-group card for \(O(L)\) is
+      <a href="{{ root }}arithmetic-group/{{ orthogonal_group.slug }}.html">\({{ orthogonal_group.latex }}\)</a>.{% endif %}
+    </p>
+    {% if arithmetic_groups %}
+    <h3>Recorded arithmetic subgroups</h3>
+    <ul>
+      {% for group in arithmetic_groups %}<li><a href="{{ root }}arithmetic-group/{{ group.slug }}.html">\({{ group.latex }}\)</a>{% if group.data.index_in_orthogonal_group is not none %}, index {{ group.data.index_in_orthogonal_group }} in \(O(L)\){% endif %}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endif %}
+
   {% if lattice.gram_tensor is not none and lattice.rank is not none %}<section aria-labelledby="gram-tensor">
     <h2 id="gram-tensor">Gram tensor</h2>
     <p>The components \(b(e_i, e_j)\) of the {{ theory("lattices", "gram-tensor", "Gram tensor") }} \(b\) in the {{ theory("lattices", "gram-tensor", "chosen basis") }} \({{ block_tex(range(1, lattice.rank + 1) | list) }}\).</p>
@@ -126,19 +145,6 @@
       <tbody>
         {% for group, series in lattice.integral.discriminant_orbits.items() %}
         <tr><th scope="row">\(\Gamma = {{ orbit_group_tex(group) }}\)</th><td>\({{ orbit_series_tex(series) }}\){% if series.reference %}, by {% if series.reference.url %}<a href="{{ series.reference.url }}">{{ series.reference.citation }}</a>{% else %}{{ series.reference.citation }}{% endif %}{% endif %}</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-    {% if lattice.groups %}
-    <h3 id="groups">Subgroups of \(O(L)\)</h3>
-    <table class="facts">
-      <tbody>
-        {% for key, group in lattice.groups.items() %}
-        <tr>
-          <th scope="row">\(\Gamma = {{ subgroup_tex(key) }}\)</th>
-          <td>{% if group.cardinality is not none %}\(|{{ subgroup_tex(key) }}| = {{ cardinality_tex(group.cardinality) }}\){% else %}order not decided{% endif %}{% if group.index_in_orthogonal_group is not none %}, \([O(L) : \Gamma] = {{ group.index_in_orthogonal_group }}\){% endif %}{% if group.parent %}, {{ subgroup_tex(group.parent) }} \leq \Gamma{% endif %}{% if group.abstract_structure %} &mdash; {{ group.abstract_structure }}{% endif %}{% if group.reference %}, by {% if group.reference.url %}<a href="{{ group.reference.url }}">{{ group.reference.citation }}</a>{% else %}{{ group.reference.citation }}{% endif %}{% endif %}</td>
-        </tr>
         {% endfor %}
       </tbody>
     </table>

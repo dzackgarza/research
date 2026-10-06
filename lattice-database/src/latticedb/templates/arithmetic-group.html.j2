@@ -1,0 +1,39 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ group.name }} · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker">Arithmetic group</p>
+    <h1>\({{ group.latex }}\)</h1>
+    <p class="names">{{ group.name }}</p>
+  </header>
+
+  <section aria-labelledby="placement">
+    <h2 id="placement">Placement</h2>
+    <p>
+      This group acts on <a class="tag" href="{{ root }}tag/{{ lattice.tag }}.html">{{ lattice.tag }}</a>
+      \({{ lattice.latex }}\) and lies in
+      <a href="{{ root }}lie-group/{{ ambient.slug }}.html">\({{ ambient.latex }}\)</a>
+      through \(O(L) \hookrightarrow O(L_{\mathbb R})\).
+    </p>
+    {% if parent %}<p>Parent group: <a href="{{ root }}arithmetic-group/{{ parent.slug }}.html">\({{ parent.latex }}\)</a>.</p>{% endif %}
+  </section>
+
+  <section aria-labelledby="data"><h2 id="data">Group data</h2><table class="facts"><tbody>
+    {% if group.standard_name %}<tr><th scope="row">Standard subgroup</th><td>\({{ subgroup_tex(group.standard_name) }}\)</td></tr>{% endif %}
+    {% if group.data.cardinality is not none %}<tr><th scope="row">Cardinality</th><td>\({{ cardinality_tex(group.data.cardinality) }}\)</td></tr>{% endif %}
+    {% if group.data.index_in_orthogonal_group is not none %}<tr><th scope="row">Index in \(O(L)\)</th><td>{{ group.data.index_in_orthogonal_group }}</td></tr>{% endif %}
+    {% if group.data.abstract_structure %}<tr><th scope="row">Description</th><td>{{ group.data.abstract_structure }}</td></tr>{% endif %}
+    {% if group.data.generator_morphisms %}<tr><th scope="row">Generators</th><td>{{ group.data.generator_morphisms | join(", ") }}</td></tr>{% endif %}
+  </tbody></table></section>
+
+  {% if group.data.orbits %}
+  <section aria-labelledby="orbits"><h2 id="orbits">Recorded primitive-vector orbits</h2><table class="facts"><tbody>
+    {% for orbit in group.data.orbits %}<tr><th scope="row">\(v^2={{ orbit.square }}\)</th><td>{{ orbit.representatives | length }} representative{% if orbit.representatives | length != 1 %}s{% endif %}</td></tr>{% endfor %}
+  </tbody></table></section>
+  {% endif %}
+
+  {% if group.data.reference %}<section aria-labelledby="reference"><h2 id="reference">Reference</h2><p>{% if group.data.reference.url %}<a href="{{ group.data.reference.url }}">{{ group.data.reference.citation }}</a>{% else %}{{ group.data.reference.citation }}{% endif %}</p></section>{% endif %}
+  {% if prose %}<section aria-labelledby="notes"><h2 id="notes">Notes</h2>{{ prose }}</section>{% endif %}
+</article>
+{% endblock %}

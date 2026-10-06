@@ -29,6 +29,7 @@ from markupsafe import Markup, escape
 from pydantic import BaseModel, Field
 
 from latticedb import root_systems
+from latticedb.catalogues import ArithmeticGroup, LieGroup
 from latticedb.corpus import Entry, load
 from latticedb.geometric import ProjectiveComplexVariety, RiemannianSymmetricSpace
 from latticedb.model import (
@@ -784,46 +785,49 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     yield "Reference", "references[]", Reference
     yield "Morphisms between two lattices", "morphisms/<S>-<T>.md", Morphisms
     yield "Morphism", "morphisms[]", Morphism
-
-
-ORTHOGONAL_LIMIT = 24
-"""The largest $p$ and $q$ in the table of orthogonal groups."""
+    yield "Lie group card", "lie-groups/<slug>.md", LieGroup
+    yield "Arithmetic group card", "arithmetic-groups/<slug>.md", ArithmeticGroup
 
 
 def orthogonal_groups(
-    target: Path, environment: Environment, lattices: dict[str, Lattice]
+    target: Path,
+    environment: Environment,
+    lattices: dict[str, Lattice],
+    groups: dict[str, LieGroup],
 ) -> None:
-    """Write `orthogonal-groups.html`: the table of orthogonal groups $O(p, q)$.
-
-    For a nondegenerate lattice $L$ of signature $(p, q)$, base change along
-    $\\mathbb{Z} \\to \\mathbb{R}$ gives an arithmetic subgroup
-    $O(L) \\hookrightarrow O(L \\otimes_{\\mathbb{Z}} \\mathbb{R}) \\cong O(p, q)$.
-    $O(p, q)$ therefore attaches to the unordered signature $\\{p, q\\}$, since
-    $O(p, q) \\cong O(q, p)$; a cell gives the number of lattices of signature
-    $(p, q)$ or $(q, p)$. A group that no lattice realizes is an empty cell.
-    """
+    """Write the Lie-group index, with the recorded real orthogonal groups $O(p,q)$."""
     counts: dict[tuple[int, int], int] = {}
     for lattice in lattices.values():
         if lattice.signature is not None and lattice.is_nondegenerate:
             key = (min(lattice.signature), max(lattice.signature))
             counts[key] = counts.get(key, 0) + 1
-    columns = list(range(ORTHOGONAL_LIMIT + 1))
-    # $O(p, q) \cong O(q, p)$, so the group is indexed by $p \leq q$: the upper
-    # triangle. A cell below the diagonal is blank.
+    orthogonal = {
+        tuple(group.orthogonal_signature): group
+        for group in groups.values()
+        if group.orthogonal_signature is not None
+    }
+    limit = max((q for _, q in orthogonal), default=0)
+    columns = list(range(limit + 1))
     rows = [
         (
             p,
-            [(q, counts.get((p, q), 0) if q >= p else None) for q in columns],
+            [
+                (q, orthogonal.get((p, q)), counts.get((p, q), 0))
+                if q >= p
+                else (q, None, None)
+                for q in columns
+            ],
         )
         for p in columns
     ]
-    (target / "orthogonal-groups.html").write_text(
-        environment.get_template("orthogonal-groups.html.j2").render(
-            root="./",
-            columns=columns,
-            rows=rows,
-        )
+    rendered = environment.get_template("orthogonal-groups.html.j2").render(
+        root="./",
+        columns=columns,
+        rows=rows,
+        groups=tuple(sorted(groups.values(), key=lambda group: group.slug)),
     )
+    (target / "orthogonal-groups.html").write_text(rendered)
+    (target / "lie-groups.html").write_text(rendered)
 
 
 def build(root: Path, target: Path) -> int:
@@ -877,6 +881,8 @@ def build(root: Path, target: Path) -> int:
     (target / "collection").mkdir()
     (target / "morphism").mkdir()
     (target / "theory").mkdir()
+    (target / "lie-group").mkdir()
+    (target / "arithmetic-group").mkdir()
     shutil.copytree(str(files("latticedb") / "assets"), target / "assets")
 
     ranks = sorted(
@@ -892,6 +898,8 @@ def build(root: Path, target: Path) -> int:
     geometric = corpus.geometric
     geometric_families = corpus.geometric_families
     graphs = corpus.graphs
+    lie_groups = {entry.value.slug: entry.value for entry in corpus.lie_groups}
+    arithmetic_groups = {entry.value.slug: entry.value for entry in corpus.arithmetic_groups}
     prose = markdown_to_html(
         [entry.prose for entry in entries]
         + [page.prose for page in pages]
@@ -943,6 +951,21 @@ def build(root: Path, target: Path) -> int:
                         for link in entry.geometric.cohomology_lattices
                     )
                 ],
+                ambient_lie_group=(
+                    lie_groups.get(f"o-{min(lattice.signature)}-{max(lattice.signature)}")
+                    if lattice.signature is not None and lattice.is_nondegenerate
+                    else None
+                ),
+                orthogonal_group=(
+                    arithmetic_groups.get(lattice.orthogonal_group)
+                    if lattice.orthogonal_group is not None
+                    else None
+                ),
+                arithmetic_groups=[
+                    arithmetic_groups[slug]
+                    for slug in lattice.arithmetic_groups
+                    if slug in arithmetic_groups
+                ],
                 previous=entries[index - 1].lattice if index > 0 else None,
                 following=entries[index + 1].lattice
                 if index + 1 < len(entries)
@@ -983,7 +1006,50 @@ def build(root: Path, target: Path) -> int:
     (target / "theory.html").write_text(
         environment.get_template("theory.html.j2").render(root="./")
     )
-    orthogonal_groups(target, environment, lattices)
+    orthogonal_groups(target, environment, lattices, lie_groups)
+    lie_group_prose = markdown_to_html([entry.prose for entry in corpus.lie_groups])
+    lie_group_page = environment.get_template("lie-group.html.j2")
+    for entry, rendered_prose in zip(corpus.lie_groups, lie_group_prose, strict=True):
+        group = entry.value
+        member_lattices = [
+            lattice
+            for lattice in lattices.values()
+            if group.orthogonal_signature is not None
+            and lattice.signature is not None
+            and lattice.is_nondegenerate
+            and tuple(sorted(lattice.signature)) == tuple(group.orthogonal_signature)
+        ]
+        (target / "lie-group" / f"{group.slug}.html").write_text(
+            lie_group_page.render(
+                root="../",
+                group=group,
+                prose=rendered_prose,
+                lattices=member_lattices,
+                lie_groups=lie_groups,
+            )
+        )
+    arithmetic_prose = markdown_to_html([entry.prose for entry in corpus.arithmetic_groups])
+    arithmetic_group_page = environment.get_template("arithmetic-group.html.j2")
+    for entry, rendered_prose in zip(corpus.arithmetic_groups, arithmetic_prose, strict=True):
+        group = entry.value
+        (target / "arithmetic-group" / f"{group.slug}.html").write_text(
+            arithmetic_group_page.render(
+                root="../",
+                group=group,
+                prose=rendered_prose,
+                lattice=lattices[group.lattice],
+                ambient=lie_groups[group.ambient_lie_group],
+                parent=arithmetic_groups.get(group.parent_group) if group.parent_group else None,
+            )
+        )
+    (target / "arithmetic-groups.html").write_text(
+        environment.get_template("arithmetic-groups.html.j2").render(
+            root="./",
+            groups=tuple(sorted(arithmetic_groups.values(), key=lambda group: group.slug)),
+            by_slug=arithmetic_groups,
+            lie_groups=lie_groups,
+        )
+    )
     (target / "hodge-diamonds.html").write_text(
         environment.get_template("hodge-diamonds.html.j2").render(
             root="./",

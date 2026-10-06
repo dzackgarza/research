@@ -1,46 +1,52 @@
 {% extends "base.html.j2" %}
-{% block title %}O(p, q) analysis · {% endblock %}
+{% block title %}Lie groups · {% endblock %}
 {% block main %}
 <header class="page-heading">
   <p class="kicker">Groups</p>
-  <h1>\(O(p, q)\) analysis</h1>
+  <h1>Lie groups</h1>
   <p class="lede">
-    The orthogonal group \(O(p, q)\) of a real quadratic space of signature
-    \((p, q)\), for \(0 \leq p \leq q \leq 24\). \(O(p, q) \cong O(q, p)\), so
-    the group is indexed by the unordered pair \(\{p, q\}\), and the table is
-    its upper triangle. A nondegenerate lattice \(L\) of signature \((p, q)\)
-    has
-    \(O(L) \hookrightarrow O(L \otimes_{\mathbb{Z}} \mathbb{R}) \cong O(p, q)\)
-    by base change, an arithmetic subgroup; every nondegenerate lattice of that
-    signature lies under it.
+    First-class Lie-group records used by the lattice catalogue. For a nondegenerate
+    lattice (L) of signature ((p,q)), base change gives
+    (O(L) \hookrightarrow O(L_{\mathbb R})), and
+    (O(L_{\mathbb R}) \cong O(p,q)).
   </p>
 </header>
 
-<section aria-labelledby="grid">
-  <h2 id="grid">Groups \(O(p, q)\), \(0 \leq p \leq q \leq 24\)</h2>
-  <p class="form-note">
-    Each cell gives the number of lattices of the catalogue whose signature is
-    \((p, q)\) or \((q, p)\), and links them in the
-    <a href="{{ root }}database.html">database</a>; a cell marked
-    &#183; is a group \(O(p, q)\) that no lattice realizes over
-    \(\mathbb{Z}\).
-  </p>
+<section aria-labelledby="groups">
+  <h2 id="groups">Recorded Lie groups</h2>
+  <div class="table-scroll">
+    <table class="member-table">
+      <thead><tr><th>Group</th><th>Field</th><th class="numeric">Dimension</th><th class="numeric">Real rank</th></tr></thead>
+      <tbody>
+        {% for group in groups %}
+        <tr>
+          <td><a href="{{ root }}lie-group/{{ group.slug }}.html">\({{ group.latex }}\)</a></td>
+          <td>{{ group.base_field }}</td>
+          <td class="numeric">{{ group.dimension }}</td>
+          <td class="numeric">{% if group.real_rank is not none %}{{ group.real_rank }}{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="orthogonal-grid">
+  <h2 id="orthogonal-grid">Real orthogonal groups (O(p,q))</h2>
+  <p class="form-note">The upper triangle uses the canonical representative (0\leq p\leq q). A linked cell has a Lie-group card; the number in parentheses is the number of lattice cards whose real orthogonal group has that type.</p>
   <div class="table-scroll">
     <table class="member-table orthogonal-table">
       <thead>
-        <tr>
-          <th scope="col" class="orthogonal-corner">\(p \backslash q\)</th>
-          {% for q in columns %}<th scope="col" class="numeric">{{ q }}</th>{% endfor %}
-        </tr>
+        <tr><th scope="col" class="orthogonal-corner">\(p \backslash q\)</th>{% for q in columns %}<th scope="col" class="numeric">{{ q }}</th>{% endfor %}</tr>
       </thead>
       <tbody>
         {% for p, cells in rows %}
         <tr>
           <th scope="row" class="numeric">{{ p }}</th>
-          {% for q, count in cells %}
+          {% for q, group, count in cells %}
           {% if count is none %}<td class="orthogonal-cell orthogonal-blank"></td>
-          {% elif count %}<td class="orthogonal-cell"><a class="orthogonal-count" href="{{ root }}database.html?signature={{ p }},{{ q }}{% if p != q %}&amp;signature={{ q }},{{ p }}{% endif %}" title="Lattices of signature \(({{ p }}, {{ q }})\){% if p != q %} and \(({{ q }}, {{ p }})\){% endif %}">{{ count }}</a></td>
-          {% else %}<td class="orthogonal-cell"><span class="orthogonal-empty" title="\(O({{ p }}, {{ q }})\): no lattice of this signature">&middot;</span></td>{% endif %}
+          {% elif group %}<td class="orthogonal-cell"><a class="orthogonal-count" href="{{ root }}lie-group/{{ group.slug }}.html" title="{{ group.name }}">{{ count }}</a></td>
+          {% else %}<td class="orthogonal-cell"><span class="orthogonal-empty">&middot;</span></td>{% endif %}
           {% endfor %}
         </tr>
         {% endfor %}

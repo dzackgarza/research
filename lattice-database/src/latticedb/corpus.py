@@ -25,6 +25,7 @@ import yaml
 from pydantic import TypeAdapter, ValidationError
 
 from latticedb.catalogues import (
+    ArithmeticGroup,
     CatalogueRecord,
     DualIsometry,
     GeometricMap,
@@ -32,6 +33,7 @@ from latticedb.catalogues import (
     LatticeFamily,
     LatticeGenus,
     LatticePolytope,
+    LieGroup,
     ModuliProblem,
     PicardFuchsOperator,
     ToricVariety,
@@ -120,6 +122,8 @@ class Corpus:
     moduli_problems: tuple[CatalogueEntry[ModuliProblem], ...]
     dual_isometries: tuple[CatalogueEntry[DualIsometry], ...]
     lattice_families: tuple[CatalogueEntry[LatticeFamily], ...]
+    lie_groups: tuple[CatalogueEntry[LieGroup], ...]
+    arithmetic_groups: tuple[CatalogueEntry[ArithmeticGroup], ...]
 
 
 Matrix = tuple[tuple[int, ...], ...]
@@ -272,6 +276,8 @@ def load(root: Path) -> Corpus:
         _catalogue(root, "moduli-problems", ModuliProblem, found),
         _catalogue(root, "morphisms/dual", DualIsometry, found),
         _catalogue(root, "lattice-families", LatticeFamily, found),
+        _catalogue(root, "lie-groups", LieGroup, found),
+        _catalogue(root, "arithmetic-groups", ArithmeticGroup, found),
     )
     if found:
         raise CorpusInvalid(tuple(found))
@@ -441,4 +447,3 @@ def gram_index(root: Path) -> dict[str, list[str]]:
     data = {"grams": grams, "without": without}
     save_index(root, data)
     return grams
-

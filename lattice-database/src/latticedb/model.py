@@ -933,14 +933,13 @@ class Lattice(Record):
     root_sublattice: RootSublattice | None = Field(
         default=None, description=RootSublattice.__doc__
     )
-    groups: dict[str, GroupData] | None = Field(
+    orthogonal_group: Slug | None = Field(
         default=None,
-        description=(
-            "Subgroups of $O(L)$ of importance to the lattice, keyed by the standard `OrbitGroup` names "
-            "(`O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+`, `SOtilde+`) or by a named subgroup such as `Gamma_En_2`. "
-            "A standard key holds $\\Gamma$'s structure, with its primitive-vector orbits in `integral.primitive_orbits`; "
-            "another key names a subgroup outside that list. Absent when no subgroup data is recorded."
-        ),
+        description="Arithmetic-group card for the canonical integral orthogonal group O(L), when that group has a stored card.",
+    )
+    arithmetic_groups: Annotated[tuple[Slug, ...], Field(strict=False)] = Field(
+        default=(),
+        description="Arithmetic-group cards attached to this lattice, including `orthogonal_group` when it is stored.",
     )
 
     @property
@@ -1054,7 +1053,6 @@ class Lattice(Record):
                 *self._definite_problems(),
                 *self._indefinite_problems(),
                 *self._root_problems(),
-                *self._group_problems(),
                 *self._dual_problems(),
             ]
         if problems:
@@ -1582,48 +1580,6 @@ class Lattice(Record):
                 "`norms` is present exactly for a root lattice",
                 ("root_sublattice", "norms"),
             )
-
-    def _group_problems(self) -> Iterator[InitErrorDetails]:
-        """Each subgroup's structure is a subgroup of $O(L)$: a key is a standard name or free, and each relation links this lattice."""
-        groups = self.groups
-        if groups is None:
-            return
-        for key, group in groups.items():
-            location = ("groups", key)
-            for vector in (
-                v
-                for group_data in (group.orbits or ())
-                for v in group_data.representatives
-            ):
-                if self.rank is None or len(vector) != self.rank:
-                    yield _problem(
-                        "group_orbit_shape",
-                        "an orbit representative has {rank} coordinates",
-                        location,
-                        {"rank": self.rank or 0},
-                    )
-                    break
-            if (
-                group.parent is not None
-                and group.parent not in ORBIT_SUBGROUPS
-                and group.parent not in groups
-            ):
-                yield _problem(
-                    "group_parent_unknown",
-                    "the parent subgroup {parent} is neither a standard name nor a key of `groups`",
-                    location,
-                    {"parent": group.parent},
-                )
-            if (
-                group.defining_relators is not None
-                and group.generator_morphisms is None
-            ):
-                yield _problem(
-                    "group_relators_require_generators",
-                    "relators require the generator list they are words in",
-                    location,
-                )
-
 
 def _subdivision_problems(
     lines: Vector, size: int, location: tuple[str, ...]

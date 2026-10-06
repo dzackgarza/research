@@ -45,7 +45,10 @@ class AlgebraicGroup(Record):
     name: str = Field(min_length=1)
     dimension: Annotated[int, Field(ge=0)]
     structure: str = Field(min_length=1)
-    cohomology_action: Slug | None = None
+    cohomology_action: Slug | None = Field(
+        default=None,
+        description="Arithmetic-group card for the induced integral cohomology action, when recorded.",
+    )
 
 
 class HomotopyGroup(Record):

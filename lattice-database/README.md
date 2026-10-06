@@ -17,6 +17,8 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `geometric-objects/<slug>.md` | One locally ringed geometric space, its specialized data and cited prose |
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
 | `graphs/<slug>.md` | One weighted graph with derived diagram properties and cited prose |
+| `lie-groups/<slug>.md` | One Lie group as its own mathematical object; real orthogonal groups use canonical cards `o-p-q` with `p <= q` |
+| `arithmetic-groups/<slug>.md` | One arithmetic subgroup attached to a lattice, with its ambient Lie group and parent arithmetic group when applicable |
 | `genera/` | Genus records with representative isometry classes and mass |
 | `lattice-families/<slug>.md` | One infinite parameterized family of lattices sharing a Gram template in its parameter, with rank, signature and cited prose |
 | `lattice-polytopes/`, `toric-varieties/` | Based lattice polytopes, polar duals and normal-fan toric varieties |
@@ -32,8 +34,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
 | `src/latticedb/geometric.py` | The schema of geometric families, projective varieties, manifolds and symmetric spaces |
 | `src/latticedb/graphs.py` | Weighted vertices and edges; Coxeter, Dynkin, Satake and rational Coxeter–Vinberg predicates |
-| `src/latticedb/catalogues.py` | Schemas of group actions, genera, polytopes, toric varieties, maps, local systems and operators |
-| `src/latticedb/arithmetic.py` | Exact arithmetic on the Gram tensor that the validators use |
+| `src/latticedb/catalogues.py` | Schemas of Lie groups, arithmetic groups, genera, polytopes, toric varieties, maps, local systems and operators |
 | `src/latticedb/root_systems.py` | The types of the irreducible root systems, their Cartan data and the lattices that they generate |
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
 | `src/latticedb/records.py` | Computes the fields of a record that the Gram tensor determines, and writes a record as a file |
@@ -191,6 +192,20 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 The `integral`, `definite`, `indefinite` and `root_sublattice` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
 `definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.discriminant_sequence`, `integral.overlattice_count`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.spinor_genus_count`, `integral.spinor_genera`, `integral.hyperbolic_index` and `integral.primitive_orbits` are optional. `integral.discriminant_sequence` records a pointed coset set for every definite even lattice on which it is computed. It records a quotient multiplication table only when the image of the discriminant action is normal.
 `integral.primitive_orbits` maps each of `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+` to the coefficients `constant`, `z` and `w` of the series $F_{L,\Gamma}(z, w)$ of the numbers of $\Gamma$-orbits of primitive vectors of each norm, null where a coefficient is not known (`theory/orbits.md`).
+
+### Orthogonal, arithmetic and Lie groups
+
+A nondegenerate lattice card records the lattice $L$, not the groups built from it. Its canonical integral orthogonal group is $O(L)$, and base change gives an inclusion
+$$
+O(L) \hookrightarrow O(L_{\mathbb R}), \qquad L_{\mathbb R}=L\otimes_{\mathbb Z}\mathbb R.
+$$
+If $L$ has signature $(p,q)$, the real quadratic space determines the Lie group $O(L_{\mathbb R})$, which is isomorphic to the canonical Lie-group card $O(\min(p,q),\max(p,q))$. The isomorphism to the standard $O(p,q)$ model is not a choice of basis stored on the lattice card.
+
+`lie-groups/<slug>.md` owns the Lie group itself: dimension, real rank, components, Lie algebra, maximal compact factors and references. Real orthogonal cards use slugs `o-p-q` with $p\leq q$.
+
+`arithmetic-groups/<slug>.md` owns a stored arithmetic group such as $O(L)$, $SO(L)$, $O^+(L)$, $\widetilde O(L)$ or a named subgroup such as $\Gamma_{\mathrm{En},2}$. The card names its lattice, its ambient Lie group, its parent arithmetic group when one is stored, and any generators, index, orbit representatives or cited group description. Supplied generators describe that arithmetic-group card; they never stand in for the canonical mathematical object $O(L)$.
+
+A lattice uses `orthogonal_group` when the database has a first-class card for its $O(L)$ and `arithmetic_groups` for the arithmetic-group cards attached to it. A lattice need not materialize an $O(L)$ card merely to know its ambient real Lie group; its signature already determines the link to `o-p-q`.
 
 `integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.
 A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.

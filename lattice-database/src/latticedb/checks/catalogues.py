@@ -49,88 +49,110 @@ def reference_problems(loaded: Corpus) -> list[str]:
     maps = {entry.value.slug: entry.value for entry in loaded.geometric_maps}
     systems = {entry.value.slug: entry.value for entry in loaded.local_systems}
     duals = {entry.value.lattice: entry.value for entry in loaded.dual_isometries}
+    lie_groups = {entry.value.slug: entry.value for entry in loaded.lie_groups}
+    arithmetic_groups = {entry.value.slug: entry.value for entry in loaded.arithmetic_groups}
+
+    for entry in loaded.lie_groups:
+        group = entry.value
+        for factor in group.maximal_compact_factors:
+            if factor not in lie_groups:
+                found.append(f"{entry.path}: maximal compact factor {factor} is not a Lie-group card")
+
+    for entry in loaded.arithmetic_groups:
+        arithmetic = entry.value
+        lattice = lattices.get(arithmetic.lattice)
+        path = str(entry.path)
+        ambient = lie_groups.get(arithmetic.ambient_lie_group)
+        if lattice is None:
+            found.append(f"{path}: lattice {arithmetic.lattice} is not in the corpus")
+            continue
+        if ambient is None:
+            found.append(f"{path}: ambient Lie group {arithmetic.ambient_lie_group} is not in the corpus")
+        elif lattice.signature is not None and lattice.is_nondegenerate and ambient.orthogonal_signature is not None:
+            signature = tuple(sorted(lattice.signature))
+            if tuple(ambient.orthogonal_signature) != signature:
+                found.append(f"{path}: ambient Lie group must have the unordered real signature {signature} of the lattice")
+        if arithmetic.parent_group is not None:
+            parent = arithmetic_groups.get(arithmetic.parent_group)
+            if parent is None or parent.lattice != arithmetic.lattice:
+                found.append(f"{path}: parent arithmetic group must be a card on lattice {arithmetic.lattice}")
+        group = arithmetic.data
+        if group.defining_relators is not None and group.generator_morphisms is None:
+            found.append(f"{path}: relators require the generator list they are words in")
+        for name in group.generator_morphisms or ():
+            self_maps = morphisms.get((lattice.tag, lattice.tag))
+            names = ({m.name for m in self_maps.morphisms if m.scale == 1} if self_maps is not None else set())
+            if name not in names:
+                found.append(f"{path}: generator {name} is not a named self-isometry of {lattice.tag}")
+        if group.stabilized is not None:
+            kind, identifier = group.stabilized.kind, group.stabilized.identifier
+            available = {
+                "chamber": {lattice.tag},
+                "geometric_object": objects,
+                "geometric_family": families,
+            }
+            if kind in available and identifier not in available[kind]:
+                found.append(f"{path}: stabilized {kind} {identifier} is not in the corpus")
+        full_order = lattice.definite.automorphism_group_order if lattice.definite is not None else None
+        if (
+            full_order is not None
+            and isinstance(group.cardinality, int)
+            and group.index_in_orthogonal_group is not None
+            and group.cardinality * group.index_in_orthogonal_group != full_order
+        ):
+            found.append(f"{path}: subgroup order times index must equal |O({lattice.tag})| = {full_order}")
+        for orbit_data in group.orbits or ():
+            n = orbit_data.square
+            for vector in orbit_data.representatives:
+                if lattice.rank is None or len(vector) != lattice.rank:
+                    found.append(f"{path}: orbit representative must have rank {lattice.rank} coordinates")
+                    continue
+                if gcd(*vector) != 1:
+                    found.append(f"{path}: orbit representative must be primitive")
+                    continue
+                square = sum(
+                    (
+                        vector[i] * lattice.gram_tensor[i][j] * vector[j]
+                        for i in range(lattice.rank)
+                        for j in range(lattice.rank)
+                    ),
+                    Fraction(),
+                )
+                if square != n:
+                    found.append(f"{path}: representative has square {square}, not {n}")
+        chamber = group.chamber
+        if chamber is not None:
+            if (
+                lattice.rank is None
+                or len(chamber.interior_vector) != lattice.rank
+                or any(len(wall) != lattice.rank for wall in chamber.wall_normals)
+            ):
+                found.append(f"{path}: chamber vectors must lie in its lattice")
+            elif (
+                lattice.signature is None
+                or min(lattice.signature) != 1
+                or max(lattice.signature) != lattice.rank - 1
+            ):
+                found.append(f"{path}: a hyperbolic chamber requires signature (1,n) or (n,1)")
 
     for entry in loaded.entries:
         lattice = entry.lattice
-        if lattice.groups is None:
-            continue
-        for key, group in lattice.groups.items():
-            path = f"{entry.path}: groups.{key}"
-            for name in group.generator_morphisms or ():
-                self_maps = morphisms.get((lattice.tag, lattice.tag))
-                names = (
-                    {m.name for m in self_maps.morphisms if m.scale == 1}
-                    if self_maps is not None
-                    else set()
-                )
-                if name not in names:
-                    found.append(
-                        f"{path}: generator {name} is not a named self-isometry of {lattice.tag}"
-                    )
-            if group.stabilized is not None:
-                kind, identifier = group.stabilized.kind, group.stabilized.identifier
-                available = {
-                    "chamber": {lattice.tag},
-                    "geometric_object": objects,
-                    "geometric_family": families,
-                }
-                if kind in available and identifier not in available[kind]:
-                    found.append(
-                        f"{path}: stabilized {kind} {identifier} is not in the corpus"
-                    )
-            full_order = (
-                lattice.definite.automorphism_group_order
-                if lattice.definite is not None
-                else None
-            )
-            if (
-                full_order is not None
-                and isinstance(group.cardinality, int)
-                and group.index_in_orthogonal_group is not None
-                and group.cardinality * group.index_in_orthogonal_group != full_order
-            ):
-                found.append(
-                    f"{path}: subgroup order times index must equal |O({lattice.tag})| = {full_order}"
-                )
-            for orbit_data in group.orbits or ():
-                n = orbit_data.square
-                for vector in orbit_data.representatives:
-                    if lattice.rank is None or len(vector) != lattice.rank:
-                        found.append(
-                            f"{path}: orbit representative must have rank {lattice.rank} coordinates"
-                        )
-                        continue
-                    if gcd(*vector) != 1:
-                        found.append(f"{path}: orbit representative must be primitive")
-                        continue
-                    square = sum(
-                        (
-                            vector[i] * lattice.gram_tensor[i][j] * vector[j]
-                            for i in range(lattice.rank)
-                            for j in range(lattice.rank)
-                        ),
-                        Fraction(),
-                    )
-                    if square != n:
-                        found.append(
-                            f"{path}: representative has square {square}, not {n}"
-                        )
-            chamber = group.chamber
-            if chamber is not None:
-                if (
-                    lattice.rank is None
-                    or len(chamber.interior_vector) != lattice.rank
-                    or any(len(wall) != lattice.rank for wall in chamber.wall_normals)
-                ):
-                    found.append(f"{path}: chamber vectors must lie in its lattice")
-                elif (
-                    lattice.signature is None
-                    or min(lattice.signature) != 1
-                    or max(lattice.signature) != lattice.rank - 1
-                ):
-                    found.append(
-                        f"{path}: a hyperbolic chamber requires signature (1,n) or (n,1)"
-                    )
+        if lattice.orthogonal_group is not None:
+            group = arithmetic_groups.get(lattice.orthogonal_group)
+            if group is None or group.lattice != lattice.tag or group.standard_name != "O":
+                found.append(f"{entry.path}: orthogonal_group must name the O arithmetic-group card of this lattice")
+        for slug in lattice.arithmetic_groups:
+            group = arithmetic_groups.get(slug)
+            if group is None or group.lattice != lattice.tag:
+                found.append(f"{entry.path}: arithmetic group {slug} must be a card on this lattice")
+        if lattice.orthogonal_group is not None and lattice.orthogonal_group not in lattice.arithmetic_groups:
+            found.append(f"{entry.path}: orthogonal_group must also occur in arithmetic_groups")
+        if lie_groups and lattice.is_nondegenerate and lattice.signature is not None:
+            p, q = sorted(lattice.signature)
+            slug = f"o-{p}-{q}"
+            ambient = lie_groups.get(slug)
+            if ambient is None or ambient.orthogonal_signature != (p, q):
+                found.append(f"{entry.path}: nondegenerate lattice requires Lie-group card {slug} for O(L_R)")
 
     for entry in loaded.genera:
         genus = entry.value
@@ -284,7 +306,7 @@ def reference_problems(loaded: Corpus) -> list[str]:
             if (
                 group is not None
                 and group.cohomology_action is not None
-                and group.cohomology_action not in groups
+                and group.cohomology_action not in arithmetic_groups
             ):
                 found.append(
                     f"{entry.path}: cohomology action {group.cohomology_action} is not in the corpus"
@@ -370,6 +392,8 @@ def reference_problems(loaded: Corpus) -> list[str]:
             found.append(
                 f"{entry.path}: geometric family {problem.geometric_family} is not in the corpus"
             )
+        if problem.arithmetic_subgroup is not None and problem.arithmetic_subgroup not in arithmetic_groups:
+            found.append(f"{entry.path}: arithmetic subgroup {problem.arithmetic_subgroup} is not an arithmetic-group card")
     return found
 
 
@@ -385,5 +409,7 @@ def problems(loaded: Corpus) -> list[str]:
         *slug_problems(loaded.moduli_problems),
         *slug_problems(loaded.dual_isometries),
         *slug_problems(loaded.lattice_families),
+        *slug_problems(loaded.lie_groups),
+        *slug_problems(loaded.arithmetic_groups),
         *reference_problems(loaded),
     ]

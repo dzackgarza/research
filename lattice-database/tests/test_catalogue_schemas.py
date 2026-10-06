@@ -8,10 +8,30 @@ import pytest
 from pydantic import TypeAdapter, ValidationError
 
 from latticedb import checks, corpus
-from latticedb.catalogues import LatticeFamily
+from latticedb.catalogues import ArithmeticGroup, LatticeFamily, LieGroup
 from latticedb.geometric import GeometricObject
 
 ROOT = Path(__file__).parent.parent
+
+
+def test_shipped_group_cards_have_first_class_lie_and_arithmetic_owners() -> None:
+    lie = [
+        LieGroup.model_validate(frontmatter.load(str(path)).metadata)
+        for path in (ROOT / "lie-groups").glob("*.md")
+    ]
+    arithmetic = [
+        ArithmeticGroup.model_validate(frontmatter.load(str(path)).metadata)
+        for path in (ROOT / "arithmetic-groups").glob("*.md")
+    ]
+    by_slug = {group.slug: group for group in lie}
+    assert by_slug["o-2-10"].orthogonal_signature == (2, 10)
+    assert by_slug["o-2-10"].dimension == 66
+    assert by_slug["o-2-10"].real_rank == 2
+    assert all(group.ambient_lie_group in by_slug for group in arithmetic)
+    enriques = frontmatter.load(str(ROOT / "lattices" / "029J.md")).metadata
+    assert enriques["orthogonal_group"] == "o-t-en"
+    assert "gamma-en-2" in enriques["arithmetic_groups"]
+    assert next(group for group in arithmetic if group.slug == "o-t-en").standard_name == "O"
 
 
 def _record(
@@ -36,16 +56,32 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
         (tmp_path / name).symlink_to(ROOT / name)
     source = frontmatter.load(str(ROOT / "morphisms" / "02BG-02BG.md"))
     generators = [entry["name"] for entry in source.metadata["morphisms"]]
-    # The subgroup data lives on the lattice card itself, in its `groups` block.
     lattice = frontmatter.load(str(ROOT / "lattices" / "02BG.md"))
-    lattice.metadata["groups"] = {
-        "leech-q8": {
-            "generator_morphisms": generators,
-            "cardinality": 8,
-            "orbits": [{"square": 4, "representatives": [[1] + [0] * 16]}],
-        }
-    }
+    lattice.metadata["arithmetic_groups"] = ["leech-q8"]
     (lattices / "02BG.md").write_text(frontmatter.dumps(lattice))
+    for tag in ("0012", "02BG"):
+        document = frontmatter.load(str(lattices / f"{tag}.md"))
+        p, q = sorted(document.metadata["signature"])
+        path = tmp_path / "lie-groups" / f"o-{p}-{q}.md"
+        path.parent.mkdir(exist_ok=True)
+        path.symlink_to(ROOT / "lie-groups" / path.name)
+    p, q = sorted(lattice.metadata["signature"])
+    group_path = tmp_path / "arithmetic-groups" / "leech-q8.md"
+    _record(
+        group_path,
+        {
+            "slug": "leech-q8",
+            "name": "Leech Q8",
+            "latex": "Q_8",
+            "lattice": "02BG",
+            "ambient_lie_group": f"o-{p}-{q}",
+            "data": {
+                "generator_morphisms": generators,
+                "cardinality": 8,
+                "orbits": [{"square": 4, "representatives": [[1] + [0] * 16]}],
+            },
+        },
+    )
     _record(
         tmp_path / "genera" / "a2.md",
         {
@@ -61,15 +97,13 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
         },
     )
     loaded = corpus.load(tmp_path)
-    by_tag = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
-    assert by_tag["02BG"].groups["leech-q8"].cardinality == 8
+    assert loaded.arithmetic_groups[0].value.data.cardinality == 8
     assert loaded.genera[0].value.mass == Fraction(1, 12)
 
     # A representative whose square disagrees with its key is a problem.
-    lattice.metadata["groups"]["leech-q8"]["orbits"] = [
-        {"square": 6, "representatives": [[1] + [0] * 16]}
-    ]
-    (lattices / "02BG.md").write_text(frontmatter.dumps(lattice))
+    group = frontmatter.load(str(group_path))
+    group.metadata["data"]["orbits"] = [{"square": 6, "representatives": [[1] + [0] * 16]}]
+    group_path.write_text(frontmatter.dumps(group))
     assert any(
         "representative has square 4, not 6" in problem
         for problem in checks.report(tmp_path)
