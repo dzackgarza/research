@@ -83,7 +83,7 @@ def _rebuild_parent_class(parent: Parent, category: Category) -> None:
     }
     preferred = {}
     seen = set()
-    for provider in providers:
+    for provider in reversed(providers):
         for name, value in vars(provider).items():
             if name.startswith("_") or name in seen:
                 continue
