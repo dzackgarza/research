@@ -570,6 +570,97 @@ class TwoUEichlerModel(SageObject):
             name=f"Eichler approximate generators in O({self.lattice()})",
         )
 
+    def _approximate_generator_column_matrices_after_base_change(self, ring_map):
+        r"""Return the private exact generator matrices after scalar extension."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        if ring_map.domain() is not lattice.base_ring():
+            raise ValueError(
+                f"the Eichler model on {lattice} can only be base changed along a map out of "
+                f"{lattice.base_ring()}, not {ring_map}"
+            )
+        target = lattice.base_change(ring_map)
+        target_engine = _engine_ring(target.base_ring())
+        source_automorphisms = lattice.O()
+        special_linear_generators = self.special_linear_group().group_generators()
+        isotropic_vectors = self.hyperbolic_basis()
+        complement_basis = self._embedded_complement_basis()
+        e, f, e_prime, f_prime = isotropic_vectors
+        perpendicular_bases = (
+            (e, e_prime, f_prime) + complement_basis,
+            (f, e_prime, f_prime) + complement_basis,
+            (e, f, e_prime) + complement_basis,
+            (e, f, f_prime) + complement_basis,
+        )
+        labels = finite_ordered_set(
+            tuple(("left-SL2", generator) for generator in special_linear_generators)
+            + tuple(("right-SL2", generator) for generator in special_linear_generators)
+            + tuple(
+                ("Eichler", position, vector_position)
+                for position, basis in enumerate(perpendicular_bases)
+                for vector_position in range(len(basis))
+            )
+        )
+
+        def generator_matrix(label):
+            kind = label[0]
+            match kind:
+                case "left-SL2":
+                    integral = self.left_action(label[1])
+                    transformation = source_automorphisms._row_action_matrix(integral).transpose()
+                case "right-SL2":
+                    integral = self.right_action(label[1])
+                    transformation = source_automorphisms._row_action_matrix(integral).transpose()
+                case "Eichler":
+                    position, vector_position = label[1], label[2]
+                    orthogonal = perpendicular_bases[position][vector_position]
+                    transformation = lattice._eichler_transvection_column_matrix(
+                        isotropic_vectors[position],
+                        orthogonal,
+                    )
+                case _:
+                    raise ValueError(
+                        f"{label!r} does not name a generator of the Eichler approximate family of "
+                        f"{self}: its kind {kind!r} is not a known kind of generator"
+                    )
+            return transformation.change_ring(target_engine)
+
+        return target, finite_indexed_family(
+            labels,
+            generator_matrix,
+            name=f"Eichler approximate generator matrices on {target}",
+        )
+
+    def approximate_generating_family_after_base_change(self, ring_map):
+        r"""Return the same Eichler generator family after scalar extension.
+
+        The source formulas already determine exact column matrices over the
+        original ring. Reuse those matrices in the scalar extension instead
+        of first constructing integral isometries and then rebuilding the same
+        maps over the target ring.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        target, matrix_family = self._approximate_generator_column_matrices_after_base_change(
+            ring_map
+        )
+        target_automorphisms = target.O()
+        return finite_indexed_family(
+            matrix_family.index_set(),
+            lambda label: target_automorphisms._isometry_from_column_matrix(
+                matrix_family[label]
+            ),
+            name=f"Eichler approximate generators in O({target})",
+        )
+
     def covering_vector_representatives(self, square):
         r"""Return one explicit primitive vector for every covering class in ``A_K``.
 

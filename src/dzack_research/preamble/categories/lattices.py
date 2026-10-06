@@ -2706,36 +2706,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return self.Aut()(image)
 
-        def eichler_transvection(self, isotropic, orthogonal):
-            r"""Return the Eichler transvection \(t(e,a)\in O(L)\).
-
-            For isotropic \(e\) and \(a\in e^\perp\),
-
-            \[
-            t(e,a)(x) = x - b(a,x)\,e + b(e,x)\,a - \tfrac12 q(a)\,b(e,x)\,e .
-            \]
-
-            It fixes \(e\) and acts trivially on \(e^\perp/e\), so it lies in
-            the unipotent radical of the parabolic subgroup stabilizing
-            \(\mathbb Z e\).  These transvections generate the stable
-            orthogonal group and put vectors into normal form, which is how
-            Eichler's criterion realizes its orbit equivalences.  The formula
-            is transcribed at ``notes/topics/coble-enriques-lattice-theory/``
-            ``reflective-two-elementary-lattices.md``, which attributes it to
-            Dawes, section 2 equation (7).
-            \(t(e,a)\) preserves \(L\) exactly when every coefficient
-            \(\tfrac12 q(a)\,b(e,x)\) is integral, automatic on an even
-            lattice and asserted otherwise.
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: L = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-                sage: e, f, a, _b = L.module_generators()
-                sage: t = L.eichler_transvection(e, a)
-                sage: t(e) == e and t(f) == f + a + e
-                True
-            """
+        def _eichler_transvection_column_matrix(self, isotropic, orthogonal):
+            r"""Return the exact column matrix of the Eichler transvection ``t(e,a)``."""
             assert isotropic.parent() is self and orthogonal.parent() is self, f"cannot form the Eichler transvection t(e, a) of {self!r} with e = {isotropic!r}, a = {orthogonal!r}: they lie in {isotropic.parent()!r} and {orthogonal.parent()!r}, not both in this lattice"
             ring = self.base_ring()
             zero = ring.zero()
@@ -2795,7 +2767,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                         for target_position in range(len(labels))
                     )
                 )
-            transformation = matrix(
+            return matrix(
                 engine,
                 [
                     [
@@ -2805,7 +2777,40 @@ class Lattices(OwnedCategoryOverBaseRing):
                     for target_position in range(len(labels))
                 ],
             )
-            return self.Aut()._isometry_from_column_matrix(transformation)
+
+        def eichler_transvection(self, isotropic, orthogonal):
+            r"""Return the Eichler transvection \(t(e,a)\in O(L)\).
+
+            For isotropic \(e\) and \(a\in e^\perp\),
+
+            \[
+            t(e,a)(x) = x - b(a,x)\,e + b(e,x)\,a - \tfrac12 q(a)\,b(e,x)\,e .
+            \]
+
+            It fixes \(e\) and acts trivially on \(e^\perp/e\), so it lies in
+            the unipotent radical of the parabolic subgroup stabilizing
+            \(\mathbb Z e\).  These transvections generate the stable
+            orthogonal group and put vectors into normal form, which is how
+            Eichler's criterion realizes its orbit equivalences.  The formula
+            is transcribed at ``notes/topics/coble-enriques-lattice-theory/``
+            ``reflective-two-elementary-lattices.md``, which attributes it to
+            Dawes, section 2 equation (7).
+            \(t(e,a)\) preserves \(L\) exactly when every coefficient
+            \(\tfrac12 q(a)\,b(e,x)\) is integral, automatic on an even
+            lattice and asserted otherwise.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: L = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
+                sage: e, f, a, _b = L.module_generators()
+                sage: t = L.eichler_transvection(e, a)
+                sage: t(e) == e and t(f) == f + a + e
+                True
+            """
+            return self.Aut()._isometry_from_column_matrix(
+                self._eichler_transvection_column_matrix(isotropic, orthogonal)
+            )
 
         def is_positive_definite(self) -> bool:
             rank = self.module_rank()

@@ -65,6 +65,42 @@ def test_approximate_generating_family_uses_exact_two_u_perpendicular_frames() -
     assert all(family[label] in lattice.O() for label in family.index_set())
 
 
+def test_base_changed_eichler_generators_are_scalar_extensions() -> None:
+    model = Lattices(ZZ)("A2").two_u_eichler_model()
+    source = model.lattice()
+    ring_map = ZZ.fraction_field_map()
+    target = source.base_change(ring_map)
+    source_family = model.approximate_generating_family()
+    target_family = model.approximate_generating_family_after_base_change(ring_map)
+    source_labels = tuple(source.module_generating_set())
+    target_labels = tuple(target.module_generating_set())
+
+    def scalar_extend(element):
+        coordinates = element.to_vector()
+        return target.linear_combination(
+            {
+                target_label: ring_map(coordinates(source_label))
+                for source_label, target_label in zip(
+                    source_labels,
+                    target_labels,
+                    strict=True,
+                )
+                if coordinates(source_label)
+            }
+        )
+
+    assert source_family.index_set() == target_family.index_set()
+    for label in source_family.index_set():
+        for source_generator, target_generator in zip(
+            source.module_generators(),
+            target.module_generators(),
+            strict=True,
+        ):
+            assert target_family[label](target_generator) == scalar_extend(
+                source_family[label](source_generator)
+            )
+
+
 def test_minus_one_on_A2_extends_by_the_identity_and_acts_nontrivially_on_the_discriminant() -> None:
     r"""\(-1\) acts on \(A_{A_2} \cong \mathbb Z/3\) by \(-1 \ne 1\)."""
     complement = Lattices(ZZ)("A2")

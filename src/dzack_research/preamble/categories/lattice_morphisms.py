@@ -660,6 +660,11 @@ class LatticeIsometryMethods:
                 module_isomorphism.forward(),
             )
             return target.element_class(target, reverse)
+        if self.domain().module_rank().is_finite() and codomain.module_rank().is_finite():
+            forward_matrix = _engine_matrix(_module_matrix(self))
+            return codomain.Isom(self.domain())._isometry_from_column_matrix(
+                forward_matrix.inverse()
+            )
         return codomain.Isom(self.domain())(lambda label: self.lift(codomain.module_generator(label)))
 
     def __invert__(self):
