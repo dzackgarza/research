@@ -284,7 +284,8 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
     in ``RootLattices`` with that Cartan type as its datum.
     """
     ring = module.base_ring()
-    rank = int(basis.cardinality())
+    basis_elements = tuple(basis)
+    rank = len(basis_elements)
     labels, embedded, lift = _module_subobject_constructor_data(module, basis)
     source_module = ring._fresh_free_module_on(labels)
     match rank:
@@ -295,7 +296,11 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
                 ring,
                 (),
                 (rank, rank),
-                (module.b(basis[i], basis[j]) for i in range(rank) for j in range(rank)),
+                (
+                    module.b(left, right)
+                    for left in basis_elements
+                    for right in basis_elements
+                ),
             )
 
     def inclusion_factory(source):
@@ -2738,7 +2743,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert isotropic.b(orthogonal) == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: a = {orthogonal!r} must lie in e^perp for e = {isotropic!r}, but b(e, a) = {isotropic.b(orthogonal)}"
             fraction_field = ring.fraction_field()
             half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
-
             images = []
             for label in self.module_generating_set():
                 x = self.module_generator(label)
