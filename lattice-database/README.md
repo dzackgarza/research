@@ -26,7 +26,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `integral-local-systems/`, `picard-fuchs-operators/` | Integral monodromy and period operators with geometric realizations |
 | `geometric-bibliography.bib` | BibTeX entries cited by geometric object and family prose |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
-| `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
+| `retired-tags.yaml` | Every permanent tag whose former record has been retired, with the reason and its current owner when one exists |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
 | `src/latticedb/model.py` | The schema of a lattice card, including its outgoing morphisms, and its validators |
@@ -122,7 +122,7 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 
 `dual_gram_tensor` stores $G^{-1}$, so $L^*$ is a derived object of the lattice card rather than another card. `integral.level` is the least $k$ for which $k b(x,x)$ is even on $L^*$; `integral.modular_scale` records a scale $k$ for which the lattice is known to be $k$-modular. A chosen isometry $L\to L^*(k)$, when one is worth storing, belongs to the `morphisms` data of the card of $L$ rather than to a separate morphism file.
 
-A scaled dual $L^*(k)$ with $k \neq 1$ is a different lattice object, with Gram tensor $kG^{-1}$, and can have its own card when it is not already represented up to the catalogue's twist/sign conventions. A source title containing the word “dual” therefore does not by itself make a card redundant; only the raw dual $L^*$ is derived automatically from the owner card.
+A scaled dual $L^*(k)$ with $k \neq 1$ is a different lattice object, with Gram tensor $kG^{-1}$, and may have its own card. A source title containing the word “dual” therefore does not by itself make a card redundant; only the raw dual $L^*$ is derived automatically from the owner card.
 
 `definite.minimal_vectors` is a complete shell in the record basis and must match the minimum and kissing number. `definite.perfect` is checked by the span of their rank-one tensors. `definite.regular` and `definite.spinor_regular` apply to integral ternary lattices. The Hermite invariant and packing density are exact functions of rank, determinant and minimum; source decimals are checked against those formulas rather than stored as exact values.
 
@@ -160,16 +160,9 @@ $U$ is the lattice with basis $e, f$ and $b(e, e) = b(f, f) = 0$, $b(e, f) = 1$.
 A component is an integer or a string `p/q`. Floats are refused.
 `dual_gram_tensor` is the Gram tensor $b^*$ of the dual lattice $L^*$ in the dual basis, the inverse matrix $G^{-1}$ of the Gram tensor $G$; it is computed from the Gram tensor, never authored separately, and it requires a nonzero determinant. A dual lattice is therefore never a second record: $L^*$ is on the card of $L$.
 
-The corpus records a lattice once, up to twist and sign.
-For an integer $n$, the twist $L(n)$ is the module of $L$ with the form $nb$.
-A Gram tensor that is $n$ times a Gram tensor with integer components for some $n \geq 2$, or that is zero, is not an admitted permanent record: the lattice is $M(n)$ for the lattice $M$ with Gram tensor $b/n$, and the corpus records $M$. Authoring may write such a sparse card; verification reports the admission error.
-So $\langle 1 \rangle$ is a record and $A_1 = \langle 1 \rangle(2)$ is not; $E_8$ is a record and $E_8(2)$ is not.
-The one exception is the 13 rows $a = r$ of Table 1 of Nikulin (J. Soviet Math.
-22 (1983)), the family `nikulin-two-elementary`: each row is a twist $M(2)$ of a unimodular record $M$, and each is a record, because the classification names the twist and not $M$.
-Verification admits a twist by 2 in that family and no other twist.
-Of $L$ and $L(-1)$ the corpus records one: the one with $b(x, x) \geq 0$ for all $x$ when $b$ is definite or semidefinite, and the one with signature $(n_+, n_-)$, $n_+ \leq n_-$, when $b$ is indefinite.
-So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature $(1, 9)$, is a record.
-A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
+For an integer $n$, the twist $L(n)$ is the same underlying free abelian group with bilinear form $nb$.
+Twisting is not an equivalence relation in the catalogue: $L$, $L(2)$ and $L(-1)$ are different bilinear lattices and may each have their own cards when they are mathematically relevant. In particular, cards such as $E_{10}$ and $E_{10}(2)$ must not be collapsed merely because their forms differ by a scalar.
+A construction can still name a twist by reference to another card plus a scale when that is the natural description. For example, `root_span.summands` can state a summand as $M(k)$ without asserting that the catalogue identifies $M(k)$ with $M$.
 
 The Gram tensor is the defining mathematical input. Ordinary enrichment can compute inexpensive derived fields, but it does not certify them. Certification is a separate CI phase that recomputes uncertified values from the card's defining data, replaces any disagreeing authored value by the computed result, and then certifies that result. Potentially expensive exact invariants, including `integral.overlattice_count`, are computed only in that certification phase. Archived intake sources are provenance, not verification oracles.
 The build reads the stored values and renders every card.
@@ -305,8 +298,7 @@ morphisms:
 ```
 
 The matrix is in the bases of the two records, with rank $T$ rows and rank $S$ columns: column $j$ lists the coordinates of $\varphi(e_j)$.
-A morphism with `scale: c` is a morphism $S(c) \to T$ from the twist of $S$: $b_T(\varphi x, \varphi y) = c \, b_S(x, y)$.
-The corpus records a lattice once up to twist and sign, so a lattice that a source names as $M(c)$ maps through the record $M$ with scale $c$: the coinvariant lattice $\Lambda_G = M(-1)$ of a symplectic K3 group embeds in the K3 lattice with scale $-1$.
+A morphism with `scale: c` has domain the twist $S(c)$ of its source card $S$, so $b_T(\varphi x,\varphi y)=c\,b_S(x,y)$. This is notation for that map, not a database normalization rule: $S(c)$ may itself also have a lattice card.
 The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
 Verification checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
 
@@ -419,7 +411,7 @@ The corpus must absorb the whole Catalogue of Lattices (G. Nebe, N. J. A. Sloane
 The work that remains, in order:
 
 1. Absorb the remaining entries of the bulk archive.
-   The archive is stored at `sources/nebe_sloane/union.gz`. Its `D_n*` entries print exact halves, while `Bring8` and `mcc` print rounded decimal Gram components that require source-specific exact data. The `Shimada_86` entry has two conflicting matrices: its full `GRAM_MATRIX` is positive definite with the stated determinant, while its lower-triangular `GRAM` is indefinite and has a different determinant. The [source audit](sources/INVARIANT-AUDIT.md#shimada_86-source-conflict) records the exact comparison. The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
+   The archive is stored at `sources/nebe_sloane/union.gz`. Its `D_n*` entries print exact halves, while `Bring8` and `mcc` print rounded decimal Gram components that require source-specific exact data. The `Shimada_86` entry has two conflicting matrices: its full `GRAM_MATRIX` is positive definite with the stated determinant, while its lower-triangular `GRAM` is indefinite and has a different determinant. The [source audit](sources/INVARIANT-AUDIT.md#shimada_86-source-conflict) records the exact comparison. Source entries are not discarded merely because their forms are scalar twists of other lattice cards.
 
 Source intake is one-way. A source contributes the claims it states — Gram tensors, identifications, invariants, relations, generators and maps — and every claim that belongs to the mathematical corpus lands in the appropriate card, relation, morphism or catalogue record. The source can be used to check that this seeding/import step copied what it was meant to copy, but it is not an oracle afterward. Computable claims are certified independently by mathematics or computation from the stored defining data. Two sources stating the same value are useful provenance, but agreement between sources is not a substitute for certification.
 
@@ -429,7 +421,7 @@ Source intake is one-way. A source contributes the claims it states — Gram ten
 
 - **The rank-3 Lorentzian lattices of Allcock, in Dutour-Sikiric's database**, <https://github.com/MathieuDutSik/GeometryDatabase_Rank3_Lorentzian_lattices>: the file `RK3_all` holds 3441 lattices, each row the Gram matrix, the simple roots, the source label `W` for the Weyl group and the ordinal `L` of the lattice within that group, in PARI-readable form; these labels are neither group orders nor subgroup indices (converted to GAP by `Convert_Allcock_RK3`). Every row is read on 2026-10-02: 3415 have signature $(2,1)$, 25 signature $(1,2)$ and one is positive definite; 933 are even and 2508 odd.
   This is the source of indefinite records the Catalogue does not give (it supplies one, `Shimada_86`): rank-3 indefinite integral lattices with their roots, which is exactly what `root_span` and the `hyperbolic` block ask for, and `RK3_explicit` (704) and `RK3_implicit` (715) split the reflective and non-reflective lists of Allcock's 1989 Bielefeld preprint.
-  A module `latticedb allcock` reads `RK3_all`, and the corpus absorbs the entries that are not a twist or a sign of a record already present.
+  A module `latticedb allcock` reads `RK3_all`; scalar twists or sign changes are not automatically identified with existing cards.
   Reached from Martinet's page of links to those working on lattices, <http://jamartin.perso.math.cnrs.fr/>.
 
 - **AN06 — Alexeev and Nikulin, *Del Pezzo and K3 Surfaces* (2006)**, <https://arxiv.org/abs/math/0406536>: start with the Zotero item `RYAAK5WJ`, its attached extraction and PDF. Absorb every Coxeter diagram printed in its tables, including the reflection-chamber diagrams of Table 1 and the extremal K3 diagrams of Table 2, as weighted graph cards. Keep each table and row label, page, vertex marking, and edge weight with its source citation.

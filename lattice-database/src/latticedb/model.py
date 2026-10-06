@@ -121,8 +121,9 @@ class Related(Record):
 class Summand(Record):
     """A lattice $M(k)$: a record $M$ of the catalogue with its form scaled by a nonzero integer $k$.
 
-    The catalogue records no twist $M(k)$ with $|k| \\geq 2$ other than the 13 rows $a = r$ of Nikulin's Table 1, and no $M(-1)$ outside its sign convention,
-    so a summand of a root sublattice such as $A_1 = \\langle 1 \\rangle(2)$ names the record and the scale.
+    The summand names a lattice card and an additional scale used by this construction.
+    The catalogue does not identify a lattice with its twists globally: $M$ and $M(k)$
+    may both have cards.
     """
 
     tag: Tag = Field(description="Tag of the lattice $M$ in the catalogue.")

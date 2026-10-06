@@ -15,9 +15,7 @@ def problems(loaded: Corpus, held: Certificates) -> list[str]:
         if missing:
             found.append(f"{entry.path}: fields awaiting source transcription or enrichment: {', '.join(missing)}")
             continue
-        gram_problems = records.gram_problems(
-            entry.lattice.gram_tensor, entry.lattice.families
-        )
+        gram_problems = records.gram_problems(entry.lattice.gram_tensor)
         if gram_problems:
             found.extend(f"{entry.path}: {problem}" for problem in gram_problems)
             continue
