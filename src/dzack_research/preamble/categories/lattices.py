@@ -3036,11 +3036,22 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def hyperbolic_plane_summand_count(self):
             r"""Return the number of represented indecomposable hyperbolic-plane summands."""
-            return sum(
-                1
-                for name in self.decomposition_names()
-                if name == "U"
-            )
+            match self.is_decomposable():
+                case False:
+                    return 0
+                case True:
+                    pass
+            hyperbolic_gram = Lattices(self.base_ring())("U").gram_tensor()
+            count = 0
+            for factor in self.indecomposable_summands():
+                match factor.indecomposable_name():
+                    case "U":
+                        count += 1
+                    case None if factor.gram_tensor() == hyperbolic_gram:
+                        count += 1
+                    case _:
+                        pass
+            return count
 
         def splits_two_hyperbolic_planes(self) -> bool:
             r"""Return whether the represented decomposition splits at least two copies of ``U``.
