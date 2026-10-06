@@ -8,6 +8,7 @@ from pathlib import Path
 
 import frontmatter
 import pytest
+from sage.all import ZZ, matrix
 
 from latticedb import certificates, corpus, genus, records
 from latticedb.model import Lattice, Yaml
@@ -41,7 +42,8 @@ def test_sagemath_computes_the_invariants_of_a2(loaded: corpus.Corpus) -> None:
     assert {
         field: values[field]
         for field in genus.BLOCKS
-        if field in values and field != "discriminant_sequence"
+        if field in values
+        and field not in {"discriminant_sequence", "automorphism_group_generator_morphisms"}
     } == {
         "genus_symbol": "II_{2,0} (2: 1^-2; 3: 1^-1 3^-1)",
         "automorphism_group_order": 12,
@@ -59,6 +61,10 @@ def test_sagemath_computes_the_invariants_of_a2(loaded: corpus.Corpus) -> None:
             "SOtilde+": two,
         },
     }
+    generators = values["automorphism_group_generator_morphisms"]
+    assert isinstance(generators, list) and generators
+    gram = matrix(ZZ, [[2, -1], [-1, 2]])
+    assert all(matrix(ZZ, generator).transpose() * gram * matrix(ZZ, generator) == gram for generator in generators)
 
 
 def test_discriminant_sequence_keeps_the_pointed_coset_quotient(
@@ -72,7 +78,7 @@ def test_discriminant_sequence_keeps_the_pointed_coset_quotient(
             "tag": "A2",
             "gram": [[2, -1], [-1, 2]],
             "sign": 1,
-            "fields": ["discriminant_sequence"],
+            "fields": ["automorphism_group_generator_morphisms", "discriminant_sequence"],
         },
         {
             "tag": "<2>+<10>",
@@ -81,11 +87,8 @@ def test_discriminant_sequence_keeps_the_pointed_coset_quotient(
             "fields": ["discriminant_sequence"],
         },
     ]
-    found = {
-        str(result["tag"]): result["discriminant_sequence"]
-        for result in genus.computed(chosen, seconds=60)
-    }
-    assert found["A2"]["lattice_group_order"] == 12
+    computed = {str(result["tag"]): result for result in genus.computed(chosen, seconds=60)}
+    found = {tag: result["discriminant_sequence"] for tag, result in computed.items()}
     assert found["A2"]["discriminant_group_order"] == 2
     assert found["A2"]["image_order"] == 2
     assert len(found["A2"]["coset_representatives"]) == 1
@@ -99,15 +102,29 @@ def test_discriminant_sequence_keeps_the_pointed_coset_quotient(
     (tmp_path / "lattices").mkdir()
     path = tmp_path / "lattices" / "0012.md"
     shutil.copy(REPOSITORY / "lattices" / "0012.md", path)
-    genus.store(path, {"discriminant_sequence": found["A2"]})
-    stored = frontmatter.load(str(path)).metadata["integral"]["discriminant_sequence"]
-    assert len(stored["lattice_generator_morphisms"]) == len(
-        found["A2"]["lattice_generators"]
+    generators = computed["A2"]["automorphism_group_generator_morphisms"]
+    genus.store(
+        path,
+        {
+            "automorphism_group_generator_morphisms": generators,
+            "discriminant_sequence": found["A2"],
+        },
     )
-    assert "lattice_generators" not in stored
+    stored = frontmatter.load(str(path)).metadata["integral"]["discriminant_sequence"]
+    assert "lattice_generator_morphisms" not in stored
     lattice = Lattice.model_validate(frontmatter.load(str(path)).metadata)
+    assert lattice.definite is not None
+    names = lattice.definite.automorphism_group_generator_morphisms
+    assert names is not None and len(names) == len(generators)
     self_isometries = [morphism for morphism in lattice.morphisms if morphism.target == "0012"]
-    assert len(self_isometries) == len(found["A2"]["lattice_generators"])
+    assert {morphism.name for morphism in self_isometries} >= set(names)
+    expected_generators = sorted(
+        generators,
+        key=lambda rows: tuple(entry for row in rows for entry in row),
+    )
+    assert genus.certified_value(
+        "automorphism_group_generator_morphisms", list(names), lattice
+    ) == expected_generators
 
 
 def test_sagemath_computes_the_hyperbolic_index() -> None:
@@ -230,7 +247,7 @@ def test_a_certified_value_is_not_requested(tmp_path: Path) -> None:
         if value is not None:
             computation = genus.name("0012", field)
             certificate_hash = certificates.certification_hash(
-                computation, a2, value
+                computation, a2, genus.certified_value(field, value, a2)
             )
             card_certifications[f"{block_name}.{field}"] = certificate_hash
             held[computation] = certificates.Certificate(
@@ -245,6 +262,7 @@ def test_a_certified_value_is_not_requested(tmp_path: Path) -> None:
     assert "genus_symbol" not in request["fields"]
     assert "genus_class_count" not in request["fields"]
     assert "automorphism_group_order" not in request["fields"]
+    assert "automorphism_group_generator_morphisms" in request["fields"]
     assert request["fields"]
 
     path = tmp_path / "lattices" / "0012.md"

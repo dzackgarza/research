@@ -226,8 +226,6 @@ def _definite(
         "minimum": rational(minimum),
         "kissing_number": kissing_number,
     }
-    if "automorphism_group_order" in declared:
-        block["automorphism_group_order"] = declared["automorphism_group_order"]
     if integral_lattice is not None:
         bound = model.theta_bound(len(gram), minimum)
         match declared.get("theta_series"):
@@ -244,6 +242,9 @@ def _definite(
         }
         for root_type, scale, simple in roots.root_system(formed, dict(positive_roots))
     ]
+    for field in model.DefiniteData.model_fields:
+        if field not in block and field in declared:
+            block[field] = declared[field]
     return _ordered(block, tuple(model.DefiniteData.model_fields))
 
 

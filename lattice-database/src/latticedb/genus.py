@@ -1,4 +1,4 @@
-"""The genus symbol, the class number, the spinor genera, the hyperbolic index, the order of O(L), and the two series of orbits, from SageMath.
+"""The genus symbol, class number, spinor genera, hyperbolic index, order and generators of O(L), and the two series of orbits, from SageMath.
 
 `certify` sends each uncertified applicable computation to `sage_genus.py` under SageMath.
 A completed computation is authoritative for the part of the card that computation owns:
@@ -35,6 +35,7 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "spinor_genera": ("integral", IntegralData),
     "hyperbolic_index": ("integral", IntegralData),
     "automorphism_group_order": ("definite", DefiniteData),
+    "automorphism_group_generator_morphisms": ("definite", DefiniteData),
     "discriminant_sequence": ("integral", IntegralData),
     "primitive_orbits": ("integral", IntegralData),
     "discriminant_orbits": ("integral", IntegralData),
@@ -45,7 +46,7 @@ ORBIT_CERTIFIED_BOUND = 4
 """The z/w degree through which the Sage orbit computation certifies a stored series."""
 
 
-def certified_value(field: str, value: Yaml) -> Yaml:
+def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> Yaml:
     """The part of a stored field determined by one completed computation.
 
     The orbit computations determine only the coefficients through degree 4.
@@ -53,6 +54,24 @@ def certified_value(field: str, value: Yaml) -> Yaml:
     remain on the card but are not included in this computation's certificate.
     Every other field in BLOCKS is determined in full by its computation.
     """
+    if field == "automorphism_group_generator_morphisms":
+        if lattice is None or not isinstance(value, list):
+            return value
+        by_name = {
+            morphism.name: morphism
+            for morphism in lattice.morphisms
+            if morphism.target == lattice.tag and morphism.scale == 1
+        }
+        if any(name not in by_name for name in value):
+            return value
+        matrices = [
+            [list(row) for row in by_name[name].matrix]
+            for name in value
+        ]
+        return sorted(
+            matrices,
+            key=lambda rows: tuple(entry for row in rows for entry in row),
+        )
     if field not in {"primitive_orbits", "discriminant_orbits"}:
         return value
     if not isinstance(value, dict):
@@ -76,13 +95,13 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
     """Whether SageMath computes `field` for `lattice`, of which `planes` is a lower bound of the hyperbolic index.
 
     Spinor genera are computed for a lattice of rank at least 3, the dimension for which SPLAG, Chapter 15, Theorem 15(b) defines them.
-    The order of O(L) is computed for a definite lattice, whose vectors of bounded norm are finite in number.
+    The order and a generating set of O(L) are computed for a definite integral lattice with PARI/GP `qfauto`.
     The series $F_{L,\\Gamma}$ of orbits of primitive vectors is computed for a definite lattice, by enumerating its vectors.
     The series $F_{A_L,\\Gamma}$ of orbits on the discriminant group is computed for an even lattice that contains $U^2$ (theory/orbits.md).
     """
     assert lattice.integral is not None
     match field:
-        case "automorphism_group_order":
+        case "automorphism_group_order" | "automorphism_group_generator_morphisms":
             return lattice.definite is not None
         case "discriminant_sequence":
             return lattice.definite is not None and lattice.integral.parity == "even"
@@ -157,7 +176,7 @@ def requests(
             stored_value = block.get(field) if isinstance(block, dict) else None
             computation = name(lattice.tag, field)
             expected_hash = certificates.certification_hash(
-                computation, lattice, certified_value(field, stored_value)
+                computation, lattice, certified_value(field, stored_value, lattice)
             )
             if stored_value is None or certificates.is_pending(
                 held, computation, cited.get(f"{block_name}.{field}"), expected_hash
@@ -211,32 +230,44 @@ def computed(chosen: list[Request], seconds: int) -> Iterator[dict[str, Yaml]]:
     )
 
 
-def _sequence_morphisms(
-    tag: str, morphisms: list[dict[str, Yaml]], value: dict[str, Yaml]
-) -> tuple[dict[str, Yaml], list[dict[str, Yaml]]]:
-    """Place full lattice isometry generators on the lattice card and refer to them by name."""
+def _generator_morphisms(
+    tag: str, morphisms: list[dict[str, Yaml]], matrices: list[Yaml]
+) -> tuple[list[str], list[dict[str, Yaml]]]:
+    """Place computed generators of O(L) on the lattice card and return their names."""
     names: list[str] = []
-    matrices = value["lattice_generators"]
-    assert isinstance(matrices, list)
+    used_self_names = {
+        morphism["name"]
+        for morphism in morphisms
+        if morphism.get("target") == tag
+        and morphism.get("scale", 1) == 1
+        and isinstance(morphism.get("name"), str)
+    }
     for index, matrix in enumerate(matrices, start=1):
+        assert isinstance(matrix, list)
         existing = next(
             (
                 morphism
                 for morphism in morphisms
-                if morphism["matrix"] == matrix and morphism.get("scale", 1) == 1
+                if morphism.get("target") == tag
+                and morphism["matrix"] == matrix
+                and morphism.get("scale", 1) == 1
             ),
             None,
         )
         if existing is None:
-            name = f"O(L) generator {index} from PARI qfauto"
+            base = f"O(L) generator {index} from PARI qfauto"
+            name = base
+            suffix = 2
+            while name in used_self_names:
+                name = f"{base} #{suffix}"
+                suffix += 1
             morphisms.append({"target": tag, "name": name, "matrix": matrix})
+            used_self_names.add(name)
         else:
             assert isinstance(existing["name"], str)
             name = existing["name"]
         names.append(name)
-    stored = {key: item for key, item in value.items() if key != "lattice_generators"}
-    stored["lattice_generator_morphisms"] = names
-    return stored, morphisms
+    return names, morphisms
 
 
 def store(path: Path, values: dict[str, Yaml]) -> None:
@@ -248,8 +279,9 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
         value = values.get(field)
         if value is None:
             continue
-        if field == "discriminant_sequence" and isinstance(value, dict):
-            value, morphisms = _sequence_morphisms(path.stem, morphisms, value)
+        if field == "automorphism_group_generator_morphisms":
+            assert isinstance(value, list)
+            value, morphisms = _generator_morphisms(path.stem, morphisms, value)
         match metadata.get(block_name):
             case dict() as block:
                 if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
@@ -294,6 +326,7 @@ def certify(
         entry = by_tag[str(values["tag"])]
         store(entry.path, values)
         stored = corpus.front_matter(frontmatter.load(str(entry.path)))
+        stored_lattice = Lattice.model_validate(stored)
         card_certifications = dict(stored.get("certifications") or {})
         for field in BLOCKS:
             if field not in values or values[field] is None:
@@ -303,7 +336,7 @@ def certify(
             assert isinstance(block, dict)
             computation = name(entry.lattice.tag, field)
             certificate_hash = certificates.certification_hash(
-                computation, entry.lattice, certified_value(field, block.get(field))
+                computation, stored_lattice, certified_value(field, block.get(field), stored_lattice)
             )
             card_certifications[f"{block_name}.{field}"] = certificate_hash
             held[computation] = Certificate(hash=certificate_hash, by=str(values["by"]))

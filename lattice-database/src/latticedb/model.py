@@ -385,8 +385,6 @@ class DiscriminantSequenceData(Record):
     discriminant_factors: list[int]
     discriminant_basis_lifts: list[list[str]]
     discriminant_quadratic_gram: list[list[str]]
-    lattice_group_order: Annotated[int, Field(gt=0)] | None = None
-    lattice_generator_morphisms: list[str] | None = None
     discriminant_group_order: int = Field(gt=0)
     discriminant_generators: list[list[list[int]]]
     image_generators: list[list[list[int]]]
@@ -421,22 +419,6 @@ class DiscriminantSequenceData(Record):
         ):
             raise ValueError(
                 "the discriminant basis and quadratic Gram matrix must match the invariant factors"
-            )
-        if self.lattice_generator_morphisms is not None and len(
-            self.lattice_generator_morphisms
-        ) != len(self.image_generators):
-            raise ValueError(
-                "each lattice generator must have one induced discriminant isometry"
-            )
-        if (self.lattice_group_order is None) != (self.kernel_order is None):
-            raise ValueError("the lattice and kernel orders are stated together")
-        if (
-            self.lattice_group_order is not None
-            and self.kernel_order is not None
-            and self.lattice_group_order != self.kernel_order * self.image_order
-        ):
-            raise ValueError(
-                "the lattice group order must equal the kernel order times the image order"
             )
         if self.discriminant_group_order != self.image_order * len(
             self.coset_representatives
@@ -682,6 +664,10 @@ class DefiniteData(Record):
     automorphism_group_order: int | None = Field(
         default=None,
         description="Order of $O(L)$, computed by `latticedb certify` with `qfauto` of PARI/GP.",
+    )
+    automorphism_group_generator_morphisms: Annotated[tuple[str, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description="Names of self-isometries in this card's `morphisms` field that generate $O(L)$, computed by `latticedb certify` with PARI/GP `qfauto`.",
     )
     minimal_vectors: list[list[int]] | None = Field(
         default=None,
@@ -1390,6 +1376,33 @@ class Lattice(Record):
             return
         data = self.definite
         integer_valued = self.is_integer_valued
+        sequence = self.integral.discriminant_sequence if self.integral is not None else None
+        generator_names = data.automorphism_group_generator_morphisms
+        if generator_names is not None:
+            self_isometry_names = [
+                morphism.name
+                for morphism in self.morphisms
+                if morphism.target == self.tag and morphism.scale == 1
+            ]
+            if len(set(generator_names)) != len(generator_names) or any(
+                self_isometry_names.count(name) != 1 for name in generator_names
+            ):
+                yield _problem(
+                    "automorphism_group_generators",
+                    "each generator name occurs once in the generator list and names exactly one scale-one self-morphism on this lattice card",
+                    ("definite", "automorphism_group_generator_morphisms"),
+                )
+        if (
+            sequence is not None
+            and data.automorphism_group_order is not None
+            and sequence.kernel_order is not None
+            and data.automorphism_group_order != sequence.kernel_order * sequence.image_order
+        ):
+            yield _problem(
+                "discriminant_kernel_order",
+                "the kernel order times the image order equals the stored order of O(L)",
+                ("integral", "discriminant_sequence", "kernel_order"),
+            )
         for name, value in (
             ("theta_series", data.theta_series),
             ("root_system", data.root_system),

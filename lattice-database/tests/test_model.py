@@ -63,6 +63,25 @@ def test_group_cardinality_is_plain_serialized_schema_data() -> None:
         GroupData.model_validate({"cardinality": 0})
 
 
+def test_definite_group_generators_name_scale_one_self_morphisms() -> None:
+    record = e8()
+    generator = [[-int(i == j) for j in range(8)] for i in range(8)]
+    record["morphisms"] = [{"target": "0001", "name": "minus identity", "matrix": generator}]
+    definite = dict(record["definite"])
+    definite["automorphism_group_generator_morphisms"] = ["minus identity"]
+    record["definite"] = definite
+    lattice = Lattice.model_validate(record)
+    assert lattice.definite is not None
+    assert lattice.definite.automorphism_group_generator_morphisms == ("minus identity",)
+
+    bad = dict(record)
+    bad_definite = dict(definite)
+    bad_definite["automorphism_group_generator_morphisms"] = ["missing"]
+    bad["definite"] = bad_definite
+    with pytest.raises(ValidationError, match="each generator name occurs once"):
+        Lattice.model_validate(bad)
+
+
 def e8() -> dict[str, Yaml]:
     """The root lattice E8: even, unimodular, positive definite, 240 minimal vectors."""
     return {

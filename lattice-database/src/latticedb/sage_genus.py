@@ -3,7 +3,7 @@
 Reads from standard input a JSON object `{"seconds": s, "lattices": [{"tag", "gram", "sign", "fields"}, ...]}`,
 where `sign` is 1 for a positive definite lattice, -1 for a negative definite one and 0 otherwise, and
 `fields` names the values to compute among `genus_symbol`, `genus_class_count`, `overlattice_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`,
-`automorphism_group_order`, `discriminant_sequence` and `primitive_orbits`. Writes one JSON line per lattice to standard output, as soon as it is
+`automorphism_group_order`, `automorphism_group_generator_morphisms`, `discriminant_sequence` and `primitive_orbits`. Writes one JSON line per lattice to standard output, as soon as it is
 computed: the tag, the version of SageMath as `by`, and each value of `fields`. A value that is not
 computed within `s` seconds is null.
 
@@ -181,8 +181,6 @@ class DiscriminantSequence(TypedDict):
     discriminant_factors: list[int]
     discriminant_basis_lifts: list[list[str]]
     discriminant_quadratic_gram: list[list[str]]
-    lattice_group_order: int
-    lattice_generators: list[list[list[int]]]
     discriminant_group_order: int
     discriminant_generators: list[list[list[int]]]
     image_generators: list[list[list[int]]]
@@ -195,7 +193,14 @@ class DiscriminantSequence(TypedDict):
     quotient_multiplication: list[list[int]] | None
 
 
-Value = int | str | list[int] | dict[str, Series] | DiscriminantSequence
+class AutomorphismGroupData(TypedDict):
+    """The order and one generating set of O(L), in the record basis."""
+
+    order: int
+    generators: list[list[list[int]]]
+
+
+Value = int | str | list[int] | list[list[list[int]]] | dict[str, Series] | DiscriminantSequence | AutomorphismGroupData
 
 
 def _discriminant_actions(
@@ -452,9 +457,16 @@ def within(seconds: int, compute: Callable[[], Value]) -> Value | None:
     return value
 
 
-def automorphism_group_order(gram: Matrix_integer_dense) -> int:
-    """The order of O(L) of a positive definite Gram matrix, by `qfauto` of PARI/GP."""
-    return int(pari(gram).qfauto()[0])
+def automorphism_group(gram: Matrix_integer_dense) -> AutomorphismGroupData:
+    """The order and PARI/GP `qfauto` generators of O(L) for a positive definite Gram matrix."""
+    value = pari(gram).qfauto()
+    return {
+        "order": int(value[0]),
+        "generators": [
+            [[int(entry) for entry in row] for row in matrix(ZZ, generator).rows()]
+            for generator in value[1]
+        ],
+    }
 
 
 def overlattice_count(gram: Matrix_integer_dense) -> int:
@@ -466,7 +478,7 @@ def overlattice_count(gram: Matrix_integer_dense) -> int:
 
 
 def discriminant_sequence(
-    gram: Matrix_integer_dense, sign: int
+    gram: Matrix_integer_dense, automorphisms: AutomorphismGroupData
 ) -> DiscriminantSequence:
     """The discriminant action of a definite even lattice and its pointed left-coset set.
 
@@ -474,9 +486,9 @@ def discriminant_sequence(
     are reduced modulo the order of its i-th generator, since an integral matrix
     representing an isometry of this module is not unique.
     """
-    definite = sign * gram
-    automorphisms = pari(definite).qfauto()
-    lattice_generators = [matrix(ZZ, generator) for generator in automorphisms[1]]
+    lattice_generators = [
+        matrix(ZZ, generator) for generator in automorphisms["generators"]
+    ]
     module = IntegralLattice(gram).discriminant_group()
     factors = [int(order) for order in module.invariants()]
     group = module.orthogonal_group()
@@ -525,7 +537,7 @@ def discriminant_sequence(
     def coset_of(element: FqfIsometry) -> int:
         return coset_index[frozenset(element * member for member in image_elements)]
 
-    order = int(automorphisms[0])
+    order = automorphisms["order"]
     image_order = int(image.order())
     return {
         "discriminant_factors": factors,
@@ -533,11 +545,6 @@ def discriminant_sequence(
             [str(coordinate) for coordinate in x.lift()] for x in basis
         ],
         "discriminant_quadratic_gram": rational_rows(module.gram_matrix_quadratic()),
-        "lattice_group_order": order,
-        "lattice_generators": [
-            [[int(entry) for entry in row] for row in generator.rows()]
-            for generator in lattice_generators
-        ],
         "discriminant_group_order": int(group.order()),
         "discriminant_generators": [
             rows(generator.matrix()) for generator in group.gens()
@@ -569,6 +576,17 @@ def main() -> None:
     for lattice in lattices:
         gram = matrix(ZZ, lattice["gram"])
         positive = gram if lattice["sign"] >= 0 else -gram
+        requested = set(lattice["fields"])
+        group_fields = {
+            "automorphism_group_order",
+            "automorphism_group_generator_morphisms",
+            "discriminant_sequence",
+        }
+        automorphisms = (
+            within(seconds, partial(automorphism_group, positive))
+            if requested & group_fields
+            else None
+        )
         computations: dict[str, Callable[[], Value]] = {
             "genus_symbol": partial(symbol, gram),
             "genus_class_count": partial(class_count, gram),
@@ -576,10 +594,6 @@ def main() -> None:
             "spinor_genus_count": partial(spinor_genus_count, gram),
             "spinor_genera": partial(spinor_genera, gram, lattice["sign"]),
             "hyperbolic_index": partial(hyperbolic_index, gram),
-            "automorphism_group_order": partial(automorphism_group_order, positive),
-            "discriminant_sequence": partial(
-                discriminant_sequence, gram, lattice["sign"]
-            ),
             "primitive_orbits": partial(primitive_orbits, positive, lattice["sign"]),
             "discriminant_orbits": partial(discriminant_orbits, gram),
         }
@@ -587,7 +601,23 @@ def main() -> None:
             "tag": lattice["tag"],
             "by": f"SageMath {version}",
         }
+        if "automorphism_group_order" in requested:
+            line["automorphism_group_order"] = (
+                automorphisms["order"] if automorphisms is not None else None
+            )
+        if "automorphism_group_generator_morphisms" in requested:
+            line["automorphism_group_generator_morphisms"] = (
+                automorphisms["generators"] if automorphisms is not None else None
+            )
+        if "discriminant_sequence" in requested:
+            line["discriminant_sequence"] = (
+                within(seconds, partial(discriminant_sequence, gram, automorphisms))
+                if automorphisms is not None
+                else None
+            )
         for field in lattice["fields"]:
+            if field in group_fields:
+                continue
             line[field] = within(seconds, computations[field])
         print(json.dumps(line), flush=True)
 

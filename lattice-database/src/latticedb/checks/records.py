@@ -45,7 +45,7 @@ def problems(loaded: Corpus, held: Certificates) -> list[str]:
             value = block.get(field) if isinstance(block, dict) else None
             local_name = f"{block_name}.{field}"
             expected_hash = certificates.certification_hash(
-                computation, entry.lattice, genus.certified_value(field, value)
+                computation, entry.lattice, genus.certified_value(field, value, entry.lattice)
             )
             if (
                 cited.get(local_name) is not None

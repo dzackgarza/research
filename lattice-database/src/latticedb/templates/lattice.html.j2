@@ -166,6 +166,9 @@
         {% if lattice.definite.automorphism_group_order is not none %}
         <tr><th scope="row">Order of the {{ theory("definite-lattices", "isometry-group", "isometry group") }}</th><td>\({{ lattice.definite.automorphism_group_order }} = {{ factorisation_tex(lattice.definite.automorphism_group_order) }}\)</td></tr>
         {% endif %}
+        {% if lattice.definite.automorphism_group_generator_morphisms %}
+        <tr><th scope="row">Generators of \(O(L)\)</th><td>{{ lattice.definite.automorphism_group_generator_morphisms | join(", ") }}</td></tr>
+        {% endif %}
       </tbody>
     </table>
     {% if lattice.definite.theta_series is not none %}
