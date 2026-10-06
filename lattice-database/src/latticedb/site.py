@@ -29,7 +29,6 @@ from markupsafe import Markup, escape
 from pydantic import BaseModel, Field
 
 from latticedb import root_systems
-from latticedb.arithmetic import Vector
 from latticedb.corpus import Entry, load
 from latticedb.geometric import ProjectiveComplexVariety, RiemannianSymmetricSpace
 from latticedb.model import (
@@ -38,6 +37,7 @@ from latticedb.model import (
     IndefiniteData,
     IntegralData,
     Lattice,
+    Vector,
     Morphism,
     Morphisms,
     OrbitGroup,
@@ -789,56 +789,39 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
 ORTHOGONAL_LIMIT = 24
 """The largest $p$ and $q$ in the table of orthogonal groups."""
 
-_ORTHOGONAL_NAME = re.compile(r"^I_\{(\d+),(\d+)\}$")
-
-
-def orthogonal_signature(lattice: Lattice) -> tuple[int, int] | None:
-    """The $(p, q)$ of a record named $\\mathrm{I}_{p,q}$; `None` for another name."""
-    match = _ORTHOGONAL_NAME.fullmatch(lattice.name)
-    return (int(match[1]), int(match[2])) if match else None
-
 
 def orthogonal_groups(
     target: Path, environment: Environment, lattices: dict[str, Lattice]
 ) -> None:
-    """Write `orthogonal-groups.html`: the $(p, q)$ table of orthogonal groups.
+    """Write `orthogonal-groups.html`: the table of orthogonal groups $O(p, q)$.
 
-    A cell links to the card of $\\mathrm{I}_{p,q}$ ($\\mathrm{I}_{q,p}$ when
-    that is the one recorded), or marks the missing card with a stub. The list
-    of cards owed states, for each signature without one, the standard lattice
-    and the command that authors it.
+    For a nondegenerate lattice $L$ of signature $(p, q)$, base change along
+    $\\mathbb{Z} \\to \\mathbb{R}$ gives an arithmetic subgroup
+    $O(L) \\hookrightarrow O(L \\otimes_{\\mathbb{Z}} \\mathbb{R}) \\cong O(p, q)$.
+    $O(p, q)$ therefore attaches to the unordered signature $\\{p, q\\}$, since
+    $O(p, q) \\cong O(q, p)$; a cell gives the number of lattices of signature
+    $(p, q)$ or $(q, p)$. A group that no lattice realizes is an empty cell.
     """
-    recorded: dict[tuple[int, int], str] = {}
-    for tag, lattice in lattices.items():
-        signature = orthogonal_signature(lattice)
-        if signature is not None:
-            key = (min(signature), max(signature))
-            recorded.setdefault(key, tag)
-    columns = list(range(1, ORTHOGONAL_LIMIT + 1))
+    counts: dict[tuple[int, int], int] = {}
+    for lattice in lattices.values():
+        if lattice.signature is not None and lattice.is_nondegenerate:
+            key = (min(lattice.signature), max(lattice.signature))
+            counts[key] = counts.get(key, 0) + 1
+    columns = list(range(ORTHOGONAL_LIMIT + 1))
+    # $O(p, q) \cong O(q, p)$, so the group is indexed by $p \leq q$: the upper
+    # triangle. A cell below the diagonal is blank.
     rows = [
         (
             p,
-            [(q, recorded.get((min(p, q), max(p, q)))) for q in columns],
+            [(q, counts.get((p, q), 0) if q >= p else None) for q in columns],
         )
         for p in columns
-    ]
-    owed = [
-        (f"\\mathrm{{I}}_{{{p},{q}}}", p, q)
-        for p in columns
-        for q in columns
-        if p <= q and (p, q) not in recorded
     ]
     (target / "orthogonal-groups.html").write_text(
         environment.get_template("orthogonal-groups.html.j2").render(
             root="./",
             columns=columns,
             rows=rows,
-            owed=owed,
-            total_cells=len(columns) * (len(columns) + 1) // 2,
-            recorded=sum(
-                1 for p in columns for q in columns if p <= q and (p, q) in recorded
-            ),
-            missing=len(owed),
         )
     )
 
@@ -1001,6 +984,12 @@ def build(root: Path, target: Path) -> int:
         environment.get_template("theory.html.j2").render(root="./")
     )
     orthogonal_groups(target, environment, lattices)
+    (target / "hodge-diamonds.html").write_text(
+        environment.get_template("hodge-diamonds.html.j2").render(
+            root="./",
+            has_k3=any(entry.geometric.slug == "k3-surface" for entry in geometric),
+        )
+    )
     (target / "morphisms.html").write_text(
         environment.get_template("morphisms.html.j2").render(
             root="./", files=morphism_files, lattices=lattices

@@ -84,7 +84,25 @@ def new(
     ] = "",
     root: Root = Path(),
 ) -> None:
-    """Write a lattice card from authored fields, without computation or verification."""
+    """Write a lattice card from authored fields, without computation or verification.
+
+    Refuses a Gram tensor that a card of the corpus already states: the
+    corpus records a lattice once, so a second card with the same tensor is
+    never written.
+    """
+    try:
+        parsed = records.gram_tensor(json.loads(gram))
+    except AssertionError as error:
+        print(f"--gram: {error}", file=sys.stderr)
+        sys.exit(1)
+    key = corpus.gram_key(parsed)
+    index = corpus.gram_index(root)
+    if index.get(key):
+        print(
+            f"gram_tensor: the corpus already holds this tensor at {' '.join(index[key])}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     declared: dict[str, Yaml] = {
         "name": name,
         "latex": latex,
@@ -94,7 +112,9 @@ def new(
         "related": [],
         "references": [{"citation": citation} for citation in reference],
     }
-    print(_author(root, declared, prose))
+    path = _author(root, declared, prose)
+    corpus.append_index(root, path.stem, parsed)
+    print(path)
 
 
 @app.command(name="bulk-source-fetch")
@@ -188,16 +208,9 @@ def morphism(
 LATTICEDB = f"latticedb {version('latticedb')}"
 
 
-def _corpus_inputs(loaded: corpus.Corpus) -> str:
-    """The digest of the Gram tensors of the records: the inputs of a computation over the whole corpus."""
-    return certificates.digest(
-        "\n".join(certificates.gram_digest(entry.lattice) for entry in loaded.entries)
-    )
-
-
 @app.command
 def verify(root: Root = Path()) -> None:
-    """Report mathematical and source errors without changing lattice cards."""
+    """Report mathematical errors without changing lattice cards."""
     try:
         count, problems = checks.run(root)
     except corpus.CorpusInvalid as invalid:
@@ -206,6 +219,19 @@ def verify(root: Root = Path()) -> None:
         sys.exit(1)
     _refuse(problems)
     print(f"{count} lattice cards verified")
+
+
+@app.command
+def duplicates(root: Root = Path()) -> None:
+    """List the tags that share a Gram tensor, without changing lattice cards."""
+    index = corpus.gram_index(root)
+    found = {gram: tags for gram, tags in index.items() if len(tags) > 1}
+    for tags in found.values():
+        print(f"{' '.join(tags)}")
+    if found:
+        print(f"{sum(len(tags) for tags in found.values())} cards share a Gram tensor", file=sys.stderr)
+        sys.exit(1)
+    print(f"{sum(len(tags) for tags in index.values())} lattice cards have distinct Gram tensors")
 
 
 @app.command
@@ -220,64 +246,71 @@ def enrich(
     summand_maps: Annotated[
         bool, Parameter(help="Compute orthogonal summand maps over the corpus.")
     ] = False,
-    genus_data: Annotated[bool, Parameter(help="Compute SageMath genus data.")] = False,
-    seconds: Annotated[
-        int, Parameter(help="Time limit of SageMath for one value of one record.")
-    ] = 120,
-    subgroup_bound: Annotated[
-        int,
-        Parameter(
-            help="Budget of subgroups for the count of integral overlattices: a larger bound decides a larger discriminant group, at the cost of about 4 microseconds for each subgroup."
-        ),
-    ] = 100_000,
     root: Root = Path(),
 ) -> None:
-    """Compute derived card fields and store their computation certificates."""
+    """Compute ordinary derived card fields without certifying them."""
     loaded = corpus.load(root)
-    held = certificates.load(root)
     selected = set(tag)
     found: list[str] = []
     for entry in loaded.entries:
         lattice = entry.lattice
         if lattice.gram_tensor is None or (selected and lattice.tag not in selected):
             continue
-        inputs = certificates.gram_digest(lattice)
-        certified = certificates.is_certified(held, f"{lattice.tag} derive", inputs)
-        # A certified record that still lacks a field the raised bound could decide is enriched again; one that is complete is not touched.
-        if certified and not (
-            lattice.integral is not None and lattice.integral.overlattice_count is None
-        ):
-            continue
         text = entry.path.read_text()
         document = frontmatter.loads(text)
-        updated = records.record_text(
-            records.derive(corpus.front_matter(document), subgroup_bound),
-            document.content,
-        )
+        metadata = corpus.front_matter(document)
+        derived = records.derive(metadata)
+        updated = records.record_text(derived, document.content)
         if updated != text:
             entry.path.write_text(updated)
             print(f"{entry.path}: derived values written")
-        held[f"{lattice.tag} derive"] = certificates.Certificate(
-            inputs=inputs, by=LATTICEDB
-        )
-    certificates.save(root, held)
-    if (
-        summand_maps
-        and not tag
-        and not certificates.is_certified(
-            held, summands.CERTIFICATE, _corpus_inputs(loaded)
-        )
-    ):
+    if summand_maps and not tag:
         problems = summands.store(root, loaded)
         found.extend(problems)
-        if not problems:
-            held[summands.CERTIFICATE] = certificates.Certificate(
-                inputs=_corpus_inputs(loaded), by=LATTICEDB
-            )
-            certificates.save(root, held)
-    if genus_data:
-        found.extend(genus.certify(root, loaded, held, tag, seconds))
     _refuse(found)
+
+
+@app.command
+def certify(
+    *,
+    tag: Annotated[
+        tuple[str, ...],
+        Parameter(help="Tag of a card to certify; repeat for each one. All cards when absent."),
+    ] = (),
+    seconds: Annotated[
+        int, Parameter(help="Time limit of SageMath for one value of one record.")
+    ] = 120,
+    root: Root = Path(),
+) -> None:
+    """Compute uncertified card values, replace disagreements, and certify the computed results."""
+    loaded = corpus.load(root)
+    held = certificates.load(root)
+    selected = set(tag)
+    for entry in loaded.entries:
+        lattice = entry.lattice
+        if lattice.gram_tensor is None or (selected and lattice.tag not in selected):
+            continue
+        document = frontmatter.load(str(entry.path))
+        metadata = corpus.front_matter(document)
+        computation = f"{lattice.tag} derive"
+        cited = metadata.get("certifications")
+        cited_hash = cited.get("derive") if isinstance(cited, dict) else None
+        expected_hash = certificates.certification_hash(
+            computation, lattice, records.derived_projection(metadata)
+        )
+        if certificates.is_certified(held, computation, cited_hash, expected_hash):
+            continue
+        computed = records.derive(metadata)
+        certificate_hash = certificates.certification_hash(
+            computation, lattice, records.derived_projection(computed)
+        )
+        card_certifications = dict(computed.get("certifications") or {})
+        card_certifications["derive"] = certificate_hash
+        computed["certifications"] = card_certifications
+        entry.path.write_text(records.record_text(computed, document.content))
+        held[computation] = certificates.Certificate(hash=certificate_hash, by=LATTICEDB)
+        certificates.save(root, held)
+    genus.certify(root, corpus.load(root), held, tag, seconds)
 
 
 @app.command

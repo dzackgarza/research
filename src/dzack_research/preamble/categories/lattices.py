@@ -1347,7 +1347,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     index = lattice_engines._oscar_lattices.number_field_witt_index(field, self.gram_tensor())
                 case _:
                     assert False, f"the Witt index of {self!r} is computed here over represented absolute number fields, but {self!r} is over {field}"
-            return _own_ring(SageZZ)(index)
+            integers = _own_ring(SageZZ)
+            return _owned_engine_element(integers, SageZZ(index))
 
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
@@ -1824,6 +1825,67 @@ class Lattices(OwnedCategoryOverBaseRing):
                 level = level.lcm(SageZZ(denominator))
             return level
 
+        def bad_reduction_primes(self):
+            r"""Return the primes dividing ``2 det(L)`` for a nondegenerate integral lattice."""
+            ring = self.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"the bad-reduction prime set here is defined for integral lattices over ZZ, but {self} is over {ring}"
+            )
+            determinant = self.determinant()
+            assert determinant != ring.zero(), (
+                f"the bad-reduction prime set of {self} is not finite because its form is degenerate"
+            )
+            return finite_ordered_set(
+                tuple((ring(2) * abs(determinant)).prime_divisors())
+            )
+
+        def discriminant_character_discriminant(self):
+            r"""Return the fundamental discriminant defining the even-rank discriminant character."""
+            from sage.arith.misc import fundamental_discriminant
+
+            ring = self.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"the discriminant quadratic character here is defined for integral lattices over ZZ, but {self} is over {ring}"
+            )
+            rank = self.module_rank()
+            assert rank.is_finite() and int(rank) % 2 == 0, (
+                f"the discriminant quadratic character of {self} is stated in even rank, but {self} has rank {rank}"
+            )
+            determinant = self.determinant()
+            assert determinant != ring.zero(), (
+                f"the discriminant quadratic character of {self} requires a nonzero determinant"
+            )
+            signed = ((-ring.one()) ** (int(rank) // 2)) * determinant
+            return _owned_engine_element(
+                ring,
+                fundamental_discriminant(_engine_element(ring, signed)),
+            )
+
+        def is_voronoi_perfect(self) -> bool:
+            r"""Return whether the rank-one tensors of the minimal shell span ``Sym^2(L_Q)``."""
+            assert self.is_definite(), (
+                f"Voronoi perfection is decided here for definite lattices, but {self} is not definite"
+            )
+            rank = int(self.module_rank())
+            dimension = rank * (rank + 1) // 2
+            rationals = self.base_ring().fraction_field()
+            ambient = rationals.free_module(dimension)
+            labels = tuple(self.module_generating_set())
+            tensors = []
+            for vector in self.shortest_vectors():
+                coordinates = vector.to_vector()
+                tensors.append(
+                    ambient(
+                        tuple(
+                            rationals(coordinates(labels[left]))
+                            * rationals(coordinates(labels[right]))
+                            for left in range(rank)
+                            for right in range(left, rank)
+                        )
+                    )
+                )
+            return int(ambient.subobject_on(tuple(tensors)).module_rank()) == dimension
+
         @cached_method
         def genus(self):
             r"""Return the genus from signature and discriminant quadratic form.
@@ -1842,6 +1904,184 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"cannot compute the genus of {self!r}: the genus is computed from the discriminant quadratic form, which exists only for an even lattice, and {self!r} is odd"
             )
             return Genus(self.signature_pair(), self.discriminant_quadratic_form())
+
+        def conway_sloane_genus_symbol(self):
+            r"""Return the canonical Conway--Sloane genus-symbol string of an integral lattice."""
+            from sage.quadratic_forms.genera.genus import Genus as SageGenus
+
+            assert _engine_ring(self.base_ring()) is SageZZ, (
+                f"the integral genus symbol here is implemented for ZZ-lattices, but {self} is over {self.base_ring()}"
+            )
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"the integral genus symbol of {self} requires finite rank and a nondegenerate form"
+            )
+            genus = SageGenus(_engine_component_matrix(self.gram_tensor()).change_ring(SageZZ))
+            positive, negative = genus.signature_pair()
+            head = f"{'II' if genus.is_even() else 'I'}_{{{positive},{negative}}}"
+            match abs(genus.determinant()) == 1:
+                case True:
+                    return head
+                case False:
+                    local = tuple(
+                        f"{symbol.prime()}: {repr(symbol).split(':', 1)[1].strip()}"
+                        for symbol in genus.local_symbols()
+                    )
+                    return f"{head} ({'; '.join(local)})"
+
+        def genus_class_number(self):
+            r"""Return the number of isometry classes in the integral genus of this lattice."""
+            from sage.quadratic_forms.binary_qf import BinaryQF
+            from sage.quadratic_forms.genera.genus import Genus as SageGenus
+
+            ring = self.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"the integral genus class number here is implemented for ZZ-lattices, but {self} is over {ring}"
+            )
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"the integral genus class number of {self} requires finite rank and a nondegenerate form"
+            )
+            gram = _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
+            representatives = SageGenus(gram).representatives(backend="sage")
+            match int(self.module_rank()) == 2, gram.det() < 0:
+                case True, True:
+                    classes = []
+                    for representative in representatives:
+                        form = BinaryQF(
+                            representative[0, 0],
+                            2 * representative[0, 1],
+                            representative[1, 1],
+                        )
+                        match any(form.is_equivalent(other, proper=False) for other in classes):
+                            case False:
+                                classes.append(form)
+                            case True:
+                                pass
+                    return ring(len(classes))
+                case _:
+                    return ring(len(representatives))
+
+        def spinor_genus_count(self):
+            r"""Return the number of improper spinor genera in the integral genus."""
+            from sage.quadratic_forms.genera.genus import Genus as SageGenus
+
+            ring = self.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"the spinor-genus count here is implemented for ZZ-lattices, but {self} is over {ring}"
+            )
+            assert self.module_rank().is_finite() and int(self.module_rank()) >= 3 and self.is_nondegenerate(), (
+                f"the spinor-genus count of {self} requires a nondegenerate lattice of finite rank at least three"
+            )
+            genus = SageGenus(_engine_component_matrix(self.gram_tensor()).change_ring(SageZZ))
+            return ring(2 ** len(genus.spinor_generators(proper=False)))
+
+        def spinor_genus_class_numbers(self):
+            r"""Return class numbers of the improper spinor genera, with that of ``self`` first."""
+            from itertools import chain, combinations
+            from sage.quadratic_forms.genera.genus import Genus as SageGenus
+            from sage.quadratic_forms.quadratic_form import QuadraticForm
+            from sage.quadratic_forms.quadratic_form__neighbors import neighbor_iteration
+            from sage.sets.primes import Primes
+
+            ring = self.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"spinor genera here are implemented for ZZ-lattices, but {self} is over {ring}"
+            )
+            assert self.module_rank().is_finite() and int(self.module_rank()) >= 3 and self.is_nondegenerate(), (
+                f"spinor genera of {self} require a nondegenerate lattice of finite rank at least three"
+            )
+            count = int(self.spinor_genus_count())
+            signature = self.signature_pair()
+            match signature.first() != ring.zero() and signature.second() != ring.zero():
+                case True:
+                    return finite_family(tuple(ring.one() for _ in range(count)), name=f"Spinor-genus class numbers of {self}")
+                case False:
+                    pass
+
+            gram = _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
+            genus = SageGenus(gram)
+            match signature.second() == ring.zero():
+                case True:
+                    sign = SageZZ.one()
+                case False:
+                    sign = -SageZZ.one()
+            form = QuadraticForm(SageZZ, (sign if genus.is_even() else 2 * sign) * gram)
+            spinor_operators, kernel = genus._improper_spinor_kernel()
+            primes = genus.spinor_generators(proper=False)
+            prime = SageZZ(2)
+            while prime.divides(genus.determinant()) or spinor_operators.delta(prime) not in kernel:
+                prime = Primes().next(prime)
+
+            classes = []
+            for chosen in chain.from_iterable(
+                combinations(primes, size) for size in range(len(primes) + 1)
+            ):
+                seed = form
+                for selected_prime in chosen:
+                    vector = seed.find_primitive_p_divisible_vector__next(selected_prime)
+                    assert vector is not None, (
+                        f"the form representing {self} has no primitive vector of norm divisible by {selected_prime}"
+                    )
+                    seed = seed.find_p_neighbor_from_vec(selected_prime, vector)
+                classes.append(
+                    neighbor_iteration(
+                        [seed],
+                        int(prime),
+                        algorithm="orbits",
+                        max_classes=10**6,
+                    )
+                )
+            from sage.rings.rational_field import QQ as SageQQ
+            mass = sum(
+                SageQQ.one() / found.number_of_automorphisms()
+                for spinor_genus in classes
+                for found in spinor_genus
+            )
+            assert mass == form.conway_mass(), (
+                f"the spinor genera computed for {self} have mass {mass}, but its genus has mass {form.conway_mass()}"
+            )
+            numbers = (
+                ring(len(classes[0])),
+                *(ring(value) for value in sorted((len(spinor_genus) for spinor_genus in classes[1:]), reverse=True)),
+            )
+            return finite_family(numbers, name=f"Spinor-genus class numbers of {self}")
+
+        def integral_hyperbolic_index(self):
+            r"""Return the largest ``n`` for which ``L`` is isometric to ``U^n + L'``."""
+            from sage.matrix.special import block_diagonal_matrix
+            from sage.quadratic_forms.genera.genus import Genus as SageGenus, genera
+
+            ring = self.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"the integral hyperbolic index here is implemented for ZZ-lattices, but {self} is over {ring}"
+            )
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"the integral hyperbolic index of {self} requires finite rank and a nondegenerate form"
+            )
+            gram = _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
+            genus = SageGenus(gram)
+            positive, negative = genus.signature_pair()
+            plane = _engine_component_matrix(Lattices(ring)("U").gram_tensor()).change_ring(SageZZ)
+            for index in range(min(positive, negative), 0, -1):
+                planes = SageGenus(block_diagonal_matrix([plane] * index))
+                match (positive, negative) == (index, index):
+                    case True:
+                        match genus == planes:
+                            case True:
+                                return ring(index)
+                            case False:
+                                continue
+                    case False:
+                        complements = genera(
+                            (positive - index, negative - index),
+                            (-1) ** index * gram.det(),
+                            even=genus.is_even(),
+                        )
+                        match any(complement.direct_sum(planes) == genus for complement in complements):
+                            case True:
+                                return ring(index)
+                            case False:
+                                pass
+            return ring.zero()
 
         def is_locally_isometric(self, other, prime) -> bool:
             r"""Return whether ``self`` and ``other`` are isometric over ``ZZ_p``."""
@@ -2258,6 +2498,29 @@ class Lattices(OwnedCategoryOverBaseRing):
                         f"the isotropic subgroup {subgroup!r} of the discriminant form of {self!r} was returned as maximal, but it lies in the larger isotropic subgroup {larger!r}"
                     )
             return inclusion
+
+        def integral_overlattice_inclusions(self):
+            r"""Return all integral overlattice inclusions ``L -> L'``.
+
+            Nikulin's overlattice correspondence identifies integral
+            overlattices with bilinear-isotropic subgroups of the discriminant
+            bilinear form.  The zero subgroup contributes the identity
+            extension.
+            """
+            assert _engine_ring(self.base_ring()) is SageZZ, (
+                f"cannot enumerate the integral overlattices of {self!r}: this is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}"
+            )
+            if not self.module_rank().is_finite() or not self.is_nondegenerate():
+                raise ValueError(
+                    f"cannot enumerate the integral overlattices of {self!r}: Nikulin's correspondence needs a nondegenerate lattice of finite rank"
+                )
+            form = self.discriminant_bilinear_form()
+            return finite_ordered_set(
+                tuple(
+                    form.overlattice_from_isotropic_subobject(subgroup)
+                    for subgroup in form.isotropic_subgroups()
+                )
+            )
 
         def local_modification(self, prime, *discriminant_classes):
             r"""Return the isotropic ``p``-primary overlattice modification.
@@ -2849,6 +3112,39 @@ class Lattices(OwnedCategoryOverBaseRing):
         def roots_of_square(self, square):
 
             return _roots_of_square(self, square)
+
+        def possible_root_lengths(self):
+            r"""Return the possible absolute self-pairings of reflective roots."""
+            assert self.module_rank().is_finite(), (
+                f"the root-length bound of {self} requires finite rank"
+            )
+            assert self.determinant() != 0, (
+                f"the root-length bound of {self} requires a nondegenerate form"
+            )
+            exponent = abs(self.discriminant_group().exponent())
+            return finite_ordered_set(
+                tuple((self.base_ring()(2) * exponent).divisors())
+            )
+
+        def reflective_roots(self):
+            r"""Return all primitive reflective roots of a definite lattice."""
+            match self.is_positive_definite(), self.is_negative_definite():
+                case True, _:
+                    sign = self.base_ring().one()
+                case _, True:
+                    sign = -self.base_ring().one()
+                case _:
+                    raise ValueError(
+                        f"cannot finitely enumerate all reflective roots of {self}: "
+                        "this computational case is available for definite lattices"
+                    )
+            return finite_ordered_set(
+                tuple(
+                    root
+                    for length in self.possible_root_lengths()
+                    for root in self.roots_of_square(sign * length)
+                )
+            )
 
         def root_sublattice(self):
 

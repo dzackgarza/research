@@ -29,7 +29,11 @@ seed *ARGS:
 enrich *ARGS:
     just _latticedb enrich {{ARGS}}
 
-# Report errors in the cards, relations, and sources
+# CI certification: compute uncertified values, replace disagreements, and write certificate hashes
+certify *ARGS:
+    just _latticedb certify {{ARGS}}
+
+# Report mathematical errors in the cards and relations
 verify:
     just _latticedb verify
 
@@ -45,6 +49,18 @@ deploy:
 tag:
     just _latticedb next-tag
 
-# Run the tests of the schema and of the build
+# Run the fast tests of the code: schema, record commands and site logic on fixtures and single specimens, never the full corpus
 test:
-    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests --ignore=tests/validation --ignore=tests/source_intake
+
+# Run full-corpus mathematical validation and the build
+test-validation:
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/validation
+
+# Exercise archived-source importers and source-to-card collation; provenance only, not mathematical validation
+test-source-intake:
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/source_intake
+
+# List the tags that share a Gram tensor
+duplicates:
+    just _latticedb duplicates

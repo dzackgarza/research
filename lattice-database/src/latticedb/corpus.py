@@ -16,6 +16,8 @@ Markdown.
 """
 
 from dataclasses import dataclass
+import json
+import re
 from pathlib import Path
 
 import frontmatter
@@ -27,12 +29,14 @@ from latticedb.catalogues import (
     DualIsometry,
     GeometricMap,
     IntegralLocalSystem,
+    LatticeFamily,
     LatticeGenus,
     LatticePolytope,
     ModuliProblem,
     PicardFuchsOperator,
     ToricVariety,
 )
+from latticedb.model import GramTensor
 from latticedb.geometric import GeometricFamily, GeometricObject
 from latticedb.graphs import WeightedGraph
 from latticedb.model import Family, Lattice, Morphisms, Tag, Yaml
@@ -115,6 +119,7 @@ class Corpus:
     operators: tuple[CatalogueEntry[PicardFuchsOperator], ...]
     moduli_problems: tuple[CatalogueEntry[ModuliProblem], ...]
     dual_isometries: tuple[CatalogueEntry[DualIsometry], ...]
+    lattice_families: tuple[CatalogueEntry[LatticeFamily], ...]
 
 
 Matrix = tuple[tuple[int, ...], ...]
@@ -266,6 +271,7 @@ def load(root: Path) -> Corpus:
         _catalogue(root, "picard-fuchs-operators", PicardFuchsOperator, found),
         _catalogue(root, "moduli-problems", ModuliProblem, found),
         _catalogue(root, "morphisms/dual", DualIsometry, found),
+        _catalogue(root, "lattice-families", LatticeFamily, found),
     )
     if found:
         raise CorpusInvalid(tuple(found))
@@ -286,3 +292,153 @@ def next_tag(root: Path) -> str:
         digits.append(TAG_ALPHABET[digit])
     assert value == 0, "the four-character tag space is full"
     return "".join(reversed(digits))
+
+
+def duplicate_grams(entries: tuple[Entry, ...]) -> dict[GramTensor, list[str]]:
+    """Each Gram tensor held by more than one record, with its tags in corpus order.
+
+    The tensor is already canonical — every component a `Fraction` — so
+    dictionary equality is Gram equality. Records without a Gram tensor
+    (sparse cards) are skipped.
+    """
+    tags: dict[GramTensor, list[str]] = {}
+    for entry in entries:
+        gram = entry.lattice.gram_tensor
+        if gram is not None:
+            tags.setdefault(gram, []).append(entry.lattice.tag)
+    return {gram: found for gram, found in tags.items() if len(found) > 1}
+
+
+_GRAM_HEAD = re.compile(r"^gram_tensor:\s*$")
+_GRAM_ROW = re.compile(r"^\s*-\s*\[(.*)\]\s*$")
+_GRAM_TOKEN = re.compile(r"\"([^\"]+)\"|(-?\d+(?:/\d+)?)")
+
+
+def _stated_gram(path: Path) -> GramTensor | None:
+    """The Gram tensor stated by a card, read as text; `None` when absent.
+
+    Only the `gram_tensor` block is read — the file is never parsed as YAML,
+    so shells of minimal vectors and other large fields cost nothing. Each row
+    is one `- [...]` line of integers or `p/q` strings, as `record_text`
+    writes them; anything else falls back to the record reader.
+    """
+    from latticedb import records
+
+    rows: list[list[int | str]] = []
+    started = False
+    with path.open() as handle:
+        for line in handle:
+            if not started:
+                if _GRAM_HEAD.match(line):
+                    started = True
+                continue
+            match = _GRAM_ROW.match(line)
+            if match is None:
+                break
+            tokens = _GRAM_TOKEN.findall(match.group(1))
+            covered = "".join(first or second for first, second in tokens)
+            if covered != re.sub(r"[\s,]", "", match.group(1)) or not tokens:
+                return records.gram_tensor(
+                    frontmatter.load(str(path)).metadata.get("gram_tensor")
+                )
+            rows.append(
+                [
+                    int(token) if "/" not in token else token
+                    for token in (first or second for first, second in tokens)
+                ]
+            )
+    if not started or not rows or any(len(row) != len(rows) for row in rows):
+        return None
+    return records.gram_tensor(rows)
+
+
+GRAM_INDEX_FILE = "gram-index.json"
+"""Each Gram tensor stated by a card, keyed canonically, with the tags stating it."""
+
+
+def gram_key(gram: GramTensor) -> str:
+    """The canonical string of a Gram tensor: each component as `n` or `p/q`."""
+    return ";".join(",".join(str(value) for value in row) for row in gram)
+
+
+def _read_index(root: Path) -> dict[str, list[str]] | None:
+    """The stored index, or `None` when it is missing or malformed.
+
+    The file holds two maps: `grams`, Gram key -> tags stating it, and
+    `without`, the tags of cards stating no Gram tensor (sparse cards).
+    """
+    path = root / GRAM_INDEX_FILE
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text())
+    except ValueError:
+        return None
+    if (
+        not isinstance(data, dict)
+        or not isinstance(data.get("grams"), dict)
+        or not isinstance(data.get("without"), list)
+        or any(
+            not isinstance(key, str)
+            or not isinstance(tags, list)
+            or any(not isinstance(tag, str) for tag in tags)
+            for key, tags in data["grams"].items()
+        )
+        or any(not isinstance(tag, str) for tag in data["without"])
+    ):
+        return None
+    return data
+
+
+def save_index(root: Path, index: dict[str, list[str]]) -> None:
+    """Write the index file."""
+    (root / GRAM_INDEX_FILE).write_text(json.dumps(index, separators=(",", ":")))
+
+
+def append_index(root: Path, tag: str, gram: GramTensor) -> None:
+    """Record a newly written card in the index file."""
+    data = _read_index(root)
+    if data is None:
+        gram_index(root)
+        data = _read_index(root)
+        assert data is not None
+    data["grams"].setdefault(gram_key(gram), []).append(tag)
+    save_index(root, data)
+
+
+def gram_index(root: Path) -> dict[str, list[str]]:
+    """Gram key -> tags stating it, from the durable index file.
+
+    The file is built once by scanning the cards. A load re-reads only the
+    gram-less cards (tens of files); a card that gained a Gram tensor since
+    promotes into the map. Any other change of the card set rebuilds it.
+    Each lookup and each append is O(1) in the corpus.
+    """
+    paths = {path.stem: path for path in (root / "lattices").glob("*.md")}
+    data = _read_index(root)
+    if data is not None and (
+        {tag for tags in data["grams"].values() for tag in tags}
+        | set(data["without"])
+    ) == set(paths):
+        changed = False
+        for tag in list(data["without"]):
+            gram = _stated_gram(paths[tag])
+            if gram is not None:
+                data["grams"].setdefault(gram_key(gram), []).append(tag)
+                data["without"].remove(tag)
+                changed = True
+        if changed:
+            save_index(root, data)
+        return data["grams"]
+    grams: dict[str, list[str]] = {}
+    without: list[str] = []
+    for stem in sorted(paths):
+        gram = _stated_gram(paths[stem])
+        if gram is None:
+            without.append(stem)
+        else:
+            grams.setdefault(gram_key(gram), []).append(stem)
+    data = {"grams": grams, "without": without}
+    save_index(root, data)
+    return grams
+

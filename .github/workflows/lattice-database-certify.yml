@@ -1,0 +1,52 @@
+name: lattice-database-certify
+'on':
+  schedule:
+  - cron: 17 3 * * *
+  workflow_dispatch: null
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: lattice-database-certify
+  cancel-in-progress: false
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    container:
+      image: sagemath/sagemath:latest
+      options: --user root
+    defaults:
+      run:
+        working-directory: lattice-database
+        shell: bash
+    steps:
+    - name: Check out (actions/checkout v4)
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+    - name: Install uv (astral-sh/setup-uv v10.2.0)
+      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
+    - name: Locate SageMath
+      run: |
+        sage_bin=$(command -v sage)
+        sage_python=$("$sage_bin" -c 'import sys; print(sys.executable)')
+        echo "SAGE_BIN=$sage_bin" >> "$GITHUB_ENV"
+        echo "SAGE_PYTHON=$sage_python" >> "$GITHUB_ENV"
+    - name: Install lattice database into SageMath
+      run: uv pip install --python "$SAGE_PYTHON" -e . pytest
+    - name: Compute and certify uncertified card values
+      run: timeout 330m env PYTHONPATH="../src:src" "$SAGE_PYTHON" -m latticedb certify --seconds 600
+    - name: Open a pull request with computed values and certificates (peter-evans/create-pull-request v8.1.1)
+      if: always()
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
+      with:
+        branch: lattice-database/certify
+        add-paths: |
+          lattice-database/lattices
+          lattice-database/morphisms
+          lattice-database/certificates.yaml
+        commit-message: 'feat(lattice-database): certify computed card values'
+        title: 'lattice-database: certify computed card values'
+        body: |
+          Nightly certification results.
+
+          For each uncertified computation, CI recomputed the value from the card's defining mathematical input. If an authored value disagreed, the computed value replaced it. The resulting card value now cites a certificate hash, and `certificates.yaml` records that hash with the computation provenance. Source-intake comparisons are not part of certification.

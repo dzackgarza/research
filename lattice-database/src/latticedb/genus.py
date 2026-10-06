@@ -1,11 +1,9 @@
 """The genus symbol, the class number, the spinor genera, the hyperbolic index, the order of O(L), and the two series of orbits, from SageMath.
 
-`certify` sends the Gram tensor of each integral record with a nonzero determinant, with the values that
-have no certificate for that Gram tensor, to `sage_genus.py` under SageMath, and stores each value as
-soon as SageMath returns it: a value that the record does not hold is written into it, and a stored value
-that differs from the computed one is a problem. A series of orbits merges with the stored one: each coefficient
-that the record does not state is written, and the stated ones must agree. A value that agrees with the record is certified; a value
-that SageMath does not compute within the time limit is certified as not finished within it.
+`certify` sends each uncertified applicable computation to `sage_genus.py` under SageMath.
+A completed computation is authoritative for the part of the card that computation owns:
+an authored value that disagrees is replaced by the computed value, and the resulting
+card value is certified. A computation that does not finish remains uncertified.
 
 Two series are computed. `integral.primitive_orbits` is the series $F_{L,\\Gamma}$ of $\\Gamma$-orbits on the
 primitive vectors of $L$, written for a definite lattice by enumerating its vectors. `integral.discriminant_orbits`
@@ -32,6 +30,7 @@ from latticedb.relations import hyperbolic_index_bounds
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "genus_symbol": ("integral", IntegralData),
     "genus_class_count": ("integral", IntegralData),
+    "overlattice_count": ("integral", IntegralData),
     "spinor_genus_count": ("integral", IntegralData),
     "spinor_genera": ("integral", IntegralData),
     "hyperbolic_index": ("integral", IntegralData),
@@ -41,6 +40,36 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "discriminant_orbits": ("integral", IntegralData),
 }
 """Each computed field, with the block of the record that holds it and the model of that block."""
+
+ORBIT_CERTIFIED_BOUND = 4
+"""The z/w degree through which the Sage orbit computation certifies a stored series."""
+
+
+def certified_value(field: str, value: Yaml) -> Yaml:
+    """The part of a stored field determined by one completed computation.
+
+    The orbit computations determine only the coefficients through degree 4.
+    A card may hold additional source-stated coefficients and a reference; those
+    remain on the card but are not included in this computation's certificate.
+    Every other field in BLOCKS is determined in full by its computation.
+    """
+    if field not in {"primitive_orbits", "discriminant_orbits"}:
+        return value
+    if not isinstance(value, dict):
+        return value
+    projected: dict[str, Yaml] = {}
+    for group, series in value.items():
+        if not isinstance(series, dict):
+            projected[group] = series
+            continue
+        z = series.get("z")
+        w = series.get("w")
+        projected[group] = {
+            "constant": series.get("constant"),
+            "z": z[:ORBIT_CERTIFIED_BOUND] if isinstance(z, list) else z,
+            "w": w[:ORBIT_CERTIFIED_BOUND] if isinstance(w, list) else w,
+        }
+    return projected
 
 
 def applies(field: str, lattice: Lattice, planes: int) -> bool:
@@ -102,7 +131,7 @@ def _sign(lattice: Lattice) -> int:
 def requests(
     loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int
 ) -> list[Request]:
-    """For each integral record with a nonzero determinant, among `tags` when it is not empty, the fields that are pending with the time limit `seconds`."""
+    """For each integral record with a nonzero determinant, the uncertified applicable fields."""
     chosen: list[Request] = []
     bounds = hyperbolic_index_bounds(loaded.morphisms, loaded.entries)
     for entry in loaded.entries:
@@ -113,17 +142,27 @@ def requests(
             or (tags and lattice.tag not in tags)
         ):
             continue
-        inputs = certificates.gram_digest(lattice)
         applicable = [
             field
             for field in BLOCKS
             if applies(field, lattice, bounds.get(lattice.tag, 0))
         ]
-        fields = [
-            field
-            for field in applicable
-            if certificates.is_pending(held, name(lattice.tag, field), inputs, seconds)
-        ]
+        metadata = corpus.front_matter(frontmatter.load(str(entry.path)))
+        card_certifications = metadata.get("certifications")
+        cited = card_certifications if isinstance(card_certifications, dict) else {}
+        fields = []
+        for field in applicable:
+            block_name = BLOCKS[field][0]
+            block = metadata.get(block_name)
+            stored_value = block.get(field) if isinstance(block, dict) else None
+            computation = name(lattice.tag, field)
+            expected_hash = certificates.certification_hash(
+                computation, lattice, certified_value(field, stored_value)
+            )
+            if stored_value is None or certificates.is_pending(
+                held, computation, cited.get(f"{block_name}.{field}"), expected_hash
+            ):
+                fields.append(field)
         if fields:
             gram = [[int(x) for x in row] for row in lattice.gram_tensor]
             chosen.append(
@@ -172,41 +211,6 @@ def computed(chosen: list[Request], seconds: int) -> Iterator[dict[str, Yaml]]:
     )
 
 
-def merged(stored: Yaml, value: Yaml, location: str) -> tuple[Yaml, list[str]]:
-    """The union of a stored and a computed value, with a problem at each place where both state a different scalar.
-
-    Dictionaries merge key by key, lists entry by entry with null for an entry that is not stated, and a null value is not stated.
-    """
-    match stored, value:
-        case None, _:
-            return value, []
-        case _, None:
-            return stored, []
-        case dict(), dict():
-            union: dict[str, Yaml] = {}
-            found: list[str] = []
-            for key in [*stored, *(key for key in value if key not in stored)]:
-                union[key], problems = merged(
-                    stored.get(key), value.get(key), f"{location}.{key}"
-                )
-                found.extend(problems)
-            return union, found
-        case list(), list():
-            entries: list[Yaml] = []
-            found = []
-            for index in range(max(len(stored), len(value))):
-                left = stored[index] if index < len(stored) else None
-                right = value[index] if index < len(value) else None
-                entry, problems = merged(left, right, f"{location}[{index}]")
-                entries.append(entry)
-                found.extend(problems)
-            return entries, found
-        case _ if stored == value:
-            return stored, []
-        case _:
-            return stored, [f"{location} is {stored}, and SageMath computes {value}"]
-
-
 def _sequence_morphisms(
     path: Path, value: dict[str, Yaml]
 ) -> tuple[dict[str, Yaml], Path, list[dict[str, Yaml]], str]:
@@ -246,26 +250,40 @@ def _sequence_morphisms(
     return stored, morphism_path, morphisms, prose
 
 
-def store(path: Path, values: dict[str, Yaml]) -> dict[str, str]:
-    """Write into the record at `path` each computed value that it does not hold; for each field whose stored value differs from the computed one, the problem."""
+def store(path: Path, values: dict[str, Yaml]) -> None:
+    """Replace each computed scope on the card by the completed computation."""
     document = frontmatter.load(str(path))
     metadata = corpus.front_matter(document)
-    found: dict[str, str] = {}
     sequence_morphisms: tuple[Path, list[dict[str, Yaml]], str] | None = None
     for field, (block_name, model) in BLOCKS.items():
         value = values.get(field)
+        if value is None:
+            continue
         if field == "discriminant_sequence" and isinstance(value, dict):
             value, morphism_path, morphisms, prose = _sequence_morphisms(path, value)
             sequence_morphisms = morphism_path, morphisms, prose
         match metadata.get(block_name):
-            case dict() as block if value is not None:
-                union, problems = merged(
-                    block.get(field), value, f"{path}: {block_name}.{field}"
-                )
-                if problems:
-                    found[field] = "; ".join(problems)
-                    continue
-                block[field] = union
+            case dict() as block:
+                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
+                    present = block.get(field)
+                    replacement = dict(present) if isinstance(present, dict) else {}
+                    for group, computed_series in value.items():
+                        if not isinstance(computed_series, dict):
+                            replacement[group] = computed_series
+                            continue
+                        old_series = replacement.get(group)
+                        updated_series = dict(old_series) if isinstance(old_series, dict) else {}
+                        for key, computed_part in computed_series.items():
+                            if key in {"z", "w"} and isinstance(computed_part, list):
+                                old_part = updated_series.get(key)
+                                tail = old_part[len(computed_part):] if isinstance(old_part, list) else []
+                                updated_series[key] = [*computed_part, *tail]
+                            else:
+                                updated_series[key] = computed_part
+                        replacement[group] = updated_series
+                    block[field] = replacement
+                else:
+                    block[field] = value
                 metadata[block_name] = {
                     key: block[key] for key in model.model_fields if key in block
                 }
@@ -282,7 +300,6 @@ def store(path: Path, values: dict[str, Yaml]) -> dict[str, str]:
     text = records.record_text(metadata, document.content)
     if text != path.read_text():
         path.write_text(text)
-    return found
 
 
 def certify(
@@ -291,26 +308,32 @@ def certify(
     held: Certificates,
     tags: tuple[str, ...],
     seconds: int,
-) -> Iterator[str]:
-    """Compute the pending values, store them, and write their certificates after each record; yield each problem."""
+) -> None:
+    """Compute every uncertified value, replace its card scope, and certify the result."""
     by_tag = {entry.lattice.tag: entry for entry in loaded.entries}
     for values in computed(requests(loaded, held, tags, seconds), seconds):
         entry = by_tag[str(values["tag"])]
-        inputs = certificates.gram_digest(entry.lattice)
-        found = store(entry.path, values)
+        store(entry.path, values)
+        stored = corpus.front_matter(frontmatter.load(str(entry.path)))
+        card_certifications = dict(stored.get("certifications") or {})
         for field in BLOCKS:
-            if field not in values or field in found:
+            if field not in values or values[field] is None:
                 continue
-            finished = values[field] is not None
-            held[name(entry.lattice.tag, field)] = Certificate(
-                inputs=inputs,
-                by=str(values["by"]),
-                seconds=None if finished else seconds,
+            block_name = BLOCKS[field][0]
+            block = stored.get(block_name)
+            assert isinstance(block, dict)
+            computation = name(entry.lattice.tag, field)
+            certificate_hash = certificates.certification_hash(
+                computation, entry.lattice, certified_value(field, block.get(field))
             )
+            card_certifications[f"{block_name}.{field}"] = certificate_hash
+            held[computation] = Certificate(hash=certificate_hash, by=str(values["by"]))
+        stored["certifications"] = card_certifications
+        document = frontmatter.load(str(entry.path))
+        entry.path.write_text(records.record_text(stored, document.content))
         certificates.save(root, held)
         print(
             entry.lattice.tag,
             {field: values[field] for field in BLOCKS if field in values},
             flush=True,
         )
-        yield from found.values()

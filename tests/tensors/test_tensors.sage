@@ -7,6 +7,8 @@ column vectors, and a linear map is given by the images of the basis vectors.
 
 from dzack_research.preamble.all import *
 
+import pytest
+
 
 def _linear_map(source, target, columns):
     r"""The linear map sending the `i`-th basis vector of ``source`` to ``columns[i]``."""
@@ -115,3 +117,16 @@ def test_pulling_back_a_bilinear_form_along_a_linear_map_is_p_transpose_b_p() ->
     change = _linear_map(plane, plane, ((1, 0), (1, 1)))
 
     assert forms([[2, 1], [1, 3]]).pullback(change) == forms([[2, 3], [3, 7]])
+
+
+def test_integral_fractions_enter_a_zz_tensor_as_integers() -> None:
+    r"""`G = [[2/1, -1], [-1, 2]]` over $\mathbb{Z}$: Python fractions with
+    denominator 1 are integers, so the tensor admits them; a non-integral
+    fraction is still rejected."""
+    from fractions import Fraction
+
+    gram = tensor(ZZ, (), (2, 2), [[Fraction('2'), -1], [-1, 2]])
+    assert gram == tensor(ZZ, (), (2, 2), [[2, -1], [-1, 2]])
+    assert gram.is_symmetric()
+    with pytest.raises(TypeError):
+        tensor(ZZ, (), (2, 2), [[Fraction('1/2'), 0], [0, 1]])

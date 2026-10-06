@@ -68,6 +68,21 @@ A source-defined subgroup $\Gamma\leq O(L)$ names its defining property or gener
 
 Scholl's and Schiemann's unavailable pages yield no further inspected claim in the present [source survey](../README.md#sources-to-absorb).
 
+## SPLAG coverage
+
+Conway–Sloane, *Sphere Packings, Lattices and Groups* (Zotero `T2WVLTDB`, with extraction) is not a stated source to absorb; the coverage below was audited record by record against Gram tensor, rank and determinant on 2026-10-05, not by name match.
+
+| SPLAG family | Corpus status, verified |
+| --- | --- |
+| Root lattices $A_n$, $D_n$, $E_6,E_7,E_8$ | $A_1$–$A_{20}$, $D_4$–$D_{20}$, $E_6,E_7,E_8$ present with the correct determinants ($n+1$, $4$, $3,2,1$); duals $A_n^*,D_n^*,E_6^*,E_7^*$ present. $A_{21}^+$ and $D_{21}^+$ have no standalone record. |
+| Laminated $\Lambda_n$ (Table 6.1) | $\Lambda_9$–$\Lambda_{20}$ and $\Lambda_{24}$ present with the table determinants (512, 768, 1024, 1024, 1024, 768, 512, 256, 256, 192, 128, 64, 1). $\Lambda_{21},\Lambda_{22}$ and SPLAG's $\Lambda_{23}$ are absent (`LAMBDA23d` is a different catalogue object: rank 23, determinant $2^{44}$, sparse card). $\Lambda_{25}$ and up absent. |
+| The 24 Niemeier lattices | All 24 root systems present as rank-24 determinant-$1$ records, even where parity is stated. |
+| $K_{12}$, $BW_{16}$, Leech family | $K_{12}$ present (rank 12, determinant $3^6$); $BW_{16}$ present (rank 16, determinant $2^8$) with its relatives; shorter Leech and Thompson–Smith (rank 248) present. Odd Leech absent. |
+| Unimodular lattices | $E_8,D_{16}^+,D_{24}^+,E_8^2,E_8^3$ and $Z^n=I_{n,0}$ for $n=2$–$26$ present. Mordell–Weil lattices and $II_{25,1}$ have no record under any name searched. |
+| Kappa lattices | Catalogue `KAPPA7/8/9` entries present as union-seeded cards. |
+
+Seeded union cards duplicate full records with byte-identical Gram tensors: `N(A24)` twice (`029C`, `3HQ1`) and $A_1$ twice (`<2>`, `A1 (union:33)`). The other `N(...)`/`N(...) (union:...)` pairs follow the same seeding pattern and need the same Gram comparison. The corpus records a lattice once; a seeded card whose Gram equals a held record is not a second record.
+
 ## Remaining intake
 
 1. Compute $MM(L)$ from the Gram matrix using the Miranda–Morrison local formula for nondegenerate even indefinite lattices of rank greater than $3$. Store its $\mathbb F_2$-dimension and `mm_trivial`. Keep $E(L)$ and the genus group distinct when the computation exposes them.

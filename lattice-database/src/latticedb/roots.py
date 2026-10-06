@@ -3,9 +3,9 @@
 A root of a lattice `L` is a primitive `r` with `b(r, r) != 0` such that the
 reflection `s_r` is in `O(L)`; `Phi(L)` is the set of roots.
 
-Definite `L`: `Phi(L)` is finite, `latticedb.arithmetic.definite_roots` lists
-it, and `root_system` gives it as its irreducible components, each with its
-type and a base.
+Definite `L`: `Phi(L)` is finite and the preamble lattice object lists its
+reflective roots; `root_system` gives them as irreducible components, each with
+its type and a base.
 
 Other `L`: `small_roots` searches the vectors with coordinates in `{-1, 0, 1}`
 and at most three nonzero coordinates for roots. When the roots found generate
@@ -19,8 +19,8 @@ from itertools import combinations, product
 
 from dzack_research.preamble.rings import session_ring_objects
 
-from latticedb import arithmetic, root_systems
-from latticedb.arithmetic import GramTensor, Vector
+from latticedb import root_systems
+from latticedb.model import GramTensor, Vector
 
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
@@ -113,7 +113,7 @@ def root_system(formed, positive_roots: dict[Vector, Fraction]) -> tuple[Compone
 def norm_two_types(formed, positive_roots: dict[Vector, Fraction]) -> tuple[str, ...]:
     """Return the ADE type of `Phi_{{2}}(L)`, or of `Phi_{{-2}}(L)` for a negative definite `L`, as the types of its components, the greatest rank first.
 
-    `positive_roots` is `arithmetic.definite_roots(gram_tensor)`. The roots
+    `positive_roots` contains one vector from each pair `r,-r` of reflective roots. The roots
     with `|b(r, r)| = 2` of an integer-valued lattice form a simply laced root
     system (Witt), so each component has type `A`, `D` or `E` at scale `1`
     or `-1`.
@@ -126,7 +126,7 @@ def norm_two_types(formed, positive_roots: dict[Vector, Fraction]) -> tuple[str,
     return tuple(types)
 
 
-def small_roots(gram_tensor: GramTensor, lattice=None) -> list[Vector]:
+def small_roots(gram_tensor: GramTensor, lattice) -> list[Vector]:
     """Return the roots with coordinates in `{-1, 0, 1}`, at most three of them nonzero and the first of those equal to 1."""
     rank = len(gram_tensor)
     roots = []
@@ -135,7 +135,7 @@ def small_roots(gram_tensor: GramTensor, lattice=None) -> list[Vector]:
             for signs in product((1, -1), repeat=size - 1):
                 coefficients = dict(zip(support, (1, *signs), strict=True))
                 r = tuple(coefficients.get(index, 0) for index in range(rank))
-                if lattice(r).is_root() if lattice is not None else arithmetic.is_root(gram_tensor, r):
+                if lattice(r).is_root():
                     roots.append(r)
     return roots
 

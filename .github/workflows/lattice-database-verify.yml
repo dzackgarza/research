@@ -30,5 +30,19 @@ jobs:
         echo "SAGE_BIN=$sage_bin" >> "$GITHUB_ENV"
 
         '
-    - name: Verify lattice cards
-      run: uv run latticedb verify
+    - name: Install lattice database into SageMath
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        uv pip install --python "$sage_python" -e . pytest
+    - name: Verify lattice cards and certificate hashes
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src:src" "$sage_python" -m latticedb verify
+    - name: Validate mathematical computations
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src:src" "$sage_python" -m pytest tests/validation
+    - name: Check source intake provenance
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src:src" "$sage_python" -m pytest tests/source_intake

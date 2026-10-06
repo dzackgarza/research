@@ -86,9 +86,20 @@
     .map(([key, [column, valueOf]]) => ({ column, rows: values(key).map(valueOf) }))
     .filter((pane) => pane.rows.length);
 
+  // A signature `p,q` selects the nondegenerate lattices of that signature.
+  const signatures = new Set(
+    params
+      .getAll("signature")
+      .map((value) => value.split(",").map(Number))
+      .filter((pair) => pair.length === 2 && pair.every(Number.isFinite))
+      .map((pair) => pair.join(",")),
+  );
+
   const { rows } = await fetch(new URL("lattices.json", siteRoot)).then((response) => response.json());
   const table = new DataTable(node, {
-    data: rows,
+    data: signatures.size
+      ? rows.filter((row) => signatures.has(`${row.n_plus},${row.n_minus}`) && row.n_plus + row.n_minus === row.rank)
+      : rows,
     columns,
     deferRender: true,
     pageLength: 50,

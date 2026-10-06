@@ -6,18 +6,24 @@
   <h1>\(O(p, q)\) analysis</h1>
   <p class="lede">
     The orthogonal group \(O(p, q)\) of a real quadratic space of signature
-    \((p, q)\), for \(1 \leq p, q \leq 24\). \(O(p, q) \cong O(q, p)\), so the
-    table is symmetric. A cell links to the catalogue card of the standard
-    lattice \(\mathrm{I}_{p,q}\); <span class="orthogonal-stub">stub</span>
-    marks a signature whose card is owed and lists it below.
+    \((p, q)\), for \(0 \leq p \leq q \leq 24\). \(O(p, q) \cong O(q, p)\), so
+    the group is indexed by the unordered pair \(\{p, q\}\), and the table is
+    its upper triangle. A nondegenerate lattice \(L\) of signature \((p, q)\)
+    has
+    \(O(L) \hookrightarrow O(L \otimes_{\mathbb{Z}} \mathbb{R}) \cong O(p, q)\)
+    by base change, an arithmetic subgroup; every nondegenerate lattice of that
+    signature lies under it.
   </p>
 </header>
 
 <section aria-labelledby="grid">
-  <h2 id="grid">Signatures \(1 \leq p, q \leq 24\)</h2>
+  <h2 id="grid">Groups \(O(p, q)\), \(0 \leq p \leq q \leq 24\)</h2>
   <p class="form-note">
-    {{ recorded }} of the {{ total_cells }} signatures have a card;
-    {{ missing }} cards are owed.
+    Each cell gives the number of lattices of the catalogue whose signature is
+    \((p, q)\) or \((q, p)\), and links them in the
+    <a href="{{ root }}database.html">database</a>; a cell marked
+    &#183; is a group \(O(p, q)\) that no lattice realizes over
+    \(\mathbb{Z}\).
   </p>
   <div class="table-scroll">
     <table class="member-table orthogonal-table">
@@ -31,37 +37,15 @@
         {% for p, cells in rows %}
         <tr>
           <th scope="row" class="numeric">{{ p }}</th>
-          {% for q, tag in cells %}
-          <td class="orthogonal-cell">
-            {% if q < p %}<span class="orthogonal-mirror" title="O({{ p }}, {{ q }}) = O({{ q }}, {{ p }})">&middot;</span>
-            {% elif tag %}<a class="tag" href="{{ root }}tag/{{ tag }}.html">{{ tag }}</a>
-            {% else %}<span class="orthogonal-stub" title="\(\mathrm{I}_{ {{- p }},{{ q -}} }\)">stub</span>{% endif %}
-          </td>
+          {% for q, count in cells %}
+          {% if count is none %}<td class="orthogonal-cell orthogonal-blank"></td>
+          {% elif count %}<td class="orthogonal-cell"><a class="orthogonal-count" href="{{ root }}database.html?signature={{ p }},{{ q }}{% if p != q %}&amp;signature={{ q }},{{ p }}{% endif %}" title="Lattices of signature \(({{ p }}, {{ q }})\){% if p != q %} and \(({{ q }}, {{ p }})\){% endif %}">{{ count }}</a></td>
+          {% else %}<td class="orthogonal-cell"><span class="orthogonal-empty" title="\(O({{ p }}, {{ q }})\): no lattice of this signature">&middot;</span></td>{% endif %}
           {% endfor %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-</section>
-
-<section aria-labelledby="owed">
-  <h2 id="owed">Cards owed</h2>
-  <p>
-    Each is the standard lattice \(\mathrm{I}_{p,q}\): a basis
-    \(e_1, \dots, e_{p+q}\) with \(b(e_i, e_i) = 1\) for \(i \leq p\),
-    \(b(e_i, e_i) = -1\) for \(i > p\), and \(b(e_i, e_j) = 0\) for
-    \(i \neq j\). Author one with
-    <code>just new --gram &lt;rows&gt; --name 'I_{p,q}' --family diagonal</code>.
-  </p>
-  {% if owed %}
-  <ul class="collection-list orthogonal-owed">
-    {% for latex, p, q in owed %}
-    <li>\({{ latex }}\)</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>Every signature has a card.</p>
-  {% endif %}
 </section>
 {% endblock %}

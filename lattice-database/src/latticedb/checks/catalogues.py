@@ -384,5 +384,6 @@ def problems(loaded: Corpus) -> list[str]:
         *slug_problems(loaded.operators),
         *slug_problems(loaded.moduli_problems),
         *slug_problems(loaded.dual_isometries),
+        *slug_problems(loaded.lattice_families),
         *reference_problems(loaded),
     ]

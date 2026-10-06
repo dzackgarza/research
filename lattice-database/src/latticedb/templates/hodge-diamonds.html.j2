@@ -1,0 +1,114 @@
+{% extends "base.html.j2" %}
+{% block title %}Hodge diamonds · {% endblock %}
+{% block head %}
+<script defer src="{{ root }}assets/hodge.js"></script>
+{% endblock %}
+{% block main %}
+<header class="page-heading">
+  <p class="kicker">Geometry</p>
+  <h1>Hodge diamonds</h1>
+  <p class="lede">
+    The Hodge numbers \(h^{p,q}\) of a smooth complex projective variety of
+    complex dimension \(n\), arranged by total degree \(k = p + q\). This page
+    is a teaching widget, not catalogue data: it draws the diamond, draws the
+    lines of its symmetries, and names what a click selects. The symmetries it
+    draws are exactly the ones the catalogue checks on every geometric card —
+    conjugation \(h^{p,q} = h^{q,p}\) and Serre duality
+    \(h^{p,q} = h^{n-p,n-q}\) — plus the square mirror
+    \(h^{p,q} = h^{n-p,q}\) whose presence the catalogue records as
+    <code>symmetry_group: D4</code> (see
+    <a href="https://hyperkaehler.info/hodge/">hyperkaehler.info/hodge</a>).
+  </p>
+</header>
+
+<section aria-labelledby="controls">
+  <h2 id="controls">The diamond</h2>
+  <form class="hodge-controls" onsubmit="return false">
+    <label for="hodge-dim">Complex dimension \(n\) — sets the size of the diamond</label>
+    <div class="hodge-row">
+      <input id="hodge-dim" type="range" min="0" max="6" step="1" value="2">
+      <output id="hodge-dim-value" for="hodge-dim">2</output>
+    </div>
+    <label for="hodge-preset">Preset</label>
+    <select id="hodge-preset">
+      <option value="general">General symbols \(h^{p,q}\)</option>
+      <option value="projective">Projective space \(\mathbf{P}^n\)</option>
+      <option value="elliptic">Elliptic curve</option>
+      <option value="k3" selected>K3 surface{% if has_k3 %} (numbers of the k3-surface card, linked below){% endif %}</option>
+      <option value="cy3">Calabi–Yau threefold, \(h^{1,1} = a\), \(h^{2,1} = b\)</option>
+      <option value="hyperkahler">Hyperkähler (K3 numbers, D4 mirrors on)</option>
+    </select>
+    <div class="hodge-row" id="hodge-ab-row" hidden>
+      <label for="hodge-a">\(a = h^{1,1}\)</label>
+      <input id="hodge-a" type="range" min="0" max="20" step="1" value="2">
+      <output id="hodge-a-value" for="hodge-a">2</output>
+      <label for="hodge-b">\(b = h^{2,1}\)</label>
+      <input id="hodge-b" type="range" min="0" max="120" step="1" value="1">
+      <output id="hodge-b-value" for="hodge-b">1</output>
+    </div>
+    <fieldset>
+      <legend>Symmetry lines to draw (the orbit of a click is the group they generate)</legend>
+      <label><input type="checkbox" id="hodge-sym-conj" checked> Conjugation, vertical line</label>
+      <label><input type="checkbox" id="hodge-sym-serre" checked> Serre duality, half turn about the centre</label>
+      <label><input type="checkbox" id="hodge-sym-horiz"> Conjugation then Serre, horizontal line</label>
+      <label><input type="checkbox" id="hodge-sym-diag"> Square mirror (the D4 extra)</label>
+      <label><input type="checkbox" id="hodge-sym-rot"> Quarter turn (the D4 extra)</label>
+    </fieldset>
+  </form>
+  <div class="table-scroll">
+    <svg id="hodge-svg" role="img" aria-label="Hodge diamond"></svg>
+  </div>
+  <div id="hodge-info" hidden>
+    <p id="hodge-orbit"></p>
+    <p id="hodge-filtration"></p>
+    <p id="hodge-totals"></p>
+  </div>
+  <noscript><p>This page needs JavaScript.</p></noscript>
+</section>
+
+<section aria-labelledby="symmetries">
+  <h2 id="symmetries">The symmetries</h2>
+  <div class="prose">
+    <p>
+      Three of the five toggles hold on every smooth complex projective
+      variety, and the catalogue checks two of them on every card. Conjugation
+      sends \((p, q)\) to \((q, p)\), the vertical line. Serre duality sends
+      \((p, q)\) to \((n-p, n-q)\), the half turn about the centre. Their
+      composite sends \((p, q)\) to \((n-q, n-p)\), the horizontal line.
+    </p>
+    <p>
+      The other two hold exactly where the catalogue records
+      <code>symmetry_group: D4</code>, the hyperkähler case. The square mirror
+      sends \((p, q)\) to \((n-p, q)\), the diagonal line; with the three above
+      it generates the eight symmetries of the square. The quarter turn sends
+      \((p, q)\) to \((n-q, p); it is the square mirror followed by Serre
+      duality. Toggling these two on another preset draws identifications that
+      do not hold there; they are for inspecting the hyperkähler diamond.
+    </p>
+  </div>
+</section>
+
+<section aria-labelledby="reading">
+  <h2 id="reading">How to read it</h2>
+  <div class="prose">
+    <p>
+      Row \(k\) of the diamond, from the top, is the cohomology
+      \(H^k = \bigoplus_{p+q=k} H^{p,q}\).
+      Clicking the diamond for \(h^{p,q}\) names its orbit under the checked
+      symmetries, and highlights the piece \(F^p H^k\) of the Hodge filtration
+      that the click selects:
+      \(F^p H^k = \bigoplus_{i \geq p} H^{i,k-i}\), the diamonds of row \(k\)
+      from column \(p\) rightwards. Its rank is the sum shown when the preset
+      has numbers.
+    </p>
+    <p>
+      The projective-space values are the standard computation of the
+      cohomology of \(\mathbf{P}^n\)
+      (<a href="https://stacks.math.columbia.edu/tag/0FMG">Stacks Project,
+      0FMG</a>); the K3 values are {% if has_k3 %}the ones of the
+      <a href="{{ root }}geometric-objects/k3-surface.html">k3-surface</a>
+      card{% else %}the standard K3 Hodge numbers{% endif %}.
+    </p>
+  </div>
+</section>
+{% endblock %}

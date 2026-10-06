@@ -1,4 +1,4 @@
-"""The record commands compute every field that the Gram tensor determines, once, when they write a record, and refuse a record whose declared values are false."""
+"""The record commands compute Gram-determined fields and certify the values they write."""
 
 import shutil
 from fractions import Fraction
@@ -8,9 +8,7 @@ import frontmatter
 import pytest
 import yaml
 
-from dzack_research.preamble.rings import session_ring_objects
-
-from latticedb import arithmetic, checks, corpus, nebe_sloane, records, root_systems, site
+from latticedb import certificates, checks, corpus, records, root_systems, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Morphism, Yaml
 
@@ -51,10 +49,19 @@ def test_derive_computes_the_invariants_and_the_root_system_of_e8() -> None:
     assert lattice.is_root_lattice
 
 
-def test_derive_states_the_number_of_integral_overlattices_of_a3() -> None:
-    # The discriminant group of A3 is Z/4 with a generator g, b(g, g) = 3/4: the form vanishes on 0 and on <2g>, and the lattices are A3 and I_3.
-    record = records.derive(declared("A3", [[2, -1, 0], [-1, 2, -1], [0, -1, 2]]))
+def test_derive_leaves_exact_overlattice_count_to_enrichment() -> None:
+    record = records.derive(
+        declared("A3", [[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
+    )
     lattice = Lattice.model_validate(record)
+    assert lattice.integral is not None
+    assert lattice.integral.overlattice_count is None
+
+
+def test_derive_preserves_an_enriched_overlattice_count() -> None:
+    source = declared("A3", [[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
+    source["integral"] = {"overlattice_count": 2}
+    lattice = Lattice.model_validate(records.derive(source))
     assert lattice.integral is not None
     assert lattice.integral.overlattice_count == 2
 
@@ -71,14 +78,6 @@ def test_derive_states_the_primes_of_bad_reduction_and_the_character_of_the_disc
     assert odd.integral is not None
     assert (odd.integral.bad_reduction_primes, odd.integral.quadratic_character) == ((2,), None)
     assert site.zeta_tex(odd, cone=False) == "\\zeta^\\Sigma(s - 2)\\, L^\\Sigma(s - 1, \\chi_{n})"
-
-
-def test_a_record_does_not_state_the_overlattice_count_above_the_subgroup_bound() -> None:
-    # I_{1,0} + <-2>^8 has the discriminant group (Z/2)^8, which has more subgroups than the bound of the enumeration.
-    record = records.derive(declared("<1> + <-2>^8", [[(1 if i == 0 else -2) if i == j else 0 for j in range(9)] for i in range(9)]))
-    lattice = Lattice.model_validate(record)
-    assert lattice.integral is not None
-    assert lattice.integral.overlattice_count is None
 
 
 def test_derive_states_the_roots_of_a_definite_lattice_whose_values_are_not_integers() -> None:
@@ -153,13 +152,6 @@ def test_new_writes_a_sparse_record_and_enrich_fills_derived_fields(tmp_path: Pa
     assert (lattice.definite.minimum, lattice.definite.kissing_number, lattice.definite.root_system) == (2, 6, ("A2",))
 
 
-def test_verify_reports_a_new_card_whose_components_duplicate_a_record(tmp_path: Path) -> None:
-    root = write_corpus(tmp_path)
-    run("new", "--gram", "[[1]]", "--name", "I_{1,0} again", "--latex", r"\mathrm{I}_{1,0}", "--root", str(root))
-    assert [path.name for path in sorted((root / "lattices").glob("*.md"))] == ["0001.md", "0002.md"]
-    assert any("same components" in problem for problem in checks.report(root))
-
-
 def test_verify_reports_a_new_card_that_is_a_twist(tmp_path: Path) -> None:
     # A1 = <1>(2), and the corpus records <1>.
     root = write_corpus(tmp_path)
@@ -183,87 +175,45 @@ def test_verify_reports_a_family_that_families_yaml_does_not_list(tmp_path: Path
     assert any("family 'hexagonal'" in problem for problem in checks.report(root))
 
 
-def test_nebe_sloane_writes_the_record_of_a_stored_entry_with_its_reference(tmp_path: Path) -> None:
-    root = write_corpus(tmp_path)
-    source = root / "sources" / "nebe_sloane"
-    source.mkdir(parents=True)
-    shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "K12.json", source / "K12.json")
-    entry = nebe_sloane.stored(source, "K12")
-    declared, prose = nebe_sloane.record(entry, "K12", "K_{12}", ("Coxeter-Todd lattice",), ())
-    derived = records.derive(declared | {"tag": "0002"})
-    nebe_sloane.check(entry, derived)
-    lattice = Lattice.model_validate(derived)
-    assert (lattice.name, lattice.aliases, lattice.families) == ("K12", ("K12", "Coxeter-Todd lattice"), ("nebe-sloane-catalogue",))
-    assert (lattice.rank, lattice.determinant) == (12, 729)
-    assert lattice.definite is not None
-    assert (lattice.definite.minimum, lattice.definite.kissing_number) == (4, 756)
-    assert [reference.url for reference in lattice.references] == ["https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/K12.html"]
-    assert "section `GRAM`" in prose
-
-
-def test_nebe_sloane_intakes_a_named_entry_from_the_union_archive(tmp_path: Path) -> None:
-    root = write_corpus(tmp_path)
-    source = root / "sources" / "nebe_sloane"
-    source.mkdir(parents=True)
-    shutil.copy(REPOSITORY / "sources" / "nebe_sloane" / "union.gz", source / "union.gz")
-    entry = nebe_sloane.archive_entry(source / "union.gz", "BGF.2.2112")
-    (source / "BGF.2.2112.json").write_text(entry.model_dump_json() + "\n")
-    declared, prose = nebe_sloane.record(entry, "BGF.2.2112", r"\mathrm{BGF.2.2112}", (), ())
-    derived = records.derive(declared | {"tag": "0002"})
-    nebe_sloane.check(entry, derived)
-    (root / "lattices" / "0002.md").write_text(records.record_text(derived, prose))
-    lattice = corpus.load(root).entries[1].lattice
-    assert (lattice.gram_tensor, lattice.determinant) == (((2, 1), (1, 12)), 23)
-    assert lattice.definite is not None
-    assert (lattice.definite.minimum, lattice.definite.kissing_number) == (2, 2)
-    assert lattice.references[0].url == "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz"
-    assert nebe_sloane.stored_problems(root, corpus.load(root)) == []
-    run("verify", "--root", str(root))
-
-
-def test_nebe_sloane_accepts_an_indefinite_entry_without_definite_invariants(tmp_path: Path) -> None:
-    entry = nebe_sloane.Entry(
-        name="IndefiniteSpecimen",
-        title="IndefiniteSpecimen",
-        url="https://example.org/IndefiniteSpecimen",
-        dimension=2,
-        determinant=-5,
-        minimal_norm=None,
-        kissing_number=None,
-        references=(),
-        gram_tensor=((2, 1), (1, -2)),
-    )
-    declared, _ = nebe_sloane.record(entry, "IndefiniteSpecimen", "S", (), ())
-    derived = records.derive(declared | {"tag": "0002"})
-    nebe_sloane.check(entry, derived)
-    lattice = Lattice.model_validate(derived)
-    assert (lattice.signature, lattice.determinant, lattice.definite) == ((1, 1), -5, None)
-
-
-def test_nebe_sloane_reads_the_full_matrix_of_shimada_86() -> None:
-    entry = nebe_sloane.archive_entry(REPOSITORY / "sources" / "nebe_sloane" / "union.gz", "Shimada_86")
-    assert (entry.dimension, entry.determinant, entry.minimal_norm, entry.kissing_number) == (86, 196608, 8, 109421928)
-    rings = session_ring_objects()
-    formed = rings["ZZ"].free_module(entry.dimension).equip_bilinear_form(rings["QQ"], entry.gram_tensor)
-    signature = formed.signature_pair()
-    assert (int(signature.first()), int(signature.second()), 0) == (86, 0, 0)
-    assert int(formed.determinant()) == entry.determinant
-
-
-def test_enrich_derives_a_record_once_for_its_gram_tensor(tmp_path: Path) -> None:
+def test_a_derive_certificate_binds_the_computed_values_for_its_gram_tensor(
+    tmp_path: Path,
+) -> None:
     root = write_corpus(tmp_path)
     path = root / "lattices" / "0001.md"
-    document = frontmatter.loads(path.read_text())
-    stale = dict(document.metadata)
-    stale["signature"] = [0, 1]
-    stale_text = "---\n" + yaml.safe_dump(stale, sort_keys=False) + "---\n\n" + document.content + "\n"
-    path.write_text(stale_text)
     run("enrich", "--tag", "0001", "--root", str(root))
     assert Lattice.model_validate(frontmatter.loads(path.read_text()).metadata).signature == (1, 0)
-    # The certificate of the derived values names the Gram tensor, which has not changed: they are not computed again.
-    path.write_text(stale_text)
+    stored = corpus.front_matter(frontmatter.load(str(path)))
+    lattice = Lattice.model_validate(stored)
+    cited_hash = certificates.certification_hash(
+        "0001 derive", lattice, records.derived_projection(stored)
+    )
+    stored["certifications"] = {"derive": cited_hash}
+    document = frontmatter.load(str(path))
+    path.write_text(records.record_text(stored, document.content))
+    certificates.save(
+        root,
+        {"0001 derive": certificates.Certificate(hash=cited_hash, by="test")},
+    )
+    assert not any("certificate" in problem for problem in checks.report(root))
+
+    changed = frontmatter.loads(path.read_text())
+    changed.metadata["signature"] = [0, 1]
+    path.write_text(
+        "---\n"
+        + yaml.safe_dump(changed.metadata, sort_keys=False)
+        + "---\n\n"
+        + changed.content
+        + "\n"
+    )
+    problems = checks.report(root)
+    assert any("contradict their completed computation certificate" in problem for problem in problems)
+
     run("enrich", "--tag", "0001", "--root", str(root))
-    assert path.read_text() == stale_text
+    repaired = path.read_text()
+    assert Lattice.model_validate(frontmatter.loads(repaired).metadata).signature == (1, 0)
+    assert not any("certificate" in problem for problem in checks.report(root))
+    run("enrich", "--tag", "0001", "--root", str(root))
+    assert path.read_text() == repaired
 
 
 def test_morphism_authors_maps_and_verify_checks_the_form_equation(tmp_path: Path) -> None:
@@ -418,3 +368,9 @@ def test_a_morphism_of_u_is_refused_when_its_matrix_does_not_preserve_the_forms_
 def test_a_morphism_with_a_scale_is_a_morphism_from_the_twist_of_its_source() -> None:
     # e -> e, f -> -f takes b(e, f) = 1 to b(e, -f) = -1, so it is a morphism U(-1) -> U.
     assert records.morphism_problems(morphism([[1, 0], [0, -1]], scale=-1), U, U) == []
+
+
+def test_derive_computes_the_dual_gram_tensor() -> None:
+    record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
+    assert record["dual_gram_tensor"] == [["2/3", "1/3"], ["1/3", "2/3"]]
+    Lattice.model_validate(record)

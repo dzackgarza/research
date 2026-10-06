@@ -52,6 +52,9 @@ def test_the_invariants_of_a2() -> None:
     assert not lattice.is_unimodular()
     assert lattice.level() == 3
     assert lattice.radical().module_rank() == 0
+    assert tuple(int(prime) for prime in lattice.bad_reduction_primes()) == (2, 3)
+    assert int(lattice.discriminant_character_discriminant()) == -3
+    assert lattice.is_voronoi_perfect()
 
 
 def test_the_roots_and_isometries_of_a2() -> None:
@@ -63,6 +66,9 @@ def test_the_roots_and_isometries_of_a2() -> None:
     assert Lattices(ZZ)("A1").Emb(lattice).cardinality() == 6
     assert lattice.root_sublattice().module_rank() == 2
     assert lattice.root_sublattice().determinant() == 3
+    reflective = lattice.reflective_roots()
+    assert int(reflective.cardinality()) == 12
+    assert {int(root.q()) for root in reflective} == {-2, -6}
 
 
 def test_the_dual_lattice_of_a2() -> None:

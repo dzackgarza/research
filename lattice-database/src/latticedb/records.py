@@ -2,7 +2,7 @@
 
 `derive` computes every field that the Gram tensor determines and keeps the
 other stored fields: the names, the families, the references, the values
-that `latticedb enrich --genus-data` computes with SageMath, and the
+that `latticedb certify` computes with SageMath, and the
 `root_span` block of a lattice that is not definite when the search for roots
 does not decide it. A record that is not definite and has no `root_span`
 block after `derive` is not decided.
@@ -18,15 +18,16 @@ does none of this again.
 
 from collections.abc import Mapping
 from fractions import Fraction
+from itertools import combinations
 
 import yaml
 
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.rings import session_ring_objects
 
-from latticedb import arithmetic, model, roots
-from latticedb.arithmetic import GramTensor, Vector
-from latticedb.model import AdeType, Definiteness, Lattice, Morphism, Yaml
+from latticedb import model, roots
+from flint import fmpq, fmpq_mat
+from latticedb.model import AdeType, Definiteness, GramTensor, Lattice, Morphism, Vector, Yaml
 
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
@@ -37,11 +38,13 @@ KEYS = (
     "name",
     "latex",
     "aliases",
+    "certifications",
     "rank",
     "gram_tensor",
     "signature",
     "determinant",
     "definiteness",
+    "dual_gram_tensor",
     "integral",
     "definite",
     "indefinite",
@@ -194,7 +197,6 @@ def _integral(
     record: dict[str, Yaml],
     gram: GramTensor,
     lattice,
-    subgroup_bound: int = arithmetic.SUBGROUP_BOUND,
 ) -> dict[str, Yaml]:
     rank = len(gram)
     declared = _block(record, "integral")
@@ -208,20 +210,16 @@ def _integral(
             if abs(int(factor)) > 1
         )
         block["discriminant_group"] = list(invariants)
-        count = arithmetic.overlattice_count(gram, subgroup_bound)
-        if count is not None:
-            block["overlattice_count"] = count
         if block["parity"] == "even" and all(factor == 2 for factor in invariants):
             block["delta"] = int(lattice.delta())
-        determinant = int(lattice.determinant())
-        block["bad_reduction_primes"] = list(
-            arithmetic.bad_reduction_primes(determinant)
-        )
+        block["bad_reduction_primes"] = [
+            int(prime) for prime in lattice.bad_reduction_primes()
+        ]
         if rank % 2 == 0:
-            block["quadratic_character"] = arithmetic.quadratic_character(
-                rank, determinant
+            block["quadratic_character"] = int(
+                lattice.discriminant_character_discriminant()
             )
-        # A value that the record states is kept: a computation once carried out is not carried out again, and a bound raised later only fills a field that is still absent.
+        # Expensive exact invariants computed by enrichment are preserved.
         for field in model.IntegralData.model_fields:
             if field not in block and field in declared:
                 block[field] = declared[field]
@@ -229,26 +227,29 @@ def _integral(
 
 
 def _definite(
-    record: dict[str, Yaml], gram: GramTensor, positive_roots: Mapping[Vector, Fraction], formed, lattice=None
+    record: dict[str, Yaml],
+    gram: GramTensor,
+    positive_roots: Mapping[Vector, Fraction],
+    formed,
+    computation_lattice,
+    rescaling: Fraction,
+    integral_lattice=None,
 ) -> dict[str, Yaml]:
     declared = _block(record, "definite")
-    if lattice is None:
-        minimum, kissing_number = arithmetic.minimum_and_kissing_number(gram)
-    else:
-        minimum = Fraction(int(abs(lattice.minimum())))
-        kissing_number = int(lattice.kissing_number())
+    minimum = Fraction(int(abs(computation_lattice.minimum()))) / rescaling
+    kissing_number = int(computation_lattice.kissing_number())
     block: dict[str, Yaml] = {
         "minimum": rational(minimum),
         "kissing_number": kissing_number,
     }
     if "automorphism_group_order" in declared:
         block["automorphism_group_order"] = declared["automorphism_group_order"]
-    if lattice is not None:
+    if integral_lattice is not None:
         bound = model.theta_bound(len(gram), minimum)
         match declared.get("theta_series"):
             case list() as stated:
                 bound = max(bound, len(stated) - 1)
-        series = lattice.theta_series(precision=bound + 1)
+        series = integral_lattice.theta_series(precision=bound + 1)
         block["theta_series"] = [int(series[index]) for index in range(bound + 1)]
         block["root_system"] = list(roots.norm_two_types(formed, dict(positive_roots)))
     block["roots"] = [
@@ -262,13 +263,9 @@ def _definite(
     return _ordered(block, tuple(model.DefiniteData.model_fields))
 
 
-def _indefinite(gram: GramTensor, lattice=None) -> dict[str, Yaml]:
-    # The radical of a degenerate form is nonzero and isotropic; `qfsolve` decides a nondegenerate rational form.
-    if lattice is None:
-        formed = ZZ.free_module(len(gram)).equip_bilinear_form(QQ, gram)
-        isotropic = formed.determinant() == 0 or arithmetic.is_isotropic(gram)
-    else:
-        isotropic = lattice.determinant() == 0 or int(lattice.witt_index()) > 0
+def _indefinite(gram: GramTensor) -> dict[str, Yaml]:
+    rational_space = Lattices(QQ)(gram)
+    isotropic = rational_space.determinant() == 0 or int(rational_space.witt_index()) > 0
     return {"isotropic": isotropic}
 
 
@@ -312,27 +309,42 @@ def _root_sublattice(
     factors = tuple(abs(int(factor)) for factor in matrix.invariant_factors())
     block: dict[str, Yaml] = {"invariant_factors": list(factors)}
     if factors == (1,) * rank:
-        block["norms"] = [
-            rational(norm) for norm in arithmetic.generating_norms(dict(spanning), rank)
-        ]
+        norms = sorted(set(spanning.values()), key=lambda norm: (abs(norm), norm))
+        ambient = ZZ.free_module(rank)
+        selected = next(
+            subset
+            for size in range(1, len(norms) + 1)
+            for subset in combinations(norms, size)
+            if all(
+                ambient.module_generator(label)
+                in ambient.subobject_on(
+                    tuple(
+                        ambient(root)
+                        for root, norm in spanning.items()
+                        if norm in subset
+                    )
+                )
+                for label in ambient.module_generating_set()
+            )
+        )
+        block["norms"] = [rational(norm) for norm in selected]
     return block
 
 
-def derive(
-    record: dict[str, Yaml], subgroup_bound: int = arithmetic.SUBGROUP_BOUND
-) -> dict[str, Yaml]:
+def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     """Return the record with every field that the Gram tensor determines computed from it.
 
     The fields `rank`, `signature`, `determinant` and `definiteness`; the
+    inverse Gram tensor `dual_gram_tensor` when the determinant is not zero; the
     blocks `integral`, `definite` and `indefinite`, each present exactly when
     its hypothesis holds; `root_span` when the record has none and the roots
     that `roots.small_roots` finds generate `L`, with the norms of its roots;
     and `root_sublattice` when the roots of `L` are stated.
 
-    `subgroup_bound` is the budget of `L.overlattice_count`: a value whose
-    discriminant group has more subgroups than that is left undecided. A field
-    the record already states is kept, so a later call with a larger bound
-    fills only what is still absent and never changes a value.
+    A field not computed here is preserved when already present. In particular,
+    exact invariants whose computation may be expensive, such as
+    `integral.overlattice_count`, are produced by enrichment rather than by
+    ordinary record derivation.
     """
     gram = gram_tensor(record["gram_tensor"])
     rank = len(gram)
@@ -351,26 +363,74 @@ def derive(
         if all(QQ(value) in ZZ for row in gram for value in row)
         else None
     )
+    match integral_lattice:
+        case None:
+            scale_generator = formed.scale_submodule().principal_generator()
+            reflection_multiplier = ZZ(int(scale_generator.denominator()))
+            reflection_lattice = Lattices(ZZ)(
+                formed.twist(reflection_multiplier).gram_tensor().change_ring(ZZ)
+            )
+        case _:
+            reflection_multiplier = ZZ.one()
+            reflection_lattice = integral_lattice
     definiteness = model.definiteness(n_plus, n_minus, n_zero)
+    dual: dict[str, Yaml] = {}
+    if determinant != 0:
+        inverse = fmpq_mat(
+            [
+                [fmpq(value.numerator, value.denominator) for value in row]
+                for row in gram
+            ]
+        ).inv()
+        dual = {
+            "dual_gram_tensor": [
+                [
+                    rational(
+                        Fraction(int(value.numerator), int(value.denominator))
+                    )
+                    for value in row
+                ]
+                for row in (
+                    [inverse[i, j] for j in range(rank)] for i in range(rank)
+                )
+            ]
+        }
     derived: dict[str, Yaml] = {
         **record,
         "rank": rank,
         "signature": [n_plus, n_minus],
         "determinant": rational(determinant),
         "definiteness": definiteness,
+        **dual,
     }
     for key in ("integral", "definite", "indefinite", "root_span", "root_sublattice"):
         derived.pop(key, None)
     if integral_lattice is not None:
-        derived["integral"] = _integral(record, gram, integral_lattice, subgroup_bound)
+        derived["integral"] = _integral(record, gram, integral_lattice)
     if definiteness in ("positive_definite", "negative_definite"):
-        positive_roots = arithmetic.definite_roots(gram)
+        labels = tuple(reflection_lattice.module_generating_set())
+        positive_roots = {}
+        for root in reflection_lattice.reflective_roots():
+            coordinates = root.to_vector()
+            vector = tuple(int(coordinates(label)) for label in labels)
+            if next(coefficient for coefficient in vector if coefficient) < 0:
+                continue
+            value = formed(vector).q()
+            positive_roots[vector] = Fraction(
+                int(value.numerator()), int(value.denominator())
+            )
         derived["definite"] = _definite(
-            record, gram, positive_roots, formed, integral_lattice
+            record,
+            gram,
+            positive_roots,
+            formed,
+            reflection_lattice,
+            Fraction(int(reflection_multiplier)),
+            integral_lattice,
         )
         derived["root_sublattice"] = _root_sublattice(gram, positive_roots)
     else:
-        found = _root_span(record, gram, formed, integral_lattice)
+        found = _root_span(record, gram, formed, reflection_lattice)
         if found is not None:
             span, spanning = found
             derived["root_span"] = span
@@ -385,8 +445,58 @@ def derive(
                 },
             )
     if definiteness == "indefinite":
-        derived["indefinite"] = _indefinite(gram, integral_lattice)
+        derived["indefinite"] = _indefinite(gram)
     return {key: derived[key] for key in KEYS if key in derived}
+
+
+def derived_projection(record: Mapping[str, Yaml]) -> dict[str, Yaml]:
+    """The part of a record whose value is computed by `derive`.
+
+    Authored identity, bibliography, families, relations and expensive
+    SageMath enrichment fields are excluded. This projection is what the
+    `<tag> derive` certificate binds.
+    """
+    projected: dict[str, Yaml] = {
+        key: record[key]
+        for key in (
+            "rank",
+            "signature",
+            "determinant",
+            "definiteness",
+            "dual_gram_tensor",
+        )
+        if key in record
+    }
+    for block_name, fields in (
+        (
+            "integral",
+            (
+                "parity",
+                "discriminant_group",
+                "delta",
+                "bad_reduction_primes",
+                "quadratic_character",
+            ),
+        ),
+        (
+            "definite",
+            ("minimum", "kissing_number", "theta_series", "root_system", "roots"),
+        ),
+        ("indefinite", ("isotropic",)),
+    ):
+        block = record.get(block_name)
+        if isinstance(block, dict):
+            projected[block_name] = {
+                field: block[field] for field in fields if field in block
+            }
+    # For a definite lattice, `derive` computes the complete root system and
+    # hence its root sublattice from the Gram tensor. For an indefinite
+    # lattice, a `root_span` can instead be authored input to a partial root
+    # search, so neither it nor the root sublattice obtained from it belongs
+    # in the aggregate Gram-derived certificate.
+    if isinstance(record.get("definite"), dict) and "root_sublattice" in record:
+        projected["root_sublattice"] = record["root_sublattice"]
+    return projected
 
 
 TWIST_FAMILY = "nikulin-two-elementary"
@@ -481,15 +591,16 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         )
     span = lattice.root_span
     if span is not None:
-        owned_lattice = Lattices(ZZ)(gram) if lattice.is_integer_valued else None
+        formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+        scale_generator = formed.scale_submodule().principal_generator()
+        multiplier = ZZ(int(scale_generator.denominator()))
+        owned_lattice = Lattices(ZZ)(
+            formed.twist(multiplier).gram_tensor().change_ring(ZZ)
+        )
         found.extend(
             f"root_span.roots: {list(row)} is not a root of L"
             for row in span.roots
-            if not (
-                owned_lattice(row).is_root()
-                if owned_lattice is not None
-                else arithmetic.is_root(gram, row)
-            )
+            if not owned_lattice(row).is_root()
         )
         if span.embedding is not None:
             ambient = ZZ.free_module(lattice.rank)
@@ -530,20 +641,28 @@ def relational_admission_problems(
             if lattice.is_integer_valued and all(
                 written[summand.tag].is_integer_valued for summand in span.summands
             ):
-                target_lattice = Lattices(ZZ)(gram)
-                summand_lattices = tuple(
-                    Lattices(ZZ)(written[summand.tag].gram_tensor).twist(summand.scale)
-                    for summand in span.summands
-                )
-                source_lattice = Lattices(ZZ).biproduct(summand_lattices)
-                try:
-                    source_lattice.Mor(target_lattice)(
-                        tuple(target_lattice(row) for row in span.embedding)
+                # An empty sum is the rank-zero lattice, which the biproduct
+                # constructor does not build: any embedding rows mismatch it.
+                if not span.summands:
+                    if span.embedding:
+                        found.append(
+                            "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
+                        )
+                else:
+                    target_lattice = Lattices(ZZ)(gram)
+                    summand_lattices = tuple(
+                        Lattices(ZZ)(written[summand.tag].gram_tensor).twist(summand.scale)
+                        for summand in span.summands
                     )
-                except ValueError:
-                    found.append(
-                        "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
-                    )
+                    source_lattice = Lattices(ZZ).biproduct(summand_lattices)
+                    try:
+                        source_lattice.Mor(target_lattice)(
+                            tuple(target_lattice(row) for row in span.embedding)
+                        )
+                    except ValueError:
+                        found.append(
+                            "root_span.embedding: the rows do not have the Gram tensor of the orthogonal sum of the summands"
+                        )
             else:
                 target_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
                 offset = 0
@@ -579,14 +698,31 @@ def relational_admission_problems(
     if definite is not None:
         invariants = isometry_invariants(lattice)
         compared = written if isometry_records is None else isometry_records
-        found.extend(
-            f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
-            for other in compared.values()
-            if other.definite is not None
-            and isometry_invariants(other) == invariants
-            and other.gram_tensor != gram
-            and lattice.is_isometric(other)
+        source_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+        source_scale = source_formed.scale_submodule().principal_generator()
+        source_multiplier = ZZ(int(source_scale.denominator()))
+        source_owned = Lattices(ZZ)(
+            source_formed.twist(source_multiplier).gram_tensor().change_ring(ZZ)
         )
+        for other in compared.values():
+            if (
+                other.definite is None
+                or isometry_invariants(other) != invariants
+                or other.gram_tensor == gram
+            ):
+                continue
+            other_formed = ZZ.free_module(other.rank).equip_bilinear_form(QQ, other.gram_tensor)
+            other_scale = other_formed.scale_submodule().principal_generator()
+            if source_scale != other_scale:
+                continue
+            other_multiplier = ZZ(int(other_scale.denominator()))
+            other_owned = Lattices(ZZ)(
+                other_formed.twist(other_multiplier).gram_tensor().change_ring(ZZ)
+            )
+            if source_owned.is_isometric(other_owned):
+                found.append(
+                    f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
+                )
     return found
 
 

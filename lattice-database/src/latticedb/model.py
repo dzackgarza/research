@@ -37,14 +37,20 @@ from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0, cardinal
 from dzack_research.preamble.rings import session_ring_objects
 
-from latticedb import arithmetic, root_systems
-from latticedb.arithmetic import Vector
+from latticedb import root_systems
 
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
+QQ = _SESSION_RINGS["QQ"]
 
 type Yaml = None | bool | int | float | str | date | list[Yaml] | dict[str, Yaml]
 """A value that a YAML document can hold."""
+
+type Vector = tuple[int, ...]
+"""Coordinates of a lattice element in the chosen basis."""
+
+type GramTensor = tuple[tuple[Fraction, ...], ...]
+"""Components ``b(e_i,e_j)`` of the selected rational-valued bilinear form."""
 
 _RATIONAL = re.compile(r"-?\d+(/[1-9]\d*)?")
 
@@ -274,7 +280,7 @@ class PrimitiveOrbitSeries(Record):
     )
     reference: Reference | None = Field(
         default=None,
-        description="The source of the coefficients; absent when `latticedb enrich --genus-data` computes them.",
+        description="The source of the coefficients; absent when `latticedb certify` computes them.",
     )
 
     def coefficient(self, n: int) -> int | None:
@@ -561,7 +567,7 @@ class IntegralData(Record):
             "The number of integral lattices $M$ with $L \\subseteq M \\subseteq L^*$, with $M = L$ counted: the number of subgroups $H$ of the discriminant group "
             "$A_L = L^*/L$ with $b_{A_L}(H, H) = 0$, for the form $b_{A_L}(x + L, y + L) = b(x, y) + \\mathbb{Z}$ with values in $\\mathbb{Q}/\\mathbb{Z}$. "
             "Subgroups are counted, not their orbits under the isometries of $L$. An even $L$ can have odd lattices among the $M$. "
-            f"Stated when the determinant is not zero and $A_L$ has at most {arithmetic.SUBGROUP_BOUND} subgroups; otherwise absent, and the count is not decided."
+            "When certified, this exact invariant was computed by the certification phase."
         ),
     )
     delta: Literal[0, 1] | None = Field(
@@ -603,7 +609,7 @@ class IntegralData(Record):
         gt=0,
         description=(
             "The class number of the genus of $L$: the number of isometry classes of lattices in the genus, $L$ counted. "
-            "Computed by `latticedb enrich --genus-data` with `Genus(G).representatives()` of SageMath; for an indefinite binary form, the representatives counted up to equivalence. "
+            "Computed by `latticedb certify` with `Genus(G).representatives()` of SageMath; for an indefinite binary form, the representatives counted up to equivalence. "
             "Requires a nonzero determinant; absent when it is not computed."
         ),
     )
@@ -614,7 +620,7 @@ class IntegralData(Record):
             "The number of spinor genera in the genus of $L$, a power of 2 (Conway and Sloane, SPLAG, Chapter 15, Section 9.1): "
             "the order of the quotient of the spinor operators by the spinor kernel of Theorems 16 and 17 there, enlarged by the spinor operator of one improper "
             "isometry, so that a spinor genus is a union of isometry classes. "
-            "Computed by `latticedb enrich --genus-data` with `Genus(G).spinor_generators(proper=False)` of SageMath. Requires a nonzero determinant and rank at least 3."
+            "Computed by `latticedb certify` with `Genus(G).spinor_generators(proper=False)` of SageMath. Requires a nonzero determinant and rank at least 3."
         ),
     )
     spinor_genera: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
@@ -622,7 +628,7 @@ class IntegralData(Record):
         description=(
             "The number of isometry classes in each spinor genus of the genus of $L$: first in the spinor genus of $L$, then in the others in decreasing order. "
             "The first entry is the class number of the spinor genus of $L$, and the sum is the class number of the genus. "
-            "An indefinite $L$ has one class in each spinor genus (Eichler; SPLAG, Chapter 15, Theorem 14). For a definite $L$, `latticedb enrich --genus-data` iterates "
+            "An indefinite $L$ has one class in each spinor genus (Eichler; SPLAG, Chapter 15, Theorem 14). For a definite $L$, `latticedb certify` iterates "
             "$p$-neighbours from one lattice of each spinor genus at a prime $p$ whose spinor operator is in the spinor kernel, so that each neighbour stays in its "
             "spinor genus (SPLAG, Chapter 15, Theorem 15), and stores the counts only when the masses $\\sum 1/|O(M)|$ of the classes found add up to the mass "
             "of the genus. Requires a nonzero determinant and rank at least 3."
@@ -635,7 +641,7 @@ class IntegralData(Record):
             "The largest $n$ with $L \\cong U^n \\oplus L'$ for a lattice $L'$, where $U$ is the hyperbolic plane. "
             "For an integral $L$ this is the largest $n$ with an embedding $U^n \\hookrightarrow L$, because a unimodular sublattice $M$ of $L$ "
             "satisfies $L = M \\oplus M^{\\perp}$. "
-            "Computed by `latticedb enrich --genus-data`: $L \\cong U^n \\oplus L'$ holds exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of "
+            "Computed by `latticedb certify`: $L \\cong U^n \\oplus L'$ holds exactly when the genus of $L$ is the sum of the genus of $U^n$ and a genus of "
             "signature $(n_+ - n, n_- - n)$, since a lattice $U \\oplus L'$ of rank at least 3 is alone in its genus "
             "(Nikulin 1980, Theorem 1.13.1*). Requires a nonzero determinant; absent when it is not computed."
         ),
@@ -646,7 +652,7 @@ class IntegralData(Record):
             "For a group $\\Gamma \\subseteq O(L)$, the series $F_{L,\\Gamma}(z, w)$ whose coefficient $c_\\Gamma(n)$ is the number of $\\Gamma$-orbits of primitive "
             "vectors $v$ with $b(v, v) = n$. The keys are `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+`: $S$ is the kernel of the determinant, "
             "$+$ the kernel of the real spinor norm, and $\\widetilde{O}(L)$ the kernel of $O(L) \\to O(A_L)$. "
-            "Computed by `latticedb enrich --genus-data` through $z^4$ and $w^4$ for a definite lattice; stated with a reference otherwise. Requires a nonzero determinant."
+            "Computed by `latticedb certify` through $z^4$ and $w^4$ for a definite lattice; stated with a reference otherwise. Requires a nonzero determinant."
         ),
     )
     discriminant_orbits: dict[OrbitGroup, PrimitiveOrbitSeries] | None = Field(
@@ -654,7 +660,7 @@ class IntegralData(Record):
         description=(
             "For a group $\\Gamma \\subseteq O(L)$, the series whose coefficient $c_\\Gamma(n)$ is the number of $\\Gamma$-orbits on the elements $\\alpha \\in A_L$ with "
             "$q_L(\\alpha) = n / \\operatorname{ord}(\\alpha)^2$, keyed by the same eight groups. This is a function of the discriminant form $(A_L, q_L)$, not of $L$: it is "
-            "computed by `latticedb enrich --genus-data` from $(A_L, q_L)$ for an even lattice of hyperbolic index at least 2. It equals $F_{L,\\Gamma}$ for an even "
+            "computed by `latticedb certify` from $(A_L, q_L)$ for an even lattice of hyperbolic index at least 2. It equals $F_{L,\\Gamma}$ for an even "
             "$L$ containing two orthogonal hyperbolic planes (Eichler; theory/orbits.md), and it is defined for every nondegenerate $L$."
         ),
     )
@@ -700,7 +706,7 @@ class DefiniteData(Record):
     )
     automorphism_group_order: int | None = Field(
         default=None,
-        description="Order of $O(L)$, computed by `latticedb enrich --genus-data` with `qfauto` of PARI/GP.",
+        description="Order of $O(L)$, computed by `latticedb certify` with `qfauto` of PARI/GP.",
     )
     minimal_vectors: list[list[int]] | None = Field(
         default=None,
@@ -844,6 +850,13 @@ class Lattice(Record):
     aliases: Annotated[tuple[str, ...], Field(strict=False)] = Field(
         default=(), description="Other names, as plain text."
     )
+    certifications: dict[str, str] = Field(
+        default_factory=dict,
+        description=(
+            "Completed computations cited by computation name. Each value is the SHA-256 "
+            "certificate hash of that computation on this card's Gram tensor and stored result."
+        ),
+    )
     rank: int | None = Field(
         default=None,
         ge=1,
@@ -879,6 +892,20 @@ class Lattice(Record):
             "`positive_definite` or `negative_definite` when $b(x, x)$ has one sign on nonzero $x$; `indefinite` when it takes both signs; "
             "`positive_semidefinite` when $b(x, x) \\geq 0$ for all $x$, $b \\neq 0$ and the determinant is zero, "
             "and `negative_semidefinite` with $\\leq$; `zero` when $b = 0$."
+        ),
+    )
+    dual_gram_tensor: (
+        Annotated[
+            tuple[Annotated[tuple[Rational, ...], Field(strict=False)], ...],
+            Field(strict=False),
+        ]
+        | None
+    ) = Field(
+        default=None,
+        description=(
+            "Components of the inverse Gram tensor, the Gram tensor $b^*$ of the dual lattice $L^*$ in the basis dual to $e_1, \\dots, e_n$: "
+            "row $i$ lists $b^*(e^i, e^1), \\dots, b^*(e^i, e^n)$. Values are integers or strings `p/q`. "
+            "Computed by `latticedb enrich` from the Gram tensor; it requires a nonzero determinant."
         ),
     )
     families: Annotated[tuple[Family, ...], Field(strict=False)] = Field(
@@ -932,26 +959,6 @@ class Lattice(Record):
     def is_definite(self) -> bool:
         """Whether $b(x, x)$ has one sign on the nonzero vectors of $L$."""
         return self.definiteness in ("positive_definite", "negative_definite")
-
-    def is_isometric(self, other: Lattice) -> bool:
-        """Whether some $g$ in $\\operatorname{GL}_n(\\mathbb{Z})$ has $g^t b g = b'$: whether the two records are the same lattice in another basis.
-
-        `b` and `b'` must be definite: the decision is PARI's `qfisom` on the
-        positive definite integer forms $k |b|$ and $k |b'|$ (Plesken and
-        Souvignier). The isometry class of an indefinite lattice is decided
-        instead by its genus and spinor genus.
-        """
-        assert self.is_definite and other.is_definite, (
-            "isometry is decided for definite lattices; one of the records is indefinite"
-        )
-        assert self.gram_tensor is not None and other.gram_tensor is not None, (
-            "isometry needs the Gram tensor of each record"
-        )
-        if self.is_integer_valued and other.is_integer_valued:
-            return Lattices(ZZ)(self.gram_tensor).is_isometric(
-                Lattices(ZZ)(other.gram_tensor)
-            )
-        return arithmetic.is_isometric(self.gram_tensor, other.gram_tensor)
 
     @property
     def is_unimodular(self) -> bool:
@@ -1048,6 +1055,7 @@ class Lattice(Record):
                 *self._indefinite_problems(),
                 *self._root_problems(),
                 *self._group_problems(),
+                *self._dual_problems(),
             ]
         if problems:
             raise ValidationError.from_exception_data(type(self).__name__, problems)
@@ -1197,12 +1205,55 @@ class Lattice(Record):
         yield from self._spinor_problems()
         yield from self._reduction_problems()
 
+    def _dual_problems(self) -> Iterator[InitErrorDetails]:
+        """The stated dual Gram tensor is the inverse of the Gram tensor."""
+        if self.dual_gram_tensor is None:
+            return
+        if self.gram_tensor is None or self.rank is None:
+            yield _problem(
+                "dual_gram_requires_gram",
+                "the dual Gram tensor requires the Gram tensor",
+                ("dual_gram_tensor",),
+            )
+            return
+        dual = self.dual_gram_tensor
+        if len(dual) != self.rank or any(len(row) != self.rank for row in dual):
+            yield _problem(
+                "dual_gram_shape",
+                "a (0,2)-tensor on a module of rank {rank} has {rank} rows of {rank} components",
+                ("dual_gram_tensor",),
+                {"rank": self.rank},
+            )
+            return
+        if self.determinant == 0:
+            yield _problem(
+                "dual_gram_degenerate",
+                "the dual Gram tensor requires a nonzero determinant",
+                ("dual_gram_tensor",),
+            )
+            return
+        gram = self.gram_tensor
+        rank = self.rank
+        if any(
+            sum(gram[i][k] * dual[k][j] for k in range(rank)) != (1 if i == j else 0)
+            for i in range(rank)
+            for j in range(rank)
+        ):
+            yield _problem(
+                "dual_gram_inverse",
+                "the dual Gram tensor is not the inverse of the Gram tensor",
+                ("dual_gram_tensor",),
+            )
+
     def _reduction_problems(self) -> Iterator[InitErrorDetails]:
         """The primes of bad reduction and the character of the discriminant are those of the determinant."""
         assert self.integral is not None
         determinant = int(self.determinant)
+        owned = Lattices(ZZ)(self.gram_tensor) if determinant != 0 else None
         primes = (
-            arithmetic.bad_reduction_primes(determinant) if determinant != 0 else None
+            tuple(int(prime) for prime in owned.bad_reduction_primes())
+            if owned is not None
+            else None
         )
         if self.integral.bad_reduction_primes != primes:
             context: dict[str, str | int] = {
@@ -1216,8 +1267,8 @@ class Lattice(Record):
                 context,
             )
         character = (
-            arithmetic.quadratic_character(self.rank, determinant)
-            if determinant != 0 and self.rank % 2 == 0
+            int(owned.discriminant_character_discriminant())
+            if owned is not None and self.rank % 2 == 0
             else None
         )
         if self.integral.quadratic_character != character:
@@ -1423,9 +1474,11 @@ class Lattice(Record):
                         "each minimal vector has the stated minimum norm",
                         ("definite", "minimal_vectors"),
                     )
-                if data.perfect is not None and data.perfect != arithmetic.is_perfect(
-                    self.rank, vectors
-                ):
+                formed = ZZ.free_module(self.rank).equip_bilinear_form(QQ, self.gram_tensor)
+                scale_generator = formed.scale_submodule().principal_generator()
+                multiplier = ZZ(int(scale_generator.denominator()))
+                owned = Lattices(ZZ)(formed.twist(multiplier).gram_tensor())
+                if data.perfect is not None and data.perfect != owned.is_voronoi_perfect():
                     yield _problem(
                         "perfectness_value",
                         "minimal-vector tensors give a different perfectness value",

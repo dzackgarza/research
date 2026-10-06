@@ -5,6 +5,7 @@ are coordinates in the bases named by their parent records. Source claims belong
 the Markdown prose with BibTeX citations.
 """
 
+import ast
 from typing import Annotated, Literal, Self
 
 from flint import fmpz_mat
@@ -47,6 +48,141 @@ class LatticeGenus(CatalogueRecord):
             )
         if self.mass is not None and self.mass <= 0:
             raise PydanticCustomError("genus_mass", "a genus mass is positive")
+        return self
+
+
+def _expression_value(node: ast.AST, parameter: str, value: int) -> int:
+    """The value of a Gram-template entry: integer arithmetic in `parameter`."""
+    match node:
+        case ast.Expression():
+            return _expression_value(node.body, parameter, value)
+        case ast.Constant() if type(node.value) is int:
+            return node.value
+        case ast.Name() if node.id == parameter:
+            return value
+        case ast.BinOp() if isinstance(node.op, (ast.Add, ast.Sub, ast.Mult)):
+            left = _expression_value(node.left, parameter, value)
+            right = _expression_value(node.right, parameter, value)
+            if isinstance(node.op, ast.Add):
+                return left + right
+            if isinstance(node.op, ast.Sub):
+                return left - right
+            return left * right
+        case ast.UnaryOp() if isinstance(node.op, (ast.USub, ast.UAdd)):
+            operand = _expression_value(node.operand, parameter, value)
+            return -operand if isinstance(node.op, ast.USub) else operand
+    raise PydanticCustomError(
+        "family_expression",
+        "a Gram-template entry is an integer or integer arithmetic in the parameter",
+    )
+
+
+class LatticeFamily(CatalogueRecord):
+    """An infinite parameterized family of lattices sharing one Gram template.
+
+    The family holds the lattice with `gram_template` with `parameter`
+    replaced by each integer `>= minimum`. Template entries are integers or
+    integer arithmetic in the parameter.
+    """
+
+    name: str = Field(min_length=1)
+    parameter: str = Field(min_length=1)
+    minimum: int
+    rank: Annotated[int, Field(gt=0)]
+    signature: Annotated[tuple[int, int], Field(strict=False)]
+    gram_template: Annotated[
+        tuple[Annotated[tuple[int | str, ...], Field(strict=False)], ...],
+        Field(strict=False),
+    ]
+
+    @model_validator(mode="after")
+    def check_template(self) -> Self:
+        if not self.parameter.isidentifier():
+            raise PydanticCustomError(
+                "family_parameter", "the parameter is an identifier"
+            )
+        rows = self.gram_template
+        if len(rows) != self.rank or any(len(row) != self.rank for row in rows):
+            raise PydanticCustomError(
+                "family_shape", "the template has rank rows of rank components"
+            )
+        seen = False
+        for row in rows:
+            for entry in row:
+                if isinstance(entry, str):
+                    seen = True
+                if isinstance(entry, bool):
+                    raise PydanticCustomError(
+                        "family_expression",
+                        "a Gram-template entry is an integer or integer arithmetic in the parameter",
+                    )
+                if isinstance(entry, str):
+                    try:
+                        tree = ast.parse(entry, mode="eval")
+                    except SyntaxError:
+                        raise PydanticCustomError(
+                            "family_expression",
+                            "a Gram-template entry is an integer or integer arithmetic in the parameter",
+                        ) from None
+                    names = {
+                        node.id
+                        for node in ast.walk(tree)
+                        if isinstance(node, ast.Name)
+                    }
+                    if names != {self.parameter}:
+                        raise PydanticCustomError(
+                            "family_parameter",
+                            "each template expression names the parameter and nothing else",
+                        )
+        if not seen:
+            raise PydanticCustomError(
+                "family_parameter",
+                "the parameter occurs in the template",
+            )
+        if any(
+            rows[i][j] != rows[j][i]
+            for i in range(self.rank)
+            for j in range(self.rank)
+        ):
+            raise PydanticCustomError(
+                "family_symmetric", "the template is a symmetric tensor"
+            )
+        # PARI starts once per process; only family records pay it.
+        import cypari2
+
+        pari = cypari2.Pari()
+        for probe in (self.minimum, self.minimum + 1):
+            matrix = [
+                [
+                    entry
+                    if isinstance(entry, int)
+                    else _expression_value(
+                        ast.parse(entry, mode="eval"), self.parameter, probe
+                    )
+                    for entry in row
+                ]
+                for row in rows
+            ]
+            if int(fmpz_mat(matrix).det()) == 0:
+                raise PydanticCustomError(
+                    "family_degenerate",
+                    "the template is nonsingular at its probe points",
+                )
+            signature = tuple(
+                int(part)
+                for part in pari.qfsign(
+                    pari.matrix(
+                        self.rank,
+                        self.rank,
+                        [entry for row in matrix for entry in row],
+                    )
+                )
+            )
+            if signature != tuple(self.signature):
+                raise PydanticCustomError(
+                    "family_signature",
+                    "the stated signature is the signature at its probe points",
+                )
         return self
 
 

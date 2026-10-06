@@ -18,6 +18,7 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `geometric-families/<slug>.md` | One parameterized geometric family and its cited prose |
 | `graphs/<slug>.md` | One weighted graph with derived diagram properties and cited prose |
 | `genera/` | Genus records with representative isometry classes and mass |
+| `lattice-families/<slug>.md` | One infinite parameterized family of lattices sharing a Gram template in its parameter, with rank, signature and cited prose |
 | `lattice-polytopes/`, `toric-varieties/` | Based lattice polytopes, polar duals and normal-fan toric varieties |
 | `geometric-maps/`, `moduli-problems/` | Geometric maps, fibrations and specified moduli problems |
 | `integral-local-systems/`, `picard-fuchs-operators/` | Integral monodromy and period operators with geometric realizations |
@@ -37,8 +38,8 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `src/latticedb/roots.py` | $\Phi(L)$ of a definite lattice as its irreducible components; roots that generate $\mathbb{Z}\Phi(L)$ for the others |
 | `src/latticedb/records.py` | Computes the fields of a record that the Gram tensor determines, and writes a record as a file |
 | `src/latticedb/nebe_sloane.py` | Reads an entry of the Catalogue of Lattices (G. Nebe, N. J. A. Sloane) and writes it as the declared fields of a record |
-| `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto, the finite symplectic groups of the K3 lattice, checks every equation they state against the records, and checks that the morphism files embed each $\Lambda^G$ and its $\Lambda_G$ in the K3 lattice as orthogonal primitive sublattices |
-| `src/latticedb/hoehn_mason.py` | Reads the coinvariant lattices of the Leech lattice of Höhn and Mason, computes their inclusions in the Leech lattice and the actions of their stabilizers, and checks them against the records, Table 10.2 of Hashimoto and the morphism files |
+| `src/latticedb/hashimoto.py` | Reads Tables 10.2 and 10.3 of Hashimoto for source intake and provenance collation; it is not part of mathematical verification |
+| `src/latticedb/hoehn_mason.py` | Reads the Höhn--Mason ancillary data for source intake and provenance collation; it is not part of mathematical verification |
 | `src/latticedb/genus.py`, `sage_genus.py` | Computes the genus symbol, the class number of the genus and the order of $O(L)$ with SageMath, and stores them in the records |
 | `src/latticedb/corpus.py` | Reads every stored record and validates only the shape of each file |
 | `src/latticedb/site.py` | Builds the site |
@@ -112,6 +113,7 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 | --- | --- |
 | A lattice's `groups` block | One entry for each subgroup $\Gamma \leq O(L)$ of interest, keyed by the standard `OrbitGroup` names (`O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+`, `SOtilde+`), whose primitive-vector series is `integral.primitive_orbits`, or by a further named subgroup such as $\Gamma_{\mathrm{En},2}$. Each entry holds generators (named self-isometries), optional relators, the abstract structure, order, index, parent, a stabilized object, a hyperbolic chamber, and orbit representatives keyed by the square. `O+` means the kernel of the real spinor norm. |
 | `genera/` | Signature, determinant, parity, genus symbol, representative lattice tags, class number, completeness and rational mass. A complete list with known group orders checks $\sum 1/|O(L_i)|$. |
+| `lattice-families/` | Parameter name and minimum, rank, signature, and the Gram template whose entries are integers or integer arithmetic in the parameter; the validator checks shape, symmetry, nonsingularity and the stated signature at the minimum and one past it. |
 | `lattice-polytopes/` | Vertices in a based free abelian group, ambient rank, source identifier, reflexivity, polar dual, and optional Delaunay sphere tied to a quadratic lattice. A toric ambient lattice is not the quadratic lattice of a lattice record. |
 | `toric-varieties/` | A polytope and its normal fan, with optional subdivision rays. |
 | `geometric-maps/` | Source and target geometric records; a fibration also names its generic fiber and can state its singular locus. |
@@ -155,6 +157,7 @@ $U$ is the lattice with basis $e, f$ and $b(e, e) = b(f, f) = 0$, $b(e, f) = 1$.
 
 `gram_tensor` is the defining datum: the components $b(e_i, e_j)$ of the Gram tensor $b$, a symmetric $(0,2)$-tensor, in a basis $e_1, \dots, e_n$ of $L$.
 A component is an integer or a string `p/q`. Floats are refused.
+`dual_gram_tensor` is the Gram tensor $b^*$ of the dual lattice $L^*$ in the dual basis, the inverse matrix $G^{-1}$ of the Gram tensor $G$; it is computed from the Gram tensor, never authored separately, and it requires a nonzero determinant. A dual lattice is therefore never a second record: $L^*$ is on the card of $L$.
 
 The corpus records a lattice once, up to twist and sign.
 For an integer $n$, the twist $L(n)$ is the module of $L$ with the form $nb$.
@@ -167,11 +170,10 @@ Of $L$ and $L(-1)$ the corpus records one: the one with $b(x, x) \geq 0$ for all
 So $E_8$ is a record and $E_8(-1)$ is not, and $U \oplus E_8(-1)$, of signature $(1, 9)$, is a record.
 A twist that a construction names is written as a summand with its scale, in the name and in `root_span.summands`: the root sublattice of $U$ is $\langle 1 \rangle(2) \oplus \langle 1 \rangle(-2)$, named `<2> + <-2>`.
 
-The fields of a record are of two kinds.
-The Gram tensor determines `rank`, `signature`, `determinant`, `definiteness`, `integral.parity`, `integral.discriminant_group`, `integral.overlattice_count`, `integral.delta`, `integral.bad_reduction_primes`, `integral.quadratic_character`, `definite.minimum`, `definite.kissing_number`, `definite.theta_series`, `definite.root_system`, `definite.roots`, `indefinite.isotropic`, `root_span.norms` and `root_sublattice`. Enrichment computes additional fields. Verification compares stored claims with their mathematical and source obligations.
+The Gram tensor is the defining mathematical input. Ordinary enrichment can compute inexpensive derived fields, but it does not certify them. Certification is a separate CI phase that recomputes uncertified values from the card's defining data, replaces any disagreeing authored value by the computed result, and then certifies that result. Potentially expensive exact invariants, including `integral.overlattice_count`, are computed only in that certification phase. Archived intake sources are provenance, not verification oracles.
 The build reads the stored values and renders every card.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-`latticedb enrich --genus-data` computes `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with `Genus` of SageMath, `integral.spinor_genus_count` and `integral.spinor_genera` of a lattice of rank at least 3 with `Genus` and the neighbour method of SageMath (`theory/overlattices.md`), `definite.automorphism_group_order` with `qfauto` of PARI/GP, and `integral.primitive_orbits` through $z^4$ and $w^4$, of a definite lattice with `qfauto` and `qfminim` and of an even lattice of hyperbolic index at least 2 from its discriminant form (`theory/orbits.md`), under SageMath. For a definite even lattice it also computes `integral.discriminant_sequence`: PARI `qfauto` supplies generators of $O(L)$, SageMath supplies generators of $O(A_L,q_L)$, and the induced matrices determine the image, kernel order, and pointed coset quotient. The lattice generators are stored as self-isometries in `morphisms/<tag>-<tag>.md`. It writes each value that a record does not hold, and reports a stored value that differs from the computed one; a series of orbits merges coefficient by coefficient with the stored one, and a person states the coefficients of any other indefinite lattice with a `reference` that proves them; a value that SageMath does not compute within the time limit is not written.
+`latticedb certify` computes exact `integral.overlattice_count`, `integral.genus_symbol`, `integral.genus_class_count` and `integral.hyperbolic_index` with SageMath, `integral.spinor_genus_count` and `integral.spinor_genera`, `definite.automorphism_group_order`, and the orbit/discriminant-sequence invariants. A completed computation replaces any disagreeing authored value in the scope it computes and then certifies the resulting card value. A computation that does not finish within the time limit writes neither a replacement nor a certificate.
 `hyperbolic.reflective` and a `root_span` block that enrichment does not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for the hypothesis.
@@ -187,15 +189,14 @@ A block on a lattice that does not satisfy the hypothesis is a validation error,
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
 The `integral`, `definite`, `indefinite` and `root_sublattice` blocks are required when their hypotheses hold; `root_span` and `hyperbolic` are optional.
-`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.discriminant_sequence`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.spinor_genus_count`, `integral.spinor_genera`, `integral.hyperbolic_index` and `integral.primitive_orbits` are optional. `integral.discriminant_sequence` records a pointed coset set for every definite even lattice on which it is computed. It records a quotient multiplication table only when the image of the discriminant action is normal.
+`definite.theta_series` and `definite.root_system` are required exactly when the lattice is integral, and `definite.automorphism_group_order`, `integral.discriminant_sequence`, `integral.overlattice_count`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.spinor_genus_count`, `integral.spinor_genera`, `integral.hyperbolic_index` and `integral.primitive_orbits` are optional. `integral.discriminant_sequence` records a pointed coset set for every definite even lattice on which it is computed. It records a quotient multiplication table only when the image of the discriminant action is normal.
 `integral.primitive_orbits` maps each of `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+` to the coefficients `constant`, `z` and `w` of the series $F_{L,\Gamma}(z, w)$ of the numbers of $\Gamma$-orbits of primitive vectors of each norm, null where a coefficient is not known (`theory/orbits.md`).
 
 `integral.overlattice_count` is the number of integral lattices $M$ with $L \subseteq M \subseteq L^*$, with $M = L$ counted.
 A lattice $M \supseteq L$ of finite index is integral exactly when $H = M/L$ is a subgroup of the discriminant group $A_L = L^*/L$ on which the form $b_{A_L}(x + L, y + L) = b(x, y) + \mathbb{Z}$ vanishes, so the field is the number of those subgroups.
 It counts subgroups, not their orbits under the isometries of $L$, and it counts every integral $M$: for an even $L$ some $M$ can be odd.
 For $U(2)$ the count is 4, and 3 of the 4 lattices are even.
-Enrichment enumerates the subgroups of $A_L$, so the field is stated exactly when the determinant is not zero and $A_L$ has at most 100000 subgroups.
-A record without it is not decided, and its page says so: $(\mathbb{Z}/2)^8$ has 417199 subgroups.
+Certification asks the exact lattice/discriminant-form API for this cardinality. If that computation has not completed, the field is absent and uncertified; there is no approximation or subgroup-count cutoff.
 
 `integral.delta` is Nikulin's invariant $\delta$ of an even lattice with $2 A_L = 0$, and it is required for exactly those lattices, $A_L = 0$ included: 0 when $b(x, x)$ is an integer for every $x$ in $L^*$, and 1 otherwise.
 With the rank $r$ and $A_L \cong (\mathbb{Z}/2)^a$ it gives Nikulin's $(r, a, \delta)$.
@@ -252,26 +253,25 @@ The address of a lattice is `tag/<TAG>.html`.
 
 **Author:** Write or edit `lattices/<TAG>.md` for a lattice without a stored source row. The tag names its permanent page. State only data and claims that the card can support.
 
-**Enrich:** `just enrich` computes additional fields on existing cards and records computation certificates. A sparse card remains a site card while it awaits enrichment.
+**Enrich:** `just enrich` computes ordinary derived fields on existing cards without changing certification status. A sparse card remains a site card while it awaits computation.
 
-**Verify:** `just verify` runs the independent checks in `src/latticedb/checks/`. The scheduled CI job reports errors in card fields, relations and source claims. It does not change cards. `just build` reads cards and renders the site.
+**Certify:** `just certify` is the computation phase used by CI. It computes each uncertified result, replaces a disagreeing authored value with the computed value, and only then writes the certificate hash to the card and certificate log.
+
+**Verify:** `just verify` runs the mathematical checks in `src/latticedb/checks/`. The scheduled CI job reports errors in card fields and relations. It does not compare cards to archived intake sources, and it does not change cards. `just build` reads cards and renders the site.
 
 ## Certificates
 
-Each computation is carried out once.
-`certificates.yaml` maps the name of each computation that the database has carried out to its certificate: the SHA-256 digest of its inputs, the program that carried it out with its version, and, for a computation that did not finish, the time limit in seconds.
+For a fixed input, a completed computation certifies its value permanently.
+The value itself is stored only on the lattice card. The card's `certifications` map cites one SHA-256 certificate hash for each completed computation. That hash commits to the computation name, the card's Gram tensor and the stored result. `certificates.yaml` stores the same hash with the program and version that computed it, but does not duplicate the result. Thus a certificate states a fact $I(G)=v$ without creating a second store of $v$. It does not expire when the implementation changes. Editing $G$ or $v$ breaks the card's hash commitment; a computation that times out or otherwise does not finish has no certificate.
 
 | Name | Computation | Inputs |
 | --- | --- | --- |
 | `<tag> derive` | The fields that the Gram tensor determines | The Gram tensor |
 | `<tag> <block>.<field>` | A value that SageMath computes, such as `0012 integral.genus_symbol` | The Gram tensor |
-| `corpus summands` | The embeddings between records that are orthogonal sums, of `latticedb.summands` | The Gram tensors of every record |
 
-`latticedb enrich` carries out computations without certificates for their present inputs and stores the resulting values and certificates.
-A computation that did not finish within the time limit is carried out again only with a larger `--seconds`. To carry out a computation again, after a change to the computation, remove its certificate.
+`latticedb certify` carries out a computation exactly when the card does not already cite the matching completed certificate. It writes the computed result to the card whether or not an authored value was already present, then writes the hash citation to `certifications` and writes only the hash and computation provenance to `certificates.yaml`.
 
-Run enrichment for selected cards with `just enrich --tag <tag>`. Use `--genus-data` or `--summand-maps` for the corresponding calculations.
-The nightly `.github/workflows/lattice-database-verify.yml` job reports errors without changing cards.
+Run ordinary enrichment for selected cards with `just enrich --tag <tag>`. Certification is run by the nightly CI certification workflow; a selected card can be certified explicitly with `just certify --tag <tag>` when debugging that workflow.
 
 ## Morphisms
 
@@ -363,6 +363,13 @@ The query string selects filters, so a filtered view has an address:
 | `property` | properties; a row must have all of them | `database.html?property=even,unimodular` |
 | `family` | families; a row must have all of them | `database.html?family=irreducible-root-lattice` |
 | `q` | text search | `database.html?q=Lambda` |
+| `signature` | nondegenerate lattices of signature (p, q); repeat for both orders | `database.html?signature=2,3&signature=3,2` |
+
+## The Hodge diamond page
+
+`hodge-diamonds.html` is a teaching widget, not catalogue data.
+It draws the Hodge diamond for a chosen complex dimension, draws the lines of the symmetries the catalogue checks on every card (conjugation and Serre duality) with the square mirror the catalogue records as `symmetry_group: D4`, names the symmetry orbit and the Hodge filtration piece of a click, and totals the rank when the preset has numbers.
+The K3 preset shows the numbers of the `k3-surface` card.
 
 ## Commands
 
@@ -375,16 +382,18 @@ The `justfile` calls it.
 | `just new ...` | Author a lattice card from a Gram tensor and supplied fields |
 | `just morphism S T ...` | Author a morphism in `morphisms/<S>-<T>.md` |
 | `just enrich ...` | Compute and store additional fields on existing cards |
-| `just verify` | Report card, relation and source errors in CI |
+| `just certify ...` | CI computation phase: replace uncertified computed scopes and attach certificate hashes |
+| `just verify` | Report mathematical card and relation errors in CI |
+| `just duplicates` | List the tags that share a Gram tensor |
 | `just build` | Render every lattice card into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
 | `just test` | Run the tests |
+| `just test-source-intake` | Exercise archived-source importers and source-to-card collation; provenance only |
 
-The check of `sources/hashimoto/` checks the records against Tables 10.2 and 10.3 of Hashimoto, and the embeddings of $\Lambda^G$ and $\Lambda_G$ in the K3 lattice `027E` as orthogonal primitive sublattices.
-The check of `sources/hoehn_mason/` checks that the morphism files hold the maps that the source determines.
+`just test-source-intake` exercises the Hashimoto and Höhn--Mason readers and their collation against the cards produced from those sources. These tests detect importer/transcription drift. They do not certify a lattice invariant and do not contribute to `just verify`.
 
-The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. Enrichment computes with PARI/GP through `cypari2` and with `python-flint`. `latticedb enrich --genus-data` needs SageMath at `$SAGE_BIN`.
+The build needs `pandoc` on `PATH`. The pages load MathJax and DataTables from a CDN. Ordinary enrichment uses the preamble's lattice computations. `latticedb certify` needs SageMath at `$SAGE_BIN` for the expensive certification computations.
 
 ## Sources to absorb
 
@@ -398,7 +407,7 @@ The work that remains, in order:
 1. Absorb the remaining entries of the bulk archive.
    The archive is stored at `sources/nebe_sloane/union.gz`. Its `D_n*` entries print exact halves, while `Bring8` and `mcc` print rounded decimal Gram components that require source-specific exact data. The `Shimada_86` entry has two conflicting matrices: its full `GRAM_MATRIX` is positive definite with the stated determinant, while its lower-triangular `GRAM` is indefinite and has a different determinant. The [source audit](sources/INVARIANT-AUDIT.md#shimada_86-source-conflict) records the exact comparison. The twist and sign rules under *A record* apply: an entry that is $M(n)$ for an integer $n \geq 2$, or the negative of the lattice the corpus records, is not a record.
 
-The survey of 2026-10-02 read these by the test the corpus uses everywhere: a source contributes the claims it states — Gram tensors, identifications, invariants, relations — and every claim lands as a field, a `related` entry, a morphism or a check of a record. Two sources stating a claim about the same lattice is not redundancy, it is convergence, and it is how a stored value gets checked; the modules of Hashimoto and of Höhn and Mason check records no other source supplies the lattice for. Nothing about a lattice being named elsewhere demotes a source. The reasons that do apply are stated at each entry: a claim the schema has no place for gains that place (AGENTS.md), and a displayed decimal is not inexact data where theory states the exact quantity it rounds — the exact value is then absorbed, as a formula evaluated in a symbolic ring, never discarded for its printing. What yields nothing is a number with no exact recovery known, or a page that is not there.
+Source intake is one-way. A source contributes the claims it states — Gram tensors, identifications, invariants, relations, generators and maps — and every claim that belongs to the mathematical corpus lands in the appropriate card, relation, morphism or catalogue record. The source can be used to check that this seeding/import step copied what it was meant to copy, but it is not an oracle afterward. Computable claims are certified independently by mathematics or computation from the stored defining data. Two sources stating the same value are useful provenance, but agreement between sources is not a substitute for certification.
 
 - **Watson's single-class genera**, `Classi/watson` on the catalogue site: 3494 primitive lattices of one class per genus, in machine-readable rows of the lower-triangular Gram entries, dimension by dimension; Lorch's completion is arXiv:1208.5638. A module `latticedb watson` reads it, and each genus's stored `integral.genus_class_count = 1` checks the table's claim.
 

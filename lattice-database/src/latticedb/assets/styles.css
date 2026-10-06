@@ -933,36 +933,110 @@ h2[id^="rank-"] {
   text-decoration: none;
 }
 
-.orthogonal-table .tag {
+.orthogonal-table .orthogonal-count {
   color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
-.orthogonal-table .tag:hover {
+.orthogonal-table .orthogonal-count:hover {
   background: var(--wash);
   color: var(--accent-dark);
 }
 
-.orthogonal-stub,
-.orthogonal-table .orthogonal-stub {
+.orthogonal-table .orthogonal-empty,
+.orthogonal-table .orthogonal-blank {
   color: var(--line);
-  font-size: 0.62rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
-.orthogonal-table .orthogonal-stub:hover {
-  background: var(--wash);
-  color: var(--accent-dark);
+.orthogonal-table .orthogonal-blank {
+  background: repeating-linear-gradient(45deg, transparent, transparent 3px, var(--wash) 3px, var(--wash) 6px);
 }
 
-.orthogonal-table .orthogonal-mirror {
+/* Hodge diamond studio */
+
+.hodge-controls {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 46rem;
+  margin-bottom: 1.5rem;
+}
+
+.hodge-controls fieldset {
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  padding: 0.6rem 0.9rem 0.8rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.hodge-controls legend {
+  padding: 0 0.4rem;
+}
+
+.hodge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.hodge-row input[type="range"] {
+  flex: 1 1 12rem;
+}
+
+#hodge-svg {
   display: block;
-  padding: 0.15rem 0.2rem;
-  color: var(--line);
-  font-size: 0.7rem;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
 }
 
-.orthogonal-owed code {
-  font-size: 0.78rem;
-  overflow-wrap: anywhere;
+.hodge-diamond {
+  fill: var(--wash);
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.hodge-cell.is-selected .hodge-diamond {
+  stroke: var(--accent-dark);
+  stroke-width: 3;
+}
+
+.hodge-cell.is-orbit .hodge-diamond {
+  fill: #d7e7f5;
+}
+
+.hodge-cell.is-filtration .hodge-diamond {
+  stroke-dasharray: 5 3;
+  stroke-width: 2.5;
+}
+
+.hodge-text {
+  text-anchor: middle;
+  font-size: 15px;
+  fill: var(--ink);
+  pointer-events: none;
+}
+
+.hodge-axis {
+  stroke: var(--accent-dark);
+  stroke-width: 1.5;
+  stroke-dasharray: 8 5;
+}
+
+.hodge-axis-d4 {
+  stroke-dasharray: 2 4;
+}
+
+.hodge-center {
+  fill: none;
+  stroke: var(--accent-dark);
+  stroke-width: 1.5;
+}
+
+.hodge-axis-label {
+  font-size: 12px;
+  font-style: italic;
+  fill: var(--muted);
 }

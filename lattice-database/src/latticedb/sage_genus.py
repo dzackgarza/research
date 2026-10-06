@@ -2,7 +2,7 @@
 
 Reads from standard input a JSON object `{"seconds": s, "lattices": [{"tag", "gram", "sign", "fields"}, ...]}`,
 where `sign` is 1 for a positive definite lattice, -1 for a negative definite one and 0 otherwise, and
-`fields` names the values to compute among `genus_symbol`, `genus_class_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`,
+`fields` names the values to compute among `genus_symbol`, `genus_class_count`, `overlattice_count`, `spinor_genus_count`, `spinor_genera`, `hyperbolic_index`,
 `automorphism_group_order`, `discriminant_sequence` and `primitive_orbits`. Writes one JSON line per lattice to standard output, as soon as it is
 computed: the tag, the version of SageMath as `by`, and each value of `fields`. A value that is not
 computed within `s` seconds is null.
@@ -34,8 +34,12 @@ from sage.quadratic_forms.quadratic_form__neighbors import neighbor_iteration
 from sage.sets.primes import Primes
 from sage.version import version
 
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.rings import session_ring_objects
+
 # The PARI instance of cypari2, which is the one SageMath initialized: a second `Pari()` in a process does not initialize PARI again.
 pari = cypari2.Pari()
+OWNED_ZZ = session_ring_objects()["ZZ"]
 
 
 class Request(TypedDict):
@@ -453,6 +457,14 @@ def automorphism_group_order(gram: Matrix_integer_dense) -> int:
     return int(pari(gram).qfauto()[0])
 
 
+def overlattice_count(gram: Matrix_integer_dense) -> int:
+    """The exact number of integral overlattices, through the lattice owner API."""
+    lattice = Lattices(OWNED_ZZ)(
+        [[int(entry) for entry in row] for row in gram.rows()]
+    )
+    return int(lattice.integral_overlattice_inclusions().cardinality())
+
+
 def discriminant_sequence(
     gram: Matrix_integer_dense, sign: int
 ) -> DiscriminantSequence:
@@ -560,6 +572,7 @@ def main() -> None:
         computations: dict[str, Callable[[], Value]] = {
             "genus_symbol": partial(symbol, gram),
             "genus_class_count": partial(class_count, gram),
+            "overlattice_count": partial(overlattice_count, gram),
             "spinor_genus_count": partial(spinor_genus_count, gram),
             "spinor_genera": partial(spinor_genera, gram, lattice["sign"]),
             "hyperbolic_index": partial(hyperbolic_index, gram),

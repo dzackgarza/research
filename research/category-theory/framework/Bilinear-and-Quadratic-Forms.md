@@ -30,12 +30,25 @@ $$
 \mcq_{R,W}=\int_{R\text{-}\mathbf{Mod}}(U\circ\operatorname{Quad}_{R,W}).
 $$
 An object of $\mathcal B_{R,W}$ is a pair $(M,b)$.
-A morphism $(M,b_M)\to(N,b_N)$ is an $R$-linear map $f\colon M\to N$ satisfying $f^*b_N=b_M$.
+A morphism $(M,b_M)\to(N,b_N)$ has underlying morphism
+$f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ and satisfies $f^*b_N=b_M$.
 The projection to $R\text{-}\mathbf{Mod}$ is the discrete fibration of @def:category-of-elements.
 The quadratic category uses the same convention.
 :::
 
-## Properties of bilinear forms {#sec-form-properties}
+::: {.convention #conv:bilinear-module-fibration title="Bilinear modules versus form-preserving maps"}
+
+Write
+$$
+\mathbf{BilMod}_R\too R\text{-}\mathbf{Mod}
+$$
+for the abelian category of bilinear modules fibred over their value modules.
+Its fibre over $W$ is the category of $W$-valued bilinear modules.
+
+Kernels, cokernels, images, exact sequences, and epi--mono factorizations of bilinear modules are taken intrinsically in $\mathbf{BilMod}_R$.
+They are not computed in $R\text{-}\mathbf{Mod}$ and then equipped with a form afterward.
+The fixed-value form-preserving category $\mathcal B_{R,W}$ above is a separate construction.
+:::
 
 ::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness"}
 For $b\colon M\times M\to W$:

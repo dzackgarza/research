@@ -9,7 +9,6 @@ other geometric objects that it names.
 
 from pathlib import Path
 
-from latticedb.arithmetic import GramTensor
 from latticedb.corpus import FAMILIES_FILE, Corpus
 from latticedb.geometric import (
     ComplexManifold,
@@ -19,7 +18,7 @@ from latticedb.geometric import (
 )
 from latticedb import records
 from latticedb.graphs import WeightedGraph
-from latticedb.model import Lattice
+from latticedb.model import GramTensor, Lattice
 from latticedb.relations import hyperbolic_index_bounds
 
 SOURCE_DIRECTORY = "lattices/source"

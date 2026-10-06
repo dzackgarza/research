@@ -107,7 +107,7 @@ $$
 \qquad
 q_{\ten}\circ\gamma = -q_{\sen}
 $$
-be the gluing anti-isometry supplied by the embedding-gluing description (@rmk:embedding-gluing-data) for the primitive embedding $\sen\injects\lkt$ with complement $\ten$.
+be the gluing anti-isometry supplied by the embedding-gluing description (@cons:embedding-gluing-data) for the primitive embedding $\sen\injects\lkt$ with complement $\ten$.
 Then
 $$
 \gent

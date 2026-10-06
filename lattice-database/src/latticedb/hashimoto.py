@@ -30,8 +30,8 @@ from pydantic import BaseModel, ConfigDict, TypeAdapter
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.rings import session_ring_objects
 
-from latticedb import arithmetic, corpus
-from latticedb.model import Lattice, Tag
+from latticedb import corpus
+from latticedb.model import GramTensor, Lattice, Tag
 
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
@@ -101,7 +101,7 @@ def symbol_group(symbol: str) -> list[int]:
     return sorted(int(match[1]) for match in found if match for _ in range(int(match[3])))
 
 
-def _tensor(rows: tuple[tuple[int, ...], ...]) -> arithmetic.GramTensor:
+def _tensor(rows: tuple[tuple[int, ...], ...]) -> GramTensor:
     return tuple(tuple(map(Fraction, row)) for row in rows)
 
 

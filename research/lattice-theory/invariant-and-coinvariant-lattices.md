@@ -1,21 +1,28 @@
 # Invariant and coinvariant lattices
 
-::: {.remark}
 
-We record the lattice-theoretic constructions attached to a group of isometries of a lattice, and specialize them to the case of an involution.
-:::
+::: {.definition #def:invariant_coinvariant_lattices title="Invariant and coinvariant lattices"}
 
-::: {.definition #def:invariant_coinvariant_lattices}
-
-Let $G\injects \Orth(L)$ be a faithful representation realizing a group $G$ acting on a lattice $L$ by isometries.
-The **invariant sublattice** and the **coinvariant sublattice** of the action are defined as
+Let
 $$
-L^G \definedas \theset{v\in L \mid g.v = v \text{ for all } g\in G},
-\qquad
-L_G \definedas (L^G)^{\perp L}
-.
+\rho\colon G\injects\Orth(L)
 $$
-Thus $L^G$ is the sublattice of vectors fixed by every element of $G$, and $L_G$ is its orthogonal complement in $L$.
+be a faithful action.
+Define
+$$
+\iota^G\colon L^G\injects L
+$$
+to be the common equalizer in $\bZ\text{-}\mathbf{Mod}$ of
+$$
+\rho(g),\id_L\colon L\rightrightarrows L,
+\qquad g\in G.
+$$
+Define
+$$
+\iota_G\colon L_G\injects L
+$$
+to be the orthogonal-complement subobject of $\iota^G$.
+These are the **invariant lattice** and **coinvariant lattice** of the action.
 :::
 
 ::: {.proposition #prop:involution_eigenspaces}
@@ -38,7 +45,12 @@ $$
 ,
 $$
 so $\beta_{L_\QQ}(v, w) = 0$.
-Hence $V_-\iscontainedin V_+^{\perp}$, and comparing dimensions gives $V_- = V_+^{\perp} = (L_G)_\QQ$.
+Hence the inclusion $V_-\injects L_\QQ$ factors through the orthogonal-complement subobject $V_+^{\perp}\injects L_\QQ$.
+The induced monomorphism
+$$
+V_-\injects V_+^{\perp}
+$$
+is an isomorphism by equality of dimensions, and $V_+^{\perp}\isoto(L_G)_\QQ$.
 :::
 
 ::: {.proposition #prop:invariant_coinvariant_primitive}
@@ -73,7 +85,11 @@ I(v_+) = I(v) + I^2(v) = I(v) + v = v_+,
 I(v_-) = I(v) - v = -v_-
 ,
 $$
-so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by the eigenspace proposition (@prop:involution_eigenspaces), in $(L_G)_\QQ\intersect L = L_G$.
+so $v_+$ factors through $L^G\injects L$. By @prop:involution_eigenspaces, $v_-$ factors through $(L_G)_\QQ\injects L_\QQ$. Since $L_G\injects L$ is primitive by @prop:invariant_coinvariant_primitive, @def:saturation identifies $L_G$ with the pullback
+$$
+L\mathbin{\times}_{L_\QQ}(L_G)_\QQ.
+$$
+Therefore $v_-$ factors through $L_G\injects L$.
 Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogonal since $v_+\in L^G$ and $v_-\in L_G = (L^G)^{\perp L}$.
 :::
 
@@ -94,16 +110,31 @@ $$
 2x = w \pm Iw .
 $$
 
-Now use the two hypotheses.
-Since $I$ lies in the stable orthogonal group it acts trivially on $A_L = \dualof{L}/L$, so $Iw - w \in L$; and since $L$ is $2$-elementary, $2\dualof{L} \iscontainedin L$, so $2w \in L$.
-Therefore
+Let
 $$
-2x = w - Iw = -(Iw - w) \in L
-\qquad\text{and}\qquad
-2x = w + Iw = 2w + (Iw - w) \in L
+\pi_L\colon L^\#\twoheadrightarrow L^\#/L
 $$
-in the two cases respectively.
-In each case $2x$ lies in $L^{\pm}\tensor_\ZZ\QQ$ as well as in $L$, and $L^{\pm}$ is primitive, so $2x \in L^{\pm}$.
+be the carrier quotient of the bilinear discriminant object $A_L$.
+Since $I\in\widetilde\Orth(L)$, the induced carrier automorphism of $L^\#/L$ is the identity, hence
+$$
+\pi_L(Iw-w)=0.
+$$
+Since $L$ is $2$-elementary, multiplication by $2$ on $L^\#/L$ is zero, hence
+$$
+\pi_L(2w)=0.
+$$
+Therefore $Iw-w$ and $2w$ both factor through the carrier monomorphism $L\injects L^\#$.
+It follows that $2x=w-Iw$ in the $-$ case and $2x=w+Iw$ in the $+$ case both factor through $L\injects L_\QQ$.
 
-Thus $2\dualof{(L^{\pm})} \iscontainedin L^{\pm}$, which is $2$-elementarity.
+At the same time $2x$ factors through $(L^{\pm})_\QQ\injects L_\QQ$.
+Since $L^{\pm}\injects L$ is primitive, @def:saturation identifies it with the pullback
+$$
+L\mathbin{\times}_{L_\QQ}(L^{\pm})_\QQ.
+$$
+Hence $2x$ factors through $L^{\pm}\injects L$.
+Thus multiplication by $2$ annihilates the carrier
+$$
+(L^{\pm})^\#/L^{\pm}
+$$
+of $A_{L^{\pm}}$, which is precisely the $2$-elementary condition of @def:p-elementary.
 :::

@@ -85,6 +85,8 @@ $O^+$ and its subgroups are then given by the [proposition on definite lattices]
 For an indefinite lattice the sets are infinite.
 Dawes gives algorithms for the orbits of vectors under subgroups of $O(L)$ ([Dawes 2022](https://arxiv.org/abs/2205.10601), Algorithms 2.1 to 2.3). When $L$ is even and contains two orthogonal hyperbolic planes, the coefficients of $F_{L,\Gamma}$ are given by the discriminant group $A_L$ and its finite quadratic form $q_L\colon A_L \to \mathbb{Q}/2\mathbb{Z}$, through the proposition below.
 
+### The series on the discriminant group {#discriminant-orbits}
+
 Define, for a subgroup $\Gamma$ of $O(L)$, the *series of orbits on the discriminant group* $$F_{A_L,\Gamma}(z, w) = c_\Gamma(0) + \sum_{n \geq 1} c_\Gamma(n) z^n + \sum_{n \geq 1} c_\Gamma(-n) w^n,$$ where $c_\Gamma(n)$ is the number of $\Gamma$-orbits on the classes $\alpha \in A_L$ with $q_L(\alpha) = n / \operatorname{ord}(\alpha)^2$.
 This is a function of $(A_L, q_L)$ alone, defined for every nondegenerate $L$; it is the object the proposition below computes, and it equals $F_{L,\Gamma}$ on the stated class.
 The two series are different functions in general: $F_{L,\Gamma}$ grades the primitive vectors of $L$, and $F_{A_L,\Gamma}$ grades the classes of $A_L$.

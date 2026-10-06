@@ -111,14 +111,10 @@ A *Coxeter system in a lattice* over $R$ is a triple $(\Phi,L,\iota)$ consisting
 
 A morphism $(\Phi_1,L_1,\iota_1)\to(\Phi_2,L_2,\iota_2)$ is a pair $(u,g)$ consisting of a morphism $u\colon\langle\Phi_1\rangle\to\langle\Phi_2\rangle$ of $\mathbf{Lat}_R$ sending $\Phi_1$ into $\Phi_2$ and a morphism $g\colon L_1\to L_2$ of $\mathbf{Lat}_R$, such that the square
 
-```{.tikz}
-%%| filename: coxeter-morphism-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
-\begin{tikzcd}
+```tikzcd id="coxeter-morphism-square"
 \langle\Phi_1\rangle \arrow[r,"u"] \arrow[d,hook,"\iota_1"'] &
 \langle\Phi_2\rangle \arrow[d,hook,"\iota_2"] \\
 L_1 \arrow[r,"g"'] & L_2
-\end{tikzcd}
 ```
 
 commutes.

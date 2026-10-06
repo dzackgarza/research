@@ -1,147 +1,68 @@
 # Discriminant forms and the genus
 
-::: {.remark}
+::: {.convention #conv:discriminant-lattice-notation title="Discriminant-form notation"}
 
-The Lattice Theory section introduced the dual lattice $\dualof{L}$, the discriminant group $A_L \definedas \dualof{L}/L$, and the discriminant quadratic form $q_L: A_L \to \QQ/2\ZZ$ of an even lattice.
-We now develop the theory these constructions specialize: the general correspondence between symmetric bilinear forms and quadratic forms, its torsion-valued counterpart, the resulting structure on $A_L$, the properties of the dual lattice, and the classification of lattices up to genus.
-Throughout, $(L, \beta_L)$ denotes a lattice in the sense of the Lattice Theory section, with $L_\QQ \definedas L\tensor_\ZZ \QQ$ and $\beta_{L_\QQ}$ the $\QQ$-linear extension of $\beta_L$.
+Throughout, $L$ denotes a nondegenerate integral lattice.
+Its bilinear discriminant form is
+$$
+A_L
+=
+\coker_{\mathbf{BilMod}_{\bZ}}(\boldsymbol\iota_L)
+$$
+from @def:discriminant.
+If $L$ is even, its quadratic discriminant form is the separate object $A_{L,q}$.
+Thus $A_L$ always means the bilinear discriminant form; the subscript $q$ is never omitted for the quadratic refinement.
+
+If $N=N(L)$ is the arithmetic level of @def:lattice-level, then the value modules are
+$$
+A_L:\quad \tfrac1N\bZ/\bZ,
+\qquad
+A_{L,q}:\quad \tfrac2N\bZ/2\bZ.
+$$
 :::
 
-## Quadratic forms and the polarization identity
+::: {.definition #def:coble-discriminant-forms title="Discriminant bilinear and quadratic forms"}
 
-::: {.definition #def:coble-quadratic-form}
-
-A **quadratic form** on a $\ZZ$-module $L$ is a map of sets $q: L \to \QQ$ such that $q(\lambda v) = \lambda^2 q(v)$ for all $v\in L$ and all $\lambda\in\ZZ$, and whose **polar form** $\beta_q$ is a symmetric bilinear form on $L$:
+This chapter uses the canonical objects of @def:discriminant without redefining them.
+The carrier module of both $A_L$ and, when defined, $A_{L,q}$ is $L^\#/L$.
+Define
 $$
-\begin{aligned}
-\beta_q: L \tensor_\ZZ L &\to \QQ \\
-(v, w) &\mapsto \beta_q(v, w) \definedas q(v+w) - q(v) - q(w)
-.
-\end{aligned}
+\ell(L)
+\definedas
+\ell(L^\#/L),
 $$
-We say $q$ is **integral** if $q(L) \iscontainedin \ZZ$, and we call the pair $(L, q)$ a **quadratic $\ZZ$-module**.
+the minimal number of generators of that finite-length $\bZ$-module.
 :::
 
-::: {.remark}
+::: {.proposition #prop:discriminant-nondegenerate title="Nondegeneracy and polarization of discriminant forms"}
 
-Setting $w = v$ in the polar form and using homogeneity gives
+The bilinear discriminant form $A_L$ is nondegenerate.
+If $L$ is even, the quadratic discriminant form $A_{L,q}$ is nondegenerate and its bilinearization is related to the bilinear discriminant form by the canonical value-module isomorphism
 $$
-\beta_q(v, v) = q(2v) - 2q(v) = 4q(v) - 2q(v) = 2q(v)
-,
+\mu_{2,N}\colon
+\tfrac1N\bZ/\bZ
+\isoto
+\tfrac2N\bZ/2\bZ,
+\qquad
+a+\bZ\longmapsto2a+2\bZ.
 $$
-so that $q(v) = \tfrac{1}{2}\beta_q(v, v)$.
-The polar form is thus always **even**, meaning $\beta_q(v, v)\in 2\ZZ$ whenever $q$ is integral.
-This identity is the source of the bijection recorded below.
-:::
-
-## The correspondence between bilinear and quadratic forms
-
-::: {.lemma #lem:coble-bilinear-quadratic-correspondence}
-
-Every $\QQ$-valued symmetric bilinear module $(L, \beta)$ determines a $\QQ$-valued quadratic module $(L, q_\beta)$ by
+Explicitly,
 $$
-q_\beta(v) \definedas \beta(v, v)
-,
+b_{q_L}
+=
+\mu_{2,N}\circ\bar\beta_L.
 $$
-and $q_\beta$ depends only on the symmetric part of $\beta$.
-Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric bilinear module $(L, \beta_q)$ via its polar form from the quadratic-form definition (@def:coble-quadratic-form).
-:::
-
-::: {.lemma #lem:coble-even-lattice-bijection}
-
-There is a bijection between even symmetric integral bilinear forms on $L$ and integral quadratic forms on $L$:
-$$
-\theset{ \beta\in \Sym^2_\ZZ(\dualof{L}) \mid \beta \text{ is even} }
-\quad\longleftrightarrow\quad
-\Quad_\ZZ(L)
-,
-$$
-under which a bilinear form $\beta$ is sent to $q(v) \definedas \tfrac{1}{2}\beta(v, v)$, and a quadratic form $q$ is sent to its polar form $\beta_q$.
-Note that this forward map $\beta\mapsto\tfrac{1}{2}\beta(v,v)$ differs by the factor $\tfrac{1}{2}$ from the map $\beta\mapsto q_\beta(v) = \beta(v,v)$ of the bilinear/quadratic correspondence lemma (@lem:coble-bilinear-quadratic-correspondence), so this bijection is a distinct construction rather than a restriction of that lemma; only the backward (polar-form) direction is shared.
-Concretely, the polar form of any integral quadratic form is an even symmetric integral bilinear form, and conversely every even symmetric integral bilinear form $\beta$ is the polar form of the integral quadratic form $q(v) \definedas \tfrac{1}{2}\beta(v, v)$.
 :::
 
 ::: {.proof}
-
-If $q$ is integral then $\beta_q(v, v) = 2q(v)\in 2\ZZ$, so $\beta_q$ is even and integral.
-Conversely, if $\beta$ is even and integral then $q(v) \definedas \tfrac{1}{2}\beta(v, v)$ takes values in $\ZZ$, and its polar form recovers $\beta$:
+Nondegeneracy of $A_L$ is the standard discriminant-pairing duality induced by the nondegenerate form on $L_\QQ$ [@Nik80, §1.1].
+For $x,y\in L^\#$,
 $$
-\beta_q(v, w)
-= q(v + w) - q(v) - q(w)
-= \tfrac{1}{2}\left( \beta(v + w, v + w) - \beta(v, v) - \beta(w, w) \right)
-= \beta(v, w)
-,
+q_L(x+y)-q_L(x)-q_L(y)
+=
+2\beta_{L_\QQ}(x,y)+2\bZ,
 $$
-using symmetry of $\beta$.
-The two assignments are mutually inverse.
-:::
-
-## Torsion bilinear and quadratic forms
-
-::: {.definition #def:coble-torsion-forms}
-
-A **torsion bilinear form** is a pair $(G, \beta)$ where $G$ is a finitely generated torsion $\ZZ$-module and
-$$
-\beta: G \tensor_\ZZ G \to \QQ/\ZZ
-$$
-is a symmetric bilinear form.
-A **torsion quadratic form** is a pair $(G, q)$ where $G$ is a finitely generated torsion $\ZZ$-module and $q: G \to \QQ/\ZZ$ is a quadratic form, i.e. $q(\lambda x) = \lambda^2 q(x)$ for all $x\in G$ and $\lambda\in\ZZ$, whose polar form is a torsion bilinear form.
-:::
-
-::: {.remark}
-
-The discriminant group $A_L$ of the Lattice Theory section is a finite, hence finitely generated torsion, $\ZZ$-module, so its associated forms are instances of this notion.
-We record the discriminant data as two separate forms: the discriminant quadratic form $q_L\colon A_L\to\QQ/2\ZZ$ (matching the $\QQ/2\ZZ$ normalization of the Lattice Theory section) and the discriminant bilinear form $b_L\colon A_L\times A_L\to\QQ/\ZZ$.
-These share the numerator $\beta(\tilde x,\tilde y)$ read modulo different lattices; the diagonal $q_L(\bar x) = \beta(\tilde x,\tilde x)\bmod 2\ZZ$ reduces to $b_L(\bar x,\bar x) = \beta(\tilde x,\tilde x)\bmod\ZZ$ under the natural surjection $\QQ/2\ZZ\surjects\QQ/\ZZ$, not under any multiplication-by-$2$ isomorphism.
-:::
-
-## The discriminant bilinear and quadratic forms
-
-::: {.definition #def:coble-discriminant-forms}
-
-Let $(L, \beta_L)$ be a nondegenerate even lattice with discriminant group $A_L = \dualof{L}/L$, and let $\beta$ also denote the $\QQ$-valued extension of the form to $\dualof{L}$.
-The **discriminant bilinear form** of $L$ is the torsion bilinear form
-$$
-\begin{aligned}
-b_L: A_L \times A_L &\to \QQ/\ZZ \\
-(\bar x, \bar y) &\mapsto \beta(x, y) \bmod \ZZ
-,
-\end{aligned}
-$$
-computed on any lifts $x, y\in \dualof{L}$ of $\bar x, \bar y$.
-Its associated **discriminant quadratic form** is
-$$
-q_L(\bar x) \definedas \beta(x, x) \bmod 2\ZZ \in \QQ/2\ZZ
-,
-$$
-for any lift $x$ of $\bar x$; this is the $\QQ/2\ZZ$-valued form $q_L$ recalled from the Lattice Theory section.
-Reducing modulo $\ZZ$ recovers the diagonal of $b_L$, i.e. $q_L(\bar x)\bmod\ZZ = b_L(\bar x,\bar x)$, via the surjection $\QQ/2\ZZ\surjects\QQ/\ZZ$.
-The **orthogonal group** $\Orth(A_L)$ is the group of automorphisms of $A_L$ preserving $q_L$.
-The **length** $\ell(L)$ of $L$ is the minimal number of generators of the abelian group $A_L$.
-:::
-
-::: {.remark}
-
-Both $b_L$ and $q_L$ are well defined: replacing a lift $x$ by $x + m$ with $m\in L$ changes $\beta(x, y)$ by $\beta(m, y)\in\ZZ$ (so $b_L$ is well defined modulo $\ZZ$) and changes $\beta(x, x)$ by $\beta(2x, m) + \beta(m, m)\in 2\ZZ$ (so $q_L$ is well defined modulo $2\ZZ$), since $\beta(\dualof{L}, L)\iscontainedin\ZZ$ and $L$ is even.
-These forms are Nikulin's discriminant forms [@Nik80].
-:::
-
-::: {.proposition #prop:discriminant-nondegenerate}
-
-The discriminant forms $b_L$ and $q_L$ of a nondegenerate lattice $L$ are themselves nondegenerate, meaning that $b_L(\bar x, \,\cdot\,) = 0$ in $\Hom(A_L, \QQ/\ZZ)$ implies $\bar x = 0$.
-For any $\bar x, \bar y\in A_L$ the $\QQ/\ZZ$-valued bilinear form is recovered from the $\QQ/2\ZZ$-valued quadratic form by
-$$
-b_L(\bar x, \bar y)
-= \tfrac{1}{2}\left( q_L(\bar x + \bar y) - q_L(\bar x) - q_L(\bar y) \right)
-,
-$$
-where the bracketed difference lies in $\QQ/2\ZZ$ and equals $2\beta(\tilde x, \tilde y)\bmod 2\ZZ$; halving this even representative yields a well-defined element $\beta(\tilde x, \tilde y)\bmod\ZZ$ of $\QQ/\ZZ$.
-:::
-
-::: {.proof}
-
-Nondegeneracy is the statement that the induced map $A_L \to \Hom(A_L, \QQ/\ZZ)$ is an isomorphism; this holds because $A_L$ is finite and the pairing $b_L$ is the pairing induced by the perfect pairing $\dualof{L}/L \times \dualof{L}/L \to \QQ/\ZZ$ coming from a nondegenerate $\beta_L$.
-The polarization identity is the reduction modulo $\ZZ$ of the identity $\beta(x, y) = \tfrac{1}{2}(\beta(x + y, x + y) - \beta(x, x) - \beta(y, y))$ on lifts.
+which is exactly $\mu_{2,N}(\bar\beta_L(x+L,y+L))$.
 :::
 
 ## Properties of the dual lattice
@@ -157,54 +78,48 @@ The dual lattice $\dualof{L} = \Hom_\ZZ(L, \ZZ)$ satisfies the following.
 
 3. The discriminant of the dual satisfies $\disc(\dualof{L}) = 1/\disc(L)$.
 
-4. The dual of a twist is $\dualof{(L(m))} = \dualof{L}(1/m)$, where $L(m)$ is the twist of $L$ by $m$ from the Lattice Theory section.
+4. The dual of a twist is $\dualof{(L(m))}=\dualof{L}(1/m)$ for the twist $L(m)$ of @def:form-twist.
 :::
 
-::: {.remark}
-
+::: {.proof}
 Property (2) is the source of (3), since $\disc(\dualof{L}) = \det(\inverseof{G_\beta}) = 1/\det(G_\beta) = 1/\disc(L)$.
-Property (1) is compatible with the direct-sum decomposition $A_{L\oplus M} = A_L\oplus A_M$ of discriminant groups recalled in the Lattice Theory section.
+Property (1) induces the canonical discriminant decomposition $A_{L\oplus M}\isoto A_L\oplus A_M$ through the cokernel sequence of @def:discriminant.
 :::
 
 ## Geometric identification of the dual lattice
 
-::: {.theorem #thm:dual-geometric-identification}
-
-For a nondegenerate integral lattice $(L, \beta_L)$, the dual lattice is identified with a $\ZZ$-submodule of $L_\QQ = L\tensor_\ZZ\QQ$ via
+::: {.theorem #thm:dual-geometric-identification title="The metric dual as a pullback"}
+The adjoint isomorphism of the rational scalar extension
 $$
-\dualof{L} \;\cong\; \theset{ v\in L_\QQ \mid \beta_{L_\QQ}(v, L) \iscontainedin \ZZ }
-,
+\beta_{L_\QQ}^\sharp\colon L_\QQ\isoto L^\vee\tensor_\ZZ\QQ
 $$
-where a functional $\varphi\in \dualof{L}$ corresponds to the unique vector $v_\varphi\in L_\QQ$ such that $\varphi(w) = \beta_{L_\QQ}(v_\varphi, w)$ for all $w\in L$.
-Under this identification one has the chain of inclusions
+identifies the metric dual with the pullback
+```tikzcd
+L^\# \arrow[r] \arrow[d] & L_\QQ \arrow[d,"\beta_{L_\QQ}^\sharp"] \\
+L^\vee \arrow[r] & L^\vee\tensor_\ZZ\QQ .
+```
+The left vertical morphism is therefore an isomorphism $L^\#\isoto L^\vee$, and the canonical maps form composable monomorphisms
 $$
-L \iscontainedin \dualof{L} \iscontainedin L_\QQ
-.
+L\xrightarrow{\iota_L}L^\#\longrightarrow L_\QQ.
 $$
 :::
 
 ::: {.proof}
-
-Nondegeneracy of $\beta_L$ makes the $\QQ$-linear extension $L_\QQ \to \Hom_\QQ(L_\QQ, \QQ)$, $v\mapsto \beta_{L_\QQ}(v, \cdot)$, an isomorphism, so each $\varphi\in \dualof{L} \iscontainedin \Hom_\QQ(L_\QQ, \QQ)$ has a unique preimage $v_\varphi\in L_\QQ$.
-The condition $\varphi(L)\iscontainedin\ZZ$ translates to $\beta_{L_\QQ}(v_\varphi, L)\iscontainedin\ZZ$, giving the stated image.
-The inclusion $L\iscontainedin \dualof{L}$ is the map $\iota$ of the Lattice Theory section, and $\dualof{L}\iscontainedin L_\QQ$ holds because the pairing takes rational values.
+The lower horizontal morphism is scalar extension along $\ZZ\to\QQ$. By the defining pullback property of @def:metric-dual, its pullback along $\beta_{L_\QQ}^\sharp$ is $L^\#$; since the right vertical morphism is an isomorphism, projection to $L^\vee$ identifies the pullback with $L^\vee$. The composite $L\xrightarrow{\iota_L}L^\#\to L_\QQ$ is the scalar-extension monomorphism.
 :::
 
-## The genus, class group, and class number
+## The genus, class set, and class number
 
-::: {.definition #def:coble-genus}
-
-Two lattices $L_1, L_2$ belong to the same **genus** if $L_{1, \ZZ_p} \cong L_{2, \ZZ_p}$ for every prime $p$, where $L_{i, \ZZ_p} \definedas L_i\tensor_\ZZ \ZZ_p$, and $L_{1, \RR}\cong L_{2, \RR}$.
-Lattices in the same genus share the same rank, signature, and determinant, but need not be isometric over $\ZZ$.
-The **class group** $\cl(L)$ is the set of isometry classes of lattices in the genus of $L$, and the **class number** is the cardinality $\abs{\cl(L)}$.
+::: {.definition #def:coble-genus title="Class set and class number"}
+The genus $\operatorname{Gen}(L)$ is the pointed set of @def:genus. Write
+$\cl(L)\definedas\operatorname{Gen}(L)$ for this **class set** of integral isometry classes, pointed by $[L]$.
+Its **class number** is $h(L)\definedas\abs{\cl(L)}$.
 :::
 
-::: {.remark}
-
-Eichler's theorem does **not** say that every indefinite genus of rank at least $3$ has class number $1$.
-It says that an indefinite spinor genus of rank at least $3$ contains a single isometry class [@CS10, Ch. 15, Thm. 14].
-Thus the class number of an indefinite genus equals the number of spinor genera in that genus; it is $1$ only when the genus consists of one spinor genus.
-For definite lattices a spinor genus can itself contain several isometry classes, and class number $1$ is comparatively rare.
+::: {.proposition #prop:eichler-spinor-class title="Eichler's theorem and class number"}
+An indefinite spinor genus of rank at least $3$ contains a single integral isometry class [@CS10, Ch. 15, Thm. 14].
+Hence for an indefinite lattice of rank at least $3$, $h(L)$ equals the number of spinor genera in $\operatorname{Gen}(L)$; in particular, $h(L)=1$ exactly when the genus contains one spinor genus.
+For definite lattices, a spinor genus may contain several integral isometry classes.
 :::
 
 ## Spinor genera and their class counts
@@ -212,11 +127,14 @@ For definite lattices a spinor genus can itself contain several isometry classes
 ::: {.definition #def:spinor-genus-partition title="Spinor genera and their class numbers"}
 
 Let $V=L_\QQ$, and for every prime $p$ write $V_p=V\tensor_\QQ\QQ_p$ and $L_p=L\tensor\ZZ_p$.
-Let
+Let $I_p\definedas\im(\theta_p)$ for the local spinor norm
 $$
-\theta_p\colon \Orth(V_p)\too \QQ_p^\times/(\QQ_p^\times)^2
+\theta_p\colon \Orth(V_p)\too \QQ_p^\times/(\QQ_p^\times)^2.
 $$
-be the local spinor norm and put $\Theta(V_p)=\ker\theta_p$.
+Define $\Theta(V_p)$ by the short exact sequence
+$$
+1\too\Theta(V_p)\too\Orth(V_p)\xrightarrow{\theta_p}I_p\too1.
+$$
 Two lattices $L$ and $M$ in the same rational quadratic space lie in the same **spinor genus** if there is a rational isometry $g\in O(V)$ and elements $\sigma_p\in\Theta(V_p)$ for every prime $p$, with $\sigma_p$ equal to the identity for almost all $p$, such that
 $$
 g(M_p)=\sigma_p(L_p)
@@ -240,16 +158,9 @@ h(\operatorname{Gen}(L))
 =
 \sum_{\mathfrak s\subset\operatorname{Gen}(L)}h(\mathfrak s).
 $$
-For indefinite lattices of rank at least $3$, Eichler's theorem gives one isometry class in each spinor genus under the improper-isometry convention used here [@CS10, Ch. 15, Thm. 14].
+For indefinite lattices of rank at least $3$, Eichler's theorem gives one isometry class in each spinor genus under the improper-isometry convention [@CS10, Ch. 15, Thm. 14].
 :::
 
-::: {.remark title="Database ordering convention for spinor genera"}
-
-The field `integral.spinor_genus_count` stores the standard number $s(L)$.
-The field `integral.spinor_genera` stores the class numbers $h(\mathfrak s)$ of the individual spinor genera, with the spinor genus containing $L$ first and the remaining class numbers written in decreasing order.
-Only this ordering of the tuple is a database convention; the spinor genera and their class numbers are standard arithmetic invariants.
-The database uses isometry rather than proper-isometry classes, matching `proper=False` in the SageMath spinor-genus computation.
-:::
 
 ::: {.proposition #prop:scattone-bound}
 
@@ -275,7 +186,7 @@ $$
 $$
 and its **volume** is the index ideal $\mathfrak{v}(L)\definedas\abs{\det G_L}\,\ZZ = \abs{A_L}\,\ZZ$.
 One has $\mathfrak{n}(L)\iscontainedin\mathfrak{s}(L)$, and $L$ is integral exactly when $\mathfrak{s}(L)\iscontainedin\ZZ$.
-Under the twist of the Lattice Theory section, $\mathfrak{s}(L(m)) = m\,\mathfrak{s}(L)$, $\mathfrak{n}(L(m)) = m\,\mathfrak{n}(L)$ and $\mathfrak{v}(L(m)) = m^{r}\,\mathfrak{v}(L)$ for $r = \rank(L)$.
+Under the twist of @def:form-twist, $\mathfrak{s}(L(m)) = m\,\mathfrak{s}(L)$, $\mathfrak{n}(L(m)) = m\,\mathfrak{n}(L)$ and $\mathfrak{v}(L(m)) = m^{r}\,\mathfrak{v}(L)$ for $r = \rank(L)$.
 :::
 
 ::: {.definition #def:local-modular-lattice title="Local modular Jordan constituents"}
@@ -301,9 +212,8 @@ in which each $L_i$ is $p^{s_i}$-modular and $s_1 < s_2 < \cdots < s_k$.
 Such a decomposition exists and is unique up to isometry, and the scales $p^{s_i}$ and the ranks $\rank(L_i)$ are invariants of $L$ at $p$.
 :::
 
-::: {.remark}
-
-The Jordan invariants at every prime are exactly the data compared in the genus definition (@def:coble-genus): two lattices lie in the same genus precisely when they have isometric Jordan decompositions at every prime and the same signature.
+::: {.proposition #prop:genus-jordan-criterion title="Genus via Jordan decompositions"}
+Two integral lattices lie in the same genus of @def:genus precisely when they have the same real signature and isometric Jordan decompositions at every prime.
 For a $2$-elementary lattice only the primes $2$ and the archimedean place carry information, and the Jordan decomposition at $2$ is assembled from the rank-two $2$-adic lattices $V_k$ and $U_k$ from Nikulin's $V_k,U_k$ definition (@def:nikulin-Vk-Uk) together with rank-one summands.
 :::
 
@@ -322,63 +232,31 @@ Only the primes dividing $2\disc L$ carry nontrivial local data beyond the unimo
 See [@CS10, Ch. 15, §§7.5--7.8].
 :::
 
-::: {.remark title="What `integral.genus_symbol` stores"}
 
-The genus symbol is standard terminology, not a new database invariant.
-The field `integral.genus_symbol` is a serialization of this Conway--Sloane symbol in the canonical notation printed by SageMath: the leading $\mathrm I$ or $\mathrm{II}$ records odd or even parity, the subscript records the signature, and the remaining factors are the nontrivial local symbols.
-The exact character string is therefore a presentation of the genus, not an extra invariant in addition to the local isometry classes.
-:::
+## The discriminant representation
 
-## The discriminant representation and its stored finite data
+::: {.definition #def:discriminant-representation-image title="Image and coset space of the quadratic discriminant representation"}
 
-::: {.definition #def:discriminant-representation-image title="Kernel and image of the discriminant representation"}
-
-Let $L$ be a nondegenerate even lattice and let
+Let $L$ be a nondegenerate even lattice.
+Use the quadratic discriminant representation of @def:discriminant-rep,
 $$
-\rho_L\colon\Orth(L)\too\Orth(A_L,q_L)
+\rho_{L,q}\colon\Orth(L)\too\Orth(A_{L,q}),
 $$
-be the natural discriminant representation.
-Set
+and write
 $$
-\widetilde\Orth(L)\definedas\ker\rho_L,
-\qquad
-I_L\definedas\im\rho_L.
+\Orth(L)\twoheadrightarrow I_{L,q}\injects\Orth(A_{L,q})
 $$
-Then there is always a short exact sequence of groups
+for its epi--mono factorization.
+Define the pointed left-coset set
 $$
-1\too\widetilde\Orth(L)
-\too\Orth(L)
-\xrightarrow{\rho_L}
-I_L
-\too1.
-$$
-The finite set
-$$
-\mathcal C_L
+\mathcal C_{L,q}
 \definedas
-\Orth(A_L,q_L)/I_L
+\Orth(A_{L,q})/I_{L,q},
 $$
-is the pointed set of left cosets, pointed by $I_L$.
-It is a quotient **group** exactly when $I_L\trianglelefteq\Orth(A_L,q_L)$.
+pointed by $I_{L,q}$.
+It is a quotient group exactly when $I_{L,q}\trianglelefteq\Orth(A_{L,q})$.
 :::
 
-::: {.remark title="The database's `discriminant_sequence` package"}
-
-The name `integral.discriminant_sequence` is project terminology for a concrete finite presentation of the standard map $\rho_L$ and its fibers; it is not a second exact sequence beyond @def:discriminant-representation-image.
-In a chosen invariant-factor basis of $A_L$, the record stores:
-
-- the invariant factors, chosen basis lifts, and Gram data for $q_L$;
-- generators of $\Orth(A_L,q_L)$;
-- named generators of $\Orth(L)$ when a full generating family is known, together with their images under $\rho_L$;
-- generators and the order $\abs{I_L}$ of the image;
-- $\abs{\widetilde\Orth(L)}$ when $\abs{\Orth(L)}$ is known, so that $\abs{\Orth(L)}=\abs{\widetilde\Orth(L)}\abs{I_L}$;
-- representatives of the pointed coset set $\mathcal C_L$, whose cardinality is the index $[\Orth(A_L,q_L):I_L]$;
-- whether $I_L$ is normal; and, only in that case, generators and a multiplication table for the quotient group $\Orth(A_L,q_L)/I_L$, together with invariant factors when that quotient is abelian.
-- when that quotient is elementary abelian of exponent $2$, its $\FF_2$-dimension.
-
-The stored flag `mm_trivial` means only that $\mathcal C_L$ has one element, equivalently that $\rho_L$ is surjective.
-It must not be confused with the Miranda--Morrison obstruction group of [@MM09, Thm. V.5.1], whose definition uses the local spinor-norm groups and has additional hypotheses.
-:::
 
 ## The mass formula as a class-number criterion
 
@@ -392,29 +270,27 @@ m(L) \definedas \Sum_{i=1}^{h} \frac{1}{\abs{\Orth(L^{(i)})}}
 $$
 :::
 
-::: {.remark title="The Smith--Minkowski--Siegel formula and its use"}
-
+::: {.proposition #prop:mass-class-number-one title="Mass criterion for class number one"}
 The mass is computable from local data alone: the Smith--Minkowski--Siegel mass formula expresses $m(L)$ as a product of an archimedean factor and one $p$-adic factor for each prime, each factor read off from the Jordan decomposition of the Jordan-decomposition theorem (@thm:jordan-decomposition); the explicit unimodular cases are tabulated in [@CS10 Ch. 16].
-Since each summand of the mass definition (@def:mass) is positive, the formula gives a criterion for class number one:
+Since each summand of @def:mass is positive,
 $$
 m(L) = \frac{1}{\abs{\Orth(L)}}
 \quad\Longleftrightarrow\quad
 \abs{\cl(L)} = 1
 .
 $$
-This is how the uniqueness of $E_8$ in rank $8$ is certified, the mass of the genus of even unimodular lattices of rank $8$ being $1/\abs{\Orth(E_8)}$, and it is the definite counterpart of the indefinite criterion recorded above.
 :::
 
 ## Surjectivity onto the discriminant group
 
-::: {.theorem #thm:two-elementary-surjectivity title="$\Orth(H)\to\Orth(A_H, q_H)$ is surjective for indefinite $2$-elementary $H$"}
+::: {.theorem #thm:two-elementary-surjectivity title="$\Orth(H)\to\Orth(A_{H,q})$ is surjective for indefinite $2$-elementary $H$"}
 
 Let $H$ be an indefinite even $2$-elementary lattice.
-Then the natural homomorphism
+Then the quadratic discriminant representation
 $$
-\Orth(H)\too\Orth(A_H, q_H)
+\rho_{H,q}\colon\Orth(H)\twoheadrightarrow\Orth(A_{H,q})
 $$
-onto the isometry group of the discriminant form is surjective.
+is surjective.
 :::
 
 ::: {.proof}
@@ -422,26 +298,23 @@ onto the isometry group of the discriminant form is surjective.
 This is [@Nik80]; see [@Ale22 §4] for the statement in this form.
 :::
 
-::: {.remark}
-
-Surjectivity means that every isometry of the finite discriminant form is induced by an isometry of the lattice. In orbit and gluing problems this permits a finite calculation in $\Orth(A_H,q_H)$ to be lifted back to $\Orth(H)$.
-:::
 
 ## Invariants that do not classify
 
 ::: {.theorem #thm:milgram title="Milgram's formula"}
 
-Let $L$ be a nondegenerate even lattice with discriminant form $q_L\colon A_L\to\QQ/2\ZZ$ and signature $(n_+, n_-)$.
+Let $L$ be a nondegenerate even lattice with quadratic discriminant form $A_{L,q}$ and signature $(n_+,n_-)$.
 Then
 $$
-\Sum_{\lambda\in A_L} e\!\left(\tfrac{1}{2}q_L(\lambda)\right)
-= \sqrt{\abs{A_L}}\;
-e\!\left(\frac{n_+ - n_-}{8}\right),
+\Sum_{\lambda\in L^\#/L}
+e\!\left(\tfrac12 q_L(\lambda)\right)
+=
+\sqrt{\abs{L^\#/L}}\;
+e\!\left(\frac{n_+-n_-}{8}\right),
 \qquad
-e(z)\definedas e^{2\pi i z}
-.
+e(z)\definedas e^{2\pi i z}.
 $$
-In particular the discriminant form determines the index $n_+ - n_-$ modulo $8$.
+In particular $A_{L,q}$ determines $n_+-n_-$ modulo $8$.
 :::
 
 ::: {.proof}
@@ -449,25 +322,22 @@ In particular the discriminant form determines the index $n_+ - n_-$ modulo $8$.
 This is the Gauss-sum formula of [@MH73 Appendix 4].
 :::
 
-::: {.remark title="What each invariant determines"}
-
-Milgram's formula is a constraint linking the two halves of the classifying data of the genus definition (@def:coble-genus); it is an invariant of the discriminant form alone.
-It is an invariant of the discriminant form, so two even lattices with the same discriminant form give the same Gauss sum whether or not they are isometric, and it recovers the index only modulo $8$, whereas the pair $(n_+, n_-)$ is what the genus needs.
-
-Two weaker invariants are sometimes offered in place of the discriminant form and do not classify.
-The **Arf invariant** is defined for a quadratic form valued in $\bF_2$; the reduction $q_L\bmod\ZZ$ of a discriminant form loses the $\QQ/2\ZZ$-valued information that distinguishes, for example, $\generators{2}$ from $\generators{-2}$, so lattices agreeing in Arf invariant need not be isometric.
-The **Brown invariant**, valued in $\ZZ/8\ZZ$, is the bordism-theoretic shadow of the index, and it records exactly what Milgram's formula supplies, namely $n_+ - n_-$ modulo $8$.
-For an even lattice the classifying data are the signature $(n_+, n_-)\in\ZZ^2$ together with the discriminant form $(A_L, q_L)$, which determine the genus [@Nik80], and for the indefinite lattices of rank at least three considered here the genus determines the isometry class.
+::: {.proposition #prop:milgram-information title="Information carried by Milgram's formula"}
+For an even lattice, the quadratic discriminant form $A_{L,q}$ determines $n_+-n_-$ modulo $8$ by @thm:milgram, but it does not determine the full signature or the integral isometry class.
+The Arf invariant of the reduction of $q_L$ modulo $\ZZ$ loses information retained by $A_{L,q}$, while the Brown invariant records only $n_+-n_-$ modulo $8$.
+The signature $(n_+,n_-)$ together with $A_{L,q}$ determines the genus [@Nik80], but a genus may contain several spinor genera and hence several integral isometry classes.
 :::
 
-::: {.remark title="The consequence for complementary lattices"}
-
-If $S\iscontainedin\Lambda$ is primitive in an even unimodular $\Lambda$ with complement $T = S^{\perp\Lambda}$, then $q_T\cong -q_S$ by the embedding-gluing description (@rmk:embedding-gluing-data), and applying Milgram's formula (@thm:milgram) to both sides gives the congruence
+::: {.corollary #cor:primitive-complement-signature title="Signature congruence for primitive complements"}
+Let $\iota\colon S\injects\Lambda$ be a primitive embedding into an even unimodular lattice, and put $T\definedas S^{\perp\Lambda}$.
+The gluing construction of @cons:embedding-gluing-data gives an anti-isometry
 $$
-\sign(S) + \sign(T)\equiv 0 \pmod 8
-.
+A_{T,q}\isoto -A_{S,q}.
 $$
-This congruence follows from $q_T\cong -q_S$: verifying the isometry of discriminant forms is a normal-form comparison of the pairs $(A_S, q_S)$ and $(A_T, -q_T)$, and a matching Gauss sum is one numerical shadow of that comparison.
+Applying @thm:milgram gives
+$$
+\sign(S)+\sign(T)\equiv0\pmod8.
+$$
 :::
 
 ## Finiteness of orbits of vectors of fixed norm
@@ -475,17 +345,10 @@ This congruence follows from $q_T\cong -q_S$: verifying the isometry of discrimi
 ::: {.theorem #thm:finiteness-fixed-norm-orbits title="Finitely many orbits in each norm"}
 
 Let $L$ be an integral lattice and $n\in\ZZ$.
-The set
-$$
-S_n \definedas \theset{ v\in L \mid v^2 = n }
-$$
-of representations of $n$ by $L$ decomposes into finitely many $\Orth(L)$-orbits.
+The norm shell $L[n]$ of @def:lattice-basic-invariants decomposes into finitely many $\Orth(L)$-orbits.
 :::
 
-::: {.remark title="Why the statement is needed and where it comes from"}
-
-For a definite lattice the statement is trivial, $S_n$ itself being finite.
-The content is the indefinite case, where $S_n$ is typically infinite: it is the assertion that the integral points of the affine quadric $\theset{v^2 = n}$ fall into finitely many orbits under the arithmetic group $\Orth(L)$, and it belongs to the classical theory of representations of an integer by an indefinite quadratic form, where the mass-formula count of representations by the classes of a genus is replaced by a count of orbits.
-
-Under the hypothesis $U^{\oplus 2}\iscontainedin L$ the Eichler criterion (the Eichler criterion (@thm:eichler-criterion)) makes it effective, bounding the number of $\widetilde{\SO}^+(L)$-orbits in $S_n$ by $\abs{A_L}$; without that hypothesis finiteness still holds but a bound has to come from elsewhere.
+::: {.proof}
+For definite $L$, the shell $L[n]$ is finite. For indefinite $L$, finiteness of the $\Orth(L)$-orbit set of integral vectors of fixed norm is the classical finiteness theorem for representations by an indefinite integral quadratic form.
+If $\operatorname{PrimEmb}(U^{\oplus2},L)$ contains an embedding whose image is an orthogonal direct summand, @thm:eichler-criterion makes the orbit classification effective: for fixed norm, a $\widetilde\Orth^+(L)$-orbit is determined by $v^*\in A_L$, so there are at most $\abs{L^\#/L}$ such orbits.
 :::

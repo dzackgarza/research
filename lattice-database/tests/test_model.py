@@ -4,6 +4,7 @@ from collections.abc import Callable
 from fractions import Fraction
 
 import pytest
+from latticedb import certificates
 from latticedb.model import Lattice, Morphism, Yaml
 from pydantic import ValidationError
 
@@ -263,12 +264,34 @@ ROOT_SUBLATTICE_OF_U: dict[str, Yaml] = {"invariant_factors": [1, 2]}
 
 
 def test_derived_properties_follow_from_the_record() -> None:
-    assert Lattice.model_validate(e8()).is_unimodular
+    e8_lattice = Lattice.model_validate(e8())
+    assert e8_lattice.is_unimodular
     assert Lattice.model_validate(a2_dual()).determinant == Fraction(1, 3)
     assert not Lattice.model_validate(a2_dual()).is_unimodular
     assert Lattice.model_validate(affine_a2()).nullity == 1
     assert Lattice.model_validate(hyperbolic_plane()).is_hyperbolic
-    assert not Lattice.model_validate(e8()).is_hyperbolic
+    assert not e8_lattice.is_hyperbolic
+
+    computation = "0001 definite.automorphism_group_order"
+    assert e8_lattice.definite is not None
+    value = e8_lattice.definite.automorphism_group_order
+    certificate_hash = certificates.certification_hash(
+        computation, e8_lattice, value
+    )
+    held = {
+        computation: certificates.Certificate(hash=certificate_hash, by="test")
+    }
+    assert certificates.is_certified(
+        held, computation, certificate_hash, certificate_hash
+    )
+    assert not certificates.is_certified(
+        held, computation, None, certificate_hash
+    )
+    changed = certificates.certification_hash(computation, e8_lattice, 1)
+    assert changed != certificate_hash
+    assert not certificates.is_certified(
+        held, computation, certificate_hash, changed
+    )
 
 
 def test_the_number_of_roots_of_a_definite_lattice_is_the_sum_over_its_components() -> None:
@@ -410,12 +433,10 @@ def test_a_series_of_orbits_is_rejected_for_its_reason(record: dict[str, Yaml], 
         (with_block(affine_a2(), "integral", hyperbolic_index=0), "hyperbolic_index_requires_nondegenerate"),
         (with_block(a2(), "integral", delta=0), "delta_requires_two_elementary_even"),
         (hyperbolic_plane() | {"root_sublattice": ROOT_SUBLATTICE_OF_U}, "root_sublattice_not_decided"),
-        # A required block or field that is absent.
-        ({key: value for key, value in e8().items() if key != "integral"}, "integral_block_missing"),
+        # A required block or field that is absent. Absent blocks are not
+        # problems: sparse cards await enrichment (Oct 3 sparse-card doctrine).
         (e8() | {"integral": {"parity": "even"}}, "discriminant_group_missing"),
         (without(e8(), "integral", "delta"), "delta_missing"),
-        ({key: value for key, value in e8().items() if key != "definite"}, "definite_block_missing"),
-        ({key: value for key, value in hyperbolic_plane().items() if key != "indefinite"}, "indefinite_block_missing"),
         (without(e8(), "definite", "theta_series"), "theta_series_missing"),
         (without(e8(), "definite", "root_system"), "root_system_missing"),
         (without(e8(), "definite", "roots"), "missing"),
@@ -450,7 +471,7 @@ def test_inconsistent_record_is_rejected_for_its_reason(record: dict[str, Yaml],
 
 def test_every_problem_of_a_record_is_reported_at_once() -> None:
     record = {key: value for key, value in e8().items() if key != "integral"} | {"indefinite": {"isotropic": False}}
-    assert error_types(record) == {"integral_block_missing", "indefinite_requires_indefinite"}
+    assert error_types(record) == {"indefinite_requires_indefinite"}
 
 
 @pytest.mark.parametrize(

@@ -22,7 +22,7 @@ An even $L$ can have odd overlattices: for $L = \langle 4 \rangle = \mathbb{Z}v$
 
 The page states the number of integral overlattices, with $M = L$ counted.
 Each subgroup $H$ counts once, so overlattices that are isometric to each other count separately.
-The number is stated when $A_L$ has at most 100000 subgroups; otherwise it is [not decided](records.html#not-decided).
+The number is stated only after the exact certification computation completes. Until then it is [not decided](records.html#not-decided).
 
 ## Genus symbol {#genus-symbol}
 

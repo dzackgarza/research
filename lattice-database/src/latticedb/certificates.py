@@ -1,15 +1,12 @@
-"""The certificates: each computation that the database has carried out, the digest of its inputs, and the program that carried it out.
+"""Certificates of completed computations.
 
-`certificates.yaml` maps the name of a computation to its certificate. The name of a computation on one
-record is `<tag> <computation>`: `<tag> derive` for the fields that `records.derive` computes from the Gram
-tensor, and `<tag> <block>.<field>` for a value that SageMath computes. The name of a check of a source
-against the corpus is `source <name>`, and that of a computation over every record is `corpus <name>`.
+`certificates.yaml` maps the name of a computation to one hash of the
+computation name, the Gram tensor, and the value stored on the card. The card
+is the only place that stores the value itself.
 
-A computation is carried out once. `latticedb enrich` carries out only the computations without a
-certificate for their present inputs, and writes the certificate when the computation agrees with the
-stored values. A certificate with `seconds` records a computation that did not finish within that many
-seconds; it is carried out again only with a larger time limit. To carry out a computation again, remove
-its certificate.
+A computation that does not finish has no certificate. Authored or seeded
+card values have no certification status until the certification phase
+computes them and writes a certificate.
 """
 
 import hashlib
@@ -25,9 +22,10 @@ CERTIFICATES_FILE = "certificates.yaml"
 
 
 class Certificate(Record):
-    inputs: str = Field(description="SHA-256 digest of the inputs of the computation.")
+    hash: str = Field(
+        description="SHA-256 digest of the computation name, Gram tensor, and certified card value.",
+    )
     by: str = Field(description="The program that carried out the computation, with its version.")
-    seconds: int | None = Field(default=None, description="The time limit within which the computation did not finish; absent when it finished.")
 
 
 Certificates = dict[str, Certificate]
@@ -49,19 +47,45 @@ def digest(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
-def gram_digest(lattice: Lattice) -> str:
-    """The digest of the Gram tensor, the input of every computation on one record."""
-    return digest(json.dumps([[str(x) for x in row] for row in lattice.gram_tensor]))
+def certification_hash(name: str, lattice: Lattice, value: object) -> str:
+    """Commit to one computation name, Gram tensor, and stored result."""
+    return digest(
+        json.dumps(
+            {
+                "computation": name,
+                "gram_tensor": [
+                    [str(entry) for entry in row] for row in lattice.gram_tensor
+                ],
+                "result": value,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            default=str,
+        )
+    )
 
 
-def is_certified(certificates: Certificates, name: str, inputs: str) -> bool:
+def is_certified(
+    certificates: Certificates,
+    name: str,
+    cited_hash: str | None,
+    expected_hash: str,
+) -> bool:
+    """Whether the card cites the exact completed certificate for its stored result."""
     certificate = certificates.get(name)
-    return certificate is not None and certificate.inputs == inputs and certificate.seconds is None
+    return (
+        cited_hash == expected_hash
+        and certificate is not None
+        and certificate.hash == cited_hash
+    )
 
 
-def is_pending(certificates: Certificates, name: str, inputs: str, seconds: int) -> bool:
-    """Whether the computation is to be carried out with the time limit `seconds`: it has no certificate for `inputs`, or did not finish within fewer seconds."""
-    certificate = certificates.get(name)
-    if certificate is None or certificate.inputs != inputs:
-        return True
-    return certificate.seconds is not None and certificate.seconds < seconds
+def is_pending(
+    certificates: Certificates,
+    name: str,
+    cited_hash: str | None,
+    expected_hash: str,
+) -> bool:
+    """Whether the card lacks a completed certificate for its stored result."""
+    return not is_certified(certificates, name, cited_hash, expected_hash)

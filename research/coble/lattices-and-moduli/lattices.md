@@ -78,7 +78,7 @@ $$
 
 This embedding is unique because $E_{10} = U \oplus E_8$ is unimodular.
 A primitively embedded unimodular sublattice splits its ambient lattice (the unimodular-splitting proposition (@prop:unimodular-splits)), so the codomain of any primitive embedding of $E_{10}$ is $E_{10}\oplus E_{10}^{\perp}$.
-The gluing datum of such an embedding is the graph of an isometry between a subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$ (the embedding-gluing description (@rmk:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is trivial and the embedding is determined by the isometry class of the complement.
+The gluing datum of such an embedding is the graph of an isometry between a subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$ (the embedding-gluing description (@cons:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is trivial and the embedding is determined by the isometry class of the complement.
 Similarly, by [@Nik80 Cor. 1.5.2, Thm. 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
 :::
 

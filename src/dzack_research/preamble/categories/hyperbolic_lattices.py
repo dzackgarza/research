@@ -24,7 +24,6 @@ form reverses every half-space condition \(b(x,r)\leq 0\).
 
 from pathlib import Path
 
-from sage.arith.misc import divisors
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
@@ -453,29 +452,6 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
         return refine(lattice, self)
 
     class ParentMethods:
-        def possible_root_lengths(self):
-            r"""Return the values \(\lvert q(r)\rvert\) a root of this lattice can take.
-
-            Vinberg's criterion: for a root \(r\) the crystallographic
-            condition \(2b(x,r)/q(r)\in R\) for all \(x\in L\) forces \(q(r)\)
-            to divide twice the last invariant factor of the correlation
-            \(L\to L^{\vee}\), which is the exponent of the discriminant group
-            \(A_L\).  The bound is what turns "does this lattice have a root of
-            such a length" into a finite question.
-
-            Stated here because it is the bound Vinberg's algorithm searches
-            under; the hypothesis it actually needs is nondegeneracy, not
-            hyperbolicity.
-            """
-            correlation = _engine_component_matrix(self.gram_tensor())
-            invariant_factors = correlation.elementary_divisors()
-            assert invariant_factors[-1] != 0, (
-                f"the possible root lengths of {self} are not bounded: the bound needs a "
-                f"nondegenerate form, but {self} has a nonzero radical, so its "
-                f"discriminant group is infinite"
-            )
-            return finite_ordered_set(tuple(self.base_ring()(int(length)) for length in divisors(2 * invariant_factors[-1])))
-
         def _engine_gram_of_signature_n_1(self):
             r"""Return a Gram matrix in the engine's \((n,1)\) convention.
 

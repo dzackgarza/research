@@ -21,6 +21,7 @@ the rank vector, and a tensor is an element of it built by the module's
 element constructor from its row-major components.
 """
 
+from fractions import Fraction
 from functools import singledispatch
 from math import prod
 
@@ -1594,6 +1595,8 @@ def _coordinate_component_repr(tensor_value) -> str:
 
 def _owned_coordinate_component(ring, value):
     r"""Admit one tensor component, crossing raw Sage ring data only at ingress."""
+    if isinstance(value, Fraction) and value.denominator == 1:
+        value = int(value)
     parent = element_parent(value)
     match parent:
         case Parent() if parent in _Rings:

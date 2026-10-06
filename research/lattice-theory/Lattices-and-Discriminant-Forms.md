@@ -4,17 +4,22 @@ Let $R$ be a Dedekind domain with fraction field $K$; the main case is $R=\bZ$ a
 
 ::: {.definition #def:lattice title="Lattices"}
 
-An $R$-*lattice* is a finitely generated projective $R$-module $L$ equipped with a symmetric bilinear form $b\colon L\times L\to R$ whose adjoint map
+An $R$-**lattice** is a finitely generated projective $R$-module $L$ equipped with a symmetric bilinear form
 $$
-b^\sharp\colon L\too L^*:=\Hom_R(L,R)
+b\colon L\tensor_RL\too R
 $$
-is injective.
+whose adjoint
+$$
+b^\sharp\colon L\too L^*,
+\qquad
+L^*\definedas\Hom_{R\text{-}\mathbf{Mod}}(L,R),
+$$
+is a monomorphism.
 The category $\mathbf{Lat}_R$ is the replete full subcategory of $\mathcal B_{R,R}$ on these objects [@Nik80].
 :::
 
-::: {.remark}
-Positive definiteness and unimodularity are additional properties.
-Freeness holds over a principal ideal domain; a basis is chosen data.
+::: {.convention #conv:lattice-basis-choice title="Chosen bases of lattices"}
+Over a principal ideal domain every lattice is free; any basis used below is chosen data rather than part of the lattice.
 :::
 
 ::: {.example #ex:subobject-base-change title="Subobjects under extension of scalars"}
@@ -30,13 +35,19 @@ The two monomorphisms represent subobjects in different module categories.
 ::: {.definition #def:unimodular title="Unimodular lattices"}
 
 A lattice is *unimodular* if $b^\sharp$ is an isomorphism.
-The unimodular lattices form a replete full subcategory $\mathbf{Unimod}_R\iscontainedin\mathbf{Lat}_R$.
+The unimodular lattices form a replete full subcategory with canonical inclusion
+$$
+\mathbf{Unimod}_R\hookrightarrow\mathbf{Lat}_R.
+$$
 :::
 
 ::: {.definition #def:even-lattice title="Even lattices"}
 
 A $\bZ$-lattice is *even* if $b(x,x)\in2\bZ$ for every $x\in L$.
-The even lattices form a replete full subcategory $\mathbf{EvenLat}_{\bZ}\iscontainedin\mathbf{Lat}_{\bZ}$.
+The even lattices form a replete full subcategory with canonical inclusion
+$$
+\mathbf{EvenLat}_{\bZ}\hookrightarrow\mathbf{Lat}_{\bZ}.
+$$
 :::
 
 ## Classification by signature {#sec-lattice-signature}
@@ -50,7 +61,7 @@ $$
 \mathbf{Def}^{+}_R,\quad
 \mathbf{Def}^{-}_R,\quad
 \mathbf{Indef}_R,\quad
-\mathbf{Hyp}_R\iscontainedin\mathbf{Indef}_R.
+\mathbf{Hyp}_R\hookrightarrow\mathbf{Indef}_R.
 $$
 Here $\mathbf{Hyp}_R$ consists of the lattices of signature $(1,n-1,0)$.
 The definite lattices are the disjoint union of $\mathbf{Def}^{+}_R$ and $\mathbf{Def}^{-}_R$, and $\mathbf{Def}_R$ and $\mathbf{Indef}_R$ partition $\mathbf{Lat}_R$.
@@ -81,73 +92,158 @@ the second complement being the root lattice $A_2$ in the sign convention of @de
 
 ::: {.definition #def:metric-dual title="Dual lattice"}
 
-Extend $b$ to $b_K$ on $L_K=L\tensor_RK$.
-The dual lattice is
+Extend $b$ to $b_K$ on $L_K=L\tensor_RK$. Let
 $$
-L^\#=\{x\in L_K\mid b_K(x,L)\subseteq R\}.
+b_K^\sharp\colon L_K\isoto\Hom_R(L,K)
 $$
-Nondegeneracy identifies $L^\#$ with the dual module $L^*$ through $x\mapsto b_K(x,-)|_L$, and $L\iscontainedin L^\#$.
+be the adjoint isomorphism, and let $L^*\injects\Hom_R(L,K)$ be induced by $R\injects K$.
+Define the **dual lattice** $L^\#$ by the pullback
+```tikzcd id="metric-dual-pullback"
+L^\# \arrow[r] \arrow[d] & L_K \arrow[d,"b_K^\sharp"] \\
+L^* \arrow[r,hook] & \Hom_R(L,K).
+```
+The top horizontal morphism realizes $L^\#$ as a subobject of $L_K$.
 :::
 
-::: {.definition #def:discriminant title="The discriminant module and form"}
+::: {.definition #def:dual-inclusion title="The canonical bilinear-module map to the dual lattice"}
 
-The *discriminant module* is
+Now specialize to an integral $\bZ$-lattice $L$.
+Define the **bilinear denominator**
 $$
-A_L=L^\#/L\cong\coker(b^\sharp).
+N_b(L)\definedas\exp(L^\#/L).
 $$
-It has a symmetric bilinear form
+Equivalently, $N_b(L)$ is the least positive integer for which multiplication by $N_b(L)$ on $L^\#$ factors through
 $$
-\bar b_L\colon A_L\times A_L\too K/R,
+\iota_L\colon L\injects L^\#.
+$$
+Hence
+$$
+\beta_{L_\bQ}(L^\#,L^\#)
+\iscontainedin
+\tfrac1{N_b(L)}\bZ.
+$$
+Hence
+$$
+(L,\bZ,\beta_L),
 \qquad
-\bar b_L(x+L,y+L)=b_K(x,y)+R.
+\left(L^\#,\tfrac1{N_b(L)}\bZ,\beta_{L_\bQ}|_{L^\#}\right)
 $$
-If $L$ is an even $\bZ$-lattice, it also has the discriminant quadratic form
+are bilinear modules in the fibres of @conv:bilinear-module-fibration over $\bZ$ and $\tfrac1{N_b(L)}\bZ$, respectively.
+The **canonical map to the dual lattice** is the bilinear-module morphism
 $$
-q_L\colon A_L\too\bQ/2\bZ,
-\qquad
-q_L(x+L)=b_{\bQ}(x,x)+2\bZ.
+\boldsymbol\iota_L\colon
+(L,\bZ,\beta_L)
+\too
+\left(L^\#,\tfrac1{N_b(L)}\bZ,\beta_{L_\bQ}|_{L^\#}\right),
 $$
-The evenness hypothesis makes this formula independent of the representative [@Nik80].
+whose carrier morphism is the canonical monomorphism
+$$
+\iota_L\colon L\injects L^\#
+$$
+and whose value-module morphism is $\bZ\injects\tfrac1{N_b(L)}\bZ$.
 :::
 
-::: {.definition #def:dual-inclusion title="The canonical map to the dual lattice"}
+::: {.definition #def:discriminant title="Bilinear and quadratic discriminant forms"}
 
-$L^{\#}$ is a finitely generated projective $R$-module equipped with the restriction of $b_K$, whose values lie in $K$; it is an object of $\mathcal B_{R,K}$, and the value module of its form is $K$.
-Pushing the form of $L$ along $R\hookrightarrow K$ places $L$ in the same category, and the *canonical map to the dual lattice* is the morphism
+The **discriminant bilinear form** of $L$ is the cokernel in the abelian category of bilinear modules:
 $$
-\iota_L\colon L\too L^{\#}
+A_L
+\definedas
+\coker_{\mathbf{BilMod}_{\bZ}}(\boldsymbol\iota_L).
 $$
-of $\mathcal B_{R,K}$ given by the inclusion $L\iscontainedin L^{\#}$, which preserves forms because $b_K$ restricts to $b$ on $L$.
-Under the identification of @def:metric-dual it is the adjoint map $b^{\sharp}\colon L\to L^{*}$.
+It is canonically represented by
+$$
+A_L
+\isoto
+\left(
+L^\#/L,
+\tfrac1{N_b(L)}\bZ/\bZ,
+\bar\beta_L
+\right),
+$$
+where
 
-The image $\iota_L(L)$ is a subobject of $L^{\#}$ and its cokernel is the discriminant module $A_L$ of @def:discriminant.
-For $R=\bZ$ and $L$ free with Gram matrix $G$ in a chosen basis, the matrix of $b^{\sharp}$ with respect to that basis and the dual basis is $G$, so $A_L\cong\bZ^{n}/G\bZ^{n}$ and the index of the image is
 $$
-[\,L^{\#}:\iota_L(L)\,]=|A_L|=|\det G| .
+\bar\beta_L\colon
+(L^\#/L)\tensor_\bZ(L^\#/L)
+\too
+\tfrac1{N_b(L)}\bZ/\bZ,
+\qquad
+\bar\beta_L(x+L,y+L)
+=
+\beta_{L_\bQ}(x,y)+\bZ.
 $$
 
-The morphism $\iota_L$ is injective, so it is an isomorphism exactly when $A_L=0$, which is exactly when $L$ is unimodular in the sense of @def:unimodular.
-In that case $\iota_L$ is an isometry from $L$ onto $L^{\#}$, so $L$ and $L^{\#}$ are isometric objects of $\mathcal B_{R,K}$ with distinct underlying modules.
+Thus $A_L$ always denotes the bilinear discriminant object.
+
+If $L$ is even, define its **quadratic level**
+$$
+N_q(L)
+\definedas
+\min\theset{
+N>0
+\st
+N\,\beta_{L_\bQ}(x,x)\in2\bZ
+\text{ for every }x\in L^\#
+}.
+$$
+This is the arithmetic level of @def:lattice-level.
+Its **quadratic discriminant form** is
+$$
+A_{L,q}
+\definedas
+\left(
+L^\#/L,
+\tfrac2{N_q(L)}\bZ/2\bZ,
+q_L
+\right),
+$$
+with
+$$
+q_L(x+L)
+=
+\beta_{L_\bQ}(x,x)+2\bZ.
+$$
+The quadratic level gives
+$$
+q_L(L^\#/L)\iscontainedin\tfrac2{N_q(L)}\bZ/2\bZ,
+$$
+and evenness makes this independent of the representative [@Nik80, §1.1].
 :::
 
 ::: {.definition #def:discbil title="Discriminant bilinear forms"}
 
-Let $\mathbf{DiscBil}_{\bZ}$ be the replete full subcategory of $\mathcal B_{\bZ,\bQ/\bZ}$ on finite abelian groups equipped with nondegenerate symmetric bilinear forms.
+Let $\mathbf{DiscBil}_{\bZ}$ be the replete full subcategory of $\mathbf{BilMod}_{\bZ}$ on nondegenerate bilinear modules
+$$
+\left(G,\tfrac1N\bZ/\bZ,b\right)
+$$
+with $G$ a finite-length $\bZ$-module and $N>0$.
 :::
 
 ::: {.definition #def:discquad title="Discriminant quadratic forms"}
 
-Let $\mathbf{DiscQuad}_{\bZ}$ be the category of finite abelian groups with $\bQ/2\bZ$-valued quadratic forms whose bilinearizations lie in $\mathbf{DiscBil}_{\bZ}$.
-Its morphisms are group homomorphisms that preserve the quadratic forms.
+Let $\mathbf{DiscQuad}_{\bZ}$ be the category of nondegenerate quadratic modules
+$$
+\left(G,\tfrac2N\bZ/2\bZ,q\right)
+$$
+with $G$ a finite-length $\bZ$-module and polarization an object of $\mathbf{DiscBil}_{\bZ}$.
 :::
 
-The discriminant construction defines functors
+The discriminant constructions define functors
 $$
-\mathbf{Lat}_{\bZ}^{\simeq}\too
-\mathbf{DiscBil}_{\bZ}^{\simeq}
-\qquad\text{and}\qquad
-\mathbf{EvenLat}_{\bZ}^{\simeq}\too
-\mathbf{DiscQuad}_{\bZ}^{\simeq}.
+\mathbf{Lat}_{\bZ}^{\simeq}
+\too
+\mathbf{DiscBil}_{\bZ}^{\simeq},
+\qquad
+L\longmapsto A_L,
+$$
+and
+$$
+\mathbf{EvenLat}_{\bZ}^{\simeq}
+\too
+\mathbf{DiscQuad}_{\bZ}^{\simeq},
+\qquad
+L\longmapsto A_{L,q}.
 $$
 
 ## Elementary lattices {#sec-elementary-lattices}
@@ -155,15 +251,24 @@ $$
 ::: {.definition #def:p-elementary title="$p$-elementary lattices"}
 
 Let $p$ be a prime.
-A $\bZ$-lattice $S$ is *$p$-elementary* if $A_S\cong(\bZ/p\bZ)^{a}$ for some $a\geq0$, so that $|{\disc}\,S|=p^{a}$; for $p=2$ this is Nikulin's definition of a *2-elementary* lattice [@Nik80, §3.6.1].
-The integer $a$ is the minimal number of generators of $A_S$.
-Each condition is invariant under isometry, so the $p$-elementary lattices form a replete full subcategory of $\mathbf{Lat}_{\bZ}$.
+A $\bZ$-lattice $S$ is **$p$-elementary** when its discriminant carrier module is elementary:
+$$
+S^\#/S\isoto(\bZ/p\bZ)^a
+$$
+for some $a\geq0$.
+Then
+$$
+\abs{\disc S}=p^a,
+\qquad
+a=\ell(S^\#/S).
+$$
+For $p=2$ this is Nikulin's $2$-elementary condition [@Nik80, §3.6.1].
+The condition is invariant under isometry and defines a replete full subcategory of $\mathbf{Lat}_{\bZ}$.
 
-For an even 2-elementary lattice $S$ put $\delta_S=0$ when $q_S$ is an orthogonal direct sum of discriminant forms of the types $u^{(2)}_{+}(2)$ and $v^{(2)}_{+}(2)$, and $\delta_S=1$ otherwise [@Nik80, §3.6].
-Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$ in the sense of @def:signature.
-The genus of an even 2-elementary lattice is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and if $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine its isometry class [@Nik80, Thm. 3.6.2].
+For an even $2$-elementary lattice $S$, the coparity $\delta_S$ is the invariant of the quadratic discriminant form $A_{S,q}$ from [@Nik80, §3.6].
+Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$.
+The genus is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and when $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine the integral isometry class [@Nik80, Thm. 3.6.2].
 :::
-
 ::: {.example #ex:a3-not-two-elementary title="Determinant order does not imply 2-elementarity"}
 Membership is a condition on the group $A_S$, which the order $|{\disc}\,S|$ alone leaves open.
 In the sign convention of @def:definiteness the root lattice $A_3$ has Gram matrix
@@ -172,53 +277,78 @@ G=\begin{pmatrix}-2&1&0\\1&-2&1\\0&1&-2\end{pmatrix},
 \qquad
 \det G=-4 .
 $$
-Write $d_1\mid d_2\mid d_3$ for its invariant factors, so that $A_{A_3}\cong\bigoplus_i\bZ/d_i\bZ$.
-Then $d_1$ is the greatest common divisor of the entries, which is $1$, and $d_1d_2$ is the greatest common divisor of the $2\times2$ minors, which is again $1$ because the minor on rows $2,3$ and columns $1,2$ is $\left|\begin{smallmatrix}1&-2\\0&1\end{smallmatrix}\right|=1$.
-Since $d_1d_2d_3=|\det G|=4$, the invariant factors are $1,1,4$ and $A_{A_3}\cong\bZ/4\bZ$.
-So $A_3$ is not 2-elementary although $|{\disc}\,A_3|=2^{2}$.
+Write $d_1\mid d_2\mid d_3$ for the invariant factors of the carrier $A_3^\#/A_3$, so
+$$
+A_3^\#/A_3\isoto\bigoplus_i\bZ/d_i\bZ.
+$$
+Then $d_1$ is the greatest common divisor of the entries of $G$, and $d_1d_2$ is the greatest common divisor of the $2\times2$ minors; both are $1$.
+Since $d_1d_2d_3=|\det G|=4$, one has
+$$
+A_3^\#/A_3\isoto\bZ/4\bZ.
+$$
+Thus the bilinear discriminant object $A_{A_3}$ is not $2$-elementary although $|\disc{A_3}|=2^2$.
 :::
 
 ## Radical and unimodularity {#sec-radical-unimodularity}
 
-::: {.definition #def:two-witnesses title="Radical and discriminant as kernel and cokernel"}
-For any symmetric bilinear form on a finitely generated projective module, define
+::: {.definition #def:two-witnesses title="Radical and adjoint cokernel"}
+
+For a symmetric bilinear form $b$ on a finitely generated projective $R$-module $M$, define $\radic(M)$ and the **adjoint cokernel** $Q_b$ by the exact sequence in $R\text{-}\mathbf{Mod}$
 $$
-\radic(L)=\ker(b^\sharp),
-\qquad
-\disc(L)=\coker(b^\sharp).
-$$
-Then $b$ is nondegenerate exactly when $\radic(L)=0$, and it is perfect exactly when both kernel and cokernel vanish.
-The exact sequence is
-$$
-0\too\radic(L)\too L
-\xrightarrow{b^\sharp}L^*\too\disc(L)
+0\too\radic(M)
+\too M
+\xrightarrow{b^\sharp}M^*
+\too Q_b
 \too0.
 $$
-For a lattice, $\disc(L)=A_L$.
+Then $b$ is nondegenerate exactly when $\radic(M)=0$, and it is perfect exactly when both $\radic(M)$ and $Q_b$ vanish.
+
+The object $Q_b$ is only the module cokernel of the adjoint. It is not the bilinear discriminant form $A_L$, which is the cokernel of $\boldsymbol\iota_L$ in $\mathbf{BilMod}_{\bZ}$ from @def:discriminant.
 :::
 
 ::: {.theorem #thm:radical-splits title="The radical splits off"}
 
-Let $R$ be a Dedekind domain, let $M$ be a finitely generated projective $R$-module, and let $b$ be a symmetric bilinear form on $M$ with values in $R$.
-Then there is a submodule $N\iscontainedin M$ with
+Let $R$ be a Dedekind domain, let $M$ be a finitely generated projective $R$-module, and let $b$ be a symmetric $R$-valued bilinear form on $M$.
+There exists a monomorphism
 $$
-M=\radic(M)\oplus N,
-\qquad
-b|_{\radic(M)}=0,
-\qquad
-b|_{N}\ \text{nondegenerate},
+\nu\colon N\injects M
 $$
-and the projection $N\to M/\radic(M)$ is an isometry onto the radical quotient of @prop:quotient-form.
+such that the induced orthogonal-sum morphism is an isomorphism
+$$
+\radic(M)\perp N\isoto M,
+$$
+the restricted form $\nu^*b$ on $N$ is nondegenerate, and the quotient morphism induces an isometry
+$$
+N\isoto M/\radic(M)
+$$
+onto the radical quotient of @prop:quotient-form.
+:::
 
-The adjoint $b^{\sharp}$ induces an injection $M/\radic(M)\hookrightarrow\Hom_R(M,R)$, whose target is finitely generated projective and therefore torsion-free; so $M/\radic(M)$ is finitely generated and torsion-free, hence projective over the Dedekind domain $R$, and
+::: {.proof}
+The adjoint induces a monomorphism
 $$
-0\too\radic(M)\too M\too M/\radic(M)\too0
+M/\radic(M)\injects\Hom_R(M,R).
 $$
-splits.
-Take $N$ to be the image of a splitting.
-Every element of $\radic(M)$ pairs to zero with every element of $M$, so the sum is orthogonal; and if $x\in N$ satisfies $b(x,N)=0$ then also $b(x,\radic(M))=0$, so $b(x,M)=0$ and $x\in N\cap\radic(M)=0$.
+Hence $M/\radic(M)$ is finitely generated and torsion-free, therefore projective over the Dedekind domain $R$.
+Choose a section
+$$
+\nu\colon N\isoto M/\radic(M)\too M
+$$
+of the quotient morphism.
+Then the induced map
+$$
+\radic(M)\oplus N\too M
+$$
+is an isomorphism of $R$-modules, and orthogonality follows from the defining property of the radical.
 
-So a degenerate form over a Dedekind domain is the orthogonal sum of a zero form and a nondegenerate one, and its isometry class is determined by the rank of its radical together with the isometry class of its radical quotient.
+The pullback
+$$
+N\mathbin{\times}_M\radic(M)
+$$
+is zero because the composite $N\xrightarrow{\nu}M\twoheadrightarrow M/\radic(M)$ is an isomorphism.
+If $x$ lies in the radical of $\nu^*b$, then $\nu(x)$ pairs trivially with both $N$ and $\radic(M)$, hence with all of $M$.
+Thus $\nu(x)$ factors through $\radic(M)\injects M$, so $x$ factors through the zero pullback above.
+Therefore $x=0$ and $\nu^*b$ is nondegenerate.
 :::
 
 ## Localization and comparison {#sec-discriminant}
@@ -245,10 +375,7 @@ The second sequence is exact because $L$ is projective.
 ::: {.theorem #thm:double-complex title="Discriminant comparison via localization"}
 For nondegenerate $L$, the extension $b_K^\sharp$ is an isomorphism and the form gives the commutative diagram
 
-```{.tikz}
-%%| filename: discriminant-comparison
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
-\begin{tikzcd}[column sep=small]
+```tikzcd id="discriminant-comparison"
 0 \arrow[r] &
 L \arrow[r] \arrow[d,"b^\sharp"'] &
 L_K \arrow[r] \arrow[d,"b_K^\sharp\;(\sim)"'] &
@@ -259,19 +386,22 @@ L^* \arrow[r] &
 \operatorname{Hom}_R(L,K) \arrow[r] &
 \operatorname{Hom}_R(L,K/R) \arrow[r] &
 0
-\end{tikzcd}
 ```
 
-The snake lemma identifies
+The snake lemma identifies the module cokernel of the adjoint with the metric-dual quotient:
 $$
-A_L\cong L^\#/L\cong\coker(b^\sharp)
+\coker_{R\text{-}\mathbf{Mod}}(b^\sharp)
+\isoto
+L^\#/L.
 $$
-and gives
+For $R=\bZ$, this is the carrier module of the bilinear discriminant object $A_L$.
+On carriers the resulting exact sequence is
 $$
-0\too A_L\too L\tensor_R(K/R)
-\too\Hom_R(L,K/R)\too0.
+0\too L^\#/L
+\too L\tensor_R(K/R)
+\too\Hom_R(L,K/R)
+\too0.
 $$
 :::
 
 These functors send an isometry of lattices to its induced isometry of discriminant forms.
-They are used in the next chapter.

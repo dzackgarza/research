@@ -27,9 +27,8 @@ import frontmatter
 from pydantic import TypeAdapter
 
 from latticedb import records
-from latticedb.arithmetic import GramTensor
 from latticedb.corpus import Corpus, Entry
-from latticedb.model import Morphism, Tag, Yaml
+from latticedb.model import GramTensor, Morphism, Tag, Yaml
 
 pari = cypari2.Pari()
 

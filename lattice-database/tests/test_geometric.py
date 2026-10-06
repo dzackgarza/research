@@ -138,7 +138,7 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     assert 'href="../geometric-objects/complex-hyperbolic-2-space.html"' in graph
     vinberg = (target / "graphs" / "hyperbolic-triangle-2-3-infinity.html").read_text()
     assert "rational Coxeter–Vinberg" in vinberg
-    assert "Hodge diamond" not in complex_ball
+    assert '<h2 id="hodge-diamond">' not in complex_ball
     quadric = (target / "geometric-objects" / "complex-quadric-q-5.html").read_text()
     bdi = (target / "geometric-objects" / "bdi-25-compact.html").read_text()
     exceptional = (target / "geometric-objects" / "eiii-noncompact.html").read_text()
@@ -210,7 +210,9 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
 
 
 def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> None:
-    (tmp_path / "lattices").symlink_to(ROOT / "lattices", target_is_directory=True)
+    lattices = tmp_path / "lattices"
+    lattices.mkdir()
+    (lattices / "0016.md").symlink_to(ROOT / "lattices" / "0016.md")
     (tmp_path / "families.yaml").symlink_to(ROOT / "families.yaml")
     (tmp_path / "retired-tags.yaml").symlink_to(ROOT / "retired-tags.yaml")
     source = frontmatter.load(str(ROOT / "geometric-objects" / "k3-surface.md"))

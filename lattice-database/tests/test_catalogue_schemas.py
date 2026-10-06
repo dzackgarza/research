@@ -8,6 +8,7 @@ import pytest
 from pydantic import TypeAdapter, ValidationError
 
 from latticedb import checks, corpus
+from latticedb.catalogues import LatticeFamily
 from latticedb.geometric import GeometricObject
 
 ROOT = Path(__file__).parent.parent
@@ -124,3 +125,103 @@ def test_modularity_requires_the_scaled_dual_isometry(tmp_path: Path) -> None:
         "matrix must give the stated isometry" in problem
         for problem in checks.report(tmp_path)
     )
+def _family(**overrides: object) -> dict[str, object]:
+    """The split OG6 family with overrides applied."""
+    record: dict[str, object] = {
+        "slug": "og6-polarized-split",
+        "name": "Polarized OG6 lattices, split case",
+        "parameter": "d",
+        "minimum": 1,
+        "rank": 7,
+        "signature": [2, 5],
+        "gram_template": [
+            [0, 1, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, -2, 0, 0],
+            [0, 0, 0, 0, 0, -2, 0],
+            [0, 0, 0, 0, 0, 0, "-2*d"],
+        ],
+    }
+    record.update(overrides)
+    return record
+
+
+def test_the_shipped_lattice_families_validate() -> None:
+    for slug in (
+        "og6-polarized-split",
+        "og6-polarized-nonsplit-4t-1",
+        "og6-polarized-nonsplit-4t-2",
+    ):
+        document = frontmatter.load(str(ROOT / "lattice-families" / f"{slug}.md"))
+        family = LatticeFamily.model_validate(document.metadata)
+        assert (family.rank, tuple(family.signature)) == (7, (2, 5))
+
+
+def test_a_lattice_family_rejects_a_malformed_template() -> None:
+    base = _family()
+    # Not square.
+    with pytest.raises(ValidationError, match="rank rows"):
+        LatticeFamily.model_validate(
+            base | {"gram_template": base["gram_template"][:6]}
+        )
+    # Not symmetric.
+    rows = [list(row) for row in base["gram_template"]]
+    rows[0][1] = 0
+    with pytest.raises(ValidationError, match="symmetric"):
+        LatticeFamily.model_validate(base | {"gram_template": rows})
+    # An unknown name.
+    rows = [list(row) for row in base["gram_template"]]
+    rows[6][6] = "-2*e"
+    with pytest.raises(ValidationError, match="nothing else"):
+        LatticeFamily.model_validate(base | {"gram_template": rows})
+    # Not arithmetic.
+    rows = [list(row) for row in base["gram_template"]]
+    rows[6][6] = "2**d"
+    with pytest.raises(ValidationError, match="integer arithmetic"):
+        LatticeFamily.model_validate(base | {"gram_template": rows})
+    # The parameter never occurs.
+    plain = [
+        [0 if value == "-2*d" else value for value in row]
+        for row in base["gram_template"]
+    ]
+    with pytest.raises(ValidationError, match="occurs in the template"):
+        LatticeFamily.model_validate(base | {"gram_template": plain})
+    # Degenerate at a probe point.
+    rows = [list(row) for row in base["gram_template"]]
+    rows[6][6] = "0*d"
+    with pytest.raises(ValidationError, match="nonsingular"):
+        LatticeFamily.model_validate(base | {"gram_template": rows})
+    # The stated signature is not the signature.
+    with pytest.raises(ValidationError, match="stated signature"):
+        LatticeFamily.model_validate(base | {"signature": [3, 4]})
+    # The parameter is not an identifier.
+    with pytest.raises(ValidationError, match="identifier"):
+        LatticeFamily.model_validate(base | {"parameter": "2d"})
+
+
+def test_the_corpus_loads_lattice_families_and_checks_their_slugs(tmp_path: Path) -> None:
+    (tmp_path / "lattices").mkdir()
+    (tmp_path / "lattices" / "0012.md").symlink_to(ROOT / "lattices" / "0012.md")
+    (tmp_path / corpus.FAMILIES_FILE).symlink_to(ROOT / corpus.FAMILIES_FILE)
+    (tmp_path / corpus.RETIRED_FILE).symlink_to(ROOT / corpus.RETIRED_FILE)
+    families = tmp_path / "lattice-families"
+    families.mkdir()
+    for slug in (
+        "og6-polarized-split",
+        "og6-polarized-nonsplit-4t-1",
+        "og6-polarized-nonsplit-4t-2",
+    ):
+        (families / f"{slug}.md").symlink_to(ROOT / "lattice-families" / f"{slug}.md")
+    loaded = corpus.load(tmp_path)
+    assert [entry.value.slug for entry in loaded.lattice_families] == [
+        "og6-polarized-nonsplit-4t-1",
+        "og6-polarized-nonsplit-4t-2",
+        "og6-polarized-split",
+    ]
+    assert [
+        problem
+        for problem in checks.report(tmp_path)
+        if 'lattice-families' in problem
+    ] == []

@@ -1,11 +1,12 @@
 """A corpus is valid exactly when the tags, families and file names that its records name exist and are unique."""
 
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
 import yaml
 
-from latticedb import checks, corpus, records, relations, summands
+from latticedb import checks, cli, corpus, records, relations, summands
 from latticedb.model import Yaml
 
 
@@ -352,3 +353,45 @@ def test_a_morphism_file_is_rejected_when_its_name_is_not_source_dash_target(
         stem="0016-0001",
     )
     assert "the file name must be 0016-0016" in problem
+
+
+def test_duplicate_grams_lists_the_tags_that_share_a_gram_tensor(tmp_path: Path) -> None:
+    directory = write(tmp_path, rank_one("0001"), rank_one("0002"), hyperbolic_plane([]))
+    loaded = corpus.load(directory)
+    assert corpus.duplicate_grams(loaded.entries) == {
+        ((Fraction(1),),): ["0001", "0002"]
+    }
+
+
+def test_duplicate_grams_is_empty_when_every_gram_tensor_is_held_once(tmp_path: Path) -> None:
+    directory = write(tmp_path, rank_one("0001"), hyperbolic_plane([]))
+    assert corpus.duplicate_grams(corpus.load(directory).entries) == {}
+
+
+def test_gram_index_lists_the_tags_stating_each_tensor(tmp_path: Path) -> None:
+    (tmp_path / "lattices").mkdir()
+    (tmp_path / "lattices" / "0001.md").write_text("---\ngram_tensor:\n- [2]\n---\n")
+    (tmp_path / "lattices" / "0002.md").write_text("---\ngram_tensor:\n- [2]\n---\n")
+    (tmp_path / "lattices" / "0003.md").write_text("---\nname: sparse\n---\n")
+    assert corpus.gram_index(tmp_path) == {"2": ["0001", "0002"]}
+    (tmp_path / "lattices" / "0004.md").write_text("---\ngram_tensor:\n- [2]\n---\n")
+    corpus.append_index(tmp_path, "0004", ((Fraction(2),),))
+    assert corpus.gram_index(tmp_path) == {"2": ["0001", "0002", "0004"]}
+
+
+def test_new_refuses_a_gram_tensor_the_corpus_holds(tmp_path: Path) -> None:
+    (tmp_path / "lattices").mkdir()
+    (tmp_path / "lattices" / "0001.md").write_text("---\ngram_tensor:\n- [2]\n---\n")
+    (tmp_path / corpus.RETIRED_FILE).write_text("{}\n")
+    with pytest.raises(SystemExit):
+        cli.new(gram="[[2]]", name="X", latex="X", root=tmp_path)
+    assert [path.name for path in sorted((tmp_path / "lattices").glob("*.md"))] == ["0001.md"]
+
+
+def test_new_writes_a_fresh_gram_tensor_and_appends_the_index(tmp_path: Path) -> None:
+    (tmp_path / "lattices").mkdir()
+    (tmp_path / "lattices" / "0001.md").write_text("---\ngram_tensor:\n- [2]\n---\n")
+    (tmp_path / corpus.RETIRED_FILE).write_text("{}\n")
+    cli.new(gram="[[3]]", name="X", latex="X", root=tmp_path)
+    assert (tmp_path / "lattices" / "0002.md").exists()
+    assert corpus.gram_index(tmp_path) == {"2": ["0001"], "3": ["0002"]}

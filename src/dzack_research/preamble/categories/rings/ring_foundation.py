@@ -3948,7 +3948,13 @@ def _engine_field_decision(engine):
             )
             return _integral_polynomial_ideal_is_maximal(lifted)
         case _:
-            return engine.is_field()
+            try:
+                return engine.is_field()
+            except NotImplementedError:
+                # Sage's generic integral domains raise, rather than answer,
+                # when they cannot decide field-ness (e.g. lazy power series
+                # rings). Undecided is Unknown, never an implicit False.
+                return Unknown
 
 
 def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
