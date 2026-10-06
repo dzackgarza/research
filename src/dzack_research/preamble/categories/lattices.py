@@ -2743,23 +2743,67 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert isotropic.b(orthogonal) == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: a = {orthogonal!r} must lie in e^perp for e = {isotropic!r}, but b(e, a) = {isotropic.b(orthogonal)}"
             fraction_field = ring.fraction_field()
             half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
-            images = []
-            for label in self.module_generating_set():
-                x = self.module_generator(label)
-                half_coefficient = half_norm * fraction_field(x.b(isotropic))
-                assert half_coefficient in ring, f"the Eichler transvection t(e, a) with e = {isotropic!r}, a = {orthogonal!r} does not preserve {self!r}: q(a) b(e, {x})/2 = {half_coefficient} is not in {ring}"
-                images.append(
-                    x
-                    - self.scalar_multiple(x.b(orthogonal), isotropic)
-                    + self.scalar_multiple(x.b(isotropic), orthogonal)
-                    - self.scalar_multiple(ring(half_coefficient), isotropic)
-                )
-            from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _engine_element,
+                _engine_ring,
+                _owned_engine_element,
+            )
             from sage.matrix.constructor import matrix
             labels = tuple(self.module_generating_set())
+            engine = _engine_ring(ring)
+            isotropic_coordinates = tuple(
+                _engine_element(ring, isotropic.to_vector()(label)) for label in labels
+            )
+            orthogonal_coordinates = tuple(
+                _engine_element(ring, orthogonal.to_vector()(label)) for label in labels
+            )
+            gram = _engine_component_matrix(self.gram_tensor())
+            pairings_with_isotropic = gram * matrix(
+                engine, len(labels), 1, isotropic_coordinates
+            )
+            pairings_with_orthogonal = gram * matrix(
+                engine, len(labels), 1, orthogonal_coordinates
+            )
+            columns = []
+            for source_position, label in enumerate(labels):
+                pairing_with_isotropic = _owned_engine_element(
+                    ring, pairings_with_isotropic[source_position, 0]
+                )
+                pairing_with_orthogonal = _owned_engine_element(
+                    ring, pairings_with_orthogonal[source_position, 0]
+                )
+                half_coefficient = half_norm * fraction_field(pairing_with_isotropic)
+                assert half_coefficient in ring, f"the Eichler transvection t(e, a) with e = {isotropic!r}, a = {orthogonal!r} does not preserve {self!r}: q(a) b(e, {self.module_generator(label)})/2 = {half_coefficient} is not in {ring}"
+                integral_half_coefficient = ring(half_coefficient)
+                columns.append(
+                    tuple(
+                        (
+                            (ring.one() if target_position == source_position else zero)
+                            - pairing_with_orthogonal
+                            * _owned_engine_element(
+                                ring, isotropic_coordinates[target_position]
+                            )
+                            + pairing_with_isotropic
+                            * _owned_engine_element(
+                                ring, orthogonal_coordinates[target_position]
+                            )
+                            - integral_half_coefficient
+                            * _owned_engine_element(
+                                ring, isotropic_coordinates[target_position]
+                            )
+                        )
+                        for target_position in range(len(labels))
+                    )
+                )
             transformation = matrix(
-                _engine_ring(ring),
-                [[_engine_element(ring, image.to_vector()(target_label)) for image in images] for target_label in labels],
+                engine,
+                [
+                    [
+                        _engine_element(ring, columns[source_position][target_position])
+                        for source_position in range(len(labels))
+                    ]
+                    for target_position in range(len(labels))
+                ],
             )
             return self.Aut()._isometry_from_column_matrix(transformation)
 
