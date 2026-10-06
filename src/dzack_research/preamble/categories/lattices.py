@@ -2988,11 +2988,10 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def hyperbolic_plane_summand_count(self):
             r"""Return the number of represented indecomposable hyperbolic-plane summands."""
-            plane = Lattices(self.base_ring())("U")
             return sum(
                 1
-                for summand in self.indecomposable_summands()
-                if summand.is_isometric(plane)
+                for name in self.decomposition_names()
+                if name == "U"
             )
 
         def splits_two_hyperbolic_planes(self) -> bool:
