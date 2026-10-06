@@ -12,6 +12,7 @@ containing $U^2$; the two agree on that class (Eichler), and only there.
 """
 
 import json
+import math
 import os
 import subprocess
 import sys
@@ -95,15 +96,17 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
     """Whether SageMath computes `field` for `lattice`, of which `planes` is a lower bound of the hyperbolic index.
 
     Spinor genera are computed for a lattice of rank at least 3, the dimension for which SPLAG, Chapter 15, Theorem 15(b) defines them.
-    The order and a generating set of O(L) are computed for a definite integral lattice with PARI/GP `qfauto`.
+    The order and a generating set of O(L) are computed for a definite rational lattice with PARI/GP `qfauto`, after multiplying the Gram tensor by a positive common denominator; this does not change O(L).
     The series $F_{L,\\Gamma}$ of orbits of primitive vectors is computed for a definite lattice, by enumerating its vectors.
     The series $F_{A_L,\\Gamma}$ of orbits on the discriminant group is computed for an even lattice that contains $U^2$ (theory/orbits.md).
     """
-    assert lattice.integral is not None
     match field:
         case "automorphism_group_order" | "automorphism_group_generator_morphisms":
             return lattice.definite is not None
+        case _ if lattice.integral is None:
+            return False
         case "discriminant_sequence":
+            assert lattice.integral is not None
             return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":
             return lattice.rank >= 3
@@ -150,14 +153,13 @@ def _sign(lattice: Lattice) -> int:
 def requests(
     loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int
 ) -> list[Request]:
-    """For each integral record with a nonzero determinant, the uncertified applicable fields."""
+    """For each nondegenerate record, the uncertified applicable CI computations."""
     chosen: list[Request] = []
     bounds = hyperbolic_index_bounds(loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
         if (
-            lattice.integral is None
-            or lattice.determinant == 0
+            lattice.determinant == 0
             or (tags and lattice.tag not in tags)
         ):
             continue
@@ -183,7 +185,13 @@ def requests(
             ):
                 fields.append(field)
         if fields:
-            gram = [[int(x) for x in row] for row in lattice.gram_tensor]
+            denominator = math.lcm(
+                *(entry.denominator for row in lattice.gram_tensor for entry in row)
+            )
+            gram = [
+                [int(denominator * entry) for entry in row]
+                for row in lattice.gram_tensor
+            ]
             chosen.append(
                 {
                     "tag": lattice.tag,

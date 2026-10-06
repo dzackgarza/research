@@ -29,6 +29,61 @@ def a2(loaded: corpus.Corpus) -> Lattice:
     )
 
 
+def test_rational_definite_lattice_requests_orthogonal_group_from_cleared_gram(
+    tmp_path: Path,
+) -> None:
+    metadata = {
+        "tag": "R001",
+        "name": "<1/2>",
+        "latex": r"\langle \frac{1}{2} \rangle",
+        "aliases": [],
+        "rank": 1,
+        "gram_tensor": [["1/2"]],
+        "signature": [1, 0],
+        "determinant": "1/2",
+        "definiteness": "positive_definite",
+        "definite": {
+            "minimum": "1/2",
+            "kissing_number": 2,
+            "automorphism_group_order": 2,
+            "roots": [
+                {"type": "A1", "scale": "1/4", "simple_roots": [[1]]}
+            ],
+        },
+        "root_sublattice": {"invariant_factors": [1], "norms": ["1/2"]},
+        "families": [],
+        "related": [],
+        "references": [],
+    }
+    path = tmp_path / "R001.md"
+    path.write_text(records.record_text(metadata, ""))
+    lattice = Lattice.model_validate(metadata)
+    loaded = corpus.Corpus(
+        entries=(corpus.Entry(lattice, "", path),),
+        families={},
+        retired={},
+        geometric=(),
+        geometric_families=(),
+        graphs=(),
+        genera=(),
+        polytopes=(),
+        toric_varieties=(),
+        geometric_maps=(),
+        local_systems=(),
+        operators=(),
+        moduli_problems=(),
+        lattice_families=(),
+        lie_groups=(),
+        arithmetic_groups=(),
+    )
+    [request] = genus.requests(loaded, {}, (), seconds=60)
+    assert request["gram"] == [[1]]
+    assert set(request["fields"]) == {
+        "automorphism_group_order",
+        "automorphism_group_generator_morphisms",
+    }
+
+
 def test_sagemath_computes_the_invariants_of_a2(loaded: corpus.Corpus) -> None:
     # A2 (record 0012) has rank 2, so no spinor genera are computed.
     # It is alone in its genus, and O(A2) is the dihedral group of order 12 (Conway and Sloane, SPLAG, Chapter 4, Section 6.1).
