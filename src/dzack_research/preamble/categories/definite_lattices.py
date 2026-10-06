@@ -372,6 +372,7 @@ class _ExactCVPEngine:
 
     def __init__(self, lattice) -> None:
         self.lattice = lattice
+        self.rank = int(lattice.module_rank())
         self.sign, positive_gram = _positive_gram(lattice)
         self.ring = lattice.base_ring()
         self.rationals = self.ring.fraction_field()
@@ -379,6 +380,29 @@ class _ExactCVPEngine:
         self.engine_gram = _engine_component_matrix(positive_gram)
         self.engine_gram_q = self.engine_gram.change_ring(SageQQ)
         self.pari_gram = self.engine_gram.__pari__()
+
+    @classmethod
+    def _from_positive_engine_gram(cls, ring, engine_gram):
+        r"""Prepare the coordinate CVP backend directly from a positive Gram matrix.
+
+        This lowering constructor is for algorithms that already own an exact
+        definite Gram and use only the coordinate-level CVP methods.  It avoids
+        constructing a categorical lattice solely to hand the same Gram back
+        to PARI.
+        """
+        if engine_gram.nrows() != engine_gram.ncols():
+            raise ValueError("an exact CVP Gram must be square")
+        result = cls.__new__(cls)
+        result.lattice = None
+        result.rank = int(engine_gram.nrows())
+        result.sign = ring.one()
+        result.ring = ring
+        result.rationals = ring.fraction_field()
+        result.engine_sign = SageQQ.one()
+        result.engine_gram = engine_gram
+        result.engine_gram_q = engine_gram.change_ring(SageQQ)
+        result.pari_gram = engine_gram.__pari__()
+        return result
 
     def _engine_scalar(self, value):
         parent = element_parent(value)
@@ -392,7 +416,7 @@ class _ExactCVPEngine:
         return SageQQ(_engine_element(self.rationals, owned))
 
     def _engine_target_coordinates(self, target):
-        if element_parent(target) is self.lattice:
+        if self.lattice is not None and element_parent(target) is self.lattice:
             coordinates = target.to_vector()
             return tuple(
                 SageQQ(
@@ -404,10 +428,11 @@ class _ExactCVPEngine:
                 for label in self.lattice.module_generating_set()
             )
         coordinates = tuple(target)
-        if len(coordinates) != int(self.lattice.module_rank()):
+        if len(coordinates) != self.rank:
+            ambient = self.lattice if self.lattice is not None else f"rank-{self.rank} definite Gram"
             raise ValueError(
-                f"{target} is not a point of {self.lattice} tensor QQ: it must have "
-                f"{self.lattice.module_rank()} coordinates, one per basis vector, but has "
+                f"{target} is not a point of {ambient} tensor QQ: it must have "
+                f"{self.rank} coordinates, one per basis vector, but has "
                 f"{len(coordinates)}"
             )
         return tuple(self._engine_scalar(coordinate) for coordinate in coordinates)

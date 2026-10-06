@@ -1,6 +1,10 @@
 r"""A small Euclidean ball around a point of (mathbf Q^2) can contain one lattice point."""
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+from dzack_research.preamble.categories.definite_lattices import _ExactCVPEngine
+from sage.matrix.constructor import matrix as sage_matrix
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 
 def test_square_lattice_close_vectors_at_radius_squared_one_eighth() -> None:
@@ -66,3 +70,17 @@ def test_affine_cvp_scale_search_finds_first_feasible_multiplier_exactly() -> No
         5,
         exact_distance=True,
     ) == 1
+
+
+def test_coordinate_cvp_engine_can_be_prepared_from_an_exact_positive_gram() -> None:
+    engine = _ExactCVPEngine._from_positive_engine_gram(
+        ZZ,
+        sage_matrix(SageZZ, [[SageZZ.one() + SageZZ.one()]]),
+    )
+
+    assert engine.lattice is None
+    assert engine.rank == 1
+    assert int(engine.engine_gram[0, 0]) == 2
+    assert engine._engine_target_coordinates((QQ(1) / 2,)) == (
+        SageQQ.one() / (SageQQ.one() + SageQQ.one()),
+    )
