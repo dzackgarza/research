@@ -278,23 +278,25 @@ def test_the_fields_page_documents_every_field_of_a_record(built: Path) -> None:
             assert f"<code>{field}</code>" in html
 
 
-def test_each_morphism_file_has_a_page_linked_from_the_index_and_from_the_pages_of_its_lattices(
+def test_each_stored_morphism_is_rendered_on_its_source_and_backlinked_from_its_target(
     built: Path,
 ) -> None:
-    files = corpus.load(ROOT).morphisms
-    assert files
-    index = (built / "morphisms.html").read_text()
-    for entry in files:
-        record = entry.morphisms
-        link = f"morphism/{record.source}-{record.target}.html"
-        assert (built / link).exists()
-        assert link in index
-        for tag in (record.source, record.target):
-            assert link in (built / "tag" / f"{tag}.html").read_text()
+    entries = corpus.load(ROOT).entries
+    stored = [
+        (entry.lattice, morphism)
+        for entry in entries
+        for morphism in entry.lattice.morphisms
+    ]
+    assert stored
+    for source, morphism in stored:
+        source_html = (built / "tag" / f"{source.tag}.html").read_text()
+        target_html = (built / "tag" / f"{morphism.target}.html").read_text()
+        assert str(site.inline_markup(morphism.name)) in source_html
+        assert f'href="../tag/{source.tag}.html#morphisms"' in target_html
 
 
-def test_a_morphism_page_draws_the_lines_of_each_matrix(built: Path) -> None:
-    html = (built / "morphism" / "0128-027E.html").read_text()
+def test_a_source_lattice_page_draws_the_lines_of_its_morphism_matrices(built: Path) -> None:
+    html = (built / "tag" / "0128.html").read_text()
     assert r"\begin{array}{rr|rrrrrrrr}" in html
     assert html.count(r"\hline") == 4
 

@@ -17,10 +17,9 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
     lattice_directory = tmp_path / "lattices"
     lattice_directory.mkdir()
     for tag in (
-        "0001",
-        "0002",
-        "0006",
-        "0013",
+            "0001",
+            "0002",
+            "0013",
         "0016",
         "0151",
         "027E",
@@ -79,7 +78,7 @@ def test_k3_hodge_diamond_and_lattice_link_are_published(tmp_path: Path) -> None
 
 def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> None:
     (tmp_path / "lattices").mkdir()
-    for tag in ("0001", "0002", "0006", "0011", "0013", "0016", "0151"):
+    for tag in ("0001", "0002", "0011", "0013", "0016", "0151"):
         (tmp_path / "lattices" / f"{tag}.md").symlink_to(
             ROOT / "lattices" / f"{tag}.md"
         )

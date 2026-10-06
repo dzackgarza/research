@@ -24,14 +24,12 @@ The site is served locally at <http://lattice-database.localhost/>, and publishe
 | `lattice-polytopes/`, `toric-varieties/` | Based lattice polytopes, polar duals and normal-fan toric varieties |
 | `geometric-maps/`, `moduli-problems/` | Geometric maps, fibrations and specified moduli problems |
 | `integral-local-systems/`, `picard-fuchs-operators/` | Integral monodromy and period operators with geometric realizations |
-| `morphisms/dual/` | Isometries $L\to L^*(k)$ in the basis dual to the lattice record |
 | `geometric-bibliography.bib` | BibTeX entries cited by geometric object and family prose |
 | `families.yaml` | Every family that a record may name, with one line of its meaning |
 | `retired-tags.yaml` | Every tag whose record the corpus no longer admits, with the lattice that was there and the twist of a record that it is |
-| `morphisms/<S>-<T>.md` | Morphisms from the lattice `S` to the lattice `T`, as matrices, and prose |
 | `pages/<slug>.md` | One collection page: conditions on the database rows, and prose |
 | `theory/<slug>.md` | One theory page: the definitions and conventions that the other pages link to |
-| `src/latticedb/model.py` | The schema of a record and of a morphism file, and their validators |
+| `src/latticedb/model.py` | The schema of a lattice card, including its outgoing morphisms, and its validators |
 | `src/latticedb/geometric.py` | The schema of geometric families, projective varieties, manifolds and symmetric spaces |
 | `src/latticedb/graphs.py` | Weighted vertices and edges; Coxeter, Dynkin, Satake and rational Coxeter–Vinberg predicates |
 | `src/latticedb/catalogues.py` | Schemas of Lie groups, arithmetic groups, genera, polytopes, toric varieties, maps, local systems and operators |
@@ -112,7 +110,7 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 
 | Catalogue | Defining data and links |
 | --- | --- |
-| A lattice's `groups` block | One entry for each subgroup $\Gamma \leq O(L)$ of interest, keyed by the standard `OrbitGroup` names (`O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+`, `SOtilde+`), whose primitive-vector series is `integral.primitive_orbits`, or by a further named subgroup such as $\Gamma_{\mathrm{En},2}$. Each entry holds generators (named self-isometries), optional relators, the abstract structure, order, index, parent, a stabilized object, a hyperbolic chamber, and orbit representatives keyed by the square. `O+` means the kernel of the real spinor norm. |
+| `arithmetic-groups/<slug>.md` | One stored arithmetic subgroup $\Gamma\leq O(L)$, including standard subgroups (`O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+`, `SOtilde+`) or named subgroups such as $\Gamma_{\mathrm{En},2}$. Its generators name self-isometries stored on the lattice card; it may also state relators, abstract structure, order, index, parent, a stabilized object, a hyperbolic chamber and orbit representatives. |
 | `genera/` | Signature, determinant, parity, genus symbol, representative lattice tags, class number, completeness and rational mass. A complete list with known group orders checks $\sum 1/|O(L_i)|$. |
 | `lattice-families/` | Parameter name and minimum, rank, signature, and the Gram template whose entries are integers or integer arithmetic in the parameter; the validator checks shape, symmetry, nonsingularity and the stated signature at the minimum and one past it. |
 | `lattice-polytopes/` | Vertices in a based free abelian group, ambient rank, source identifier, reflexivity, polar dual, and optional Delaunay sphere tied to a quadratic lattice. A toric ambient lattice is not the quadratic lattice of a lattice record. |
@@ -122,7 +120,9 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 | `integral-local-systems/` | A fibration over a smooth base, its source family, cohomological degree and rank; optional integral fiber lattice and matrices of monodromy around named loops. |
 | `picard-fuchs-operators/` | Exact rational polynomial coefficients of $\sum_i a_i(x)(x\,d/dx)^i$, coordinate, normalization, singularities and exponents; each realization names a family, period and relation to the operator. |
 
-`morphisms/dual/<slug>.md` records a matrix $M$ for $L\to L^*(k)$ in the dual basis. Its validator checks $M\in GL_n(\mathbb Z)$ and $M^{\mathsf T}(kG^{-1})M=G$. The lattice's `integral.modular_scale` names the same $k$ and requires such a morphism. `integral.level` is the least $k$ for which $k b(x,x)$ is even on $L^*$; the validator computes it from $G^{-1}$. They are different invariants.
+`dual_gram_tensor` stores $G^{-1}$, so $L^*$ is a derived object of the lattice card rather than another card. `integral.level` is the least $k$ for which $k b(x,x)$ is even on $L^*$; `integral.modular_scale` records a scale $k$ for which the lattice is known to be $k$-modular. A chosen isometry $L\to L^*(k)$, when one is worth storing, belongs to the `morphisms` data of the card of $L$ rather than to a separate morphism file.
+
+A scaled dual $L^*(k)$ with $k \neq 1$ is a different lattice object, with Gram tensor $kG^{-1}$, and can have its own card when it is not already represented up to the catalogue's twist/sign conventions. A source title containing the word “dual” therefore does not by itself make a card redundant; only the raw dual $L^*$ is derived automatically from the owner card.
 
 `definite.minimal_vectors` is a complete shell in the record basis and must match the minimum and kissing number. `definite.perfect` is checked by the span of their rank-one tensors. `definite.regular` and `definite.spinor_regular` apply to integral ternary lattices. The Hermite invariant and packing density are exact functions of rank, determinant and minimum; source decimals are checked against those formulas rather than stored as exact values.
 
@@ -290,22 +290,18 @@ Run ordinary enrichment for selected cards with `just enrich --tag <tag>`. Certi
 
 ## Morphisms
 
-A file `morphisms/<S>-<T>.md` holds morphisms from the lattice with tag `S` to the lattice with tag `T`: maps $\varphi$ with $b_T(\varphi x, \varphi y) = b_S(x, y)$.
-The front matter is the record, and the body is notes in Pandoc Markdown.
+A lattice card owns every stored morphism whose domain is that lattice. Each item of its `morphisms` list names the target card and records a map $\varphi:S(c)\to T$ with $b_T(\varphi x,\varphi y)=c\,b_S(x,y)$. The domain is therefore structural and is not duplicated inside the morphism.
 
 ```yaml
----
-source: '0128'
-target: 027E
 morphisms:
-- name: $U \oplus E_8(-1) \hookrightarrow U^3 \oplus E_8(-1)^2$
+- target: 027E
+  name: $U \oplus E_8(-1) \hookrightarrow U^3 \oplus E_8(-1)^2$
   description: The inclusion as the first summand $U$ and the first summand $E_8(-1)$.
   matrix:
   - [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   - ...
   row_subdivisions: [2, 4, 6, 14]
   column_subdivisions: [2]
----
 ```
 
 The matrix is in the bases of the two records, with rank $T$ rows and rank $S$ columns: column $j$ lists the coordinates of $\varphi(e_j)$.
@@ -314,15 +310,15 @@ The corpus records a lattice once up to twist and sign, so a lattice that a sour
 The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
 Verification checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
 
-`latticedb enrich --summand-maps` writes the embeddings into each record $T$ that is an orthogonal sum.
+`latticedb enrich --summand-maps` writes the resulting embeddings on their source lattice cards, with each morphism naming its orthogonal-sum target $T$.
 The orthogonal summands of $T$ are the connected components of the graph on its basis in which $e_i$ and $e_j$ are adjacent when $b(e_i, e_j) \neq 0$; group them by their Gram matrix, $T = \bigoplus_M M^{n_M}$.
 The diagonal $x \mapsto (x, \ldots, x)$ embeds $M(k)$ into $M^k$.
 For each $M$, a partition $\lambda$ of an integer $m \leq n_M$, with its parts placed on consecutive summands, gives an embedding $\bigoplus_M \bigoplus_j M(\lambda_j) \to T$; with $g = \gcd_j \lambda_j$, it is a morphism of scale $g$ from the record with the summands $M(\lambda_j / g)$, when the corpus holds one.
 Up to the permutations of isometric summands there are $\prod_M \sum_{m \leq n_M} p(m)$ such embeddings, with $p$ the partition function; the identity of $T$ is not written.
 
-Each file has the page `morphism/<S>-<T>.html`, which draws each matrix with its lines; `morphisms.html` lists the files, and the page of each lattice links the files that name it.
+The page of the source lattice renders its outgoing morphisms and matrices. The page of a target lattice derives its incoming-morphism links by indexing all source cards; incoming maps are never stored a second time.
 
-`just morphism S T --name ... --matrix ...` appends a morphism to the file. Scheduled verification checks its equations.
+`just morphism S T --name ... --matrix ...` appends the morphism to lattice card `S`. Scheduled verification checks its equation.
 From SageMath, for a matrix `M` whose columns are the images (a morphism `phi` gives `M = phi.matrix().transpose()`, because SageMath lists the images in rows):
 
 ```python
@@ -395,7 +391,7 @@ The `justfile` calls it.
 | --- | --- |
 | `just seed` | Convert stored source rows into permanent lattice cards |
 | `just new ...` | Author a lattice card from a Gram tensor and supplied fields |
-| `just morphism S T ...` | Author a morphism in `morphisms/<S>-<T>.md` |
+| `just morphism S T ...` | Append a morphism with domain `S` and codomain `T` to lattice card `S` |
 | `just enrich ...` | Compute and store additional fields on existing cards |
 | `just certify ...` | CI computation phase: replace uncertified computed scopes and attach certificate hashes |
 | `just verify` | Report mathematical card and relation errors in CI |
@@ -403,8 +399,11 @@ The `justfile` calls it.
 | `just build` | Render every lattice card into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
-| `just test` | Run the tests |
+| `just test` | Run only preamble-free data-model/schema coherence tests; this is the local sub-second gate |
+| `just test-validation` | CI-only mathematical and integration validation under Sage/preamble |
 | `just test-source-intake` | Exercise archived-source importers and source-to-card collation; provenance only |
+
+`just test` must not import Sage or `dzack_research`. The schema layer parses stored data and checks internal shape/coherence only. Mathematical recomputation of lattice invariants belongs to `just verify` / `just test-validation` in CI, and the underlying lattice algorithms are tested at their preamble owners.
 
 `just test-source-intake` exercises the Hashimoto and Höhn--Mason readers and their collation against the cards produced from those sources. These tests detect importer/transcription drift. They do not certify a lattice invariant and do not contribute to `just verify`.
 
@@ -447,7 +446,7 @@ Source intake is one-way. A source contributes the claims it states — Gram ten
 
 - **Martinet's perfect lattices**, <http://jamartin.perso.math.cnrs.fr/Lattices/index.html>: the perfect lattices of dimensions at most 7 in `perf2to7` and the dimension-8 sets in PARI/GP files (`p8.gp.gz` and siblings), readable by `cypari2`; perfectness is a property a record states in its prose, and the Grams are definite integral records.
 
-- **Borcherds's tables of lattices**, <http://math.berkeley.edu/~reb/lattices/>: for each of the 665 odd unimodular and 121 even determinant-2 lattices of dimension 25 the root system, the order of the orthogonal group modulo the reflection group, and the orbits of norm $0,-2,-4,-6$ vectors of $I\!I_{25,1}$ with coordinates and simple-root counts; King's table of masses of the 32-dimensional even unimodular lattices by root system; the `norm*` and Magma-format files, all read on 2026-10-02. It prints no Gram tensor, so it writes no record — its claims land on records the corpus already holds: the twenty-four norm-zero vectors identify the Niemeier lattices as the orthogonal complements of norm-zero vectors of $I\!I_{25,1}$, which is `related` material and a morphism file for the twenty-three Niemeier records, with the page as the reference; the root system and the group order are the same fields of the rank-25 positive-definite records, the order derived from the stated group structure: Table −2 gives $|O(L)|=|R||G|$ for the even determinant-2 case, while Table −4 gives $|O(L)|=2|R||G|$ for the odd unimodular case, with $R$ the root-reflection group and $G$ the chamber stabilizer — these table values require the identified action before comparison with `definite.automorphism_group_order`; King's mass is a genus-level statement about the 32-dimensional records the corpus does not yet have, to be carried when they arrive.
+- **Borcherds's tables of lattices**, <http://math.berkeley.edu/~reb/lattices/>: for each of the 665 odd unimodular and 121 even determinant-2 lattices of dimension 25 the root system, the order of the orthogonal group modulo the reflection group, and the orbits of norm $0,-2,-4,-6$ vectors of $I\!I_{25,1}$ with coordinates and simple-root counts; King's table of masses of the 32-dimensional even unimodular lattices by root system; the `norm*` and Magma-format files, all read on 2026-10-02. It prints no Gram tensor, so it writes no record — its claims land on records the corpus already holds: the twenty-four norm-zero vectors identify the Niemeier lattices as the orthogonal complements of norm-zero vectors of $I\!I_{25,1}$, which is `related` material and outgoing morphism data on the twenty-three Niemeier cards, with the page as the reference; the root system and the group order are the same fields of the rank-25 positive-definite records, the order derived from the stated group structure: Table −2 gives $|O(L)|=|R||G|$ for the even determinant-2 case, while Table −4 gives $|O(L)|=2|R||G|$ for the odd unimodular case, with $R$ the root-reflection group and $G$ the chamber stabilizer — these table values require the identified action before comparison with `definite.automorphism_group_order`; King's mass is a genus-level statement about the 32-dimensional records the corpus does not yet have, to be carried when they arrive.
 
 - **Cohn's kissing-number table**, <https://cohn.mit.edu/kissing-numbers>: the best known bounds per dimension, its lower bounds originally the Catalogue's table and later improvements naming their lattices — a citation for `definite.kissing_number` and, where a record attains a bound stated elsewhere, an outside table the field checks against.
 

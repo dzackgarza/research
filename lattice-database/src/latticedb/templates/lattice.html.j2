@@ -125,7 +125,7 @@
         <tr><th scope="row">{{ theory("overlattices", "spinor-genera", "Classes in each spinor genus") }}, the spinor genus of \(L\) first</th><td>{{ lattice.integral.spinor_genera | join(", ") }}</td></tr>
         {% endif %}
         {% if lattice.integral.hyperbolic_index is not none or hyperbolic_bound is not none %}
-        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{% if lattice.integral.hyperbolic_index is not none %}{{ lattice.integral.hyperbolic_index }}{% else %}\(\geq {{ hyperbolic_bound }}\), by an embedding of \(U^{ {{- hyperbolic_bound -}} }\) in the morphism files{% endif %}</td></tr>
+        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{% if lattice.integral.hyperbolic_index is not none %}{{ lattice.integral.hyperbolic_index }}{% else %}\(\geq {{ hyperbolic_bound }}\), by a stored embedding \(U^{ {{- hyperbolic_bound -}} } \to L\){% endif %}</td></tr>
         {% endif %}
       </tbody>
     </table>
@@ -336,15 +336,29 @@
   </section>
   {% endif %}
 
-  {% if morphism_files %}
+  {% if outgoing_morphisms or incoming_morphisms %}
   <section aria-labelledby="morphisms">
     <h2 id="morphisms">{{ theory("morphisms", "morphisms", "Morphisms") }}</h2>
+    {% if outgoing_morphisms %}
+    <h3>From this lattice</h3>
+    {% for morphism, target, tex, text in outgoing_morphisms %}
+    <section aria-labelledby="morphism-{{ loop.index }}">
+      <h4 id="morphism-{{ loop.index }}">{{ morphism.name | inline_markup }}</h4>
+      <p>\(L{% if morphism.scale != 1 %}({{ morphism.scale }}){% endif %} \to\) <a class="tag" href="{{ root }}tag/{{ target.tag }}.html">{{ target.tag }}</a> \({{ target.latex }}\).</p>
+      {% if morphism.description %}<p>{{ morphism.description | inline_markup }}</p>{% endif %}
+      <div class="table-scroll">\[{{ tex }}\]</div>
+      <div class="copy-block"><pre id="morphism-matrix-{{ loop.index }}">{{ text }}</pre><button type="button" data-copy="morphism-matrix-{{ loop.index }}">Copy</button></div>
+    </section>
+    {% endfor %}
+    {% endif %}
+    {% if incoming_morphisms %}
+    <h3>To this lattice</h3>
     <ul class="related-list">
-      {% for file in morphism_files %}
-      {% set source, target = lattices[file.source], lattices[file.target] %}
-      <li><a href="{{ root }}morphism/{{ file.source }}-{{ file.target }}.html">\({{ source.latex }} \to {{ target.latex }}\)</a> <span class="relation">{{ file.morphisms | length }} {{ "morphism" if file.morphisms | length == 1 else "morphisms" }}</span></li>
+      {% for source, morphism in incoming_morphisms %}
+      <li><a class="tag" href="{{ root }}tag/{{ source.tag }}.html#morphisms">{{ source.tag }}</a> \({{ source.latex }}{% if morphism.scale != 1 %}({{ morphism.scale }}){% endif %} \to L\): {{ morphism.name | inline_markup }}</li>
       {% endfor %}
     </ul>
+    {% endif %}
   </section>
   {% endif %}
 

@@ -10,9 +10,9 @@ A tag is permanent. `retired-tags.yaml` lists each tag whose record the corpus
 no longer admits, with the lattice that was there and why it is not a record;
 no record takes a retired tag, and `next_tag` counts them.
 
-`morphisms/<S>-<T>.md` holds morphisms from the lattice with tag `S` to the
-lattice with tag `T`: YAML front matter, a `Morphisms` record, and notes in
-Markdown.
+Each lattice card owns the stored morphisms whose domain is that lattice. Each
+morphism names its codomain lattice by tag; incoming morphisms are derived by indexing
+the cards.
 """
 
 from dataclasses import dataclass
@@ -27,7 +27,6 @@ from pydantic import TypeAdapter, ValidationError
 from latticedb.catalogues import (
     ArithmeticGroup,
     CatalogueRecord,
-    DualIsometry,
     GeometricMap,
     IntegralLocalSystem,
     LatticeFamily,
@@ -41,7 +40,7 @@ from latticedb.catalogues import (
 from latticedb.model import GramTensor
 from latticedb.geometric import GeometricFamily, GeometricObject
 from latticedb.graphs import WeightedGraph
-from latticedb.model import Family, Lattice, Morphisms, Tag, Yaml
+from latticedb.model import Family, Lattice, Tag, Yaml
 
 TAG_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -65,13 +64,6 @@ RETIRED_FILE = "retired-tags.yaml"
 @dataclass(frozen=True)
 class Entry:
     lattice: Lattice
-    prose: str
-    path: Path
-
-
-@dataclass(frozen=True)
-class MorphismEntry:
-    morphisms: Morphisms
     prose: str
     path: Path
 
@@ -109,7 +101,6 @@ class Corpus:
     entries: tuple[Entry, ...]
     families: Families
     retired: Retired
-    morphisms: tuple[MorphismEntry, ...]
     geometric: tuple[GeometricEntry, ...]
     geometric_families: tuple[GeometricFamilyEntry, ...]
     graphs: tuple[GraphEntry, ...]
@@ -120,7 +111,6 @@ class Corpus:
     local_systems: tuple[CatalogueEntry[IntegralLocalSystem], ...]
     operators: tuple[CatalogueEntry[PicardFuchsOperator], ...]
     moduli_problems: tuple[CatalogueEntry[ModuliProblem], ...]
-    dual_isometries: tuple[CatalogueEntry[DualIsometry], ...]
     lattice_families: tuple[CatalogueEntry[LatticeFamily], ...]
     lie_groups: tuple[CatalogueEntry[LieGroup], ...]
     arithmetic_groups: tuple[CatalogueEntry[ArithmeticGroup], ...]
@@ -128,17 +118,18 @@ class Corpus:
 
 Matrix = tuple[tuple[int, ...], ...]
 Held = dict[tuple[Tag, Tag], tuple[tuple[Matrix, int], ...]]
-"""For each pair (source, target) with a morphism file, the matrix and the scale of each of its morphisms."""
+"""For each source/target pair, the matrix and scale of each stored morphism."""
 
 
 def held(corpus: Corpus) -> Held:
-    """The matrices and scales of the morphism files of `corpus`."""
-    return {
-        (entry.morphisms.source, entry.morphisms.target): tuple(
-            (morphism.matrix, morphism.scale) for morphism in entry.morphisms.morphisms
-        )
-        for entry in corpus.morphisms
-    }
+    """The matrices and scales of the lattice-card morphisms of `corpus`."""
+    grouped: dict[tuple[Tag, Tag], list[tuple[Matrix, int]]] = {}
+    for entry in corpus.entries:
+        for morphism in entry.lattice.morphisms:
+            grouped.setdefault((entry.lattice.tag, morphism.target), []).append(
+                (morphism.matrix, morphism.scale)
+            )
+    return {pair: tuple(values) for pair, values in grouped.items()}
 
 
 class CorpusInvalid(Exception):
@@ -207,18 +198,6 @@ def load(root: Path) -> Corpus:
             entries.append(Entry(lattice, document.content, path))
         except ValidationError as error:
             found.extend(_record_problems(path, error))
-    morphisms: list[MorphismEntry] = []
-    for path in sorted((root / "morphisms").glob("*.md")):
-        document = frontmatter.load(str(path))
-        # Pydantic reports the problems of a morphism file only through this exception.
-        try:
-            morphisms.append(
-                MorphismEntry(
-                    Morphisms.model_validate(document.metadata), document.content, path
-                )
-            )
-        except ValidationError as error:
-            found.extend(_record_problems(path, error))
     geometric: list[GeometricEntry] = []
     geometric_adapter = TypeAdapter(GeometricObject)
     for path in sorted((root / "geometric-objects").glob("*.md")):
@@ -263,7 +242,6 @@ def load(root: Path) -> Corpus:
         tuple(entries),
         families,
         retired,
-        tuple(morphisms),
         tuple(geometric),
         tuple(geometric_families),
         tuple(graphs),
@@ -274,7 +252,6 @@ def load(root: Path) -> Corpus:
         _catalogue(root, "integral-local-systems", IntegralLocalSystem, found),
         _catalogue(root, "picard-fuchs-operators", PicardFuchsOperator, found),
         _catalogue(root, "moduli-problems", ModuliProblem, found),
-        _catalogue(root, "morphisms/dual", DualIsometry, found),
         _catalogue(root, "lattice-families", LatticeFamily, found),
         _catalogue(root, "lie-groups", LieGroup, found),
         _catalogue(root, "arithmetic-groups", ArithmeticGroup, found),

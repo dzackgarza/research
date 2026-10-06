@@ -2,8 +2,8 @@
 
 `load` reads each file and stops at its own front matter, so it never compares
 two records. Everything here is such a comparison: a tag against its file name,
-a record against the families and the retired tags, a morphism file against the
-records it maps, a geometric object against the lattices, the graphs and the
+a record against the families and the retired tags, a stored morphism against
+its target record, a geometric object against the lattices, the graphs and the
 other geometric objects that it names.
 """
 
@@ -100,43 +100,23 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
 
 
 def morphism_problems(loaded: Corpus) -> list[str]:
-    """The problems of the morphism files.
-
-    A file name that is not `<source>-<target>`, a tag that is not in the corpus or is retired, two files for one pair,
-    a stored map that does not satisfy its morphism equation, and a stored hyperbolic index that is less than the n of an embedding U^n -> T.
-    """
-    morphisms = loaded.morphisms
+    """The problems of the morphisms stored on their source lattice cards."""
     entries = loaded.entries
     retired = loaded.retired
     found: list[str] = []
     by_tag = {entry.lattice.tag: entry.lattice for entry in entries}
-    pairs: dict[tuple[str, str], Path] = {}
-    for entry in morphisms:
-        record = entry.morphisms
-        pair = (record.source, record.target)
-        if entry.path.stem != f"{record.source}-{record.target}":
-            found.append(
-                f"{entry.path}: the file name must be {record.source}-{record.target}"
-            )
-        if pair in pairs:
-            found.append(
-                f"{entry.path}: {pairs[pair]} also holds morphisms {record.source} -> {record.target}"
-            )
-        pairs.setdefault(pair, entry.path)
-        missing = [tag for tag in pair if tag not in by_tag]
-        found.extend(
-            f"{entry.path}: the tag {tag} is retired ({retired[tag]})"
-            for tag in missing
-            if tag in retired
-        )
-        found.extend(
-            f"{entry.path}: the tag {tag} is not in the corpus"
-            for tag in missing
-            if tag not in retired
-        )
-        if not missing:
-            source = by_tag[record.source]
-            target = by_tag[record.target]
+    for entry in entries:
+        source = entry.lattice
+        for morphism in source.morphisms:
+            target = by_tag.get(morphism.target)
+            if target is None:
+                if morphism.target in retired:
+                    found.append(
+                        f"{entry.path}: morphism target {morphism.target} is retired ({retired[morphism.target]})"
+                    )
+                else:
+                    found.append(f"{entry.path}: morphism target {morphism.target} is not in the corpus")
+                continue
             if (
                 source.rank is not None
                 and source.gram_tensor is not None
@@ -144,11 +124,10 @@ def morphism_problems(loaded: Corpus) -> list[str]:
                 and target.gram_tensor is not None
             ):
                 found.extend(
-                    f"{entry.path}: {problem}"
-                    for morphism in record.morphisms
+                    f"{entry.path}: morphisms.{morphism.name}: {problem}"
                     for problem in records.morphism_problems(morphism, source, target)
                 )
-    for tag, bound in hyperbolic_index_bounds(morphisms, entries).items():
+    for tag, bound in hyperbolic_index_bounds(entries).items():
         target = by_tag.get(tag)
         stored = (
             target.integral.hyperbolic_index
@@ -157,7 +136,7 @@ def morphism_problems(loaded: Corpus) -> list[str]:
         )
         if stored is not None and stored < bound:
             found.append(
-                f"{tag}: integral.hyperbolic_index is {stored}, and a morphism file embeds U^{bound} into it"
+                f"{tag}: integral.hyperbolic_index is {stored}, and a stored morphism embeds U^{bound} into it"
             )
     return found
 

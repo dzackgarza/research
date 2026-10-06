@@ -21,7 +21,6 @@ from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 
 import frontmatter
-from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0
 from flint import fmpz
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
 from markdown_it import MarkdownIt
@@ -40,7 +39,6 @@ from latticedb.model import (
     Lattice,
     Vector,
     Morphism,
-    Morphisms,
     OrbitGroup,
     PrimitiveOrbitSeries,
     Record,
@@ -172,17 +170,15 @@ ORBIT_GROUP_KEYS = ("O", "SO", "O+", "SO+", "Otilde", "SOtilde", "Otilde+", "SOt
 
 
 def subgroup_tex(key: str) -> str:
-    """TeX for a key of a card's `groups` block: an eight-standard subgroup name, or a named one such as `Gamma_En_2`."""
+    """TeX for a standard arithmetic-subgroup name or a named subgroup such as `Gamma_En_2`."""
     return orbit_group_tex(key) if key in ORBIT_GROUP_KEYS else key.replace("_", "\\_")
 
 
-def cardinality_tex(cardinality: Cardinal) -> str:
-    """TeX for a group cardinality supplied by the preamble."""
-    if cardinality == aleph0:
+def cardinality_tex(cardinality: int | str) -> str:
+    """TeX for a stored finite or countably infinite group cardinality."""
+    if cardinality == "aleph0":
         return "\\aleph_0"
-    return (
-        str(cardinality.finite_value()) if cardinality.is_finite() else str(cardinality)
-    )
+    return str(cardinality)
 
 
 def orbit_series_tex(series: PrimitiveOrbitSeries) -> str:
@@ -783,7 +779,6 @@ def fields() -> Iterator[tuple[str, str | None, type[BaseModel]]]:
     yield "Roots of a lattice that is not definite", "root_span", RootSpan
     yield "Related lattice", "related[]", Related
     yield "Reference", "references[]", Reference
-    yield "Morphisms between two lattices", "morphisms/<S>-<T>.md", Morphisms
     yield "Morphism", "morphisms[]", Morphism
     yield "Lie group card", "lie-groups/<slug>.md", LieGroup
     yield "Arithmetic group card", "arithmetic-groups/<slug>.md", ArithmeticGroup
@@ -879,7 +874,6 @@ def build(root: Path, target: Path) -> int:
         shutil.rmtree(target)
     (target / "tag").mkdir(parents=True)
     (target / "collection").mkdir()
-    (target / "morphism").mkdir()
     (target / "theory").mkdir()
     (target / "lie-group").mkdir()
     (target / "arithmetic-group").mkdir()
@@ -894,7 +888,6 @@ def build(root: Path, target: Path) -> int:
         rank: [entry for entry in entries if entry.lattice.rank == rank]
         for rank in ranks
     }
-    morphism_files = [entry.morphisms for entry in corpus.morphisms]
     geometric = corpus.geometric
     geometric_families = corpus.geometric_families
     graphs = corpus.graphs
@@ -903,11 +896,14 @@ def build(root: Path, target: Path) -> int:
     prose = markdown_to_html(
         [entry.prose for entry in entries]
         + [page.prose for page in pages]
-        + [entry.prose for entry in corpus.morphisms]
         + [page.prose for page in theory]
     )
     lattice_page = environment.get_template("lattice.html.j2")
-    bounds = hyperbolic_index_bounds(corpus.morphisms, entries)
+    bounds = hyperbolic_index_bounds(entries)
+    incoming_by_tag: dict[str, list[tuple[Lattice, Morphism]]] = {}
+    for source in lattices.values():
+        for morphism in source.morphisms:
+            incoming_by_tag.setdefault(morphism.target, []).append((source, morphism))
     for index, entry in enumerate(entries):
         lattice = entry.lattice
         components = json.dumps(
@@ -937,10 +933,11 @@ def build(root: Path, target: Path) -> int:
                 else (),
                 hyperbolic_bound=bounds.get(lattice.tag),
                 lattices=lattices,
-                morphism_files=[
-                    file
-                    for file in morphism_files
-                    if lattice.tag in (file.source, file.target)
+                incoming_morphisms=incoming_by_tag.get(lattice.tag, ()),
+                outgoing_morphisms=[
+                    (morphism, lattices[morphism.target], matrix_tex(morphism), matrix_text(morphism))
+                    for morphism in lattice.morphisms
+                    if morphism.target in lattices
                 ],
                 geometric_objects=[
                     entry.geometric
@@ -981,26 +978,12 @@ def build(root: Path, target: Path) -> int:
             query=database_query(page.collection),
         )
         (target / "collection" / f"{page.slug}.html").write_text(html)
-    morphism_page = environment.get_template("morphism.html.j2")
-    for index, file in enumerate(morphism_files):
-        html = morphism_page.render(
-            root="../",
-            file=file,
-            source=lattices[file.source],
-            target=lattices[file.target],
-            prose=prose[len(entries) + len(pages) + index],
-            morphisms=[
-                (morphism, matrix_tex(morphism), matrix_text(morphism))
-                for morphism in file.morphisms
-            ],
-        )
-        (target / "morphism" / f"{file.source}-{file.target}.html").write_text(html)
     article_page = environment.get_template("article.html.j2")
     for index, article in enumerate(theory):
         html = article_page.render(
             root="../",
             page=article,
-            prose=prose[len(entries) + len(pages) + len(morphism_files) + index],
+            prose=prose[len(entries) + len(pages) + index],
         )
         (target / "theory" / f"{article.slug}.html").write_text(html)
     (target / "theory.html").write_text(
@@ -1054,11 +1037,6 @@ def build(root: Path, target: Path) -> int:
         environment.get_template("hodge-diamonds.html.j2").render(
             root="./",
             has_k3=any(entry.geometric.slug == "k3-surface" for entry in geometric),
-        )
-    )
-    (target / "morphisms.html").write_text(
-        environment.get_template("morphisms.html.j2").render(
-            root="./", files=morphism_files, lattices=lattices
         )
     )
     (target / "geometric-objects").mkdir()

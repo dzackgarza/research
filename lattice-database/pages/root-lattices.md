@@ -11,4 +11,4 @@ A lattice $L$ is a *root lattice* when $L = \mathbb{Z}\Phi(L)$; the root sublatt
 ## ADE lattices
 
 The lattices of the family [`irreducible-root-lattice`](../database.html?family=irreducible-root-lattice) give $A_n$, $D_n$, $E_6$, $E_7$ and $E_8$ in the [basis of simple roots](../theory/named-lattices.html#root-lattices).
-The [dual lattices](../database.html?family=dual-root-lattice) of these lattices are separate lattices of the catalogue.
+For each nondegenerate root lattice $R$, the same card stores the dual Gram tensor $G_R^{-1}$ of $R^*$ in the basis dual to the chosen basis of $R$; the dual is not a second lattice card.

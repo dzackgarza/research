@@ -175,18 +175,13 @@ def morphism(
             help="JSON list of the lines between columns, as SageMath's `M.subdivisions()[1]`."
         ),
     ] = "[]",
-    prose: Annotated[
-        str | None,
-        Parameter(
-            help="Notes of the file in Pandoc Markdown; replaces the notes that are there."
-        ),
-    ] = None,
     root: Root = Path(),
 ) -> None:
-    """Author a morphism in `morphisms/<SOURCE>-<TARGET>.md`."""
-    path = root / "morphisms" / f"{source}-{target}.md"
-    present = frontmatter.load(str(path)) if path.exists() else None
+    """Author a morphism on the source lattice card."""
+    path = root / "lattices" / f"{source}.md"
+    document = frontmatter.load(str(path))
     added: dict[str, Yaml] = {
+        "target": target,
         "name": name,
         "matrix": json.loads(matrix),
         "row_subdivisions": json.loads(row_subdivisions),
@@ -196,12 +191,9 @@ def morphism(
         added["description"] = description
     if scale != 1:
         added["scale"] = scale
-    listed: list[dict[str, Yaml]] = (
-        list(present.metadata["morphisms"]) if present else []
-    )
-    notes = prose if prose is not None else (present.content if present else "")
-    path.parent.mkdir(exist_ok=True)
-    path.write_text(records.morphisms_text(source, target, [*listed, added], notes))
+    metadata = corpus.front_matter(document)
+    metadata["morphisms"] = [*metadata.get("morphisms", []), added]
+    path.write_text(records.record_text(metadata, document.content))
     print(path)
 
 

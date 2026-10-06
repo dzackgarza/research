@@ -6,9 +6,9 @@
 default:
     @just --list
 
-# Run the lattice database in the repository's Sage Python, with both source
-# trees visible.  The database consumes the preamble's lattice mathematics, so
-# plain CPython is not a supported runtime.
+# Run mathematical lattice-database workflows in the repository's Sage Python,
+# with both source trees visible. Schema/data-model coherence uses plain Python
+# through `just test` below.
 [private]
 _latticedb *ARGS:
     PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m latticedb {{ARGS}}
@@ -17,7 +17,7 @@ _latticedb *ARGS:
 new *ARGS:
     just _latticedb new {{ARGS}}
 
-# Author a morphism in morphisms/<S>-<T>.md: `just morphism 0016 0016 --name exchange --matrix '[[0,1],[1,0]]'`
+# Author a morphism on source card S: `just morphism 0016 0016 --name exchange --matrix '[[0,1],[1,0]]'`
 morphism SOURCE TARGET *ARGS:
     just _latticedb morphism {{SOURCE}} {{TARGET}} {{ARGS}}
 
@@ -49,17 +49,17 @@ deploy:
 tag:
     just _latticedb next-tag
 
-# Run the fast tests of the code: schema, record commands and site logic on fixtures and single specimens, never the full corpus
+# Local gate: pure data-model/schema coherence only. This target must stay preamble/Sage-free and sub-second.
 test:
-    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests --ignore=tests/validation --ignore=tests/source_intake
+    PYTHONPATH="src" uv run python -m pytest tests/test_model.py -q
 
-# Run full-corpus mathematical validation and the build
+# CI-only mathematical/integration validation. These modules may use the preamble and Sage.
 test-validation:
-    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/validation
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/test_catalogue_schemas.py tests/test_corpus.py tests/test_genus.py tests/test_geometric.py tests/test_hashimoto.py tests/test_hoehn_mason.py tests/test_records.py tests/validation
 
 # Exercise archived-source importers and source-to-card collation; provenance only, not mathematical validation
 test-source-intake:
-    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/source_intake
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/test_bulk_sources.py tests/source_intake
 
 # List the tags that share a Gram tensor
 duplicates:

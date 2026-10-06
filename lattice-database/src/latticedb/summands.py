@@ -26,7 +26,7 @@ import cypari2
 import frontmatter
 from pydantic import TypeAdapter
 
-from latticedb import records
+from latticedb import corpus, records
 from latticedb.corpus import Corpus, Entry
 from latticedb.model import GramTensor, Morphism, Tag, Yaml
 
@@ -149,12 +149,10 @@ def all_embeddings(entries: Sequence[Entry]) -> list[Embedding]:
 CERTIFICATE = "corpus summands"
 """The name of the computation of the embeddings between the records; its inputs are the Gram tensors of the corpus."""
 
-PROSE = "The embeddings of `latticedb.summands`: each summand of the source maps by $x \\mapsto (x, \\ldots, x)$ into a set of orthogonal summands of the target."
-
-
 def _morphism(embedding: Embedding) -> dict[str, Yaml]:
     sets = " \\sqcup ".join("\\{" + ", ".join(str(position) for position in part) + "\\}" for part in embedding.parts)
     morphism: dict[str, Yaml] = {
+        "target": embedding.target,
         "name": f"Diagonal into the summands ${sets}$",
         "description": (
             "Summand $j$ of the source maps by $x \\mapsto (x, \\ldots, x)$ into the orthogonal summands of the target in set $j$, "
@@ -168,27 +166,24 @@ def _morphism(embedding: Embedding) -> dict[str, Yaml]:
 
 
 def store(root: Path, loaded: Corpus) -> list[str]:
-    """Write each embedding of `all_embeddings` that its file `morphisms/<S>-<T>.md` does not hold; the problems of an embedding that does not preserve the forms."""
+    """Write each new summand embedding on its source lattice card."""
     by_tag = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
-    files = {(entry.morphisms.source, entry.morphisms.target): entry for entry in loaded.morphisms}
     found: list[str] = []
-    new: dict[tuple[Tag, Tag], list[dict[str, Yaml]]] = {}
+    new: dict[Tag, list[dict[str, Yaml]]] = {}
     for embedding in all_embeddings(loaded.entries):
         morphism = _morphism(embedding)
         found.extend(records.morphism_problems(Morphism.model_validate(morphism), by_tag[embedding.source], by_tag[embedding.target]))
-        pair = (embedding.source, embedding.target)
-        held = files[pair].morphisms.morphisms if pair in files else ()
+        held = by_tag[embedding.source].morphisms
         if not any(m.matrix == embedding.matrix and m.scale == embedding.scale for m in held):
-            new.setdefault(pair, []).append(morphism)
+            new.setdefault(embedding.source, []).append(morphism)
     if found:
         return found
-    for (source, target), morphisms in new.items():
-        path = root / "morphisms" / f"{source}-{target}.md"
-        if (source, target) in files:
-            document = frontmatter.load(str(path))
-            stored = TypeAdapter(list[dict[str, Yaml]]).validate_python(document.metadata["morphisms"])
-            path.write_text(records.morphisms_text(source, target, stored + morphisms, document.content))
-        else:
-            path.write_text(records.morphisms_text(source, target, morphisms, PROSE))
-    print(f"{sum(len(m) for m in new.values())} embeddings of orthogonal summands written to {len(new)} morphism files")
+    for source, morphisms in new.items():
+        path = root / "lattices" / f"{source}.md"
+        document = frontmatter.load(str(path))
+        metadata = corpus.front_matter(document)
+        stored = TypeAdapter(list[dict[str, Yaml]]).validate_python(metadata.get("morphisms", []))
+        metadata["morphisms"] = stored + morphisms
+        path.write_text(records.record_text(metadata, document.content))
+    print(f"{sum(len(m) for m in new.values())} embeddings of orthogonal summands written to {len(new)} source lattice cards")
     return []

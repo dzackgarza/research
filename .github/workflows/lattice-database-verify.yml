@@ -41,8 +41,16 @@ jobs:
     - name: Validate mathematical computations
       run: |
         sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
-        PYTHONPATH="../src:src" "$sage_python" -m pytest tests/validation
+        PYTHONPATH="../src:src" "$sage_python" -m pytest \
+          tests/test_catalogue_schemas.py \
+          tests/test_corpus.py \
+          tests/test_genus.py \
+          tests/test_geometric.py \
+          tests/test_hashimoto.py \
+          tests/test_hoehn_mason.py \
+          tests/test_records.py \
+          tests/validation
     - name: Check source intake provenance
       run: |
         sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
-        PYTHONPATH="../src:src" "$sage_python" -m pytest tests/source_intake
+        PYTHONPATH="../src:src" "$sage_python" -m pytest tests/test_bulk_sources.py tests/source_intake

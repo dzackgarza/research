@@ -10,7 +10,7 @@ import frontmatter
 from flint import fmpz_mat
 
 from latticedb import hashimoto
-from latticedb.model import Lattice, Morphisms
+from latticedb.model import Lattice
 
 REPOSITORY = Path(__file__).resolve().parent.parent.parent
 
@@ -22,12 +22,11 @@ def _lattice(tag: str) -> Lattice:
 
 
 def _held(source: str, target: str) -> tuple[tuple[tuple[tuple[int, ...], ...], int], ...]:
-    record = Morphisms.model_validate(
-        frontmatter.load(
-            str(REPOSITORY / "morphisms" / f"{source}-{target}.md")
-        ).metadata
+    return tuple(
+        (morphism.matrix, morphism.scale)
+        for morphism in _lattice(source).morphisms
+        if morphism.target == target
     )
-    return tuple((morphism.matrix, morphism.scale) for morphism in record.morphisms)
 
 
 def test_row_81_and_its_shared_rows_are_read_from_the_stored_tables() -> None:

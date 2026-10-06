@@ -42,7 +42,6 @@ jobs:
         branch: lattice-database/certify
         add-paths: |
           lattice-database/lattices
-          lattice-database/morphisms
           lattice-database/certificates.yaml
         commit-message: 'feat(lattice-database): certify computed card values'
         title: 'lattice-database: certify computed card values'

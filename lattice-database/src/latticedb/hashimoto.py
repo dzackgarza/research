@@ -13,7 +13,7 @@ on each other row, the record $R$ and the twist $t$ with $\\Lambda_G = R(t)$.
 `sources/hashimoto/table_10_3.json` stores each printed Gram tensor $T$ with the record $R$, the
 twist $t$, and the matrix $P$ whose column $j$ holds the coordinates in the basis of $R$ of the
 $j$-th basis vector of $T$, so that $P^{\\top} (t \\, G_R) P = T$.
-`check` asserts every equation that these files state, and that the morphism files hold, for each
+`check` asserts every equation that these files state, and that the stored card morphisms hold, for each
 printed lattice $R(s)$ of Table 10.3, an embedding of $R(s)$ in the K3 lattice and an embedding of the
 coinvariant lattice of its row whose images are primitive and orthogonal: the invariant lattice and its
 orthogonal complement.
@@ -106,7 +106,7 @@ def _tensor(rows: tuple[tuple[int, ...], ...]) -> GramTensor:
 
 
 def complements(invariant: tuple[Tag, int], coinvariant: tuple[Tag, int], k3: Lattice, morphisms: corpus.Held) -> bool:
-    """Whether the morphism files hold embeddings of `invariant` $= R(s)$ and `coinvariant` $= C(t)$ into the K3 lattice whose images are primitive and orthogonal."""
+    """Whether the source lattice cards hold embeddings of `invariant` $= R(s)$ and `coinvariant` $= C(t)$ into the K3 lattice whose images are primitive and orthogonal."""
     k3_lattice = Lattices(ZZ)(k3.gram_tensor)
     ambient_module = ZZ.free_module(K3_RANK)
     for first, scale in morphisms.get((invariant[0], K3_RECORD), ()):
@@ -132,7 +132,7 @@ def complements(invariant: tuple[Tag, int], coinvariant: tuple[Tag, int], k3: La
 
 
 def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], lattices: Mapping[str, Lattice], morphisms: corpus.Held) -> list[str]:
-    """The equations of Tables 10.2 and 10.3 that the records and the morphism files do not satisfy."""
+    """The equations of Tables 10.2 and 10.3 that the records and stored card morphisms do not satisfy."""
     found: list[str] = []
     by_n = {row.n: row for row in groups}
     assert sorted(by_n) == list(range(1, 82)), "Table 10.2 has the rows 1 to 81"
@@ -204,11 +204,11 @@ def check(groups: tuple[GroupRow, ...], invariants: tuple[InvariantRow, ...], la
             assert row.coinvariant is not None
             if not complements((printed.record, printed.twist), (row.coinvariant.record, row.coinvariant.twist), lattices[K3_RECORD], morphisms):
                 pair = f"{printed.record}({printed.twist}) and {row.coinvariant.record}({row.coinvariant.twist})"
-                found.append(f"Table 10.3 row {invariant.n}: the morphism files hold no primitive orthogonal embeddings of {pair} in {K3_RECORD}")
+                found.append(f"Table 10.3 row {invariant.n}: the source lattice cards hold no primitive orthogonal embeddings of {pair} in {K3_RECORD}")
     return found
 
 
 def stored_problems(root: Path, loaded: corpus.Corpus) -> list[str]:
-    """`check` on the files under `root/sources/hashimoto`, against the records and the morphism files of `loaded`."""
+    """`check` on the files under `root/sources/hashimoto`, against the lattice records and their stored morphisms."""
     lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
     return check(*stored(root / "sources" / "hashimoto"), lattices, corpus.held(loaded))

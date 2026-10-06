@@ -1,12 +1,66 @@
 """A record validates exactly when its fields have the shapes of the schema and each block is present exactly when its hypothesis holds."""
 
+import ast
 from collections.abc import Callable
 from fractions import Fraction
+from pathlib import Path
 
 import pytest
 from latticedb import certificates
-from latticedb.model import Lattice, Morphism, Yaml
+from latticedb.model import GroupData, Lattice, Morphism, Yaml
 from pydantic import ValidationError
+
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def test_schema_layer_has_no_preamble_or_sage_dependency() -> None:
+    """Parsing cards must not initialize the mathematical-computation backend."""
+    for relative in (
+        "src/latticedb/model.py",
+        "src/latticedb/catalogues.py",
+        "src/latticedb/geometric.py",
+        "src/latticedb/graphs.py",
+        "src/latticedb/corpus.py",
+    ):
+        tree = ast.parse((ROOT / relative).read_text())
+        modules = {
+            node.module
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ImportFrom) and node.module is not None
+        } | {
+            alias.name
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Import)
+            for alias in node.names
+        }
+        assert not any(
+            module == "sage"
+            or module.startswith("sage.")
+            or module == "dzack_research"
+            or module.startswith("dzack_research.")
+            for module in modules
+        ), relative
+
+
+def test_model_does_not_recompute_authored_mathematical_invariants() -> None:
+    """Mathematical truth is checked by CI validation, not by Pydantic construction."""
+    record = e8()
+    integral = dict(record["integral"])
+    integral["level"] = 17
+    integral["bad_reduction_primes"] = [17]
+    integral["quadratic_character"] = 17
+    record["integral"] = integral
+    lattice = Lattice.model_validate(record)
+    assert lattice.integral is not None
+    assert lattice.integral.level == 17
+
+
+def test_group_cardinality_is_plain_serialized_schema_data() -> None:
+    assert GroupData.model_validate({"cardinality": 8}).cardinality == 8
+    assert GroupData.model_validate({"cardinality": "aleph0"}).cardinality == "aleph0"
+    with pytest.raises(ValidationError):
+        GroupData.model_validate({"cardinality": 0})
 
 
 def e8() -> dict[str, Yaml]:
@@ -488,9 +542,9 @@ def test_a_morphism_is_rejected_when_its_matrix_is_not_rectangular_or_a_line_doe
     matrix: list[list[int]], row_subdivisions: list[int], column_subdivisions: list[int]
 ) -> None:
     with pytest.raises(ValidationError):
-        Morphism.model_validate({"name": "phi", "matrix": matrix, "row_subdivisions": row_subdivisions, "column_subdivisions": column_subdivisions})
+        Morphism.model_validate({"target": "0001", "name": "phi", "matrix": matrix, "row_subdivisions": row_subdivisions, "column_subdivisions": column_subdivisions})
 
 
 def test_the_images_of_a_morphism_are_the_columns_of_its_matrix() -> None:
-    morphism = Morphism.model_validate({"name": "phi", "matrix": [[1, 2], [3, 4], [5, 6]], "row_subdivisions": [1, 2], "column_subdivisions": [1]})
+    morphism = Morphism.model_validate({"target": "0001", "name": "phi", "matrix": [[1, 2], [3, 4], [5, 6]], "row_subdivisions": [1, 2], "column_subdivisions": [1]})
     assert morphism.images == ((1, 3, 5), (2, 4, 6))

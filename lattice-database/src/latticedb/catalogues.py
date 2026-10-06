@@ -246,14 +246,6 @@ class LatticeFamily(CatalogueRecord):
         return self
 
 
-class DualIsometry(CatalogueRecord):
-    """An isometry L -> L*(k), with matrix in the basis dual to the record basis."""
-
-    lattice: Tag
-    scale: Annotated[int, Field(gt=0)]
-    matrix: list[list[int]]
-
-
 class LatticePolytope(CatalogueRecord):
     """A lattice polytope in a based free abelian group, separate from a quadratic lattice."""
 

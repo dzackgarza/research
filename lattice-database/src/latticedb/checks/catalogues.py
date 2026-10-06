@@ -38,17 +38,12 @@ def reference_problems(loaded: Corpus) -> list[str]:
     """Check references between the typed catalogues and the lattice and geometric records."""
     found: list[str] = []
     lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
-    morphisms = {
-        (entry.morphisms.source, entry.morphisms.target): entry.morphisms
-        for entry in loaded.morphisms
-    }
     objects = {entry.geometric.slug for entry in loaded.geometric}
     families = {entry.family.slug for entry in loaded.geometric_families}
     polytopes = {entry.value.slug: entry.value for entry in loaded.polytopes}
     toric = {entry.value.slug for entry in loaded.toric_varieties}
     maps = {entry.value.slug: entry.value for entry in loaded.geometric_maps}
     systems = {entry.value.slug: entry.value for entry in loaded.local_systems}
-    duals = {entry.value.lattice: entry.value for entry in loaded.dual_isometries}
     lie_groups = {entry.value.slug: entry.value for entry in loaded.lie_groups}
     arithmetic_groups = {entry.value.slug: entry.value for entry in loaded.arithmetic_groups}
 
@@ -80,8 +75,11 @@ def reference_problems(loaded: Corpus) -> list[str]:
         if group.defining_relators is not None and group.generator_morphisms is None:
             found.append(f"{path}: relators require the generator list they are words in")
         for name in group.generator_morphisms or ():
-            self_maps = morphisms.get((lattice.tag, lattice.tag))
-            names = ({m.name for m in self_maps.morphisms if m.scale == 1} if self_maps is not None else set())
+            names = {
+                morphism.name
+                for morphism in lattice.morphisms
+                if morphism.target == lattice.tag and morphism.scale == 1
+            }
             if name not in names:
                 found.append(f"{path}: generator {name} is not a named self-isometry of {lattice.tag}")
         if group.stabilized is not None:
@@ -207,41 +205,6 @@ def reference_problems(loaded: Corpus) -> list[str]:
                 found.append(
                     f"{entry.path}: mass differs from the sum of reciprocal automorphism-group orders"
                 )
-
-    for entry in loaded.dual_isometries:
-        dual = entry.value
-        lattice = lattices.get(dual.lattice)
-        valid = False
-        if (
-            lattice is not None
-            and lattice.integral is not None
-            and lattice.integral.modular_scale == dual.scale
-        ):
-            source = Lattices(ZZ)(lattice.gram_tensor)
-            twisted_dual = source.dual_lattice().twist(dual.scale)
-            try:
-                target = Lattices(ZZ)(twisted_dual.gram_tensor())
-                images = tuple(
-                    target(vector)
-                    for vector in zip(*dual.matrix, strict=True)
-                )
-                source.Isom(target)(images)
-                valid = True
-            except (AssertionError, TypeError, ValueError):
-                valid = False
-        if not valid:
-            found.append(
-                f"{entry.path}: matrix must give the stated isometry L -> L*(k) for lattice {dual.lattice}"
-            )
-    for tag, lattice in lattices.items():
-        if (
-            lattice.integral is not None
-            and lattice.integral.modular_scale is not None
-            and tag not in duals
-        ):
-            found.append(
-                f"{tag}: integral.modular_scale requires a dual-isometry morphism"
-            )
 
     for entry in loaded.polytopes:
         polytope = entry.value
@@ -407,7 +370,6 @@ def problems(loaded: Corpus) -> list[str]:
         *slug_problems(loaded.local_systems),
         *slug_problems(loaded.operators),
         *slug_problems(loaded.moduli_problems),
-        *slug_problems(loaded.dual_isometries),
         *slug_problems(loaded.lattice_families),
         *slug_problems(loaded.lie_groups),
         *slug_problems(loaded.arithmetic_groups),

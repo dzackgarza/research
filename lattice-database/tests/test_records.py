@@ -218,7 +218,7 @@ def test_a_derive_certificate_binds_the_computed_values_for_its_gram_tensor(
 
 def test_morphism_authors_maps_and_verify_checks_the_form_equation(tmp_path: Path) -> None:
     root = write_corpus(tmp_path)
-    run("morphism", "0001", "0001", "--name", "identity", "--matrix", "[[1]]", "--prose", "Automorphisms of Z.", "--root", str(root))
+    run("morphism", "0001", "0001", "--name", "identity", "--matrix", "[[1]]", "--root", str(root))
     run("morphism", "0001", "0001", "--name", "negation", "--matrix", "[[-1]]", "--root", str(root))
     run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--root", str(root))
     assert any(
@@ -231,8 +231,8 @@ def test_morphism_authors_maps_and_verify_checks_the_form_equation(tmp_path: Pat
     scaled_root = write_corpus(scaled)
     # x -> 2x takes b(x, x) = 1 to b(2x, 2x) = 4: a morphism Z(4) -> Z.
     run("morphism", "0001", "0001", "--name", "doubling", "--matrix", "[[2]]", "--scale", "4", "--root", str(scaled_root))
-    (entry,) = corpus.load(scaled_root).morphisms
-    found = [(morphism.name, morphism.matrix, morphism.scale) for morphism in entry.morphisms.morphisms]
+    (entry,) = corpus.load(scaled_root).entries
+    found = [(morphism.name, morphism.matrix, morphism.scale) for morphism in entry.lattice.morphisms]
     assert found == [("doubling", ((2,),), 4)]
 
 
@@ -340,7 +340,7 @@ U = admitted("U", [[0, 1], [1, 0]])
 
 
 def morphism(matrix: list[list[int]], row_subdivisions: list[int] | None = None, scale: int = 1) -> Morphism:
-    return Morphism.model_validate({"name": "phi", "matrix": matrix, "scale": scale, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []})
+    return Morphism.model_validate({"target": "0002", "name": "phi", "matrix": matrix, "scale": scale, "row_subdivisions": row_subdivisions or [], "column_subdivisions": []})
 
 
 @pytest.mark.parametrize(
@@ -374,3 +374,35 @@ def test_derive_computes_the_dual_gram_tensor() -> None:
     record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
     assert record["dual_gram_tensor"] == [["2/3", "1/3"], ["1/3", "2/3"]]
     Lattice.model_validate(record)
+
+
+def test_ci_validation_recomputes_authored_level_and_reduction_invariants() -> None:
+    record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
+    integral = dict(record["integral"])
+    integral["level"] = 17
+    integral["bad_reduction_primes"] = [17]
+    integral["quadratic_character"] = 17
+    lattice = Lattice.model_validate(record | {"integral": integral})
+    problems = records.local_admission_problems(lattice)
+    assert any("integral.level" in problem for problem in problems)
+    assert any("integral.bad_reduction_primes" in problem for problem in problems)
+    assert any("integral.quadratic_character" in problem for problem in problems)
+
+
+def test_ci_validation_recomputes_authored_perfectness() -> None:
+    record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
+    definite = dict(record["definite"])
+    definite["minimal_vectors"] = [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+        [1, 1],
+        [-1, -1],
+    ]
+    definite["perfect"] = False
+    lattice = Lattice.model_validate(record | {"definite": definite})
+    assert any(
+        "definite.perfect" in problem
+        for problem in records.local_admission_problems(lattice)
+    )

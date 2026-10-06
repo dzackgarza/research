@@ -3,6 +3,7 @@
 from fractions import Fraction
 from pathlib import Path
 
+import frontmatter
 import pytest
 import yaml
 
@@ -210,13 +211,16 @@ def write_morphisms(
     source: str,
     target: str,
     morphisms: list[dict[str, Yaml]],
-    stem: str | None = None,
 ) -> Path:
-    """The file `morphisms/<stem>.md` under `root`, with `<source>-<target>` as the stem unless another is given."""
-    (root / "morphisms").mkdir(exist_ok=True)
-    (root / "morphisms" / f"{stem or f'{source}-{target}'}.md").write_text(
-        records.morphisms_text(source, target, morphisms, "Test morphisms.")
-    )
+    """Store morphisms with domain `source` on that lattice card."""
+    path = root / "lattices" / f"{source}.md"
+    document = frontmatter.load(str(path))
+    metadata = corpus.front_matter(document)
+    metadata["morphisms"] = [
+        *metadata.get("morphisms", []),
+        *({"target": target, **morphism} for morphism in morphisms),
+    ]
+    path.write_text(records.record_text(metadata, document.content))
     return root
 
 
@@ -228,14 +232,12 @@ def morphism_problems(
     source: str,
     target: str,
     morphisms: list[dict[str, Yaml]],
-    stem: str | None = None,
 ) -> tuple[str, ...]:
     directory = write_morphisms(
         write(tmp_path, rank_one("0001"), square_sum(), hyperbolic_plane(VALID_U)),
         source,
         target,
         morphisms,
-        stem,
     )
     return checks.report(directory)
 
@@ -253,8 +255,8 @@ def test_the_identity_and_the_exchange_of_e_and_f_are_morphisms_of_u(
         "0016",
         morphisms,
     )
-    (loaded,) = corpus.load(directory).morphisms
-    assert [morphism.name for morphism in loaded.morphisms.morphisms] == [
+    loaded = next(entry.lattice for entry in corpus.load(directory).entries if entry.lattice.tag == "0016")
+    assert [morphism.name for morphism in loaded.morphisms] == [
         "identity",
         "exchange",
     ]
@@ -271,7 +273,7 @@ def test_an_embedding_of_u_bounds_the_hyperbolic_index_from_below(
         identity,
     )
     loaded = corpus.load(directory)
-    assert relations.hyperbolic_index_bounds(loaded.morphisms, loaded.entries) == {
+    assert relations.hyperbolic_index_bounds(loaded.entries) == {
         "0016": 1
     }
 
@@ -292,7 +294,7 @@ def test_a_hyperbolic_index_below_an_embedding_of_u_is_refused(tmp_path: Path) -
         write(tmp_path, rank_one("0001"), plane), "0016", "0016", identity
     )
     assert checks.report(directory) == (
-        "0016: integral.hyperbolic_index is 0, and a morphism file embeds U^1 into it",
+        "0016: integral.hyperbolic_index is 0, and a stored morphism embeds U^1 into it",
     )
 
 
@@ -305,8 +307,8 @@ def test_the_inclusion_of_a_summand_is_a_morphism_whose_lines_cut_orthogonal_sum
     directory = write_morphisms(
         write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", morphisms
     )
-    (loaded,) = corpus.load(directory).morphisms
-    assert loaded.morphisms.morphisms[0].images == ((1, 0),)
+    source = next(entry.lattice for entry in corpus.load(directory).entries if entry.lattice.tag == "0001")
+    assert source.morphisms[0].images == ((1, 0),)
 
 
 def test_the_summands_of_1_plus_1_give_its_inclusion_once_and_its_diagonal_at_scale_2(
@@ -319,8 +321,8 @@ def test_the_summands_of_1_plus_1_give_its_inclusion_once_and_its_diagonal_at_sc
     assert summands.store(directory, corpus.load(directory)) == []
     assert summands.store(directory, corpus.load(directory)) == []
 
-    (loaded,) = corpus.load(directory).morphisms
-    morphisms = loaded.morphisms.morphisms
+    loaded = next(entry.lattice for entry in corpus.load(directory).entries if entry.lattice.tag == "0001")
+    morphisms = tuple(morphism for morphism in loaded.morphisms if morphism.target == "0002")
     assert [(morphism.matrix, morphism.scale) for morphism in morphisms] == [
         (((1,), (0,)), 1),
         (((1,), (1,)), 2),
@@ -328,31 +330,25 @@ def test_the_summands_of_1_plus_1_give_its_inclusion_once_and_its_diagonal_at_sc
     assert morphisms[1].name == "Diagonal into the summands $\\{1, 2\\}$"
 
 
-def test_a_morphism_file_is_rejected_when_a_tag_is_not_in_the_corpus_or_is_retired(
+def test_a_morphism_is_rejected_when_its_target_is_not_in_the_corpus_or_is_retired(
     tmp_path: Path,
 ) -> None:
-    problems = morphism_problems(
-        tmp_path, "0003", "000Z", [{"name": "identity", "matrix": [[1]]}]
+    retired_root = tmp_path / "retired"
+    retired_root.mkdir()
+    retired = morphism_problems(
+        retired_root, "0001", "000Z", [{"name": "identity", "matrix": [[1]]}]
     )
-    assert sorted(problems) == sorted(
-        [
-            f"{tmp_path / 'morphisms' / '0003-000Z.md'}: the tag 0003 is not in the corpus",
-            f"{tmp_path / 'morphisms' / '0003-000Z.md'}: the tag 000Z is retired ({RETIRED['000Z']})",
-        ]
+    assert retired == (
+        f"{retired_root / 'lattices' / '0001.md'}: morphism target 000Z is retired ({RETIRED['000Z']})",
     )
-
-
-def test_a_morphism_file_is_rejected_when_its_name_is_not_source_dash_target(
-    tmp_path: Path,
-) -> None:
-    (problem,) = morphism_problems(
-        tmp_path,
-        "0016",
-        "0016",
-        [{"name": "identity", "matrix": [[1, 0], [0, 1]]}],
-        stem="0016-0001",
+    missing_root = tmp_path / "missing"
+    missing_root.mkdir()
+    missing = morphism_problems(
+        missing_root, "0001", "0003", [{"name": "identity", "matrix": [[1]]}]
     )
-    assert "the file name must be 0016-0016" in problem
+    assert missing == (
+        f"{missing_root / 'lattices' / '0001.md'}: morphism target 0003 is not in the corpus",
+    )
 
 
 def test_duplicate_grams_lists_the_tags_that_share_a_gram_tensor(tmp_path: Path) -> None:

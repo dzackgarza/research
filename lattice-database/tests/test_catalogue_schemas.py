@@ -5,6 +5,7 @@ from pathlib import Path
 
 import frontmatter
 import pytest
+import yaml
 from pydantic import TypeAdapter, ValidationError
 
 from latticedb import checks, corpus
@@ -49,14 +50,17 @@ def test_group_orbit_and_genus_links_use_the_existing_lattice_records(
     lattices.mkdir()
     for tag in ("0012",):
         (lattices / f"{tag}.md").symlink_to(ROOT / "lattices" / f"{tag}.md")
-    morphisms = tmp_path / "morphisms"
-    morphisms.mkdir()
-    (morphisms / "02BG-02BG.md").symlink_to(ROOT / "morphisms" / "02BG-02BG.md")
     for name in ("families.yaml", "retired-tags.yaml"):
         (tmp_path / name).symlink_to(ROOT / name)
-    source = frontmatter.load(str(ROOT / "morphisms" / "02BG-02BG.md"))
-    generators = [entry["name"] for entry in source.metadata["morphisms"]]
     lattice = frontmatter.load(str(ROOT / "lattices" / "02BG.md"))
+    generators = [
+        entry["name"]
+        for entry in lattice.metadata["morphisms"]
+        if entry["target"] == "02BG"
+    ]
+    lattice.metadata["morphisms"] = [
+        entry for entry in lattice.metadata["morphisms"] if entry["target"] == "02BG"
+    ]
     lattice.metadata["arithmetic_groups"] = ["leech-q8"]
     (lattices / "02BG.md").write_text(frontmatter.dumps(lattice))
     for tag in ("0012", "02BG"):
@@ -126,39 +130,12 @@ def test_complete_intersection_configuration_has_the_stated_dimension() -> None:
         adapter.validate_python(source.metadata)
 
 
-def test_modularity_requires_the_scaled_dual_isometry(tmp_path: Path) -> None:
-    for name in ("families.yaml", "retired-tags.yaml"):
-        (tmp_path / name).symlink_to(ROOT / name)
-    lattice_dir = tmp_path / "lattices"
-    lattice_dir.mkdir()
-    source = frontmatter.load(str(ROOT / "lattices" / "0012.md"))
-    source.metadata["related"] = []
-    source.metadata["integral"]["modular_scale"] = 3
-    (lattice_dir / "0012.md").write_text(frontmatter.dumps(source))
-    dual_path = tmp_path / "morphisms" / "dual" / "a2-duality.md"
-    _record(
-        dual_path,
-        {
-            "slug": "a2-duality",
-            "lattice": "0012",
-            "scale": 3,
-            "matrix": [[1, 0], [0, -1]],
-        },
-    )
-    corpus.load(tmp_path)
-    _record(
-        dual_path,
-        {
-            "slug": "a2-duality",
-            "lattice": "0012",
-            "scale": 3,
-            "matrix": [[1, 0], [0, 1]],
-        },
-    )
-    assert any(
-        "matrix must give the stated isometry" in problem
-        for problem in checks.report(tmp_path)
-    )
+def test_dual_lattice_data_lives_on_the_owning_lattice_card() -> None:
+    a2 = frontmatter.load(str(ROOT / "lattices" / "0012.md")).metadata
+    assert a2["dual_gram_tensor"] == [["2/3", "1/3"], ["1/3", "2/3"]]
+    assert not (ROOT / "lattices" / "0017.md").exists()
+    retired = yaml.safe_load((ROOT / "retired-tags.yaml").read_text())
+    assert "dual is stored on lattice card 0012" in retired["0017"]
 def _family(**overrides: object) -> dict[str, object]:
     """The split OG6 family with overrides applied."""
     record: dict[str, object] = {

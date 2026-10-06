@@ -28,20 +28,11 @@ from pydantic import (
     ConfigDict,
     Field,
     ValidationError,
-    field_validator,
     model_validator,
 )
 from pydantic_core import InitErrorDetails, PydanticCustomError
 
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.sets.cardinals import Cardinal, aleph0, cardinal
-from dzack_research.preamble.rings import session_ring_objects
-
 from latticedb import root_systems
-
-_SESSION_RINGS = session_ring_objects()
-ZZ = _SESSION_RINGS["ZZ"]
-QQ = _SESSION_RINGS["QQ"]
 
 type Yaml = None | bool | int | float | str | date | list[Yaml] | dict[str, Yaml]
 """A value that a YAML document can hold."""
@@ -89,7 +80,7 @@ AdeType = Annotated[str, Field(pattern=r"^(A[1-9]\d*|D[4-9]|D[1-9]\d+|E[678])$")
 RootType = Annotated[str, Field(pattern=root_systems.TYPE_PATTERN)]
 IntegerVector = Annotated[tuple[int, ...], Field(strict=False)]
 VectorList = Annotated[tuple[IntegerVector, ...], Field(strict=False)]
-Cardinality = Cardinal | None
+Cardinality = Annotated[int, Field(gt=0)] | Literal["aleph0"] | None
 Definiteness = Literal[
     "positive_definite",
     "negative_definite",
@@ -345,23 +336,6 @@ class GroupData(Record):
         ),
     )
 
-    @field_validator("cardinality", mode="before")
-    @classmethod
-    def _parse_cardinality(cls, value: object) -> Cardinal | None:
-        """Read the YAML spelling of this group's cardinality."""
-        if value is None or isinstance(value, Cardinal):
-            return value
-        match value:
-            case "aleph0":
-                return aleph0
-            case bool():
-                pass
-            case int() if value > 0:
-                return cardinal(value)
-        raise PydanticCustomError(
-            "cardinality_type",
-            "a group cardinality is a positive integer or 'aleph0'",
-        )
     index_in_orthogonal_group: Annotated[int, Field(gt=0)] | None = Field(
         default=None, description="The index $[O(L) : \\Gamma]$."
     )
@@ -371,7 +345,7 @@ class GroupData(Record):
     )
     generator_morphisms: Annotated[tuple[str, ...], Field(strict=False)] | None = Field(
         default=None,
-        description="Names of self-isometries of $L$, in `morphisms/<L>-<L>.md`, that generate $\\Gamma$.",
+        description="Names of self-isometries in this lattice card's `morphisms` field that generate $\\Gamma$.",
     )
     defining_relators: (
         tuple[Annotated[tuple[int, ...], Field(strict=False)], ...] | None
@@ -544,7 +518,7 @@ class IntegralData(Record):
     )
     modular_scale: Annotated[int, Field(gt=0)] | None = Field(
         default=None,
-        description="The $k$ of an isometry $L\\cong L^*(k)$ recorded by a dual-isometry morphism.",
+        description="The $k$ for which the card states $L\\cong L^*(k)$; an explicit chosen isometry, when stored, belongs to this card's morphisms rather than a separate object.",
     )
     discriminant_group: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
@@ -811,6 +785,68 @@ class RootSublattice(Record):
     )
 
 
+class Morphism(Record):
+    """A stored morphism whose domain is the lattice card that contains it."""
+
+    target: Tag = Field(description="Tag of the codomain lattice $T$.")
+    name: str = Field(description="Name as plain text; TeX between `$` signs is rendered.")
+    description: str | None = Field(
+        default=None,
+        description="One or two sentences on the morphism, as plain text with TeX between `$` signs.",
+    )
+    matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = Field(
+        description=(
+            "Matrix with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: "
+            "column $j$ lists the coordinates of $\\varphi(e_j)$ in the chosen basis of $T$."
+        )
+    )
+    scale: int = Field(
+        default=1,
+        description="The nonzero integer $c$ with $b_T(\\varphi x, \\varphi y) = c b_S(x, y)$.",
+    )
+    row_subdivisions: IntegerVector = Field(default=())
+    column_subdivisions: IntegerVector = Field(default=())
+
+    @model_validator(mode="after")
+    def _well_defined(self) -> Self:
+        columns = len(self.matrix[0])
+        problems: list[InitErrorDetails] = []
+        if columns == 0 or any(len(row) != columns for row in self.matrix):
+            problems.append(
+                _problem(
+                    "matrix_shape",
+                    "the rows of the matrix are nonempty and have one length",
+                    ("matrix",),
+                )
+            )
+        if self.scale == 0:
+            problems.append(
+                _problem(
+                    "scale_nonzero",
+                    "the scale c of a morphism S(c) -> T is not zero",
+                    ("scale",),
+                )
+            )
+        problems.extend(
+            _subdivision_problems(
+                self.row_subdivisions, len(self.matrix), ("row_subdivisions",)
+            )
+        )
+        problems.extend(
+            _subdivision_problems(
+                self.column_subdivisions, columns, ("column_subdivisions",)
+            )
+        )
+        if problems:
+            raise ValidationError.from_exception_data(type(self).__name__, problems)
+        return self
+
+    @property
+    def images(self) -> tuple[Vector, ...]:
+        """The columns of the matrix: the coordinates of the images of the source basis."""
+        return tuple(zip(*self.matrix, strict=True))
+
+
 def definiteness(n_plus: int, n_minus: int, n_zero: int) -> Definiteness:
     match (n_plus > 0, n_minus > 0, n_zero > 0):
         case (True, True, _):
@@ -932,6 +968,10 @@ class Lattice(Record):
     root_span: RootSpan | None = Field(default=None, description=RootSpan.__doc__)
     root_sublattice: RootSublattice | None = Field(
         default=None, description=RootSublattice.__doc__
+    )
+    morphisms: Annotated[tuple[Morphism, ...], Field(strict=False)] = Field(
+        default=(),
+        description="Stored morphisms whose domain is this lattice card; each morphism names its codomain lattice by tag.",
     )
     orthogonal_group: Slug | None = Field(
         default=None,
@@ -1159,16 +1199,6 @@ class Lattice(Record):
                 "the determinant is not zero, so `discriminant_group` is required",
                 ("integral", "discriminant_group"),
             )
-        if (
-            self.integral.level is not None
-            and self.determinant != 0
-            and self.integral.level != int(Lattices(ZZ)(self.gram_tensor).level())
-        ):
-            yield _problem(
-                "level_value",
-                "the stated level does not equal the level of the dual quadratic form",
-                ("integral", "level"),
-            )
         if self.integral.discriminant_sequence is not None:
             if self.determinant == 0 or self.integral.parity != "even":
                 yield _problem(
@@ -1201,7 +1231,6 @@ class Lattice(Record):
         if self.integral.primitive_orbits is not None and self.determinant != 0:
             yield from self._orbit_problems(self.integral.primitive_orbits)
         yield from self._spinor_problems()
-        yield from self._reduction_problems()
 
     def _dual_problems(self) -> Iterator[InitErrorDetails]:
         """The stated dual Gram tensor is the inverse of the Gram tensor."""
@@ -1241,44 +1270,6 @@ class Lattice(Record):
                 "dual_gram_inverse",
                 "the dual Gram tensor is not the inverse of the Gram tensor",
                 ("dual_gram_tensor",),
-            )
-
-    def _reduction_problems(self) -> Iterator[InitErrorDetails]:
-        """The primes of bad reduction and the character of the discriminant are those of the determinant."""
-        assert self.integral is not None
-        determinant = int(self.determinant)
-        owned = Lattices(ZZ)(self.gram_tensor) if determinant != 0 else None
-        primes = (
-            tuple(int(prime) for prime in owned.bad_reduction_primes())
-            if owned is not None
-            else None
-        )
-        if self.integral.bad_reduction_primes != primes:
-            context: dict[str, str | int] = {
-                "stated": str(self.integral.bad_reduction_primes),
-                "computed": str(primes),
-            }
-            yield _problem(
-                "bad_reduction_primes",
-                "`bad_reduction_primes` is {stated}, and the determinant gives {computed}",
-                ("integral", "bad_reduction_primes"),
-                context,
-            )
-        character = (
-            int(owned.discriminant_character_discriminant())
-            if owned is not None and self.rank % 2 == 0
-            else None
-        )
-        if self.integral.quadratic_character != character:
-            context = {
-                "stated": str(self.integral.quadratic_character),
-                "computed": str(character),
-            }
-            yield _problem(
-                "quadratic_character",
-                "`quadratic_character` is {stated}, and rank and determinant give {computed}",
-                ("integral", "quadratic_character"),
-                context,
             )
 
     def _spinor_problems(self) -> Iterator[InitErrorDetails]:
@@ -1472,16 +1463,6 @@ class Lattice(Record):
                         "each minimal vector has the stated minimum norm",
                         ("definite", "minimal_vectors"),
                     )
-                formed = ZZ.free_module(self.rank).equip_bilinear_form(QQ, self.gram_tensor)
-                scale_generator = formed.scale_submodule().principal_generator()
-                multiplier = ZZ(int(scale_generator.denominator()))
-                owned = Lattices(ZZ)(formed.twist(multiplier).gram_tensor())
-                if data.perfect is not None and data.perfect != owned.is_voronoi_perfect():
-                    yield _problem(
-                        "perfectness_value",
-                        "minimal-vector tensors give a different perfectness value",
-                        ("definite", "perfect"),
-                    )
         elif data.perfect is not None:
             yield _problem(
                 "perfectness_witness",
@@ -1593,99 +1574,3 @@ def _subdivision_problems(
             location,
             {"size": size},
         )
-
-
-class Morphism(Record):
-    """A morphism $\\varphi \\colon S(c) \\to T$ of lattices.
-
-    A $\\mathbb{Z}$-linear map with $b_T(\\varphi x, \\varphi y) = c \\, b_S(x, y)$ for a nonzero integer $c$, 1 by default.
-
-    Its matrix is in the chosen bases of $S$ and $T$, which list the orthogonal summands in the order of their names.
-    """
-
-    name: str = Field(
-        description="Name as plain text; TeX between `$` signs is rendered."
-    )
-    description: str | None = Field(
-        default=None,
-        description="One or two sentences on the morphism, as plain text with TeX between `$` signs.",
-    )
-    matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = (
-        Field(
-            description=(
-                "Matrix of $\\varphi$, with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\\varphi(e_j)$ "
-                "in the chosen basis of $T$, so that $M^{\\top} G_T M = c \\, G_S$ for the matrices $G_S = (b_S(e_i, e_j))$ and $G_T = (b_T(e_i, e_j))$. "
-                "A SageMath morphism `phi` gives `phi.matrix().transpose()`, because SageMath lists the images in rows."
-            )
-        )
-    )
-    scale: int = Field(
-        default=1,
-        description=(
-            "The nonzero integer $c$ with $b_T(\\varphi x, \\varphi y) = c \\, b_S(x, y)$: the map is a morphism $S(c) \\to T$ from the twist of $S$ by $c$. "
-            "Absent for $c = 1$. A lattice that a source names as a twist $M(c)$ of the record $M$ maps to $T$ with this scale."
-        ),
-    )
-    row_subdivisions: IntegerVector = Field(
-        default=(),
-        description=(
-            "Lines between the rows, as `M.subdivisions()` of SageMath states them: a line $k$ lies between rows $k$ and $k + 1$. "
-            "The basis vectors of $T$ between two consecutive lines span an orthogonal summand of $T$."
-        ),
-    )
-    column_subdivisions: IntegerVector = Field(
-        default=(),
-        description=(
-            "Lines between the columns: a line $k$ lies between columns $k$ and $k + 1$. "
-            "The basis vectors of $S$ between two consecutive lines span an orthogonal summand of $S$."
-        ),
-    )
-
-    @model_validator(mode="after")
-    def _well_defined(self) -> Self:
-        columns = len(self.matrix[0])
-        problems: list[InitErrorDetails] = []
-        if columns == 0 or any(len(row) != columns for row in self.matrix):
-            problems.append(
-                _problem(
-                    "matrix_shape",
-                    "the rows of the matrix are nonempty and have one length",
-                    ("matrix",),
-                )
-            )
-        if self.scale == 0:
-            problems.append(
-                _problem(
-                    "scale_nonzero",
-                    "the scale c of a morphism S(c) -> T is not zero",
-                    ("scale",),
-                )
-            )
-        problems.extend(
-            _subdivision_problems(
-                self.row_subdivisions, len(self.matrix), ("row_subdivisions",)
-            )
-        )
-        problems.extend(
-            _subdivision_problems(
-                self.column_subdivisions, columns, ("column_subdivisions",)
-            )
-        )
-        if problems:
-            raise ValidationError.from_exception_data(type(self).__name__, problems)
-        return self
-
-    @property
-    def images(self) -> tuple[Vector, ...]:
-        """The columns of the matrix: the coordinates of $\\varphi(e_1), \\varphi(e_2), \\dots$."""
-        return tuple(zip(*self.matrix, strict=True))
-
-
-class Morphisms(Record):
-    """The front matter of `morphisms/<S>-<T>.md`: morphisms from the lattice $S$ to the lattice $T$ of the corpus."""
-
-    source: Tag = Field(description="Tag of the source $S$.")
-    target: Tag = Field(description="Tag of the target $T$.")
-    morphisms: Annotated[tuple[Morphism, ...], Field(strict=False, min_length=1)] = (
-        Field(description="The morphisms $S \\to T$.")
-    )

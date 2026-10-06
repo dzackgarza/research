@@ -92,5 +92,5 @@ So $L \cong U^n \oplus L'$ for some $L'$ exactly when the genus of $L$ is the su
 `latticedb certify` computes it so: for $n$ from $\min(n_+, n_-)$ down to 1, it searches the genera of that signature with determinant $(-1)^n \det L$ and the parity of $L$, with `genera` and `Genus.direct_sum` of SageMath.
 A definite lattice has hyperbolic index 0.
 
-A morphism file that embeds $U^n$ into $L$ is a lower bound $n$ for the hyperbolic index of $L$.
+A stored morphism $U^n \to L$ is a lower bound $n$ for the hyperbolic index of $L$.
 `latticedb check` refuses a stored hyperbolic index that is less than such a bound, and the page of a lattice without a stored value states the bound.

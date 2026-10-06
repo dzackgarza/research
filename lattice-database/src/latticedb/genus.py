@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import TypedDict
 
 import frontmatter
-from pydantic import BaseModel, TypeAdapter
+from pydantic import BaseModel
 
 from latticedb import certificates, corpus, records
 from latticedb.certificates import Certificate, Certificates
@@ -133,7 +133,7 @@ def requests(
 ) -> list[Request]:
     """For each integral record with a nonzero determinant, the uncertified applicable fields."""
     chosen: list[Request] = []
-    bounds = hyperbolic_index_bounds(loaded.morphisms, loaded.entries)
+    bounds = hyperbolic_index_bounds(loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
         if (
@@ -212,20 +212,9 @@ def computed(chosen: list[Request], seconds: int) -> Iterator[dict[str, Yaml]]:
 
 
 def _sequence_morphisms(
-    path: Path, value: dict[str, Yaml]
-) -> tuple[dict[str, Yaml], Path, list[dict[str, Yaml]], str]:
-    """Place full lattice isometry generators in the self-morphism file and refer to them by name."""
-    tag = path.stem
-    morphism_path = path.parent.parent / "morphisms" / f"{tag}-{tag}.md"
-    if morphism_path.exists():
-        document = frontmatter.load(str(morphism_path))
-        morphisms = TypeAdapter(list[dict[str, Yaml]]).validate_python(
-            document.metadata["morphisms"]
-        )
-        prose = document.content
-    else:
-        morphisms = []
-        prose = "Generators of the integral orthogonal group in the basis of the lattice record."
+    tag: str, morphisms: list[dict[str, Yaml]], value: dict[str, Yaml]
+) -> tuple[dict[str, Yaml], list[dict[str, Yaml]]]:
+    """Place full lattice isometry generators on the lattice card and refer to them by name."""
     names: list[str] = []
     matrices = value["lattice_generators"]
     assert isinstance(matrices, list)
@@ -240,28 +229,27 @@ def _sequence_morphisms(
         )
         if existing is None:
             name = f"O(L) generator {index} from PARI qfauto"
-            morphisms.append({"name": name, "matrix": matrix})
+            morphisms.append({"target": tag, "name": name, "matrix": matrix})
         else:
             assert isinstance(existing["name"], str)
             name = existing["name"]
         names.append(name)
     stored = {key: item for key, item in value.items() if key != "lattice_generators"}
     stored["lattice_generator_morphisms"] = names
-    return stored, morphism_path, morphisms, prose
+    return stored, morphisms
 
 
 def store(path: Path, values: dict[str, Yaml]) -> None:
     """Replace each computed scope on the card by the completed computation."""
     document = frontmatter.load(str(path))
     metadata = corpus.front_matter(document)
-    sequence_morphisms: tuple[Path, list[dict[str, Yaml]], str] | None = None
+    morphisms = list(metadata.get("morphisms", []))
     for field, (block_name, model) in BLOCKS.items():
         value = values.get(field)
         if value is None:
             continue
         if field == "discriminant_sequence" and isinstance(value, dict):
-            value, morphism_path, morphisms, prose = _sequence_morphisms(path, value)
-            sequence_morphisms = morphism_path, morphisms, prose
+            value, morphisms = _sequence_morphisms(path.stem, morphisms, value)
         match metadata.get(block_name):
             case dict() as block:
                 if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
@@ -287,16 +275,7 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
                 metadata[block_name] = {
                     key: block[key] for key in model.model_fields if key in block
                 }
-                if field == "discriminant_sequence" and sequence_morphisms is not None:
-                    morphism_path, morphisms, prose = sequence_morphisms
-                    morphism_text = records.morphisms_text(
-                        path.stem, path.stem, morphisms, prose
-                    )
-                    if (
-                        not morphism_path.exists()
-                        or morphism_path.read_text() != morphism_text
-                    ):
-                        morphism_path.write_text(morphism_text)
+    metadata["morphisms"] = morphisms
     text = records.record_text(metadata, document.content)
     if text != path.read_text():
         path.write_text(text)

@@ -14,9 +14,12 @@ algorithm.  This is the cross-repository contract recorded by
 `HANDOFF.md` and by the corresponding foundational complaint in the research
 repository.
 
-All lattice-database workflows therefore run under the repository's Sage Python
-with both `../src` and this package's `src` on `PYTHONPATH`.  A plain CPython
-environment is not a supported execution path for the database.
+The schema/data-model layer (`model`, `catalogues`, `geometric`, `graphs`, `corpus`)
+is deliberately preamble-free and must parse/validate under ordinary CPython.
+`just test` exercises only that fast coherence layer. Workflows that compute or
+verify mathematical lattice claims (`enrich`, `verify`, certification and CI
+validation) run under the repository's Sage Python with both `../src` and this
+package's `src` on `PYTHONPATH` and consume the preamble operations.
 
 ## Independent workflows
 
@@ -52,10 +55,11 @@ change:
 | --- | --- |
 | An invariant of one lattice: a genus symbol, a class number, the order of $O(L)$, a root system | A field of the record, in the block of its hypothesis |
 | A relation between two records: a twist, a dual, an orthogonal complement, a gluing | A `related` entry of each record, and the prose |
-| A map between lattices: an embedding, an isometry, a generator of a group action | A morphism file `morphisms/<S>-<T>.md` |
+| A map whose domain is a lattice card: an embedding, an isometry, a generator of a group action | A `morphisms` entry on that source lattice card; the entry names its target |
 | A Lie group such as $O(p,q)$ | A `lie-groups/<slug>.md` card |
 | $O(L)$ or another arithmetic subgroup attached to a lattice | An `arithmetic-groups/<slug>.md` card, referenced by the lattice card |
-| An isometry from a tagged lattice to its scaled dual, whose dual has no separate tag | A morphism file `morphisms/dual/<slug>.md`, with the dual basis and scale stated |
+| The dual lattice $L^*$ | `dual_gram_tensor = G_L^{-1}` on the card of $L$; never a second lattice card |
+| A chosen isometry $L\to L^*(k)$, when one is recorded | Morphism data on the card of $L$, with the derived dual target described there; never a separate morphism card |
 | What a source states: a table, a list of Gram tensors, a basis in other coordinates | `sources/<source>/`, read by a source module; source-to-card comparison is importer/provenance testing only, never mathematical verification |
 | An identification of a record with an entry of a source | The reference of the record, with the locator of the entry, and the prose that states the argument |
 

@@ -10,7 +10,7 @@ import frontmatter
 import pytest
 
 from latticedb import certificates, corpus, genus, records
-from latticedb.model import Lattice, Morphisms, Yaml
+from latticedb.model import Lattice, Yaml
 
 REPOSITORY = Path(__file__).resolve().parent.parent.parent
 
@@ -97,7 +97,6 @@ def test_discriminant_sequence_keeps_the_pointed_coset_quotient(
     assert found["<2>+<10>"]["mm_trivial"] is False
     assert found["<2>+<10>"]["quotient_multiplication"] == [[0, 1], [1, 0]]
     (tmp_path / "lattices").mkdir()
-    (tmp_path / "morphisms").mkdir()
     path = tmp_path / "lattices" / "0012.md"
     shutil.copy(REPOSITORY / "lattices" / "0012.md", path)
     genus.store(path, {"discriminant_sequence": found["A2"]})
@@ -106,10 +105,9 @@ def test_discriminant_sequence_keeps_the_pointed_coset_quotient(
         found["A2"]["lattice_generators"]
     )
     assert "lattice_generators" not in stored
-    morphism_path = tmp_path / "morphisms" / "0012-0012.md"
-    assert morphism_path.exists()
-    Lattice.model_validate(frontmatter.load(str(path)).metadata)
-    Morphisms.model_validate(frontmatter.load(str(morphism_path)).metadata)
+    lattice = Lattice.model_validate(frontmatter.load(str(path)).metadata)
+    self_isometries = [morphism for morphism in lattice.morphisms if morphism.target == "0012"]
+    assert len(self_isometries) == len(found["A2"]["lattice_generators"])
 
 
 def test_sagemath_computes_the_hyperbolic_index() -> None:

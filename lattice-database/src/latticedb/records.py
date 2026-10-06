@@ -12,8 +12,7 @@ record or morphism before it is written: the Gram tensor, the declared values,
 and the statements against the records already written. Reading the corpus
 does none of this again.
 
-`record_text` writes a record in the layout of the corpus, and
-`morphisms_text` writes a morphism file.
+`record_text` writes a lattice card, including the morphisms whose domain is that card.
 """
 
 from collections.abc import Mapping
@@ -50,6 +49,7 @@ KEYS = (
     "indefinite",
     "root_span",
     "root_sublattice",
+    "morphisms",
     "orthogonal_group",
     "arithmetic_groups",
     "families",
@@ -114,6 +114,7 @@ def _body(prose: str) -> str:
 
 
 MORPHISM_KEYS = (
+    "target",
     "name",
     "description",
     "matrix",
@@ -121,25 +122,7 @@ MORPHISM_KEYS = (
     "row_subdivisions",
     "column_subdivisions",
 )
-"""The keys of a morphism, in the order in which a morphism file lists them."""
-
-
-def morphisms_text(
-    source: str, target: str, morphisms: list[dict[str, Yaml]], prose: str
-) -> str:
-    """Return the text of the file `morphisms/<source>-<target>.md`."""
-    assert all(set(morphism) <= set(MORPHISM_KEYS) for morphism in morphisms)
-    ordered = [
-        {key: _styled(morphism[key]) for key in MORPHISM_KEYS if key in morphism}
-        for morphism in morphisms
-    ]
-    document = {"source": source, "target": target, "morphisms": ordered}
-    return (
-        "---\n"
-        + yaml.dump(document, sort_keys=False, allow_unicode=True, width=100000)
-        + "---\n"
-        + _body(prose)
-    )
+"""The keys of a morphism, in the order in which a lattice card lists them."""
 
 
 def rational(value: Fraction) -> int | str:
@@ -578,7 +561,37 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
     """Admission problems whose truth depends only on one lattice record."""
     found = []
     gram = lattice.gram_tensor
+    integral = lattice.integral
     definite = lattice.definite
+    if integral is not None and lattice.determinant != 0:
+        owned = Lattices(ZZ)(gram)
+        if integral.level is not None and integral.level != int(owned.level()):
+            found.append(
+                "integral.level: the stated level does not equal the level of the dual quadratic form"
+            )
+        primes = tuple(int(prime) for prime in owned.bad_reduction_primes())
+        if integral.bad_reduction_primes != primes:
+            found.append(
+                f"integral.bad_reduction_primes: stated {integral.bad_reduction_primes}, computed {primes}"
+            )
+        character = (
+            int(owned.discriminant_character_discriminant())
+            if lattice.rank % 2 == 0
+            else None
+        )
+        if integral.quadratic_character != character:
+            found.append(
+                f"integral.quadratic_character: stated {integral.quadratic_character}, computed {character}"
+            )
+    if definite is not None and definite.perfect is not None and definite.minimal_vectors is not None:
+        formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+        scale_generator = formed.scale_submodule().principal_generator()
+        multiplier = ZZ(int(scale_generator.denominator()))
+        owned = Lattices(ZZ)(formed.twist(multiplier).gram_tensor())
+        if definite.perfect != owned.is_voronoi_perfect():
+            found.append(
+                "definite.perfect: minimal-vector tensors give a different perfectness value"
+            )
     if (
         definite is not None
         and definite.automorphism_group_order is not None

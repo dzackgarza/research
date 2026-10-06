@@ -14,7 +14,7 @@ $B$ and the generators of $C$ as printed, the row, the record $R$, the twist $t$
 matrix $P$ whose column $j$ holds the coordinates in the basis of $A$ of the $j$-th basis vector of $R$.
 
 `embedding` and `automorphisms` compute from these the morphism $R(t) \\to \\Lambda$ and the action of $C$
-on $R$; `check` asserts every equation that the files state and that the morphism files hold these maps.
+on $R$; `check` asserts every equation that the files state and that the source lattice cards hold these maps.
 """
 
 from collections.abc import Mapping
@@ -137,7 +137,7 @@ def group_order(generators: list[Matrix]) -> int:
 
 
 def check(leech: Leech, entries: tuple[Entry, ...], groups: tuple[hashimoto.GroupRow, ...], lattices: Mapping[str, Lattice], morphisms: corpus.Held) -> list[str]:
-    """The equations of the stored file that the records, Table 10.2 of Hashimoto and the morphism files do not satisfy."""
+    """The equations of the stored file that the records, Table 10.2 of Hashimoto and the stored card morphisms do not satisfy."""
     found: list[str] = []
     gram = leech_gram(leech)
     basis = _rational(leech.record_basis)
@@ -177,15 +177,15 @@ def check(leech: Leech, entries: tuple[Entry, ...], groups: tuple[hashimoto.Grou
         if order != row.order:
             found.append(f"{name}: C acts on A with a group of order {order}, Table 10.2 row {entry.row} states |G| = {row.order}")
         if (embedding(leech, entry), entry.twist) not in morphisms.get((entry.record, leech.record), ()):
-            found.append(f"morphisms/{entry.record}-{leech.record}.md does not hold the inclusion of {name}")
+            found.append(f"lattice card {entry.record} does not hold the inclusion of {name} into {leech.record}")
         held = morphisms.get((entry.record, entry.record), ())
         if any((g, 1) not in held for g in generated):
-            found.append(f"morphisms/{entry.record}-{entry.record}.md does not hold the generators of C of {name}")
+            found.append(f"lattice card {entry.record} does not hold the self-isometry generators of C of {name}")
     return found
 
 
 def stored_problems(root: Path, loaded: corpus.Corpus) -> list[str]:
-    """`check` on the files under `root/sources/hoehn_mason`, against the records and the morphism files of `loaded`."""
+    """`check` on the files under `root/sources/hoehn_mason`, against the lattice records and their stored morphisms."""
     groups, _ = hashimoto.stored(root / "sources" / "hashimoto")
     lattices = {entry.lattice.tag: entry.lattice for entry in loaded.entries}
     return check(*stored(root / "sources" / "hoehn_mason"), groups, lattices, corpus.held(loaded))
