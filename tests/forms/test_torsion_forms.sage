@@ -115,6 +115,16 @@ def test_the_bilinear_discriminant_form_of_u2_is_metabolic_with_orthogonal_group
     assert form.orthogonal_quotient(metabolizer).cardinality() == 1
 
 
+def test_u2_bilinear_orthogonal_group_element_orbit() -> None:
+    form = Lattices(ZZ)("U").twist(2).discriminant_bilinear_form()
+    label = next(iter(form.module_generating_set()))
+    element = form.module_generator(label)
+    group = form.O()
+
+    assert group.order() == 6
+    assert group.orbit(element).cardinality() == 3
+
+
 def test_the_discriminant_forms_of_a1_are_one_half_mod_one_and_minus_one_half_mod_two() -> None:
     r"""$A_1 = \langle -2\rangle$: $A_1^\vee / A_1 = \mathbb{Z}/2$ on $e/2$, with $b = q = -1/2$."""
     a1 = Lattices(ZZ)("A1")

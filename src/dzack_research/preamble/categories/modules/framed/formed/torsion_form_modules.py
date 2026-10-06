@@ -157,11 +157,29 @@ class TorsionFormIsometry(CategoricalIsomorphism):
     r"""An explicit isomorphism of finite framed torsion modules preserving a form."""
 
     def __init__(self, parent, forward, inverse, *, quadratic: bool) -> None:
-        super().__init__(parent, forward, inverse)
+        super().__init__(parent, forward, inverse, verify=False)
         self._quadratic = bool(quadratic)
         source = self.domain()
         target = self.codomain()
-        generators = tuple(source.module_generators())
+        source_generators = tuple(source.module_generators())
+        target_generators = tuple(target.module_generators())
+        if any(
+            inverse(forward(generator)) != generator
+            for generator in source_generators
+        ):
+            raise ValueError(
+                f"{inverse} is not a left inverse of {forward}: their composition "
+                f"does not fix every selected generator of {source}"
+            )
+        if any(
+            forward(inverse(generator)) != generator
+            for generator in target_generators
+        ):
+            raise ValueError(
+                f"{inverse} is not a right inverse of {forward}: their composition "
+                f"does not fix every selected generator of {target}"
+            )
+        generators = source_generators
         if self._quadratic:
             probes = generators + tuple(
                 left + right
@@ -1018,6 +1036,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def __classcall__(cls, mor_family, form, **options):
         return typecall(cls, mor_family, form, **options)
 
+    def _cache_key(self):
+        r"""Cache this live fixed-form automorphism group by its canonical identity."""
+        return id(self)
+
     def __init__(
         self,
         mor_family,
@@ -1148,7 +1170,6 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         engine_automorphism = self._engine_group_parent(engine_automorphism)
         normalization = self.normalization_isometry()
         normalized_forward = self._normalized_map(engine_automorphism)
-        normalized_inverse = self._normalized_map(~engine_automorphism)
 
         original = normalization.domain()
         forward = original.module_category().Mor(original, original)(
@@ -1161,16 +1182,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
                 for label in original.module_generating_set()
             }
         )
-        inverse = original.module_category().Mor(original, original)(
-            {
-                label: normalization.inverse()(
-                    normalized_inverse(
-                        normalization.forward()(original.module_generator(label))
-                    )
-                )
-                for label in original.module_generating_set()
-            }
-        )
+        inverse = forward.inverse()
         return self.element_class(
             self,
             forward,
