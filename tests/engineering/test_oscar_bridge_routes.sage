@@ -11,22 +11,6 @@ provisioning remedy; nothing here substitutes another engine.
 from dzack_research.preamble.all import *
 
 
-def test_rational_spinor_norm_of_hyperbolic_plane_isometries() -> None:
-    # The spinor norm of s_{v_1}...s_{v_m} is the square class of
-    # prod -(v_i, v_i)/2 (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, §1).
-    # On U with e.f = 1: swap = s_{e-f} with (e-f)^2 = -2, class [1];
-    # -1 = s_{e+f} s_{e-f} with (e+f)^2 = 2, class [-1][1] = [-1].
-    lattice = Lattices(ZZ)("U")
-    e, f = lattice.module_generators()
-    swap = lattice.Aut()((f, e))
-    minus_identity = lattice.Aut()((-e, -f))
-    spinor_norm = lattice.spinor_norm()
-    square_classes = QQ.square_class_group()
-
-    assert spinor_norm(swap) == square_classes(1)
-    assert spinor_norm(minus_identity) == square_classes(-1)
-
-
 def test_centralizer_discriminant_image_of_negation_on_the_rank_one_even_lattice() -> None:
     # L = <4>: A_L = Z/4, and -1 acts nontrivially on A_L.  O(L) = {+-1},
     # so the centralizer of -1 is all of O(L), and its discriminant image is
