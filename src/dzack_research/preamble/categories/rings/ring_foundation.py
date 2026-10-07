@@ -27,17 +27,14 @@ from sage.arith.misc import (
 )
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
-from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
 from sage.categories.finite_fields import FiniteFields as SageFiniteFields
-from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.categories.principal_ideal_domains import (
     PrincipalIdealDomains as SagePrincipalIdealDomains,
 )
-from sage.categories.quotient_fields import QuotientFields as SageQuotientFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
@@ -1717,7 +1714,9 @@ class _PredicateSubringParent(Parent):
         self._predicate = predicate
         self._description = description
         commutative_rings = OwnedRings().Commutative()
-        self._preamble_is_commutative = category.is_subcategory(commutative_rings) or ambient_ring.is_commutative() is True
+        # A subring of a commutative ring is commutative: the ambient ring's
+        # placement decides it, never a computed answer.
+        self._preamble_is_commutative = category.is_subcategory(commutative_rings) or ambient_ring in commutative_rings
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
         base = self if self._preamble_is_commutative else _own_ring(SageZZ)
@@ -4034,7 +4033,13 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._engine.is_exact()
 
     def _field_decision(self):
-        return self._engine.is_field()
+        r"""The engine's field decision, an untrusted answer to the caller of ``is_field``."""
+        decision = _engine_field_decision(self._engine)
+        match decision:
+            case None:
+                return AtomicProposition("is_field", self)
+            case _:
+                return decision
 
     def _commutativity_decision(self):
         return self._engine.is_commutative()
@@ -4151,21 +4156,6 @@ def _engine_scalar_ring(engine: Ring):
     return _own_ring(base)
 
 
-def _integer_mod_local_prime(engine):
-    r"""Return the unique residue characteristic of ``ZZ/nZZ`` when it is local."""
-    match engine:
-        case IntegerModRing_generic():
-            modulus = SageZZ(engine.characteristic())
-            factors = tuple(modulus.factor())
-            match factors:
-                case ((prime, _exponent),):
-                    return SageZZ(prime)
-                case _:
-                    return None
-        case _:
-            return None
-
-
 def _is_integral_multivariate_ideal(engine_ideal) -> bool:
     r"""Whether ``engine_ideal`` lives in ``ZZ[x_1, ..., x_n]``, where Sage's own ``is_prime`` and ``is_maximal`` raise."""
     ring = engine_ideal.ring()
@@ -4258,19 +4248,354 @@ def _engine_field_decision(engine):
                 return None
 
 
-def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
+def _size_of_finitely_supported_families(coefficients, indeterminates) -> Category:
+    r"""The size of a ring of finitely supported coefficient families on monomials or words.
+
+    ``R[x_1, ..., x_n]``, ``R<x_1, ..., x_n>`` and ``R[x_1^{\pm 1}, ..., x_n^{\pm 1}]``
+    have as elements the finitely supported maps from the set of monomials or
+    words in ``n`` indeterminates to ``R``.  For ``n = 0`` that set is one
+    point and the ring is ``R``.  For ``n >= 1`` it is countably infinite, so
+    over a nonzero finite or countable ``R`` the ring is countably infinite,
+    and over an uncountable ``R`` it is uncountable.  The size of ``R``, and
+    that ``1 != 0`` in ``R``, are read from its placement.
+    """
+    match coefficients:
+        case _ if indeterminates == 0:
+            return _placed_size(coefficients)
+        case _ if coefficients in owned_sets.UncountableSets():
+            return owned_sets.UncountableSets()
+        case _ if coefficients in owned_sets.CountablyInfiniteSets():
+            return owned_sets.CountablyInfiniteSets()
+        case _ if _placed_nonzero(coefficients) and coefficients in owned_sets.FiniteSets():
+            return owned_sets.CountablyInfiniteSets()
+        case _:
+            return owned_sets.Sets()
+
+
+def _placed_nonzero(ring) -> bool:
+    r"""Whether the placement of ``ring`` states ``1 != 0``.
+
+    A domain, a division ring and a local ring have ``1 != 0`` by definition,
+    and an infinite ring has more than one element.  The zero ring ``ZZ/1ZZ``
+    is the finite ring these exclude.
+    """
+    return (
+        ring in OwnedRings().Commutative().NoZeroDivisors()
+        or ring in OwnedRings().Division()
+        or ring in OwnedRings().Commutative().Local()
+        or ring in owned_sets.CountablyInfiniteSets()
+        or ring in owned_sets.UncountableSets()
+    )
+
+
+def _size_of_all_coefficient_families(coefficients) -> Category:
+    r"""The size of ``R[[x_1, ..., x_n]]`` or ``R((x))``, read from the placement of ``R``.
+
+    A power series is an arbitrary map from the countably infinite set of
+    monomials to ``R``, so there are ``|R|^{aleph_0}`` of them: uncountably
+    many for every ``R`` with ``1 != 0``.
+    """
+    match coefficients:
+        case _ if _placed_nonzero(coefficients):
+            return owned_sets.UncountableSets()
+        case _:
+            return owned_sets.Sets()
+
+
+def _placed_size(ring) -> Category:
+    r"""The size placement of the owned ring ``ring``: finite, countably infinite, uncountable, or unstated."""
+    match ring:
+        case _ if ring in owned_sets.FiniteSets():
+            return owned_sets.FiniteSets()
+        case _ if ring in owned_sets.CountablyInfiniteSets():
+            return owned_sets.CountablyInfiniteSets()
+        case _ if ring in owned_sets.UncountableSets():
+            return owned_sets.UncountableSets()
+        case _:
+            return owned_sets.Sets()
+
+
+def _inherited_ring_placements(coefficients, *, univariate_over_field_is_principal: bool) -> tuple[Category, ...]:
+    r"""The placements an extension of ``R`` by indeterminates inherits from ``R``.
+
+    For ``A`` one of ``R[x_1, ..., x_n]``, ``R[x^{\pm 1}]``, ``R[[x_1, ..., x_n]]``
+    with finitely many indeterminates:
+
+    - ``A`` is commutative when ``R`` is;
+    - ``A`` is a domain when ``R`` is (the leading or lowest-order term of a
+      product is the product of those terms);
+    - ``A`` is Noetherian when ``R`` is (Hilbert's basis theorem, and its
+      power series form; a localization of a Noetherian ring is Noetherian).
+
+    When ``univariate_over_field_is_principal`` holds, a single indeterminate
+    over a field also makes ``A`` a principal ideal domain: ``K[x]`` is
+    Euclidean, ``K[x^{\pm 1}]`` is a localization of it, and ``K[[x]]`` is a
+    discrete valuation ring.  ``R`` is read through its placement only.
+    """
+    placements = []
+    if coefficients in OwnedRings().Commutative():
+        placements.append(OwnedRings().Commutative())
+    if coefficients in OwnedRings().Commutative().NoZeroDivisors():
+        placements.append(OwnedRings().Commutative().NoZeroDivisors())
+    if coefficients in OwnedRings().Noetherian():
+        placements.append(OwnedRings().Noetherian())
+    if univariate_over_field_is_principal and coefficients in OwnedRings().Division().Commutative():
+        placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
+    return tuple(placements)
+
+
+def _presented_ring_category(engine: Ring) -> Category:
+    r"""The owned ring placement given by the construction that presents ``engine``.
+
+    Placement follows construction (``ARC-08``, ``CON-07``).  Each case names
+    one ring constructor and reads only the data that constructor received:
+    the modulus ``n`` of ``ZZ/nZZ``, the degree of ``F_q``, the coefficient
+    ring and the number of indeterminates of a polynomial, Laurent, power
+    series or free algebra, the cover of a quotient, the ring of a fraction
+    field, the size and entries of a matrix ring.  A constituent ring the
+    preamble already owns is read by its placement.  The theorem that places
+    the result is stated in the case.  No answer the engine computes about the
+    ring itself -- ``is_field``, ``is_commutative``, ``is_noetherian``, its
+    Sage category -- is read; those answer their callers through the decision
+    procedures of the owned ring.  A construction no case names is placed in
+    ``OwnedRings()`` alone, with no size.
+
+    The case is selected by the Sage parent class that the constructor
+    returned, inside this private adapter (``OWN-06``): that class is the
+    record of which constructor was applied, and nothing it computes is read.
+    """
+    from sage.algebras.free_algebra import FreeAlgebra_generic
+    from sage.matrix.matrix_space import MatrixSpace
+    from sage.rings.abc import (
+        ComplexBallField,
+        ComplexDoubleField,
+        ComplexField,
+        ComplexIntervalField,
+        RealBallField,
+        RealDoubleField,
+        RealField,
+        RealIntervalField,
+        pAdicField,
+        pAdicRing,
+    )
+    from sage.rings.finite_rings.finite_field_base import FiniteField
+    from sage.rings.fraction_field import FractionField_generic
+    from sage.rings.laurent_series_ring import LaurentSeriesRing
+    from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
+    from sage.rings.number_field.number_field_base import NumberField
+    from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
+    from sage.rings.power_series_ring import PowerSeriesRing_generic
+    from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.symbolic.ring import SymbolicRing
+
+    from dzack_research.preamble.categories.rings.number_fields import (
+        NumberFieldsWithChosenPrimitiveElement,
+        OrdersWithChosenIntegralBasis,
+        OwnedNumberFields,
+    )
     from dzack_research.preamble.owned_category import owned_category_join
 
-    r"""Return the strongest owned ring category witnessed by ``engine``.
+    domain = OwnedRings().Commutative().NoZeroDivisors()
+    principal = domain.PrincipalIdeals()
+    noetherian = OwnedRings().Noetherian()
+    # A field is a commutative division ring; its only ideals are 0 and
+    # itself, so it is a principal ideal domain and Noetherian.
+    field = (OwnedRings().Division().Commutative(), principal, noetherian)
+    match engine:
+        case _ if engine is SageZZ:
+            # ZZ is Euclidean, ordered, countable, and its own ring of
+            # integers with the integral basis (1).
+            placements = (
+                principal, noetherian, OwnedOrderedRings(),
+                owned_sets.CountablyInfiniteSets(), OrdersWithChosenIntegralBasis(),
+            )
+        case _ if engine is SageQQ:
+            # QQ = Frac(ZZ) is the prime field of characteristic 0, ordered,
+            # and the number field of degree 1.
+            placements = (
+                *field, PrimeFields(), OwnedOrderedRings(), OwnedNumberFields(),
+                owned_sets.CountablyInfiniteSets(),
+            )
+        case _ if engine is SageAA:
+            # The real algebraic numbers form an ordered, countable field.
+            placements = (*field, OwnedOrderedRings(), owned_sets.CountablyInfiniteSets())
+        case _ if engine is SageQQbar:
+            placements = (*field, owned_sets.CountablyInfiniteSets())
+        case FiniteField():
+            # F_q is a finite field; it is the prime field F_p exactly when
+            # its degree over F_p, a datum of GF(p^k), is k = 1.
+            prime_field = (PrimeFields(),) if engine.degree() == 1 else ()
+            placements = (*field, *prime_field, owned_sets.FiniteSets())
+        case IntegerModRing_generic():
+            placements = (
+                OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(),
+                *_integer_mod_placements(SageZZ(engine.order())),
+            )
+        case NumberField():
+            # A number field K = QQ[x]/(f) with f irreducible, presented by
+            # its chosen generator.
+            placements = (
+                *field, OwnedNumberFields(), NumberFieldsWithChosenPrimitiveElement(),
+                owned_sets.CountablyInfiniteSets(),
+            )
+        case SageNumberFieldOrder():
+            # An order is a subring of a number field, free of finite rank
+            # over ZZ, so a Noetherian domain; its basis is a construction
+            # datum.
+            placements = (
+                domain, noetherian, owned_sets.CountablyInfiniteSets(),
+                OrdersWithChosenIntegralBasis(),
+            )
+        case (
+            RealField() | RealDoubleField() | RealBallField() | RealIntervalField()
+            | ComplexField() | ComplexDoubleField() | ComplexBallField() | ComplexIntervalField()
+        ):
+            # These constructors present RR or CC, uncountable fields.
+            placements = (*field, owned_sets.UncountableSets())
+        case pAdicField():
+            # Q_p and its finite extensions are uncountable fields.
+            placements = (*field, owned_sets.UncountableSets())
+        case pAdicRing():
+            # Z_p and the rings of integers of its finite extensions are
+            # discrete valuation rings, uncountable.
+            placements = (principal, noetherian, owned_sets.UncountableSets())
+        case PolynomialRing_generic() | MPolynomialRing_base():
+            coefficients = _own_ring(engine.base_ring())
+            placements = (
+                *_inherited_ring_placements(
+                    coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
+                ),
+                _size_of_finitely_supported_families(coefficients, engine.ngens()),
+            )
+        case LaurentPolynomialRing_generic():
+            coefficients = _own_ring(engine.base_ring())
+            placements = (
+                *_inherited_ring_placements(
+                    coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
+                ),
+                _size_of_finitely_supported_families(coefficients, engine.ngens()),
+            )
+        case PowerSeriesRing_generic() | LazyPowerSeriesRing():
+            coefficients = _own_ring(engine.base_ring())
+            placements = (
+                *_inherited_ring_placements(
+                    coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
+                ),
+                _size_of_all_coefficient_families(coefficients),
+            )
+        case LaurentSeriesRing() | LazyLaurentSeriesRing():
+            # K((x)) = Frac(K[[x]]) is a field over a field K; over any R it
+            # inherits commutativity and the domain property from R[[x]].
+            coefficients = _own_ring(engine.base_ring())
+            over_field = field if coefficients in OwnedRings().Division().Commutative() else ()
+            placements = (
+                *over_field,
+                *_inherited_ring_placements(coefficients, univariate_over_field_is_principal=False),
+                _size_of_all_coefficient_families(coefficients),
+            )
+        case FractionField_generic():
+            # |Frac(D)| = |D|: a fraction is a pair of elements of D, and D
+            # embeds in Frac(D).
+            source = _own_ring(engine.ring())
+            placements = (*field, _placed_size(source))
+        case QuotientRing_generic():
+            # R/I is commutative, Noetherian or finite when R is.  Whether
+            # I is prime or maximal is computed, never a datum of R/I, so
+            # it places nothing here.
+            cover = _own_ring(engine.cover_ring())
+            commutative = (OwnedRings().Commutative(),) if cover in OwnedRings().Commutative() else ()
+            cover_noetherian = (noetherian,) if cover in OwnedRings().Noetherian() else ()
+            finite = (owned_sets.FiniteSets(),) if cover in owned_sets.FiniteSets() else ()
+            placements = (*commutative, *cover_noetherian, *finite)
+        case FreeAlgebra_generic():
+            # T(R^S) on |S| = n generators.  For n <= 1 it is R[x] (or R);
+            # for n >= 2 the generators x, y have xy != yx, and the
+            # two-sided ideals (x y^k x) do not stabilize.
+            coefficients = _own_ring(engine.base_ring())
+            match engine.ngens() <= 1:
+                case True:
+                    inherited = _inherited_ring_placements(
+                        coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
+                    )
+                case False:
+                    inherited = ()
+            placements = (*inherited, _size_of_finitely_supported_families(coefficients, engine.ngens()))
+        case MatrixSpace():
+            # M_n(R) is commutative exactly when n <= 1 and R is; it is a
+            # finitely generated R-module, so Noetherian when R is; it is
+            # R^{n^2} as a set.
+            coefficients = _own_ring(engine.base_ring())
+            commutative = (
+                (OwnedRings().Commutative(),)
+                if engine.nrows() <= 1 and coefficients in OwnedRings().Commutative()
+                else ()
+            )
+            matrix_noetherian = (noetherian,) if coefficients in OwnedRings().Noetherian() else ()
+            finite = (owned_sets.FiniteSets(),) if coefficients in owned_sets.FiniteSets() else ()
+            placements = (*commutative, *matrix_noetherian, *finite)
+        case SymbolicRing():
+            # Sage's symbolic expressions are built with a commutative
+            # product; that is the only datum of the construction.
+            placements = (OwnedRings().Commutative(),)
+        case _:
+            placements = ()
+    joined = owned_category_join((OwnedRings(), *placements))
+    match joined.is_subcategory(owned_sets.FiniteSets()):
+        case True:
+            # A finite ring has finite length over itself.
+            return owned_category_join((joined, OwnedRings().Artinian()))
+        case False:
+            return joined
+
+
+def _integer_mod_placements(modulus) -> tuple[Category, ...]:
+    r"""The placements of ``ZZ/nZZ`` given by its modulus ``n``.
+
+    ``ZZ/nZZ`` is the field ``F_p`` exactly when ``n = p`` is prime, and a
+    local ring with maximal ideal ``(p)`` exactly when ``n = p^k``.  The
+    factorization of ``n`` is arithmetic of the construction datum.
+    """
+    match _prime_power_base(modulus):
+        case None:
+            return ()
+        case prime if prime == modulus:
+            return (
+                OwnedRings().Division().Commutative(),
+                OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals(),
+                PrimeFields(),
+            )
+        case _:
+            return (OwnedRings().Commutative().Local(),)
+
+
+def _prime_power_base(modulus):
+    r"""The prime ``p`` with ``modulus = p^k`` for some ``k >= 1``, else ``None``."""
+    factors = tuple(SageZZ(modulus).factor())
+    match factors:
+        case ((prime, _exponent),):
+            return SageZZ(prime)
+        case _:
+            return None
+
+
+def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
+    r"""Return the owned ring category the construction of ``engine`` places it in.
+
+    The ring placement is :func:`_presented_ring_category`.  To it this adds
+    the algebra and module structure the constructor selects: the ring is an
+    associative unital algebra over ``scalar_base`` (over itself when there is
+    none), commutative exactly when its ring placement is, and the module
+    framing the constructor fixes.
 
     ``scalar_base`` is the owned base already selected by the constructor.
     Re-reading an engine scalar parent here can create a second owned view of
     the same mathematical base and hence two distinct parameterized algebra
     categories.
     """
-    category = engine.category()
+    from dzack_research.preamble.owned_category import owned_category_join
+
+    presented = _presented_ring_category(engine)
     extra = []
-    commutative = engine.is_commutative() is True
     match owned_ring:
         case None:
             algebra_base = scalar_base
@@ -4291,16 +4616,11 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
             from dzack_research.preamble.categories.algebras.algebras import Algebras
 
             algebra = Algebras(algebra_base).Associative().Unital()
-            match commutative:
+            match presented.is_subcategory(OwnedRings().Commutative()):
                 case True:
                     extra.append(algebra.Commutative())
                 case False:
                     extra.append(algebra)
-    match commutative:
-        case True:
-            extra.append(OwnedRings().Commutative())
-        case False:
-            pass
     match (scalar_base is None, owned_ring is not None):
         case (True, True):
             # Every ring is the rank-one free module over itself.  Fix that
@@ -4326,84 +4646,7 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
             extra.append(native_free)
         case _:
             pass
-    if engine in SageIntegralDomains():
-        extra.append(OwnedRings().Commutative().NoZeroDivisors())
-    if engine is SageZZ or engine is SageQQ or engine is SageAA:
-        extra.append(OwnedOrderedRings())
-    field_decision = _engine_field_decision(engine)
-    match field_decision:
-        case True:
-            # A prime field is QQ or F_p.  A field realized as Zmod(n) is F_p
-            # (GF(p) is an IntegerModRing_generic, GF(p^k) for k > 1 is not);
-            # Sage's generic quotients have no is_finite to ask instead.
-            match engine is SageQQ or isinstance(engine, IntegerModRing_generic):
-                case True:
-                    extra.append(PrimeFields())
-                case False:
-                    pass
-        case _:
-            pass
-    if category.is_subcategory(SagePrincipalIdealDomains()):
-        extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
-    elif (
-        isinstance(engine, SageNumberFieldOrder)
-        and engine.is_maximal()
-        and engine.class_number() == 1
-    ):
-        # A maximal order is Dedekind, hence is a PID exactly when its
-        # ideal class group is trivial.  Sage does not place number-field
-        # orders in its PrincipalIdealDomains category, so retain this
-        # theorem at the owned boundary where the class number is exact.
-        extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
-    noetherian = engine.is_noetherian()
-    if noetherian is True:
-        extra.append(OwnedRings().Noetherian())
-    match field_decision:
-        case True:
-            placement = OwnedRings().Division().Commutative()
-        case _:
-            match category.is_subcategory(SageDivisionRings()):
-                case True:
-                    placement = OwnedRings().Division()
-                case False:
-                    placement = OwnedRings()
-    size = _owned_ring_size(engine)
-    match size.is_subcategory(owned_sets.FiniteSets()):
-        case True:
-            extra.append(OwnedRings().Artinian())
-        case False:
-            pass
-    local_prime = _integer_mod_local_prime(engine)
-    match (local_prime is not None, field_decision is not True):
-        case (True, True):
-            extra.append(OwnedRings().Commutative().Local())
-        case _:
-            pass
-    match engine in SageNumberFields():
-        case True:
-            from dzack_research.preamble.categories.rings.number_fields import (
-                NumberFieldsWithChosenPrimitiveElement,
-                OwnedNumberFields,
-            )
-
-            extra.append(OwnedNumberFields())
-            match engine is SageQQ:
-                case True:
-                    pass
-                case False:
-                    extra.append(NumberFieldsWithChosenPrimitiveElement())
-        case False:
-            pass
-    match engine is SageZZ or isinstance(engine, SageNumberFieldOrder):
-        case True:
-            from dzack_research.preamble.categories.rings.number_fields import (
-                OrdersWithChosenIntegralBasis,
-            )
-
-            extra.append(OrdersWithChosenIntegralBasis())
-        case False:
-            pass
-    joined = owned_category_join((placement, size, *extra))
+    joined = owned_category_join((presented, *extra))
     if engine is SageZZ or (
         isinstance(engine, SageNumberFieldOrder)
         and (scalar_base is None or _engine_ring(scalar_base) is SageZZ)
@@ -4415,29 +4658,27 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
 def _install_engine_selected_ring_data(ring, engine) -> None:
     r"""Fix constructor data required by exact initial ring placement."""
     match engine:
-        case IntegerModRing_generic() if _engine_field_decision(engine) is not True:
-            prime = _integer_mod_local_prime(engine)
-            match prime:
-                case None:
-                    pass
-                case _:
-                    from dzack_research.preamble.categories.rings.commutative_algebra import (
-                        GeneratedIdealView,
-                    )
+        case IntegerModRing_generic() if ring in OwnedRings().Commutative().Local():
+            # ZZ/p^kZZ with k >= 2: the maximal ideal (p) and the residue
+            # field F_p are data of the modulus.
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                GeneratedIdealView,
+            )
 
-                    residue = GF(prime)
-                    maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
-                    residue_map = ring.Mor(residue)(
-                        lambda element: residue(
-                            SageZZ(_engine_element(ring, element).lift())
-                        )
-                    )
-                    _install_local_ring_construction(
-                        ring,
-                        maximal_ideal,
-                        residue,
-                        residue_map,
-                    )
+            prime = _prime_power_base(SageZZ(engine.order()))
+            residue = GF(prime)
+            maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
+            residue_map = ring.Mor(residue)(
+                lambda element: residue(
+                    SageZZ(_engine_element(ring, element).lift())
+                )
+            )
+            _install_local_ring_construction(
+                ring,
+                maximal_ideal,
+                residue,
+                residue_map,
+            )
         case SageNumberFieldOrder() if engine is not SageZZ:
             from dzack_research.preamble.categories.modules.pure.modules import (
                 _fix_selected_module_resolution,
@@ -4457,49 +4698,6 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
             )
         case _:
             pass
-
-
-def _owned_ring_size(engine):
-    r"""Return the exact Set-cardinality placement known from the engine kind."""
-    from sage.categories.number_fields import NumberFields
-    from sage.categories.sets_cat import Sets as SageSets
-    from sage.rings.qqbar import AA as SageAA
-    from sage.rings.qqbar import QQbar as SageQQbar
-
-    if engine.category().is_subcategory(SageSets().Finite()):
-        return owned_sets.FiniteSets()
-    if not engine.is_exact():
-        return owned_sets.UncountableSets()
-    if (
-        engine is SageZZ
-        or engine is SageQQ
-        or engine in NumberFields()
-        or isinstance(engine, SageNumberFieldOrder)
-        or engine is SageAA
-        or engine is SageQQbar
-    ):
-        return owned_sets.CountablyInfiniteSets()
-    if isinstance(engine, (PolynomialRing_generic, MPolynomialRing_base)):
-        coefficient_size = _owned_ring_size(engine.base_ring())
-        if engine.ngens() == 0:
-            return coefficient_size
-        match coefficient_size:
-            case _ if coefficient_size.is_subcategory(owned_sets.FiniteSets()) or coefficient_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
-                return owned_sets.CountablyInfiniteSets()
-            case _ if coefficient_size.is_subcategory(owned_sets.UncountableSets()):
-                return owned_sets.UncountableSets()
-            case _:
-                pass
-    if engine.category().is_subcategory(SageQuotientFields()):
-        source_size = _owned_ring_size(engine.ring())
-        match source_size:
-            case _ if source_size.is_subcategory(owned_sets.FiniteSets()) or source_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
-                return owned_sets.CountablyInfiniteSets()
-            case _ if source_size.is_subcategory(owned_sets.UncountableSets()):
-                return owned_sets.UncountableSets()
-            case _:
-                pass
-    return owned_sets.Sets()
 
 
 def _own_if_ring(result):
