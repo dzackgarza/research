@@ -24,7 +24,7 @@ traversal, in ``sage_indefinite_port.indefinite.lorentzian_cells``.
 What *is* owned, so that a caller does not reach here for it:
 
 - generators of ``O(L)`` for an indefinite lattice, through
-  ``L.O().framing().group_generators()``, whose explicit framing crossing goes to the indefinite
+  ``L.O().select_group_resolution().group_generators()``, whose selection of generators goes to the indefinite
   automorphism group of ``sage-indefinite-port`` and so does not need the cell traversal;
 - the ``O(L)``-orbits of vectors of a given square, their stabilizers and
   their equivalence witnesses, through the exact indefinite backend;

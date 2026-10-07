@@ -28,9 +28,9 @@ class OrthogonalCharacterQuotient:
                 f"determine the whole subgroup"
             )
         # This finite-image algorithm is explicitly generator-driven.  Selecting
-        # the exact represented O(L) framing is therefore part of constructing
+        # a generating epimorphism onto O(L) is therefore part of constructing
         # this quotient; merely knowing O(L) is finitely generated would not be.
-        self.supergroup = subgroup.supergroup().framing()
+        self.supergroup = subgroup.supergroup().select_group_resolution()
         self.lattice = self.supergroup.domain()
         data = subgroup._character_data_snapshot()
         self.discriminant_preimages = tuple(data.get("discriminant_preimages", ()))

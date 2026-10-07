@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 
 
 def _uses_generator_comparison(field) -> bool:
-    r"""Whether this adapter reads a finite determining family from the engine.
+    r"""Whether this adapter compares field morphisms on generators over the prime field.
 
     Number fields and finite fields supply algebraic generators.  A native
     ngens() on an analytic or completed field need not count generators as
@@ -56,7 +56,11 @@ def _native_field_generators(engine):
 
 
 def _field_generators(field):
-    r"""A finite determining family for a represented finite or number field."""
+    r"""A finite set of generators of a finite or number field over its prime field.
+
+    A field morphism fixes the prime field, so two field morphisms out of the
+    field agree when they agree on these generators.
+    """
     assert _uses_generator_comparison(field), (
         f"cannot list field generators of {field}: generators are computed only for finite fields "
         f"and number fields, and {field} is neither"

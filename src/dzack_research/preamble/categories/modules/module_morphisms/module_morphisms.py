@@ -53,14 +53,14 @@ def _has_finite_free_framing(module) -> bool:
 
 
 def _finite_generating_elements(module):
-    r"""A finite determining family for linear maps, or no such supplied data.
+    r"""A finite generating set of ``module``, or ``None`` when none is supplied.
 
     Used only by module-morphism comparison. Relations are unnecessary for
     comparing already admitted linear maps: linearity extends equality from
-    a spanning family. Products of spanning families span a tensor product
+    a generating set. Pure tensors of generators generate a tensor product
     by bilinearity (Mathlib TensorProduct.ext). Adding structure preserves
-    the supplied unformed module's family through its existing coercion.
-    No infinite family or point sample is used to infer equality.
+    the supplied unformed module's generating set through its existing coercion.
+    No infinite set or point sample is used to infer equality.
     """
     from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
 

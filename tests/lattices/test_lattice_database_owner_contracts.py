@@ -27,7 +27,7 @@ def test_rational_definite_orthogonal_group_is_owned_by_the_lattice() -> None:
     lattice = Lattices(QQ)([[QQ(1) / 2]])
     group = lattice.orthogonal_group()
     assert group.cardinality() == 2
-    assert len(tuple(group.framing().group_generators())) == 1
+    assert len(tuple(group.select_group_resolution().group_generators())) == 1
 
 
 def test_a2_orbit_and_discriminant_certification_data_are_owned_by_the_lattice() -> None:

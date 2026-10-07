@@ -1420,7 +1420,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             and domain.module_rank().is_finite()
             and domain.is_definite()
         ):
-            self._retain_group_framing()
+            self._select_computed_group_resolution()
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the isometry; ``check=True`` runs its validators (``OWN-22``)."""
@@ -1536,7 +1536,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if self.domain() is not self.codomain():
             raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no group, so they have no image in the orthogonal group of a discriminant form")
         target = self.domain().discriminant_group().orthogonal_group()
-        return target.subgroup_on(tuple(generator.discriminant_morphism() for generator in self.framing().group_generators()))
+        return target.subgroup_on(tuple(generator.discriminant_morphism() for generator in self.select_group_resolution().group_generators()))
 
     def discriminant_lift(self, automorphism):
         r"""Return ``g in O(L)`` inducing ``automorphism`` on ``A_L``, or ``None``.
@@ -1557,7 +1557,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         target = self.domain().discriminant_group().orthogonal_group()
         automorphism = target(automorphism)
         representation = self.discriminant_representation()
-        witnesses = self.framing().finite_image_lifts(representation)
+        witnesses = self.select_group_resolution().finite_image_lifts(representation)
         return witnesses.get(automorphism)
 
     def discriminant_preimage(self, subgroup):
@@ -1842,19 +1842,23 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             name=f"Orthogonal-group generators of {lattice}",
         )
 
-    def _retain_group_framing(self) -> None:
-        r"""Select the computed generators of ``O(L)`` as this group's framing.
+    def _select_computed_group_resolution(self) -> None:
+        r"""Select the generating epimorphism from the free group on the computed generators of ``O(L)``.
 
         Selecting computes nothing; the generators are computed when
         ``group_generators()`` first reads the selected resolution.
         """
         _fix_selected_group_resolution_on(self, self._computed_group_generators)
 
-    def framing(self):
-        r"""Explicitly select the represented generator framing of ``O(L)``."""
+    def select_group_resolution(self):
+        r"""Select the generating epimorphism ``F(S) -> O(L)`` on the computed generating set ``S``, and return ``O(L)``.
+
+        It is the degree-zero truncation of a free-group resolution of
+        ``O(L)`` (``CAT-29``); after it, ``group_generators()`` answers.
+        """
         if self.has_selected_group_resolution():
             return self
-        self._retain_group_framing()
+        self._select_computed_group_resolution()
         return self
 
     def structure_description(self):
