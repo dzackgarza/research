@@ -1861,7 +1861,7 @@ Use this table during review before reading the longer entries below.  Each left
 | repeated compliance checks grow around same violation | strengthen type/category/constructor/API so violation is structurally exposed |
 | upstream tether shows duplicate general operation but local alias is preserved | delete/resite the local declaration; alignment can expose a defect |
 | `pass` in mathematical implementation | implement/delete; genuine contract uses Sage `@abstract_method` + `...` |
-| exact predicate returns `False`/`Unknown` because algorithm is missing | assertion-gate the computational frontier; reserve `Unknown` for explicitly soft knowledge predicates |
+| exact predicate returns `False`/bare `Unknown` because algorithm is missing | decide what the data decides and return the proposition (`Predicate`) otherwise (`DEF-06`); `Unknown` stays only for explicitly soft knowledge predicates and `ask` |
 | `list(...)` / `tuple(...)` only to iterate | keep owned collection/generator lazy |
 | multiple eager map/filter stages | generator/`map`/`filter` pipeline |
 | raw `while` used only for ordinary iteration | `for`/iterator construct; retain `while` only for genuine evolving state |
