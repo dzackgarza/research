@@ -116,6 +116,25 @@ Observed 2026-10-07 in a preamble session: `Magmas().Commutative() is Magmas()` 
 Consequence: a category that introduces a law must declare the nested axiom class for every axiom its `SubcategoryMethods` names.
 Route chosen: `Magmas.Commutative(CategoryWithAxiom)` and `AdditiveMagmas.AdditiveCommutative(CategoryWithAxiom)` in `categories/group/magmas.py`. Sage joins each into every category with its axiom whose path reaches the base. A 2026-10-07 probe over the 204 owned categories that construct with no parameter or with `ZZ`, `QQ` or `Groups.C(2)` found no other accessor that returns its own category for an axiom outside `axioms()`, except the group shorthands `FinitelyGenerated` and `FinitelyPresented`, which name `FinitelyGeneratedAsMagma` and `FinitelyPresentedAsGroup`.
 
+### Conjugacy in a free group: `FreeGroup` elements have `is_conjugate`, `IndexedFreeGroup` elements do not
+
+An element of a finite-rank `FreeGroup` inherits `ElementLibGAP.is_conjugate` (`sage/groups/libgap_wrapper.pyx`, line 747), which is GAP's `IsConjugate`. On a free group GAP dispatches it to the FGA package method "RepresentativeActionOp for conjugation of elements in a free group" (`/usr/share/gap/pkg/fga/lib/ReprAct.gi`, line 14, FGA 1.5.0), which compares cyclically reduced words. An `IndexedFreeGroup` element has no `is_conjugate` and no GAP model.
+
+Measured on SageMath 10.10.beta8, 2026-10-07, Sage alone, in `FreeGroup(2)`: `w = (a b a^-1 b^2)^(n/5)` against `v = g w g^-1` with `g = (b a^2)^(n/3)` (conjugate), and against `w a` (not conjugate).
+
+| length of `w` | length of `v` | `w.is_conjugate(v)` | `w.is_conjugate(w*a)` |
+| --- | --- | --- | --- |
+| 10 | 28 | 0.79 ms (first call) | 0.06 ms |
+| 100 | 298 | 0.03 ms | 0.02 ms |
+| 1000 | 2998 | 0.10 ms | 0.02 ms |
+| 10000 | 29998 | 0.91 ms | 0.05 ms |
+
+The cost grows about linearly in the word length.
+Reproduce: in Sage, `F = FreeGroup(2); a, b = F.gens(); w = (a*b*a^-1*b^2)^200; g = (b*a^2)^333; timeit('w.is_conjugate(g*w*~g)')`.
+
+Route chosen: `_free_group_conjugacy` in `categories/group/groups.py` reads both reduced words, renames the finitely many letters they use to the generators of a finite-rank `FreeGroup`, and asks `is_conjugate` there. The retraction of `F(S)` onto the free group on those letters makes the answer the same in `F(S)`, so the route serves `IndexedFreeGroup` and an infinite basis.
+Depends on this: `GroupsWithChosenFreeBasis._conjugacy_decision`, hence `conjugation_g_set().in_same_orbit` and conjugacy classes of free groups.
+
 ### `DiGraph.longest_path()` is a MILP by default; a DAG's longest chain is `level_sets()`
 
 `longest_path(algorithm='MILP')` is the default and `'heuristic'` the only alternative (its docstring).

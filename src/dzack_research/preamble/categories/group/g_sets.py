@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.logic import AtomicProposition, Unknown, ask
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.validation import validator
 
@@ -540,22 +540,48 @@ class _Orbit:
     def acting_group(self):
         return self.g_set().acting_group()
 
-    def __contains__(self, point) -> bool:
+    def _decided_orbit_relation(self, point) -> bool:
+        r"""Whether ``point`` lies in this orbit, where the orbit relation of ``X`` decides it.
+
+        Membership and equality of orbits answer ``True`` or ``False`` and
+        nothing else, so they are exact operations on the relation, not
+        predicates: where ``ask`` of the relation is ``Unknown`` they reach
+        the assertion frontier (``CAT-01``, ``DEV-52``) and never answer
+        ``False`` for a question no procedure decided.
+        """
         g_set = self.g_set()
-        return point in g_set and g_set.in_same_orbit(self.representative(), point)
+        relation = ask(g_set.in_same_orbit(self.representative(), point))
+        assert relation is not Unknown, (
+            f"whether {point} lies in the orbit of {self.representative()} under "
+            f"{self.acting_group()} is defined, but no procedure supplied by {g_set} decides it"
+        )
+        return relation
+
+    def __contains__(self, point) -> bool:
+        return point in self.g_set() and self._decided_orbit_relation(point)
 
     @cached_method
     def points(self):
-        r"""The subset ``G . x`` of ``X``, cut out by the orbit relation."""
-        g_set = self.g_set()
-        representative = self.representative()
-        return g_set.condition_set(
-            lambda point: g_set.in_same_orbit(representative, point)
-        )
+        r"""The subset ``G . x`` of ``X``, cut out by the orbit relation where it is decided."""
+        return self.g_set().condition_set(self._decided_orbit_relation)
 
     def cardinality(self):
-        r"""``|G . x|``, the cardinality of the subset of ``X`` this orbit is."""
-        return self.points().cardinality()
+        r"""``|G . x| = [G : G_x]``, the index of the stabilizer of the representative.
+
+        This is the orbit-stabilizer theorem.  On a finite set ``X`` the
+        orbit is the subset of ``X`` cut out by the orbit relation, which
+        the construction of a finite ``G``-set decides from the orbits of
+        its chosen group generators, so its cardinality is read there.
+        Otherwise it is the index of the stabilizer, which the category of
+        the stabilizer computes (an open subgroup of a profinite group
+        knows its index from the degree of its fixed field).
+        """
+        g_set = self.g_set()
+        match g_set:
+            case _ if g_set in FiniteSets():
+                return self.points().cardinality()
+            case _:
+                return self.stabilizer().index()
 
     def stabilizer(self):
         r"""The stabilizer of the representative; other points have conjugate stabilizers."""
@@ -571,7 +597,7 @@ class _Orbit:
             return NotImplemented
         if element_parent(other) is not self.parent():
             return op == op_NE
-        meet = self.g_set().in_same_orbit(self.representative(), other.representative())
+        meet = self._decided_orbit_relation(other.representative())
         return meet if op == op_EQ else not meet
 
     def __hash__(self) -> int:
@@ -663,14 +689,16 @@ def _orbit_set(g_set):
 class _GSetOnPoints:
     r"""A ``G``-set on a given set of points, with the procedure deciding its orbit relation.
 
-    The data are the point set and the relation, a function of two points
-    answering ``True``, ``False`` or ``Unknown``; the action is the
+    The data are the point set, the relation, a function of two points
+    answering ``True``, ``False`` or ``Unknown``, and the stabilizer, a
+    function naming the subgroup that fixes a point; the action is the
     ``GObjects`` datum.
     """
 
-    def __init__(self, point_set, orbit_relation, **rest) -> None:
+    def __init__(self, point_set, orbit_relation, stabilizer, **rest) -> None:
         self._point_set = point_set
         self._orbit_relation = orbit_relation
+        self._stabilizer = stabilizer
         super().__init__(**rest)
 
     def point_set(self):
@@ -694,15 +722,20 @@ class _GSetOnPoints:
     def _orbit_relation_decision(self, source, target):
         return self._orbit_relation(source, target)
 
+    def _named_stabilizer(self, point):
+        return self._stabilizer(point)
+
     def _repr_(self) -> str:
         return f"{self.point_set()} with {self.acting_group()}-action"
 
 
-def _g_set_on_points(group, point_set, action, orbit_relation):
+def _g_set_on_points(group, point_set, action, orbit_relation, stabilizer):
     r"""The ``G``-set on ``point_set`` with the action ``action(g, x)``.
 
     ``orbit_relation(x, y)`` decides whether ``y in G . x``, answering
-    ``Unknown`` where no procedure decides it.
+    ``Unknown`` where no procedure decides it.  ``stabilizer(x)`` is the
+    subgroup ``G_x`` the action names: the centralizer of an element under
+    conjugation, the normalizer of a subgroup under conjugation.
     """
     g_sets = GObjects(group, Sets())
     match point_set:
@@ -715,6 +748,7 @@ def _g_set_on_points(group, point_set, action, orbit_relation):
         _engine=(category, _GSetOnPoints, None),
         point_set=point_set,
         orbit_relation=orbit_relation,
+        stabilizer=stabilizer,
         acting_group=group,
         action=lambda group_element: (lambda point: action(group_element, point)),
         underlying_category=Sets(),
