@@ -2046,15 +2046,23 @@ standing where a mathematical noun belongs.
 `mathematical-apis-must-use-the-field-s-actual-lexicon`; proven repeat offenders are
 in the banned-language index above.)
 
-**A predicate is decided on the data that determines it, or it answers that it does
-not know.** Equivariance of $\rho$ is checked on generators when generators are
+**A predicate is decided on the data that determines it, or it returns the
+proposition.** Equivariance of $\rho$ is checked on generators when generators are
 available; membership in $O(L)$ is $M^{t}G_{L}M = G_{L}$; a subgroup of $O(L)$ is
 carved out by a predicate. Iterating a group, a homset or a module to establish a
 property is correct only for the finite objects that happen to be in the suite, and
 $\mathrm{GL}_n(R)$, $\mathrm{Gal}(\overline{\mathbb{Q}}/\mathbb{Q})$, $O(L)$ for
-indefinite $L$, and $\mathbb{Z}^{\infty}$ are all ordinary inputs here. Where the
-check cannot be made, the answer is a three-valued *unknown* that collapses to false,
-with the reason stated — never a loop that works on small inputs. Sage is a computer
+indefinite $L$, and $\mathbb{Z}^{\infty}$ are all ordinary inputs here. A predicate
+returns a proposition, an element of `Propositions` (`preamble/logic.py`), and
+`ask(P)` evaluates it, the way `sympy.ask` evaluates a sympy proposition. Where the
+question is computable or decidable, the predicate computes or decides it and returns
+`True` or `False`; where it is not decided, it returns the `Predicate` that states it,
+whose own `_ask_` runs every procedure that applies and answers `Unknown` only when
+none decides it. A predicate never returns a bare `Unknown`, never collapses an
+undecided question to `False`, and never runs a loop that works only on small inputs.
+`G_{\mathbb{Q}}` is not abelian because it surjects onto a finite quotient that is
+not abelian, so `is_abelian()` decides it; injectivity of an arbitrary function on an
+infinite set is undecided, so `is_injective()` returns the proposition. Sage is a computer
 algebra system, not a proof assistant: a theorem is cited from `lean-categories`,
 never re-established at runtime, and no computed answer is a proof.
 *The tell:* `for g in G`; `for f in Hom(...)`; a bounded search with a cap;
@@ -3192,7 +3200,7 @@ These recall `lean-categories`' definitions to fix the presentation; where they 
 - Do not use general undecidability to reject a specialized decision procedure.
 - KBMAG can make equality decidable for groups with suitable automatic structures.
 - Such machinery is significant research, not a conflict with the undecidability rule.
-- Return `Unknown` only where the available hypotheses and algorithms do not decide the question.
+- Return the proposition, a `Predicate` that `ask()` evaluates, where the available hypotheses and algorithms do not decide the question; never a bare `Unknown`.
 - A specialized algorithm should return a definite result on its valid domain.
 - Record its hypotheses, citing the `lean-categories` theorem that justifies it, in the category that supplies it.
 - Let category placement select the specialized algorithm.

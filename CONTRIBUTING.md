@@ -4340,11 +4340,13 @@ A notion with an a priori mathematical meaning is not a customization hook.
 
 Do not force every question into a Python boolean, and do not use `Unknown` to replace an exact mathematical value.
 
-**Exact operation/predicate:** `cardinality()`, `is_nondegenerate()`, `kernel()`, etc. retain their mathematical codomain.  If today's algorithm does not cover a represented case, route known cases and assertion-gate the unsupported computational remainder as specified by `CAT-01`.
+**Exact operation:** `cardinality()`, `kernel()`, etc. retain their mathematical codomain.  If today's algorithm does not cover a represented case, route known cases and assertion-gate the unsupported computational remainder as specified by `CAT-01`.
+
+**Exact predicate:** `is_nondegenerate()`, `is_injective()`, `is_abelian()`, etc. have the codomain `Propositions` (`preamble/logic.py`).  Where the question is computable or decidable, the predicate computes or decides it and returns `True` or `False`.  Where it is not decided, it returns the `Predicate` that states it; `ask(P)` evaluates that proposition, as `sympy.ask` evaluates a sympy proposition, and answers `Unknown` only when no procedure decides it.  A predicate never returns a bare `Unknown` and never answers `False` for an undecided question.
 
 **Soft knowledge/computability predicate:** a deliberately epistemic API such as `generators_are_computable()` or `has_computed_group_generators()` may have the explicit three-valued codomain `True | False | Unknown` when “not currently known/decided” is itself what the method is asking.
 
-**Bad:** return `False` from `is_nondegenerate()` because no algorithm is known; return `Unknown` as the “cardinality” of a set; return `True` from a soft predicate merely because construction accepted an input.
+**Bad:** return `False` from `is_nondegenerate()` because no algorithm is known; return a bare `Unknown` from `is_injective()` in place of the proposition; return `Unknown` as the “cardinality” of a set; return `True` from a soft predicate merely because construction accepted an input.
 
 #### `STY-147`: Universal-property test checks one factorization only -> test existence and uniqueness
 
@@ -5869,13 +5871,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEF-06`: Exact Mathematical Questions and Soft Knowledge Questions Have Different Codomains
 
-- **Rule**: Preserve the actual mathematical codomain of an exact operation or predicate.  Do not return `False`, `None`, or `Unknown` merely because the current implementation cannot decide/compute a represented case; use the assertion-gated computational frontier of `CAT-01`.  Separately, an explicitly **soft knowledge/computability predicate** may be designed with a three-valued codomain `True | False | Unknown` when the proposition being returned is itself “what is currently known/computable/available.”
+- **Rule**: Preserve the actual mathematical codomain of an exact operation or predicate.  Do not return `False`, `None`, or `Unknown` merely because the current implementation cannot decide/compute a represented case.  An exact operation uses the assertion-gated computational frontier of `CAT-01`.  An exact predicate returns a proposition: `True` or `False` where the question is computable or decidable and is decided, and otherwise the `Predicate` (`preamble/logic.py`) that states it, which `ask(P)` evaluates to `True`, `False` or `Unknown`.  Separately, an explicitly **soft knowledge/computability predicate** may be designed with a three-valued codomain `True | False | Unknown` when the proposition being returned is itself “what is currently known/computable/available.”
 
 - **Rationale**: “The object is not nondegenerate” and “the current system does not know whether it is nondegenerate” are different statements.  So are “this group is not finitely generated” and “no generating-set algorithm is currently available.”  Collapsing them creates confident mathematical falsehoods; returning `Unknown` from an exact-valued operation changes its mathematics just as badly.
 
 - **Violation Example**: `is_nondegenerate()` returns `False` when no algorithm handles an infinite callable form; `cardinality()` returns `Unknown`; `generators_are_computable()` returns `True` merely because the constructor accepted external input.
 
-- **Correct Example**: `is_nondegenerate()` computes known cases and assertion-gates the current frontier.  A distinct `generators_are_computable()` or `has_computed_group_generators()` may return Sage's `Unknown` when that explicitly three-valued knowledge question has not been decided.
+- **Correct Example**: `is_nondegenerate()` computes known cases and returns the proposition on the rest; `G_QQ.is_abelian()` returns `False` from a finite quotient isomorphic to `S_3`; `Sets().Mor(QQ, QQ)(f).is_injective()` for an arbitrary function `f` returns the proposition, and `ask` of it is `Unknown`.  A distinct `generators_are_computable()` or `has_computed_group_generators()` may return Sage's `Unknown` when that explicitly three-valued knowledge question has not been decided.
 
 
 #### `DEF-07`: An Operation's Codomain Is `lean-categories`'; an Implementation Outside It Is a Finding
