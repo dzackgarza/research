@@ -521,14 +521,6 @@ class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
         return True
 
 
-class _TransportedLatticeEmbedding(LatticeEmbedding):
-    r"""A represented module embedding read in the corresponding lattice Mono."""
-
-    def __init__(self, parent, embedding) -> None:
-        self._underlying_module_embedding = embedding
-        super().__init__(parent, embedding)
-
-
 class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
@@ -1139,7 +1131,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                     f"{images.codomain()}, so it is not a lattice embedding of "
                     f"{self.domain()} into {self.codomain()}"
                 )
-            return _TransportedLatticeEmbedding(self, images)
+            return self.element_class(self, images)
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
