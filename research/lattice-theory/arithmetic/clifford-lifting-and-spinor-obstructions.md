@@ -7,9 +7,9 @@ $$
 b_q(x,y)=q(x+y)-q(x)-q(y),\qquad
 b_q^\sharp\colon M\longrightarrow M^\vee.
 $$
-The polar form is **perfect** if $b_q^\sharp$ is an isomorphism. For a free module of finite rank, perfectness is equivalent to the polar Gram determinant being a unit. Over an integral domain, injectivity of $b_q^\sharp$ is equivalent to nondegeneracy over the fraction field.
+The polar form is *perfect* if $b_q^\sharp$ is an isomorphism. For a free module of finite rank, perfectness is equivalent to the polar Gram determinant being a unit. Over an integral domain, injectivity of $b_q^\sharp$ is equivalent to nondegeneracy over the fraction field.
 
-Hahn–O'Meara call the quadratic module *nonsingular* when its associated bilinear form is nonsingular; their bilinear definition requires an isomorphism to the dual. This is the hypothesis in their ring-valued spinor-norm construction, together with freeness of finite rank. [Hahn–O'Meara, §5.1A, Proposition 5.1.5, §5.1D, and §7.2C, pp. 418–419](https://doi.org/10.1007/978-3-662-13152-7).
+Hahn–O'Meara call the quadratic module *nonsingular* when its associated bilinear form is nonsingular; their bilinear definition requires an isomorphism to the dual. This is the hypothesis in their ring-valued spinor-norm construction, together with freeness of finite rank [@HO89, §5.1A, Proposition 5.1.5, §5.1D, and §7.2C, pp. 418–419].
 
 The Clifford algebra is
 $$
@@ -25,7 +25,7 @@ G(A)=\{c\in C_A^\times:
 c\text{ is locally homogeneous},\quad
 cM_A(c')^{-1}=M_A,\ c\bar c=1\}.
 $$
-Locally homogeneous means homogeneous on an open cover of $\operatorname{Spec}A$, with the degree allowed to vary between components. The twisted adjoint action defines $p\colon G\to O(q)$. A **norm-one Clifford lift** of $g\in O(q)(A)$ is an element of $p^{-1}(g)(A)$. Define $\operatorname{Spin}(M,q)(A)=G(A)\cap C_{A,0}$. Both functors are fppf sheaves.
+Locally homogeneous means homogeneous on an open cover of $\operatorname{Spec}A$, with the degree allowed to vary between components. The twisted adjoint action defines $p\colon G\to O(q)$. A *norm-one Clifford lift* of $g\in O(q)(A)$ is an element of $p^{-1}(g)(A)$. Define $\operatorname{Spin}(M,q)(A)=G(A)\cap C_{A,0}$. Both functors are fppf sheaves.
 
 ## Lifting torsors
 
@@ -60,14 +60,14 @@ For the Clifford map $p\colon G\to O(q)$, the sheaf $I$ consists of isometries w
 
 ## Discriminant modules and the classical exact sequence
 
-A **discriminant module** over $R$ is a pair $(P,f)$ consisting of an invertible $R$-module and an isomorphism $f\colon P^{\otimes2}\simeq R$. Tensor product defines the group $\operatorname{Disc}(R)$ of their isomorphism classes. There are canonical identifications and an exact sequence
+A *discriminant module* over $R$ is a pair $(P,f)$ consisting of an invertible $R$-module and an isomorphism $f\colon P^{\otimes2}\simeq R$. Tensor product defines the group $\operatorname{Disc}(R)$ of their isomorphism classes. There are canonical identifications and an exact sequence
 $$
 \operatorname{Disc}(R)\simeq H^1_{\mathrm{fppf}}(R,\mu_2),\qquad
 1\longrightarrow R^\times/(R^\times)^2
 \longrightarrow\operatorname{Disc}(R)
 \longrightarrow\operatorname{Pic}(R)[2]\longrightarrow1.
 $$
-The last map forgets $f$. The first sends $[a]$ to the trivial line with pairing $f(1,1)=a$. These statements hold even when $2$ is not invertible; this is why the fppf topology is used. [Stacks Project, §59.28, Lemmas 59.28.3 and 59.28.5](https://stacks.math.columbia.edu/tag/03PK).
+The last map forgets $f$. The first sends $[a]$ to the trivial line with pairing $f(1,1)=a$. The fppf Kummer sequence gives these statements for every commutative ring [@stacks-03PK, Lemmas 59.28.3 and 59.28.5].
 
 For $g\in O(M,q)$, define the graded intertwiner module by
 $$
@@ -79,11 +79,11 @@ $$
 f_g\colon L_g^{\otimes2}\longrightarrow R,\qquad
 d\otimes e\longmapsto d\bar e.
 $$
-The **spinor norm** is the homomorphism $\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)$ defined by
+The *spinor norm* is the homomorphism $\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)$ defined by
 $$
 \theta_R(g)=[L_g,f_g]\in\operatorname{Disc}(R).
 $$
-Multiplication of intertwiner lines proves that this is a homomorphism. Its torsor consists of local generators $u$ with $u\bar u=1$. Thus the discriminant module and the norm-one lifting torsor describe the same obstruction. A generator of norm $a\in R^\times$ acquires norm one after adjoining a square root of $a$ and rescaling. [Hahn–O'Meara, §7.2C, pp. 418–421](https://doi.org/10.1007/978-3-662-13152-7).
+Multiplication of intertwiner lines proves that this is a homomorphism. Its torsor consists of local generators $u$ with $u\bar u=1$. A generator of norm $a\in R^\times$ acquires norm one after adjoining a square root of $a$ and rescaling [@HO89, §7.2C, pp. 418–421].
 
 Write $O_{\mathrm{rot}}(M)$ for the kernel of their Clifford residue, the locally constant parity of the intertwiner line. Their notation for this group is $O^+(M)$. Restricting to even lifts gives
 $$
@@ -91,7 +91,7 @@ $$
 \longrightarrow O_{\mathrm{rot}}(M)
 \xrightarrow{\theta_R}\operatorname{Disc}(R).
 $$
-Exactness gives $\operatorname{im}\operatorname{Spin}(M)=O_{\mathrm{rot}}(M)\cap\ker\theta_R$. For $M$ free of finite rank with perfect polar form, $O_{\mathrm{rot}}(M)=SO(M)$ when $2$ is not a zero divisor. [Hahn–O'Meara, Theorems 7.2.19 and 7.2.21](https://doi.org/10.1007/978-3-662-13152-7).
+Exactness gives $\operatorname{im}\operatorname{Spin}(M)=O_{\mathrm{rot}}(M)\cap\ker\theta_R$. For $M$ free of finite rank with perfect polar form, $O_{\mathrm{rot}}(M)=SO(M)$ when $2$ is not a zero divisor [@HO89, 7.2.19 and Theorem 7.2.21].
 
 ## Square classes and change of base
 
@@ -103,7 +103,7 @@ $$
 \theta_F(s_{v_1}\cdots s_{v_r})=
 \left[\prod_{i=1}^r(-q(v_i))\right].
 $$
-The first identity is [Hahn–O'Meara, §7.2C, Example 1, p. 421](https://doi.org/10.1007/978-3-662-13152-7); the second follows from multiplicativity.
+The first identity is [@HO89, §7.2C, Example 1, p. 421]; the second follows from multiplicativity.
 
 Base change sends $(L_g,f_g)$ to $(L_g\otimes_R A,f_g\otimes_R A)$. Whenever the integral construction applies, it follows that
 $$
@@ -111,12 +111,21 @@ $$
 $$
 For a domain $R$ with fraction field $F$, a generically nondegenerate form has the *generic* obstruction $\theta_F(g_F)$.
 
-More explicitly, assume $\operatorname{char}F\ne2$ and put $V=M\otimes_R F$. Let $\operatorname{Pin}(V)$ denote the norm-one homogeneous Clifford group with the conjugation convention above. The pullback group
+Assume $\operatorname{char}F\ne2$ and put $V=M\otimes_R F$. Let $\operatorname{Pin}(V)$ denote the norm-one homogeneous Clifford group defined by Clifford conjugation. Define $E_R^{\mathrm{gen}}$ by the Cartesian square of groups
+
+```tikzcd
+E_R^{\mathrm{gen}} \arrow[r] \arrow[d] \arrow[dr, phantom, "\lrcorner", very near start]
+  & \operatorname{Pin}(V)(F) \arrow[d,"p"] \\
+O(M,q)(R) \arrow[r,"g\mapsto g_F"]
+  & O(V,q_F)(F).
+```
+
+Thus
 $$
 E_R^{\mathrm{gen}}
-=O(M,q)(R)\mathbin{\times}_{O(V,q_F)(F)}\operatorname{Pin}(V)(F)
+=O(M,q)(R)\mathbin{\times}_{O(V,q_F)(F)}\operatorname{Pin}(V)(F).
 $$
-gives an exact sequence
+There is an exact sequence
 $$
 1\longrightarrow\mu_2(F)\longrightarrow E_R^{\mathrm{gen}}
 \longrightarrow O(M,q)(R)
@@ -126,26 +135,39 @@ Indeed, projection from the pullback has the same kernel as the field Clifford m
 
 ## Algebraic spinor morphisms and their kernels
 
-::: {.definition #def:algebraic-spinor-kernels title="Lifting, spinor, and even spinor kernels"}
+::: {.definition #def:integral-clifford-lifting-subgroup title="Integral Clifford lifting subgroup"}
 
-For the norm-one Clifford map $p\colon G\to O(q)$ over an arbitrary ring, define the **integral lifting subgroup**
+For the norm-one Clifford map $p\colon G\to O(q)$ over an arbitrary ring, define the *integral lifting subgroup*
 $$
 K_{\mathrm{lift},R}(M)=\operatorname{im}\bigl(G(R)\xrightarrow{p}O(M,q)(R)\bigr).
 $$
 With $I$ and $K$ as in @prop:clifford-lift-obstruction, this is the inverse image of the trivial torsor under the pointed-set map $\delta\colon I(R)\to H^1_{\mathrm{fppf}}(R,K)$. Its domain consists of the isometries admitting fppf-local lifts.
+:::
 
-For $M$ free of finite rank with perfect polar form, define the **full algebraic spinor kernel** and **even algebraic spinor kernel** by
+::: {.definition #def:algebraic-spinor-kernels title="Full algebraic spinor kernel"}
+
+For $M$ free of finite rank with perfect polar form, the *full algebraic spinor kernel* is
 $$
-K_R(M)=\ker\bigl(\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)\bigr),
-\qquad
+K_R(M)=\ker\bigl(\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)\bigr).
+$$
+:::
+
+::: {.definition #def:even-algebraic-spinor-kernel title="Even algebraic spinor kernel"}
+
+For $M$ free of finite rank with perfect polar form, the *even algebraic spinor kernel* is
+$$
 K_R^{\mathrm{ev}}(M)=K_R(M)\cap O_{\mathrm{rot}}(M).
 $$
+:::
+
 The lifting interpretation gives
 $$
 K_R(M)=K_{\mathrm{lift},R}(M),\qquad
 K_R^{\mathrm{ev}}(M)=\operatorname{im}\bigl(\operatorname{Spin}(M)(R)\to O(M,q)(R)\bigr).
 $$
 Thus the image of $\operatorname{Spin}$ is the residue-zero subgroup of the full spinor kernel.
+
+::: {.definition #def:generic-spinor-kernel title="Generic spinor kernel"}
 
 For a domain $R$ with fraction field $F$ of characteristic different from $2$, assume only that $q_F$ is nondegenerate. Define
 $$
@@ -216,7 +238,7 @@ K_{\mathbb Z}(L)=K_{\mathbb Q}(L)=K_{\mathbb R}(L),
 \operatorname{im}\operatorname{Spin}(L)(\mathbb Z)
 =SO(L)\cap K_{\mathbb R}(L).
 $$
-For a nonunimodular lattice, the rational-to-real equality criterion still applies. The integral lifting subgroup is defined by the integral Clifford map as in @def:algebraic-spinor-kernels.
+For a nonunimodular lattice, the rational-to-real equality criterion still applies. The integral lifting subgroup is @def:integral-clifford-lifting-subgroup.
 
 ## The moduli character and its algebraic identification
 
@@ -251,7 +273,7 @@ O_{\mathrm{mod}}^+(L)=K_{\mathbb Q}(L)
 \operatorname{im}(\theta_{\mathbb Q}^L)\cap
 \bigl(\mathbb Q_{>0}^\times/(\mathbb Q^\times)^2\bigr)=\{[1]\}.
 $$
-For the reflection normalization and component interpretation, see [Dawes, §§1.3–1.4](https://arxiv.org/html/2205.10601).
+For the reflection normalization and component interpretation, see [@Daw22, §§1.3–1.4].
 :::
 
 ::: {.proof}
@@ -299,7 +321,7 @@ $$
 =\ker(\rho_L,\chi_{\mathrm{per}})
 =\widetilde O(L)\cap K_{\mathbb R}(L).
 $$
-The notation $\widetilde O^+(L)$ denotes $\widetilde O_{\mathrm{mod}}^+(L)$ in [Dawes, §§1.2–1.4](https://arxiv.org/html/2205.10601), with discriminant form normalized as $b(x,x)\bmod2\mathbb Z$.
+The notation $\widetilde O^+(L)$ denotes $\widetilde O_{\mathrm{mod}}^+(L)$ in [@Daw22, §§1.2–1.4], with discriminant form normalized as $b(x,x)\bmod2\mathbb Z$.
 
 There is also a stable rational spinor kernel $\widetilde K_{\mathbb Q}(L)=\ker\rho_L\cap K_{\mathbb Q}(L)$. Their precise comparison is
 $$
@@ -330,23 +352,76 @@ For a weight-two variation of K3 type, with Hodge numbers $(1,n,1)$ and the type
 $$
 \Gamma_{\mathbb V}\subseteq\widetilde O_{\mathrm{mod}}^+(L).
 $$
-::: {.proposition #prop:quotient-monodromy title="A sufficient geometric condition for equality"}
+### Lattice-polarized K3 periods
 
-Let $D^\circ\subseteq\Omega_L^+$ be a connected invariant open subset for a subgroup $\Gamma\subseteq O_{\mathrm{mod}}^+(L)$. Equip the analytic quotient stack $[D^\circ/\Gamma]$ with the integral local system obtained from $D^\circ\times L$ and the given action of $\Gamma$ on $L$. Its monodromy image is exactly $\Gamma$.
+Fix a primitive embedding $P\hookrightarrow\Lambda_{\mathrm{K3}}$ of an even lattice of signature $(1,t)$, where $\Lambda_{\mathrm{K3}}$ is the even unimodular lattice of signature $(3,19)$. Put $T=P^\perp$. The group of changes of marking fixing the polarization pointwise is
+$$
+\Gamma(P)=\{\gamma\in O(\Lambda_{\mathrm{K3}}):\gamma|_P=1\}.
+$$
+Restriction to $T$ is injective. Its image $\Gamma_P$ is
+$$
+\Gamma_P=\ker\bigl(O(T)\to O(A_T,q_{A_T})\bigr)=\widetilde O(T),
+\qquad
+\operatorname{Stab}_{\Gamma_P}(\Omega_T^+)=\widetilde O_{\mathrm{mod}}^+(T).
+$$
+The first equality is [@Dol96, Proposition 3.3]; the second follows by intersecting with the period-component stabilizer. Dolgachev's ample lattice-polarized period space is the complement of the root hyperplanes in $\Omega_T$, modulo $\Gamma_P$ [@Dol96, §3, Corollary 3.2 and the discussion following Proposition 3.3].
 
-In particular, an identification of the pair consisting of a moduli stack and its variation with this quotient and its tautological local system, for $\Gamma=\widetilde O_{\mathrm{mod}}^+(L)$, identifies its monodromy with $\widetilde O_{\mathrm{mod}}^+(L)$.
+### Kneser's comparison theorem
+
+For a prime $p$, define $\operatorname{rank}_p(L)$ as the maximal rank of a sublattice whose Gram determinant is prime to $p$. Define the *rational spinorial kernel*
+$$
+O'(L)=SO(L)\cap K_{\mathbb Q}(L),\qquad
+\widetilde{SO}_{\mathrm{mod}}^+(L)=SO(L)\cap\widetilde O_{\mathrm{mod}}^+(L).
+$$
+
+::: {.theorem #thm:kneser-spinor-comparison title="Kneser conditions"}
+
+Let $L$ be an even lattice of signature $(2,n)$ with $n\geq2$. Suppose $L$ represents $-2$, $\operatorname{rank}_3(L)\geq5$, and $\operatorname{rank}_2(L)\geq6$. Then
+$$
+O'(L)=\widetilde{SO}_{\mathrm{mod}}^+(L)
+=\langle s_u s_v:u,v\in L,\ b(u,u)=b(v,v)=-2\rangle.
+$$
+The generation statement is Kneser's theorem, as stated in [@GHS08, Theorem 1.1]; the equality with the stable real kernel is [@GHS08, Corollary 1.2].
+:::
+
+::: {.corollary #cor:kneser-full-spinor-kernel title="Integral and rational lifts under the Kneser conditions"}
+
+Under the hypotheses of @thm:kneser-spinor-comparison,
+$$
+K_{\mathrm{lift},\mathbb Z}(L)=K_{\mathbb Q}(L)=\widetilde O_{\mathrm{mod}}^+(L)
+=\langle s_a:a\in L,\ b(a,a)=-2\rangle.
+$$
+Moreover,
+$$
+\operatorname{im}\bigl(\operatorname{Spin}(L)(\mathbb Z)\to O(L)\bigr)
+=O'(L)=\widetilde{SO}_{\mathrm{mod}}^+(L).
+$$
 :::
 
 ::: {.proof}
 
-Assume the stated quotient and local system. We prove equality of the monodromy image.
+Assume the Kneser conditions and choose a root $a\in L$.
 
-1. **Containment.** The local system is constant on $D^\circ$ and descends using $\Gamma$, so all of its parallel transport lies in $\Gamma$.
-2. **Realization.** Fix $x\in D^\circ$ and $\gamma\in\Gamma$. The connected open subset $D^\circ$ of a manifold is path connected. A path from $x$ to $\gamma x$, closed in the quotient stack using the group action, gives monodromy $\gamma$ or its inverse according to the path convention. Thus every element of $\Gamma$ occurs.
-3. **Conclusion.** Steps 1–2 identify the monodromy image with $\Gamma$.
+1. **Root reflection.** The formula $s_a(x)=x+b(x,a)a$ gives an integral isometry. For $x\in L^\vee$, its difference from $x$ lies in $L$, so $\rho_L(s_a)=1$. Also $\det(s_a)=-1$ and $\theta_{\mathbb Q}(s_a)=[1]$.
+2. **Even parts.** The determinant-one parts of $K_{\mathbb Q}(L)$ and $\widetilde O_{\mathrm{mod}}^+(L)$ coincide and are generated by pairs of root reflections, by @thm:kneser-spinor-comparison.
+3. **Odd parts.** Multiplication by $s_a$ identifies the determinant-minus-one part of each of these two groups with its determinant-one part, by step 1.
+4. **Integral lifts.** The Clifford vector $a$ has $a^2=q(a)=-1$ and $a\bar a=1$. It is an integral norm-one lift of $s_a$. Products of these vectors lift the group generated by the root reflections; products of pairs lie in $\operatorname{Spin}(L)(\mathbb Z)$.
+5. **Conclusion.** Steps 2–3 identify $K_{\mathbb Q}(L)$ with $\widetilde O_{\mathrm{mod}}^+(L)$ and give the stated generators. Step 4 and $K_{\mathrm{lift},\mathbb Z}(L)\subseteq K_{\mathbb Q}(L)$ identify the integral lifting subgroup. For the even subgroup, step 4 gives surjectivity onto $O'(L)$; scalar extension places the image of $\operatorname{Spin}(L)(\mathbb Z)$ in $O'(L)$.
 :::
 
-If $B'\to B$ is a connected cover introducing level structure, the pulled-back variation has monodromy $m_{\mathbb V}(\pi_1(B'))$, with $\pi_1(B')$ regarded as a subgroup of $\pi_1(B)$.
+::: {.example #ex:polarized-k3-spinor-kernel title="The polarized K3 period lattice"}
+
+For a primitive polarization of degree $2d$, $d>0$, the orthogonal complement in $\Lambda_{\mathrm{K3}}$ is
+$$
+L_{2d}=2U\oplus2E_8(-1)\oplus\langle-2d\rangle
+$$
+[@GHS08, equation (3)]. Its unimodular summand has rank $20$, so $\operatorname{rank}_2(L_{2d})$ and $\operatorname{rank}_3(L_{2d})$ are at least $20$. It contains $2U$ and a vector of square $-2$. Consequently @cor:kneser-full-spinor-kernel gives
+$$
+K_{\mathrm{lift},\mathbb Z}(L_{2d})
+=K_{\mathbb Q}(L_{2d})=\widetilde O_{\mathrm{mod}}^+(L_{2d}).
+$$
+By [@Dol96, Proposition 3.3], this is the component-preserving period group for the fixed primitive polarization embedding.
+:::
 
 ## Clifford groups for nonperfect forms
 
@@ -363,7 +438,7 @@ $$
 \xrightarrow{\pi}O_{M^\perp}(M,q),
 \qquad N(c)\in\widetilde Z(C)^\times.
 $$
-Suppose $O_{M^\perp}(M,q)$ is generated by the $e$-reflections and Euler transformations of Zemel's §2. Suppose also that $R\hookrightarrow S$, that $M_S$ has an orthogonal basis $(x_i)$, and that every nonzero member of $\{2\}\cup\{q_S(x_i)\}$ is a non-zero-divisor in $S$. Then $\pi$ is surjective. [Zemel, Corollary 3.3, Proposition 3.7, and Theorem 3.8](https://arxiv.org/html/2112.05046).
+Suppose $O_{M^\perp}(M,q)$ is generated by the $e$-reflections and Euler transformations of [@Zem21, §2]. Suppose also that $R\hookrightarrow S$, that $M_S$ has an orthogonal basis $(x_i)$, and that every nonzero member of $\{2\}\cup\{q_S(x_i)\}$ is a non-zero-divisor in $S$. Then $\pi$ is surjective [@Zem21, Corollary 3.3, Proposition 3.7, and Theorem 3.8].
 
 ::: {.example #ex:spinor-integral-extension title="A generic spinor class which does not extend over the integers"}
 
