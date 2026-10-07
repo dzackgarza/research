@@ -499,21 +499,16 @@ class OwnedSetMorphism(SetMorphism):
         return Sets().image_set(self, self.domain())
 
     def is_injective(self) -> bool | UnknownClass:
-        r"""Decide ``f(x) = f(y) => x = y`` by the represented mathematical case.
+        r"""Decide ``f(x) = f(y) => x = y`` on the map's own data.
 
-        A unital morphism out of a field is injective. Otherwise the generic
-        represented algorithm counts the image of a finite enumerated domain;
-        unsupported infinite cases retain ``Unknown``.
+        A function is its values, so injectivity is decided by counting the
+        image of a finite enumerated domain and is ``Unknown`` otherwise.  A
+        structure on the domain decides nothing about an arbitrary function
+        out of it; an arrow of a subcategory whose theorems decide injectivity
+        answers through its own ``is_injective``, as a ring map does.
         """
         domain = self.domain()
-        from dzack_research.preamble.categories.rings.ring_foundation import (
-            OwnedFields,
-            OwnedOrders,
-        )
-
         match domain:
-            case _ if domain in OwnedFields() or domain in OwnedOrders():
-                return True
             case _ if domain in FiniteSets() and domain in EnumeratedSets():
                 return self.image().cardinality() == domain.cardinality()
             case _:
