@@ -629,29 +629,46 @@ def _fix_selected_group_resolution_data(
     replace=False,
 ) -> None:
     r"""Retain one explicit free-group augmentation as truncation-zero data."""
-
-    def selected_resolution():
-        from dzack_research.preamble.categories.abstract_categories.resolutions import (
-            Resolutions,
-        )
-
-        augmentation = _group_framing_morphism(
-            group, source, labels, generator_morphism
-        )
-        free = GroupsWithChosenFreeBasis()
-        return Resolutions(OwnedGroups(), free, 0, free).selected_degree_zero(
-            group,
-            source,
-            augmentation,
-            generating_set=labels,
-            generator_morphism=generator_morphism,
-        )
-
     _fix_selected_resolution(
         group,
         OwnedGroups(),
-        selected_resolution,
+        lambda: _selected_group_resolution(group, source, labels, generator_morphism),
         replace=replace,
+    )
+
+
+def _fix_selected_group_resolution_on(group, generating_set, *, replace=False) -> None:
+    r"""Retain the free-group augmentation on a generating subset computed at first read.
+
+    ``generating_set`` is a zero-argument computation of a subset ``S`` of
+    ``group``.  Fixing the datum computes nothing: ``S``, the free group
+    ``F(S)`` and the augmentation ``F(S) -> group`` induced by the inclusion
+    ``S -> group`` are built when the selected resolution is first read.
+    """
+
+    def selected_resolution():
+        generators = generating_set()
+        source = Groups.Free(index_set=generators)
+        inclusion = Sets().Mor(generators, group)(lambda generator: generator)
+        return _selected_group_resolution(group, source, generators, inclusion)
+
+    _fix_selected_resolution(group, OwnedGroups(), selected_resolution, replace=replace)
+
+
+def _selected_group_resolution(group, source, labels, generator_morphism):
+    r"""The truncation-zero free-group resolution ``source -> group`` on ``labels``."""
+    from dzack_research.preamble.categories.abstract_categories.resolutions import (
+        Resolutions,
+    )
+
+    augmentation = _group_framing_morphism(group, source, labels, generator_morphism)
+    free = GroupsWithChosenFreeBasis()
+    return Resolutions(OwnedGroups(), free, 0, free).selected_degree_zero(
+        group,
+        source,
+        augmentation,
+        generating_set=labels,
+        generator_morphism=generator_morphism,
     )
 
 
