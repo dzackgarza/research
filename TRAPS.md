@@ -86,6 +86,27 @@ Route chosen: no owned category declares itself over a lower base.
 Restriction of scalars is a functor obtained from the category, and a preservation theorem on that functor states which properties descend.
 Depends on this: the `Modules`, `Algebras` and `Schemes` bases (AGENTS.md, *Red flags*).
 
+### A Python subclass of a category class loses its axiom classes
+
+A nested axiom class such as `MagmaticAlgebras.Unital` is bound to its base class by `CategoryWithAxiom.__classget__` (sage/categories/category_with_axiom.py, `def __classget__`, Sage 10.10.beta8): it asserts that `_base_category_class_and_axiom[0]` is the class the attribute is read from. `Category._with_axiom_as_tuple` (category.py) reads the axiom with `getattr(self.__class__, axiom)`, so a category whose class is a Python subclass of the base class raises on every axiom. Reproduction, 2026-10-07, no preamble in the process:
+
+```bash
+/home/dzack/gitclones/sage-dev-allopts/.venv/bin/python3 -c "
+from sage.all import QQ
+from sage.categories.magmatic_algebras import MagmaticAlgebras
+class MagmaticAlgebrasSubclass(MagmaticAlgebras):
+    pass
+print(MagmaticAlgebras(QQ).Unital())
+print(MagmaticAlgebrasSubclass(QQ).Unital())
+"
+```
+
+The first line prints `Category of unital algebras over Rational Field`; the second raises `AssertionError: base category class for <class 'sage.categories.unital_algebras.UnitalAlgebras'> mismatch; expected <class 'sage.categories.magmatic_algebras.MagmaticAlgebras'>, got <class '__main__.MagmaticAlgebrasSubclass'>`.
+The preamble meets it at `ModulesOverGroupAlgebra(Modules)` (`modules/group_modules/group_modules.py`): `Modules(ZZ[C2]).Free()` raises the same assertion for `Modules.Free`.
+
+Consequence: a category class whose objects use Sage's axiom classes cannot be refined by a Python subclass.
+Route chosen: none yet; the owner rules (`TODO.md`, `modules-over-a-group-algebra-keep-the-module-axioms`).
+
 ### `DiGraph.longest_path()` is a MILP by default; a DAG's longest chain is `level_sets()`
 
 `longest_path(algorithm='MILP')` is the default and `'heuristic'` the only alternative (its docstring).

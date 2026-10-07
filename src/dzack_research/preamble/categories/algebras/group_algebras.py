@@ -14,7 +14,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _center_algebra,
 )
@@ -197,41 +196,6 @@ def _group_algebra(base_ring, group):
     )
 
 
-class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
-    r"""The algebra map ``R[H] -> R[G]`` induced by a represented group map.
-
-    The multiplication law is not re-decided by equality of two linear maps on
-    the (possibly infinite) basis ``H``.  A group morphism already satisfies
-    ``f(hk)=f(h)f(k)`` and ``f(1)=1``; extending its basis map ``R``-linearly is
-    therefore the unique unital algebra morphism of group algebras.
-    """
-
-    def __init__(self, parent, group_morphism) -> None:
-        source = self.domain()
-        target = self.codomain()
-        if group_morphism.domain() is not source.group():
-            raise ValueError(
-                f"the group algebra morphism {self.domain()} -> {self.codomain()} needs a group map starting "
-                f"at {source.group()}, but {group_morphism} starts at {group_morphism.domain()}"
-            )
-        if group_morphism.codomain() is not target.group():
-            raise ValueError(
-                f"the group algebra morphism {self.domain()} -> {self.codomain()} needs a group map ending at "
-                f"{target.group()}, but {group_morphism} ends at {group_morphism.codomain()}"
-            )
-
-        linear = source.module_category().Mor(source, target)(
-            lambda label: target.module_generator(group_morphism(label))
-        )
-        super().__init__(parent, linear)
-
-    def _multiplicativity_derivation(self):
-        return True
-
-    def _unit_preservation_derivation(self):
-        return True
-
-
 class _GroupAlgebraFunctor(Functor):
     r"""\(R[-]\colon \mathbf{Grp}\to \mathbf{Alg}_R\).
 
@@ -252,12 +216,13 @@ class _GroupAlgebraFunctor(Functor):
         return self._base_ring[group]
 
     def _apply_morphism(self, group_morphism):
+        r"""``R[f]``: the basis map ``h -> f(h)`` extended ``R``-linearly, an arrow of the unital algebra Mor."""
         source = self(group_morphism.domain())
         target = self(group_morphism.codomain())
-        return GroupAlgebraMorphism(
-            Algebras(source.base_ring()).Associative().Unital().Mor(source, target),
-            group_morphism,
+        linear = source.module_category().Mor(source, target)(
+            lambda label: target.module_generator(group_morphism(label))
         )
+        return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(linear)
 
     def _repr_(self):
         return f"Group-algebra functor over {self._base_ring}"

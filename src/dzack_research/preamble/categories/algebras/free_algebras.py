@@ -16,6 +16,9 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+from sage.misc.unknown import Unknown
+from sage.structure.element import parent as element_parent
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -1841,6 +1844,34 @@ class FramedFreeAlgebraMorphism:
     def is_identity(self) -> bool:
         return self._preamble_is_identity
 
+    def _richcmp_(self, other, op):
+        r"""Decide equality on the algebra generators of the free source.
+
+        By the universal property of the free algebra, two algebra maps out
+        of it are equal exactly when they agree on its algebra generators.
+        The module-map comparison this overrides decides on the module
+        generators, which for a free algebra are all its words.
+        """
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if self is other:
+            return op == op_EQ
+        labels = self.domain().algebra_generating_set()
+        if not labels.cardinality().is_finite():
+            return Unknown
+        decisions = tuple(
+            self.algebra_generator_images()[label] == other.algebra_generator_images()[label]
+            for label in labels
+        )
+        match any(value is False for value in decisions), all(value is True for value in decisions):
+            case True, _:
+                equal = False
+            case _, True:
+                equal = True
+            case _:
+                equal = Unknown
+        return equal if op == op_EQ or equal is Unknown else not equal
+
 
 class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
     ElementMethods = FramedFreeAlgebraMorphism
@@ -1853,8 +1884,21 @@ class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
             codomain,
         )
 
-    def _element_constructor_(self, images):
-        return self.element_class(self, images)
+    def _element_constructor_(self, datum):
+        r"""An algebra map out of a free algebra, from the images of its algebra generators.
+
+        A linear map with these endpoints, stated to be an algebra map, is
+        read by its values on the algebra generators: by the universal
+        property of the free algebra those values determine the map.
+        """
+        domain = self.domain()
+        match datum:
+            case _ if element_parent(datum) is domain.module_category().Mor(domain, self.codomain()):
+                return self.element_class(
+                    self, lambda label: datum(domain.algebra_generator(label))
+                )
+            case _:
+                return self.element_class(self, datum)
 
     def identity(self):
         if self.domain() is not self.codomain():
