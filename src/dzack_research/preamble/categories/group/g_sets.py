@@ -103,7 +103,20 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
+    def underlying_category(self):
+        r"""``FinSet``, the codomain of the forgetful functor."""
+        return FiniteSets()
+
     # Functors out of finite G-sets, sited on their domain.
+
+    @cached_method
+    def forgetful_functor(self):
+        r"""``U : FinGSet_G -> FinSet``, the underlying finite set of a finite ``G``-set."""
+        from dzack_research.preamble.categories.functors.g_sets import (
+            UnderlyingFiniteGSetFunctor,
+        )
+
+        return UnderlyingFiniteGSetFunctor(self.group())
 
     @cached_method
     def orbits_functor(self):
