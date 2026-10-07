@@ -243,6 +243,7 @@ Route chosen: `_isometry_class_representatives` in `src/dzack_research/preamble/
 A definite genus of three or more members with `mass · |O(L)| = 1` is one class and needs no comparison; otherwise `qfisominit` runs once per class representative and `qfisom` tests each member against them.
 An indefinite genus of rank at least 3 with one spinor genus is one class; otherwise each member goes to Hecke `is_isometric` through `_OscarLatticeAdapter.integer_lattices_are_isometric` in `lattice_engines.py`.
 The PARI stack is left at Sage's default, so a lattice like `D_20^+` that reaches a comparison raises PARI's stack error rather than growing a process-wide setting.
+The wall time of the whole partition as a function of the number of lattices is untested.
 Depends on this: `Lattices(ZZ).isometry_classes`, and through it lattice-db duplicate detection.
 
 ## mypy
