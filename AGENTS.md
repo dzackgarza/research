@@ -1984,6 +1984,40 @@ never re-established at runtime, and no computed answer is a proof.
 `undecidable-problem-pseudo-booleans`; the undecidability audit under *Work-selection
 discipline* is the sibling rule.)
 
+**The data a caller holds presents an object; it never selects the owner of an
+operation.** A lattice-db card stores a presentation: a configuration matrix
+of multidegrees in $\mathbb{P}^{n_1}\times\cdots\times\mathbb{P}^{n_m}$, a
+decorated graph, a table of numbers. The false belief: "the operation belongs
+to the category whose objects look like this data", so every function that
+reads a configuration matrix goes to complete intersections, and every function
+that reads a decorated graph goes to a "weighted graph" owner. The correct
+sequence has four steps:
+1. Name the object the data presents: a smooth complete intersection $X$, a
+   root system, a real form of a semisimple Lie algebra, a hyperbolic
+   reflection group.
+2. Construct it through its category. The presenting category introduces only
+   its own datum. For a complete intersection, that datum is the ambient
+   product and the multidegrees.
+3. Answer the asked value with the method of the category whose definition
+   defines it, reached by inheritance. Examples: $\chi$ and $b_k$ of a space;
+   $h^{p,q} = \dim H^q(X,\Omega^p)$ of a smooth proper variety; $\dim$ of a
+   scheme; Calabi–Yau ($K_X$ trivial) as an axiom on the base that states it.
+4. A formula in the presenting data is a realization on the subcategory,
+   justified by a cited theorem. Examples: $\dim = \sum n_i - r$;
+   $\sum_j d_{j,i} = n_i+1$ by adjunction; Hirzebruch's generating function.
+   It is never the definition and never the placement.
+
+A function that checks a stored value against a theorem (Hodge symmetry,
+Serre duality, Vinberg's criterion on a stored Gram matrix) is not mathematics
+to relocate. Either the object is constructed and the value is computed and
+compared (certification), or the value is a transcription. Relocating the
+functions of a leaf module one by one is the same false belief: the unit is
+the notion asked, not the function that happened to compute it.
+*The tell:* a class or module named for a data shape (`WeightedGraphInvariants`,
+`HodgePoincareInvariants`, `catalogue_invariants`); a method whose arguments
+are the presentation's raw numbers rather than the object; an owner chosen
+because "that is where the formula can be evaluated".
+
 **Morphisms are constructed by the caller, in the categories they live in.** A
 $G$-action on $M$ is a group morphism $\rho: G\to\operatorname{Aut}(M)$ that the
 caller builds; $M$ does not accept a group and a list of images and assemble one.
