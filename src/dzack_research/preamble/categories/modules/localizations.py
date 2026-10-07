@@ -5,7 +5,7 @@ from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presentation_rows,
+    _relation_morphism,
     _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -455,40 +454,22 @@ def _localized_module(
 def _transported_presentation(numerator_module, localization_ring):
     r"""Return the presentation of ``S^{-1}M`` induced by one of ``M``.
 
-    Localization is exact, so applying ``R -> S^{-1}R`` to the relation rows of
-    a presentation of ``M`` presents ``S^{-1}M`` on the images of the same
+    Localization is exact, so applying ``R -> S^{-1}R`` to the relation
+    morphism ``r: F_1 -> F_0`` of ``M``, coefficient by coefficient, gives
+    ``S^{-1}r``, which presents ``S^{-1}M`` on the images of the same
     generators.
     """
-    source_ring = localization_ring.localization_source()
-    relation_rows = _presentation_rows(numerator_module)
-    if numerator_module in _SelectedFinitePresentationModules(source_ring):
-        relation_labels = numerator_module.presentation().domain().module_generating_set()
-    else:
-        relation_labels = Sets.Δ[len(relation_rows) - 1]
-    generator_labels = numerator_module.module_generating_set()
+    relations = _relation_morphism(numerator_module)
     localization_map = localization_ring.localization_map()
-    transported_rows = tuple(
-        tuple(localization_map(coefficient) for coefficient in row)
-        for row in relation_rows
-    )
-    relation_matrix = localization_ring.matrix_space(len(transported_rows), int(generator_labels.cardinality())).from_rows(transported_rows)
-    free_relations = localization_ring.free_module(relation_labels)
-    free_generators = localization_ring.free_module(generator_labels)
-    images = {
-        relation_label: free_generators.linear_combination(
-            {
-                generator_label: coefficient
-                for generator_label, coefficient in zip(
-                    generator_labels,
-                    row,
-                    strict=True,
-                )
-                if coefficient != localization_ring.zero()
-            }
+    free_relations = localization_ring.free_module(relations.domain().module_generating_set())
+    free_generators = localization_ring.free_module(numerator_module.module_generating_set())
+
+    def localized_relation(relation_label):
+        relation = relations(relations.domain().module_generator(relation_label)).to_vector()
+        return free_generators.linear_combination(
+            {label: localization_map(relation(label)) for label in relation.support().domain()}
         )
-        for relation_label, row in zip(relation_labels, transported_rows, strict=True)
-    }
+
     return {
-        "relation_matrix": relation_matrix,
-        "presentation": free_relations.module_category().Mor(free_relations, free_generators)(images),
+        "presentation": free_relations.module_category().Mor(free_relations, free_generators)(localized_relation),
     }

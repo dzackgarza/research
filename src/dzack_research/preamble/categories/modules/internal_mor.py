@@ -12,8 +12,9 @@ from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _SelectedFinitePresentationModules,
-    _presentation_from_relation_rows,
-    _presentation_matrix,
+    _morphism_on_elements,
+    _morphism_on_engine_vectors,
+    _relation_morphism,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -25,7 +26,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _represented_finite_presentation,
     _tensor_pair,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
@@ -87,9 +87,12 @@ def _internal_mor_model_data_from_endpoints(source, target):
     )
 
     source_labels = source.module_generating_set()
-    target.module_generating_set()
-    source_relations = _presentation_matrix(source)
-    relation_labels = Sets.Δ[source_relations.nrows() - 1]
+    source_relations = _relation_morphism(source)
+    relation_labels = source_relations.domain().module_generating_set()
+    relation_coordinates = tuple(
+        (relation_label, source_relations(source_relations.domain().module_generator(relation_label)).to_vector())
+        for relation_label in relation_labels
+    )
     generator_free_module = ring.free_module(source_labels)
     relation_free_module = ring.free_module(relation_labels)
 
@@ -98,19 +101,20 @@ def _internal_mor_model_data_from_endpoints(source, target):
     relation_assignments = modules.tensor_product((relation_free_module, target))
     relation_assignment_labels = relation_assignments.module_generating_set()
 
+    # Evaluating the relations on an assignment ``e_s tensor n`` gives
+    # ``sum_k (coefficient of e_s in r(e_k)) e_k tensor n``.
     def relation_image(pair):
         source_label = pair.component(0)
         target_label = pair.component(1)
-        source_position = int(source_labels.ranking_map()(source_label))
         return relation_assignments.linear_combination(
             {
                 _tensor_pair(
                     relation_assignment_labels,
                     relation_label,
                     target_label,
-                ): source_relations[relation_label, source_position]
-                for relation_label in relation_labels
-                if source_relations[relation_label, source_position]
+                ): coordinates(source_label)
+                for relation_label, coordinates in relation_coordinates
+                if coordinates(source_label)
             }
         )
 
@@ -129,21 +133,12 @@ def _internal_mor_model_data_from_endpoints(source, target):
         and relation_assignments._smith_engine() is not None
     ):
         kernel = _native_fgp_morphism(relation_evaluation).kernel()
-        engine_ring = _engine_ring(ring)
-        engine_kernel_relations = kernel._relative_matrix().change_ring(engine_ring)
-        kernel_relations = ring.matrix_space(engine_kernel_relations.nrows(), engine_kernel_relations.ncols()).from_rows(
-            tuple(
-                tuple(_owned_engine_element(ring, engine_ring(entry)) for entry in row)
-                for row in engine_kernel_relations.rows()
-            )
-        )
-        kernel_labels = Sets.Δ[int(kernel.V().rank()) - 1]
-        kernel_relation_labels = Sets.Δ[engine_kernel_relations.nrows() - 1]
-        kernel_presentation = _presentation_from_relation_rows(
-            ring,
-            kernel_labels,
-            kernel_relation_labels,
-            kernel_relations,
+        engine_kernel_relations = kernel._relative_matrix().change_ring(_engine_ring(ring))
+        # Sage's FGP module lists each relation of the kernel by its
+        # coordinates in the kernel generators.
+        kernel_presentation = _morphism_on_engine_vectors(
+            ring._fresh_free_module_on(Sets.Δ[int(kernel.V().rank()) - 1]),
+            engine_kernel_relations.rows(),
         )
         model = kernel_presentation.cokernel()
         inclusion = _module_subobject_inclusion(
@@ -171,18 +166,21 @@ def _internal_mor_model_data_from_endpoints(source, target):
             lift=(None if lift is None else lambda element: lift(model, element)),
         )
 
-    relation_matrix = _presentation_matrix(model)
-    presentation = (
-        model.presentation()
-        if model in _SelectedFinitePresentationModules(model.base_ring())
-        else _presentation_from_relation_rows(
-            model.base_ring(),
-            model.module_generating_set(),
-            Sets.Δ[relation_matrix.nrows() - 1],
-            relation_matrix,
-        )
+    if model in _SelectedFinitePresentationModules(model.base_ring()):
+        return model, inclusion, model.presentation()
+    # The relations of the model, transported label for label onto a free
+    # module that frames the Mor module itself.
+    model_relations = _relation_morphism(model)
+    generators = model.base_ring()._fresh_free_module_on(model.module_generating_set())
+
+    def transported(relation_label):
+        relation = model_relations(model_relations.domain().module_generator(relation_label)).to_vector()
+        return generators.linear_combination({label: relation(label) for label in relation.support().domain()})
+
+    return model, inclusion, _morphism_on_elements(
+        generators,
+        tuple(transported(label) for label in model_relations.domain().module_generating_set()),
     )
-    return model, inclusion, relation_matrix, presentation
 
 
 def _internal_mor_model_data(mor):

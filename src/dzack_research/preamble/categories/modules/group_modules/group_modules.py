@@ -1273,10 +1273,10 @@ class _CoefficientModuleEngine:
             for label in coordinates.support().domain()
         }
 
-    def _selected_presentation_rows(self):
+    def _selected_relation_morphism(self):
         if self._is_the_regular_module():
-            return super()._selected_presentation_rows()
-        return self.unformed_module()._selected_presentation_rows()
+            return super()._selected_relation_morphism()
+        return self.unformed_module()._selected_relation_morphism()
 
     def coefficient_module_rank(self):
         return self.unformed_module().module_rank()

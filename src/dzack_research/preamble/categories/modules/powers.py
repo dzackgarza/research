@@ -21,8 +21,8 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presentation_from_relation_rows,
-    _presentation_rows,
+    _morphism_on_elements,
+    _relation_morphism,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
@@ -637,69 +637,51 @@ def _free_degree_labels(source_labels, degree: int, flavor: str):
     )
 
 
-def _symmetric_relation_rows(
-    relation_rows,
-    source_labels,
-    degree: int,
-    labels,
-    ring,
-):
-    if degree == 0:
-        return []
-    rows = []
-    lower_labels = _free_degree_labels(
-        source_labels,
-        degree - 1,
-        "symmetric",
+def _relation_coordinates(relations):
+    r"""Return the coordinate function of each relation ``r(e_k)`` of ``r: F_1 -> F_0``."""
+    return tuple(
+        relations(relations.domain().module_generator(label)).to_vector()
+        for label in relations.domain().module_generating_set()
     )
-    width = int(labels.cardinality())
-    for relation in relation_rows:
+
+
+def _symmetric_relations(relation_coordinates, source_labels, degree: int, generators):
+    r"""Return the relations ``r(e_k) m`` of ``Sym^d``, for ``m`` a monomial of degree ``d - 1``."""
+    if degree == 0:
+        return ()
+    ring = generators.base_ring()
+    lower_labels = _free_degree_labels(source_labels, degree - 1, "symmetric")
+    relations = []
+    for relation in relation_coordinates:
         for monomial in lower_labels:
-            row = [ring.zero()] * width
-            for source_position, coefficient in enumerate(relation):
-                if not coefficient:
-                    continue
-                source_label = source_labels[source_position]
+            coefficients = {}
+            for source_label in relation.support().domain():
                 target = monomial.add_label(source_label)
-                row[labels.ranking_map()(target)] += ring(coefficient)
-            if any(row):
-                rows.append(row)
-    return rows
+                coefficients[target] = coefficients.get(target, ring.zero()) + ring(relation(source_label))
+            relations.append(generators.linear_combination(coefficients))
+    return tuple(relation for relation in relations if relation)
 
 
-def _alternating_relation_rows(
-    relation_rows,
-    source_labels,
-    degree: int,
-    labels,
-    ring,
-):
+def _alternating_relations(relation_coordinates, source_labels, degree: int, generators):
+    r"""Return the relations ``r(e_k) wedge m`` of ``Alt^d``, for ``m`` a wedge of degree ``d - 1``."""
     if degree == 0:
-        return []
-    rows = []
-    lower_labels = _free_degree_labels(
-        source_labels,
-        degree - 1,
-        "alternating",
-    )
+        return ()
+    ring = generators.base_ring()
+    lower_labels = _free_degree_labels(source_labels, degree - 1, "alternating")
     singleton_labels = _free_degree_labels(source_labels, 1, "alternating")
-    width = int(labels.cardinality())
-    for relation in relation_rows:
+    relations = []
+    for relation in relation_coordinates:
         for monomial in lower_labels:
-            row = [ring.zero()] * width
-            for source_position, coefficient in enumerate(relation):
-                if not coefficient:
-                    continue
-                source_label = source_labels[source_position]
+            coefficients = {}
+            for source_label in relation.support().domain():
                 singleton = singleton_labels.from_multiplicities({source_label: 1})
                 wedge = monomial.wedge_with(singleton)
                 if wedge is None:
                     continue
                 target, sign = wedge
-                row[labels.ranking_map()(target)] += sign * ring(coefficient)
-            if any(row):
-                rows.append(row)
-    return rows
+                coefficients[target] = coefficients.get(target, ring.zero()) + sign * ring(relation(source_label))
+            relations.append(generators.linear_combination(coefficients))
+    return tuple(relation for relation in relations if relation)
 
 
 def _divided_product_coefficient(left, right):
@@ -712,48 +694,28 @@ def _divided_product_coefficient(left, right):
     )
 
 
-def _divided_relation_rows(
-    relation_rows,
-    source_labels,
-    degree: int,
-    labels,
-    ring,
-):
+def _divided_relations(relation_coordinates, source_labels, degree: int, generators):
+    r"""Return the relations ``gamma_j(r(e_k)) m`` of ``Gamma^d``, for ``m`` of degree ``d - j``."""
     if degree == 0:
-        return []
-    rows = []
-    width = int(labels.cardinality())
-    for relation in relation_rows:
+        return ()
+    ring = generators.base_ring()
+    relations = []
+    for relation in relation_coordinates:
         for divided_degree in range(1, degree + 1):
-            divided_labels = _free_degree_labels(
-                source_labels,
-                divided_degree,
-                "divided",
-            )
-            complementary_labels = _free_degree_labels(
-                source_labels,
-                degree - divided_degree,
-                "divided",
-            )
+            divided_labels = _free_degree_labels(source_labels, divided_degree, "divided")
+            complementary_labels = _free_degree_labels(source_labels, degree - divided_degree, "divided")
             for monomial in complementary_labels:
-                row = [ring.zero()] * width
+                coefficients = {}
                 for exponent in divided_labels:
                     coefficient = ring.one()
                     for source_label in exponent.support():
-                        scalar = ring(
-                            relation[int(source_labels.ranking_map()(source_label))]
-                        )
-                        coefficient *= scalar ** exponent.multiplicity(source_label)
+                        coefficient *= ring(relation(source_label)) ** exponent.multiplicity(source_label)
                     if not coefficient:
                         continue
                     target = exponent.merged_with(monomial)
-                    row[labels.ranking_map()(target)] += (
-                        coefficient
-                        * _divided_product_coefficient(exponent, monomial)
-                    )
-                if any(row):
-                    rows.append(row)
-    return rows
+                    coefficients[target] = coefficients.get(target, ring.zero()) + coefficient * _divided_product_coefficient(exponent, monomial)
+                relations.append(generators.linear_combination(coefficients))
+    return tuple(relation for relation in relations if relation)
 
 
 def _presented_degree_power(
@@ -797,46 +759,20 @@ def _presented_degree_power(
             f"{source_labels} is not finite"
         )
 
-
-    relation_rows = _presentation_rows(module)
+    relation_coordinates = _relation_coordinates(_relation_morphism(module))
+    generators = ring._fresh_free_module_on(labels)
     if flavor == "symmetric":
-        rows = _symmetric_relation_rows(
-            relation_rows,
-            source_labels,
-            degree,
-            labels,
-            ring,
-        )
+        relations = _symmetric_relations(relation_coordinates, source_labels, degree, generators)
     elif flavor == "alternating":
-        rows = _alternating_relation_rows(
-            relation_rows,
-            source_labels,
-            degree,
-            labels,
-            ring,
-        )
+        relations = _alternating_relations(relation_coordinates, source_labels, degree, generators)
     elif flavor == "divided":
-        rows = _divided_relation_rows(
-            relation_rows,
-            source_labels,
-            degree,
-            labels,
-            ring,
-        )
+        relations = _divided_relations(relation_coordinates, source_labels, degree, generators)
     else:
         raise ValueError(
             f"{flavor!r} is not a kind of power: expected 'symmetric', 'alternating' or 'divided'"
         )
 
-
-    relation_matrix = ring.matrix_space(len(rows), int(labels.cardinality())).from_rows(tuple(tuple(row) for row in rows))
-    relation_labels = Sets.Δ[len(rows) - 1]
-    presentation = _presentation_from_relation_rows(
-        ring,
-        labels,
-        relation_labels,
-        relation_matrix,
-    )
+    presentation = _morphism_on_elements(generators, relations)
     return ModulesWithChosenFinitePresentation(ring)(
         presentation,
         category=owned_category_join(extra_categories) if extra_categories else None,

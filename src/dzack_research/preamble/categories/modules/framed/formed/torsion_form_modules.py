@@ -29,9 +29,8 @@ from dzack_research.preamble.categories.group.groups import (
     _fix_selected_group_resolution_data,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _matrix_coordinate_rows,
     _module_invariant_factor_form,
-    _presentation_matrix,
+    _relation_images,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -104,49 +103,39 @@ def _linear_combination(value_module, coefficients, values):
     )
 
 
-def _relation_coefficients(relations):
-    r"""Return each chosen relation's coefficients, asked of the matrix itself.
+def _bilinear_descends(relation_images, gram, value_module) -> bool:
+    r"""Decide ``b(r, x) = b(x, r) = 0`` for each relation ``r`` and generator ``x``.
 
-    A row of an owned matrix is an element of the dual module, not a sequence,
-    so the coefficients come from the matrix entries at the chosen labels.
+    ``relation_images`` holds the coordinates of each ``r(e_i)`` in the
+    module generators, read by application of the relation morphism.
     """
-    parent = relations.parent()
-    return tuple(
-        tuple(
-            relations.matrix_entry(row_label, column_label)
-            for column_label in parent.column_index_set()
-        )
-        for row_label in parent.row_index_set()
-    )
-
-
-def _bilinear_descends(relations, gram, value_module) -> bool:
     rank = len(gram)
-    for row in _relation_coefficients(relations):
+    for relation in relation_images:
         for j in range(rank):
-            if _linear_combination(value_module, row, tuple(gram[i][j] for i in range(rank))) != value_module.zero():
+            if _linear_combination(value_module, relation, tuple(gram[i][j] for i in range(rank))) != value_module.zero():
                 return False
         for i in range(rank):
-            if _linear_combination(value_module, row, tuple(gram[i][j] for j in range(rank))) != value_module.zero():
+            if _linear_combination(value_module, relation, tuple(gram[i][j] for j in range(rank))) != value_module.zero():
                 return False
     return True
 
 
-def _quadratic_descends(relations, gram, value_module) -> bool:
+def _quadratic_descends(relation_images, gram, value_module) -> bool:
+    r"""Decide ``q(r) = 0`` and ``2 b(x, r) = 0`` for each relation ``r`` and generator ``x``."""
     rank = len(gram)
     two = value_module.base_ring()(2)
-    for row in _relation_coefficients(relations):
+    for relation in relation_images:
         # q(x+r)-q(x)-q(r) is the polar value 2*x^T G r.
         for j in range(rank):
             pairing = _linear_combination(
                 value_module,
-                row,
+                relation,
                 tuple(gram[i][j] for i in range(rank)),
             )
             if value_module.scalar_multiple(two, pairing) != value_module.zero():
                 return False
         norm = sum(
-            (row[i] * row[j] * gram[i][j] for i in range(rank) for j in range(rank) if row[i] and row[j]),
+            (relation[i] * relation[j] * gram[i][j] for i in range(rank) for j in range(rank) if relation[i] and relation[j]),
             value_module.zero(),
         )
         if norm != value_module.zero():
@@ -298,7 +287,6 @@ def _underlying_presented_module(form):
 def _underlying_element(form, element):
     return form.unformed_module()(element)
 
-
 def _generator_and_relation_map(form, generators):
     r"""Return ``F(generators) + F(relations) -> F(S)`` for the framing ``F(S) ->> form``.
 
@@ -312,7 +300,7 @@ def _generator_and_relation_map(form, generators):
     module = _underlying_presented_module(form)
     ring = module.base_ring()
     framing_labels = tuple(module.module_generating_set())
-    relation_rows = tuple(_matrix_coordinate_rows(_presentation_matrix(module)))
+    relation_images = _relation_images(module)
     lift_space = ring.matrix_space(len(framing_labels), len(generators))
     coordinate_module = lift_space.codomain()
     coordinate_labels = tuple(coordinate_module.module_generating_set())
@@ -335,15 +323,19 @@ def _generator_and_relation_map(form, generators):
             )
         )
     )
-    known = ring.matrix_space(len(framing_labels), len(relation_rows))(
-        tuple(coordinate_vector(row) for row in relation_rows)
+    known = ring.matrix_space(len(framing_labels), len(relation_images))(
+        tuple(coordinate_vector(image) for image in relation_images)
     )
     summands = Modules(ring).biproduct((lifts.domain(), known.domain()))
     return summands.from_summands(lifts, known)
 
 
 def _relations_among_generators(form, generators):
-    r"""Return the relation matrix for a selected generating family of ``form``."""
+    r"""Return the relation morphism ``F(relations) -> F(generators)`` of a generating family of ``form``.
+
+    Its image is the module of relations among ``generators``: the kernel of
+    the generator-and-relation map, projected onto the generator summand.
+    """
 
     combined = _generator_and_relation_map(form, generators)
     kernel = combined.kernel()
@@ -351,10 +343,9 @@ def _relations_among_generators(form, generators):
         combined.domain().left_projection() * kernel.inclusion()
     ).image()
     inclusion = relations.inclusion()
-    linear_inclusion = inclusion.domain().module_category().Mor(
+    return inclusion.domain().module_category().Mor(
         inclusion.domain(), inclusion.codomain()
     )(inclusion)
-    return linear_inclusion.transpose()
 
 
 def _quadratic_gram_on(form, generators):

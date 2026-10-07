@@ -662,23 +662,25 @@ class ModuleMorphismMethods:
         if self._element_function is not None:
             return self.linearity_decision()
         domain = self.domain()
-        rows = domain._selected_presentation_rows()
-        if rows is None:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FramedFreeModules,
-            )
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
 
-            if domain in FramedFreeModules(domain.base_ring()):
-                return True
+        if domain in FramedFreeModules(domain.base_ring()):
+            return True
+        relations = domain._selected_relation_morphism()
+        if relations is None:
             return Unknown
         zero = self.codomain().zero()
-        labels = domain.module_generating_set()
         decision = True
-        for row in rows:
-            relation_image = self._linear_combination_of_generator_images(domain.framing_source()({label: coefficient for label, coefficient in zip(labels, row, strict=True) if coefficient}))
+        for relation_label in relations.domain().module_generating_set():
+            relation = relations(relations.domain().module_generator(relation_label)).to_vector()
+            relation_image = self._linear_combination_of_generator_images(
+                domain.framing_source()({label: relation(label) for label in relation.support().domain()})
+            )
             relation_holds = relation_image == zero
             if relation_holds is False:
-                raise ValueError(f"the generator images do not define a linear map {domain} -> {self.codomain()}: the relation {row} of {domain} is sent to {relation_image}, not to 0")
+                raise ValueError(f"the generator images do not define a linear map {domain} -> {self.codomain()}: the relation {relation} of {domain} is sent to {relation_image}, not to 0")
             if relation_holds is not True:
                 decision = Unknown
         return decision
@@ -2283,7 +2285,7 @@ def _initialize_module_mor_parent(
                     _internal_mor_model_data_from_endpoints,
                 )
 
-                model, _inclusion, relation_matrix, presentation = _internal_mor_model_data_from_endpoints(
+                model, _inclusion, presentation = _internal_mor_model_data_from_endpoints(
                     domain,
                     codomain,
                 )
@@ -2293,7 +2295,7 @@ def _initialize_module_mor_parent(
                         model.module_generator(label)
                     )
                 )
-                return relation_matrix, presentation, labels, generator_morphism
+                return presentation, labels, generator_morphism
 
             _fix_lazy_selected_module_presentation(
                 parent,
@@ -2538,22 +2540,10 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         return _ConstructedElementwiseModuleMorphism(self, function)
 
     def presentation_matrix(self):
-        r"""Return the relation rows of the presented model of this Mor module."""
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _SelectedFinitePresentationModules,
-        )
+        r"""Return the relation morphism of the presented model of this Mor module as a type-``(1,1)`` tensor."""
+        from dzack_research.preamble.tensors.tensor import tensor
 
-        match self in _SelectedFinitePresentationModules(self.base_ring()):
-            case True:
-                self.selected_module_resolution()
-                return self._selected_module_presentation.relation_matrix()
-            case False:
-                from dzack_research.preamble.categories.modules.internal_mor import (
-                    _internal_mor_model_data,
-                )
-
-                _model, _inclusion, relation_matrix, _presentation = _internal_mor_model_data(self)
-                return relation_matrix
+        return tensor.from_morphism(self.presentation())
 
     def presentation(self):
         r"""Return the presentation of the presented model of this Mor module."""
@@ -2570,7 +2560,7 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
                     _internal_mor_model_data,
                 )
 
-                _model, _inclusion, _relation_matrix, presentation = _internal_mor_model_data(self)
+                _model, _inclusion, presentation = _internal_mor_model_data(self)
                 return presentation
 
     def linear_combination(self, coefficients):

@@ -35,9 +35,9 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _fix_selected_module_presentation,
-    _presentation_from_relation_rows,
-    _presentation_matrix,
+    _relation_morphism,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -436,13 +436,24 @@ class DerivationSpace(RestrictedMorCategoryParent):
         )
         if classifiers in ModulesWithChosenFinitePresentation(algebra):
             framing_labels = classifiers.module_generating_set()
-            relation_matrix = _presentation_matrix(classifiers)
-            classifier_presentation = classifiers.presentation()
-            presentation = _presentation_from_relation_rows(
-                algebra,
-                framing_labels,
-                classifier_presentation.domain().module_generating_set(),
-                relation_matrix,
+            # The classifier relations, transported label for label onto
+            # free modules that frame Der_R(A, M) itself.
+            classifier_relations = _relation_morphism(classifiers)
+            relation_source = _fresh_free_module_on(
+                algebra, classifier_relations.domain().module_generating_set()
+            )
+            relation_target = _fresh_free_module_on(algebra, framing_labels)
+
+            def transported_relation(relation_label):
+                image = classifier_relations(
+                    classifier_relations.domain().module_generator(relation_label)
+                ).to_vector()
+                return relation_target.linear_combination(
+                    {label: image(label) for label in image.support().domain()}
+                )
+
+            presentation = relation_source.module_category().Mor(relation_source, relation_target)(
+                transported_relation
             )
             _fix_selected_module_resolution(
                 self,
@@ -456,7 +467,6 @@ class DerivationSpace(RestrictedMorCategoryParent):
             _fix_selected_module_presentation(
                 self,
                 algebra,
-                relation_matrix,
                 presentation,
             )
         self.register_action(_DerivationAlgebraAction(algebra, self, True))

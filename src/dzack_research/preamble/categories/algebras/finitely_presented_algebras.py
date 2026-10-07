@@ -13,7 +13,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     _WordFramedPresentedAlgebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _relation_morphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 
@@ -116,21 +115,21 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
     r"""Quotient a free associative algebra by ``module``'s linear relations."""
 
     engine = _engine_ring(presentation_ring)
-    relation_matrix = _presentation_matrix(module)
-    relation_indices = Sets.Δ[relation_matrix.nrows() - 1]
+    relations = _relation_morphism(module)
+    generator_labels = tuple(relations.codomain().module_generating_set())
     base = presentation_ring.base_ring()
 
-    def backend_relation(index):
-        row_position = int(index)
+    def backend_relation(relation_label):
+        image = relations(relations.domain().module_generator(relation_label)).to_vector()
         result = engine.zero()
-        for position in range(relation_matrix.ncols()):
-            coefficient = relation_matrix[row_position, position]
+        for position, generator_label in enumerate(generator_labels):
+            coefficient = image(generator_label)
             if coefficient:
                 result += _engine_element(base, coefficient) * engine.gen(position)
         return result
 
     selected_relations = indexed_family(
-        relation_indices,
+        relations.domain().module_generating_set(),
         lambda index: _owned_engine_element(presentation_ring,
             backend_relation(index)
         ),

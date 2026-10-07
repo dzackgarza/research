@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
     _CochainComplexDirectSum,
 )
 from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _relation_morphism
 from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumElement
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -299,19 +299,16 @@ class Connection(Element):
         module = self.module()
         if module not in ModulesWithChosenFinitePresentation(self.algebra()):
             return
-        labels = module.module_generating_set()
-        for row in _presentation_rows(module):
+        relations = _relation_morphism(module)
+        for relation_label in relations.domain().module_generating_set():
+            relation = relations(relations.domain().module_generator(relation_label)).to_vector()
             value = self._from_coefficients(
-                {
-                    labels[position]: coefficient
-                    for position, coefficient in enumerate(row)
-                    if coefficient
-                }
+                {label: relation(label) for label in relation.support().domain()}
             )
             if value != self.target_module().zero():
                 raise ValueError(
                     f"the proposed connection is not well defined on {module}: it must send every relation "
-                    f"among the module generators to zero, but it sends the relation {row} to {value}"
+                    f"among the module generators to zero, but it sends the relation {relation} to {value}"
                 )
 
     def __call__(self, element):

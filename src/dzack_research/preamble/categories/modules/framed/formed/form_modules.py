@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presentation_matrix,
+    _relation_images,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     CokernelTorsionFormModules,
@@ -1716,7 +1716,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
-                relations = _presentation_matrix(module)
+                relations = _relation_images(module)
                 if not _bilinear_descends(relations, values, value_module):
                     raise ValueError(
                         f"the Gram matrix {values} does not define a bilinear form on {module}: some relation "
@@ -2088,7 +2088,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     raise ValueError(
                         f"the Gram matrix {values} of a quadratic form on {module} must be symmetric, but it is not"
                     )
-                relations = _presentation_matrix(module)
+                relations = _relation_images(module)
                 if not _quadratic_descends(relations, values, value_module):
                     raise ValueError(
                         f"the Gram matrix {values} does not define a quadratic form on {module}: for some "
