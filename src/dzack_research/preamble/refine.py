@@ -148,42 +148,30 @@ def _rebuild_morphism_class(morphism: Morphism, category: Category) -> None:
     morphism.__class__ = new_class
 
 
-def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> None:
-    """Require every owned certified property before category admission.
+def check_certifying_predicates(obj: SageObject, category: Category, held: Category) -> None:
+    """Raise ``ValueError`` unless ``obj`` has each property ``category`` certifies beyond ``held``.
 
     A category states the property that admits an object as the sequence of
-    owned operations that reads it off, left to right: ``"is_even"`` asks the
+    public operations that reads it off, left to right: ``"is_even"`` asks the
     lattice, ``"module_rank.is_finite"`` asks the lattice for its rank and the
     rank for its finiteness.  The last operation answers ``True`` or the
-    object does not belong.
+    object does not belong.  A category ``held`` already contains is not asked
+    again.
     """
-    for candidate_category in category.all_super_categories(proper=False):
-        category_type = type(candidate_category)
+    for certified in category.all_super_categories(proper=False):
+        category_type = type(certified)
         if not category_type.__module__.startswith(_PREAMBLE_PACKAGE):
             continue
         statement = getattr(category_type, "_certifying_predicate", None)
-        if statement is None:
+        if statement is None or held.is_subcategory(certified):
             continue
         answer = obj
         for operation in statement.split("."):
-            try:
-                predicate = getattr(answer, operation)
-            except AttributeError:
-                assert operation.startswith("is_"), (
-                    f"refining {obj} into {candidate_category} requires {operation}(), "
-                    f"but {answer} has no such operation"
-                )
-                decision_name = (
-                    "_projectivity_decision"
-                    if operation == "is_projective"
-                    else f"_{operation[3:]}_decision"
-                )
-                predicate = getattr(answer, decision_name)
-            answer = predicate()
-        assert answer is True, (
-            f"refining {obj} into {candidate_category} requires "
-            f"{statement}() to hold"
-        )
+            answer = getattr(answer, operation)()
+        if answer is not True:
+            raise ValueError(
+                f"{obj} is not an object of {certified}: {statement}() answers {answer}"
+            )
 
 
 def realize_owned_category[SageObjectT: SageObject](obj: SageObjectT) -> SageObjectT:
@@ -251,7 +239,7 @@ def refine[SageObjectT: SageObject](
     from dzack_research.preamble.owned_category import owned_category_join
 
     target = category if isinstance(category, Category) else owned_category_join(tuple(category))
-    _assert_certifying_predicates_hold(obj, target)
+    check_certifying_predicates(obj, target, obj.category())
     if isinstance(obj, Morphism):
         # A morphism's mathematical membership is determined by its Mor
         # parent.  There is no independent Sage category slot to mutate here;

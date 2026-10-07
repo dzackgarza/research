@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
-    _OwnedRingParent,
     _engine_ring,
     _enumerated_ring_elements,
     _owned_ring,
@@ -2273,8 +2272,8 @@ def _initialize_module_mor_parent(
         _matrix_unit,
     )
 
-    # Fix the choice of every selected resolution before the mixed Sage Mor is
-    # initialized and refined.  A represented internal-Hom presentation is
+    # Fix the choice of every selected resolution before the Mor is
+    # constructed in its placement.  A represented internal-Hom presentation is
     # endpoint-determined but potentially expensive, so its factory is fixed
     # here and its model is realized only on the first module-data read.
     match placement:
@@ -2333,10 +2332,11 @@ class _ModuleMorCommonMethods:
     """
 
     def base_ring(self):
-        r"""The center of ``R``, stored by ``_initialize_module_mor_parent``.
+        r"""The center of ``R``, over which ``Hom_R(M, N)`` is a module.
 
-        Admission into the placement asks for it before ``Modules`` supplies
-        its own reader of the same datum.
+        ``_initialize_module_mor_parent`` stores it before ``CategoricalMor``
+        constructs this Mor in its placement; ``Modules`` reads the same
+        datum once that placement is realized.
         """
         return self._preamble_base_ring
 
@@ -2390,29 +2390,6 @@ class _ModuleMorCommonMethods:
         morphism = self.element_class(self, images)
         morphism.validate_linearity(check=check)
         return morphism
-
-    def _projectivity_decision(self):
-        r"""Decide projectivity of ``Hom_R(M, N)`` where its endpoints determine it.
-
-        Over a commutative ring, ``Hom_R(F_R(S), F_R(T))`` between finite
-        framed free modules is free on the matrix units ``T x S``, hence
-        projective.  This is asked while the Mor parent is being admitted
-        into its placement, so it is answered from the endpoints rather than
-        from that placement.  Otherwise projectivity is not decided here.
-        """
-        from sage.misc.unknown import Unknown
-
-        ring = self.domain().base_ring()
-        match ring:
-            case _OwnedRingParent():
-                commutative = ring._commutativity_decision()
-            case _:
-                commutative = ring.is_commutative()
-        match commutative:
-            case True if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
-                return True
-            case _:
-                return Unknown
 
     def _apply_pointwise_scalar(self, scalar, element):
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)

@@ -59,11 +59,12 @@ from dzack_research.preamble.owned_category import (
     owned_category_join,
 )
 from dzack_research.preamble.refine import (
+    check_certifying_predicates,
     construction_scope,
     realize_owned_category,
-    refine,
     run_construction_hooks,
 )
+from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -428,6 +429,20 @@ class _DiscreteTwoMorConstructions:
     _categorical_coproduct_morphism = _categorical_product_morphism
 
 
+@cached_function(key=type)
+def _mor_subcategory_class(mor: CategoricalMor) -> type:
+    r"""The subcategory class of the Mor objects of one concrete type.
+
+    Sage's ``Category.subcategory_class`` builds it from the type's
+    ``SubcategoryMethods`` and the ``subcategory_class`` of each category in
+    ``_super_categories_for_classes``.  A Mor object fixes that list to
+    ``[Objects()]``, so the class is a function of the concrete type alone.
+    """
+    return mor._make_named_class(
+        "subcategory_class", "SubcategoryMethods", cache=False, picklable=False
+    )
+
+
 class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
     r"""A represented Mor object which is both a Sage Mor and a category.
 
@@ -443,7 +458,32 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     actual ``Mor``, while also making that same parent the discrete category
     ``Hom_C(A,B)``.  Concrete categories subclass this and add enrichment to
     the *same object*.
+
+    Host initialization protocol.  This class is the root of the Mor-object
+    chain: it alone names the host bases ``Homset`` and ``Category``, so it
+    alone runs their non-cooperative initialization, once, in ``__init__``.
+    Subclasses construct through ``CategoricalMor.__init__`` and never call a
+    host initializer themselves.
+
+    - ``Category``: Sage's ``Category.__init__``
+      (``sage/categories/category.py``) only sets ``__class__`` to the
+      dynamic class over ``subcategory_class``, built per instance with
+      ``cache=False``.  ``__init__`` sets the same class built once per
+      concrete Mor type, because a fresh type per instance defeats the cache
+      of every class Sage and the owned realization build from it.  The
+      invariant: the class is a function of the concrete type alone.
+    - ``Homset``: Sage's ``Homset.__init__`` stores the endpoints and runs
+      ``Parent.__init__`` once in ``Sets().Homsets()`` or
+      ``Sets().Endsets()``.  ``_init_category_`` records the caller's
+      placement, ``_mor_placement``, joined with that category.  The
+      invariant: ``category()`` is the placement and ``homset_category()``
+      is ``Sets()``.
+
+    Construction calls ``validate_placement`` once with ``check=False``
+    (``OWN-22``).
     """
+
+    _mor_placement: Category | None = None
 
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
@@ -536,9 +576,8 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         category-generated arrow chain and keeps Sage's legacy construction.
         Once it declares ``ElementMethods`` instead, the generated Hom element
         type is the actual runtime arrow class.  A lazy attribute, as Sage's
-        ``Parent.element_class`` is: refining this Mor into its placement
-        category extends the arrow type with that category's element methods
-        (``refine._rebuild_element_class``) and stores the result here.
+        ``Parent.element_class`` is: the generated arrow type includes the
+        element class of the placement this Mor is constructed in.
         """
         if any(
             ancestor.__dict__.get("Element") is not None
@@ -579,19 +618,59 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         # Packet/enrichment code transports the mathematical structure
         # explicitly, so the runtime method spine stays at Objects().
         self._super_categories_for_classes = [SageObjects()]
-        Category.__init__(self)
-        SageHomset.__init__(
-            self,
-            domain,
-            codomain,
-            category=SageSets(),
+        # Host ``Category`` initialization; see the class docstring.
+        self.__class__ = dynamic_class(
+            f"{type(self).__name__}_with_category",
+            (type(self), self.subcategory_class),
+            reduction=None,
+            doccls=type(self),
         )
-        if category is not None:
-            # Sage ``Mor`` insists on constructing first in ``Sets`` so it
-            # can form its private Mors/Endsets runtime category.  Complete
-            # the owned enrichment while this constructor is still active;
-            # callers never observe an un-enriched module Mor parent.
-            refine(self, category)
+        # Host ``Homset`` initialization.  It stores the endpoints and runs
+        # ``Parent.__init__`` once, in Sage's ``Sets`` Mor category, and
+        # ``_init_category_`` records the placement over it.
+        self._mor_placement = category
+        SageHomset.__init__(self, domain, codomain, category=SageSets())
+        with construction_scope(self) as reached:
+            realize_owned_category(self)
+            run_construction_hooks(self, reached)
+        self.validate_placement(check=False)
+
+    @lazy_attribute
+    def subcategory_class(self) -> type:
+        r"""Sage's subcategory class, shared by every Mor of one concrete type."""
+        return _mor_subcategory_class(self)
+
+    def _init_category_(self, category: Category) -> None:
+        r"""Record the placement over Sage's ``Sets`` Mor runtime class.
+
+        The ``CategoryObject.__init__`` interception point that
+        ``Parent.__init__`` (``sage/structure/parent.pyx``) calls with the
+        category ``Homset.__init__`` passes it: ``Sets().Homsets()``, or
+        ``Sets().Endsets()`` when ``A`` is ``B``.  ``Parent._init_category_``
+        builds the host class from that category, so the host class is shared
+        by every Mor of one concrete type; the owned methods of the placement
+        are realized over it by ``realize_owned_category``.  The placement is
+        recorded as the join of that category with the caller's placement.
+        """
+        Parent._init_category_(self, category)
+        match self._mor_placement:
+            case None:
+                pass
+            case placement:
+                SageCategoryObject._init_category_(
+                    self, owned_category_join((category, placement))
+                )
+
+    @validator
+    def validate_placement(self) -> None:
+        r"""Raise ``ValueError`` unless this Mor has each property its placement certifies.
+
+        Construction places this Mor in the caller's category without asking
+        whether it has the properties that category states (``OWN-22``).
+        Each one is decided here from the Mor's data, through the certifying
+        statement of the category that states it.
+        """
+        check_certifying_predicates(self, self.category(), self.homset_category())
 
     def _already_parented_arrow(self, candidate: Morphism) -> bool:
         r"""Whether ``candidate`` is already represented by this Mor theory."""
