@@ -17,39 +17,35 @@ jobs:
   certify:
     runs-on: ubuntu-latest
     timeout-minutes: 350
-    container:
-      image: sagemath/sagemath:latest
-      options: --user root
     defaults:
       run:
         working-directory: lattice-database
-        shell: bash
+        shell: bash -el {0}
     steps:
-    - name: Install Git in the SageMath container
-      working-directory: /
-      run: |
-        apt-get update
-        apt-get install --yes --no-install-recommends git
     - name: Check out (actions/checkout v4)
       id: checkout
       uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       with:
         fetch-depth: 0
         ref: main
+    - name: Provision SageMath on Python 3.14
+      uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3.2.1
+      with:
+        environment-name: research-ci
+        create-args: >-
+          python=3.14
+          sage=10.9
+          pip
+        cache-environment: true
+        cache-downloads: true
     - name: Install uv (astral-sh/setup-uv v10.2.0)
       uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
       with:
         enable-cache: false
-    - name: Locate SageMath
+    - name: Install lattice database in the SageMath environment
       run: |
-        sage_bin=$(command -v sage)
-        sage_python=$("$sage_bin" -c 'import sys; print(sys.executable)')
-        echo "SAGE_BIN=$sage_bin" >> "$GITHUB_ENV"
-        echo "SAGE_PYTHON=$sage_python" >> "$GITHUB_ENV"
-    - name: Install lattice database dependencies into SageMath
-      run: |
-        uv pip install --python "$SAGE_PYTHON" 'pydantic>=2.11' 'pyyaml>=6.0' 'python-frontmatter>=1.1' 'jinja2>=3.1' 'python-flint>=0.9' 'cyclopts>=3' 'markdown-it-py>=4.2.0' 'pytest>=8'
-        "$SAGE_BIN" -python -c 'import cypari2, flint, frontmatter, jinja2, markdown_it, pydantic, yaml'
+        uv pip install --python "$(command -v python)" -e . pytest
+        python -c 'import sys, sage.all; assert sys.version_info >= (3, 14); print(sys.version); print(sage.all.version.version)'
     - name: Compute and certify uncertified card values
       env:
         LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
@@ -58,7 +54,7 @@ jobs:
         if [[ -n "$LATTICEDB_TAG" ]]; then
           args+=(--tag "$LATTICEDB_TAG")
         fi
-        timeout 330m env PYTHONPATH="../src:src" "$SAGE_BIN" -python -m latticedb certify "${args[@]}"
+        timeout 330m env PYTHONPATH="../src:src" python -m latticedb certify "${args[@]}"
     - name: Commit completed computations to main
       if: ${{ always() && steps.checkout.outcome == 'success' }}
       working-directory: ${{ github.workspace }}
