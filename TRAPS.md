@@ -281,6 +281,34 @@ The PARI stack is left at Sage's default, so a lattice like `D_20^+` that reache
 The wall time of the whole partition as a function of the number of lattices is untested.
 Depends on this: `Lattices(ZZ).isometry_classes`, and through it lattice-db duplicate detection.
 
+### The rational spinor norm costs nothing per isometry; reaching it through OSCAR costs about 25 s once per process
+
+Sage has no spinor norm of an isometry of a rational quadratic space: `sage/quadratic_forms/genera/spinor_genus.py` and `genus.py` hold only spinor operators and the spinor kernel of a genus, and `sage/groups/matrix_gps/` has nothing.
+PARI has no spinor norm function.
+GAP's `SpinorNorm` (`grp/classic.gi`) covers only finite fields of odd characteristic, but the `WallForm(form, m)` it calls works over any field, `QQ` included.
+The Wall form of `g` on `W = im(1 - g)` has discriminant the Zassenhaus spinor norm (Taylor, *The Geometry of the Classical Groups*, p. 163); with `form = 2G`, `DeterminantMat(WallForm(2G, g).form)` is in the square class of OSCAR's `rational_spinor_norm(...; b = 1)`, which is `b(v_1, v_1) ... b(v_m, v_m)` for `g = s_{v_1} ... s_{v_m}`.
+For `g = 1`, `WallForm` returns an empty form whose `DeterminantMat` raises; the spinor norm is 1, as GAP's own `SpinorNorm` returns.
+GAP and the preamble's isometry matrices both act on rows.
+
+Per-isometry cost, in ms per isometry, isometries of the Gram matrix by row action (`g G g^T = G`), SageMath 10.10.beta8 with GAP 4.16dev, Julia 1.10.11 with Oscar 1.7.1 through `sage-julia-bridge` 6625927, 2026-10-07, second of two runs:
+
+| specimen | rank | isometries | Sage, Wall form by hand | libgap `WallForm` | OSCAR through the bridge |
+| --- | --- | --- | --- | --- | --- |
+| `A1+A1` | 2 | 8 | 1.44 | 0.70 | 1.12 |
+| `U+A1` | 3 | 8 | 0.37 | 0.71 | 0.81 |
+| `A1+A1+A1` | 3 | 48 | 0.12 | 1.61 | 0.62 |
+| `E8` (reflection words) | 8 | 48 | 0.51 | 1.92 | 1.70 |
+| `U+U+E8` | 12 | 48 | 0.17 | 1.65 | 6.48 |
+
+The three routes agree on the square class of all 160 isometries.
+The first libgap `WallForm` call took 595 ms and 246 ms in two runs; starting Julia and defining the adapter module took 36.55 s and 29.37 s.
+Engine alone, OSCAR: Julia process start 1.76 s, `using Oscar` 21.50 s, the adapter module 1.64 s, the first call 1.43 s.
+Through the preamble, `L.spinor_kernel().cardinality()` for `L = NamedLattices.A1 + NamedLattices.A1` took 29.36 s after a 2.47 s session import; `|spinor kernel| = 4`; the first of eight spinor-norm calls took 27.08 s, of which the bridge's `eval` loading Oscar took 23.16 s, and the other seven took 0.80 s together; `O(L)` through GAP took 0.57 s.
+
+Reproduce with `direnv exec /home/dzack/research /home/dzack/gitclones/sage-dev-allopts/sage -python probe.py src/dzack_research/preamble/categories/lattice_engines.py --oscar`, where the probe enumerates the isometries of the specimens above and times the three routes on each.
+Route chosen: `_gap_rational_spinor_norm_class` in `src/dzack_research/preamble/categories/lattice_engines.py` computes the rational spinor norm by libgap `WallForm`; the number-field spinor norm stays on OSCAR, since GAP has no general number fields.
+Depends on this: `spinor_norm`, `spinor_norm_class`, `spinor_kernel` and `spinorial_kernel` of a lattice over `ZZ` or `QQ`.
+
 ## mypy
 
 ### A star import that rebinds a name is rejected, and the first binding wins
