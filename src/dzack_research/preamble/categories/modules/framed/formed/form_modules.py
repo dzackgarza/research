@@ -84,6 +84,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    Zmod,
+    _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -148,16 +150,20 @@ def _relation_morphism(ring, relation_rows):
 
 @cached_function(key=lambda formed_module: id(formed_module))
 def _represented_value_module(formed_module):
-    r"""Return the actual module object underlying a form's public value object.
+    r"""Return the actual module object underlying a form's public value object."""
+    return _represented_module(formed_module.value_module(), formed_module.base_ring())
 
-    A scalar-valued form publicly takes values in the ring ``R``.  When ``R``
-    is already carrying its canonical self-module structure it is returned
-    directly; otherwise ``R.regular_module()`` supplies the canonical rank-one
-    realization over itself.  Genuine module-valued forms are unchanged.
+
+@cached_function(key=lambda value, ring: (id(value), id(ring)))
+def _represented_module(value, ring):
+    r"""Return the ``ring``-module underlying the value object ``value`` of a pairing.
+
+    A scalar-valued pairing publicly takes values in the ring ``R``.  When
+    ``R`` is already carrying its canonical self-module structure it is
+    returned directly; otherwise ``R.regular_module()`` supplies the canonical
+    rank-one realization over itself.  Genuine module values are unchanged.
     """
 
-    value = formed_module.value_module()
-    ring = formed_module.base_ring()
     if value is ring:
         return ring.regular_module()
     if value in Modules(ring):
@@ -171,21 +177,24 @@ def _represented_value_module(formed_module):
                 f"the form value ring {value} does not carry the required represented {ring}-module structure"
             ) from error
     raise TypeError(
-        f"the form on {formed_module} takes values in {value}, which is neither an "
+        f"a pairing takes values in {value}, which is neither an "
         f"{ring}-module nor a ring receiving a map from {ring}, so it cannot serve as a value module"
     )
 
 
 def _value_as_module_element(formed_module, value):
-    represented = _represented_value_module(formed_module)
-    if represented is formed_module.value_module():
+    return _as_module_element(formed_module.value_module(), formed_module.base_ring(), value)
+
+
+def _as_module_element(values, ring, value):
+    r"""Return the pairing value ``value`` in ``values`` as an element of its represented ``ring``-module."""
+    represented = _represented_module(values, ring)
+    if represented is values:
         return represented(value)
     extension = represented.module_over_extension()
     unit_label = extension.module_generating_set()[0]
     return represented.wrap(
-        extension.linear_combination(
-            {unit_label: formed_module.value_module()(value)}
-        )
+        extension.linear_combination({unit_label: values(value)})
     )
 
 
@@ -935,14 +944,17 @@ class PairingObjects(OwnedCategoryOverBaseRing):
             r"""Return ``X -> Hom_R(Y,W)``, ``x |-> (y |-> b(x,y))``."""
             left = self.left_module()
             right = self.right_module()
-            values = _represented_value_module(self)
+            pairing_values = self._pairing_value_module()
+            ring = self.base_ring()
+            values = _represented_module(pairing_values, ring)
             internal_mor = right.module_category().Mor(right, values)
             return left.module_category().Mor(
                 left, internal_mor
             )._from_constructed_element_map(
                 lambda left_element: internal_mor._from_constructed_element_map(
-                    lambda right_element: _value_as_module_element(
-                        self,
+                    lambda right_element: _as_module_element(
+                        pairing_values,
+                        ring,
                         self.pairing(left_element, right_element),
                     )
                 )
@@ -953,14 +965,17 @@ class PairingObjects(OwnedCategoryOverBaseRing):
             r"""Return ``Y -> Hom_R(X,W)``, ``y |-> (x |-> b(x,y))``."""
             left = self.left_module()
             right = self.right_module()
-            values = _represented_value_module(self)
+            pairing_values = self._pairing_value_module()
+            ring = self.base_ring()
+            values = _represented_module(pairing_values, ring)
             internal_mor = left.module_category().Mor(left, values)
             return right.module_category().Mor(
                 right, internal_mor
             )._from_constructed_element_map(
                 lambda right_element: internal_mor._from_constructed_element_map(
-                    lambda left_element: _value_as_module_element(
-                        self,
+                    lambda left_element: _as_module_element(
+                        pairing_values,
+                        ring,
                         self.pairing(left_element, right_element),
                     )
                 )
@@ -2382,6 +2397,37 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 def O(self):  # noqa: E743 - standard mathematical notation O(A,q)
                     return self.automorphism_group()
 
+                @cached_method
+                def brown_invariant(self):
+                    r"""Return the Brown invariant ``Br(q)`` in ``ZZ/8ZZ`` from the Gauss sum.
+
+                    For a nondegenerate torsion quadratic form ``q: A -> QQ/2ZZ``
+                    the normalized Gauss sum is an eighth root of unity, and
+
+                    ``|A|^(-1/2) * sum_x exp(pi*i*q(x)) = exp(pi*i*Br(q)/4)``.
+
+                    By Milgram's formula, ``Br(q_L)`` is the signature of an even
+                    lattice ``L`` mod ``8``.  The sum is computed in ``QQbar``, so
+                    the comparison with each eighth root of unity is exact
+                    algebraic-number equality.
+                    """
+                    from sage.rings.qqbar import QQbar
+
+                    assert self.is_nondegenerate(), (
+                        f"the Brown invariant is defined by the Gauss sum of a nondegenerate torsion "
+                        f"quadratic form, but the bilinear form of {self} has a nonzero radical "
+                        f"{self.left_radical()}"
+                    )
+                    values = self.value_module()
+                    total = QQbar.zero()
+                    for element in self.elements():
+                        lifted = values.lift(self.q(element))
+                        value = _engine_element(lifted.parent(), lifted)
+                        total += QQbar.zeta(2 * value.denominator()) ** value.numerator()
+                    phase = total / QQbar(int(self.cardinality())).sqrt()
+                    zeta8 = QQbar.zeta(8)
+                    return Zmod(8)(next(residue for residue in range(8) if phase == zeta8**residue))
+
                 def b(self, left, right):
                     r"""The bilinear form ``b: A x A -> K/R`` of ``q: A -> K/2R``.
 
@@ -2398,6 +2444,18 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     polar = self.q(left + right) - self.q(left) - self.q(right)
                     bilinear_values = FractionFieldQuotients(self.base_ring())(1)
                     return bilinear_values(values.lift(polar) / values.fraction_field()(2))
+
+                def value_module(self):
+                    r"""Return ``K/2R``, the codomain of ``q``."""
+                    return self.form().codomain()
+
+                def _pairing_value_module(self):
+                    r"""Return ``K/R``, the value module of the pairing :meth:`b`.
+
+                    The correlation ``A -> Mor(A, K/R)``, ``x |-> b(x, -)``, is
+                    the map whose kernel is the radical of ``q``.
+                    """
+                    return FractionFieldQuotients(self.base_ring())(1)
 
                 def associated_bilinear_form(self):
                     r"""Forget ``q:A->K/2R`` to its bilinear form ``b:A^2->K/R``.
