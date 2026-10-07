@@ -64,21 +64,20 @@ def _coordinate_family_from_family(
     return indexed_family(indices, transported, name=name)
 
 
-def _coordinate_family_from_rows[CoordinateValueInputT](
+def _coordinate_rows[CoordinateValueInputT](
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
     rows: Iterable[Iterable[CoordinateValueInputT]],
     *,
     name: str,
-) -> IndexedFamily:
-    r"""Parse finite rectangular rows as a family indexed by ``left × right``.
+) -> tuple[tuple[ElementOfCategoryObject, ...], ...]:
+    r"""Read finite rectangular rows, in the order of the two framings, into ``value_module``.
 
-    Literal ingress: the rows are read once, in the order of the two framings,
-    and their entries converted into ``value_module``.  Read at most one
-    excess row or entry, so a malformed infinite iterator is rejected too.
+    Literal ingress: the rows are read once and their entries converted into
+    ``value_module``.  Read at most one excess row or entry, so a malformed
+    infinite iterator is rejected too.
     """
-    indices = _coordinate_index_set(left_labels, right_labels)
     left_size = int(left_labels.cardinality())
     right_size = int(right_labels.cardinality())
     entries = tuple(
@@ -90,6 +89,20 @@ def _coordinate_family_from_rows[CoordinateValueInputT](
             f"the coordinate array for {name} must have {left_size} rows of {right_size} entries each, but "
             f"the rows given have lengths {tuple(len(row) for row in entries)}"
         )
+    return entries
+
+
+def _coordinate_family_from_rows[CoordinateValueInputT](
+    left_labels: Parent,
+    right_labels: Parent,
+    value_module: Parent,
+    rows: Iterable[Iterable[CoordinateValueInputT]],
+    *,
+    name: str,
+) -> IndexedFamily:
+    r"""Parse finite rectangular rows as a family indexed by ``left × right``."""
+    indices = _coordinate_index_set(left_labels, right_labels)
+    entries = _coordinate_rows(left_labels, right_labels, value_module, rows, name=name)
 
     return indexed_family(
         indices,

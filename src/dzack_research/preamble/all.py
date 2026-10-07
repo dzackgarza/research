@@ -477,6 +477,7 @@ from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F40
     reflection_cosines,
 )
 from dzack_research.preamble.logic import Predicate, Propositions, Unknown, ask  # noqa: F401
+from dzack_research.preamble.validation import strict_checking  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
     RR,
     binomial,

@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.validation import validator
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -252,7 +253,6 @@ class Connection(Element):
             image,
             name=f"Connection generator values of {self.module()}",
         )
-        self._check_relations()
 
     def module(self):
         return self.parent().module()
@@ -288,8 +288,14 @@ class Connection(Element):
                 )
         return result
 
-    def _check_relations(self) -> None:
+    @validator
+    def validate_relations(self) -> None:
+        r"""Raise ``ValueError`` unless ``nabla`` sends every presentation relation to zero (``OWN-22``).
 
+        For a relation ``sum_i a_i e_i = 0`` the Leibniz rule gives
+        ``nabla(sum_i a_i e_i) = sum_i (a_i nabla(e_i) + e_i tensor d a_i)``,
+        which must vanish for ``nabla`` to be well defined on the module.
+        """
         module = self.module()
         if module not in ModulesWithChosenFinitePresentation(self.algebra()):
             return
@@ -496,7 +502,7 @@ class ConnectionSpace(RestrictedMorCategoryParent):
     def inclusion(self):
         return self._inclusion
 
-    def _element_constructor_(self, generator_images):
+    def _element_constructor_(self, generator_images, *, check=False):
         if isinstance(generator_images, Connection) and generator_images.parent() is self:
             return generator_images
         if isinstance(generator_images, Morphism):
@@ -517,7 +523,9 @@ class ConnectionSpace(RestrictedMorCategoryParent):
             if connection.parent() is self:
                 return connection
             return self(lambda label: connection.generator_image(label))
-        return Connection(self, generator_images)
+        connection = Connection(self, generator_images)
+        connection.validate_relations(check=check)
+        return connection
 
     def _repr_(self):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
@@ -557,32 +565,43 @@ class ConnectionMorphism(Element):
 
     def __init__(self, parent, images) -> None:
         Element.__init__(self, parent)
-        underlying = parent.arrow_set()(images)
-        if underlying.linearity_decision() is not True:
-            raise ValueError(
-                f"{underlying} is not a morphism of modules with connection: it must be linear over "
-                f"{underlying.domain().base_ring()}, and that is not known"
-            )
-        self._underlying_morphism = underlying
-        match self._horizontality_derivation():
-            case True:
-                pass
-            case False:
-                raise ValueError(
-                    f"{underlying} is not a morphism of modules with connection: it must commute with the "
-                    f"connections of {parent.domain_object()} and {parent.codomain_object()}, and it does not"
-                )
-            case _:
-                self._check_connection_square()
         self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
             parent.arrow_set(),
             self,
-            underlying,
+            parent.arrow_set()(images),
         )
 
     def _horizontality_derivation(self):
         r"""Return a construction-derived horizontality decision, or ``None``."""
         return None
+
+    @validator
+    def validate_linearity(self) -> None:
+        r"""Raise ``ValueError`` unless the underlying map is known to be linear (``OWN-22``)."""
+        underlying = self.underlying_linear_morphism()
+        if underlying.linearity_decision() is not True:
+            raise ValueError(
+                f"{underlying} is not a morphism of modules with connection: it must be linear over "
+                f"{underlying.domain().base_ring()}, and that is not known"
+            )
+
+    @cached_method
+    def horizontality_decision(self) -> bool:
+        r"""Return whether this map commutes with the connections, computed on first request."""
+        match self._horizontality_derivation():
+            case None:
+                return self._horizontal_on_generators()
+            case derived:
+                return derived
+
+    @validator
+    def validate_horizontality(self) -> None:
+        r"""Raise ``ValueError`` unless ``nabla_F f = (f tensor 1) nabla_E`` (``OWN-22``)."""
+        if self.horizontality_decision() is False:
+            raise ValueError(
+                f"{self.underlying_linear_morphism()} is not a morphism of modules with connection: it "
+                f"must commute with the connections of {self.domain()} and {self.codomain()}, and it does not"
+            )
 
     def domain(self):
         return self.parent().domain_object()
@@ -615,7 +634,7 @@ class ConnectionMorphism(Element):
         underlying = self.underlying_linear_morphism() * other.underlying_linear_morphism()
         return other.domain().Mor(self.codomain())._from_horizontal_morphism(underlying)
 
-    def _check_connection_square(self) -> None:
+    def _horizontal_on_generators(self) -> bool:
         domain_connection = self.domain().connection()
         codomain_connection = self.codomain().connection()
         if domain_connection.algebra() is not codomain_connection.algebra():
@@ -647,16 +666,12 @@ class ConnectionMorphism(Element):
             f"so {domain_module} must have a chosen finite presentation over {ring}, but it is in "
             f"{domain_module.category()}"
         )
-        for label in domain_module.module_generating_set():
-            generator = domain_module.module_generator(label)
-            match codomain_connection(underlying(generator)) == induced(domain_connection(generator)):
-                case True:
-                    pass
-                case _:
-                    raise ValueError(
-                        f"{underlying} is not a morphism of modules with connection: it must commute with "
-                        f"the connections, but it fails on the generator {generator} of {domain_module}"
-                    )
+        return all(
+            codomain_connection(underlying(generator)) == induced(domain_connection(generator))
+            for generator in (
+                domain_module.module_generator(label) for label in domain_module.module_generating_set()
+            )
+        )
 
 
 class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
@@ -734,14 +749,17 @@ class ConnectionMor(RestrictedMorCategoryParent):
             codomain,
         )
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
         if isinstance(images, ConnectionMorphism) and images.parent() is self:
             return images
         if isinstance(images, HorizontalConnectionUnderlyingMorphism):
             structured = images.connection_morphism()
             if structured.parent() is self:
                 return structured
-        return ConnectionMorphism(self, images)
+        morphism = ConnectionMorphism(self, images)
+        morphism.validate_linearity(check=check)
+        morphism.validate_horizontality(check=check)
+        return morphism
 
     def _from_horizontal_morphism(self, underlying):
         return _ConstructedHorizontalConnectionMorphism(self, underlying)

@@ -75,6 +75,7 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
     FractionFieldQuotients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    MatrixSpaces,
     Modules,
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
@@ -94,6 +95,8 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.validation import validator
 
 for _form_axiom in ("Symmetric", "Nondegenerate", "Unimodular", "Even"):
     if _form_axiom not in all_axioms:
@@ -183,44 +186,57 @@ def _mapped_value(domain, codomain, value_morphism, value):
 def _form_square_commutes(domain, codomain, module_morphism, value_morphism) -> bool:
     r"""Whether ``h(b_M(x, y)) = b_N(f(x), f(y))`` for the pair ``(f, h)`` from ``M`` to ``N``.
 
-    A bilinear form is determined by its values on pairs of module generators,
-    and a quadratic form ``q`` by ``q(s)`` and ``q(s + t)`` on generators, so
-    the square is decided on those finitely many elements.
+    When both forms are bilinear and ring-valued, ``h`` is the identity and
+    ``f`` is a map of framed free modules of finite rank, the square is the
+    tensor equation ``f^* G_N = G_M``: the Gram tensor of ``N`` pulled back
+    along ``f`` is the Gram tensor of ``M``, and :meth:`Tensor.pullback` owns
+    that contraction (``OWN-24``).  Otherwise no Gram tensor states the
+    square, and it is decided on generators: a bilinear form is determined by
+    its values on pairs of module generators, and a quadratic form ``q`` by
+    ``q(s)`` and ``q(s + t)`` on generators.
     """
     source_form = domain.form()
     target_form = codomain.form()
-    source_generators = tuple(domain.module_generators())
-
-    def map_value(value):
-        return _mapped_value(domain, codomain, value_morphism, value)
-
-    if _is_bilinear_form(source_form):
-        if not _is_bilinear_form(target_form):
+    values = value_morphism.domain()
+    match _is_bilinear_form(source_form), _is_quadratic_form(source_form):
+        case True, _ if not _is_bilinear_form(target_form):
             raise TypeError(
                 f"{domain} has a bilinear form, so a morphism out of it must land in a "
                 f"module with a bilinear form, but {codomain} has form {target_form}"
             )
-        return all(
-            map_value(domain.b(left, right))
-            == codomain.b(module_morphism(left), module_morphism(right))
-            for left in source_generators
-            for right in source_generators
-        )
-    if _is_quadratic_form(source_form):
-        if not _is_quadratic_form(target_form):
+        case _, True if not _is_quadratic_form(target_form):
             raise TypeError(
                 f"{domain} has a quadratic form, so a morphism out of it must land in a "
                 f"module with a quadratic form, but {codomain} has form {target_form}"
             )
-        probes = source_generators + tuple(
-            left + right
-            for index, left in enumerate(source_generators)
-            for right in source_generators[index + 1 :]
-        )
-        return all(
-            map_value(domain.norm(element)) == codomain.norm(module_morphism(element))
-            for element in probes
-        )
+        case True, _ if (
+            source_form.codomain() in OwnedRings()
+            and value_morphism is values.module_category().Mor(values, values).identity()
+            and domain.module_category().Mor(domain, codomain) in MatrixSpaces(domain.base_ring())
+        ):
+            return codomain.gram_tensor().pullback(module_morphism).is_equal_tensor(
+                domain.gram_tensor()
+            )
+        case True, _:
+            source_generators = tuple(domain.module_generators())
+            return all(
+                _mapped_value(domain, codomain, value_morphism, domain.b(left, right))
+                == codomain.b(module_morphism(left), module_morphism(right))
+                for left in source_generators
+                for right in source_generators
+            )
+        case _, True:
+            source_generators = tuple(domain.module_generators())
+            probes = source_generators + tuple(
+                left + right
+                for index, left in enumerate(source_generators)
+                for right in source_generators[index + 1 :]
+            )
+            return all(
+                _mapped_value(domain, codomain, value_morphism, domain.norm(element))
+                == codomain.norm(module_morphism(element))
+                for element in probes
+            )
     raise TypeError(
         f"a morphism of formed modules requires a bilinear or quadratic form on its domain, "
         f"but {domain} has form {source_form}"
@@ -231,9 +247,12 @@ class FormedModuleMorphism:
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
-    and a module map on the value objects, satisfying the form square.  The
-    form is preserved exactly, and the morphism is an isometry onto its image,
-    exactly when ``h`` is the identity; :meth:`preserves_form_exactly` asks that.
+    and a module map on the value objects, satisfying the form square
+    ``h(b(x,y)) = b'(f(x),f(y))``.  Construction states the square and does not
+    compute it (``OWN-22``); :meth:`preserves_forms` computes it when asked.
+    The form is preserved exactly, and the morphism is an isometry onto its
+    image, exactly when ``h`` is the identity; :meth:`preserves_form_exactly`
+    asks that.
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
@@ -263,7 +282,6 @@ class FormedModuleMorphism:
             )
         self._value_morphism = value_morphism
         super().__init__(parent, module_morphism)
-        self._check_form_square()
 
     def value_morphism(self):
         return self._value_morphism
@@ -281,14 +299,24 @@ class FormedModuleMorphism:
     def map_value(self, value):
         return _mapped_value(self.domain(), self.codomain(), self.value_morphism(), value)
 
-    def _check_form_square(self) -> None:
-        if not _form_square_commutes(
+    def preserves_forms(self) -> bool:
+        r"""Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on the module generators.
+
+        The caller's diagnostic of ``OWN-22``: construction does not compute
+        it, and its answer is an untrusted computation.
+        """
+        return _form_square_commutes(
             self.domain(), self.codomain(), self, self.value_morphism()
-        ):
+        )
+
+    @validator
+    def validate_form_square(self) -> None:
+        r"""Raise ``ValueError`` unless ``h(b(x,y)) = b'(f(x),f(y))`` (``OWN-22``)."""
+        if not self.preserves_forms():
             raise ValueError(
                 f"({self}, {self.value_morphism()}) is not a morphism of formed modules "
-                f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not equal "
-                f"the target form on the images of the generators"
+                f"{self.domain()} -> {self.codomain()}: the value map applied to the source form "
+                f"is not the target form pulled back along the module map"
             )
 
     def __eq__(self, other) -> bool:
@@ -349,6 +377,18 @@ class FormEmbedding:
 
     def is_quadratic(self) -> bool:
         return self._quadratic
+
+    @validator
+    def validate_injectivity(self) -> None:
+        r"""Raise ``ValueError`` unless the module map is known to be injective (``OWN-22``)."""
+        domain = self.domain()
+        codomain = self.codomain()
+        injective = domain.module_category().Mor(domain, codomain)(self).is_injective()
+        if injective is not True:
+            raise ValueError(
+                f"{self} is not a form-preserving embedding {domain} -> {codomain}: "
+                f"its module map is not known to be injective (is_injective returned {injective})"
+            )
 
     @cached_method
     def orthogonal_complement(self):
@@ -427,9 +467,11 @@ class FormEmbeddingMor(CategoricalMor):
             )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
-    def _element_constructor_(self, images, *, quadratic: bool | None = None):
+    def _element_constructor_(self, images, *, quadratic: bool | None = None, check=False):
+        domain = self.domain()
+        codomain = self.codomain()
         if isinstance(images, FormEmbedding):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+            if images.domain() is not domain or images.codomain() is not codomain:
                 raise ValueError(
                     f"{images} is an embedding {images.domain()} -> {images.codomain()}, "
                     f"not an element of {self}"
@@ -438,8 +480,6 @@ class FormEmbeddingMor(CategoricalMor):
                 return images
             images = domain.module_category().Mor(domain, codomain)(images)
 
-        domain = self.domain()
-        codomain = self.codomain()
         if quadratic is None:
             ring = domain.base_ring()
             quadratic = domain in QuadraticFormModules(ring)
@@ -456,12 +496,8 @@ class FormEmbeddingMor(CategoricalMor):
             values.module_category().Mor(values, values).identity(),
             quadratic=quadratic,
         )
-        injective = embedding.is_injective()
-        if injective is not True:
-            raise ValueError(
-                f"{module_morphism} is not a form-preserving embedding {domain} -> {codomain}: "
-                f"the module map is not known to be injective (is_injective returned {injective})"
-            )
+        embedding.validate_form_square(check=check)
+        embedding.validate_injectivity(check=check)
         return embedding
 
     def super_categories(self):
@@ -495,7 +531,7 @@ class FormedModuleMor(CategoricalMor):
             codomain,
         )
 
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, *, check=False):
 
         explicit_pair = (
             isinstance(datum, tuple)
@@ -536,7 +572,9 @@ class FormedModuleMor(CategoricalMor):
                 )
             datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
         module_morphism, value_morphism = datum
-        return self.element_class(self, module_morphism, value_morphism)
+        morphism = self.element_class(self, module_morphism, value_morphism)
+        morphism.validate_form_square(check=check)
+        return morphism
 
     def preserves_forms(self, module_morphism) -> bool:
         r"""Whether the module map ``f: M -> N`` preserves the forms: ``b_N(f(x), f(y)) = b_M(x, y)``.
@@ -638,7 +676,6 @@ class FiberedFormedModuleMorphism:
             domain,
         )
         super().__init__(parent, parent.ring_map(), compatible)
-        self._check_form_square()
 
     def ring_map(self):
         return self.parent().ring_map()
@@ -656,52 +693,27 @@ class FiberedFormedModuleMorphism:
             self.codomain(), self.value_morphism()(source_element)
         )
 
-    def _check_form_square(self) -> None:
-        changed = self.base_changed_domain()
-        module_morphism = self.linearization()
-        source_form = changed.form()
-        target_form = self.codomain().form()
-        generators = tuple(changed.module_generators())
-        if _is_bilinear_form(source_form):
-            if not _is_bilinear_form(target_form):
-                raise TypeError(
-                    f"{changed} has a bilinear form, so a morphism out of it must land in a "
-                    f"module with a bilinear form, but {self.codomain()} has form {target_form}"
-                )
-            commutes = all(
-                self.map_value(changed.b(left, right))
-                == self.codomain().b(
-                    module_morphism(left), module_morphism(right)
-                )
-                for left in generators
-                for right in generators
-            )
-        elif _is_quadratic_form(source_form):
-            if not _is_quadratic_form(target_form):
-                raise TypeError(
-                    f"{changed} has a quadratic form, so a morphism out of it must land in a "
-                    f"module with a quadratic form, but {self.codomain()} has form {target_form}"
-                )
-            probes = generators + tuple(
-                left + right
-                for index, left in enumerate(generators)
-                for right in generators[index + 1 :]
-            )
-            commutes = all(
-                self.map_value(changed.norm(element))
-                == self.codomain().norm(module_morphism(element))
-                for element in probes
-            )
-        else:
-            raise TypeError(
-                f"a morphism of formed modules over {self.ring_map()} requires a bilinear or quadratic "
-                f"form on its domain, but {changed} has form {source_form}"
-            )
-        if not commutes:
+    def preserves_forms(self) -> bool:
+        r"""Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on generators of the scalar extension.
+
+        The caller's diagnostic of ``OWN-22``: construction does not compute
+        it, and its answer is an untrusted computation.
+        """
+        return _form_square_commutes(
+            self.base_changed_domain(),
+            self.codomain(),
+            self.linearization(),
+            self.value_morphism(),
+        )
+
+    @validator
+    def validate_form_square(self) -> None:
+        r"""Raise ``ValueError`` unless ``h(b(x,y)) = b'(f(x),f(y))`` on the scalar extension (``OWN-22``)."""
+        if not self.preserves_forms():
             raise ValueError(
-                f"({module_morphism}, {self.value_morphism()}) is not a morphism of formed modules "
-                f"{changed} -> {self.codomain()} over {self.ring_map()}: the value map applied to the source "
-                f"form does not equal the target form on the images of the generators"
+                f"({self.linearization()}, {self.value_morphism()}) is not a morphism of formed modules "
+                f"{self.base_changed_domain()} -> {self.codomain()} over {self.ring_map()}: the value map "
+                f"applied to the source form is not the target form pulled back along the module map"
             )
 
     def __mul__(self, other):
@@ -794,9 +806,11 @@ class FiberedFormedModuleMor(CategoricalMor):
         r"""The lower arrow theory is the varying-ring semilinear module Mor."""
         return [self.module_mor()]
 
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, *, check=False):
         module_morphism, value_morphism = datum
-        return self.element_class(self, module_morphism, value_morphism)
+        morphism = self.element_class(self, module_morphism, value_morphism)
+        morphism.validate_form_square(check=check)
+        return morphism
 
     def identity(self):
         if self.domain() is not self.codomain():
@@ -1181,11 +1195,23 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _formed_form(self):
-            r"""The selected form read on this module: its arguments coerce to the unformed module."""
+            r"""The selected form read on this module.
+
+            This module is built on the framing of the unformed module, so a
+            bilinear form with values in a ring on a finite framing reads here
+            with the same Gram tensor.  Otherwise its arguments coerce to the
+            unformed module.
+            """
             form = self.form()
             module = self.unformed_module()
             if form.module() is self:
                 return form
+            if (
+                _is_bilinear_form(form)
+                and form.codomain() in OwnedRings()
+                and _has_finite_framing(module)
+            ):
+                return self.bilinear_forms(self.value_module())(form.gram_tensor())
             if _is_quadratic_form(form):
                 return self.quadratic_map(
                     self.value_module(),
@@ -1267,18 +1293,32 @@ class FormModules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, codomain)
 
         def b(self, left, right):
-            r"""Evaluate the (polar) bilinear form on two elements of this module."""
+            r"""Evaluate the (polar) bilinear form on two elements of this module.
+
+            On a finite framing with values in a ring, ``b(x, y)`` is one
+            contraction ``G(x, y) = sum_{i,j} G_{ij} x^i y^j`` of the Gram
+            tensor with the coordinate vectors of ``x`` and ``y`` (`OWN-24`).
+            """
             if left not in self or right not in self:
                 raise TypeError(
                     f"the form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
                 )
             form = self.form()
-            if form.module() is not self:
-                module = self.unformed_module()
-                left, right = module(left), module(right)
-            if _is_quadratic_form(form):
-                return form.b(left, right)
-            return form(left, right)
+            match _is_quadratic_form(form):
+                case False if form.codomain() in OwnedRings() and _has_finite_framing(self):
+                    # This module is constructed on the framing of the form's
+                    # module, so its coordinates are the Gram tensor's indices.
+                    framing = self.framing_morphism()
+                    values = form.codomain()
+                    return form.gram_tensor().contract(
+                        tensor.vector(values, tuple(framing.lift(left))),
+                        tensor.vector(values, tuple(framing.lift(right))),
+                    )
+                case is_quadratic:
+                    module = form.module()
+                    if module is not self:
+                        left, right = module(left), module(right)
+                    return form.b(left, right) if is_quadratic else form(left, right)
 
         def norm(self, element):
             r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""
@@ -1329,9 +1369,13 @@ class FormModules(OwnedCategoryOverBaseRing):
             return tensor.lower_index(self, slot)
 
         def twist(self, scalar):
-
+            r"""This module with the form scaled by ``scalar``: Gram tensor ``m G`` when it has one."""
             form = self._formed_form()
             if _is_bilinear_form(form):
+                if form.codomain() in OwnedRings() and _has_finite_framing(form.module()):
+                    return FormModules(self.base_ring())(
+                        self.bilinear_forms(self.value_module())(scalar * form.gram_tensor())
+                    )
                 if _has_finite_framing(form.module()):
                     values = form.coordinate_values().map(
                         lambda value: scalar * value,

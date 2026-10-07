@@ -37,10 +37,14 @@ class _ScalarExtensionModuleMorphism(ModuleMorphism):
             scalar_extension_of=source_morphism,
             scalar_extension_functor=functor,
         )
-        # Scalar extension is functorial on genuinely linear maps.  When the
-        # input is only conditional, the image carries exactly that condition;
-        # reconstructing it from generator images must not promote it to True.
-        self._linearity_decision = source_morphism.linearity_decision()
+
+    def linearity_decision(self):
+        r"""Scalar extension is functorial on linear maps: ``S tensor_R f`` has exactly ``f``'s decision.
+
+        Reconstructing it from generator images must not promote a
+        conditional input to ``True``.
+        """
+        return self._source_morphism.linearity_decision()
 
 
 class _RestrictionModuleMorphism(ModuleMorphism):

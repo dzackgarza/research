@@ -277,14 +277,12 @@ class Tensor:
         return index_rank_family(self._index_ranks())
 
     def _upper_index_ranks(self) -> tuple:
-        r"""Return the dimensions of the contravariant indices."""
-        p, _q = self.tensor_type()
-        return self._index_ranks()[:p]
+        r"""Return the dimensions of the contravariant indices, those of this tensor's module."""
+        return self.parent()._upper_index_ranks()
 
     def _lower_index_ranks(self) -> tuple:
-        r"""Return the dimensions of the covariant indices."""
-        p, _q = self.tensor_type()
-        return self._index_ranks()[p:]
+        r"""Return the dimensions of the covariant indices, those of this tensor's module."""
+        return self.parent()._lower_index_ranks()
 
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return $(p,q)$: $p$ contravariant indices and $q$ covariant indices.
@@ -578,6 +576,16 @@ class Tensor:
                     f"covariant tensor contraction takes, in a slot of rank {rank}, "
                     f"a vector of {slot_module}"
                 )
+        # The ubiquitous pairing G(x, y) = x^t G y is one product in the
+        # selected exact matrix backend, crossed back into the owned ring.
+        if len(vectors) == 2:
+            left, right = vectors
+            return _owned_engine_element(
+                self.base_ring(),
+                _engine_component_vector(left)
+                * _engine_component_matrix(self)
+                * _engine_component_vector(right),
+            )
         from itertools import product as cartesian_product
 
         return sum(
@@ -1073,11 +1081,31 @@ def _engine_component_matrix(value):
     )
 
 
+def _engine_row_action_matrix(morphism):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): a morphism as Sage's row action.
+
+    Publicly a linear map ``f: V -> W`` between finite framed-free modules acts
+    on coordinate columns: column ``j`` of its matrix holds the coordinates of
+    ``f(e_j)``.  Sage's matrix groups act on coordinate rows from the right, so
+    this lowering converts the convention once, by one transpose.  Row ``i`` of
+    the result is the coordinate row of ``f(e_i)``; raising reads it so.
+    """
+    matrix = morphism.domain().module_category().Mor(
+        morphism.domain(), morphism.codomain()
+    )(morphism)
+    assert matrix.parent() in MatrixSpaces(matrix.parent().base_ring()), (
+        f"{morphism} has no matrix: its domain {morphism.domain()} and codomain "
+        f"{morphism.codomain()} must be free modules of finite rank with a chosen basis, "
+        f"but the module maps between them form {matrix.parent()}"
+    )
+    return _engine_module_matrix(matrix).transpose()
+
+
 def _engine_component_vector(value):
     r"""Private engine adapter (`OWN-06`): the Sage vector of a one-index tensor.
 
     The one crossing of a one-index tensor, of either variance, into Sage's
-    vector backend; its only caller is the plain-text component display.
+    vector backend; its caller is the evaluation of a pairing on two vectors.
     """
     if value.tensor_order() != 1:
         raise TypeError(
