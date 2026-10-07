@@ -2342,7 +2342,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             level = SageZZ.one()
             for denominator in denominators:
                 level = level.lcm(SageZZ(denominator))
-            return level
+            return _own_ring(SageZZ)(int(level))
 
         def bad_reduction_primes(self):
             r"""Return the primes of bad reduction of the quadric ``Q(x) = n``: the primes dividing ``2 det(L)``.
