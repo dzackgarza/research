@@ -3028,18 +3028,52 @@ class Lattices(OwnedCategoryOverBaseRing):
             Eichler's criterion each class carries at most one stable orbit;
             whether a covering class is attained is a separate question.
             """
+            from sage.matrix.constructor import matrix as sage_matrix
+            from sage.modules.free_module_element import vector as sage_vector
+            from sage.rings.rational_field import QQ as SageQQ
+
             discriminant = self.discriminant_group()
             values = discriminant.quadratic_value_module()
+            bilinear_values = discriminant.bilinear_value_module()
             field = self.base_ring().fraction_field()
             target = field(square)
-            return finite_ordered_set(
-                tuple(
-                    element
-                    for element in discriminant.elements()
-                    if discriminant.q(element)
-                    == values(target / field(element.additive_order()) ** 2)
-                )
+            engine = discriminant._smith_engine()
+            assert engine is not None, (
+                f"the covering discriminant classes of {self} cannot be enumerated: "
+                f"the Smith normal form of {discriminant} is not available"
             )
+
+            generators = tuple(discriminant.module_generators())
+            gram = sage_matrix(SageQQ, len(generators), len(generators))
+            for left_position, left in enumerate(generators):
+                gram[left_position, left_position] = SageQQ(
+                    _engine_element(field, values.lift(discriminant.q(left)))
+                )
+                for right_position in range(left_position):
+                    pairing = discriminant.b(left, generators[right_position])
+                    representative = SageQQ(
+                        _engine_element(field, bilinear_values.lift(pairing))
+                    )
+                    gram[left_position, right_position] = representative
+                    gram[right_position, left_position] = representative
+
+            targets_by_order = {}
+            matches = []
+            for position in range(int(engine.cardinality())):
+                engine_element = engine[position]
+                order = int(engine_element.additive_order())
+                target_value = targets_by_order.get(order)
+                if target_value is None:
+                    target_value = values(target / field(order) ** 2)
+                    targets_by_order[order] = target_value
+                coordinates = sage_vector(SageQQ, tuple(engine_element.lift()))
+                raw_value = (coordinates * gram * coordinates.column())[0]
+                value = values(_owned_engine_element(field, raw_value))
+                if value == target_value:
+                    matches.append(
+                        discriminant._from_smith_engine_element(engine_element)
+                    )
+            return finite_ordered_set(tuple(matches))
 
         def hyperbolic_plane_summand_count(self):
             r"""Return the number of represented indecomposable hyperbolic-plane summands."""
