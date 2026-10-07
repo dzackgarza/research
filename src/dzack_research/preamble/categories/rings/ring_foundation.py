@@ -2558,6 +2558,62 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return self
             return self.free_module(1)
 
+        def _module_basis_along(self, ring_map):
+            r"""A basis of ``Res_f(S)`` over ``R`` for ``f = ring_map: R -> S = self``, or ``None``.
+
+            Protected ring contract (``OWN-05``).  Purpose: restriction of
+            scalars frames ``Res_f(M)`` by the products ``s_i m_j`` of a basis
+            ``(s_i)`` of ``S`` over ``R`` along ``f`` with a framing ``(m_j)`` of
+            ``M`` over ``S``.  ``Res_f(S)`` is itself the object under
+            construction there, so it has no public framing to ask; the basis
+            comes from how ``S`` is realized, which only ``S`` may read.
+
+            Implementers are ring owners: this default, and the owners whose
+            realization supplies a basis along a coefficient map
+            (``QuotientRings``, ``OwnedNumberFields``).  Callers are
+            ``_restricted_scalars_view`` and ``RestrictedScalarsModules``.
+
+            The result is a ``_NativeModuleBasis``.  Its source is a free
+            ``R``-module ``F_R(I)`` with a chosen basis, ``image(i)`` is
+            ``s_i`` in ``S``, and ``coordinates(s)`` is the finitely supported
+            ``{i: c_i}`` with ``c_i`` in ``R`` and ``s = sum_i f(c_i) s_i``,
+            unique for each ``s``.  ``None`` states that no basis along this
+            ``f`` is selected, never that ``Res_f(S)`` is not free.
+
+            The default is the basis of ``S`` as an ``R``-algebra framed over
+            ``R``, when ``f`` is its structure morphism ``R -> Z(S) -> S``.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+            from dzack_research.preamble.categories.modules.native_modules import (
+                _NativeModuleBasis,
+            )
+
+            scalars = _owned_ring(ring_map.domain())
+            match (
+                self.base_ring() is scalars
+                and self in FramedFreeModules(scalars)
+                and self in Algebras(scalars).Associative().Unital()
+            ):
+                case False:
+                    return None
+            structure = self.algebra_structure_morphism()
+            center = structure.codomain()
+            coefficient_map = structure if center is self else center.inclusion() * structure
+            match _ring_morphisms_equal(ring_map, coefficient_map):
+                case True:
+                    framing = self.framing_morphism()
+
+                    def coordinates(element):
+                        vector = framing.lift(element)
+                        return {label: vector(label) for label in vector.support().domain()}
+
+                    return _NativeModuleBasis(self.framing_source(), self.module_generator, coordinates)
+                case _:
+                    return None
+
         def __getitem__(self, names):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""
             from dzack_research.preamble.categories.algebras.group_algebras import (

@@ -3621,10 +3621,12 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
     r"""Modules ``Res_f(M)``: an ``S``-module ``M`` read over ``R`` along ``f: R -> S``.
 
     The datum is the pair ``(M, f)``.  The underlying additive group is that
-    of ``M`` and ``r`` acts as ``f(r)``.  When ``S`` is finite free over ``R``
-    on ``(s_i)`` and ``M`` is finitely framed over ``S`` on ``(m_j)``, the
-    products ``s_i m_j`` frame ``Res_f(M)``, and a chosen finite presentation
-    of ``M`` induces one of ``Res_f(M)``.
+    of ``M`` and ``r`` acts as ``f(r)``.  When ``Res_f(S)`` is finite free
+    over ``R`` on ``(s_i)`` and ``M`` is finitely framed over ``S`` on
+    ``(m_j)``, the products ``s_i m_j`` frame ``Res_f(M)``, and a chosen
+    finite presentation of ``M`` induces one of ``Res_f(M)``.  The basis
+    ``(s_i)`` is selected by ``S`` along ``f`` and retained as
+    ``scalar_basis``.
     """
 
     def an_object(self):
@@ -3690,9 +3692,12 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             {"base_ring", "module_generating_set", "module_generator_function"}
         )
 
-        def __init__(self, module_over_extension, ring_map, framing_source=None, **rest) -> None:
+        def __init__(
+            self, module_over_extension, ring_map, framing_source=None, scalar_basis=None, **rest
+        ) -> None:
             self._module_over_extension = module_over_extension
             self._ring_map = ring_map
+            self._scalar_basis = scalar_basis
             ring = _owned_ring(ring_map.domain())
             framing = {}
             if framing_source is not None:
@@ -3809,7 +3814,7 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             assert label in labels, f"{label!r} does not index a generator of {self}; its generators are indexed by {labels}"
             label = labels(label)
             extension_module = self.module_over_extension()
-            scalar = self.extension_ring().module_generator(label.component(0))
+            scalar = self._scalar_basis.image(label.component(0))
             module_generator = extension_module.module_generator(label.component(1))
             return self.element_class(
                 self,
@@ -3822,15 +3827,12 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             module_coordinates = self.module_over_extension().framing_morphism().lift(
                 element.underlying_element()
             )
-            scalar_framing = self.extension_ring().framing_morphism()
             framing = self.module_generating_set()
             coefficients = {}
             for module_label in module_coordinates.support().domain():
-                scalar_coordinates = scalar_framing.lift(module_coordinates(module_label))
-                for scalar_label in scalar_coordinates.support().domain():
-                    coefficients[framing((scalar_label, module_label))] = self.base_ring()(
-                        scalar_coordinates(scalar_label)
-                    )
+                scalar_coordinates = self._scalar_basis.coordinates(module_coordinates(module_label))
+                for scalar_label, value in scalar_coordinates.items():
+                    coefficients[framing((scalar_label, module_label))] = self.base_ring()(value)
             return coefficients
 
         def _represented_kernel_of_morphism(self, morphism):
@@ -3900,10 +3902,9 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             return f"{self.module_over_extension()} restricted to {self.base_ring()} along {self.ring_map()}"
 
 
-def _restricted_scalar_framing_labels(module):
-    r"""Return the framing labels ``I x J`` of ``Res_f(M)`` for ``S`` framed on ``I``, ``M`` on ``J``."""
-    extension_ring = _owned_ring(module.base_ring())
-    scalar_labels = extension_ring.module_generating_set()
+def _restricted_scalar_framing_labels(module, scalar_basis):
+    r"""Return the framing labels ``I x J`` of ``Res_f(M)`` for ``Res_f(S)`` framed on ``I``, ``M`` on ``J``."""
+    scalar_labels = scalar_basis.source().module_generating_set()
     module_labels = module.module_generating_set()
     return Sets().product(
         indexed_family(
@@ -3913,15 +3914,15 @@ def _restricted_scalar_framing_labels(module):
     )
 
 
-def _restricted_scalar_presentation(module, ring_map, labels):
+def _restricted_scalar_presentation(module, ring_map, labels, scalar_basis):
     r"""Return the relation morphism of ``Res_f(M)`` induced by the one of ``M``.
 
-    Suppose ``S`` is finite free over ``R`` on ``(s_i)`` and ``M`` is
+    Suppose ``Res_f(S)`` is finite free over ``R`` on ``(s_i)`` and ``M`` is
     presented over ``S`` by ``r: F_S(K) -> F_S(J)``.  The restricted
     module is generated over ``R`` by ``s_i m_j``.  For every relation
     ``r(e_k)`` and every ``s_i`` the relation ``s_i r(e_k)`` is expanded
-    in the selected ``R``-basis of ``S``.  These generate the restriction
-    of the ``S``-relation submodule to ``R``.
+    in the basis ``scalar_basis`` of ``Res_f(S)``.  These generate the
+    restriction of the ``S``-relation submodule to ``R``.
     """
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _morphism_on_elements,
@@ -3929,7 +3930,7 @@ def _restricted_scalar_presentation(module, ring_map, labels):
 
     ring = _owned_ring(ring_map.domain())
     extension_ring = _owned_ring(module.base_ring())
-    scalar_labels = extension_ring.module_generating_set()
+    scalar_labels = scalar_basis.source().module_generating_set()
     relations = module._selected_relation_morphism()
     assert relations is not None, (
         f"the restriction of scalars of {module} needs the relations of its finite presentation, "
@@ -3938,15 +3939,14 @@ def _restricted_scalar_presentation(module, ring_map, labels):
     generators = ring._fresh_free_module_on(labels)
 
     def restricted_relation(relation_label, scalar_label):
-        scalar_generator = extension_ring.module_generator(scalar_label)
+        scalar_generator = scalar_basis.image(scalar_label)
         relation = relations(relations.domain().module_generator(relation_label)).to_vector()
         coefficients = {}
         for module_label in relation.support().domain():
             product = extension_ring(scalar_generator * extension_ring(relation(module_label)))
-            product_coordinates = extension_ring.framing_morphism().lift(product)
-            for output_scalar_label in product_coordinates.support().domain():
+            for output_scalar_label, value in scalar_basis.coordinates(product).items():
                 label = labels(lambda index: output_scalar_label if int(index) == 0 else module_label)
-                coefficients[label] = coefficients.get(label, ring.zero()) + ring(product_coordinates(output_scalar_label))
+                coefficients[label] = coefficients.get(label, ring.zero()) + ring(value)
         return generators.linear_combination({label: value for label, value in coefficients.items() if value})
 
     restricted = tuple(
@@ -3969,8 +3969,10 @@ def _restricted_scalars_view(
     r"""Return ``Res_f(M)`` along ``f: R -> S``, placed by what ``M`` and ``S`` already are.
 
     ``Res_f(M)`` is framed, finitely generated and finitely presented over
-    ``R`` when ``S`` is finite free over ``R`` and ``M`` is so over ``S``; a
-    selected inclusion places it among the subobjects.
+    ``R`` when ``Res_f(S)`` is finite free over ``R`` and ``M`` is so over
+    ``S``; a selected inclusion places it among the subobjects.  The basis of
+    ``Res_f(S)`` is the one ``S`` selects along ``f``, so it is taken along
+    the given map and never from ``S``'s structure over its own base ring.
     """
     assert _engine_ring(ring_map.codomain()) is _engine_ring(module.base_ring()), (
         f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the base ring "
@@ -3985,27 +3987,32 @@ def _restricted_scalars_view(
     placement = [RestrictedScalarsModules(base_ring)]
     data = {"module_over_extension": module, "ring_map": ring_map}
 
-    framed_over_finite_free_scalars = (
-        module.has_selected_module_resolution()
-        and module in Modules(extension_ring).FinitelyGenerated()
-        and extension_ring in FinitelyGeneratedFreeModules(base_ring)
+    finitely_framed = module.has_selected_module_resolution() and module in Modules(extension_ring).FinitelyGenerated()
+    scalar_basis = extension_ring._module_basis_along(ring_map) if finitely_framed else None
+    framed_over_finite_free_scalars = scalar_basis is not None and scalar_basis.source() in FinitelyGeneratedFreeModules(
+        base_ring
     )
     match module:
         case _ if framed_over_finite_free_scalars and module in ModulesWithChosenFinitePresentation(extension_ring):
             presentation = _restricted_scalar_presentation(
                 module,
                 ring_map,
-                _restricted_scalar_framing_labels(module),
+                _restricted_scalar_framing_labels(module, scalar_basis),
+                scalar_basis,
             )
             placement.append(_SelectedFinitePresentationModules(base_ring))
             data.update(
                 presentation=presentation,
                 framing_source=presentation.codomain(),
+                scalar_basis=scalar_basis,
             )
         case _ if framed_over_finite_free_scalars:
             placement.append(Modules(base_ring).FinitelyGenerated())
-            data["framing_source"] = base_ring._fresh_free_module_on(
-                _restricted_scalar_framing_labels(module)
+            data.update(
+                framing_source=base_ring._fresh_free_module_on(
+                    _restricted_scalar_framing_labels(module, scalar_basis)
+                ),
+                scalar_basis=scalar_basis,
             )
 
     if _subobject_inclusion_factory is not None or (

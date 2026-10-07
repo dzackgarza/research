@@ -479,25 +479,20 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             case True:
                 placement.append(Algebras(base).Commutative())
         if finite_free_degree is not None:
-            from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
+            from dzack_research.preamble.categories.modules.native_modules import _power_module_basis
 
-            module_labels = Sets.Δ[finite_free_degree - 1]
-            source = base.free_module(module_labels)
             module_primitive = quotient_engine.gen() if finite_free_generator is None else finite_free_generator
-
-            def basis_image(exponent):
-                return self._from_engine_element(module_primitive) ** int(exponent)
 
             def basis_coordinates(element):
                 backend = self._engine_element(self(element))
-                coordinates = backend if finite_free_coordinates is None else finite_free_coordinates(backend)
-                return {
-                    label: _owned_engine_element(base, coefficient)
-                    for label, coefficient in zip(module_labels, coordinates, strict=True)
-                    if coefficient != 0
-                }
+                return backend if finite_free_coordinates is None else finite_free_coordinates(backend)
 
-            self._native_module_basis = _NativeModuleBasis(source, basis_image, basis_coordinates)
+            self._native_module_basis = _power_module_basis(
+                base,
+                finite_free_degree,
+                lambda exponent: self._from_engine_element(module_primitive) ** exponent,
+                basis_coordinates,
+            )
             placement.append(FinitelyGeneratedFreeModules(base))
 
         selected_generator_values = generator_values
