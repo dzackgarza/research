@@ -28,29 +28,23 @@ jobs:
       with:
         fetch-depth: 0
         ref: main
-    - name: Provision SageMath on Python 3.14
-      uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3.2.1
-      with:
-        environment-name: research-ci
-        create-args: >-
-          python=3.14
-          sage=10.9
-          pip
-        cache-environment: true
-        cache-downloads: true
-    - name: Install uv (astral-sh/setup-uv v10.2.0)
-      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
-      with:
-        enable-cache: false
-    - name: Upgrade SageMath library to 10.10
+    - name: Start the canonical research Sage environment
+      working-directory: ${{ github.workspace }}
       run: |
-        python -m pip install --upgrade 'meson>=1.11.2' meson-python 'cython>=3.1'
-        python -m pip install --no-build-isolation --no-deps --force-reinstall 'sagemath==10.10'
-        python -c 'import sage.version; assert sage.version.version.startswith("10.10"); print(sage.version.version)'
-    - name: Install lattice database in the SageMath environment
+        docker run --detach --name sage-env \
+          --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+          --workdir "$GITHUB_WORKSPACE" \
+          ghcr.io/dzackgarza/sage:develop sleep infinity
+        docker exec -i -w "$GITHUB_WORKSPACE" sage-env \
+          /sage/.venv/bin/python -c \
+          'import sys, sage.version; assert sys.version_info >= (3, 14); print(sys.version); print(sage.version.version)'
+    - name: Install current research and lattice database checkouts
+      working-directory: ${{ github.workspace }}
       run: |
-        uv pip install --python "$(command -v python)" -e . pytest
-        python -c 'import sys, sage.all; assert sys.version_info >= (3, 14); print(sys.version)'
+        docker exec -i -w "$GITHUB_WORKSPACE" sage-env \
+          /sage/.venv/bin/uv pip install --python /sage/.venv/bin/python --no-deps --editable "$GITHUB_WORKSPACE"
+        docker exec -i -w "$GITHUB_WORKSPACE/lattice-database" sage-env \
+          /sage/.venv/bin/uv pip install --python /sage/.venv/bin/python --editable . pytest
     - name: Compute and certify uncertified card values
       env:
         LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
@@ -59,7 +53,10 @@ jobs:
         if [[ -n "$LATTICEDB_TAG" ]]; then
           args+=(--tag "$LATTICEDB_TAG")
         fi
-        timeout 330m env PYTHONPATH="../src:src" python -m latticedb certify "${args[@]}"
+        timeout 330m docker exec -i \
+          --env "PYTHONPATH=$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/lattice-database/src" \
+          --workdir "$GITHUB_WORKSPACE/lattice-database" \
+          sage-env /sage/.venv/bin/python -m latticedb certify "${args[@]}"
     - name: Commit completed computations to main
       if: ${{ always() && steps.checkout.outcome == 'success' }}
       working-directory: ${{ github.workspace }}
@@ -95,3 +92,8 @@ jobs:
 
         echo "::error::Could not integrate computed values into main after 5 attempts; durable result remains on ${staging_branch}."
         exit 1
+    - name: Stop the Sage environment
+      if: always()
+      working-directory: ${{ github.workspace }}
+      shell: bash --noprofile --norc -e -o pipefail {0}
+      run: docker rm --force sage-env >/dev/null 2>&1 || true
