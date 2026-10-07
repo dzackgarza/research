@@ -144,6 +144,26 @@ Select subsequent work from the current `TODO.md` dependency graph and its prior
 Recurrence of an older scheduled pause does not supersede this resume; only a later
 explicit owner instruction stops the repository again.
 
+## Every subagent reads the contributing guidelines before it touches code (always-on)
+
+No agent edits code in this repository, or in `lattice-database/`, until it has read
+the contributing guidelines in full. This applies to every subagent, worker and
+delegate, whatever its task size. A brief that cites rule codes, or that summarizes
+the rules, does not satisfy it.
+
+A brief that dispatches code work names these files as required reading before
+the first edit, and requires the report to list the files that were read:
+
+- `INTENT.md` and this file;
+- `CONTRIBUTING.md` in full, including the preamble architecture specification;
+- `TODO.md` and `COMPLAINTS.md`;
+- `docs/preamble-megadoc.md`;
+- the `AGENTS.md` and `README.md` of the subtree that the work edits.
+
+An agent that has edited code before reading them checks every such edit against
+the guidelines before it continues. Accept no delivery whose report does not list
+this reading.
+
 ## Preamble coding prerequisites
 
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
