@@ -104,7 +104,10 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
     variable is unchanged and the component is
     ``id_{F_n} tensor morphism``.  In both cases a represented homology class
     is sent through its selected cycle representative, so the map is induced
-    on the same owned quotient that defines ``module.tor``.
+    on the same owned quotient that defines ``module.tor``.  The component
+    is a chain map, so it sends boundaries to boundaries: the class of the
+    image does not depend on the selected representative, and the induced
+    map is linear by construction.
     """
     degree = int(degree)
     if degree < 0:
@@ -157,7 +160,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
             raise ValueError(
                 f"Tor has two arguments, numbered 1 and 2, so {morphism} cannot act in argument {argument}"
             )
-    return source.module_category().Mor(source, target).elementwise(
+    return source.module_category().Mor(source, target)._from_constructed_element_map(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
         )
@@ -170,6 +173,8 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
     The first variable is contravariant and the second is covariant.  Both
     maps are induced on the owned cohomology quotient by the corresponding
     internal-Mor component, rather than by recomputing an abstract Ext group.
+    That component is a cochain map, so it sends coboundaries to
+    coboundaries and the induced map is linear by construction.
     """
     degree = int(degree)
     if degree < 0:
@@ -231,7 +236,7 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             raise ValueError(
                 f"Ext has two arguments, numbered 1 and 2, so {morphism} cannot act in argument {argument}"
             )
-    return source.module_category().Mor(source, target).elementwise(
+    return source.module_category().Mor(source, target)._from_constructed_element_map(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
         )
