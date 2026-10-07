@@ -103,6 +103,9 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.coxeter_diagrams import (
     CoxeterDiagrams as CoxeterDiagrams,
 )
+from dzack_research.preamble.categories.satake_diagrams import (
+    SatakeDiagrams as SatakeDiagrams,
+)
 from dzack_research.preamble.categories.chamber_systems import (  # noqa: F401
     ChamberSystems,
 )

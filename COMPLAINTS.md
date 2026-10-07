@@ -279,6 +279,25 @@ labels and `weighted_graph`; the lattice-db graph cards that read them.
 keyword argument 'evaluator'` from the module-morphism construction.
 Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
 
+### Satake diagrams and real forms have no formalization
+
+A Satake diagram is a Dynkin diagram with black nodes `X` and a diagram
+involution `tau`, and it is one exactly when `(X, tau)` is admissible (Kolb,
+*Quantum symmetric Kac-Moody pairs*, 2014, Definition 2.3; Araki 1962). The
+preamble now presents the category (`categories/satake_diagrams.py`) with
+admissibility as its validator, and lattice-db builds its Satake cards as its
+objects. `rg -i 'satake|araki'` over `~/gitclones/lean-categories` found
+neither the diagrams, the admissibility condition, nor real forms of a
+semisimple Lie algebra on 2026-10-07.
+**Dependency path:** Cartan matrix of a finite-type root basis -> its
+automorphisms `Aut(A, X)` and the longest element `w_X` of a parabolic
+subgroup -> admissible pairs -> the real form a Satake diagram presents.
+**Consumers:** `SatakeDiagrams.is_admissible`; the lattice-db Satake cards;
+the real-form functor of `satake-diagrams-present-real-forms` in TODO.
+**Request:** `lean-categories` formalizes admissible pairs from Kolb,
+Definition 2.3, and real forms of complex semisimple Lie algebras with Araki's
+classification by Satake diagrams.
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.

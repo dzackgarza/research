@@ -196,6 +196,17 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
         }
     )
     assert degenerate.properties() == ("Coxeter",)
+    # One black node on A2 with the identity involution: X = {alpha1} gives
+    # rho_X^vee = h_1 / 2 and alpha2(rho_X^vee) = -1/2, which is not an integer,
+    # so the pair is not admissible (Kolb, Quantum symmetric Kac-Moody pairs,
+    # Definition 2.3 (3)).
+    invalid_satake = card("a2-su21-satake").model_dump()
+    invalid_satake["vertices"][0]["weight"]["satake"] = "black"
+    invalid_satake["edges"] = invalid_satake["edges"][:1]
+    inadmissible = WeightedGraph.model_validate(invalid_satake)
+    assert inadmissible.properties() == ("Coxeter", "Dynkin", "simply laced")
+    with pytest.raises(AssertionError):
+        inadmissible.satake_diagram().validate_admissibility()
     arbitrary = WeightedGraph.model_validate(
         {
             "slug": "arbitrary",

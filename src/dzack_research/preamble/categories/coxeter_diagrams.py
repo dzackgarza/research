@@ -183,7 +183,7 @@ class CoxeterDiagramMor(CategoricalMor):
                 )
             assignment = dict(zip(vertices, images, strict=True))
             function = assignment.__getitem__
-        morphism = CoxeterDiagramMorphism(self, function)
+        morphism = self.element_class(self, function)
         for left in self.domain().index_set():
             for right in self.domain().index_set():
                 if self.domain().coxeter_entry(left, right) != self.codomain().coxeter_entry(

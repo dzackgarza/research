@@ -647,7 +647,12 @@ These remain required constructions with their original generality, maps, specim
     Theory and leads: `docs/theory/modular-forms-and-hecke-operators.md`. **Closure specimens:** `[SL_2(ZZ) : Γ_0(11)] = 12`, and `X_0(11)` has genus 1. `S_2(Γ_0(11))` is spanned by `q ∏ (1 − q^n)^2 (1 − q^{11n})^2`, whose `a_p` agree with `p + 1 − #E(F_p)` for `E = 11a1` at good primes.
     `T_2` acts on that form by `a_2 = −2`. `E[2]` of `ℂ/(ZZ + ZZi)` has 4 points.
 
-- [ ] **`extended-mathematics-session`**. **Needs:** `lattice-represents-an-integer`, `lattice-glue-stabilizers`, `group-exact-sequences-and-homology`, `coxeter-complexes-and-buildings`, `modular-forms-and-hecke-algebras`.
+- [ ] **`satake-diagrams-present-real-forms`**. **Needs:** `terminal-session`.
+  **Owner and delta:** `SatakeDiagrams` (`categories/satake_diagrams.py`) gains the functor to real forms: an admissible Satake diagram `(D, X, tau)` of a complex semisimple Lie algebra `g` presents a real form `g_0` of `g` up to isomorphism (Araki 1962; Kolb, *Quantum symmetric Kac-Moody pairs*, 2014, section 2.4).
+  The codomain is the category of real forms of `g`, a real Lie algebra with an isomorphism of its complexification to `g`; `lean-categories` formalizes neither Satake diagrams nor real forms, so the request there runs beside this node.
+  **Closure specimens:** each lattice-db Satake card maps to the real form its card names, with the identification cited from Araki's table (Araki 1962, pp. 32-33), beginning with `a2-su21-satake`: `A_2`, no black node, `tau` the swap. The functor is defined only on admissible diagrams, so `A_3` with black nodes `{1}` and `tau = id` (Kolb 2014, Example 2.4) has no image.
+
+- [ ] **`extended-mathematics-session`**. **Needs:** `lattice-represents-an-integer`, `lattice-glue-stabilizers`, `group-exact-sequences-and-homology`, `coxeter-complexes-and-buildings`, `modular-forms-and-hecke-algebras`, `satake-diagrams-present-real-forms`.
   **Owner and delta:** exercise every required M4 construction and its maps together with the frozen core, through the public session and applicable research notebook. Extend the API reference and meaningful-method denominator with the new contracts. Run the distinguishing specimens retained in each feature node, including its full hypotheses and computational regimes.
   **Acceptance:** required feature specimens and the retained suite pass, meaningful-method coverage remains above 90 percent, and ordinary workflows preserve their previous capability. Repair shared owners before extending dependent consumers. An unresolved engine-ownership ruling keeps its required construction and this node open; it does not reopen the earlier usable-core milestone.
 
