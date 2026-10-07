@@ -163,10 +163,24 @@ the first edit, and requires the report to list the files that were read:
 An agent that has edited code before reading them checks every such edit against
 the guidelines before it continues.
 
-A brief never adds verification that this file exempts. Preamble work and its
-lattice-db callers skip test, import and execution runs (see the notebook workflow
-note); a brief that tells a worker to run them after each unit makes it spend
-hours on runs that decide nothing. Accept no delivery whose report does not list
+## Subagents commit; only the orchestrator accepts and pushes (always-on)
+
+A subagent never runs a full test suite, a QC gate or a push. It commits each
+unit with `git commit --no-verify`. It runs a test only when one specific test
+decides a specific question about its own edit, and then it runs that test alone.
+A preamble import, `just test`, a collection run or a subtree suite is not
+targeted.
+
+Only the orchestrating agent:
+
+- decides whether the delivered work is accepted;
+- runs any further tests or gates;
+- decides whether to fix, amend or add to a subagent's commits;
+- pushes.
+
+A brief never gives a subagent verification work that this rule or an exemption
+in this file removes. A brief that told a worker to run the import and the
+lattice-db tests after each unit cost it hours of runs that decided nothing. Accept no delivery whose report does not list
 this reading.
 
 ## Preamble coding prerequisites
