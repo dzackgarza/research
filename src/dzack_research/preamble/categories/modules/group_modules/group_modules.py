@@ -958,8 +958,13 @@ def _coefficient_morphism_from_images(
     images,
     *,
     elementwise=False,
+    linearity_premises=None,
 ):
-    r"""Read equivariant-map data as a map of the retained coefficient modules."""
+    r"""Read equivariant-map data as a map of the retained coefficient modules.
+
+    An elementwise map built by a Mor-module operation keeps the linear maps
+    it is built from as the premises of its linearity.
+    """
     source = parent.domain().unformed_module()
     target = parent.codomain().unformed_module()
     mor = source.module_category().Mor(source, target)
@@ -999,8 +1004,11 @@ def _coefficient_morphism_from_images(
             raise TypeError(
                 f"{images} cannot define a map {parent.domain()} -> {parent.codomain()} elementwise: it is not a function"
             )
-        return mor.elementwise(
+        return mor.element_class(
+            mor,
             lambda element: target(images(parent.domain()(element))),
+            elementwise=True,
+            linearity_premises=linearity_premises,
         )
 
     if isinstance(images, dict):
@@ -1024,11 +1032,13 @@ class GroupModuleMorphismMethods:
         lift=None,
         equivariance_decision=None,
         selected_lift_exact=False,
+        linearity_premises=None,
     ) -> None:
         underlying = _coefficient_morphism_from_images(
             parent,
             images,
             elementwise=elementwise,
+            linearity_premises=linearity_premises,
         )
         self._coefficient_morphism = underlying
         self._supplied_equivariance_decision = equivariance_decision
@@ -1279,6 +1289,14 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             )
         underlying = self.underlying_mor().identity()
         return self._from_equivariant_images(underlying)
+
+    def _scalar_identity(self, scalar):
+        r"""``r . id``, the same multiple on the coefficient modules.
+
+        The action of each group element is ``R``-linear and ``r`` lies in the
+        centre of ``R``, so ``r . id`` commutes with the action.
+        """
+        return self._from_equivariant_images(self.underlying_mor()._scalar_identity(scalar))
 
     def _repr_(self):
         return f"Mor_{self.domain().group()}({self.domain()}, {self.codomain()})"

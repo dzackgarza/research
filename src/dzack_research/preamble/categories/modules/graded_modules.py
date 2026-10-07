@@ -161,9 +161,15 @@ class GradedModuleMorphismMethods:
         images,
         *,
         elementwise=False,
+        linearity_premises=None,
         degree_preservation=None,
     ) -> None:
-        super().__init__(parent, images, elementwise=elementwise)
+        super().__init__(
+            parent,
+            images,
+            elementwise=elementwise,
+            linearity_premises=linearity_premises,
+        )
         self._supplied_degree_preservation_decision = degree_preservation
 
     def _degree_preservation_derivation(self):

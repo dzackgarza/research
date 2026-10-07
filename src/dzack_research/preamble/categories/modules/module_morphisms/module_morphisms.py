@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _distinct_supercategories,
     _precomposable,
 )
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -198,6 +199,15 @@ class ModuleMorphismMethods:
     elements; optionally a selected lift through the map; and, for a map
     ``S tensor_R f`` constructed by scalar extension along ``R -> S``, the
     morphism ``f`` and the scalar-extension functor it is the image under.
+
+    An arrow built by an operation of its Mor module (a pointwise sum,
+    negative or scalar multiple, a composite, the zero map, a multiple of
+    the identity, the universal arrows of products and equalizers) also
+    takes ``linearity_premises``: the family of linear maps from which the
+    operation builds it.  ``Hom_R(M, N)`` is closed under these operations,
+    so the arrow is linear when every premise is, and the empty family
+    means the module axioms alone make it linear.  Only those operations
+    supply the family; the public constructors take none.
     """
 
     _scalar_extension_of = None
@@ -225,10 +235,17 @@ class ModuleMorphismMethods:
     def _elementwise_linearity_derivation(self):
         r"""Return the construction-derived linearity decision, or ``None``.
 
-        Ordinary elementwise callables do not.  Private universal-construction
-        morphisms override this at their declaration, so callers cannot select
-        a derivation with a string or boolean flag.
+        An arrow built by a Mor-module operation conjoins the linearity
+        decisions of its premises; a linear map read into another Mor with
+        the same endpoints keeps the decision of that map.  Ordinary
+        elementwise callables have no derivation.  No caller selects a
+        derivation with a string or boolean flag.
         """
+        match self._linearity_premises:
+            case None:
+                pass
+            case premises:
+                return _combined_linearity_decision(premises)
         source_morphism = self._source_module_morphism
         if source_morphism is not None:
             return source_morphism.linearity_decision()
@@ -253,6 +270,7 @@ class ModuleMorphismMethods:
         scalar_extension_of=None,
         scalar_extension_functor=None,
         lift=None,
+        linearity_premises=None,
     ) -> None:
         self._initialize_lower_arrow(parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
@@ -262,6 +280,7 @@ class ModuleMorphismMethods:
         self._scalar_extension_of = scalar_extension_of
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
+        self._linearity_premises = linearity_premises
         self._source_module_morphism = None
         self._element_function = None
         domain = self.domain()
@@ -719,34 +738,60 @@ class ModuleMorphismMethods:
         )
         return self._generator_images
 
-    def __add__(self, other):
-        r"""Return the pointwise sum in ``Hom_R(M, N)``.
+    def _pointwise_mor(self):
+        r"""The Mor holding the pointwise sums and negatives of this arrow.
 
-        ``other`` is read in this Mor module by its element constructor: a
-        linear map with the same endpoints, or a scalar of an endomorphism
-        ring, which is that multiple of the identity.
+        It is this arrow's own Mor when that Mor is an additive group.  A Mor
+        that is not (isometries, embeddings, automorphisms) does not contain
+        ``f + g`` or ``-f``; they lie in ``Hom_R(M, N)`` of the endpoints.
         """
         parent = self.parent()
+        match parent:
+            case _ if parent in AdditiveGroups():
+                return parent
+            case _:
+                domain = self.domain()
+                return domain.module_category().Mor(domain, self.codomain())
+
+    def __add__(self, other):
+        r"""Return the pointwise sum ``(f + g)(m) = f(m) + g(m)``.
+
+        ``other`` is read by the element constructor of the Mor that holds
+        the sum: a linear map with the same endpoints, or a scalar of an
+        endomorphism ring, which is that multiple of the identity.
+        """
+        parent = self._pointwise_mor()
         summand = parent(other)
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
         if left is not None and right is not None:
             return parent._scalar_identity(left + right)
-        return _PointwiseSumModuleMorphism(parent, self, summand)
+        return parent.element_class(
+            parent,
+            lambda element: self(element) + summand(element),
+            elementwise=True,
+            linearity_premises=(self, summand),
+        )
 
     def __neg__(self):
-        parent = self.parent()
+        r"""Return the pointwise negative ``(-f)(m) = -f(m)``."""
+        parent = self._pointwise_mor()
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         scalar = _scalar_identity_coefficient(self)
         if scalar is not None:
             return parent._scalar_identity(-scalar)
-        return _PointwiseNegationModuleMorphism(parent, self)
+        return parent.element_class(
+            parent,
+            lambda element: -self(element),
+            elementwise=True,
+            linearity_premises=(self,),
+        )
 
     def __sub__(self, other):
-        r"""Return the pointwise difference in ``Hom_R(M, N)``."""
-        return self + (-self.parent()(other))
+        r"""Return the pointwise difference ``f - g = f + (-g)``."""
+        return self + (-self._pointwise_mor()(other))
 
     def _richcmp_(self, other, op):
         r"""Compare admitted linear maps on an available finite spanning family.
@@ -1795,11 +1840,16 @@ class ModuleMorphismMethods:
                 if other._is_the_identity():
                     return self
                 mor = source.module_category().Mor(source, target)
-                # Composition of certified linear maps is linear.  Keep that
-                # theorem as construction data instead of rebuilding the
-                # composite from all selected generator images and rechecking
-                # the source relations.
-                return _CompositeModuleMorphism(mor, self, other)
+                # Composition of linear maps is linear.  Keep that theorem as
+                # construction data instead of rebuilding the composite from
+                # all selected generator images and rechecking the source
+                # relations.
+                return mor.element_class(
+                    mor,
+                    lambda element: self(other(element)),
+                    elementwise=True,
+                    linearity_premises=(self, other),
+                )
             case _ if other in self.parent().base_ring():
                 return self.parent().scalar_multiple(other, self)
             case _:
@@ -1971,190 +2021,6 @@ class ModuleMorphism(ModuleMorphismMethods, Morphism):
 
     def _initialize_lower_arrow(self, parent) -> None:
         Morphism.__init__(self, parent)
-
-
-class _PointwiseSumModuleMorphism(ModuleMorphism):
-    r"""The sum of two module maps; its linearity decision conjoins theirs."""
-
-    def __init__(self, parent, left, right) -> None:
-        self._left_summand = left
-        self._right_summand = right
-        super().__init__(
-            parent,
-            lambda element: left(element) + right(element),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision((self._left_summand, self._right_summand))
-
-
-class _PointwiseNegationModuleMorphism(ModuleMorphism):
-    r"""The additive inverse of an admitted module map."""
-
-    def __init__(self, parent, morphism) -> None:
-        self._negated_morphism = morphism
-        super().__init__(parent, lambda element: -morphism(element), elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return self._negated_morphism.linearity_decision()
-
-
-class _PointwiseScalarMultipleModuleMorphism(ModuleMorphism):
-    r"""A scalar multiple of a module map; its linearity decision is that of the map."""
-
-    def __init__(self, parent, scalar, morphism) -> None:
-        self._scalar = parent.base_ring()(scalar)
-        self._scaled_morphism = morphism
-        super().__init__(
-            parent,
-            lambda element: self.codomain().scalar_multiple(
-                self._scalar,
-                morphism(element),
-            ),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._scaled_morphism.linearity_decision()
-
-
-class _CompositeModuleMorphism(ModuleMorphism):
-    r"""The composite of two module maps; its linearity decision conjoins theirs."""
-
-    def __init__(self, parent, left, right) -> None:
-        self._left_factor = left
-        self._right_factor = right
-        super().__init__(parent, lambda element: left(right(element)), elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision((self._left_factor, self._right_factor))
-
-
-class _TransportedModuleMorphism(ModuleMorphism):
-    r"""The same module map viewed in another Mor parent with the same endpoints."""
-
-    def __init__(self, parent, morphism) -> None:
-        self._transported_morphism = morphism
-        super().__init__(parent, lambda element: morphism(element), elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return self._transported_morphism.linearity_decision()
-
-
-class _ConstructedElementwiseModuleMorphism(ModuleMorphism):
-    r"""An elementwise map whose supplying construction proves linearity."""
-
-    def __init__(self, parent, function) -> None:
-        super().__init__(parent, function, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
-class _ScalarIdentityModuleMorphism(ModuleMorphism):
-    r"""The scalar multiple of the identity, linear by the module action."""
-
-    def __init__(self, parent, scalar) -> None:
-        from dzack_research.preamble.categories.group.additive_mors import _ScalarIdentityEvaluation
-
-        evaluation = _ScalarIdentityEvaluation(parent, scalar)
-        super().__init__(parent, evaluation, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
-class _ZeroModuleMorphism(ModuleMorphism):
-    r"""The zero map between two modules, linear by the zero element laws."""
-
-    def __init__(self, parent) -> None:
-        super().__init__(
-            parent,
-            lambda _element: self.codomain().zero(),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
-class _ProductProjectionModuleMorphism(ModuleMorphism):
-    r"""Projection from a set-created module product, linear by componentwise construction."""
-
-    def __init__(self, parent, underlying_projection) -> None:
-        self._underlying_projection = underlying_projection
-        super().__init__(
-            parent,
-            lambda element: self.codomain()(
-                underlying_projection(element.underlying_element())
-            ),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
-class _ProductFactorModuleMorphism(ModuleMorphism):
-    r"""Product factor induced by a cone of linear maps, hence linear componentwise."""
-
-    def __init__(self, parent, underlying_factor, legs) -> None:
-        self._underlying_factor = underlying_factor
-        self._legs = legs
-        super().__init__(
-            parent,
-            lambda element: self.codomain()(underlying_factor(element)),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision(self._legs)
-
-
-class _EqualizerInclusionModuleMorphism(ModuleMorphism):
-    r"""The inclusion of a set-created equalizer with inherited module operations."""
-
-    def __init__(self, parent, underlying_inclusion, parallel_maps) -> None:
-        self._underlying_inclusion = underlying_inclusion
-        self._parallel_maps = parallel_maps
-        super().__init__(
-            parent,
-            lambda element: self.codomain()(
-                underlying_inclusion(element.underlying_element())
-            ),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision(self._parallel_maps)
-
-
-class _EqualizerFactorModuleMorphism(ModuleMorphism):
-    r"""The unique linear factor through an equalizer inclusion."""
-
-    def __init__(self, parent, source_leg, inclusion=None) -> None:
-        self._source_leg = source_leg
-        self._equalizer_inclusion = inclusion
-
-        def factor(element):
-            image = source_leg(element)
-            match inclusion:
-                case None:
-                    return self.codomain()(image)
-                case _:
-                    return inclusion.lift(image)
-
-        super().__init__(parent, factor, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        dependencies = [self._source_leg]
-        match self._equalizer_inclusion:
-            case None:
-                pass
-            case inclusion:
-                dependencies.append(inclusion)
-        return _combined_linearity_decision(dependencies)
 
 
 class FramingMorphism(ModuleMorphism):
@@ -2476,10 +2342,14 @@ class _ModuleMorCommonMethods:
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            if images.linearity_decision() is not True:
-                return _TransportedModuleMorphism(self, images)
-            if not self.domain().is_framed_module():
-                return _TransportedModuleMorphism(self, images)
+            if images.linearity_decision() is not True or not self.domain().is_framed_module():
+                # The same map, read in this Mor: linear exactly when it is.
+                return self.element_class(
+                    self,
+                    images,
+                    elementwise=True,
+                    linearity_premises=(images,),
+                )
             match images.has_module_generator_images():
                 case True:
                     images = images.module_generator_morphism()
@@ -2524,7 +2394,15 @@ class _ModuleMorCommonMethods:
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
 
     def _scalar_identity(self, scalar):
-        return _ScalarIdentityModuleMorphism(self, scalar)
+        r"""The endomorphism ``r . id``, linear by the module axioms."""
+        from dzack_research.preamble.categories.group.additive_mors import _ScalarIdentityEvaluation
+
+        return self.element_class(
+            self,
+            _ScalarIdentityEvaluation(self, scalar),
+            elementwise=True,
+            linearity_premises=(),
+        )
 
     def _compose_module_endomorphisms(self, left, right):
         r"""Compose two endomorphisms; the composite's linearity decision conjoins theirs."""
@@ -2536,13 +2414,18 @@ class _ModuleMorCommonMethods:
         right_scalar = _scalar_identity_coefficient(right)
         if left_scalar is not None and right_scalar is not None:
             return self._scalar_identity(left_scalar * right_scalar)
-        return _CompositeModuleMorphism(self, left, right)
+        return self.element_class(
+            self,
+            lambda element: left(right(element)),
+            elementwise=True,
+            linearity_premises=(left, right),
+        )
 
     def _compose_endomorphisms(self, left, right):
         return self._compose_module_endomorphisms(left, right)
 
     def _module_scalar_multiple(self, scalar, morphism):
-        r"""Realize the pointwise action defining this Mor's scalar enrichment."""
+        r"""Realize the pointwise action ``(r f)(m) = r f(m)`` defining this Mor's scalar enrichment."""
         if morphism.parent() is not self:
             morphism = self(morphism)
         scalar = self.base_ring()(scalar)
@@ -2551,7 +2434,13 @@ class _ModuleMorCommonMethods:
         coefficient = _scalar_identity_coefficient(morphism)
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
-        return _PointwiseScalarMultipleModuleMorphism(self, scalar, morphism)
+        codomain = self.codomain()
+        return self.element_class(
+            self,
+            lambda element: codomain.scalar_multiple(scalar, morphism(element)),
+            elementwise=True,
+            linearity_premises=(morphism,),
+        )
 
     def _owned_scalar_multiple(self, scalar, morphism):
         return self._module_scalar_multiple(scalar, morphism)
@@ -2576,33 +2465,69 @@ class _ModuleMorCommonMethods:
         )
 
     def _product_projection(self, underlying_projection):
-        r"""Admit the projection created by the underlying-set module product."""
-        return _ProductProjectionModuleMorphism(self, underlying_projection)
+        r"""The projection of a product whose module operations are componentwise, linear by that construction."""
+        codomain = self.codomain()
+        return self.element_class(
+            self,
+            lambda element: codomain(underlying_projection(element.underlying_element())),
+            elementwise=True,
+            linearity_premises=(),
+        )
 
     def _product_factor(self, underlying_factor, legs):
-        r"""Admit the factor induced by a cone into a componentwise module product."""
-        return _ProductFactorModuleMorphism(self, underlying_factor, legs)
+        r"""The factor induced by a cone into a componentwise module product; linear when its legs are."""
+        codomain = self.codomain()
+        return self.element_class(
+            self,
+            lambda element: codomain(underlying_factor(element)),
+            elementwise=True,
+            linearity_premises=legs,
+        )
 
     def _equalizer_inclusion(self, underlying_inclusion, parallel_maps):
-        r"""Admit the inclusion created by the underlying-set equalizer."""
-        return _EqualizerInclusionModuleMorphism(
+        r"""The inclusion of the equalizer of ``parallel_maps``; linear when the parallel maps are."""
+        codomain = self.codomain()
+        return self.element_class(
             self,
-            underlying_inclusion,
-            parallel_maps,
+            lambda element: codomain(underlying_inclusion(element.underlying_element())),
+            elementwise=True,
+            linearity_premises=parallel_maps,
         )
 
     def _equalizer_factor(self, source_leg, *, inclusion=None):
-        r"""Admit the universal factor through a represented module equalizer."""
-        return _EqualizerFactorModuleMorphism(
-            self,
-            source_leg,
-            inclusion=inclusion,
-        )
+        r"""The unique factor of ``source_leg`` through a represented module equalizer.
+
+        It is ``source_leg`` read in the equalizer, or lifted through
+        ``inclusion`` when one is given, and linear when those maps are.
+        """
+        codomain = self.codomain()
+        match inclusion:
+            case None:
+                return self.element_class(
+                    self,
+                    lambda element: codomain(source_leg(element)),
+                    elementwise=True,
+                    linearity_premises=(source_leg,),
+                )
+            case _:
+                return self.element_class(
+                    self,
+                    lambda element: inclusion.lift(source_leg(element)),
+                    elementwise=True,
+                    linearity_premises=(source_leg, inclusion),
+                )
 
     def zero(self):
+        r"""The zero map ``m -> 0``, linear by the module axioms."""
         if self.domain() is self.codomain():
             return self._scalar_identity(self.base_ring().zero())
-        return _ZeroModuleMorphism(self)
+        codomain = self.codomain()
+        return self.element_class(
+            self,
+            lambda _element: codomain.zero(),
+            elementwise=True,
+            linearity_premises=(),
+        )
 
     @cached_method
     def identity(self):
@@ -2668,13 +2593,18 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         return self._element_constructor_(images)
 
     def _from_constructed_element_map(self, function):
-        r"""Admit an elementwise map whose construction proves module-linearity."""
+        r"""The elementwise map of a construction that makes it linear: a premise-free Mor operation."""
         if not callable(function):
             raise TypeError(
                 f"a constructed linear map {self.domain()} -> {self.codomain()} needs a function on elements, "
                 f"but got {function!r}"
             )
-        return _ConstructedElementwiseModuleMorphism(self, function)
+        return self.element_class(
+            self,
+            function,
+            elementwise=True,
+            linearity_premises=(),
+        )
 
     def presentation_matrix(self):
         r"""Return the relation morphism of the presented model of this Mor module as a type-``(1,1)`` tensor."""

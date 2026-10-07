@@ -276,10 +276,24 @@ class QuadraticModuleMorphism:
     framing generators.
     """
 
-    def __init__(self, parent, images, *, lift_gram_tensor=None, lift_coordinate_values=None) -> None:
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        elementwise=False,
+        linearity_premises=None,
+        lift_gram_tensor=None,
+        lift_coordinate_values=None,
+    ) -> None:
         self._lift_gram_tensor = lift_gram_tensor
         self._lift_coordinate_values = lift_coordinate_values
-        super().__init__(parent, images)
+        super().__init__(
+            parent,
+            images,
+            elementwise=elementwise,
+            linearity_premises=linearity_premises,
+        )
 
     def module(self):
         return self.domain().divided_square_source()
