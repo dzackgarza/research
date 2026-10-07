@@ -414,15 +414,14 @@ Repair the existing public construction routes and inherited methods before prov
   **Closure:** `tests/modules/test_tor_and_ext_of_finite_cyclic_groups.sage::test_multiplication_by_two_induces_zero_on_tor_one_of_z2_and_z2` passes.
 
 - [ ] **`resolution-truncations-in-the-session`**. **Needs:** none.
-  **Owner and delta:** a chosen resolution is truncated at an index in `ℕ ∪ {∞}`, where `∞` is a cofibrant replacement (`CAT-29`). `Resolutions` takes `Infinity` (`abstract_categories/resolutions.py:25`), but the session star import binds neither `Infinity` nor `oo`. So `tests/categories/test_resolution_categories.sage:9` imports it from `sage.rings.infinity` (TL01). The session presents the truncation index.
-  The same file passes `FramedFreeModules(ZZ)` as the level category of a resolution and asserts `level(0) in FramedFreeModules(ZZ)`, at lines 61, 82, 91 and 130. TL08 (`utilities/test_lint.py:24`) bans naming a `Framed…` category anywhere in a test. `CAT-29` makes framed free modules the levels of a chosen free resolution. **Owner ruling owed:** whether a test may name a chosen-datum category as a parameter or a membership target, or whether `Resolutions` takes the level class some other way.
+  **Owner and delta:** a chosen resolution is truncated at an index in `ℕ ∪ {∞}`, where `∞` is a cofibrant replacement (`CAT-29`). `Resolutions` takes `Infinity` (`abstract_categories/resolutions.py:25`), but the session star import binds neither `Infinity` nor `oo`. So `tests/categories/test_resolution_categories.sage:9` imports it from `sage.rings.infinity` (TL01). The truncation index is an ordinal `<= omega`, and the session binds the ordinal `omega` (`sets/cardinals.py`); `Resolutions` takes the session ordinal, not Sage's `Infinity`.
   **Closure:** `tests/categories/test_resolution_categories.sage` passes the test lint.
 
 - [ ] **`restricted-scalars-modules-are-modules`**. **Needs:** none.
-  **Owner and delta:** `RestrictedScalarsModules` (`modules/pure/modules.py`) constructs `Res_f(M)` along `f: R -> S`, and two module operations stop there.
+  **Owner and delta:** `RestrictedScalarsModules` (`modules/pure/modules.py`) constructs `Res_f(M)` along `f: R -> S`, and three module operations stop there.
   `is_torsion` and `is_torsion_free` answer `Unknown` for `Res_f(QQ^2)` along `ZZ -> QQ`. When `S` is a field and `f` is injective, every nonzero `f(r)` is a unit, so `Res_f(M)` is torsion-free, and it is torsion only when `M = 0`. A ring morphism out of `ZZ` is injective exactly when its codomain has characteristic `0`, because `ZZ` is initial.
   `base_change` is abstract on restricted-scalars modules, so the counit `QQ ⊗ Res(QQ^2) -> QQ^2` of `Modules(ZZ).base_change_adjunction` raises `NotImplementedError` (`functors/scalar_change.py:138`).
-  `GF(2)["x"]` is a native free algebra with no `gen()`. The preamble spelling of its variable is `algebra_generator(label)`, and `tests/modules/test_restriction_of_scalars_on_morphisms.sage:63` calls `R.gen()`. The owner rules which spelling the session presents for the variable of a polynomial ring.
+  `Res_f(A^1)` for `A = GF(2)[x]/(x^2)` along `GF(2) -> A` has no `module_rank` (`AttributeError` on `RestrictedScalarsModules`); restriction along a finite free extension of rank `d` sends rank `r` to rank `dr`.
   **Closure:** `tests/modules/test_scalar_change_between_z_and_q.sage` passes, and so does `test_restricting_f2_x_mod_x2_to_f2_gives_a_plane_of_four_elements_on_which_x_squares_to_zero`.
 
 - [ ] **`presented-modules-are-presented-by-their-relation-morphism`**. **Needs:** none.

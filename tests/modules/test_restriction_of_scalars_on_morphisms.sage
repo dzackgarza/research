@@ -60,7 +60,7 @@ def test_restricting_f2_x_mod_x2_to_f2_gives_a_plane_of_four_elements_on_which_x
     Source: restriction along a finite free extension multiplies ranks; by hand.
     """
     R = GF(2)["x"]
-    x = R.gen()
+    x = R.algebra_generator("x")
     A = R.quotient_ring(R.ideal(x**2))
     restriction = Modules(A).restriction_of_scalars(GF(2).Mor(A)(lambda scalar: A(scalar)))
     line = A**1

@@ -58,7 +58,7 @@ def test_infinite_module_resolution_category_represents_length_zero_chain_data()
         Modules(ZZ),
         Modules(ZZ).Projective(),
         Infinity,
-        FramedFreeModules(ZZ),
+        Modules(ZZ).Free(),
     ).dold_kan_image()
     resolution = resolutions.constant(free)
 
@@ -79,7 +79,7 @@ def test_one_generator_polynomial_algebra_resolution_transports_to_its_monomial_
         Modules(ZZ),
         Modules(ZZ).Projective(),
         0,
-        FramedFreeModules(ZZ),
+        Modules(ZZ).Free(),
     ).dold_kan_image()
     transport = algebra_resolutions.transport_degree_zero(
         forget,
@@ -88,7 +88,7 @@ def test_one_generator_polynomial_algebra_resolution_transports_to_its_monomial_
     module_resolution = transport(algebra_resolution)
 
     assert module_resolution.target() is algebra
-    assert module_resolution.level(0) in FramedFreeModules(ZZ)
+    assert module_resolution.level(0) in Modules(ZZ).Free()
     assert module_resolution.augmentation().domain() is algebra
     assert module_resolution.augmentation().codomain() is algebra
 
@@ -127,7 +127,7 @@ def test_a_framed_free_module_is_a_length_zero_resolution() -> None:
         Modules(ZZ),
         Modules(ZZ).Projective(),
         2,
-        FramedFreeModules(ZZ),
+        Modules(ZZ).Free(),
     ).dold_kan_image()
     resolution = resolutions.constant(free)
 
