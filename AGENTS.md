@@ -171,6 +171,17 @@ decides a specific question about its own edit, and then it runs that test alone
 A preamble import, `just test`, a collection run or a subtree suite is not
 targeted.
 
+A probe script is a test under this rule. Each Sage process pays about 60 s
+of session import before it reaches the question. So a subagent puts its open
+questions into one probe and runs it once per unit, on the smallest specimen
+that decides them: `U`, `A_2`, `C_2` acting on `ZZ^2`. It never reruns a probe
+to confirm an edit that the source shows. It never runs a probe over the
+lattice-database corpus or an E-series lattice unless the node is about that
+corpus or that lattice. A size it did not measure is written "untested". On
+2026-10-07 one worker ended its turn to wait on a probe over 8,000
+lattice-database cards. Another spent about 12 minutes on repeated 60 s probe
+processes.
+
 Only the orchestrating agent:
 
 - decides whether the delivered work is accepted;
