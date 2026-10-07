@@ -293,15 +293,15 @@ A second projective resolution gives a canonically isomorphic object, and the li
 
 For $R$-modules $A$ and $B$,
 $$
-\operatorname{Ext}^i_R(A,B)=R^i\Hom_R(A,-)(B),
+\Ext^i_R(A,B)=R^i\Hom_R(A,-)(B),
 \qquad
-\operatorname{Tor}^R_n(A,B)=L_n(-\otimes_RB)(A)
+\Tor^R_n(A,B)=L_n(-\otimes_RB)(A)
 $$
-[@Wei94, Def. 2.5.2, Def. 2.6.4]. Then $\operatorname{Ext}^0_R(A,B)=\Hom_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6]. Resolving either variable gives the same result:
+[@Wei94, Def. 2.5.2, Def. 2.6.4]. Then $\Ext^0_R(A,B)=\Hom_R(A,B)$ and $\Tor^R_0(A,B)\cong A\otimes_RB$, and $\Tor^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6]. Resolving either variable gives the same result:
 $$
 L_*(A\otimes_R-)(B)\cong L_*(-\otimes_RB)(A)
 $$
-[@Wei94, §2.7]. For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
+[@Wei94, §2.7]. For projective $A$, $\Tor^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\Ext^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
-These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
+These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\Tor^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
 :::

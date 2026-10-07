@@ -154,11 +154,11 @@ The concrete instance in this monograph is the uniqueness of $\widetilde{B}_7(2)
 
 ::: {.conjecture #cnj:galois-invariance-parabolics title="Open problem: Galois invariance of the maximal parabolic count"}
 
-Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form is defined over a totally real number field $K$, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
+Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form is defined over a totally real number field $K$, and let $\sigma\in\Gal(K/\QQ)$.
 The conjecture is that $\Sigma$ and its conjugate $\sigma(\Sigma)$ have the same number of maximal parabolic subdiagrams.
 
 By the Galois-conjugate Gram-form remark @rmk:galois-conjugate-gram-form the signature of $\sigma(G)$ is not determined by that of $G$, so the conjugate diagram need not be hyperbolic at all and the statement requires the hypothesis that it is.
-The open work is to determine the action of $\operatorname{Gal}(K/\QQ)$ on the set of maximal parabolic subdiagrams --- whether it permutes them, and if so with what orbits.
+The open work is to determine the action of $\Gal(K/\QQ)$ on the set of maximal parabolic subdiagrams --- whether it permutes them, and if so with what orbits.
 The diagrams of this monograph have Gram field $\QQ$ or $\QQ(\sqrt2)$, the latter arising from the $m_{ij} = 4$ bonds of the $B$-type diagrams, so the smallest instance is the nontrivial automorphism of $\QQ(\sqrt2)$ acting on the folded Sterk diagrams.
 :::
 

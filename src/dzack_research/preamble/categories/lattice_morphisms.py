@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     ModuleMorphismMethods,
 )
-from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+from dzack_research.preamble.categories.modules.pure.modules import Modules, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -465,6 +465,43 @@ class LatticeEmbeddingMethods:
 
         return IsotropicReductions(self.codomain().base_ring())(self)
 
+    def orthogonal_complement(self):
+        r"""Return the orthogonal complement of this embedded lattice.
+
+        For a finite-rank integral lattice embedding with coordinate matrix
+        ``M`` and ambient Gram matrix ``G``, the orthogonal complement is the
+        integral kernel of ``M^T G``.  Computing that kernel directly is the
+        finite-free realization of the generic pairing-morphism kernel and
+        avoids rebuilding the pairing through elementwise categorical
+        evaluation.
+        """
+        source = self.domain()
+        target = self.codomain()
+        if (
+            _engine_ring(source.base_ring()) is not SageZZ
+            or _engine_ring(target.base_ring()) is not SageZZ
+            or not source.module_rank().is_finite()
+            or not target.module_rank().is_finite()
+        ):
+            return super().orthogonal_complement()
+
+        inclusion = _engine_matrix(_module_matrix(self))
+        ambient_gram = _engine_component_matrix(target.gram_tensor())
+        kernel_basis = (inclusion.transpose() * ambient_gram).right_kernel().basis_matrix()
+        target_labels = tuple(target.module_generating_set())
+        ring = target.base_ring()
+        embedded_basis = tuple(
+            target.linear_combination(
+                {
+                    label: _owned_engine_element(ring, coefficient)
+                    for label, coefficient in zip(target_labels, row, strict=True)
+                    if coefficient
+                }
+            )
+            for row in kernel_basis.rows()
+        )
+        return target.subobject_on(embedded_basis)
+
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
 
@@ -609,20 +646,21 @@ class _TransportedLatticeEmbedding(LatticeEmbedding):
 class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
-    def __init__(self, parent, images) -> None:
+    def __init__(self, parent, images, *, _form_preservation_known: bool = False) -> None:
         if isinstance(images, CategoricalIsomorphism):
             domain = parent.domain()
             codomain = parent.codomain()
             forward = domain.module_category().Mor(domain, codomain)(images.forward())
             inverse = codomain.module_category().Mor(codomain, domain)(images.inverse())
-            forward_matrix = _engine_matrix(_module_matrix(forward))
-            domain_gram = _engine_component_matrix(domain.gram_tensor())
-            codomain_gram = _engine_component_matrix(codomain.gram_tensor())
-            if forward_matrix.transpose() * codomain_gram * forward_matrix != domain_gram:
-                raise ValueError(
-                    f"the module map {forward} does not preserve the lattice form from "
-                    f"{domain} to {codomain}"
-                )
+            if not _form_preservation_known:
+                forward_matrix = _engine_matrix(_module_matrix(forward))
+                domain_gram = _engine_component_matrix(domain.gram_tensor())
+                codomain_gram = _engine_component_matrix(codomain.gram_tensor())
+                if forward_matrix.transpose() * codomain_gram * forward_matrix != domain_gram:
+                    raise ValueError(
+                        f"the module map {forward} does not preserve the lattice form from "
+                        f"{domain} to {codomain}"
+                    )
 
             values = _represented_value_module(domain)
             target_values = _represented_value_module(codomain)
@@ -645,6 +683,39 @@ class LatticeIsometryMethods:
 
     def is_surjective(self) -> bool:
         return True
+
+    def base_change(self, ring_map):
+        r"""Extend this isometry along the selected ring map as an isometry.
+
+        Scalar extension preserves inverse pairs and the defining form
+        equation. Retain those facts explicitly instead of forgetting to a
+        bare module morphism and re-proving surjectivity and form preservation
+        in the target lattice hom-set.
+        """
+        ring = self.domain().base_ring()
+        if self.codomain().base_ring() is not ring or ring_map.domain() is not ring:
+            raise ValueError(
+                "a lattice isometry can only be base changed along a map out "
+                "of the common base ring of its endpoints"
+            )
+        scalar_extension = Modules(ring).scalar_extension(ring_map)
+        source = scalar_extension(self.domain())
+        target = scalar_extension(self.codomain())
+        forward = scalar_extension(self)
+        inverse = scalar_extension(self.inverse())
+        module_isomorphism = source.module_category().Core().Mor(
+            source,
+            target,
+        )._from_known_inverse_pair(
+            forward,
+            inverse,
+        )
+        homset = source.Isom(target)
+        return homset.element_class(
+            homset,
+            module_isomorphism,
+            _form_preservation_known=True,
+        )
 
     def inverse(self):
         r"""Return the inverse isometry."""
@@ -2445,8 +2516,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if engine_capabilities.is_available("lattice.indefinite_isometry_witness"):
             witness_rows = engine_capabilities.compute(
                 "lattice.indefinite_isometry_witness",
-                _engine_gram_rows(codomain),
                 _engine_gram_rows(domain),
+                _engine_gram_rows(codomain),
             )
             if witness_rows is None:
                 return (True, None, None)

@@ -83,7 +83,7 @@ An $n$-ary operation on $X\in\mathcal C$ is a morphism
 $$
 \mu\colon X^{\times n}\longrightarrow X.
 $$
-For fixed $X$, these morphisms form the arity-$n$ term of the cartesian endomorphism operad $\operatorname{End}_{\mathcal C}(X)$.
+For fixed $X$, these morphisms form the arity-$n$ term of the cartesian endomorphism operad $\End_{\mathcal C}(X)$.
 Composition is substitution of operations, and the symmetric-group action permutes the factors.
 
 For an arbitrary morphism $X\to Y$, neither precomposition nor postcomposition defines a map $\Hom(X^n,X)\to\Hom(Y^n,Y)$.
@@ -96,5 +96,5 @@ An equation between terms is equality of two parallel morphisms obtained by comp
 In a 2-category, a weak version may instead include a chosen invertible 2-cell between the composites; its coherence laws are further equations between 2-cells.
 
 An operad $\mathcal O$ specifies operations, symmetric-group actions, units, and composition.
-An $\mathcal O$-algebra is defined by a morphism of operads $\mathcal O\to\operatorname{End}_{\mathcal C}(X)$.
+An $\mathcal O$-algebra is defined by a morphism of operads $\mathcal O\to\End_{\mathcal C}(X)$.
 Claims involving $A_\infty$, $E_n$, or $E_\infty$ structures name the chosen operad or a cited equivalent model.

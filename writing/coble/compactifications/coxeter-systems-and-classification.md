@@ -334,7 +334,7 @@ For $m = 8$ the base field is $\QQ(\sqrt{2+\sqrt2})$, of degree $4$ over $\QQ$ b
 
 ::: {.remark #rmk:galois-conjugate-gram-form title="Galois conjugates of a Gram form"}
 
-Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
+Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\Gal(K/\QQ)$.
 Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ of the same rank, with the same diagonal $-2$.
 Its signature is not determined by that of $G(M)$: the signature of a symmetric form over a totally real field is not a Galois invariant, as the rank-one forms $\gens{1-\sqrt2}$ and $\gens{1+\sqrt2}$ over $\QQ(\sqrt2)$ show.
 Whether every nontrivial conjugate of a hyperbolic Gram form is negative definite is a condition on $M$ that must be computed, and is the arithmeticity question recorded in the Open Problems section.

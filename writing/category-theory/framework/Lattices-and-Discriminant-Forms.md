@@ -225,7 +225,7 @@ So a degenerate form over a Dedekind domain is the orthogonal sum of a zero form
 ::: {.theorem #thm:localization-les title="Localization exact sequences"}
 For an $R$-module $M$, tensoring $0\to R\to K\to K/R\to0$ begins the exact sequence
 $$
-0\longrightarrow\operatorname{Tor}_1^R(M,K/R)\longrightarrow M
+0\longrightarrow\Tor_1^R(M,K/R)\longrightarrow M
 \longrightarrow M\otimes_RK\longrightarrow M\otimes_R(K/R)\longrightarrow0.
 $$
 For a lattice $L$, projectivity makes the Tor term vanish, so the sequence becomes
