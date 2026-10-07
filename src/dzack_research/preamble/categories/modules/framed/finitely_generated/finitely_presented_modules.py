@@ -1146,13 +1146,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
-        def is_torsion(self):
+        def _torsion_decision(self):
             r"""Read torsion off the invariant factors over a PID, else take the generic fibre."""
             if self.base_ring() not in PrincipalIdealDomains():
                 return super().is_torsion()
             return self.module_rank() == 0
 
-        def is_torsion_free(self):
+        def _torsion_freeness_decision(self):
             r"""Over a PID ``M`` is torsion-free exactly when no invariant factor is a nonzero non-unit."""
             ring = self.base_ring()
             if ring in OwnedFields():
@@ -1161,7 +1161,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return super().is_torsion_free()
             return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
 
-        def is_free(self) -> bool:
+        def _freeness_decision(self) -> bool:
             r"""Over a PID a finitely generated module is free exactly when it is torsion-free.
 
             This is the structure theorem: the decomposition has no cyclic
@@ -1462,7 +1462,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 * normalization
             )
 
-        def is_projective(self) -> bool:
+        def _projectivity_decision(self) -> bool:
             r"""Decide finite projectivity of the selected presentation.
 
             Over a principal ideal domain the structure theorem decides it and
@@ -1654,7 +1654,6 @@ def _module_invariant_factor_form(module):
     """
     presentation_iso = module.invariant_factor_presentation()
     diagonal_presentation = presentation_iso.codomain().arrow()
-    full_normalized = diagonal_presentation.cokernel()
     invariants = module._invariants_with_units()
 
     invariant_positions = finite_ordered_set(Sets.Δ[len(invariants) - 1])
@@ -1682,6 +1681,55 @@ def _module_invariant_factor_form(module):
     )
     reduced = reduced_presentation.cokernel()
 
+    if all(
+        invariants[int(retained_positions[int(position)])] == ring.zero()
+        for position in reduced_labels
+    ):
+        target_forward = presentation_iso.forward().right()
+        target_inverse = presentation_iso.inverse().right()
+        original_target = module.presentation().codomain()
+        normalized_target = diagonal_presentation.codomain()
+        normalized_labels = tuple(normalized_target.module_generating_set())
+        normalized_framing = normalized_target.framing_morphism()
+        original_projection = module.presentation_projection()
+        reduced_generator_labels = tuple(reduced.module_generating_set())
+
+        forward_images = {}
+        for label in module.module_generating_set():
+            coordinates = normalized_framing.lift(
+                target_forward(original_target.module_generator(label))
+            )
+            forward_images[label] = reduced.linear_combination(
+                {
+                    reduced_label: coordinates(
+                        normalized_labels[
+                            int(retained_positions[int(reduced_label)])
+                        ]
+                    )
+                    for reduced_label in reduced_generator_labels
+                }
+            )
+        forward = module.module_category().Mor(module, reduced)(forward_images)
+        inverse = reduced.module_category().Mor(reduced, module)(
+            {
+                reduced_label: original_projection(
+                    target_inverse(
+                        normalized_target.module_generator(
+                            normalized_labels[
+                                int(retained_positions[int(reduced_label)])
+                            ]
+                        )
+                    )
+                )
+                for reduced_label in reduced_generator_labels
+            }
+        )
+        return module.module_category().Core().Mor(module, reduced)(
+            forward,
+            inverse,
+        )
+
+    full_normalized = diagonal_presentation.cokernel()
     full_labels = full_normalized.module_generating_set()
     full_to_reduced = full_normalized.module_category().Mor(full_normalized, reduced)(
         {

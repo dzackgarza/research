@@ -135,6 +135,8 @@ def test_two_quadrics_in_p4_meet_in_a_gorenstein_del_pezzo_surface_of_degree_fou
 
     assert tuple(surface.defining_degrees()) == (2, 2)
     assert surface.dimension() == 2
+    assert surface in ProperSurfaces(QQ)
+    assert surface in ProjectiveSurfaces(QQ)
     assert surface.projective_degree() == 4
     assert surface.is_gorenstein()
     assert not surface.is_smooth()

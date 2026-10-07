@@ -6,6 +6,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoryPacketMethods,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -71,7 +74,7 @@ class MagmaMorCategoryConstruction(MorCategoryConstruction):
         return MagmaMor
 
 
-class Magmas(OwnedCategory):
+class Magmas(CategoryPacketMethods, OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
     def an_object(self):
@@ -86,6 +89,28 @@ class Magmas(OwnedCategory):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
+
+    class ElementMethods:
+        @abstract_method
+        def __mul__(self, other):
+            r"""Return the value of the selected magma law on ``(self, other)``."""
+
+    class ParentMethods:
+        def _commutativity_decision(self):
+            r"""Protected decision procedure for the magma commutativity predicate."""
+            return NotImplemented
+
+        def is_commutative(self):
+            r"""Return whether the magma law satisfies ``xy = yx`` for all elements."""
+            match self in Magmas().Commutative():
+                case True:
+                    return True
+                case False:
+                    decision = self._commutativity_decision()
+                    assert decision is not NotImplemented, (
+                        f"commutativity is defined for every magma, but no decision procedure is available for {self}"
+                    )
+                    return decision
 
     class SubcategoryMethods:
         def Subobjects(self, base_object):
@@ -119,7 +144,7 @@ class MonoidMorCategoryConstruction(MorCategoryConstruction):
         return MonoidMor
 
 
-class Semigroups(OwnedCategory):
+class Semigroups(CategoryPacketMethods, OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
     def an_object(self):
@@ -129,7 +154,7 @@ class Semigroups(OwnedCategory):
         return [Magmas()]
 
 
-class Monoids(OwnedCategory):
+class Monoids(CategoryPacketMethods, OwnedCategory):
     def an_object(self):
         return Magmas().an_object()
 
@@ -137,6 +162,18 @@ class Monoids(OwnedCategory):
         return [Semigroups()]
 
     class ElementMethods:
+        def _unit_decision(self):
+            r"""Protected decision procedure for invertibility in the ambient monoid."""
+            return NotImplemented
+
+        def is_unit(self):
+            r"""Return whether this element has a two-sided inverse in its monoid."""
+            decision = self._unit_decision()
+            assert decision is not NotImplemented, (
+                f"invertibility is defined for every monoid element, but no decision procedure is available for {self}"
+            )
+            return decision
+
         def _pow_int(self, exponent):
             r"""Integer powers by repeated squaring, from the monoid law."""
             from sage.arith.power import generic_power
@@ -196,7 +233,7 @@ class Monoids(OwnedCategory):
 
 
 
-class AdditiveMagmas(OwnedCategory):
+class AdditiveMagmas(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (
@@ -218,13 +255,18 @@ class AdditiveMagmas(OwnedCategory):
 
         return [Sets()]
 
+    class ElementMethods:
+        @abstract_method
+        def __add__(self, other):
+            r"""Return the value of the selected additive magma law on ``(self, other)``."""
+
     class SubcategoryMethods:
         def AdditiveCommutative(self):
             r"""Return this category with the axiom ``x + y = y + x``."""
             return self._with_axiom("AdditiveCommutative")
 
 
-class AdditiveSemigroups(OwnedCategory):
+class AdditiveSemigroups(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (
@@ -240,7 +282,7 @@ class AdditiveSemigroups(OwnedCategory):
         return [AdditiveMagmas()]
 
 
-class AdditiveMonoids(OwnedCategory):
+class AdditiveMonoids(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (
@@ -256,11 +298,15 @@ class AdditiveMonoids(OwnedCategory):
         return [AdditiveSemigroups()]
 
     class ParentMethods:
+        @abstract_method
+        def zero(self):
+            r"""Return the identity element for the additive monoid law."""
+
         def monoidal_unit(self):
             return self.zero()
 
 
-class AdditiveGroups(OwnedCategory):
+class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
         def fixed_category_class(self):
             from dzack_research.preamble.categories.group.additive_mors import (

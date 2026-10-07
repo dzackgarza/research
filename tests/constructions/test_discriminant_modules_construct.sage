@@ -27,6 +27,7 @@ def test_discriminant_module_retains_lattice_dual_correlation_and_projection() -
     assert projection.domain() is dual
     assert projection.codomain() is discriminant
     assert discriminant.cardinality() == cardinal(3)
+    assert discriminant not in ModuleSubobjects(ZZ)
 
 
 def test_discriminant_classes_lift_back_to_the_selected_dual_lattice() -> None:
@@ -49,7 +50,17 @@ def test_a2_discriminant_primary_parts_and_subgroups_are_the_cyclic_order_three_
     assert discriminant.primary_part(3).cardinality() == cardinal(3)
     assert discriminant.primary_part(2).cardinality() == cardinal(1)
     assert generated.cardinality() == cardinal(3)
+    assert generated in ModuleSubobjects(ZZ)
     assert discriminant.subgroups().cardinality() == cardinal(2)
+
+
+def test_unimodular_discriminant_module_is_the_zero_quotient_not_a_subobject() -> None:
+    discriminant = Lattices(ZZ)("E8").discriminant_module()
+
+    assert discriminant in DiscriminantModules(ZZ)
+    assert discriminant not in ModuleSubobjects(ZZ)
+    assert discriminant.is_zero()
+    assert discriminant.cardinality() == cardinal(1)
 
 
 def test_discriminant_module_morphisms_have_identity() -> None:

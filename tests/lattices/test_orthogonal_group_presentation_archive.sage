@@ -12,7 +12,7 @@ def test_the_orthogonal_group_of_a4_is_s5_times_c2() -> None:
     orthogonal_group = Lattices.A4.Aut()
 
     assert orthogonal_group.order() == 240
-    assert orthogonal_group.is_finitely_presented()
+    assert orthogonal_group.is_finitely_presented_as_group()
     assert not orthogonal_group.is_abelian()
     assert orthogonal_group.center().order() == 2
     assert orthogonal_group.derived_subgroup().order() == 60

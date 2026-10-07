@@ -820,6 +820,7 @@ class _GluedScheme(SageObject):
         local_closed_subschemes,
         *,
         name="Chartwise closed subscheme",
+        placements=(),
         _engine=None,
         construction_data=None,
     ):
@@ -827,6 +828,7 @@ class _GluedScheme(SageObject):
             self.gluing_datum(),
             local_closed_subschemes,
             name=name,
+            placements=placements,
             _engine=_engine,
             construction_data=construction_data,
         )
@@ -6435,6 +6437,7 @@ def _chartwise_closed_subscheme(
     local_closed_subschemes,
     *,
     name="Chartwise closed subscheme",
+    placements=(),
     _engine=None,
     construction_data=None,
 ):
@@ -6469,7 +6472,11 @@ def _chartwise_closed_subscheme(
     return _glued_chartwise_subscheme(
         datum,
         local_closed,
-        (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())),
+        (
+            ClosedEmbeddings(datum.scheme()),
+            ClosedSubschemes(datum.base_ring()),
+            *placements,
+        ),
         _engine=_engine,
         construction_data=construction_data,
     )

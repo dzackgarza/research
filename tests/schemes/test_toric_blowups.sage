@@ -12,8 +12,10 @@ def test_blowup_of_a_torus_fixed_point_of_p2_is_the_star_subdivision_with_blowdo
 
     blowup = plane.toric_fixed_point_blowup(center)
 
+    assert blowup in Blowups(QQ)
     assert blowup in ToricFixedPointBlowups(QQ)
     assert blowup.blowup_source() is plane
+    assert blowup.blowup_center().inclusion().codomain() is plane
     assert blowup.blowup_center_cone() is center
     assert blowup.blowup_morphism().domain() is blowup
     assert blowup.blowup_morphism().codomain() is plane
@@ -26,8 +28,15 @@ def test_exceptional_curve_has_self_intersection_minus_one_and_picard_rank_incre
     plane = _projective_plane()
     blowup = plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
 
-    exceptional = blowup.exceptional_divisor()
+    exceptional = blowup.exceptional_weil_divisor()
+    exceptional_subscheme = blowup.exceptional_divisor()
+    ideal_sheaf = exceptional_subscheme.ideal_sheaf()
 
+    assert exceptional_subscheme in EffectiveCartierDivisors(blowup)
+    assert exceptional_subscheme.inclusion().codomain() is blowup
+    assert ideal_sheaf in QuasiCoherentSheaves(blowup).Invertible()
+    assert ideal_sheaf.associated_divisor() == -exceptional
+    assert exceptional_subscheme.picard_class() == blowup.exceptional_picard_class()
     assert blowup.exceptional_self_intersection() == -1
     assert blowup.weil_multiplicity(exceptional, blowup.exceptional_ray()) == 1
     assert int(blowup.picard_group().module_rank()) == int(plane.picard_group().module_rank()) + 1
@@ -51,7 +60,7 @@ def test_total_and_strict_transforms_distinguish_the_exceptional_multiplicity() 
 
     strict = blowup.strict_transform_divisor(boundary)
     total = blowup.blowup_morphism().pullback_divisor(boundary)
-    exceptional = blowup.exceptional_divisor()
+    exceptional = blowup.exceptional_weil_divisor()
 
     assert total == strict + exceptional
     assert blowup.divisor_intersection(strict, strict) == 0

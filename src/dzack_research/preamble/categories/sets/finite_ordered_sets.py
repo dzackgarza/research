@@ -13,12 +13,11 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.cardinals import cardinal, omega, ordinal
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
-    WellOrderedSets,
     finite_ordinal_set,
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -43,7 +42,7 @@ class OrderedEnumeratedSets(OwnedCategory):
         return finite_ordered_set((0, 1, 2))
 
     def super_categories(self):
-        return [EnumeratedSets(), WellOrderedSets()]
+        return [EnumeratedSets()]
 
     def __call__(self, index_set, element_at, **datum):
         r"""Construct from an enumeration even when ``index_set`` is itself in this category.
@@ -125,6 +124,33 @@ class OrderedEnumeratedSets(OwnedCategory):
             r"""The chosen inverse on this set, with ``None`` allowed off it."""
             return self._index_of_function
 
+        def __iter__(self):
+            r"""Iterate through the chosen enumeration.
+
+            This category already stores the bijection ``I -> X`` as its
+            defining datum.  Iteration therefore evaluates that map on the
+            represented index set directly; the categorical ranking
+            isomorphism is needed when the isomorphism itself is requested,
+            not to read the enumeration it represents.
+
+            The standard finite ordinal is the one self-indexed construction:
+            its index set is literally itself and its selected enumeration is
+            the identity on ``0, ..., n-1``.  Read those positions from its
+            finite cardinality rather than recursively asking it to iterate.
+            """
+            element_at = self.enumeration()
+            index_set = self.index_set()
+            if index_set is self:
+                size = cardinal(self.cardinality())
+                assert size.is_finite(), (
+                    f"the self-indexed ordered enumeration {self} needs a finite cardinality "
+                    "or its defining category must state its own base enumeration"
+                )
+                indices = range(int(size.finite_value()))
+            else:
+                indices = index_set
+            return (element_at(index) for index in indices)
+
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
             r"""The chosen enumeration of this set, as one isomorphism.
@@ -146,31 +172,10 @@ class OrderedEnumeratedSets(OwnedCategory):
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def order_type(self):
-            r"""Return the ordinal order type of this ranked well-order."""
-            size = cardinal(self.index_set().cardinality())
-            if size.is_finite():
-                return ordinal(size.finite_value())
-            assert size.is_countably_infinite(), (
-                f"the represented ordered enumeration {self} has cardinality {size}; its order type is implemented "
-                "here only for finite or countably infinite enumerations"
-            )
-            return omega(0)
-
-        def __iter__(self):
-            return (self._element_at_function(index) for index in self.index_set())
-
-        def __getitem__(self, position):
-            r"""Return the point at ``position`` directly from the chosen enumeration."""
-            index = self.index_set().ranking_map().inverse()(position)
-            return self._element_at_function(index)
-
         def __contains__(self, element) -> bool:
             if self._contains_function is not None:
                 return bool(self._contains_function(element))
             return self._index_of_function(element) is not None
-
-        is_parent_of = __contains__
 
         def __call__(self, element):
             return self._element_constructor_(element)
@@ -396,9 +401,6 @@ class FiniteOrderedSets(OwnedCategory):
         def __hash__(self) -> int:
             # Do not hash members: group/lattice elements may normalize expensively.
             return hash(int(self.cardinality()))
-
-        def __len__(self) -> int:
-            return int(self.cardinality())
 
         def _repr_(self) -> str:
             return "{" + ", ".join(repr(element) for element in self) + "}"

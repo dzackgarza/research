@@ -459,6 +459,176 @@ comparison of a card with the preamble's realization.
 
 ## Workflow Papercuts
 
+### Finite cyclic subgroup membership is decided by enumerating powers
+
+`CyclicGroups.__contains__` in
+`categories/group/cyclic_subgroups.py` currently answers membership in a
+finite cyclic subgroup by constructing `_finite_elements()` and comparing the
+candidate against every power of the selected generator. Membership in the
+represented subgroup is a group-engine question when the ambient realization
+supports subgroup membership; enumeration is a separate chosen presentation
+of the finite set and should not be the decision procedure.
+
+**Dependency path:** selected cyclic generator -> represented subgroup in the
+ambient group engine -> engine membership decision -> owned subgroup
+membership. Infinite cyclic membership retains its explicit discrete-log
+computability boundary when no maintained route applies.
+**Consumer:** `CyclicGroups.__contains__`; iteration may continue to enumerate
+finite cyclic groups, but membership must not depend on that enumeration.
+**Repair:** `engine-wiring-audit` in [TODO.md](TODO.md).
+
+### Zettlr all-workspace lint conflates component `id=` properties with Pandoc `#` identifiers
+
+Running the Zettlr linter across the configured writing and site workspaces
+should lint valid component attribute blocks without aborting.  The site
+component contract uses key-value attributes such as
+`{.component type="video" provider="youtube" id="E_Ly2NWX1g8"}`; the same
+form is used by multiple site documents.
+
+Observed on 2026-09-29: all-workspace lint aborts with
+`Inconsistent attribute block: id "E_Ly2NWX1g8" not found ...`.
+`extract-references.ts::locateAttribute` in the Zettlr/Pandoc integration
+calls `parsePandocAttributes`, sees `attributes.id`, and then requires that
+value to occur as an authored `#<id>` token.  A component's ordinary
+key-value `id=...` property therefore reaches the identifier-token branch and
+throws even though the authored attribute block is valid for the component
+renderer.  Linting the `/research/writing` workspace alone is clean through
+warning severity; adding the site workspace exposes the failure.
+
+**Expected behavior:** a generic key-value `id=...` property remains component
+data and is not treated as a Pandoc reference identifier unless an authored
+`#...` identifier token is present.  Explicit `#...` reference identifiers
+must continue to be located with their exact source range.
+**Owning boundary:** Zettlr/Pandoc attribute parsing and reference extraction,
+not the research documents or the site component syntax.
+**Examples:** the Benson Farb video block above, together with established site
+video blocks using `id="3IjAy0gHRyY"` and `id="zRPa-VAvl6Q"`.
+**Coverage boundary:** the concrete all-workspace failure, the identifier
+locator source, and these three site video-component uses were inspected.  No
+claim is made about other key-value `id=` consumers.
+
+### Flowmark Unicode-math lint scans inert comments and literal code
+
+Running Flowmark's `math/unicode-symbol` rule on authored Markdown should
+inspect mathematical prose, not text Pandoc treats as inert or literal.  The
+rule currently reports Unicode-math warnings inside both HTML comments and
+inline code spans.
+
+Observed on 2026-09-29 with minimal stdin specimens: a comment containing
+`F\u2082d` and `\u0393\u2082d` reports warnings for those Unicode math code
+points, while an inline code span containing `AltBil\u2286SkewBil` and
+`\u03b3` reports the same rule.  The same first
+failure accounts for the remaining `math/unicode-symbol` diagnostics in
+commented archival notes in
+`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md`
+and
+`writing/dissertation/sections/3-part-main-theorem/6-chapter/600-finite-coarsening.md`;
+the inline-code failure appears in literal bad/good authoring examples in
+`writing/CONTRIBUTING.md`.
+
+**Expected behavior:** HTML comments and code spans are excluded from
+`math/unicode-symbol`; Unicode mathematical notation in rendered prose remains
+diagnosed.
+**Owning boundary:** Flowmark's Markdown token scoping for the
+`math/unicode-symbol` rule, not the dissertation comments or literal examples.
+**Coverage boundary:** the two minimal stdin specimens and the current
+repository occurrences above were reproduced.  No claim is made about other
+math lint rules or other Markdown literal-node kinds.
+
+### Source category-graph slices collapse parameterized fibres into self-edges
+
+The source-only category graph is an inspection tool for the M1 placement
+audit, so selecting a category must remain usable while execution is suspended.
+On 2026-09-29,
+`just category-graph slice --select PermutationGroups --direction up` aborted
+before producing the requested slice with
+`Self-declarations cannot define a strict category order:
+['DistinguishedAffineCovers']`.
+
+The triggering declaration is
+`DistinguishedAffineCovers(X).super_categories()`, whose parameterized fibre
+lists the unparameterized catalogue `DistinguishedAffineCovers()` together
+with `CoveringFamilies(AffSch_R/X)`.  The source graph records category classes
+but not this parameter distinction, so the fibre-to-catalogue inclusion is
+collapsed to an apparent class self-edge and blocks inspection of unrelated
+categories.
+
+**Expected behavior:** a source slice for an unrelated category does not abort
+because a parameterized category and its catalogue share one implementation
+class.  The graph either represents their parameters sufficiently to retain
+the strict relation or records that relation outside its class-level strict
+poset.
+**Owning boundary:** `dzack_research.utilities.category_graph`'s source model of
+parameterized category declarations, not the `PermutationGroups` placement
+pass and not, by this observation alone, the mathematics of distinguished
+affine covers.
+**Coverage boundary:** the failing slice command and the declaration at
+`categories/schemes/ringed_spaces.py::DistinguishedAffineCovers.super_categories`
+were inspected.  No claim is made here about other same-class parameterized
+relations.
+
+### Module-subobject joins and meets do not transport canonical ideal structure
+
+The placement audit found that `CommutativeIdeals(R)` is a strict subcategory
+of `ModuleSubobjects(R)`, but it reimplements both `sum` and `intersection`
+with raw ideal-engine operations.  Mathematically these are the same join and
+meet of the two submodules of the regular module `R`: the sum of ideals is the
+module sum and the intersection of ideals is the module-subobject pullback.
+
+The general owner already implements both constructions in
+`categories/modules/pure/modules.py::ModuleSubobjects.ParentMethods`, but its
+results are constructed only as module subobjects.  Simply deleting the ideal
+overrides would therefore discard the canonical fact that the result is again
+an ideal, together with the selected ideal-generator/engine data required by
+the current `CommutativeIdeals` representation.  The ideal overrides in
+`categories/rings/commutative_ideals.py` preserve that structure only by
+maintaining a second computation path.
+
+**Expected behavior:** the module-subobject sum/meet construction has one
+authority and transports any structural category whose closure under the
+selected construction is part of its declared contract.  In particular,
+intersections and sums of commutative ideals return `CommutativeIdeals(R)`
+without a second public `sum`/`intersection` implementation at the ideal leaf.
+**Dependency path:** selected module subobjects and their inclusions -> general
+subobject join/pullback -> structure-preservation datum for commutative ideals
+-> one result carrying both `ModuleSubobjects(R)` and `CommutativeIdeals(R)`.
+**Consumers:** `CommutativeIdeals.sum`, `CommutativeIdeals.intersection`, and
+all callers that subsequently require ideal operations on those results.
+**Coverage boundary:** the live module-subobject implementations at
+`modules/pure/modules.py` and the two ideal implementations at
+`rings/commutative_ideals.py` were inspected during `placement-audit`.  No
+claim is made here about preservation of arbitrary additional subobject
+categories; each such closure law requires its own mathematical justification.
+
+### Toric scalar base change drops the toric construction data
+
+Scalar base change of a toric scheme should retain the fan that defines the
+toric variety.  On 2026-09-29 the construction-chain review for projective
+surface method placement found that `_SchemeBaseChangeFunctor._apply_object`
+routes every scheme presented by a finite affine gluing through
+`_glued_object` before inspecting any toric specialization.  `ToricSchemes`
+are built by exactly such a gluing.  `_glued_object` then reconstructs only a
+generic glued scheme in `FiberProductSchemes(R')`; it does not retain
+`ToricSchemes(R')`, the fan, or the optional polarizing polytope.
+
+**Expected behavior:** for a scalar map `R -> R'`, the base change of
+`X_Sigma` remains the toric scheme `X_Sigma` over `R'`, carrying the same fan
+and any selected polarization together with the fibre-product projections.
+Properties determined by the fan, such as smoothness and (for complete toric
+surfaces over a field) projective-surface placement, are then inherited from
+that same retained datum rather than re-guessed after gluing.
+**Dependency path:** `ToricSchemes(R)` and its defining fan -> affine-atlas
+gluing -> scheme scalar base change -> fibre-product gluing over `R'` ->
+retained toric construction data and category placement.
+**Owning boundary:** the scheme base-change constructor together with the
+toric-scheme constructor, not the individual toric operations that disappear
+after the base change.
+**Coverage boundary:** `_SchemeBaseChangeFunctor._apply_object` and
+`_glued_object`, and the toric construction in `_toric_variety`, were inspected
+as source.  No runtime execution was performed under the current M1 execution
+suspension, and no claim is made here about other specialized affine-gluing
+families that may also need structure-preserving base change.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.

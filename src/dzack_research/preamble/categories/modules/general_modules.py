@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     _enumerated_ring_elements,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
@@ -220,15 +219,15 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 return self(element)
             return self(element).underlying_element()
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the cardinality of the set this module is built on.
 
             The module adds structure to that set and no elements, so the count
             is the set's and is not computed a second time here.
             """
-            return cardinal(self.underlying_set().cardinality())
+            return self.underlying_set().cardinality()
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             r"""Whether the underlying set is placed as finite: ``True``, ``False`` or ``Unknown``.
 
             Read from placement rather than from ``cardinality``, which asserts

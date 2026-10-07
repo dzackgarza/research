@@ -16,8 +16,8 @@ constructed by calling that category.
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Hashable, Sequence
-from typing import overload
+from collections.abc import Hashable, Mapping, Sequence
+from typing import TYPE_CHECKING, overload
 
 from sage.arith.misc import gcd
 from sage.categories.morphism import SetMorphism
@@ -28,6 +28,7 @@ from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import RingElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
@@ -69,6 +70,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _center_density,
     _close_vectors,
     _closest_vector,
+    _exact_cvp_engine,
     _contact_polytope,
     _covering_radius,
     _gaussian_heuristic,
@@ -160,6 +162,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
     PrimeFields,
+    _OwnedRingParent,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -293,7 +296,8 @@ def _lattice_subobject_spanning(module, basis, root_system_label=None):
     in ``RootLattices`` with that root-system label as its datum.
     """
     ring = module.base_ring()
-    rank = int(basis.cardinality())
+    basis_elements = tuple(basis)
+    rank = len(basis_elements)
     labels, embedded, lift = _module_subobject_constructor_data(module, basis)
     source_module = ring._fresh_free_module_on(labels)
     match rank:
@@ -304,7 +308,11 @@ def _lattice_subobject_spanning(module, basis, root_system_label=None):
                 ring,
                 (),
                 (rank, rank),
-                (module.b(basis[i], basis[j]) for i in range(rank) for j in range(rank)),
+                (
+                    module.b(left, right)
+                    for left in basis_elements
+                    for right in basis_elements
+                ),
             )
 
     def inclusion_factory(source):
@@ -392,6 +400,10 @@ class LocalGenusSymbol:
 
     def __repr__(self):
         return f"Local genus at {self.prime()} with Jordan blocks {self.jordan_blocks()}"
+
+
+class NotPrimitiveError(ValueError):
+    r"""Raised when an operation requiring a primitive lattice vector is given a nonprimitive one."""
 
 
 class Genus:
@@ -1324,6 +1336,15 @@ class Lattices(OwnedCategoryOverBaseRing):
         construction computes from the presentation.
         """
 
+        if TYPE_CHECKING:
+            def linear_combination(
+                self,
+                coefficients: Mapping[Hashable, RingElement | int],
+            ) -> "Lattices.ElementMethods": ...
+
+        def base_ring(self) -> _OwnedRingParent:
+            return super().base_ring()
+
         def __init__(self, gram_tensor, **rest) -> None:
             self._preamble_gram_tensor = gram_tensor
             super().__init__(**rest)
@@ -1549,7 +1570,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.special_orthogonal_group(*args, **kwargs)
 
         @cached_method(key=lambda self, ring_map: id(ring_map))
-        def base_change(self, ring_map):
+        def base_change(self, ring_map) -> "Lattices.ParentMethods":
             r"""Return \(L\otimes_R S\) along ``ring_map`` \(\varphi\colon R\to S\), a lattice over \(S\).
 
             The scalar extension of the underlying free module is the free
@@ -3157,6 +3178,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return module.associated_bilinear_form()
             return module
 
+        @cached_method
         def discriminant_quadratic_form(self):
             r"""Return ``A_L`` with its ``K/2R``-valued quadratic form when ``L`` is even."""
 
@@ -3168,6 +3190,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert module in DiscriminantQuadraticModules(self.base_ring())
             return module
 
+        @cached_method
         def discriminant_group(self):
             r"""Return the ``ZZ`` discriminant group with every form supported by ``L``."""
             if _engine_ring(self.base_ring()) is not SageZZ:
@@ -3260,6 +3283,14 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return TwoUEichlerModel(self)
 
+        def two_u_eichler_model_from_represented_biproduct(self):
+            r"""Wrap this existing represented ``U + U + K`` biproduct as an Eichler model."""
+            from dzack_research.preamble.categories.eichler_criterion import (
+                TwoUEichlerModel,
+            )
+
+            return TwoUEichlerModel.from_represented_biproduct(self)
+
         def rational_polyhedral_cone(
             self,
             halfspace_covectors,
@@ -3321,6 +3352,78 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return self.Aut()(image)
 
+        def _eichler_transvection_column_matrix(self, isotropic, orthogonal):
+            r"""Return the exact column matrix of the Eichler transvection ``t(e,a)``."""
+            assert isotropic.parent() is self and orthogonal.parent() is self, f"cannot form the Eichler transvection t(e, a) of {self!r} with e = {isotropic!r}, a = {orthogonal!r}: they lie in {isotropic.parent()!r} and {orthogonal.parent()!r}, not both in this lattice"
+            ring = self.base_ring()
+            zero = ring.zero()
+            assert isotropic.q() == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: e = {isotropic!r} must be isotropic, but q(e) = {isotropic.q()}"
+            assert isotropic.b(orthogonal) == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: a = {orthogonal!r} must lie in e^perp for e = {isotropic!r}, but b(e, a) = {isotropic.b(orthogonal)}"
+            fraction_field = ring.fraction_field()
+            half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _engine_element,
+                _engine_ring,
+                _owned_engine_element,
+            )
+            from sage.matrix.constructor import matrix
+            labels = tuple(self.module_generating_set())
+            engine = _engine_ring(ring)
+            isotropic_coordinates = tuple(
+                _engine_element(ring, isotropic.to_vector()(label)) for label in labels
+            )
+            orthogonal_coordinates = tuple(
+                _engine_element(ring, orthogonal.to_vector()(label)) for label in labels
+            )
+            gram = _engine_component_matrix(self.gram_tensor())
+            pairings_with_isotropic = gram * matrix(
+                engine, len(labels), 1, isotropic_coordinates
+            )
+            pairings_with_orthogonal = gram * matrix(
+                engine, len(labels), 1, orthogonal_coordinates
+            )
+            columns = []
+            for source_position, label in enumerate(labels):
+                pairing_with_isotropic = _owned_engine_element(
+                    ring, pairings_with_isotropic[source_position, 0]
+                )
+                pairing_with_orthogonal = _owned_engine_element(
+                    ring, pairings_with_orthogonal[source_position, 0]
+                )
+                half_coefficient = half_norm * fraction_field(pairing_with_isotropic)
+                assert half_coefficient in ring, f"the Eichler transvection t(e, a) with e = {isotropic!r}, a = {orthogonal!r} does not preserve {self!r}: q(a) b(e, {self.module_generator(label)})/2 = {half_coefficient} is not in {ring}"
+                integral_half_coefficient = ring(half_coefficient)
+                columns.append(
+                    tuple(
+                        (
+                            (ring.one() if target_position == source_position else zero)
+                            - pairing_with_orthogonal
+                            * _owned_engine_element(
+                                ring, isotropic_coordinates[target_position]
+                            )
+                            + pairing_with_isotropic
+                            * _owned_engine_element(
+                                ring, orthogonal_coordinates[target_position]
+                            )
+                            - integral_half_coefficient
+                            * _owned_engine_element(
+                                ring, isotropic_coordinates[target_position]
+                            )
+                        )
+                        for target_position in range(len(labels))
+                    )
+                )
+            return matrix(
+                engine,
+                [
+                    [
+                        _engine_element(ring, columns[source_position][target_position])
+                        for source_position in range(len(labels))
+                    ]
+                    for target_position in range(len(labels))
+                ],
+            )
+
         def eichler_transvection(self, isotropic, orthogonal):
             r"""Return the Eichler transvection \(t(e,a)\in O(L)\).
 
@@ -3352,31 +3455,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
             """
             assert isotropic.parent() is self and orthogonal.parent() is self, (
-                f"cannot form the Eichler transvection t(e, a) of {self!r} with e = {isotropic!r}, a = {orthogonal!r}: they lie in {isotropic.parent()!r} and {orthogonal.parent()!r}, not both in this lattice"
+                f"cannot form the Eichler transvection t(e, a) of {self!r} with e = {isotropic!r}, a = {orthogonal!r}: they lie in {isotropic.parent()!r} and {orthogonal.parent()!r}, not both in {self!r}"
             )
-            ring = self.base_ring()
-            zero = ring.zero()
-            assert isotropic.q() == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: e = {isotropic!r} must be isotropic, but q(e) = {isotropic.q()}"
-            assert isotropic.b(orthogonal) == zero, (
+            assert isotropic.q() == self.base_ring().zero(), f"cannot form the Eichler transvection t(e, a) of {self!r}: e = {isotropic!r} must be isotropic, but q(e) = {isotropic.q()}"
+            assert isotropic.b(orthogonal) == self.base_ring().zero(), (
                 f"cannot form the Eichler transvection t(e, a) of {self!r}: a = {orthogonal!r} must lie in e^perp for e = {isotropic!r}, but b(e, a) = {isotropic.b(orthogonal)}"
             )
-            fraction_field = ring.fraction_field()
-            half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
-
-            def image(label):
-                x = self.module_generator(label)
-                half_coefficient = half_norm * fraction_field(x.b(isotropic))
-                assert half_coefficient in ring, (
-                    f"the Eichler transvection t(e, a) with e = {isotropic!r}, a = {orthogonal!r} does not preserve {self!r}: q(a) b(e, {x})/2 = {half_coefficient} is not in {ring}"
-                )
-                return (
-                    x
-                    - self.scalar_multiple(x.b(orthogonal), isotropic)
-                    + self.scalar_multiple(x.b(isotropic), orthogonal)
-                    - self.scalar_multiple(ring(half_coefficient), isotropic)
-                )
-
-            return self.Aut()(image)
+            return self.Aut()._isometry_from_column_matrix(
+                self._eichler_transvection_column_matrix(isotropic, orthogonal)
+            )
 
         def is_positive_definite(self) -> bool:
             rank = self.module_rank()
@@ -3658,11 +3745,55 @@ class Lattices(OwnedCategoryOverBaseRing):
             Eichler's criterion each class carries at most one stable orbit;
             whether a covering class is attained is a separate question.
             """
+            from sage.matrix.constructor import matrix as sage_matrix
+            from sage.modules.free_module_element import vector as sage_vector
+            from sage.rings.rational_field import QQ as SageQQ
+
             discriminant = self.discriminant_group()
             values = discriminant.quadratic_value_module()
+            bilinear_values = discriminant.bilinear_value_module()
             field = self.base_ring().fraction_field()
             target = field(square)
-            return finite_ordered_set(tuple(element for element in discriminant.elements() if discriminant.q(element) == values(target / field(element.additive_order()) ** 2)))
+            unformed = discriminant.unformed_module()
+            engine = unformed._smith_engine()
+            assert engine is not None, (
+                f"the covering discriminant classes of {self} cannot be enumerated: "
+                f"the Smith normal form of {discriminant} is not available"
+            )
+
+            generators = tuple(discriminant.module_generators())
+            gram = sage_matrix(SageQQ, len(generators), len(generators))
+            for left_position, left in enumerate(generators):
+                gram[left_position, left_position] = SageQQ(
+                    _engine_element(field, values.lift(discriminant.q(left)))
+                )
+                for right_position in range(left_position):
+                    pairing = discriminant.b(left, generators[right_position])
+                    representative = SageQQ(
+                        _engine_element(field, bilinear_values.lift(pairing))
+                    )
+                    gram[left_position, right_position] = representative
+                    gram[right_position, left_position] = representative
+
+            targets_by_order = {}
+            matches = []
+            for position in range(int(engine.cardinality())):
+                engine_element = engine[position]
+                order = int(engine_element.additive_order())
+                target_value = targets_by_order.get(order)
+                if target_value is None:
+                    target_value = values(target / field(order) ** 2)
+                    targets_by_order[order] = target_value
+                coordinates = sage_vector(SageQQ, tuple(engine_element.lift()))
+                raw_value = (coordinates * gram * coordinates.column())[0]
+                value = values(_owned_engine_element(field, raw_value))
+                if value == target_value:
+                    matches.append(
+                        discriminant._element_from_unformed_module(
+                            unformed._from_smith_engine_element(engine_element)
+                        )
+                    )
+            return finite_ordered_set(tuple(matches))
 
         def hyperbolic_plane_summand_count(self):
             r"""Return the number of represented indecomposable hyperbolic-plane summands."""
@@ -3809,6 +3940,30 @@ class Lattices(OwnedCategoryOverBaseRing):
         def closest_vector(self, target):
 
             return _closest_vector(self, target)
+
+        @cached_method
+        def _exact_cvp_engine(self):
+            return _exact_cvp_engine(self)
+
+        def _has_close_vector(self, target, square_bound) -> bool:
+            return self._exact_cvp_engine().has_close_vector(
+                target, square_bound
+            )
+
+        def _first_close_vector_scale(
+            self,
+            target,
+            square_bound,
+            max_multiplier,
+            *,
+            exact_distance=False,
+        ):
+            return self._exact_cvp_engine().first_close_vector_scale(
+                target,
+                square_bound,
+                max_multiplier,
+                exact_distance=exact_distance,
+            )
 
         def close_vectors(self, target, square_bound):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
@@ -4006,6 +4161,16 @@ class Lattices(OwnedCategoryOverBaseRing):
         vector.
         """
 
+        if TYPE_CHECKING:
+            def __add__(
+                self,
+                other: "Lattices.ElementMethods",
+            ) -> "Lattices.ElementMethods": ...
+            def __sub__(
+                self,
+                other: "Lattices.ElementMethods",
+            ) -> "Lattices.ElementMethods": ...
+
         def _lattice_terms(self):
             r"""The nonzero coefficients of this vector, in the order of the framing's enumeration."""
             ranking = self.parent().module_generating_set().ranking_map()
@@ -4145,8 +4310,59 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.orthogonal_complement()
 
         def isotropic_reduction(self):
-            r"""Return \(v^\perp/Rv\) for an isotropic vector, with its parabolic data."""
+            r"""Return \(v^\perp/Rv\) as a lattice for a primitive isotropic vector.
+
+            For nonprimitive isotropic vectors the cokernel has torsion, so it
+            is not an object of :class:`Lattices`; use
+            :meth:`isotropic_quotient` for that formed-module quotient.
+            """
+            if not self.is_isotropic():
+                raise ValueError(
+                    f"cannot form the isotropic reduction of {self!r}: "
+                    f"q(v) = {self.q()} is nonzero"
+                )
+            if not self.is_primitive():
+                raise NotPrimitiveError(
+                    f"cannot form the lattice v^perp/Rv for {self!r}: "
+                    "the vector is not primitive; use isotropic_quotient() "
+                    "to retain the torsion quotient"
+                )
             return self.sublattice().inclusion().isotropic_reduction()
+
+        def isotropic_quotient(self):
+            r"""Return the formed module \(v^\perp/Rv\), retaining torsion.
+
+            The rank-one subobject \(Rv\) is not saturated.  For isotropic
+            \(v\), its image in \(v^\perp\) lies in the radical of the
+            restricted form, so that form descends along the literal cokernel
+            \(v^\perp/Rv\).  In particular, nonprimitive input is not
+            silently replaced by its primitive line.
+            """
+            if not self.is_isotropic():
+                raise ValueError(
+                    f"cannot form the isotropic quotient of {self!r}: "
+                    f"q(v) = {self.q()} is nonzero"
+                )
+            line = self.sublattice()
+            line_in_ambient = line.inclusion()
+            perpendicular = line_in_ambient.orthogonal_complement()
+            perpendicular_in_ambient = perpendicular.inclusion()
+            line_in_perpendicular = line.Mono(perpendicular)(
+                {
+                    label: perpendicular_in_ambient.lift(
+                        line_in_ambient(line.module_generator(label))
+                    )
+                    for label in line.module_generating_set()
+                }
+            )
+            value_module = perpendicular.value_module()
+            value_identity = value_module.module_category().Mor(
+                value_module, value_module
+            ).identity()
+            descended = perpendicular._formed_form().descend_along(
+                line_in_perpendicular, value_identity
+            )
+            return FormModules(descended.module().base_ring())(descended)
 
         def e_perp_mod_e(self):
             r"""Return ``v^perp/Rv``; archived synonym for :meth:`isotropic_reduction`."""
@@ -4727,7 +4943,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Lattices(self.base_ring())]
 
-    def _call_(self, isotropic_embedding):
+    def _call_(self, isotropic_embedding, *, coordinate_frame=None):
         r"""Return \(K_I=I^\perp/I\) for the totally isotropic embedding \(\iota:I\hookrightarrow L\).
 
         \(I\) pairs to zero against \(I^\perp\), so the form of \(L\)
@@ -4764,11 +4980,39 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             coordinates = quotient.framing_morphism().lift(quotient_generator)
             return perpendicular.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
-        lifts = finite_indexed_family(
-            labels,
-            lift,
-            name="Isotropic-reduction lifts",
-        )
+        match coordinate_frame:
+            case None:
+                lifts = finite_indexed_family(
+                    labels,
+                    lift,
+                    name="Isotropic-reduction coordinate frame",
+                )
+            case _:
+                normalized = normalization.codomain()
+                normalized_labels = normalized.module_generating_set()
+                presentation_projection = quotient.presentation_projection()
+
+                def selected_lift(position):
+                    candidate = perpendicular(coordinate_frame[position])
+                    normalized_image = normalization.forward()(
+                        presentation_projection(candidate)
+                    )
+                    expected = normalized.module_generator(
+                        normalized_labels[int(position)]
+                    )
+                    if normalized_image != expected:
+                        raise ValueError(
+                            f"{candidate!r} is not a lift of quotient generator "
+                            f"{position!r} for the isotropic reduction of "
+                            f"{isotropic_embedding!r}"
+                        )
+                    return candidate
+
+                lifts = finite_indexed_family(
+                    labels,
+                    selected_lift,
+                    name="Isotropic-reduction coordinate frame",
+                )
         module = ring._fresh_free_module_on(labels)
         match rank:
             case 0:
@@ -4789,7 +5033,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 "isotropic_embedding": isotropic_embedding,
                 "orthogonal_complement": perpendicular,
                 "isotropic_inclusion": into_perpendicular,
-                "reduction_lifts": lifts,
+                "coordinate_frame": lifts,
                 "reduction_normalization": normalization,
             },
         )
@@ -4800,16 +5044,38 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             isotropic_embedding,
             orthogonal_complement,
             isotropic_inclusion,
-            reduction_lifts,
+            coordinate_frame,
             reduction_normalization,
             **rest,
         ) -> None:
             self._preamble_isotropic_embedding = isotropic_embedding
             self._preamble_orthogonal_complement = orthogonal_complement
             self._preamble_isotropic_inclusion = isotropic_inclusion
-            self._preamble_reduction_lifts = reduction_lifts
+            self._preamble_coordinate_frame = coordinate_frame
             self._preamble_reduction_normalization = reduction_normalization
             super().__init__(**rest)
+
+        def __eq__(self, other) -> bool:
+            r"""Compare reductions by their defining isotropic embedding, not their coordinate frame."""
+            if self is other:
+                return True
+            return (
+                hasattr(other, "base_ring")
+                and other.base_ring() is self.base_ring()
+                and other in IsotropicReductions(self.base_ring())
+                and other.isotropic_embedding() is self.isotropic_embedding()
+            )
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __hash__(self) -> int:
+            return hash(
+                (
+                    IsotropicReductions(self.base_ring()),
+                    id(self.isotropic_embedding()),
+                )
+            )
 
         def isotropic_embedding(self):
             r"""Return \(\iota:I\hookrightarrow L\), the embedding this reduces."""
@@ -4918,9 +5184,20 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 orthogonal_summand,
             )
 
-        def reduction_lifts(self):
+        def coordinate_frame(self):
             r"""Return the chosen lifts of the framing of \(K_I\) into \(I^\perp\)."""
-            return self._preamble_reduction_lifts
+            return self._preamble_coordinate_frame
+
+        def with_coordinate_frame(self, coordinate_frame):
+            r"""Return this reduction with another lift frame of the same quotient generators."""
+            return IsotropicReductions(self.base_ring())(
+                self.isotropic_embedding(),
+                coordinate_frame=coordinate_frame,
+            )
+
+        def reduction_lifts(self):
+            r"""Archived name for :meth:`coordinate_frame`."""
+            return self.coordinate_frame()
 
         def quotient_lattice(self):
             r"""Return \(K_I=I^\perp/I\), which is this lattice."""
@@ -4957,6 +5234,15 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             r"""Return ``P_I^1``, the subgroup fixing the isotropic sublattice pointwise."""
             embedding = self.isotropic_embedding()
             return embedding.codomain().O().pointwise_stabilizer(embedding)
+
+        @cached_method
+        def pointwise_perpendicular_kernel(self):
+            r"""Return the kernel of isometries acting identically on \(I^\perp\)."""
+            from sage_indefinite_port.indefinite.isotropic_lifts import (
+                pointwise_perpendicular_kernel,
+            )
+
+            return pointwise_perpendicular_kernel(self)
 
         @cached_method
         def levi_action(self):

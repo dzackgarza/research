@@ -41,7 +41,7 @@ from sage.misc.classcall_metaclass import typecall
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.category_object import CategoryObject as SageCategoryObject
-from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.dynamic_class import DynamicMetaclass, dynamic_class
 from sage.structure.element import parent
 from sage.structure.parent import Parent
 
@@ -473,17 +473,58 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     @cached_method
     def _generated_arrow_type(self) -> type:
         r"""Return the arrow type generated from this Mor category's graph."""
-        return self._make_named_class(
-            "element_class",
-            "ElementMethods",
-            cache=False,
-            picklable=False,
+        providers = []
+        visited = set()
+
+        def visit(mor):
+            marker = id(mor)
+            if marker in visited:
+                return
+            visited.add(marker)
+            for ancestor in type(mor).__mro__:
+                if ancestor is CategoricalMor:
+                    break
+                provider = ancestor.__dict__.get("ElementMethods")
+                if isinstance(provider, type) and provider not in providers:
+                    providers.append(provider)
+            for super_category in mor.super_categories():
+                if isinstance(super_category, CategoricalMor):
+                    visit(super_category)
+
+        visit(self)
+
+        bases = []
+        for candidate in (
+            *providers,
+            self.category().element_class,
+            CategoricalMor.ElementMethods,
+        ):
+            if any(
+                candidate is known or issubclass(known, candidate)
+                for known in bases
+            ):
+                continue
+            bases = [
+                known for known in bases
+                if not issubclass(candidate, known)
+            ]
+            bases.append(candidate)
+
+        return dynamic_class(
+            f"{type(self).__name__}.ArrowType",
+            tuple(bases),
+            doccls=providers[0] if providers else CategoricalMor.ElementMethods,
         )
 
     @property
     def ElementType(self) -> type:
         r"""The public arrow implementation type of this fixed Mor category."""
-        if type(self).__dict__.get("Element") is not None:
+        if any(
+            ancestor.__dict__.get("Element") is not None
+            for ancestor in type(self).__mro__[
+                : type(self).__mro__.index(CategoricalMor)
+            ]
+        ):
             return Parent.element_class.f(self)
         return self._generated_arrow_type()
 
@@ -499,9 +540,14 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         category extends the arrow type with that category's element methods
         (``refine._rebuild_element_class``) and stores the result here.
         """
-        if getattr(type(self), "Element", None) is not None:
+        if any(
+            ancestor.__dict__.get("Element") is not None
+            for ancestor in type(self).__mro__[
+                : type(self).__mro__.index(CategoricalMor)
+            ]
+        ):
             return Parent.element_class.f(self)
-        return self.ElementType
+        return self._generated_arrow_type()
 
     @staticmethod
     def __classcall__(cls, *arguments, **options):
@@ -565,6 +611,10 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
 
     def mor_family(self) -> _MorCategoryOf:
         return self._family
+
+    def is_endomorphism_set(self) -> bool:
+        r"""Expose the MorCategories operation across the enriched-Mor runtime boundary."""
+        return MorCategories.ParentMethods.is_endomorphism_set(self)
 
     @property
     def _MorCategory(self) -> type[_MorCategoryOf]:
@@ -1331,6 +1381,11 @@ class MorCategories(OwnedCategoryBase):
 
         witness = Sets().an_object()
         return Sets().Mor(witness, witness)
+
+    class ParentMethods:
+        def is_endomorphism_set(self) -> bool:
+            r"""Whether this fixed Mor is End_C(A) = Hom_C(A,A)."""
+            return self.domain_object() is self.codomain_object()
 
     def __contains__(self, candidate: Any) -> bool:
         r"""Whether ``candidate`` is a fixed Mor category.

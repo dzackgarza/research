@@ -275,7 +275,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 denominator * element.denominator(),
             )
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             r"""Finite numerator modules have finite localizations.
 
             Localizing a finite module is a quotient of its finite underlying

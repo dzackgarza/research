@@ -399,9 +399,6 @@ class RngMor(CategoricalMor):
     def __call__(self, datum):
         return self._element_constructor_(datum)
 
-    def is_endomorphism_set(self):
-        return self.domain() is self.codomain()
-
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RngMorphism)
 
@@ -536,9 +533,6 @@ class RingMor(CategoricalMor):
 
     def __call__(self, datum):
         return self._element_constructor_(datum)
-
-    def is_endomorphism_set(self):
-        return self.domain() is self.codomain()
 
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RingMorphism)
@@ -1542,7 +1536,7 @@ class _PredicateSubringParent(Parent):
         _algebra_from_native_ring(self, lambda left, right: self(left * right), self._one,
             lambda scalar, element: self(self(scalar) * self(element)))
 
-    def is_commutative(self):
+    def _commutativity_decision(self):
         if self._preamble_is_commutative:
             return True
         from sage.misc.unknown import Unknown
@@ -1828,9 +1822,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return _own_ring(SageZZ)
 
             class ParentMethods:
-                def is_integral_domain(self, *args, **kwargs):
-                    return True
-
                 def fractional_ideal(self, *module_generators):
                     r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
                     from dzack_research.preamble.categories.modules.fractional_ideals import (
@@ -1895,10 +1886,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
-        class ParentMethods:
-            def is_noetherian(self):
-                return True
-
     class Artinian(CategoryWithAxiom):
         r"""Artinian rings: the descending chain condition on ideals."""
 
@@ -1913,10 +1900,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def extra_super_categories(self):
             r"""Hopkins–Levitzki: an artinian ring is noetherian."""
             return [OwnedRings().Noetherian()]
-
-        class ParentMethods:
-            def is_artinian(self):
-                return True
 
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
@@ -1964,9 +1947,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._with_axiom("Complete")
 
             class ParentMethods:
-                def is_local(self):
-                    return True
-
                 def local_ring_construction(self):
                     construction = self._selected_local_ring_construction()
                     assert construction is not None, (
@@ -2020,17 +2000,17 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return [OwnedRings().Noetherian()]
 
         class ParentMethods:
-            def is_commutative(self):
-                return True
-
             def nilradical(self):
                 r"""Return the nilradical ``sqrt((0))`` of this commutative ring."""
                 return self.ideal(self.zero()).radical()
 
-            def is_reduced(self) -> bool:
+            def _reducedness_decision(self) -> bool:
                 r"""Return whether this commutative ring has zero nilradical."""
                 zero_ideal = self.ideal(self.zero())
                 return self.nilradical() == zero_ideal
+
+            def is_reduced(self) -> bool:
+                return self._reducedness_decision()
 
             @cached_method
             def square_class_group(self):
@@ -2207,6 +2187,35 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        def _integral_domain_decision(self):
+            return Unknown
+
+        def is_integral_domain(self):
+            match self:
+                case _ if self in OwnedRings().NoZeroDivisors().Commutative():
+                    return True
+                case _:
+                    return self._integral_domain_decision()
+
+        def is_noetherian(self):
+            return True if self in OwnedRings().Noetherian() else Unknown
+
+        def is_artinian(self):
+            return True if self in OwnedRings().Artinian() else Unknown
+
+        def is_local(self):
+            return True if self in OwnedRings().Commutative().Local() else Unknown
+
+        def _field_decision(self):
+            return Unknown
+
+        def is_field(self):
+            match self:
+                case _ if self in OwnedRings().Division().Commutative():
+                    return True
+                case _:
+                    return self._field_decision()
+
         def _selected_local_ring_construction(self):
             r"""Return an installed local-ring datum, or ``None``.
 
@@ -2403,12 +2412,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 )
             return rings.Mor(self, codomain)
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the exact represented cardinal of the underlying set."""
             from dzack_research.preamble.categories.sets.cardinals import (
                 aleph0,
                 cardinal,
-                continuum,
             )
 
             category = self.category()
@@ -2425,12 +2433,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     )
                 case _ if category.is_subcategory(owned_sets.CountablyInfiniteSets()):
                     return aleph0
-                case _ if category.is_subcategory(owned_sets.UncountableSets()):
-                    return continuum
                 case _:
                     # No size placement on the ring: its underlying set may still be
                     # constructed at a lower level, as M_n(R) is the free module R^(n^2).
-                    return super().cardinality()
+                    return super()._cardinality_decision()
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
             r"""Return whether this ring carries a nontrivial selected exact presentation.
@@ -2456,14 +2462,46 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return self(value)
 
         def is_central(self, element):
-            r"""Return whether ``element`` is central in the foundational ring regimes."""
-            if element not in self:
-                return False
-            assert self in OwnedRings().Commutative(), (
-                f"cannot decide whether {element} is central in {self}: centrality is computed here only in "
-                "a commutative ring"
-            )
-            return True
+            r"""Return whether ``element`` commutes with every element of this ring.
+
+            In a framed algebra it is enough to commute with the selected
+            algebra generators: scalar coefficients are central and the
+            commuting relation is preserved by sums and products.  In an
+            endomorphism algebra a represented scalar map ``r id`` is central
+            because every linear ``h`` satisfies ``h(r x) = r h(x)``.
+            """
+            match element in self:
+                case False:
+                    return False
+                case True:
+                    element = self(element)
+
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            match self:
+                case _ if self in OwnedRings().Commutative():
+                    return True
+                case _ if self in Algebras(self.base_ring()) and self.is_framed_algebra():
+                    return all(
+                        element * self.algebra_generator(label)
+                        == self.algebra_generator(label) * element
+                        for label in self.algebra_generating_set()
+                    )
+                case _:
+                    from dzack_research.preamble.categories.group.additive_mors import (
+                        AdditiveEndomorphismRings,
+                        _scalar_identity_coefficient,
+                    )
+
+                    match self:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()) and _scalar_identity_coefficient(element) is not None:
+                            return True
+                        case _:
+                            assert False, (
+                                f"centrality is defined for every element of {self}, but the current preamble "
+                                "computes it only for commutative rings, framed algebras, and represented scalar "
+                                "endomorphisms"
+                            )
 
         @cached_method
         def ring_center(self):
@@ -2602,7 +2640,7 @@ def OwnedFields():
     return OwnedRings().Division().Commutative()
 
 
-class OwnedOrders(OwnedCategory):
+class OwnedOrders(CategoryPacketMethods, OwnedCategory):
     r"""Orders: integral domains finitely generated as ``ZZ``-modules (Neukirch I §12).
 
     The number field is ``Frac(O) = O (x) QQ``, determined by the ring, and
@@ -2611,6 +2649,12 @@ class OwnedOrders(OwnedCategory):
     The class is the home of the operations of orders (their embeddings, the
     adjunction with number fields, maximality); it adds no condition.
     """
+
+    class _MorCategory(MorCategoryConstruction):
+        def fixed_category_class(self):
+            from dzack_research.preamble.categories.rings.embeddings import OrderMor
+
+            return OrderMor
 
     def an_object(self):
         r"""The integers, the ring of integers of the rationals."""
@@ -3732,16 +3776,16 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_exact(self):
         return self._engine.is_exact()
 
-    def is_field(self, *args, **kwargs):
-        return self._engine.is_field(*args, **kwargs)
+    def _field_decision(self):
+        return self._engine.is_field()
 
-    def is_commutative(self):
+    def _commutativity_decision(self):
         return self._engine.is_commutative()
 
-    def is_integral_domain(self, *args, **kwargs):
-        return self._engine.is_integral_domain(*args, **kwargs)
+    def _integral_domain_decision(self):
+        return self._engine.is_integral_domain()
 
-    def is_finite(self):
+    def _finiteness_decision(self):
         return self._engine.is_finite()
 
     def _preamble_is_number_field_order(self):

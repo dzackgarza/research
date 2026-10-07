@@ -12,7 +12,6 @@ from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
-from sage.combinat.subset import Subsets as SageSubsets
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown, UnknownClass
@@ -35,6 +34,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoryPacketMethods,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -135,14 +137,20 @@ def _finite_set_quotient_by_generated_relation(target, relation_pairs):
 
 
 class EnumeratedSets(OwnedCategory):
-    r"""Sets equipped with a represented ranking/enumeration."""
+    r"""Sets equipped with a represented ranking/enumeration.
+
+    The ranking is an isomorphism onto the standard finite or countable
+    well-order.  Pulling that order back along the ranking therefore makes
+    every object here a well-ordered set; ``order_type`` is the order type of
+    that standard target.
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""The ordinal 2, ranked by its own order."""
         return finite_ordinal_set(2)
 
     def super_categories(self):
-        return [Sets().Countable()]
+        return [Sets().Countable(), WellOrderedSets()]
 
     class ParentMethods:
         @abstract_method
@@ -155,6 +163,22 @@ class EnumeratedSets(OwnedCategory):
             is not an object of the ordinal category ``Ord``.
             """
 
+        def __iter__(self):
+            r"""Iterate in the order selected by this set's ranking map."""
+            ranking = self.ranking_map()
+            point_at = ranking.inverse()
+            counting_order = ranking.codomain()
+            match counting_order in FiniteSets():
+                case True:
+                    positions = range(int(cardinal(counting_order.cardinality()).finite_value()))
+                case False:
+                    assert counting_order in CountablyInfiniteSets(), (
+                        f"the ranking map of {self} has codomain {counting_order}, not a finite or countably infinite "
+                        "standard well-order"
+                    )
+                    positions = count()
+            return (point_at(position) for position in positions)
+
         def __getitem__(self, position):
             r"""Return the point at ``position``, the ranking map run backwards."""
             return self.ranking_map().inverse()(position)
@@ -163,6 +187,18 @@ class EnumeratedSets(OwnedCategory):
             r"""The order the enumeration transports from its ordinal: ``x <= y`` when ``x`` is ranked no later."""
             ranking = self.ranking_map()
             return ranking(left) <= ranking(right)
+
+        def order_type(self):
+            r"""Return the ordinal order type transported by the ranking map."""
+            size = cardinal(self.ranking_map().codomain().cardinality())
+            if size.is_finite():
+                return ordinal(size.finite_value())
+            assert size.is_countably_infinite(), (
+                f"the standard counting order of {self} has cardinality {size}, not finite or countably infinite"
+            )
+            from dzack_research.preamble.categories.sets.cardinals import omega
+
+            return omega(0)
 
         def _ranking_isomorphism(self, position_of, point_at):
             r"""Build the represented enumeration from its mutually inverse directions."""
@@ -244,25 +280,9 @@ class AugmentedSimplexCategory(OwnedCategory):
                 **rest,
             )
 
-        def order_type(self) -> Ordinal:
-            r"""The ordinal order type ``n`` of this standard well-order.
-
-            The finite ordinal ``{0, ..., n-1}`` is the von Neumann ordinal
-            ``n``, so its order type is the datum it was built from.
-            """
-            return ordinal(self._size)
-
-        def __iter__(self):
-            return (NN(index) for index in range(self._size))
-
-        def __getitem__(self, position):
-            r"""Return the point at ``position`` without enumerating preceding points."""
-            position = int(position)
-            if position < 0 or position >= self._size:
-                raise IndexError(
-                    f"position {position} is out of range for {self}, which has {self._size} points"
-                )
-            return NN(position)
+        def _cardinality_decision(self):
+            r"""The represented finite ordinal has exactly ``size`` points."""
+            return cardinal(self._size)
 
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
@@ -296,8 +316,6 @@ class AugmentedSimplexCategory(OwnedCategory):
                 case _:
                     return False
 
-        is_parent_of = __contains__
-
         def __call__(self, element):
             r"""Normalize a natural number to the point of this ordinal it names.
 
@@ -309,9 +327,6 @@ class AugmentedSimplexCategory(OwnedCategory):
             if element not in self:
                 raise ValueError(f"{element!r} is not an element of {self}")
             return NN(int(element))
-
-        def __len__(self):
-            return self._size
 
         def _repr_(self):
             if not self._size:
@@ -642,7 +657,7 @@ def _set_mor_category(domain, codomain):
     return SetMorCategoryConstruction(Sets()).Of(domain, codomain)
 
 
-class Sets(OwnedCategory):
+class Sets(CategoryPacketMethods, OwnedCategory):
     r"""The owned category of sets.
 
     All Sage set objects are admitted.  The category owns the mathematical
@@ -1366,6 +1381,28 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        def is_parent_of(self, element) -> bool:
+            r"""Whether the candidate belongs to this represented set."""
+            return element in self
+
+        def _finiteness_decision(self):
+            r"""Protected computation of finiteness when placement does not decide it."""
+            return Unknown
+
+        def _cardinality_decision(self):
+            r"""Protected exact cardinality supplied by a construction-specific realization."""
+            return Unknown
+
+        def is_finite(self):
+            r"""Return whether the underlying set has finite cardinality."""
+            match self:
+                case _ if self in Sets().Finite():
+                    return True
+                case _ if self in Sets().Infinite():
+                    return False
+                case _:
+                    return self._finiteness_decision()
+
         def cardinality(self) -> Cardinalities.ObjectType:
             r"""The cardinality ``|X|``, an object of ``Card``.
 
@@ -1391,11 +1428,11 @@ class Sets(OwnedCategory):
             - any other finite set is counted through its points, and any
               other countably infinite set has cardinality ``aleph_0``.
 
-            An engine realizing sets whose construction determines a
-            cardinality these cases do not reach -- the image of an injective
-            map, the ``k``-selections from a set -- states that theorem with
-            its own ``cardinality``.  A represented set outside all of these
-            has a cardinality that no exact computation here reaches, and the
+            A realization whose construction determines a cardinality these
+            standard set cases do not reach supplies that theorem through the
+            protected ``_cardinality_decision`` hook.  The public operation
+            remains here.  A represented set outside all of these routes has a
+            cardinality that no exact computation here reaches, and the
             assertion says so.
             """
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -1405,9 +1442,11 @@ class Sets(OwnedCategory):
                 PredicateSubrings,
             )
 
+            construction_cardinality = self._cardinality_decision()
+            if construction_cardinality is not Unknown:
+                return cardinal(construction_cardinality)
+
             match self:
-                case _ if self in AugmentedSimplexCategory():
-                    return self.order_type().cardinality()
                 case _ if self in OrderedEnumeratedSets():
                     return cardinal(self.index_set().cardinality())
                 case _ if self in PowerSets():
@@ -1466,14 +1505,16 @@ class Sets(OwnedCategory):
                                         f"(it is in {self.category()})"
                                     )
                                     return _aleph0()
-                case _ if self in Sets().Finite():
-                    return cardinal(sum(1 for _point in self))
                 case _:
-                    assert self in Sets().Countable() and self in Sets().Infinite(), (
-                        f"cannot compute the cardinality of {self}: it is not known to be finite or countably "
-                        f"infinite, and no formula for it applies (it is in {self.category()})"
-                    )
-                    return _aleph0()
+                    match self:
+                        case _ if self in Sets().Finite():
+                            return cardinal(sum(1 for _point in self))
+                        case _:
+                            assert self in Sets().Countable() and self in Sets().Infinite(), (
+                                f"cannot compute the cardinality of {self}: it is not known to be finite or countably "
+                                f"infinite, and no formula for it applies (it is in {self.category()})"
+                            )
+                            return _aleph0()
 
         def finite_words(self):
             r"""All finite words in this alphabet, including the empty word."""
@@ -1482,16 +1523,6 @@ class Sets(OwnedCategory):
         def finite_multisets(self):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
-
-        def counting_well_order(self):
-            r"""Return the standard finite or countable well-order indexing this enumeration."""
-            size = cardinal(self.cardinality())
-            if size.is_finite():
-                return finite_ordinal_set(size.finite_value())
-            assert size.is_countably_infinite(), (
-                f"{self} has cardinality {size}, which is not countable, so no ordinal here counts it"
-            )
-            return NN
 
         def Mor(
             self,
@@ -1573,6 +1604,11 @@ class Sets(OwnedCategory):
             r"""A finite set is countable."""
             return [Sets().Countable()]
 
+        class ParentMethods:
+            def __len__(self) -> int:
+                r"""Return the finite cardinality as a Python length."""
+                return int(self.cardinality())
+
         # Functors into finite G-sets, sited on their domain.
 
         def trivial_action(self, group: Parent) -> Functor:
@@ -1620,6 +1656,17 @@ class Sets(OwnedCategory):
         def an_object(self) -> ObjectOfCategory:
             r"""The natural numbers."""
             return NN
+
+        class ParentMethods:
+            def counting_well_order(self):
+                r"""Return the standard finite or countable well-order of this set's cardinality."""
+                size = cardinal(self.cardinality())
+                if size.is_finite():
+                    return finite_ordinal_set(size.finite_value())
+                assert size.is_countably_infinite(), (
+                    f"{self} is countable but has cardinality {size}, which is neither finite nor countably infinite"
+                )
+                return NN
 
         class Infinite(CategoryWithAxiom):
             r"""Sets whose cardinality is \(\aleph_0\)."""
@@ -1674,8 +1721,6 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def __contains__(self, point) -> bool:
         return point in self._points
-
-    is_parent_of = __contains__
 
     def _element_constructor_(self, point):
         if point not in self:
@@ -2171,7 +2216,20 @@ class PowerSets(OwnedCategory):
 
     def _call_(self, base_set):
         r"""Construct the power object of ``base_set``."""
-        return _object_of(self, base_set=base_set)
+        placements = [self]
+        engine = None
+        if base_set in FiniteSets():
+            placements.append(FiniteSets())
+            if base_set in EnumeratedSets():
+                placements.append(EnumeratedSets())
+                engine = (self, _EnumeratedPowerSetEngine, None)
+        elif base_set in InfiniteSets():
+            placements.append(UncountableSets())
+        return _object_of(
+            owned_category_join(placements),
+            _engine=engine,
+            base_set=base_set,
+        )
 
     class ParentMethods:
         def __init__(self, base_set: Parent, **rest) -> None:
@@ -2314,26 +2372,55 @@ class PowerSets(OwnedCategory):
 
             return Sets().Mor(self, target)(direct_image)
 
-        def __iter__(self):
-            r"""Enumerate the subsets of a finite enumerated base.
-
-            Sage's ``Subsets`` (sage/combinat/subset.py) is the engine that
-            enumerates them; each subset it yields is read back through this
-            power set's element constructor (`OWN-06`).
-            """
-            base = self.base_set()
-            assert base in FiniteSets() and base in EnumeratedSets(), (
-                f"cannot list the subsets of {base}: the power set is enumerated here only for a finite "
-                "enumerated set"
-            )
-            return (self(subset) for subset in SageSubsets(base))
-
         def cardinality_comparison(self) -> CardinalityMorphism:
             size = self.cardinality()
             return _cardinalities().Mor(size, size).identity()
 
         def _repr_(self) -> str:
             return f"Power set of {self.base_set()}"
+
+
+def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
+    r"""Rank finite subsets of an enumerated source by their binary support."""
+    source_size = cardinal(source.cardinality())
+
+    def point_at(position):
+        position = int(position)
+        bound = 1 << int(source_size.finite_value()) if source_size.is_finite() else None
+        if position < 0 or (bound is not None and position >= bound):
+            raise IndexError(
+                f"position {position} is out of range for {subset_set}, which has cardinality {subset_set.cardinality()}"
+            )
+        members = []
+        source_position = 0
+        remaining_bits = position
+        while remaining_bits:
+            if remaining_bits & 1:
+                members.append(source[source_position])
+            source_position += 1
+            remaining_bits >>= 1
+        return subset_set(tuple(members))
+
+    def position_of(subset):
+        subset = subset_set(subset)
+        remaining = int(cardinal(subset.cardinality()).finite_value())
+        position = 0
+        source_position = 0
+        while remaining:
+            point = source[source_position]
+            if point in subset:
+                position |= 1 << source_position
+                remaining -= 1
+            source_position += 1
+        return position
+
+    return subset_set._ranking_isomorphism(position_of, point_at)
+
+
+class _EnumeratedPowerSetEngine:
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        return _finite_subset_ranking_map(self, self.base_set())
 
 
 @cached_function
@@ -2404,8 +2491,23 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def _call_(self, source, subset_cardinality):
         r"""Construct the set of subsets of ``source`` of the stated cardinality."""
+        subset_cardinality = int(subset_cardinality)
+        placements = [self]
+        engine = None
+        if subset_cardinality == 0 or source in FiniteSets():
+            placements.append(FiniteSets())
+        elif source in CountablyInfiniteSets():
+            placements.append(CountablyInfiniteSets())
+        elif source in UncountableSets():
+            placements.append(UncountableSets())
+        elif source in CountableSets():
+            placements.append(CountableSets())
+        if source in EnumeratedSets():
+            placements.append(EnumeratedSets())
+            engine = (self, _EnumeratedFixedCardinalitySubsetSetEngine, None)
         return _object_of(
-            self,
+            owned_category_join(placements),
+            _engine=engine,
             source=source,
             subset_cardinality=subset_cardinality,
         )
@@ -2425,15 +2527,12 @@ class FixedCardinalitySubsetSets(OwnedCategory):
         def subset_cardinality(self) -> int:
             return self._subset_cardinality
 
-        def power_set(self) -> Sets().ObjectType:
-            return self.source().power_set()
-
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
             return self._element_constructor_(*args, **kwargs)
 
         def _element_constructor_(self, members):
-            subset = self.power_set()(members)
+            subset = self.source().power_set()(members)
             if subset.domain().cardinality() != cardinal(self.subset_cardinality()):
                 raise ValueError(
                     f"{subset.domain()} is not in {self}: it has cardinality {subset.domain().cardinality()}, "
@@ -2442,26 +2541,40 @@ class FixedCardinalitySubsetSets(OwnedCategory):
             return subset
 
         def __contains__(self, candidate) -> bool:
-            if candidate not in self.power_set():
+            ambient_power_set = self.source().power_set()
+            if candidate not in ambient_power_set:
                 return False
-            return self.power_set()(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
-
-        def __iter__(self):
-            r"""Enumerate the ``k``-subsets of a finite enumerated source.
-
-            Sage's ``Subsets`` (sage/combinat/subset.py) is the engine that
-            enumerates them; each is read back through this object's element
-            constructor (`OWN-06`).
-            """
-            source = self.source()
-            assert source in FiniteSets() and source in EnumeratedSets(), (
-                f"cannot list the {self.subset_cardinality()}-element subsets of {source}: they are enumerated "
-                "here only for a finite enumerated set"
-            )
-            return (self(tuple(subset)) for subset in SageSubsets(source, self.subset_cardinality()))
+            return ambient_power_set(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
 
         def _repr_(self) -> str:
             return f"Subsets of {self.source()} of cardinality {self.subset_cardinality()}"
+
+
+class _EnumeratedFixedCardinalitySubsetSetEngine:
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        selections = self.source().ordered_subsets_of_size(self.subset_cardinality())
+
+        def point_at(position):
+            return self(tuple(selections.ranking_map().inverse()(position)))
+
+        def position_of(subset):
+            subset = self(subset)
+            needed = self.subset_cardinality()
+
+            def source_positions():
+                found = 0
+                source_position = 0
+                while found < needed:
+                    if self.source()[source_position] in subset:
+                        yield source_position
+                        found += 1
+                    source_position += 1
+
+            selection = selections.from_source_rank_positions(source_positions())
+            return selections.ranking_map()(selection)
+
+        return self._ranking_isomorphism(position_of, point_at)
 
 
 @cached_function
@@ -2485,7 +2598,24 @@ class FinitePowerSets(OwnedCategory):
 
     def _call_(self, source):
         r"""Construct the finite-subset object of ``source``."""
-        return _object_of(self, source=source)
+        placements = [self]
+        engine = None
+        if source in FiniteSets():
+            placements.append(FiniteSets())
+        elif source in CountablyInfiniteSets():
+            placements.append(CountablyInfiniteSets())
+        elif source in UncountableSets():
+            placements.append(UncountableSets())
+        elif source in CountableSets():
+            placements.append(CountableSets())
+        if source in EnumeratedSets():
+            placements.append(EnumeratedSets())
+            engine = (self, _EnumeratedFinitePowerSetEngine, None)
+        return _object_of(
+            owned_category_join(placements),
+            _engine=engine,
+            source=source,
+        )
 
     class ParentMethods:
         def __init__(self, source: Parent, **rest) -> None:
@@ -2495,35 +2625,30 @@ class FinitePowerSets(OwnedCategory):
         def source(self) -> Sets().ObjectType:
             return self._source
 
-        def power_set(self) -> Sets().ObjectType:
-            return self.source().power_set()
-
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
             return self._element_constructor_(*args, **kwargs)
 
         def _element_constructor_(self, members):
-            subset = self.power_set()(members)
+            subset = self.source().power_set()(members)
             if not subset.domain().cardinality().is_finite():
                 raise ValueError(f"{subset.domain()} is not in {self}: it is not finite")
             return subset
 
         def __contains__(self, candidate) -> bool:
-            if candidate not in self.power_set():
+            ambient_power_set = self.source().power_set()
+            if candidate not in ambient_power_set:
                 return False
-            return self.power_set()(candidate).domain().cardinality().is_finite()
-
-        def __iter__(self):
-            r"""Enumerate the subsets of a finite enumerated source, through Sage's ``Subsets`` (`OWN-06`)."""
-            source = self.source()
-            assert source in FiniteSets() and source in EnumeratedSets(), (
-                f"cannot list the finite subsets of {source}: they are enumerated here only for a finite "
-                "enumerated set"
-            )
-            return (self(tuple(subset)) for subset in SageSubsets(source))
+            return ambient_power_set(candidate).domain().cardinality().is_finite()
 
         def _repr_(self) -> str:
             return f"Finite subsets of {self.source()}"
+
+
+class _EnumeratedFinitePowerSetEngine:
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        return _finite_subset_ranking_map(self, self.source())
 
 
 @cached_function
@@ -2573,8 +2698,6 @@ class _ConditionSet(Sets().ObjectType):
         r"""Whether ``element`` is a point of \(X\) satisfying \(P\)."""
         universe = self.universe()
         return element in universe and bool(self.predicate()(universe(element)))
-
-    is_parent_of = __contains__
 
     def _element_constructor_(self, element):
         if element not in self:
@@ -2657,7 +2780,7 @@ class _ImageSet(Sets().ObjectType):
             case _:
                 return Unknown
 
-    def cardinality(self) -> Cardinalities.ObjectType:
+    def _cardinality_decision(self) -> Cardinalities.ObjectType | UnknownClass:
         r"""The cardinality of \(f(A)\).
 
         An inverse on the image makes \(f\) a bijection \(A\to f(A)\), so
@@ -2667,12 +2790,8 @@ class _ImageSet(Sets().ObjectType):
         match self.source_set():
             case source if self._image_inverse is not None:
                 return cardinal(source.cardinality())
-            case source:
-                assert source in FiniteSets(), (
-                    f"cannot compute the cardinality of the image {self}: its source {source} is not known to be "
-                    "finite and no inverse on the image was given"
-                )
-                return super().cardinality()
+            case _:
+                return Unknown
 
     @cached_method
     def _distinct_values(self):
@@ -2706,8 +2825,6 @@ class _ImageSet(Sets().ObjectType):
                     "inverse on the image was given"
                 )
 
-    is_parent_of = __contains__
-
     def _element_constructor_(self, element):
         if element not in self:
             raise ValueError(f"{element!r} is not in {self}")
@@ -2737,11 +2854,10 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
         factors = tuple(family(index) for index in index_set)
+        if all(factor in EnumeratedSets() for factor in factors):
+            placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
         if all(factor in FiniteSets() for factor in factors):
-            if all(factor in EnumeratedSets() for factor in factors):
-                placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
-            else:
-                placements.append(FiniteSets())
+            placements.append(FiniteSets())
         elif all(factor in CountableSets() for factor in factors):
             # A finite product of countable sets is countable.  Do not demand
             # exact cardinalities merely to construct the product: some owned
@@ -2947,10 +3063,6 @@ class CartesianProductsOfSets(OwnedCategory):
                 positional_components=positional,
             )
 
-        @cached_method
-        def ranking_map(self) -> CategoricalIsomorphism:
-            return _cartesian_product_ranking_map(self)
-
         def projection(self, index: IndexT) -> SetMorphism:
             normalized = self.index_set()(index)
             return Sets().Mor(self, self.factor(normalized))(lambda element: element.component(normalized))
@@ -2962,81 +3074,6 @@ class CartesianProductsOfSets(OwnedCategory):
         ) -> SetMorphism:
             r"""Return the unique map into the product with the stated components."""
             return Sets().Mor(source, self)(lambda element: self(lambda index: maps(index)(element)))
-
-        def __iter__(self):
-            assert self.has_finite_index_set(), (
-                f"cannot list the elements of {self}: its index set {self.index_set()} is infinite"
-            )
-
-            ranking = self.index_set().ranking_map()
-            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-            factors = tuple(
-                self.factor(ranking.inverse()(position))
-                for position in range(index_count)
-            )
-            factor_cardinalities = tuple(
-                cardinal(factor.cardinality()) for factor in factors
-            )
-
-            if all(size.is_finite() for size in factor_cardinalities):
-                def sections(position, assignment):
-                    if position == index_count:
-                        positional = tuple(assignment[offset] for offset in range(index_count))
-                        yield self.element_class(
-                            self,
-                            lambda index, positional=positional: positional[int(ranking(index))],
-                            positional_components=positional,
-                        )
-                        return
-                    for value in factors[position]:
-                        assignment[position] = value
-                        yield from sections(position + 1, assignment)
-                    assignment.pop(position, None)
-
-                return sections(0, {})
-
-            assert all(
-                factor in EnumeratedSets() and size.is_countable()
-                for factor, size in zip(factors, factor_cardinalities, strict=True)
-            ), (
-                f"cannot list the elements of {self}: the product is enumerated here only when every factor "
-                "is enumerated and countable"
-            )
-
-            bounds = tuple(
-                int(size.finite_value()) if size.is_finite() else None
-                for size in factor_cardinalities
-            )
-
-            def weak_compositions(total, parts):
-                if parts == 0:
-                    if total == 0:
-                        yield ()
-                    return
-                if parts == 1:
-                    yield (total,)
-                    return
-                for first in range(total + 1):
-                    for rest in weak_compositions(total - first, parts - 1):
-                        yield (first, *rest)
-
-            def countable_sections():
-                for total in count():
-                    for positions in weak_compositions(total, index_count):
-                        if any(
-                            bound is not None and position >= bound
-                            for position, bound in zip(positions, bounds, strict=True)
-                        ):
-                            continue
-                        values = tuple(
-                            factor.ranking_map().inverse()(position)
-                            for factor, position in zip(factors, positions, strict=True)
-                        )
-                        yield self(
-                            lambda index, values=values: values[int(ranking(index))]
-                        )
-
-            return countable_sections()
 
         def _repr_(self) -> str:
             return f"Product of the family over {self.index_set()}"
@@ -3078,67 +3115,106 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
 
 
 def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
-    r"""Return the mixed-radix enumeration of a finite enumerated product.
+    r"""Return the enumeration of a finite-index product of enumerated sets.
 
     This is the enumeration datum that justifies placing the product in
-    :class:`EnumeratedSets`.  Keeping it outside either category's method MRO
-    lets the specialized placement expose the concrete map without duplicating
-    the product algorithm.
+    :class:`EnumeratedSets`.  Finite factors use mixed radix; otherwise the
+    finitely many countable rankings are diagonalized by total rank.
     """
     assert product.has_finite_index_set(), (
-        f"the mixed-radix enumeration of {product} needs a finite index set, but "
+        f"the enumeration of {product} needs a finite index set, but "
         f"{product.index_set()} is not known to be finite"
     )
     assert product.index_set() in EnumeratedSets(), (
-        f"the mixed-radix enumeration of {product} needs an enumerated index set, but "
+        f"the enumeration of {product} needs an enumerated index set, but "
         f"{product.index_set()} is not enumerated"
     )
     index_count = int(cardinal(product.index_set().cardinality()).finite_value())
     index_ranking = product.index_set().ranking_map()
     index_at = index_ranking.inverse()
-    for index in product.index_set():
-        factor = product.factor(index)
+    factors = tuple(product.factor(index_at(offset)) for offset in range(index_count))
+    for offset, factor in enumerate(factors):
         assert factor in EnumeratedSets(), (
-            f"the mixed-radix enumeration of {product} needs every factor enumerated, but the factor "
-            f"{factor} at {index} is not"
+            f"the enumeration of {product} needs every factor enumerated, but the factor "
+            f"{factor} at {index_at(offset)} is not"
         )
-        assert cardinal(factor.cardinality()).is_finite(), (
-            f"the mixed-radix enumeration of {product} needs every factor finite, but the factor "
-            f"{factor} at {index} is infinite"
-        )
-    total_size = int(cardinal(product.cardinality()).finite_value())
+    factor_cardinalities = tuple(cardinal(factor.cardinality()) for factor in factors)
+    finite_factors = all(size.is_finite() for size in factor_cardinalities)
+    product_size = cardinal(product.cardinality())
+
+    def weak_compositions(total, parts):
+        if parts == 0:
+            if total == 0:
+                yield ()
+            return
+        if parts == 1:
+            yield (total,)
+            return
+        for first in range(total + 1):
+            for rest in weak_compositions(total - first, parts - 1):
+                yield (first, *rest)
+
+    bounds = tuple(
+        int(size.finite_value()) if size.is_finite() else None
+        for size in factor_cardinalities
+    )
+
+    def rank_vectors():
+        for total in count():
+            for positions in weak_compositions(total, index_count):
+                if any(
+                    bound is not None and position >= bound
+                    for position, bound in zip(positions, bounds, strict=True)
+                ):
+                    continue
+                yield positions
 
     def point_at(position):
         position = int(position)
-        if position < 0 or position >= total_size:
+        if position < 0 or (product_size.is_finite() and position >= int(product_size.finite_value())):
             raise IndexError(
-                f"position {position} is out of range for {product}, which has {total_size} elements"
+                f"position {position} is out of range for {product}, which has cardinality {product_size}"
             )
-        assignment = {}
-        quotient = position
-        for offset in range(index_count - 1, -1, -1):
-            index = index_at(offset)
-            factor = product.factor(index)
-            radix = int(cardinal(factor.cardinality()).finite_value())
-            quotient, digit = divmod(quotient, radix)
-            assignment[offset] = factor.ranking_map().inverse()(digit)
-        return product(tuple(assignment[offset] for offset in range(index_count)))
+        if finite_factors:
+            assignment = {}
+            quotient = position
+            for offset in range(index_count - 1, -1, -1):
+                factor = factors[offset]
+                radix = int(factor_cardinalities[offset].finite_value())
+                quotient, digit = divmod(quotient, radix)
+                assignment[offset] = factor.ranking_map().inverse()(digit)
+            return product(tuple(assignment[offset] for offset in range(index_count)))
+        for reached, positions in enumerate(rank_vectors()):
+            if reached == position:
+                return product(
+                    tuple(
+                        factor.ranking_map().inverse()(rank)
+                        for factor, rank in zip(factors, positions, strict=True)
+                    )
+                )
+        raise IndexError(f"position {position} is out of range for {product}")
 
     def position_of(section):
         section = product(section)
-        position = 0
-        for index in product.index_set():
-            factor = product.factor(index)
-            radix = int(cardinal(factor.cardinality()).finite_value())
-            digit = int(factor.ranking_map()(section.component(index)))
-            position = position * radix + digit
-        return position
+        digits = tuple(
+            int(factor.ranking_map()(section.component(index_at(offset))))
+            for offset, factor in enumerate(factors)
+        )
+        if finite_factors:
+            position = 0
+            for digit, size in zip(digits, factor_cardinalities, strict=True):
+                position = position * int(size.finite_value()) + digit
+            return position
+        for position, ranks in enumerate(rank_vectors()):
+            if ranks == digits:
+                return position
+        raise ValueError(f"{section!r} is not an element of {product}")
 
     return product._ranking_isomorphism(position_of, point_at)
 
 
 class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
-    r"""Finite dependent products carrying their mixed-radix enumeration."""
+    r"""Products over a finite enumerated index with enumerated factors."""
 
     def an_object(self):
         return CartesianProductsOfSets().an_object()
@@ -3147,7 +3223,6 @@ class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
         return [
             CartesianProductsOfSets(),
             EnumeratedSets(),
-            FiniteSets(),
         ]
 
     class ParentMethods:
@@ -3259,8 +3334,6 @@ class CoproductsOfSets(OwnedCategory):
 
         def __contains__(self, element) -> bool:
             return element_parent(element) is self
-
-        is_parent_of = __contains__
 
         def _repr_(self) -> str:
             return f"Coproduct of the family over {self.index_set()}"
@@ -3398,14 +3471,6 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def __iter__(self):
-            finite_size = self._known_finite_size()
-            positions = range(finite_size) if finite_size is not None else count()
-            point_at = self.ranking_map().inverse()
-            return (point_at(position) for position in positions)
-
-
-
 DisjointUnionsOfSets = CoproductsOfSets
 
 
@@ -3432,7 +3497,7 @@ class _FiniteWordSet:
                     return Sets().product(indexed_family(positions, lambda _: alphabet))
         super().__init__(family=indexed_family(NN, degree_set), **rest)
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         match self._alphabet.cardinality() == 0:
             case True:
                 return cardinal(1)
@@ -3554,7 +3619,6 @@ class NaturalNumberSets(OwnedCategory):
         return [
             EnumeratedSets(),
             Sets().Infinite(),
-            WellOrderedSets(),
             OwnedSemirings(),
         ]
 
@@ -3586,22 +3650,6 @@ class NaturalNumberSets(OwnedCategory):
 
         def __ne__(self, other):
             return not self == other
-
-        def __lt__(self, other):
-            other = self.parent()(other)
-            return self._value < other._value
-
-        def __le__(self, other):
-            other = self.parent()(other)
-            return self._value <= other._value
-
-        def __gt__(self, other):
-            other = self.parent()(other)
-            return self._value > other._value
-
-        def __ge__(self, other):
-            other = self.parent()(other)
-            return self._value >= other._value
 
         def _semiring_operand(self, other):
             r"""Read another natural here, or defer to a larger semiring.
@@ -3704,22 +3752,10 @@ class NaturalNumberSets(OwnedCategory):
                 case _:
                     return False
 
-        def __iter__(self):
-            index = 0
-            while True:
-                yield self(index)
-                index += 1
-
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
             r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
             return self._ranking_isomorphism(lambda value: int(self(value)), self)
-
-        def order_type(self):
-            r"""The order type of the natural numbers, namely ``omega``."""
-            from dzack_research.preamble.categories.sets.cardinals import omega
-
-            return omega(0)
 
         def zero(self) -> NN.ElementType:
             return self(0)
@@ -3745,13 +3781,14 @@ class Mors(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
-    class ParentMethods:
-        def is_endomorphism_set(self) -> bool:
-            return self.domain() is self.codomain()
-
 
 class PartiallyOrderedSets(OwnedCategory):
-    r"""Sets equipped with a partial order."""
+    r"""Sets equipped with a partial order.
+
+    The relation ``le`` is the defining operation supplied by each represented
+    partial order.  The four element comparisons are derived from that one
+    relation, rather than reimplemented by particular ordered sets.
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers under their usual order."""
@@ -3759,6 +3796,26 @@ class PartiallyOrderedSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    class ParentMethods:
+        @abstract_method
+        def le(self, left, right) -> bool:
+            r"""Return whether ``left <= right`` in the selected partial order."""
+
+    class ElementMethods:
+        def __le__(self, other):
+            return self.parent().le(self, other)
+
+        def __lt__(self, other):
+            parent = self.parent()
+            return parent.le(self, other) and not parent.le(other, self)
+
+        def __ge__(self, other):
+            return self.parent().le(other, self)
+
+        def __gt__(self, other):
+            parent = self.parent()
+            return parent.le(other, self) and not parent.le(self, other)
 
 
 class TotallyOrderedSets(OwnedCategory):

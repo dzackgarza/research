@@ -82,6 +82,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
 )
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
     _commutative_algebra_with_structure,
@@ -105,6 +106,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     LocallyRingedMorCategoryConstruction,
+    QuasiCoherentSheaves,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
@@ -121,12 +123,13 @@ for _scheme_axiom in (
     "Affine",
     "QuasiAffine",
     "Projective",
+    "Proper",
     "QuasiProjective",
     "Separated",
     "FiniteType",
+    "LocallyNoetherian",
     "Integral",
     "Normal",
-    "Proper",
     "CalabiYau",
 ):
     if _scheme_axiom not in all_axioms:
@@ -1863,6 +1866,11 @@ def _affine_scheme(algebra, base, placements=(), **level_data):
     """
     schemes = Schemes(base)
     categories = [schemes.Affine()]
+    match algebra in OwnedRings().Noetherian():
+        case True:
+            categories.append(schemes.LocallyNoetherian())
+        case False:
+            pass
     if algebra is base or (algebra.is_framed_algebra() and algebra.algebra_generating_set().cardinality().is_finite()):
         categories.extend((schemes.FiniteType(), schemes.QuasiProjective()))
     if algebra is base:
@@ -2123,6 +2131,10 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""Return this category with the axiom that its objects are Calabi--Yau over the base."""
             return self._with_axiom("CalabiYau")
 
+        def LocallyNoetherian(self):
+            r"""Return this category with the axiom that its objects are locally Noetherian."""
+            return self._with_axiom("LocallyNoetherian")
+
         def Integral(self):
             r"""Return this category with the axiom that its objects are integral."""
             return self._with_axiom("Integral")
@@ -2302,9 +2314,9 @@ class Schemes(OwnedCategoryOverBaseRing):
             The input maps are open immersions ``U_i -> X``.  Joint coverage is
             exact in the regimes represented by the scheme construction itself:
             an identity member, the selected affine-gluing atlas, and a family of
-            distinguished opens of an affine scheme.  More specialized scheme
-            categories add their own theorem-backed regimes (for example the
-            standard projective atlas) before delegating here.
+            distinguished opens of an affine scheme.  Projective and product-
+            projective standard atlases are additional theorem-backed cases of
+            this same scheme-level coverage operation.
 
             This is the admission decision used by the represented Zariski
             coverage; an unrepresented cover is rejected rather than silently
@@ -2339,6 +2351,36 @@ class Schemes(OwnedCategoryOverBaseRing):
                     pass
 
             base = self.scheme_base_ring()
+            match self:
+                case _ if self in ProjectiveSpaces(base):
+                    standard = finite_family(
+                        tuple(
+                            self.standard_affine_chart_embedding(index)
+                            for index in range(int(self.relative_dimension()) + 1)
+                        ),
+                        name="Standard projective affine cover embeddings",
+                    )
+                    match all(
+                        any(embedding == standard_embedding for embedding in family)
+                        for standard_embedding in standard
+                    ):
+                        case True:
+                            return True
+                        case False:
+                            pass
+                case _ if self in ProductProjectiveSpaces(base):
+                    _choices, _charts, standard_embeddings = self._standard_affine_cover_charts_and_embeddings()
+                    match all(
+                        any(embedding == standard_embedding for embedding in family)
+                        for standard_embedding in standard_embeddings.values()
+                    ):
+                        case True:
+                            return True
+                        case False:
+                            pass
+                case _:
+                    pass
+
             match self in Schemes(base).Affine():
                 case True:
                     match all(
@@ -2365,8 +2407,8 @@ class Schemes(OwnedCategoryOverBaseRing):
 
             raise ValueError(
                 f"cannot decide whether the open immersions {family} cover {self}: the family is not the "
-                f"identity, does not contain the affine charts {self} was glued from, and is not a family "
-                "of distinguished open subschemes of an affine scheme"
+                f"identity, does not contain the affine charts {self} was glued from or its selected standard "
+                "projective charts, and is not a family of distinguished open subschemes of an affine scheme"
             )
 
         def chartwise_closed_subscheme(
@@ -2374,6 +2416,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             local_closed_subschemes,
             *,
             name="Chartwise closed subscheme",
+            placements=(),
             _engine=None,
             construction_data=None,
         ):
@@ -2384,6 +2427,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             return self._scheme_engine_realization.chartwise_closed_subscheme(
                 local_closed_subschemes,
                 name=name,
+                placements=placements,
                 _engine=_engine,
                 construction_data=construction_data,
             )
@@ -2797,12 +2841,53 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_separated(self):
                 return True
 
+            def point_blowup(self, point):
+                r"""Return the blowup of ``self`` along the closed image of the ``R``-point ``point``.
+
+                A section ``Spec R -> X`` of a separated ``R``-scheme is a
+                closed immersion, so its image is a closed center and the
+                blowup is defined (Stacks, Tags 024T and 0806).  The current
+                represented computation is the projective-plane case; other
+                separated schemes retain the operation at this owner and state
+                the missing Rees-algebra computation explicitly.
+                """
+                base = self.scheme_base_ring()
+                assert point.domain() is self.base_scheme() and point.codomain() is self, (
+                    f"cannot blow up {self} at {point}: the center must be an {base}-point "
+                    f"Spec {base} -> {self}"
+                )
+                match self:
+                    case _ if (
+                        self in ProjectiveSpaces(base)
+                        and base in OwnedFields()
+                        and int(self.relative_dimension()) == 2
+                    ):
+                        from dzack_research.preamble.categories.schemes.blowups import (
+                            _projective_point_blowup,
+                        )
+
+                        return _projective_point_blowup(self, point)
+                    case _:
+                        raise AssertionError(
+                            f"the blowup of the separated scheme {self} at the closed point {point} is defined "
+                            "as the relative Proj of the Rees algebra of its point ideal, but this realization "
+                            "does not supply that Rees-algebra construction"
+                        )
+
         def an_object(self):
             r"""The affine line, separated because it is affine."""
             return AffineSpaces(self.base_ring())(1)
 
     class FiniteType(CategoryWithAxiom):
         r"""Schemes of finite type over the base."""
+
+        def extra_super_categories(self):
+            base = self.base_ring()
+            match base in OwnedRings().Noetherian():
+                case True:
+                    return [Schemes(base).LocallyNoetherian()]
+                case False:
+                    return []
 
         class ParentMethods:
             def is_finite_type(self):
@@ -2867,9 +2952,145 @@ class Schemes(OwnedCategoryOverBaseRing):
                     _etale_comparison_embedding(self, "chi")
                 ).euler_characteristic()
 
+            @cached_method
+            def zeta_function(self):
+                r"""Return the Hasse--Weil zeta function over a finite base field.
+
+                For a finite-type scheme ``X/F_q`` this is
+
+                ``Z(X,T) = exp(sum_{n >= 1} #X(F_{q^n}) T^n / n)``.
+
+                The operation belongs to finite-type schemes; represented
+                families supply computational cases through ``_zeta_function``.
+                """
+                base = self.scheme_base_ring()
+                assert base in OwnedFields() and base.cardinality().is_finite(), (
+                    f"the Hasse--Weil zeta function of {self} is represented here only over a finite field, "
+                    f"but its base ring is {base}"
+                )
+                return self._zeta_function()
+
+            def _zeta_function(self):
+                raise AssertionError(
+                    f"the Hasse--Weil zeta function of the finite-type scheme {self} is defined by its point "
+                    "counts over finite extensions, but this realization has no selected zeta-function algorithm"
+                )
+
         def an_object(self):
             r"""The affine line, of finite type over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+    class LocallyNoetherian(CategoryWithAxiom):
+        r"""Schemes locally covered by spectra of Noetherian rings (Stacks, Tag 01OV)."""
+
+        class ParentMethods:
+            def is_locally_noetherian(self):
+                return True
+
+            def cycle_group(self, cycle_dimension):
+                r"""Return ``Z_k(X)``, the group of locally finite ``k``-cycles on ``X``.
+
+                The mathematical group is generated by the integral closed
+                subschemes of dimension ``k``, with locally finite support.  A
+                represented affine Noetherian scheme supplies the current
+                sparse computation; other locally Noetherian schemes retain
+                the operation and state that computational frontier.
+                """
+                return self._cycle_group(cycle_dimension)
+
+            def _cycle_group(self, cycle_dimension):
+                raise AssertionError(
+                    f"the algebraic cycle group Z_{cycle_dimension}({self}) is defined by locally finite "
+                    "formal sums of integral closed subschemes of the stated dimension, but this realization "
+                    "does not supply a represented family of those prime cycles"
+                )
+
+        def an_object(self):
+            r"""The affine line when the selected base is Noetherian."""
+            base = self.base_ring()
+            assert base in OwnedRings().Noetherian(), (
+                f"the canonical locally Noetherian scheme over {base} used here is A^1_{base}, "
+                f"but {base} is not known to be Noetherian"
+            )
+            return AffineSpaces(base)(1)
+
+        class Integral(CategoryWithAxiom):
+            r"""Locally Noetherian integral schemes, where Weil divisor classes are defined."""
+
+            class ParentMethods:
+                def weil_cycle_isomorphism(self):
+                    r"""Identify Weil divisors with codimension-one cycles on ``X``."""
+                    return self._weil_cycle_isomorphism()
+
+                def _weil_cycle_isomorphism(self):
+                    raise AssertionError(
+                        f"the Weil divisors of {self} and its codimension-one cycles have the same prime "
+                        "generators, but this realization does not supply compatible represented groups from "
+                        "which to construct that canonical isomorphism"
+                    )
+
+                def full_weil_divisor_group(self):
+                    r"""Return ``Div(X)``, the Weil divisor group (Stacks, Tag 0BE2)."""
+                    return self._full_weil_divisor_group()
+
+                def _full_weil_divisor_group(self):
+                    raise AssertionError(
+                        f"the Weil divisor group of the locally Noetherian integral scheme {self} is defined "
+                        "on its codimension-one prime divisors, but this realization does not supply a "
+                        "represented prime-divisor family and order-of-vanishing algorithm"
+                    )
+
+                @cached_method
+                def class_group(self):
+                    r"""Return ``Cl(X) = Div(X) / Prin(X)`` (Stacks, Tag 0BE4)."""
+                    return self._class_group()
+
+                def _class_group(self):
+                    raise AssertionError(
+                        f"the Weil divisor class group Cl({self}) is defined as Div({self}) modulo principal "
+                        "Weil divisors, but this realization does not supply a represented quotient presentation"
+                    )
+
+                @cached_method
+                def picard_to_class_group_morphism(
+                    self,
+                    base_picard_group=None,
+                    base_class_group=None,
+                    base_picard_to_class=None,
+                ):
+                    r"""Return the canonical comparison ``Pic(X) -> Cl(X)``.
+
+                    On a locally Noetherian integral scheme an invertible sheaf
+                    determines a Weil divisor class, hence this map belongs here.
+                    Represented descendants supply the computation from their
+                    Cartier/Weil or divisor-presentation data.
+                    """
+                    return self._picard_to_class_group_morphism(
+                        base_picard_group=base_picard_group,
+                        base_class_group=base_class_group,
+                        base_picard_to_class=base_picard_to_class,
+                    )
+
+                def _picard_to_class_group_morphism(
+                    self,
+                    base_picard_group=None,
+                    base_class_group=None,
+                    base_picard_to_class=None,
+                ):
+                    raise AssertionError(
+                        f"the canonical map Pic({self}) -> Cl({self}) is defined by sending an invertible "
+                        "sheaf to its Weil divisor class, but this realization does not supply a represented "
+                        "Cartier-to-Weil divisor comparison algorithm"
+                    )
+
+            def an_object(self):
+                r"""The affine line when the base is a Noetherian domain."""
+                base = self.base_ring()
+                assert base in OwnedRings().Noetherian() and base in OwnedIntegralDomains(), (
+                    f"the canonical locally Noetherian integral scheme over {base} used here is A^1_{base}, "
+                    "which requires the base to be a Noetherian integral domain"
+                )
+                return AffineSpaces(base)(1)
 
     class Proper(CategoryWithAxiom):
         r"""Schemes proper over the base.
@@ -2979,6 +3200,37 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_smooth(self):
                 return True
 
+            @cached_method
+            def canonical_line_bundle(self):
+                r"""Return the relative canonical line bundle ``omega_{X/R}`` in a represented smooth case.
+
+                For a smooth morphism of constant relative dimension ``d`` the
+                mathematical owner is this category: ``omega_{X/R} =
+                det(Omega^1_{X/R})``.  Descendant categories supply private
+                computational specializations; other smooth schemes retain the
+                operation at its owner and state the missing determinant
+                algorithm rather than losing the operation by lower placement.
+                """
+                return self._canonical_line_bundle()
+
+            def _canonical_line_bundle(self):
+                raise AssertionError(
+                    f"the canonical line bundle of the smooth scheme {self} is "
+                    "det(Omega^1), but a represented determinant of its relative "
+                    "cotangent sheaf is not computed here"
+                )
+
+            def canonical_bundle(self, *args, **kwargs):
+                return self.canonical_line_bundle(*args, **kwargs)
+
+            @cached_method
+            def anticanonical_line_bundle(self):
+                r"""Return ``omega_{X/R}^{-1}`` in every represented canonical-bundle case."""
+                return self.canonical_line_bundle().dual_sheaf()
+
+            def anticanonical_bundle(self, *args, **kwargs):
+                return self.anticanonical_line_bundle(*args, **kwargs)
+
         def an_object(self):
             r"""The affine line, which is smooth over the base ring."""
             return AffineSpaces(self.base_ring())(1)
@@ -3068,24 +3320,33 @@ class Schemes(OwnedCategoryOverBaseRing):
                 r"""Return local factoriality at ``p`` in the supported regular regime."""
                 return self._prime_point(point).is_locally_factorial()
 
-            def cycle_group(self, cycle_dimension):
-                r"""Return the algebraic cycle group ``Z_k(self)`` in dimension ``k``."""
+            def _cycle_group(self, cycle_dimension):
+                r"""Compute ``Z_k(self)`` from the represented Noetherian affine spectrum."""
                 from dzack_research.preamble.categories.divisors.chow_groups import (
                     _affine_cycle_group,
                 )
 
                 return _affine_cycle_group(self, cycle_dimension)
 
-            def full_weil_divisor_group(self):
-                r"""Return the full height-one Weil divisor group of this affine scheme."""
-                from dzack_research.preamble.categories.divisors.general_divisors import (
-                    _affine_normal_weil_divisor_group,
-                )
+            def _full_weil_divisor_group(self):
+                r"""Return the full height-one Weil divisor group in the represented affine-normal case."""
+                base = self.scheme_base_ring()
+                match self in Schemes(base).Normal():
+                    case True:
+                        from dzack_research.preamble.categories.divisors.general_divisors import (
+                            _affine_normal_weil_divisor_group,
+                        )
 
-                return _affine_normal_weil_divisor_group(self)
+                        return _affine_normal_weil_divisor_group(self)
+                    case False:
+                        raise AssertionError(
+                            f"the Weil divisor group Div({self}) is defined because {self} is locally "
+                            "Noetherian and integral, but the represented affine computation available "
+                            "here requires normality in order to compute height-one valuations"
+                        )
 
-            def weil_cycle_isomorphism(self):
-                r"""Identify full Weil divisors with codimension-one cycles."""
+            def _weil_cycle_isomorphism(self):
+                r"""Compute the Weil/cycle identification from the common affine prime spectrum."""
                 from dzack_research.preamble.categories.divisors.chow_groups import (
                     _affine_weil_cycle_isomorphism,
                 )
@@ -3216,6 +3477,10 @@ class Schemes(OwnedCategoryOverBaseRing):
                     inclusion_codomain=self,
                     inclusion_datum=localized.localization_map(),
                 )
+
+            def basic_open(self, element):
+                r"""Archived spelling for the distinguished open ``D(element)``."""
+                return self.distinguished_open(element)
 
             def distinguished_open_cover(self, *elements):
                 r"""Return the finite cover by ``D(f_i)`` when the ``f_i`` generate the unit ideal."""
@@ -4048,8 +4313,12 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         @cached_method
-        def picard_group(self):
+        def _picard_group(self, base_picard_group=None):
             r"""Return ``Pic(A^n_k) = 0`` over a field."""
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "the affine-space computation has no projective-bundle base datum"
+            )
             base = self.scheme_base_ring()
             assert base in OwnedFields(), (
                 f"cannot compute the Picard group of {self}: Pic(A^n) = 0 is used here only over a field, "
@@ -4060,7 +4329,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             return PicardGroups().trivial(self)
 
         @cached_method
-        def class_group(self):
+        def _class_group(self):
             r"""Return ``Cl(A^n_k) = 0`` over a field."""
             base = self.scheme_base_ring()
             assert base in OwnedFields(), (
@@ -4071,16 +4340,9 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
             return ClassGroups().trivial(self)
 
-        def basic_open(self, element):
-            r"""Archived spelling for the distinguished open ``D(element)``."""
-            return self.distinguished_open(element)
-
-        def zeta_function(self):
+        def _zeta_function(self):
             r"""Return ``Z(A^d/F_q, T) = 1/(1 - q^d T)``."""
             base = self.scheme_base_ring()
-            assert base in OwnedFields() and base.cardinality().is_finite(), (
-                f"cannot compute the zeta function of {self}: its base ring {base} must be a finite field"
-            )
             rational_functions, T = _rational_functions_in_T()
             q = int(base.cardinality().finite_value())
             d = int(self.relative_dimension())
@@ -4103,9 +4365,18 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
     The realization is Sage's projective space on the same names; the chosen
     coordinates are the data it is built from.
     """
-    engine = _SageProjectiveSpace(int(dimension), _engine_ring(base), names=_normalized_space_names(names))
+    dimension = int(dimension)
+    engine = _SageProjectiveSpace(dimension, _engine_ring(base), names=_normalized_space_names(names))
+    decided = list(_space_placements(base, dimension))
+    match (base in OwnedFields(), dimension):
+        case (True, 2):
+            from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+
+            decided.append(ProjectiveSurfaces(base))
+        case _:
+            pass
     return _object_of(
-        owned_category_join((ProjectiveSpaces(base), *_space_placements(base, dimension), *placements)),
+        owned_category_join((ProjectiveSpaces(base), *decided, *placements)),
         scheme_base_ring=base,
         scheme_engine=engine,
         **level_data,
@@ -4160,16 +4431,8 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             lattice = _own_ring(SageZZ).free_module(int(self.relative_dimension()))
             return RationalPolyhedralFans(lattice).projective_space_fan()
 
-        def point_blowup(self, point):
-            r"""Blow up this represented projective plane at ``point``."""
-            from dzack_research.preamble.categories.schemes.blowups import (
-                _projective_point_blowup,
-            )
-
-            return _projective_point_blowup(self, point)
-
         @cached_method
-        def picard_to_class_group_morphism(
+        def _picard_to_class_group_morphism(
             self,
             base_picard_group=None,
             base_class_group=None,
@@ -4211,7 +4474,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     )
                     return _projective_space_picard_to_class_group_morphism(self, *supplied)
 
-        def picard_group(self, base_picard_group=None):
+        def _picard_group(self, base_picard_group=None):
             r"""Return the represented Picard group of this projective space.
 
             With no supplied base Picard group, use the field-base divisor-class
@@ -4220,13 +4483,55 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             """
             match base_picard_group:
                 case None:
+                    base = self.scheme_base_ring()
+                    assert base in OwnedFields(), (
+                        f"cannot compute Pic({self}) without a supplied base Picard group: the represented "
+                        f"default route uses Pic({self}) -> Cl({self}) over a field, but the base is {base}"
+                    )
                     return self.picard_to_class_group_morphism().domain()
                 case _:
                     from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 
                     return PicardGroups().projective_bundle(self, base_picard_group)
 
-        def class_group(self):
+        @cached_method
+        def _picard_intersection_pairing(self):
+            r"""The form ``[O(1)]^2 = 1`` on ``Pic(P^2)``."""
+            assert int(self.relative_dimension()) == 2, (
+                f"the projective-space surface pairing applies to P^2, but {self} has relative "
+                f"dimension {self.relative_dimension()}"
+            )
+            picard = self.picard_group()
+            labels = picard.module_generating_set()
+            assert int(labels.cardinality()) == 1, (
+                f"Pic(P^2) over a field should have one generator [O(1)], but {picard} has "
+                f"{labels.cardinality()} generators"
+            )
+            integers = _own_ring(SageZZ)
+            return BilinearMap(
+                picard,
+                picard,
+                integers.regular_module(),
+                lambda _left, _right: integers.one(),
+            )
+
+        def _del_pezzo_degree(self):
+            r"""``(-K_{P^2})^2 = (3H)^2 = 9``."""
+            assert int(self.relative_dimension()) == 2, (
+                f"the projective-space Del Pezzo degree applies to P^2, but {self} has relative "
+                f"dimension {self.relative_dimension()}"
+            )
+            return _own_ring(SageZZ)(9)
+
+        def _is_del_pezzo(self) -> bool:
+            r"""``P^2`` is Del Pezzo because ``-K = O(3)`` is ample."""
+            assert int(self.relative_dimension()) == 2, (
+                f"the projective-space Del Pezzo predicate applies to P^2, but {self} has relative "
+                f"dimension {self.relative_dimension()}"
+            )
+            return bool(self.anticanonical_line_bundle().is_ample())
+
+        def _class_group(self):
             return self.picard_to_class_group_morphism().codomain()
 
         def homogeneous_coordinate_generators(self):
@@ -4366,20 +4671,9 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _coordinate_imposed_multiplicity_linear_system(self, degree, coordinate_index, vanishing_order)
 
         @cached_method
-        def canonical_line_bundle(self):
-            r"""Return ``omega_{P^n_R} = O(-n-1)`` in the standard smooth projective regime."""
+        def _canonical_line_bundle(self):
+            r"""Compute ``omega_{P^n_R} = O(-n-1)`` for the smooth-owner operation."""
             return self.O(-int(self.relative_dimension()) - 1)
-
-        def canonical_bundle(self, *args, **kwargs):
-            return self.canonical_line_bundle(*args, **kwargs)
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            r"""Return ``omega_{P^n_R}^{-1} = O(n+1)``."""
-            return self.O(int(self.relative_dimension()) + 1)
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def standard_affine_atlas(self):
@@ -4395,28 +4689,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 tuple(self.standard_affine_chart_embedding(index) for index in indices),
             )
 
-        def is_covered_by_open_immersions(self, embeddings) -> bool:
-            r"""Recognize the standard projective cover before the general scheme cases."""
-            family = finite_family(
-                tuple(embeddings),
-                name="Open immersions proposed as a projective Zariski cover",
-            )
-            standard = finite_family(
-                tuple(
-                    self.standard_affine_chart_embedding(index)
-                    for index in range(int(self.relative_dimension()) + 1)
-                ),
-                name="Standard projective affine cover embeddings",
-            )
-            match all(
-                any(embedding == standard_embedding for embedding in family)
-                for standard_embedding in standard
-            ):
-                case True:
-                    return True
-                case False:
-                    return super().is_covered_by_open_immersions(family)
-
         def glued_from_standard_charts(self):
             r"""``P^n_R`` presented as the gluing of its standard affine charts.
 
@@ -4431,12 +4703,9 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 tuple(self.standard_chart_transition(left, right) for left, right in combinations(indices, 2)),
             )
 
-        def zeta_function(self):
+        def _zeta_function(self):
             r"""Return ``Z(P^d/F_q, T) = prod_{i=0}^d (1 - q^i T)^{-1}``."""
             base = self.scheme_base_ring()
-            assert base in OwnedFields() and base.cardinality().is_finite(), (
-                f"cannot compute the zeta function of {self}: its base ring {base} must be a finite field"
-            )
             rational_functions, T = _rational_functions_in_T()
             q = int(base.cardinality().finite_value())
             d = int(self.relative_dimension())
@@ -4715,22 +4984,6 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
 
             return choices, charts, embeddings
 
-        def is_covered_by_open_immersions(self, embeddings) -> bool:
-            r"""Recognize the standard product-projective cover before general cases."""
-            family = finite_family(
-                tuple(embeddings),
-                name="Open immersions proposed as a multiprojective Zariski cover",
-            )
-            _choices, _charts, standard_embeddings = self._standard_affine_cover_charts_and_embeddings()
-            match all(
-                any(embedding == standard_embedding for embedding in family)
-                for standard_embedding in standard_embeddings.values()
-            ):
-                case True:
-                    return True
-                case False:
-                    return super().is_covered_by_open_immersions(family)
-
         @cached_method
         def standard_affine_atlas(self):
             r"""Return the product of the factors' standard affine atlases."""
@@ -4795,18 +5048,8 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _product_projective_o(self, _family_ingress(degrees))
 
         @cached_method
-        def canonical_line_bundle(self):
+        def _canonical_line_bundle(self):
             return self.O(*(-int(factor.relative_dimension()) - 1 for factor in self.factors()))
-
-        def canonical_bundle(self, *args, **kwargs):
-            return self.canonical_line_bundle(*args, **kwargs)
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            return self.O(*(int(factor.relative_dimension()) + 1 for factor in self.factors()))
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
 
 
 def _scheme_product_cache_key(factors):
@@ -5520,8 +5763,14 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         return base_object.closed_subscheme(first)
 
     class ParentMethods:
-        def __init__(self, defining_equations=None, **rest) -> None:
+        def __init__(
+            self,
+            defining_equations=None,
+            closed_embedding_ideal_sheaf=None,
+            **rest,
+        ) -> None:
             self._defining_equations = defining_equations
+            self._closed_embedding_ideal_sheaf = closed_embedding_ideal_sheaf
             super().__init__(**rest)
 
         def defining_equations(self):
@@ -5757,7 +6006,17 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             return point.local_length(meeting)
 
         def ideal_sheaf(self):
-            r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""
+            r"""Return the quasi-coherent ideal sheaf ``I_Z`` of this closed subscheme.
+
+            Constructions that already represent ``I_Z`` retain that exact sheaf
+            as defining data.  Otherwise the affine presentation realizes it as
+            ``I~`` from the defining ideal when asked for.
+            """
+            match self._closed_embedding_ideal_sheaf:
+                case None:
+                    pass
+                case ideal_sheaf:
+                    return ideal_sheaf
             codomain = self.inclusion().codomain()
             assert codomain in Schemes(codomain.scheme_base_ring()).Affine(), (
                 f"cannot form the ideal sheaf of {self}: this requires a closed subscheme of an affine "
@@ -5816,6 +6075,76 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                         f"cannot form the open complement of {self}: this is computed here only in affine or "
                         f"projective schemes, but {codomain} is an object of {codomain.category()}"
                     )
+
+
+class EffectiveCartierDivisors(_SchemeSubobjectsOf):
+    r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
+
+    An effective Cartier divisor is a closed subscheme whose ideal sheaf is
+    invertible.  This is structure on the closed subobject, not on one
+    particular divisor realization.  A represented construction may retain a
+    Picard-class realization; the class itself is mathematically ``[O_X(D)]``.
+    """
+
+    immersion_name = "effective Cartier divisors"
+
+    def super_categories(self):
+        ambient = self.base_object()
+        return [
+            ClosedEmbeddings(ambient),
+            ClosedSubschemes(ambient.scheme_base_ring()),
+        ]
+
+    def an_object(self):
+        r"""Return the empty effective Cartier divisor in the represented affine case."""
+        ambient = self.base_object()
+        base = ambient.scheme_base_ring()
+        match ambient:
+            case _ if ambient in Schemes(base).Affine():
+                return ambient.closed_subscheme(
+                    ambient.coordinate_algebra().one(),
+                    placements=(self,),
+                    effective_cartier_ideal_sheaf=ambient.structure_sheaf(),
+                )
+            case _:
+                raise AssertionError(
+                    f"the empty closed subscheme is an effective Cartier divisor on {ambient}, but this "
+                    "category currently constructs that specimen only from an affine presentation"
+                )
+
+    class ParentMethods:
+        def __init__(
+            self,
+            effective_cartier_ideal_sheaf,
+            effective_cartier_picard_class=None,
+            **rest,
+        ) -> None:
+            self._effective_cartier_picard_class = effective_cartier_picard_class
+            super().__init__(
+                closed_embedding_ideal_sheaf=effective_cartier_ideal_sheaf,
+                **rest,
+            )
+            ambient = self.inclusion().codomain()
+            assert self.ideal_sheaf() in QuasiCoherentSheaves(ambient).Invertible(), (
+                f"the defining ideal sheaf of the effective Cartier divisor {self} on {ambient} must be "
+                f"an invertible O_X-module on {ambient}, but {self.ideal_sheaf()} is an object of "
+                f"{self.ideal_sheaf().category()}"
+            )
+
+        def is_effective_cartier_divisor(self) -> bool:
+            return True
+
+        def picard_class(self):
+            r"""Return the represented class ``[O_X(D)] = [I_D^vee]`` in ``Pic(X)``."""
+            match self._effective_cartier_picard_class:
+                case None:
+                    raise AssertionError(
+                        f"{self} is an effective Cartier divisor on {self.inclusion().codomain()}, so it "
+                        "defines the Picard class [O(D)], but this closed-subscheme realization does not "
+                        "supply a represented class"
+                    )
+                case picard_class:
+                    return picard_class
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
@@ -5992,6 +6321,7 @@ __all__ = [
     "AffineSpaces",
     "ClosedEmbeddings",
     "ClosedSubschemes",
+    "EffectiveCartierDivisors",
     "FiberProductSchemes",
     "IntegralSchemes",
     "NormalSchemes",

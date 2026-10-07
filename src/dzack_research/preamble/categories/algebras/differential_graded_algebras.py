@@ -271,9 +271,6 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         def differential(self):
             return self._preamble_differential
 
-        def d(self, element):
-            return self.differential()(element)
-
         @cached_method
         def _negative_cochain_zero_module(self):
             r"""The represented zero module used by the inherited cochain complex."""

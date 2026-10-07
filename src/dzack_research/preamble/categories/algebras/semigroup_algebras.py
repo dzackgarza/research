@@ -43,7 +43,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         return "affine semigroup algebras"
 
     class ParentMethods:
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the cardinality of ``R[S]`` from its affine semigroup.
 
             A finitely generated submonoid of a lattice is trivial exactly when

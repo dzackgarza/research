@@ -19,6 +19,10 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    OwnedMor,
+)
+
 _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
 
 
@@ -79,7 +83,7 @@ def _rebuild_parent_class(parent: Parent, category: Category) -> None:
     }
     preferred = {}
     seen = set()
-    for provider in providers:
+    for provider in reversed(providers):
         for name, value in vars(provider).items():
             if name.startswith("_") or name in seen:
                 continue
@@ -162,7 +166,20 @@ def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> N
             continue
         answer = obj
         for operation in statement.split("."):
-            answer = getattr(answer, operation)()
+            try:
+                predicate = getattr(answer, operation)
+            except AttributeError:
+                assert operation.startswith("is_"), (
+                    f"refining {obj} into {candidate_category} requires {operation}(), "
+                    f"but {answer} has no such operation"
+                )
+                decision_name = (
+                    "_projectivity_decision"
+                    if operation == "is_projective"
+                    else f"_{operation[3:]}_decision"
+                )
+                predicate = getattr(answer, decision_name)
+            answer = predicate()
         assert answer is True, (
             f"refining {obj} into {candidate_category} requires "
             f"{statement}() to hold"
@@ -182,7 +199,8 @@ def realize_owned_category[SageObjectT: SageObject](obj: SageObjectT) -> SageObj
         return obj
     if isinstance(obj, Parent):
         _rebuild_parent_class(obj, category)
-        _rebuild_element_class(obj, category)
+        if not isinstance(obj, OwnedMor):
+            _rebuild_element_class(obj, category)
     return obj
 
 

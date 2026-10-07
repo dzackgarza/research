@@ -119,3 +119,18 @@ def test_base_change_of_the_rational_projective_line_is_the_projective_line_over
     assert changed.is_isomorphic(ProjectiveSpaces(field)(1))
     assert changed.relative_dimension() == 1
     assert changed.genus() == 0
+
+
+def test_base_change_of_a_cubic_surface_retains_its_projective_surface_owner() -> None:
+    field, ring_map = _extension()
+    space = ProjectiveSpaces(QQ)(3, names=("x0", "x1", "x2", "x3"))
+    x0, x1, x2, x3 = space.homogeneous_coordinate_generators()
+    cubic = space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
+
+    changed = cubic.base_change(ring_map)
+
+    assert changed in ProjectiveCompleteIntersections(field)
+    assert changed in ProperSurfaces(field)
+    assert changed in ProjectiveSurfaces(field)
+    assert changed.is_del_pezzo()
+    assert changed.del_pezzo_degree() == 3

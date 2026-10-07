@@ -318,7 +318,7 @@ class CoxeterDiagrams(OwnedCategory):
         def index_set(self):
             return self._index_set
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             return self._index_set.cardinality()
 
         def vertex(self, position):
@@ -329,8 +329,6 @@ class CoxeterDiagrams(OwnedCategory):
 
         def __contains__(self, vertex) -> bool:
             return vertex in self.index_set()
-
-        is_parent_of = __contains__
 
         def _element_constructor_(self, vertex):
             return self.index_set()(vertex)

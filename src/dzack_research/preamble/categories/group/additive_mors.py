@@ -220,43 +220,11 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         return [AdditiveMorGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
-        def unformed_module(self):
-            r"""The endomorphism algebra is built on this already-constructed Mor module."""
-            return self
-
         def _compose_endomorphisms(self, left, right):
             left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
             if left_scalar is not None and right_scalar is not None:
                 return self._scalar_identity(left_scalar * right_scalar)
             return self.elementwise(lambda element: left(right(element)))
-
-        def is_central(self, morphism):
-            r"""Scalar endomorphisms commute with all linear endomorphisms.
-
-            h(rx)=r h(x) proves the assertion without enumerating h. For
-            additive endomorphisms the scalars are integers and the same
-            equation follows by repeated addition. Other cases go to the next
-            owner: an endomorphism ring framed as an algebra (matrix units on a
-            finite free module) decides them on its algebra generators.
-            See Mathlib Algebra/Module/LinearMap/End, Module.toModuleEnd.
-            """
-            from dzack_research.preamble.categories.algebras.algebras import Algebras
-
-            morphism = self(morphism)
-            if _scalar_identity_coefficient(morphism) is not None:
-                return True
-            match self in Algebras(self.base_ring()) and self.is_framed_algebra():
-                case True:
-                    return all(
-                        morphism * self.algebra_generator(label)
-                        == self.algebra_generator(label) * morphism
-                        for label in self.algebra_generating_set()
-                    )
-                case False:
-                    return super().is_central(morphism)
-
-        def scalar_multiple(self, scalar, morphism):
-            return self._owned_scalar_multiple(scalar, morphism)
 
         def _owned_scalar_multiple(self, scalar, morphism):
             r"""Apply the selected scalar enrichment pointwise.
@@ -281,9 +249,6 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         @cached_method
         def identity(self):
             return self._scalar_identity(self.base_ring().one())
-
-        def one(self):
-            return self.identity()
 
 
 class AdditiveMorphism:

@@ -2,9 +2,18 @@ r"""Toric blowups of smooth surfaces at torus-fixed points."""
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
+)
+from dzack_research.preamble.categories.schemes.blowups import Blowups
+from dzack_research.preamble.categories.schemes.schemes import (
+    EffectiveCartierDivisors,
+    Schemes,
+)
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes, _integers
+from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
 
 class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
@@ -32,14 +41,20 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
         return plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
 
     def super_categories(self):
-        return [ToricSchemes(self.base_ring())]
+        base = self.base_ring()
+        categories = [Blowups(base), ToricSchemes(base), Schemes(base).Smooth()]
+        match base in OwnedIntegralDomains():
+            case True:
+                categories.append(Surfaces(base))
+            case False:
+                pass
+        return categories
 
     def _repr_object_names(self):
         return f"toric fixed-point blowups over {self.base_ring()}"
 
     class ParentMethods:
-        def __init__(self, blowup_source, blowup_center_cone, exceptional_ray, **rest) -> None:
-            self._blowup_source = blowup_source
+        def __init__(self, blowup_center_cone, exceptional_ray, **rest) -> None:
             self._blowup_center_cone = blowup_center_cone
             self._exceptional_ray = exceptional_ray
             super().__init__(**rest)
@@ -47,12 +62,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
         def is_toric_fixed_point_blowup(self) -> bool:
             return True
 
-        def blowup_source(self):
-            r"""The smooth toric surface whose fixed point was blown up."""
-            return self._blowup_source
-
-        @cached_method
-        def blowup_morphism(self):
+        def _blowup_morphism(self):
             r"""The blowdown ``Bl_p X -> X``, induced by the identity of ``N``.
 
             The star subdivision refines the fan of ``X``, so the identity
@@ -64,9 +74,6 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             identity = lattice.module_category().Mor(lattice, lattice).identity()
             return self.toric_morphism(identity, source)
 
-        def blowdown(self, *args, **kwargs):
-            return self.blowup_morphism(*args, **kwargs)
-
         def blowup_center_cone(self):
             r"""Return the maximal source-fan cone indexing the blown-up fixed point."""
             return self._blowup_center_cone
@@ -75,11 +82,23 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             r"""The ray ``u+v`` of the subdivided fan, whose divisor is exceptional."""
             return self._exceptional_ray
 
-        def exceptional_divisor(self):
+        def exceptional_weil_divisor(self):
+            r"""Return the torus-invariant Weil divisor supported on the exceptional ray."""
             return self.torus_invariant_prime_divisor(self.exceptional_ray())
 
+        def _exceptional_divisor(self):
+            exceptional = self.exceptional_weil_divisor()
+            return self.torus_invariant_divisor_support_subscheme(
+                exceptional,
+                placements=(EffectiveCartierDivisors(self),),
+                construction_data={
+                    "effective_cartier_ideal_sheaf": self.invertible_sheaf_of_divisor(-exceptional),
+                    "effective_cartier_picard_class": self._represented_exceptional_picard_class(),
+                },
+            )
+
         def exceptional_self_intersection(self):
-            exceptional = self.exceptional_divisor()
+            exceptional = self.exceptional_weil_divisor()
             return self.divisor_intersection(exceptional, exceptional)
 
         def _refined_ray_for_source_ray(self, source_ray):
@@ -120,7 +139,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def picard_pullback_morphism(self):
+        def _picard_pullback_morphism(self):
             r"""Return ``f^*: Pic(X) -> Pic(Bl_p X)`` for the toric blowdown.
 
             The map is induced from the existing Cartier-divisor pullback.  Its
@@ -128,7 +147,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             principal-divisor relations vanish after pullback.
             """
             source = self.blowup_source()
-            source_picard = source.picard_group()
+            source_picard = self.source_picard_group()
             target_picard = self.picard_group()
             source_weil = source.weil_divisor_group()
 
@@ -143,24 +162,8 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
 
             return source_picard.module_category().Mor(source_picard, target_picard)(image)
 
-        def exceptional_picard_class(self):
+        def _represented_exceptional_picard_class(self):
             return self.picard_group().module_generator(self.exceptional_ray())
-
-        def is_del_pezzo(self) -> bool:
-            r"""Decide the del Pezzo condition in the complete toric-surface regime."""
-            if not self.fan().is_complete():
-                return False
-            return self.is_ample(-self.canonical_divisor())
-
-        def del_pezzo_degree(self):
-            r"""Return ``(-K)^2`` for a represented toric del Pezzo blowup."""
-            assert self.is_del_pezzo(), (
-                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: its "
-                "anticanonical divisor is not ample"
-            )
-            anticanonical = -self.canonical_divisor()
-            return self.divisor_intersection(anticanonical, anticanonical)
-
 
 def _toric_fixed_point_blowup(surface, center_cone):
     r"""Blow up the torus-fixed point indexed by ``center_cone`` on a smooth toric surface.
@@ -191,6 +194,7 @@ def _toric_fixed_point_blowup(surface, center_cone):
         f"the maximal cone {center_cone} of the smooth toric surface {surface} should have 2 "
         f"rays, but it has {center_cone.rays().cardinality()}"
     )
+    center = surface.torus_fixed_point_subscheme(center_cone)
     first, second = tuple(center_cone.rays())
     new_ray_vector = first + second
 
@@ -229,6 +233,7 @@ def _toric_fixed_point_blowup(surface, center_cone):
         base,
         placements=(ToricFixedPointBlowups(base),),
         blowup_source=surface,
+        blowup_center=center,
         blowup_center_cone=center_cone,
         exceptional_ray=exceptional,
     )

@@ -11,6 +11,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -270,4 +271,100 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
         return f"surfaces over {self.base_ring()}"
 
 
-__all__ = ["Curves", "Surfaces", "Varieties"]
+class ProperSurfaces(OwnedCategoryOverBaseRing):
+    r"""Proper integral surfaces over the stated base.
+
+    Over a field, two invertible sheaves on a proper surface have an
+    integer-valued numerical intersection number (Stacks Project, Tag 0BEP).
+    This is therefore the common owner of the Picard intersection pairing for
+    represented proper surfaces.  Computational families implement only
+    the private hook.
+    """
+
+    def parameter_category(self):
+        return OwnedFields()
+
+    def super_categories(self):
+        base = self.base_ring()
+        return [Surfaces(base), Schemes(base).Proper()]
+
+    def an_object(self):
+        r"""The projective plane, hence a proper integral surface."""
+        return ProjectiveSpaces(self.base_ring())(2)
+
+    def _repr_object_names(self):
+        return f"proper surfaces over {self.base_ring()}"
+
+    class ParentMethods:
+        @cached_method
+        def picard_intersection_pairing(self):
+            r"""Return ``Pic(X) x Pic(X) -> ZZ`` by numerical intersection."""
+            base = self.scheme_base_ring()
+            assert base in OwnedFields(), (
+                f"the integer-valued numerical intersection pairing on Pic({self}) is owned here for "
+                f"proper surfaces over a field, but the base ring is {base}"
+            )
+            return self._picard_intersection_pairing()
+
+        def _picard_intersection_pairing(self):
+            raise AssertionError(
+                f"the Picard intersection pairing of the proper surface {self} is mathematically "
+                "defined by numerical intersection, but no represented algorithm for it applies here"
+            )
+
+
+class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
+    r"""Projective integral surfaces over the stated base.
+
+    The Del Pezzo predicate uses the convention represented in this repository:
+    a normal Gorenstein projective surface whose anticanonical line bundle is
+    ample.  The smooth projective definition is the smooth special case; the
+    normal Gorenstein singular convention is the one used by
+    Hidaka--Watanabe, *Tokyo J. Math.* 4 (1981), 319--330.
+    """
+
+    def parameter_category(self):
+        return OwnedFields()
+
+    def super_categories(self):
+        base = self.base_ring()
+        return [ProperSurfaces(base), Schemes(base).Projective()]
+
+    def an_object(self):
+        r"""The projective plane, a projective integral surface."""
+        return ProjectiveSpaces(self.base_ring())(2)
+
+    def _repr_object_names(self):
+        return f"projective surfaces over {self.base_ring()}"
+
+    class ParentMethods:
+        def is_del_pezzo(self) -> bool:
+            r"""Decide whether ``X`` is a normal Gorenstein Del Pezzo surface."""
+            base = self.scheme_base_ring()
+            assert base in OwnedFields(), (
+                f"the represented Del Pezzo predicate for {self} is owned for projective surfaces over "
+                f"a field, but the base ring is {base}"
+            )
+            return bool(self._is_del_pezzo())
+
+        def _is_del_pezzo(self) -> bool:
+            raise AssertionError(
+                f"whether the projective surface {self} is normal Gorenstein with ample anticanonical "
+                "line bundle is not decided by a represented algorithm here"
+            )
+
+        def del_pezzo_degree(self):
+            r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
+            assert self.is_del_pezzo(), (
+                f"the Del Pezzo degree (-K)^2 is requested for {self}, but it is not a Del Pezzo surface"
+            )
+            return self._del_pezzo_degree()
+
+        def _del_pezzo_degree(self):
+            raise AssertionError(
+                f"the Del Pezzo degree of {self} is (-K)^2, but no represented self-intersection "
+                "algorithm for its anticanonical class applies here"
+            )
+
+
+__all__ = ["Curves", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]

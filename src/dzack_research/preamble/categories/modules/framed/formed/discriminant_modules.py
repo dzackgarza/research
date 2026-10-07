@@ -189,9 +189,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         def bilinear_value_module(self):
             return self._preamble_bilinear_value_module
 
-        def value_module(self):
-            return self.bilinear_value_module()
-
         def b(self, left, right):
             if left not in self or right not in self:
                 raise TypeError(
@@ -230,7 +227,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which the bilinear form vanishes."""
-            return self.subgroups().filtered(
+            return self.subgroups().condition_set(
                 lambda subgroup: self.form_vanishes_on(subgroup.embedded_elements()),
             )
 
@@ -250,13 +247,13 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                     for larger in isotropic
                 )
 
-            return isotropic.filtered(is_maximal)
+            return isotropic.condition_set(is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return totally isotropic ``H`` with ``|H|^2=|A|``."""
             order = int(self.cardinality())
-            return self.isotropic_subgroups().filtered(
+            return self.isotropic_subgroups().condition_set(
                 lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
             )
 
@@ -451,19 +448,9 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def quadratic_value_module(self):
             return self._preamble_quadratic_value_module
 
-        def value_module(self):
-            return self.quadratic_value_module()
-
         def twist(self, scalar):
             r"""Return the same discriminant module equipped with ``scalar*q``."""
             return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
-
-        def q(self, element):
-            if element not in self:
-                raise TypeError(
-                    f"the discriminant quadratic form on {self} is defined on its elements, but {element} is not in {self}"
-                )
-            return self.quadratic_value_module()(self.dual_lattice().norm(self.dual_lattice_lift(element)))
 
         @cached_method
         def isotropic_elements(self):
@@ -482,7 +469,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             r"""Return all subgroups on which ``q`` vanishes identically."""
 
             zero = self.quadratic_value_module().zero()
-            return self.subgroups().filtered(
+            return self.subgroups().condition_set(
                 lambda subgroup: all(
                     self.q(element) == zero
                     for element in subgroup.embedded_elements()
@@ -505,14 +492,14 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                     for larger in isotropic
                 )
 
-            return isotropic.filtered(is_maximal)
+            return isotropic.condition_set(is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return isotropic ``H`` with ``|H|^2=|A|``."""
 
             order = int(self.cardinality())
-            return self.isotropic_subgroups().filtered(
+            return self.isotropic_subgroups().condition_set(
                 lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
             )
 
@@ -725,6 +712,19 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
+        def additive_order(self):
+            r"""Return the additive order of a discriminant class.
+
+            The rank-zero discriminant module may be represented by the zero
+            free form module rather than by a presented torsion parent.  Its
+            unique element still has additive order one.  Nonzero modules
+            retain the finitely-presented torsion implementation.
+            """
+            parent = self.parent()
+            if parent.is_zero():
+                return parent.base_ring().one()
+            return super().additive_order()
+
         def is_characteristic(self) -> bool:
             r"""Return whether this class is characteristic for the quadratic form.
 
@@ -772,8 +772,11 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
 
             ambient = self.ambient_discriminant_module()
             engine_subgroup = self._preamble_discriminant_engine_subgroup
+            unformed = ambient.unformed_module()
             return ambient.elements().filtered(
-                lambda element: ambient._to_smith_engine_element(element)
+                lambda element: unformed._to_smith_engine_element(
+                    ambient._element_of_unformed_module(element)
+                )
                 in engine_subgroup,
             )
 
@@ -852,9 +855,15 @@ def _discriminant_subgroup(ambient, generators):
 
     # The subgroup is decomposed into cyclic summands on the Smith engine;
     # every generator is returned as an element of the owned ambient module.
-    smith_engine = ambient._smith_engine()
+    unformed = ambient.unformed_module()
+    smith_engine = unformed._smith_engine()
     engine_subgroup = smith_engine.submodule(
-        [ambient._to_smith_engine_element(generator) for generator in generators]
+        [
+            unformed._to_smith_engine_element(
+                ambient._element_of_unformed_module(generator)
+            )
+            for generator in generators
+        ]
     )
     ring = ambient.base_ring()
     invariants = tuple(
@@ -873,7 +882,9 @@ def _discriminant_subgroup(ambient, generators):
     if invariants:
         prototype = Modules(ring).FinitelyPresented().Torsion().direct_sum_of_cyclics(invariants)
         ambient_generators = tuple(
-            ambient._from_smith_engine_element(generator)
+            ambient._element_from_unformed_module(
+                unformed._from_smith_engine_element(generator)
+            )
             for generator in engine_subgroup.smith_form_gens()
         )
         images = {
@@ -907,7 +918,8 @@ def _all_discriminant_subgroups(ambient):
     r"""Return the subgroup lattice through GAP's finite-abelian routine."""
     from sage.groups.abelian_gps.abelian_group_gap import AbelianGroupGap
 
-    smith_engine = ambient._smith_engine()
+    unformed = ambient.unformed_module()
+    smith_engine = unformed._smith_engine()
     assert smith_engine is not None, (
         f"the subgroups of {ambient} are enumerated from its invariant factor decomposition, "
         f"which has not been computed for {ambient}, in {ambient.category()}"
@@ -917,9 +929,11 @@ def _all_discriminant_subgroups(ambient):
         tuple(
             ambient.subgroup_on(
                 tuple(
-                    ambient._from_smith_engine_element(
-                        smith_engine.linear_combination_of_smith_form_gens(
-                            additive_group(generator).exponents()
+                    ambient._element_from_unformed_module(
+                        unformed._from_smith_engine_element(
+                            smith_engine.linear_combination_of_smith_form_gens(
+                                additive_group(generator).exponents()
+                            )
                         )
                     )
                     for generator in subgroup.gens()

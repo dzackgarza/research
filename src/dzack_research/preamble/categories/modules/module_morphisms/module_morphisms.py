@@ -16,12 +16,13 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _distinct_supercategories,
     _precomposable,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    _OwnedRingParent,
     _engine_ring,
     _enumerated_ring_elements,
     _owned_ring,
@@ -95,7 +96,10 @@ def _integral_left_solver(system, ring):
     assert system.parent() in MatrixSpaces(ring), f"cannot solve the linear system {system} over {ring}: its matrix must have entries in {ring}, but it lies in {system.parent()}"
 
     transposed = system.transpose()
-    smith, left, right = transposed.smith_form()
+    smith_data = transposed.smith_form()
+    smith = smith_data["diagonal"]
+    left = smith_data["left_change"]
+    right = smith_data["right_change"]
     # smith_form() names the two maps by the sides of the presentation
     # square: left is the codomain change applied to the target, while
     # right is the inverse domain change applied after diagonal solving.
@@ -1170,12 +1174,41 @@ class ModuleMorphismMethods:
         r"""Return the saturation of the image of an injective morphism.
 
         For ``i:S -> M`` this is the kernel of
-        ``M -> M/S -> (M/S)/Tor(M/S)``.
+        ``M -> M/S -> (M/S)/Tor(M/S)``.  For finite free ``ZZ``-modules,
+        compute the primitive row lattice directly from the Smith form of the
+        coordinate matrix instead of constructing the quotient object first.
         """
         assert self.is_injective(), (
             f"cannot saturate the image of {self.domain()} -> {self.codomain()}: saturation is defined for an "
             f"injective map, and this map has nonzero kernel"
         )
+        ring = self.domain().base_ring()
+        from sage.rings.integer_ring import ZZ as SageZZ
+        if _engine_ring(ring) is SageZZ and _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
+            from sage.matrix.constructor import matrix
+            from sage.modules.free_module import FreeModule
+            source_labels = tuple(self.domain().module_generating_set())
+            target_labels = tuple(self.codomain().module_generating_set())
+            rows = []
+            for source_label in source_labels:
+                image = self(self.domain().module_generator(source_label))
+                coordinates = image.to_vector()
+                rows.append([_engine_element(ring, coordinates(label)) for label in target_labels])
+            engine = _engine_ring(ring)
+            A = matrix(engine, rows)
+            smith, left, right = A.smith_form()
+            rank = int(A.rank())
+            # D = left * A * right.  The primitive closure of the row lattice of A
+            # is spanned by the first ``rank`` rows of right^{-1}.
+            primitive_rows = tuple(right.inverse().row(i) for i in range(rank))
+            ambient = FreeModule(engine, len(target_labels))
+            primitive = ambient.submodule(primitive_rows)
+            basis_rows = tuple(tuple(row) for row in primitive.basis_matrix().rows())
+            generators = tuple(
+                self.codomain().linear_combination({target_labels[j]: _owned_engine_element(ring, value) for j, value in enumerate(row) if value})
+                for row in basis_rows
+            )
+            return self.codomain().subobject_on(generators)
         quotient = self.cokernel()
         projection = quotient.torsion_free_quotient_projection()
         composite = projection * quotient.presentation_projection()
@@ -2358,7 +2391,7 @@ class _ModuleMorCommonMethods:
         morphism.validate_linearity(check=check)
         return morphism
 
-    def is_projective(self):
+    def _projectivity_decision(self):
         r"""Decide projectivity of ``Hom_R(M, N)`` where its endpoints determine it.
 
         Over a commutative ring, ``Hom_R(F_R(S), F_R(T))`` between finite
@@ -2369,8 +2402,13 @@ class _ModuleMorCommonMethods:
         """
         from sage.misc.unknown import Unknown
 
-        ring = self.base_ring()
-        match ring in OwnedRings().Commutative():
+        ring = self.domain().base_ring()
+        match ring:
+            case _OwnedRingParent():
+                commutative = ring._commutativity_decision()
+            case _:
+                commutative = ring.is_commutative()
+        match commutative:
             case True if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
                 return True
             case _:
@@ -2959,7 +2997,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
     def module(self):
         return self.domain()
 
-    def is_finite(self):
+    def _finiteness_decision(self):
         r"""A finite module has finitely many automorphisms; otherwise this is not decided here.
 
         An infinite module can have a finite automorphism group (``Aut_Z(Z)``

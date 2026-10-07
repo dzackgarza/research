@@ -489,11 +489,11 @@ class _RestrictionCoextensionAdjunction(Adjunction):
         return f"Restriction/coextension adjunction along {self._ring_map}"
 
 
-@cached_function
+@cached_function(key=lambda ring_map: id(ring_map))
 def _base_change_adjunction(ring_map) -> _BaseChangeAdjunction:
     return _BaseChangeAdjunction(ring_map)
 
 
-@cached_function
+@cached_function(key=lambda ring_map: id(ring_map))
 def _restriction_coextension_adjunction(ring_map) -> _RestrictionCoextensionAdjunction:
     return _RestrictionCoextensionAdjunction(ring_map)

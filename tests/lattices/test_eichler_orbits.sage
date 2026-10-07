@@ -49,6 +49,16 @@ def test_the_criterion_reads_its_hypothesis_off_the_decomposition() -> None:
     assert not NamedLattices.LK3.eichler_criterion_applies()
 
 
+def test_raw_gram_factor_does_not_count_as_a_represented_u_summand() -> None:
+    raw_u = Lattices(ZZ)([[2, 1], [1, 0]])
+    lattice = raw_u + NamedLattices.U
+
+    assert raw_u.is_isometric(NamedLattices.U)
+    assert tuple(lattice.decomposition_names()) == (None, "U")
+    assert lattice.hyperbolic_plane_summand_count() == 1
+    assert not lattice.splits_two_hyperbolic_planes()
+
+
 def test_on_a_unimodular_lattice_the_square_decides() -> None:
     lattice = _decomposed_k3()
     first_plane = lattice.module_generator(0) + lattice.module_generator(1)

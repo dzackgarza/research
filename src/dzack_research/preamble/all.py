@@ -8,11 +8,13 @@ an ordinary Python support object deliberately selected by the preamble.
 """
 
 import sys as _sys
+from typing import cast as _cast
 
 # The session's numeric vocabulary and its parser are one contract: decimal
 # literals remain explicit MPFR approximations even though ``RealNumber`` now
 # names an exact element of ``RR``.
 import sageparse.preparser.research  # noqa: F401
+from sage.misc.lazy_import import lazy_import as _lazy_import
 from sage.repl.load import load as _sage_load
 
 from dzack_research.preamble import language_runtime as _language_runtime
@@ -234,6 +236,7 @@ from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F4
     HyperbolicLattices,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (  # noqa: F401
+    FlagType,
     IsotropicFlag,
 )
 from dzack_research.preamble.categories.isotropic_parabolics import (  # noqa: F401
@@ -254,6 +257,7 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     Genus,
     IsotropicReductions,
     Lattices,
+    NotPrimitiveError,
     NoncrystallographicRootLattices,
     NondegenerateLattices,
     RootLattices,  # noqa: F401
@@ -336,86 +340,94 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
     FiniteCommensurabilityQuotient,
     IntegralStructureAction,
 )
-from dzack_research.preamble.schemes import (
-    ADELogPairs,
-    AlgebraSheaves,
-    AffineGroupSchemeActions,
-    AffineGroupSchemes,
-    AffineGSchemes,
-    AffineInvariantQuotientBaseChangeComparison,
-    AffineSchemes,
-    AffineSpaces,
-    AnalyticDiscFamily,
-    ClosedEmbeddings,
-    ClosedSubschemes,
-    ConvexPolygons,
-    ConvexPolytopes,
-    DistinguishedAffineCoverRefinement,
-    CurveLocalDeltaContribution,
-    Curves,
-    CyclicCoverBaseChangeComparison,
-    DistinguishedAffineCovers,
-    distinguished_affine_coverage,
-    FiberProductSchemes,
-    FiniteGluedInvariantQuotient,
-    GeometricFundamentalGroups,
-    HesseBertiniFamily,
-    HorikawaEnriquesSurface,
-    HorikawaK3Family,
-    IntegralSchemes,
-    IntegralSingularCohomologyGroups,
-    IntegralTopologicalCohomologyGroups,
-    IsolatedHypersurfaceSingularity,
-    LatticePolygons,
-    LatticePolytopes,
-    LegendreMonodromyFamily,
-    LocallyRingedSpaces,
-    LogPairs,
-    ModuleSheaves,
-    NodalCubic,
-    NodalCubicIntegralTopology,
-    NodalCubicNormalization,
-    NormalSchemes,
-    OpenImmersions,
-    PGL2IntegralTopology,
-    PointedAnalyticFundamentalGroup,
-    ProductProjectiveSpaces,
-    ProductSchemes,
-    ProjectiveCompleteIntersections,
-    ProjectiveGeneralLinearGroup2,
-    ProjectivePointBlowups,
-    ProjectiveSchemes,
-    ProjectiveSpaces,
-    QuasiCoherentSheaves,
-    RationalPolyhedralFans,
-    RegularPolytopes,
-    RelativeCyclicCoverLift,
-    RelativeProjectivizations,
-    ResolutionIntegralCohomologyGroups,
-    RingedSpaces,
-    SchemeMonomorphisms,
-    SchemeMorphism,
-    Schemes,
-    ZariskiCoveringFamilies,
-    zariski_coverage,
-    SheafObjects,
-    SheafedSpaces,
-    SideDecoration,
-    SmoothSchemes,
-    Surfaces,
-    ToricFixedPointBlowups,
-    ToricFundamentalGroups,
-    ToricGeometricLineBundleCohomologySpaces,
-    ToricIntegralSingularCohomologyGroups,
-    ToricLogPairs,
-    ToricSchemes,
-    ToricWeightCohomologyComplexes,
-    Varieties,
-    rational_quintic_with_nonrational_node_normalization,
-    rational_quintic_with_two_nodes_normalization,
+_lazy_import(
+    "dzack_research.preamble.schemes",
+    (
+        "ADELogPairs",
+        "AlgebraSheaves",
+        "AffineGroupSchemeActions",
+        "AffineGroupSchemes",
+        "AffineGSchemes",
+        "AffineInvariantQuotientBaseChangeComparison",
+        "AffineSchemes",
+        "AffineSpaces",
+        "AnalyticDiscFamily",
+        "Blowups",
+        "ClosedEmbeddings",
+        "ClosedSubschemes",
+        "ConvexPolygons",
+        "ConvexPolytopes",
+        "CurveLocalDeltaContribution",
+        "Curves",
+        "CyclicCoverBaseChangeComparison",
+        "DistinguishedAffineCoverRefinement",
+        "DistinguishedAffineCovers",
+        "EffectiveCartierDivisors",
+        "FiberProductSchemes",
+        "FiniteGluedInvariantQuotient",
+        "GeometricFundamentalGroups",
+        "HesseBertiniFamily",
+        "HorikawaEnriquesSurface",
+        "HorikawaK3Family",
+        "IntegralSchemes",
+        "IntegralSingularCohomologyGroups",
+        "IntegralTopologicalCohomologyGroups",
+        "IsolatedHypersurfaceSingularity",
+        "LatticePolygons",
+        "LatticePolytopes",
+        "LegendreMonodromyFamily",
+        "LocallyRingedSpaces",
+        "LogPairs",
+        "ModuleSheaves",
+        "NodalCubic",
+        "NodalCubicIntegralTopology",
+        "NodalCubicNormalization",
+        "NormalSchemes",
+        "OpenImmersions",
+        "PGL2IntegralTopology",
+        "PointedAnalyticFundamentalGroup",
+        "ProductProjectiveSpaces",
+        "ProductSchemes",
+        "ProjectiveCompleteIntersections",
+        "ProjectiveGeneralLinearGroup2",
+        "ProjectivePointBlowups",
+        "ProjectiveSchemes",
+        "ProjectiveSurfaces",
+        "ProjectiveSpaces",
+        "ProperSurfaces",
+        "QuasiCoherentSheaves",
+        "RationalPolyhedralFans",
+        "RegularPolytopes",
+        "RelativeCyclicCoverLift",
+        "RelativeProjectivizations",
+        "ResolutionIntegralCohomologyGroups",
+        "RingedSpaces",
+        "SchemeMonomorphisms",
+        "SchemeMorphism",
+        "Schemes",
+        "SheafObjects",
+        "SheafedSpaces",
+        "SideDecoration",
+        "SmoothSchemes",
+        "Surfaces",
+        "ToricFixedPointBlowups",
+        "ToricFundamentalGroups",
+        "ToricGeometricLineBundleCohomologySpaces",
+        "ToricIntegralSingularCohomologyGroups",
+        "ToricLogPairs",
+        "ToricSchemes",
+        "ToricWeightCohomologyComplexes",
+        "Varieties",
+        "ZariskiCoveringFamilies",
+        "distinguished_affine_coverage",
+        "rational_quintic_with_nonrational_node_normalization",
+        "rational_quintic_with_two_nodes_normalization",
+        "zariski_coverage",
+    ),
 )
-from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: F401
-    CyclicCovers,
+_lazy_import(
+    "dzack_research.preamble.categories.schemes.cyclic_covers",
+    "CyclicCovers",
 )
 from dzack_research.preamble.categories.sets import (  # noqa: F401
     AugmentedSimplexCategory,
@@ -471,6 +483,9 @@ from dzack_research.preamble.categories.vector_configurations import (  # noqa: 
 )
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _OwnedRingParent,
 )
 from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F401
     VinbergInvariantMatrices,
@@ -533,6 +548,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     UnitInterval,
     ZariskiClosedSubobjects,
     _restore_session_ring_bindings,  # noqa: F401
+    session_ring_objects as _session_ring_objects,
 )
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
 from dzack_research.preamble.utilities import (
@@ -562,6 +578,9 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
 # they load; the public session receives only owned scalar objects, owned
 # constructors, and the owned runtime names emitted by the research dialect.
 _restore_session_ring_bindings(globals())
+_session_rings = _session_ring_objects()
+ZZ: _OwnedRingParent = _cast(_OwnedRingParent, _session_rings["ZZ"])
+QQ: _OwnedRingParent = _cast(_OwnedRingParent, _session_rings["QQ"])
 Integer = _language_runtime.Integer
 RealNumber = _language_runtime.RealNumber
 ComplexNumber = _language_runtime.ComplexNumber
@@ -573,17 +592,20 @@ ellipsis_iter = _language_runtime.ellipsis_iter
 
 # The catalogue constructs named lattices at import time, so it is imported
 # last, after every name it uses exists.
-from dzack_research.preamble.catalogue import (  # noqa: E402,F401
-    Embeddings,
-    Involutions,
-    NamedLattices,
-    NegativeDefTwoElementary,
-    TwoElementary,
-    signature_orthogonal_sums,
-    two_elementary_orthogonal_sums,
+_lazy_import(
+    "dzack_research.preamble.catalogue",
+    (
+        "Embeddings",
+        "Involutions",
+        "NamedLattices",
+        "NegativeDefTwoElementary",
+        "TwoElementary",
+        "signature_orthogonal_sums",
+        "two_elementary_orthogonal_sums",
+    ),
 )
-from dzack_research.preamble.coble import Coble  # noqa: E402,F401
-from dzack_research.preamble.sterk import Sterk  # noqa: E402,F401
+_lazy_import("dzack_research.preamble.coble", "Coble")
+_lazy_import("dzack_research.preamble.sterk", "Sterk")
 
 
 _language_runtime.install(globals())

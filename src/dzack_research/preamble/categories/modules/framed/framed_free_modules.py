@@ -1,12 +1,14 @@
 """Free modules with their canonical framing."""
 
+from typing import TYPE_CHECKING
+
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module import FreeModule as _SageFreeModule
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import ModuleElement
+from sage.structure.element import ModuleElement, RingElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -347,7 +349,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring()).Free()]
 
     class ElementMethods:
-        def to_vector(self):
+        if TYPE_CHECKING:
+            def __call__(self, label) -> RingElement: ...
+
+        def to_vector(self) -> "FramedFreeModules.ElementMethods":
             r"""The coordinates of this element in the chosen basis ``I``.
 
             The finitely supported function \(a_v\colon I\to R\) with
@@ -442,7 +447,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return self.module_generating_set().cardinality()
 
-        def is_torsion_free(self) -> bool:
+        def _torsion_freeness_decision(self) -> bool:
             r"""A free module over a domain is torsion-free.
 
             A basis element is killed only by a scalar killing its coefficient,
@@ -470,7 +475,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 return Cardinalities().one()
             return Cardinalities().supremum(scalars, labels)
 
-        def is_finite(self) -> bool:
+        def _finiteness_decision(self) -> bool:
             r"""Return whether the underlying free module is finite."""
             return self.cardinality().is_finite()
 
@@ -749,11 +754,12 @@ def _span_basis_elements(module, module_generating_set):
             # p-adic backends otherwise divide through nonunit pivots.
             return finite_ordered_set((generator,))
     support_labels = _finite_support_labels(module, generators)
+    support_points = tuple(support_labels)
 
     # Private finite backend serialization.  Only the finite support window is
     # materialized; the ambient framing itself is never enumerated.
     engine = _engine_ring(ring)
-    support_count = int(support_labels.cardinality())
+    support_count = len(support_points)
     free = _SageFreeModule(engine, support_count)
     engine_rows = []
     for candidate in generators:
@@ -763,7 +769,7 @@ def _span_basis_elements(module, module_generating_set):
             [
                 _engine_element(
                     ring,
-                    coordinates(support_labels[position]),
+                    coordinates(support_points[position]),
                 )
                 for position in range(support_count)
             ]
@@ -779,7 +785,7 @@ def _span_basis_elements(module, module_generating_set):
         row = basis.row(int(position))
         return module.linear_combination(
             {
-                support_labels[column]: _owned_engine_element(ring, row[column])
+                support_points[column]: _owned_engine_element(ring, row[column])
                 for column in range(support_count)
                 if row[column]
             }
@@ -847,23 +853,25 @@ def _module_subobject_constructor_data(module, basis):
         f"cannot form the submodule of {module} spanned by {basis}: {module} must be a free "
         f"{ring}-module with a chosen basis, but it is in {module.category()}"
     )
-    labels = Sets.Δ[int(basis.cardinality()) - 1]
+    basis_elements = tuple(basis)
+    labels = Sets.Δ[len(basis_elements) - 1]
 
     def embedded(label):
-        return basis[int(label)]
+        return basis_elements[int(label)]
 
     support_labels = _finite_support_labels(module, basis)
-    source_rank = int(basis.cardinality())
-    support_rank_count = int(support_labels.cardinality())
+    support_points = tuple(support_labels)
+    source_rank = len(basis_elements)
+    support_rank_count = len(support_points)
     if source_rank:
         coordinate_matrix = ring.matrix_space(source_rank, support_rank_count).from_rows(
             tuple(
                 tuple(
-                    coordinates(support_labels[j])
+                    coordinates(support_points[j])
                     for j in range(support_rank_count)
                 )
                 for coordinates in (
-                    module(basis[i]).to_vector() for i in range(source_rank)
+                    module(element).to_vector() for element in basis_elements
                 )
             )
         )
@@ -887,7 +895,7 @@ def _module_subobject_constructor_data(module, basis):
             )
         solution = coordinate_solver(
             (
-                coordinates(support_labels[j])
+                coordinates(support_points[j])
                 for j in range(support_rank_count)
             ),
         )

@@ -521,14 +521,22 @@ class CatConstructionsMixin:
             seen.setdefault(base, None)
         bases = tuple(seen)
 
-        return dynamic_class(
+        reduction = (_subcategory_class_of, (category,)) if picklable else None
+        owned_providers = () if provider is None else (provider,)
+        metaclass = _abc_metaclass_for(bases)
+        result = metaclass(
             f"{declaring_class.__name__}.subcategory_class",
             bases,
-            None,
-            doccls=doccls,
-            reduction=(_subcategory_class_of, (category,)) if picklable else None,
-            cache=cache,
+            {
+                "_owned_providers": owned_providers,
+                "_reduction": reduction,
+                "_doccls": (doccls,),
+                "__doc__": doccls.__doc__,
+                "__module__": doccls.__module__,
+            },
         )
+        _abc_init(result)
+        return result
 
 
 def declared_implementation_types(

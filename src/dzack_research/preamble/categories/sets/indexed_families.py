@@ -67,7 +67,17 @@ class IndexedFamily[IndexT, ValueT]:
             sage: family.value([0]) is family.value([0])
             True
         """
-        normalized = self.index_set()(index)
+        return self._value_at_normalized_index(self.index_set()(index))
+
+    def _value_at_normalized_index(self, normalized: IndexT) -> ValueT:
+        r"""Return the cached value at an index already supplied by ``index_set()``.
+
+        Iteration over an indexed family obtains its labels from the index set
+        itself.  Reapplying the index-set constructor to those labels is not a
+        mathematical operation and can be expensive for represented index
+        sets, so the internal iteration path enters the value cache directly.
+        Public ``value(index)`` still performs the canonical normalization.
+        """
         match normalized:
             case Hashable():
                 missing = object()
@@ -99,7 +109,10 @@ class IndexedFamily[IndexT, ValueT]:
                 return self.value(self.index_set().ranking_map().inverse()(index))
 
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
-        return ((index, self.value(index)) for index in self.index_set())
+        return (
+            (index, self._value_at_normalized_index(index))
+            for index in self.index_set()
+        )
 
     def keys(self) -> SetObject:
         r"""Return the mathematical index set of this family."""
@@ -113,7 +126,10 @@ class IndexedFamily[IndexT, ValueT]:
         return self.value(index) if index in self.index_set() else default
 
     def __iter__(self) -> Iterator[ValueT]:
-        return (self.value(index) for index in self.index_set())
+        return (
+            self._value_at_normalized_index(index)
+            for index in self.index_set()
+        )
 
     def __contains__(self, candidate: object) -> bool:
         r"""Return whether candidate occurs among the values of a finite family.
@@ -128,7 +144,7 @@ class IndexedFamily[IndexT, ValueT]:
                 "value membership is represented only for a finite indexed family"
             )
         return any(
-            (self.value(index) == candidate) is True
+            (self._value_at_normalized_index(index) == candidate) is True
             for index in self.index_set()
         )
 

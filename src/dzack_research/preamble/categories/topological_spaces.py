@@ -119,15 +119,13 @@ class _FiniteTopologicalSpaceEngine:
     def __contains__(self, point) -> bool:
         return point in self.unstructured_set()
 
-    is_parent_of = __contains__
-
     def _element_constructor_(self, point):
         return self.unstructured_set()(point)
 
     def __iter__(self):
         return iter(self.unstructured_set())
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         return self.unstructured_set().cardinality()
 
 

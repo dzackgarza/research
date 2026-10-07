@@ -859,7 +859,7 @@ class QuotientRings(OwnedCategory):
             r"""Whether this is ``R/R``, the zero ring."""
             return bool(_engine_ideal(self.quotient_source(), self.defining_ideal()).is_one())
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             if self._is_zero_ring():
                 return True
             if self._preamble_engine_ring is not None:
@@ -903,11 +903,11 @@ class QuotientRings(OwnedCategory):
                 f"{self.quotient_source()} modulo {self.defining_ideal()}"
             )
 
-        def is_field(self):
+        def _field_decision(self):
             r"""Return whether R/I is a field, equivalently whether I is maximal."""
             return bool(self.defining_ideal().is_maximal())
 
-        def is_integral_domain(self):
+        def _integral_domain_decision(self):
             return bool(self.defining_ideal().is_prime())
 
         def krull_dimension(self):
@@ -1011,7 +1011,7 @@ class QuotientRings(OwnedCategory):
             r"""Return the normalized irreducible components with their maps."""
             return self._affine_normalization_data().components
 
-        def is_reduced(self) -> bool:
+        def _reducedness_decision(self) -> bool:
             defining = _engine_ideal(self.quotient_source(), self.defining_ideal())
             return defining.radical() == defining
 
@@ -1606,7 +1606,7 @@ class PrimeLocalizations(OwnedCategory):
                 )
             return prime
 
-        def is_field(self):
+        def _field_decision(self):
             r"""Return whether the maximal ideal ``p R_p`` vanishes."""
             return all(
                 self(generator) == self.zero()

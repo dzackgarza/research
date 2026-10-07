@@ -86,11 +86,10 @@ for name in CHAPTERS:
         print(f"docs-check: cleared {stray}, left by an interrupted render")
 
 # --- render twice, capturing warnings -------------------------------------------
-# custom-numbered-blocks resolves \ref and \longref against a registry it builds as
+# custom-numbered-blocks resolves custom-block @id references (and legacy
+# \ref/\longref) against a registry it builds as
 # the render proceeds, so a first pass can only reach blocks declared in chapters it
-# has already processed. A reference forward to a later chapter finds nothing, and
-# pandoc drops the unmatched macro rather than printing it, so the sentence closes
-# over the hole. The registry is written to disk (._htmlbook_xref.json at the project
+# has already processed. The registry is written to disk (._htmlbook_xref.json at the project
 # root) and read back at the start of each chapter, so a second pass over the same
 # tree resolves every reference the first pass registered. This is the same reason a
 # LaTeX document is compiled twice; the cost is one extra render.

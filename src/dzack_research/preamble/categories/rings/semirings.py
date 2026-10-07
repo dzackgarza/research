@@ -10,6 +10,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoryPacketMethods,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
@@ -93,7 +96,7 @@ class RngMorCategoryConstruction(MorCategoryConstruction):
         return RngMor
 
 
-class OwnedSemirings(OwnedCategory):
+class OwnedSemirings(CategoryPacketMethods, OwnedCategory):
     """Semirings on the owned operation spine."""
 
     _MorCategory = SemiringMorCategoryConstruction
@@ -140,7 +143,7 @@ class OwnedSemirings(OwnedCategory):
         return morphisms(image)
 
 
-class OwnedRngs(OwnedCategory):
+class OwnedRngs(CategoryPacketMethods, OwnedCategory):
     """Rngs on the owned operation spine."""
 
     _MorCategory = RngMorCategoryConstruction

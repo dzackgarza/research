@@ -486,6 +486,38 @@ Keep the category declaration, constructor signature, and executable contract as
 
 These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, placement, locality, and dependency-direction model to new code even when no existing example names the exact violation.
 
+### Collaborative, agent-driven research with visible evidence
+
+This repository is built for collaborative research between humans and AI agents. A result
+typically passes through three stages. A human states the mathematics informally, in natural
+language. An agent pseudo-formalizes that draft in Sage, inside a relatively rigid ecosystem of
+owned categories, constructions and contracts that gives the translation a definite place to land.
+Humans and agents then edit, review and audit that Sage until the result carries evidence strong
+enough to be used in a paper.
+
+Sage is not a proof checker, and this process does not make it one. Confidence in a computed
+result is fundamentally probabilistic and subjective. The aim is to build as many objective
+mechanisms as possible, so that confidence rises and so that everyone can see what the evidence
+is and how strong it is.
+
+The code should therefore be easy for agents to use correctly and hard for them to get wrong,
+whether by accident or on purpose, without a clear signal. For example, an agent needs subgroups
+of `O(L)`. The general interface for subgroups of groups carries guarantees, but it is harder to
+satisfy, so the agent adds a special-purpose construction that bypasses it. This will happen, so
+the first defence is to make such a bypass visible quickly. The ideal is a structure in which the
+bypass cannot be written at all.
+
+Concretely:
+
+- **Separate what exists from how well it is known.** The dashboard keeps three questions apart:
+  whether a capability exists, how broad it is, and how strongly its behavior has been certified.
+- **Independent oracles.** Results are checked against independent systems such as PARI/GP, Magma
+  and OSCAR, not against a single reference implementation, so that agreement is evidence rather
+  than circularity.
+- **Structure that shows its gaps.** Algorithms, interfaces and documentation are organized so
+  that humans and agents can find gaps, see the contract a general owner guarantees, and notice
+  when new code steps around it.
+
 ## Preamble architecture specification
 
 This section is the authoritative specification of construction, entrypoints,

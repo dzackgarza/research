@@ -1009,16 +1009,14 @@ class _GroupEngine:
             case _:
                 return r"\mathrm{Group}"
 
-    def is_abelian(self):
+    def _abelianity_decision(self):
         match self:
-            case _ if self in OwnedAbelianGroups():
-                return True
             case _ if self in OwnedFiniteGroups():
                 return bool(_gap_model(self).IsAbelian())
             case _:
                 return _engine_abelianity(self._engine)
 
-    def is_arithmetic_group(self):
+    def _arithmeticity_decision(self):
         return True if _is_arithmetic_witness(self._engine) else Unknown
 
 
@@ -1238,6 +1236,59 @@ def _engine_subgroup(group, generators):
         group._engine_subgroup_from_generators(selected),
         selected,
     )
+
+
+class _SubgroupCollection(Sets().ObjectType):
+    r"""The set of represented subgroups of one owned group.
+
+    A point is an object of ``Subgroups(G)``, hence retains its inclusion into
+    ``G``.  This set is defined for every represented group.  When ``G`` is
+    placed among finite groups, GAP supplies an exact enumeration; that
+    enumeration is computational structure on the same set, not its definition.
+    """
+
+    def __init__(self, group) -> None:
+        assert group in OwnedGroups(), (
+            f"the subgroup collection is defined for a group, but {group} is not an owned group"
+        )
+        self._group = group
+        match group:
+            case _ if group in OwnedFiniteGroups():
+                placement = FiniteSets()
+            case _:
+                placement = Sets()
+        super().__init__(category=placement, facade=True)
+
+    def __contains__(self, candidate) -> bool:
+        r"""Whether ``candidate`` is a represented subgroup of the ambient group."""
+        return candidate in Subgroups(self._group)
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                f"{candidate!r} is not a represented subgroup of {self._group}"
+            )
+        return candidate
+
+    def __iter__(self):
+        r"""Enumerate this set when the ambient represented group is finite."""
+        group = self._group
+        match group:
+            case _ if group in OwnedFiniteGroups():
+                return (
+                    _subgroup_from_gap(group, subgroup)
+                    for subgroup in _gap_model(group).AllSubgroups()
+                )
+            case _:
+                assert False, (
+                    f"cannot list all subgroups of {group}: its subgroup collection is defined as a set, "
+                    "but exact enumeration is installed only for finite represented groups"
+                )
+
+    def _repr_(self) -> str:
+        return f"Subgroups of {self._group}"
 
 
 # --------------------------------------------------------------------------
@@ -1813,7 +1864,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 raise TypeError(f"{images!r} cannot define a homomorphism {self.domain()} -> {self.codomain()}: give the images of the free basis {indices} as a map, a function, or a dictionary")
         return self.element_class(self, generator_morphism)
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         r"""A homomorphism from F(S) is exactly a function S -> H."""
         return cardinal(self.codomain().cardinality()) ** cardinal(self.domain().free_basis().cardinality())
 
@@ -2121,7 +2172,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         )
 
     @cached_method
-    def cardinality(self):
+    def _cardinality_decision(self):
         r"""Return the cardinality of the represented homomorphism object."""
         domain = self.domain()
         codomain = self.codomain()
@@ -2133,10 +2184,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 )
                 return cardinal(int(homomorphisms.Length()))
             case _:
-                assert False, (
-                    f"the cardinality of Mor({domain}, {codomain}) is defined as a set cardinality, but the current "
-                    "preamble computes it only when both groups are finite represented groups"
-                )
+                return Unknown
 
     def _repr_(self):
         return f"Mor({self.domain()}, {self.codomain()})"
@@ -2227,7 +2275,7 @@ class GroupAutomorphismGroups(OwnedCategory):
         def supergroup(self):
             return self
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""``|Aut(G)|``: from GAP for finite ``G``, from the rank for a free ``G``.
 
             ``Aut(F_0)`` is trivial, ``Aut(F_1) = C_2``, and ``Aut(F_n)`` for
@@ -2245,7 +2293,7 @@ class GroupAutomorphismGroups(OwnedCategory):
                         return cardinal(2)
                     case _:
                         return aleph(0)
-            return super().cardinality()
+            return super()._cardinality_decision()
 
         def _repr_(self):
             return f"Aut({self.domain()})"
@@ -2905,7 +2953,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return groups.Mor(self, codomain)
             raise TypeError(f"the homomorphisms {self} -> {codomain} in {category} are not group homomorphisms: {codomain} must be a group and {category} a category of groups")
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             from dzack_research.preamble.categories.group.cyclic_subgroups import (
                 CyclicGroups,
             )
@@ -2924,25 +2972,27 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             match self:
                 case _ if self in OwnedAbelianGroups():
                     return True
+                case _:
+                    return self._abelianity_decision()
+
+        def _abelianity_decision(self):
+            match self:
                 case _ if self in OwnedFiniteGroups():
                     return all(left * right == right * left for left in self for right in self)
                 case _:
                     return Unknown
 
         def is_finitely_generated(self):
-            from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
-                AbsoluteGaloisGroupsOfFiniteFields,
-            )
-
             match self:
                 case _ if self in OwnedGroups().FinitelyGeneratedAsMagma():
                     return True
-                case _ if self in AbsoluteGaloisGroupsOfFiniteFields():
-                    return False
                 case _:
-                    return Unknown
+                    return self._finite_generation_decision()
 
-        def is_finitely_presented(self):
+        def _finite_generation_decision(self):
+            return Unknown
+
+        def is_finitely_presented_as_group(self):
             match self.is_finitely_generated():
                 case False:
                     return False
@@ -2952,13 +3002,16 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return Unknown
 
         def is_arithmetic_group(self):
+            return self._arithmeticity_decision()
+
+        def _arithmeticity_decision(self):
             return Unknown
 
         def is_topological_group(self) -> bool:
             r"""Whether this represented group carries compatible topology data."""
             return self in TopologicalGroups()
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             from dzack_research.preamble.categories.group.cyclic_subgroups import (
                 CyclicGroups,
             )
@@ -2984,11 +3037,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return continuum
             if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
                 return aleph(0)
-            assert False, (
-                f"the cardinality of {self} is not computed here: it is computed only for finite groups, free groups, "
-                f"and infinite finitely generated groups, and {self} is not known to be any of these; "
-                f"{self} is in {self.category()}"
-            )
+            return Unknown
 
         def order(self):
             r"""The set cardinality, read as an integer when finite."""
@@ -3009,13 +3058,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         f"the quotient of {self} by the normal closure of {relators} is defined for every group, "
                         "but the current preamble computes it only for groups with a chosen finite presentation"
                     )
-
-        def order_is_invertible_in(self, ring) -> bool:
-            r"""Return whether ``|G|`` is a unit in ``ring`` for this finite group."""
-            assert self in OwnedFiniteGroups(), (
-                f"cannot decide whether the order of {self} is a unit in {ring}: {self} is not known to be finite"
-            )
-            return bool(ring(int(self.order())).is_unit())
 
         def finite_image_lifts(
             self,
@@ -3231,27 +3273,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def subgroups(self):
-            r"""Return the represented subgroups as an owned finite ordered set.
+            r"""Return the set of represented subgroups of this group.
 
-            GAP owns exact subgroup enumeration for finite groups whose elements
-            are represented by its group model.  Each enumerated subgroup is
-            raised through the existing transported-subgroup constructor, so the
-            ambient group and canonical inclusion remain the same owned data used
-            by ``subgroup(...)`` and the subgroup categories.
+            Its points are objects of ``Subgroups(self)``, so every point
+            retains its inclusion into this group.  Finite represented groups
+            additionally enumerate this same set exactly through GAP.
             """
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return finite_ordered_set(
-                        tuple(
-                            _subgroup_from_gap(self, subgroup)
-                            for subgroup in _gap_model(self).AllSubgroups()
-                        )
-                    )
-                case _:
-                    assert False, (
-                        f"the subgroup collection of {self} is defined, but the current preamble enumerates all "
-                        "subgroups only for finite represented groups"
-                    )
+            return _SubgroupCollection(self)
 
         def supergroup(self):
             r"""The group this one was constructed as a subgroup of; a group that is not is its own.
@@ -3334,6 +3362,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
+            def order_is_invertible_in(self, ring) -> bool:
+                r"""Return whether the finite order ``|G|`` is a unit in ``ring``."""
+                return bool(ring(int(self.order())).is_unit())
+
             def conjugacy_classes_representatives(self):
                 classes = _gap_model(self).ConjugacyClasses()
                 return FiniteOrderedSets().from_indexed(
@@ -3688,8 +3720,8 @@ class PermutationGroups(OwnedCategory):
 
         def orbit(self, point):
             r"""The orbit ``G . point`` of the natural action."""
-            engine = _engine_group(self)
-            return finite_ordered_set(tuple(_owned_point(image) for image in engine.orbit(_engine_point(engine, point))))
+            action = self.natural_g_set()
+            return action.orbits().orbit_of(point).points()
 
         def orbits(self, points=None):
             r"""The orbit set of the natural action on ``points`` (all natural points by default)."""
@@ -3697,17 +3729,12 @@ class PermutationGroups(OwnedCategory):
             return g_set.orbits()
 
         def stabilizer(self, point):
-            r"""The subgroup ``G_x`` fixing ``point``, computed by the permutation engine."""
-            engine = _engine_group(self)
-            engine_point = _engine_point(engine, point)
-            return _subgroup_from_gap(
-                self,
-                libgap.Stabilizer(_gap_model(self), libgap(engine_point), libgap.OnPoints),
-            )
+            r"""The subgroup ``G_x`` fixing ``point`` in the natural action."""
+            return self.natural_g_set().stabilizer(point)
 
         def is_transitive(self) -> bool:
             r"""Whether the natural action has one orbit."""
-            return bool(_engine_group(self).is_transitive())
+            return self.natural_g_set().is_transitive_action()
 
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):
@@ -3855,7 +3882,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
         def zero(self):
             return self(lambda element: self._identity_value())
 
-        def is_commutative(self):
+        def _commutativity_decision(self):
             r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
             if not self._group.has_selected_group_resolution():
                 return Unknown

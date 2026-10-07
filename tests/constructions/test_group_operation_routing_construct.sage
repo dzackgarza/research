@@ -14,13 +14,16 @@ def test_infinite_finitely_presented_abelianization_names_missing_route() -> Non
 
 def test_general_group_operations_do_not_silently_assume_gap_finiteness() -> None:
     group = Groups.Free(2)
+    subgroups = group.subgroups()
+    whole = group.predicate_subgroup(lambda _element: True, "the whole group")
 
     with pytest.raises(AssertionError, match="commutator subgroup.*defined for every group"):
         group.commutator_subgroup()
     with pytest.raises(AssertionError, match="center.*defined for every group"):
         group.center()
-    with pytest.raises(AssertionError, match="subgroup collection.*defined"):
-        group.subgroups()
+    assert subgroups in Sets()
+    assert whole in subgroups
+    assert whole.supergroup() is group
     with pytest.raises(AssertionError, match="defined for every pair of groups"):
         group.is_isomorphic_to(group)
 

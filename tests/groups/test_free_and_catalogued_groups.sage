@@ -27,7 +27,7 @@ def test_the_free_group_on_two_letters_is_nonabelian_and_freely_reduces_words() 
     assert a * b != b * a
     assert not free.is_abelian()
     assert free.is_finitely_generated()
-    assert free.is_finitely_presented()
+    assert free.is_finitely_presented_as_group()
     assert free.free_generator(0) == a
     assert free.reduced_word(a * b * a**-1).cardinality() == cardinal(3)
 

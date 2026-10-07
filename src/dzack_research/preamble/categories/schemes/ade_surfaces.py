@@ -357,14 +357,6 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             self._side_decorations = side_decorations
             super().__init__(**rest)
 
-        def scheme(self):
-            r"""Return the scheme of this ADE base log pair, namely ``Y=V_Q``."""
-            return self.log_scheme()
-
-        def toric_scheme(self):
-            r"""Return the ambient toric scheme of this base pair, again ``Y=V_Q``."""
-            return self.log_scheme()
-
         def base(self):
             r"""Return this base ADE log pair itself."""
             return self

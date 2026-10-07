@@ -75,7 +75,7 @@ class _SparseFreeAlgebra(_WordModule):
     def _realize_graded_piece_basis_label(self, degree, label):
         return self.from_component(degree, self.graded_piece(degree).module_generator(label))
 
-    def is_commutative(self):
+    def _commutativity_decision(self):
         size = self.algebra_generating_set().cardinality()
         match self.flavor():
             case "symmetric":

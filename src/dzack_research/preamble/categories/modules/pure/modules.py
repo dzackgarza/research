@@ -15,7 +15,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import ModuleElement
+from sage.structure.element import Element, ModuleElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
@@ -40,15 +40,13 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
     _parallel_pair_diagram,
 )
-from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
-    AssociativeAlgebraMorCategoryConstruction,
-)
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleAutomorphismGroup,
     ModuleEmbeddingMor,
     ModuleMor,
     ModuleMorphism,
+    ModuleMorphismMethods,
     SubFramingMorphism,
     TensorProductModuleMor,
     _framing_morphism,
@@ -68,6 +66,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    RingMor,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
@@ -120,6 +119,51 @@ class ModuleMorCategoryConstruction(MorCategoryConstruction):
 
     def fixed_category_class_for(self, domain, codomain):
         return domain._module_mor_class()
+
+
+class MatrixEndomorphismMor(ModuleMor):
+    r"""Linear endomorphism-space maps which also preserve composition and its unit."""
+
+    class ElementMethods(ModuleMorphismMethods, RingMor.ElementMethods):
+        pass
+
+
+class MatrixEndomorphismMorCategoryConstruction(MorCategoryConstruction):
+    r"""Fixed Mor of matrix endomorphism objects over an arbitrary base ring.
+
+    Unverified specimens under ``DEV-58`` distinguish the two branches.  Over
+    a noncommutative coefficient ring the fixed Mor retains the linear matrix
+    structure and the composition-ring structure without claiming an algebra
+    over that coefficient ring::
+
+        sage: base = ZZ.matrix_space(2, 2)
+        sage: matrices = base.matrix_space(1, 1)
+        sage: mor = MatrixEndomorphismSpaces(base).Mor(matrices, matrices)
+        sage: identity = mor.identity()
+        sage: identity.parent() is mor and isinstance(identity, ModuleMorphism)
+        True
+        sage: identity(matrices.one()) == matrices.one()
+        True
+
+    Over a commutative base the existing unital multiplicative algebra Mor is
+    retained::
+
+        sage: matrices = ZZ.matrix_space(2, 2)
+        sage: identity = MatrixEndomorphismSpaces(ZZ).Mor(matrices, matrices).identity()
+        sage: identity(matrices.one()) == matrices.one() and identity.preserves_unit()
+        True
+    """
+
+    def fixed_category_class_for(self, domain, codomain):
+        match self.base_category().base_ring() in OwnedRings().Commutative():
+            case True:
+                from dzack_research.preamble.categories.algebras.algebras import (
+                    UnitalMultiplicativeAlgebraMor,
+                )
+
+                return UnitalMultiplicativeAlgebraMor
+            case False:
+                return MatrixEndomorphismMor
 
 
 class ModuleMonoCategoryConstruction(MonoCategoryConstruction):
@@ -979,7 +1023,13 @@ class Modules(OwnedCategoryOverBaseRing):
         return self.base_ring().free_module(1)
 
     def super_categories(self):
-        match self.base_ring().is_commutative():
+        base_ring = self.base_ring()
+        match base_ring:
+            case _OwnedRingParent():
+                commutative = base_ring._commutativity_decision()
+            case _:
+                commutative = base_ring.is_commutative()
+        match commutative:
             case True:
                 from dzack_research.preamble.categories.modules.fibered_modules import (
                     ModulesOverCommutativeRings,
@@ -1071,6 +1121,8 @@ class Modules(OwnedCategoryOverBaseRing):
     _EndCategory = ModuleEndCategoryConstruction
 
     class ElementMethods:
+        __add__ = Element.__add__
+
         def __rmul__(self, scalar):
             r"""Return ring multiplication or the left module scalar action.
 
@@ -1536,17 +1588,67 @@ class Modules(OwnedCategoryOverBaseRing):
         def is_module(self) -> bool:
             return True
 
-        def is_free(self) -> bool:
-            return False
+        def _freeness_decision(self):
+            return Unknown
 
-        def is_finitely_generated(self) -> bool:
-            return False
+        def is_free(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).Free():
+                    return True
+                case _:
+                    return self._freeness_decision()
+
+        def _finite_generation_decision(self):
+            return Unknown
+
+        def is_finitely_generated(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).FinitelyGenerated():
+                    return True
+                case _:
+                    return self._finite_generation_decision()
+
+        def _finite_presentation_decision(self):
+            return Unknown
+
+        def is_finitely_presented(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).FinitelyPresented():
+                    return True
+                case _:
+                    return self._finite_presentation_decision()
+
+        def _projectivity_decision(self):
+            return Unknown
+
+        def is_projective(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).Projective():
+                    return True
+                case _:
+                    return self._projectivity_decision()
+
+        def _torsion_decision(self):
+            return Unknown
+
+        def is_torsion(self):
+            match self:
+                case _ if self in Modules(self.base_ring()).Torsion():
+                    return True
+                case _:
+                    return self._torsion_decision()
+
+        def _torsion_freeness_decision(self):
+            return Unknown
+
+        def is_torsion_free(self):
+            return self._torsion_freeness_decision()
 
         def is_framed_module(self) -> bool:
             r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
             return self.has_selected_module_resolution()
 
-        def is_finite(self):
+        def _finiteness_decision(self):
             return Unknown
 
         def is_flat(self) -> bool:
@@ -1894,7 +1996,7 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             return self.generic_fibre_map().kernel()
 
-        def is_torsion_free(self) -> bool:
+        def _torsion_freeness_decision(self) -> bool:
             r"""Return whether ``Tor(M)=0``, that is whether ``M -> K tensor_R M`` is injective."""
             return self.generic_fibre_map().is_injective()
 
@@ -1996,9 +2098,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         class ParentMethods:
-            def is_finitely_generated(self) -> bool:
-                return True
-
             @cached_method
             def fiber(self, point):
                 r"""Return ``M(p)=M tensor_R kappa(p)`` at ``p in Spec(R)``."""
@@ -2086,7 +2185,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     )
                 return self.fiber_dimension(ring.spectrum().generic_point())
 
-            def is_torsion(self) -> bool:
+            def _torsion_decision(self) -> bool:
                 r"""Return whether ``K tensor_R M = 0`` over an integral domain.
 
                 The generic fibre is a vector space over ``K``, so it vanishes
@@ -2136,9 +2235,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return _cokernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
-            def is_finitely_presented(self) -> bool:
-                return True
-
             def tor(self, other, degree=0):
                 r"""Return ``Tor_degree(self, other)`` from the selected free resolution."""
                 from dzack_research.preamble.categories.modules.derived_functors import _tor
@@ -2205,9 +2301,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
 
             class ParentMethods:
-                def is_torsion(self) -> bool:
-                    return True
-
                 def invariants(self):
                     r"""Return the invariant factors of this finite presented torsion module."""
                     return self.invariant_factors()
@@ -2219,6 +2312,12 @@ class Modules(OwnedCategoryOverBaseRing):
                     assert _engine_ring(self.base_ring()) is SageZZ, (
                         f"the elements of the torsion module {self} are enumerated only over ZZ, not over {self.base_ring()}"
                     )
+                    if self.is_zero():
+                        return FiniteOrderedSets().from_indexed(
+                            Sets.Δ[0],
+                            lambda _position: self.zero(),
+                            name="Finite torsion elements",
+                        )
                     engine = self._smith_engine()
                     assert engine is not None, (
                         f"the elements of the finite abelian group {self} cannot be enumerated: its Smith normal form is not available"
@@ -2360,10 +2459,6 @@ class Modules(OwnedCategoryOverBaseRing):
         def extra_super_categories(self):
             return [Modules(self.base_ring()).Projective()]
 
-        class ParentMethods:
-            def is_free(self) -> bool:
-                return True
-
     class Projective(CategoryWithAxiom):
         r"""Direct summands of free modules."""
 
@@ -2374,9 +2469,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         class ParentMethods:
-            def is_projective(self) -> bool:
-                return True
-
             def projective_rank(self, point):
                 r"""Return the local free rank of a finite projective module at ``point``."""
                 if self not in Modules(self.base_ring()).FinitelyGenerated():
@@ -2416,11 +2508,6 @@ class Modules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.lattices import Lattices
 
             return Lattices(self.base_ring())("U").discriminant_group()
-
-        class ParentMethods:
-            def is_torsion(self) -> bool:
-                return True
-
 
 FinitelyGeneratedModules = Modules.FinitelyGenerated
 FinitelyPresentedModules = Modules.FinitelyPresented
@@ -2886,11 +2973,23 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             f"to have a chosen finite presentation over {ring}, but it is only known to be in "
             f"{morphism.codomain().category()}"
         )
+        subobject_ambient = construction_data.pop("subobject_ambient", None)
+        subobject_generator_images = construction_data.pop(
+            "subobject_generator_images", None
+        )
+        subobject_lift = construction_data.pop("subobject_lift", None)
+        subobject_inclusion_factory = construction_data.pop(
+            "subobject_inclusion_factory", None
+        )
         return _presented_module_from_morphism(
             morphism,
             _cokernel_morphism=morphism,
             _extra_categories=() if category is None else (category,),
             _extra_construction_data=construction_data or None,
+            _subobject_ambient=subobject_ambient,
+            _subobject_generator_images=subobject_generator_images,
+            _subobject_lift=subobject_lift,
+            _subobject_inclusion_factory=subobject_inclusion_factory,
         )
 
     def super_categories(self):
@@ -3491,6 +3590,10 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Return the unchanged additive group of the extension-ring module."""
             return self.module_over_extension().underlying_additive_group()
 
+        def is_zero(self) -> bool:
+            r"""Return whether the unchanged underlying additive group is zero."""
+            return self.module_over_extension().is_zero()
+
         def _underlying_additive_element(self, element):
             element = self(element)
             extension = self.module_over_extension()
@@ -3561,6 +3664,63 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                         scalar_coordinates(scalar_label)
                     )
             return coefficients
+
+        def _represented_kernel_of_morphism(self, morphism):
+            r"""Compute a finite-free source kernel in a restricted fraction-field module.
+
+            If ``W`` is finitely framed over ``Frac(R)``, the images of a
+            finite basis of ``F`` in ``Res(W)`` have finitely many rational
+            coordinates.  Multiplying every coordinate by one common
+            denominator embeds the same kernel problem in a finite free
+            ``R``-module, where the ordinary matrix-kernel owner applies.
+            """
+            if morphism.codomain() is not self:
+                return NotImplemented
+            domain = morphism.domain()
+            ring = self.base_ring()
+            if not _coordinate_framed_free_module(domain, ring):
+                return NotImplemented
+            fractions = self.extension_ring()
+            if fractions is not ring.fraction_field():
+                return NotImplemented
+            extension = self.module_over_extension()
+            if not (
+                extension.has_selected_module_resolution()
+                and extension in FinitelyGeneratedModules(fractions)
+            ):
+                return NotImplemented
+
+            framing = extension.framing_morphism()
+            image_coordinates = {
+                label: framing.lift(
+                    morphism(domain.module_generator(label)).underlying_element()
+                )
+                for label in domain.module_generating_set()
+            }
+            denominator = ring.one()
+            for coordinates in image_coordinates.values():
+                for label in coordinates.support().domain():
+                    denominator = denominator.lcm(coordinates(label).denominator())
+            scale = self.ring_map()(denominator)
+            cleared_module = ring._fresh_free_module_on(
+                extension.module_generating_set()
+            )
+
+            def cleared(coordinates):
+                return cleared_module.linear_combination(
+                    {
+                        label: ring(scale * coordinates(label))
+                        for label in coordinates.support().domain()
+                    }
+                )
+
+            cleared_morphism = domain.Mor(cleared_module)(
+                {
+                    label: cleared(coordinates)
+                    for label, coordinates in image_coordinates.items()
+                }
+            )
+            return cleared_morphism.kernel()
 
         def zero(self):
             return self.element_class(self, self.module_over_extension().zero())
@@ -4884,18 +5044,19 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             AdditiveEndomorphismRings,
         )
 
-        # MatrixSpaces states only the linear half.  The multiplication of
-        # End_R(F) is the same composition owned by AdditiveEndomorphismRings;
-        # the matrix realization specializes that object rather than carrying
-        # a parallel generic algebra datum.
-        return [
-            MatrixSpaces(self.base_ring()),
-            AdditiveEndomorphismRings(self.base_ring()),
-        ]
+        # MatrixSpaces states the entrywise/module half.  Composition always
+        # makes End_R(F) a ring; when R is commutative the same object is the
+        # additive-endomorphism R-algebra, while a noncommutative R does not
+        # supply that algebra structure.
+        ring = self.base_ring()
+        match ring in OwnedRings().Commutative():
+            case True:
+                multiplicative_owner = AdditiveEndomorphismRings(ring)
+            case False:
+                multiplicative_owner = OwnedRings()
+        return [MatrixSpaces(ring), multiplicative_owner]
 
-    # The two above state two different morphisms, so this names which of
-    # them End_R(F) means: the one that preserves everything it is.
-    _MorCategory = AssociativeAlgebraMorCategoryConstruction
+    _MorCategory = MatrixEndomorphismMorCategoryConstruction
 
     class ParentMethods:
         def _compose_endomorphisms(self, left, right):
@@ -4906,7 +5067,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             r"""Scale matrix endomorphisms as linear maps, not merely additive maps."""
             return self._module_scalar_multiple(scalar, morphism)
 
-        def is_commutative(self):
+        def _commutativity_decision(self):
             r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R)\) commutes.
 
             The base is not assumed commutative here, so the answer depends on
@@ -4953,7 +5114,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
-        def is_unit(self) -> bool:
+        def _unit_decision(self) -> bool:
             r"""Return whether this endomorphism is invertible in \(\operatorname{End}_R(M)\).
 
             A unit of a ring is an element with a two-sided inverse in it, and

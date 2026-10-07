@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _two_factors_of,
 )
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups, Magmas
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
@@ -478,9 +478,6 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
 
 
 class _CommutativeUnitalAlgebraParentMethods:
-    def is_commutative(self) -> bool:
-        return True
-
     def kahler_differentials(self):
         r"""Return ``Omega^1_{A/R}`` for this commutative ``R``-algebra."""
         from dzack_research.preamble.categories.algebras.kahler_differentials import (
@@ -909,7 +906,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        return [Modules(self.base_ring())]
+        return [Modules(self.base_ring()), Magmas()]
 
     def _declared_parameter_subcategory_relation(self, source_category, target_category):
         r"""Compare algebra categories through the selected scalar-restriction tower.
@@ -1039,12 +1036,12 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
-        def cardinality(self):
+        def _cardinality_decision(self):
             r"""Return the cardinality of the module carrying this algebra."""
             module = self.unformed_module()
             match module is self:
                 case True:
-                    return super().cardinality()
+                    return super()._cardinality_decision()
                 case False:
                     return module.cardinality()
 
@@ -1178,7 +1175,23 @@ class Algebras(OwnedCategoryOverBaseRing):
             native = self._native_module_presentation()
             if native is not None:
                 return native.module()
-            return self._preamble_unformed_module
+            retained = vars(self).get("_preamble_unformed_module")
+            match retained:
+                case _ if retained is not None:
+                    return retained
+                case _:
+                    from dzack_research.preamble.categories.group.additive_mors import (
+                        AdditiveEndomorphismRings,
+                    )
+
+                    match self:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()):
+                            return self
+                        case _:
+                            assert False, (
+                                f"{self} was constructed as an algebra without retaining the module its "
+                                "multiplication is defined on"
+                            )
 
         def _element_of_unformed_module(self, element):
             r"""The element of :meth:`unformed_module` on the data of ``element``.
@@ -1373,18 +1386,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         def product_on_algebra_generators(self, left, right):
             return self.algebra_generator(left) * self.algebra_generator(right)
 
-        def is_central(self, element):
-            match element in self:
-                case False:
-                    return False
-                case True:
-                    return all(
-                        element * self.algebra_generator(label)
-                        == self.algebra_generator(label) * element
-                        for label in self.algebra_generating_set()
-                    )
-
-        def is_commutative(self):
+        def _commutativity_decision(self):
             r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
 
             Commutativity is a property of the multiplication before it is a
@@ -1753,7 +1755,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     return presentation.quotient_by_relations(("x^2",))
 
                 class ParentMethods:
-                    def is_finitely_presented(self) -> bool:
+                    def is_finitely_presented_as_algebra(self) -> bool:
                         return True
 
             def _call_(self, module, multiplication, unit):
@@ -1923,7 +1925,23 @@ class Algebras(OwnedCategoryOverBaseRing):
             @cached_method
             def one(self):
                 r"""The unit, read on this algebra by coercion from the unit of ``M``."""
-                return self(self._preamble_algebra_unit)
+                unit = vars(self).get("_preamble_algebra_unit")
+                match unit:
+                    case _ if unit is not None:
+                        return self(unit)
+                    case _:
+                        from dzack_research.preamble.categories.group.additive_mors import (
+                            AdditiveEndomorphismRings,
+                        )
+
+                        match self:
+                            case _ if self in AdditiveEndomorphismRings(self.base_ring()):
+                                return self.identity()
+                            case _:
+                                assert False, (
+                                    f"{self} is a unital algebra but its construction supplied neither a "
+                                    "unit element nor a represented endomorphism identity"
+                                )
 
             @cached_method
             def unit_morphism(self):
@@ -1962,11 +1980,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                 placement=(self,),
                 law_decisions={"commutativity": commutativity},
             )
-
-        class ParentMethods:
-            def is_commutative(self) -> bool:
-                return True
-
 
 # ``Lie`` is an owned algebra axiom not known to Sage's global axiom registry.
 # Register the nested refinement explicitly so ``Algebras(R).Lie()`` is a
@@ -2183,24 +2196,6 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
                 lambda source: source.Mor(self)(generator_morphism),
             )
 
-        def algebra_base_ring(self):
-            r"""``R`` for ``End_R(F)``: the base ring of the Mor module this algebra is."""
-            return self.base_ring()
-
-        def is_commutative(self) -> bool:
-            r"""``M_n(R)`` commutes exactly when ``n <= 1``.
-
-            This category is over a commutative ring, so the only obstruction
-            is the size of the matrices.  Rank one gives ``R`` itself and rank
-            zero the zero ring; from rank two the matrix units ``e_{12}`` and
-            ``e_{21}`` fail to commute.
-            """
-            return self.base_ring().one() == self.base_ring().zero() or self.nrows() <= 1
-
-        def one(self):
-            r"""The unit of ``End_R(F)``: the identity, the unit of composition."""
-            return self.identity()
-
 def _require_matrix_algebra(mor):
     r"""Return a square matrix Mor after requiring constructor-time algebra placement."""
 
@@ -2352,7 +2347,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             scalar_kernel = defining_ideal.elimination_ideal(algebra_variables)
             return bool(scalar_kernel.is_zero())
 
-        def is_torsion_free(self) -> bool:
+        def _torsion_freeness_decision(self) -> bool:
             r"""Decide torsion-freeness in the supported integral PID-algebra regime.
 
             If ``R`` and ``A`` are domains, then the ``R``-module ``A`` is

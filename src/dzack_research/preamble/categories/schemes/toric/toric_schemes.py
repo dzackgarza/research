@@ -77,6 +77,7 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 )
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
+    ProjectiveSurfaces,
     Surfaces,
     Varieties,
 )
@@ -605,6 +606,42 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 int(self.dimension()) - int(orbit_dimension)
             )
 
+        def torus_fixed_point_subscheme(self, cone):
+            r"""Return the torus-fixed closed point indexed by a full-dimensional cone.
+
+            For a full-dimensional cone ``sigma``, the closed orbit in
+            ``U_sigma = Spec k[S_sigma]`` is cut out by all nonconstant
+            semigroup generators.  It is absent from every other maximal toric
+            chart.  Gluing those local closed subschemes gives the orbit closure
+            ``V(sigma)``, which is the fixed point used as a blowup center.
+            """
+            fan = self.fan()
+            assert cone in fan.maximal_cones(), (
+                f"the torus-fixed point of {self} must be indexed by a maximal cone of {fan}, "
+                f"but {cone} is not maximal"
+            )
+            assert int(cone.dimension()) == int(fan.dimension()), (
+                f"the orbit indexed by {cone} in {self} is not a fixed point: the cone has dimension "
+                f"{cone.dimension()} while the fan has dimension {fan.dimension()}"
+            )
+            local_closed = {}
+            for chart_cone in self.gluing_datum().chart_indices():
+                chart = self.affine_chart(chart_cone)
+                algebra = chart.coordinate_algebra()
+                match chart_cone == cone:
+                    case True:
+                        equations = tuple(
+                            algebra.algebra_generator(label)
+                            for label in algebra.algebra_generating_set()
+                        )
+                    case False:
+                        equations = (algebra.one(),)
+                local_closed[chart_cone] = chart.closed_subscheme(equations)
+            return self.chartwise_closed_subscheme(
+                local_closed,
+                name="Torus-fixed point",
+            )
+
         @cached_method
         def torus_invariant_divisor_group(self):
             r"""``Div_T(X) = ⊕_rho ZZ D_rho``, free on the rays (CLS §4.1).
@@ -672,7 +709,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""Return ``div(chi^m)`` as an element of the represented Weil group."""
             return self.character_divisor_morphism()(self.character_lattice()(character))
 
-        def torus_invariant_divisor_support_subscheme(self, divisor):
+        def torus_invariant_divisor_support_subscheme(
+            self,
+            divisor,
+            *,
+            placements=(),
+            construction_data=None,
+        ):
             r"""Return the reduced union of torus-invariant primes in an effective divisor.
 
             On ``U_sigma=Spec k[S_sigma]`` the invariant prime ``D_rho`` for
@@ -719,6 +762,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return self.chartwise_closed_subscheme(
                 local_closed,
                 name="Support of a torus-invariant divisor",
+                placements=placements,
+                construction_data=construction_data,
             )
 
         @cached_method
@@ -786,7 +831,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return not self.character_divisor_morphism().is_injective()
 
         @cached_method
-        def class_group(self):
+        def _class_group(self):
             r"""``Cl(X) = Div_T(X)/div(chi^M)`` (CLS Thm. 4.1.3).
 
             The sequence ``M -> Div_T(X) -> Cl(X) -> 0`` is exact for every
@@ -803,6 +848,12 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             ``Div_T(X)``, so the quotient sends each generator to the generator
             of the same name.
             """
+            base = self.scheme_base_ring()
+            assert self in Schemes(base).LocallyNoetherian().Integral(), (
+                f"cannot form the class-group projection for {self}: the scheme-level Weil divisor class "
+                "group is owned by locally Noetherian integral schemes, but this toric scheme is an object "
+                f"of {self.category()}"
+            )
             group = self.torus_invariant_divisor_group()
             classes = self.class_group()
             return group.module_category().Mor(group, classes)(
@@ -932,7 +983,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return True
 
         @cached_method
-        def picard_group(self):
+        def _picard_group(self, base_picard_group=None):
             r"""``Pic(X) = CDiv_T(X)/M`` (CLS Thm. 4.2.1).
 
             On a smooth fan every torus-invariant Weil divisor is Cartier (CLS
@@ -943,6 +994,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             free divisor group into a finitely presented cokernel, and the
             module layer represents kernels only between free modules.
             """
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "the toric divisor presentation has no projective-bundle base datum"
+            )
             assert self.fan().is_smooth(), (
                 f"the Picard group of {self} is computed only for a smooth fan, where every Weil "
                 "divisor is Cartier; its fan is not smooth, so test the divisors in question "
@@ -951,7 +1006,12 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return PicardGroups()(self.character_divisor_morphism().cokernel())
 
         @cached_method
-        def picard_to_class_group_morphism(self):
+        def _picard_to_class_group_morphism(
+            self,
+            base_picard_group=None,
+            base_class_group=None,
+            base_picard_to_class=None,
+        ):
             r"""The natural comparison ``Pic(X) -> Cl(X)`` for a smooth toric variety.
 
             Since every invariant Weil divisor is Cartier on a smooth fan, the
@@ -959,6 +1019,11 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             the same presentation; this map records the comparison rather than
             identifying them by object identity.
             """
+            supplied = (base_picard_group, base_class_group, base_picard_to_class)
+            assert supplied == (None, None, None), (
+                f"cannot use supplied projective-bundle base data {supplied} to compute Pic({self}) -> Cl({self}): "
+                "the toric comparison is computed from the fan's divisor presentation"
+            )
             picard = self.picard_group()
             classes = self.class_group()
             forward = picard.module_category().Mor(picard, classes)(
@@ -978,6 +1043,11 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         @cached_method
         def torus_invariant_cartier_class_projection(self):
             r"""The quotient ``CDiv_T(X) -> Pic(X)`` for a smooth toric variety."""
+            base = self.scheme_base_ring()
+            assert self in Schemes(base).LocallyNoetherian().Integral(), (
+                f"cannot form the Cartier class projection for {self}: the comparison Pic({self}) -> "
+                f"Cl({self}) requires a locally Noetherian integral scheme"
+            )
             return (
                 self.picard_to_class_group_morphism().inverse()
                 * self.class_group_projection()
@@ -1621,7 +1691,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return _integers()(value)
 
         @cached_method
-        def picard_intersection_pairing(self):
+        def _picard_intersection_pairing(self):
             r"""Return the integral intersection pairing on ``Pic(X)`` for a smooth complete toric surface."""
             assert int(self.dimension()) == 2, (
                 f"the intersection pairing on Pic is computed for toric surfaces, but {self} has "
@@ -1645,6 +1715,19 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     weil.module_generator(right_label),
                 ),
             )
+
+        def _is_del_pezzo(self) -> bool:
+            r"""Decide Del Pezzo for a represented projective toric surface."""
+            assert int(self.dimension()) == 2 and self.fan().is_complete(), (
+                f"the toric Del Pezzo algorithm applies to complete toric surfaces, but {self} has "
+                f"dimension {self.dimension()} and complete fan: {self.fan().is_complete()}"
+            )
+            return bool(self.is_ample(-self.canonical_divisor()))
+
+        def _del_pezzo_degree(self):
+            r"""Return ``(-K_X)^2`` by toric divisor intersection."""
+            anticanonical = -self.canonical_divisor()
+            return self.divisor_intersection(anticanonical, anticanonical)
 
         @cached_method
         def chow_group(self, cycle_dimension):
@@ -1920,8 +2003,9 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     level's data, together with the placements the fan decides at
     construction (smooth exactly when the fan is, CLS Thm. 3.1.19; over a
     field, proper exactly when the fan is complete, CLS Thm. 3.4.1; a curve or
-    a surface by the rank of ``N``) and the further ``placements`` a caller
-    constructs it in.  Over a field, Sage's ``ToricVariety`` of the same fan
+    a surface by the rank of ``N``; every complete toric surface is projective,
+    CLS Prop. 6.3.25) and the further ``placements`` a caller constructs it in.
+    Over a field, Sage's ``ToricVariety`` of the same fan
     is retained as a private realization; over a general base the owned affine
     gluing is the realization.
     """
@@ -1942,6 +2026,11 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
                 decided.append(Surfaces(base))
             case _:
                 pass
+    match (base in OwnedFields(), int(fan.dimension()), fan.is_complete()):
+        case (True, 2, True):
+            decided.append(ProjectiveSurfaces(base))
+        case _:
+            pass
     engine_base = _engine_ring(base)
     native = (
         _SageToricVariety(_engine_fan(fan), base_ring=engine_base)

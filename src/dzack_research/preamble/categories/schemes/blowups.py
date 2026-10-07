@@ -1,4 +1,13 @@
-r"""Blowups of projective planes at represented rational points.
+r"""Owned blowups and the projective-plane point-blowup specialization.
+
+The common owner is the blowup
+
+``b : Bl_Z(X) = Proj_X(\bigoplus_{n >= 0} I_Z^n) -> X``
+
+of a scheme along a closed subscheme.  Its retained level data are the source
+``X`` and center ``Z <= X``.  Computational specializations supply the selected
+realization of the blowdown, exceptional divisor, and transforms without
+moving those public operations down to the specialization.
 
 For a point ``p`` of ``P^2`` choose the two canonical linear forms obtained by
 normalizing one nonzero homogeneous coordinate.  They form a regular sequence
@@ -28,9 +37,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
+    EffectiveCartierDivisors,
     ProjectiveSpaces,
     Schemes,
 )
+from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -40,6 +51,151 @@ def _integers():
     return _own_ring(SageZZ)
 
 
+class Blowups(OwnedCategoryOverBaseRing):
+    r"""Schemes represented as a selected blowup ``Bl_Z(X) -> X``.
+
+    The level datum is the source scheme ``X`` together with the closed center
+    ``Z <= X``.  The mathematical blowup is the relative Proj of the Rees
+    algebra of the center ideal.  Existing specialized realizations retain the
+    same datum and implement the private computational hooks below.
+    """
+
+    def _repr_object_names(self):
+        return f"blowups of schemes over {self.base_ring()}"
+
+    def super_categories(self):
+        return [Schemes(self.base_ring())]
+
+    def an_object(self):
+        from dzack_research.preamble.categories.schemes.toric.blowups import (
+            ToricFixedPointBlowups,
+        )
+
+        return ToricFixedPointBlowups(self.base_ring()).an_object()
+
+    class ParentMethods:
+        def __init__(self, blowup_source, blowup_center, **rest) -> None:
+            base = blowup_source.scheme_base_ring()
+            assert blowup_center in ClosedSubschemes(base), (
+                f"the center of the blowup of {blowup_source} must be a closed subscheme over {base}, "
+                f"but {blowup_center} is in {blowup_center.category()}"
+            )
+            assert blowup_center.inclusion().codomain() is blowup_source, (
+                f"the center of the blowup of {blowup_source} must be a closed subscheme of that source, "
+                f"but {blowup_center} lies in {blowup_center.inclusion().codomain()}"
+            )
+            self._blowup_source = blowup_source
+            self._blowup_center = blowup_center
+            super().__init__(**rest)
+
+        def blowup_source(self):
+            r"""Return ``X`` for this selected blowup ``Bl_Z(X)``."""
+            return self._blowup_source
+
+        def blowup_center(self):
+            r"""Return the closed center ``Z <= X`` of this selected blowup."""
+            return self._blowup_center
+
+        @cached_method
+        def source_picard_group(self):
+            r"""Return ``Pic(X)`` for the source ``X`` of this blowup."""
+            return self.blowup_source().picard_group()
+
+        @cached_method
+        def blowup_morphism(self):
+            r"""Return the selected blowdown ``Bl_Z(X) -> X``."""
+            return self._blowup_morphism()
+
+        def _blowup_morphism(self):
+            raise AssertionError(
+                f"the blowdown of {self} exists as the relative-Proj structure morphism, but this "
+                "blowup realization does not supply its represented map"
+            )
+
+        def blowdown(self, *args, **kwargs):
+            return self.blowup_morphism(*args, **kwargs)
+
+        @cached_method
+        def exceptional_divisor(self):
+            r"""Return the exceptional divisor ``b^{-1}(Z)`` as a closed subscheme."""
+            return self._exceptional_divisor()
+
+        def _exceptional_divisor(self):
+            raise AssertionError(
+                f"the exceptional divisor of {self} is the inverse image of {self.blowup_center()} under "
+                f"{self.blowup_morphism()}, but this realization does not compute that non-affine fibre product"
+            )
+
+        def scheme_theoretic_inverse_image(self, closed_subscheme):
+            r"""Return ``b^{-1}(Y)`` for a represented closed subscheme ``Y <= X``."""
+            assert closed_subscheme in ClosedSubschemes(self.scheme_base_ring()), (
+                f"the inverse image under the blowup {self} needs a closed subscheme of "
+                f"{self.blowup_source()}, but {closed_subscheme} is in {closed_subscheme.category()}"
+            )
+            assert closed_subscheme.inclusion().codomain() is self.blowup_source(), (
+                f"{closed_subscheme} is a closed subscheme of {closed_subscheme.inclusion().codomain()}, "
+                f"not of the blowup source {self.blowup_source()}"
+            )
+            return self._scheme_theoretic_inverse_image(closed_subscheme)
+
+        def _scheme_theoretic_inverse_image(self, closed_subscheme):
+            return self.blowup_morphism().inverse_image(closed_subscheme)
+
+        def total_transform(self, closed_subscheme):
+            r"""Return the total transform ``b^{-1}(Y)`` of ``Y <= X``."""
+            return self.scheme_theoretic_inverse_image(closed_subscheme)
+
+        def strict_transform(self, closed_subscheme):
+            r"""Return the strict transform of ``closed_subscheme`` under this blowup."""
+            return self._strict_transform(closed_subscheme)
+
+        def _strict_transform(self, closed_subscheme):
+            raise AssertionError(
+                f"the strict transform of {closed_subscheme} under {self} is defined as the closure of the "
+                "inverse image away from the center, but this realization does not compute that closure"
+            )
+
+        def picard_pullback_morphism(self):
+            r"""Return the represented pullback ``b^*: Pic(X) -> Pic(Bl_Z(X))``."""
+            return self._picard_pullback_morphism()
+
+        def _picard_pullback_morphism(self):
+            raise AssertionError(
+                f"pullback along {self.blowup_morphism()} induces Pic({self.blowup_source()}) -> Pic({self}), "
+                "but this blowup realization does not yet represent that homomorphism"
+            )
+
+        def exceptional_picard_class(self):
+            r"""Return the Picard class of the exceptional divisor."""
+            return self.exceptional_divisor().picard_class()
+
+        def _represented_exceptional_picard_class(self):
+            raise AssertionError(
+                f"the exceptional divisor of {self} has a Picard class, but this blowup realization does "
+                "not yet represent it"
+            )
+
+        def pullback_line_bundle(self, source_bundle):
+            r"""Return the represented invertible pullback ``b^* source_bundle``."""
+            return self._pullback_line_bundle(source_bundle)
+
+        def _pullback_line_bundle(self, source_bundle):
+            raise AssertionError(
+                f"the pullback of {source_bundle} along {self.blowup_morphism()} is an invertible sheaf, "
+                "but this blowup realization does not yet retain an invertible presentation of it"
+            )
+
+        def exceptional_line_bundle(self):
+            r"""Return ``O(E)`` for the exceptional divisor ``E``."""
+            return self._exceptional_line_bundle()
+
+        def _exceptional_line_bundle(self):
+            raise AssertionError(
+                f"the exceptional divisor of {self} defines O(E), but this blowup realization does not "
+                "yet retain an invertible presentation of that line bundle"
+            )
+
+
 class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
     r"""Blowups ``Bl_p(P^2)`` of the projective plane at one rational point ``p``."""
 
@@ -47,7 +203,14 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         return f"projective-plane point blowups over {self.base_ring()}"
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective().Smooth()]
+        base = self.base_ring()
+        categories = [Blowups(base), Schemes(base).Smooth()]
+        match base in OwnedFields():
+            case True:
+                categories.append(ProjectiveSurfaces(base))
+            case False:
+                pass
+        return categories
 
     def an_object(self):
         plane = ProjectiveSpaces(self.base_ring())(2)
@@ -62,9 +225,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         return _projective_point_blowup(point.codomain(), point)
 
     class ParentMethods:
-        def __init__(self, blowup_point, blowup_center, graph_section_space, **rest) -> None:
+        def __init__(self, blowup_point, graph_section_space, **rest) -> None:
             self._blowup_point = blowup_point
-            self._blowup_center = blowup_center
             self._graph_section_space = graph_section_space
             super().__init__(**rest)
 
@@ -72,25 +234,13 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             r"""The rational point ``p: Spec R -> P^2`` that is blown up."""
             return self._blowup_point
 
-        def blowup_source(self):
-            r"""The projective plane ``P^2`` that is blown up."""
-            return self.blowup_point().codomain()
-
-        def blowup_center(self):
-            r"""The center ``V(f, g) <= P^2`` cut out by the selected regular sequence."""
-            return self._blowup_center
-
         def graph_ambient_product(self):
             r"""``P^2 x P^1``, the codomain of the graph inclusion."""
             return self.inclusion().codomain()
 
-        @cached_method
-        def blowup_morphism(self):
+        def _blowup_morphism(self):
             r"""The blowdown ``Bl_p(P^2) -> P^2``: the first projection along the inclusion."""
             return self.graph_ambient_product().projection(0) * self.inclusion()
-
-        def blowdown(self, *args, **kwargs):
-            return self.blowup_morphism(*args, **kwargs)
 
         def graph_relation(self):
             r"""The bihomogeneous equation ``f V - g U`` cutting the blowup out."""
@@ -127,20 +277,20 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             raised = hypersurface.homogeneous_defining_equations(source_ring)
             return self.source_coordinate_embedding()(next(iter(raised)))
 
-        @cached_method
-        def exceptional_divisor(self):
+        def _exceptional_divisor(self):
             r"""``E = pi^{-1}(p)``, cut out in the blowup by the center equations."""
-            return self.closed_subscheme(self.center_equations_in_graph_ring())
+            return self.closed_subscheme(
+                self.center_equations_in_graph_ring(),
+                placements=(EffectiveCartierDivisors(self),),
+                effective_cartier_ideal_sheaf=self.exceptional_line_bundle().dual_sheaf(),
+                effective_cartier_picard_class=self._represented_exceptional_picard_class(),
+            )
 
-        def scheme_theoretic_inverse_image(self, hypersurface):
+        def _scheme_theoretic_inverse_image(self, hypersurface):
             r"""``pi^{-1}(C)``, cut out in the blowup by the pulled-back equation of ``C``."""
             return self.closed_subscheme(self._source_hypersurface_equation_in_graph_ring(hypersurface))
 
-        def total_transform(self, hypersurface):
-            r"""The total transform ``pi^*C``, cut out by the pulled-back equation of ``C``."""
-            return self.closed_subscheme(self._source_hypersurface_equation_in_graph_ring(hypersurface))
-
-        def strict_transform(self, hypersurface):
+        def _strict_transform(self, hypersurface):
             r"""The strict transform: the saturation of ``(f V - g U, pi^* h)`` by the center ideal."""
             ring = self.graph_relation().parent()
             equation = self._source_hypersurface_equation_in_graph_ring(hypersurface)
@@ -176,7 +326,11 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return _integers()(multiplicity)
 
         @cached_method
-        def picard_group(self):
+        def _picard_group(self, base_picard_group=None):
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "this point-blowup presentation computes its Picard group directly"
+            )
             module = _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
             )
@@ -185,18 +339,11 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def hyperplane_picard_class(self):
             return self.picard_group().module_generator("H")
 
-        def exceptional_picard_class(self):
+        def _represented_exceptional_picard_class(self):
             return self.picard_group().module_generator("E")
 
         @cached_method
-        def source_picard_group(self):
-            source = self.blowup_source()
-            return source.picard_group(
-                PicardGroups().trivial(source.base_scheme())
-            )
-
-        @cached_method
-        def picard_pullback_morphism(self):
+        def _picard_pullback_morphism(self):
             source = self.source_picard_group()
             labels = source.module_generating_set()
             assert int(labels.cardinality()) == 1, (
@@ -208,16 +355,18 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def picard_intersection_pairing(self):
+        def _picard_intersection_pairing(self):
             picard = self.picard_group()
             values = _integers().regular_module()
 
             def value(left, right):
-                if left == "H" and right == "H":
-                    return _integers().one()
-                if left == "E" and right == "E":
-                    return -_integers().one()
-                return _integers().zero()
+                match (left, right):
+                    case ("H", "H"):
+                        return _integers().one()
+                    case ("E", "E"):
+                        return -_integers().one()
+                    case _:
+                        return _integers().zero()
 
             return BilinearMap(picard, picard, values, value)
 
@@ -239,7 +388,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
                 * self.exceptional_picard_class()
             )
 
-        def pullback_line_bundle(self, source_bundle):
+        def _pullback_line_bundle(self, source_bundle):
             r"""``pi^* O_{P^2}(d) = O_{P^2 x P^1}(d, 0)|_B``."""
             assert source_bundle.projective_space() is self.blowup_source(), (
                 f"{source_bundle} is not a line bundle O(d) on the blown-up plane "
@@ -251,7 +400,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             ).restrict_to(self)
 
         @cached_method
-        def exceptional_line_bundle(self):
+        def _exceptional_line_bundle(self):
             r"""Return ``O_B(E)=O_{P^2 x P^1}(1,-1)|_B``."""
             return self.graph_ambient_product().O(1, -1).restrict_to(self)
 
@@ -274,27 +423,14 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
             return canonical.canonical_isomorphism_to(target)
 
-        def canonical_line_bundle(self):
+        def _canonical_line_bundle(self):
             return self.canonical_comparison().domain()
 
-        canonical_bundle = canonical_line_bundle
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            return self.canonical_line_bundle().dual_sheaf()
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
-
-        def is_del_pezzo(self) -> bool:
+        def _is_del_pezzo(self) -> bool:
             return bool(self.anticanonical_line_bundle().is_ample())
 
-        def del_pezzo_degree(self):
+        def _del_pezzo_degree(self):
             r"""``(-K_B)^2 = (3H - E)^2``."""
-            assert self.is_del_pezzo(), (
-                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: its "
-                "anticanonical bundle is not ample"
-            )
             anticanonical = (
                 3 * self.hyperplane_picard_class()
                 - self.exceptional_picard_class()
@@ -358,11 +494,13 @@ def _projective_point_blowup(projective_plane, point):
         graph_relation,
         placements=(ProjectivePointBlowups(base),),
         blowup_point=point,
+        blowup_source=projective_plane,
         blowup_center=center,
         graph_section_space=graph_sections,
     )
 
 
 __all__ = [
+    "Blowups",
     "ProjectivePointBlowups",
 ]

@@ -862,6 +862,9 @@ class PairingObjects(OwnedCategoryOverBaseRing):
     def an_object(self):
         return PairedModules(self.base_ring()).an_object()
 
+    def super_categories(self):
+        return [Modules(self.base_ring())]
+
     class ParentMethods:
         def pairing(self, left, right):
             r"""Evaluate this object's selected pairing on ``(left,right)``."""
@@ -1407,10 +1410,12 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         base_change = _formed_module_base_change
     class ElementMethods:
+        @cached_method
         def b(self, other):
             r"""Return the polar bilinear value ``b(self, other)``."""
             return self.parent().b(self, other)
 
+        @cached_method
         def q(self):
             r"""Return the represented quadratic/norm value of this element."""
             return self.parent().norm(self)

@@ -353,7 +353,7 @@ class _FiniteFieldAutomorphismEngine:
             ZZ(int(self.automorphisms().cardinality())),
         )
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         return cardinal(self.order())
 
     def compose(self, left, right):
@@ -414,7 +414,7 @@ class _FiniteFieldAutomorphismEngine:
         )
         return finite_ordered_set(generators[:1])
 
-    def is_abelian(self) -> bool:
+    def _abelianity_decision(self) -> bool:
         return all(left * right == right * left for left in self for right in self)
 
     def _repr_(self) -> str:

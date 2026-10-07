@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from heapq import merge
-from itertools import count
 from operator import index
 from typing import SupportsIndex, TypeVar
 
@@ -24,7 +23,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
-    TotallyOrderedSets,
 )
 
 PointT = TypeVar("PointT")
@@ -264,7 +262,7 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
             case _:
                 size_placement = ()
         super().__init__(
-            category=Cat().meet([EnumeratedSets(), TotallyOrderedSets(), *size_placement]),
+            category=Cat().meet([EnumeratedSets(), *size_placement]),
             facade=False,
         )
 
@@ -283,7 +281,7 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
             repetition=self.allows_repetition(),
         )
 
-    def cardinality(self) -> Cardinalities.ObjectType:
+    def _cardinality_decision(self) -> Cardinalities.ObjectType:
         r"""The number of \(k\)-selections from \(S\).
 
         For finite \(S\) with \(|S| = n\): \(\binom{n}{k}\) subsets and
@@ -327,17 +325,9 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
             lambda selection: self(selection).combinatorial_rank(), selection_at
         )
 
-    def __iter__(self):
-        size = self.cardinality()
-        positions = range(int(size)) if size.is_finite() else count()
-        selection_at = self.ranking_map().inverse()
-        return (selection_at(position) for position in positions)
-
     def __contains__(self, candidate) -> bool:
         r"""A selection of this set is an element constructed in it."""
         return element_parent(candidate) is self
-
-    is_parent_of = __contains__
 
     def _element_constructor_(self, datum):
         if datum in self:

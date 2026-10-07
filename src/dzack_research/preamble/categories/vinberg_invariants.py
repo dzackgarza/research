@@ -203,8 +203,6 @@ class VinbergInvariantMatrices(OwnedCategory):
         def __contains__(self, mirror) -> bool:
             return mirror in self.index_set()
 
-        is_parent_of = __contains__
-
         def _element_constructor_(self, mirror):
             return self.index_set()(mirror)
 
@@ -241,7 +239,7 @@ class VinbergInvariantMatrices(OwnedCategory):
                 )
             return self.vinberg_invariant(left, right)
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             return self._index_set.cardinality()
 
         def projective_line(self):

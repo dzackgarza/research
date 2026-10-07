@@ -43,6 +43,7 @@ def test_the_positive_orthant_has_three_rays_three_facets_and_no_lineality() -> 
     orthant = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).reduction_cell(((1, 0, 0), (0, 1, 0), (0, 0, 1)))
 
     assert orthant.primitive_rays().cardinality() == 3
+    assert orthant.facet_covectors().cardinality() == 3
     assert orthant.facets().cardinality() == 3
     assert orthant.lineality_generators().cardinality() == 0
 

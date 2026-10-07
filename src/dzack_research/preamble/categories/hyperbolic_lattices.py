@@ -494,7 +494,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_roots,
                 max_decompositions,
             )
-            roots = tuple(self(tuple(row)) for row in rows)
+            roots = tuple(self(tuple(int(entry) for entry in row)) for row in rows)
             return complete, tuple(-root for root in roots) if negated else roots
 
         def vinberg_simple_roots(self, controlling_vector=None, *, max_roots=None, max_decompositions=None):
@@ -817,7 +817,10 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
 
             vertices = []
             for generator_row, incident_rows in record["vertices"]:
-                incident = tuple(self(tuple(row)) for row in incident_rows)
+                incident = tuple(
+                    self(tuple(int(entry) for entry in row))
+                    for row in incident_rows
+                )
                 match negated:
                     case True:
                         incident = tuple(-root for root in incident)

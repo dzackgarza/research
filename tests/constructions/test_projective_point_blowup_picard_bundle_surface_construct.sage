@@ -1,5 +1,7 @@
 r"""The point blowup of (mathbf P^2) retains the standard Picard pullback and canonical bundle formula."""
 
+import pytest
+
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
@@ -30,3 +32,12 @@ def test_point_blowup_exceptional_and_canonical_line_bundles_satisfy_blowup_form
     assert pulled_canonical == blowup.graph_ambient_product().O(-3, 0).restrict_to(blowup)
     assert comparison.domain() == blowup.canonical_line_bundle()
     assert comparison.codomain() == pulled_canonical.tensor_product(exceptional)
+
+
+def test_picard_group_operation_is_owned_by_ringed_spaces() -> None:
+    ringed_space = RingedSpaces().an_object()
+
+    assert ringed_space in RingedSpaces()
+    assert ringed_space not in ProjectivePointBlowups(ZZ)
+    with pytest.raises(AssertionError, match="group of isomorphism classes"):
+        ringed_space.picard_group()

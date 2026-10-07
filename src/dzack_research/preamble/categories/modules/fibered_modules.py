@@ -25,6 +25,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoryPacketMethods,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
@@ -84,10 +87,8 @@ class SemilinearModuleMorphism:
                 f"a semilinear map into {codomain} lies over a ring map into its base ring "
                 f"{codomain.base_ring()}, but {scalar_map} ends at {scalar_map.codomain()}"
             )
-        adjunction = Modules(domain.base_ring()).base_change_adjunction(scalar_map)
-        restricted = adjunction.right_adjoint()(codomain)
         self._scalar_map = scalar_map
-        self._restricted_codomain = restricted
+        self._restricted_codomain = None
         self._restricted_morphism = None
         self._derived_linearity_decision = linearity_decision
         match restricted_morphism, evaluator:
@@ -99,6 +100,7 @@ class SemilinearModuleMorphism:
             case None, _:
                 pass
             case _, None:
+                restricted = self.restricted_codomain()
                 linear_mor = Modules(domain.base_ring()).Mor(domain, restricted)
                 self._restricted_morphism = linear_mor(restricted_morphism)
                 evaluator = lambda element: codomain(
@@ -122,6 +124,11 @@ class SemilinearModuleMorphism:
 
     def restricted_codomain(self):
         r"""Return ``Res_sigma(N)``, the target read in the source fibre."""
+        if self._restricted_codomain is None:
+            adjunction = Modules(self.domain().base_ring()).base_change_adjunction(
+                self.scalar_map()
+            )
+            self._restricted_codomain = adjunction.right_adjoint()(self.codomain())
         return self._restricted_codomain
 
     @cached_method
@@ -322,7 +329,7 @@ class SemilinearModuleMor(CategoricalMor):
             )
         module = self.domain()
         ring = module.base_ring()
-        scalar_map = ring.Mor(ring).identity()
+        scalar_map = CommutativeRings().Mor(ring, ring).identity()
         restricted = self.restricted_codomain(scalar_map)
         compatible = _DerivedRestrictedSemilinearMorphism(
             Modules(ring).Mor(module, restricted),
@@ -355,7 +362,7 @@ class ModuleBaseRingProjection(Functor):
         return "Base-ring projection from modules over commutative rings"
 
 
-class ModulesOverCommutativeRings(OwnedCategory):
+class ModulesOverCommutativeRings(CategoryPacketMethods, OwnedCategory):
     r"""The Grothendieck category of ``R |-> Modules(R)`` on commutative rings.
 
     Objects are modules ``M`` together with their commutative scalar ring

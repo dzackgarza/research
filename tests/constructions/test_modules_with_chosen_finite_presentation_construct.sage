@@ -30,6 +30,29 @@ def test_chosen_presentation_retains_its_presenting_arrow_and_tensor_hom_adjunct
     assert isinstance(module.module_generator(0), module.ElementType)
 
 
+def test_chosen_presentation_routes_selected_subobject_data_to_its_inclusion() -> None:
+    ring, _x, module = _x4_module()
+    images = {
+        label: module.module_generator(label)
+        for label in module.module_generating_set()
+    }
+    subobject = ModulesWithChosenFinitePresentation(ring)(
+        module.presentation(),
+        category=ModuleSubobjects(ring),
+        subobject_ambient=module,
+        subobject_generator_images=images,
+    )
+    inclusion = subobject.inclusion()
+
+    assert subobject in ModuleSubobjects(ring)
+    assert inclusion.domain() is subobject
+    assert inclusion.codomain() is module
+    assert all(
+        inclusion(subobject.module_generator(label)) == module.module_generator(label)
+        for label in subobject.module_generating_set()
+    )
+
+
 def test_x4_module_is_unchanged_by_x_adic_completion_and_projects_to_truncations() -> None:
     ring, x, module = _x4_module()
     ideal = ring.ideal(x)
