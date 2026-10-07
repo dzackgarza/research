@@ -166,6 +166,14 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
     hodge_poincare: Annotated[tuple[HodgeTerm, ...], Field(strict=False)] = Field(description="Nonzero coefficients of H_X(u,v) = sum h^(p,q) u^p v^q.")
     symmetry_group: Literal["V4", "D4"] | None = Field(default=None, description="The full subgroup of square symmetries preserving the Hodge diamond.")
     local_deformation_dimension: Annotated[int, Field(ge=0)] | None = Field(default=None, description="The dimension of the local complex deformation space when unobstructed.")
+    betti_numbers: Annotated[tuple[Annotated[int, Field(ge=0)], ...], Field(strict=False)] = Field(
+        default=(),
+        description="b_0, ..., b_{2 dimension}: the ranks of H^k(X; Z), transcribed from the card's source.",
+    )
+    euler_characteristic: int | None = Field(
+        default=None,
+        description="The topological Euler characteristic of X, transcribed from the card's source.",
+    )
     chern_numbers: Annotated[tuple[ChernNumber, ...], Field(strict=False)] = ()
     pontryagin_numbers: list[PontryaginNumber] = Field(default_factory=list)
     riemann_roch_polynomial: RiemannRochPolynomial | None = None
@@ -182,6 +190,8 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
     def check_hodge_poincare(self) -> Self:
         if len({(term.p, term.q) for term in self.hodge_poincare}) != len(self.hodge_poincare):
             raise PydanticCustomError("hodge_duplicate", "a Hodge–Poincaré monomial occurs more than once")
+        if self.betti_numbers and len(self.betti_numbers) != 2 * self.dimension + 1:
+            raise PydanticCustomError("betti_shape", "Betti numbers list b_0 through b_(2 dimension)")
         if (self.family is None) != (self.family_parameter is None):
             raise PydanticCustomError("family_parameter", "family and family_parameter must occur together")
         chern_indices: set[tuple[int, ...]] = set()
@@ -206,25 +216,12 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
             raise PydanticCustomError("cohomology_degree", "a cohomology degree has more than one lattice")
         return self
 
-    def betti_number(self, degree: int) -> int:
-        """Sum of the stored h^(p,q) with p + q = degree.
-
-        This applies the Hodge decomposition H^k(X, C) = sum_{p+q=k} H^{p,q}(X)
-        (Huybrechts, Complex Geometry, §3.2) to the transcribed table, because
-        the card has no defining data from which the preamble constructs X.
-        """
-        return sum(term.coefficient for term in self.hodge_poincare if term.p + term.q == degree)
-
     def hodge_number(self, p: int, q: int) -> int:
         """The stored coefficient of u^p v^q in the Hodge–Poincaré series; zero when the card omits it."""
         return next(
             (term.coefficient for term in self.hodge_poincare if (term.p, term.q) == (p, q)),
             0,
         )
-
-    def euler_characteristic(self) -> int:
-        """The alternating sum of :meth:`betti_number` over 0 <= k <= 2 dimension (Hatcher, Thm. 2.44)."""
-        return sum((-1) ** degree * self.betti_number(degree) for degree in range(2 * self.dimension + 1))
 
 
 class RiemannianSymmetricSpace(LocallyRingedSpace):

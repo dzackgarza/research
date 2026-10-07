@@ -25,9 +25,9 @@
 
   <section aria-labelledby="numerical-invariants">
     <h2 id="numerical-invariants">Numerical invariants</h2>
-    <p>Euler characteristic: {{ geometric.euler_characteristic() }}.</p>
+    {% if geometric.euler_characteristic is not none %}<p>Euler characteristic: {{ geometric.euler_characteristic }}.</p>{% endif %}
     {% if geometric.local_deformation_dimension is not none %}<p>Dimension of the local deformation space: {{ geometric.local_deformation_dimension }}.</p>{% endif %}
-    <p>Betti numbers: {% for degree in range(2 * geometric.dimension + 1) %}{% if not loop.first %}, {% endif %}<i>b</i><sub>{{ degree }}</sub> = {{ geometric.betti_number(degree) }}{% endfor %}.</p>
+    {% if geometric.betti_numbers %}<p>Betti numbers: {% for betti in geometric.betti_numbers %}{% if not loop.first %}, {% endif %}<i>b</i><sub>{{ loop.index0 }}</sub> = {{ betti }}{% endfor %}.</p>{% endif %}
     {% if geometric.chern_numbers %}
     <h3>Chern numbers</h3>
     <ul>

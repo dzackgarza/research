@@ -69,9 +69,10 @@ An instance names its `family` slug and integer `family_parameter`; verification
 Each instance retains its own Hodge series.
 `local_deformation_dimension` records the dimension of an unobstructed local complex deformation space.
 `chern_numbers` stores source-stated or preamble-computed Chern-number index tuples and integral values; the schema only prevents duplicate index tuples.
+The optional `betti_numbers` stores $b_0,\dots,b_{2n}$, $b_k=\operatorname{rank}H^k(X;\mathbb Z)$ for $n$ the complex dimension, and the optional `euler_characteristic` stores $\chi(X)$; both are transcribed from the card's source or computed by the preamble. The schema checks only that `betti_numbers` has $2n+1$ entries.
 
 An optional `cohomology_lattices` entry identifies $H^k(X;\mathbb Z)$ modulo torsion with a tagged lattice, under the named pairing and integer scale.
-Verification checks that the tag exists. Any comparison with Betti or Hodge numbers is a mathematical operation and therefore belongs to the preamble.
+Verification checks that the tag exists and, when the card stores $b_k$, that the tagged lattice has rank $b_k$: the entry asserts an isomorphism with $H^k(X;\mathbb Z)/\mathrm{tors}$, whose rank is $b_k$ by definition. Any comparison with Hodge numbers is a mathematical operation and therefore belongs to the preamble.
 The pairing names the form: the Hodge numbers alone do not determine it.
 The geometric object page links to the lattice page, and the lattice page links back.
 
@@ -88,6 +89,8 @@ hodge_poincare:
 - {p: 2, q: 2, coefficient: 1}
 symmetry_group: D4
 local_deformation_dimension: 20
+betti_numbers: [1, 0, 22, 0, 1]
+euler_characteristic: 24
 chern_numbers:
 - {indices: [2], value: 24}
 cohomology_lattices:
