@@ -20,13 +20,16 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSets,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
 )
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 def _members_of_subset(base_set, candidate):
@@ -105,29 +108,19 @@ class _FiniteTopologyData(SageObject):
 
 
 class _FiniteTopologicalSpaceEngine:
-    r"""A finite topological space realized on an already owned finite set."""
+    r"""A finite topological space ``X = (S, tau)``, constructed on its set of points ``S``.
 
-    def __init__(self, point_set, topology_data, **rest) -> None:
-        self._unstructured_set = point_set
-        super().__init__(topology_data=topology_data, facade=True, **rest)
+    The set level of ``X`` is the finite ordered set enumerated by ``S``
+    through the identity of ``S``: its points are the points of ``S``, and
+    its finiteness, enumeration, counting well-order and cardinality are the
+    ones that set level derives from ``S``.  This level adds only ``tau``.
+    """
 
     def unstructured_set(self):
-        r"""The set on which this selected topology was placed."""
-        return self._unstructured_set
+        r"""The set ``S`` on which this topology was placed, the index set of its enumeration."""
+        return self.index_set()
 
     underlying_set = unstructured_set
-
-    def __contains__(self, point) -> bool:
-        return point in self.unstructured_set()
-
-    def _element_constructor_(self, point):
-        return self.unstructured_set()(point)
-
-    def __iter__(self):
-        return iter(self.unstructured_set())
-
-    def _cardinality_decision(self):
-        return self.unstructured_set().cardinality()
 
 
 class ContinuousMap:
@@ -297,14 +290,22 @@ class TopologicalSpaces(OwnedCategory):
         return self(points, ((), (points(1),), points))
 
     def _call_(self, point_set, open_subsets):
-        r"""Construct an exact finite topology on ``point_set``."""
+        r"""Construct the exact finite topology ``open_subsets`` on ``point_set``.
+
+        The space is constructed on ``S = point_set`` through its set level:
+        the finite ordered set enumerated by ``S`` through the identity of
+        ``S``.  The topology level adds the open sets.
+        """
         point_set = Sets()(point_set)
         topology_data = _FiniteTopologyData(point_set, open_subsets)
         return _object_of(
-            self,
+            owned_category_join((self, FiniteOrderedSets())),
             _engine=(self, _FiniteTopologicalSpaceEngine, None),
-            point_set=point_set,
             topology_data=topology_data,
+            index_set=point_set,
+            element_at=Sets().Mor(point_set, point_set).identity(),
+            index_of=lambda point: point_set(point) if point in point_set else None,
+            contains=lambda point: point in point_set,
         )
 
     @classmethod
