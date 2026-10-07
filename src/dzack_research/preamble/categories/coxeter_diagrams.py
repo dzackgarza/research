@@ -47,26 +47,34 @@ def _engine_cartan_type_data(value):
 
 
 def _coxeter_entry(q1, q2, pairing):
-    integers = _own_ring(SageZZ)
-    q1 = _engine_element(integers, q1)
-    q2 = _engine_element(integers, q2)
-    pairing = _engine_element(integers, pairing)
-    if q1 == 0 or q2 == 0:
-        raise ValueError(
-            f"cannot compute the Coxeter angle of two vectors with squares {q1} and {q2}: "
-            f"a root must have nonzero square"
-        )
-    if pairing == 0:
-        return SageZZ(2)
-    four_cos_squared = QQ(4 * pairing**2) / QQ(q1 * q2)
-    if four_cos_squared == 1:
-        return SageZZ(3)
-    if four_cos_squared == 2:
-        return SageZZ(4)
-    if four_cos_squared == 3:
-        return SageZZ(6)
-    if four_cos_squared >= 4:
-        return Infinity
+    r"""Return the Coxeter exponent of the mirrors of two roots with squares ``q1``, ``q2``.
+
+    The angle \(\theta\) between the mirrors satisfies
+    \(4\cos^2\theta = 4b^2/(q_1 q_2)\) for the pairing \(b\), a rational number
+    for roots of a rational form whatever its scale.  The exponent is \(m\)
+    with \(4\cos^2(\pi/m)\) equal to it: \(0, 1, 2, 3\) give \(m = 2, 3, 4, 6\),
+    and a value of at least \(4\) means parallel or divergent mirrors, \(m=\infty\).
+    """
+    rationals = _own_ring(QQ)
+    q1 = _engine_element(rationals, q1)
+    q2 = _engine_element(rationals, q2)
+    pairing = _engine_element(rationals, pairing)
+    assert q1 != 0 and q2 != 0, (
+        f"cannot compute the Coxeter angle of two vectors with squares {q1} and {q2}: "
+        f"a root must have nonzero square"
+    )
+    four_cos_squared = 4 * pairing**2 / (q1 * q2)
+    match four_cos_squared:
+        case 0:
+            return SageZZ(2)
+        case 1:
+            return SageZZ(3)
+        case 2:
+            return SageZZ(4)
+        case 3:
+            return SageZZ(6)
+        case _ if four_cos_squared >= 4:
+            return Infinity
     raise ValueError(
         f"two roots with squares {q1}, {q2} and pairing {pairing} have no crystallographic "
         f"Coxeter angle pi/m: 4 cos^2(pi/m) would be {four_cos_squared}, which is not 0, 1, 2, 3 "

@@ -10,6 +10,8 @@ is \(-b(r_i,r_j)\), so its determinant is \((-1)^n\det b\) and its inertia is th
 - The roots \(r_0,r_1,r_2\) with pairwise products \(1\) give the triangle \(\tilde A_2\):
   \(-b\) has eigenvalues \(3,3,0\), so the Schläflian is \(0\) and the inertia \((2,0,1)\);
   each edge is \(A_2\), of Schläflian 3.
+- The simple roots of \(B_3\) in \(\mathbb{Z}^3\) have root scale \(1/2\), and their reference
+  diagram is the \(B_3\) root basis at that scale.
 - Two roots with \(b(r,s)=3\) have \(b^2 > q(r)q(s)\): their mirrors diverge, the bond is
   \(\infty\), and \(-b\) has one positive and one negative eigenvalue.
 """
@@ -87,3 +89,18 @@ def test_the_inertia_of_two_roots_with_divergent_mirrors() -> None:
 
     assert diagram.positive_inertia_index() == 1
     assert diagram.negative_inertia_index() == 1
+
+
+def test_a_b3_root_basis_of_scale_one_half_has_the_b3_reference_diagram() -> None:
+    # The simple roots e1 - e2, e2 - e3, e3 of B3 in the standard lattice ZZ^3
+    # (Humphreys, Introduction to Lie Algebras and Representation Theory, 12.1)
+    # have squares 2, 2, 1, so the root scale is 1/2 and the reference diagram
+    # is the B3 root basis twisted to shortest square 1.
+    lattice = Lattices(ZZ)([[2, -1, 0], [-1, 2, -1], [0, -1, 1]])
+    diagram = CoxeterDiagrams().from_roots(tuple(lattice.module_generators()))
+
+    assert diagram.root_scale() == 1 / 2
+    assert diagram.label() == "B3"
+    reference = diagram.scaled_cartan_type()
+    assert reference.root_scale() == 1 / 2
+    assert reference.coxeter_matrix() == diagram.coxeter_matrix()
