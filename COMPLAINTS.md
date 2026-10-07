@@ -333,18 +333,19 @@ Repair: `coxeter-diagrams-construct-from-their-data` in TODO.
 
 A matrix is an element of the topological `R`-module `Mat_{n x m}(R)`, and a
 linear map is an element of `Hom_R(R^m, R^n)`. The map between them is
-neither injective nor surjective in general. The session's free `matrix`
-(`preamble/language_runtime.py:63`) reads the ring from the entries and
-returns an element of `ring.matrix_space(n, m)`, which `MatrixSpaces`
-presents as a Mor object. So one free function hides the parent and turns a
-matrix into a map. Eleven other free session functions also return new
-objects without their category: `finite_ordered_set`, `nikulin_invariants`,
-`signature_pair`, `signature_pairs`, `reflection_cosines`, `factorial`,
-`binomial`, `lmap`, `lzip`, `zipsum` and `to_var_names` (session survey,
-2026-10-08).
-**Consumers:** `tests/lattices/test_vinberg_invariants.sage:145` and
-`tests/user_simulations/test_newcomer_session.sage:126` call `matrix(ZZ, ...)`.
-Repair: `session-objects-are-built-by-their-parents` in TODO.
+neither injective nor surjective in general. `MatrixSpaces` presents
+`ring.matrix_space(n, m)` as a Mor object, so a matrix is still read as a
+map. The session binds no `matrix`, and the sageparse prelude then binds Sage's
+raw `matrix` constructor in every lowered session file, so the matrix literal
+returns a raw Sage matrix. The session survey of 2026-10-08 still lists
+object-returning free functions: the cardinal and ordinal constructors, the
+Galois-stage and conjugacy-class factories, `BilinearMap`, `TensorModule`,
+`Coverage` and the catalogue's orthogonal-sum enumerators.
+**Consumers:** `tests/user_simulations/test_newcomer_session.sage:126` calls
+`matrix(ZZ, ...)`.
+Repair: `matrix-literals-lower-to-owned-matrices`,
+`free-session-constructors-move-to-their-categories` and
+`doctrine-states-the-matrix-ruling` in TODO.
 
 ### A finite cardinal does not convert into the integers
 
