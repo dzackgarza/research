@@ -3767,6 +3767,31 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                 case False:
                     return Unknown
 
+        def _rank_decision(self):
+            r"""``rank_R Res_f(M) = rank_R Res_f(S) * rank_S(M)``, the tower law.
+
+            Mathlib ``rank_mul_rank`` (``Mathlib.LinearAlgebra.Dimension.Free``)
+            states it when ``Res_f(S)`` is free over ``R``, ``M`` is free over
+            ``S``, and ``R`` and ``S`` have the strong rank condition, which
+            every nonzero commutative ring has.  ``Res_f(S)`` is free on the
+            retained ``scalar_basis``; ``M`` is free when it is placed so, and
+            always when ``S`` is a field.
+            """
+            ring = self.base_ring()
+            extension_ring = self.extension_ring()
+            module = self.module_over_extension()
+            match self:
+                case _ if (
+                    self._scalar_basis is not None
+                    and ring in OwnedRings().Commutative()
+                    and extension_ring in OwnedRings().Commutative()
+                    and extension_ring.one() != extension_ring.zero()
+                    and (extension_ring in OwnedFields() or module in Modules(extension_ring).Free())
+                ):
+                    return self._scalar_basis.source().module_rank() * module.module_rank()
+                case _:
+                    return Unknown
+
         def _underlying_additive_element(self, element):
             element = self(element)
             extension = self.module_over_extension()
