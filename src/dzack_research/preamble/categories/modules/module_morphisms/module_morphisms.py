@@ -81,22 +81,22 @@ def _finite_generating_elements(module):
             return None
 
 
-def _integral_left_solver(system, ring):
-    r"""Factor one integral system once and return its exact row solver.
+def _integral_preimage_solver(morphism, ring):
+    r"""Factor a finite free morphism once and return its exact preimage solver.
 
-    The solver returns the solution ``a`` of ``a * system = target``, or
-    ``None`` when the target is not an integral combination of the rows: the
-    Smith form ``D = U A V`` reduces the system to ``d_i x_i = (U t)_i``,
-    solvable exactly when each ``d_i`` divides its right-hand side.
+    For ``f: F(S) -> F(T)`` the solver takes the coordinates of ``t`` in
+    ``F(T)`` and returns ``x`` in ``F(S)`` with ``f(x) = t``, or ``None``
+    when ``t`` is not in the image: the Smith form ``D = U f V`` reduces
+    the equation to ``d_i y_i = (U t)_i``, solvable exactly when each
+    ``d_i`` divides its right-hand side, and then ``x = V y``.
     """
 
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert ring in OwnedRings(), f"cannot solve a linear system integrally over {ring}: the coefficients must lie in a ring, but {ring} is not a ring"
-    assert system.parent() in MatrixSpaces(ring), f"cannot solve the linear system {system} over {ring}: its matrix must have entries in {ring}, but it lies in {system.parent()}"
+    assert morphism.parent() in MatrixSpaces(ring), f"cannot solve f(x) = t integrally for f = {morphism} over {ring}: f must be a map of finite free {ring}-modules with chosen bases, but it lies in {morphism.parent()}"
 
-    transposed = system.transpose()
-    smith_data = transposed.smith_form()
+    smith_data = morphism.smith_form()
     smith = smith_data["diagonal"]
     left = smith_data["left_change"]
     right = smith_data["right_change"]
@@ -110,8 +110,8 @@ def _integral_left_solver(system, ring):
     def solve(target):
         target_values = tuple(ring(value) for value in target)
         assert len(target_values) == int(target_labels.cardinality()), (
-            f"cannot solve a * A = t for t = {target}: t must have {target_labels.cardinality()} entries, "
-            f"one per column of A, but it has {len(target_values)}"
+            f"cannot solve f(x) = t for t = {target}: t must have {target_labels.cardinality()} entries, "
+            f"one per generator of the codomain of f, but it has {len(target_values)}"
         )
         target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
         shifted_vector = left(target_vector)
@@ -137,15 +137,9 @@ def _integral_left_solver(system, ring):
     return solve
 
 
-def _solve_left_integrally_element(system, target, ring):
-    r"""Return the row-coefficient element ``a`` with ``a*system = target``, or ``None``."""
-
-    return _integral_left_solver(system, ring)(target)
-
-
-def _integral_left_positional_solver(system, ring):
-    r"""Factor ``system`` once and return its positional integral row solver."""
-    element_solver = _integral_left_solver(system, ring)
+def _integral_preimage_positional_solver(morphism, ring):
+    r"""Factor ``f`` once and return its positional integral preimage solver."""
+    element_solver = _integral_preimage_solver(morphism, ring)
 
     def solve(target):
         original_solution = element_solver(target)
@@ -160,9 +154,9 @@ def _integral_left_positional_solver(system, ring):
     return solve
 
 
-def _solve_left_integrally(system, target, ring):
-    r"""Return positional coefficients ``a`` with ``a*system = target`` over a PID, or ``None``."""
-    return _integral_left_positional_solver(system, ring)(target)
+def _solve_preimage_integrally(morphism, target, ring):
+    r"""Return the coordinates of ``x`` with ``f(x) = t`` over a PID, or ``None``."""
+    return _integral_preimage_positional_solver(morphism, ring)(target)
 
 
 def _scalar_linearity_generating_scalars(ring):
@@ -1259,11 +1253,7 @@ class ModuleMorphismMethods:
         coordinate_map = self.domain().module_category().Mor(
             self.domain(), self.codomain()
         )(self)
-        solution = _solve_left_integrally(
-            coordinate_map.transpose(),
-            target,
-            ring,
-        )
+        solution = _solve_preimage_integrally(coordinate_map, target, ring)
         if solution is None:
             return None
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
