@@ -1466,7 +1466,8 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def is_orthogonal_to(self, other) -> bool:
             r"""Return whether the polar/bilinear value ``b(self, other)`` is zero."""
-            return bool(self.b(other) == self.parent().value_module().zero())
+            pairing = self.b(other)
+            return bool(pairing == pairing.parent().zero())
 
         def represents(self, value) -> bool:
             r"""Return whether this element has represented norm ``value``.
