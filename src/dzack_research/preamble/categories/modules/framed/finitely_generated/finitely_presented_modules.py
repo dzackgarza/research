@@ -1702,10 +1702,9 @@ def _module_invariant_factor_form(module):
                 for reduced_label in reduced_generator_labels
             }
         )
-        return module.module_category().Core().Mor(module, reduced)(
-            forward,
-            inverse,
-        )
+        return module.module_category().Core().Mor(
+            module, reduced
+        )._from_known_inverse_pair(forward, inverse)
 
     full_normalized = diagonal_presentation.cokernel()
     full_labels = full_normalized.module_generating_set()
@@ -1724,7 +1723,7 @@ def _module_invariant_factor_form(module):
     reduced_iso = full_normalized.module_category().Core().Mor(
         full_normalized,
         reduced,
-    )(full_to_reduced, reduced_to_full)
+    )._from_known_inverse_pair(full_to_reduced, reduced_to_full)
 
     target_forward = presentation_iso.forward().right()
     target_inverse = presentation_iso.inverse().right()
@@ -1739,7 +1738,7 @@ def _module_invariant_factor_form(module):
     presentation_cokernel_iso = module.module_category().Core().Mor(
         module,
         full_normalized,
-    )(original_to_full, full_to_original)
+    )._from_known_inverse_pair(original_to_full, full_to_original)
     return reduced_iso * presentation_cokernel_iso
 
 

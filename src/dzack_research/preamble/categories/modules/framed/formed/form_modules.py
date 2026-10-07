@@ -1746,8 +1746,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             ):
                 r"""Equip ``module`` with the bilinear form represented by ``gram``.
 
-                The value object is explicit.  Descent is checked on both arguments:
-                every chosen relation must pair to zero with every chosen generator.
+                The value object is explicit.  Descent to the quotient is the
+                validator ``validate_descent`` (``OWN-22``).
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
                     raise ValueError(
@@ -1757,12 +1757,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
-                relations = _relation_images(module)
-                if not _bilinear_descends(relations, values, value_module):
-                    raise ValueError(
-                        f"the Gram matrix {values} does not define a bilinear form on {module}: some relation "
-                        f"of {module} does not pair to zero in {value_module} with every generator"
-                    )
                 formed = FormModules(module.base_ring())(
                     module.bilinear_forms(value_module)(values),
                     _extra_categories=(self, *tuple(_extra_categories)),
@@ -1771,6 +1765,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     _subobject_lift=_subobject_lift,
                     _subobject_inclusion_factory=_subobject_inclusion_factory,
                 )
+                formed.validate_descent(check=False)
                 return formed
 
             def from_relations_and_gram(self, relation_rows, gram, value_module):
@@ -1813,6 +1808,27 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 return TorsionFormTwistFunctor(self, scalar, quadratic=False)
 
             class ParentMethods:
+                @validator
+                def validate_descent(self) -> None:
+                    r"""Raise ``ValueError`` unless the form descends to the quotient (``OWN-22``).
+
+                    The Gram values on the chosen generators define a form on
+                    the cokernel exactly when every chosen relation pairs to
+                    zero with every chosen generator, on both sides.
+                    """
+                    module = self.unformed_module()
+                    value_module = self.value_module()
+                    values = _coerced_gram(
+                        value_module,
+                        _representative_gram(self, quadratic=False),
+                        int(module.module_generating_set().cardinality()),
+                    )
+                    if not _bilinear_descends(_relation_images(module), values, value_module):
+                        raise ValueError(
+                            f"the Gram matrix {values} does not define a bilinear form on {module}: some "
+                            f"relation of {module} does not pair to zero in {value_module} with every generator"
+                        )
+
                 def subobject_generated_by(self, generators):
                     r"""Return the span as a bilinear-form-bearing subobject."""
                     return _torsion_form_subobject_on(self, generators, quadratic=False)
@@ -2119,9 +2135,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             ):
                 r"""Equip ``module`` with ``q(x)=x^T gram x`` valued in ``value_module``.
 
-                For every relation ``r`` we check both ``q(r)=0`` and vanishing of the
-                polar value ``q(x+r)-q(x)-q(r)`` against every generator.  These are
-                exactly the conditions for the quadratic map to descend to the quotient.
+                Symmetry of ``gram`` is the validator of the quadratic map, and
+                descent to the quotient is the validator ``validate_descent``
+                (``OWN-22``).
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
                     raise ValueError(
@@ -2131,16 +2147,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
-                if any(values[i][j] != values[j][i] for i in range(rank) for j in range(rank)):
-                    raise ValueError(
-                        f"the Gram matrix {values} of a quadratic form on {module} must be symmetric, but it is not"
-                    )
-                relations = _relation_images(module)
-                if not _quadratic_descends(relations, values, value_module):
-                    raise ValueError(
-                        f"the Gram matrix {values} does not define a quadratic form on {module}: for some "
-                        f"relation r, q(r) or the polar value of r with a generator is nonzero in {value_module}"
-                    )
                 formed = FormModules(module.base_ring())(
                     module.quadratic_forms(value_module)(values),
                     _extra_categories=(self, *tuple(_extra_categories)),
@@ -2149,6 +2155,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     _subobject_lift=_subobject_lift,
                     _subobject_inclusion_factory=_subobject_inclusion_factory,
                 )
+                formed.validate_descent(check=False)
                 return formed
 
             def from_relations_and_gram(self, relation_rows, gram, value_module):
@@ -2192,6 +2199,29 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 return TorsionFormTwistFunctor(self, scalar, quadratic=True)
 
             class ParentMethods:
+                @validator
+                def validate_descent(self) -> None:
+                    r"""Raise ``ValueError`` unless the quadratic form descends to the quotient (``OWN-22``).
+
+                    For every chosen relation ``r``, ``q(r) = 0`` and the polar
+                    value ``q(x+r)-q(x)-q(r)`` vanishes against every chosen
+                    generator ``x``.  These are exactly the conditions for the
+                    quadratic map on the cover to descend to the quotient.
+                    """
+                    module = self.unformed_module()
+                    value_module = self.value_module()
+                    values = _coerced_gram(
+                        value_module,
+                        _representative_gram(self, quadratic=True),
+                        int(module.module_generating_set().cardinality()),
+                    )
+                    if not _quadratic_descends(_relation_images(module), values, value_module):
+                        raise ValueError(
+                            f"the Gram matrix {values} does not define a quadratic form on {module}: for "
+                            f"some relation r, q(r) or the polar value of r with a generator is nonzero in "
+                            f"{value_module}"
+                        )
+
                 @cached_method
                 def scale_submodule(self):
                     r"""Return the submodule of the value module generated by quadratic values."""

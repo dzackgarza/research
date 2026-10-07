@@ -14,11 +14,11 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     _forms_are_isomorphic,
+    _invariant_factor_form_isomorphism,
     _p_adic_jordan_decomposition,
     _p_adic_jordan_form,
     _torsion_form_automorphism_group,
     _p_adic_jordan_module_generators,
-    _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -355,26 +355,11 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
             The discriminant module itself remains the literal cokernel
             ``L^# / L`` on the selected dual-basis classes.  The codomain is a
-            different formed module on the non-unit Smith generators.
+            different formed module on the non-unit Smith generators.  The
+            discriminant module is built through ``FormModules`` on its
+            descended form, so the normalization transports that form.
             """
-
-            generators = tuple(self.module_generators())
-            gram = tuple(
-                tuple(self.b(left, right) for right in generators)
-                for left in generators
-            )
-            formed = TorsionBilinearFormModules(self.base_ring()).from_module(
-                self,
-                gram,
-                self.bilinear_value_module(),
-            )
-            normalization = formed.invariant_factor_form()
-            forward, inverse = _through_formed_copy(self, formed, normalization)
-            return _torsion_form_isometry(
-                forward,
-                inverse,
-                quadratic=False,
-            )
+            return _invariant_factor_form_isomorphism(self, quadratic=False)
 
         def p_adic_jordan_decomposition(self):
 
@@ -589,38 +574,11 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             The source remains the literal discriminant cokernel with the
             classes of the selected dual basis as its framing.  The target is
             a distinct finite quadratic module whose framing consists only of
-            the non-unit Smith factors.
+            the non-unit Smith factors.  The discriminant module is built
+            through ``FormModules`` on its descended quadratic form, so the
+            normalization transports that form.
             """
-
-            generators = tuple(self.module_generators())
-            quadratic_values = self.quadratic_value_module()
-            gram = []
-            for i, left in enumerate(generators):
-                row = []
-                for j, right in enumerate(generators):
-                    if i == j:
-                        row.append(self.q(left))
-                    else:
-                        row.append(
-                            quadratic_values(
-                                self.bilinear_value_module().lift(
-                                    self.b(left, right)
-                                )
-                            )
-                        )
-                gram.append(tuple(row))
-            formed = TorsionQuadraticFormModules(self.base_ring()).from_module(
-                self,
-                tuple(gram),
-                quadratic_values,
-            )
-            normalization = formed.invariant_factor_form()
-            forward, inverse = _through_formed_copy(self, formed, normalization)
-            return _torsion_form_isometry(
-                forward,
-                inverse,
-                quadratic=True,
-            )
+            return _invariant_factor_form_isomorphism(self, quadratic=True)
 
         def p_adic_jordan_decomposition(self):
 
@@ -753,30 +711,6 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
                 )
             zero = ambient.quadratic_value_module().zero()
             return all(ambient.q(element) == zero for element in self.embedded_elements())
-
-
-def _through_formed_copy(module, formed, normalization):
-    r"""Read an isometry out of a formed object built on ``module`` as maps on ``module``.
-
-    ``formed`` is built on the data of ``module``, so a generator of
-    ``module`` reads in ``formed`` by coercion and the isometry's image of it
-    is a generator image of ``module -> normalized``; the inverse reads back
-    the same way.
-    """
-    normalized = normalization.forward().codomain()
-    forward = module.module_category().Mor(module, normalized)(
-        {
-            label: normalization.forward()(formed(module.module_generator(label)))
-            for label in module.module_generating_set()
-        }
-    )
-    inverse = normalized.module_category().Mor(normalized, module)(
-        {
-            label: module(normalization.inverse()(normalized.module_generator(label)))
-            for label in normalized.module_generating_set()
-        }
-    )
-    return forward, inverse
 
 
 def _subquotient_module(subgroup, larger):

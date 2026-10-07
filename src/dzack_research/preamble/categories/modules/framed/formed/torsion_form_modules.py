@@ -1459,37 +1459,31 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
     The underlying module normalization is the explicit Smith isomorphism
     ``M -> M_if``.  The form on ``M_if`` is obtained by pulling the selected
     bilinear lift along its inverse, so no form data are inferred from an
-    abstract invariant-factor decomposition.
+    abstract invariant-factor decomposition.  The pullback is one tensor
+    contraction ``c^t G c`` (``OWN-24``): ``G`` holds rational representatives
+    of the form on the framing of ``M``, and ``c: F(S_if) -> F(S)`` lifts the
+    inverse to the framings, sending each generator of ``M_if`` to a lift of
+    its image in ``M``.
     """
     module = form.unformed_module()
 
     module_isomorphism = _module_invariant_factor_form(module)
     normalized_module = module_isomorphism.codomain()
-    preimages = tuple(
-        form(module_isomorphism.inverse()(generator))
-        for generator in normalized_module.module_generators()
+    inverse = module_isomorphism.inverse()
+    framing = module.framing_morphism()
+    normalized_cover = normalized_module.framing_morphism().domain()
+    cover_inverse = normalized_cover.module_category().Mor(normalized_cover, framing.domain())(
+        {
+            label: framing.lift(inverse(normalized_module.module_generator(label)))
+            for label in normalized_cover.module_generating_set()
+        }
     )
-    if quadratic:
-        quadratic_form = form.form()
-        gram = tuple(
-            tuple(quadratic_form.lift_pairing(left, right) for right in preimages)
-            for left in preimages
-        )
-        normalized = _torsion_form_modules(form.base_ring(), quadratic=True).from_module(
-            normalized_module,
-            gram,
-            form.value_module(),
-        )
-    else:
-        gram = tuple(
-            tuple(form.b(left, right) for right in preimages)
-            for left in preimages
-        )
-        normalized = _torsion_form_modules(form.base_ring(), quadratic=False).from_module(
-            normalized_module,
-            gram,
-            form.value_module(),
-        )
+    gram = _representative_gram(form, quadratic=quadratic).pullback(cover_inverse)
+    normalized = _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
+        normalized_module,
+        gram,
+        form.value_module(),
+    )
 
     forward_images = {
         label: normalized(module_isomorphism(module(form.module_generator(label))))
