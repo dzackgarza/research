@@ -1495,10 +1495,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``rho_L:O(L)->O(A_L)`` by functoriality of discriminants."""
             source = self.Aut()
             target = self.discriminant_group().orthogonal_group()
-            return SetMorphism(
-                source.Mor(target),
-                lambda isometry: isometry.discriminant_morphism(),
-            )
+            return source.Mor(target)(lambda isometry: isometry.discriminant_morphism())
 
         @cached_method
         def discriminant_image(self):
