@@ -304,6 +304,70 @@ labels and `weighted_graph`; the lattice-db graph cards that read them.
 keyword argument 'evaluator'` from the module-morphism construction.
 Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
 
+### Products of equal families of sets are different sets
+
+The product \(\prod_{i\in I}X_i\) is determined by the family
+\(i\mapsto X_i\): two equal families have one product. `Sets().product`
+(`categories/sets/set_categories.py`) interns a finite product by
+`_finite_family_key`, the identity of the index set and of each factor
+object, and the product objects compare by identity. Finite ordered sets
+compare extensionally, so `V = finite_ordered_set((0, 1))` and
+`W = finite_ordered_set((0, 1))` satisfy `V == W`, but `V**2 == W**2` is
+`False`, and an element of `V**2` is refused by `W**2` with
+`ValueError: (0, 0) is an element of Product of the family over {0,...,1},
+not of the product Product of the family over {0,...,1}` (observed
+2026-10-07).
+**Dependency path:** equality of finite sets -> equality of their
+products -> extensional equality of functions on a product, as
+`IndexedFamily.__eq__` first compares index sets.
+**Consumers:** the Coxeter matrix `m: V x V -> Card` of a Coxeter diagram
+and of a Vinberg invariant matrix. Two diagrams built separately on the
+vertex set `{0, 1}` have unequal Coxeter matrices even with equal entries:
+`tests/lattices/test_coxeter.sage`, `test_vinberg_invariants.sage` and
+`test_coxeter_subdiagrams.sage` (parallel and divergent mirrors),
+`test_coxeter_diagrams_of_root_configurations.sage` (the `B_3` reference
+diagram) and `tests/schemes/test_regular_polytope_symmetry.sage` assert
+equalities that are true and answer `False`.
+Repair: `products-of-equal-families-are-equal` in TODO.
+
+### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
+
+The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
+their vertex sets, form a finite partially ordered set, and so do the
+`Aut`-orbits of subdiagrams under the orbit order. `CoxeterDiagrams`
+(`categories/coxeter_diagrams.py`) returns both as Sage `Poset` objects
+through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on`: the six
+public methods `subdiagram_poset`, `elliptic_subdiagram_poset`,
+`parabolic_subdiagram_poset`, `subdiagram_orbit_poset`,
+`elliptic_subdiagram_orbit_poset` and `parabolic_subdiagram_orbit_poset`
+put a raw engine object on the public surface (`OWN-03`). The owned
+`PartiallyOrderedSets()` (`categories/sets/set_categories.py`) has no
+constructor of a finite poset from its underlying set and its order
+relation, so no owned object can be returned today. `plot()` returns a
+Sage `Graphics`.
+The same category still admits engine input: `from_coxeter_matrix`
+accepts a Sage `CoxeterMatrix`, `from_cartan_type` a Sage `CartanType`,
+and `Groups.Coxeter` (`categories/group/groups.py`) passes any argument
+other than the owned Coxeter matrix to Sage's `CoxeterGroup` unchanged
+(`OWN-04`). `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
+**Dependency path:** finite posets in `PartiallyOrderedSets()` from
+`(X, <=)` -> the subdiagram and orbit orders -> the public poset methods.
+**Partial capability:** the Coxeter matrix is the owned function
+`m: V x V -> Card` (`coxeter_matrix()`), and the Coxeter graph and the root
+intersection graph are objects of `LabelledGraphs()`.
+**Consumers:** the six poset methods, their callers in
+`tests/lattices/test_coxeter_subdiagrams.sage`, and the expectation files
+under `tests/constructions/` that ask for their cardinalities.
+Repair: `coxeter-diagram-orders-are-owned-posets` in TODO.
+
+**Observed 2026-10-07:** `Groups.Coxeter(["A", 2])` and
+`Groups.Coxeter(D.coxeter_matrix())` both raise `NotImplementedError`.
+`_own_group` places the raised group at construction, and
+`_owned_group_category` calls `_is_abelian_witness`, which calls
+`is_abelian()` on Sage's `CoxeterMatrixGroup`; Sage's `Group.is_abelian`
+raises for that class. Deciding commutativity is a computation done at
+construction (`OWN-22`). Repair: `construction-is-instant` in TODO.
+
 ### Satake diagrams and real forms have no formalization
 
 A Satake diagram is a Dynkin diagram with black nodes `X` and a diagram

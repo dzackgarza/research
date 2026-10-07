@@ -45,11 +45,12 @@ def test_dodecahedron_has_coxeter_diagram_h3_and_symmetry_group_of_order_120() -
     symmetry group the Coxeter group `H_3` of order 120 (Coxeter, *Regular
     Polytopes*, Table I)."""
     dodecahedron = RegularPolytopes().from_schlafli_symbol("{5,3}")
-    coxeter = dodecahedron.symmetry_coxeter_diagram().coxeter_matrix()
+    diagram = dodecahedron.symmetry_coxeter_diagram()
+    first, second, third = diagram.vertices()
 
     assert dodecahedron.dimension() == 3
     assert tuple(dodecahedron.f_vector()) == (1, 20, 30, 12, 1)
-    assert coxeter[0, 1] == 5
-    assert coxeter[1, 2] == 3
-    assert coxeter[0, 2] == 2
+    assert diagram.coxeter_entry(first, second) == 5
+    assert diagram.coxeter_entry(second, third) == 3
+    assert diagram.coxeter_entry(first, third) == 2
     assert dodecahedron.symmetry_group().order() == 120

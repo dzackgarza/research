@@ -238,7 +238,7 @@ def test_diagram_automorphism_groups_match_the_literature(name, vertices, edges,
     r"""\(\operatorname{Aut}\) of \(A_4\), \(D_4\), \(E_8\): path reversal \(\mathbb Z/2\), triality \(S_3\), trivial."""
     diagram = FINITE[name]()
     assert diagram.cardinality() == vertices
-    assert diagram.graph().num_edges() == edges
+    assert diagram.graph().edges().cardinality() == edges
     assert diagram.Aut().cardinality() == automorphisms
 
 
