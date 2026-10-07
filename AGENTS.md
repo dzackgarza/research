@@ -1072,9 +1072,11 @@ Optimize **waste**, which is a different thing entirely:
 Removing waste usually makes the code *more* legible, because what remains is the
 mathematics. That is the tell that it was waste.
 
-Genuine hot paths may later need `case`/`match` dispatch or caching. That is a
-design change: propose it and discuss it explicitly first. Reaching for a cache,
-or for a literature constant in place of a computation, before finding out *why*
+Caching is the default shape of a method that computes a datum of an object
+(*Construction is instant* below), not an optimization. A genuine hot path that
+needs `case`/`match` dispatch is a design change: propose it and discuss it
+explicitly first. Reaching for a cache to make one slow call fast, or for a
+literature constant in place of a computation, before finding out *why*
 something is slow, is not optimization — it is hiding the defect. Reaching for a
 different library is the same move with a worse consequence: it also deletes
 the site where the cost would have been measured (`ENG-07`, `ENG-08`).
@@ -1085,6 +1087,58 @@ lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
 combinations; their orthogonal groups are finite and their invariants and
 coinvariants are quick. Reach for a large specimen only when the claim is about
 that specimen.
+
+# Construction is instant; checking is asked for; loops are tensors (always-on)
+
+The preamble is a symbolic system. It proves nothing, so construction has
+nothing to establish. The caller who places an object in a category, or builds
+a morphism from its data, is trusted to have supplied data with the properties
+the category states. Every construction in the tree moves to this shape;
+`OWN-22` and `OWN-24` are the reviewable rules.
+
+- **Construction is almost instant.** It stores the defining datum and fixes
+  the category, and nothing else. It computes no invariant, no inverse, no
+  group generators, no presentation and no check.
+- **Computation is lazy and cached.** A datum of an object (`O(L)`'s group
+  generators, an inverse, a Gram matrix of a sublattice, a genus symbol) is
+  computed on the first request, cached on the object, and reused by every
+  method that needs it.
+- **Checking is a validator, never inline.** A well-definedness condition
+  (linearity, isometry, equivariance, injectivity, an algebra's relations) is a
+  validator method of the object. Construction calls the validators once,
+  after the object exists, and each validator returns at once unless the
+  global strict-checking flag is on. The pattern is pydantic's post-init
+  validator with an early bail. Anyone can call a validator by hand, for a
+  critical result or for extra assertion guarding. No check is written into
+  `__init__`, an element constructor or a computation.
+- **The strict flag is global and is for exploration.** One session-wide
+  setting turns every validator on. It is off by default, and no code turns it
+  on for its own benefit.
+- **A loop over pairings is a tensor contraction.** Mathematics written as an
+  imperative loop is almost always one tensor operation done slowly: the
+  pairings of many vectors are one matrix product, `f` being an isometry is the
+  one equation `M^T G' M = G`, a family of evaluations is one contraction.
+  Write the tensor equation. Numerical optimization lives behind the tensor
+  interface (vectors, covectors, matrices, morphism tensors), never in the
+  mathematical code that calls it.
+
+Some conditions cannot be checked at all. The Fourier transform is an isometry
+of `L^2(RR)`, and no finite computation confirms it. A construction that
+checked its laws could not build that morphism, so a construction never checks
+its laws.
+
+*The false belief:* "constructing an object verifies it". It makes every
+construction pay for a proof the system cannot give, and the cost compounds
+through every construction built on top. On 2026-10-07 the test that builds
+`O(E_6)`, a group of order 103680, took 72.8 s. Almost all of that time was preamble
+overhead: each isometry was checked at construction, and each check rebuilt
+the form at 60 ms a call.
+
+*The tell:* a check, `assert`, `.inverse()`, `is_injective()` or generator
+computation inside `__init__` or `_element_constructor_`; a `check=True`
+default; a `for` loop over pairs of vectors, roots or basis elements; a
+`sum(... for ...)` over pairings; a method that recomputes a datum on every
+call.
 
 # Every task is an instrument; the product is a map of Sage (always-on)
 
