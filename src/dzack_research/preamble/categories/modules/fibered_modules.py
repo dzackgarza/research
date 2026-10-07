@@ -40,14 +40,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 
 
 class _DerivedRestrictedSemilinearMorphism(ModuleMorphism):
-    r"""A restricted-target linear map whose linearity follows from its construction."""
+    r"""A restricted-target linear map whose linearity follows from its construction.
+
+    ``decision`` is a zero-argument callable, asked on the first request
+    (``OWN-22``).
+    """
 
     def __init__(self, parent, evaluator, decision) -> None:
         self._semilinear_linearity_decision = decision
         super().__init__(parent, evaluator, elementwise=True)
 
     def _elementwise_linearity_derivation(self):
-        return self._semilinear_linearity_decision
+        return self._semilinear_linearity_decision()
 
 
 class SemilinearModuleMorphism:
@@ -100,7 +104,6 @@ class SemilinearModuleMorphism:
                 evaluator = lambda element: codomain(
                     self._restricted_morphism(element).underlying_element()
                 )
-                self._derived_linearity_decision = self._restricted_morphism.linearity_decision()
             case _, _:
                 raise TypeError(
                     "a semilinear arrow is defined either by its restricted linear morphism "
@@ -131,7 +134,7 @@ class SemilinearModuleMorphism:
         return _DerivedRestrictedSemilinearMorphism(
             linear_mor,
             lambda element: restricted.wrap(self(element)),
-            self._derived_linearity_decision,
+            lambda: self._derived_linearity_decision,
         )
 
     @cached_method
@@ -193,16 +196,15 @@ class SemilinearModuleMorphism:
         mor = ModulesOverCommutativeRings().Mor(source, self.codomain())
         restricted = mor.restricted_codomain(scalar_map)
         linear_mor = Modules(source.base_ring()).Mor(source, restricted)
-        decision = (
-            True
-            if self.restricted_morphism().linearity_decision() is True
-            and other.restricted_morphism().linearity_decision() is True
-            else Unknown
-        )
         composite = _DerivedRestrictedSemilinearMorphism(
             linear_mor,
             lambda element: restricted.wrap(self(other(element))),
-            decision,
+            lambda: (
+                True
+                if self.restricted_morphism().linearity_decision() is True
+                and other.restricted_morphism().linearity_decision() is True
+                else Unknown
+            ),
         )
         return mor(scalar_map, composite)
 
@@ -228,7 +230,7 @@ class SemilinearModuleMorphism:
         compatible = _DerivedRestrictedSemilinearMorphism(
             Modules(source.base_ring()).Mor(source, restricted),
             lambda element: restricted.wrap(morphism(element)),
-            morphism.linearity_decision(),
+            morphism.linearity_decision,
         )
         return mor(scalar_map, compatible)
 
@@ -286,7 +288,7 @@ class SemilinearModuleMor(CategoricalMor):
                     compatible_map = _DerivedRestrictedSemilinearMorphism(
                         compatible_mor,
                         lambda element: restricted.wrap(additive(element)),
-                        compatible_map.linearity_decision(),
+                        compatible_map.linearity_decision,
                     )
                 else:
                     compatible_map = compatible_mor.elementwise(
@@ -325,7 +327,7 @@ class SemilinearModuleMor(CategoricalMor):
         compatible = _DerivedRestrictedSemilinearMorphism(
             Modules(ring).Mor(module, restricted),
             lambda element: restricted.wrap(module(element)),
-            True,
+            lambda: True,
         )
         return self(scalar_map, compatible)
 

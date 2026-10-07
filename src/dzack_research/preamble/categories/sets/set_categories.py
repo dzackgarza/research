@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.cardinals import (
@@ -1747,22 +1748,27 @@ class SetInjection(OwnedSetMorphism):
     def _injectivity_derivation(self):
         return None
 
-    def __init__(self, parent, function) -> None:
-        OwnedSetMorphism.__init__(self, parent, function)
-        decision = self._injectivity_derivation()
-        if decision is None:
-            decision = parent.arrow_set()(function).is_injective()
-        if decision is False:
-            raise ValueError(
-                f"{function} is not injective as a map {parent.domain()} -> {parent.codomain()}"
-            )
-        if decision is not True:
-            raise ValueError(
-                f"cannot decide whether {function} is injective as a map {parent.domain()} -> {parent.codomain()}"
-            )
+    @cached_method
+    def is_injective(self) -> bool | UnknownClass:
+        r"""Decide injectivity on first request, from the construction where it gives it."""
+        match self._injectivity_derivation():
+            case None:
+                return super().is_injective()
+            case derived:
+                return derived
 
-    def is_injective(self) -> bool:
-        return True
+    @validator
+    def validate_injectivity(self) -> None:
+        r"""Raise ``ValueError`` unless ``f(x) = f(y) => x = y`` is known (``OWN-22``)."""
+        match self.is_injective():
+            case True:
+                pass
+            case False:
+                raise ValueError(f"{self} is not injective as a map {self.domain()} -> {self.codomain()}")
+            case _:
+                raise ValueError(
+                    f"cannot decide whether {self} is injective as a map {self.domain()} -> {self.codomain()}"
+                )
 
     def __mul__(self, other):
         r"""Compose; a composite of monomorphisms is placed as a monomorphism."""
@@ -1770,7 +1776,7 @@ class SetInjection(OwnedSetMorphism):
         if composite is NotImplemented:
             return composite
         monomorphisms = Sets().Mono(other.domain(), self.codomain())
-        if Sets().Mono(other.domain(), other.codomain()).accepts(other):
+        if self.is_injective() is True and Sets().Mono(other.domain(), other.codomain()).accepts(other):
             return _CompositeSetInjection(monomorphisms, self, other)
         return composite
 
@@ -1799,22 +1805,27 @@ class SetSurjection(OwnedSetMorphism):
     def _surjectivity_derivation(self):
         return None
 
-    def __init__(self, parent, function) -> None:
-        OwnedSetMorphism.__init__(self, parent, function)
-        decision = self._surjectivity_derivation()
-        if decision is None:
-            decision = parent.arrow_set()(function).is_surjective()
-        if decision is False:
-            raise ValueError(
-                f"{function} is not surjective as a map {parent.domain()} -> {parent.codomain()}"
-            )
-        if decision is not True:
-            raise ValueError(
-                f"cannot decide whether {function} is surjective as a map {parent.domain()} -> {parent.codomain()}"
-            )
+    @cached_method
+    def is_surjective(self) -> bool | UnknownClass:
+        r"""Decide surjectivity on first request, from the construction where it gives it."""
+        match self._surjectivity_derivation():
+            case None:
+                return super().is_surjective()
+            case derived:
+                return derived
 
-    def is_surjective(self) -> bool:
-        return True
+    @validator
+    def validate_surjectivity(self) -> None:
+        r"""Raise ``ValueError`` unless every point of the codomain is known to be a value (``OWN-22``)."""
+        match self.is_surjective():
+            case True:
+                pass
+            case False:
+                raise ValueError(f"{self} is not surjective as a map {self.domain()} -> {self.codomain()}")
+            case _:
+                raise ValueError(
+                    f"cannot decide whether {self} is surjective as a map {self.domain()} -> {self.codomain()}"
+                )
 
     def __mul__(self, other):
         r"""Compose; a composite of epimorphisms is placed as an epimorphism."""
@@ -1822,7 +1833,7 @@ class SetSurjection(OwnedSetMorphism):
         if composite is NotImplemented:
             return composite
         epimorphisms = Sets().Epi(other.domain(), self.codomain())
-        if Sets().Epi(other.domain(), other.codomain()).accepts(other):
+        if self.is_surjective() is True and Sets().Epi(other.domain(), other.codomain()).accepts(other):
             return _CompositeSetSurjection(epimorphisms, self, other)
         return composite
 
@@ -1848,8 +1859,8 @@ class _CompositeSetSurjection(SetSurjection):
 class SetInjectionMor(SetMorCategory):
     r"""The declared injections between two sets."""
 
-    def _element_constructor_(self, datum):
-        r"""Admit an injective set map, or a callable declared injective."""
+    def _element_constructor_(self, datum, *, check=False):
+        r"""An injection given by a set map or a function on points; injectivity is its validator."""
         if isinstance(datum, Morphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
@@ -1858,17 +1869,14 @@ class SetInjectionMor(SetMorCategory):
                 )
             if datum.parent() is self:
                 return datum
-            if self.arrow_set()(datum).is_injective() is not True:
-                raise ValueError(
-                    f"{datum} is not known to be injective, so it is not an injection {self.domain()} -> {self.codomain()}"
-                )
-            return SetInjection(self, datum)
-        if not callable(datum):
+        elif not callable(datum):
             raise TypeError(
                 f"an injection {self.domain()} -> {self.codomain()} needs a function on points, but "
                 f"{datum!r} is not callable"
             )
-        return SetInjection(self, datum)
+        injection = SetInjection(self, datum)
+        injection.validate_injectivity(check=check)
+        return injection
 
     def arrow_set(self):
         return Sets().Mor(self.domain(), self.codomain())
@@ -1903,8 +1911,8 @@ class SetInjectionMor(SetMorCategory):
 class SetSurjectionMor(SetMorCategory):
     r"""The declared surjections between two sets."""
 
-    def _element_constructor_(self, datum):
-        r"""Admit a surjective set map, or a callable declared surjective."""
+    def _element_constructor_(self, datum, *, check=False):
+        r"""A surjection given by a set map or a function on points; surjectivity is its validator."""
         if isinstance(datum, Morphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
@@ -1913,17 +1921,14 @@ class SetSurjectionMor(SetMorCategory):
                 )
             if datum.parent() is self:
                 return datum
-            if self.arrow_set()(datum).is_surjective() is not True:
-                raise ValueError(
-                    f"{datum} is not known to be surjective, so it is not a surjection {self.domain()} -> {self.codomain()}"
-                )
-            return SetSurjection(self, datum)
-        if not callable(datum):
+        elif not callable(datum):
             raise TypeError(
                 f"a surjection {self.domain()} -> {self.codomain()} needs a function on points, but "
                 f"{datum!r} is not callable"
             )
-        return SetSurjection(self, datum)
+        surjection = SetSurjection(self, datum)
+        surjection.validate_surjectivity(check=check)
+        return surjection
 
     def arrow_set(self):
         return Sets().Mor(self.domain(), self.codomain())
@@ -2201,9 +2206,9 @@ class PowerSets(OwnedCategory):
                     raise ValueError(
                         f"{member!r} is not an element of {base}, so it cannot be a member of a subset of {base}"
                     )
-                point = base(member)
-                if point not in normalized:
-                    normalized.append(point)
+                normalized.append(base(member))
+            # ``finite_ordered_set`` identifies equal points; identifying them
+            # here as well compared every pair twice.
             inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
             return Sets().Subobjects(base)(inclusion)
 

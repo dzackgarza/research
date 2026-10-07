@@ -4986,7 +4986,12 @@ def _matrix_index(index_set, key):
 
 
 def _engine_matrix(morphism):
-    r"""Privately materialize one matrix-Mor element in Sage."""
+    r"""Privately materialize one matrix-Mor element in Sage, in one engine call.
+
+    Column ``s`` is the coordinate vector of the image of ``e_s``, read once
+    in row-label order; the rows of the engine matrix are read off those
+    columns, so no entry is looked up by its pair of labels.
+    """
     from sage.matrix.constructor import matrix as sage_matrix
 
     parent = _require_matrix_mor(morphism.parent())
@@ -4996,15 +5001,15 @@ def _engine_matrix(morphism):
             f"{parent.base_ring()}"
         )
     ring = parent.base_ring()
+    columns = tuple(
+        tuple(morphism._matrix_column_coordinates(column_label))
+        for column_label in parent.column_index_set()
+    )
     return sage_matrix(
         _engine_ring(ring),
         parent.nrows(),
         parent.ncols(),
-        [
-            _engine_element(ring, morphism.matrix_entry(row_label, column_label))
-            for row_label in parent.row_index_set()
-            for column_label in parent.column_index_set()
-        ],
+        [_engine_element(ring, entry) for row in zip(*columns, strict=True) for entry in row],
     )
 
 

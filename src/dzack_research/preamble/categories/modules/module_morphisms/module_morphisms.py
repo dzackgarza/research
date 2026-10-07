@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
+from dzack_research.preamble.validation import validator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -263,43 +264,33 @@ class ModuleMorphismMethods:
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
         self._direct_linearity_premise = None
-        self._selected_lift_exactness = True if lift is None else Unknown
-        if lift is not None:
-            lift_derivation = self._selected_lift_derivation()
-            if lift_derivation is False:
-                raise ValueError(f"the given lift through the map in {parent} is not a section of it: its own construction shows it fails f(lift(y)) = y")
-            if lift_derivation is True:
-                self._selected_lift_exactness = True
         self._element_function = None
-        self._linearity_decision = True
         domain = self.domain()
         codomain = self.codomain()
-        if (
-            isinstance(images, Morphism)
-            and images.domain() is domain
-            and images.codomain() is codomain
-        ):
-            source_morphism = images
-            if isinstance(source_morphism, ModuleMorphismMethods):
-                self._direct_linearity_premise = source_morphism
-            images = lambda element: source_morphism(element)
-            elementwise = True
+        match images:
+            case ModuleMorphismMethods() if (
+                not elementwise
+                and images.domain() is domain
+                and images.codomain() is codomain
+                and images.has_module_generator_images()
+            ):
+                # A linear map is its generator images: keep them rather than
+                # re-evaluating the map on every element (``OWN-22``).
+                images = images.module_generator_morphism()
+            case Morphism() if images.domain() is domain and images.codomain() is codomain:
+                source_morphism = images
+                if isinstance(source_morphism, ModuleMorphismMethods):
+                    self._direct_linearity_premise = source_morphism
+                images = lambda element: source_morphism(element)
+                elementwise = True
+            case _:
+                pass
         if elementwise or not domain.has_selected_module_resolution():
             if not callable(images):
                 raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: {domain} has no chosen generators, so the map must be given as a function on elements")
             self._element_function = images
             self._generator_image = None
             self._generator_morphism = None
-            derivation = self._elementwise_linearity_derivation()
-            match derivation:
-                case None:
-                    self._linearity_decision = self._verify_elementwise_linearity_when_decidable()
-                case False:
-                    raise ValueError(f"the given map {domain} -> {codomain} is not {domain.base_ring()}-linear")
-                case _:
-                    self._linearity_decision = derivation
-            self._refute_invalid_selected_lift_when_decidable()
-            self._derived_linearity_decision = self._linearity_decision
             return
         labels = self.domain().module_generating_set()
         set_mor = Sets().Mor(labels, self.codomain())
@@ -390,9 +381,35 @@ class ModuleMorphismMethods:
             self._generator_morphism = set_mor(self._generator_image)
         else:
             raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: give the images of the generators of {domain} as a dictionary, list, indexed family or function")
-        self._linearity_decision = self._check_selected_domain_relations()
-        self._refute_invalid_selected_lift_when_decidable()
-        self._derived_linearity_decision = self._linearity_decision
+
+    @validator
+    def validate_linearity(self) -> None:
+        r"""Raise ``ValueError`` unless this map is known to be linear (``OWN-22``).
+
+        A map given by generator images is linear exactly when it sends the
+        relations of the chosen presentation to zero; a map given on elements
+        is decided in the regimes :meth:`linearity_decision` names.
+        """
+        decision = self.linearity_decision()
+        if decision is not True:
+            raise ValueError(
+                f"the map {self.domain()} -> {self.codomain()} is not known to be "
+                f"{self.domain().base_ring()}-linear (its linearity decision is {decision})"
+            )
+
+    @validator
+    def validate_lift(self) -> None:
+        r"""Raise ``ValueError`` when the selected lift is witnessed not to be a section (``OWN-22``)."""
+        match self._lift_function:
+            case None:
+                return
+            case _:
+                if self._selected_lift_derivation() is False:
+                    raise ValueError(
+                        f"the given lift through {self.domain()} -> {self.codomain()} is not a section of it: "
+                        f"its own construction shows it fails f(lift(y)) = y"
+                    )
+                self._refute_invalid_selected_lift_when_decidable()
 
     def _refute_invalid_selected_lift_when_decidable(self) -> None:
         r"""Reject witnessed section-equation failures of a selected lift.
@@ -429,15 +446,29 @@ class ModuleMorphismMethods:
             if section_equation is False:
                 raise ValueError(f"the given lift through {self.domain()} -> {codomain} is not a section: for y = {target} it returns x = {candidate}, but f(x) != y")
 
+    @cached_method
     def linearity_decision(self):
         r"""Return ``True`` when linearity is established, otherwise ``Unknown``.
 
-        Generator-image maps are linear extensions after their source relations
-        are checked.  Elementwise maps are either decided in an effective
-        regime, derived by a named universal construction, or retain the
-        unresolved hypothesis explicitly.
+        Computed on the first request, not at construction (``OWN-22``).  A
+        computation that refutes linearity raises ``ValueError`` naming the
+        witness (a relation not sent to zero, or elements ``x, y`` with
+        ``f(x + y) != f(x) + f(y)``).
+        Generator-image maps are linear extensions after their source
+        relations are checked.  Elementwise maps are either decided in an
+        effective regime, derived by a named universal construction, or retain
+        the unresolved hypothesis explicitly.
         """
-        return self._linearity_decision
+        match self._element_function:
+            case None:
+                return self._check_selected_domain_relations()
+            case _:
+                derivation = self._elementwise_linearity_derivation()
+                match derivation:
+                    case None:
+                        return self._verify_elementwise_linearity_when_decidable()
+                    case _:
+                        return derivation
 
     def _require_established_linearity(self, operation: str) -> None:
         r"""Require the linearity premise consumed by a linear-algebra conclusion."""
@@ -632,7 +663,7 @@ class ModuleMorphismMethods:
 
     def _check_selected_domain_relations(self):
         if self._element_function is not None:
-            return self._linearity_decision
+            return self.linearity_decision()
         domain = self.domain()
         rows = domain._selected_presentation_rows()
         if rows is None:
@@ -654,6 +685,10 @@ class ModuleMorphismMethods:
             if relation_holds is not True:
                 decision = Unknown
         return decision
+
+    def has_module_generator_images(self) -> bool:
+        r"""Return whether this map was given by the images of the chosen generators of its domain."""
+        return self._generator_morphism is not None
 
     def module_generator_morphism(self):
         assert self._generator_morphism is not None, (
@@ -1164,7 +1199,7 @@ class ModuleMorphismMethods:
         if custom is not None:
             candidate = custom(element)
             if candidate is None:
-                if self._selected_lift_exactness is True:
+                if self.selected_lift_exactness_decision() is True:
                     return None
                 raise ValueError(
                     f"cannot decide whether {element} is in the image of {self.domain()} -> {self.codomain()}: "
@@ -1227,9 +1262,19 @@ class ModuleMorphismMethods:
         r"""Return whether this map carries a selected lift callback."""
         return self._lift_function is not None
 
+    @cached_method
     def selected_lift_exactness_decision(self):
-        r"""Return whether absence reported by the selected lift is construction-derived."""
-        return self._selected_lift_exactness
+        r"""Return whether absence reported by the selected lift is construction-derived.
+
+        ``True`` with no selected lift, or when the lift's own construction
+        shows it is a section; otherwise ``Unknown``.  Asked on the first
+        request (``OWN-22``).
+        """
+        match self._lift_function:
+            case None:
+                return True
+            case _:
+                return True if self._selected_lift_derivation() is True else Unknown
 
     def factor_through(self, target_embedding):
         r"""Return the unique factor through a represented module embedding.
@@ -1744,9 +1789,9 @@ class ModuleMorphismMethods:
         assert self.codomain() is module, (
             f"{module} -> {self.codomain()} is not an automorphism: its domain and codomain must be the same module"
         )
-        return Modules(module.base_ring()).Aut(module)._from_known_inverse_pair(
+        return Modules(module.base_ring()).Aut(module)._from_inverse_computation(
             self,
-            self.inverse(),
+            self.inverse,
         )
 
 
@@ -1991,27 +2036,40 @@ class FramingMorphism(ModuleMorphism):
 
 
 class ModuleEmbeddingMethods:
-    r"""An admitted injective module morphism."""
+    r"""An injective module morphism: an element of the monomorphisms ``Mono_R(M, N)``.
+
+    Membership states injectivity, so :meth:`is_injective` answers by
+    placement; :meth:`validate_injectivity` computes the kernel when asked
+    (``OWN-22``).
+    """
 
     def _injectivity_derivation(self):
         r"""Return a construction-derived injectivity decision, or ``None``."""
         return None
 
-    def __init__(self, parent, images, **options) -> None:
-        super().__init__(parent, images, **options)
-        if self.linearity_decision() is not True:
-            raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: it is not known to be {self.domain().base_ring()}-linear")
+    def is_injective(self) -> bool:
+        r"""True: an element of ``Mono_R(M, N)`` is injective by its placement."""
+        return True
+
+    @validator
+    def validate_injectivity(self) -> None:
+        r"""Raise ``ValueError`` unless ``ker(f) = 0`` is established.
+
+        A construction that derives injectivity (a subobject inclusion, a
+        localization of a monomorphism) answers at once; otherwise the map is
+        read in ``Mor_R(M, N)`` and its kernel is computed.
+        """
         decision = self._injectivity_derivation()
-        if decision is None:
-            decision = ModuleMorphismMethods.is_injective(self)
+        match decision:
+            case None:
+                linear = self.domain().module_category().Mor(self.domain(), self.codomain())(self)
+                decision = linear.is_injective()
+            case _:
+                pass
         if decision is False:
             raise ValueError(f"{self.domain()} -> {self.codomain()} is not an injective linear map: its kernel is nonzero")
         if decision is not True:
             raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: its injectivity cannot be decided")
-        self._injectivity_decision = True
-
-    def is_injective(self) -> bool:
-        return self._injectivity_decision
 
 
 class ModuleEmbedding(ModuleEmbeddingMethods, ModuleMorphism):
@@ -2093,22 +2151,24 @@ class ModuleEmbeddingMor(CategoricalMor):
         )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
-    def _element_constructor_(self, images, *, lift=None):
+    def _element_constructor_(self, images, *, lift=None, check=False):
+        r"""Construct the monomorphism with these images; ``check=True`` runs its validators (``OWN-22``)."""
         if isinstance(images, ModuleEmbeddingMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            return _TransportedModuleEmbedding(self, images, lift=lift)
-        if isinstance(images, ModuleMorphismMethods):
+            embedding = _TransportedModuleEmbedding(self, images, lift=lift)
+        elif isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            return _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
-        return self.element_class(
-            self,
-            images,
-            lift=lift,
-        )
+            embedding = _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
+        else:
+            embedding = self.element_class(self, images, lift=lift)
+        embedding.validate_linearity(check=check)
+        embedding.validate_lift(check=check)
+        embedding.validate_injectivity(check=check)
+        return embedding
 
     def _subobject_inclusion(self, images, *, lift=None):
         r"""Construct the inclusion carried by an owned module-subobject datum."""
@@ -2247,7 +2307,8 @@ class _ModuleMorCommonMethods:
         """
         return self._preamble_base_ring
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        r"""Construct the linear map with these images; ``check=True`` runs its validators (``OWN-22``)."""
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         if (
@@ -2266,7 +2327,11 @@ class _ModuleMorCommonMethods:
                 return _TransportedModuleMorphism(self, images)
             if not self.domain().is_framed_module():
                 return _TransportedModuleMorphism(self, images)
-            images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
+            match images.has_module_generator_images():
+                case True:
+                    images = images.module_generator_morphism()
+                case False:
+                    images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
         elif isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
@@ -2289,7 +2354,9 @@ class _ModuleMorCommonMethods:
 
         if self in _SelectedFinitePresentationModules(base_ring) and images in self._internal_mor_model():
             return self._morphism_from_internal_model(self._internal_mor_model()(images))
-        return self.element_class(self, images)
+        morphism = self.element_class(self, images)
+        morphism.validate_linearity(check=check)
+        return morphism
 
     def is_projective(self):
         r"""Decide projectivity of ``Hom_R(M, N)`` where its endpoints determine it.
@@ -2703,7 +2770,12 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
                     return parent.codomain()(value)
 
         super().__init__(parent, generator_image)
-        self._linearity_decision = Unknown
+
+    @cached_method
+    def linearity_decision(self):
+        r"""Reject a selected tensor relation the values do not kill; otherwise the bilinearity premise stays ``Unknown``."""
+        self._check_selected_domain_relations()
+        return Unknown
 
     def __call__(self, *arguments):
         match len(arguments):
@@ -2724,15 +2796,23 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
 
 
 class ModuleAutomorphismMethods:
-    r"""An invertible module endomorphism, as an element of ``Aut_R(M)``."""
+    r"""An invertible module endomorphism, as an element of ``Aut_R(M)``.
 
-    def __init__(self, parent, forward, inverse) -> None:
+    The defining datum is the forward map.  The inverse is computed on the
+    first request and cached (``OWN-22``): ``inverse_computation`` is a
+    zero-argument callable returning it.
+    """
+
+    def __init__(self, parent, forward, inverse_computation) -> None:
         module = parent.domain()
-        mor = module.module_category().Mor(module, module)
-        forward = mor(forward)
-        inverse = mor(inverse)
-        self._inverse = inverse
-        super().__init__(parent, forward)
+        self._inverse_computation = inverse_computation
+        super().__init__(parent, module.module_category().Mor(module, module)(forward))
+
+    @cached_method
+    def _inverse_morphism(self):
+        r"""The inverse module map, computed once."""
+        module = self.domain()
+        return module.module_category().Mor(module, module)(self._inverse_computation())
 
     def forward(self):
         module = self.domain()
@@ -2771,7 +2851,7 @@ class ModuleAutomorphismMethods:
         return hash(id(self.parent()))
 
     def inverse(self):
-        return self.parent()._from_known_inverse_pair(self._inverse, self.forward())
+        return self.parent()._from_known_inverse_pair(self._inverse_morphism(), self.forward())
 
     __invert__ = inverse
 
@@ -2779,9 +2859,9 @@ class ModuleAutomorphismMethods:
         r"""The group law ``(g, g^{-1}) (h, h^{-1}) = (gh, h^{-1} g^{-1})``, or ``g . f`` for a module map ``f``."""
         match other:
             case _ if element_parent(other) is self.parent():
-                return self.parent()._from_known_inverse_pair(
+                return self.parent()._from_inverse_computation(
                     self.forward() * other.forward(),
-                    other._inverse * self._inverse,
+                    lambda: other._inverse_morphism() * self._inverse_morphism(),
                 )
             case _:
                 return self.forward() * other
@@ -2844,11 +2924,11 @@ class ModuleAutomorphismGroup(CategoricalMor):
         return self._base_ring
 
     def _from_known_inverse_pair(self, forward, inverse):
-        module = self.domain()
-        mor = module.module_category().Mor(module, module)
-        forward = mor(forward)
-        inverse = mor(inverse)
-        return self.element_class(self, forward, inverse)
+        return self.element_class(self, forward, lambda: inverse)
+
+    def _from_inverse_computation(self, forward, inverse_computation):
+        r"""The automorphism ``forward``, whose inverse ``inverse_computation()`` is asked on first request."""
+        return self.element_class(self, forward, inverse_computation)
 
     def __call__(self, datum):
         r"""Construct an automorphism-group element rather than preserving a bare Iso arrow."""
@@ -2860,16 +2940,10 @@ class ModuleAutomorphismGroup(CategoricalMor):
                 return datum
             datum = datum.as_morphism()
         if isinstance(datum, CategoricalIsomorphism):
-            module = self.domain()
-            mor = module.module_category().Mor(module, module)
-            return self.element_class(
-                self,
-                mor(datum.forward()),
-                mor(datum.inverse()),
-            )
+            return self._from_inverse_computation(datum.forward(), datum.inverse)
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
-        return self._from_known_inverse_pair(forward, forward.inverse())
+        return self._from_inverse_computation(forward, forward.inverse)
 
     @cached_method
     def identity(self):

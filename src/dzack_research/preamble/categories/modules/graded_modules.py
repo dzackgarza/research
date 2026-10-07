@@ -1,6 +1,6 @@
 """Modules graded by a monoid."""
 
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.lexicon.set_theory import SetObject
+from dzack_research.preamble.validation import validator
 
 
 def _normalize_grading_monoid(monoid: Parent | None) -> SetObject:
@@ -163,31 +164,33 @@ class GradedModuleMorphismMethods:
         degree_preservation=None,
     ) -> None:
         super().__init__(parent, images, elementwise=elementwise)
-        if self.linearity_decision() is not True:
-            raise ValueError(
-                f"the proposed map {parent.domain()} -> {parent.codomain()} is not known to be "
-                f"{parent.domain().base_ring()}-linear, so it is not a graded-module morphism"
-            )
-        derived = (
-            self._degree_preservation_derivation()
-            if degree_preservation is None
-            else degree_preservation
-        )
-        self._degree_preservation_decision = (
-            self._decide_degree_preservation() if derived is None else derived
-        )
-        if self._degree_preservation_decision is False:
-            raise ValueError(
-                f"the proposed map {parent.domain()} -> {parent.codomain()} does not preserve degree"
-            )
+        self._degree_preservation_premise = degree_preservation
 
     def _degree_preservation_derivation(self):
         r"""Return a construction-derived degree-preservation decision, or ``None``."""
         return None
 
+    @cached_method
     def degree_preservation_decision(self):
-        r"""Return the retained decision that this map preserves degree."""
-        return self._degree_preservation_decision
+        r"""Return the decision that this map preserves degree.
+
+        A premise supplied at construction, or one derived from the
+        construction, is returned as given; otherwise the decision is computed
+        on the selected homogeneous generators on the first request
+        (``OWN-22``).
+        """
+        if self._degree_preservation_premise is not None:
+            return self._degree_preservation_premise
+        derived = self._degree_preservation_derivation()
+        return self._decide_degree_preservation() if derived is None else derived
+
+    @validator
+    def validate_degree_preservation(self) -> None:
+        r"""Raise ``ValueError`` when this map is decided not to preserve degree (``OWN-22``)."""
+        if self.degree_preservation_decision() is False:
+            raise ValueError(
+                f"the map {self.domain()} -> {self.codomain()} does not preserve degree"
+            )
 
     def _decide_degree_preservation(self):
         r"""Decide degree preservation on selected homogeneous generators when possible."""
@@ -300,7 +303,8 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         )
         _initialize_module_mor_parent(self, mor_family, domain, codomain)
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        r"""Construct the graded map; ``check=True`` runs its validators (``OWN-22``)."""
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -309,8 +313,14 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
                 )
             if isinstance(images, GradedModuleMorphismMethods) and images.parent() is self:
                 return images
-            return self.element_class(self, images)
-        return super()._element_constructor_(images)
+            morphism = self.element_class(self, images)
+            morphism.validate_linearity(check=check)
+            morphism.validate_degree_preservation(check=check)
+            return morphism
+        morphism = super()._element_constructor_(images, check=check)
+        if isinstance(morphism, GradedModuleMorphismMethods):
+            morphism.validate_degree_preservation(check=check)
+        return morphism
 
 
 

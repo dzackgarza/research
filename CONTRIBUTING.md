@@ -1452,6 +1452,19 @@ of this specification.
   call.  No check is written into `__init__`, an element constructor or a
   computation, because some laws cannot be checked at all: no finite
   computation shows that the Fourier transform is an isometry of `L^2(RR)`.
+
+  The flag and the protocol have one owner, `dzack_research.preamble.validation`.
+  `strict_checking()` reads the flag and `strict_checking(True)` sets it, in the
+  spelling of Sage's `proof.arithmetic()`; the session import exports it.  A
+  validator is a method decorated with `@validator`, named `validate_<law>`
+  (`validate_linearity`, `validate_injectivity`, `validate_surjectivity`,
+  `validate_form_square`, `validate_lift`), that raises `ValueError` when the
+  object fails the law.  It takes `check=True` by default, so a call by hand
+  runs; an element constructor calls each validator of its category with its
+  own `check` argument, which defaults to `False`.  A membership that states a
+  property answers the predicate by placement: an element of `Mono(M, N)`
+  answers `is_injective()` with `True`, and `validate_injectivity` is how that
+  claim is checked.
 - **Rationale:** An eager check or an eager structure table costs what the
   construction never needed, and it compounds: building `End_R(C)` for a
   presented `C` built its multiplication `End ⊗ End -> End` through another

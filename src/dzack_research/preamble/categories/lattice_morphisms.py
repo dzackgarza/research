@@ -19,10 +19,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
-    Groups,
     OwnedFiniteGroups,
     OwnedGroups,
-    _fix_selected_group_resolution_data,
+    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -46,7 +45,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     ModuleMorphismMethods,
 )
-from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
@@ -58,8 +56,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
+    _engine_row_action_matrix,
     tensor,
 )
 
@@ -361,14 +361,6 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
         ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
-        if self.linearity_decision() is not True:
-            raise ValueError(f"{self} is not a lattice morphism: the map from {self.domain()} to {self.codomain()} is not known to be {self.domain().base_ring()}-linear")
-        domain = self.domain()
-        codomain = self.codomain()
-        if domain.module_rank().is_finite() and codomain.module_rank().is_finite():
-            pulled_back = codomain.gram_tensor().pullback(self)
-            if not pulled_back.is_equal_tensor(domain.gram_tensor()):
-                raise ValueError(f"{self} is not a lattice morphism from {domain} to {codomain}: the pullback of the form of {codomain} is not the form of {domain}")
 
 
 class LatticeEmbeddingMethods:
@@ -482,20 +474,8 @@ class LatticeEmbeddingMethods:
 class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
     r"""Compatibility shell for private lattice-embedding realizations."""
 
-    def _injectivity_derivation(self):
-        return None
-
-    def __init__(self, parent, images, *, elementwise=False) -> None:
-        LatticeMorphism.__init__(self, parent, images, elementwise=elementwise)
-        decision = self._injectivity_derivation()
-        if decision is None:
-            decision = ModuleMorphism.is_injective(self)
-        if decision is False:
-            raise ValueError(f"{self} is not a lattice embedding of {self.domain()} into {self.codomain()}: it is not injective")
-        if decision is not True:
-            raise ValueError(f"{self} is not known to be a lattice embedding of {self.domain()} into {self.codomain()}: injectivity could not be decided")
-
     def is_injective(self) -> bool:
+        r"""True: membership in the embedding Mor states it (``OWN-22``)."""
         return True
 
 
@@ -504,14 +484,7 @@ class _TransportedLatticeEmbedding(LatticeEmbedding):
 
     def __init__(self, parent, embedding) -> None:
         self._underlying_module_embedding = embedding
-        source = parent.domain()
-        super().__init__(
-            parent,
-            lambda label: embedding(source.module_generator(label)),
-        )
-
-    def _injectivity_derivation(self):
-        return True
+        super().__init__(parent, embedding)
 
 
 class LatticeIsometryMethods:
@@ -523,14 +496,28 @@ class LatticeIsometryMethods:
                 module = parent.domain()
                 module_mor = module.module_category().Mor(module, module)
                 forward = module_mor(images)
-                super().__init__(parent, forward, forward.inverse())
+                super().__init__(parent, forward, forward.inverse)
             case False:
                 super().__init__(parent, images)
-        if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
-            raise ValueError(f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: it is not surjective")
 
     def is_surjective(self) -> bool:
+        r"""True: membership in the isometry Mor states it (``OWN-22``)."""
         return True
+
+    @validator
+    def validate_surjectivity(self) -> None:
+        r"""Raise ``ValueError`` unless ``coker(f) = 0`` is established for the underlying linear map."""
+        domain = self.domain()
+        decision = domain.module_category().Mor(domain, self.codomain())(self).is_surjective()
+        if decision is False:
+            raise ValueError(f"{domain} -> {self.codomain()} is not an isometry: it is not surjective")
+        if decision is not True:
+            raise ValueError(f"cannot accept {domain} -> {self.codomain()} as an isometry: its surjectivity cannot be decided")
+
+    @cached_method
+    def _coordinate_tensor(self):
+        r"""The type-``(1,1)`` tensor of this isometry in the chosen framings, computed once."""
+        return _tensor_view(self)
 
     def inverse(self):
         r"""Return the inverse isometry."""
@@ -544,7 +531,7 @@ class LatticeIsometryMethods:
         if self is other:
             return True
         return (
-            isinstance(other, LatticeIsometryMethods) and other.domain() is self.domain() and other.codomain() is self.codomain() and _tensor_view(other) == _tensor_view(self)
+            isinstance(other, LatticeIsometryMethods) and other.domain() is self.domain() and other.codomain() is self.codomain() and other._coordinate_tensor() == self._coordinate_tensor()
         )
 
     def __ne__(self, other) -> bool:
@@ -555,7 +542,7 @@ class LatticeIsometryMethods:
             (
                 id(self.domain()),
                 id(self.codomain()),
-                _tensor_view(self),
+                self._coordinate_tensor(),
             )
         )
 
@@ -963,7 +950,14 @@ class LatticeMor(CategoricalMor):
             codomain,
         )
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        r"""Construct the lattice morphism; ``check=True`` runs its validators (``OWN-22``)."""
+        morphism = self._morphism_from_images(images)
+        morphism.validate_linearity(check=check)
+        morphism.validate_form_square(check=check)
+        return morphism
+
+    def _morphism_from_images(self, images):
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -973,9 +967,7 @@ class LatticeMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            if images.linearity_decision() is not True:
-                raise ValueError(f"{images} is not a lattice morphism from {self.domain()} to {self.codomain()}: it is not known to be {self.domain().base_ring()}-linear")
-            return self.elementwise(lambda element: images(element))
+            return self.element_class(self, images)
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -1023,7 +1015,15 @@ class LatticeEmbeddingMor(CategoricalMor):
         if category is not None:
             realize_owned_category(self)
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        r"""Construct the lattice embedding; ``check=True`` runs its validators (``OWN-22``)."""
+        embedding = self._morphism_from_images(images)
+        embedding.validate_linearity(check=check)
+        embedding.validate_form_square(check=check)
+        embedding.validate_injectivity(check=check)
+        return embedding
+
+    def _morphism_from_images(self, images):
         if isinstance(images, ModuleEmbeddingMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -1041,13 +1041,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            if images.linearity_decision() is not True:
-                raise ValueError(f"{images} is not a lattice embedding of {self.domain()} into {self.codomain()}: it is not known to be {self.domain().base_ring()}-linear")
-            source = self.domain()
-            return self.element_class(
-                self,
-                lambda label: images(source.module_generator(label)),
-            )
+            return self.element_class(self, images)
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -1313,9 +1307,18 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             and domain.module_rank().is_finite()
             and domain.is_definite()
         ):
-            self._retain_group_framing(self._computed_group_generators())
+            self._retain_group_framing()
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        r"""Construct the isometry; ``check=True`` runs its validators (``OWN-22``)."""
+        isometry = self._morphism_from_images(images)
+        isometry.validate_linearity(check=check)
+        isometry.validate_form_square(check=check)
+        isometry.validate_injectivity(check=check)
+        isometry.validate_surjectivity(check=check)
+        return isometry
+
+    def _morphism_from_images(self, images):
         if isinstance(images, LatticeIsometryMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -1323,11 +1326,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 )
             if images.parent() is self:
                 return images
-            source = self.domain()
-            return self.element_class(
-                self,
-                lambda label: images(source.module_generator(label)),
-            )
+            return self.element_class(self, images)
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
@@ -1641,7 +1640,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         signature = lattice.signature_pair()
         if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
             gram = -gram
-        return IntegralLattice(gram).orthogonal_group()
+        engine = IntegralLattice(gram).orthogonal_group()
+        # PARI's ``qfauto`` (Plesken--Souvignier) returns |O(L)| with the
+        # generators; GAP would otherwise recompute the order of the matrix
+        # group by an orbit algorithm.  TRAPS.md records both wall times.
+        engine.gap().SetSize(SageZZ(QuadraticForm(SageZZ, 2 * gram).number_of_automorphisms()))
+        return engine
 
     def _from_engine(self, _engine_element):
         r"""Transport one backend row-action isometry to a live automorphism."""
@@ -1676,9 +1680,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return the private row-action matrix of one live lattice isometry."""
         if element_parent(automorphism) is not self:
             raise ValueError(f"{automorphism} has no matrix in {self}: it lies in {element_parent(automorphism)}")
-        # Publicly the linear map acts on columns. Sage matrix groups act on
-        # coordinate rows on the right, hence one transpose at this boundary.
-        return _engine_matrix(_module_matrix(automorphism)).transpose()
+        return _engine_row_action_matrix(automorphism)
 
     def _to_engine(self, automorphism):
         r"""Transport one live automorphism to the full private engine."""
@@ -1719,25 +1721,27 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             )
 
             return orthogonal_group_generators(self)
-        backend_generators = self._engine_group().gens()
-        positions = Sets.Δ[len(backend_generators) - 1]
+        generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
+        positions = Sets.Δ[len(generators) - 1]
         return FiniteOrderedSets().from_indexed(
             positions,
-            lambda position: self._from_engine(backend_generators[int(position)]),
+            lambda position: generators[int(position)],
             name=f"Orthogonal-group generators of {lattice}",
         )
 
-    def _retain_group_framing(self, generators) -> None:
-        r"""Retain one computed exact generating family as this group's framing."""
-        source = Groups.Free(index_set=generators)
-        generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-        _fix_selected_group_resolution_data(self, source, generators, generator_morphism)
+    def _retain_group_framing(self) -> None:
+        r"""Select the computed generators of ``O(L)`` as this group's framing.
+
+        Selecting computes nothing; the generators are computed when
+        ``group_generators()`` first reads the selected resolution.
+        """
+        _fix_selected_group_resolution_on(self, self._computed_group_generators)
 
     def framing(self):
-        r"""Explicitly select and retain the represented generator framing of ``O(L)``."""
+        r"""Explicitly select the represented generator framing of ``O(L)``."""
         if self.has_selected_group_resolution():
             return self
-        self._retain_group_framing(self._computed_group_generators())
+        self._retain_group_framing()
         return self
 
     def structure_description(self):
@@ -2011,10 +2015,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             )
             if transformation is False:
                 return (True, None, None)
-            if transformation.transpose() * codomain_gram * transformation != domain_gram:
-                raise ArithmeticError(
-                    f"the matrix {transformation} returned as an isometry from {domain} to {codomain} does not carry the form of {codomain} to the form of {domain}"
-                )
+            # The engine's matrix is an untrusted answer; the isometry's own
+            # form-square validator checks it under strict checking (OWN-22).
             return (False, self._isometry_from_column_matrix(transformation), None)
 
         if int(domain.module_rank()) == 2:

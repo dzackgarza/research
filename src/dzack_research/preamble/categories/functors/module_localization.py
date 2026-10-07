@@ -32,9 +32,9 @@ class _LocalizedModuleMorphism(ModuleMorphism):
             scalar_extension_of=source_morphism,
             scalar_extension_functor=functor,
         )
-        self._linearity_decision = source_morphism.linearity_decision()
 
-    def _elementwise_linearity_derivation(self):
+    def linearity_decision(self):
+        r"""Localization is functorial: ``S^{-1} f`` is linear exactly when ``f`` is known to be."""
         return self._source_morphism.linearity_decision()
 
 

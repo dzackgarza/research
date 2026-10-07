@@ -15,6 +15,31 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
 )
+from dzack_research.preamble.validation import validator
+
+
+@validator
+def validate_isometric_embedding(embedding_datum):
+    r"""Check that an engine's embedding ``A`` pulls the target Gram tensor ``G`` back to the source's: ``G(A-, A-) = G'``.
+
+    ``embedding_datum`` is ``(target_gram, source_gram, embedding)`` as an
+    engine returned it.  The engine's answer is untrusted; this law runs only
+    when asked or under :data:`strict_checking`.
+    """
+    target_gram, source_gram, embedding = embedding_datum
+    pulled_back = target_gram.pullback(embedding)
+    if not pulled_back.is_equal_tensor(source_gram):
+        raise ValueError(f"the embedding {embedding} into the form {target_gram} is not isometric: it pulls the target back to {pulled_back}, not {source_gram}")
+
+
+@validator
+def validate_even_unimodular_gram(gram):
+    r"""Check that the Gram tensor ``gram`` is unimodular (``det = +-1``) and even (every ``G(e_i, e_i)`` is even)."""
+    engine_gram = _engine_component_matrix(gram)
+    if abs(engine_gram.determinant()) != 1:
+        raise ValueError(f"the form {gram} is not unimodular: its determinant is {engine_gram.determinant()}")
+    if any(entry % 2 for entry in engine_gram.diagonal()):
+        raise ValueError(f"the form {gram} is not even: some diagonal entry is odd")
 
 
 def _rational_positive_vector(gram):
@@ -442,14 +467,8 @@ class _OscarLatticeAdapter:
                 tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows())) for target in range(embedding_engine.ncols())
             )
         )
-        if not target_gram.pullback(embedding).is_equal_tensor(gram):
-            raise ArithmeticError(
-                f"OSCAR's embedding {embedding} of the form {gram} into {target_gram} is not an isometric embedding: it pulls back {target_gram.pullback(embedding)}"
-            )
-        if abs(target_gram.det()) != 1:
-            raise ArithmeticError(f"OSCAR embedded the form {gram} into {target_gram}, which is not unimodular: its determinant is {target_gram.det()}")
-        if any(target_gram[index, index] % 2 for index in range(target_shape[0])):
-            raise ArithmeticError(f"OSCAR embedded the form {gram} into {target_gram}, which is not even: some diagonal entry is odd")
+        validate_isometric_embedding((target_gram, gram, embedding), check=False)
+        validate_even_unimodular_gram(target_gram, check=False)
         return target_gram, embedding
 
     def target_primitive_embedding(self, source_gram, target_gram):
@@ -488,12 +507,7 @@ class _OscarLatticeAdapter:
                 tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows())) for target in range(embedding_engine.ncols())
             )
         )
-        if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
-            raise ArithmeticError(
-                f"OSCAR's embedding {embedding} of the form {source_gram} into {target_gram} is not "
-                f"isometric: it pulls {target_prime_gram} back to "
-                f"{target_prime_gram.pullback(embedding)}, not {source_prime_gram}"
-            )
+        validate_isometric_embedding((target_prime_gram, source_prime_gram, embedding), check=False)
         return target_prime_gram, source_prime_gram, embedding
 
     def target_primitive_embedding_classes(
@@ -539,12 +553,7 @@ class _OscarLatticeAdapter:
                     for target in range(embedding_engine.ncols())
                 )
             )
-            if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
-                raise ArithmeticError(
-                    f"OSCAR's embedding {embedding} of the form {source_gram} into {target_gram} is "
-                    f"not isometric: it pulls {target_prime_gram} back to "
-                    f"{target_prime_gram.pullback(embedding)}, not {source_prime_gram}"
-                )
+            validate_isometric_embedding((target_prime_gram, source_prime_gram, embedding), check=False)
             representatives.append((target_prime_gram, source_prime_gram, embedding))
         return tuple(representatives)
 

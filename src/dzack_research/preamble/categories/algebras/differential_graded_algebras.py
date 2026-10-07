@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.validation import validator
 
 
 class DegreewiseLinearMorphism(ModuleMorphism):
@@ -319,28 +320,29 @@ class Differential(GradedDerivation):
             algebra.graded_derivations(algebra, shift=1),
             function,
         )
-        observed = self._square_zero_on_generators()
-        match observed:
-            case False:
-                raise ValueError(
-                    f"{function} is not a differential on {algebra}: d^2 != 0 on a generator"
-                )
-            case _:
-                pass
-        derived = self._square_zero_derivation()
-        match derived:
-            case None:
-                self._square_zero_decision = Unknown
-            case decision if decision is True or decision is Unknown:
-                self._square_zero_decision = decision
-            case _:
-                raise ValueError(f"d^2 = 0 is recorded only as True or Unknown, but got {observed}")
 
     def _square_zero_derivation(self):
         return None
 
+    @cached_method
     def square_zero_decision(self):
-        return self._square_zero_decision
+        r"""The decision on ``d^2 = 0`` that the construction supplies, read on the first request (``OWN-22``)."""
+        derived = self._square_zero_derivation()
+        match derived:
+            case None:
+                return Unknown
+            case decision if decision is True or decision is Unknown:
+                return decision
+            case _:
+                raise ValueError(f"d^2 = 0 is recorded only as True or Unknown, but got {derived}")
+
+    @validator
+    def validate_square_zero(self) -> None:
+        r"""Raise ``ValueError`` when ``d(d(x)) != 0`` on a selected generator ``x`` (``OWN-22``)."""
+        if self._square_zero_on_generators() is False:
+            raise ValueError(
+                f"{self._function} is not a differential on {self.algebra()}: d^2 != 0 on a generator"
+            )
 
     def _square_zero_on_generators(self):
         algebra = self.algebra()
@@ -404,12 +406,15 @@ def _fix_selected_differential(
             f"the Leibniz rule and d^2 = 0 are recorded only as True or Unknown, but got {graded_leibniz} "
             f"and {square_zero}"
         )
-    algebra._preamble_differential = _RetainedDifferential(
+    differential = _RetainedDifferential(
         algebra,
         function,
         graded_leibniz,
         square_zero,
     )
+    differential.validate_graded_leibniz(check=False)
+    differential.validate_square_zero(check=False)
+    algebra._preamble_differential = differential
 
 
 class DGAMorphism:
