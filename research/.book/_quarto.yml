@@ -90,6 +90,7 @@ book:
     - part: Lattice theory
       chapters:
         - lattice-theory/Lattices-and-Discriminant-Forms.md
+        - lattice-theory/arithmetic/clifford-lifting-and-spinor-obstructions.md
         - lattice-theory/Isometries-and-Arithmetic-Invariants.md
         - lattice-theory/lattice-theory.md
         - lattice-theory/root-systems.md
