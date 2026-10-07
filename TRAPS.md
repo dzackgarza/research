@@ -214,6 +214,37 @@ Reproduce with `~/.local/bin/sage probe.sage`, where the probe times the calls a
 Route chosen: the private engine of `O(L)` (`LatticeIsometryMor._engine_group`, `src/dzack_research/preamble/categories/lattice_morphisms.py`) records the PARI order on the GAP model with `SetSize`, so the group's cardinality is the engine's order and never a GAP orbit computation.
 Depends on this: `O(L).cardinality()` for every definite lattice.
 
+### PARI's definite isometry test costs the number of vectors up to the largest diagonal entry, and Sage has no other route
+
+Sage's `QuadraticForm.is_globally_equivalent_to` calls PARI `qfisom`, so PARI is the only definite isometry test Sage ships.
+`qfisominit(G)` and `qfauto(G)` enumerate every vector of norm at most the largest diagonal entry of `G`, so their cost follows that vector count, not the rank.
+`qfisom(init, G')` against a stored `qfisominit` costs about a tenth of the init, and `qfauto(init)` on the same structure reuses its enumeration.
+`D_n^+` with an LLL-reduced Gram matrix needs a vector of norm `n/4` among its basis vectors, which is what makes `D_20^+` expensive; its `qfisominit` needs more than 1 GiB of PARI stack, so with Sage's default stack it raises a stack overflow.
+`qfrep(G, 4, 0)`, the numbers of vectors of norm 1 to 4, costs under 1 ms on every specimen.
+The mass of a definite genus is a closed formula and costs a few ms.
+SageMath 10.10.beta8, PARI stack set to 8 GiB by `pari.allocatemem(2^33, 2^34)`, 2026-10-07, one run each; `D_n^+` is `span(ZZ, rows)` of `D_n` and the glue vector `(1/2, ..., 1/2)`, reduced by `LLL_gram`:
+
+| lattice | vector pairs up to the largest diagonal entry | `Genus(G)` | `.mass()` | `qfauto(G)` | `qfisominit(G)` | `qfauto(init)` | `qfisom(init, G)` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `E7` | not measured | 63.8 ms | 8.2 ms | 6.6 ms | 3.1 ms | 0.7 ms | 0.9 ms |
+| `E8` | not measured | 26.8 ms | 8.6 ms | 10.5 ms | 5.8 ms | 2.0 ms | 1.1 ms |
+| `D12^+` | 1,156 | 23.5 ms | 3.6 ms | 42.3 ms | 24.8 ms | 15.1 ms | 4.8 ms |
+| `D16^+` | 31,200 | 25.3 ms | 6.3 ms | 2838.8 ms | 2374.6 ms | 565.9 ms | 262.8 ms |
+| `D20^+` | 301,304 | 32.2 ms | 6.1 ms | 78055.9 ms | 73099.5 ms | not measured | 6768.1 ms |
+
+The `qfauto(init)` column comes from a second run, in which `qfisominit` took 2.8, 2.6, 26.3 and 2899.6 ms; the `D20^+` row ran beside another Sage process, and alone `qfisominit` took 31.07 s and `qfisom` 3.30 s.
+
+Sage's `GenusSymbol_global_ring.__eq__` compares the local symbols and never the signature, and the class defines no `__hash__`, so genera cannot key a dictionary.
+Sage decides neither which spinor genus of a genus a lattice lies in nor isometry of indefinite lattices of rank at least 3 when the genus has more than one spinor genus; `Genus.spinor_generators(proper=False)` only says whether it has more than one.
+Hecke's `is_isometric(::ZZLat, ::ZZLat)` decides every case, the indefinite one by `p`-adic approximation and the spinor operators.
+
+Reproduce with `~/.local/bin/sage probe.sage`, where the probe builds the specimens above and times each call.
+Route chosen: `_isometry_class_representatives` in `src/dzack_research/preamble/categories/lattices.py` computes each lattice's rank, determinant, signature, `qfrep(G, 4, 0)` and canonical local symbols once and groups by them, then decides only inside a genus with more than one member.
+A definite genus of three or more members with `mass · |O(L)| = 1` is one class and needs no comparison; otherwise `qfisominit` runs once per class representative and `qfisom` tests each member against them.
+An indefinite genus of rank at least 3 with one spinor genus is one class; otherwise each member goes to Hecke `is_isometric` through `_OscarLatticeAdapter.integer_lattices_are_isometric` in `lattice_engines.py`.
+The PARI stack is left at Sage's default, so a lattice like `D_20^+` that reaches a comparison raises PARI's stack error rather than growing a process-wide setting.
+Depends on this: `Lattices(ZZ).isometry_classes`, and through it lattice-db duplicate detection.
+
 ## mypy
 
 ### A star import that rebinds a name is rejected, and the first binding wins

@@ -315,6 +315,7 @@ Repair the existing public construction routes and inherited methods before prov
   Its cardinality is the class number, and parity (even or odd) is an axiom on it, the same for every member.
   It is constructed through its owner, not as a bare class, per `CAT-28`. `representatives()` and `class_number()` become that set's enumeration and cardinality.
   The spike built this and it reached main's history as PR #59 (`d2891a225`) and `5766b97d1`, then was lost when the spike was absorbed; do not port that code.
+  The genus exists for odd lattices too, and genera have an equality: `Lattices(ZZ).isometry_classes` then groups a family by the owned genus instead of by Sage's local symbols in private (`COMPLAINTS.md`, *The genus of an odd integral lattice has no owned object*).
   **Closure:** the genus of `E8` has cardinality 1; the genus of `E8 + E8` has cardinality 2 (`E8 + E8` and `D16^+`); the genus of `A2` is even; the genus of `I_1 + I_1` is odd; `representatives()` enumerates that finite set.
 
 - [ ] **`daily-core-exercises`**. **Needs:** `placement-audit`.
