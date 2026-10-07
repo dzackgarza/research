@@ -205,7 +205,7 @@ def test_a_torsion_bilinear_form() -> None:
     assert form.O().order() == 2
     assert form.is_isometric_to(form)
     assert form.is_anti_isometric(form.twist(-1))
-    assert form.normal_form().cardinality() == cardinal(4)
+    assert form.normal_form().codomain().cardinality() == cardinal(4)
 
 
 def test_form_embeddings_between_lattices() -> None:
