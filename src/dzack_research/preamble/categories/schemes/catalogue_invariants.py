@@ -25,9 +25,6 @@ class HodgePoincareInvariants:
         self.terms = tuple(terms)
         self._table = {(term.p, term.q): term.coefficient for term in self.terms}
 
-    def has_unique_bidegrees(self) -> bool:
-        return len(self._table) == len(self.terms)
-
     def exponents_within_dimension(self) -> bool:
         return all(
             0 <= p <= self.dimension and 0 <= q <= self.dimension
@@ -57,9 +54,6 @@ class HodgePoincareInvariants:
             )
             else "V4"
         )
-
-    def hodge_number(self, p: int, q: int) -> int:
-        return int(self._table.get((int(p), int(q)), 0))
 
     def betti_number(self, degree: int) -> int:
         degree = int(degree)
@@ -101,10 +95,6 @@ def chern_indices_are_top_degree(indices, dimension: int) -> bool:
 
 def pontryagin_indices_are_top_degree(indices, complex_dimension: int) -> bool:
     return 2 * sum(int(value) for value in indices) == int(complex_dimension)
-
-
-def surface_data_fits_dimension(complex_dimension: int) -> bool:
-    return int(complex_dimension) == 2
 
 
 def cohomology_degree_fits_dimension(degree: int, complex_dimension: int) -> bool:

@@ -157,6 +157,5 @@ def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
     )
     assert hodge.satisfies_hodge_symmetry_and_serre_duality()
     assert hodge.symmetry_group() == "D4"
-    assert hodge.hodge_number(1, 1) == 20
     assert hodge.betti_number(2) == 22
     assert hodge.euler_characteristic() == 24
