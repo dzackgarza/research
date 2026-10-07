@@ -77,7 +77,7 @@ def _supply_abstract_contracts(new_class: type, mixins: tuple[type, ...], inheri
         name
         for provider in mixins
         for name, value in vars(provider).items()
-        if not name.startswith("_") and isinstance(value, AbstractMethod)
+        if isinstance(value, AbstractMethod)
     }
     for name in contracts:
         if not isinstance(inspect.getattr_static(new_class, name), AbstractMethod):

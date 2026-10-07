@@ -92,8 +92,14 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
 
     class ElementMethods:
         @abstract_method
-        def __mul__(self, other):
-            r"""Return the value of the selected magma law on ``(self, other)``."""
+        def _mul_(self, other):
+            r"""Return the value of the selected magma law on ``(self, other)``.
+
+            ``other`` has the parent of ``self``.  ``x * y`` reaches this
+            through Sage's ``Element.__mul__``, which coerces both operands
+            into one parent first; an element supplies the law here, never by
+            overriding the operator.
+            """
 
     class ParentMethods:
         def _commutativity_decision(self):
