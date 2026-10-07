@@ -569,7 +569,7 @@ def _engine_element_action(group, backend_element, point):
         case SageGaloisGroup():
             field = _own_ring(engine.number_field())
             assert point in field, f"{group} acts on the field {field} by automorphisms, but {point} is not an element of {field}"
-            return _owned_engine_element(field, backend_element.as_mor()(_engine_element(field, point)))
+            return _owned_engine_element(field, backend_element.as_hom()(_engine_element(field, point)))
         case PermutationGroup_generic():
             engine_point = _engine_point(engine, point)
             if engine_point not in engine.domain():
@@ -1577,7 +1577,7 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     assert bool(group_model.IsNormal(normal_subgroup)), (
         f"the quotient of {group} by {normal_subgroup} is not a group: {normal_subgroup} is not a normal subgroup of {group}"
     )
-    gap_projection = libgap.NaturalMorphismByNormalSubgroup(
+    gap_projection = libgap.NaturalHomomorphismByNormalSubgroup(
         group_model,
         normal_subgroup,
     )
