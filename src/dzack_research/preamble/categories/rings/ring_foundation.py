@@ -317,6 +317,32 @@ class RingMorphism:
             )
         return self.contraction_of_ideal(codomain.ideal(codomain.zero()))
 
+    def is_injective(self):
+        r"""Decide ``ker f = 0`` for ``f: R -> S`` from the category of ``R`` and the characteristic of ``S``.
+
+        Out of a field the kernel is an ideal, so it is ``0`` or ``R``, and it
+        is ``R`` exactly when ``1_S = f(1) = 0``: ``f`` is injective exactly
+        when ``1_S`` is not zero.
+
+        Out of an order ``O`` (``ZZ`` among them), ``f`` is injective exactly
+        when ``char S = 0``.  A positive characteristic ``n`` puts ``n`` in
+        the kernel.  Conversely, a nonzero ``a in O`` is integral, so its
+        minimal polynomial over ``QQ`` has integer coefficients and a nonzero
+        constant term ``c``; ``c`` lies in ``aO``, so ``f(a) = 0`` forces
+        ``c 1_S = 0`` and ``char S`` positive.
+
+        Any other domain takes the set-level answer.
+        """
+        domain = self.domain()
+        codomain = self.codomain()
+        match domain:
+            case _ if domain in OwnedFields():
+                return not codomain.one().is_zero()
+            case _ if domain in OwnedOrders():
+                return codomain.characteristic().is_zero()
+            case _:
+                return super().is_injective()
+
 
 def _selected_engine_ring_morphism(morphism):
     r"""Return a retained private ring-map realization, or None.

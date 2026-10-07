@@ -3617,6 +3617,38 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""``|Res_f(M)| = |M|``: restriction of scalars keeps the underlying set."""
             return self.module_over_extension().cardinality()
 
+        def _scalars_act_by_units(self):
+            r"""Whether every nonzero ``r in R`` acts on ``Res_f(M)`` invertibly.
+
+            When ``S`` is a field and ``f`` is injective, ``f(r)`` is a nonzero
+            element of a field for ``r != 0``, so ``r m = f(r) m`` vanishes
+            only when ``m`` does.
+            """
+            return self.extension_ring() in OwnedFields() and self.ring_map().is_injective() is True
+
+        def _torsion_freeness_decision(self):
+            r"""``Res_f(M)`` is torsion-free when ``S`` is a field and ``f`` is injective.
+
+            ``r m = f(r) m = 0`` with ``r != 0`` gives ``m = f(r)^{-1} f(r) m = 0``.
+            """
+            match self._scalars_act_by_units():
+                case True:
+                    return True
+                case False:
+                    return Unknown
+
+        def _torsion_decision(self):
+            r"""``Res_f(M)`` is torsion only when ``M = 0``, when ``S`` is a field and ``f`` is injective.
+
+            No nonzero element is killed by a nonzero scalar, so every element
+            is torsion exactly when there is no nonzero element.
+            """
+            match self._scalars_act_by_units():
+                case True:
+                    return self.is_zero()
+                case False:
+                    return Unknown
+
         def _underlying_additive_element(self, element):
             element = self(element)
             extension = self.module_over_extension()
