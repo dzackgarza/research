@@ -1,5 +1,7 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
+from math import prod
+
 from sage.all import CC as SageCC
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -20,6 +22,7 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedRings,
     _engine_ring,
     _own_ring,
 )
@@ -1379,12 +1382,9 @@ def _complete_intersection_integral_singular_cohomology(scheme, degree):
         return _free_integral_topology_group(scheme, degree, 1 - degree % 2, realization)
     series = PowerSeriesRing(SageZZ, "t", default_prec=dimension + 1)
     t = series.gen()
-    chern = (1 + t) ** (dimension + len(degrees) + 1)
-    for equation_degree in degrees:
-        chern *= ~(1 + equation_degree * t)
-    euler = chern[dimension]
-    for equation_degree in degrees:
-        euler *= equation_degree
+    normal_chern = prod((1 + equation_degree * t for equation_degree in degrees), start=series.one())
+    chern = (1 + t) ** (dimension + len(degrees) + 1) * ~normal_chern
+    euler = prod(degrees, start=SageZZ.one()) * chern[dimension]
     middle = (-1) ** dimension * (euler - (dimension + 1) + (1 - dimension % 2))
     return _free_integral_topology_group(scheme, degree, int(middle), realization)
 
@@ -1457,11 +1457,16 @@ class _ComplexRealizationEngine:
         - a smooth complete toric variety: the cycle map ``CH^k -> H^{2k}`` is
           an isomorphism and odd cohomology vanishes (Danilov--Jurkiewicz);
         - a smooth projective complete intersection: the Lefschetz hyperplane
-          theorem and the Euler number of its Chern class (Dimca, Ch. 5, §3).
+          theorem and the Euler number of its Chern class (Dimca, Ch. 5, §3);
+        - projective space ``P^n``: Hatcher, *Algebraic Topology* [Hat02],
+          Thm. 3.19, ``H^*(CP^n; ZZ) = ZZ[alpha]/(alpha^{n+1})`` with
+          ``|alpha| = 2``, so ``H^k`` is free of rank one for even
+          ``0 <= k <= 2n`` and zero otherwise.
         """
         from dzack_research.preamble.categories.schemes.complete_intersections import (
             ProjectiveCompleteIntersections,
         )
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
         from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
             ToricSchemes,
         )
@@ -1469,14 +1474,20 @@ class _ComplexRealizationEngine:
         scheme = self.scheme()
         base = scheme.scheme_base_ring()
         match scheme:
+            case _ if scheme in ProjectiveSpaces(base):
+                degree = int(degree)
+                rank = int(0 <= degree <= 2 * int(scheme.dimension()) and degree % 2 == 0)
+                return _free_integral_topology_group(
+                    scheme, degree, rank, "complex analytic realization of projective space"
+                )
             case _ if scheme in ToricSchemes(base):
                 return _toric_integral_singular_cohomology(scheme, degree)
             case _ if scheme in ProjectiveCompleteIntersections(base):
                 return _complete_intersection_integral_singular_cohomology(scheme, degree)
             case _:
                 assert False, (
-                    f"H^{degree}({self}; ZZ) is computed only for smooth complete toric varieties "
-                    f"and smooth projective complete intersections, and {scheme} is in "
+                    f"H^{degree}({self}; ZZ) is computed only for projective spaces, smooth complete toric "
+                    f"varieties and smooth projective complete intersections, and {scheme} is in "
                     f"{scheme.category()}"
                 )
 
@@ -1516,7 +1527,7 @@ def _rational_complex_embedding():
     r"""The embedding ``QQ -> CC``; it is the only one, since ``QQ`` is the prime field."""
     rationals = _own_ring(SageQQ)
     complexes = _own_ring(SageCC)
-    return rationals.Mor(complexes)(lambda scalar: complexes(scalar))
+    return rationals.Mor(complexes, category=OwnedRings())(lambda scalar: complexes(scalar))
 
 
 __all__ = [

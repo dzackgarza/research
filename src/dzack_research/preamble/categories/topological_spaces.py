@@ -296,8 +296,8 @@ class TopologicalSpaces(OwnedCategory):
             """
             assert False, (
                 f"the integral singular cohomology H^{degree}({self}; ZZ) is computed only for the "
-                "complex realizations of smooth complete toric varieties and smooth projective "
-                "complete intersections over QQ"
+                "complex realizations of projective spaces, smooth complete toric varieties and "
+                "smooth projective complete intersections over QQ"
             )
 
         def betti_number(self, degree):
@@ -318,17 +318,23 @@ class TopologicalSpaces(OwnedCategory):
             ``chi(X) = sum_n (-1)^n rank H_n(X)``.  The sum runs over the
             degrees up to the dimension of a finite CW complex homotopy
             equivalent to ``X``, which the realization states in
-            :meth:`_finite_cw_dimension`.
+            :meth:`_finite_cw_dimension`.  The sum is the contraction of the
+            Betti vector ``(b_0, ..., b_d)`` with the covector
+            ``((-1)^0, ..., (-1)^d)``.
             """
             from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+            from dzack_research.preamble.tensors import tensor
             from sage.rings.integer_ring import ZZ as SageZZ
 
             integers = _own_ring(SageZZ)
-            total = integers.zero()
-            for degree in range(int(self._finite_cw_dimension()) + 1):
-                betti = integers(int(self.betti_number(degree)))
-                total += betti if degree % 2 == 0 else -betti
-            return total
+            degrees = range(int(self._finite_cw_dimension()) + 1)
+            betti_vector = tensor.vector(
+                integers, [integers(int(self.betti_number(degree))) for degree in degrees]
+            )
+            alternating_signs = tensor.covector(
+                integers, [integers((-1) ** degree) for degree in degrees]
+            )
+            return alternating_signs.contract(betti_vector)
 
         def _finite_cw_dimension(self):
             r"""A bound ``d`` with ``X`` homotopy equivalent to a finite CW complex of dimension ``<= d``.

@@ -1787,6 +1787,41 @@ def _affine_spec_morphism(algebra_morphism):
 # ---------------------------------------------------------------------------
 
 
+def _etale_comparison_embedding(scheme, invariant):
+    r"""The embedding ``sigma: k -> CC`` along which the etale ``invariant`` of ``scheme`` is computed.
+
+    Artin's comparison theorem (Freitag--Kiehl [FK88], Ch. I, Thm. 11.6)
+    computes etale cohomology of ``X_{kbar}`` as singular cohomology of
+    ``X(CC)`` when ``char k = 0``.  The embedding constructed here is the
+    unique one ``QQ -> CC``; any other base is a stated gap.
+    """
+    from sage.rings.rational_field import QQ as SageQQ
+
+    from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+        _rational_complex_embedding,
+    )
+
+    base = scheme.scheme_base_ring()
+    assert base in OwnedFields(), (
+        f"the etale invariant {invariant} of {scheme} is defined through X_kbar for X over a "
+        f"field k, but {scheme} is over {base}, which is not a field"
+    )
+    match base:
+        case _ if _engine_ring(base) is SageQQ:
+            return _rational_complex_embedding()
+        case _ if base.characteristic() == 0:
+            assert False, (
+                f"the etale invariant {invariant} of {scheme} is computed by comparison along an "
+                f"embedding {base} -> CC, and such an embedding is constructed only for QQ"
+            )
+        case _:
+            assert False, (
+                f"the etale invariant {invariant} of {scheme} over {base}, of characteristic "
+                f"{base.characteristic()}, has no comparison with a complex realization, and "
+                "etale cohomology in positive characteristic is not computed"
+            )
+
+
 def _normal_placement(base_ring) -> bool:
     r"""Whether \(\mathbb{A}^n_R\) and \(\mathbb{P}^n_R\) over ``base_ring`` are placed as normal.
 
@@ -2801,6 +2836,36 @@ class Schemes(OwnedCategoryOverBaseRing):
                     f"{scalar_embedding} has codomain {scalar_embedding.codomain()}"
                 )
                 return _complex_realization(self, scalar_embedding)
+
+            def betti_number(self, degree):
+                r"""``b_k(X) = dim_{Q_l} H^k_et(X_{kbar}, Q_l)`` for a prime ``l != char k``.
+
+                Freitag--Kiehl, *Etale Cohomology and the Weil Conjecture*
+                [FK88], Ch. I, §12: ``H^k(X, Q_l) = H^k(X, Z_l) (x) Q_l`` with
+                ``H^k(X, Z_l) = lim_n H^k(X, Z/l^n)``.  When ``char k = 0`` and
+                ``sigma: k -> CC`` is an embedding, Artin's comparison theorem
+                ([FK88], Ch. I, Thm. 11.6, for ``X x_{k, sigma} CC -> Spec CC``)
+                identifies ``H^k_et(X_{kbar}, Z/l^n)`` with
+                ``H^k(X(CC), Z/l^n)``.  Passing to the limit and tensoring
+                with ``Q_l`` gives ``b_k(X) = b_k(X(CC))``, the Betti number
+                of :meth:`complex_realization`.
+                """
+                return self.complex_realization(
+                    _etale_comparison_embedding(self, f"b_{degree}")
+                ).betti_number(degree)
+
+            def euler_characteristic(self):
+                r"""``chi(X) = sum_k (-1)^k b_k(X)``, with ``b_k`` the etale Betti numbers.
+
+                By :meth:`betti_number`, each ``b_k(X)`` equals
+                ``b_k(X(CC))`` along ``sigma: k -> CC``, so the alternating
+                sum is the Euler characteristic of the complex realization,
+                which :class:`TopologicalSpaces` computes as the contraction
+                of the Betti vector with ``((-1)^k)``.
+                """
+                return self.complex_realization(
+                    _etale_comparison_embedding(self, "chi")
+                ).euler_characteristic()
 
         def an_object(self):
             r"""The affine line, of finite type over the base ring."""
