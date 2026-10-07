@@ -94,7 +94,6 @@ from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
     aleph,
     cardinal,
-    continuum,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -3170,32 +3169,31 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return self in TopologicalGroups()
 
         def _cardinality_decision(self):
-            from dzack_research.preamble.categories.group.cyclic_subgroups import (
-                CyclicGroups,
-            )
-            from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
-                AbsoluteGaloisGroupsOfFiniteFields,
-            )
+            r"""``|G|``, from what the group's own data determine.
 
-            if self in CyclicGroups():
-                generator_order = cardinal(self.group_generator().order())
-                return (
-                    generator_order
-                    if generator_order.is_finite()
-                    else aleph(0)
-                )
-            if self in OwnedFiniteGroups():
-                return cardinal(_finite_order(self))
-            if self in GroupsWithChosenFreeBasis():
-                basis_cardinality = self.free_basis().cardinality()
-                if basis_cardinality == cardinal(0):
-                    return cardinal(1)
-                return Cardinalities().supremum(aleph(0), basis_cardinality)
-            if self in AbsoluteGaloisGroupsOfFiniteFields():
-                return continuum
-            if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
-                return aleph(0)
-            return Unknown
+            A finite group is counted by its engine.  A free group on a basis
+            ``S`` is trivial for empty ``S`` and otherwise has
+            ``max(aleph_0, |S|)`` elements, its reduced words.  An infinite
+            finitely generated group is a quotient of a free group of finite
+            rank, so it is countably infinite.  A subcategory whose datum
+            determines more supplies its own answer.
+            """
+            match self:
+                case _ if self in OwnedFiniteGroups():
+                    return cardinal(_finite_order(self))
+                case _ if self in GroupsWithChosenFreeBasis():
+                    basis_cardinality = self.free_basis().cardinality()
+                    if basis_cardinality == cardinal(0):
+                        return cardinal(1)
+                    return Cardinalities().supremum(aleph(0), basis_cardinality)
+                case _ if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
+                    return aleph(0)
+                case _:
+                    assert False, (
+                        f"cannot compute the cardinality of the group {self}: it is not known to be finite, "
+                        f"it has no chosen free basis, and it is not known to be infinite and finitely "
+                        f"generated (it is in {self.category()})"
+                    )
 
         def order(self):
             r"""The set cardinality, read as an integer when finite."""

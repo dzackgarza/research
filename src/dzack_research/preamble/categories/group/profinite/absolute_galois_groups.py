@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -147,6 +148,15 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
             finite generating set.
             """
             return self.topological_group_generators()
+
+        def _cardinality_decision(self):
+            r"""``|G_{F_q}| = 2^{aleph_0}``.
+
+            ``G_{F_q}`` is the profinite completion ``\widehat{ZZ} =
+            \prod_p ZZ_p``, and ``ZZ_2`` alone already has the continuum
+            of elements, its ``2``-adic digit sequences.
+            """
+            return continuum
 
 
 class OpenAbsoluteGaloisSubgroups(OwnedParameterizedCategory):

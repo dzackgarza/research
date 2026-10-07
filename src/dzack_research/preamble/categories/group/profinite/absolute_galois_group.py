@@ -6,7 +6,6 @@ from sage.categories.finite_fields import FiniteFields
 from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
-from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import Element
@@ -383,8 +382,8 @@ class _AbsoluteGaloisGroupEngine:
             inverse,
         )
 
-    def order(self):
-        r"""Return the order of ``G_K``, infinite for a finite or number field ``K``.
+    def _finiteness_decision(self):
+        r"""Return ``False`` for a finite or number field ``K``: ``G_K`` is infinite.
 
         ``G_K`` surjects onto every ``Gal(L/K)`` with ``L`` finite Galois over
         ``K`` inside the chosen closure, so finite quotients of unbounded
@@ -393,16 +392,6 @@ class _AbsoluteGaloisGroupEngine:
         field ``K`` the quotient ``(C_2)^r`` exists for every ``r`` (see
         ``_finite_generation_decision``), of order ``2^r``.
         """
-        assert self._is_finite_field() or self._is_number_field(), (
-            f"the order of {self} is computed only when its base field is finite or a "
-            f"number field, but the base field is {self._field}"
-        )
-        return Infinity
-
-    cardinality = order
-
-    def _finiteness_decision(self):
-        r"""Return ``False`` when :meth:`order` decides that ``G_K`` is infinite."""
         match self:
             case _ if self._is_finite_field() or self._is_number_field():
                 return False
