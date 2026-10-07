@@ -329,18 +329,22 @@ which *Coxeter diagrams answer subdiagram orders and drawings as Sage
 objects* already records as engine input.
 Repair: `coxeter-diagrams-construct-from-their-data` in TODO.
 
-### The session matrix does not take its ring
+### Free session functions construct objects
 
-A matrix over a ring `R` is a family of entries in `R`; the ring is part of
-the datum whenever the entries do not determine it. The session's `matrix`
-(`preamble/language_runtime.py`) takes one argument, the rows, and reads the
-ring from the entries. `matrix(ZZ, [[4, 1, 1], [1, 4, 1], [1, 1, 4]])`
-raises `TypeError: matrix() takes 1 positional argument but 2 were given`
-(observed 2026-10-07), and `matrix(ZZ, m, n, f)`, the matrix with entries
-`f(i, j)`, has no spelling.
-**Consumers:** `tests/lattices/test_vinberg_invariants.sage` (the affine
-`A_2` triangle at `t = 1`) and `tests/user_simulations/test_newcomer_session.sage`.
-Repair: `the-session-matrix-takes-its-ring` in TODO.
+A matrix is an element of the topological `R`-module `Mat_{n x m}(R)`, and a
+linear map is an element of `Hom_R(R^m, R^n)`. The map between them is
+neither injective nor surjective in general. The session's free `matrix`
+(`preamble/language_runtime.py:63`) reads the ring from the entries and
+returns an element of `ring.matrix_space(n, m)`, which `MatrixSpaces`
+presents as a Mor object. So one free function hides the parent and turns a
+matrix into a map. Eleven other free session functions also return new
+objects without their category: `finite_ordered_set`, `nikulin_invariants`,
+`signature_pair`, `signature_pairs`, `reflection_cosines`, `factorial`,
+`binomial`, `lmap`, `lzip`, `zipsum` and `to_var_names` (session survey,
+2026-10-08).
+**Consumers:** `tests/lattices/test_vinberg_invariants.sage:145` and
+`tests/user_simulations/test_newcomer_session.sage:126` call `matrix(ZZ, ...)`.
+Repair: `session-objects-are-built-by-their-parents` in TODO.
 
 ### A finite cardinal does not convert into the integers
 
