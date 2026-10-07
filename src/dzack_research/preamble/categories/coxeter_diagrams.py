@@ -1059,11 +1059,11 @@ class CoxeterDiagrams(OwnedCategory):
 
         @cached_method
         def scaled_cartan_type(self):
-            r"""Return the reference diagram of the type of this connected elliptic diagram.
+            r"""Return the diagram of the type of this connected elliptic diagram.
 
             A connected elliptic Coxeter diagram is the diagram of exactly one
             finite irreducible Coxeter group (Humphreys, *Reflection Groups and
-            Coxeter Groups*, §2.7), and the reference diagram of that type is
+            Coxeter Groups*, §2.7), and the Coxeter diagram of that type is
             returned.  Its :meth:`label` names the type, as ``A2`` or ``I2(5)``.
 
             A rooted diagram is a root basis in its realization, and its roots
@@ -1071,11 +1071,12 @@ class CoxeterDiagrams(OwnedCategory):
             root squares: \(B_n\) has one short simple root and \(C_n\) has one
             long one (Humphreys, *Introduction to Lie Algebras and
             Representation Theory*, §11.4).  At rank two they are one root
-            system, whose reference is ``C2``.  The rooted reference is the
-            simple-root diagram of the root lattice of the recognized type,
-            twisted so that its shortest root has square \(2s\) for the
-            :meth:`root_scale` \(s\); :meth:`reference_isomorphism` identifies it
-            with this diagram.  Recognition of a rooted diagram is implemented
+            system, whose diagram of the type is ``C2``.  For a rooted diagram,
+            the diagram of the type is the diagram of the simple roots of the
+            root lattice of the recognized type, twisted so that its shortest
+            root has square \(2s\) for the :meth:`root_scale` \(s\);
+            :meth:`isomorphism_from_type_diagram` identifies it with this
+            diagram.  Recognition of a rooted diagram is implemented
             for crystallographic root bases.
             """
             assert self.is_connected() and self.is_elliptic(), (
@@ -1093,9 +1094,9 @@ class CoxeterDiagrams(OwnedCategory):
             match self.is_rooted(), letter:
                 case False, "I":
                     order = self.coxeter_entry(self.vertex(0), self.vertex(1))
-                    return _unrooted_reference_diagram(letter, int(order))
+                    return _coxeter_diagram_of_type(letter, int(order))
                 case False, _:
-                    return _unrooted_reference_diagram(letter, rank)
+                    return _coxeter_diagram_of_type(letter, rank)
             assert letter not in ("H", "I"), (
                 f"the type of the rooted {self} is recognized for crystallographic root bases, "
                 f"and its Coxeter type {cartan} is not crystallographic"
@@ -1112,7 +1113,7 @@ class CoxeterDiagrams(OwnedCategory):
                         f"{squares} match neither B (one short root) nor C (one long root)"
                     )
                     letter = "B" if short_count == 1 else "C"
-            reference = _rooted_reference_diagram(letter, rank, engine_scale)
+            reference = _simple_root_diagram_of_type(letter, rank, engine_scale)
             assert reference._engine_root_intersection_graph().is_isomorphic(
                 self._engine_root_intersection_graph(), edge_labels=True
             ), (
@@ -1124,17 +1125,17 @@ class CoxeterDiagrams(OwnedCategory):
         def label(self):
             r"""Return the name of the type of this connected elliptic diagram.
 
-            It is the label of the reference diagram :meth:`scaled_cartan_type`,
+            It is the label of the diagram of the type, :meth:`scaled_cartan_type`,
             as ``A2``, ``C2`` or ``I2(5)``.
             """
             return self.scaled_cartan_type()._type_label
 
-        def reference_isomorphism(self):
-            r"""Return an isomorphism from the reference diagram of the type onto this diagram.
+        def isomorphism_from_type_diagram(self):
+            r"""Return an isomorphism from the diagram of the type onto this diagram.
 
             For a rooted diagram it also preserves the root squares and
-            pairings, so it carries the ordered simple roots of the reference to
-            an ordering of the roots of this diagram.
+            pairings, so it carries the ordered simple roots of the diagram of
+            the type to an ordering of the roots of this diagram.
             """
             reference = self.scaled_cartan_type()
             match self.is_rooted():
@@ -1147,11 +1148,11 @@ class CoxeterDiagrams(OwnedCategory):
             isomorphic, certificate = source.is_isomorphic(
                 target, edge_labels=True, certificate=True
             )
-            assert isomorphic, f"the reference diagram {reference} is not isomorphic to {self}"
+            assert isomorphic, f"the diagram of the type {reference} is not isomorphic to {self}"
             return reference.Mor(self)(certificate.__getitem__)
 
         def component_scaled_cartan_types(self):
-            r"""Return the component-indexed family of the reference diagrams of the components."""
+            r"""Return the component-indexed family of the diagrams of the types of the components."""
             from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             components = self.connected_components()
@@ -1159,7 +1160,7 @@ class CoxeterDiagrams(OwnedCategory):
             return indexed_family(
                 labels,
                 lambda position: components[int(position)].scaled_cartan_type(),
-                name="Reference diagrams of Coxeter components",
+                name="Diagrams of the types of the Coxeter components",
             )
 
         def drawing_conventions(self):
@@ -1255,7 +1256,7 @@ class CoxeterDiagrams(OwnedCategory):
             return self.tikz_picture()
 
         def root_intersection_graph(self):
-            r"""Return the labelled graph of root squares and root pairings.
+            r"""Return the Gram matrix of the roots, as a labelled graph.
 
             Vertex \(v\) is labelled \(q(r_v)\) and the edge \(vw\) is labelled
             \(b(r_v,r_w)\), for every pair that pairs nonzero.  This is the
@@ -1397,7 +1398,7 @@ class CoxeterDiagrams(OwnedCategory):
 
 
 def _root_basis_diagram(roots, names=None, index_set=None, positions=None, type_label=None):
-    r"""Return the rooted diagram of ``roots``, named ``type_label`` when it is a reference diagram."""
+    r"""Return the rooted diagram of ``roots``, named ``type_label`` when it is the diagram of a type."""
     roots = tuple(roots)
     if not roots:
         raise ValueError(
@@ -1447,8 +1448,8 @@ def _root_basis_diagram(roots, names=None, index_set=None, positions=None, type_
 
 
 @cached_function
-def _unrooted_reference_diagram(letter, index):
-    r"""Return the reference diagram of the finite irreducible Coxeter type ``(letter, index)``.
+def _coxeter_diagram_of_type(letter, index):
+    r"""Return the Coxeter diagram of the finite irreducible Coxeter type ``(letter, index)``.
 
     ``index`` is the rank, except for the dihedral type \(I_2(p)\), whose index
     is \(p\).  The diagram is labelled ``I2(p)`` or by letter and rank.
@@ -1463,8 +1464,8 @@ def _unrooted_reference_diagram(letter, index):
 
 
 @cached_function
-def _rooted_reference_diagram(letter, rank, engine_scale):
-    r"""Return the reference root basis of type ``letter``/``rank`` at root scale ``engine_scale``.
+def _simple_root_diagram_of_type(letter, rank, engine_scale):
+    r"""Return the diagram of the simple roots of type ``letter``/``rank`` at root scale ``engine_scale``.
 
     The roots are the simple roots of ``Lattices.root_lattice(letter, rank)``,
     whose shortest root has square \(-2\), twisted by \(-s\) so that the

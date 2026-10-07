@@ -108,8 +108,8 @@ def _engine_rho_coweight_pairings(diagram, black):
 class SatakeDiagrams(OwnedCategory):
     r"""Satake diagrams: a Dynkin diagram, a set of black nodes and a diagram involution.
 
-    ``SatakeDiagrams()(D, X, tau)`` takes a rooted Coxeter diagram ``D`` (the
-    Dynkin diagram of its root basis), the black nodes ``X`` among its vertices,
+    ``SatakeDiagrams()(D, X, tau)`` takes the Dynkin diagram ``D`` of a root
+    basis (a Coxeter diagram that retains its roots), the black nodes ``X`` among its vertices,
     and a morphism ``tau`` of ``D`` to itself that the caller constructs in
     ``D.Mor(D)``.  The result is a Coxeter diagram built on the data of ``D``,
     and :meth:`ParentMethods.dynkin_diagram` returns ``D`` itself.

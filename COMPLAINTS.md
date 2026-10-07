@@ -326,8 +326,8 @@ and of a Vinberg invariant matrix. Two diagrams built separately on the
 vertex set `{0, 1}` have unequal Coxeter matrices even with equal entries:
 `tests/lattices/test_coxeter.sage`, `test_vinberg_invariants.sage` and
 `test_coxeter_subdiagrams.sage` (parallel and divergent mirrors),
-`test_coxeter_diagrams_of_root_configurations.sage` (the `B_3` reference
-diagram) and `tests/schemes/test_regular_polytope_symmetry.sage` assert
+`test_coxeter_diagrams_of_root_configurations.sage` (the diagram of
+type `B_3`) and `tests/schemes/test_regular_polytope_symmetry.sage` assert
 equalities that are true and answer `False`.
 Repair: `products-of-equal-families-are-equal` in TODO.
 

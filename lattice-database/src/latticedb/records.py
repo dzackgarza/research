@@ -253,18 +253,18 @@ def _root_component(
 ) -> tuple[str, Fraction, tuple[tuple[int, ...], ...]]:
     """Serialize one root-system component: its type, signed scale and ordered simple roots.
 
-    The simple roots are listed in the vertex order of the component's reference
-    diagram, in the coordinates of the lattice's module generators.  The card names
-    the rank-two type B2, where the preamble's reference diagram is C2.
+    The simple roots are listed in the vertex order of the diagram of the component's
+    type, in the coordinates of the lattice's module generators.  The card names the
+    rank-two type B2, where the preamble's diagram of that type is C2.
     """
-    reference_isomorphism = component.reference_isomorphism()
+    isomorphism_from_type_diagram = component.isomorphism_from_type_diagram()
     labels = tuple(lattice.module_generating_set())
     roots = tuple(
         tuple(
-            int(component.root(reference_isomorphism(vertex)).to_vector()(label))
+            int(component.root(isomorphism_from_type_diagram(vertex)).to_vector()(label))
             for label in labels
         )
-        for vertex in reference_isomorphism.domain().vertices()
+        for vertex in isomorphism_from_type_diagram.domain().vertices()
     )
     scale = component.root_scale()
     root_type = "B2" if component.label() == "C2" else component.label()

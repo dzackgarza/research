@@ -191,8 +191,8 @@ class WeightedGraph(Record):
     def satake_diagram(self):
         """The Satake diagram the card's root basis and Satake marks present, or None.
 
-        The Dynkin diagram is the rooted diagram of the simple roots of the presented
-        root basis; the black nodes are the vertices marked `black`; the involution
+        The Dynkin diagram is the diagram of the simple roots of the presented root
+        basis; the black nodes are the vertices marked `black`; the involution
         exchanges the endpoints of each `satake_pair` edge and fixes every other node.
         """
         form = self._gram_form()

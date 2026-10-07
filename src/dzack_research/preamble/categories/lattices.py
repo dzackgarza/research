@@ -3614,10 +3614,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         def reflective_root_system_components(self):
             r"""Return the irreducible components of the reflective root system.
 
-            Each component is a connected rooted Coxeter diagram whose roots are
-            simple roots in this lattice; its :meth:`label`, :meth:`root_scale`
-            and :meth:`reference_isomorphism` give its type, scale and the
-            reference order of its simple roots.
+            Each component is a connected Coxeter diagram of simple roots in
+            this lattice; its :meth:`label`, :meth:`root_scale` and
+            :meth:`isomorphism_from_type_diagram` give its type, its scale and
+            the order of its simple roots that the diagram of the type fixes.
             """
             return _reflective_root_system_components(self)
 
@@ -5563,10 +5563,11 @@ class RootLattices(OwnedCategory):
             return CartanType(self.label())
 
         def dynkin_diagram(self):
-            r"""Return the rooted Coxeter diagram of the simple roots.
+            r"""Return the Dynkin diagram of the simple roots.
 
-            Its vertices are the simple roots, with their squares and pairings,
-            which is the datum a Dynkin diagram draws; its connected components
+            It is the Coxeter diagram of the simple roots that retains the
+            roots: its vertices are the simple roots, with their squares and
+            pairings, which is the datum a Dynkin diagram draws; its connected components
             are the irreducible components of the root system.
             """
             from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
