@@ -134,8 +134,8 @@ def _printed_summary(lattice) -> tuple[int, tuple[int, int], int, tuple[int, ...
     )
 
 
-def basis_gives_isometry(source, target, basis_rows) -> bool:
-    """Whether the printed change of basis `P` is an isometry from `source` onto `target`.
+def basis_isometry(source, target, basis_rows):
+    """The printed change of basis `P` as an isometry from `source` onto `target`, or `None`.
 
     The columns of `P` are the images of the generators of `source` in the
     coordinates of `target`.  The module map they define is an isometry when it
@@ -143,11 +143,13 @@ def basis_gives_isometry(source, target, basis_rows) -> bool:
     """
     images = tuple(target(column) for column in zip(*basis_rows, strict=True))
     module_map = source.module_category().Mor(source, target)(images)
-    return (
+    if (
         source.Mor(target).preserves_forms(module_map)
         and module_map.is_injective()
         and module_map.is_surjective()
-    )
+    ):
+        return module_map
+    return None
 
 
 def _primitive_orthogonal_pair(ambient, first, second) -> bool:
@@ -251,7 +253,7 @@ def check(
                 printed.twist
             )
             source = Lattices(ZZ)(printed.gram_tensor)
-            if not basis_gives_isometry(source, target, printed.basis):
+            if basis_isometry(source, target, printed.basis) is None:
                 found.append(
                     f"Table 10.3 row {invariant.n}: P is not an isometry from the printed Gram tensor to {printed.record}({printed.twist})"
                 )

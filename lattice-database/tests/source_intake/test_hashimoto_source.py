@@ -52,7 +52,7 @@ def test_row_81_change_of_basis_lands_on_the_seeded_lattice_card() -> None:
     printed = next(item for item in invariants if item.n == 81).lattices[0]
     source = Lattices(ZZ)(printed.gram_tensor)
     target = Lattices(ZZ)(_lattice(printed.record).gram_tensor).twist(printed.twist)
-    assert hashimoto.basis_gives_isometry(source, target, printed.basis)
+    assert hashimoto.basis_isometry(source, target, printed.basis) is not None
 
 
 def test_row_81_embeddings_were_seeded_as_orthogonal_primitive_complements() -> None:
