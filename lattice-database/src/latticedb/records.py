@@ -241,6 +241,8 @@ def _integral(
             block["quadratic_character"] = int(
                 lattice.discriminant_character_discriminant()
             )
+        if lattice.is_even():
+            block["level"] = int(lattice.level())
         # Other stored invariants are preserved; their computation has separate preamble owners.
         for field in model.IntegralData.model_fields:
             if field not in block and field in declared:
@@ -284,6 +286,7 @@ def _definite(
     integral_lattice=None,
 ) -> dict[str, Yaml]:
     declared = _block(record, "definite")
+    labels = tuple(computation_lattice.module_generating_set())
     minimum_value = computation_lattice.minimum()
     minimum = Fraction(
         int(abs(minimum_value.numerator())),
@@ -292,6 +295,12 @@ def _definite(
     block: dict[str, Yaml] = {
         "minimum": rational(minimum),
         "kissing_number": int(computation_lattice.kissing_number()),
+        # A twist L(m) has the vectors of L and rescales the form, so it keeps the minimal shell and perfection.
+        "minimal_vectors": sorted(
+            [int(vector.to_vector()(label)) for label in labels]
+            for vector in computation_lattice.shortest_vectors()
+        ),
+        "perfect": bool(computation_lattice.is_voronoi_perfect()),
     }
     if integral_lattice is not None:
         stored_theta = declared.get("theta_series")
@@ -363,8 +372,9 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     """Return the card with selected fields supplied by preamble-owned operations.
 
     The adapter serializes rank, signature, determinant, definiteness, the dual
-    Gram tensor, selected integral invariants, definite minimum/kissing number
-    indefinite isotropy, theta prefixes and root-system/root-sublattice data from
+    Gram tensor, selected integral invariants including the level of an even
+    lattice, the definite minimum, kissing number, minimal shell and Voronoi
+    perfection, indefinite isotropy, theta prefixes and root-system/root-sublattice data from
     preamble objects.
 
     A field not returned by these preamble calls is preserved when already present.
@@ -476,11 +486,20 @@ def derived_projection(record: Mapping[str, Yaml]) -> dict[str, Yaml]:
                 "delta",
                 "bad_reduction_primes",
                 "quadratic_character",
+                "level",
             ),
         ),
         (
             "definite",
-            ("minimum", "kissing_number", "theta_series", "root_system", "roots"),
+            (
+                "minimum",
+                "kissing_number",
+                "minimal_vectors",
+                "perfect",
+                "theta_series",
+                "root_system",
+                "roots",
+            ),
         ),
         ("indefinite", ("isotropic",)),
     ):
