@@ -29,7 +29,7 @@ def test_genus_of_a2_is_determined_by_signature_and_discriminant_form() -> None:
     determinant ``3``.
     """
     lattice = Lattices(ZZ)("A2")
-    genus = Genus(signature_pair(0, 2), lattice.discriminant_quadratic_form())
+    genus = Lattices(ZZ).genus(signature_pair(0, 2), lattice.discriminant_quadratic_form())
 
     assert genus == lattice.genus()
     assert genus.determinant() == 3

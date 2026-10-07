@@ -293,6 +293,29 @@ def _engine_torsion_form(normalized_form, *, quadratic: bool):
     return engine
 
 
+def _even_lattice_genus_engine(form, signature):
+    r"""Return Sage's finite quadratic form of ``form`` and the engine signature.
+
+    The pair is private scratch for the existence and representative
+    computations of [nikulin1979integral, Thm. 1.10.1]; it never leaves this
+    module's callers.
+    """
+    engine = _engine_torsion_form(form.invariant_factor_form().codomain(), quadratic=True)
+    return engine, (SageZZ(int(signature.first())), SageZZ(int(signature.second())))
+
+
+def _even_lattice_genus_exists(form, signature) -> bool:
+    r"""Decide whether an even lattice of ``signature`` has discriminant form ``form``."""
+    engine, pair = _even_lattice_genus_engine(form, signature)
+    return bool(engine.is_genus(pair, even=True))
+
+
+def _even_lattice_genus_gram(form, signature):
+    r"""Return the private Gram matrix of one even lattice with these invariants."""
+    engine, pair = _even_lattice_genus_engine(form, signature)
+    return engine.genus(pair).representative()
+
+
 def _value_module(form, *, quadratic: bool):
     r"""Return the value module through the owned form interface."""
     return form.value_module()

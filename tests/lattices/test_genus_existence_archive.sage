@@ -23,7 +23,7 @@ def test_a2_discriminant_genus_exists_exactly_when_the_signature_satisfies_milgr
 
     assert discriminant.brown_invariant() == 6
     for signature, exists in expected.items():
-        assert Genus(signature, discriminant).exists() is exists
+        assert discriminant.is_discriminant_form_of_even_lattice(signature_pair(*signature)) is exists
 
 
 def test_adjoining_hyperbolic_planes_to_a2_realizes_the_indefinite_genera() -> None:
@@ -31,5 +31,5 @@ def test_adjoining_hyperbolic_planes_to_a2_realizes_the_indefinite_genera() -> N
     a2 = Lattices(ZZ)("A2")
     u = Lattices(ZZ)("U")
 
-    assert Genus((1, 3), discriminant) == (a2 + u).genus()
-    assert Genus((2, 4), discriminant) == (a2 + u + u).genus()
+    assert Lattices(ZZ).genus(signature_pair(1, 3), discriminant) == (a2 + u).genus()
+    assert Lattices(ZZ).genus(signature_pair(2, 4), discriminant) == (a2 + u + u).genus()
