@@ -22,10 +22,7 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.pure.modules import (
-    Modules,
-    _torsion_module_presented_by_matrix,
-)
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -428,11 +425,13 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 "is not an integer"
             )
             order = self.base_ring()(order_in_field)
-            cyclic = _torsion_module_presented_by_matrix(
-                ((order,),),
-                base_ring=self.base_ring(),
+            # gZ/nZ is R/(n/g) on one generator: the cokernel of the relation
+            # morphism r: R -> R, e |-> (n/g) e.
+            line = self.base_ring().free_module(1)
+            label = line.module_generating_set()[0]
+            relations = line.module_category().Mor(line, line)(
+                {label: line.scalar_multiple(order, line.module_generator(label))}
             )
-            label = cyclic.module_generating_set()[0]
             image = self(generator)
 
             def lift_from_ambient(subobject, element):
@@ -448,7 +447,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 )
 
             subobject = ModulesWithChosenFinitePresentation(self.base_ring())(
-                cyclic.presentation(),
+                relations,
                 category=owned_category_join((
                     ModuleSubobjects(self.base_ring()),
                     Modules(self.base_ring()).FinitelyPresented().Torsion(),

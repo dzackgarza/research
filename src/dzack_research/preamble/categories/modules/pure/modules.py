@@ -1337,6 +1337,19 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return this module tensored with ``other`` over the common base ring."""
             return self.module_category().tensor_product((self, other))
 
+        def __add__(self, other):
+            r"""Return the direct sum ``self ⊕ other``, the biproduct of the two summands.
+
+            The two-index case of ``Modules(R).biproduct`` over the common
+            base ring ``R``.
+            """
+            modules = Modules(self.base_ring())
+            match other in modules:
+                case True:
+                    return modules.biproduct((self, other))
+                case False:
+                    return NotImplemented
+
         def pairings_with(self, right_module, value_module):
             r"""Return bilinear pairings ``self x right_module -> value_module``."""
             from dzack_research.preamble.categories.forms.forms import _pairings
@@ -2369,18 +2382,15 @@ class Modules(OwnedCategoryOverBaseRing):
                         f"the orders {orders} include 0, and R/(0) = {ring} is not a torsion module"
                     )
                 orders = tuple(order for order in orders if not order.is_unit())
-                size = len(orders)
-
-                relations = ring.matrix_space(size, size).from_rows(
-                    tuple(
-                        tuple(
-                            order if row == column else ring.zero()
-                            for column in range(size)
-                        )
-                        for row, order in enumerate(orders)
-                    )
+                # The relation morphism r: R^n -> R^n, e_i |-> a_i e_i.
+                free = ring.free_module(len(orders))
+                relations = free.module_category().Mor(free, free)(
+                    {
+                        label: free.scalar_multiple(order, free.module_generator(label))
+                        for label, order in zip(free.module_generating_set(), orders, strict=True)
+                    }
                 )
-                return _torsion_module_presented_by_matrix(relations, base_ring=ring)
+                return self(relations)
 
             def from_abelian_group(self, group):
                 r"""Return a finite abelian group as a torsion ``ZZ``-module presentation.
@@ -2416,12 +2426,11 @@ class Modules(OwnedCategoryOverBaseRing):
 
                 generators = tuple(group.group_generators())
                 ring = self.base_ring()
+                # The relation morphism r: F(relations) -> F(group generators).
+                target = ring.free_module(finite_ordered_set(generators))
                 if not generators:
-                    return _torsion_module_presented_by_matrix(
-                        engine_matrix(SageZZ, 0, 0),
-                        finite_ordered_set(()),
-                        base_ring=ring,
-                    )
+                    source = ring.free_module(0)
+                    return self(source.module_category().Mor(source, target)({}))
                 orders = tuple(int(generator.order()) for generator in generators)
                 search_size = prod(orders)
                 assert search_size <= 10**6, (
@@ -2458,10 +2467,26 @@ class Modules(OwnedCategoryOverBaseRing):
                 relations = engine_matrix(SageZZ, relation_rows)
                 reduced = _row_normal_form(relations, include_zero_rows=True)
                 full_rank_rows = reduced.matrix_from_rows(tuple(range(len(generators))))
-                return _torsion_module_presented_by_matrix(
-                    full_rank_rows,
-                    finite_ordered_set(generators),
-                    base_ring=ring,
+                source = ring.free_module(len(generators))
+
+                def relation_image(row):
+                    return target.linear_combination(
+                        {
+                            generator: ring(coefficient)
+                            for generator, coefficient in zip(generators, row, strict=True)
+                            if coefficient
+                        }
+                    )
+
+                return self(
+                    source.module_category().Mor(source, target)(
+                        {
+                            relation: relation_image(row)
+                            for relation, row in zip(
+                                source.module_generating_set(), full_rank_rows.rows(), strict=True
+                            )
+                        }
+                    )
                 )
 
     class Free(CategoryWithAxiom):
@@ -5290,51 +5315,3 @@ def _coordinate_images(morphism):
         return tuple(image(codomain_label) for codomain_label in codomain_labels)
 
     return tuple(coordinates(label) for label in morphism.domain().module_generating_set())
-
-
-def _torsion_module_presented_by_matrix(
-    relations, module_generating_set=None, *, base_ring=None
-):
-    r"""Return the torsion module presented by ``relations``.
-
-    ``relations`` is either the relation morphism ``r: F_1 -> F_0`` as an
-    owned matrix Mor element, or the family of relations, each written by
-    its coordinates in the module generators.
-    """
-
-    ring = _own_ring(SageZZ) if base_ring is None else base_ring
-    match relations:
-        case _ if element_parent(relations) in MatrixSpaces(ring):
-            images = _coordinate_images(relations)
-            width = int(relations.codomain().module_generating_set().cardinality())
-        case _:
-            images = tuple(tuple(row) for row in relations)
-            width = 0 if not images else len(images[0])
-    labels = (
-        finite_ordered_set(range(width))
-        if module_generating_set is None
-        else finite_ordered_set(module_generating_set)
-    )
-    if labels.cardinality() != cardinal(width):
-        raise ValueError(
-            f"the relations have {width} coordinates, but the module has {labels.cardinality()} generators {labels}"
-        )
-    target = ring.free_module(labels)
-    source = ring.free_module(len(images))
-
-    def relation_image(coordinates):
-        return target.linear_combination(
-            {
-                label: ring(coefficient)
-                for label, coefficient in zip(labels, coordinates, strict=True)
-                if coefficient
-            }
-        )
-
-    images_by_label = {
-        source_label: relation_image(coordinates)
-        for source_label, coordinates in zip(source.module_generating_set(), images, strict=True)
-    }
-    return Modules(ring).FinitelyPresented().Torsion()(
-        source.module_category().Mor(source, target)(images_by_label)
-    )

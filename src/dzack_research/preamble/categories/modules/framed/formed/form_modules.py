@@ -80,7 +80,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
     VectorSpaces,
-    _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -1732,10 +1731,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 )
                 return formed
 
-            def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
-                r"""Construct a torsion bilinear form from presentation and Gram data."""
+            def from_relations_and_gram(self, relation_morphism, gram, value_module):
+                r"""Construct a torsion bilinear form on ``coker(r)`` from ``r`` and a Gram matrix.
 
-                module = _torsion_module_presented_by_matrix(relations, module_generating_set)
+                ``relation_morphism`` is ``r: F(relations) -> F(module_generators)``;
+                ``gram`` gives ``b`` on the module generators, valued in ``value_module``.
+                """
+
+                module = Modules(self.base_ring()).FinitelyPresented().Torsion()(relation_morphism)
                 return self.from_module(module, gram, value_module)
 
             def cokernel(self, morphism):
@@ -2104,10 +2107,15 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 )
                 return formed
 
-            def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
-                r"""Construct a torsion quadratic form from presentation and Gram data."""
+            def from_relations_and_gram(self, relation_morphism, gram, value_module):
+                r"""Construct a torsion quadratic form on ``coker(r)`` from ``r`` and a Gram matrix.
 
-                module = _torsion_module_presented_by_matrix(relations, module_generating_set)
+                ``relation_morphism`` is ``r: F(relations) -> F(module_generators)``;
+                ``gram`` gives ``q`` on the diagonal and ``b`` off it on the module
+                generators, valued in ``value_module``.
+                """
+
+                module = Modules(self.base_ring()).FinitelyPresented().Torsion()(relation_morphism)
                 return self.from_module(module, gram, value_module)
 
             def cokernel(self, morphism):

@@ -151,8 +151,8 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjectConstruction,
     ModuleSubobjects,
+    Modules,
     TensorProductModules,
-    _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
@@ -3142,9 +3142,10 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             source_classes = tuple(graph)
             target_classes = tuple(graph[value] for value in source_classes)
-            labels = finite_ordered_set(range(len(source_classes)))
-            relations = _relations_among_generators(first_discriminant, source_classes)
-            abstract_glue = _torsion_module_presented_by_matrix(relations, labels)
+            abstract_glue = Modules(first_discriminant.base_ring()).FinitelyPresented().Torsion()(
+                _relations_among_generators(first_discriminant, source_classes)
+            )
+            labels = tuple(abstract_glue.module_generating_set())
 
             glue_values = first_discriminant.value_module()
             source_images = {label: source_class for label, source_class in zip(labels, source_classes, strict=True)}

@@ -5,9 +5,15 @@ def values():
     return FractionFieldQuotients(ZZ)(1)
 
 
+def relations():
+    r"""$r: \mathbb Z \to \mathbb Z$, $e \mapsto 2e$, whose cokernel is $\mathbb Z/2$."""
+    line = ZZ.free_module(1)
+    return line.End()({0: 2 * line.module_generator(0)})
+
+
 def from_data():
     r"""$\mathbb Z/2$ with $b(x, x) = 1/2 \bmod \mathbb Z$."""
-    return TorsionBilinearFormModules(ZZ).from_relations_and_gram([[2]], [[1/2]], values())
+    return TorsionBilinearFormModules(ZZ).from_relations_and_gram(relations(), [[1/2]], values())
 
 
 def test_the_data_and_the_lattice_constructions_agree() -> None:
@@ -16,7 +22,7 @@ def test_the_data_and_the_lattice_constructions_agree() -> None:
 
 
 def test_the_quadratic_refinement_construction_agrees() -> None:
-    quadratic = TorsionQuadraticFormModules(ZZ).from_relations_and_gram([[2]], [[-1/2]], FractionFieldQuotients(ZZ)(2))
+    quadratic = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(relations(), [[-1/2]], FractionFieldQuotients(ZZ)(2))
     assert from_data().is_isometric_to(quadratic.associated_bilinear_form())
 
 
