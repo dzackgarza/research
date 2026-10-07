@@ -404,7 +404,10 @@ class LocalGenusSymbol:
         [CS10, Ch. 15, §7.6].
         """
         integers = self.prime().parent()
-        return tuple(tuple(integers(entry) for entry in block) for block in self._engine().canonical_symbol())
+        return tuple(
+            tuple(_owned_engine_element(integers, SageZZ(entry)) for entry in block)
+            for block in self._engine().canonical_symbol()
+        )
 
     def __eq__(self, other):
         return isinstance(other, LocalGenusSymbol) and self.prime() == other.prime() and self.jordan_blocks() == other.jordan_blocks()
@@ -489,7 +492,13 @@ class _Genus(Sets().ObjectType):
         integers = _own_ring(SageZZ)
         prime = integers(prime)
         symbol = self._engine().local_symbol(_engine_element(integers, prime))
-        return LocalGenusSymbol(prime, symbol.canonical_symbol())
+        return LocalGenusSymbol(
+            prime,
+            tuple(
+                tuple(_owned_engine_element(integers, SageZZ(entry)) for entry in block)
+                for block in symbol.canonical_symbol()
+            ),
+        )
 
     def excess(self, prime):
         return self.local_symbol(prime).excess()
@@ -556,12 +565,16 @@ class _Genus(Sets().ObjectType):
             case _ if other is self:
                 return True
             case _ if other in _integral_lattice_genera():
+                integers = _own_ring(SageZZ)
                 return (
                     self.signature_pair() == other.signature_pair()
                     and self.determinant() == other.determinant()
                     and all(
-                        self.local_symbol(symbol.prime()) == other.local_symbol(symbol.prime())
-                        for symbol in self._engine().local_symbols()
+                        self.local_symbol(prime) == other.local_symbol(prime)
+                        for prime in (
+                            _owned_engine_element(integers, SageZZ(symbol.prime()))
+                            for symbol in self._engine().local_symbols()
+                        )
                     )
                 )
             case _:
@@ -3056,7 +3069,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     f"cannot decide whether {self!r} embeds primitively in II_({positive},{negative}): Nikulin's criterion needs an even nondegenerate lattice of finite rank, and {self!r} fails one of these"
                 )
             _signature = self.signature_pair()
-            source_positive, source_negative = _signature.first(), _signature.second()
+            source_positive, source_negative = ring(int(_signature.first())), ring(int(_signature.second()))
             if (positive - negative) % 8 != 0:
                 return False
             if positive < source_positive or negative < source_negative:
