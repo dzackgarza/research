@@ -197,6 +197,23 @@ Over `Zmod(n)` the question reduces to `ZZ`, because `(Z/n)[x]/I = Z[x]/(n, I)`.
 `Qp(3, 20).quotient(Qp(3, 20).ideal(3))` raises `ValueError: variable name '3bar' does not start with a letter`: Sage names the quotient's generator after the field's generator, which is `3`. With `names=('u',)` it returns the zero ring.
 Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: a field engine's quotient is built with an explicit private name.
 
+### `IntegralLattice(G).orthogonal_group().order()` recomputes in GAP the order that PARI already returned
+
+For a definite lattice, `IntegralLattice.orthogonal_group()` takes its generators from PARI's `qfauto` (through `QuadraticForm.automorphism_group()`), which returns `|O(L)|` with them, and discards the order.
+`.order()` then asks GAP for `Size` of the matrix group, which GAP computes from the generators by an orbit algorithm.
+`QuadraticForm(ZZ, 2*G).number_of_automorphisms()` reads the PARI order.
+Best of three runs, except the GAP order and the group construction (one run each, since both are cached), SageMath 10.10.beta8, 2026-10-07, `G = CartanMatrix(['E', n]).change_ring(ZZ)`:
+
+| n | `pari(G).qfauto()` | `number_of_automorphisms()` | `orthogonal_group()` | `.gens()` | `.order()` from GAP | `.order()` after `gap().SetSize(...)` | order of O(L) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 6 | 1.26 ms | 1.44 ms | 489 ms (first call, includes warm-up) | 24.8 ms | 771 ms | 0.008 ms | 103680 |
+| 7 | 1.06 ms | 2.03 ms | 47.6 ms | 24.5 ms | 1760 ms | 0.008 ms | 2903040 |
+| 8 | 2.58 ms | 3.55 ms | 34.9 ms | 20.3 ms | 8366 ms | 0.008 ms | 696729600 |
+
+Reproduce with `~/.local/bin/sage probe.sage`, where the probe times the calls above for `n = 6, 7, 8`.
+Route chosen: the private engine of `O(L)` (`LatticeIsometryMor._engine_group`, `src/dzack_research/preamble/categories/lattice_morphisms.py`) records the PARI order on the GAP model with `SetSize`, so the group's cardinality is the engine's order and never a GAP orbit computation.
+Depends on this: `O(L).cardinality()` for every definite lattice.
+
 ## mypy
 
 ### A star import that rebinds a name is rejected, and the first binding wins

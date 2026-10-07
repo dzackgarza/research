@@ -1640,7 +1640,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         signature = lattice.signature_pair()
         if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
             gram = -gram
-        return IntegralLattice(gram).orthogonal_group()
+        engine = IntegralLattice(gram).orthogonal_group()
+        # PARI's ``qfauto`` (Plesken--Souvignier) returns |O(L)| with the
+        # generators; GAP would otherwise recompute the order of the matrix
+        # group by an orbit algorithm.  TRAPS.md records both wall times.
+        engine.gap().SetSize(SageZZ(QuadraticForm(SageZZ, 2 * gram).number_of_automorphisms()))
+        return engine
 
     def _from_engine(self, _engine_element):
         r"""Transport one backend row-action isometry to a live automorphism."""
@@ -1718,11 +1723,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             )
 
             return orthogonal_group_generators(self)
-        backend_generators = self._engine_group().gens()
-        positions = Sets.Δ[len(backend_generators) - 1]
+        generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
+        positions = Sets.Δ[len(generators) - 1]
         return FiniteOrderedSets().from_indexed(
             positions,
-            lambda position: self._from_engine(backend_generators[int(position)]),
+            lambda position: generators[int(position)],
             name=f"Orthogonal-group generators of {lattice}",
         )
 
