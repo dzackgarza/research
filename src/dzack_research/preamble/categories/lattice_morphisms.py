@@ -19,10 +19,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
-    Groups,
     OwnedFiniteGroups,
     OwnedGroups,
-    _fix_selected_group_resolution_data,
+    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -1313,7 +1312,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             and domain.module_rank().is_finite()
             and domain.is_definite()
         ):
-            self._retain_group_framing(self._computed_group_generators())
+            self._retain_group_framing()
 
     def _element_constructor_(self, images):
         if isinstance(images, LatticeIsometryMethods):
@@ -1727,17 +1726,19 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             name=f"Orthogonal-group generators of {lattice}",
         )
 
-    def _retain_group_framing(self, generators) -> None:
-        r"""Retain one computed exact generating family as this group's framing."""
-        source = Groups.Free(index_set=generators)
-        generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-        _fix_selected_group_resolution_data(self, source, generators, generator_morphism)
+    def _retain_group_framing(self) -> None:
+        r"""Select the computed generators of ``O(L)`` as this group's framing.
+
+        Selecting computes nothing; the generators are computed when
+        ``group_generators()`` first reads the selected resolution.
+        """
+        _fix_selected_group_resolution_on(self, self._computed_group_generators)
 
     def framing(self):
-        r"""Explicitly select and retain the represented generator framing of ``O(L)``."""
+        r"""Explicitly select the represented generator framing of ``O(L)``."""
         if self.has_selected_group_resolution():
             return self
-        self._retain_group_framing(self._computed_group_generators())
+        self._retain_group_framing()
         return self
 
     def structure_description(self):
