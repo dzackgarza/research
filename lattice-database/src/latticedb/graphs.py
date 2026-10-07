@@ -8,10 +8,11 @@ lists is answered by that object's category:
   invariant form `b(alpha_i, alpha_i) = q_i`, `b(alpha_i, alpha_j) = a_ij q_i / 2`
   (Kac, *Infinite dimensional Lie algebras*, section 2.1);
 - norms on the vertices and Gram entries on the bonds present a family of mirror
-  normals with its Gram form (Vinberg, *Hyperbolic reflection groups*, section 2).
+  normals with its Gram matrix (Vinberg, *Hyperbolic reflection groups*, section 2).
 
-Either Gram form determines the Vinberg invariant matrix of the mirrors, and that
-matrix determines the Coxeter diagram.  Satake marks on a root basis (black nodes,
+Either Gram matrix determines the matrix of invariants `[4 b(r,s)^2 : q(r) q(s)]`
+of the pairs of mirrors (`VinbergInvariantMatrices`), and that matrix determines the
+Coxeter diagram.  Satake marks on a root basis (black nodes,
 and `satake_pair` edges for the diagram involution, every unpaired node fixed)
 present a Satake diagram on the Dynkin diagram of the root basis.
 """
@@ -129,7 +130,7 @@ class WeightedGraph(Record):
             source, target = position[bond.source], position[bond.target]
             assert not bond.directed and source != target and rows[source][target] == 0, (
                 f"{self.slug}: the bond {bond.id} is not one undirected bond between two "
-                f"distinct mirrors, so the card states no Gram form"
+                f"distinct mirrors, so the card states no Gram matrix"
             )
             rows[source][target] = rows[target][source] = pairing(bond)
         return tuple(tuple(rational(entry) for entry in row) for row in rows)
@@ -150,7 +151,7 @@ class WeightedGraph(Record):
         return rational(bond.datum("gram"))
 
     def _gram_form(self):
-        """The presented Gram form: the root basis with its invariant form, or the mirror normals.
+        """The presented formed module: the root basis with its invariant form, or the mirror normals.
 
         None when the decorations present neither.
         """
@@ -179,7 +180,7 @@ class WeightedGraph(Record):
         return tuple(tuple(row) for row in rows)
 
     def vinberg_invariant_matrix(self):
-        """The Vinberg invariant matrix of the presented Gram form, or None when there is none."""
+        """The matrix of invariants of the pairs of presented mirrors, or None when the card presents none."""
         form = self._gram_form()
         if form is None:
             return None
@@ -222,16 +223,16 @@ class WeightedGraph(Record):
 
         Every class is answered by a preamble object the card presents:
 
-        - Coxeter: the Coxeter diagram of the mirrors' Vinberg invariant matrix exists;
+        - Coxeter: the Coxeter diagram of the mirrors' invariant matrix exists;
         - Dynkin: the root basis generates a root system of finite type, that is, its
           Weyl group, the Coxeter group of the diagram, is finite (Kac, Proposition 4.9);
         - simply laced: every bond of the diagram is 2 or 3;
         - Satake: the presented Satake diagram is admissible (Kolb, *Quantum symmetric
           Kac-Moody pairs*, Definition 2.3; Araki 1962);
-        - rational Coxeter–Vinberg: rational mirror normals whose Gram tensor is the Gram
-          tensor of the walls of an acute-angled hyperbolic Coxeter polytope: at least
-          three walls, positive norms, nonpositive off-diagonal entries and signature
-          (n - 1, 1, 0).
+        - hyperbolic Coxeter polytope: the mirror normals are the normals of the walls of
+          an acute-angled Coxeter polytope in hyperbolic space (Vinberg, sections 2 and 5):
+          at least three walls, positive norms, nonpositive off-diagonal entries and
+          signature (n - 1, 1, 0) of their Gram tensor.
         """
         invariants = self.vinberg_invariant_matrix()
         if invariants is None:
@@ -250,6 +251,6 @@ class WeightedGraph(Record):
             ("Dynkin", dynkin),
             ("simply laced", invariants.is_simply_laced()),
             ("Satake", satake),
-            ("rational Coxeter–Vinberg", hyperbolic),
+            ("hyperbolic Coxeter polytope", hyperbolic),
         )
         return tuple(name for name, holds in classes if holds)

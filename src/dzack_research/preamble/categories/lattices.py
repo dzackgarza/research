@@ -1650,7 +1650,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
             Over number fields the private OSCAR/Hecke realization decomposes
-            the Gram form into its anisotropic and hyperbolic summands; half
+            the quadratic space into its anisotropic and hyperbolic summands; half
             the dimension of the latter is the Witt index.
             """
             space = self.vector_space()
@@ -1723,7 +1723,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             real place \(\mathbb Q\to\mathbb R\) it is the real spinor norm
             whose kernel is :meth:`O_plus`.
 
-            The private computation diagonalizes the Gram form and uses
+            The private computation diagonalizes the Gram matrix and uses
             OSCAR's reflection factorization.  The rational specialization
             retains OSCAR's ``rational_spinor_norm`` wrapper; represented
             absolute number fields use the same generic ``spin`` algorithm

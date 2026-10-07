@@ -939,7 +939,7 @@ class CoxeterDiagrams(OwnedCategory):
             )
 
         def _subdiagram_orbit_poset_on(self, representatives):
-            r"""Return the orbit order on one representative per :meth:`Aut`-orbit.
+            r"""Return the order that inclusion induces on the :meth:`Aut`-orbits, one representative per orbit.
 
             The order on orbits, not on the representatives:
             \([H]\leq[K]\) when some member of \([H]\) is an induced
@@ -974,13 +974,13 @@ class CoxeterDiagrams(OwnedCategory):
             return self._subdiagram_orbit_poset_on(tuple(orbits))
 
         def elliptic_subdiagram_orbit_poset(self, *, connected=False):
-            r"""Return the elliptic subdiagram orbits in the orbit order."""
+            r"""Return the :meth:`Aut`-orbits of elliptic subdiagrams, ordered by the order inclusion induces on orbits."""
             return self._subdiagram_orbit_poset_on(
                 self.elliptic_subdiagram_orbits(connected=connected)
             )
 
         def parabolic_subdiagram_orbit_poset(self, *, connected=False):
-            r"""Return the parabolic subdiagram orbits in the orbit order."""
+            r"""Return the :meth:`Aut`-orbits of parabolic subdiagrams, ordered by the order inclusion induces on orbits."""
             return self._subdiagram_orbit_poset_on(
                 self.parabolic_subdiagram_orbits(connected=connected)
             )

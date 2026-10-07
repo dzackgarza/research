@@ -132,10 +132,10 @@ def morphism_problems(loaded: Corpus) -> list[str]:
 
 
 def bond_order_problems(loaded: Corpus) -> list[str]:
-    """The stored Coxeter orders that disagree with the diagram the card's Gram form presents.
+    """The stored Coxeter orders that disagree with the diagram the card's Gram matrix presents.
 
-    The Coxeter diagram is constructed from the card's Gram form, through its Vinberg
-    invariant matrix, and each bond's stored `order` is compared with that diagram's
+    The Coxeter diagram is constructed from the card's Gram matrix, through the matrix
+    of invariants of its pairs of mirrors, and each bond's stored `order` is compared with that diagram's
     Coxeter entry: the order of the product of the two reflections, `infinity` being the
     cardinal aleph_0.
     """
@@ -155,7 +155,7 @@ def bond_order_problems(loaded: Corpus) -> list[str]:
             if constructed != expected:
                 found.append(
                     f"{entry.path}: the bond {edge.id} stores order {stored}, but the "
-                    f"Coxeter diagram of the card's Gram form has order {constructed}"
+                    f"Coxeter diagram of the card's Gram matrix has order {constructed}"
                 )
     return found
 

@@ -136,7 +136,7 @@ def test_symmetric_spaces_and_analytic_variety_are_published(tmp_path: Path) -> 
     assert "Coxeter, Dynkin, simply laced, Satake" in graph
     assert 'href="../geometric-objects/complex-hyperbolic-2-space.html"' in graph
     vinberg = (target / "graphs" / "hyperbolic-triangle-2-3-infinity.html").read_text()
-    assert "rational Coxeter–Vinberg" in vinberg
+    assert "hyperbolic Coxeter polytope" in vinberg
     assert '<h2 id="hodge-diamond">' not in complex_ball
     quadric = (target / "geometric-objects" / "complex-quadric-q-5.html").read_text()
     bdi = (target / "geometric-objects" / "bdi-25-compact.html").read_text()
@@ -164,7 +164,7 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
     )
     assert card("hyperbolic-triangle-2-3-infinity").properties() == (
         "Coxeter",
-        "rational Coxeter–Vinberg",
+        "hyperbolic Coxeter polytope",
     )
     # Four walls of norm 1 whose adjacent pairs have Gram entry -1 and whose opposite
     # pairs have Gram entry -3: the Gram determinant is (a + 1)^3 (a - 3) at a = 3, so
@@ -174,7 +174,7 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
     degenerate = WeightedGraph.model_validate(
         {
             "slug": "degenerate-quadrilateral",
-            "name": "Degenerate quadrilateral Gram form",
+            "name": "Degenerate quadrilateral Gram matrix",
             "vertices": [{"id": wall, "weight": {"norm_squared": 1}} for wall in walls],
             "edges": [
                 {
