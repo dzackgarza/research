@@ -25,7 +25,6 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -80,6 +79,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
@@ -147,7 +147,7 @@ class MultiplicativeAlgebraMorphism:
     between two module morphisms out of \(A\otimes_R A\), asked of the module
     Mor when :meth:`is_multiplicative` is first asked: its finite generating
     data decide the equation when value equality is decided; otherwise it
-    answers ``Unknown``, the hypothesis the arrow is stated under
+    answers the proposition of the equation, the hypothesis the arrow is stated under
     (``CON-16``, ``DEV-52``).  :meth:`validate_multiplicativity` refuses a map
     for which it answers ``False``.
     """
@@ -176,7 +176,7 @@ class MultiplicativeAlgebraMorphism:
 
     @cached_method
     def is_multiplicative(self):
-        r"""The decision of \(f\,m_A = m_B\,(f\otimes f)\), or ``Unknown`` when it is the stated hypothesis."""
+        r"""The decision of \(f\,m_A = m_B\,(f\otimes f)\), or the proposition when it is the stated hypothesis."""
         derived = self._multiplicativity_derivation()
         if derived is not None:
             return derived
@@ -279,7 +279,7 @@ class UnitalMultiplicativeAlgebraMorphism:
 
     @cached_method
     def preserves_unit(self):
-        r"""The decision of the unit equation \(f(1) = 1\), or ``Unknown`` for its stated hypothesis."""
+        r"""The decision of the unit equation \(f(1) = 1\), or the proposition for its stated hypothesis."""
         derived = self._unit_preservation_derivation()
         if derived is not None:
             return derived
@@ -797,35 +797,25 @@ def _product_on(multiplication):
     return lambda left, right: multiplication(left, right)
 
 
-def _all_identity_decisions(decisions):
-    r"""Conjoin decisions without treating an undecided equality as false."""
-    result = True
-    for decision in decisions:
-        if decision is False:
-            return False
-        if decision is not True:
-            result = Unknown
-    return result
-
-
-def _decide_on_module_generators(module, identity, arity):
+def _decide_on_module_generators(module, identity, arity, statement):
     r"""Decide an ``R``-multilinear identity on tuples of module generators of ``module``.
 
     Both sides of every identity decided here are ``R``-multilinear in their
     arguments, so agreement on each tuple of module generators is agreement on
     all of ``module``.  A module stating no finite framing leaves the identity
-    ``Unknown``: it is not enumerated (``DEV-52``).
+    undecided: it is not enumerated (``DEV-52``), and the answer is
+    ``statement``, the proposition that the identity holds.
     """
     ring = module.base_ring()
     match module:
         case _ if module.has_selected_module_resolution() and module.module_generating_set().cardinality().is_finite():
             labels = module.module_generating_set()
-            return _all_identity_decisions(
+            return conjunction(
                 identity(*(module.module_generator(label) for label in labels_tuple))
                 for labels_tuple in itertools.product(labels, repeat=arity)
             )
         case _:
-            return Unknown
+            return statement
 
 
 def _associativity(multiplication):
@@ -842,7 +832,7 @@ def _alternation(multiplication):
     r"""``[x, x] = 0`` on generators and ``[x, y] + [y, x] = 0`` on pairs: alternation of a bilinear map."""
     product = _product_on(multiplication)
     zero = multiplication.codomain().zero()
-    return lambda x, y: _all_identity_decisions((
+    return lambda x, y: conjunction((
         product(x, x) == zero, product(x, y) + product(y, x) == zero,
     ))
 
@@ -855,7 +845,7 @@ def _jacobi_identity(multiplication):
 
 def _two_sided_unit(multiplication, unit):
     product = _product_on(multiplication)
-    return lambda x: _all_identity_decisions((product(unit, x) == x, product(x, unit) == x))
+    return lambda x: conjunction((product(unit, x) == x, product(x, unit) == x))
 
 
 def _assert_not_refuted(held, statement, module):
@@ -1151,36 +1141,43 @@ class Algebras(OwnedCategoryOverBaseRing):
             r"""Retain the exact admission decision supporting each algebra axiom placement."""
             retained = dict(vars(self).get("_preamble_algebra_law_decisions", {}))
             for law, decision in dict(decisions).items():
-                assert decision is True or decision is Unknown, (
-                    f"the {law} law of an algebra is recorded only as True or Unknown, but got {decision}"
+                assert decision is True or decision in Propositions, (
+                    f"the {law} law of an algebra is recorded only as True or as the proposition "
+                    f"stating it, but got {decision}"
                 )
-                previous = retained.get(law)
-                if previous is True:
-                    continue
-                if previous is Unknown and decision is Unknown:
-                    continue
-                retained[law] = decision
+                if retained.get(law) is not True:
+                    retained[law] = decision
             self._preamble_algebra_law_decisions = retained
 
         def associativity_decision(self):
-            r"""Return the retained decision supporting associative placement, else ``Unknown``."""
-            return self._preamble_algebra_law_decisions.get("associativity", Unknown)
+            r"""Return the retained decision supporting associative placement, else the proposition of the law."""
+            return self._preamble_algebra_law_decisions.get(
+                "associativity", AtomicProposition("is_associative", self.multiplication())
+            )
 
         def unit_laws_decision(self):
-            r"""Return the retained decision supporting the selected two-sided unit, else ``Unknown``."""
-            return self._preamble_algebra_law_decisions.get("unit", Unknown)
+            r"""Return the retained decision supporting the selected two-sided unit, else the proposition of the law."""
+            return self._preamble_algebra_law_decisions.get(
+                "unit", AtomicProposition("is_two_sided_unit", self.multiplication())
+            )
 
         def commutativity_decision(self):
-            r"""Return the retained decision supporting commutative placement, else ``Unknown``."""
-            return self._preamble_algebra_law_decisions.get("commutativity", Unknown)
+            r"""Return the retained decision supporting commutative placement, else the proposition of the law."""
+            return self._preamble_algebra_law_decisions.get(
+                "commutativity", AtomicProposition("is_commutative", self.multiplication())
+            )
 
         def alternation_decision(self):
-            r"""Return the retained decision supporting alternation of a Lie bracket, else ``Unknown``."""
-            return self._preamble_algebra_law_decisions.get("alternation", Unknown)
+            r"""Return the retained decision supporting alternation of a Lie bracket, else the proposition of the law."""
+            return self._preamble_algebra_law_decisions.get(
+                "alternation", AtomicProposition("is_alternating", self.multiplication())
+            )
 
         def jacobi_decision(self):
-            r"""Return the retained decision supporting the Jacobi identity, else ``Unknown``."""
-            return self._preamble_algebra_law_decisions.get("jacobi", Unknown)
+            r"""Return the retained decision supporting the Jacobi identity, else the proposition of the law."""
+            return self._preamble_algebra_law_decisions.get(
+                "jacobi", AtomicProposition("satisfies_jacobi_identity", self.multiplication())
+            )
 
         def _retain_algebra_datum(self, module, multiplication):
             r"""Retain the root constructor's already validated (M,m) once.
@@ -1417,7 +1414,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return self.algebra_generator(left) * self.algebra_generator(right)
 
         def _commutativity_decision(self):
-            r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
+            r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else the proposition.
 
             Commutativity is a property of the multiplication before it is a
             refinement; the ``Commutative`` axiom answers ``True`` by placement.
@@ -1427,6 +1424,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 self.unformed_module(),
                 _commutativity(multiplication),
                 2,
+                AtomicProposition("is_commutative", multiplication),
             )
 
         def product(self, left, right):
@@ -1672,7 +1670,8 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _call_(self, module, multiplication):
             r"""The associative algebra on ``(M, m)``: ``(xy)z = x(yz)`` decided on module generators of ``M``."""
             associativity = _decide_on_module_generators(
-                module, _associativity(multiplication), 3
+                module, _associativity(multiplication), 3,
+                AtomicProposition("is_associative", multiplication),
             )
             _assert_not_refuted(associativity, "associativity", module)
             return _algebra_on_module(
@@ -1791,12 +1790,14 @@ class Algebras(OwnedCategoryOverBaseRing):
             def _call_(self, module, multiplication, unit):
                 r"""The associative unital algebra on ``(M, m)`` with unit ``1 in M``, both identities decided on module generators."""
                 associativity = _decide_on_module_generators(
-                    module, _associativity(multiplication), 3
+                    module, _associativity(multiplication), 3,
+                    AtomicProposition("is_associative", multiplication),
                 )
                 unit_laws = _decide_on_module_generators(
                     module,
                     _two_sided_unit(multiplication, module(unit)),
                     1,
+                    AtomicProposition("is_two_sided_unit", multiplication, module(unit)),
                 )
                 _assert_not_refuted(associativity, "associativity", module)
                 _assert_not_refuted(unit_laws, "the two unit equations", module)
@@ -1830,15 +1831,18 @@ class Algebras(OwnedCategoryOverBaseRing):
                     r"""The commutative associative unital algebra on ``(M, m)`` with unit ``1 in M``, each identity decided on module generators."""
                     decisions = {
                         "associativity": _decide_on_module_generators(
-                            module, _associativity(multiplication), 3
+                            module, _associativity(multiplication), 3,
+                            AtomicProposition("is_associative", multiplication),
                         ),
                         "commutativity": _decide_on_module_generators(
-                            module, _commutativity(multiplication), 2
+                            module, _commutativity(multiplication), 2,
+                            AtomicProposition("is_commutative", multiplication),
                         ),
                         "unit": _decide_on_module_generators(
                             module,
                             _two_sided_unit(multiplication, module(unit)),
                             1,
+                            AtomicProposition("is_two_sided_unit", multiplication, module(unit)),
                         ),
                     }
                     for law, statement in (
@@ -1878,10 +1882,12 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _call_(self, module, multiplication):
             r"""The Lie algebra on ``(M, m)``, ``m`` its bracket: alternation and the Jacobi identity decided on module generators."""
             alternation = _decide_on_module_generators(
-                module, _alternation(multiplication), 2
+                module, _alternation(multiplication), 2,
+                AtomicProposition("is_alternating", multiplication),
             )
             jacobi = _decide_on_module_generators(
-                module, _jacobi_identity(multiplication), 3
+                module, _jacobi_identity(multiplication), 3,
+                AtomicProposition("satisfies_jacobi_identity", multiplication),
             )
             _assert_not_refuted(alternation, "alternation", module)
             _assert_not_refuted(jacobi, "the Jacobi identity", module)
@@ -1918,6 +1924,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 module,
                 _two_sided_unit(multiplication, module(unit)),
                 1,
+                AtomicProposition("is_two_sided_unit", multiplication, module(unit)),
             )
             _assert_not_refuted(unit_laws, "the two unit equations", module)
             return _algebra_on_module(
@@ -2001,7 +2008,8 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _call_(self, module, multiplication):
             r"""The commutative algebra on ``(M, m)``: ``xy = yx`` decided on module generators of ``M``."""
             commutativity = _decide_on_module_generators(
-                module, _commutativity(multiplication), 2
+                module, _commutativity(multiplication), 2,
+                AtomicProposition("is_commutative", multiplication),
             )
             _assert_not_refuted(commutativity, "commutativity", module)
             return _algebra_on_module(
@@ -2054,7 +2062,8 @@ def _algebra_on_module(
     cited where it is called.  ``unit``, an element of ``M``, is required
     exactly when the placement is unital.  ``construction_data`` carries the
     datum of a data category in ``placement``.  ``law_decisions`` carries the
-    exact ``True``/``Unknown`` premises supporting axiom placements.
+    exact premises supporting axiom placements: ``True``, or the proposition
+    of a law stated as a hypothesis.
     """
     ring = module.base_ring()
     tensor = multiplication.domain()
@@ -2075,8 +2084,8 @@ def _algebra_on_module(
     selected_category = Cat().meet(categories)
     law_decisions = dict(law_decisions or {})
     for decision in law_decisions.values():
-        assert decision is True or decision is Unknown, (
-            f"an algebra law is recorded only as True or Unknown, but got {decision}"
+        assert decision is True or decision in Propositions, (
+            f"an algebra law is recorded only as True or as the proposition stating it, but got {decision}"
         )
     for required_category, required_laws in (
         (Algebras(ring).Associative(), ("associativity",)),
@@ -2885,11 +2894,10 @@ class AlgebraMorphism:
             return op == op_EQ
         domain = self.domain()
         if not domain.is_framed_algebra():
-            return Unknown
-        equal = self.algebra_generator_images() == other.algebra_generator_images()
-        if equal is Unknown:
-            return Unknown
-        return equal if op == op_EQ else not equal
+            equal = AtomicProposition("equal", self, other)
+        else:
+            equal = self.algebra_generator_images() == other.algebra_generator_images()
+        return equal if op == op_EQ else negation(equal)
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():

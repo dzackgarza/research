@@ -16,7 +16,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -61,6 +60,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
 
 def _polynomial_monomial_exponents(engine, monomial) -> tuple[int, ...]:
@@ -1858,19 +1858,13 @@ class FramedFreeAlgebraMorphism:
             return op == op_EQ
         labels = self.domain().algebra_generating_set()
         if not labels.cardinality().is_finite():
-            return Unknown
-        decisions = tuple(
-            self.algebra_generator_images()[label] == other.algebra_generator_images()[label]
-            for label in labels
-        )
-        match any(value is False for value in decisions), all(value is True for value in decisions):
-            case True, _:
-                equal = False
-            case _, True:
-                equal = True
-            case _:
-                equal = Unknown
-        return equal if op == op_EQ or equal is Unknown else not equal
+            equal = AtomicProposition("equal", self, other)
+        else:
+            equal = conjunction(
+                self.algebra_generator_images()[label] == other.algebra_generator_images()[label]
+                for label in labels
+            )
+        return equal if op == op_EQ else negation(equal)
 
 
 class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):

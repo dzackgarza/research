@@ -1,7 +1,6 @@
 r"""Differential graded algebra categories and their morphisms."""
 
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -23,6 +22,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.logic import AtomicProposition, Propositions
 from dzack_research.preamble.validation import validator
 
 
@@ -70,8 +70,8 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         r"""Equip one exact graded algebra with one selected differential.
 
         The graded algebra is retained as defining data.  A caller-supplied
-        differential may leave its graded-Leibniz or square-zero law at the
-        declared ``Unknown`` frontier; construction-derived differentials use
+        function supplies no decision of its graded-Leibniz or square-zero
+        law, so each law is the proposition that states it; construction-derived differentials use
         :meth:`_from_constructed_differential` instead of turning generator
         observations into proofs.
         """
@@ -93,7 +93,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             )
         elif callable(differential):
             function = differential
-            decisions = (Unknown, Unknown)
+            decisions = (None, None)
         else:
             raise TypeError(
                 f"a differential on {algebra} is a map of degree one on elements, but got {differential!r}"
@@ -116,12 +116,10 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
                 f"{self.base_ring()}, but {algebra} is not one"
             )
         leibniz, square_zero = decisions
-        if not (leibniz is True or leibniz is Unknown) or not (
-            square_zero is True or square_zero is Unknown
-        ):
+        if not _is_recorded_law_decision(leibniz) or not _is_recorded_law_decision(square_zero):
             raise ValueError(
-                f"the Leibniz rule and d^2 = 0 are recorded only as True or Unknown, but got {leibniz} and "
-                f"{square_zero}"
+                f"the Leibniz rule and d^2 = 0 are recorded only as True, a proposition or None, but got "
+                f"{leibniz} and {square_zero}"
             )
         placements = [self]
         ring = self.base_ring()
@@ -194,7 +192,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             super().__init__(**rest)
             if dga_differential_function is not None:
                 decisions = (
-                    (Unknown, Unknown)
+                    (None, None)
                     if dga_differential_decisions is None
                     else tuple(dga_differential_decisions)
                 )
@@ -327,11 +325,11 @@ class Differential(GradedDerivation):
         derived = self._square_zero_derivation()
         match derived:
             case None:
-                return Unknown
-            case decision if decision is True or decision is Unknown:
+                return AtomicProposition("is_square_zero", self)
+            case decision if decision is True or decision in Propositions:
                 return decision
             case _:
-                raise ValueError(f"d^2 = 0 is recorded only as True or Unknown, but got {derived}")
+                raise ValueError(f"d^2 = 0 is recorded only as True or a proposition, but got {derived}")
 
     @validator
     def validate_square_zero(self) -> None:
@@ -343,15 +341,16 @@ class Differential(GradedDerivation):
 
     def _square_zero_on_generators(self):
         algebra = self.algebra()
+        undecided = AtomicProposition("is_square_zero", self)
         if not algebra.is_framed_algebra():
-            return Unknown
+            return undecided
         labels = algebra.algebra_generating_set()
         finite = labels.cardinality().is_finite()
         match finite:
             case True:
                 pass
             case False:
-                return Unknown
+                return undecided
         for label in labels:
             generator = algebra.algebra_generator(label)
             match self(self(generator)) == algebra.zero():
@@ -360,7 +359,7 @@ class Differential(GradedDerivation):
                 case False:
                     return False
                 case _:
-                    return Unknown
+                    return undecided
         return True
 
 
@@ -379,12 +378,17 @@ class _RetainedDifferential(Differential):
         return self._retained_square_zero
 
 
+def _is_recorded_law_decision(decision) -> bool:
+    r"""Whether ``decision`` is a recorded law decision: ``True``, a proposition, or ``None`` for none supplied."""
+    return decision is True or decision is None or decision in Propositions
+
+
 def _fix_selected_differential(
     algebra,
     function,
     *,
-    graded_leibniz=Unknown,
-    square_zero=Unknown,
+    graded_leibniz=None,
+    square_zero=None,
 ) -> None:
     r"""Install one selected DGA differential at the DGA owner.
 
@@ -396,12 +400,10 @@ def _fix_selected_differential(
     """
     if algebra._preamble_differential is not None:
         raise ValueError(f"{algebra} already has a differential; it cannot be given a second one")
-    if not (graded_leibniz is True or graded_leibniz is Unknown) or not (
-        square_zero is True or square_zero is Unknown
-    ):
+    if not _is_recorded_law_decision(graded_leibniz) or not _is_recorded_law_decision(square_zero):
         raise ValueError(
-            f"the Leibniz rule and d^2 = 0 are recorded only as True or Unknown, but got {graded_leibniz} "
-            f"and {square_zero}"
+            f"the Leibniz rule and d^2 = 0 are recorded only as True, a proposition or None, but got "
+            f"{graded_leibniz} and {square_zero}"
         )
     differential = _RetainedDifferential(
         algebra,
@@ -445,10 +447,10 @@ class DGAMorphism:
         else:
             if not (
                 differential_compatibility is True
-                or differential_compatibility is Unknown
+                or differential_compatibility in Propositions
             ):
                 raise ValueError(
-                    f"compatibility f d = d f is recorded only as True or Unknown, but got {differential_compatibility}"
+                    f"compatibility f d = d f is recorded only as True or a proposition, but got {differential_compatibility}"
                 )
             self._differential_compatibility = differential_compatibility
 
@@ -458,12 +460,13 @@ class DGAMorphism:
     def _decide_differential_compatibility(self):
         source = self.domain()
         target = self.codomain()
+        undecided = AtomicProposition("commutes_with_differentials", self)
         if not source.is_framed_algebra():
-            return Unknown
+            return undecided
         labels = source.algebra_generating_set()
         finite = labels.cardinality().is_finite()
         if finite is not True:
-            return Unknown
+            return undecided
         comparisons = tuple(
             self(source.d(source.algebra_generator(label)))
             == target.d(self(source.algebra_generator(label)))
@@ -476,7 +479,7 @@ class DGAMorphism:
             and source.differential().linearity_decision() is True
             and target.differential().linearity_decision() is True
         )
-        return True if linear and all(answer is True for answer in comparisons) else Unknown
+        return True if linear and all(answer is True for answer in comparisons) else undecided
 
     def __mul__(self, other):
         if not isinstance(other, DGAMorphism) or other.codomain() is not self.domain():
@@ -486,7 +489,7 @@ class DGAMorphism:
             True
             if self.differential_compatibility_decision() is True
             and other.differential_compatibility_decision() is True
-            else Unknown
+            else None
         )
         graded = GradedAlgebras(source.base_ring(), source.grading_monoid())
         return DifferentialGradedAlgebras(source.base_ring()).Mor(
@@ -531,7 +534,11 @@ class DGAMor(CategoricalMor):
         )
 
     def _from_differential_preserving_underlying_morphism(self, morphism, decision=True):
-        r"""Lift a graded algebra morphism, with ``decision`` as its decision that it commutes with the differentials."""
+        r"""Lift a graded algebra morphism, with ``decision`` as its decision that it commutes with the differentials.
+
+        ``None`` supplies no decision: the lift then decides the compatibility
+        on algebra generators, or answers the proposition that states it.
+        """
         return self.element_class(
             self,
             morphism,
