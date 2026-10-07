@@ -3798,6 +3798,15 @@ class NaturalNumberSets(OwnedCategory):
             r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
             return self._ranking_isomorphism(lambda value: int(self(value)), self)
 
+        def le(self, left, right) -> bool:
+            r"""The order of the ordinal $\omega$: $m \le n$ when $n = m + k$ for some $k \in \mathbb N$.
+
+            ``EnumeratedSets`` transports an order along the ranking map, and
+            here that map is the identity of $\mathbb N$, so $\mathbb N$
+            states the order it transports.
+            """
+            return int(self(left)) <= int(self(right))
+
         def zero(self) -> NN.ElementType:
             return self(0)
 
