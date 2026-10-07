@@ -7,12 +7,13 @@ stored fields. It contains no independent lattice algorithm.
 `record_text` writes a lattice card, including the morphisms whose domain is that card.
 """
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from fractions import Fraction
 from itertools import combinations
 import yaml
 
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import model
@@ -633,10 +634,7 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
 
 
 def relational_admission_problems(
-    lattice: Lattice,
-    written: Mapping[str, Lattice],
-    *,
-    isometry_records: Mapping[str, Lattice] | None = None,
+    lattice: Lattice, written: Mapping[str, Lattice]
 ) -> list[str]:
     """Mathematical problems relating one card to other cards, via preamble objects."""
     if lattice.rank is None or lattice.gram_tensor is None:
@@ -678,48 +676,55 @@ def relational_admission_problems(
                 found.append(
                     "root_span.embedding: the rows do not realize the stated orthogonal sum"
                 )
-    if lattice.definite is not None:
-        compared = written if isometry_records is None else isometry_records
-        source_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(
-            QQ, lattice.gram_tensor
-        )
-        source_lattice, source_multiplier = _integral_reflection_model(source_formed)
-        for other in compared.values():
-            if (
-                other is lattice
-                or other.definite is None
-                or other.rank is None
-                or other.gram_tensor is None
-                or other.gram_tensor == lattice.gram_tensor
-            ):
-                continue
-            other_formed = ZZ.free_module(other.rank).equip_bilinear_form(
-                QQ, other.gram_tensor
-            )
-            other_lattice, other_multiplier = _integral_reflection_model(other_formed)
-            if (
-                source_multiplier == other_multiplier
-                and source_lattice.is_isometric(other_lattice) is True
-            ):
-                found.append(
-                    f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
-                )
     return found
 
 
-def admission_problems(
-    lattice: Lattice,
-    written: Mapping[str, Lattice],
-    *,
-    isometry_records: Mapping[str, Lattice] | None = None,
-) -> list[str]:
+def admission_problems(lattice: Lattice, written: Mapping[str, Lattice]) -> list[str]:
     """All preamble-backed admission problems of one lattice card."""
     return [
         *local_admission_problems(lattice),
-        *relational_admission_problems(
-            lattice, written, isometry_records=isometry_records
-        ),
+        *relational_admission_problems(lattice, written),
     ]
+
+
+def definite_isometry_problems(lattices: Sequence[Lattice]) -> dict[str, list[str]]:
+    """The definite cards isometric to another card in another basis, by tag.
+
+    A card's form `L` is isometric to another's `L'` exactly when the denominators
+    `m` of their scales agree and the integral twists `L(m)`, `L'(m)` are isometric.
+    The preamble partitions the twists into isometry classes in one call; each class
+    is then split by `m`, and every card after the first of a part is reported against
+    that first card. A card whose Gram tensor equals that of the first card is reported
+    by the check of repeated Gram tensors instead.
+    """
+    definite = tuple(
+        lattice
+        for lattice in lattices
+        if lattice.definite is not None
+        and lattice.rank is not None
+        and lattice.gram_tensor is not None
+    )
+    models = tuple(
+        _integral_reflection_model(
+            ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, lattice.gram_tensor)
+        )
+        for lattice in definite
+    )
+    classes = Lattices(ZZ).isometry_classes(
+        finite_family(tuple(model for model, _multiplier in models))
+    )
+    found: dict[str, list[str]] = {}
+    for block in classes:
+        first_of_multiplier: dict[int, Lattice] = {}
+        for index in block:
+            lattice = definite[int(index)]
+            first = first_of_multiplier.setdefault(models[int(index)][1], lattice)
+            if first is lattice or first.gram_tensor == lattice.gram_tensor:
+                continue
+            found.setdefault(lattice.tag, []).append(
+                f"the lattice is isometric to {first.tag} ({first.name}), in another basis"
+            )
+    return found
 
 
 def morphism_problems(morphism, source: Lattice, target: Lattice) -> list[str]:

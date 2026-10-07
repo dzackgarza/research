@@ -20,7 +20,7 @@ from latticedb.geometric import (
     RiemannianSymmetricSpace,
 )
 from latticedb.graphs import WeightedGraph
-from latticedb.model import GramTensor, Lattice
+from latticedb.model import GramTensor
 from latticedb.relations import hyperbolic_index_bounds
 
 SOURCE_DIRECTORY = "lattices/source"
@@ -31,7 +31,8 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
     """The problems that concern more than one lattice record.
 
     A file name that is not its tag, a tag that a source row also reserves, a retired tag,
-    a repeated name or Gram tensor, a family that `families.yaml` does not list, and a
+    a repeated name or Gram tensor, a definite card isometric to another in another basis,
+    a family that `families.yaml` does not list, and a
     related or summand tag that is not in the corpus.
     """
     entries = loaded.entries
@@ -46,7 +47,6 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
     )
     by_name: dict[str, Path] = {}
     by_components: dict[GramTensor, Path] = {}
-    earlier_definite: dict[str, Lattice] = {}
     for entry in entries:
         lattice = entry.lattice
         if entry.path.stem != lattice.tag:
@@ -82,12 +82,16 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
                 )
         found.extend(
             f"{entry.path}: {problem}"
-            for problem in records.relational_admission_problems(
-                lattice, by_tag, isometry_records=earlier_definite
-            )
+            for problem in records.relational_admission_problems(lattice, by_tag)
         )
-        if lattice.definite is not None and lattice.gram_tensor is not None:
-            earlier_definite[lattice.tag] = lattice
+    isometric = records.definite_isometry_problems(
+        tuple(entry.lattice for entry in entries)
+    )
+    found.extend(
+        f"{entry.path}: {problem}"
+        for entry in entries
+        for problem in isometric.get(entry.lattice.tag, ())
+    )
     return found
 
 

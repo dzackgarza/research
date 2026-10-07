@@ -331,6 +331,12 @@ function target_primitive_embedding_classes(
     return [1, 1, result]
 end
 
+function integer_lattices_are_isometric(first_gram_entries, second_gram_entries)
+    first = integer_lattice(; gram = change_base_ring(QQ, _zz_matrix(first_gram_entries)))
+    second = integer_lattice(; gram = change_base_ring(QQ, _zz_matrix(second_gram_entries)))
+    return is_isometric(first, second) ? 1 : 0
+end
+
 function leech_gram_rows()
     lattice = leech_lattice()
     gram = change_base_ring(ZZ, gram_matrix(lattice))
@@ -556,6 +562,25 @@ class _OscarLatticeAdapter:
             validate_isometric_embedding((target_prime_gram, source_prime_gram, embedding), check=False)
             representatives.append((target_prime_gram, source_prime_gram, embedding))
         return tuple(representatives)
+
+    def integer_lattices_are_isometric(self, first, second):
+        r"""Decide whether ``(ZZ^n, first)`` and ``(ZZ^n, second)`` are isometric, by Hecke's ``is_isometric``.
+
+        ``first`` and ``second`` are Sage integer Gram matrices of
+        nondegenerate lattices.  For an indefinite genus of rank at least 3
+        Hecke approximates a ``p``-adic isometry and decides whether its
+        spinor norm lies in the kernel of the improper spinor operators.
+        """
+        answer = SageZZ(
+            self._bridge().call(
+                "DzackResearchOscarLatticeAdapter.integer_lattices_are_isometric",
+                first,
+                second,
+            )
+        )
+        if answer not in (0, 1):
+            raise RuntimeError(f"Hecke answered {answer} for the isometry of the forms {first} and {second}, not 0 or 1")
+        return answer == 1
 
     def leech_gram_rows(self):
         rows = self._bridge().call("DzackResearchOscarLatticeAdapter.leech_gram_rows")
