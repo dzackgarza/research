@@ -95,7 +95,7 @@ class LatticeGenus(CatalogueRecord):
 
 
 def _expression_value(node: ast.AST, parameter: str, value: int) -> int:
-    """The value of a Gram-template entry: integer arithmetic in `parameter`."""
+    """The value of an entry of `gram_template`: integer arithmetic in `parameter`."""
     match node:
         case ast.Expression():
             return _expression_value(node.body, parameter, value)
@@ -116,16 +116,16 @@ def _expression_value(node: ast.AST, parameter: str, value: int) -> int:
             return -operand if isinstance(node.op, ast.USub) else operand
     raise PydanticCustomError(
         "family_expression",
-        "a Gram-template entry is an integer or integer arithmetic in the parameter",
+        "an entry of gram_template is an integer or integer arithmetic in the parameter",
     )
 
 
 class LatticeFamily(CatalogueRecord):
-    """An infinite parameterized family of lattices sharing one Gram template.
+    """An infinite parameterized family of lattices whose Gram matrix is a function of one integer parameter.
 
-    The family holds the lattice with `gram_template` with `parameter`
-    replaced by each integer `>= minimum`. Template entries are integers or
-    integer arithmetic in the parameter.
+    For each integer `n >= minimum` the family holds the lattice whose Gram
+    matrix is `gram_template` with `parameter` replaced by `n`. The entries of
+    `gram_template` are integers or integer arithmetic in the parameter.
     """
 
     name: str = Field(min_length=1)
@@ -147,7 +147,7 @@ class LatticeFamily(CatalogueRecord):
         rows = self.gram_template
         if len(rows) != self.rank or any(len(row) != self.rank for row in rows):
             raise PydanticCustomError(
-                "family_shape", "the template has rank rows of rank components"
+                "family_shape", "gram_template has rank rows of rank components"
             )
         seen = False
         for row in rows:
@@ -157,7 +157,7 @@ class LatticeFamily(CatalogueRecord):
                 if isinstance(entry, bool):
                     raise PydanticCustomError(
                         "family_expression",
-                        "a Gram-template entry is an integer or integer arithmetic in the parameter",
+                        "an entry of gram_template is an integer or integer arithmetic in the parameter",
                     )
                 if isinstance(entry, str):
                     try:
@@ -165,7 +165,7 @@ class LatticeFamily(CatalogueRecord):
                     except SyntaxError:
                         raise PydanticCustomError(
                             "family_expression",
-                            "a Gram-template entry is an integer or integer arithmetic in the parameter",
+                            "an entry of gram_template is an integer or integer arithmetic in the parameter",
                         ) from None
                     names = {
                         node.id
@@ -175,12 +175,12 @@ class LatticeFamily(CatalogueRecord):
                     if names != {self.parameter}:
                         raise PydanticCustomError(
                             "family_parameter",
-                            "each template expression names the parameter and nothing else",
+                            "each expression in gram_template names the parameter and nothing else",
                         )
         if not seen:
             raise PydanticCustomError(
                 "family_parameter",
-                "the parameter occurs in the template",
+                "the parameter occurs in gram_template",
             )
         if any(
             rows[i][j] != rows[j][i]
@@ -188,7 +188,7 @@ class LatticeFamily(CatalogueRecord):
             for j in range(self.rank)
         ):
             raise PydanticCustomError(
-                "family_symmetric", "the template is a symmetric tensor"
+                "family_symmetric", "gram_template is a symmetric tensor"
             )
         return self
 

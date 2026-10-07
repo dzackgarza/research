@@ -155,7 +155,7 @@ class _TensorQuotientClassifierMorphism(TensorProductModuleMorphism):
     r"""The classifier induced by one elementwise bilinear evaluation.
 
     A raw Python evaluation does not prove its own bilinearity.  The map is an
-    element of the tensor Mor with that premise retained as ``Unknown``; named
+    element of the tensor Mor whose linearity decision is ``Unknown``; named
     constructions whose bilinearity is derived override that decision.
     """
 

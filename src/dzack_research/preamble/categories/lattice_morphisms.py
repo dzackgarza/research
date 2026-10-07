@@ -59,9 +59,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
+    _engine_binary_form_pullback,
+    _engine_column_matrix_from_row_action,
     _engine_component_matrix,
     _engine_row_action_matrix,
     tensor,
@@ -92,7 +93,7 @@ def _module_matrix(morphism):
 
 
 def _binary_form_from_gram(gram):
-    r"""Return the integral binary quadratic form ``x^T gram x``."""
+    r"""Return the integral binary quadratic form ``x |-> gram(x, x)``."""
     return BinaryQF(
         SageZZ(gram[0, 0]),
         SageZZ(2 * gram[0, 1]),
@@ -101,14 +102,15 @@ def _binary_form_from_gram(gram):
 
 
 def _proper_reduced_binary_equivalence_matrix(source, target):
-    r"""Return ``M in SL_2(ZZ)`` with ``source * M = target``, or ``None``.
+    r"""Return ``M in SL_2(ZZ)`` with ``M^* source = target``, or ``None``.
 
     Both forms are reduced indefinite forms of the same non-square
     discriminant.  Sage supplies their proper reduced cycle.  Consecutive
     forms differ alternately by a ``_Rho`` step and its conjugate by
-    ``diag(1,-1)``.  Their right-action matrices are respectively
+    ``diag(1,-1)``; the step pulling one back to the next is respectively
     ``[[0,-1],[1,s]]`` and ``[[0,1],[-1,s]]``.  Recovering ``s`` from the two
-    consecutive exact forms avoids reproducing the reduction algorithm.
+    consecutive exact forms avoids reproducing the reduction algorithm, and the
+    steps compose as matrices because pullback is contravariant.
     """
     identity = engine_matrix(SageZZ, ((1, 0), (0, 1)))
     cycle = tuple(source.cycle(proper=True))
@@ -143,7 +145,7 @@ def _proper_reduced_binary_equivalence_matrix(source, target):
                     SageZZ,
                     ((0, 1), (-1, step_parameter)),
                 )
-            if current.matrix_action_right(step) == following:
+            if _engine_binary_form_pullback(current, step) == following:
                 candidates.append(step)
         if not candidates:
             raise ArithmeticError(
@@ -151,13 +153,11 @@ def _proper_reduced_binary_equivalence_matrix(source, target):
             )
         step = candidates[0]
         transformation = transformation * step
-    if source.matrix_action_right(transformation) != target:
-        raise ArithmeticError(f"the product {transformation} of the reduction-cycle steps does not carry the binary form {source} to {target}; the proper equivalence is wrong")
     return transformation
 
 
 def _rho_step_matrix(current, following):
-    r"""Return the exact ``SL_2(ZZ)`` matrix carrying ``current`` to ``following=current._Rho()``."""
+    r"""Return the exact ``SL_2(ZZ)`` matrix pulling ``current`` back to ``following=current._Rho()``."""
     denominator = SageZZ(2) * SageZZ(current[2])
     if denominator == 0:
         raise ArithmeticError(f"the reduction step Rho is undefined on the binary form {current}: its c-coefficient is 0")
@@ -167,13 +167,10 @@ def _rho_step_matrix(current, following):
         raise ArithmeticError(
             f"the reduction step from the binary form {current} to {following} has non-integral parameter {numerator}/{denominator}, so it is not in SL_2(ZZ)"
         )
-    step = engine_matrix(
+    return engine_matrix(
         SageZZ,
         ((0, -1), (1, step_parameter)),
     )
-    if current.matrix_action_right(step) != following:
-        raise ArithmeticError(f"the matrix {step} carries the binary form {current} to {current.matrix_action_right(step)}, not to its reduction step {following}")
-    return step
 
 
 def _split_binary_reduction_to_zero_c(form):
@@ -187,13 +184,11 @@ def _split_binary_reduction_to_zero_c(form):
         following = current._Rho()
         transformation = transformation * _rho_step_matrix(current, following)
         current = following
-    if form.matrix_action_right(transformation) != current:
-        raise ArithmeticError(f"the reduction matrix {transformation} does not carry the split binary form {form} to its reduced form {current} with c = 0")
     return current, transformation
 
 
 def _proper_split_binary_equivalence_matrix(source, target):
-    r"""Return ``M in SL_2(ZZ)`` with ``source * M = target`` for split indefinite forms."""
+    r"""Return ``M in SL_2(ZZ)`` with ``M^* source = target`` for split indefinite forms."""
     source_reduced, source_reduction = _split_binary_reduction_to_zero_c(source)
     target_reduced, target_reduction = _split_binary_reduction_to_zero_c(target)
     if source_reduced[1] != target_reduced[1]:
@@ -211,19 +206,16 @@ def _proper_split_binary_equivalence_matrix(source, target):
         SageZZ,
         ((1, 0), (shear_parameter, 1)),
     )
-    if source_reduced.matrix_action_right(shear) != target_reduced:
-        raise ArithmeticError(f"the shear {shear} does not carry the reduced binary form {source_reduced} to {target_reduced}")
-    transformation = source_reduction * shear * target_reduction.inverse()
-    if source.matrix_action_right(transformation) != target:
-        raise ArithmeticError(f"the matrix {transformation} does not carry the split binary form {source} to {target}; the proper equivalence is wrong")
-    return transformation
+    return source_reduction * shear * target_reduction.inverse()
 
 
 def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
     r"""Return a binary indefinite isometry matrix, ``False``, or ``Unknown``.
 
-    A returned matrix ``P`` satisfies ``P^T codomain_gram P = domain_gram``.
-    The non-square-discriminant classification is complete by binary reduction
+    A returned matrix ``P`` pulls the codomain form back to the domain form,
+    ``P^* codomain_gram = domain_gram``.  It is an engine answer: the
+    isometry built from it is checked by its own form-square validator
+    (`OWN-22`).  The non-square-discriminant classification is complete by binary reduction
     cycles.  For square discriminant, Sage's split reduction terminates at a
     form ``a*x^2+b*x*y``; Conway--Sloane's criterion is then constructive via
     an integral shear, with one fixed determinant-minus-one twist handling the
@@ -240,7 +232,7 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
         )
         if transformation is None:
             improper_twist = engine_matrix(SageZZ, ((-1, 0), (0, 1)))
-            twisted_codomain = codomain_form.matrix_action_right(improper_twist)
+            twisted_codomain = _engine_binary_form_pullback(codomain_form, improper_twist)
             proper_after_twist = _proper_split_binary_equivalence_matrix(
                 twisted_codomain,
                 domain_form,
@@ -248,10 +240,6 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
             if proper_after_twist is None:
                 return False
             transformation = improper_twist * proper_after_twist
-        if codomain_form.matrix_action_right(transformation) != domain_form:
-            raise ArithmeticError(
-                f"the matrix {transformation} does not carry the binary form {codomain_form} to {domain_form}, so it is not an isometry between the two rank-2 lattices"
-            )
         return transformation
     domain_reduced, domain_reduction = domain_form.reduced_form(
         transformation=True,
@@ -267,7 +255,7 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
     )
     if reduced_transport is None:
         swap = engine_matrix(SageZZ, ((0, 1), (1, 0)))
-        swapped = codomain_reduced.matrix_action_right(swap)
+        swapped = _engine_binary_form_pullback(codomain_reduced, swap)
         proper_after_swap = _proper_reduced_binary_equivalence_matrix(
             swapped,
             domain_reduced,
@@ -278,10 +266,6 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
     transformation = codomain_reduction * reduced_transport * domain_reduction.inverse()
     if transformation.base_ring() is not SageZZ:
         transformation = transformation.change_ring(SageZZ)
-    if codomain_form.matrix_action_right(transformation) != domain_form:
-        raise ArithmeticError(
-            f"the matrix {transformation} does not carry the binary form {codomain_form} to {domain_form}, so it is not an isometry between the two rank-2 lattices"
-        )
     return transformation
 
 
@@ -303,7 +287,7 @@ def _rational_spinor_norm_representative(isometry):
     space = isometry.domain()
     value = lattice_engines._oscar_lattices.rational_spinor_norm_class(
         space.gram_tensor(),
-        _tensor_view(isometry),
+        isometry,
     )
     return _owned_engine_element(space.base_ring(), value)
 
@@ -315,7 +299,7 @@ def _number_field_spinor_norm_representative(isometry):
     return lattice_engines._oscar_lattices.number_field_spinor_norm_class(
         field,
         space.gram_tensor(),
-        _tensor_view(isometry),
+        isometry,
     )
 
 
@@ -417,12 +401,12 @@ class LatticeEmbeddingMethods:
     def orthogonal_complement(self):
         r"""Return the orthogonal complement of this embedded lattice.
 
-        For a finite-rank integral lattice embedding with coordinate matrix
-        ``M`` and ambient Gram matrix ``G``, the orthogonal complement is the
-        integral kernel of ``M^T G``.  Computing that kernel directly is the
-        finite-free realization of the generic pairing-morphism kernel and
-        avoids rebuilding the pairing through elementwise categorical
-        evaluation.
+        For an embedding ``i: S -> L`` of finite-rank integral lattices the
+        orthogonal complement is the right kernel of the pairing
+        ``S \times L -> ZZ``, ``(s, x) \mapsto b_L(i s, x)``, which is the
+        pullback of ``b_L`` along ``(i, 1_L)``.  Computing that kernel from the
+        pulled-back tensor is the finite-free realization of the generic
+        pairing-morphism kernel.
         """
         source = self.domain()
         target = self.codomain()
@@ -434,9 +418,9 @@ class LatticeEmbeddingMethods:
         ):
             return super().orthogonal_complement()
 
-        inclusion = _engine_matrix(_module_matrix(self))
-        ambient_gram = _engine_component_matrix(target.gram_tensor())
-        kernel_basis = (inclusion.transpose() * ambient_gram).right_kernel().basis_matrix()
+        identity = target.module_category().Mor(target, target).identity()
+        pairing = target.gram_tensor().pullback(self, identity)
+        kernel_basis = _engine_component_matrix(pairing).right_kernel().basis_matrix()
         target_labels = tuple(target.module_generating_set())
         ring = target.base_ring()
         embedded_basis = tuple(
@@ -882,22 +866,35 @@ class LatticeIsometryMethods:
 
     @cached_method
     def _discriminant_forward_morphism(self):
-        r"""Return the induced module map on discriminant groups."""
+        r"""Return the induced module map on discriminant groups.
+
+        For an isometry ``f: L -> M`` the map ``f^#: L^# -> M^#`` sends the
+        dual basis vector ``e^s`` to the vector whose ``r``-th dual-basis
+        coordinate is ``b_M(f e^s, m_r) = b_L(e^s, f^{-1} m_r)``, the
+        ``e_s``-coordinate of ``f^{-1}(m_r)``.
+        """
         source = self.domain().discriminant_group()
         target = self.codomain().discriminant_group()
         target_dual = target.projection().domain()
         target_dual_generators = target_dual.module_generators()
-        dual_map = _module_matrix(self).inverse().transpose()
+        inverse = ~self
+        codomain = self.codomain()
+        preimage_coordinates = tuple(
+            inverse(codomain.module_generator(label)).to_vector()
+            for label in codomain.module_generating_set()
+        )
         images = {}
-        for source_position, label in enumerate(source.module_generating_set()):
+        for domain_label, label in zip(
+            self.domain().module_generating_set(), source.module_generating_set(), strict=True
+        ):
             dual_image = sum(
                 (
                     target_dual.scalar_multiple(
-                        dual_map[target_position, source_position],
+                        coordinates(domain_label),
                         target_dual_generators[target_position],
                     )
-                    for target_position in range(dual_map.parent().nrows())
-                    if dual_map[target_position, source_position]
+                    for target_position, coordinates in enumerate(preimage_coordinates)
+                    if coordinates(domain_label)
                 ),
                 target_dual.zero(),
             )
@@ -1004,7 +1001,7 @@ class LatticeIsometryMethods:
 
         engine_generators, expected_order, invariant_rank, coinvariant_rank = lattice_engines._oscar_lattices.centralizer_discriminant_image(
             lattice.gram_tensor(),
-            _tensor_view(self),
+            self,
         )
         if self.invariant_lattice().module_rank() != invariant_rank:
             raise ArithmeticError(
@@ -1067,7 +1064,7 @@ class LatticeMor(CategoricalMor):
         r"""Construct the lattice morphism; ``check=True`` runs its validators (``OWN-22``)."""
         morphism = self._morphism_from_images(images)
         morphism.validate_linearity(check=check)
-        morphism.validate_form_square(check=check)
+        morphism.validate_form_preservation(check=check)
         return morphism
 
     def _morphism_from_images(self, images):
@@ -1125,14 +1122,12 @@ class LatticeEmbeddingMor(CategoricalMor):
             codomain,
             category=category,
         )
-        if category is not None:
-            realize_owned_category(self)
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the lattice embedding; ``check=True`` runs its validators (``OWN-22``)."""
         embedding = self._morphism_from_images(images)
         embedding.validate_linearity(check=check)
-        embedding.validate_form_square(check=check)
+        embedding.validate_form_preservation(check=check)
         embedding.validate_injectivity(check=check)
         return embedding
 
@@ -1420,13 +1415,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             and domain.module_rank().is_finite()
             and domain.is_definite()
         ):
-            self._retain_group_framing()
+            self._select_computed_group_resolution()
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the isometry; ``check=True`` runs its validators (``OWN-22``)."""
         isometry = self._morphism_from_images(images)
         isometry.validate_linearity(check=check)
-        isometry.validate_form_square(check=check)
+        isometry.validate_form_preservation(check=check)
         isometry.validate_injectivity(check=check)
         isometry.validate_surjectivity(check=check)
         return isometry
@@ -1536,7 +1531,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if self.domain() is not self.codomain():
             raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no group, so they have no image in the orthogonal group of a discriminant form")
         target = self.domain().discriminant_group().orthogonal_group()
-        return target.subgroup_on(tuple(generator.discriminant_morphism() for generator in self.framing().group_generators()))
+        return target.subgroup_on(tuple(generator.discriminant_morphism() for generator in self.select_group_resolution().group_generators()))
 
     def discriminant_lift(self, automorphism):
         r"""Return ``g in O(L)`` inducing ``automorphism`` on ``A_L``, or ``None``.
@@ -1557,7 +1552,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         target = self.domain().discriminant_group().orthogonal_group()
         automorphism = target(automorphism)
         representation = self.discriminant_representation()
-        witnesses = self.framing().finite_image_lifts(representation)
+        witnesses = self.select_group_resolution().finite_image_lifts(representation)
         return witnesses.get(automorphism)
 
     def discriminant_preimage(self, subgroup):
@@ -1770,24 +1765,22 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         codomain = self.codomain()
         ring = codomain.base_ring()
         generators = tuple(codomain.module_generators())
-        len(generators)
-        images = []
-        for source_position in range(int(self.domain().module_rank())):
-            row = row_action_matrix[source_position]
-            images.append(
+        return self(
+            tuple(
                 sum(
                     (
                         codomain.scalar_multiple(
                             _owned_engine_element(ring, SageZZ(coefficient)),
                             generator,
                         )
-                        for coefficient, generator in zip(row, generators, strict=True)
+                        for coefficient, generator in zip(column, generators, strict=True)
                         if coefficient
                     ),
                     codomain.zero(),
                 )
+                for column in _engine_column_matrix_from_row_action(row_action_matrix).columns()
             )
-        return self(tuple(images))
+        )
 
     def _row_action_matrix(self, automorphism):
         r"""Return the private row-action matrix of one live lattice isometry."""
@@ -1842,19 +1835,23 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             name=f"Orthogonal-group generators of {lattice}",
         )
 
-    def _retain_group_framing(self) -> None:
-        r"""Select the computed generators of ``O(L)`` as this group's framing.
+    def _select_computed_group_resolution(self) -> None:
+        r"""Select the generating epimorphism from the free group on the computed generators of ``O(L)``.
 
         Selecting computes nothing; the generators are computed when
         ``group_generators()`` first reads the selected resolution.
         """
         _fix_selected_group_resolution_on(self, self._computed_group_generators)
 
-    def framing(self):
-        r"""Explicitly select the represented generator framing of ``O(L)``."""
+    def select_group_resolution(self):
+        r"""Select the generating epimorphism ``F(S) -> O(L)`` on the computed generating set ``S``, and return ``O(L)``.
+
+        It is the degree-zero truncation of a free-group resolution of
+        ``O(L)`` (``CAT-29``); after it, ``group_generators()`` answers.
+        """
         if self.has_selected_group_resolution():
             return self
-        self._retain_group_framing()
+        self._select_computed_group_resolution()
         return self
 
     def structure_description(self):

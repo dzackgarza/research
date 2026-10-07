@@ -146,7 +146,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _solve_left_integrally,
+    _solve_preimage_integrally,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjectConstruction,
@@ -281,19 +281,20 @@ def _indecomposable_name(lattice):
 
 
 @cached_function(
-    key=lambda module, basis, root_system_label=None: (
+    key=lambda module, basis, root_system_type_name=None: (
         id(module),
         basis,
-        root_system_label,
+        root_system_type_name,
     )
 )
-def _lattice_subobject_spanning(module, basis, root_system_label=None):
+def _lattice_subobject_spanning(module, basis, root_system_type_name=None):
     r"""Return the canonical lattice subobject on a finite span basis.
 
     The subobject is the lattice on the free module framed by the span basis,
     with the restricted Gram \(b(v_i,v_j)\), built in one construction that
-    retains its inclusion into ``module``.  A ``root_system_label`` places it
-    in ``RootLattices`` with that root-system label as its datum.
+    retains its inclusion into ``module``.  A ``root_system_type_name`` places
+    it in ``RootLattices`` with that name of the type of the root system as its
+    datum.
     """
     ring = module.base_ring()
     basis_elements = tuple(basis)
@@ -321,12 +322,12 @@ def _lattice_subobject_spanning(module, basis, root_system_label=None):
 
     extra_categories = ()
     construction_data = {}
-    match root_system_label:
+    match root_system_type_name:
         case None:
             pass
         case _:
             extra_categories = (RootLattices(),)
-            construction_data = {"root_system_label": root_system_label}
+            construction_data = {"root_system_type_name": root_system_type_name}
     return _lattice_object(
         Lattices(ring),
         source_module,
@@ -920,7 +921,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         match lattice in RootLattices():
             case True:
                 carried_categories.append(RootLattices())
-                carried_data["root_system_label"] = lattice.label()
+                carried_data["root_system_type_name"] = lattice.root_system_type_name()
         match lattice in NoncrystallographicRootLattices(ring):
             case True:
                 carried_categories.append(NoncrystallographicRootLattices(ring))
@@ -1432,13 +1433,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Synonym for :meth:`orthogonal_complement`."""
             return self.orthogonal_complement(sublattice)
 
-        def _root_subobject_on(self, module_generating_set, root_system_label):
+        def _root_subobject_on(self, module_generating_set, root_system_type_name):
             r"""Return the selected root sublattice with its root-system label at construction."""
             basis = _span_basis_elements(self, module_generating_set)
             return _lattice_subobject_spanning(
                 self,
                 basis,
-                root_system_label=root_system_label,
+                root_system_type_name=root_system_type_name,
             )
 
         def Mor(self, codomain, category=None):
@@ -1650,7 +1651,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
             Over number fields the private OSCAR/Hecke realization decomposes
-            the Gram form into its anisotropic and hyperbolic summands; half
+            the quadratic space into its anisotropic and hyperbolic summands; half
             the dimension of the latter is the Witt index.
             """
             space = self.vector_space()
@@ -1723,7 +1724,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             real place \(\mathbb Q\to\mathbb R\) it is the real spinor norm
             whose kernel is :meth:`O_plus`.
 
-            The private computation diagonalizes the Gram form and uses
+            The private computation diagonalizes the Gram matrix and uses
             OSCAR's reflection factorization.  The rational specialization
             retains OSCAR's ``rational_spinor_norm`` wrapper; represented
             absolute number fields use the same generic ``spin`` algorithm
@@ -2168,7 +2169,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             return level
 
         def bad_reduction_primes(self):
-            r"""Return the primes dividing ``2 det(L)`` for a nondegenerate integral lattice."""
+            r"""Return the primes of bad reduction of the quadric ``Q(x) = n``: the primes dividing ``2 det(L)``.
+
+            For an odd prime ``p``, ``Q`` modulo ``p`` is nondegenerate exactly
+            when ``p`` does not divide ``det(L)``; modulo 2, ``Q`` is the square
+            of a linear form, so 2 is always a prime of bad reduction
+            (``lattice-database/theory/zeta.md``, *Primes of bad reduction*).
+            """
             ring = self.base_ring()
             assert _engine_ring(ring) is SageZZ, (
                 f"the bad-reduction prime set here is defined for integral lattices over ZZ, but {self} is over {ring}"
@@ -2182,7 +2189,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         def discriminant_character_discriminant(self):
-            r"""Return the fundamental discriminant defining the even-rank discriminant character."""
+            r"""Return the discriminant ``d`` of the field ``Q(sqrt(D))``, ``D = (-1)^m det(L)`` in rank ``2m``.
+
+            It is 1 when ``D`` is a square.  For a prime ``p`` not dividing
+            ``2 det(L)``, the character ``chi_D(p)`` is the Kronecker symbol
+            ``(d/p)``, which is the Legendre symbol ``(D/p)``
+            (``lattice-database/theory/zeta.md``, *The character of the
+            discriminant*).
+            """
             from sage.arith.misc import fundamental_discriminant
 
             ring = self.base_ring()
@@ -2805,7 +2819,25 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ),
             )
 
-            basis_map = rationals.matrix_space(rank, rank).from_rows(tuple(tuple(basis_rows[column, row] for column in range(rank)) for row in range(rank)))
+            def basis_inclusion(scalars, rows):
+                # The map scalars^rank -> L sending e_j to the j-th basis
+                # vector of L', whose coordinates in L are rows[j].
+                space = scalars.matrix_space(rank, rank)
+                coordinates = space.codomain()
+                coordinate_labels = tuple(coordinates.module_generating_set())
+                return space(
+                    tuple(
+                        coordinates.linear_combination(
+                            {label: entry for label, entry in zip(coordinate_labels, row, strict=True) if entry}
+                        )
+                        for row in rows
+                    )
+                )
+
+            basis_map = basis_inclusion(
+                rationals,
+                tuple(tuple(basis_rows[row, column] for column in range(rank)) for row in range(rank)),
+            )
             gram = self.gram_tensor().change_ring(rationals).pullback(basis_map)
             if not all(gram[i, j] in ring for i in range(rank) for j in range(rank)):
                 raise ValueError(
@@ -2824,17 +2856,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 integral_gram,
                 module_generators=labels,
             )
-            # The system every generator is solved against: the basis of L'
-            # in the coordinates of L, as the owned matrix the solver takes.
-            integral_basis = ring.matrix_space(rank, rank).from_rows(tuple(tuple(row) for row in integral_basis_rows))
+            # The image of e_s is the preimage of d e_s under the inclusion of
+            # d L' into L, read in the basis of L'.
+            integral_basis = basis_inclusion(ring, integral_basis_rows)
             images = {}
             for source_position, source_label in enumerate(self.module_generating_set()):
                 target = [denominator if index == source_position else ring.zero() for index in range(rank)]
-                coefficients = _solve_left_integrally(
-                    integral_basis,
-                    target,
-                    ring,
-                )
+                coefficients = _solve_preimage_integrally(integral_basis, target, ring)
                 images[source_label] = enlarged.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             return self.Emb(enlarged)(images)
 
@@ -3614,10 +3642,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         def reflective_root_system_components(self):
             r"""Return the irreducible components of the reflective root system.
 
-            Each component is a connected rooted Coxeter diagram whose roots are
-            simple roots in this lattice; its :meth:`label`, :meth:`root_scale`
-            and :meth:`reference_isomorphism` give its type, scale and the
-            reference order of its simple roots.
+            Each component is a connected Coxeter diagram of simple roots in
+            this lattice; its :meth:`label`, :meth:`root_scale` and
+            :meth:`isomorphism_from_type_diagram` give its type, its scale and
+            the order of its simple roots that the diagram of the type fixes.
             """
             return _reflective_root_system_components(self)
 
@@ -5550,23 +5578,24 @@ class RootLattices(OwnedCategory):
         return [Lattices(_own_ring(SageZZ)).FinitelyGenerated().Nondegenerate().Even()]
 
     class ParentMethods:
-        def __init__(self, root_system_label, **rest) -> None:
-            self._preamble_root_system_label = root_system_label
+        def __init__(self, root_system_type_name, **rest) -> None:
+            self._preamble_root_system_type_name = root_system_type_name
             super().__init__(**rest)
 
-        def label(self):
-            r"""Return the name of the root system of the simple roots, as ``A2`` or ``A2xA1``."""
-            return self._preamble_root_system_label
+        def root_system_type_name(self):
+            r"""Return the name of the type of the root system of the simple roots, as ``A2`` or ``A2xA1``."""
+            return self._preamble_root_system_type_name
 
         def _engine_cartan_type(self):
-            r"""Return the private engine Cartan type named by :meth:`label`."""
-            return CartanType(self.label())
+            r"""Return the private engine Cartan type named by :meth:`root_system_type_name`."""
+            return CartanType(self.root_system_type_name())
 
         def dynkin_diagram(self):
-            r"""Return the rooted Coxeter diagram of the simple roots.
+            r"""Return the Dynkin diagram of the simple roots.
 
-            Its vertices are the simple roots, with their squares and pairings,
-            which is the datum a Dynkin diagram draws; its connected components
+            It is the Coxeter diagram of the simple roots that retains the
+            roots: its vertices are the simple roots, with their squares and
+            pairings, which is the datum a Dynkin diagram draws; its connected components
             are the irreducible components of the root system.
             """
             from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
@@ -5581,7 +5610,7 @@ class RootLattices(OwnedCategory):
             cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(
-                    f"{self!r} has no single Coxeter number: its root system of type {self.label()} is reducible, and each irreducible component has its own Coxeter number"
+                    f"{self!r} has no single Coxeter number: its root system of type {self.root_system_type_name()} is reducible, and each irreducible component has its own Coxeter number"
                 )
             return self.base_ring()(int(cartan_type.coxeter_number()))
 
@@ -5595,7 +5624,7 @@ class RootLattices(OwnedCategory):
             cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(
-                    f"{self!r} has no single highest root: its root system of type {self.label()} is reducible, and each irreducible component has its own highest root"
+                    f"{self!r} has no single highest root: its root system of type {self.root_system_type_name()} is reducible, and each irreducible component has its own highest root"
                 )
             coefficients = RootSystem(cartan_type).root_lattice().highest_root().to_vector()
             vector = self.framing_source()(

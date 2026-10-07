@@ -156,7 +156,7 @@ def _fraction_of(value) -> Fraction:
     return Fraction(int(value.numerator()), int(value.denominator()))
 
 
-def _integral_reflection_model(formed):
+def _integral_twist(formed):
     """The twist `L(m)` of `formed` by the denominator `m` of its scale, as a ZZ-lattice, and `m`.
 
     `formed` is a finite free ZZ-module with a QQ-valued bilinear form.  Its twist by
@@ -253,18 +253,18 @@ def _root_component(
 ) -> tuple[str, Fraction, tuple[tuple[int, ...], ...]]:
     """Serialize one root-system component: its type, signed scale and ordered simple roots.
 
-    The simple roots are listed in the vertex order of the component's reference
-    diagram, in the coordinates of the lattice's module generators.  The card names
-    the rank-two type B2, where the preamble's reference diagram is C2.
+    The simple roots are listed in the vertex order of the diagram of the component's
+    type, in the coordinates of the lattice's module generators.  The card names the
+    rank-two type B2, where the preamble's diagram of that type is C2.
     """
-    reference_isomorphism = component.reference_isomorphism()
+    isomorphism_from_type_diagram = component.isomorphism_from_type_diagram()
     labels = tuple(lattice.module_generating_set())
     roots = tuple(
         tuple(
-            int(component.root(reference_isomorphism(vertex)).to_vector()(label))
+            int(component.root(isomorphism_from_type_diagram(vertex)).to_vector()(label))
             for label in labels
         )
-        for vertex in reference_isomorphism.domain().vertices()
+        for vertex in isomorphism_from_type_diagram.domain().vertices()
     )
     scale = component.root_scale()
     root_type = "B2" if component.label() == "C2" else component.label()
@@ -390,9 +390,9 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     )
     match integral_lattice:
         case None:
-            reflection_lattice, reflection_multiplier = _integral_reflection_model(formed)
+            integral_twist, twist_multiplier = _integral_twist(formed)
         case _:
-            reflection_lattice, reflection_multiplier = integral_lattice, 1
+            integral_twist, twist_multiplier = integral_lattice, 1
     definiteness = formed.definiteness()
     dual: dict[str, Yaml] = {}
     if determinant != 0:
@@ -428,14 +428,14 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
             record,
             gram,
             formed,
-            reflection_lattice,
-            Fraction(reflection_multiplier),
+            integral_twist,
+            Fraction(twist_multiplier),
             integral_lattice,
         )
-        labels = tuple(reflection_lattice.module_generating_set())
+        labels = tuple(integral_twist.module_generating_set())
         reflective_roots = tuple(
             tuple(int(root.to_vector()(label)) for label in labels)
-            for root in reflection_lattice.reflective_roots()
+            for root in integral_twist.reflective_roots()
         )
         derived["root_sublattice"] = _root_sublattice(formed, reflective_roots)
     else:
@@ -593,8 +593,8 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         if formed.definiteness() not in ("positive_definite", "negative_definite"):
             found.append("definite: the stored definite block requires a definite form")
         if definite.perfect is not None:
-            reflection_lattice, _multiplier = _integral_reflection_model(formed)
-            if definite.perfect != reflection_lattice.is_voronoi_perfect():
+            integral_twist, _multiplier = _integral_twist(formed)
+            if definite.perfect != integral_twist.is_voronoi_perfect():
                 found.append(
                     "definite.perfect: the stated value differs from L.is_voronoi_perfect()"
                 )
@@ -610,11 +610,11 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
             )
     span = lattice.root_span
     if span is not None:
-        reflection_lattice, _multiplier = _integral_reflection_model(formed)
+        integral_twist, _multiplier = _integral_twist(formed)
         found.extend(
             f"root_span.roots: {list(row)} is not a root of L"
             for row in span.roots
-            if not reflection_lattice(row).is_root()
+            if not integral_twist(row).is_root()
         )
         if span.embedding is not None:
             ambient = ZZ.free_module(lattice.rank)
@@ -705,7 +705,7 @@ def definite_isometry_problems(lattices: Sequence[Lattice]) -> dict[str, list[st
         and lattice.gram_tensor is not None
     )
     models = tuple(
-        _integral_reflection_model(
+        _integral_twist(
             ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, lattice.gram_tensor)
         )
         for lattice in definite

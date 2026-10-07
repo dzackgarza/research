@@ -3,7 +3,7 @@
 This module owns the algorithms migrated from the former
 ``lattice-database/src/latticedb/sage_genus.py`` implementation.  The
 orthogonal group itself is never recomputed here: definite orbit calculations
-consume ``L.orthogonal_group().framing().group_generators()``.
+consume ``L.orthogonal_group().select_group_resolution().group_generators()``.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from collections.abc import Callable, Mapping, Sequence, Sized
 from functools import partial
 
 from sage.groups.fqf_orthogonal import FqfIsometry
-from sage.matrix.constructor import matrix
+from sage.matrix.constructor import column_matrix, matrix
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.matrix.matrix_rational_dense import Matrix_rational_dense
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
@@ -61,7 +61,7 @@ def _isometry_matrix(isometry) -> Matrix_integer_dense:
 def _orthogonal_generator_matrices(lattice) -> list[Matrix_integer_dense]:
     return [
         _isometry_matrix(generator)
-        for generator in lattice.orthogonal_group().framing().group_generators()
+        for generator in lattice.orthogonal_group().select_group_resolution().group_generators()
     ]
 
 
@@ -76,9 +76,15 @@ def _discriminant_actions(
     ]
     factors = [abs(int(smith[index, index])) for index in kept]
     left_inverse = left.inverse_of_unit()
+    gram_inverse = gram.inverse()
     actions = []
     for generator in generators:
-        action = left * generator.inverse_of_unit().transpose() * left_inverse
+        # The Gram matrix is the correlation L -> L^dual in the dual basis, and
+        # an isometry g commutes with it: g acts on L^dual by gram g gram^-1.
+        # The Smith factor ``left`` changes the dual basis to the one in which
+        # L^dual / L is a product of cyclic groups.
+        dual_action = (gram * generator * gram_inverse).change_ring(ZZ)
+        action = left * dual_action * left_inverse
         actions.append(action.matrix_from_rows_and_columns(kept, kept))
     return factors, actions
 
@@ -137,14 +143,14 @@ def _quotient_action(
     if not with_discriminant:
         return (sign_part,)
     order = len(factors)
-    current = matrix(ZZ, order, order, list(element[1:])).transpose()
+    current = matrix(ZZ, order, order, list(element[1:]))
     product = action * current
     return (
         sign_part,
         *(
             int(product[i, j]) % factors[i]
-            for j in range(order)
             for i in range(order)
+            for j in range(order)
         ),
     )
 
@@ -168,7 +174,7 @@ def primitive_orbit_series(lattice, bound: int = ORBIT_NORM_BOUND):
                 primitive_coordinates.append(_element_coordinates(vector))
                 norms.append(absolute_norm)
     vectors = (
-        matrix(ZZ, primitive_coordinates).transpose()
+        column_matrix(ZZ, primitive_coordinates)
         if primitive_coordinates
         else matrix(ZZ, int(lattice.module_rank()), 0)
     )
@@ -290,22 +296,20 @@ def discriminant_sequence_data(lattice):
     basis = module.gens()
 
     def rows(action: Matrix_integer_dense) -> list[list[int]]:
+        # Sage's FQF automorphism matrix lists the image of generator i as
+        # row i, so entry (i, j) is a coordinate in the cyclic factor j.
         return [
-            [int(action[i, j]) % factors[i] for j in range(len(factors))]
+            [int(action[i, j]) % factors[j] for j in range(len(factors))]
             for i in range(len(factors))
         ]
 
     def rational_rows(value: Matrix_rational_dense) -> list[list[str]]:
         return [[str(entry) for entry in row] for row in value.rows()]
 
-    images = []
-    for generator in lattice_generators:
-        columns = [
-            [int(coordinate) for coordinate in module(generator * element.lift())]
-            for element in basis
-        ]
-        action = matrix(ZZ, columns).transpose() if columns else matrix(ZZ, 0, 0)
-        images.append(group(action))
+    images = [
+        group(module.hom([module(generator * element.lift()) for element in basis]))
+        for generator in lattice_generators
+    ]
     image = group.subgroup(images)
     image_elements = list(image)
     group_elements = list(group)

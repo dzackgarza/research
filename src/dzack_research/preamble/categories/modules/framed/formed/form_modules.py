@@ -247,9 +247,9 @@ class FormedModuleMorphism:
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
-    and a module map on the value objects, satisfying the form square
-    ``h(b(x,y)) = b'(f(x),f(y))``.  Construction states the square and does not
-    compute it (``OWN-22``); :meth:`preserves_forms` computes it when asked.
+    and a module map on the value objects that preserves the forms,
+    ``h(b(x,y)) = b'(f(x),f(y))``.  Construction states this equation and does
+    not compute it (``OWN-22``); :meth:`preserves_forms` computes it when asked.
     The form is preserved exactly, and the morphism is an isometry onto its
     image, exactly when ``h`` is the identity; :meth:`preserves_form_exactly`
     asks that.
@@ -310,7 +310,7 @@ class FormedModuleMorphism:
         )
 
     @validator
-    def validate_form_square(self) -> None:
+    def validate_form_preservation(self) -> None:
         r"""Raise ``ValueError`` unless ``h(b(x,y)) = b'(f(x),f(y))`` (``OWN-22``)."""
         if not self.preserves_forms():
             raise ValueError(
@@ -496,7 +496,7 @@ class FormEmbeddingMor(CategoricalMor):
             values.module_category().Mor(values, values).identity(),
             quadratic=quadratic,
         )
-        embedding.validate_form_square(check=check)
+        embedding.validate_form_preservation(check=check)
         embedding.validate_injectivity(check=check)
         return embedding
 
@@ -573,7 +573,7 @@ class FormedModuleMor(CategoricalMor):
             datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
         module_morphism, value_morphism = datum
         morphism = self.element_class(self, module_morphism, value_morphism)
-        morphism.validate_form_square(check=check)
+        morphism.validate_form_preservation(check=check)
         return morphism
 
     def preserves_forms(self, module_morphism) -> bool:
@@ -707,7 +707,7 @@ class FiberedFormedModuleMorphism:
         )
 
     @validator
-    def validate_form_square(self) -> None:
+    def validate_form_preservation(self) -> None:
         r"""Raise ``ValueError`` unless ``h(b(x,y)) = b'(f(x),f(y))`` on the scalar extension (``OWN-22``)."""
         if not self.preserves_forms():
             raise ValueError(
@@ -809,7 +809,7 @@ class FiberedFormedModuleMor(CategoricalMor):
     def _element_constructor_(self, datum, *, check=False):
         module_morphism, value_morphism = datum
         morphism = self.element_class(self, module_morphism, value_morphism)
-        morphism.validate_form_square(check=check)
+        morphism.validate_form_preservation(check=check)
         return morphism
 
     def identity(self):

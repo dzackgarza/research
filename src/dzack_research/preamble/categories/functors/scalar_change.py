@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 
 
 class _ScalarExtensionModuleMorphism(ModuleMorphism):
-    r"""``S tensor_R f`` with the exact linearity premise carried by ``f``."""
+    r"""``S tensor_R f``, whose linearity decision is that of ``f``."""
 
     def __init__(self, parent, source_morphism, generator_images, functor) -> None:
         self._source_morphism = source_morphism
@@ -48,7 +48,7 @@ class _ScalarExtensionModuleMorphism(ModuleMorphism):
 
 
 class _RestrictionModuleMorphism(ModuleMorphism):
-    r"""Restriction of scalars of one module map, with its source premise."""
+    r"""Restriction of scalars of one module map, whose linearity decision is that of the map."""
 
     def __init__(self, parent, source_morphism, action) -> None:
         self._source_morphism = source_morphism

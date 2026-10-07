@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
-    _OwnedRingParent,
     _engine_ring,
     _enumerated_ring_elements,
     _owned_ring,
@@ -54,14 +53,14 @@ def _has_finite_free_framing(module) -> bool:
 
 
 def _finite_generating_elements(module):
-    r"""A finite determining family for linear maps, or no such supplied data.
+    r"""A finite generating set of ``module``, or ``None`` when none is supplied.
 
     Used only by module-morphism comparison. Relations are unnecessary for
     comparing already admitted linear maps: linearity extends equality from
-    a spanning family. Products of spanning families span a tensor product
+    a generating set. Pure tensors of generators generate a tensor product
     by bilinearity (Mathlib TensorProduct.ext). Adding structure preserves
-    the supplied unformed module's family through its existing coercion.
-    No infinite family or point sample is used to infer equality.
+    the supplied unformed module's generating set through its existing coercion.
+    No infinite set or point sample is used to infer equality.
     """
     from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
 
@@ -82,22 +81,22 @@ def _finite_generating_elements(module):
             return None
 
 
-def _integral_left_solver(system, ring):
-    r"""Factor one integral system once and return its exact row solver.
+def _integral_preimage_solver(morphism, ring):
+    r"""Factor a finite free morphism once and return its exact preimage solver.
 
-    The solver returns the solution ``a`` of ``a * system = target``, or
-    ``None`` when the target is not an integral combination of the rows: the
-    Smith form ``D = U A V`` reduces the system to ``d_i x_i = (U t)_i``,
-    solvable exactly when each ``d_i`` divides its right-hand side.
+    For ``f: F(S) -> F(T)`` the solver takes the coordinates of ``t`` in
+    ``F(T)`` and returns ``x`` in ``F(S)`` with ``f(x) = t``, or ``None``
+    when ``t`` is not in the image: the Smith form ``D = U f V`` reduces
+    the equation to ``d_i y_i = (U t)_i``, solvable exactly when each
+    ``d_i`` divides its right-hand side, and then ``x = V y``.
     """
 
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert ring in OwnedRings(), f"cannot solve a linear system integrally over {ring}: the coefficients must lie in a ring, but {ring} is not a ring"
-    assert system.parent() in MatrixSpaces(ring), f"cannot solve the linear system {system} over {ring}: its matrix must have entries in {ring}, but it lies in {system.parent()}"
+    assert morphism.parent() in MatrixSpaces(ring), f"cannot solve f(x) = t integrally for f = {morphism} over {ring}: f must be a map of finite free {ring}-modules with chosen bases, but it lies in {morphism.parent()}"
 
-    transposed = system.transpose()
-    smith_data = transposed.smith_form()
+    smith_data = morphism.smith_form()
     smith = smith_data["diagonal"]
     left = smith_data["left_change"]
     right = smith_data["right_change"]
@@ -111,8 +110,8 @@ def _integral_left_solver(system, ring):
     def solve(target):
         target_values = tuple(ring(value) for value in target)
         assert len(target_values) == int(target_labels.cardinality()), (
-            f"cannot solve a * A = t for t = {target}: t must have {target_labels.cardinality()} entries, "
-            f"one per column of A, but it has {len(target_values)}"
+            f"cannot solve f(x) = t for t = {target}: t must have {target_labels.cardinality()} entries, "
+            f"one per generator of the codomain of f, but it has {len(target_values)}"
         )
         target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
         shifted_vector = left(target_vector)
@@ -138,15 +137,9 @@ def _integral_left_solver(system, ring):
     return solve
 
 
-def _solve_left_integrally_element(system, target, ring):
-    r"""Return the row-coefficient element ``a`` with ``a*system = target``, or ``None``."""
-
-    return _integral_left_solver(system, ring)(target)
-
-
-def _integral_left_positional_solver(system, ring):
-    r"""Factor ``system`` once and return its positional integral row solver."""
-    element_solver = _integral_left_solver(system, ring)
+def _integral_preimage_positional_solver(morphism, ring):
+    r"""Factor ``f`` once and return its positional integral preimage solver."""
+    element_solver = _integral_preimage_solver(morphism, ring)
 
     def solve(target):
         original_solution = element_solver(target)
@@ -161,9 +154,9 @@ def _integral_left_positional_solver(system, ring):
     return solve
 
 
-def _solve_left_integrally(system, target, ring):
-    r"""Return positional coefficients ``a`` with ``a*system = target`` over a PID, or ``None``."""
-    return _integral_left_positional_solver(system, ring)(target)
+def _solve_preimage_integrally(morphism, target, ring):
+    r"""Return the coordinates of ``x`` with ``f(x) = t`` over a PID, or ``None``."""
+    return _integral_preimage_positional_solver(morphism, ring)(target)
 
 
 def _scalar_linearity_generating_scalars(ring):
@@ -235,9 +228,9 @@ class ModuleMorphismMethods:
         morphisms override this at their declaration, so callers cannot select
         a derivation with a string or boolean flag.
         """
-        premise = self._direct_linearity_premise
-        if premise is not None:
-            return premise.linearity_decision()
+        source_morphism = self._source_module_morphism
+        if source_morphism is not None:
+            return source_morphism.linearity_decision()
         return None
 
     def _selected_lift_derivation(self):
@@ -268,7 +261,7 @@ class ModuleMorphismMethods:
         self._scalar_extension_of = scalar_extension_of
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
-        self._direct_linearity_premise = None
+        self._source_module_morphism = None
         self._element_function = None
         domain = self.domain()
         codomain = self.codomain()
@@ -285,7 +278,7 @@ class ModuleMorphismMethods:
             case Morphism() if images.domain() is domain and images.codomain() is codomain:
                 source_morphism = images
                 if isinstance(source_morphism, ModuleMorphismMethods):
-                    self._direct_linearity_premise = source_morphism
+                    self._source_module_morphism = source_morphism
                 images = lambda element: source_morphism(element)
                 elementwise = True
             case _:
@@ -491,7 +484,7 @@ class ModuleMorphismMethods:
                         return derivation
 
     def _require_established_linearity(self, operation: str) -> None:
-        r"""Require the linearity premise consumed by a linear-algebra conclusion."""
+        r"""Require that this map is known to be linear, as ``operation`` needs."""
         if self.linearity_decision() is not True:
             raise ValueError(
                 f"{operation} requires a linear map, but the map {self.domain()} -> {self.codomain()} was given as a "
@@ -1276,11 +1269,7 @@ class ModuleMorphismMethods:
         coordinate_map = self.domain().module_category().Mor(
             self.domain(), self.codomain()
         )(self)
-        solution = _solve_left_integrally(
-            coordinate_map.transpose(),
-            target,
-            ring,
-        )
+        solution = _solve_preimage_integrally(coordinate_map, target, ring)
         if solution is None:
             return None
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
@@ -1846,7 +1835,7 @@ class ModuleMorphismMethods:
 
 
 def _combined_linearity_decision(morphisms):
-    r"""Conjoin the linearity decisions of actual morphism premises."""
+    r"""Conjoin the linearity decisions of the morphisms of ``morphisms``."""
     match morphisms:
         case IndexedFamily():
             size = morphisms.cardinality()
@@ -1872,7 +1861,7 @@ class ModuleMorphism(ModuleMorphismMethods, Morphism):
 
 
 class _PointwiseSumModuleMorphism(ModuleMorphism):
-    r"""The sum of two admitted module maps, with exactly their law premises."""
+    r"""The sum of two module maps; its linearity decision conjoins theirs."""
 
     def __init__(self, parent, left, right) -> None:
         self._left_summand = left
@@ -1899,7 +1888,7 @@ class _PointwiseNegationModuleMorphism(ModuleMorphism):
 
 
 class _PointwiseScalarMultipleModuleMorphism(ModuleMorphism):
-    r"""A scalar multiple of an admitted linear map, retaining its premise."""
+    r"""A scalar multiple of a module map; its linearity decision is that of the map."""
 
     def __init__(self, parent, scalar, morphism) -> None:
         self._scalar = parent.base_ring()(scalar)
@@ -1918,7 +1907,7 @@ class _PointwiseScalarMultipleModuleMorphism(ModuleMorphism):
 
 
 class _CompositeModuleMorphism(ModuleMorphism):
-    r"""Composition of two admitted module maps with their law premises."""
+    r"""The composite of two module maps; its linearity decision conjoins theirs."""
 
     def __init__(self, parent, left, right) -> None:
         self._left_factor = left
@@ -2172,11 +2161,11 @@ class _TransportedModuleEmbedding(ModuleEmbedding):
         return True if self._transported_lift_is_exact else None
 
 
-class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
-    r"""A known linear map submitted to the Mono owner for injectivity admission."""
+class _ModuleMorphismAsEmbedding(ModuleEmbedding):
+    r"""A module map regarded as an element of the injective linear maps; its injectivity is checked by validation."""
 
     def __init__(self, parent, morphism, *, lift=None) -> None:
-        self._proposed_morphism = morphism
+        self._linear_map = morphism
         super().__init__(
             parent,
             lambda element: morphism(element),
@@ -2185,7 +2174,7 @@ class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
         )
 
     def _elementwise_linearity_derivation(self):
-        return self._proposed_morphism.linearity_decision()
+        return self._linear_map.linearity_decision()
 
 
 class ModuleEmbeddingMor(CategoricalMor):
@@ -2212,7 +2201,7 @@ class ModuleEmbeddingMor(CategoricalMor):
         elif isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            embedding = _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
+            embedding = _ModuleMorphismAsEmbedding(self, images, lift=lift)
         else:
             embedding = self.element_class(self, images, lift=lift)
         embedding.validate_linearity(check=check)
@@ -2290,8 +2279,8 @@ def _initialize_module_mor_parent(
         _matrix_unit,
     )
 
-    # Fix the choice of every selected resolution before the mixed Sage Mor is
-    # initialized and refined.  A represented internal-Hom presentation is
+    # Fix the choice of every selected resolution before the Mor is
+    # constructed in its placement.  A represented internal-Hom presentation is
     # endpoint-determined but potentially expensive, so its factory is fixed
     # here and its model is realized only on the first module-data read.
     match placement:
@@ -2350,10 +2339,11 @@ class _ModuleMorCommonMethods:
     """
 
     def base_ring(self):
-        r"""The center of ``R``, stored by ``_initialize_module_mor_parent``.
+        r"""The center of ``R``, over which ``Hom_R(M, N)`` is a module.
 
-        Admission into the placement asks for it before ``Modules`` supplies
-        its own reader of the same datum.
+        ``_initialize_module_mor_parent`` stores it before ``CategoricalMor``
+        constructs this Mor in its placement; ``Modules`` reads the same
+        datum once that placement is realized.
         """
         return self._preamble_base_ring
 
@@ -2408,29 +2398,6 @@ class _ModuleMorCommonMethods:
         morphism.validate_linearity(check=check)
         return morphism
 
-    def _projectivity_decision(self):
-        r"""Decide projectivity of ``Hom_R(M, N)`` where its endpoints determine it.
-
-        Over a commutative ring, ``Hom_R(F_R(S), F_R(T))`` between finite
-        framed free modules is free on the matrix units ``T x S``, hence
-        projective.  This is asked while the Mor parent is being admitted
-        into its placement, so it is answered from the endpoints rather than
-        from that placement.  Otherwise projectivity is not decided here.
-        """
-        from sage.misc.unknown import Unknown
-
-        ring = self.domain().base_ring()
-        match ring:
-            case _OwnedRingParent():
-                commutative = ring._commutativity_decision()
-            case _:
-                commutative = ring.is_commutative()
-        match commutative:
-            case True if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
-                return True
-            case _:
-                return Unknown
-
     def _apply_pointwise_scalar(self, scalar, element):
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
 
@@ -2438,7 +2405,7 @@ class _ModuleMorCommonMethods:
         return _ScalarIdentityModuleMorphism(self, scalar)
 
     def _compose_module_endomorphisms(self, left, right):
-        r"""Compose endomorphisms while retaining both module-linearity premises."""
+        r"""Compose two endomorphisms; the composite's linearity decision conjoins theirs."""
         from dzack_research.preamble.categories.group.additive_mors import (
             _scalar_identity_coefficient,
         )
@@ -2802,9 +2769,9 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
     from the values on pairs of factor generators, and ordinary module-Mor
     admission still rejects any selected tensor relation that those values do
     not kill.  A Python callable, however, does not establish that its values
-    on arbitrary factor elements agree with that bilinear extension.  Retain
-    that bilinearity premise as ``Unknown`` instead of promoting agreement on
-    the selected framing to a proof.
+    on arbitrary factor elements agree with that bilinear extension.  So the
+    linearity decision is ``Unknown``: agreement on the selected framing does
+    not decide bilinearity.
     """
 
     def __init__(self, parent, evaluation) -> None:
@@ -2828,7 +2795,7 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
 
     @cached_method
     def linearity_decision(self):
-        r"""Reject a selected tensor relation the values do not kill; otherwise the bilinearity premise stays ``Unknown``."""
+        r"""Reject a selected tensor relation the values do not kill; otherwise return ``Unknown``."""
         self._check_selected_domain_relations()
         return Unknown
 

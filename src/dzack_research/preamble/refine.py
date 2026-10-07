@@ -2,16 +2,19 @@
 
 Sage's ``_refine_category_`` joins categories but leaves the concrete class
 before category methods in the MRO.  For an owned parent, this helper rebuilds
-its dispatch class so owned category methods win.  Adoption of Sage parents is
+its dispatch class so owned category methods win; an abstract contract of the
+category is fulfilled by the implementation the object already has.  Adoption of Sage parents is
 not performed here: free modules, groups, rings and other adopted objects enter
 through owned facades that hold the Sage parent as a private engine.
 """
 
+import inspect
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.misc.abstract_method import AbstractMethod
 from sage.misc.cachefunc import cached_function
 from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import dynamic_class
@@ -57,6 +60,40 @@ def _owned_mixins(category: Category, attr: str) -> tuple[type, ...]:
     return tuple(providers)
 
 
+def _supply_abstract_contracts(new_class: type, mixins: tuple[type, ...], inherited: type) -> None:
+    """Let an implementation the object already has fulfil each abstract contract it reaches.
+
+    The rebuilt class puts the owned methods of the category before the
+    class they refine, so a category operation wins over a class method of
+    the same name.  An ``abstract_method`` is not an operation: it states that
+    a participant of the category supplies one (``STY-48``).  When the
+    winner for a name is such a contract and ``inherited`` already resolves
+    that name to a preamble implementation, that implementation is the
+    participant's answer, and it is aliased onto ``new_class`` ahead of the
+    contract.  An implementation defined outside the preamble, by a Sage host
+    class, does not fulfil an owned contract.
+    """
+    contracts = {
+        name
+        for provider in mixins
+        for name, value in vars(provider).items()
+        if not name.startswith("_") and isinstance(value, AbstractMethod)
+    }
+    for name in contracts:
+        if not isinstance(inspect.getattr_static(new_class, name), AbstractMethod):
+            continue
+        definer = next(
+            (klass for klass in inherited.__mro__ if name in vars(klass)),
+            None,
+        )
+        if definer is None or not definer.__module__.startswith(_PREAMBLE_PACKAGE):
+            continue
+        supplied = vars(definer)[name]
+        if isinstance(supplied, AbstractMethod):
+            continue
+        setattr(new_class, name, supplied)
+
+
 def _rebuild_parent_class(parent: Parent, category: Category) -> None:
     providers = _owned_mixins(category, "ParentMethods")
     if not providers:
@@ -99,6 +136,7 @@ def _rebuild_parent_class(parent: Parent, category: Category) -> None:
     )
     for name, value in preferred.items():
         setattr(new_class, name, value)
+    _supply_abstract_contracts(new_class, mixins, inherited)
     new_class._preamble_concrete = concrete
     new_class._preamble_inherited = inherited
     parent.__class__ = new_class
@@ -121,11 +159,13 @@ def _rebuild_element_class(parent: Parent, category: Category) -> None:
     if not mixins:
         return
     parent.__dict__.pop("_abstract_element_class", None)
-    parent.element_class = dynamic_class(
+    element_class = dynamic_class(
         f"{type(parent).__name__}.element_class",
         (*mixins, native),
         doccls=native,
     )
+    _supply_abstract_contracts(element_class, mixins, native)
+    parent.element_class = element_class
 
 
 def _rebuild_morphism_class(morphism: Morphism, category: Category) -> None:
@@ -143,47 +183,36 @@ def _rebuild_morphism_class(morphism: Morphism, category: Category) -> None:
         (*mixins, inherited),
         doccls=concrete,
     )
+    _supply_abstract_contracts(new_class, mixins, inherited)
     new_class._preamble_concrete = concrete
     new_class._preamble_inherited = inherited
     morphism.__class__ = new_class
 
 
-def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> None:
-    """Require every owned certified property before category admission.
+def check_certifying_predicates(obj: SageObject, category: Category, held: Category) -> None:
+    """Raise ``ValueError`` unless ``obj`` has each property ``category`` certifies beyond ``held``.
 
     A category states the property that admits an object as the sequence of
-    owned operations that reads it off, left to right: ``"is_even"`` asks the
+    public operations that reads it off, left to right: ``"is_even"`` asks the
     lattice, ``"module_rank.is_finite"`` asks the lattice for its rank and the
     rank for its finiteness.  The last operation answers ``True`` or the
-    object does not belong.
+    object does not belong.  A category ``held`` already contains is not asked
+    again.
     """
-    for candidate_category in category.all_super_categories(proper=False):
-        category_type = type(candidate_category)
+    for certified in category.all_super_categories(proper=False):
+        category_type = type(certified)
         if not category_type.__module__.startswith(_PREAMBLE_PACKAGE):
             continue
         statement = getattr(category_type, "_certifying_predicate", None)
-        if statement is None:
+        if statement is None or held.is_subcategory(certified):
             continue
         answer = obj
         for operation in statement.split("."):
-            try:
-                predicate = getattr(answer, operation)
-            except AttributeError:
-                assert operation.startswith("is_"), (
-                    f"refining {obj} into {candidate_category} requires {operation}(), "
-                    f"but {answer} has no such operation"
-                )
-                decision_name = (
-                    "_projectivity_decision"
-                    if operation == "is_projective"
-                    else f"_{operation[3:]}_decision"
-                )
-                predicate = getattr(answer, decision_name)
-            answer = predicate()
-        assert answer is True, (
-            f"refining {obj} into {candidate_category} requires "
-            f"{statement}() to hold"
-        )
+            answer = getattr(answer, operation)()
+        if answer is not True:
+            raise ValueError(
+                f"{obj} is not an object of {certified}: {statement}() answers {answer}"
+            )
 
 
 def realize_owned_category[SageObjectT: SageObject](obj: SageObjectT) -> SageObjectT:
@@ -251,7 +280,7 @@ def refine[SageObjectT: SageObject](
     from dzack_research.preamble.owned_category import owned_category_join
 
     target = category if isinstance(category, Category) else owned_category_join(tuple(category))
-    _assert_certifying_predicates_hold(obj, target)
+    check_certifying_predicates(obj, target, obj.category())
     if isinstance(obj, Morphism):
         # A morphism's mathematical membership is determined by its Mor
         # parent.  There is no independent Sage category slot to mutate here;

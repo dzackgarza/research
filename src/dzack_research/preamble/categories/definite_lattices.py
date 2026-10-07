@@ -256,7 +256,7 @@ def _root_sublattice(lattice):
     from sage.combinat.root_system.cartan_type import CartanType
     from sage.graphs.graph import Graph
 
-    from dzack_research.preamble.categories._lattice import _root_system_label
+    from dzack_research.preamble.categories._lattice import _root_system_type_name
 
     root_vectors = tuple(lattice.roots())
     if not root_vectors:
@@ -297,7 +297,7 @@ def _root_sublattice(lattice):
     recognized = component_types[0] if len(component_types) == 1 else CartanType(component_types)
 
     if lattice.is_negative_definite():
-        return lattice._root_subobject_on(ordered, _root_system_label(recognized))
+        return lattice._root_subobject_on(ordered, _root_system_type_name(recognized))
     return lattice.subobject_on(ordered)
 
 
@@ -697,8 +697,10 @@ def _babai(lattice, target):
     from sage.modules.free_module_element import vector as sage_vector
 
     rationals = point.base_ring()
-    backend_rows = _engine_component_matrix(gram).LLL_gram().change_ring(SageQQ)
-    basis_map = backend_rows.transpose()
+    # Sage's LLL_gram returns U with U^T G U reduced (matrix2.pyx, LLL_gram):
+    # column j of U is the j-th reduced basis vector, so U is the map from
+    # reduced coordinates to the lattice frame.
+    basis_map = _engine_component_matrix(gram).LLL_gram().change_ring(SageQQ)
     point_backend = sage_vector(
         SageQQ,
         [_engine_element(rationals, entry) for entry in point],
@@ -883,14 +885,16 @@ def _successive_minima(lattice):
     if rank == 0:
         return finite_family((), name="Successive minima")
     engine_gram = _engine_component_matrix(gram)
-    transformation = engine_gram.LLL_gram()
-    reduced = transformation * engine_gram * transformation.transpose()
-    bound = max(reduced.diagonal())
-    _count, _largest, raw_coordinates = engine_gram.__pari__().qfminim(bound, None)
-    coordinate_array = raw_coordinates
-    if coordinate_array.nrows() != rank:
-        coordinate_array = coordinate_array.transpose()
     ring = lattice.base_ring()
+    # The columns of Sage's LLL_gram transformation are a reduced basis; the
+    # largest of their squares bounds every successive minimum.
+    reduced_basis = tuple(
+        tensor.vector(ring, [_owned_engine_element(ring, entry) for entry in column])
+        for column in engine_gram.LLL_gram().columns()
+    )
+    bound = max(_engine_element(ring, gram.contract(vector, vector)) for vector in reduced_basis)
+    # PARI's qfminim returns the short vectors as the columns of its third entry.
+    _count, _largest, coordinate_array = engine_gram.__pari__().qfminim(bound, None)
     coordinates = tuple(
         tensor.vector(
             ring,

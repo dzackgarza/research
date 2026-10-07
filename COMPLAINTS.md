@@ -279,10 +279,11 @@ the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
 ### A Vinberg invariant is not yet a point of the projective line
 
-The Vinberg invariant of two mirrors is the point
-`[4 b(r,s)^2 : q(r) q(s)]` of `P^1`, and an `R`-point of `P^1_R` is a
-morphism `Spec R -> P^1_R` (Vinberg, *Hyperbolic reflection groups*, 1985,
-section 1). `VinbergInvariantMatrices.vinberg_invariant`
+The invariant of two mirrors is the point `[4 b(r,s)^2 : q(r) q(s)]` of
+`P^1`; for normals of positive square it dehomogenizes to `4 g^2`, where `g`
+is the entry of the Gram matrix of the unit normals (Vinberg, *Hyperbolic
+reflection groups*, 1985, section 1). An `R`-point of `P^1_R` is a morphism
+`Spec R -> P^1_R`. `VinbergInvariantMatrices.vinberg_invariant`
 (`categories/vinberg_invariants.py`) asks the owned scheme
 `ProjectiveSpaces(R)(1)` to accept the pair `[numerator, denominator]`, and
 that scheme has no element constructor: the call raises `AttributeError`
@@ -304,37 +305,66 @@ labels and `weighted_graph`; the lattice-db graph cards that read them.
 keyword argument 'evaluator'` from the module-morphism construction.
 Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
 
-### Products of equal families of sets are different sets
+### A Coxeter diagram is not constructed by its category
 
-The product \(\prod_{i\in I}X_i\) is determined by the family
-\(i\mapsto X_i\): two equal families have one product. `Sets().product`
-(`categories/sets/set_categories.py`) interns a finite product by
-`_finite_family_key`, the identity of the index set and of each factor
-object, and the product objects compare by identity. Finite ordered sets
-compare extensionally, so `V = finite_ordered_set((0, 1))` and
-`W = finite_ordered_set((0, 1))` satisfy `V == W`, but `V**2 == W**2` is
-`False`, and an element of `V**2` is refused by `W**2` with
-`ValueError: (0, 0) is an element of Product of the family over {0,...,1},
-not of the product Product of the family over {0,...,1}` (observed
-2026-10-07).
-**Dependency path:** equality of finite sets -> equality of their
-products -> extensional equality of functions on a product, as
-`IndexedFamily.__eq__` first compares index sets.
-**Consumers:** the Coxeter matrix `m: V x V -> Card` of a Coxeter diagram
-and of a Vinberg invariant matrix. Two diagrams built separately on the
-vertex set `{0, 1}` have unequal Coxeter matrices even with equal entries:
-`tests/lattices/test_coxeter.sage`, `test_vinberg_invariants.sage` and
-`test_coxeter_subdiagrams.sage` (parallel and divergent mirrors),
-`test_coxeter_diagrams_of_root_configurations.sage` (the `B_3` reference
-diagram) and `tests/schemes/test_regular_polytope_symmetry.sage` assert
-equalities that are true and answer `False`.
-Repair: `products-of-equal-families-are-equal` in TODO.
+An object of a category is constructed by the category applied to its
+defining data. A Coxeter diagram on a finite set `V` is determined by its
+Coxeter matrix `m: V x V -> Card`, and a finite family of roots of a
+lattice determines one through the pairings of its roots. `CoxeterDiagrams`
+(`categories/coxeter_diagrams.py`) constructs diagrams only through
+`from_coxeter_matrix`, `from_roots` and `from_cartan_type`; the category has
+no element constructor, so `CoxeterDiagrams()(datum)` raises
+`NotImplementedError` from Sage's `Category.__call__` (observed 2026-10-07).
+**Dependency path:** the Coxeter matrix as the owned function
+`m: V x V -> Card` -> the category applied to `m`, or to a family of roots
+-> the diagram, equal to the one the `from_*` route builds.
+**Partial capability:** `from_coxeter_matrix` and `from_roots` build the
+diagram; their Coxeter matrices compare equal on equal data.
+**Consumers:** `tests/lattices/test_coxeter.sage` (4 failures),
+`test_coxeter_subdiagrams.sage` (5 failures), `test_vinberg_invariants.sage`
+(through `rooted_diagram` and the Cartan-type and matrix calls),
+`test_coxeter_gram_archive.sage` and `tests/objects/test_coxeter_diagram_a2.sage`.
+**Coverage boundary:** the Cartan-type datum enters as a Sage `CartanType`,
+which *Coxeter diagrams answer subdiagram orders and drawings as Sage
+objects* already records as engine input.
+Repair: `coxeter-diagrams-construct-from-their-data` in TODO.
+
+### The session matrix does not take its ring
+
+A matrix over a ring `R` is a family of entries in `R`; the ring is part of
+the datum whenever the entries do not determine it. The session's `matrix`
+(`preamble/language_runtime.py`) takes one argument, the rows, and reads the
+ring from the entries. `matrix(ZZ, [[4, 1, 1], [1, 4, 1], [1, 1, 4]])`
+raises `TypeError: matrix() takes 1 positional argument but 2 were given`
+(observed 2026-10-07), and `matrix(ZZ, m, n, f)`, the matrix with entries
+`f(i, j)`, has no spelling.
+**Consumers:** `tests/lattices/test_vinberg_invariants.sage` (the affine
+`A_2` triangle at `t = 1`) and `tests/user_simulations/test_newcomer_session.sage`.
+Repair: `the-session-matrix-takes-its-ring` in TODO.
+
+### A finite cardinal does not convert into the integers
+
+A finite cardinal is a natural number, and the natural numbers include
+into the integers. The session's cardinals are objects of `Cardinalities`
+(parents), so Sage's `parent(c)` returns the cardinal's class, and the
+integers' element constructor (`categories/rings/ring_foundation.py`) passes
+that class to `Modules(ZZ).__contains__`, which raises
+`TypeError: category() needs an argument` (observed 2026-10-07).
+`RegularPolytopes.dimension()` (`categories/schemes/polytopes.py`) converts
+`schlafli_symbol().cardinality() + 1` into `_own_ring(SageZZ)`, so the cube
+has no dimension.
+**Dependency path:** cardinality of a finite set -> the natural number it
+is -> its image under `NN -> ZZ`.
+**Consumers:** `tests/schemes/test_regular_polytope_symmetry.sage`
+(`test_the_cube_is_three_dimensional`) and every caller of
+`RegularPolytopes.dimension()`.
+Repair: `a-finite-cardinal-is-a-natural-number` in TODO.
 
 ### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
 
 The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
 their vertex sets, form a finite partially ordered set, and so do the
-`Aut`-orbits of subdiagrams under the orbit order. `CoxeterDiagrams`
+`Aut`-orbits of subdiagrams under the order that inclusion induces on orbits. `CoxeterDiagrams`
 (`categories/coxeter_diagrams.py`) returns both as Sage `Poset` objects
 through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on`: the six
 public methods `subdiagram_poset`, `elliptic_subdiagram_poset`,
@@ -351,7 +381,8 @@ and `Groups.Coxeter` (`categories/group/groups.py`) passes any argument
 other than the owned Coxeter matrix to Sage's `CoxeterGroup` unchanged
 (`OWN-04`). `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
 **Dependency path:** finite posets in `PartiallyOrderedSets()` from
-`(X, <=)` -> the subdiagram and orbit orders -> the public poset methods.
+`(X, <=)` -> inclusion of subdiagrams and the order it induces on
+`Aut`-orbits -> the public poset methods.
 **Partial capability:** the Coxeter matrix is the owned function
 `m: V x V -> Card` (`coxeter_matrix()`), and the Coxeter graph and the root
 intersection graph are objects of `LabelledGraphs()`.

@@ -1,17 +1,18 @@
-r"""Vinberg invariant matrices: the projective invariant of a family of mirrors.
+r"""Matrices of the projective invariants of the pairs of a family of mirrors.
 
-For two non-isotropic vectors \(r,s\) of a formed module the **Vinberg
-invariant** is
+For two non-isotropic vectors \(r,s\) of a formed module the invariant of the
+pair (``vinberg_invariant``) is
 
 .. MATH::
 
     t(r,s) \;=\; \bigl[\,4\,b(r,s)^2 \;:\; q(r)\,q(s)\,\bigr] \;\in\; \mathbb P^1(R),
 
-the projective point of the pair.  Rescaling either vector multiplies
+the projective point of the pair.  When \(q(r),q(s)>0\) it dehomogenizes to
+\(4g^2\), where \(g=b(r,s)/\sqrt{q(r)q(s)}\) is the entry of the Gram matrix
+of the unit normals (Vinberg, section 1).  Rescaling either vector multiplies
 numerator and denominator by the same square, so \(t\) depends on the two
-mirrors and not on the normals chosen for them; that invariance is why it is
-Vinberg's invariant, and it is why the value is a point of the projective line
-rather than an element of \(R\).  Over \(\mathbb Z\) the ratio
+mirrors and not on the normals chosen for them; that is why the value is a
+point of the projective line rather than an element of \(R\).  Over \(\mathbb Z\) the ratio
 \(4b(r,s)^2/q(r)q(s)\) is usually not an integer, so no matrix over the base
 ring can hold these values while a matrix of projective points can.
 
@@ -28,7 +29,7 @@ and the invariant matrix carries strictly more than the Coxeter matrix: at
 says the mirrors are parallel and \(t > 4\) says they diverge.
 
 Sources.  Vinberg, *Hyperbolic reflection groups*, Russian Math. Surveys 40
-(1985), sections 1 and 4, for the invariant, the classification of a pair of
+(1985), sections 1 and 4, for the Gram matrix of a family of mirrors, the classification of a pair of
 mirrors, and the Lannér and quasi-Lannér conditions; Lannér, *On complexes
 with transitive groups of automorphisms* (1950), for the cocompact simplex
 groups; Bourbaki, *Groupes et algebres de Lie* VI.1.1 for crystallographic
@@ -235,7 +236,7 @@ class VinbergInvariantMatrices(OwnedCategory):
             if not self.has_edge(left, right):
                 raise ValueError(
                     f"the mirrors {left} and {right} of {self} are orthogonal, so they are "
-                    f"not joined by an edge of the Vinberg diagram and the edge has no label"
+                    f"not joined by an edge of the graph of mirrors and the edge has no label"
                 )
             return self.vinberg_invariant(left, right)
 
@@ -415,13 +416,15 @@ class VinbergInvariantMatrices(OwnedCategory):
             )
 
         def weighted_graph(self):
-            r"""Return the underlying graph of mirrors labelled by points of \(\mathbb P^1(R)\).
+            r"""Return the image of this invariant matrix in ``LabelledGraphs``.
 
-            This is the image of the invariant matrix in ``LabelledGraphs``: the
-            vertices are the mirrors, an edge joins two mirrors that are not
-            orthogonal, the label of an edge is the Vinberg invariant of its
-            pair, and the label of a vertex is the diagonal invariant
-            \([4:1]\).
+            The vertices are the mirrors and an edge joins two mirrors that are
+            not orthogonal, as in the scheme of a polytope (Vinberg, section
+            5.2).  The label of an edge is the invariant
+            \([4b(r,s)^2 : q(r)q(s)]\in\mathbb P^1(R)\) of its pair, which for
+            the walls of a polytope dehomogenizes to four times the square of
+            the weight of that edge in the scheme.  The label of a vertex is
+            the diagonal invariant \([4:1]\).
             """
             vertices = tuple(self.vertices())
             edges = tuple(self.edges())

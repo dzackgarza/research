@@ -16,7 +16,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.base_change import _base_change_codomain
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _integral_left_positional_solver,
+    _integral_preimage_positional_solver,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
@@ -864,11 +864,21 @@ def _module_subobject_constructor_data(module, basis):
     source_rank = len(basis_elements)
     support_rank_count = len(support_points)
     if source_rank:
-        coordinate_matrix = ring.matrix_space(source_rank, support_rank_count).from_rows(
+        # The map F(labels) -> F(support) sending the i-th label to the
+        # coordinates of the i-th spanning element on the support.
+        coordinate_space = ring.matrix_space(support_rank_count, source_rank)
+        support_module = coordinate_space.codomain()
+        support_module_labels = tuple(support_module.module_generating_set())
+        coordinate_matrix = coordinate_space(
             tuple(
-                tuple(
-                    coordinates(support_points[j])
-                    for j in range(support_rank_count)
+                support_module.linear_combination(
+                    {
+                        support_module_label: coordinates(support_point)
+                        for support_module_label, support_point in zip(
+                            support_module_labels, support_points, strict=True
+                        )
+                        if coordinates(support_point)
+                    }
                 )
                 for coordinates in (
                     module(element).to_vector() for element in basis_elements
@@ -889,7 +899,7 @@ def _module_subobject_constructor_data(module, basis):
         if source_rank == 0:
             return None if coordinates else source.zero()
         if coordinate_solver is None:
-            coordinate_solver = _integral_left_positional_solver(
+            coordinate_solver = _integral_preimage_positional_solver(
                 coordinate_matrix,
                 ring,
             )

@@ -26,7 +26,7 @@ from functools import singledispatch
 from math import prod
 
 from sage.matrix.constructor import matrix as _sage_matrix
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.modules.free_module_element import vector as _sage_vector
 from sage.rings.infinity import Infinity
@@ -240,6 +240,12 @@ def _tensor_space_session_and_latex(
         _otimes_session(session_factors, ring_name),
         _otimes_latex(tex_factors, ring_tex),
     )
+
+
+@cached_function
+def _bidegrees() -> Parent:
+    r"""The set $\mathbb N^2$ of tensor types $(p, q)$, the product built once."""
+    return NN**2
 
 
 class Tensor:
@@ -868,7 +874,7 @@ class Tensor:
         """
         valence = self.tensor_valence()
         first_rank, second_rank = self._index_ranks()
-        if valence in {(NN**2)((0, 2)), (NN**2)((2, 0))}:
+        if valence in {_bidegrees()((0, 2)), _bidegrees()((2, 0))}:
             if first_rank != second_rank:
                 raise ValueError(
                     f"cannot dualize this type-{valence} tensor with index ranks "
@@ -881,7 +887,7 @@ class Tensor:
                 tuple(_owned_engine_element(ring, entry) for entry in row)
                 for row in inverse.rows()
             ]
-            if valence == (NN**2)((0, 2)):
+            if valence == _bidegrees()((0, 2)):
                 return tensor(ring, (first_rank, second_rank), (), components)
             return tensor(ring, (), (first_rank, second_rank), components)
         raise TypeError(
@@ -899,7 +905,7 @@ class Tensor:
         is again type ``(0,2)``.
         """
         valence = self.tensor_valence()
-        match valence == (NN**2)((0, 2)):
+        match valence == _bidegrees()((0, 2)):
             case False:
                 raise TypeError(
                     f"cannot form the dual pairing of a type-{valence} tensor: "
@@ -914,19 +920,86 @@ class Tensor:
                     inverse._component_array(),
                 )
 
-    def pullback(self, morphism):
-        r"""Pull this covariant tensor back along an owned linear morphism.
+    def pullback(self, morphism, *slot_morphisms):
+        r"""Pull this covariant tensor back along owned linear morphisms.
 
         For ``f: V -> W`` and ``T`` of type ``(0,q)`` on ``W``, return
-        ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
-        matrices are only an implementation of this transport: the endpoint
-        module Mor must itself be the finite framed-free matrix Mor.
+        ``f^*T = T \circ (f \times \cdots \times f)`` on ``V``.  Given one
+        morphism ``f_k: V_k -> W`` for each covariant slot, return
+        ``T \circ (f_1 \times \cdots \times f_q)`` on
+        ``V_1 \times \cdots \times V_q``.  For a form ``b`` on ``L`` and
+        ``i: S -> L``, the pullback along ``(i, 1_L)`` is the pairing
+        ``S \times L -> R``, ``(s, x) \mapsto b(i s, x)``.
+
+        The public datum is the morphism.  Finite coordinate matrices are
+        only an implementation of this transport: each endpoint module Mor
+        must itself be the finite framed-free matrix Mor.  When ``f`` is
+        linear over ``R`` and ``T`` has components in an ``R``-algebra ``S``,
+        the pullback is along the base change ``f \otimes_R S``, whose matrix
+        is that of ``f`` read in ``S``.
         """
         if self._upper_index_ranks():
             raise TypeError(
                 f"cannot pull back a type-{self.tensor_valence()} tensor along "
                 f"{morphism}: pullback f^*T is defined for a covariant tensor, type (0, q)"
             )
+        given = tuple(
+            self._pullback_matrix(f) for f in (morphism, *slot_morphisms)
+        )
+        q = len(self._lower_index_ranks())
+        matrices = given * q if not slot_morphisms else given
+        if len(matrices) != q:
+            raise ValueError(
+                f"cannot pull back a tensor with {q} covariant slots along "
+                f"{len(matrices)} morphisms: give one morphism, or one per slot"
+            )
+        target_ranks = tuple(matrix.parent().matrix_shape()[0] for matrix in matrices)
+        if target_ranks != self._lower_index_ranks():
+            raise ValueError(
+                f"cannot pull back a tensor with covariant index ranks "
+                f"{self._lower_index_ranks()} along morphisms whose codomains have ranks "
+                f"{target_ranks}: each covariant index must have its morphism's codomain rank"
+            )
+        if q == 0:
+            return self
+        ring = self.base_ring()
+        source_ranks = tuple(matrix.parent().matrix_shape()[1] for matrix in matrices)
+
+        # The ubiquitous bilinear case is exactly A_1^t G A_2.  Use the
+        # selected exact matrix backend only inside this boundary and cross
+        # every entry back before constructing the owned tensor.
+        if q == 2:
+            left, right = (
+                _engine_module_matrix(matrix).change_ring(_engine_ring(ring))
+                for matrix in matrices
+            )
+            backend_pullback = left.transpose() * _engine_component_matrix(self) * right
+            entries = tuple(
+                _owned_engine_element(ring, entry) for entry in backend_pullback.list()
+            )
+            return tensor(ring, (), source_ranks, _nested(entries, source_ranks))
+
+        from itertools import product as cartesian_product
+
+        source_positions = cartesian_product(*(range(rank) for rank in source_ranks))
+        target_positions = tuple(
+            cartesian_product(*(range(rank) for rank in self._lower_index_ranks()))
+        )
+        entries = []
+        for source_indices in source_positions:
+            value = ring.zero()
+            for target_indices in target_positions:
+                coefficient = self[target_indices]
+                for matrix, target_index, source_index in zip(
+                    matrices, target_indices, source_indices, strict=True
+                ):
+                    coefficient *= ring(matrix[target_index, source_index])
+                value += coefficient
+            entries.append(value)
+        return tensor(ring, (), source_ranks, _nested(tuple(entries), source_ranks))
+
+    def _pullback_matrix(self, morphism):
+        r"""Return the framed-free module Mor element of ``morphism`` for :meth:`pullback`."""
         if _is_coordinate_tensor(morphism, self.base_ring()):
             raise TypeError(
                 f"cannot pull back along the tensor {morphism!r}: pullback takes a linear "
@@ -936,64 +1009,13 @@ class Tensor:
         matrix = morphism.domain().module_category().Mor(
             morphism.domain(), morphism.codomain()
         )(morphism)
-
-        if matrix.parent() not in MatrixSpaces(self.base_ring()):
+        if matrix.parent() not in MatrixSpaces(matrix.parent().base_ring()):
             raise TypeError(
-                f"cannot pull back a tensor over {self.base_ring()} along {morphism}, "
-                f"whose matrix is over {matrix.parent().base_ring()}: both must be over "
-                f"the same ring"
+                f"cannot pull back a tensor along {morphism}: its domain and codomain must be "
+                f"free modules of finite rank with a chosen basis, but the module maps between "
+                f"them form {matrix.parent()}"
             )
-        target_rank, source_rank = matrix.parent().matrix_shape()
-        if any(rank != target_rank for rank in self._lower_index_ranks()):
-            raise ValueError(
-                f"cannot pull back a tensor with covariant index ranks "
-                f"{self._lower_index_ranks()} along {morphism}, whose codomain has rank "
-                f"{target_rank}: every covariant index must have the codomain's rank"
-            )
-        q = len(self._lower_index_ranks())
-        if q == 0:
-            return self
-
-        # The ubiquitous bilinear case is exactly A^t G A.  Use the selected
-        # exact matrix backend only inside this boundary and cross every entry
-        # back before constructing the owned tensor.
-        if q == 2:
-
-            backend_map = _engine_module_matrix(matrix)
-            backend_form = _engine_component_matrix(self)
-            backend_pullback = backend_map.transpose() * backend_form * backend_map
-            ring = self.base_ring()
-            entries = tuple(
-                _owned_engine_element(ring, entry) for entry in backend_pullback.list()
-            )
-            return tensor(
-                ring,
-                (),
-                (source_rank, source_rank),
-                _nested(entries, (source_rank, source_rank)),
-            )
-
-        from itertools import product as cartesian_product
-
-        source_positions = tuple(cartesian_product(range(source_rank), repeat=q))
-        target_positions = tuple(cartesian_product(range(target_rank), repeat=q))
-        entries = []
-        for source_indices in source_positions:
-            value = self.base_ring().zero()
-            for target_indices in target_positions:
-                coefficient = self[target_indices]
-                for target_index, source_index in zip(
-                    target_indices, source_indices, strict=True
-                ):
-                    coefficient *= matrix[target_index, source_index]
-                value += coefficient
-            entries.append(value)
-        return tensor(
-            self.base_ring(),
-            (),
-            (source_rank,) * q,
-            _nested(tuple(entries), (source_rank,) * q),
-        )
+        return matrix
 
 
 def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
@@ -1010,7 +1032,7 @@ def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
         case True:
             pass
     valence = value.tensor_valence()
-    match valence == (NN**2)((0, 2)):
+    match valence == _bidegrees()((0, 2)):
         case False:
             raise TypeError(
                 f"a bilinear form is a covariant 2-tensor of type (0, 2), "
@@ -1099,6 +1121,32 @@ def _engine_row_action_matrix(morphism):
         f"but the module maps between them form {matrix.parent()}"
     )
     return _engine_module_matrix(matrix).transpose()
+
+
+def _engine_column_matrix_from_row_action(row_action):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): raise an engine row action to a column matrix.
+
+    The inverse of :func:`_engine_row_action_matrix`.  An engine that acts on
+    coordinate rows (Sage's matrix groups, OSCAR's isometries and embeddings)
+    returns a matrix whose row ``i`` is the coordinate row of ``f(e_i)``.  The
+    returned Sage matrix has column ``i`` holding those coordinates, the public
+    convention, so its caller reads generator images from its columns.
+    """
+    return row_action.transpose()
+
+
+def _engine_binary_form_pullback(form, linear_map):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): pull a Sage binary form back along a map.
+
+    ``form`` is a Sage ``BinaryQF`` ``Q`` on ``ZZ^2`` and ``linear_map`` a Sage
+    ``2 x 2`` matrix ``M`` acting on coordinate columns.  Return the pullback
+    ``M^*Q = Q o M``.  Sage's ``BinaryQF.matrix_action_right(M)`` evaluates
+    ``Q`` on the columns of ``M``, ``Q(ax+by, cx+dy)`` for
+    ``M = [[a, b], [c, d]]``, which is that pullback; this is the one site that
+    names Sage's side convention for binary forms.  Pullback is contravariant,
+    ``(M N)^*Q = N^*(M^*Q)``, so a chain of reduction steps composes as matrices.
+    """
+    return form.matrix_action_right(linear_map)
 
 
 def _engine_component_vector(value):
@@ -1495,7 +1543,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
         other_valence = other.tensor_valence()
         from itertools import product as cartesian_product
 
-        if len(upper) >= 2 and not lower and other_valence == (NN**2)((0, 1)):
+        if len(upper) >= 2 and not lower and other_valence == _bidegrees()((0, 1)):
             if upper[-1] != other._lower_index_ranks()[0]:
                 raise ValueError(
                     f"cannot multiply a type-{valence} tensor by a covector of rank "
@@ -1513,7 +1561,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 for position in positions
             )
             return tensor(ring, output_upper, (), _nested(entries, output_upper))
-        if other_valence == (NN**2)((1, 0)):
+        if other_valence == _bidegrees()((1, 0)):
             if not lower:
                 raise TypeError(
                     f"a type-{valence} tensor has no covariant index, so it cannot be "
@@ -1547,7 +1595,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
             if not output_shape:
                 return entries[0]
             return tensor(ring, output_upper, output_lower, _nested(entries, output_shape))
-        if valence == (NN**2)((1, 1)) and other_valence == (NN**2)((1, 1)):
+        if valence == _bidegrees()((1, 1)) and other_valence == _bidegrees()((1, 1)):
             if lower != other._upper_index_ranks():
                 raise ValueError(
                     f"cannot compose type-(1, 1) tensors with index ranks "
@@ -1567,7 +1615,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 for j in range(columns)
             )
             return tensor(ring, (rows,), (columns,), _nested(entries, (rows, columns)))
-        if valence == (NN**2)((0, 1)) and other_valence == (NN**2)((1, 1)):
+        if valence == _bidegrees()((0, 1)) and other_valence == _bidegrees()((1, 1)):
             # In V* tensor V tensor W*, evaluate the adjacent V*, V pair.
             if lower != other._upper_index_ranks():
                 raise ValueError(
@@ -1675,10 +1723,10 @@ class _CoordinateTensorModule:
         r"""Return the family assigning each index slot the rank of its module."""
         return index_rank_family(self._index_ranks())
 
+    @cached_method
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`)."""
-
-        return (NN**2)((len(self._upper_ranks), len(self._lower_ranks)))
+        return _bidegrees()((len(self._upper_ranks), len(self._lower_ranks)))
 
     def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.tensor_type()
@@ -1846,7 +1894,7 @@ def _tensor_module_on(base_ring, upper_ranks, lower_ranks):
 
 def _mixed_tensor_valence(valence) -> ProductOfNaturalNumbers:
     r"""Normalize one bidegree ``(p,q)`` of the mixed tensor algebra."""
-    return (NN**2)(valence)
+    return _bidegrees()(valence)
 
 
 class MixedTensorAlgebraElement(GradedDirectSumElement):
@@ -1961,7 +2009,7 @@ def _mixed_tensor_algebra(module):
     )
     ring = _own_ring(module.base_ring())
     size = int(rank)
-    bigrades = NN**2
+    bigrades = _bidegrees()
     pieces = indexed_family(
         bigrades,
         lambda valence: TensorModule(

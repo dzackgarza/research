@@ -30,7 +30,7 @@ from sage.rings.rational_field import QQ
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.coxeter_diagrams import (
     CoxeterDiagrams,
-    _engine_coxeter_exponent,
+    _engine_coxeter_matrix_entry,
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -65,7 +65,7 @@ def _engine_opposition_images(diagram, black):
     group = CoxeterGroup(
         CoxeterMatrix(
             [
-                [_engine_coxeter_exponent(diagram.coxeter_entry(left, right)) for right in black]
+                [_engine_coxeter_matrix_entry(diagram.coxeter_entry(left, right)) for right in black]
                 for left in black
             ]
         ),
@@ -108,8 +108,8 @@ def _engine_rho_coweight_pairings(diagram, black):
 class SatakeDiagrams(OwnedCategory):
     r"""Satake diagrams: a Dynkin diagram, a set of black nodes and a diagram involution.
 
-    ``SatakeDiagrams()(D, X, tau)`` takes a rooted Coxeter diagram ``D`` (the
-    Dynkin diagram of its root basis), the black nodes ``X`` among its vertices,
+    ``SatakeDiagrams()(D, X, tau)`` takes the Dynkin diagram ``D`` of a root
+    basis (a Coxeter diagram that retains its roots), the black nodes ``X`` among its vertices,
     and a morphism ``tau`` of ``D`` to itself that the caller constructs in
     ``D.Mor(D)``.  The result is a Coxeter diagram built on the data of ``D``,
     and :meth:`ParentMethods.dynkin_diagram` returns ``D`` itself.

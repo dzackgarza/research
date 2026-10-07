@@ -12,7 +12,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
+    _engine_column_matrix_from_row_action,
     _engine_component_matrix,
+    _engine_row_action_matrix,
     tensor,
 )
 from dzack_research.preamble.validation import validator
@@ -70,18 +72,24 @@ def _rational_positive_vector(gram):
     )
 
 
-def _integer_engine_matrix(value, *, transpose=False):
+def _integer_engine_matrix(value):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
         raise TypeError(f"{value} cannot be passed to OSCAR as an integer matrix: it must be a tensor with two indices")
-    engine = _engine_component_matrix(value).change_ring(SageZZ)
-    return engine.transpose() if transpose else engine
+    return _engine_component_matrix(value).change_ring(SageZZ)
 
 
-def _rational_engine_matrix(value, *, transpose=False):
+def _rational_engine_matrix(value):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
         raise TypeError(f"{value} cannot be passed to OSCAR as a rational matrix: it must be a tensor with two indices")
-    engine = _engine_component_matrix(value).change_ring(SageQQ)
-    return engine.transpose() if transpose else engine
+    return _engine_component_matrix(value).change_ring(SageQQ)
+
+
+def _owned_embedding_from_row_action(ring, row_action):
+    r"""Raise an OSCAR embedding, which lists source generator images as rows, to an owned matrix Mor."""
+    columns = _engine_column_matrix_from_row_action(row_action)
+    return ring.matrix_space(columns.nrows(), columns.ncols()).from_rows(
+        tuple(tuple(_owned_engine_element(ring, entry) for entry in row) for row in columns.rows())
+    )
 
 
 def _number_field_descriptor(field):
@@ -106,14 +114,16 @@ def _number_field_element_coefficients(field, value):
     return tuple(SageQQ(coefficient) for coefficient in coefficients)
 
 
-def _number_field_engine_matrix(value, field, *, transpose=False):
-    r"""Lower a represented matrix to nested rational power-basis coefficients."""
+def _number_field_coefficient_rows(engine, field):
+    r"""Write a Sage matrix over ``field`` as nested rational power-basis coefficients."""
+    return [[list(_number_field_element_coefficients(field, engine[row, column])) for column in range(engine.ncols())] for row in range(engine.nrows())]
+
+
+def _number_field_engine_matrix(value, field):
+    r"""Lower a two-index tensor to nested rational power-basis coefficients."""
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
         raise TypeError(f"{value} cannot be passed to OSCAR as a number-field matrix: it must be a tensor with two indices")
-    engine = _engine_component_matrix(value)
-    if transpose:
-        engine = engine.transpose()
-    return [[list(_number_field_element_coefficients(field, engine[row, column])) for column in range(engine.ncols())] for row in range(engine.nrows())]
+    return _number_field_coefficient_rows(_engine_component_matrix(value), field)
 
 
 _OSCAR_LATTICE_ADAPTER_SOURCE = r"""
@@ -365,7 +375,7 @@ class _OscarLatticeAdapter:
             bridge.call(
                 "DzackResearchOscarLatticeAdapter.rational_spinor_norm_class",
                 _rational_engine_matrix(gram),
-                _rational_engine_matrix(isometry, transpose=True),
+                _engine_row_action_matrix(isometry).change_ring(SageQQ),
             )
         )
         if value == 0:
@@ -391,7 +401,7 @@ class _OscarLatticeAdapter:
             "DzackResearchOscarLatticeAdapter.number_field_spinor_norm_class",
             list(_number_field_descriptor(field)),
             _number_field_engine_matrix(gram, field),
-            _number_field_engine_matrix(isometry, field, transpose=True),
+            _number_field_coefficient_rows(_engine_row_action_matrix(isometry), field),
         )
         engine = _engine_ring(field)
         generator = engine.gen()
@@ -420,7 +430,7 @@ class _OscarLatticeAdapter:
         result = self._bridge().call(
             "DzackResearchOscarLatticeAdapter.centralizer_discriminant_image",
             _integer_engine_matrix(gram),
-            _integer_engine_matrix(isometry, transpose=True),
+            _engine_row_action_matrix(isometry).change_ring(SageZZ),
         )
         if not isinstance(result, list) or len(result) != 4:
             raise RuntimeError(f"the image of the centralizer of {isometry} in O(A_L) for the form {gram} came back from OSCAR as {result!r}, not a list of four entries")
@@ -466,13 +476,7 @@ class _OscarLatticeAdapter:
             tuple(tuple(_owned_engine_element(ring, entry) for entry in row) for row in target_engine.rows()),
         )
 
-        # OSCAR emits source basis images as rows.  The live Mor matrix acts on
-        # coordinate columns, so transpose those rows into target-by-source shape.
-        embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
-            tuple(
-                tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows())) for target in range(embedding_engine.ncols())
-            )
-        )
+        embedding = _owned_embedding_from_row_action(ring, embedding_engine)
         validate_isometric_embedding((target_gram, gram, embedding), check=False)
         validate_even_unimodular_gram(target_gram, check=False)
         return target_gram, embedding
@@ -508,11 +512,7 @@ class _OscarLatticeAdapter:
 
         target_prime_gram = owned_gram(target_engine)
         source_prime_gram = owned_gram(source_engine)
-        embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
-            tuple(
-                tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows())) for target in range(embedding_engine.ncols())
-            )
-        )
+        embedding = _owned_embedding_from_row_action(ring, embedding_engine)
         validate_isometric_embedding((target_prime_gram, source_prime_gram, embedding), check=False)
         return target_prime_gram, source_prime_gram, embedding
 
@@ -553,12 +553,7 @@ class _OscarLatticeAdapter:
 
             target_prime_gram = owned_gram(target_engine)
             source_prime_gram = owned_gram(source_engine)
-            embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
-                tuple(
-                    tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows()))
-                    for target in range(embedding_engine.ncols())
-                )
-            )
+            embedding = _owned_embedding_from_row_action(ring, embedding_engine)
             validate_isometric_embedding((target_prime_gram, source_prime_gram, embedding), check=False)
             representatives.append((target_prime_gram, source_prime_gram, embedding))
         return tuple(representatives)
@@ -567,9 +562,15 @@ class _OscarLatticeAdapter:
         r"""Decide whether ``(ZZ^n, first)`` and ``(ZZ^n, second)`` are isometric, by Hecke's ``is_isometric``.
 
         ``first`` and ``second`` are Sage integer Gram matrices of
-        nondegenerate lattices.  For an indefinite genus of rank at least 3
-        Hecke approximates a ``p``-adic isometry and decides whether its
-        spinor norm lies in the kernel of the improper spinor operators.
+        nondegenerate lattices ``L`` and ``M``.  For an indefinite genus of rank
+        at least 3 Hecke (``_is_isometric_indef``) answers ``False`` when the
+        genera differ and ``True`` when the genus has no improper spinor
+        generators.  Otherwise it approximates an isometry ``f`` of the rational
+        quadratic spaces with ``f(L_p) = M_p`` at every prime ``p`` dividing
+        ``2 det L``, and answers whether the index ``r = [M : f(L) cap M]`` is
+        improperly automorphous (Conway and Sloane, *Sphere Packings, Lattices
+        and Groups*, chapter 15, Theorem 15, as Hecke's
+        ``improper_spinor_generators`` cites it).
         """
         answer = SageZZ(
             self._bridge().call(

@@ -208,9 +208,10 @@ class RingMorphism:
         its restriction along ``R -> S^-1 R``.  Quotients are determined by
         precomposition with their quotient projection, while a framed algebra
         is determined by its scalar restriction and selected algebra-generator
-        images.  These are the mathematical determining families owned by the
-        corresponding constructors, so equality belongs here rather than at a
-        downstream scheme/descent consumer.
+        images.  Each of ``R -> S^-1 R``, the quotient projection and the map
+        from the polynomial ring on the selected algebra generators is an
+        epimorphism of rings owned by its constructor, so equality belongs here
+        rather than at a downstream scheme/descent consumer.
         """
         if op not in (op_EQ, op_NE):
             return NotImplemented

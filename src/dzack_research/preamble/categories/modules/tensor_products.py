@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _TensorProductOfMorphisms(TensorProductModuleMorphism):
-    r"""The functorial tensor map ``f tensor g`` with its two linear premises."""
+    r"""The tensor map ``f tensor g``; its linearity decision conjoins those of ``f`` and ``g``."""
 
     def __init__(self, parent, classified, left_morphism, right_morphism) -> None:
         self._classified_tensor_map = classified
