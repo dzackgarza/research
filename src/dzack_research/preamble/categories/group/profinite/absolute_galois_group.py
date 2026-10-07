@@ -950,133 +950,27 @@ def _same_k_extension(
     )
 
 
-class _OpenGaloisSubgroupConjugacyClassEngine:
-    r"""The conjugacy class obtained by forgetting (E\hookrightarrow\bar K)."""
-
-    def __init__(self, supergroup, extension_field, base_embedding, **rest) -> None:
-        self._supergroup = supergroup
-        self._extension_field = extension_field
-        self._base_embedding = base_embedding
-        super().__init__(**rest)
-
-    def supergroup(self):
-        return self._supergroup
-
-    def ambient(self):
-        r"""Return the ambient absolute Galois group ``G_K``.
-
-        ``supergroup`` is the generic subgroup vocabulary; ``ambient`` is the
-        arithmetic name retained by the open-subgroup construction data.
-        """
-        return self.supergroup()
-
-    def fixed_field(self):
-        return self._extension_field
-
-    def base_embedding(self):
-        return self._base_embedding
-
-    def index(self):
-
-        return _relative_degree(self._supergroup.base_field(), self._extension_field)
-
-    def representative(self, embedding=None):
-        if embedding is None:
-            candidates = [
-                candidate
-                for candidate in self._extension_field.exact_embeddings(
-                    self._supergroup.algebraic_closure()
-                )
-                if all(
-                    candidate(self._base_embedding(generator))
-                    == self._supergroup.base_embedding()(generator)
-                    for generator in self._supergroup.base_field().field_generators()
-                )
-            ]
-            if not candidates:
-                raise ValueError(
-                    f"{self._extension_field} has no embedding into "
-                    f"{self._supergroup.algebraic_closure()} over "
-                    f"{self._supergroup.base_field()}"
-                )
-            embedding = candidates[0]
-        stage = self._supergroup.extension_data(
-            self._extension_field,
-            embedding=embedding,
-            base_embedding=self._base_embedding,
-        )
-        return self._supergroup.open_subgroup(stage)
-
-    def __contains__(self, candidate) -> bool:
-        if candidate not in OpenAbsoluteGaloisSubgroups(self._supergroup):
-            return False
-        fixed_extension = candidate.fixed_extension()
-        return _same_k_extension(
-            self._supergroup,
-            self._extension_field,
-            self._base_embedding,
-            candidate.fixed_field(),
-            fixed_extension.base_embedding(),
-        )
-
-    def _element_constructor_(self, candidate):
-        if candidate not in self:
-            raise ValueError(
-                f"{candidate} is not conjugate in {self._supergroup} to the open subgroup "
-                f"fixing {self._extension_field}"
-            )
-        return candidate
-
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, _OpenGaloisSubgroupConjugacyClassEngine):
-            return False
-        if other._supergroup is not self._supergroup:
-            return False
-        return _same_k_extension(
-            self._supergroup,
-            self._extension_field,
-            self._base_embedding,
-            other._extension_field,
-            other._base_embedding,
-        )
-
-    def __hash__(self) -> int:
-        return hash((id(self._supergroup), self.index()))
-
-    def _repr_(self) -> str:
-        return (
-            f"Conjugacy class of index-{self.index()} open subgroups of "
-            f"{self._supergroup} corresponding to {self._extension_field}"
-        )
-
-
 def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
-    r"""Construct the conjugacy orbit of an open subgroup as a represented set."""
-    if extension_field not in OwnedRings():
-        if extension_field.base_field() is not supergroup.base_field():
-            raise ValueError(
-                f"{extension_field} is an extension of {extension_field.base_field()}, "
-                f"not of the base field {supergroup.base_field()} of {supergroup}"
-            )
-        field = extension_field.field()
-        base_embedding = extension_field.base_embedding()
-    else:
-        field = extension_field
-        base_embeddings = supergroup.base_field().exact_embeddings(field)
+    r"""The conjugation orbit of the open subgroups ``G_E`` of ``G_K`` fixing a ``K``-extension ``E``.
+
+    It is the orbit of one ``G_E`` in the orbit set of ``G_K`` acting by
+    conjugation on its subgroups, so it forgets the embedding
+    ``E -> Kbar``.  ``extension_field`` is a stage ``K -> E -> Kbar``, or an
+    owned field ``E`` with exactly one embedding of ``K``.
+    """
+    if extension_field in OwnedRings():
+        base_embeddings = supergroup.base_field().exact_embeddings(extension_field)
         if len(base_embeddings) != 1:
             raise ValueError(
-                f"{field} has {len(base_embeddings)} embeddings of "
+                f"{extension_field} has {len(base_embeddings)} embeddings of "
                 f"{supergroup.base_field()}, so its structure as an extension of "
                 f"{supergroup.base_field()} is ambiguous; give it as an extension K -> L"
             )
-        base_embedding = base_embeddings[0]
-    return _object_of(
-        Sets(),
-        _engine=(Sets(), _OpenGaloisSubgroupConjugacyClassEngine, None),
-        supergroup=supergroup,
-        extension_field=field,
-        base_embedding=base_embedding,
-    )
+        extension_field = supergroup.extension_data(
+            extension_field, base_embedding=base_embeddings[0]
+        )
+    representative = supergroup.open_subgroup(extension_field)
+    return supergroup.subgroup_conjugation_g_set().orbits().orbit_of(representative)
 
 
 
