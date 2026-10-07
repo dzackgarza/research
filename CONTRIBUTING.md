@@ -5411,15 +5411,15 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: Compute integrality from the specified ring extension; derive evenness/torsion as properties; represent a genuinely chosen orientation, embedding, section, framing, or presentation by its actual mathematical datum.
 
 
-#### `CON-11`: A Framing Is a Selected Epimorphism `Free_R(S) -> M`
+#### `CON-11`: A Chosen Generating Set Is a Selected Epimorphism `Free_R(S) -> M`
 
-- **Rule**: Model a framed module by an actual set `S` and a selected epimorphism `Free_R(S) -> M`.  The framing set is the domain of the distinguished-generator map; generator evaluation is the image of its free generators.  Do not identify a framing with a Python sequence, an ordered basis, or a reversible label-to-element correspondence unless stronger chosen structure supplies those properties.
+- **Rule**: Model a module with chosen module generators by an actual set `S` and a selected epimorphism `Free_R(S) -> M`, the truncation-0 resolution of `CAT-29`.  The set `S` is the domain of the generating epimorphism; generator evaluation is the image of its free generators.  Do not identify the chosen generators with a Python sequence, an ordered basis, or a reversible label-to-element correspondence unless stronger chosen structure supplies those properties.  A *framing* is the length-0 case, in which the epimorphism is an isomorphism, i.e. a basis (`CAT-29`).
 
-- **Rationale**: Finite generation, freeness, a basis, order, and enumerability are independent hypotheses.  A generic framing may use an infinite/nonenumerable set, and an epimorphism may identify distinct free generators.  Treating a framing as a tuple/basis silently adds all of those hypotheses and creates exactly the finite-coordinate blast radius `ARC-16` forbids.
+- **Rationale**: Finite generation, freeness, a basis, order, and enumerability are independent hypotheses.  A generating epimorphism may have an infinite/nonenumerable domain, and it may identify distinct free generators.  Treating it as a tuple/basis silently adds all of those hypotheses and creates exactly the finite-coordinate blast radius `ARC-16` forbids.
 
-- **Violation Example**: `self._module_generators = tuple(generators)` as the definition of framing; recover a framing label from every generator image; require a rank integer when the natural input is an arbitrary set `S`.
+- **Violation Example**: `self._module_generators = tuple(generators)` as the definition of the chosen generators; recover a label from every generator image; require a rank integer when the natural input is an arbitrary set `S`.
 
-- **Correct Example**: retain `S`, `Free_R(S)`, and the selected epimorphism.  The canonical rank-`n` free module is the specialization `S=[n]`; a based module is the refinement in which the framing morphism is an isomorphism and the additional ordering/indexing data is actually present.
+- **Correct Example**: retain `S`, `Free_R(S)`, and the selected epimorphism.  The canonical rank-`n` free module is the specialization `S=[n]`; a framed (based) module is the refinement in which the epimorphism is an isomorphism and the additional ordering/indexing data is actually present.
 
 
 
