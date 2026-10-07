@@ -16,7 +16,6 @@ and coequalizer of the action on a finite group generating set.
 
 from sage.categories.map import Map
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -78,6 +77,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.validation import validator
 
@@ -505,8 +505,8 @@ class ModulesOverGroupAlgebra(Modules):
             r"""Decide ``g . element = element`` for every ``g``, on the chosen group generators."""
             group = self.group()
             if not group.has_selected_group_resolution():
-                return Unknown
-            return all(self.act(generator, element) == element for generator in group.group_generators())
+                return AtomicProposition("is_invariant", self, element)
+            return conjunction(self.act(generator, element) == element for generator in group.group_generators())
 
         def restrict_action(self, group_morphism):
             r"""This module acted on by ``H`` through ``phi: H -> G``: restriction of scalars along ``R[H] -> R[G]``."""
@@ -1227,13 +1227,13 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def is_equivariant(self, arrow):
         group = self.domain().group()
         if not group.has_selected_group_resolution():
-            return Unknown
+            return AtomicProposition("is_equivariant", self, arrow)
         underlying = _coefficient_morphism_from_images(
             self,
             arrow,
             elementwise=False,
         )
-        return all(
+        return conjunction(
             underlying * self.domain().action_of(generator)
             == self.codomain().action_of(generator) * underlying
             for generator in group.group_generators()

@@ -17,7 +17,7 @@ of ``Ar(C)``: each declares it and states only its condition on arrows.
 
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset as SageHomset
@@ -26,7 +26,6 @@ from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
@@ -55,6 +54,9 @@ from dzack_research.preamble.categories.sets.indexed_families import IndexedFami
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 
 _Object = TypeVar("_Object")
@@ -134,20 +136,21 @@ class CommutativeSquare(NaturalTransformationMorphism):
         product = Sets().product((self.left().parent(), self.right().parent()))
         return product((self.left(), self.right()))
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         r"""Two squares between the same arrows agree when both of their edges do."""
         if self is other:
             return True
         if parent(other) is not self.parent():
             return False
         equalities = (self.left() == other.left(), self.right() == other.right())
-        if any(answer is False for answer in equalities):
-            return False
-        return True if all(answer is True for answer in equalities) else Unknown
+        from dzack_research.preamble.logic import conjunction
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return conjunction(equalities)
+
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))

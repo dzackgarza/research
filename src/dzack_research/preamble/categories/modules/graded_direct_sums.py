@@ -1,7 +1,6 @@
 r"""Finite-support direct sums of a represented family of graded modules."""
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -19,6 +18,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -74,16 +74,8 @@ class _DirectSumFactorMorphism(ModuleMorphism):
     def _elementwise_linearity_derivation(self):
         indices = self._component_maps.index_set()
         if not indices.cardinality().is_finite():
-            return Unknown
-        decision = True
-        for degree in indices:
-            morphism = self._component_maps[degree]
-            current = morphism.linearity_decision()
-            if current is False:
-                return False
-            if current is not True:
-                decision = Unknown
-        return decision
+            return AtomicProposition("is_linear", self)
+        return conjunction(self._component_maps[degree].linearity_decision() for degree in indices)
 
 
 class GradedDirectSumElement(ModuleElement):
@@ -174,18 +166,11 @@ class GradedDirectSumElement(ModuleElement):
             return NotImplemented
         if element_parent(other) is not self.parent():
             return op == op_NE
-        decisions = tuple(
+        equal = conjunction(
             self.homogeneous_component(degree) == other.homogeneous_component(degree)
             for degree in set(self._components) | set(other._components)
         )
-        match (any(value is False for value in decisions), all(value is True for value in decisions)):
-            case (True, _):
-                equal = False
-            case (_, True):
-                equal = True
-            case _:
-                equal = Unknown
-        return equal if op == op_EQ or equal is Unknown else not equal
+        return equal if op == op_EQ else negation(equal)
 
     def _repr_(self):
         if not self._components:

@@ -30,7 +30,6 @@ data are only a realization of the categorical action.
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -47,6 +46,7 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.validation import validator
 
@@ -710,8 +710,8 @@ class GObjectMor(CategoricalMor):
             case _ if group.is_finite() is True:
                 determining = group
             case _:
-                return Unknown
-        return all(
+                return AtomicProposition("is_equivariant", self, arrow)
+        return conjunction(
             arrow * self.domain().action_of(element)
             == self.codomain().action_of(element) * arrow
             for element in determining
@@ -1065,13 +1065,13 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             question of every nonidentity element separately.
 
             ``X^g`` is empty exactly when its ideal is the unit ideal.  For an
-            acting group not decided finite the answer is ``Unknown``: the
-            question is one condition per element and no owned criterion
-            replaces it.
+            acting group not decided finite the answer is the proposition
+            ``action_is_free(X)``: the question is one condition per element
+            and no owned criterion replaces it.
             """
             group = self.acting_group()
             if group.is_finite() is not True:
-                return Unknown
+                return AtomicProposition("action_is_free", self)
             identity = group.one()
             for group_element in group:
                 if group_element == identity:
@@ -1091,8 +1091,8 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 case _ if group.is_finite() is True:
                     determining = group
                 case _:
-                    return Unknown
-            return all(self.act(group_element, element) == element for group_element in determining)
+                    return AtomicProposition("is_invariant", self, element)
+            return conjunction(self.act(group_element, element) == element for group_element in determining)
 
 
 __all__ = [

@@ -6,7 +6,6 @@ from collections.abc import Callable, Hashable, Iterator, Mapping
 from itertools import islice
 from typing import TYPE_CHECKING, Any
 
-from sage.misc.unknown import Unknown
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
@@ -16,6 +15,7 @@ from dzack_research.preamble.owned_category import _object_of
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from dzack_research.preamble.logic import Predicate
 
 
 class IndexedFamily[IndexT, ValueT]:
@@ -171,8 +171,14 @@ class IndexedFamily[IndexT, ValueT]:
             name=name,
         )
 
-    def __eq__(self, other: Any):
-        r"""Return extensional equality, or ``Unknown`` when undecidable."""
+    def __eq__(self, other: Any) -> bool | Predicate:
+        r"""Return extensional equality, decided on a finite index set.
+
+        Otherwise the answer is the proposition that the two families are
+        equal.
+        """
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
+
         if self is other:
             return True
         if not isinstance(other, IndexedFamily):
@@ -181,25 +187,14 @@ class IndexedFamily[IndexT, ValueT]:
         same_indices = self.index_set() == other.index_set()
         if same_indices is False:
             return False
-        if same_indices is not True:
-            return Unknown
-        if self.cardinality().is_finite() is not True:
-            return Unknown
+        if same_indices is not True or self.cardinality().is_finite() is not True:
+            return AtomicProposition("equal", self, other)
+        return conjunction(self.value(index) == other.value(index) for index in self.index_set())
 
-        answer = True
-        for index in self.index_set():
-            same_value = self.value(index) == other.value(index)
-            if same_value is False:
-                return False
-            if same_value is not True:
-                answer = Unknown
-        return answer
+    def __ne__(self, other) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
 
-    def __ne__(self, other):
-        equal = self == other
-        if equal is Unknown:
-            return Unknown
-        return not equal
+        return negation(self == other)
 
     def __hash__(self):
         r"""Hash finite extensional data and infinite families by identity."""

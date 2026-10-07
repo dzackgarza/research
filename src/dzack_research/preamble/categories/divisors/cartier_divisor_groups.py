@@ -13,7 +13,6 @@ they are not a second kind of Cartier-divisor object.
 """
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -31,6 +30,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -296,11 +296,7 @@ class _CartierSectionClass:
             case True:
                 pass
         decision = self.parent().equal(self, other)
-        match op == op_EQ or decision is Unknown:
-            case True:
-                return decision
-            case False:
-                return not decision
+        return decision if op == op_EQ else negation(decision)
 
     __hash__ = None
 
@@ -325,9 +321,9 @@ class _CartierSectionClasses:
     r"""The underlying set of global Cartier-quotient sections.
 
     Finite-atlas lifts are identified when their local equations differ by
-    chartwise regular units.  For distinct represented atlases, equality may
-    remain ``Unknown`` until a common refinement is available; this does not
-    change the section represented by either lift.
+    chartwise regular units.  For distinct represented atlases, equality is
+    the proposition ``equal(D, E)`` until a common refinement is available;
+    this does not change the section represented by either lift.
     """
 
     def __init__(self, quotient_sheaf, **rest) -> None:
@@ -533,6 +529,13 @@ class _CartierSectionClasses:
         )
 
     def equal(self, left, right):
+        r"""Decide ``D = E``, else return the proposition ``equal(D, E)``.
+
+        Equal summands, or equal operands of the same multiple, give equal
+        sections; the converse fails (``D + E = E + D``, and the group of
+        Cartier divisors of a non-normal scheme can have torsion), so only a
+        positive answer is drawn from them.
+        """
         left = self(left)
         right = self(right)
         match (left._kind, right._kind):
@@ -546,22 +549,20 @@ class _CartierSectionClasses:
                 return self._finite_atlas_is_zero(left)
             case ("finite_atlas", "finite_atlas") if left._atlas is right._atlas:
                 return self._same_atlas_equal(left, right)
-            case ("sum", "sum"):
-                left_decision = self.equal(left._left, right._left)
-                right_decision = self.equal(left._right, right._right)
-                match (left_decision, right_decision):
-                    case (True, True):
-                        return True
-                    case (False, _) | (_, False):
-                        return False
-                    case _:
-                        return Unknown
+            case ("sum", "sum") if (
+                self.equal(left._left, right._left) is True
+                and self.equal(left._right, right._right) is True
+            ):
+                return True
             case ("negation", "negation"):
                 return self.equal(left._operand, right._operand)
-            case ("multiple", "multiple") if left._scalar == right._scalar:
-                return self.equal(left._operand, right._operand)
+            case ("multiple", "multiple") if (
+                left._scalar == right._scalar
+                and self.equal(left._operand, right._operand) is True
+            ):
+                return True
             case _:
-                return Unknown
+                return AtomicProposition("equal", left, right)
 
     def _repr_(self):
         return f"Global sections of {self.quotient_sheaf()}"

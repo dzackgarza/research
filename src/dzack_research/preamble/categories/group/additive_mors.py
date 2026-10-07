@@ -8,7 +8,6 @@ packet, using Sage's ``Mor``, ``Morphism`` and integer multiplication action.
 
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.coerce_actions import IntegerMulAction
 from sage.structure.richcmp import op_EQ, op_NE
@@ -20,6 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -313,16 +313,10 @@ class AdditiveMorphism:
             return op == op_EQ
         domain = self.domain()
         if domain.is_finite() is not True or domain not in EnumeratedSets():
-            return Unknown
-        decisions = tuple(self(element) == other(element) for element in domain)
-        match (all(value is True for value in decisions), any(value is False for value in decisions)):
-            case (True, _):
-                equal = True
-            case (_, True):
-                equal = False
-            case _:
-                equal = Unknown
-        return equal if op == op_EQ or equal is Unknown else not equal
+            equal = AtomicProposition("equal", self, other)
+        else:
+            equal = conjunction(self(element) == other(element) for element in domain)
+        return equal if op == op_EQ else negation(equal)
 
 
 class AdditiveMor(CategoricalMor):

@@ -6,7 +6,6 @@ their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
 from sage.misc.cachefunc import cached_function
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -19,6 +18,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.logic import AtomicProposition
 
 
 class _PowerAlgebra:
@@ -72,7 +72,7 @@ class _PowerAlgebra:
                     return True
                 if size.is_finite() and int(size.finite_value()) <= 1:
                     return True
-                return Unknown
+                return AtomicProposition("is_commutative", self)
 
     def divided_power(self, value, exponent):
         if self.flavor() != "divided":

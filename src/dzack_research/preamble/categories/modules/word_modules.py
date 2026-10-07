@@ -9,7 +9,6 @@ This is a private module realization, not an algebra or a new category.
 """
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -28,6 +27,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets as OwnedSets
+from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -396,15 +396,8 @@ class _WordClass:
             return op == op_NE
         presentation = self.parent().presentation()
         difference = presentation.normalize(self._representative - other._representative)
-        decisions = tuple(difference(label) == presentation.base_ring().zero() for label in difference.support().domain())
-        match (all(value is True for value in decisions), any(value is False for value in decisions)):
-            case (True, _):
-                equal = True
-            case (_, True):
-                equal = False
-            case _:
-                equal = Unknown
-        return equal if op == op_EQ or equal is Unknown else not equal
+        equal = conjunction(difference(label) == presentation.base_ring().zero() for label in difference.support().domain())
+        return equal if op == op_EQ else negation(equal)
 
     __hash__ = None
 

@@ -16,6 +16,7 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.structure.element import parent as element_parent
 from sage.categories.objects import Objects
 from sage.groups.abelian_gps.abelian_group import (
     AbelianGroup_class,
@@ -45,7 +46,6 @@ from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.latex import latex
-from sage.misc.unknown import Unknown
 from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -100,6 +100,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, finite_ordinal_set
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import (
     _implementation_with_engine,
     _object_of,
@@ -147,12 +148,16 @@ def _engine_group(group):
 
 
 def _engine_finiteness(engine):
-    r"""Return ``True``/``False`` when Sage's category already decides finiteness, else ``Unknown``."""
+    r"""Return ``True``/``False`` when Sage's category states finiteness, else ``None``.
+
+    ``None`` means that the engine's category states neither, so the engine
+    supplies no witness either way.
+    """
     if engine in SageFiniteGroups():
         return True
     if engine.category().is_subcategory(SageGroups().Infinite()):
         return False
-    return Unknown
+    return None
 
 
 def _gap_model(group):
@@ -825,17 +830,18 @@ def _engine_quotient_by_relators(group, relators):
 
 
 def _engine_abelianity(engine):
-    r"""Whether the engine's structure decides its group abelian, else ``Unknown``.
+    r"""Whether the engine's structure decides its group abelian, else ``None``.
 
     ``F_0`` and ``F_1`` are abelian; ``F_n`` for ``n >= 2`` contains two
     noncommuting free generators.  This reads the rank of the represented
-    free group and performs no search.
+    free group and performs no search.  ``None`` means that the engine's
+    structure supplies no witness either way.
     """
     match engine:
         case FreeGroup_class():
             return engine.ngens() <= 1
         case _:
-            return Unknown
+            return None
 
 
 # Witnesses read off an engine for the placement of the group it realizes.
@@ -1054,14 +1060,17 @@ class _GroupEngine:
                 return r"\mathrm{Group}"
 
     def _abelianity_decision(self):
+        engine_decision = _engine_abelianity(self._engine)
         match self:
             case _ if self in OwnedFiniteGroups():
                 return bool(_gap_model(self).IsAbelian())
+            case _ if engine_decision is not None:
+                return engine_decision
             case _:
-                return _engine_abelianity(self._engine)
+                return AtomicProposition("is_abelian", self)
 
     def _arithmeticity_decision(self):
-        return True if _is_arithmetic_witness(self._engine) else Unknown
+        return True if _is_arithmetic_witness(self._engine) else AtomicProposition("is_arithmetic_group", self)
 
 
 class _GroupElement(MultiplicativeGroupElement):
@@ -2094,25 +2103,29 @@ class GroupMorphism:
         return self._gap_homomorphism
 
     def __eq__(self, other):
-        r"""Decide equality on represented determining data when available."""
-        if not isinstance(other, Morphism) or other.parent() is not self.parent():
+        r"""Decide equality on represented determining data when available.
+
+        Otherwise the answer is the proposition that the two morphisms are
+        equal.
+        """
+        if element_parent(other) is not self.parent():
             return False
         if self is other:
             return True
         source = self.domain()
         match source:
             case _ if source.has_selected_group_resolution():
-                return all(
+                return conjunction(
                     self(generator) == other(generator)
                     for generator in source.group_generators()
                 )
             case _ if source.is_finite() is True:
-                return all(self(element) == other(element) for element in source)
+                return conjunction(self(element) == other(element) for element in source)
             case _:
-                return Unknown
+                return AtomicProposition("equal", self, other)
 
     def __ne__(self, other):
-        return not self == other
+        return negation(self == other)
 
     def _composition(self, right):
         r"""``self ∘ right`` for a group morphism ``right``, computed on the generators of its source.
@@ -2342,7 +2355,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 )
                 return cardinal(int(homomorphisms.Length()))
             case _:
-                return Unknown
+                return None
 
     def _repr_(self):
         return f"Mor({self.domain()}, {self.codomain()})"
@@ -3123,7 +3136,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _ if self in CyclicGroups():
                     return cardinal(self.group_generator().order()).is_finite()
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_finite", self)
 
         def is_abelian(self):
             match self:
@@ -3137,7 +3150,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _ if self in OwnedFiniteGroups():
                     return all(left * right == right * left for left in self for right in self)
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_abelian", self)
 
         def is_finitely_generated(self):
             match self:
@@ -3147,7 +3160,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return self._finite_generation_decision()
 
         def _finite_generation_decision(self):
-            return Unknown
+            return AtomicProposition("is_finitely_generated", self)
 
         def is_finitely_presented_as_group(self):
             match self.is_finitely_generated():
@@ -3156,13 +3169,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _ if self in OwnedGroups().FinitelyPresentedAsGroup():
                     return True
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_finitely_presented_as_group", self)
 
         def is_arithmetic_group(self):
             return self._arithmeticity_decision()
 
         def _arithmeticity_decision(self):
-            return Unknown
+            return AtomicProposition("is_arithmetic_group", self)
 
         def is_topological_group(self) -> bool:
             r"""Whether this represented group carries compatible topology data."""
@@ -3796,12 +3809,12 @@ class TopologicalGroups(OwnedCategory):
 
     class ParentMethods:
         def is_profinite(self):
-            r"""Whether this topological group is known to be profinite."""
+            r"""Whether this topological group is profinite, or the proposition that it is."""
             from dzack_research.preamble.categories.group.profinite.profinite_groups import (
                 ProfiniteGroups,
             )
 
-            return True if self in ProfiniteGroups() else Unknown
+            return True if self in ProfiniteGroups() else AtomicProposition("is_profinite", self)
 
 
 class GroupsWithChosenFreeBasis(OwnedCategory):
@@ -4040,13 +4053,18 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
             return self(lambda element: self._identity_value())
 
         def _commutativity_decision(self):
-            r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
+            r"""``End(A)`` commutes when ``A`` is cyclic.
+
+            A group on one generator is cyclic; otherwise the answer is the
+            proposition that ``End(A)`` is commutative.
+            """
+            undecided = AtomicProposition("is_commutative", self)
             if not self._group.has_selected_group_resolution():
-                return Unknown
+                return undecided
             generators = self._group.group_generators().cardinality()
             if generators.is_finite() and int(generators.finite_value()) <= 1:
                 return True
-            return Unknown
+            return undecided
 
         def _repr_(self):
             return f"Endomorphism ring of {self._group}"

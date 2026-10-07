@@ -13,11 +13,10 @@ This is the generators-and-relations construction in Mathlib
 computations remain at their existing module owners.  Sage's
 ``CombinatorialFreeModule_Tensor`` requires free factors; it is not an
 algorithm for this general quotient.  Equality here proves the reductions
-it can perform and otherwise returns ``Unknown``: distinct representatives
-are never evidence of distinct quotient classes.
+it can perform and otherwise returns the proposition ``equal(x, y)``:
+distinct representatives are never evidence of distinct quotient classes.
 """
 
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -30,6 +29,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     TensorProductModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+from dzack_research.preamble.logic import AtomicProposition, negation
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -53,8 +53,8 @@ class _TensorClass:
         difference = self.parent().reduced_terms(
             (*self._terms, *((-scalar, factors) for scalar, factors in other._terms))
         )
-        decision = True if not difference else Unknown
-        return decision if op == op_EQ or decision is Unknown else not decision
+        decision = True if not difference else AtomicProposition("equal", self, other)
+        return decision if op == op_EQ else negation(decision)
 
     __hash__ = None
 
@@ -155,7 +155,8 @@ class _TensorQuotientClassifierMorphism(TensorProductModuleMorphism):
     r"""The classifier induced by one elementwise bilinear evaluation.
 
     A raw Python evaluation does not prove its own bilinearity.  The map is an
-    element of the tensor Mor whose linearity decision is ``Unknown``; named
+    element of the tensor Mor whose linearity decision is the proposition
+    ``is_linear(f)``; named
     constructions whose bilinearity is derived override that decision.
     """
 
@@ -203,7 +204,7 @@ class _TensorQuotientModule:
         r"""Classify the stated R-bilinear evaluation, which kills the relations.
 
         The callable states the two-variable evaluation.  The resulting Mor
-        element retains ``Unknown`` linearity unless its construction derives
+        element's linearity is the proposition ``is_linear(f)`` unless its construction derives
         bilinearity; no finite framing is invented to certify it.
         """
         self._two_factors()

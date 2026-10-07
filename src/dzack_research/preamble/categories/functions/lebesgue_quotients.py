@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.logic import Predicate, ask
+from dzack_research.preamble.logic import Predicate, ask, negation
 from dzack_research.preamble.rings.real import RR
 
 
@@ -119,8 +119,10 @@ class _AEClass:
             return NotImplemented
         if element_parent(other) is not self.parent():
             return op == op_NE
-        decision = ask(AlmostEverywhereEquality(self.representative(), other.representative()))
-        return decision if op == op_EQ or decision is Unknown else not decision
+        statement = AlmostEverywhereEquality(self.representative(), other.representative())
+        decision = ask(statement)
+        equal = statement if decision is Unknown else decision
+        return equal if op == op_EQ else negation(equal)
 
     __hash__ = None
 

@@ -13,7 +13,6 @@ from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -51,6 +50,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction
 from dzack_research.preamble.validation import validator
 
 
@@ -649,30 +649,38 @@ class GradedDerivation(ModuleElement):
     def _graded_derivation_decision(self):
         r"""Return the decision on linearity, degree preservation and the graded Leibniz rule.
 
-        For a map given as a function on elements the decision is ``Unknown``;
-        for a map that a construction produced it is the decision that
-        construction supplies, ``True`` or ``Unknown``.  Read on the first
-        request, not at construction (``OWN-22``).
+        For a map given as a function on elements the decision is the
+        proposition ``is_graded_derivation(D)``; for a map that a construction
+        produced it is the decision that construction supplies, ``True`` or a
+        proposition.  Read on the first request, not at construction
+        (``OWN-22``).
         """
         derived = self._graded_derivation_derivation()
         match derived:
             case None:
-                return Unknown
-            case decision if decision is True or decision is Unknown:
+                return AtomicProposition("is_graded_derivation", self)
+            case decision if decision is True or decision in Propositions:
                 return decision
             case _:
                 raise ValueError(
-                    f"a graded derivation is recorded only when its defining laws are True or Unknown, but got {derived}"
+                    f"a graded derivation is recorded only when its defining laws are True or a proposition, but got {derived}"
                 )
 
     def linearity_decision(self):
-        return self._graded_derivation_decision()
+        r"""``True`` when the derivation laws are decided, else the proposition ``is_linear(D)``."""
+        return True if self._graded_derivation_decision() is True else AtomicProposition("is_linear", self)
 
     def degree_preservation_decision(self):
-        return self._graded_derivation_decision()
+        r"""``True`` when the derivation laws are decided, else the proposition ``preserves_degree(D)``."""
+        return True if self._graded_derivation_decision() is True else AtomicProposition("preserves_degree", self)
 
     def graded_leibniz_decision(self):
-        return self._graded_derivation_decision()
+        r"""``True`` when the derivation laws are decided, else the proposition ``satisfies_graded_leibniz_rule(D)``."""
+        return (
+            True
+            if self._graded_derivation_decision() is True
+            else AtomicProposition("satisfies_graded_leibniz_rule", self)
+        )
 
     @validator
     def validate_graded_leibniz(self) -> None:
@@ -747,41 +755,44 @@ class GradedDerivation(ModuleElement):
 
         Passing this finite observation does not prove that an arbitrary
         element map is linear or satisfies Leibniz on all elements; those laws
-        remain ``Unknown`` unless the construction supplies their theorem.
+        remain propositions unless the construction supplies their theorem.
+        Where the generator data do not decide the check, the answer is the
+        proposition ``check_on_generators(D)``.
         """
         algebra = self.algebra()
         target = self.target()
+        undecided = AtomicProposition("check_on_generators", self)
         if not algebra.is_framed_algebra():
-            return Unknown
+            return undecided
         labels = algebra.algebra_generating_set()
         finite = labels.cardinality().is_finite()
         match finite:
             case True:
                 pass
             case False:
-                return Unknown
+                return undecided
         for label in labels:
             generator = algebra.algebra_generator(label)
             is_zero = generator == algebra.zero()
             match is_zero:
                 case True:
                     continue
-                case _ if is_zero is Unknown:
-                    return Unknown
                 case False:
                     pass
+                case _:
+                    return undecided
             if not generator.is_homogeneous():
-                return Unknown
+                return undecided
             generator_degree = algebra.homogeneous_degree(generator)
             image = self(generator)
             image_is_zero = image == target.zero()
             match image_is_zero:
                 case True:
                     continue
-                case _ if image_is_zero is Unknown:
-                    return Unknown
                 case False:
                     pass
+                case _:
+                    return undecided
             if not image.is_homogeneous():
                 return False
             image_degree = target.homogeneous_degree(image)
@@ -791,19 +802,19 @@ class GradedDerivation(ModuleElement):
                 case False:
                     return False
                 case _:
-                    return Unknown
+                    return undecided
         for left_label in labels:
             left = algebra.algebra_generator(left_label)
             left_is_zero = left == algebra.zero()
             match left_is_zero:
                 case True:
                     continue
-                case _ if left_is_zero is Unknown:
-                    return Unknown
                 case False:
                     pass
+                case _:
+                    return undecided
             if not left.is_homogeneous():
-                return Unknown
+                return undecided
             left_degree = algebra.homogeneous_degree(left)
             for right_label in labels:
                 right = algebra.algebra_generator(right_label)
@@ -816,13 +827,13 @@ class GradedDerivation(ModuleElement):
                     case False:
                         return False
                     case _:
-                        return Unknown
+                        return undecided
         return True
 
 
 def _combined_graded_derivation_decision(derivations):
     r"""Transfer the graded-derivation theorem through an operation on actual derivations."""
-    decisions = tuple(
+    return conjunction(
         decision
         for derivation in derivations
         for decision in (
@@ -831,11 +842,6 @@ def _combined_graded_derivation_decision(derivations):
             derivation.graded_leibniz_decision(),
         )
     )
-    match all(decision is True for decision in decisions):
-        case True:
-            return True
-        case False:
-            return Unknown
 
 
 class _DerivedGradedDerivation(GradedDerivation):

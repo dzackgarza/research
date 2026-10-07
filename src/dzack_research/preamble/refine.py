@@ -66,8 +66,12 @@ class RealizationHook:
     r"""A protected decision procedure that a realization of the category may supply.
 
     The owner is the category whose ``ParentMethods`` declares the hook; the
-    hook's body there is the undecided answer (``Unknown``), and the public
-    operation of that category is its only caller.  A realization whose
+    hook's body there is the answer when no participant decides, and the
+    public operation of that category is its only caller.  For a predicate
+    hook that answer is the proposition the public predicate states
+    (``DEF-06``); for a value hook it is ``None``, which states that no value
+    was supplied and leaves the public operation to its own cases or to its
+    assertion frontier (``CAT-01``).  A realization whose
     construction determines the answer (``Mor(G, H)`` of finite groups counts
     its homomorphisms) supplies the hook on its own class; a more specific
     category supplies it on its ``ParentMethods``.  The public operation

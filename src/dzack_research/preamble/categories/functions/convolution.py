@@ -11,7 +11,6 @@ They are not one total product on the sum of every Lp.
 """
 
 from sage.misc.cachefunc import cached_function
-from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.symbolic.ring import SR
 

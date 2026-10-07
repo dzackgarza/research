@@ -3,7 +3,6 @@ r"""Algebraic connections on represented modules over commutative algebras."""
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
@@ -35,6 +34,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
 
 
@@ -396,12 +396,12 @@ class Connection(Element):
         return result
 
     def is_flat(self):
-
+        r"""Decide flatness on the chosen finite generators, else answer the proposition ``is_flat``."""
         module = self.module()
         ring = module.base_ring()
         match module in ModulesWithChosenFinitePresentation(ring):
             case False:
-                return Unknown
+                return AtomicProposition("is_flat", self)
             case True:
                 pass
         labels = module.module_generating_set()
@@ -409,9 +409,9 @@ class Connection(Element):
             case True:
                 pass
             case _:
-                return Unknown
+                return AtomicProposition("is_flat", self)
         zero = self.curvature_target().zero()
-        return all(
+        return conjunction(
             self.curvature_on_generator(label) == zero
             for label in labels
         )

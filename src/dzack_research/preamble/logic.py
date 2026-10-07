@@ -77,6 +77,111 @@ Propositions = _object_of(
 Predicate = Propositions.element_class
 
 
+class AtomicProposition(Predicate):
+    r"""The closed atomic proposition \(R(x_1, \dots, x_n)\) that no procedure decides.
+
+    An exact predicate decides every case that its data decides and returns
+    ``True`` or ``False``.  On the remaining cases it returns this
+    proposition: the relation \(R\), named by ``relation``, at the points
+    ``x_i``.  The predicate that constructs it has already run each procedure
+    that applies, so ``ask`` of it is ``Unknown`` (`DEF-06`).
+    """
+
+    def __init__(self, relation: str, *points) -> None:
+        self._relation = relation
+        self._points = points
+        super().__init__()
+
+    def relation(self) -> str:
+        return self._relation
+
+    def points(self):
+        return self._points
+
+    def _ask_(self, *, max_prec: int = 4096) -> UnknownClass:
+        return Unknown
+
+    def _repr_(self) -> str:
+        return f"{self._relation}({', '.join(repr(point) for point in self._points)})"
+
+
+class Negation(Predicate):
+    r"""The proposition \(\neg P\) of an undecided proposition \(P\)."""
+
+    def __init__(self, statement: Predicate) -> None:
+        self._statement = statement
+        super().__init__()
+
+    def negated(self) -> Predicate:
+        return self._statement
+
+    def _ask_(self, *, max_prec: int = 4096) -> bool | UnknownClass:
+        answer = ask(self._statement, max_prec=max_prec)
+        return answer if answer is Unknown else not answer
+
+    def _repr_(self) -> str:
+        return f"not {self._statement!r}"
+
+
+class Conjunction(Predicate):
+    r"""The proposition \(P_1 \wedge \dots \wedge P_n\) of undecided propositions."""
+
+    def __init__(self, statements) -> None:
+        self._statements = statements
+        super().__init__()
+
+    def conjuncts(self):
+        return self._statements
+
+    def _ask_(self, *, max_prec: int = 4096) -> bool | UnknownClass:
+        answers = tuple(ask(statement, max_prec=max_prec) for statement in self._statements)
+        if any(answer is False for answer in answers):
+            return False
+        if any(answer is Unknown for answer in answers):
+            return Unknown
+        return True
+
+    def _repr_(self) -> str:
+        return " and ".join(repr(statement) for statement in self._statements)
+
+
+def negation(statement: bool | Predicate) -> bool | Predicate:
+    r"""The negation of a proposition, decided when ``statement`` is decided."""
+    match statement:
+        case _ if statement is True or statement is False:
+            return not statement
+        case Predicate():
+            return Negation(statement)
+        case _:
+            raise TypeError(f"negation(...) takes True, False or a proposition, but was given {statement!r}")
+
+
+def conjunction(statements) -> bool | Predicate:
+    r"""The conjunction of propositions.
+
+    ``False`` when one conjunct is ``False``, ``True`` when every conjunct is
+    ``True``, and otherwise the conjunction of the undecided conjuncts.
+    """
+    undecided = []
+    for statement in statements:
+        match statement:
+            case _ if statement is False:
+                return False
+            case _ if statement is True:
+                pass
+            case Predicate():
+                undecided.append(statement)
+            case _:
+                raise TypeError(f"conjunction(...) takes True, False or propositions, but was given {statement!r}")
+    match undecided:
+        case []:
+            return True
+        case [single]:
+            return single
+        case _:
+            return Conjunction(tuple(undecided))
+
+
 def ask(
     statement: bool | UnknownClass | Predicate,
     *,
@@ -102,4 +207,14 @@ def ask(
             raise TypeError(f"ask(...) decides True, False, Unknown or a proposition, but was given {statement!r}")
 
 
-__all__ = ["Predicate", "Propositions", "Unknown", "ask"]
+__all__ = [
+    "AtomicProposition",
+    "Conjunction",
+    "Negation",
+    "Predicate",
+    "Propositions",
+    "Unknown",
+    "ask",
+    "conjunction",
+    "negation",
+]

@@ -12,7 +12,6 @@ from sage.categories.groups import Groups as SageGroups
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element, ModuleElement
 from sage.structure.element import parent as element_parent
@@ -85,6 +84,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
+from dzack_research.preamble.logic import AtomicProposition, Predicate
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 
@@ -1612,7 +1612,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return True
 
         def _freeness_decision(self):
-            return Unknown
+            return AtomicProposition("is_free", self)
 
         def is_free(self):
             match self:
@@ -1622,7 +1622,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     return self._freeness_decision()
 
         def _finite_generation_decision(self):
-            return Unknown
+            return AtomicProposition("is_finitely_generated", self)
 
         def is_finitely_generated(self):
             match self:
@@ -1632,7 +1632,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     return self._finite_generation_decision()
 
         def _finite_presentation_decision(self):
-            return Unknown
+            return AtomicProposition("is_finitely_presented", self)
 
         def is_finitely_presented(self):
             match self:
@@ -1646,9 +1646,10 @@ class Modules(OwnedCategoryOverBaseRing):
 
             ``Modules(R).Projective()`` certifies its objects by this
             statement, so a placement there is checked against it.  A module
-            whose data does not decide projectivity answers ``Unknown``.
+            whose data does not decide projectivity answers the proposition
+            ``is_projective(M)``.
             """
-            return Unknown
+            return AtomicProposition("is_projective", self)
 
         def is_projective(self):
             match self:
@@ -1658,7 +1659,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     return self.projectivity_decision()
 
         def _torsion_decision(self):
-            return Unknown
+            return AtomicProposition("is_torsion", self)
 
         def is_torsion(self):
             match self:
@@ -1668,7 +1669,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     return self._torsion_decision()
 
         def _torsion_freeness_decision(self):
-            return Unknown
+            return AtomicProposition("is_torsion_free", self)
 
         def is_torsion_free(self):
             return self._torsion_freeness_decision()
@@ -1678,9 +1679,9 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.has_selected_module_resolution()
 
         def _finiteness_decision(self):
-            return Unknown
+            return AtomicProposition("is_finite", self)
 
-        def is_flat(self) -> bool:
+        def is_flat(self) -> bool | Predicate:
             r"""Decide flatness in the field and PID regimes.
 
             Every module over a field is flat.  Over a PID, flatness is
@@ -1693,7 +1694,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _ if ring in OwnedFields():
                     return True
                 case _ if ring in PrincipalIdealDomains():
-                    return bool(self.is_torsion_free())
+                    return self.is_torsion_free()
                 case _:
                     raise AssertionError(
                         f"flatness is decided over a field or a principal ideal domain, and {ring} is neither"
@@ -1704,10 +1705,10 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Protected rank of this module when its data does not reach the general case.
 
             ``module_rank`` is the only caller.  A realization or a more
-            specific category supplies the answer as a cardinal; ``Unknown``
-            here means undecided.
+            specific category supplies the answer as a cardinal; ``None``
+            here means none is supplied.
             """
-            return Unknown
+            return None
 
         def module_rank(self):
             r"""Return ``rank_R(M)`` (Mathlib ``Module.rank``), a cardinal.
@@ -1726,7 +1727,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     return cardinal(SageZZ(int(self.cardinality())).exact_log(int(ring.cardinality())))
                 case _:
                     decided = self._rank_decision()
-                    assert decided is not Unknown, (
+                    assert decided is not None, (
                         f"the rank of {self} over {ring} is computed over a finite field for a finite "
                         f"module, or from a chosen basis or presentation, and {self} supplies none of these"
                     )
@@ -3748,7 +3749,7 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                 case True:
                     return True
                 case False:
-                    return Unknown
+                    return AtomicProposition("is_torsion_free", self)
 
         def _torsion_decision(self):
             r"""``Res_f(M)`` is torsion only when ``M = 0``, when ``S`` is a field and ``f`` is injective.
@@ -3760,7 +3761,7 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                 case True:
                     return self.is_zero()
                 case False:
-                    return Unknown
+                    return AtomicProposition("is_torsion", self)
 
         def _underlying_additive_element(self, element):
             element = self(element)
@@ -4811,7 +4812,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 case True if _coordinate_framed_free_module(self.domain(), ring) and _coordinate_framed_free_module(self.codomain(), ring):
                     return True
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_projective", self)
 
         def row_index_set(self):
             return self.codomain().module_generating_set()

@@ -2,7 +2,6 @@
 
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
@@ -34,6 +33,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.lexicon.algebra import MonoidObject
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 # Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
@@ -298,8 +298,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def grading_compatibility_decision(self):
-            r"""Return the retained decision that multiplication respects the selected grading."""
-            return self._preamble_algebra_law_decisions.get("grading", Unknown)
+            r"""Return the retained decision that multiplication respects the selected grading, else the proposition."""
+            return self._preamble_algebra_law_decisions.get(
+                "grading", AtomicProposition("respects_grading", self.multiplication())
+            )
 
         def restrict_scalars(self, ring_map):
             r"""Restrict scalars while retaining this algebra's grading."""
@@ -427,10 +429,12 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         )
         unit = _unit_from_multiplication(multiplication)
         associativity = _decide_on_module_generators(
-            module, _associativity(multiplication), 3
+            module, _associativity(multiplication), 3,
+            AtomicProposition("is_associative", multiplication),
         )
         unit_laws = _decide_on_module_generators(
-            module, _two_sided_unit(multiplication, unit), 1
+            module, _two_sided_unit(multiplication, unit), 1,
+            AtomicProposition("is_two_sided_unit", multiplication, unit),
         )
         _assert_not_refuted(associativity, "associativity", module)
         _assert_not_refuted(unit_laws, "the two unit equations", module)
@@ -442,7 +446,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             law_decisions={
                 "associativity": associativity,
                 "unit": unit_laws,
-                "grading": Unknown,
+                "grading": AtomicProposition("respects_grading", multiplication),
             },
         )
 

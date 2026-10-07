@@ -391,7 +391,7 @@ def _distinguished_open_cycle_pullback(open_subscheme, cycle):
         f"cannot pull {cycle} back to the open subscheme {open_subscheme}: the cycle lives "
         f"on {source.cycle_scheme()}, not on the scheme {ambient} that contains the open"
     )
-    assert open_subscheme.is_distinguished_open(), (
+    assert open_subscheme.is_distinguished_open() is True, (
         f"cannot pull {cycle} back to {open_subscheme}: flat pullback of cycles is "
         "implemented only along a distinguished open immersion D(f), where a prime pulls "
         "back to the extension of its ideal to the localization, and this open is not "

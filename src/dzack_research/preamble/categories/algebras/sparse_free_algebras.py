@@ -5,7 +5,6 @@ from typing import Any
 
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -24,6 +23,7 @@ from dzack_research.preamble.categories.modules.word_modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 
 
 class _SparseFreeAlgebra(_WordModule):
@@ -85,7 +85,7 @@ class _SparseFreeAlgebra(_WordModule):
             case _ if self.generating_module() in FramedFreeModules(self.base_ring()) and (self.base_ring().one() != self.base_ring().zero()) is True:
                 return False
             case _:
-                return Unknown
+                return AtomicProposition("is_commutative", self)
 
     def is_central(self, element):
         element = self(element)
@@ -98,15 +98,8 @@ class _SparseFreeAlgebra(_WordModule):
             return True
         labels = self.algebra_generating_set()
         if not labels.cardinality().is_finite():
-            return Unknown
-        decisions = tuple(element * self.algebra_generator(label) == self.algebra_generator(label) * element for label in labels)
-        match (all(value is True for value in decisions), any(value is False for value in decisions)):
-            case (True, _):
-                return True
-            case (_, True):
-                return False
-            case _:
-                return Unknown
+            return AtomicProposition("is_central", self, element)
+        return conjunction(element * self.algebra_generator(label) == self.algebra_generator(label) * element for label in labels)
 
     @cached_method
     def ring_center(self):

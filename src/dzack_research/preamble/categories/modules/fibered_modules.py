@@ -19,7 +19,6 @@ arXiv:0907.0061, for the Grothendieck construction.
 
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -42,13 +41,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     CommutativeRings,
     OwnedRings,
 )
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
 
 class _LinearMapIntoRestrictionOfScalars(ModuleMorphism):
     r"""The ``R``-linear map ``M -> Res_sigma(N)`` of a ``sigma``-semilinear map ``M -> N``.
 
     Its linearity decision is that of the semilinear map.  ``decision`` is a
-    zero-argument callable, asked on the first request (``OWN-22``).
+    zero-argument callable, asked on the first request (``OWN-22``); its
+    ``None`` supplies no decision, and linearity is then the proposition
+    ``is_linear(f)``.
     """
 
     def __init__(self, parent, evaluator, decision) -> None:
@@ -56,7 +58,10 @@ class _LinearMapIntoRestrictionOfScalars(ModuleMorphism):
         super().__init__(parent, evaluator, elementwise=True)
 
     def _elementwise_linearity_derivation(self):
-        return self._semilinear_linearity_decision()
+        decision = self._semilinear_linearity_decision()
+        if decision is None:
+            return AtomicProposition("is_linear", self)
+        return decision
 
 
 class SemilinearModuleMorphism:
@@ -75,7 +80,7 @@ class SemilinearModuleMorphism:
         restricted_morphism=None,
         *,
         evaluator=None,
-        linearity_decision=Unknown,
+        linearity_decision=None,
     ) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
@@ -178,8 +183,9 @@ class SemilinearModuleMorphism:
         their additive maps are equal.  A ``sigma``-semilinear map sends
         ``sum r_i x_i`` to ``sum sigma(r_i) f(x_i)``, so on a finite spanning
         family of the source the two maps agree everywhere when they agree
-        there.  Without such a family the additive maps' own three-valued
-        comparison answers; no infinite family is iterated.
+        there.  Without such a family the additive maps' own comparison
+        answers; no infinite family is iterated.  An undecided comparison
+        answers the proposition ``equal(f, g)``.
         """
         if op not in (op_EQ, op_NE):
             return NotImplemented
@@ -191,21 +197,15 @@ class SemilinearModuleMorphism:
             case False:
                 return op == op_NE
             case _:
-                return Unknown
+                equal = AtomicProposition("equal", self, other)
+                return equal if op == op_EQ else negation(equal)
         elements = _finite_generating_elements(self.domain())
         match elements:
             case None:
                 equal = self.additive_map() == other.additive_map()
             case _:
-                decisions = tuple(self(element) == other(element) for element in elements)
-                match any(value is False for value in decisions), all(value is True for value in decisions):
-                    case True, _:
-                        equal = False
-                    case _, True:
-                        equal = True
-                    case _:
-                        equal = Unknown
-        return equal if op == op_EQ or equal is Unknown else not equal
+                equal = conjunction(self(element) == other(element) for element in elements)
+        return equal if op == op_EQ else negation(equal)
 
     def __mul__(self, other):
         match other:
@@ -221,11 +221,11 @@ class SemilinearModuleMorphism:
         composite = _LinearMapIntoRestrictionOfScalars(
             linear_mor,
             lambda element: restricted.wrap(self(other(element))),
-            lambda: (
-                True
-                if self.restricted_morphism().linearity_decision() is True
-                and other.restricted_morphism().linearity_decision() is True
-                else Unknown
+            lambda: conjunction(
+                (
+                    self.restricted_morphism().linearity_decision(),
+                    other.restricted_morphism().linearity_decision(),
+                )
             ),
         )
         return mor(scalar_map, composite)

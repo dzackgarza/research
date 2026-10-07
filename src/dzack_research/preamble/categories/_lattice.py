@@ -31,7 +31,6 @@ from sage.arith.misc import factor
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
-from sage.misc.unknown import Unknown
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -66,6 +65,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     Sets,
 )
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
     TensorModule,
@@ -292,20 +292,6 @@ def _gram_determinant(gram, ring):
     return _owned_engine_element(ring, _engine_ring(ring)(determinant))
 
 
-def _known_conjunction(values):
-    r"""Conjoin mathematical decisions without treating Unknown as false."""
-    unknown = False
-    for value in values:
-        match value:
-            case False:
-                return False
-            case True:
-                pass
-            case _:
-                unknown = True
-    return Unknown if unknown else True
-
-
 def _regular_scalar(scalar, ring):
     r"""Whether multiplication by this scalar is injective on R.
 
@@ -324,7 +310,7 @@ def _regular_scalar(scalar, ring):
         return False
     if scalar == ring.zero():
         return False
-    return Unknown
+    return AtomicProposition("is_regular", scalar, ring)
 
 
 def _gram_is_nondegenerate(gram, ring):
@@ -347,7 +333,7 @@ def _gram_is_unimodular(gram, ring):
     r"""Whether the correlation \(M\to M^\vee\) of the presented form is an isomorphism.
 
     At finite rank it is decided by \(\det G\in R^\times\); at infinite rank
-    the pairing rule decides it or answers ``Unknown``.
+    the pairing rule decides it or answers the proposition.
     """
     match _gram_rank(gram).is_finite():
         case True:
@@ -363,11 +349,11 @@ def _gram_is_even(gram, ring):
     \(b(x,x)=\sum_i x_i^2 b(e_i,e_i)+2\sum_{i<j}x_ix_jb(e_i,e_j)\), so
     evenness is membership of every diagonal value in the ideal \(2R\).  The
     ideal is asked of a commutative base ring; over any other ring the answer
-    is ``Unknown``.
+    is the proposition that the form is even.
     """
     match ring in OwnedRings().Commutative():
         case False:
-            return Unknown
+            return AtomicProposition("is_even", gram)
     twice = ring.ideal(ring(2))
     match _gram_rank(gram).is_finite():
         case True:
@@ -500,8 +486,9 @@ class _PairingGram(ModuleElement, Tensor):
     At infinite rank the rule is the only presentation of the form, so it
     also answers the property questions the construction asks of it:
     :meth:`is_nondegenerate`, :meth:`is_unimodular` and :meth:`is_even_in`
-    answer ``Unknown`` for a rule with no decision procedure, and each
-    subclass with one overrides them.
+    answer the proposition for a rule with no decision procedure, and each
+    subclass with one overrides them.  :meth:`_inertia` states the
+    signature when the rule determines it.
     """
 
     __hash__ = Tensor._tensor_hash
@@ -554,21 +541,27 @@ class _PairingGram(ModuleElement, Tensor):
 
         return _tensor_richcmp(self, other, op)
 
-    def signature_pair(self):
-        r"""Return $(p,q)$ of the rule, by Sylvester's law at finite rank."""
-        return _sylvester(self) if _gram_rank(self).is_finite() else Unknown
+    def _inertia(self):
+        r"""Return $(p,q)$ of the rule when the rule determines it, else ``None``.
+
+        Protected contract (`OWN-05`).  Owner: :class:`_PairingGram`.  Each
+        rule subclass that determines its inertia overrides it; called only
+        through :func:`_signature_pair_of_gram`.  At finite rank this is
+        Sylvester's law.  ``None`` states that the rule supplies no value.
+        """
+        return _sylvester(self) if _gram_rank(self).is_finite() else None
 
     def is_nondegenerate(self):
-        r"""``Unknown``: no finite restriction of this rule decides injectivity of its correlation."""
-        return Unknown
+        r"""No finite restriction of this rule decides injectivity of its correlation."""
+        return AtomicProposition("is_nondegenerate", self)
 
     def is_unimodular(self):
-        r"""``Unknown``: no finite restriction of this rule decides that its correlation is an isomorphism."""
-        return Unknown
+        r"""No finite restriction of this rule decides that its correlation is an isomorphism."""
+        return AtomicProposition("is_unimodular", self)
 
     def is_even_in(self, twice):
-        r"""``Unknown``: this rule states no decision of \(b(x,x)\in 2R\) on all of its module."""
-        return Unknown
+        r"""This rule states no decision of \(b(x,x)\in 2R\) on all of its module."""
+        return AtomicProposition("is_even_in", self, twice)
 
     def dual_gram_on(self, dual_module):
         r"""Materialize the inverse finite Gram; sparse infinite rules override it."""
@@ -675,15 +668,15 @@ class _BaseChangedGram(_PairingGram):
     def is_unimodular(self):
         r"""An isomorphism remains an isomorphism after scalar extension."""
         source_decision = self._source_gram.is_unimodular()
-        return True if source_decision is True else Unknown
+        return True if source_decision is True else AtomicProposition("is_unimodular", self)
 
     def is_nondegenerate(self):
         r"""Unimodularity survives every scalar extension; bare injectivity need not."""
-        return True if self.is_unimodular() is True else Unknown
+        return True if self.is_unimodular() is True else AtomicProposition("is_nondegenerate", self)
 
     def is_even_in(self, twice):
         r"""The generic transported rule does not select an evenness decision."""
-        return Unknown
+        return AtomicProposition("is_even_in", self, twice)
 
     def _pairing_name(self) -> str:
         return f"{self._source_gram._pairing_name()} base-changed along {self._ring_map}"
@@ -709,19 +702,19 @@ class _ScaledGram(_PairingGram):
     def __call__(self, left, right):
         return self._scalar * self._gram(left, right)
 
-    def signature_pair(self):
+    def _inertia(self):
         if self._scalar == 0:
             return signature_pair(0, 0)
-        scaled = self._gram.signature_pair()
-        if scaled is Unknown:
-            return Unknown
+        scaled = self._gram._inertia()
+        if scaled is None:
+            return None
         if self._scalar > 0:
             return scaled
         return signature_pair(scaled.second(), scaled.first())
 
     def is_nondegenerate(self):
         r"""Scaling a free-module form preserves injectivity exactly for a regular scalar."""
-        return _known_conjunction((_regular_scalar(self._scalar, self.base_ring()), self._gram.is_nondegenerate()))
+        return conjunction((_regular_scalar(self._scalar, self.base_ring()), self._gram.is_nondegenerate()))
 
     def is_unimodular(self):
         r"""\(sb\) is unimodular when \(s\) is a unit and \(b\) is unimodular."""
@@ -797,7 +790,7 @@ class _DiagonalGram(_PairingGram):
             self.base_ring().zero(),
         )
 
-    def signature_pair(self):
+    def _inertia(self):
         match _gram_rank(self).is_finite():
             case True:
                 return _sylvester(self)
@@ -812,7 +805,7 @@ class _DiagonalGram(_PairingGram):
 
     def is_nondegenerate(self):
         r"""A diagonal correlation is injective exactly when each entry is regular."""
-        return _known_conjunction(
+        return conjunction(
             _regular_scalar(value, self.base_ring())
             for value in (self._default, *self._exceptions.values())
         )
@@ -901,7 +894,7 @@ class _IdentityGram(_DiagonalGram):
     def __init__(self, module) -> None:
         super().__init__(module, {}, module.base_ring().one())
 
-    def signature_pair(self):
+    def _inertia(self):
         _rational_fraction_field(self.base_ring())
         return signature_pair(cardinal(self._module.module_rank()), 0)
 
@@ -995,10 +988,10 @@ class _BiproductGram(_PairingGram):
             self.base_ring().zero(),
         )
 
-    def signature_pair(self):
-        pairs = tuple(block.signature_pair() for block in self._blocks)
-        if any(pair is Unknown for pair in pairs):
-            return Unknown
+    def _inertia(self):
+        pairs = tuple(_signature_pair_of_gram(block.gram_tensor()) for block in self._blocks)
+        if any(pair is None for pair in pairs):
+            return None
         return signature_pair(
             sum(pair.first() for pair in pairs),
             sum(pair.second() for pair in pairs),
@@ -1006,15 +999,15 @@ class _BiproductGram(_PairingGram):
 
     def is_nondegenerate(self):
         r"""An orthogonal sum is nondegenerate when every summand is."""
-        return _known_conjunction(block.is_nondegenerate() for block in self._blocks)
+        return conjunction(block.is_nondegenerate() for block in self._blocks)
 
     def is_unimodular(self):
         r"""An orthogonal sum is unimodular when every summand is."""
-        return _known_conjunction(block.is_unimodular() for block in self._blocks)
+        return conjunction(block.is_unimodular() for block in self._blocks)
 
     def is_even_in(self, twice):
         r"""An orthogonal sum is even when every summand is."""
-        return _known_conjunction(block.is_even() for block in self._blocks)
+        return conjunction(block.is_even() for block in self._blocks)
 
     def _latex_(self) -> str:
         return r" \oplus ".join(
@@ -1099,13 +1092,13 @@ class _TensorProductGram(_PairingGram):
             self.base_ring().zero(),
         )
 
-    def signature_pair(self):
+    def _inertia(self):
         positive = SageZZ.one()
         negative = SageZZ.zero()
         for lattice_factor in self._factors:
-            pair = lattice_factor.signature_pair()
-            if pair is Unknown:
-                return Unknown
+            pair = _signature_pair_of_gram(lattice_factor.gram_tensor())
+            if pair is None:
+                return None
             new_positive = positive * pair.first() + negative * pair.second()
             new_negative = positive * pair.second() + negative * pair.first()
             positive, negative = new_positive, new_negative
@@ -1184,14 +1177,14 @@ class _ColimitGram(_PairingGram):
         stage = self._stage_at(max(positions) + 1)
         return _lattice_vector_from_coefficients(stage, positions_left).b(_lattice_vector_from_coefficients(stage, positions_right))
 
-    def signature_pair(self):
+    def _inertia(self):
         r"""Finite sampling does not determine the inertia of an arbitrary colimit.
 
         Diagonal forms agreeing through any chosen N can acquire their first
         negative entry at N+1, or infinitely many negative entries thereafter.
         The stage function alone supplies no decision of that infinite datum.
         """
-        return Unknown
+        return None
 
     def _latex_(self) -> str:
         return r"\operatorname{colim}_n G_n"
@@ -1388,16 +1381,16 @@ def _sylvester(gram: Tensor):
 
 
 def _signature_pair_of_gram(gram: Tensor):
-    r"""Return $(p,q)$ for a Gram presentation.
+    r"""Return $(p,q)$ for a Gram presentation, or ``None`` when it does not determine it.
 
     At finite rank it is Sylvester's law on the components; at infinite rank
-    the pairing rule states it.
+    the pairing rule states it when the rule determines it.
     """
     match _gram_rank(gram).is_finite():
         case True:
             return _sylvester(gram)
         case False:
-            return gram.signature_pair()
+            return gram._inertia()
 
 
 def _discriminant_of_gram(gram: Tensor):
@@ -1445,7 +1438,7 @@ def _lattice_latex(lattice, ring_tex: str) -> str:
 
     match cardinal(rank).is_finite():
         case False:
-            if signature_field is QQ and signature is not Unknown:
+            if signature_field is QQ and signature is not None:
                 pos, neg = signature.first(), signature.second()
                 invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)}, \\quad \\mathrm{{sig}}(L) = ({latex(pos)}, {neg}) \\\\"
             else:

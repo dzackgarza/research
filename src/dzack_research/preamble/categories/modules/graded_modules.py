@@ -1,7 +1,6 @@
 """Modules graded by a monoid."""
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
@@ -33,6 +32,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.lexicon.set_theory import SetObject
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.validation import validator
 
 
@@ -193,27 +193,28 @@ class GradedModuleMorphismMethods:
             )
 
     def _decide_degree_preservation(self):
-        r"""Decide degree preservation on selected homogeneous generators when possible."""
+        r"""Decide degree preservation on selected homogeneous generators, else the proposition ``preserves_degree(f)``."""
 
         domain = self.domain()
+        undecided = AtomicProposition("preserves_degree", self)
         if not domain.has_selected_module_resolution():
-            return Unknown
+            return undecided
         labels = domain.module_generating_set()
         if not labels.cardinality().is_finite():
-            return Unknown
+            return undecided
         answer = True
         for label in labels:
             source = domain.module_generator(label)
             source_degree = _represented_homogeneous_degree_or_none(source)
             if source_degree is None:
-                answer = Unknown
+                answer = undecided
                 continue
             image = self(source)
             zero = image == self.codomain().zero()
             if zero is True:
                 continue
             if zero is not False:
-                answer = Unknown
+                answer = undecided
                 continue
             target_degree = _represented_homogeneous_degree_or_none(image)
             if target_degree is None:

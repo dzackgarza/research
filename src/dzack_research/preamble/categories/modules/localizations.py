@@ -1,6 +1,5 @@
 r"""Modules equipped as localizations of modules over the source ring."""
 
-from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -19,6 +18,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
     OwnedCategoryOverBaseRing,
 )
+from dzack_research.preamble.logic import AtomicProposition, Propositions, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -97,7 +97,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     return None
 
         def equality_status(self, other):
-            r"""Return ``True``, ``False``, or ``Unknown`` for fraction equality."""
+            r"""Return ``True``, ``False``, or the proposition ``equal(x, y)`` for fraction equality."""
             if other.parent() is not self.parent():
                 return False
             return self.parent()._fraction_equality_status(self, other)
@@ -107,8 +107,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             status = self.equality_status(other)
             match status:
-                case _ if status is Unknown:
-                    return Unknown
+                case _ if status in Propositions:
+                    return status if op == op_EQ else negation(status)
                 case _:
                     return bool(status) if op == op_EQ else not bool(status)
 
@@ -223,7 +223,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             of ``d`` under the chosen generators of ``S``, searched for zero.
             A torsion-free module over a domain has ``Ann_R(d) = 0`` for ``d``
             nonzero, which meets no submonoid of nonzero elements.  Otherwise
-            the answer is ``Unknown``.
+            the answer is the proposition ``equal(x, y)``.
             """
             source = self.numerator_module()
             source_ring = self.source_ring()
@@ -254,10 +254,10 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                             for generator in generators
                         )
                     return False
-                case _ if source_ring in IntegralDomains() and source.is_torsion_free():
+                case _ if source_ring in IntegralDomains() and source.is_torsion_free() is True:
                     return self.localization_ring().inverted_submonoid_meets(source_ring.ideal(source_ring.zero()))
                 case _:
-                    return Unknown
+                    return AtomicProposition("equal", left, right)
 
         def inverted_elements(self):
             r"""Return the chosen generators of the submonoid ``S`` inverted here."""
@@ -285,7 +285,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 return True
             if self.is_zero() is True:
                 return True
-            return Unknown
+            return AtomicProposition("is_finite", self)
 
         def is_zero(self):
             r"""Decide whether ``S^{-1}M = 0``.
@@ -304,11 +304,11 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                         self.fraction(element).equality_status(self.zero())
                         for element in source
                     )
-                    if any(status is Unknown for status in statuses):
-                        return Unknown
+                    if any(status in Propositions for status in statuses):
+                        return AtomicProposition("is_zero", self)
                     return all(status is True for status in statuses)
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_zero", self)
 
         def _repr_(self):
             return (

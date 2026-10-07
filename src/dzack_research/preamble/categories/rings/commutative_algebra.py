@@ -14,7 +14,6 @@ from sage.all import (
 from sage.categories.fields import Fields as SageFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.fraction_field import FractionField_generic as SageFractionField
@@ -74,6 +73,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     UncountableSets,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -358,12 +358,13 @@ class PrimeSpectra(OwnedCategory):
             Every regular local ring is a unique-factorization domain.  This
             gives an exact positive criterion from the local-ring data already
             represented here.  A singular local ring can still be factorial,
-            so failure of regularity is not a negative criterion and is left
-            undecided until a divisor-class computation supplies one.
+            so failure of regularity is not a negative criterion: the answer is
+            then the proposition ``is_locally_factorial(R)``, until a
+            divisor-class computation decides it.
             """
             if self.is_regular():
                 return True
-            return Unknown
+            return AtomicProposition("is_locally_factorial", self)
 
         def order_of_vanishing(self, function):
             r"""Return ``ord_p(f)`` at this height-one point.
@@ -869,9 +870,7 @@ class QuotientRings(OwnedCategory):
                 return not _engine_ideal(
                     self.quotient_source(), self.defining_ideal()
                 ).is_zero()
-            from sage.misc.unknown import Unknown
-
-            return Unknown
+            return AtomicProposition("is_finite", self)
 
         def cardinality(self):
             # Sage's generic quotient of a field by its unit ideal has no
@@ -1783,10 +1782,10 @@ class AdicCompletions(Category):
             return self.is_adically_separated()
 
         def is_flat_over_source(self):
-            r"""Return flatness of ``A^`` over ``A`` in the Noetherian regime."""
+            r"""Return flatness of ``A^`` over ``A`` in the Noetherian regime, else the proposition."""
             if self.completion_source() in OwnedRings().Noetherian():
                 return True
-            return Unknown
+            return AtomicProposition("is_flat_over_source", self)
 
         def computation_precision(self):
             return self._adic_completion_precision
