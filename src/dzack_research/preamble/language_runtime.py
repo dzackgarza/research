@@ -60,8 +60,46 @@ def ComplexNumber(real, imag=None):
     return _owned_engine_element(parent, backend)
 
 
-def matrix(rows):
-    r"""Construct the owned matrix-Mor represented by a rectangular row family."""
+def matrix(*data):
+    r"""Construct the owned matrix-Mor over a ring from its entries.
+
+    ``matrix(R, rows)`` has the given rows, with entries in ``R``;
+    ``matrix(R, m, n, f)`` has ``m`` rows and ``n`` columns, with the entry
+    ``f(i, j)`` of ``R`` in row ``i`` and column ``j``, counted from ``0``;
+    ``matrix(rows)`` is over the ring of its entries, the integers when no
+    entry is an element of a ring.
+    """
+    match data:
+        case (rows,):
+            rows = _rectangular_rows(rows)
+            return matrix(_entry_ring(rows), rows)
+        case (ring, rows):
+            assert ring in OwnedRings(), (
+                f"matrix({ring}, ...) needs a ring for its entries, but {ring} is not a ring"
+            )
+            rows = _rectangular_rows(rows)
+            width = len(rows[0]) if rows else 0
+            return ring.matrix_space(len(rows), width).from_rows(rows)
+        case (ring, nrows, ncols, entry):
+            assert ring in OwnedRings(), (
+                f"matrix({ring}, {nrows}, {ncols}, f) needs a ring for its entries, "
+                f"but {ring} is not a ring"
+            )
+            return ring.matrix_space(nrows, ncols).from_rows(
+                tuple(
+                    tuple(entry(Integer(i), Integer(j)) for j in range(ncols))
+                    for i in range(nrows)
+                )
+            )
+        case _:
+            raise TypeError(
+                f"matrix takes (rows), (R, rows) or (R, m, n, f), "
+                f"but {len(data)} arguments were given"
+            )
+
+
+def _rectangular_rows(rows):
+    r"""The rows of a matrix, which have one common length."""
     rows = tuple(tuple(row) for row in rows)
     if rows:
         width = len(rows[0])
@@ -70,24 +108,22 @@ def matrix(rows):
                 f"a matrix needs rows of one common length, but the given rows have "
                 f"lengths {tuple(len(row) for row in rows)}"
             )
-    else:
-        width = 0
+    return rows
 
+
+def _entry_ring(rows):
+    r"""The ring of the first entry that is a ring element; the integers if none is."""
     from sage.rings.integer_ring import ZZ as SageZZ
 
-    ring = None
-    for row in rows:
-        for entry in row:
-            parent = element_parent(entry)
-            if parent in OwnedRings():
-                ring = parent
-                break
-        if ring is not None:
-            break
-    if ring is None:
-        ring = _own_ring(SageZZ)
-    matrix_space = ring.matrix_space(len(rows), width)
-    return matrix_space.from_rows(rows)
+    return next(
+        (
+            element_parent(entry)
+            for row in rows
+            for entry in row
+            if element_parent(entry) in OwnedRings()
+        ),
+        _own_ring(SageZZ),
+    )
 
 
 def Set(iterable):
