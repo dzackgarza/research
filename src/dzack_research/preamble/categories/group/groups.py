@@ -107,6 +107,7 @@ from dzack_research.preamble.owned_category import (
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.validation import validator
 
 # Finite generation reuses Sage's axiom for it, ``FinitelyGeneratedAsMagma``.
 # Finite presentation is qualified as Sage qualifies that one: an axiom name
@@ -1816,29 +1817,62 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
 class GroupMorphism:
     r"""A group morphism, optionally carrying a private GAP realization."""
 
-    def __init__(self, parent, realization, check=True) -> None:
-        domain = parent.domain()
-        codomain = parent.codomain()
+    def __init__(self, parent, realization) -> None:
         self._gap_homomorphism = None
         match realization:
             case GapElement():
-                if check:
-                    assert realization.Source() == _gap_model(domain), (
-                        f"the GAP homomorphism is not a homomorphism out of {domain}: its source differs from {domain}"
-                    )
-                    assert realization.Range() == _gap_model(codomain), (
-                        f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
-                    )
                 self._gap_homomorphism = realization
                 evaluator = self._evaluate_gap
             case _ if callable(realization):
                 evaluator = realization
             case _:
                 raise TypeError(
-                    f"a group morphism {domain} -> {codomain} needs an elementwise map or a GAP homomorphism, "
-                    f"but got {realization!r}"
+                    f"a group morphism {parent.domain()} -> {parent.codomain()} needs an elementwise map or a GAP "
+                    f"homomorphism, but got {realization!r}"
                 )
         super().__init__(parent, evaluator)
+
+    @validator
+    def validate_homomorphism(self) -> None:
+        r"""Raise ``ValueError`` unless ``f(xy) = f(x) f(y)`` (``OWN-22``).
+
+        A GAP realization is a map between the engine models of the two
+        endpoints, and its generator images must satisfy the relations of
+        the source.  An elementwise rule on a finite source is decided on
+        all pairs of elements.
+        """
+        domain = self.domain()
+        codomain = self.codomain()
+        match self._gap_homomorphism:
+            case None:
+                assert domain.is_finite() is True, (
+                    f"whether {self} preserves multiplication is decided here on all pairs of elements, so "
+                    f"{domain} must be finite, and it is not known to be"
+                )
+                if not all(
+                    self(left * right) == self(left) * self(right)
+                    for left in domain
+                    for right in domain
+                ):
+                    raise ValueError(
+                        f"the function does not define a homomorphism {domain} -> {codomain}: it does not "
+                        f"preserve multiplication"
+                    )
+            case engine:
+                if engine.Source() != _gap_model(domain):
+                    raise ValueError(
+                        f"the GAP homomorphism is not a homomorphism out of {domain}: its source differs from {domain}"
+                    )
+                if engine.Range() != _gap_model(codomain):
+                    raise ValueError(
+                        f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
+                    )
+                generators, images = engine.MappingGeneratorsImages()
+                if libgap.GroupHomomorphismByImages(engine.Source(), engine.Range(), generators, images).is_bool():
+                    raise ValueError(
+                        f"the given images do not define a homomorphism {domain} -> {codomain}: they do not "
+                        f"satisfy the relations of {domain}"
+                    )
 
     def _gap_morphism_crossing(self):
         r"""Return the private GAP realization to the group computation owner."""
@@ -2016,65 +2050,47 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         """
         return _law_reversed(self.domain()) != _law_reversed(self.codomain())
 
-    def _element_constructor_(self, images, check=True, **_options):
+    def _element_constructor_(self, images, *, check=False, **_options):
         match images:
             case dict():
-                return self._from_group_generator_images(images, check=check)
+                morphism = self._from_group_generator_images(images)
             case GapElement():
-                return self._from_gap_homomorphism(images, check=check)
+                morphism = self.element_class(self, images)
             case Morphism() if images.parent() is self:
                 return images
             case tuple() | list():
-                return self._from_gap_generator_images(images, check=check)
+                morphism = self._from_gap_generator_images(images)
             case _ if callable(images):
-                return self._from_finite_elementwise_rule(images)
-        raise TypeError(f"unable to convert {images!r} to an element of {self}")
+                morphism = self._from_finite_elementwise_rule(images)
+            case _:
+                raise TypeError(f"unable to convert {images!r} to an element of {self}")
+        morphism.validate_homomorphism(check=check)
+        return morphism
 
     def _from_finite_elementwise_rule(self, function):
-        r"""Admit an elementwise group map by exhaustive verification on a finite domain.
+        r"""An elementwise group map on a finite domain.
 
         This is the finite analogue of specifying a map on chosen generators:
         when no framing has been selected, the multiplication table itself is
-        a finite determining family.  The resulting arrow is still an element
-        of this Mor object; finite enumeration is only its admission algorithm.
+        a finite determining family, on which ``validate_homomorphism``
+        decides the law.
         """
         domain = self.domain()
         assert domain.is_finite() is True, (
             f"a function on elements defines a homomorphism {domain} -> {self.codomain()} here only when {domain} is "
             f"finite, so that the homomorphism law can be checked on all pairs of elements; {domain} is not known to be finite"
         )
-        morphism = self.element_class(self, function)
-        assert all(
-            morphism(left * right) == morphism(left) * morphism(right)
-            for left in domain
-            for right in domain
-        ), f"the function does not define a homomorphism {domain} -> {self.codomain()}: it does not preserve multiplication"
-        return morphism
+        return self.element_class(self, function)
 
-    def _from_gap_homomorphism(self, gap_homomorphism, check=True):
-        if check:
-            assert gap_homomorphism.Source() == _gap_model(self.domain()), (
-                f"the GAP homomorphism is not a homomorphism out of {self.domain()}: its source differs from {self.domain()}"
-            )
-            assert gap_homomorphism.Range() == _gap_model(self.codomain()), (
-                f"the GAP homomorphism is not a homomorphism into {self.codomain()}: its range differs from {self.codomain()}"
-            )
-        return self.element_class(self, gap_homomorphism, check=False)
-
-    def _from_engine_generator_images(self, generator_models, image_models, check=True):
+    def _from_engine_generator_images(self, generator_models, image_models):
         source = _gap_model(self.domain())
         target = _gap_model(self.codomain())
         if self._is_twisted():
             image_models = [model.Inverse() for model in image_models]
-        if not check:
-            engine = libgap.GroupHomomorphismByImagesNC(source, target, generator_models, image_models)
-            return self.element_class(self, engine, check=False)
-        engine = libgap.GroupHomomorphismByImages(source, target, generator_models, image_models)
-        if engine.is_bool():
-            raise ValueError(f"the given images do not define a homomorphism {self.domain()} -> {self.codomain()}: they do not satisfy the relations of {self.domain()}")
-        return self.element_class(self, engine, check=False)
+        engine = libgap.GroupHomomorphismByImagesNC(source, target, generator_models, image_models)
+        return self.element_class(self, engine)
 
-    def _from_group_generator_images(self, images, check=True):
+    def _from_group_generator_images(self, images):
         domain = self.domain()
         codomain = self.codomain()
         if not domain.has_selected_group_resolution():
@@ -2087,16 +2103,14 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return self._from_engine_generator_images(
             [_element_to_engine(domain, generator) for generator in generators],
             [_element_to_engine(codomain, codomain(images[generator])) for generator in generators],
-            check=check,
         )
 
-    def _from_gap_generator_images(self, images, check=True):
+    def _from_gap_generator_images(self, images):
         r"""Images listed in the order of the GAP model's own generators."""
         codomain = self.codomain()
         return self._from_engine_generator_images(
             list(_gap_model(self.domain()).GeneratorsOfGroup()),
             [_element_to_engine(codomain, codomain(image)) for image in images],
-            check=check,
         )
 
     @cached_method
@@ -2122,6 +2136,12 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
 
 
 class GroupAutomorphismMethods:
+    @validator
+    def validate_bijectivity(self) -> None:
+        r"""Raise ``ValueError`` unless this endomorphism is bijective (``OWN-22``)."""
+        if not bool(self._gap_morphism_crossing().IsBijective()):
+            raise ValueError(f"{self} does not define an element of {self.parent()}: the homomorphism is not bijective")
+
     def _composition(self, right):
         r"""Compose automorphisms inside their represented automorphism group."""
         if right.parent() is self.parent():
@@ -2287,16 +2307,9 @@ class GroupAutomorphismGroup(GroupMor):
     one = identity
     identity_automorphism = identity
 
-    def _element_constructor_(self, images, check=True, **options):
-        match images:
-            case GapElement():
-                automorphism = self.element_class(self, images, check=False)
-            case _:
-                automorphism = super()._element_constructor_(images, check=check, **options)
-        if check and not bool(
-            automorphism._gap_morphism_crossing().IsBijective()
-        ):
-            raise ValueError(f"{images} does not define an element of {self}: the homomorphism is not bijective")
+    def _element_constructor_(self, images, *, check=False, **options):
+        automorphism = super()._element_constructor_(images, check=check, **options)
+        automorphism.validate_bijectivity(check=check)
         return automorphism
 
 class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):

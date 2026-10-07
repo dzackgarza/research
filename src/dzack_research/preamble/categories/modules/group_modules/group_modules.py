@@ -79,6 +79,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.validation import validator
 
 
 class GroupModuleMorCategoryConstruction(MorCategoryConstruction):
@@ -996,21 +997,8 @@ class GroupModuleMorphismMethods:
             images,
             elementwise=elementwise,
         )
-        if underlying.linearity_decision() is not True:
-            raise ValueError(
-                f"{underlying} is not known to be {underlying.domain().base_ring()}-linear, so it is not a "
-                f"morphism {parent.domain()} -> {parent.codomain()}"
-            )
-        decision = (
-            parent.is_equivariant(underlying)
-            if equivariance_decision is None
-            else equivariance_decision
-        )
-        if decision is not True:
-            raise ValueError(
-                f"{underlying} is not known to be {parent.domain().group()}-equivariant, so it is not a "
-                f"morphism {parent.domain()} -> {parent.codomain()}"
-            )
+        self._coefficient_morphism = underlying
+        self._equivariance_premise = equivariance_decision
         self._selected_group_module_lift_exact = bool(selected_lift_exact)
         super().__init__(
             parent,
@@ -1022,7 +1010,29 @@ class GroupModuleMorphismMethods:
         )
 
     def _elementwise_linearity_derivation(self):
-        return True
+        return self._coefficient_morphism.linearity_decision()
+
+    @cached_method
+    def equivariance_decision(self):
+        r"""Return whether ``f rho_M(g) = rho_N(g) f`` for all ``g``, computed on first request.
+
+        A construction that gives equivariance supplies it as its premise;
+        otherwise the parent decides it on the selected group generators.
+        """
+        match self._equivariance_premise:
+            case None:
+                return self.parent().is_equivariant(self._coefficient_morphism)
+            case premise:
+                return premise
+
+    @validator
+    def validate_equivariance(self) -> None:
+        r"""Raise ``ValueError`` unless this map is known to be ``G``-equivariant (``OWN-22``)."""
+        if self.equivariance_decision() is not True:
+            raise ValueError(
+                f"{self._coefficient_morphism} is not known to be {self.domain().group()}-equivariant, so "
+                f"it is not a morphism {self.domain()} -> {self.codomain()}"
+            )
 
     def _selected_lift_derivation(self):
         return True if self._selected_group_module_lift_exact else None
@@ -1196,10 +1206,13 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             for generator in group.group_generators()
         )
 
-    def _element_constructor_(self, images, *, lift=None):
+    def _element_constructor_(self, images, *, lift=None, check=False):
         if isinstance(images, GroupModuleMorphismMethods) and images.parent() is self and lift is None:
             return images
-        return self.element_class(self, images, lift=lift)
+        morphism = self.element_class(self, images, lift=lift)
+        morphism.validate_linearity(check=check)
+        morphism.validate_equivariance(check=check)
+        return morphism
 
     def _from_equivariant_images(
         self,
@@ -1215,7 +1228,7 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         compositions.  Arbitrary user-supplied maps still use the ordinary
         constructor and are checked on the selected group/module generators.
         """
-        return self.element_class(
+        morphism = self.element_class(
             self,
             images,
             elementwise=elementwise,
@@ -1223,6 +1236,8 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             equivariance_decision=True,
             selected_lift_exact=selected_lift_exact,
         )
+        morphism.validate_linearity(check=False)
+        return morphism
 
     def identity(self):
         if self.domain() is not self.codomain():
