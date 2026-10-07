@@ -95,6 +95,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
 
 for _form_axiom in ("Symmetric", "Nondegenerate", "Unimodular", "Even"):
@@ -1280,18 +1281,32 @@ class FormModules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, codomain)
 
         def b(self, left, right):
-            r"""Evaluate the (polar) bilinear form on two elements of this module."""
+            r"""Evaluate the (polar) bilinear form on two elements of this module.
+
+            On a finite framing with values in a ring, ``b(x, y)`` is one
+            contraction ``G(x, y) = sum_{i,j} G_{ij} x^i y^j`` of the Gram
+            tensor with the coordinate vectors of ``x`` and ``y`` (`OWN-24`).
+            """
             if left not in self or right not in self:
                 raise TypeError(
                     f"the form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
                 )
             form = self.form()
-            if form.module() is not self:
-                module = self.unformed_module()
-                left, right = module(left), module(right)
-            if _is_quadratic_form(form):
-                return form.b(left, right)
-            return form(left, right)
+            match _is_quadratic_form(form):
+                case False if form.codomain() in OwnedRings() and _has_finite_framing(self):
+                    # This module is constructed on the framing of the form's
+                    # module, so its coordinates are the Gram tensor's indices.
+                    framing = self.framing_morphism()
+                    values = form.codomain()
+                    return form.gram_tensor().contract(
+                        tensor.vector(values, tuple(framing.lift(left))),
+                        tensor.vector(values, tuple(framing.lift(right))),
+                    )
+                case is_quadratic:
+                    module = form.module()
+                    if module is not self:
+                        left, right = module(left), module(right)
+                    return form.b(left, right) if is_quadratic else form(left, right)
 
         def norm(self, element):
             r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""

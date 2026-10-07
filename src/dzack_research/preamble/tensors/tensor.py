@@ -576,6 +576,16 @@ class Tensor:
                     f"covariant tensor contraction takes, in a slot of rank {rank}, "
                     f"a vector of {slot_module}"
                 )
+        # The ubiquitous pairing G(x, y) = x^t G y is one product in the
+        # selected exact matrix backend, crossed back into the owned ring.
+        if len(vectors) == 2:
+            left, right = vectors
+            return _owned_engine_element(
+                self.base_ring(),
+                _engine_component_vector(left)
+                * _engine_component_matrix(self)
+                * _engine_component_vector(right),
+            )
         from itertools import product as cartesian_product
 
         return sum(
@@ -1095,7 +1105,7 @@ def _engine_component_vector(value):
     r"""Private engine adapter (`OWN-06`): the Sage vector of a one-index tensor.
 
     The one crossing of a one-index tensor, of either variance, into Sage's
-    vector backend; its only caller is the plain-text component display.
+    vector backend; its caller is the evaluation of a pairing on two vectors.
     """
     if value.tensor_order() != 1:
         raise TypeError(
