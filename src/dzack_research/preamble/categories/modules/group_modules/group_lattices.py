@@ -367,7 +367,7 @@ def _group_lattice(lattice, group, action):
     construction_data = [("source_group_module", source_group_module)]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
-        construction_data.append(("root_system_label", lattice.label()))
+        construction_data.append(("root_system_type_name", lattice.root_system_type_name()))
     result = Lattices(base_ring)._specialize_existing_lattice(
         lattice,
         extra_categories=tuple(extra_categories),
