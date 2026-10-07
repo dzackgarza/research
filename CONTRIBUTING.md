@@ -1577,7 +1577,7 @@ of this specification.
   answer that no check sees on symmetric specimens.  On 2026-10-07 the
   isometry check was stated three times in `lattice_morphisms.py`: as the
   pullback, as `transformation.transpose() * codomain_gram * transformation`,
-  and as 64 `b(., .)` evaluations in `_check_form_square`. The last one cost
+  and as 64 `b(., .)` evaluations in `_form_square_commutes`. The last one cost
   18 s of the `O(E_6)` test.
 - **Violation Example:** `for` loops over pairs of roots, basis vectors or
   generators; `all(b(x, y) == ... for x ... for y ...)`; `P * G * P.transpose()`
