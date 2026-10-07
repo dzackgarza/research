@@ -1,6 +1,9 @@
 r"""Owned categories for absolute Galois groups."""
 
+from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_method
+from sage.rings.rational_field import QQ as SageQQ
+
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -14,7 +17,10 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.group.profinite.profinite_groups import (
     ProfiniteGroups,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -62,6 +68,53 @@ class AbsoluteGaloisGroups(OwnedCategory):
         def has_computed_group_generators(self) -> bool:
             r"""Whether an algebraic generating set has been materialized."""
             return False
+
+        def _finite_quotient_witnesses(self):
+            r"""Yield restrictions ``G_K -> Gal(L/K)`` to cubic splitting fields over ``K``.
+
+            Implements the protected contract of
+            ``ProfiniteGroups.ParentMethods._finite_quotient_witnesses``.  For
+            a number field ``K``, the splitting field ``L`` over ``K`` of a
+            cubic with coefficients in ``K`` is a finite Galois extension of
+            ``K``, so restriction ``G_K -> Gal(L/K)`` is a continuous
+            surjection onto a finite group.  The cubics are ``x^3 - 2`` and
+            ``x^3 - x - 1``, taken over ``K`` itself.  ``Gal(L/K)`` is ``S_3``
+            when the cubic is irreducible over ``K`` and its discriminant is
+            not a square in ``K``.  Over ``QQ`` the first cubic gives
+            ``Gal(QQ(2^{1/3}, zeta_3)/QQ) = S_3``.  The Kummer cubic
+            ``x^3 - 2`` has an abelian group over a field containing
+            ``zeta_3``; the second cubic is not of Kummer form.  Other base
+            fields select no quotient here.
+            """
+            computation_field = _engine_ring(self.base_field())
+            match computation_field:
+                case _ if computation_field is SageQQ or (
+                    computation_field in NumberFields()
+                    and computation_field.is_absolute()
+                ):
+                    x = computation_field["x"].gen()
+                    yield self._cubic_splitting_field_restriction(x**3 - 2)
+                    yield self._cubic_splitting_field_restriction(x**3 - x - 1)
+                case _:
+                    return
+
+        @cached_method
+        def _cubic_splitting_field_restriction(self, polynomial):
+            r"""Return the restriction ``G_K -> Gal(L/K)`` to the splitting field ``L`` of ``polynomial``.
+
+            ``polynomial`` has coefficients in the computation field of ``K``.
+            The stage ``K -> L`` is the base map the splitting-field
+            construction returns.
+            """
+            splitting_field, base_backend = polynomial.splitting_field(
+                "s", map=True
+            )
+            splitting_field = _own_ring(splitting_field)
+            base_embedding = self.base_field().Mor(splitting_field)(base_backend)
+            stage = self.extension_data(
+                splitting_field, base_embedding=base_embedding
+            )
+            return self.restriction_map(stage)
 
 
 class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
