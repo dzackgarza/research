@@ -101,6 +101,21 @@ def _engine_coxeter_exponent(entry):
             return _engine_cartan_type_data(entry)
 
 
+def _engine_coxeter_matrix_of(coxeter_matrix):
+    r"""Lower an owned Coxeter matrix \(m\colon V\times V\to\mathrm{Card}\) to Sage.
+
+    The result is the Sage ``CoxeterMatrix`` on the index set \(V\), read off
+    the first coordinates of the pairs in their order, with entry
+    \(m(v,w)\) and \(\aleph_0\) written ``-1``.
+    """
+    values = {(pair[0], pair[1]): value for pair, value in coxeter_matrix.items()}
+    vertices = tuple(dict.fromkeys(left for left, _right in values))
+    return CoxeterMatrix(
+        [[_engine_coxeter_exponent(values[left, right]) for right in vertices] for left in vertices],
+        index_set=vertices,
+    )
+
+
 class CoxeterDiagramMorphism:
     r"""A vertex map preserving every Coxeter exponent.
 
@@ -378,6 +393,39 @@ class CoxeterDiagrams(OwnedCategory):
             return self._names
 
         def coxeter_matrix(self):
+            r"""Return the Coxeter matrix, the function \(m\colon V\times V\to\mathrm{Card}\).
+
+            \(m(v,w)\) is the order of \(s_v s_w\) in the Coxeter group, so the
+            matrix is the family over the pairs of vertices whose value at
+            \((v,w)\) is :meth:`coxeter_entry`; \(m(v,v)=1\), and an element of
+            infinite order has the value \(\aleph_0\).
+            """
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            return indexed_family(
+                self.index_set() ** 2,
+                lambda pair: self.coxeter_entry(pair[0], pair[1]),
+                name="Coxeter matrix",
+            )
+
+        def _engine_coxeter_matrix(self):
+            r"""Return the Sage ``CoxeterMatrix`` that is this diagram's defining datum.
+
+            Protected construction contract of ``CoxeterDiagrams`` (``OWN-05``).
+            The owner is ``CoxeterDiagrams``.  The one permitted caller outside
+            this module is ``SatakeDiagrams._call_``: a Satake diagram is a
+            Coxeter diagram constructed on the data of its Dynkin diagram
+            ``D``, so its constructor hands this datum of ``D`` unchanged to the
+            ``CoxeterDiagrams`` construction it threads through.  Input: none.
+            Output: a ``sage.combinat.root_system.coxeter_matrix.CoxeterMatrix``
+            whose index set is :meth:`index_set` and whose entry at
+            \((v,w)\) is \(m(v,w)\), with \(\aleph_0\) written ``-1``.  The
+            returned object is the stored datum; a caller does not mutate it.
+            The public :meth:`coxeter_matrix` cannot serve this purpose,
+            because the ``CoxeterDiagrams`` constructor takes the engine
+            matrix, and the owned function would be lowered entry by entry
+            only to be raised again.
+            """
             return self._coxeter_matrix
 
         def coxeter_entry(self, left, right):
@@ -413,7 +461,7 @@ class CoxeterDiagrams(OwnedCategory):
             if self._preferred_positions is not None:
                 return dict(self._preferred_positions)
             if self._computed_positions is None:
-                layout = self.graph().layout()
+                layout = self._engine_graph().layout()
                 self._computed_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in layout.items()}
             return dict(self._computed_positions)
 
@@ -472,6 +520,24 @@ class CoxeterDiagrams(OwnedCategory):
             distinction is a fact about the roots, and a rooted diagram answers
             it through :meth:`mirrors_are_parallel` and
             :meth:`mirrors_are_divergent`.
+
+            It is the image of this diagram under the forgetful functor to
+            ``LabelledGraphs()``.
+            """
+            edges = tuple((edge[0], edge[1]) for edge in self.edges())
+            return LabelledGraphs().from_labels(
+                tuple(self.vertices()),
+                edges,
+                {vertex: self.vertex_label(vertex) for vertex in self.vertices()},
+                {edge: self.edge_label(*edge) for edge in edges},
+            )
+
+        def _engine_graph(self):
+            r"""Return the Coxeter graph of :meth:`graph` as a Sage ``Graph``.
+
+            Private to ``CoxeterDiagrams``: its layout, connected components,
+            isomorphism certificates and drawing are computed on it.  Edges
+            carry the bond \(m_{vw}\) as their label.
             """
             graph = Graph(multiedges=False, loops=False)
             graph.add_vertices(tuple(self.index_set()))
@@ -486,7 +552,7 @@ class CoxeterDiagrams(OwnedCategory):
             return finite_ordered_set(
                 tuple(
                     self.induced_subdiagram(component)
-                    for component in self.graph().connected_components(sort=False)
+                    for component in self._engine_graph().connected_components(sort=False)
                 )
             )
 
@@ -496,7 +562,7 @@ class CoxeterDiagrams(OwnedCategory):
             One component is the definition, so the diagram on no vertices is
             not connected: it has zero components, not one.
             """
-            return self.graph().connected_components_number() == 1
+            return self._engine_graph().connected_components_number() == 1
 
         def induced_subdiagram(self, vertices):
             vertices = tuple(vertices)
@@ -517,7 +583,7 @@ class CoxeterDiagrams(OwnedCategory):
                     f"cannot form the subdiagram of {self} induced on {vertices}: some of them are "
                     f"not vertices of {self}, whose vertices are {self.index_set()}"
                 )
-            matrix_ = self.coxeter_matrix()
+            matrix_ = self._coxeter_matrix
             entries = [[matrix_[left, right] for right in vertices] for left in vertices]
             ranking = self.index_set().ranking_map()
             names = tuple(self._names[ranking(vertex)] for vertex in vertices)
@@ -705,7 +771,7 @@ class CoxeterDiagrams(OwnedCategory):
             """
             from dzack_research.preamble.categories.group.groups import Groups
 
-            return Groups.Coxeter(self.coxeter_matrix())
+            return Groups.Coxeter(self._coxeter_matrix)
 
         def finitely_presented_coxeter_group(self):
             r"""Return the same owned Coxeter group, which retains its defining presentation."""
@@ -1018,8 +1084,8 @@ class CoxeterDiagrams(OwnedCategory):
                 f"{self} has no type: only a connected elliptic Coxeter diagram is the diagram "
                 f"of a finite irreducible Coxeter group"
             )
-            coxeter_type = self.coxeter_matrix().coxeter_type()
-            assert coxeter_type is not self.coxeter_matrix(), (
+            coxeter_type = self._coxeter_matrix.coxeter_type()
+            assert coxeter_type is not self._coxeter_matrix, (
                 f"{self} is elliptic, but its Coxeter matrix {self.coxeter_matrix()} was not "
                 f"recognized as a finite Coxeter type"
             )
@@ -1049,8 +1115,8 @@ class CoxeterDiagrams(OwnedCategory):
                     )
                     letter = "B" if short_count == 1 else "C"
             reference = _rooted_reference_diagram(letter, rank, engine_scale)
-            assert reference.root_intersection_graph().is_isomorphic(
-                self.root_intersection_graph(), edge_labels=True
+            assert reference._engine_root_intersection_graph().is_isomorphic(
+                self._engine_root_intersection_graph(), edge_labels=True
             ), (
                 f"{self} was recognized as type {letter}{rank} with root scale {engine_scale}, but "
                 f"the simple roots of that type do not have the Gram data of the roots of {self}"
@@ -1075,11 +1141,11 @@ class CoxeterDiagrams(OwnedCategory):
             reference = self.scaled_cartan_type()
             match self.is_rooted():
                 case True:
-                    source = reference.root_intersection_graph()
-                    target = self.root_intersection_graph()
+                    source = reference._engine_root_intersection_graph()
+                    target = self._engine_root_intersection_graph()
                 case False:
-                    source = reference.graph()
-                    target = self.graph()
+                    source = reference._engine_graph()
+                    target = self._engine_graph()
             isomorphic, certificate = source.is_isomorphic(
                 target, edge_labels=True, certificate=True
             )
@@ -1100,7 +1166,7 @@ class CoxeterDiagrams(OwnedCategory):
 
         def drawing_conventions(self):
             return {
-                "root squares": "stored as self-loops in root_intersection_graph(), omitted from TikZ",
+                "root squares": "the vertex labels of root_intersection_graph(), omitted from TikZ",
                 "ordinary Coxeter bond": "m=3 is drawn without a label",
                 "other Coxeter bonds": "the Coxeter exponent labels the edge",
             }
@@ -1185,19 +1251,40 @@ class CoxeterDiagrams(OwnedCategory):
             return self.induced_subdiagram(vertices)
 
         def plot(self, **options):
-            return self.graph().plot(**options)
+            return self._engine_graph().plot(**options)
 
         def tikz(self, **_options):
             return self.tikz_picture()
 
         def root_intersection_graph(self):
-            r"""Return the graph of root squares and root pairings.
+            r"""Return the labelled graph of root squares and root pairings.
 
-            Vertex \(v\) carries \(q(r_v)\) as a loop label and the edge
-            \(vw\) carries \(b(r_v,r_w)\), for every pair that pairs nonzero.
-            This is the exact integral datum the Coxeter matrix summarizes: the
-            Coxeter bond is recovered from \(4b(r_v,r_w)^2/q(r_v)q(r_w)\), and
-            the pairings themselves separate diagrams the bonds identify.
+            Vertex \(v\) is labelled \(q(r_v)\) and the edge \(vw\) is labelled
+            \(b(r_v,r_w)\), for every pair that pairs nonzero.  This is the
+            exact integral datum the Coxeter matrix summarizes: the Coxeter
+            bond is recovered from \(4b(r_v,r_w)^2/q(r_v)q(r_w)\), and the
+            pairings themselves separate diagrams the bonds identify.
+            """
+            gram = self.root_gram_tensor()
+            positioned = tuple(enumerate(self.index_set()))
+            edges = {
+                (left, right): gram[i, j]
+                for (i, left), (j, right) in combinations(positioned, 2)
+                if gram[i, j] != 0
+            }
+            return LabelledGraphs().from_labels(
+                tuple(self.index_set()),
+                tuple(edges),
+                {vertex: gram[position, position] for position, vertex in positioned},
+                edges,
+            )
+
+        def _engine_root_intersection_graph(self):
+            r"""Return :meth:`root_intersection_graph` as a Sage ``Graph``.
+
+            Private to ``CoxeterDiagrams``: its isomorphism certificates are
+            computed on it.  The square \(q(r_v)\) is the label of a loop at
+            \(v\), so that a label-preserving isomorphism preserves it.
             """
             gram = self.root_gram_tensor()
             graph = Graph(multiedges=False, loops=True)
@@ -1251,15 +1338,23 @@ class CoxeterDiagrams(OwnedCategory):
 
         An entry \(m_{vw}\) is the order of \(s_v s_w\): a positive integer, or the
         cardinal \(\aleph_0\) (``aleph0``) for an element of infinite order.
+        The matrix is the function \(m\colon V\times V\to\mathrm{Card}\) that
+        :meth:`coxeter_matrix` returns, whose diagram has vertex set \(V\), or
+        its rows, whose diagram has the row positions as vertices.
         """
-        if isinstance(coxeter_matrix, (list, tuple)):
-            entries = tuple(
-                tuple(_engine_coxeter_exponent(entry) for entry in row) for row in coxeter_matrix
-            )
-            coxeter_matrix = CoxeterMatrix(
-                entries,
-                index_set=tuple(position for position, _row in enumerate(entries)),
-            )
+        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+        match coxeter_matrix:
+            case IndexedFamily():
+                coxeter_matrix = _engine_coxeter_matrix_of(coxeter_matrix)
+            case list() | tuple():
+                entries = tuple(
+                    tuple(_engine_coxeter_exponent(entry) for entry in row) for row in coxeter_matrix
+                )
+                coxeter_matrix = CoxeterMatrix(
+                    entries,
+                    index_set=tuple(position for position, _row in enumerate(entries)),
+                )
         return _coxeter_diagram(coxeter_matrix, names=names, positions=positions)
 
     def from_cartan_type(self, cartan_type, names=None, *, rooted=False, scale=None, positions=None):

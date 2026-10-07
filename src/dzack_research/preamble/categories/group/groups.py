@@ -1428,6 +1428,13 @@ def _SmallGroup(order, index):
 def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
     from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
 
+    from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+    match data:
+        case IndexedFamily():
+            # The owned Coxeter matrix m: V x V -> Card, lowered to Sage's matrix on V.
+            data = _engine_coxeter_matrix_of(data)
     scalar_ring = None if base_ring is None else _engine_ring(base_ring)
     return _own_group(
         CoxeterGroup(

@@ -279,6 +279,36 @@ labels and `weighted_graph`; the lattice-db graph cards that read them.
 keyword argument 'evaluator'` from the module-morphism construction.
 Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
 
+### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
+
+The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
+their vertex sets, form a finite partially ordered set, and so do the
+`Aut`-orbits of subdiagrams under the orbit order. `CoxeterDiagrams`
+(`categories/coxeter_diagrams.py`) returns both as Sage `Poset` objects
+through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on`: the six
+public methods `subdiagram_poset`, `elliptic_subdiagram_poset`,
+`parabolic_subdiagram_poset`, `subdiagram_orbit_poset`,
+`elliptic_subdiagram_orbit_poset` and `parabolic_subdiagram_orbit_poset`
+put a raw engine object on the public surface (`OWN-03`). The owned
+`PartiallyOrderedSets()` (`categories/sets/set_categories.py`) has no
+constructor of a finite poset from its underlying set and its order
+relation, so no owned object can be returned today. `plot()` returns a
+Sage `Graphics`.
+The same category still admits engine input: `from_coxeter_matrix`
+accepts a Sage `CoxeterMatrix`, `from_cartan_type` a Sage `CartanType`,
+and `Groups.Coxeter` (`categories/group/groups.py`) passes any argument
+other than the owned Coxeter matrix to Sage's `CoxeterGroup` unchanged
+(`OWN-04`). `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
+**Dependency path:** finite posets in `PartiallyOrderedSets()` from
+`(X, <=)` -> the subdiagram and orbit orders -> the public poset methods.
+**Partial capability:** the Coxeter matrix is the owned function
+`m: V x V -> Card` (`coxeter_matrix()`), and the Coxeter graph and the root
+intersection graph are objects of `LabelledGraphs()`.
+**Consumers:** the six poset methods, their callers in
+`tests/lattices/test_coxeter_subdiagrams.sage`, and the expectation files
+under `tests/constructions/` that ask for their cardinalities.
+Repair: `coxeter-diagram-orders-are-owned-posets` in TODO.
+
 ### Satake diagrams and real forms have no formalization
 
 A Satake diagram is a Dynkin diagram with black nodes `X` and a diagram

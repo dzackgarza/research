@@ -22,7 +22,9 @@ def test_the_categories_of_the_diagram() -> None:
 def test_the_shape_of_the_diagram() -> None:
     graph = diagram()
     assert graph.num_vertices() == 2
-    assert graph.coxeter_matrix() == matrix([[1, 3], [3, 1]])
+    first, second = graph.vertices()
+    assert graph.coxeter_entry(first, first) == 1
+    assert graph.coxeter_entry(first, second) == 3
     assert graph.is_connected()
     assert graph.is_rooted()
 

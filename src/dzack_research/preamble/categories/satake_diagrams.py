@@ -28,7 +28,10 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.coxeter_diagrams import (
+    CoxeterDiagrams,
+    _engine_coxeter_exponent,
+)
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -58,9 +61,13 @@ def _engine_opposition_images(diagram, black):
     Coxeter group \(W_X\) by its longest element.  Sage's reflection
     representation computes \(W_X\) and \(w_X\).
     """
-    exponents = diagram.coxeter_matrix()
     group = CoxeterGroup(
-        CoxeterMatrix([[exponents[left, right] for right in black] for left in black]),
+        CoxeterMatrix(
+            [
+                [_engine_coxeter_exponent(diagram.coxeter_entry(left, right)) for right in black]
+                for left in black
+            ]
+        ),
         implementation="reflection",
     )
     longest = group.long_element()
@@ -123,7 +130,7 @@ class SatakeDiagrams(OwnedCategory):
     def _call_(self, diagram, black_nodes, involution):
         return _object_of(
             self,
-            coxeter_matrix=diagram.coxeter_matrix(),
+            coxeter_matrix=diagram._engine_coxeter_matrix(),
             names=diagram.vertex_names(),
             roots=diagram.roots(),
             root_gram=diagram.root_gram_tensor(),

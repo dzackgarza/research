@@ -42,10 +42,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.coxeter_diagrams import (
-    CoxeterDiagrams,
-    _engine_coxeter_exponent,
-)
+from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 from dzack_research.preamble.categories.graph_categories import LabelledGraphs
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _cross_engine_ring_value,
@@ -369,15 +366,17 @@ class VinbergInvariantMatrices(OwnedCategory):
             return cardinal(_coxeter_bond(ratio))
 
         def coxeter_matrix(self):
-            r"""Return the Coxeter matrix this invariant matrix determines."""
-            from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+            r"""Return the Coxeter matrix \(m\colon V\times V\to\mathrm{Card}\) this invariant matrix determines.
 
-            vertices = tuple(self._index_set)
-            entries = [
-                [_engine_coxeter_exponent(self.coxeter_entry(left, right)) for right in vertices]
-                for left in vertices
-            ]
-            return CoxeterMatrix(entries, index_set=vertices)
+            Its value at a pair of mirrors is :meth:`coxeter_entry`.
+            """
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            return indexed_family(
+                self._index_set**2,
+                lambda pair: self.coxeter_entry(pair[0], pair[1]),
+                name="Coxeter matrix",
+            )
 
         def coxeter_diagram(self):
             r"""Return the Coxeter diagram of this invariant matrix.

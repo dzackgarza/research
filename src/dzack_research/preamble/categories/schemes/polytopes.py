@@ -68,8 +68,6 @@ class RegularPolytopes(OwnedCategory):
 
     def from_schlafli_symbol(self, symbol):
         r"""Return the finite regular abstract polytope with Schlaefli symbol ``symbol``."""
-        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-
         from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 
         match symbol:
@@ -99,7 +97,7 @@ class RegularPolytopes(OwnedCategory):
             )
             for row in range(rank)
         )
-        diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
+        diagram = CoxeterDiagrams().from_coxeter_matrix(entries)
         assert diagram.is_elliptic(), (
             f"the Schlaefli symbol {bonds} does not define a finite regular polytope: its Coxeter "
             "group is infinite (the Coxeter diagram is not spherical)"

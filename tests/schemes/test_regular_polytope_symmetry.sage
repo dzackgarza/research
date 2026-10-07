@@ -14,16 +14,18 @@ def test_the_cube_has_the_linear_coxeter_diagram_4_3() -> None:
     cube = RegularPolytopes().from_schlafli_symbol("{4,3}")
 
     assert tuple(cube.schlafli_symbol()) == (4, 3)
-    assert cube.symmetry_coxeter_diagram().coxeter_matrix() == matrix([[1, 4, 2], [4, 1, 3], [2, 3, 1]])
+    assert cube.symmetry_coxeter_diagram().coxeter_matrix() == CoxeterDiagrams().from_coxeter_matrix(
+        [[1, 4, 2], [4, 1, 3], [2, 3, 1]]
+    ).coxeter_matrix()
 
 
 def test_the_twenty_four_cell_has_the_f4_diagram() -> None:
     r"""``{3,4,3}``: the linear diagram with bonds ``3, 4, 3``, which is ``F_4``."""
     cell = RegularPolytopes().from_schlafli_symbol("{3,4,3}")
 
-    assert cell.symmetry_coxeter_diagram().coxeter_matrix() == matrix(
+    assert cell.symmetry_coxeter_diagram().coxeter_matrix() == CoxeterDiagrams().from_coxeter_matrix(
         [[1, 3, 2, 2], [3, 1, 4, 2], [2, 4, 1, 3], [2, 2, 3, 1]]
-    )
+    ).coxeter_matrix()
 
 
 def test_the_pentagon_has_the_dihedral_diagram_i2_5() -> None:
@@ -31,7 +33,9 @@ def test_the_pentagon_has_the_dihedral_diagram_i2_5() -> None:
     pentagon = RegularPolytopes().from_schlafli_symbol("{5}")
 
     assert tuple(pentagon.schlafli_symbol()) == (5,)
-    assert pentagon.symmetry_coxeter_diagram().coxeter_matrix() == matrix([[1, 5], [5, 1]])
+    assert pentagon.symmetry_coxeter_diagram().coxeter_matrix() == CoxeterDiagrams().from_coxeter_matrix(
+        [[1, 5], [5, 1]]
+    ).coxeter_matrix()
 
 
 def test_the_cube_is_three_dimensional() -> None:
