@@ -14,7 +14,6 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.disjoint_set import DisjointSet as SageDisjointSet
 from sage.sets.set import Set as SageSet
@@ -53,6 +52,7 @@ if TYPE_CHECKING:
         Ordinal,
     )
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from dzack_research.preamble.logic import Predicate
 
 IndexT = TypeVar("IndexT")
 SourcePointT = TypeVar("SourcePointT")
@@ -429,7 +429,7 @@ class OwnedSetMorphism(SetMorphism):
         point = self.domain()(element)
         return self.codomain()(self._owned_function(point, *args, **kwargs))
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         r"""Compare two arrows of one Mor through ``_richcmp_``.
 
         Sage's ``SetMorphism`` compares the stored functions and never calls
@@ -441,33 +441,31 @@ class OwnedSetMorphism(SetMorphism):
             return False
         return self._richcmp_(other, op_EQ)
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
+    def __ne__(self, other: Any) -> bool | Predicate:
         if element_parent(other) is not self.parent():
             return True
         return self._richcmp_(other, op_NE)
 
-    def _richcmp_(self, other: Self, op: int) -> bool | UnknownClass:
+    def _richcmp_(self, other: Self, op: int) -> bool | Predicate:
         r"""Two set maps agree when they agree at every point.
 
-        That is decidable when the source is a finite enumerated set, and not
-        otherwise.
+        On a finite enumerated source this is the conjunction of the equalities
+        of their values; on any other source it is the proposition that they
+        are equal.
         """
+        from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+
         if op not in (op_EQ, op_NE):
             return NotImplemented
         if self is other:
             return op == op_EQ
         domain = self.domain()
-        if domain not in FiniteSets() or domain not in EnumeratedSets():
-            return Unknown
-        decisions = tuple(self(element) == other(element) for element in domain)
-        match any(value is False for value in decisions), all(value is True for value in decisions):
-            case True, _:
-                equal = False
-            case _, True:
-                equal = True
+        match domain:
+            case _ if domain in FiniteSets() and domain in EnumeratedSets():
+                equal = conjunction(self(element) == other(element) for element in domain)
             case _:
-                equal = Unknown
-        return equal if op == op_EQ or equal is Unknown else not equal
+                equal = AtomicProposition("equal", self, other)
+        return equal if op == op_EQ else negation(equal)
 
     def __hash__(self) -> int:
         # Equality is extensional within one Mor.  An identity-based hash of
@@ -475,8 +473,8 @@ class OwnedSetMorphism(SetMorphism):
         # the parent also works when points of either endpoint are unhashable.
         return hash(id(self.parent()))
 
-    def is_identity(self) -> bool | UnknownClass:
-        r"""Decide identity on a finite enumeration; retain unknown otherwise.
+    def is_identity(self) -> bool | Predicate:
+        r"""Decide identity on a finite enumeration; return the proposition otherwise.
 
         The identity of a Mor object is the one arrow its ``identity()`` interns,
         so that arrow answers by identity of objects; any other arrow answers
@@ -498,35 +496,41 @@ class OwnedSetMorphism(SetMorphism):
         """
         return Sets().image_set(self, self.domain())
 
-    def is_injective(self) -> bool | UnknownClass:
+    def is_injective(self) -> bool | Predicate:
         r"""Decide ``f(x) = f(y) => x = y`` on the map's own data.
 
         A function is its values, so injectivity is decided by counting the
-        image of a finite enumerated domain and is ``Unknown`` otherwise.  A
-        structure on the domain decides nothing about an arbitrary function
-        out of it; an arrow of a subcategory whose theorems decide injectivity
-        answers through its own ``is_injective``, as a ring map does.
+        image of a finite enumerated domain; on any other domain the answer is
+        the proposition that ``f`` is injective.  A structure on the domain
+        decides nothing about an arbitrary function out of it; an arrow of a
+        subcategory whose theorems decide injectivity answers through its own
+        ``is_injective``, as a ring map does.
         """
+        from dzack_research.preamble.logic import AtomicProposition
+
         domain = self.domain()
         match domain:
             case _ if domain in FiniteSets() and domain in EnumeratedSets():
                 return self.image().cardinality() == domain.cardinality()
             case _:
-                return Unknown
+                return AtomicProposition("is_injective", self)
 
-    def is_surjective(self) -> bool | UnknownClass:
+    def is_surjective(self) -> bool | Predicate:
         r"""Decide that every point of the codomain is a value.
 
-        Decided on finite enumerated endpoints; ``Unknown`` otherwise.
+        Decided on finite enumerated endpoints; otherwise the answer is the
+        proposition that ``f`` is surjective.
         """
+        from dzack_research.preamble.logic import AtomicProposition
+
         domain = self.domain()
         codomain = self.codomain()
-        if domain not in FiniteSets() or domain not in EnumeratedSets():
-            return Unknown
-        if codomain not in FiniteSets() or codomain not in EnumeratedSets():
-            return Unknown
-        image = self.image()
-        return all(point in image for point in codomain)
+        match domain, codomain:
+            case _ if all(end in FiniteSets() and end in EnumeratedSets() for end in (domain, codomain)):
+                image = self.image()
+                return all(point in image for point in codomain)
+            case _:
+                return AtomicProposition("is_surjective", self)
 
     def inverse(self):
         r"""Return the inverse of a bijection between finite enumerated sets."""
@@ -1438,20 +1442,23 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             r"""Protected computation of finiteness when placement does not decide it.
 
             ``is_finite`` is the only caller.  A realization or a more specific
-            category supplies the answer; ``Unknown`` here means undecided.
+            category supplies the answer; here it is the proposition that the
+            set is finite.
             """
-            return Unknown
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_finite", self)
 
         @RealizationHook
         def _cardinality_decision(self):
             r"""Protected exact cardinality supplied by a construction-specific realization.
 
             ``cardinality`` is the only caller.  A realization or a more
-            specific category supplies the answer as a cardinal; ``Unknown``
-            here means undecided, and ``cardinality`` then reads the standard
-            set constructions.
+            specific category supplies the answer as a cardinal.  ``None``
+            here means that no realization supplies one, and ``cardinality``
+            then reads the standard set constructions.
             """
-            return Unknown
+            return None
 
         def is_finite(self):
             r"""Return whether the underlying set has finite cardinality."""
@@ -1503,7 +1510,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             construction_cardinality = self._cardinality_decision()
-            if construction_cardinality is not Unknown:
+            if construction_cardinality is not None:
                 return cardinal(construction_cardinality)
 
             match self:
@@ -1854,7 +1861,7 @@ class SetInjection(OwnedSetMorphism):
         return None
 
     @cached_method
-    def is_injective(self) -> bool | UnknownClass:
+    def is_injective(self) -> bool | Predicate:
         r"""Decide injectivity on first request, from the construction where it gives it."""
         match self._injectivity_derivation():
             case None:
@@ -1911,7 +1918,7 @@ class SetSurjection(OwnedSetMorphism):
         return None
 
     @cached_method
-    def is_surjective(self) -> bool | UnknownClass:
+    def is_surjective(self) -> bool | Predicate:
         r"""Decide surjectivity on first request, from the construction where it gives it."""
         match self._surjectivity_derivation():
             case None:
@@ -2233,12 +2240,14 @@ class SetInclusion(OwnedSetMorphism):
     def __or__(self, other):
         return self.union(other)
 
-    def __eq__(self, other) -> bool | UnknownClass:
+    def __eq__(self, other) -> bool | Predicate:
         r"""Two subsets of \(X\) are equal when they have the same members.
 
         Decided when the base is finite enumerated, or when both subsets are
-        finite enumerated; ``Unknown`` otherwise.
+        finite enumerated; otherwise the proposition that they are equal.
         """
+        from dzack_research.preamble.logic import AtomicProposition
+
         if self is other:
             return True
         if other not in self.codomain().power_set():
@@ -2250,11 +2259,12 @@ class SetInclusion(OwnedSetMorphism):
         left, right = self.domain(), other.domain()
         if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
             return left.cardinality() == right.cardinality() and all(member in other for member in left)
-        return Unknown
+        return AtomicProposition("equal", self, other)
 
-    def __ne__(self, other) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+    def __ne__(self, other) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def _repr_(self) -> str:
         return f"Subobject of {self.codomain()} defined by {self.domain()}"
@@ -2823,13 +2833,15 @@ class _ImageSet(Sets().ObjectType):
         )
         return self._image_inverse
 
-    def is_injective_image(self) -> bool | UnknownClass:
+    def is_injective_image(self) -> bool | Predicate:
         r"""Whether \(f\) is injective on \(A\).
 
         ``True`` when an inverse on the image was selected; decided by
-        counting the distinct values over a finite source; ``Unknown``
-        otherwise.
+        counting the distinct values over a finite source; otherwise the
+        proposition that \(f\) is injective on \(A\).
         """
+        from dzack_research.preamble.logic import AtomicProposition
+
         match self.source_set():
             case _ if self._image_inverse is not None:
                 return True
@@ -2838,20 +2850,21 @@ class _ImageSet(Sets().ObjectType):
                     source.cardinality()
                 )
             case _:
-                return Unknown
+                return AtomicProposition("is_injective_image", self)
 
-    def _cardinality_decision(self) -> Cardinalities.ObjectType | UnknownClass:
+    def _cardinality_decision(self) -> Cardinalities.ObjectType | None:
         r"""The cardinality of \(f(A)\).
 
         An inverse on the image makes \(f\) a bijection \(A\to f(A)\), so
         \(|f(A)| = |A|\); without one, the image of a finite set is a finite
-        set, counted through its points by the set level.
+        set, counted through its points by the set level, and this hook
+        supplies nothing.
         """
         match self.source_set():
             case source if self._image_inverse is not None:
                 return cardinal(source.cardinality())
             case _:
-                return Unknown
+                return None
 
     @cached_method
     def _distinct_values(self):
@@ -3014,14 +3027,16 @@ class CartesianProductsOfSets(OwnedCategory):
                 return f"Section of {self.parent()}"
             return "(" + ", ".join(repr(self.component(index)) for index in self.parent().index_set()) + ")"
 
-        def __eq__(self, other) -> bool | UnknownClass:
+        def __eq__(self, other) -> bool | Predicate:
+            from dzack_research.preamble.logic import AtomicProposition, conjunction
+
             if self is other:
                 return True
-            if not isinstance(other, Element) or other.parent() is not self.parent():
+            if element_parent(other) is not self.parent():
                 return False
             if not self.parent().has_finite_index_set():
-                return True if self._components is other._components else Unknown
-            answer = True
+                return True if self._components is other._components else AtomicProposition("equal", self, other)
+            undecided = []
             finite_enumerated = self.parent() in FiniteEnumeratedCartesianProductsOfSets()
             for index in self.parent().index_set():
                 left = self.component(index)
@@ -3038,12 +3053,13 @@ class CartesianProductsOfSets(OwnedCategory):
                     if factor_ranking(left) != factor_ranking(right):
                         return False
                     continue
-                answer = Unknown
-            return answer
+                undecided.append(equal)
+            return conjunction(undecided)
 
-        def __ne__(self, other) -> bool | UnknownClass:
-            equal = self == other
-            return Unknown if equal is Unknown else not equal
+        def __ne__(self, other) -> bool | Predicate:
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
 
         def __hash__(self) -> int:
             if not self.parent().has_finite_index_set():
@@ -3925,8 +3941,9 @@ class WellOrderedSetMorphism:
         return self.underlying_set_morphism() == other.underlying_set_morphism()
 
     def __ne__(self, other):
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     __hash__ = None
 
