@@ -1622,12 +1622,17 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Synonym for :meth:`orthogonal_complement`."""
             return self.orthogonal_complement(sublattice)
 
-        def _root_subobject_on(self, module_generating_set, root_system_type_name):
-            r"""Return the selected root sublattice with its root-system label at construction."""
-            basis = _span_basis_elements(self, module_generating_set)
+        def _root_subobject_on(self, simple_roots, root_system_type_name):
+            r"""Return the root sublattice framed by its simple roots, with its root-system label.
+
+            A simple system is a basis of the root lattice it spans (Humphreys,
+            *Introduction to Lie Algebras and Representation Theory*, §10.1), so
+            the simple roots frame the sublattice and its
+            :meth:`simple_roots` returns them.
+            """
             return _lattice_subobject_spanning(
                 self,
-                basis,
+                tuple(simple_roots),
                 root_system_type_name=root_system_type_name,
             )
 
