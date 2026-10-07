@@ -252,6 +252,74 @@ Magma's documented real-reflection/reflection-subgroup APIs were inspected.
 No exact backend was found for either missing construction. Repair requires
 the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
+### Complex realization acts only on objects, and analytification exists only on affine spaces
+
+For a field `k` of characteristic 0 and an embedding `sigma: k -> CC`, the
+complex realization `X -> X(CC)_sigma` is a functor from schemes of finite type
+over `k` to topological spaces, and the comparison theorem (Freitag-Kiehl
+[FK88] Ch. I Thm 11.6) identifies the l-adic Betti numbers of `X_{kbar}` with
+the Betti numbers of `X(CC)_sigma`. `Schemes(k).FiniteType.complex_realization`
+(`categories/schemes/schemes.py`) acts on objects only: no morphism `f: X -> Y`
+has an image `f(CC)`, so no induced map `H^k(Y(CC); ZZ) -> H^k(X(CC); ZZ)`
+exists. Analytification exists only as `AffineSpaces(k).analytification`
+(`schemes.py`, `analytic_families.py`), on affine spaces and polynomial maps.
+The realization computes integral cohomology for projective space, smooth
+complete toric varieties and smooth projective complete intersections only, and
+the embedding `sigma` is constructed only for `k = QQ`.
+
+**Dependency path:** analytification of a scheme of finite type -> its action on
+morphisms -> complex realization as a functor -> induced maps on singular
+cohomology; separately, the embeddings of a number field into `CC`.
+**Consumers:** `Schemes(k).FiniteType.betti_number` and `euler_characteristic`
+on schemes that are neither toric nor complete intersections, including the
+branched double covers of `P^1 x P^1` in
+`tests/schemes/test_horikawa_k3_family.sage` and
+`tests/schemes/test_horikawa_enriques_family.sage` (`chi = 24`); every
+pullback on cohomology.
+**Coverage boundary:** the realization owner in `geometric_cohomology.py`, the
+analytification owner in `analytic_families.py` and the scheme categories in
+`schemes.py` were inspected. Repair is the `complex-realization-is-a-functor`
+node in [TODO.md](TODO.md).
+
+### The Hodge structure of a smooth complete intersection is present only for the quartic surface
+
+A smooth complete intersection `X` of multidegree `(d_1, ..., d_r)` in `P^n`
+over a field of characteristic 0 has Hodge numbers determined by `n` and the
+`d_i`; outside the middle degree they are those of projective space. The tree's
+`ProjectiveCompleteIntersections(k).hodge_structure()`
+(`categories/schemes/complete_intersections.py`) builds `_QuarticK3HodgeData`
+only, so every other multidegree has no Hodge numbers.
+
+**Dependency path:** smooth projective complete intersection -> Lefschetz
+hyperplane theorem outside the middle degree -> generating function of the
+middle-degree Hodge numbers -> `hodge_number(p, q)`.
+**Consumers:** `Schemes(k).Proper().Smooth().hodge_number` on complete
+intersections; the `hodge_poincare` series stored on lattice-database
+geometric cards.
+**Coverage boundary:** the Zotero library was searched for a source stating the
+general formula. The item labelled SGA 7 II (`CMV4MC6A`, LNM 340) holds an
+extraction of SGA 7 I; the item labelled SGA 4 volume 305 (`ZXUPYTKS`) holds
+tome 1, Exposés I to IV; SGA 4½ (`HRUVM374`) holds a table of contents only;
+Hirzebruch, *Topological Methods in Algebraic Geometry*, is absent. Dimca
+[Dim92] (B34) states the Steenbrink formula for quasismooth weighted
+hypersurfaces only. Repair is the `complete-intersection-hodge-sources` and
+`complete-intersection-hodge-structure` nodes in [TODO.md](TODO.md).
+
+### Geometric lattice-database cards store no Betti numbers
+
+Of the 37 cards in `lattice-database/geometric-objects/`, only
+`k3-surface.md` stores `betti_numbers`. The others store a Hodge series, a
+linked cohomology lattice or neither, so no card-level Betti number or Euler
+characteristic exists to compare with `Schemes(k).FiniteType.betti_number`.
+
+**Dependency path:** a cited source or a constructed preamble object ->
+`b_k` and `chi` on the card.
+**Consumers:** the lattice-database geometric-object pages and every
+comparison of a card with the preamble's realization.
+**Coverage boundary:** the frontmatter of every card under
+`lattice-database/geometric-objects/` was read. Repair is the
+`geometric-cards-store-betti-numbers` node in [TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
