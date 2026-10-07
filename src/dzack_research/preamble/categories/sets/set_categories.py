@@ -788,12 +788,17 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             is what `CON-14` requires. A two-factor call may pass a two-element
             family, whose canonical labels are then `Sets.Δ[1]`.
 
-            Two constructions of the same product are the same object.  Without
-            that, an element of one never equals an element of the other and the
-            product is unusable as a codomain -- a caller could not compare what an
-            operation returned against a value it built.  A family's value map is a
-            callable and cannot key a cache, so a finite index set is resolved to
-            its factors, which can.
+            Equal families have one product (`SET-05`).  Without that, an element
+            of one never equals an element of the other and the product is
+            unusable as a codomain -- a caller could not compare what an operation
+            returned against a value it built.  A family's value map is a callable
+            and cannot key a cache, so a finite index set is resolved to its
+            factors, which compare by their own equality.
+
+            Asking for the product constructs the object only: it stores the
+            family and fixes the category (`OWN-22`).  The discrete diagram and
+            the universal cone are built when ``product_construction`` asks for
+            them.
 
             A bare sequence of factors is the family on the canonical labels, so
             the caller may hand over either.
@@ -805,11 +810,24 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             family = _factor_family(family, name="Product factors")
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
-                return self._categorical_product_construction(family).object()
+                return self._finite_product(family)
             return CartesianProductsOfSets()(family)
 
         def _categorical_product(self, left, right):
-            return self._categorical_product_construction((left, right)).object()
+            return self._finite_product((left, right))
+
+        def _finite_product(self, factors):
+            r"""Return the product of a finite family of sets, without its universal cone."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Product factors")
+            if any(factor not in self for factor in family):
+                raise TypeError(
+                    f"a product of sets needs every factor to be a set, but the factors are {family}"
+                )
+            return _cartesian_product_of_finite_family(family)
 
         def _categorical_product_construction(self, factors):
             from dzack_research.preamble.categories.abstract_categories.products import (
@@ -819,11 +837,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             family = _finite_factor_family(factors, name="Product factors")
-            if any(factor not in self for factor in family):
-                raise TypeError(
-                    f"a product of sets needs every factor to be a set, but the factors are {family}"
-                )
-            product = _cartesian_product_of_finite_family(family)
+            product = self._finite_product(family)
             diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
@@ -1035,9 +1049,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             by an index.  Both are coproducts and only one is the coproduct
             over $I$ (`CON-14`).
 
-            Two constructions of the same coproduct are the same object, for
-            the reason :meth:`product` gives -- an element of one would
-            otherwise never equal an element of the other.
+            Equal families have one coproduct, for the reason :meth:`product`
+            gives -- an element of one would otherwise never equal an element
+            of the other.  Asking for the coproduct constructs the object only;
+            the universal cocone is built when ``coproduct_construction`` asks
+            for it.
 
             A bare sequence of factors is the family on the canonical labels,
             so the caller may hand over either.
@@ -1049,11 +1065,24 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             family = _factor_family(family, name="Coproduct factors")
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
-                return self._categorical_coproduct_construction(family).object()
+                return self._finite_coproduct(family)
             return CoproductsOfSets()(family)
 
         def _categorical_coproduct(self, left, right):
-            return self._categorical_coproduct_construction((left, right)).object()
+            return self._finite_coproduct((left, right))
+
+        def _finite_coproduct(self, factors):
+            r"""Return the coproduct of a finite family of sets, without its universal cocone."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Coproduct factors")
+            if any(factor not in self for factor in family):
+                raise TypeError(
+                    f"a coproduct of sets needs every factor to be a set, but the factors are {family}"
+                )
+            return _coproduct_of_finite_family(family)
 
         def _categorical_coproduct_construction(self, factors):
             from dzack_research.preamble.categories.abstract_categories.products import (
@@ -1063,11 +1092,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             family = _finite_factor_family(factors, name="Coproduct factors")
-            if any(factor not in self for factor in family):
-                raise TypeError(
-                    f"a coproduct of sets needs every factor to be a set, but the factors are {family}"
-                )
-            coproduct = _coproduct_of_finite_family(family)
+            coproduct = self._finite_coproduct(family)
             diagram = _discrete_diagram(family, self)
             universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
@@ -3523,14 +3548,17 @@ def _finite_words(alphabet, *, commutative):
     )
 
 
-def _finite_family_key(family: IndexedFamily) -> tuple[int, tuple[int, ...]]:
-    r"""Intern a finite construction by its exact index set and factor objects.
+def _finite_family_key(family: IndexedFamily) -> tuple[Parent, tuple[Parent, ...]]:
+    r"""Intern a finite construction by its index set and its factors, up to equality.
 
-    Resolving a finite family is legitimate here; its labels are retained by
-    the family rather than replaced by positions.  The resulting parent keeps
-    the family and its factors alive, so identity keys cannot be recycled.
+    Equal families of sets have one product and one coproduct (`SET-05`), so
+    the key is the index set with the factors in its enumeration, which hash
+    and compare by the objects' own equality.  Equal is not isomorphic: two
+    finite sets of one cardinality with different points stay different
+    factors (`CON-14`).  Resolving a finite family is legitimate here; its
+    labels are retained by the family rather than replaced by positions.
     """
-    return id(family.index_set()), tuple(id(value) for value in family)
+    return family.index_set(), tuple(family)
 
 
 @cached_function(key=_finite_family_key)
