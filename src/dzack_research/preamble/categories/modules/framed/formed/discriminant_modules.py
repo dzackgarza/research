@@ -25,8 +25,6 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    Zmod,
-    _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -664,40 +662,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         def O(self):  # noqa: E743 - standard mathematical notation O(A,q)
             return self.automorphism_group()
-
-        @cached_method
-        def brown_invariant(self):
-            r"""Return the Brown invariant in ``ZZ/8ZZ`` from the exact Gauss sum.
-
-            With the present convention ``q:A -> QQ/2ZZ``, the normalized
-            Gauss sum is
-
-            ``|A|^(-1/2) * sum_x exp(pi*i*q(x)) = exp(pi*i*Br(q)/4)``.
-
-            Discriminant forms are nondegenerate, so the left side is an
-            eighth root of unity.  The computation takes place in ``QQbar``;
-            equality there is exact algebraic-number equality, not a floating
-            phase comparison.
-            """
-            from sage.rings.qqbar import QQbar
-
-            total = QQbar.zero()
-            for element in self.elements():
-                lifted = self.quadratic_value_module().lift(self.q(element))
-                value = _engine_element(lifted.parent(), lifted)
-                denominator = value.denominator()
-                numerator = value.numerator()
-                total += QQbar.zeta(2 * denominator) ** numerator
-            scale = QQbar(int(self.cardinality())).sqrt()
-            zeta8 = QQbar.zeta(8)
-            residues = Zmod(8)
-            for residue in range(8):
-                if total == scale * zeta8**residue:
-                    return residues(residue)
-            raise ArithmeticError(
-                f"the Brown invariant of {self} is undefined: its normalized Gauss sum {total / scale} "
-                "is not an eighth root of unity, so the form is degenerate"
-            )
 
     class ElementMethods:
         def additive_order(self):

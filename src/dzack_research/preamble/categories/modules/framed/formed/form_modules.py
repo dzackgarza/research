@@ -84,6 +84,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    Zmod,
+    _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -2381,6 +2383,37 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
                 def O(self):  # noqa: E743 - standard mathematical notation O(A,q)
                     return self.automorphism_group()
+
+                @cached_method
+                def brown_invariant(self):
+                    r"""Return the Brown invariant ``Br(q)`` in ``ZZ/8ZZ`` from the Gauss sum.
+
+                    For a nondegenerate torsion quadratic form ``q: A -> QQ/2ZZ``
+                    the normalized Gauss sum is an eighth root of unity, and
+
+                    ``|A|^(-1/2) * sum_x exp(pi*i*q(x)) = exp(pi*i*Br(q)/4)``.
+
+                    By Milgram's formula, ``Br(q_L)`` is the signature of an even
+                    lattice ``L`` mod ``8``.  The sum is computed in ``QQbar``, so
+                    the comparison with each eighth root of unity is exact
+                    algebraic-number equality.
+                    """
+                    from sage.rings.qqbar import QQbar
+
+                    assert self.is_nondegenerate(), (
+                        f"the Brown invariant is defined by the Gauss sum of a nondegenerate torsion "
+                        f"quadratic form, but the bilinear form of {self} has a nonzero radical "
+                        f"{self.left_radical()}"
+                    )
+                    values = self.value_module()
+                    total = QQbar.zero()
+                    for element in self.elements():
+                        lifted = values.lift(self.q(element))
+                        value = _engine_element(lifted.parent(), lifted)
+                        total += QQbar.zeta(2 * value.denominator()) ** value.numerator()
+                    phase = total / QQbar(int(self.cardinality())).sqrt()
+                    zeta8 = QQbar.zeta(8)
+                    return Zmod(8)(next(residue for residue in range(8) if phase == zeta8**residue))
 
                 def b(self, left, right):
                     r"""The bilinear form ``b: A x A -> K/R`` of ``q: A -> K/2R``.
