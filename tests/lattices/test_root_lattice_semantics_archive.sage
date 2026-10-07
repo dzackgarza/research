@@ -22,8 +22,7 @@ def test_archived_a2_selected_simple_system_and_highest_root_are_live() -> None:
     assert diagram.is_elliptic()
     assert diagram.coxeter_entry(diagram.vertex(0), diagram.vertex(1)) == 3
     assert lattice.label() == "A2"
-    assert lattice.cartan_type().label() == "A2"
-    assert lattice.cartan_type().module_rank() == 2
+    assert diagram.cardinality() == cardinal(2)
     assert lattice.coxeter_number() == 3
     assert highest == first + second
     assert highest.is_root()

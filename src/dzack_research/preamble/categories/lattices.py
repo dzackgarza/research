@@ -5120,14 +5120,6 @@ class RootLattices(OwnedCategory):
             r"""Return the private engine Cartan type named by :meth:`label`."""
             return CartanType(self.label())
 
-        def cartan_type(self):
-            r"""Return the reference root lattice of the type of this root lattice.
-
-            It is ``Lattices(ZZ)(label)``: the root lattice whose framing is the
-            simple roots of the type named by :meth:`label`.
-            """
-            return Lattices(_own_ring(SageZZ))(self.label())
-
         def dynkin_diagram(self):
             r"""Return the rooted Coxeter diagram of the simple roots.
 
