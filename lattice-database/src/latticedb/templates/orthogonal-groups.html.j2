@@ -1,0 +1,57 @@
+{% extends "base.html.j2" %}
+{% block title %}Lie groups · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <p class="kicker">Groups</p>
+  <h1>Lie groups</h1>
+  <p class="lede">
+    First-class Lie-group records used by the lattice catalogue. For a nondegenerate
+    lattice (L) of signature ((p,q)), base change gives
+    (O(L) \hookrightarrow O(L_{\mathbb R})), and
+    (O(L_{\mathbb R}) \cong O(p,q)).
+  </p>
+</header>
+
+<section aria-labelledby="groups">
+  <h2 id="groups">Recorded Lie groups</h2>
+  <div class="table-scroll">
+    <table class="member-table">
+      <thead><tr><th>Group</th><th>Field</th><th class="numeric">Dimension</th><th class="numeric">Real rank</th></tr></thead>
+      <tbody>
+        {% for group in groups %}
+        <tr>
+          <td><a href="{{ root }}lie-group/{{ group.slug }}.html">\({{ group.latex }}\)</a></td>
+          <td>{{ group.base_field }}</td>
+          <td class="numeric">{{ group.dimension }}</td>
+          <td class="numeric">{% if group.real_rank is not none %}{{ group.real_rank }}{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="orthogonal-grid">
+  <h2 id="orthogonal-grid">Real orthogonal groups (O(p,q))</h2>
+  <p class="form-note">The upper triangle uses the canonical representative (0\leq p\leq q). A linked cell has a Lie-group card; the number in parentheses is the number of lattice cards whose real orthogonal group has that type.</p>
+  <div class="table-scroll">
+    <table class="member-table orthogonal-table">
+      <thead>
+        <tr><th scope="col" class="orthogonal-corner">\(p \backslash q\)</th>{% for q in columns %}<th scope="col" class="numeric">{{ q }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for p, cells in rows %}
+        <tr>
+          <th scope="row" class="numeric">{{ p }}</th>
+          {% for q, group, count in cells %}
+          {% if count is none %}<td class="orthogonal-cell orthogonal-blank"></td>
+          {% elif group %}<td class="orthogonal-cell"><a class="orthogonal-count" href="{{ root }}lie-group/{{ group.slug }}.html" title="{{ group.name }}">{{ count }}</a></td>
+          {% else %}<td class="orthogonal-cell"><span class="orthogonal-empty">&middot;</span></td>{% endif %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

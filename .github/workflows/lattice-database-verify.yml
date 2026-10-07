@@ -1,0 +1,61 @@
+name: lattice-database-verify
+'on':
+  schedule:
+  - cron: 17 3 * * *
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: lattice-database-verify
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    container:
+      image: sagemath/sagemath:latest
+      options: --user root
+    defaults:
+      run:
+        working-directory: lattice-database
+        shell: bash
+    steps:
+    - name: Check out (actions/checkout v4)
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+    - name: Install uv (astral-sh/setup-uv v10.2.0)
+      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
+    - name: Locate SageMath
+      run: 'sage_bin=$(command -v sage)
+
+        echo "SAGE_BIN=$sage_bin" >> "$GITHUB_ENV"
+
+        '
+    - name: Install lattice database into SageMath
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        uv pip install --python "$sage_python" -e . pytest
+    - name: Verify lattice cards and certificate hashes
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src:src" "$sage_python" -m latticedb verify
+    - name: Validate preamble owner contracts
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src" "$sage_python" -c 'import sage.all, sys, pytest; sys.exit(pytest.main(sys.argv[1:]))' \
+          ../tests/lattices/test_lattice_database_owner_contracts.py \
+          ../tests/lattices/test_coordinate_diagonal_embeddings.py
+    - name: Validate lattice database integration
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src:src" "$sage_python" -m pytest \
+          tests/test_catalogue_schemas.py \
+          tests/test_corpus.py \
+          tests/test_genus.py \
+          tests/test_geometric.py \
+          tests/test_hashimoto.py \
+          tests/test_records.py \
+          tests/validation
+    - name: Check source intake provenance
+      run: |
+        sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+        PYTHONPATH="../src:src" "$sage_python" -m pytest tests/test_bulk_sources.py tests/source_intake

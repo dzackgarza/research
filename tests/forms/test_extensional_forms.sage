@@ -29,6 +29,13 @@ def test_a_bilinear_form_is_determined_by_its_values_on_basis_pairs() -> None:
     assert form(first + second, first + second) == QQ(9) / 2
     assert form.norm(first + second) == QQ(9) / 2
 
+    indefinite = module.equip_bilinear_form(QQ, [[QQ(1) / 2, 0], [0, -2]])
+    positive = module.equip_bilinear_form(QQ, [[QQ(1) / 2, 0], [0, 3]])
+    assert indefinite.signature_pair() == (1, 1)
+    assert indefinite.determinant() == -1
+    assert positive.signature_pair() == (2, 0)
+    assert positive.scale_submodule() == ZZ.fractional_ideal(QQ(1) / 2)
+
 
 def test_extensional_equality_of_bilinear_forms() -> None:
     module = ZZ.free_module(2)

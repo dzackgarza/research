@@ -1,0 +1,21 @@
+---
+tag: 2YFS
+name: brandt_intrau Brandt_2.html:9866
+latex: brandt_intrau Brandt_2.html:9866
+aliases: []
+rank: 3
+gram_tensor:
+- [6, 2, 1]
+- [2, 10, -2]
+- [1, -2, 20]
+signature: [3, 0]
+determinant: 1078
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:9866.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+---
+
+Source entry `brandt_intrau:Brandt_2.html:9866` gives this Gram tensor.

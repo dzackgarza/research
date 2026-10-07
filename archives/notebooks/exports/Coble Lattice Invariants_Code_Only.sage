@@ -80,30 +80,20 @@ old_lattice_repr
 from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric, FreeQuadraticModule_submodule_with_basis_pid    
 from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-common_files = "/home/dzack/Dropbox/Projects/polyhedral_common/CI_tests/common.g"
+from sage_indefinite_port.indefinite import recursive
 
-def getOrbitRepresentatives(L, Xnorm, debug=False):
-    eProg = "INDEF_FORM_GetOrbitRepresentative"
-    eGram =  L.gram_matrix() #U_2.gram_matrix()
-    gap.eval(f'eProg:="{eProg}"')
-    gap.eval(f'Read("{common_files}");')
-    FileM = gap.eval('FileM:=Filename(DirectoryTemporary(), "Mat.in");')
-    gap.eval('FileOut:=Filename(DirectoryTemporary(), "Test.out");');
-    gap.function_call('WriteMatrixFile', [FileM, eGram] )
-    if debug: print(gap('FileM'))
-    if debug: print(gap('FileOut'))
-    gap.eval(f'TheCommand:=Concatenation(eProg, " gmp ", FileM, " ", String({Xnorm}), " GAP ", FileOut)')
-    if debug: print(gap('TheCommand'))
-    gap.eval('Exec(TheCommand)')
-    gap_orbs = gap('ReadAsFunction(FileOut)();')
-    orbs = [ vector(ZZ, list(x)) for x in list(gap_orbs)]
+def getOrbitRepresentatives(L, Xnorm):
+    eGram = L.gram_matrix()
+    rows = recursive.vector_orbit_representatives(eGram, Xnorm
+    )
+    orbs = [ vector(ZZ, list(x)) for x in rows]
     isotrops = [ (v, L.q(v)) for v in orbs]
     return isotrops
 
 setattr(
     sage.modules.free_quadratic_module_integer_symmetric.FreeQuadraticModule_integer_symmetric,
     "getOrbitRepresentatives",
-    lambda self, Xnorm: getOrbitRepresentatives(self, Xnorm, debug=False)
+    lambda self, Xnorm: getOrbitRepresentatives(self, Xnorm)
 )
 
 def vinberg_algorithm(self):

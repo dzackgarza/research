@@ -6,9 +6,9 @@ machine reaches as ~/.pandoc and CI clones to $HOME/.pandoc. They are not copied
 this repo, so the book has to collect them at build time the same way it collects the
 bibliography and the MathJax macros.
 
-Every chapter is symlinked flat into writing/.book, so pandoc runs with its working
-directory there for all of them and one `rendered/` beside the project file serves the
-whole book. A page writes `![...](rendered/fig_x.svg)` and means that directory.
+A page writes `![...](/rendered/fig_x.svg)`. The leading slash makes the path relative
+to the project root, so one `rendered/` beside the project file serves every chapter,
+whatever directory the chapter sits in.
 
 Only the referenced files are staged: the source tree is 52 MB of figures and PDFs for
 every document on this machine, and the site should carry the thirty-odd this book
@@ -31,7 +31,7 @@ wanted = set()
 for md in PROSE.rglob("*.md"):
     if "_site" in md.parts:
         continue
-    wanted |= set(re.findall(r"\]\(rendered/([^)\s]+)", md.read_text(encoding="utf-8", errors="replace")))
+    wanted |= set(re.findall(r"\]\(/rendered/([^)\s]+)", md.read_text(encoding="utf-8", errors="replace")))
 
 missing = sorted(n for n in wanted if not (SOURCE / n).is_file())
 if missing:

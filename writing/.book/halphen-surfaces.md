@@ -1,1 +1,0 @@
-coble/degenerations/halphen-surfaces.md

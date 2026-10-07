@@ -1,0 +1,1042 @@
+@font-face {
+  font-family: "ETBook";
+  src: url("fonts/et-book-roman-line-figures.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ETBook";
+  src: url("fonts/et-book-bold-line-figures.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ETBook";
+  src: url("fonts/et-book-display-italic-old-style-figures.woff") format("woff");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --ink: #18212b;
+  --muted: #5c6774;
+  --line: #dce2e8;
+  --paper: #fffff8;
+  --wash: #f4f7fa;
+  --accent: #1769aa;
+  --accent-dark: #0e4c7d;
+  --alarm: #a3271c;
+  --measure: 68ch;
+  --label: 0.875rem;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family:
+    "ETBook", Charter, "Bitstream Charter", "Iowan Old Style", Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ink: #e3e9ef;
+    --muted: #9fadbb;
+    --line: #2b343d;
+    --paper: #11171d;
+    --wash: #1a222a;
+    --accent: #6fb3ee;
+    --accent-dark: #a8d1f7;
+    --alarm: #f08e82;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  background: var(--paper);
+}
+
+.hodge-diamond {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin: 1.5rem 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hodge-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.hodge-row span {
+  min-width: 2rem;
+  text-align: center;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+}
+
+a:hover {
+  color: var(--accent-dark);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 0.2rem;
+}
+
+code,
+pre,
+.tag {
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+  background: var(--wash);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  font-weight: normal;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
+}
+
+h2 {
+  margin: 3rem 0 0.9rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.45rem;
+}
+
+h3 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.15rem;
+  font-style: italic;
+}
+
+p {
+  max-width: var(--measure);
+  margin: 0.6rem 0;
+}
+
+input,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  background: var(--paper);
+}
+
+button {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.3rem;
+  background: var(--accent);
+  color: var(--paper);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent-dark);
+  background: var(--accent-dark);
+}
+
+mjx-container {
+  max-width: 100%;
+}
+
+mjx-container:not([display="true"]) {
+  display: inline-block;
+  overflow: visible;
+  vertical-align: middle;
+}
+
+mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.2rem;
+}
+
+/* Site frame */
+
+.site-header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.75rem;
+  width: min(100% - 2rem, 86rem);
+  min-height: 3.75rem;
+  margin-inline: auto;
+  padding-block: 0.5rem;
+}
+
+.site-brand {
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: bold;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.25rem;
+}
+
+.site-links a {
+  color: var(--muted);
+  font-size: 0.98rem;
+  text-decoration: none;
+}
+
+.site-links a:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+.tag-lookup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.tag-lookup label,
+.kicker,
+.search-form label,
+.pager-label {
+  color: var(--muted);
+  font-size: var(--label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tag-lookup input {
+  width: 4.5rem;
+  padding: 0.2rem 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  text-transform: uppercase;
+}
+
+.tag-lookup input::placeholder {
+  text-transform: none;
+}
+
+.tag-lookup button {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.page-layout {
+  width: min(100% - 2rem, 58rem);
+  margin: 3rem auto 6rem;
+}
+
+.page-layout.page-wide {
+  width: min(100% - 2rem, 86rem);
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.site-footer p {
+  width: min(100% - 2rem, 86rem);
+  max-width: none;
+  margin: 1.25rem auto;
+}
+
+/* Headings of pages */
+
+.page-heading {
+  margin-bottom: 2rem;
+}
+
+.kicker {
+  margin: 0 0 0.4rem;
+}
+
+.kicker .tag {
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.lede {
+  margin-top: 0.9rem;
+  font-size: 1.12rem;
+}
+
+.names {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.separator {
+  margin-inline: 0.6rem;
+  color: var(--line);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips a,
+.chip {
+  display: inline-block;
+  padding: 0.05rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--wash);
+  color: var(--ink);
+  font-size: 0.88rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.chips a:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.chips .family a {
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.85;
+}
+
+/* A value that a person declared, which the build did not compute */
+.declared {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  vertical-align: 0.1em;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+/* Tables */
+
+table {
+  border-collapse: collapse;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.facts {
+  width: 100%;
+}
+
+.facts th,
+.facts td {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.facts th {
+  width: 18rem;
+  padding-right: 1.5rem;
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.facts td {
+  overflow-wrap: anywhere;
+}
+
+.components {
+  margin: 0.75rem 0;
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.components th,
+.components td {
+  min-width: 2.2rem;
+  padding: 0.15rem 0.45rem;
+  text-align: right;
+}
+
+.components th {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.components thead th {
+  border-bottom: 1px solid var(--line);
+}
+
+.components tbody th {
+  border-right: 1px solid var(--line);
+}
+
+.components .zero {
+  color: color-mix(in srgb, var(--muted) 70%, var(--paper));
+}
+
+.copy-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.copy-block pre {
+  flex: 1;
+  min-width: 0;
+  max-height: 6.5rem;
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  background: var(--wash);
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.copy-block button {
+  min-width: 4.6rem;
+  font-size: 0.9rem;
+}
+
+.member-table,
+.field-table {
+  width: 100%;
+}
+
+.member-table th,
+.member-table td,
+.field-table th,
+.field-table td {
+  padding: 0.4rem 1rem 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.member-table thead th,
+.field-table thead th {
+  border-bottom-color: var(--muted);
+  color: var(--muted);
+  font-size: var(--label);
+  font-weight: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The capitals and the spacing of a column heading do not apply to the formula in it. */
+.member-table thead th mjx-container,
+.field-table thead th mjx-container {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.member-table td {
+  white-space: nowrap;
+}
+
+/* A table of vectors is as wide as its columns, so that a value stays next to the vector that it belongs to. */
+.member-table.vector-table {
+  width: auto;
+}
+
+.vector-table th,
+.vector-table td {
+  padding-right: 2.5rem;
+}
+
+.member-table td.member-properties {
+  min-width: 14rem;
+  white-space: normal;
+}
+
+.member-table .chip {
+  margin: 0.08rem 0;
+  padding: 0 0.45rem;
+  font-size: 0.8rem;
+}
+
+.member-table .numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.field-table tbody th {
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.field-table th:first-child {
+  width: 15rem;
+}
+
+.field-table th:nth-child(2) {
+  width: 6rem;
+}
+
+.field-table td:last-child {
+  min-width: 18rem;
+}
+
+/* Home page */
+
+.search-form {
+  margin: 2rem 0 1rem;
+  padding: 1.1rem 1.25rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--wash);
+}
+
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.search-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.rank-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rank-grid a {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  text-decoration: none;
+}
+
+.rank-grid a:hover {
+  border-color: var(--accent);
+  background: var(--wash);
+}
+
+.rank-number {
+  color: var(--ink);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.rank-count {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.collection-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collection-list li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.collection-list a {
+  font-size: 1.1rem;
+}
+
+.collection-list p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+}
+
+.count {
+  margin-left: 0.5rem;
+  padding: 0 0.45rem;
+  border-radius: 1rem;
+  background: var(--wash);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* Tag index */
+
+.rank-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 1.25rem;
+}
+
+.rank-jump a {
+  min-width: 2.1rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.rank-jump a:hover {
+  border-color: var(--accent);
+  background: var(--wash);
+}
+
+h2[id^="rank-"] {
+  scroll-margin-top: 5rem;
+}
+
+.tag-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+  gap: 0 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.tag-name {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tag-signature {
+  color: var(--muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* Lattice page */
+
+.prose {
+  max-width: var(--measure);
+}
+
+.related-list,
+.reference-list {
+  max-width: var(--measure);
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.related-list li,
+.reference-list li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+
+.related-list .tag {
+  margin-right: 0.5rem;
+}
+
+.relation {
+  display: block;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.pager a {
+  min-width: 0;
+  text-decoration: none;
+}
+
+.pager a[rel="next"] {
+  text-align: right;
+}
+
+.pager-label {
+  display: block;
+}
+
+.pager .tag {
+  margin-right: 0.3rem;
+}
+
+@media (max-width: 40rem) {
+  :root {
+    font-size: 1rem;
+  }
+
+  .page-layout {
+    margin-top: 2rem;
+  }
+
+  .tag-lookup label {
+    display: none;
+  }
+
+  .facts th {
+    width: 50%;
+    padding-right: 0.75rem;
+  }
+
+  /* A field of the schema is a block: its name, whether it is required, then its meaning. */
+  .field-table thead {
+    display: none;
+  }
+
+  .field-table tr {
+    display: block;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .field-table tbody th,
+  .field-table td {
+    display: inline-block;
+    width: auto;
+    padding: 0 0.75rem 0 0;
+    border: 0;
+  }
+
+  .field-table td:nth-child(2) {
+    color: var(--muted);
+    font-size: var(--label);
+  }
+
+  .field-table td.required::before {
+    content: "required: ";
+  }
+
+  .field-table td:nth-child(2) a::after {
+    content: " lattices";
+  }
+
+  .field-table td:last-child {
+    display: block;
+    min-width: 0;
+    padding-top: 0.2rem;
+  }
+}
+
+/* Theory blocks: Pandoc fenced divs `::: {.definition}` and the like */
+
+.definition,
+.theorem,
+.proposition,
+.example,
+.proof {
+  max-width: var(--measure);
+  margin: 1rem 0;
+}
+
+.definition,
+.theorem,
+.proposition {
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 3px solid var(--line);
+}
+
+.theorem,
+.proposition {
+  border-left-color: var(--accent);
+}
+
+.definition > p,
+.theorem > p,
+.proposition > p,
+.example > p,
+.proof > p {
+  margin: 0.4rem 0;
+}
+
+.definition > p:first-child::before,
+.theorem > p:first-child::before,
+.proposition > p:first-child::before,
+.example > p:first-child::before,
+.proof > p:first-child::before {
+  font-weight: bold;
+  font-style: normal;
+}
+
+.definition > p:first-child::before {
+  content: "Definition. ";
+}
+
+.theorem > p:first-child::before {
+  content: "Theorem. ";
+}
+
+/* attr() reads the element that generates the pseudo-element, so the named
+   label belongs to the block itself, floated beside its first paragraph. */
+.theorem[data-name] > p:first-child::before {
+  content: none;
+}
+
+.theorem[data-name]::before {
+  content: "Theorem (" attr(data-name) ").";
+  float: left;
+  margin: 0.4rem 0.3em 0 0;
+  font-weight: bold;
+}
+
+.proposition > p:first-child::before {
+  content: "Proposition. ";
+}
+
+.example > p:first-child::before {
+  content: "Example. ";
+}
+
+.proof > p:first-child::before {
+  content: "Proof. ";
+  font-style: italic;
+  font-weight: normal;
+}
+
+.proof > p:last-child::after {
+  content: " \220E";
+  float: right;
+}
+
+/* O(p, q) analysis: the signature grid */
+
+.orthogonal-table {
+  width: auto;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.orthogonal-table th,
+.orthogonal-table td {
+  padding: 0;
+  border: 1px solid var(--line);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.orthogonal-table thead th {
+  padding: 0.25rem 0.4rem;
+  font-size: 0.72rem;
+}
+
+.orthogonal-table tbody th {
+  padding: 0.25rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: normal;
+}
+
+.orthogonal-table .orthogonal-corner {
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.orthogonal-table .orthogonal-cell {
+  min-width: 2.9rem;
+  height: 1.7rem;
+}
+
+.orthogonal-table .orthogonal-cell a {
+  display: block;
+  padding: 0.15rem 0.2rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+
+.orthogonal-table .orthogonal-count {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.orthogonal-table .orthogonal-count:hover {
+  background: var(--wash);
+  color: var(--accent-dark);
+}
+
+.orthogonal-table .orthogonal-empty,
+.orthogonal-table .orthogonal-blank {
+  color: var(--line);
+}
+
+.orthogonal-table .orthogonal-blank {
+  background: repeating-linear-gradient(45deg, transparent, transparent 3px, var(--wash) 3px, var(--wash) 6px);
+}
+
+/* Hodge diamond studio */
+
+.hodge-controls {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 46rem;
+  margin-bottom: 1.5rem;
+}
+
+.hodge-controls fieldset {
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  padding: 0.6rem 0.9rem 0.8rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.hodge-controls legend {
+  padding: 0 0.4rem;
+}
+
+.hodge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.hodge-row input[type="range"] {
+  flex: 1 1 12rem;
+}
+
+#hodge-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.hodge-diamond {
+  fill: var(--wash);
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.hodge-cell.is-selected .hodge-diamond {
+  stroke: var(--accent-dark);
+  stroke-width: 3;
+}
+
+.hodge-cell.is-orbit .hodge-diamond {
+  fill: #d7e7f5;
+}
+
+.hodge-cell.is-filtration .hodge-diamond {
+  stroke-dasharray: 5 3;
+  stroke-width: 2.5;
+}
+
+.hodge-text {
+  text-anchor: middle;
+  font-size: 15px;
+  fill: var(--ink);
+  pointer-events: none;
+}
+
+.hodge-axis {
+  stroke: var(--accent-dark);
+  stroke-width: 1.5;
+  stroke-dasharray: 8 5;
+}
+
+.hodge-axis-d4 {
+  stroke-dasharray: 2 4;
+}
+
+.hodge-center {
+  fill: none;
+  stroke: var(--accent-dark);
+  stroke-width: 1.5;
+}
+
+.hodge-axis-label {
+  font-size: 12px;
+  font-style: italic;
+  fill: var(--muted);
+}

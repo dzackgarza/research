@@ -6,7 +6,8 @@ Renders the book and fails (nonzero exit) on any data-integrity defect:
   2. unresolved cross-refs    — `quarto-unresolved-ref` in the rendered HTML
                                 (the `?@` grep is a false green — Quarto renders an
                                  unresolved ref as `?sec-x`, no `@`)
-  3. broken cross-page anchor links — `[t](Page.md#anchor)` whose anchor id is absent
+  3. broken links            — `[t](#id)` whose id no page has, or a link that names
+                                a page by its path or a numbered block by its id
 
 Quarto command from $QUARTO (default `uvx --from quarto-cli quarto`).
 Run: `just docs-check`.
@@ -58,30 +59,29 @@ for name in LINKED_PARTS:
     if entry.resolve() != source.resolve():
         sys.exit(f"docs-check: {entry} links to {entry.resolve()}, not to {source}")
 
-# Every chapter reaches the project root the same way: as a link to the prose that
-# stays in its topic directory under writing/. The flat layout is what gives the
-# numbered-block filter one registry instead of one per directory, so a chapter that
-# became a copy would both drift from its source and render against a stale registry.
-CHAPTERS = re.findall(r"^\s+-\s+(?:part:\s+)?([A-Za-z0-9._-]+\.md)\s*$",
+# Every chapter is listed by its path in the topic tree, through the part link above.
+# A missing chapter fails the render with a message that names only the file, so the
+# list is checked here first.
+CHAPTERS = re.findall(r"^\s+-\s+(?:part:\s+)?([A-Za-z0-9._/-]+\.md)\s*$",
                       (BOOK / "_quarto.yml").read_text(), re.M)
 if len(CHAPTERS) < 2:
     sys.exit("docs-check: read no chapter list out of _quarto.yml")
 for name in CHAPTERS:
     entry = BOOK / name
-    if not entry.is_symlink():
-        sys.exit(f"docs-check: chapter {entry} is a copy, not a link into writing/ — "
-                 "edits to it would not reach the prose the book owns.")
     if not entry.resolve().is_file():
-        sys.exit(f"docs-check: chapter {entry} links to {entry.resolve()}, which does not exist")
+        sys.exit(f"docs-check: chapter {name} in _quarto.yml does not exist")
+    if DOCS.resolve() not in entry.resolve().parents:
+        sys.exit(f"docs-check: chapter {name} resolves to {entry.resolve()}, outside writing/")
 
 # --- clear intermediates a previous render left behind ---------------------------
-# Quarto writes each chapter's html beside the project file and then moves it into
-# _site. A render that aborts leaves one behind, and the next render fails moving a
+# Quarto writes each chapter's html beside its source and then moves it into _site.
+# A render that aborts leaves one behind, and the next render fails moving a
 # *different* chapter, so one interrupted run keeps every later run red until the
-# stray file goes. Only a file whose chapter is in the book is removed, so nothing
+# stray file goes. Only the html of a chapter in the book is removed, so nothing
 # authored can be caught by this.
-for stray in sorted(BOOK.glob("*.html")):
-    if stray.with_suffix(".md").name in CHAPTERS:
+for name in CHAPTERS:
+    stray = (BOOK / name).with_suffix(".html")
+    if stray.exists():
         stray.unlink()
         print(f"docs-check: cleared {stray}, left by an interrupted render")
 
@@ -116,7 +116,7 @@ if missing:
 for html in sorted(SITE.rglob("*.html")):
     hits = html.read_text(encoding="utf-8", errors="replace").count("quarto-unresolved-ref")
     if hits:
-        refs = sorted(set(re.findall(r'quarto-unresolved-ref[^>]*>\?([\w-]+)',
+        refs = sorted(set(re.findall(r'quarto-unresolved-ref[^>]*>\?([\w:-]+)',
                                      html.read_text(encoding="utf-8", errors="replace"))))
         failures.append(f"{html.name}: {hits} unresolved cross-ref(s): {', '.join(refs)}")
 
@@ -134,14 +134,31 @@ if not SITE_MD:
     sys.exit("docs-check: no rendered markdown found — the source scan and _site "
              "disagree, so checks 3 and 4 below would pass without reading anything")
 
-# 3. broken cross-page anchor links
-ids = {h.stem: set(re.findall(r'id="([^"]+)"', h.read_text(encoding="utf-8", errors="replace")))
-       for h in SITE.rglob("*.html")}
+# The theorem-family prefixes: the keys amsthm-refs hands to the numbered-block filter.
+AMSTHM_REFS = BOOK / "_extensions/local/amsthm-refs/amsthm-refs.lua"
+lua_table = re.search(r"local ref_prefixes = \{(.*?)\}", AMSTHM_REFS.read_text(), re.S)
+if lua_table is None:
+    sys.exit(f"docs-check: read no ref_prefixes table out of {AMSTHM_REFS}")
+THEOREM_PREFIXES = re.findall(r'(\w+)"?\]?\s*=\s*true', lua_table.group(1))
+
+# 3. broken links. A link names its target by id, `[t](#sec-x)`, and Quarto finds the
+# page that holds the id, so a chapter can move without breaking a link to it. A link
+# by path, `[t](../dir/Page.md)`, breaks when either end moves, so it is refused.
+# Quarto finds the page only for a heading id; a link to a numbered block (`#thm:x`)
+# stays an in-page anchor and is dead from any other chapter, so it is refused too.
+ids = {i for h in SITE.rglob("*.html")
+       for i in re.findall(r'id="([^"]+)"', h.read_text(encoding="utf-8", errors="replace"))}
 for md in SITE_MD:
-    for m in re.finditer(r'\]\(([^)\s]+?)\.(?:md|html)#([^)]+)\)', md.read_text(encoding="utf-8", errors="replace")):
-        page, anchor = m.group(1).split("/")[-1], m.group(2)   # basename stem (subfolder-relative links)
-        if page in ids and anchor not in ids[page]:
-            failures.append(f"{md.name}: broken anchor link -> {page}#{anchor}")
+    for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        for m in re.finditer(r"\]\(#([^)\s]+)\)", line):
+            if m.group(1).split(":")[0] in THEOREM_PREFIXES and ":" in m.group(1):
+                failures.append(f"{md.name}:{i}: link to the block #{m.group(1)} — "
+                                f"write `text (@{m.group(1)})`")
+            elif m.group(1) not in ids:
+                failures.append(f"{md.name}:{i}: link to #{m.group(1)}, which no page has")
+        for m in re.finditer(r"\]\(((?![a-z]+:)[^)\s#]+\.md)(#[^)\s]*)?\)", line):
+            failures.append(f"{md.name}:{i}: link to the path {m.group(1)} — link to the "
+                            "id of the heading instead, `[text](#sec-x)`")
 
 # 4. no manual numbers in section headings — sections auto-number (Quarto book)
 for md in SITE_MD:
@@ -168,17 +185,25 @@ for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", REFS_WEB.read_text(encoding="
     elif "ncatlab.org" not in body:
         failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
 
-# 7. cross-reference commands the book does not implement — checked in the source,
-# because the rendered page shows nothing at all. New numbered references use @id;
-# `\cref{x}` is unsupported, and pandoc drops the raw LaTeX inline rather than printing it,
-# so the reference silently disappears from the
-# sentence. Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref
-# marker, and a dropped \cref never became a Quarto crossref.
-for md in SITE_MD:
-    for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-        for m in re.finditer(r"\\[cC]ref\{([^}]*)\}", line):
-            failures.append(f"{md.name}:{i}: {m.group(0)} renders as nothing — "
-                            f"write @{m.group(1)} for a numbered target")
+# 7. theorem-family references — checked in the source, because the rendered page
+# shows nothing at all. The book writes them as the pandoc papers do: `@thm:key` and
+# `[-@thm:key]`, which the amsthm-refs filter hands to custom-numbered-blocks. cnb
+# drops a reference whose id it never registered, and pandoc drops raw LaTeX such as
+# `\cref{x}` in HTML, so either defect silently deletes words from the sentence.
+# Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref marker.
+sources = {md: md.read_text(encoding="utf-8", errors="replace") for md in SITE_MD}
+defined = {m.group(1) for text in sources.values()
+           for m in re.finditer(r"^:{3,}\s*\{[^}\n]*#([\w:.-]+)", text, re.M)}
+THEOREM_REF = re.compile(r"(?<![\w@])@((?:" + "|".join(THEOREM_PREFIXES) + r"):[\w:.-]*[\w-])")
+for md, text in sources.items():
+    for i, line in enumerate(text.splitlines(), 1):
+        for m in THEOREM_REF.finditer(line):
+            if m.group(1) not in defined:
+                failures.append(f"{md.name}:{i}: @{m.group(1)} names no block in the book — "
+                                "the reference renders as nothing")
+        for m in re.finditer(r"\\(?:[cC]ref|longref|ref)\{([^}]*)\}", line):
+            failures.append(f"{md.name}:{i}: {m.group(0)} is raw LaTeX — "
+                            f"write @{m.group(1)} or [-@{m.group(1)}]")
 
 # 8. external links must resolve — a cited resource that 404s can't be verified to exist
 import urllib.request

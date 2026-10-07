@@ -1,0 +1,137 @@
+/* DataTables, in the colours and the type of the site. */
+
+:root {
+  --dt-row-selected: 23, 105, 170;
+  --dt-row-hover: 23, 105, 170;
+}
+
+.dt-container {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.dt-container .dt-layout-row {
+  margin: 0.6rem 0;
+}
+
+.dt-container input,
+.dt-container select,
+.dt-container button,
+.dt-container .dt-button {
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
+.dt-container .dt-layout-table > .dt-layout-cell {
+  overflow-x: auto;
+}
+
+table.dataTable thead th {
+  border-bottom-color: var(--muted);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: normal;
+  line-height: 1.25;
+  vertical-align: bottom;
+}
+
+table.dataTable td.labels-cell {
+  min-width: 13rem;
+}
+
+table.dataTable tbody td {
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+}
+
+table.dataTable td.tag-cell,
+table.dataTable td.nowrap-cell {
+  white-space: nowrap;
+}
+
+table.dataTable .lattice-link {
+  text-decoration: none;
+}
+
+table.dataTable .chip {
+  display: inline-block;
+  margin: 0.08rem 0;
+  padding: 0 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--wash);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Filter panes */
+
+div.dtsp-panesContainer {
+  width: 100%;
+  font-family: inherit;
+}
+
+div.dtsp-panesContainer div.dtsp-searchPanes div.dtsp-searchPane {
+  margin-top: 0.4rem !important;
+}
+
+div.dtsp-panesContainer div.dtsp-title {
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+div.dtsp-panesContainer button {
+  color: var(--ink);
+  font-weight: normal;
+}
+
+div.dtsp-panesContainer button:hover {
+  background: transparent;
+  color: var(--accent);
+}
+
+div.dtsp-panesContainer button.dtsp-disabledButton,
+div.dtsp-panesContainer button.dtsp-disabledButton:hover {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+div.dtsp-searchPane button.dtsp-paneButton {
+  font-family: system-ui, sans-serif;
+}
+
+div.dtsp-topRow button.dtsp-collapseButton span.dtsp-caret {
+  top: 4px;
+}
+
+div.dtsp-searchPane div.dt-container {
+  margin-top: 0;
+  font-size: 0.9rem;
+}
+
+div.dtsp-searchPane table.dataTable tbody td {
+  border-top: 0;
+}
+
+@media screen and (min-width: 641px) and (max-width: 64rem) {
+  div.dtsp-searchPanes div.dtsp-columns-4 {
+    min-width: 49% !important;
+    max-width: 49% !important;
+  }
+}
+
+/* Condition builder */
+
+div.dtsb-searchBuilder {
+  font-family: inherit;
+}
+
+div.dtsb-searchBuilder div.dtsb-titleRow div.dtsb-title {
+  padding-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

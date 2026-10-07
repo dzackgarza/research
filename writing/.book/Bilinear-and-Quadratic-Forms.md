@@ -1,1 +1,0 @@
-category-theory/framework/Bilinear-and-Quadratic-Forms.md

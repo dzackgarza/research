@@ -1,1 +1,0 @@
-coble/adjacent-programs/nodal-enriques-moduli-program.md

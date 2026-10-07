@@ -1,1 +1,0 @@
-coble/computations/root-vectors-and-folded-sterk-diagrams.md

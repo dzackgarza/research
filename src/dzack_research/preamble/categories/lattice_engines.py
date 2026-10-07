@@ -1,12 +1,5 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
-import shutil
-from functools import partial
-from importlib import import_module
-from importlib.util import find_spec
-from pathlib import Path
-
-from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -17,23 +10,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_component_matrix,
     tensor,
-)
-from py_polyhedral.binaries import (
-    binary_available,
-    indefinite_form_automorphism_group,
-    indefinite_form_get_orbit_representative,
-    indefinite_form_isotropic_k_stuff,
-    indefinite_form_stabilizer_isotropic_subspace,
-    indefinite_form_stabilizer_vector,
-    indefinite_form_test_equivalence,
-    indefinite_form_test_equivalence_isotropic_k_plane,
-    indefinite_form_test_equivalence_vector,
-    lorentzian_perfect_domain_traversal,
 )
 
 
@@ -45,25 +25,17 @@ def _rational_positive_vector(gram):
     the transformation matrix itself is never public API.
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
-        raise TypeError(
-            f"cannot find a vector of positive square for {gram}: it must be the Gram tensor "
-            f"of a bilinear form, a tensor of type (0, 2)"
-        )
+        raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
     engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
     diagonal, change = QuadraticForm(
         SageQQ,
         2 * engine_gram,
     ).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
-    positive = [
-        index
-        for index in range(diagonal_matrix.nrows())
-        if diagonal_matrix[index, index] > 0
-    ]
+    positive = [index for index in range(diagonal_matrix.nrows()) if diagonal_matrix[index, index] > 0]
     if len(positive) != 1:
         raise ValueError(
-            f"the form with Gram tensor {gram} has {len(positive)} positive directions, but its "
-            f"positive cone has two components only for signature (1, n), with exactly one"
+            f"the form with Gram tensor {gram} has {len(positive)} positive directions, but its positive cone has two components only for signature (1, n), with exactly one"
         )
     column = change.column(positive[0])
     rationals = gram.base_ring().fraction_field()
@@ -75,20 +47,14 @@ def _rational_positive_vector(gram):
 
 def _integer_engine_matrix(value, *, transpose=False):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
-        raise TypeError(
-            f"{value} cannot be passed to OSCAR as an integer matrix: it must be a tensor with "
-            f"two indices"
-        )
+        raise TypeError(f"{value} cannot be passed to OSCAR as an integer matrix: it must be a tensor with two indices")
     engine = _engine_component_matrix(value).change_ring(SageZZ)
     return engine.transpose() if transpose else engine
 
 
 def _rational_engine_matrix(value, *, transpose=False):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
-        raise TypeError(
-            f"{value} cannot be passed to OSCAR as a rational matrix: it must be a tensor with "
-            f"two indices"
-        )
+        raise TypeError(f"{value} cannot be passed to OSCAR as a rational matrix: it must be a tensor with two indices")
     engine = _engine_component_matrix(value).change_ring(SageQQ)
     return engine.transpose() if transpose else engine
 
@@ -98,12 +64,9 @@ def _number_field_descriptor(field):
     from sage.categories.number_fields import NumberFields as SageNumberFields
 
     engine = _engine_ring(field)
-    assert engine in SageNumberFields() and engine is not SageQQ, (
-        f"the OSCAR number-field lattice adapter needs a nontrivial absolute number field, but got {field}"
-    )
+    assert engine in SageNumberFields() and engine is not SageQQ, f"the OSCAR number-field lattice adapter needs a nontrivial absolute number field, but got {field}"
     assert engine.is_absolute(), (
-        f"the OSCAR number-field lattice adapter needs an absolute primitive-element presentation, but {field} "
-        "is represented as a relative number field"
+        f"the OSCAR number-field lattice adapter needs an absolute primitive-element presentation, but {field} is represented as a relative number field"
     )
     polynomial = engine.defining_polynomial()
     return tuple(SageQQ(coefficient) for coefficient in polynomial.list())
@@ -121,19 +84,11 @@ def _number_field_element_coefficients(field, value):
 def _number_field_engine_matrix(value, field, *, transpose=False):
     r"""Lower a represented matrix to nested rational power-basis coefficients."""
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
-        raise TypeError(
-            f"{value} cannot be passed to OSCAR as a number-field matrix: it must be a tensor with two indices"
-        )
+        raise TypeError(f"{value} cannot be passed to OSCAR as a number-field matrix: it must be a tensor with two indices")
     engine = _engine_component_matrix(value)
     if transpose:
         engine = engine.transpose()
-    return [
-        [
-            list(_number_field_element_coefficients(field, engine[row, column]))
-            for column in range(engine.ncols())
-        ]
-        for row in range(engine.nrows())
-    ]
+    return [[list(_number_field_element_coefficients(field, engine[row, column])) for column in range(engine.ncols())] for row in range(engine.nrows())]
 
 
 _OSCAR_LATTICE_ADAPTER_SOURCE = r"""
@@ -206,24 +161,11 @@ function rational_spinor_norm_class(gram_entries, isometry_entries)
 end
 
 function rational_witt_index(gram_entries)
-    space = quadratic_space(QQ, _qq_matrix(gram_entries))
-    space_class = Oscar.Hecke.isometry_class(space)
-    plane = QQ[0 1; 1 0]
-    index = 0
-    # The Witt index is the number r of hyperbolic planes in a splitting
-    # V = H_1 + ... + H_r + V_0 with V_0 zero or anisotropic (O'Meara 42F), so
-    # it is the largest r with H^r a subspace of V.  Hecke decides whether the
-    # isometry class of V represents that of H^r from local invariants, the
-    # same decision its is_isotropic makes for r = 1.
-    while 2 * (index + 1) <= dim(space)
-        hyperbolic = quadratic_space(
-            QQ,
-            block_diagonal_matrix([plane for _ in 1:(index + 1)]),
-        )
-        Oscar.Hecke.represents(space_class, Oscar.Hecke.isometry_class(hyperbolic)) || break
-        index += 1
-    end
-    return index
+    gram = _qq_matrix(gram_entries)
+    _anisotropic, hyperbolic, radical = Oscar.Hecke._quadratic_form_decomposition(gram)
+    nrows(radical) == 0 || error("Witt index requires a nondegenerate quadratic space")
+    iseven(nrows(hyperbolic)) || error("Hecke returned an odd-dimensional hyperbolic summand")
+    return div(nrows(hyperbolic), 2)
 end
 
 function number_field_spinor_norm_class(defining_coefficients, gram_entries, isometry_entries)
@@ -370,53 +312,17 @@ function leech_gram_rows()
     rows, columns = size(gram)
     return [[Int(gram[i, j]) for j in 1:columns] for i in 1:rows]
 end
-
-function integral_isometry_witness(source_gram_entries, target_gram_entries)
-    source_gram = _zz_matrix(source_gram_entries)
-    target_gram = _zz_matrix(target_gram_entries)
-    source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
-    target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
-    isometric, isometry = is_isometric_with_isometry(
-        source,
-        target;
-        ambient_representation = false,
-    )
-    if !isometric
-        return [0]
-    end
-    integral = change_base_ring(ZZ, isometry)
-    if integral * target_gram * transpose(integral) != source_gram
-        error("OSCAR returned an isometry with the wrong Gram identity")
-    end
-    return [1, integral]
-end
 end
 """
-
-
-_OSCAR_PROVIDER = "oscar-via-sage-julia-bridge"
-_OSCAR_PROVISIONING = (
-    "clone github.com/dzackgarza/sage-julia-bridge and run `just setup` there: it "
-    "installs the bridge into Sage's environment, instantiates the bridge's Julia "
-    "project with its JSON and Oscar dependencies"
-)
 
 
 class _OscarLatticeAdapter:
     r"""One persistent OSCAR realization behind ``sage-julia-bridge``."""
 
-    def available(self) -> bool:
-        if find_spec("sage_julia_bridge") is None:
-            return False
-        juliaup = Path.home() / ".juliaup" / "bin" / "julia"
-        return juliaup.exists() or shutil.which("julia") is not None
-
     def _bridge(self):
         from sage_julia_bridge import julia
 
-        module_loaded = julia.sage(
-            "isdefined(Main, :DzackResearchOscarLatticeAdapter)"
-        )
+        module_loaded = julia.sage("isdefined(Main, :DzackResearchOscarLatticeAdapter)")
         if not module_loaded:
             julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
         return julia
@@ -432,10 +338,7 @@ class _OscarLatticeAdapter:
             )
         )
         if value == 0:
-            raise ArithmeticError(
-                f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram}, but "
-                f"a spinor norm is a nonzero square class"
-            )
+            raise ArithmeticError(f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram}, but a spinor norm is a nonzero square class")
         return value
 
     def rational_witt_index(self, gram):
@@ -448,10 +351,7 @@ class _OscarLatticeAdapter:
             )
         )
         if not 0 <= 2 * index <= engine_gram.nrows():
-            raise ArithmeticError(
-                f"OSCAR computed Witt index {index} for the form {gram}, but a Witt index r "
-                f"satisfies 0 <= 2r <= the dimension"
-            )
+            raise ArithmeticError(f"OSCAR computed Witt index {index} for the form {gram}, but a Witt index r satisfies 0 <= 2r <= the dimension")
         return index
 
     def number_field_spinor_norm_class(self, field, gram, isometry):
@@ -468,10 +368,7 @@ class _OscarLatticeAdapter:
         for exponent, coefficient in enumerate(coefficients):
             value += SageQQ(coefficient) * generator**exponent
         if value == 0:
-            raise ArithmeticError(
-                f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram} over {field}, but "
-                "a spinor norm is a nonzero square class"
-            )
+            raise ArithmeticError(f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram} over {field}, but a spinor norm is a nonzero square class")
         return _owned_engine_element(field, value)
 
     def number_field_witt_index(self, field, gram):
@@ -485,10 +382,7 @@ class _OscarLatticeAdapter:
             )
         )
         if not 0 <= 2 * index <= engine_gram.nrows():
-            raise ArithmeticError(
-                f"Hecke computed Witt index {index} for the form {gram} over {field}, but a Witt index r "
-                "satisfies 0 <= 2r <= the dimension"
-            )
+            raise ArithmeticError(f"Hecke computed Witt index {index} for the form {gram} over {field}, but a Witt index r satisfies 0 <= 2r <= the dimension")
         return index
 
     def centralizer_discriminant_image(self, gram, isometry):
@@ -498,10 +392,7 @@ class _OscarLatticeAdapter:
             _integer_engine_matrix(isometry, transpose=True),
         )
         if not isinstance(result, list) or len(result) != 4:
-            raise RuntimeError(
-                f"the image of the centralizer of {isometry} in O(A_L) for the form {gram} came "
-                f"back from OSCAR as {result!r}, not a list of four entries"
-            )
+            raise RuntimeError(f"the image of the centralizer of {isometry} in O(A_L) for the form {gram} came back from OSCAR as {result!r}, not a list of four entries")
         engine_generators, order, invariant_rank, coinvariant_rank = result
         generators = tuple(
             tensor.matrix(
@@ -512,14 +403,8 @@ class _OscarLatticeAdapter:
             )
             for generator in engine_generators
         )
-        if any(
-            generator.tensor_shape()[0] != generator.tensor_shape()[1]
-            for generator in generators
-        ):
-            raise ArithmeticError(
-                f"OSCAR returned generators {generators} for the image of the centralizer of "
-                f"{isometry} in O(A_L), and some are not square matrices"
-            )
+        if any(generator.tensor_shape()[0] != generator.tensor_shape()[1] for generator in generators):
+            raise ArithmeticError(f"OSCAR returned generators {generators} for the image of the centralizer of {isometry} in O(A_L), and some are not square matrices")
         return (
             generators,
             SageZZ(order),
@@ -547,38 +432,24 @@ class _OscarLatticeAdapter:
             ring,
             (),
             target_shape,
-            tuple(
-                tuple(_owned_engine_element(ring, entry) for entry in row)
-                for row in target_engine.rows()
-            ),
+            tuple(tuple(_owned_engine_element(ring, entry) for entry in row) for row in target_engine.rows()),
         )
 
         # OSCAR emits source basis images as rows.  The live Mor matrix acts on
         # coordinate columns, so transpose those rows into target-by-source shape.
         embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(
-                tuple(
-                    _owned_engine_element(ring, embedding_engine[source, target])
-                    for source in range(embedding_engine.nrows())
-                )
-                for target in range(embedding_engine.ncols())
+                tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows())) for target in range(embedding_engine.ncols())
             )
         )
         if not target_gram.pullback(embedding).is_equal_tensor(gram):
             raise ArithmeticError(
-                f"OSCAR's embedding {embedding} of the form {gram} into {target_gram} is not an "
-                f"isometric embedding: it pulls back {target_gram.pullback(embedding)}"
+                f"OSCAR's embedding {embedding} of the form {gram} into {target_gram} is not an isometric embedding: it pulls back {target_gram.pullback(embedding)}"
             )
         if abs(target_gram.det()) != 1:
-            raise ArithmeticError(
-                f"OSCAR embedded the form {gram} into {target_gram}, which is not unimodular: its "
-                f"determinant is {target_gram.det()}"
-            )
+            raise ArithmeticError(f"OSCAR embedded the form {gram} into {target_gram}, which is not unimodular: its determinant is {target_gram.det()}")
         if any(target_gram[index, index] % 2 for index in range(target_shape[0])):
-            raise ArithmeticError(
-                f"OSCAR embedded the form {gram} into {target_gram}, which is not even: some "
-                f"diagonal entry is odd"
-            )
+            raise ArithmeticError(f"OSCAR embedded the form {gram} into {target_gram}, which is not even: some diagonal entry is odd")
         return target_gram, embedding
 
     def target_primitive_embedding(self, source_gram, target_gram):
@@ -588,24 +459,17 @@ class _OscarLatticeAdapter:
             _integer_engine_matrix(target_gram),
         )
         if not isinstance(result, list) or not result:
-            raise RuntimeError(
-                f"the primitive embedding of the form {source_gram} into {target_gram} came back "
-                f"from OSCAR as {result!r}, not a nonempty list"
-            )
+            raise RuntimeError(f"the primitive embedding of the form {source_gram} into {target_gram} came back from OSCAR as {result!r}, not a nonempty list")
         if int(result[0]) == 0:
             return None
         if len(result) < 2:
             raise RuntimeError(
-                f"the primitive embedding of the form {source_gram} into {target_gram} came back "
-                f"from OSCAR as {result!r}, without the entry saying whether one exists"
+                f"the primitive embedding of the form {source_gram} into {target_gram} came back from OSCAR as {result!r}, without the entry saying whether one exists"
             )
         if int(result[1]) == 0:
             return False
         if len(result) != 5:
-            raise RuntimeError(
-                f"the primitive embedding of the form {source_gram} into {target_gram} came back "
-                f"from OSCAR as {result!r}, not a list of five entries"
-            )
+            raise RuntimeError(f"the primitive embedding of the form {source_gram} into {target_gram} came back from OSCAR as {result!r}, not a list of five entries")
         target_engine, source_engine, embedding_engine = result[2:]
         ring = source_gram.base_ring()
 
@@ -614,21 +478,14 @@ class _OscarLatticeAdapter:
                 ring,
                 (),
                 (engine.nrows(), engine.ncols()),
-                tuple(
-                    tuple(_owned_engine_element(ring, entry) for entry in row)
-                    for row in engine.rows()
-                ),
+                tuple(tuple(_owned_engine_element(ring, entry) for entry in row) for row in engine.rows()),
             )
 
         target_prime_gram = owned_gram(target_engine)
         source_prime_gram = owned_gram(source_engine)
         embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(
-                tuple(
-                    _owned_engine_element(ring, embedding_engine[source, target])
-                    for source in range(embedding_engine.nrows())
-                )
-                for target in range(embedding_engine.ncols())
+                tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows())) for target in range(embedding_engine.ncols())
             )
         )
         if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
@@ -652,26 +509,17 @@ class _OscarLatticeAdapter:
             str(classification),
         )
         if not isinstance(result, list) or not result:
-            raise RuntimeError(
-                f"the classes of primitive embeddings of {source_gram} into {target_gram} came back "
-                f"from OSCAR as {result!r}, not a nonempty list"
-            )
+            raise RuntimeError(f"the classes of primitive embeddings of {source_gram} into {target_gram} came back from OSCAR as {result!r}, not a nonempty list")
         if int(result[0]) == 0:
             return None
         if len(result) != 3:
-            raise RuntimeError(
-                f"the classes of primitive embeddings of {source_gram} into {target_gram} came back "
-                f"from OSCAR as {result!r}, not a list of three entries"
-            )
+            raise RuntimeError(f"the classes of primitive embeddings of {source_gram} into {target_gram} came back from OSCAR as {result!r}, not a list of three entries")
         if int(result[1]) == 0:
             return ()
         representatives = []
         for record in result[2]:
             if not isinstance(record, list) or len(record) != 3:
-                raise RuntimeError(
-                    f"a class of primitive embeddings of {source_gram} into {target_gram} came back "
-                    f"from OSCAR as {record!r}, not a list of three entries"
-                )
+                raise RuntimeError(f"a class of primitive embeddings of {source_gram} into {target_gram} came back from OSCAR as {record!r}, not a list of three entries")
             target_engine, source_engine, embedding_engine = record
             ring = source_gram.base_ring()
 
@@ -680,20 +528,14 @@ class _OscarLatticeAdapter:
                     ring,
                     (),
                     (engine.nrows(), engine.ncols()),
-                    tuple(
-                        tuple(_owned_engine_element(ring, entry) for entry in row)
-                        for row in engine.rows()
-                    ),
+                    tuple(tuple(_owned_engine_element(ring, entry) for entry in row) for row in engine.rows()),
                 )
 
             target_prime_gram = owned_gram(target_engine)
             source_prime_gram = owned_gram(source_engine)
             embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
                 tuple(
-                    tuple(
-                        _owned_engine_element(ring, embedding_engine[source, target])
-                        for source in range(embedding_engine.nrows())
-                    )
+                    tuple(_owned_engine_element(ring, embedding_engine[source, target]) for source in range(embedding_engine.nrows()))
                     for target in range(embedding_engine.ncols())
                 )
             )
@@ -707,502 +549,22 @@ class _OscarLatticeAdapter:
         return tuple(representatives)
 
     def leech_gram_rows(self):
-        rows = self._bridge().call(
-            "DzackResearchOscarLatticeAdapter.leech_gram_rows"
-        )
+        rows = self._bridge().call("DzackResearchOscarLatticeAdapter.leech_gram_rows")
         if not isinstance(rows, list) or len(rows) != 24:
-            raise RuntimeError(
-                f"the Gram matrix of the Leech lattice came back from OSCAR as {rows!r}, not a "
-                f"list of 24 rows"
-            )
+            raise RuntimeError(f"the Gram matrix of the Leech lattice came back from OSCAR as {rows!r}, not a list of 24 rows")
         matrix_rows = tuple(tuple(SageZZ(entry) for entry in row) for row in rows)
         if any(len(row) != 24 for row in matrix_rows):
-            raise RuntimeError(
-                f"the Gram matrix of the Leech lattice from OSCAR has row lengths "
-                f"{tuple(len(row) for row in matrix_rows)}, not 24 each"
-            )
+            raise RuntimeError(f"the Gram matrix of the Leech lattice from OSCAR has row lengths {tuple(len(row) for row in matrix_rows)}, not 24 each")
         gram = engine_matrix(SageZZ, matrix_rows)
         if not gram.is_symmetric():
-            raise ArithmeticError(
-                f"the Gram matrix of the Leech lattice from OSCAR is not symmetric:\n{gram}"
-            )
+            raise ArithmeticError(f"the Gram matrix of the Leech lattice from OSCAR is not symmetric:\n{gram}")
         if abs(gram.det()) != 1:
-            raise ArithmeticError(
-                f"the Gram matrix of the Leech lattice from OSCAR is not unimodular: its "
-                f"determinant is {gram.det()}"
-            )
+            raise ArithmeticError(f"the Gram matrix of the Leech lattice from OSCAR is not unimodular: its determinant is {gram.det()}")
         if any(gram[index, index] % 2 for index in range(24)):
-            raise ArithmeticError(
-                f"the Gram matrix of the Leech lattice from OSCAR is not even: some diagonal "
-                f"entry is odd"
-            )
+            raise ArithmeticError("the Gram matrix of the Leech lattice from OSCAR is not even: some diagonal entry is odd")
         return matrix_rows
-
-    def integral_isometry_witness(self, source_gram, target_gram):
-        result = self._bridge().call(
-            "DzackResearchOscarLatticeAdapter.integral_isometry_witness",
-            _integer_engine_matrix(source_gram),
-            _integer_engine_matrix(target_gram),
-        )
-        if not isinstance(result, list) or not result:
-            raise RuntimeError(
-                f"the isometry between the forms {source_gram} and {target_gram} came back from "
-                f"OSCAR as {result!r}, not a nonempty list"
-            )
-        if int(result[0]) == 0:
-            return None
-        if len(result) != 2:
-            raise RuntimeError(
-                f"the isometry between the forms {source_gram} and {target_gram} came back from "
-                f"OSCAR as {result!r}, not a list of two entries"
-            )
-        witness = result[1]
-        if witness.nrows() != witness.ncols():
-            raise ArithmeticError(
-                f"OSCAR returned a {witness.nrows()} x {witness.ncols()} matrix as an isometry "
-                f"between the forms {source_gram} and {target_gram}; an isometry matrix is square"
-            )
-        source_engine = _integer_engine_matrix(source_gram)
-        target_engine = _integer_engine_matrix(target_gram)
-        if witness * target_engine * witness.transpose() != source_engine:
-            raise ArithmeticError(
-                f"OSCAR's matrix {witness} is not an isometry between the forms {source_gram} and "
-                f"{target_gram}: it does not carry one Gram matrix to the other"
-            )
-        return tuple(
-            tuple(SageZZ(entry) for entry in row)
-            for row in witness.rows()
-        )
 
 
 _oscar_lattices = _OscarLatticeAdapter()
-
-engine_capabilities.register(
-    "lattice.rational_spinor_norm",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.rational_spinor_norm_class,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.rational_witt_index",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.rational_witt_index,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.number_field_spinor_norm",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.number_field_spinor_norm_class,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.number_field_witt_index",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.number_field_witt_index,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.centralizer_discriminant_image",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.centralizer_discriminant_image,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.even_unimodular_primitive_embedding",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.even_unimodular_primitive_embedding,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.target_primitive_embedding",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.target_primitive_embedding,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.target_primitive_embedding_classes",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.target_primitive_embedding_classes,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.leech_gram_rows",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.leech_gram_rows,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-engine_capabilities.register(
-    "lattice.oscar_isometry_witness",
-    _OSCAR_PROVIDER,
-    _oscar_lattices.integral_isometry_witness,
-    available=_oscar_lattices.available,
-    provisioning=_OSCAR_PROVISIONING,
-)
-
-
-def _rational_spinor_norm(gram, isometry):
-    return engine_capabilities.compute(
-        "lattice.rational_spinor_norm",
-        gram,
-        isometry,
-    )
-
-
-def _rational_witt_index(gram):
-    return engine_capabilities.compute(
-        "lattice.rational_witt_index",
-        gram,
-    )
-
-
-def _number_field_spinor_norm(field, gram, isometry):
-    return engine_capabilities.compute(
-        "lattice.number_field_spinor_norm",
-        field,
-        gram,
-        isometry,
-    )
-
-
-def _number_field_witt_index(field, gram):
-    return engine_capabilities.compute(
-        "lattice.number_field_witt_index",
-        field,
-        gram,
-    )
-
-
-def _centralizer_discriminant_image(gram, isometry):
-    return engine_capabilities.compute(
-        "lattice.centralizer_discriminant_image",
-        gram,
-        isometry,
-    )
-
-
-def _even_unimodular_primitive_embedding(gram, positive, negative):
-    return engine_capabilities.compute(
-        "lattice.even_unimodular_primitive_embedding",
-        gram,
-        positive,
-        negative,
-    )
-
-
-def _target_primitive_embedding(source_gram, target_gram):
-    return engine_capabilities.compute(
-        "lattice.target_primitive_embedding",
-        source_gram,
-        target_gram,
-    )
-
-
-def _target_primitive_embedding_classes(source_gram, target_gram, classification):
-    return engine_capabilities.compute(
-        "lattice.target_primitive_embedding_classes",
-        source_gram,
-        target_gram,
-        classification,
-    )
-
-
-def _leech_gram_rows():
-    r"""Return Hecke's exact positive-definite Leech Gram rows privately."""
-    return engine_capabilities.compute("lattice.leech_gram_rows")
-
-
-def _integral_isometry_witness(source_gram, target_gram):
-    return engine_capabilities.compute(
-        "lattice.oscar_isometry_witness",
-        source_gram,
-        target_gram,
-    )
-
-
-# ---------------------------------------------------------------------------
-# The indefinite-lattice algorithms, in the order the layer offers them.
-#
-# ``sage-indefinite-port`` is where these algorithms are going: it ports the
-# ``INDEF_FORM_*`` kernels onto the owned formed-lattice category, so a ported
-# operation computes in the session instead of through a file protocol.  It is
-# the first provider of every capability below.
-#
-# ``polyhedral_common``, reached through the ``py_polyhedral`` wrapper, is the
-# realization being replaced, and it is what computes today.  The wrapper owns
-# that boundary: it writes the matrix files the programs read and resolves each
-# program from ``PATH`` at call time, so nothing here names a build directory
-# or an absolute executable.
-#
-# The second entry is not a fallback.  It is the realization the layer reaches
-# while the port of that operation is outstanding, and when neither provider is
-# available the refusal carries both absences with both remedies.
-#
-# The port depends on this package, so it is imported lazily, inside the
-# availability predicate, the same way the OSCAR adapter reaches the Julia
-# bridge.  A capability the port does not expose yet names its own module and
-# attribute as ``None``; filling those in is what turns the port on for that
-# operation.
-# ---------------------------------------------------------------------------
-
-_PORT_PROVIDER = "sage-indefinite-port"
-_PORT_PACKAGE = "sage_indefinite_port"
-_PORT_INSTALL = (
-    "sage -pip install --no-deps -e /home/dzack/gitclones/sage-indefinite-port"
-)
-
-
-def _port_provisioning(kernel, ported):
-    r"""State how ``kernel`` becomes available from the port."""
-    if ported:
-        return f"install the port into Sage's environment with `{_PORT_INSTALL}`"
-    return (
-        f"install the port into Sage's environment with `{_PORT_INSTALL}`; the "
-        f"operation itself arrives with sage-indefinite-port's port of {kernel}"
-    )
-
-
-def _port_available(module_name, attribute) -> bool:
-    r"""Return whether the port exposes this operation in this session."""
-    if module_name is None or find_spec(_PORT_PACKAGE) is None:
-        return False
-    return attribute in vars(import_module(module_name))
-
-
-def _port_operation(module_name, attribute, /, *args, **kwargs):
-    return vars(import_module(module_name))[attribute](*args, **kwargs)
-
-
-# Capability, the kernel the port carries it under, module, attribute.  The
-# kernel names are the ones declared in `src_indefinite/CombinedAlgorithms.h`,
-# except INDEF_FORM_Invariant, which is in `src_indefinite/IndefiniteFormFundamental.h`.
-# They are not the driver names: the driver INDEF_FORM_TestEquivalenceVector
-# calls the kernel INDEF_FORM_EquivalenceVector, and INDEF_FORM_StabilizerIsotropicPlane
-# calls INDEF_FORM_Stabilizer_IsotropicKplane.
-_PORT_REALIZATIONS = (
-    (
-        "lattice.indefinite_isometry_prefilter",
-        "INDEF_FORM_Invariant",
-        "sage_indefinite_port.invariants",
-        "lattice_prefilter",
-    ),
-    (
-        "lattice.indefinite_automorphism_group",
-        "INDEF_FORM_AutomorphismGroup",
-        "sage_indefinite_port.indefinite.recursive_provider",
-        "indefinite_automorphism_group",
-    ),
-    (
-        "lattice.indefinite_isometry_witness",
-        "INDEF_FORM_TestEquivalence",
-        "sage_indefinite_port.indefinite.recursive_provider",
-        "indefinite_isometry_witness",
-    ),
-    (
-        "lattice.indefinite_vector_isometry_witness",
-        "INDEF_FORM_EquivalenceVector",
-        "sage_indefinite_port.indefinite.recursive_provider",
-        "indefinite_vector_isometry_witness",
-    ),
-    (
-        "lattice.indefinite_orbit_representative",
-        "INDEF_FORM_GetOrbitRepresentative",
-        "sage_indefinite_port.indefinite.recursive_provider",
-        "indefinite_orbit_representative",
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_orbits",
-        "INDEF_FORM_GetOrbit_IsotropicKplane",
-        None,
-        None,
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_stabilizer",
-        "INDEF_FORM_Stabilizer_IsotropicKplane",
-        None,
-        None,
-    ),
-    ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector", "sage_indefinite_port.indefinite.recursive_provider", "indefinite_vector_stabilizer"),
-    (
-        "lattice.indefinite_isotropic_subspace_isometry_witness",
-        "INDEF_FORM_Equivalence_IsotropicKplane",
-        None,
-        None,
-    ),
-    (
-        "lattice.rational_integral_structure",
-        "MatrixIntegral_* / GroupAction.g",
-        "sage_indefinite_port.groups.integral_structures",
-        "integral_structure_action_for_group",
-    ),
-    (
-        "lattice.pointwise_perpendicular_kernel",
-        "GetOrthogonalTotallyIsotropicKernelSubspace",
-        "sage_indefinite_port.indefinite.isotropic_lifts",
-        "pointwise_perpendicular_kernel",
-    ),
-)
-
-for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
-    engine_capabilities.register(
-        _capability,
-        _PORT_PROVIDER,
-        partial(_port_operation, _module, _attribute),
-        available=partial(_port_available, _module, _attribute),
-        provisioning=_port_provisioning(_kernel, _module is not None),
-    )
-
-
-_POLYHEDRAL_PROVIDER = "polyhedral-common-via-py-polyhedral"
-
-_POLYHEDRAL_BUILD = (
-    "clone github.com/MathieuDutSik/polyhedral_common, build the indefinite-form "
-    "programs with `make -C src_indefinite`, and link them into a directory on PATH"
-)
-
-_POLYHEDRAL_LORENTZIAN_BUILD = (
-    "clone github.com/MathieuDutSik/polyhedral_common, build "
-    "LORENTZ_MPI_PerfectLorentzian from src_lorentzian, and expose the binary on PATH"
-)
-
-
-def _lorentzian_perfect_domain_records(gram, option="total"):
-    r"""Cross polyhedral_common's GAP traversal records to plain exact data."""
-    output = lorentzian_perfect_domain_traversal(gram, option)
-    expression = output.strip()
-    if expression.startswith("return "):
-        expression = expression[len("return ") :]
-    if expression.endswith(";"):
-        expression = expression[:-1]
-    records = libgap.eval(expression)
-    result = []
-    for record in records:
-        obj = record["x"]
-        ext = obj["EXT"].sage()
-        group = obj["GRP"]
-        degree = len(ext)
-        permutations = []
-        for generator in group.GeneratorsOfGroup():
-            permutations.append(
-                [
-                    int(libgap.OnPoints(point, generator).sage()) - 1
-                    for point in range(1, degree + 1)
-                ]
-            )
-        adjacencies = []
-        for adjacency in record["ListAdj"]:
-            data = adjacency["x"]
-            selected_face_positions = {
-                int(position) for position in data["eInc"].sage()
-            }
-            adjacencies.append(
-                {
-                    "x": {
-                        "eInc": [
-                            int(position in selected_face_positions)
-                            for position in range(1, degree + 1)
-                        ],
-                        "eBigMat": data["eBigMat"].sage(),
-                    },
-                    "iOrb": int(adjacency["iOrb"].sage()),
-                }
-            )
-        result.append(
-            {
-                "x": {"EXT": ext, "GRP": permutations},
-                "ListAdj": adjacencies,
-            }
-        )
-    return tuple(result)
-
-
-def _polyhedral_no_program(kernel):
-    r"""State that this operation has no program, and where it comes from instead.
-
-    ``src_indefinite/Makefile`` lists the drivers polyhedral_common compiles and
-    these are not among them, so no build or install produces them.  The kernel
-    exists in ``src_indefinite/CombinedAlgorithms.h``, and the operation reaches
-    the session through the port of that kernel.
-    """
-    return (
-        "polyhedral_common builds no program of this name, so the operation "
-        f"arrives with sage-indefinite-port's port of {kernel}"
-    )
-
-
-_POLYHEDRAL_REALIZATIONS = (
-    (
-        "lattice.indefinite_automorphism_group",
-        "INDEF_FORM_AutomorphismGroup",
-        indefinite_form_automorphism_group,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_isometry_witness",
-        "INDEF_FORM_TestEquivalence",
-        indefinite_form_test_equivalence,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_vector_isometry_witness",
-        "INDEF_FORM_TestEquivalenceVector",
-        indefinite_form_test_equivalence_vector,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_orbit_representative",
-        "INDEF_FORM_GetOrbitRepresentative",
-        indefinite_form_get_orbit_representative,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_orbits",
-        "INDEF_FORM_GetOrbit_IsotropicKplane",
-        indefinite_form_isotropic_k_stuff,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_stabilizer",
-        "INDEF_FORM_StabilizerIsotropicPlane",
-        indefinite_form_stabilizer_isotropic_subspace,
-        _POLYHEDRAL_BUILD,
-    ),
-    (
-        "lattice.indefinite_vector_stabilizer",
-        "INDEF_FORM_StabilizerVector",
-        indefinite_form_stabilizer_vector,
-        _polyhedral_no_program("INDEF_FORM_StabilizerVector"),
-    ),
-    (
-        "lattice.indefinite_isotropic_subspace_isometry_witness",
-        "INDEF_FORM_TestEquivalenceIsotropicKplane",
-        indefinite_form_test_equivalence_isotropic_k_plane,
-        _polyhedral_no_program("INDEF_FORM_Equivalence_IsotropicKplane"),
-    ),
-    (
-        "lattice.lorentzian_perfect_domain_traversal",
-        "LORENTZ_MPI_PerfectLorentzian",
-        _lorentzian_perfect_domain_records,
-        _POLYHEDRAL_LORENTZIAN_BUILD,
-    ),
-)
-
-for _capability, _binary, _operation, _provisioning in _POLYHEDRAL_REALIZATIONS:
-    engine_capabilities.register(
-        _capability,
-        _POLYHEDRAL_PROVIDER,
-        _operation,
-        available=partial(binary_available, _binary),
-        provisioning=_provisioning,
-    )
-
 
 __all__: list[str] = []

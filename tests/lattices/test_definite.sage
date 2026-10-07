@@ -146,6 +146,21 @@ def test_even_overlattice_inclusions_enumerate_isotropic_glue_for_u2() -> None:
     assert sum(inclusion.codomain().is_unimodular() for inclusion in inclusions) == 2
 
 
+def test_integral_overlattice_inclusions_are_the_bilinear_isotropic_subgroups() -> None:
+    cases = (
+        ([[0, 1], [1, 0]], 1),
+        ([[2, -1], [-1, 2]], 1),
+        ([[16]], 3),
+        ([[2, 0], [0, 2]], 2),
+        ([[0, 2], [2, 0]], 4),
+        ([[2, -1, 0], [-1, 2, -1], [0, -1, 2]], 2),
+        ([[2, -1, 0, 0], [-1, 2, -1, -1], [0, -1, 2, 0], [0, -1, 0, 2]], 4),
+    )
+    for gram, expected in cases:
+        lattice = Lattices(ZZ)(gram)
+        assert int(lattice.integral_overlattice_inclusions().cardinality()) == expected
+
+
 def test_nikulin_even_unimodular_embedding_existence_controls_embedding_mor() -> None:
     target = Lattices(ZZ)("U")
     a1 = Lattices(ZZ)("A1")

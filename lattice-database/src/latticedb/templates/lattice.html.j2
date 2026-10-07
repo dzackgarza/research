@@ -1,0 +1,368 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ lattice.name }} · {% endblock %}
+{% from "macros.html.j2" import theory with context %}
+{% macro yes_no(value) %}{{ "yes" if value else "no" }}{% endmacro %}
+{% macro declared() %}<a class="declared" href="{{ root }}theory/records.html#declared" title="Not computed here; the notes cite its source.">declared</a>{% endmacro %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker">Tag <span class="tag">{{ lattice.tag }}</span></p>
+    <h1>\({{ lattice.latex }}\)</h1>
+    <p class="names">{{ lattice.name }}{% for alias in lattice.aliases %}<span class="separator">·</span>{{ alias }}{% endfor %}</p>
+    <ul class="chips" aria-label="Properties and families">
+      {% if lattice.definiteness %}<li><a href="{{ root }}database.html?definiteness={{ definiteness_label[lattice.definiteness] | urlencode }}">{{ definiteness_label[lattice.definiteness] }}</a></li>{% endif %}
+      {% for property in properties(lattice) %}
+      <li><a href="{{ root }}database.html?property={{ property | urlencode }}">{{ property }}</a></li>
+      {% endfor %}
+      {% for family in lattice.families %}
+      <li class="family"><a href="{{ root }}database.html?family={{ family | urlencode }}" title="{{ families[family] }}">{{ family }}</a></li>
+      {% endfor %}
+    </ul>
+  </header>
+
+  {% if geometric_objects %}
+  <section aria-labelledby="geometric-objects">
+    <h2 id="geometric-objects">Geometric objects</h2>
+    <ul>
+      {% for geometric in geometric_objects %}
+      <li><a href="{{ root }}geometric-objects/{{ geometric.slug }}.html">{{ geometric.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="invariants">
+    <h2 id="invariants">Invariants</h2>
+    <table class="facts">
+      <tbody>
+        {% if lattice.rank is not none %}<tr><th scope="row">Rank</th><td>{{ lattice.rank }}</td></tr>{% endif %}
+        {% if lattice.signature %}<tr><th scope="row">{{ theory("lattices", "signature", "Signature") }} \((n_+, n_-)\)</th><td>({{ lattice.signature[0] }}, {{ lattice.signature[1] }})</td></tr>{% endif %}
+        {% if lattice.nullity %}
+        <tr><th scope="row">Rank of the {{ theory("lattices", "degenerate", "radical") }}</th><td>{{ lattice.nullity }}</td></tr>
+        {% endif %}
+        {% if lattice.determinant is not none %}<tr><th scope="row">{{ theory("lattices", "signature", "Determinant") }}</th><td>\({{ rational_tex(lattice.determinant) }}\)</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </section>
+
+  {% if ambient_lie_group %}
+  <section aria-labelledby="orthogonal-group">
+    <h2 id="orthogonal-group">Orthogonal group</h2>
+    <p>
+      The integral orthogonal group \(O(L)\) embeds by base change as
+      \(O(L) \hookrightarrow O(L_{\mathbb R}) \cong\)
+      <a href="{{ root }}lie-group/{{ ambient_lie_group.slug }}.html">\({{ ambient_lie_group.latex }}\)</a>.
+      {% if orthogonal_group %}The stored arithmetic-group card for \(O(L)\) is
+      <a href="{{ root }}arithmetic-group/{{ orthogonal_group.slug }}.html">\({{ orthogonal_group.latex }}\)</a>.{% endif %}
+    </p>
+    {% if arithmetic_groups %}
+    <h3>Recorded arithmetic subgroups</h3>
+    <ul>
+      {% for group in arithmetic_groups %}<li><a href="{{ root }}arithmetic-group/{{ group.slug }}.html">\({{ group.latex }}\)</a>{% if group.data.index_in_orthogonal_group is not none %}, index {{ group.data.index_in_orthogonal_group }} in \(O(L)\){% endif %}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if lattice.gram_tensor is not none and lattice.rank is not none %}<section aria-labelledby="gram-tensor">
+    <h2 id="gram-tensor">Gram tensor</h2>
+    <p>The components \(b(e_i, e_j)\) of the {{ theory("lattices", "gram-tensor", "Gram tensor") }} \(b\) in the {{ theory("lattices", "gram-tensor", "chosen basis") }} \({{ block_tex(range(1, lattice.rank + 1) | list) }}\).</p>
+    <div class="table-scroll">
+      <table class="components">
+        <thead>
+          <tr><td></td>{% for j in range(1, lattice.rank + 1) %}<th scope="col">\(e_{ {{- j -}} }\)</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for components_row in lattice.gram_tensor %}
+          <tr><th scope="row">\(e_{ {{- loop.index -}} }\)</th>{% for value in components_row %}<td{% if value == 0 %} class="zero"{% endif %}>{{ value }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="copy-block">
+      <pre id="components-text">{{ components_text }}</pre>
+      <button type="button" data-copy="components-text">Copy</button>
+    </div>
+  </section>{% endif %}
+
+  {% if lattice.integral %}
+  <section aria-labelledby="integral">
+    <h2 id="integral">Integral lattice</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">{{ theory("lattices", "integral", "Parity") }}</th><td>{{ lattice.integral.parity }}</td></tr>
+       {% if lattice.integral.discriminant_group is not none %}
+       <tr><th scope="row">{{ theory("discriminant-forms", "discriminant-group", "Discriminant group") }}</th><td>\({{ group_tex(lattice.integral.discriminant_group) }}\)</td></tr>
+        <tr><th scope="row">{{ theory("discriminant-forms", "unimodular", "Unimodular") }}</th><td>{{ yes_no(lattice.integral.discriminant_group == ()) }}</td></tr>
+       <tr><th scope="row">{{ theory("overlattices", "overlattices", "Integral overlattices") }} \(L \subseteq M \subseteq L^*\)</th><td>{% if lattice.integral.overlattice_count is not none %}{{ lattice.integral.overlattice_count }}{% else %}{{ theory("records", "not-decided", "not decided") }}{% endif %}</td></tr>
+        {% endif %}
+        {% if lattice.integral.delta is not none %}
+        <tr><th scope="row">{{ theory("discriminant-forms", "two-elementary", "Nikulin invariants") }} \((r, a, \delta)\)</th><td>\(({{ lattice.rank }}, {{ lattice.integral.discriminant_group | length }}, {{ lattice.integral.delta }})\)</td></tr>
+        {% endif %}
+        {% if lattice.integral.bad_reduction_primes is not none %}
+        <tr><th scope="row">{{ theory("zeta", "bad-reduction", "Primes of bad reduction") }} \(\Sigma_L = \{p \mid 2 \det L\}\)</th><td>\(\{ {{- lattice.integral.bad_reduction_primes | join(", ") -}} \}\)</td></tr>
+        <tr><th scope="row">{{ theory("zeta", "zeta", "Zeta function") }} of the cone \(X_0 : Q(x) = 0\)</th><td>\(\zeta^\Sigma(X_0, s) = {{ zeta_tex(lattice, true) }}\)</td></tr>
+        <tr><th scope="row">{{ theory("zeta", "zeta", "Zeta function") }} of \(X_n : Q(x) = n\), \(n \neq 0\)</th><td>\(\zeta^\Sigma(X_n, s) = {{ zeta_tex(lattice, false) }}\)</td></tr>
+        {% endif %}
+        {% if lattice.integral.quadratic_character is not none %}
+        <tr><th scope="row">{{ theory("zeta", "character", "Character of the discriminant") }} \(\chi_D\), \(D = (-1)^{ {{- lattice.rank // 2 -}} } \det L\)</th><td>{% if lattice.integral.quadratic_character == 1 %}trivial{% else %}\(\chi_{ {{- lattice.integral.quadratic_character -}} } = \left(\frac{ {{- lattice.integral.quadratic_character -}} }{\cdot}\right)\){% endif %}</td></tr>
+        {% endif %}
+        {% if lattice.integral.genus_symbol %}
+        <tr><th scope="row">{{ theory("overlattices", "genus-symbol", "Genus symbol") }}</th><td>\({{ genus_tex(lattice.integral.genus_symbol) }}\)</td></tr>
+        {% endif %}
+        {% if lattice.integral.genus_class_count is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "class-number", "Class number of the genus") }}</th><td>{{ lattice.integral.genus_class_count }}</td></tr>
+        {% endif %}
+        {% if lattice.integral.spinor_genus_count is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "spinor-genera", "Spinor genera in the genus") }}</th><td>{{ lattice.integral.spinor_genus_count }}</td></tr>
+        {% endif %}
+        {% if lattice.integral.spinor_genera is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "spinor-genera", "Classes in each spinor genus") }}, the spinor genus of \(L\) first</th><td>{{ lattice.integral.spinor_genera | join(", ") }}</td></tr>
+        {% endif %}
+        {% if lattice.integral.hyperbolic_index is not none %}
+        <tr><th scope="row">{{ theory("overlattices", "hyperbolic-index", "Hyperbolic index") }} \(\max\{n : L \cong U^n \oplus L'\}\)</th><td>{{ lattice.integral.hyperbolic_index }}</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+    {% if lattice.integral.primitive_orbits %}
+    <h3 id="primitive-orbits">{{ theory("orbits", "primitive-orbits", "Orbits of primitive vectors") }} \(F_{L,\Gamma}(z, w) = \sum_n c_\Gamma(n)\, z^n\), with \(w^n\) for \(z^{-n}\)</h3>
+    <table class="facts">
+      <tbody>
+        {% for group, series in lattice.integral.primitive_orbits.items() %}
+        <tr><th scope="row">\(\Gamma = {{ orbit_group_tex(group) }}\)</th><td>\({{ orbit_series_tex(series) }}\){% if series.reference %}, by {% if series.reference.url %}<a href="{{ series.reference.url }}">{{ series.reference.citation }}</a>{% else %}{{ series.reference.citation }}{% endif %}{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% if lattice.integral.discriminant_orbits %}
+    <h3 id="discriminant-orbits">{{ theory("orbits", "discriminant-orbits", "Orbits on the discriminant group") }} \(F_{A_L,\Gamma}(z, w) = \sum_n c_\Gamma(n)\, z^n\), with \(w^n\) for \(z^{-n}\)</h3>
+    <table class="facts">
+      <tbody>
+        {% for group, series in lattice.integral.discriminant_orbits.items() %}
+        <tr><th scope="row">\(\Gamma = {{ orbit_group_tex(group) }}\)</th><td>\({{ orbit_series_tex(series) }}\){% if series.reference %}, by {% if series.reference.url %}<a href="{{ series.reference.url }}">{{ series.reference.citation }}</a>{% else %}{{ series.reference.citation }}{% endif %}{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if lattice.definite %}
+  <section aria-labelledby="definite">
+    <h2 id="definite">Definite lattice</h2>
+    {% set form = "-b" if lattice.definiteness == "negative_definite" else "b" %}
+    {% if lattice.definiteness == "negative_definite" %}
+    <p>The form is negative definite, so the invariants below are those of \(-b\) ({{ theory("definite-lattices", "sign", "sign convention") }}).</p>
+    {% endif %}
+    <table class="facts">
+      <tbody>
+        {% if lattice.definite.minimum is not none %}
+        <tr><th scope="row">{{ theory("definite-lattices", "minimum", "Minimum") }} of \({{ form }}(x, x)\), \(x \neq 0\)</th><td>\({{ rational_tex(lattice.definite.minimum) }}\)</td></tr>
+        {% endif %}
+        {% if lattice.definite.kissing_number is not none %}
+        <tr><th scope="row">{{ theory("definite-lattices", "minimum", "Kissing number") }}</th><td>{{ lattice.definite.kissing_number }}</td></tr>
+        {% endif %}
+        {% if lattice.definite.automorphism_group_order is not none %}
+        <tr><th scope="row">Order of the {{ theory("definite-lattices", "isometry-group", "isometry group") }}</th><td>\({{ lattice.definite.automorphism_group_order }}\)</td></tr>
+        {% endif %}
+        {% if lattice.definite.automorphism_group_generator_morphisms %}
+        <tr><th scope="row">Generators of \(O(L)\)</th><td>{{ lattice.definite.automorphism_group_generator_morphisms | join(", ") }}</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+    {% if lattice.definite.theta_series is not none %}
+    <h3>{{ theory("definite-lattices", "theta-series", "Theta series") }}</h3>
+    \[ \sum_{x \in L} q^{ {{- form -}} (x, x)} = {{ theta_tex(lattice.definite.theta_series) }} \]
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if lattice.indefinite %}
+  <section aria-labelledby="indefinite">
+    <h2 id="indefinite">Indefinite lattice</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">{{ theory("indefinite-lattices", "isotropic", "Isotropic") }}</th><td>{{ yes_no(lattice.indefinite.isotropic) }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if lattice.hyperbolic %}
+  <section aria-labelledby="hyperbolic">
+    <h2 id="hyperbolic">Hyperbolic lattice</h2>
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">{{ theory("indefinite-lattices", "reflective", "Reflective") }}</th><td>{{ yes_no(lattice.hyperbolic.reflective) }} {{ declared() }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+ <section aria-labelledby="roots">
+   <h2 id="roots">{{ theory("roots", "roots", "Roots") }}</h2>
+   {% set span = lattice.root_span %}
+    {% set root_sub = lattice.root_sublattice %}
+   <table class="facts">
+     <tbody>
+        {% if root_sub is none and span is none and not (lattice.definite and lattice.definite.roots) %}
+       <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
+       <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>{{ theory("records", "not-decided", "not decided") }}</td></tr>
+       {% else %}
+        {% if root_sub and root_sub.norms is not none %}
+        <tr><th scope="row">Root lattice: \(L = \mathbb{Z}\Phi(L)\)</th><td>yes</td></tr>
+        <tr><th scope="row">\(L = \mathbb{Z}\Phi_S(L)\) for</th><td>\(S = {{ set_tex(root_sub.norms) }}\)</td></tr>
+       {% endif %}
+       <tr><th scope="row">\(R(L) = \mathbb{Z}\Phi(L)\)</th><td>
+          {%- if span_summands -%}
+          \(\cong\) {% for summand, name in span_summands %}<a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ name }}\){% if not loop.last %} \(\oplus\) {% endif %}{% endfor %}
+          {%- elif span_name is none -%}
+          {{ theory("records", "not-decided", "isometry class not decided") }}
+          {%- elif span_name[1] in ("L", "0") -%}
+          \({{ span_name[1] }}\)
+          {%- else -%}
+          \(\cong {{ span_name[1] }}\)
+         {%- endif -%}
+       </td></tr>
+        {% if root_sub %}
+        <tr><th scope="row">Stored invariant factors of \(R(L)\)</th><td>{{ root_sub.invariant_factors | join(", ") }}</td></tr>
+        {% endif %}
+       {% if not lattice.definite %}
+       <tr><th scope="row">Proof</th><td>
+         {%- if not span.roots -%}
+         The notes prove that \(L\) has no roots.
+         {%- else -%}
+          The stored rows in <a href="#generating-roots">roots that generate \(\mathbb{Z}\Phi(L)\)</a> are source-stated generating roots; the prose records the completeness argument.
+         {%- endif -%}
+       </td></tr>
+        {% endif %}
+        {% endif %}
+      </tbody>
+    </table>
+    {% if lattice.definite and lattice.definite.roots %}
+    {% set several = lattice.definite.roots | length > 1 %}
+    <h3>{{ theory("roots", "definite", "Components") }} of \(\Phi(L)\)</h3>
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Component</th><th scope="col">Type</th><th scope="col">Stored scale</th></tr>
+        </thead>
+        <tbody>
+          {% for component in lattice.definite.roots %}
+          <tr><td>\(\Phi_{ {{- loop.index -}} }\)</td><td>\({{ root_system_tex((component.type,)) }}\)</td><td>\({{ rational_tex(component.scale) }}\)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h3>{{ theory("roots", "definite", "Simple roots") }}</h3>
+    {% if several %}<p>\(\alpha^{(c)}_j\) is simple root \(j\) of the component \(\Phi_c\).</p>{% endif %}
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Simple root</th><th scope="col">Coordinates</th></tr>
+        </thead>
+        <tbody>
+          {% for component in lattice.definite.roots %}
+          {% set c = loop.index %}
+          {% for simple_root in component.simple_roots %}
+          <tr><td>\(\alpha{% if several %}^{({{ c }})}{% endif %}_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(simple_root) }}\)</td></tr>
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+   {% if span and span.roots %}
+   <h3 id="generating-roots">{{ theory("roots", "not-definite", "Roots that generate") }} \(\mathbb{Z}\Phi(L)\)</h3>
+   <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Root</th><th scope="col">Coordinates</th><th scope="col" class="numeric">\(b(r, r)\)</th></tr>
+        </thead>
+        <tbody>
+          {% for generating_root in span.roots %}
+          <tr><td>\(r_{ {{- loop.index -}} }\)</td><td>\({{ combination_tex(generating_root) }}\)</td><td class="numeric">\({{ rational_tex(span.norms[loop.index0]) }}\)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if span_images %}
+    <h3>{{ theory("roots", "not-definite", "Embedding") }} \(M_1 \oplus M_2 \oplus \dots \to L\) with image \(\mathbb{Z}\Phi(L)\)</h3>
+    <p>Image of each basis vector \(e_j\) of each summand \(M_i\).</p>
+    <div class="table-scroll">
+      <table class="member-table vector-table">
+        <thead>
+          <tr><th scope="col">Summand</th><th scope="col">Basis vector of the summand</th><th scope="col">Image in \(L\)</th></tr>
+        </thead>
+        <tbody>
+          {% for summand, name, j, image in span_images %}
+          <tr><td><a class="tag" href="{{ root }}tag/{{ summand.tag }}.html">{{ summand.tag }}</a> \({{ name }}\)</td><td>\(e_{ {{- j -}} }\)</td><td>\({{ combination_tex(image) }}\)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </section>
+
+  {% if prose | trim %}
+  <section aria-labelledby="notes">
+    <h2 id="notes">Notes</h2>
+    <div class="prose">{{ prose }}</div>
+  </section>
+  {% endif %}
+
+  {% if related %}
+  <section aria-labelledby="related">
+    <h2 id="related">Related lattices</h2>
+    <ul class="related-list">
+      {% for other, relation in related %}
+      <li><a class="tag" href="{{ root }}tag/{{ other.tag }}.html">{{ other.tag }}</a> <span class="tag-name">\({{ other.latex }}\)</span> <span class="relation">{{ relation }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if outgoing_morphisms or incoming_morphisms %}
+  <section aria-labelledby="morphisms">
+    <h2 id="morphisms">{{ theory("morphisms", "morphisms", "Morphisms") }}</h2>
+    {% if outgoing_morphisms %}
+    <h3>From this lattice</h3>
+    {% for morphism, target, tex, text in outgoing_morphisms %}
+    <section aria-labelledby="morphism-{{ loop.index }}">
+      <h4 id="morphism-{{ loop.index }}">{{ morphism.name | inline_markup }}</h4>
+      <p>\(L{% if morphism.scale != 1 %}({{ morphism.scale }}){% endif %} \to\) <a class="tag" href="{{ root }}tag/{{ target.tag }}.html">{{ target.tag }}</a> \({{ target.latex }}\).</p>
+      {% if morphism.description %}<p>{{ morphism.description | inline_markup }}</p>{% endif %}
+      <div class="table-scroll">\[{{ tex }}\]</div>
+      <div class="copy-block"><pre id="morphism-matrix-{{ loop.index }}">{{ text }}</pre><button type="button" data-copy="morphism-matrix-{{ loop.index }}">Copy</button></div>
+    </section>
+    {% endfor %}
+    {% endif %}
+    {% if incoming_morphisms %}
+    <h3>To this lattice</h3>
+    <ul class="related-list">
+      {% for source, morphism in incoming_morphisms %}
+      <li><a class="tag" href="{{ root }}tag/{{ source.tag }}.html#morphisms">{{ source.tag }}</a> \({{ source.latex }}{% if morphism.scale != 1 %}({{ morphism.scale }}){% endif %} \to L\): {{ morphism.name | inline_markup }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if lattice.references %}
+  <section aria-labelledby="references">
+    <h2 id="references">References</h2>
+    <ol class="reference-list">
+      {% for reference in lattice.references %}
+      <li>{{ reference.citation }}{% if reference.url %} <a href="{{ reference.url }}">{{ reference.url }}</a>{% endif %}</li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+
+  <nav class="pager" aria-label="Adjacent tags">
+    {% if previous %}<a rel="prev" href="{{ root }}tag/{{ previous.tag }}.html"><span class="pager-label">Previous</span><span class="tag">{{ previous.tag }}</span> \({{ previous.latex }}\)</a>{% else %}<span></span>{% endif %}
+    {% if following %}<a rel="next" href="{{ root }}tag/{{ following.tag }}.html"><span class="pager-label">Next</span><span class="tag">{{ following.tag }}</span> \({{ following.latex }}\)</a>{% endif %}
+  </nav>
+</article>
+{% endblock %}

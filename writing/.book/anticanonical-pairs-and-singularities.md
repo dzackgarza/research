@@ -1,1 +1,0 @@
-coble/degenerations/anticanonical-pairs-and-singularities.md

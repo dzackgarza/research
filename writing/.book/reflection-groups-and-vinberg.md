@@ -1,1 +1,0 @@
-coble/compactifications/reflection-groups-and-vinberg.md

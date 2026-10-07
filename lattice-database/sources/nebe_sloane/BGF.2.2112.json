@@ -1,0 +1,20 @@
+{
+ "name": "BGF.2.2112",
+ "title": "BGF.2.2112",
+ "url": "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz",
+ "dimension": 2,
+ "determinant": 23,
+ "minimal_norm": 2,
+ "kissing_number": 2,
+ "references": [],
+ "gram_tensor": [
+  [
+   2,
+   1
+  ],
+  [
+   1,
+   12
+  ]
+ ]
+}

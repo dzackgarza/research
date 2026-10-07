@@ -95,7 +95,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                     )
                 case _:
                     return parent._from_engine_element(
-                        _engine_element(parent.base_ring(), scalar) * self._backend()
+                        _engine_element(parent.base_ring(), scalar) * self._backend(),
                     )
 
         _rmul_ = _lmul_

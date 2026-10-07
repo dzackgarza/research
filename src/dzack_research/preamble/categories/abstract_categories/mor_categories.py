@@ -38,6 +38,7 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.category_object import CategoryObject as SageCategoryObject
 from sage.structure.dynamic_class import DynamicMetaclass, dynamic_class
@@ -220,6 +221,22 @@ def _packet_supercategories(category):
         for supercategory in category.super_categories()
         if _has_category_packet_surface(supercategory)
     )
+
+
+def _distinct_supercategories(categories) -> list:
+    r"""Return ``categories`` without repeats, in order, compared by identity.
+
+    Several packet supercategories of a base category may state no Mor theory
+    of their own, and then their Mor families return the same inherited fixed
+    Mor object.  Sage's ``_all_super_categories`` merges ``super_categories()``
+    with ``C3_sorted_merge``, which fails on a repeated entry, so a fixed Mor
+    states each supercategory once.
+    """
+    distinct = []
+    for category in categories:
+        if not any(category is seen for seen in distinct):
+            distinct.append(category)
+    return distinct
 
 
 def _precomposable(second: Morphism, first) -> bool:
@@ -441,6 +458,18 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             """
             return (mor, self), {}
 
+    # A Mor category compares as the category it is: by identity, through
+    # Sage's ``WithEqualityById`` (``sage.misc.fast_methods``), which every
+    # ``Category`` inherits.  ``OwnedMor`` precedes ``Category`` in the MRO, so
+    # Sage ``Homset.__eq__`` (domain, codomain, placement) would otherwise make
+    # distinct Mor categories between the same objects equal, and Sage's
+    # ``C3_sorted_merge`` over ``_all_super_categories`` requires ``==`` to be
+    # identity on categories.  The owning family interns each fixed Mor by
+    # endpoint identity (``_MorCategoryOf._cached_between``).
+    __eq__ = Category.__eq__
+    __ne__ = Category.__ne__
+    __hash__ = Category.__hash__
+
     @cached_method
     def _generated_arrow_type(self) -> type:
         r"""Return the arrow type generated from this Mor category's graph."""
@@ -499,14 +528,17 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             return Parent.element_class.f(self)
         return self._generated_arrow_type()
 
-    @property
+    @lazy_attribute
     def element_class(self) -> type:
         r"""Sage's element spelling of the owned arrow type.
 
         A Mor class still declaring ``Element`` has not yet migrated onto the
         category-generated arrow chain and keeps Sage's legacy construction.
         Once it declares ``ElementMethods`` instead, the generated Hom element
-        type is the actual runtime arrow class.
+        type is the actual runtime arrow class.  A lazy attribute, as Sage's
+        ``Parent.element_class`` is: refining this Mor into its placement
+        category extends the arrow type with that category's element methods
+        (``refine._rebuild_element_class``) and stores the result here.
         """
         if any(
             ancestor.__dict__.get("Element") is not None
@@ -742,7 +774,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
                         domain
                     )
                 )
-        return supers or [Objects()]
+        return _distinct_supercategories(supers) or [Objects()]
 
     def two_mor(
         self,
@@ -1018,7 +1050,7 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
                         domain
                     )
                 )
-        return supers or [Objects()]
+        return _distinct_supercategories(supers) or [Objects()]
 
     def _repr_(self) -> str:
         return (
@@ -1076,7 +1108,7 @@ class FixedRestrictedMorCategory(FixedMorCategory):
             ))
             for supercategory in _packet_supercategories(self.base_category())
         ]
-        return [base, *inherited]
+        return _distinct_supercategories([base, *inherited])
 
 
 class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
@@ -1275,7 +1307,7 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
                 self.aut_family().family_over(supercategory).Of(domain)
                 for supercategory in _packet_supercategories(self.base_category())
             )
-        return supers
+        return _distinct_supercategories(supers)
 
     def identity_automorphism(self) -> CategoricalIsomorphism:
         if self.aut_family() is None:
@@ -1323,11 +1355,9 @@ class FixedAutCategory(FixedIsoCategory):
             self.mor_family().family_over(supercategory).Of(obj)
             for supercategory in _packet_supercategories(self.base_category())
         ]
-        return [
-            packet.Ends().Of(obj),
-            packet.Isos().Of(obj, obj),
-            *inherited,
-        ]
+        return _distinct_supercategories(
+            [packet.Ends().Of(obj), packet.Isos().Of(obj, obj), *inherited]
+        )
 
     def _repr_(self) -> str:
         return f"Aut_{self.base_category()}({self.domain_object()})"

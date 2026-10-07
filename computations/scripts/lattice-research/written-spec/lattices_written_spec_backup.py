@@ -135,15 +135,7 @@ from sage.modules.fg_pid.fgp_morphism import FGP_Morphism
 from sage.modules.free_module_morphism import FreeModuleMorphism
 from sage.modules.vector_integer_dense import Vector_integer_dense
 from sage.sets.condition_set import ConditionSet as _ConditionSet
-from src.backends.external.py_polyhedral import (
-    indefinite_form_automorphism_group,
-    indefinite_form_isotropic_k_flag,
-    indefinite_form_isotropic_k_plane,
-    indefinite_form_stabilizer_isotropic_flag,
-    indefinite_form_stabilizer_isotropic_line,
-    indefinite_form_stabilizer_isotropic_plane_2d,
-    indefinite_form_stabilizer_vector,
-)
+from sage_indefinite_port.indefinite import isotropic_flags, recursive
 from src.backends.isometry_backend import ISOMETRY_BACKEND
 
 _A1_POSITIVE = IntegralLattice("A1")
@@ -1288,7 +1280,7 @@ class Lattice(_LatticeBase):
         return morphism
 
     # ------------------------------------------------------------------
-    # High-level computational methods (route to polyhedral_common binaries)
+    # High-level computational methods (route to sage-indefinite-port capabilities)
     # ------------------------------------------------------------------
 
     def _gram_rows(self):
@@ -1320,7 +1312,7 @@ class Lattice(_LatticeBase):
         gram_rows = self._gram_rows()
         return LatticeOrthogonalGroup.from_lattice(
             self,
-            lambda: self._matrices_from_raw(indefinite_form_automorphism_group(gram_rows)),
+            lambda: self._matrices_from_raw(recursive.orthogonal_group_generators(gram_rows)),
         )
 
     def stabilizer_of_vector(self, v) -> LatticeOrthogonalSubgroup:
@@ -1335,7 +1327,7 @@ class Lattice(_LatticeBase):
         vlist = self._vec_to_list(v)
         gram_rows = self._gram_rows()
         return self.orthogonal_group().subgroup(
-            gens_fn=lambda: self._matrices_from_raw(indefinite_form_stabilizer_vector(gram_rows, vlist)),
+            gens_fn=lambda: self._matrices_from_raw(recursive.vector_stabilizer_generators(gram_rows, vlist)),
             predicate=lambda M, _v=v_col: M * _v == _v,
         )
 
@@ -1353,7 +1345,7 @@ class Lattice(_LatticeBase):
         vlist = self._vec_to_list(v)
         gram_rows = self._gram_rows()
         return self.orthogonal_group().subgroup(
-            gens_fn=lambda: self._matrices_from_raw(indefinite_form_stabilizer_isotropic_line(gram_rows, vlist)),
+            gens_fn=lambda: self._matrices_from_raw(isotropic_flags.isotropic_sublattice_stabilizer_generators(gram_rows, [vlist])),
             predicate=lambda M, _s=span_v, _v=v_col: M * _v in _s,
         )
 
@@ -1371,7 +1363,7 @@ class Lattice(_LatticeBase):
         vlist, wlist = self._vec_to_list(v), self._vec_to_list(w)
         gram_rows = self._gram_rows()
         return self.orthogonal_group().subgroup(
-            gens_fn=lambda: self._matrices_from_raw(indefinite_form_stabilizer_isotropic_plane_2d(gram_rows, vlist, wlist)),
+            gens_fn=lambda: self._matrices_from_raw(isotropic_flags.isotropic_sublattice_stabilizer_generators(gram_rows, [vlist, wlist])),
             predicate=lambda M, _p=plane, _v=v_col, _w=w_col: M * _v in _p and M * _w in _p,
         )
 
@@ -1394,7 +1386,7 @@ class Lattice(_LatticeBase):
             return all(M * c in s for c, s in zip(_cols, _strata))
 
         return self.orthogonal_group().subgroup(
-            gens_fn=lambda: self._matrices_from_raw(indefinite_form_stabilizer_isotropic_flag(gram_rows, basis_lists)),
+            gens_fn=lambda: self._matrices_from_raw(isotropic_flags.isotropic_flag_stabilizer_generators(gram_rows, basis_lists)),
             predicate=_flag_predicate,
         )
 
@@ -1404,7 +1396,7 @@ class Lattice(_LatticeBase):
         Returns a list of LatticeElements, one per O(self)-orbit of primitive
         isotropic lines (1-dimensional totally isotropic subspaces).
         """
-        raw = indefinite_form_isotropic_k_plane(self._gram_rows(), 1)
+        raw = isotropic_flags.isotropic_sublattice_orbit_representatives(self._gram_rows(), 1)
         return [self(rows[0]) for rows in raw]
 
     def isotropic_plane_orbits(self):
@@ -1413,7 +1405,7 @@ class Lattice(_LatticeBase):
         Returns a list of pairs (v, w) of LatticeElements spanning one
         representative totally isotropic 2-plane per O(self)-orbit.
         """
-        raw = indefinite_form_isotropic_k_plane(self._gram_rows(), 2)
+        raw = isotropic_flags.isotropic_sublattice_orbit_representatives(self._gram_rows(), 2)
         # raw is a list of 2×n matrices (list of two row-vectors)
         return [(self(rows[0]), self(rows[1])) for rows in raw]
 
@@ -1424,7 +1416,7 @@ class Lattice(_LatticeBase):
         k=2: orbits of flags line ⊂ plane
         Returns a list of lists of LatticeElements.
         """
-        raw = indefinite_form_isotropic_k_flag(self._gram_rows(), k)
+        raw = isotropic_flags.isotropic_flag_orbit_representatives(self._gram_rows(), k)
         return [[self(row) for row in rows] for rows in raw]
 
     def _eigenspace_sublattice(self, iota_matrix, eigenvalue: int) -> Lattice:

@@ -1,0 +1,257 @@
+\begin{thebibliography}{BHPVdV04}
+
+\bibitem[AB17]{calculations}
+Kenneth Ascher and Dori Bejleri.
+\newblock Log canonical models of elliptic surfaces.
+\newblock {\em Advances in Mathematics}, 320:210--243, 2017.
+
+\bibitem[AB19]{tsm}
+Kenneth Ascher and Dori Bejleri.
+\newblock Moduli of fibered surface pairs from twisted stable maps.
+\newblock {\em Mathematische Annalen}, 374(1-2):1007--1032, 2019.
+
+\bibitem[AB21a]{master}
+Kenneth Ascher and Dori Bejleri.
+\newblock Moduli of weighted stable elliptic surfaces and invariance of log
+  plurigenera.
+\newblock {\em Proc. Lond. Math. Soc}, 122(5):617--677, 2021.
+
+\bibitem[AB21b]{tsm2}
+Kenneth Ascher and Dori Bejleri.
+\newblock Smoothability of relative stable maps to stacky curves.
+\newblock {\em arXiv:2108.05324}, 2021.
+
+\bibitem[ABE20]{abe}
+Valery {Alexeev}, Adrian {Brunyate}, and Philip {Engel}.
+\newblock {Compactifications of moduli of elliptic K3 surfaces: stable pair and
+  toroidal}.
+\newblock {\em arXiv e-prints}, page arXiv:2002.07127, Feb 2020.
+
+\bibitem[AET19]{aet}
+Valery {Alexeev}, Philip {Engel}, and Alan {Thompson}.
+\newblock {Stable pair compactification of moduli of K3 surfaces of degree 2}.
+\newblock {\em arXiv e-prints}, page arXiv:1903.09742, Mar 2019.
+
+\bibitem[Ale94]{boundedness}
+Valery Alexeev.
+\newblock Boundedness and {$K^2$} for log surfaces.
+\newblock {\em Internat. J. Math.}, 5(6):779--810, 1994.
+
+\bibitem[AV97]{av}
+Dan Abramovich and Angelo Vistoli.
+\newblock Complete moduli for fibered surfaces.
+\newblock {\em Recent progress in intersection theory (Bologna, 1997)}, 1997.
+
+\bibitem[AV02]{av2}
+Dan Abramovich and Angelo Vistoli.
+\newblock Compactifying the space of stable maps.
+\newblock {\em J. Amer. Math. Soc.}, 15(1):27--75, 2002.
+
+\bibitem[BB66]{bb}
+W.~L. Baily, Jr. and A.~Borel.
+\newblock Compactification of arithmetic quotients of bounded symmetric
+  domains.
+\newblock {\em Ann. of Math. (2)}, 84:442--528, 1966.
+
+\bibitem[BHPVdV04]{complexsurfaces}
+Wolf~P. Barth, Klaus Hulek, Chris A.~M. Peters, and Antonius Van~de Ven.
+\newblock {\em Compact complex surfaces}, volume~4 of {\em Ergebnisse der
+  Mathematik und ihrer Grenzgebiete. 3. Folge. A Series of Modern Surveys in
+  Mathematics [Results in Mathematics and Related Areas. 3rd Series. A Series
+  of Modern Surveys in Mathematics]}.
+\newblock Springer-Verlag, Berlin, second edition, 2004.
+
+\bibitem[Bru15]{brunyate}
+Adrian Brunyate.
+\newblock {\em A Modular Compactification of the Space of Elliptic K3
+  Surfaces}.
+\newblock PhD thesis, The University of Georgia, 2015.
+
+\bibitem[Cad07]{cadman}
+Charles Cadman.
+\newblock Using stacks to impose tangency conditions on curves.
+\newblock {\em Amer. J. Math.}, 129(2):405--427, 2007.
+
+\bibitem[Dol96]{dolgachev}
+I.~V. Dolgachev.
+\newblock Mirror symmetry for lattice polarized {$K3$} surfaces.
+\newblock {\em J. Math. Sci.}, 81(3):2599--2630, 1996.
+\newblock Algebraic geometry, 4.
+
+\bibitem[Fri84a]{friedman}
+Robert Friedman.
+\newblock A new proof of the global {T}orelli theorem for {$K3$} surfaces.
+\newblock {\em Ann. of Math. (2)}, 120(2):237--269, 1984.
+
+\bibitem[Fri84b]{friedmanbook}
+Robert Friedman.
+\newblock The period map at the boundary of moduli.
+\newblock In {\em Topics in transcendental algebraic geometry ({P}rinceton,
+  {N}.{J}., 1981/1982)}, volume 106 of {\em Ann. of Math. Stud.}, pages
+  183--208. Princeton Univ. Press, Princeton, NJ, 1984.
+
+\bibitem[Gat02]{gathmann}
+Andreas Gathmann.
+\newblock Absolute and relative {G}romov-{W}itten invariants of very ample
+  hypersurfaces.
+\newblock {\em Duke Math. J.}, 115(2):171--203, 2002.
+
+\bibitem[GG14]{gg}
+Noah Giansiracusa and William~Danny Gillam.
+\newblock On {K}apranov's description of {$\overline M_{0,n}$} as a {C}how
+  quotient.
+\newblock {\em Turkish J. Math.}, 38(4):625--648, 2014.
+
+\bibitem[Has03]{has}
+Brendan Hassett.
+\newblock Moduli spaces of weighted pointed stable curves.
+\newblock {\em Advances in Mathematics}, pages 316--352, 2003.
+
+\bibitem[HL02]{hl}
+Gert Heckman and Eduard Looijenga.
+\newblock The moduli space of rational elliptic surfaces.
+\newblock In {\em Algebraic Geometry 2000}, volume~36 of {\em Adv. Stud. Pure
+  Math}. Math. Soc. Japan, 2002.
+
+\bibitem[HMX18]{hmx}
+Christopher~D. Hacon, James McKernan, and Chenyang Xu.
+\newblock Boundedness of moduli of varieties of general type.
+\newblock {\em J. Eur. Math. Soc. (JEMS)}, 20(4):865--901, 2018.
+
+\bibitem[HP15]{HP}
+Robin Hartshorne and Claudia Polini.
+\newblock Divisor class groups of singular surfaces.
+\newblock {\em Trans. Amer. Math. Soc.}, 367(9):6357--6385, 2015.
+
+\bibitem[HT15]{HT}
+Andrew Harder and Alan Thompson.
+\newblock The geometry and moduli of {K}3 surfaces.
+\newblock In {\em Calabi-{Y}au varieties: arithmetic, geometry and physics},
+  volume~34 of {\em Fields Inst. Monogr.}, pages 3--43. Fields Inst. Res. Math.
+  Sci., Toronto, ON, 2015.
+
+\bibitem[HX13]{hx1}
+Christopher~D. Hacon and Chenyang Xu.
+\newblock Existence of log canonical closures.
+\newblock {\em Invent. Math.}, 192(1):161--195, 2013.
+
+\bibitem[{Inc}20]{giovanni}
+G.~{Inchiostro}.
+\newblock {Moduli of Weierstrass fibrations with marked section}.
+\newblock {\em Advances in Mathematics}, 2020.
+\newblock To appear.
+
+\bibitem[KK10]{kk}
+J\'{a}nos Koll\'{a}r and S\'{a}ndor~J. Kov\'{a}cs.
+\newblock Log canonical singularities are {D}u {B}ois.
+\newblock {\em J. Amer. Math. Soc.}, 23(3):791--813, 2010.
+
+\bibitem[KM98]{km}
+J{\'a}nos Koll{\'a}r and Shigefumi Mori.
+\newblock {\em Birational geometry of algebraic varieties}, volume 134 of {\em
+  Cambridge Tracts in Mathematics}.
+\newblock Cambridge University Press, Cambridge, 1998.
+\newblock With the collaboration of C. H. Clemens and A. Corti, Translated from
+  the 1998 Japanese original.
+
+\bibitem[Kol13]{singmmp}
+J{\'a}nos Koll{\'a}r.
+\newblock {\em Singularities of the minimal model program}, volume 200 of {\em
+  Cambridge Tracts in Mathematics}.
+\newblock Cambridge University Press, Cambridge, 2013.
+\newblock With a collaboration of S{\'a}ndor Kov{\'a}cs.
+
+\bibitem[{Kol}18]{kollarmumford}
+J{\'a}nos {Koll{\'a}r}.
+\newblock {Mumford's influence on the moduli theory of algebraic varieties}.
+\newblock {\em arXiv e-prints}, page arXiv:1809.10723, September 2018.
+
+\bibitem[Kol21]{kolmodbook}
+J\'anos Koll\'ar.
+\newblock {\em Families of varieties of general type}.
+\newblock Available at \url{https://web.math.princeton.edu/~kollar/}, 2021.
+
+\bibitem[KP17]{kp}
+S\'{a}ndor~J. Kov\'{a}cs and Zsolt Patakfalvi.
+\newblock Projectivity of the moduli space of stable log-varieties and
+  subadditivity of log-{K}odaira dimension.
+\newblock {\em J. Amer. Math. Soc.}, 30(4):959--1021, 2017.
+
+\bibitem[KSB88]{ksb}
+J.~Koll{\'a}r and N.~I. Shepherd-Barron.
+\newblock Threefolds and deformations of surface singularities.
+\newblock {\em Invent. Math.}, 91(2):299--338, 1988.
+
+\bibitem[Laz16]{laza}
+Radu Laza.
+\newblock The {KSBA} compactification for the moduli space of degree two {$K3$}
+  pairs.
+\newblock {\em J. Eur. Math. Soc. (JEMS)}, 18(2):225--279, 2016.
+
+\bibitem[LN02]{ln}
+Gabrielle La~Nave.
+\newblock Explicit stable models of elliptic surfaces with sections.
+\newblock {\em arXiv: 0205035}, 2002.
+
+\bibitem[LZ16]{lazacpd}
+Radu Laza and Zheng Zhang.
+\newblock Classical period domains.
+\newblock In {\em Recent advances in {H}odge theory}, volume 427 of {\em London
+  Math. Soc. Lecture Note Ser.}, pages 3--44. Cambridge Univ. Press, Cambridge,
+  2016.
+
+\bibitem[Mir81]{mir}
+Rick Miranda.
+\newblock The moduli of weierstrass fibrations over $\mathbb{P}^1$.
+\newblock {\em Math. Ann.}, 255(3):379--394, 1981.
+
+\bibitem[Mir89]{mir3}
+Rick Miranda.
+\newblock {\em The basic theory of elliptic surfaces}.
+\newblock Dottorato di Ricerca in Matematica. [Doctorate in Mathematical
+  Research]. ETS Editrice, Pisa, 1989.
+
+\bibitem[Nik79]{nikulin}
+V.~V. Nikulin.
+\newblock Finite groups of automorphisms of {K}\"ahlerian {$K3$} surfaces.
+\newblock {\em Trudy Moskov. Mat. Obshch.}, 38:75--137, 1979.
+
+\bibitem[Ols07]{olsson}
+Martin~C Olsson.
+\newblock (log) twisted curves.
+\newblock {\em Compositio Mathematica}, 143(2):476--494, 2007.
+
+\bibitem[OO18]{oo}
+Y.~{Odaka} and Y.~{Oshima}.
+\newblock {Collapsing K3 surfaces, Tropical geometry and Moduli
+  compactifications of Satake, Morgan-Shalen type}.
+\newblock {\em ArXiv e-prints}, October 2018.
+
+\bibitem[Per90]{persson}
+Ulf Persson.
+\newblock Configurations of {K}odaira fibers on rational elliptic surfaces.
+\newblock {\em Math. Z.}, 205(1):1--47, 1990.
+
+\bibitem[Sca87]{scattone}
+Francesco Scattone.
+\newblock On the compactification of moduli spaces for algebraic {$K3$}
+  surfaces.
+\newblock {\em Mem. Amer. Math. Soc.}, 70(374):x+86, 1987.
+
+\bibitem[Shi03]{shioda}
+Tetsuji Shioda.
+\newblock The elliptic k3 surfaces with a maximal singular fibre.
+\newblock {\em Comptes Rendus Mathematique}, 337(7):461 -- 466, 2003.
+
+\bibitem[SS09]{sselliptic}
+M.~{Schuett} and T.~{Shioda}.
+\newblock {Elliptic Surfaces}.
+\newblock {\em ArXiv e-prints}, July 2009.
+
+\bibitem[Vak00]{vakil}
+Ravi Vakil.
+\newblock The enumerative geometry of rational and elliptic curves in
+  projective space.
+\newblock {\em J. Reine Angew. Math.}, 529:101--153, 2000.
+
+\end{thebibliography}

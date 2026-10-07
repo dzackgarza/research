@@ -103,30 +103,18 @@ old_lattice_repr
 from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric, FreeQuadraticModule_submodule_with_basis_pid    
 from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
 
-common_files = "/home/dzack/Dropbox/Projects/polyhedral_common/CI_tests/common.g"
+from sage_indefinite_port.indefinite import recursive
 
-def getOrbitRepresentatives(L, Xnorm, debug=False):
-    eProg = "INDEF_FORM_GetOrbitRepresentative"
-    eGram =  L.gram_matrix() #U_2.gram_matrix()
-    gap.eval(f'eProg:="{eProg}"')
-    gap.eval(f'Read("{common_files}");')
-    FileM = gap.eval('FileM:=Filename(DirectoryTemporary(), "Mat.in");')
-    gap.eval('FileOut:=Filename(DirectoryTemporary(), "Test.out");');
-    gap.function_call('WriteMatrixFile', [FileM, eGram] )
-    if debug: print(gap('FileM'))
-    if debug: print(gap('FileOut'))
-    gap.eval(f'TheCommand:=Concatenation(eProg, " gmp ", FileM, " ", String({Xnorm}), " GAP ", FileOut)')
-    if debug: print(gap('TheCommand'))
-    gap.eval('Exec(TheCommand)')
-    gap_orbs = gap('ReadAsFunction(FileOut)();')
-    orbs = [ vector(ZZ, list(x)) for x in list(gap_orbs)]
+def getOrbitRepresentatives(L, Xnorm):
+    raw_orbs = recursive.vector_orbit_representatives(L.gram_matrix(), Xnorm)
+    orbs = [ vector(ZZ, list(x)) for x in raw_orbs]
     isotrops = [ (v, L.q(v)) for v in orbs]
     return isotrops
 
 setattr(
     sage.modules.free_quadratic_module_integer_symmetric.FreeQuadraticModule_integer_symmetric,
     "getOrbitRepresentatives",
-    lambda self, Xnorm: getOrbitRepresentatives(self, Xnorm, debug=False)
+    lambda self, Xnorm: getOrbitRepresentatives(self, Xnorm)
 )
 
 def vinberg_algorithm(self):
@@ -284,13 +272,10 @@ out
 ## Code Cell 18
 
 ```python
-# INDEF_FORM_InvariantIsotropicPlane [arith] [QFile] [PlaneFile] [choice] [OutFormat] [OutFile]
-# INDEF_FORM_TestEquivalenceVector [arith] [FileM] [FileV1] [FileV2] [OutFormat] [OutFile]
-# INDEF_ApproximateOrbitRepresentative [arith] [MatFile] [X] [OutFormat] [OutFile]
-# ? GRP_RuntimeOrbitSplitting after GRP_LinearSpace_Stabilizer_DoubleCoset?
-# ? LATT_FindIsotropic (eProg, " rational ", FileIn, " GAP ", FileOut);
-# TestCase_LinearSpace_Stabilizer_DoubleCoset in ProcessExamples?
-# INDEF_FORM_StabilizerVector
+# sage-indefinite-port capabilities used below:
+# vector_equivalence_witness
+# vector_orbit_representatives
+# vector_stabilizer_generators
 ```
 
 ----------------------------------------
@@ -356,23 +341,8 @@ L.<e,f,ep,fp,a1,...,a8> = U @ U_2 @ E8_2
 Lat = L
 vec = e
 
-eGram = Lat.gram_matrix()
-vec = libgap(vec)
-eProg = "INDEF_FORM_TestStabilizerVector"
-FileM = gap.eval('FileM:=Filename(DirectoryTemporary(), "Mat.in");')
-FileV = gap.eval('FileM:=Filename(DirectoryTemporary(), "Vec.in");')
-FileOut = gap.eval('FileOut:=Filename(DirectoryTemporary(), "Test.out");');
-eGram
-str( gap( FileM) )
-gap.function_call('WriteMatrixFile', [FileM, eGram] )
-# gap.function_call('WriteVector', [FileV, vec] )
-# cmds = [eProg, "gmp", str(gap(FileM)), str(gap(FileV)), "GAP", str( gap(FileOut)) ]
-# f = open("logs.txt", "w")
-# subprocess.run(cmds, stdout = f, stderr = f)
-# print( ' '.join(cmds) )
-# U = ReadAsFunction2("/tmp/gaptempdirMLZmTi/Test.out")
-# #U = gap('ReadAsFunction(FileOut)();')
-# stab_v_subgroup = GL(Lat.rank(), ZZ).subgroup(U)
+U = recursive.vector_stabilizer_generators(Lat.gram_matrix(), vec)
+stab_v_subgroup = GL(Lat.rank(), ZZ).subgroup(U)
 ```
 
 ----------------------------------------

@@ -1,1 +1,0 @@
-coble/degenerations/kulikov-models.md

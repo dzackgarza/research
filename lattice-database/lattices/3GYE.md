@@ -1,0 +1,23 @@
+---
+tag: 3GYE
+name: watson 5:6
+latex: watson 5:6
+aliases: []
+rank: 5
+gram_tensor:
+- [2, 1, 0, 0, 0]
+- [1, 2, 0, 0, 0]
+- [0, 0, 2, 1, 0]
+- [0, 0, 1, 2, 0]
+- [0, 0, 0, 0, 6]
+signature: [5, 0]
+determinant: 54
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Watson, primitive lattices of class number one, 5:6.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+---
+
+Source entry `watson:5:6` gives this Gram tensor.

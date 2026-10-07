@@ -17,7 +17,9 @@ The current repo already has:
 
 The missing pieces are:
 
-- the installed binary and wrapper for `INDEF_FORM_TestEquivalenceVector`,
+- the vector equivalence witness `INDEF_FORM_TestEquivalenceVector`, which
+  sage-indefinite-port provides as the function
+  `vector_equivalence_witness`,
 - a private backend that composes Dawes Algorithms 2.1-2.3 with the existing
   `LatticeOrthogonalGroup` / `LatticeOrthogonalSubgroup` objects,
 - first-class subgroup constructors matching Dawes's arithmetic subgroup notation,
@@ -44,10 +46,10 @@ condition-set model.
 
 At the end of this work:
 
-- `src/external/bin` contains `INDEF_FORM_TestEquivalenceVector`,
-- `src/external/py_polyhedral` wraps it,
+- the function `vector_equivalence_witness` of
+  sage-indefinite-port decides vector equivalence under the full `O(L)`,
 - the repo has a private `dawes_orbit_backend` module that dispatches between:
-  - the full `O(L)` Dutour-Sikirić binary,
+  - the full `O(L)` algorithm of Dutour Sikirić, through that capability,
   - Dawes Algorithm 2.1 for arbitrary subgroups when `v_1^\perp` is definite,
   - Dawes Algorithms 2.2/2.3 for structured arithmetic subgroups when
     `v_1^\perp` is indefinite,
@@ -83,15 +85,12 @@ At the end of this work:
   Lemmas 2.4-2.5.
 - [Dawes non-isotropic vector orbits](dawes-nonisotropic-vector-orbits)
 - [Indefinite isometry backend](../backends/indefinite-isometry)
-- `src/external/README.md`
-- [polyhedral_common indefinite methods](../external/dutsik_polyhedral/polyhedral_common/notes/indefinite_methods)
 - [Oscar lattices](../backends/oscar-lattices)
 
 ### Online backend docs
 
-- `MathieuDutSik/polyhedral_common`
-  - `src_indefinite/INDEF_FORM_TestEquivalenceVector.cpp`
-  - `CMakeLists.txt`
+- sage-indefinite-port, `README.md` and `capabilities.toml`
+  - `vector_equivalence_witness`
 - `MathieuDutSik/Indefinite.jl`
 - OSCAR docs, `NumberTheory/QuadFormAndIsom/latwithisom`
   - `image_centralizer_in_Oq`
@@ -115,8 +114,8 @@ At the end of this work:
 
 ### Design rule
 
-Use the full `O(L)` binary whenever it is decisive. Use Dawes only when subgroup
-restrictions make the ambient binary insufficient.
+Use the full `O(L)` capability whenever it is decisive. Use Dawes only when subgroup
+restrictions make the ambient capability insufficient.
 
 That means:
 
@@ -180,13 +179,11 @@ start from `L.orthogonal_group()`.
 
 ## Wiring into Existing Code
 
-The implementation should touch exactly four layers.
+The implementation should touch exactly three layers.
 
-- `src/external/bin`
-  - installed binary artifact only
-- `src/external/py_polyhedral/binaries.py`
-  and `src/external/py_polyhedral/__init__.py`
-  - raw subprocess wrapper layer only
+- the function `vector_equivalence_witness` of
+  sage-indefinite-port, called directly
+  - the full-`O(L)` witness only
 - `src/research/dawes_orbit_backend.py`
   - all backend dispatch, subgroup-spec compilation, and Dawes logic
 - `src/coble_geometry_foundation.py`
@@ -354,50 +351,21 @@ and fail there if they are false. It should not weaken the problem to ambient
 
 ## File-Level Plan
 
-### Phase 0: Install the missing binary
-
-Files:
-
-- `src/external/bin`
+### Phase 1: Reach the vector equivalence capability
 
 Work:
 
-- build or copy `INDEF_FORM_TestEquivalenceVector` from the canonical
-  `polyhedral_common` source,
-- verify that the installed binary uses the same `gmp` and `PYTHON` conventions as
-  the other indefinite wrappers.
+- call `recursive.vector_equivalence_witness(M, v1, v2)`,
+- state the matrix/vector conventions of the returned witness explicitly in the
+  docstring.
 
 Acceptance:
 
-- `src/external/bin/INDEF_FORM_TestEquivalenceVector` exists and runs.
+- the call returns a witness matrix or `None`.
 
 Validation:
 
-- execute the binary on a known positive case and a known negative case.
-
-### Phase 1: Wrap the raw binary
-
-Files:
-
-- `src/external/py_polyhedral/binaries.py`
-- `src/external/py_polyhedral/__init__.py`
-
-Work:
-
-- add `indefinite_form_test_equivalence_vector(M, v1, v2)`,
-- mirror the existing temp-file wrapper style,
-- request `PYTHON` output so the wrapper receives either a matrix literal or
-  `None`,
-- preserve the current matrix/vector conventions explicitly in the docstring.
-
-Acceptance:
-
-- the wrapper returns a witness matrix or `None` with the same conventions as the
-  raw binary.
-
-Validation:
-
-- wrapper-level integration test against the installed binary.
+- a known positive case and a known negative case.
 
 ### Phase 2: Scaffold the private backend
 
@@ -409,7 +377,7 @@ Work:
 
 - add normalization and invariant checks,
 - add subgroup-spec compilation from existing group/subgroup objects,
-- add ambient binary fast path,
+- add ambient capability fast path,
 - add complement-building helpers,
 - add branch-precondition assertions.
 
@@ -519,9 +487,9 @@ Validation:
 
 ## Testing Strategy
 
-### Wrapper tests
+### Capability tests
 
-- ambient positive case for `INDEF_FORM_TestEquivalenceVector`
+- ambient positive case for `vector_equivalence_witness`
 - ambient negative case
 - regression on output parsing and matrix convention
 
@@ -534,7 +502,7 @@ Validation:
 
 ### Orbit solver tests
 
-- ambient `O(L)` cases resolved directly by the binary
+- ambient `O(L)` cases resolved directly by the capability
 - Algorithm 2.1 cases with custom black-box subgroup predicates
 - Algorithm 2.2/2.3 cases using Dawes Examples 2.2 and 2.6 as exact fixtures
 
@@ -545,18 +513,6 @@ Validation:
 - `L.orthogonal_group().preimage_of_discriminant_subgroup(A).vectors_are_equivalent(...)`
 
 ## Risks and Stop Rules
-
-### Risk: build/install drift in the external binary toolchain
-
-Mitigation:
-
-- treat `src/external/README.md` plus upstream `polyhedral_common` as the install
-  contract,
-- verify the binary before touching the semantic API.
-
-Stop rule:
-
-- do not proceed past phase 0 until the binary actually runs.
 
 ### Risk: spinor-norm route is harder to operationalize than expected
 

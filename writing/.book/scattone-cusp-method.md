@@ -1,1 +1,0 @@
-coble/compactifications/scattone-cusp-method.md

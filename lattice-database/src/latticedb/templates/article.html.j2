@@ -1,0 +1,12 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ page.article.title | replace("$", "") }} · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker"><a href="{{ root }}theory.html">Theory</a></p>
+    <h1>{{ page.article.title | inline_markup }}</h1>
+    <p class="lede">{{ page.article.summary | inline_markup }}</p>
+  </header>
+  <div class="prose">{{ prose }}</div>
+</article>
+{% endblock %}

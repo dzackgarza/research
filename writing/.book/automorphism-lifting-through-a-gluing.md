@@ -1,1 +1,0 @@
-coble/lattices-and-moduli/automorphism-lifting-through-a-gluing.md

@@ -1,1 +1,0 @@
-category-theory/framework/Stable-Categories-of-Modules-with-Duality.md

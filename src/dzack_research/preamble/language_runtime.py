@@ -7,6 +7,8 @@ the functions below and every backend value is crossed back before return.
 
 from __future__ import annotations
 
+from typing import cast
+
 from sage.structure.element import parent as element_parent
 from sageparse import Context, Node, splice
 from sageparse.extensions.research import EXTENSION as _RESEARCH_EXTENSION
@@ -14,6 +16,7 @@ from sageparse.extensions.research import EXTENSION as _RESEARCH_EXTENSION
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
+    _OwnedIntegerElement,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -23,19 +26,21 @@ from dzack_research.preamble.rings.real import (
     RR,
 )
 from dzack_research.preamble.rings.real import (
+    ExactRealNumber,
     RealApproximation as owned,
 )
 
 
-def Integer(value=0):
+def Integer(value: int | str | _OwnedIntegerElement = 0) -> _OwnedIntegerElement:
     from sage.rings.integer_ring import ZZ as SageZZ
 
-    return _own_ring(SageZZ)(value)
+    # The ZZ parent selects _OwnedIntegerElement as its Element class.
+    return cast(_OwnedIntegerElement, _own_ring(SageZZ)(value))
 
 
-def RealNumber(value):
+def RealNumber(value: int | str | _OwnedIntegerElement | ExactRealNumber) -> ExactRealNumber:
 
-    return RR(value)
+    return cast(ExactRealNumber, RR(value))
 
 
 def RealApproximation(value):

@@ -11,12 +11,9 @@ isometry route.
 Definite lattices then defer to Sage's quadratic-form equivalence. Indefinite
 even two-elementary lattices use the signature plus Nikulin's ``(r, a,
 delta)`` classification invariants. The remaining indefinite cases delegate to
-Mathieu Dutour Sikiric's ``INDEF_FORM_TestEquivalence`` C++ binary (from
-``polyhedral_common``) via subprocess, and require an exact witness matrix
-before returning ``True``.
-
-The binary lives at ``src/external/bin/INDEF_FORM_TestEquivalence`` inside
-this repository.  See ``src/external/README.md`` for installation instructions.
+the function ``isometry``, which
+``sage-indefinite-port`` owns, and require an exact witness matrix before
+returning ``True``.
 
 Sources:
 - Repo theory note: ``theory/foundations/reflective-two-elementary-lattices.md``, section ``Nikulin classification``
@@ -25,14 +22,12 @@ Sources:
 - Primary source: V. V. Nikulin, ``Integer Symmetric Bilinear Forms and Some of
   Their Geometric Applications`` (1979), Theorem ``1.14.2``
 - Backend research note: ``theory/backends/indefinite-isometry.md``
-- Upstream software:
-  `MathieuDutSik/polyhedral_common`, ``src_indefinite/INDEF_FORM_TestEquivalence``
 """
 
 from __future__ import annotations
 
 from sage.all import ZZ, IntegralLattice
-from src.backends.external.py_polyhedral import indefinite_form_test_equivalence
+from sage_indefinite_port.indefinite import recursive
 
 
 class LatticeIsometryBackend:
@@ -123,14 +118,13 @@ class LatticeIsometryBackend:
 
     def _isometric_indefinite_general(self, left, right):
         """
-        General indefinite branch via Dutour's ``INDEF_FORM_TestEquivalence``.
+        General indefinite branch through ``isometry``.
 
-        Writes both Gram matrices to temp files, invokes the C++ binary, reads
-        back the witness matrix (a Python literal), and verifies it over ``ZZ``.
+        Asks ``sage-indefinite-port`` for a witness matrix and verifies it
+        over ``ZZ``.
 
         Sources:
         - ``theory/backends/indefinite-isometry.md``
-        - `MathieuDutSik/polyhedral_common`, ``src_indefinite/``
         """
         cache_key = (self._gram_key(left), self._gram_key(right))
         cache = self.__dict__.setdefault("_isometry_cache", {})
@@ -141,7 +135,7 @@ class LatticeIsometryBackend:
     def _compute_general_indefinite_isometry(self, left, right):
         M1 = left.inner_product_matrix()
         M2 = right.inner_product_matrix()
-        witness_data = indefinite_form_test_equivalence(M1.rows(), M2.rows())
+        witness_data = recursive.isometry(M1.rows(), M2.rows())
         if witness_data is None:
             return False
         from sage.all import matrix

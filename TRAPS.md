@@ -1,41 +1,32 @@
 # Engine traps
 
-Measured facts about the engines this repository delegates to, kept because
-each one is the product of the work and costs an afternoon to rediscover
-(`CONTRIBUTING.md`: *The artifacts are instruments; the product is a map of
-Sage*; `DEV-63` owns this file). A row is a finding, never a hypothesis: it
-records the operation, the spelling measured, the specimen and its size
-parameter, the wall times, the version, the command that reproduces it, and the
-route chosen. A cost is a curve in the size parameter, or it is a single data
-point and says so. `COMPLAINTS.md` holds the unresolved need; this file holds
-the fact, which delivery uses and never resolves.
+Measured facts about the engines this repository delegates to, kept because each one is the product of the work and costs an afternoon to rediscover (`CONTRIBUTING.md`: *The artifacts are instruments; the product is a map of Sage*; `DEV-63` owns this file).
+A row is a finding, never a hypothesis: it records the operation, the spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, and the route chosen.
+A cost is a curve in the size parameter, or it is a single data point and says so.
+`COMPLAINTS.md` holds the unresolved need; this file holds the fact, which delivery uses and never resolves.
 
-Read this file before choosing any engine route. Write to it in the turn the
-measurement is made.
+Read this file before choosing any engine route.
+Write to it in the turn the measurement is made.
 
 ## Sage
 
 ### Lazy Taylor series do not implement `is_field()`
 
-On SageMath 10.10.beta10, the lazy Taylor series parent used for `QQ[[t]]`
-raises `NotImplementedError` from `is_field()` rather than returning a Boolean.
-This is a single capability probe with no size parameter. Reproduce with the
-repository's selected full Sage driver:
+On SageMath 10.10.beta10, the lazy Taylor series parent used for `QQ[[t]]` raises `NotImplementedError` from `is_field()` rather than returning a Boolean.
+This is a single capability probe with no size parameter.
+Reproduce with the repository's selected full Sage driver:
 
 ```bash
 /home/dzack/gitclones/sage-dev-allopts/sage -python -c \
   "from sage.all import QQ; from sage.rings.lazy_series_ring import LazyPowerSeriesRing; print(LazyPowerSeriesRing(QQ, 't').is_field())"
 ```
 
-Route chosen: the private ring-classification boundary treats this as an
-unrepresented field decision and retains only category facts the engine does
-establish. Depends on this: owned formal power-series/adically-complete ring
-construction.
+Route chosen: the private ring-classification boundary treats this as an unrepresented field decision and retains only category facts the engine does establish.
+Depends on this: owned formal power-series/adically-complete ring construction.
 
 ### Importing `sage.all` costs about a second; one module costs a tenth of that
 
-Per-invocation tooling that needs one Sage module pays for the whole library
-when it imports `sage.all`, and almost nothing when it imports the module.
+Per-invocation tooling that needs one Sage module pays for the whole library when it imports `sage.all`, and almost nothing when it imports the module.
 Single data points, not a curve: there is no size parameter.
 
 | import | wall time, three runs |
@@ -47,39 +38,28 @@ Single data points, not a curve: there is no size parameter.
 | `import sage.all`, then `Graph` | 1.34 s, 1.21 s, 1.22 s |
 | `sage -c pass` (the launcher) | 1.02 s, 1.04 s, 0.93 s |
 
-Sage 10.10.beta8, Python 3.14.7, the `.envrc` interpreter
-`/home/dzack/gitclones/sage-dev-allopts/.venv/bin/python`, 2026-09-16. The
-first run of a set is slower; the steady value is the last two. Reproduce with:
+Sage 10.10.beta8, Python 3.14.7, the `.envrc` interpreter `/home/dzack/gitclones/sage-dev-allopts/.venv/bin/python`, 2026-09-16. The first run of a set is slower; the steady value is the last two.
+Reproduce with:
 
 ```bash
 PY=/home/dzack/gitclones/sage-dev-allopts/.venv/bin/python
 for i in 1 2 3; do /usr/bin/time -f '%e s' $PY -c 'from sage.graphs.graph import Graph'; done
 ```
 
-Route chosen: a tool that runs once per invocation imports the module it
-computes with, never `sage.all`. Spawning one Sage process per item is a design
-defect at either import. Depends on this: the `category-graph` recipes
-(TODO node `category-graph-engine`).
+Route chosen: a tool that runs once per invocation imports the module it computes with, never `sage.all`. Spawning one Sage process per item is a design defect at either import.
+Depends on this: the `category-graph` recipes (TODO node `category-graph-engine`).
 
-The `sage` on `PATH` is a symlink to `sage-dev-allopts/.venv/bin/sage`, a
-Python script that accepts `-c` and rejects `-python`; time module imports with
-the venv's `python` directly.
+The `sage` on `PATH` is a symlink to `sage-dev-allopts/.venv/bin/sage`, a Python script that accepts `-c` and rejects `-python`; time module imports with the venv's `python` directly.
 
-Importing `sage.topology.simplicial_complex` without `sage.all` prints
-`UserWarning: Resolving lazy import ... during startup` three times on first
-use. The results are unaffected; loading `sage.all` first silences it and
-costs the second above.
+Importing `sage.topology.simplicial_complex` without `sage.all` prints `UserWarning: Resolving lazy import ... during startup` three times on first use.
+The results are unaffected; loading `sage.all` first silences it and costs the second above.
 
 ### `Graph.minimum_cycle_basis()` takes integer vertices only, and costs seconds on a few hundred vertices
 
-The default route is `sage.graphs.base.boost_graph.min_cycle_basis`. On string
-vertices it raises `TypeError: an integer is required` (the edge set is a
-`pair<int,int>`); relabel first with `relabel(return_map=True)` and map back.
-Each returned cycle is a vertex set, not in cyclic order (its own docstring);
-order it with `subgraph(cycle).cycle_basis()`.
+The default route is `sage.graphs.base.boost_graph.min_cycle_basis`. On string vertices it raises `TypeError: an integer is required` (the edge set is a `pair<int,int>`); relabel first with `relabel(return_map=True)` and map back.
+Each returned cycle is a vertex set, not in cyclic order (its own docstring); order it with `subgraph(cycle).cycle_basis()`.
 
-Wall time on the declared category graph, 312 vertices, 397 edges, 88
-independent cycles, one 2-connected block of 135 vertices holding 86 of them:
+Wall time on the declared category graph, 312 vertices, 397 edges, 88 independent cycles, one 2-connected block of 135 vertices holding 86 of them:
 
 | call | wall time |
 | --- | --- |
@@ -91,138 +71,69 @@ independent cycles, one 2-connected block of 135 vertices holding 86 of them:
 | `blocks_and_cut_vertices()`, `transitive_reduction()`, `level_sets()` | milliseconds |
 | `SimplicialComplex(edges).homology(reduced=False)` default `'pari'` / `'dhsw'` | 0.19 s / 0.02 s |
 
-Single graph, one run each, Sage 10.10.beta8, 2026-09-16; the shape of the
-cost in the vertex count is not measured. Reproduce with `just category-graph
-cells` (whole run about 9 s) and the calls above on `_graph(_declared_edges(...))`
-from `dzack_research.utilities.category_graph`.
+Single graph, one run each, Sage 10.10.beta8, 2026-09-16; the shape of the cost in the vertex count is not measured.
+Reproduce with `just category-graph cells` (whole run about 9 s) and the calls above on `_graph(_declared_edges(...))` from `dzack_research.utilities.category_graph`.
 
-Route chosen: the cycle space is the direct sum over 2-connected blocks, so the
-`cells` view computes the default basis per block and reports the blocks; a
-large block is the audit finding, not an obstacle. The per-block cost is paid
-once per run.
+Route chosen: the cycle space is the direct sum over 2-connected blocks, so the `cells` view computes the default basis per block and reports the blocks; a large block is the audit finding, not an obstacle.
+The per-block cost is paid once per run.
 
 ### An axiom applies to every declared supercategory, so a base-restriction edge asserts descent of every property
 
-`CategoryWithAxiom.super_categories` (sage/categories/category_with_axiom.py,
-`def super_categories`, Sage 10.10.beta8) returns the join of the base
-category, `category._with_axiom_as_tuple(axiom)` for every supercategory of
-the base, and `extra_super_categories()`. `_with_axiom_as_tuple`
-(category.py) applies the axiom to any category whose class hierarchy
-defines it, and `Modules(ZZ)` defines the same axioms as `Modules(QQ)`.
-Consequence, read from source on 2026-09-16 and not executed: if `Modules(QQ)`
-declared `Modules(ZZ)` (restriction of scalars), then
-`Modules(QQ).FinitelyGenerated()` would have `Modules(ZZ).FinitelyGenerated()`
-as a supercategory, which is false; the same for every property stated
-relative to the base (finite type, smooth, projective, free of finite rank).
-Absolute properties (commutative, associative, finite) descend truly, but the
-mechanism cannot tell the two apart.
+`CategoryWithAxiom.super_categories` (sage/categories/category_with_axiom.py, `def super_categories`, Sage 10.10.beta8) returns the join of the base category, `category._with_axiom_as_tuple(axiom)` for every supercategory of the base, and `extra_super_categories()`. `_with_axiom_as_tuple` (category.py) applies the axiom to any category whose class hierarchy defines it, and `Modules(ZZ)` defines the same axioms as `Modules(QQ)`. Consequence, read from source on 2026-09-16 and not executed: if `Modules(QQ)` declared `Modules(ZZ)` (restriction of scalars), then `Modules(QQ).FinitelyGenerated()` would have `Modules(ZZ).FinitelyGenerated()` as a supercategory, which is false; the same for every property stated relative to the base (finite type, smooth, projective, free of finite rank).
+Absolute properties (commutative, associative, finite) descend truly, but the mechanism cannot tell the two apart.
 
-Route chosen: no owned category declares itself over a lower base. Restriction
-of scalars is a functor obtained from the category, and a preservation
-theorem on that functor states which properties descend. Depends on this: the
-`Modules`, `Algebras` and `Schemes` bases (AGENTS.md, *Red flags*).
+Route chosen: no owned category declares itself over a lower base.
+Restriction of scalars is a functor obtained from the category, and a preservation theorem on that functor states which properties descend.
+Depends on this: the `Modules`, `Algebras` and `Schemes` bases (AGENTS.md, *Red flags*).
 
 ### `DiGraph.longest_path()` is a MILP by default; a DAG's longest chain is `level_sets()`
 
-`longest_path(algorithm='MILP')` is the default and `'heuristic'` the only
-alternative (its docstring). For an acyclic digraph, `level_sets()` puts a
-vertex in level `k` exactly when its longest path from a source has `k` edges,
-in `O(n + m)` (its docstring and body). The longest chain is
-`len(level_sets()) - 1`, and the longest chain *from* each vertex to a sink is
-its level in `reverse().level_sets()`. Verified on a seven-vertex DAG with a
-shortcut edge; used by the `shape` view.
+`longest_path(algorithm='MILP')` is the default and `'heuristic'` the only alternative (its docstring).
+For an acyclic digraph, `level_sets()` puts a vertex in level `k` exactly when its longest path from a source has `k` edges, in `O(n + m)` (its docstring and body).
+The longest chain is `len(level_sets()) - 1`, and the longest chain *from* each vertex to a sink is its level in `reverse().level_sets()`. Verified on a seven-vertex DAG with a shortcut edge; used by the `shape` view.
 
 ### `==` between symbolic variables is a proof attempt, and costs a coercion search
 
 `SR.var("e_0") == SR.var("e_1")` is a symbolic equation, not a boolean.
-Asking its truth (`bool`, `any`, `in` over a list of symbols) makes Sage try to
-prove it, and one route evaluates the difference at random points of
-`ComplexIntervalField` (`complex_interval_field.py`, `random_element`). A
-membership test that scanned a list of symbolic labels with `==` made each
-Gram entry of a lattice cost milliseconds and the star import take 460 s on
-2026-09-23 (rank 4: 0.44 s, rank 8: 3.3 s per lattice, cubic).
+Asking its truth (`bool`, `any`, `in` over a list of symbols) makes Sage try to prove it, and one route evaluates the difference at random points of `ComplexIntervalField` (`complex_interval_field.py`, `random_element`). A membership test that scanned a list of symbolic labels with `==` made each Gram entry of a lattice cost milliseconds and the star import take 460 s on 2026-09-23 (rank 4: 0.44 s, rank 8: 3.3 s per lattice, cubic).
 
-Route chosen: decide membership of hashable points by hashing
-(`sage.sets.set.Set`, a `frozenset`), never by comparing a candidate with every
-point. Symbols hash consistently with identity of name.
+Route chosen: decide membership of hashable points by hashing (`sage.sets.set.Set`, a `frozenset`), never by comparing a candidate with every point.
+Symbols hash consistently with identity of name.
 
 ### pytest-timeout's `SIGALRM` inside Cython code stops the whole run
 
-With `--timeout-method=signal`, the alarm that pytest-timeout raises can land
-inside a Sage `sig_on()` block. cysignals then raises
-`cysignals.signals.AlarmInterrupt`, which pytest treats as an interrupt: the
-run stops with "!!! cysignals.signals.AlarmInterrupt !!!" and the remaining
-tests never execute. Observed on the 2026-09-23 triage run with
-`--timeout=1`, at 84% of 16,311 tests. With the default per-test timeout
-(`func_only` false) the alarm can also fire while pytest builds a failure
-report, and pytest aborts with `INTERNALERROR ... Failed: Timeout`;
-`-o timeout_func_only=true` confines the alarm to the test function.
+With `--timeout-method=signal`, the alarm that pytest-timeout raises can land inside a Sage `sig_on()` block.
+cysignals then raises `cysignals.signals.AlarmInterrupt`, which pytest treats as an interrupt: the run stops with "!!! cysignals.signals.AlarmInterrupt !!!" and the remaining tests never execute.
+Observed on the 2026-09-23 triage run with `--timeout=1`, at 84% of 16,311 tests.
+With the default per-test timeout (`func_only` false) the alarm can also fire while pytest builds a failure report, and pytest aborts with `INTERNALERROR ... Failed: Timeout`; `-o timeout_func_only=true` confines the alarm to the test function.
 
-Route chosen: a triage catalogue run resumes after the interrupted file; the
-gated default run treats any test at its time limit as a failed run anyway.
+Route chosen: a triage catalogue run resumes after the interrupted file; the gated default run treats any test at its time limit as a failed run anyway.
 
 ### `Localization.is_unit` answers True for any nonzero element of a number-field order
 
-`Localization(O, S).is_unit` returns
-`_cut_off_extra_units_from_base_ring_element(numerator).is_unit()`, whose
-first test is `x.numerator().is_unit()` (`sage/rings/localization.py` 448,
-872). For an element of a number-field order, `numerator()` is an element of
-the field, where every nonzero element is a unit, so the localization reports
-every nonzero numerator a unit. Specimen, Sage alone (no preamble):
-`QuadraticField(-1, "a").maximal_order().localization((2,))(3).is_unit()` is
-`True`, although 3 is prime in `Z[i]` and `S = {2^k}`; `ZZ.localization((2,))(3)`
-answers `False` correctly. Sage 10.10.beta8, 2026-09-25.
+`Localization(O, S).is_unit` returns `_cut_off_extra_units_from_base_ring_element(numerator).is_unit()`, whose first test is `x.numerator().is_unit()` (`sage/rings/localization.py` 448, 872). For an element of a number-field order, `numerator()` is an element of the field, where every nonzero element is a unit, so the localization reports every nonzero numerator a unit.
+Specimen, Sage alone (no preamble): `QuadraticField(-1, "a").maximal_order().localization((2,))(3).is_unit()` is `True`, although 3 is prime in `Z[i]` and `S = {2^k}`; `ZZ.localization((2,))(3)` answers `False` correctly.
+Sage 10.10.beta8, 2026-09-25.
 
-Route chosen: a localization of a number-field order decides units from the
-definition in the source ring -- `a/s` is a unit exactly when saturating `(a)`
-by the inverted elements gives the unit ideal
-(`LocalizationRings.ElementMethods.is_unit`).  Other sources keep the engine's
-decision, which is exact when numerators lie in the source ring; the owned
-ideal machinery cannot yet saturate in every such ring (`Z[1/2][x]`).
+Route chosen: a localization of a number-field order decides units from the definition in the source ring -- `a/s` is a unit exactly when saturating `(a)` by the inverted elements gives the unit ideal (`LocalizationRings.ElementMethods.is_unit`). Other sources keep the engine's decision, which is exact when numerators lie in the source ring; the owned ideal machinery cannot yet saturate in every such ring (`Z[1/2][x]`).
 
 ### Sage's default conversion into a parent needs the source in Sage's categories
 
-`SR(x)` for an element of a parent whose category is not one of Sage's own
-(the owned `ZZ`) fails with `ValueError: Integer Ring is not in Category of
-sets with partial maps`. `Parent._internal_convert_map_from` finds no
-registered map and falls back to `_generic_convert_map`. That builds
-`DefaultConvertMap_unique(S, self)`, whose homset is
-`S.Hom(self, category=self.category()._meet_(S.category()))`. The meet of the
-symbolic ring's category and an owned category is Sage's
-`SetsWithPartialMaps`, and `Hom` asserts that both endpoints lie in it
-(`sage/structure/parent.pyx` 1963, `sage/categories/homset.py` 449). The
-coercion model's `bin_op` does not reach the element's `_symbolic_`, so
-`1/2 + pi` and `binomial(5, 2)` fail the same way. Observed with Sage 10.9
-(`sage-dev-allopts`) on 2026-09-23.
+`SR(x)` for an element of a parent whose category is not one of Sage's own (the owned `ZZ`) fails with `ValueError: Integer Ring is not in Category of sets with partial maps`. `Parent._internal_convert_map_from` finds no registered map and falls back to `_generic_convert_map`. That builds `DefaultConvertMap_unique(S, self)`, whose homset is `S.Hom(self, category=self.category()._meet_(S.category()))`. The meet of the symbolic ring's category and an owned category is Sage's `SetsWithPartialMaps`, and `Hom` asserts that both endpoints lie in it (`sage/structure/parent.pyx` 1963, `sage/categories/homset.py` 449). The coercion model's `bin_op` does not reach the element's `_symbolic_`, so `1/2 + pi` and `binomial(5, 2)` fail the same way.
+Observed with Sage 10.9 (`sage-dev-allopts`) on 2026-09-23.
 
-Sage's `ZZ` and `QQ` fail the same way on an owned element: `SageZZ(n)`,
-`SageQQ(n)`, `CartanType(["A", n])` raise, and `n in SageZZ` is False, for
-the session literal `n`. Sage's `ZZ` alone has a way around the default map:
-its `_convert_method_name` is `_integer_`, so it converts any element whose
-class has an `_integer_` method (`parent.pyx` 1958, `convert_method_map`).
-`QQ._convert_method_name` is `None`. Observed 2026-09-25.
+Sage's `ZZ` and `QQ` fail the same way on an owned element: `SageZZ(n)`, `SageQQ(n)`, `CartanType(["A", n])` raise, and `n in SageZZ` is False, for the session literal `n`. Sage's `ZZ` alone has a way around the default map: its `_convert_method_name` is `_integer_`, so it converts any element whose class has an `_integer_` method (`parent.pyx` 1958, `convert_method_map`). `QQ._convert_method_name` is `None`. Observed 2026-09-25.
 
-Route chosen: owned numbers never enter `SR`, and owned code lowers a session
-value to the engine itself before calling Sage (`_engine_element`), never
-relying on Sage to convert it. The preamble owns `pi`, `e` and
-the elementary functions over its exact real field (`rings/real.py`), and the
-owned rings declare their coercions among themselves (`_coerce_map_from_`).
+Route chosen: owned numbers never enter `SR`, and owned code lowers a session value to the engine itself before calling Sage (`_engine_element`), never relying on Sage to convert it.
+The preamble owns `pi`, `e` and the elementary functions over its exact real field (`rings/real.py`), and the owned rings declare their coercions among themselves (`_coerce_map_from_`).
 
-A related fact: under the `sage` command a script runs in `sage.all`'s own
-namespace (`globals() is vars(sage.all)`), so a star import rebinds the
-attributes of `sage.all`. Owned code that falls back to a Sage function takes
-it from its defining module (`sage.functions.trig`, `sage.misc.functional`),
-never through `sage.all`.
+A related fact: under the `sage` command a script runs in `sage.all`'s own namespace (`globals() is vars(sage.all)`), so a star import rebinds the attributes of `sage.all`. Owned code that falls back to a Sage function takes it from its defining module (`sage.functions.trig`, `sage.misc.functional`), never through `sage.all`.
 
 ### A class-body alias of a `cached_method` discards the original's cache
 
-`h = g` for a `@cached_method g` does not share `g`'s cache. Reached through
-`h`, `CachedMethod.__get__` looks for an existing caller only in
-`inst._cached_methods`, builds a fresh caller with an empty cache, and stores
-it under the function's own name with `setattr(inst, "g", caller)`
-(`sage/misc/cachefunc.pyx`, `CachedMethod.__get__`). So `x.h()` replaces the
-cache of `x.g()`, and a later `x.g()` recomputes and returns a different
-object. Reproducer, Sage 10.9 (`sage-dev-allopts`), 2026-09-24:
+`h = g` for a `@cached_method g` does not share `g`'s cache.
+Reached through `h`, `CachedMethod.__get__` looks for an existing caller only in `inst._cached_methods`, builds a fresh caller with an empty cache, and stores it under the function's own name with `setattr(inst, "g", caller)` (`sage/misc/cachefunc.pyx`, `CachedMethod.__get__`). So `x.h()` replaces the cache of `x.g()`, and a later `x.g()` recomputes and returns a different object.
+Reproducer, Sage 10.9 (`sage-dev-allopts`), 2026-09-24:
 
 ```python
 class P(Parent):
@@ -232,42 +143,22 @@ class P(Parent):
 p = P(); a = p.g(); p.h(); p.g() is a   # False
 ```
 
-Observed as `ToricSchemes.weil_divisor_group = torus_invariant_divisor_group`:
-a divisor built in `Div_T(X)` stopped belonging to `Div_T(X)` after the alias was
-called. Route chosen: an alias of a cached method is a method that calls it.
+Observed as `ToricSchemes.weil_divisor_group = torus_invariant_divisor_group`: a divisor built in `Div_T(X)` stopped belonging to `Div_T(X)` after the alias was called.
+Route chosen: an alias of a cached method is a method that calls it.
 
 ### `krull_dimension` is missing on generic quotients of multivariate polynomial rings
 
-`R.quotient(I)` for `R = PolynomialRing(QQ, ['x','y'])` is a
-`QuotientRing_generic` whose `krull_dimension` is the `CommutativeRings`
-category default, which raises `NotImplementedError`
-(`sage/categories/commutative_rings.py`). There `I.dimension()` (Singular)
-gives the answer. Every other engine measured has its own method:
-`Zmod(6)` and `ZZ.quotient(2)` give 0 (`IntegerModRing_generic`),
-`ZZ['x'].quotient(x^2+1)` gives 1 (`PolynomialQuotientRing_generic`), and
-`QQ['x']`, `ZZ` and `ZZ.localization(2)` give 1. `Zmod(n)` is itself a
-`QuotientRing_generic`, over `ZZ`, whose ideals have no `dimension`, so a
-dispatch on `QuotientRing_generic` alone sends it to the wrong route.
-Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the
-defining-ideal route applies only when the cover ring is an
-`MPolynomialRing_base`.
+`R.quotient(I)` for `R = PolynomialRing(QQ, ['x','y'])` is a `QuotientRing_generic` whose `krull_dimension` is the `CommutativeRings` category default, which raises `NotImplementedError` (`sage/categories/commutative_rings.py`). There `I.dimension()` (Singular) gives the answer.
+Every other engine measured has its own method: `Zmod(6)` and `ZZ.quotient(2)` give 0 (`IntegerModRing_generic`), `ZZ['x'].quotient(x^2+1)` gives 1 (`PolynomialQuotientRing_generic`), and `QQ['x']`, `ZZ` and `ZZ.localization(2)` give 1. `Zmod(n)` is itself a `QuotientRing_generic`, over `ZZ`, whose ideals have no `dimension`, so a dispatch on `QuotientRing_generic` alone sends it to the wrong route.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the defining-ideal route applies only when the cover ring is an `MPolynomialRing_base`.
 
 ### `is_maximal` raises on multivariate polynomial ideals, and univariate ideals have no `dimension`
 
-Over `S = PolynomialRing(QQ, ['x','y'])`, `S.ideal(x, y).is_maximal()` and
-`S.ideal(x).is_maximal()` raise `NotImplementedError`, as does
-`ZZ['x'].ideal(2, x).is_maximal()`. `MPolynomialIdeal.dimension()` answers
-(`S.ideal(x).dimension() == 1`). Over `QQ['x']` the opposite holds:
-`Ideal_1poly_field` has no `dimension`, and `is_maximal()` answers
-(`(x^2+1)` gives `True`). Measured on Sage 10.9 (`sage-dev-allopts`),
-2026-09-25. Route chosen: multivariate ideals over a field use Zariski's
-lemma, prime with quotient of dimension zero; every other ideal asks Sage's
-`is_maximal`.
+Over `S = PolynomialRing(QQ, ['x','y'])`, `S.ideal(x, y).is_maximal()` and `S.ideal(x).is_maximal()` raise `NotImplementedError`, as does `ZZ['x'].ideal(2, x).is_maximal()`. `MPolynomialIdeal.dimension()` answers (`S.ideal(x).dimension() == 1`). Over `QQ['x']` the opposite holds: `Ideal_1poly_field` has no `dimension`, and `is_maximal()` answers (`(x^2+1)` gives `True`). Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: multivariate ideals over a field use Zariski's lemma, prime with quotient of dimension zero; every other ideal asks Sage's `is_maximal`.
 
 ### Sage's localizations of polynomial rings decide units on only one shape
 
-`L(e).is_unit()` measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25, for
-`e` in `x, 2, 3, x+1, 2x`:
+`L(e).is_unit()` measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25, for `e` in `x, 2, 3, x+1, 2x`:
 
 | engine | nonconstant `e` | constants |
 | --- | --- | --- |
@@ -277,62 +168,66 @@ lemma, prime with quotient of dimension zero; every other ideal asks Sage's
 | `ZZ.localization(2)['x'].localization(x)` | correct (`x`, `2x` units; `x+1` not) | correct |
 | `PolynomialRing(ZZ.localization(2), 'x,y').localization(x)` | `NotImplementedError` | `NotImplementedError` |
 
-So a localization that inverts a constant in a polynomial ring over `ZZ`
-cannot decide units of nonconstant elements, and only the univariate ring
-over Sage's own `ZZ.localization(2)` answers. Route chosen: a univariate
-polynomial algebra over a localized base keeps that engine; flattening is
-used only in several variables, where no engine answers and the gap is
-still open.
+So a localization that inverts a constant in a polynomial ring over `ZZ` cannot decide units of nonconstant elements, and only the univariate ring over Sage's own `ZZ.localization(2)` answers.
+Route chosen: a univariate polynomial algebra over a localized base keeps that engine; flattening is used only in several variables, where no engine answers and the gap is still open.
 
 ### `x in RealBallField(p)` is not "the field can enclose x"
 
-`pi^2 in RealBallField(64)` and `sqrt(2) in RealBallField(64)` are both
-`False`, while `RealBallField(64)(pi^2)` returns `[9.8696... +/- 3.20e-18]`.
-Conversion succeeds for every closed real symbolic expression measured
-(`pi^2`, `sqrt(2)`, `e + log(3)`, `sin(1)`, `3/7`) and raises `TypeError`
-for `x + 1`, `I` and `I*pi`. `expression.variables() == ()` together with
-`expression.is_real()` separates the two. `pi^2 in AA` is `False` and
-`sqrt(2) in AA` is `True`, so `AA` membership does test algebraicity. Measured
-on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the ball-sign
-certificate is attempted on closed real expressions.
+`pi^2 in RealBallField(64)` and `sqrt(2) in RealBallField(64)` are both `False`, while `RealBallField(64)(pi^2)` returns `[9.8696... +/- 3.20e-18]`. Conversion succeeds for every closed real symbolic expression measured (`pi^2`, `sqrt(2)`, `e + log(3)`, `sin(1)`, `3/7`) and raises `TypeError` for `x + 1`, `I` and `I*pi`. `expression.variables() == ()` together with `expression.is_real()` separates the two.
+`pi^2 in AA` is `False` and `sqrt(2) in AA` is `True`, so `AA` membership does test algebraicity.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the ball-sign certificate is attempted on closed real expressions.
 
 ### `FreeAlgebra.__contains__` rejects constants
 
-`ZZ(2) in FreeAlgebra(QQ, 2, 'x,y')` and `QQ(2) in FreeAlgebra(QQ, 2, 'x,y')`
-are `False`, and so is `ZZ(2) in FreeAlgebra(ZZ, 2, 'x,y')`, although the
-coercion exists and `F(2)` is twice the unit. `ZZ(2) in QQ['x,y']` is `True`.
-Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: an
-owned ring decides membership of another owned ring's element by the
-canonical map first, then by the engine's `in`.
+`ZZ(2) in FreeAlgebra(QQ, 2, 'x,y')` and `QQ(2) in FreeAlgebra(QQ, 2, 'x,y')` are `False`, and so is `ZZ(2) in FreeAlgebra(ZZ, 2, 'x,y')`, although the coercion exists and `F(2)` is twice the unit.
+`ZZ(2) in QQ['x,y']` is `True`. Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: an owned ring decides membership of another owned ring's element by the canonical map first, then by the engine's `in`.
 
 ### Over `ZZ`, Sage's multivariate ideals decide neither primality nor maximality, and have no `syzygy_module`
 
-For `R = PolynomialRing(ZZ, ['x','y'])`, `R.ideal(...).is_prime()` and
-`is_maximal()` raise `NotImplementedError`, and `syzygy_module()` raises
-`ValueError: Coefficient ring must be a field`. Singular answers all three
-over `ZZ`: `minAssZ` from `primdecint.lib` gives the minimal primes
-(`(6, x, y)` gives `(2, x, y)` and `(3, x, y)`; `(2, x^2+1, y)` gives
-`(2, x+1, y)`), `syz` gives the syzygies (`(2, x, y)` gives `(y, 0, -2)`,
-`(x, -2, 0)`, `(0, -y, x)`), and a Groebner basis over `ZZ` exposes
-`I cap ZZ` as its constant. Measured on Sage 10.9 (`sage-dev-allopts`),
-2026-09-25. Route chosen: primality by `minAssZ`, maximality by
-`I cap ZZ = (p)` and Zariski's lemma in `F_p[x_1, ..., x_n]`, syzygies by
-Singular `syz`.
+For `R = PolynomialRing(ZZ, ['x','y'])`, `R.ideal(...).is_prime()` and `is_maximal()` raise `NotImplementedError`, and `syzygy_module()` raises `ValueError: Coefficient ring must be a field`. Singular answers all three over `ZZ`: `minAssZ` from `primdecint.lib` gives the minimal primes (`(6, x, y)` gives `(2, x, y)` and `(3, x, y)`; `(2, x^2+1, y)` gives `(2, x+1, y)`), `syz` gives the syzygies (`(2, x, y)` gives `(y, 0, -2)`, `(x, -2, 0)`, `(0, -y, x)`), and a Groebner basis over `ZZ` exposes `I cap ZZ` as its constant.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: primality by `minAssZ`, maximality by `I cap ZZ = (p)` and Zariski's lemma in `F_p[x_1, ..., x_n]`, syzygies by Singular `syz`.
 
 ### Over `AA`, multivariate ideals have no primality test
 
-`PolynomialRing(AA, ['x','y']).ideal(x, y).is_prime()` raises `TypeError:
-cannot call Singular function 'primdecSY'`: Singular has no algebraic-real
-coefficients, and Sage has no other primary decomposition over `AA`.
-Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen:
-whether such a quotient is a field is left undecided (`Unknown`), so it is not
-placed in fields. Over `Zmod(n)` the question reduces to `ZZ`, because
-`(Z/n)[x]/I = Z[x]/(n, I)`.
+`PolynomialRing(AA, ['x','y']).ideal(x, y).is_prime()` raises `TypeError: cannot call Singular function 'primdecSY'`: Singular has no algebraic-real coefficients, and Sage has no other primary decomposition over `AA`. Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: whether such a quotient is a field is left undecided (`Unknown`), so it is not placed in fields.
+Over `Zmod(n)` the question reduces to `ZZ`, because `(Z/n)[x]/I = Z[x]/(n, I)`.
 
 ### `Qp(p).quotient(I)` invents an invalid generator name
 
-`Qp(3, 20).quotient(Qp(3, 20).ideal(3))` raises `ValueError: variable name
-'3bar' does not start with a letter`: Sage names the quotient's generator
-after the field's generator, which is `3`. With `names=('u',)` it returns the
-zero ring. Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route
-chosen: a field engine's quotient is built with an explicit private name.
+`Qp(3, 20).quotient(Qp(3, 20).ideal(3))` raises `ValueError: variable name '3bar' does not start with a letter`: Sage names the quotient's generator after the field's generator, which is `3`. With `names=('u',)` it returns the zero ring.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: a field engine's quotient is built with an explicit private name.
+
+## mypy
+
+### A star import that rebinds a name is rejected, and the first binding wins
+
+A Sage session file that loads the preamble rebinds Sage names on purpose: the lowered file starts with `from sage.all_cmdline import *`, and `from dzack_research.preamble.all import *` then rebinds `Integer` and `RealNumber` to the preamble's own constructors.
+Python binds the later import.
+mypy 2.4.0 reports `Incompatible import of "Integer"` at the second import, and `reveal_type(Integer)` after it is still the first module's class, so every later use is checked against the wrong type.
+Neither `--allow-redefinition` nor `--allow-redefinition-new --local-partial-types` changes either result.
+This is upstream python/mypy#16972, open on 2026-10-02; Pyright takes the later binding.
+Three-file specimen:
+
+```bash
+printf 'class Integer: ...\n' > a.py
+printf 'def Integer(value: int = 0) -> int:\n    return value\n' > b.py
+printf 'from a import *\nfrom b import *\nreveal_type(Integer)\n' > c.py
+uvx mypy@2.4.0 --no-incremental c.py
+```
+
+Route chosen: none in this repository.
+The rebinding is the design of the session, and a suppression would hide the wrong inferred type as well as the error.
+The two errors stay on the lowered `sage-init.sage` until mypy models the later binding.
+
+### mypy cannot see `sageparse` through a default editable install
+
+`tree-sitter-sage` maps two package roots in `setup.py`: `bindings/python` for `tree_sitter_sage` and `src/sageparse` for `sageparse`. The default editable install of setuptools puts an import-hook finder in site-packages; Python imports `sageparse` through it, but mypy reads only the paths of `.pth` files and reports `Cannot find implementation or library stub for module named "sageparse"`. `editable_mode=compat` writes one `.pth` line, the first root `bindings/python`, so `sageparse` is not importable at all after it.
+Checked with setuptools in the Sage venv on 2026-10-02 by `sage -pip show -f tree-sitter-sage` and the `.pth` contents.
+
+Route chosen: `editable_mode=strict`, which builds a tree of symbolic links under `build/__editable__.*` and puts that tree on a `.pth` line.
+Edits to existing files are live; a new module needs the install again.
+
+```bash
+direnv exec ~/research "$SAGE_BIN" -pip install --no-deps \
+  --config-settings editable_mode=strict -e ~/gitclones/tree-sitter-sage
+```

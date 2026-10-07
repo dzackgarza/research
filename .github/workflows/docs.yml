@@ -10,6 +10,7 @@ name: docs
       - writing/.assets/**
       - scripts/**
       - .github/workflows/docs.yml
+      - lattice-database/**
   workflow_dispatch: null
 permissions:
   contents: read
@@ -23,9 +24,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
       - name: Provision shared Pandoc filters
-        run: git clone --depth 1 https://github.com/dzackgarza/pandoc-config "$HOME/.pandoc"
+        run: |
+          git clone --depth 1 https://github.com/dzackgarza/pandoc-config "$HOME/.pandoc"
+          echo "revision=$(git -C "$HOME/.pandoc" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "sources=$(git rev-parse HEAD:writing HEAD:scripts HEAD:.github/workflows/docs.yml | sha256sum | cut -d " " -f 1)" >> "$GITHUB_OUTPUT"
+        id: pandoc-config
+      # A push that changes only the lattice database reuses the book rendered from the same
+      # writing/ tree and the same pandoc-config revision, so it skips TeX and Quarto.
+      - name: Restore the rendered book
+        id: book
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: writing/.book/_site
+          key: book-${{ steps.pandoc-config.outputs.revision }}-${{ steps.pandoc-config.outputs.sources }}
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
+        if: steps.book.outputs.cache-hit != 'true'
+      # texlive-full, because a partial install diverges the moment a figure reaches
+      # for a package nobody listed.
       - name: Install TikZ rendering dependencies
         # texlive-full, the same TeX the figures are authored against locally.
         # A partial install diverges the moment a figure reaches for a package
@@ -33,6 +49,16 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes pdf2svg poppler-utils texlive-full
+        if: steps.book.outputs.cache-hit != 'true'
+      # The inline Dynkin figures of the shared tikzcd filter use luahyperbolic, which
+      # is newer than the TeX Live that Ubuntu ships; CTAN supplies it.
+      - name: Install TeX packages newer than Ubuntu TeX Live
+        run: |
+          mkdir -p "$HOME/texmf/tex/lualatex"
+          curl --fail --location --output luahyperbolic.zip https://mirrors.ctan.org/macros/luatex/latex/luahyperbolic.zip
+          unzip -q luahyperbolic.zip -d "$HOME/texmf/tex/lualatex"
+          kpsewhich luahyperbolic.sty
+        if: steps.book.outputs.cache-hit != 'true'
       - name: Fetch shared bibliography and MathJax macros
         # From the pandoc-config clone above, the same way `just docs-assets`
         # takes them from ~/.pandoc. Fetching the bib over raw.githubusercontent
@@ -41,6 +67,7 @@ jobs:
           cp "$HOME/.pandoc/bib/references.bib" writing/.assets/references.bib
           cp "$HOME/.pandoc/templates/css/mathjax-macros.html" writing/.assets/mathjax-macros.html
           python3 scripts/docs_figures.py
+        if: steps.book.outputs.cache-hit != 'true'
       - run: python3 scripts/docs_check.py
         name: Render + integrity gate
         # The runner has no uv, and quarto-actions already provisioned quarto.
@@ -49,10 +76,28 @@ jobs:
         # a pinned install.
         env:
           QUARTO: quarto
+        if: steps.book.outputs.cache-hit != 'true'
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      # The pandoc release used on the workstation; the build converts the record prose with it.
+      - name: Install pandoc
+        run: |
+          curl --fail --location --output pandoc.deb https://github.com/jgm/pandoc/releases/download/3.10.2/pandoc-3.10.2-1-amd64.deb
+          sudo apt-get install --yes ./pandoc.deb
+      - name: Build the lattice database
+        working-directory: lattice-database
+        run: uv run latticedb build
+      # The deployment replaces the whole Pages site, so the book and the database go up as one
+      # artifact: the book at the root, the database at lattice-database/.
+      - name: Assemble the site
+        run: |
+          mkdir _pages
+          cp -r writing/.book/_site/. _pages/
+          cp -r lattice-database/_site _pages/lattice-database
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
-          path: writing/.book/_site
+          path: _pages
   deploy:
     needs: build
     runs-on: ubuntu-latest

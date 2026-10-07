@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     IsoCategoryConstruction,
+    _distinct_supercategories,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
@@ -1096,7 +1097,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
                 for superpacket in packet.super_packets()
                 if form in superpacket.C()
             )
-        return supers
+        return _distinct_supercategories(supers)
 
     def invariant_form(self):
         return self.domain()

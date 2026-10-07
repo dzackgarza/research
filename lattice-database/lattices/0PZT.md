@@ -1,0 +1,53 @@
+---
+tag: 0PZT
+name: Nipp form d1161.html:3931
+latex: Nipp form d1161.html:3931
+aliases: []
+rank: 4
+gram_tensor:
+- [3, 1, 0, 1]
+- [1, 3, 0, -1]
+- [0, 0, 3, 0]
+- [1, -1, 0, 4]
+signature: [4, 0]
+determinant: 72
+definiteness: positive_definite
+integral:
+  parity: odd
+  discriminant_group: [3, 24]
+  overlattice_count: 2
+  bad_reduction_primes: [2, 3]
+  quadratic_character: 8
+definite:
+  minimum: 3
+  kissing_number: 6
+  automorphism_group_order: 16
+  theta_series: [1, 0, 0, 6, 6, 4, 8, 12, 10, 8, 0, 8, 36]
+  root_system: []
+  roots:
+  - type: A1
+    scale: 3/2
+    simple_roots:
+    - [0, 0, 1, 0]
+  - type: A1
+    scale: 6
+    simple_roots:
+    - [1, -1, 0, -2]
+  - type: A1
+    scale: 2
+    simple_roots:
+    - [1, -1, 0, 0]
+  - type: A1
+    scale: 4
+    simple_roots:
+    - [1, 1, 0, 0]
+root_sublattice:
+  invariant_factors: [1, 1, 2, 2]
+families: []
+related: []
+references:
+- citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, d1161.html:3931.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/d1161.html
+---
+
+The Gram tensor is the integral bilinear form of the quadratic form at line 3931 of Nipp's table `d1161.html`. The source form is the twist of this lattice by 2.

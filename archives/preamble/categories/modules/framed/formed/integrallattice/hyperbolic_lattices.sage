@@ -286,7 +286,8 @@ class HyperbolicLattices(Category):
 
         def allcock_edgewalk(self: "HyperbolicLatticeParent") -> dict:
             r"""Return fundamental-domain data for $W(L)$ from Allcock's
-            edgewalk (the ``polyhedral_common`` engine).
+            edgewalk (the capability
+            ``lorentzian_edgewalk_fundamental_domain`` of sage-indefinite-port).
 
             A second producer of the object :meth:`vinberg_algorithm`
             enumerates: the engine walks the edges of a fundamental

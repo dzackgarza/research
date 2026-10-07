@@ -13,11 +13,11 @@ from sage.structure.element import parent as element_parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     CategoricalIsomorphism,
+    _distinct_supercategories,
     _precomposable,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    CommutativeRings,
     LocalizationRings,
     LocalRings,
     OwnedCategoryOverBaseRing,
@@ -213,7 +213,10 @@ class ModuleMorphismMethods:
         ring = domain.base_ring()
         match ring.is_commutative():
             case True:
-                scalar_map = CommutativeRings().Mor(ring, ring).identity()
+                # The scalar map is a ring homomorphism, so its identity lives in
+                # ``Mor_Ring``.  The strongest Mor of ``ring`` can have arrows that
+                # build module maps again (algebra maps of ``QQ``), which regresses.
+                scalar_map = ring.Mor(ring, category=OwnedRings()).identity()
                 super().__init__(
                     parent,
                     scalar_map,
@@ -2249,6 +2252,10 @@ def _initialize_module_mor_parent(
                 selected_presentation_data,
             )
 
+    # Hom_R(M, N) is a module over the center of R.  ``Modules.ParentMethods``
+    # reads that scalar ring from ``_preamble_base_ring``; the Sage Homset
+    # base stays unset.
+    parent._preamble_base_ring = ring.ring_center()
     CategoricalMor.__init__(
         parent,
         mor_family,
@@ -2264,6 +2271,14 @@ class _ModuleMorCommonMethods:
     distinct categories and use this class only to share ordinary module-Mor
     operations.
     """
+
+    def base_ring(self):
+        r"""The center of ``R``, stored by ``_initialize_module_mor_parent``.
+
+        Admission into the placement asks for it before ``Modules`` supplies
+        its own reader of the same datum.
+        """
+        return self._preamble_base_ring
 
     def _element_constructor_(self, images):
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
@@ -2931,7 +2946,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
         ]
         if self.aut_family() is not None:
             supers.append(packet.Ends().Of(module))
-        return supers
+        return _distinct_supercategories(supers)
 
     def _repr_(self):
         return f"Aut_{self.base_category()}({self.module()})"

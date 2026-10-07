@@ -1,1 +1,0 @@
-coble/computations/fundamental-chamber-polyhedra.md

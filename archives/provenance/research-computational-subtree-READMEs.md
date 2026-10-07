@@ -90,10 +90,9 @@ remote. Do not vendor the current `~/gitclones/research` tree into this reposito
 
 ## Declared submodules
 
-`.gitmodules` declared two submodules, neither of which was ever checked out into the
-clone's working tree:
+`.gitmodules` declared a submodule that was never checked out into the clone's working
+tree:
 
-- `polyhedral_common` — `https://github.com/dzackgarza/polyhedral_common`
 - `sage-dzg-fork` — `git@github.com:dzackgarza/sage-fork-dzg.git`
 
 ## Structural checks the clone enforced

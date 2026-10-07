@@ -1,0 +1,22 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ graph.name }} · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading"><p class="kicker">Weighted graph</p><h1>{{ graph.name }}</h1></header>
+  <p>Properties: {{ graph.properties()|join(", ") }}.</p>
+  <section aria-labelledby="vertices"><h2 id="vertices">Vertices</h2>
+    <div class="table-scroll"><table class="member-table"><thead><tr><th>ID</th><th>Weight</th></tr></thead><tbody>
+    {% for vertex in graph.vertices %}<tr><td>{{ vertex.id }}</td><td><code>{{ vertex.weight|tojson }}</code></td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <section aria-labelledby="edges"><h2 id="edges">Edges</h2>
+    <div class="table-scroll"><table class="member-table"><thead><tr><th>ID</th><th>Endpoints</th><th>Relation</th><th>Weight</th></tr></thead><tbody>
+    {% for edge in graph.edges %}<tr><td>{{ edge.id }}</td><td>{{ edge.source }} {{ "→" if edge.directed else "—" }} {{ edge.target }}</td><td>{{ edge.relation }}</td><td><code>{{ edge.weight|tojson }}</code></td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% if objects %}<section aria-labelledby="objects"><h2 id="objects">Geometric objects</h2><ul>
+    {% for object in objects %}<li><a href="{{ root }}geometric-objects/{{ object.slug }}.html">{{ object.name }}</a></li>{% endfor %}
+  </ul></section>{% endif %}
+  <section aria-labelledby="notes"><h2 id="notes">Notes</h2>{{ prose }}</section>
+</article>
+{% endblock %}

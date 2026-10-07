@@ -1,1 +1,0 @@
-coble/appendix-reference/adjunction-and-ramification-formulae.md

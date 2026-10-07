@@ -1,0 +1,41 @@
+---
+tag: 0XMC
+name: Nipp form d1373.html:331
+latex: Nipp form d1373.html:331
+aliases: []
+rank: 4
+gram_tensor:
+- [2, 1, 0, 1]
+- [1, 8, 3, 0]
+- [0, 3, 8, 4]
+- [1, 0, 4, 16]
+signature: [4, 0]
+determinant: 1313
+definiteness: positive_definite
+integral:
+  parity: even
+  discriminant_group: [1313]
+  overlattice_count: 1
+  bad_reduction_primes: [2, 13, 101]
+  quadratic_character: 1313
+definite:
+  minimum: 2
+  kissing_number: 2
+  automorphism_group_order: 4
+  theta_series: [1, 0, 2, 0, 0, 0, 0, 0, 8, 0, 8, 0, 4]
+  root_system: [A1]
+  roots:
+  - type: A1
+    scale: 1
+    simple_roots:
+    - [1, 0, 0, 0]
+root_sublattice:
+  invariant_factors: [1]
+families: []
+related: []
+references:
+- citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, d1373.html:331.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/d1373.html
+---
+
+The Gram tensor is the integral bilinear form of the quadratic form at line 331 of Nipp's table `d1373.html`.

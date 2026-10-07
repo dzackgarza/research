@@ -63,6 +63,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
     IsoCategoryConstruction,
     _category_mor_parent,
+    _distinct_supercategories,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -73,10 +74,12 @@ from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
     Monoids,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphismMethods,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleMorphism,
-    ModuleMorphismMethods,
     _engine_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -2307,7 +2310,7 @@ class GroupAutomorphismGroup(GroupMor):
         if self.aut_family() is not None:
             supers.append(packet.Ends().Of(group))
             supers.extend(superpacket.Auts().Of(group) for superpacket in packet.super_packets() if group in superpacket.C())
-        return supers
+        return _distinct_supercategories(supers)
 
     def identity(self):
         return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)

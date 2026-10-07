@@ -1,0 +1,23 @@
+{
+  "name": "LAMBDA11",
+  "title": "LAMBDA11",
+  "url": "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/LAMBDA11.html",
+  "dimension": 11,
+  "determinant": 1024,
+  "minimal_norm": 4,
+  "kissing_number": 438,
+  "references": ["1. SPLAG p. 157.", "2. W.Plesken, M.Pohst, Constructing integral lattices with prescribed minimum II,", "Math. Comp. Vol 60, N. 202 (1993) 817-825"],
+  "gram_tensor": [
+    [4, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-2, 4, -2, 2, 0, 0, 0, 0, 0, 0, 0],
+    [0, -2, 4, 0, 0, 2, 0, 0, 0, 0, 0],
+    [0, 2, 0, 4, 2, 2, 0, 0, 0, 0, 0],
+    [0, 0, 0, 2, 4, 2, 0, 0, 2, 1, 0],
+    [0, 0, 2, 2, 2, 4, 2, 2, 1, 2, 0],
+    [0, 0, 0, 0, 0, 2, 4, 2, 0, 2, 0],
+    [0, 0, 0, 0, 0, 2, 2, 4, 0, 2, 0],
+    [0, 0, 0, 0, 2, 1, 0, 0, 4, 2, 0],
+    [0, 0, 0, 0, 1, 2, 2, 2, 2, 4, 2],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4]
+  ]
+}

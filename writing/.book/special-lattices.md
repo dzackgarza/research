@@ -1,1 +1,0 @@
-coble/lattices-and-moduli/special-lattices.md

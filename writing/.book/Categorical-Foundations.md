@@ -1,1 +1,0 @@
-category-theory/framework/Categorical-Foundations.md

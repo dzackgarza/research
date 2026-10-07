@@ -8,7 +8,7 @@ Public nouns and API constraints:
 - Subgroups are represented by condition-set predicates plus private structured metadata. Membership is mandatory; generator computation is optional and lazy.
 - Public non-isotropic subgroup methods should live on both orthogonal group nouns: `special_orthogonal_subgroup()`, `plus_subgroup()`, `special_plus_subgroup()`, `preimage_of_discriminant_subgroup(A)`, `find_vector_isometry(v1,v2)`, `vectors_are_equivalent(v1,v2)`.
 - Public isotropic subgroup methods should live on both orthogonal group nouns: `isotropic_line_orbits()`, `isotropic_plane_orbits()`, `isotropic_flag_orbits(k)`, `isotropic_lines_are_equivalent(v1,v2)`, `isotropic_planes_are_equivalent(basis1,basis2)`.
-- Keep orchestration private. Non-isotropic vector-orbit logic belongs in `src/research/dawes_orbit_backend.py`. Isotropic subgroup splitting belongs in `src/research/isotropic_gamma_orbit_backend.py`. Raw binary wrappers belong in `src/external/py_polyhedral/binaries.py`. Public method shims belong in the existing lattice/group file, not on a new helper module.
+- Keep orchestration private. Non-isotropic vector-orbit logic belongs in `src/research/dawes_orbit_backend.py`. Isotropic subgroup splitting belongs in `src/research/isotropic_gamma_orbit_backend.py`. The indefinite orbit and stabilizer algorithms are capabilities of sage-indefinite-port. Public method shims belong in the existing lattice/group file, not on a new helper module.
 
 Non-isotropic vector orbit store:
 
@@ -24,7 +24,7 @@ Non-isotropic vector orbit store:
 Isotropic subgroup orbit store:
 
 - Do not use the Dawes non-isotropic backend for Sterk/Dutour-Sikiric/Hulek cusp claims. Isotropic line/plane/flag orbits use ambient isotropic orbit/stabilizer data plus finite quotient/double-coset splitting.
-- Ambient full-group isotropic line, plane, and flag orbits should use Dutour-Sikiric `polyhedral_common`/Indefinite.jl binaries or buildings.sage. Stored Indefinite.jl calls: `INDEF_FORM_GetOrbit_IsotropicKplane(Q,k)` and `INDEF_FORM_GetOrbit_IsotropicKflag(Q,k)`.
+- Ambient full-group isotropic line, plane, and flag orbits use Dutour Sikirić's algorithms through the sage-indefinite-port functions `isotropic_sublattice_orbit_representatives` (isotropic sublattices of rank `k`) and `isotropic_flag_orbit_representatives` (isotropic flags), or buildings.sage.
 - Structured subgroup splitting method: choose ambient arithmetic group `G_0`, compute ambient orbit representative `x` and stabilizer `G_x`, compute a finite quotient of `G_0`, compute image of target subgroup `Gamma`, compute double cosets `G_x \ G_0 / Gamma` in the finite quotient, lift quotient representatives back to ambient isometries, and apply them to `x`.
 - The decisive abstraction is finite image data, not infinite generators for `Gamma`. Generate ambient `O(L)` generators, ambient isotropic stabilizer generators, finite quotient subgroup generators, and quotient-generator lifts. Do not require infinite subgroup generators merely for `Gamma`-orbits.
 - Initial supported structured subgroup families: `O(L)`, `SO(L)`, `O^+(L)`, `SO^+(L)`, preimages of finite discriminant subgroups, intersections of those, and Enriques-style centralizer/stabilizer image subgroups. Exclude opaque `ConditionSet` subgroups with no finite quotient image.

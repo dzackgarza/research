@@ -1,0 +1,16 @@
+{% extends "base.html.j2" %}
+{% block title %}Theory · {% endblock %}
+{% block main %}
+<header class="page-heading">
+  <h1>Theory</h1>
+  <p class="lede">Definitions and conventions of the catalogue.</p>
+</header>
+<ul class="collection-list">
+  {% for page in theory %}
+  <li>
+    <a href="{{ root }}theory/{{ page.slug }}.html">{{ page.article.title | inline_markup }}</a>
+    <p>{{ page.article.summary | inline_markup }}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

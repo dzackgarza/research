@@ -27,7 +27,6 @@ software, and return data that the public lattice/category layer verifies.
 - `src.bak/backends/isotropic_gamma_orbit_backend.py`
 - `src.bak/backends/oscar_centralizer/`
 - `src.bak/backends/external/README.md`
-- `src.bak/backends/external/py_polyhedral/binaries.py`
 - `.agents/memories/theory-backend-routing.md`
 - `.agents/memories/theory/backends/indefinite-isometry.md`
 - `.agents/memories/theory/backends/indefinite-jl.md`

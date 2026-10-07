@@ -105,9 +105,10 @@ def _definite_isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
 
     Definite is the hypothesis and not a preference: Plesken--Souvignier is a
     definite-forms algorithm.  The indefinite regime has its own engine --
-    polyhedral_common's ``INDEF_FORM_AutomorphismGroup`` behind
-    :mod:`engines`, routed by :func:`_isometry_group_generator_matrices` --
-    and when that engine is unprovisioned no generating set is in hand:
+    the capability ``lattice.indefinite_automorphism_group`` of
+    sage-indefinite-port behind :mod:`engines`, routed by
+    :func:`_isometry_group_generator_matrices` -- and when that capability is
+    unavailable no generating set is in hand:
     :mod:`predicate_subgroups` exists because computing one by search for a
     common indefinite lattice runs for days.  That \(O(L)\) is nevertheless
     finitely generated is Borel and Harish-Chandra's theorem, which is why
@@ -137,25 +138,19 @@ def _isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
 
     One question, two engines: Plesken--Souvignier (PARI, through Sage's
     quadratic forms) on the definite regime,
-    polyhedral_common's ``INDEF_FORM_AutomorphismGroup`` (behind
-    :mod:`engines`) on the indefinite one.  Either engine's output is
-    row-convention generator matrices verified against the Gram matrix
-    before an isometry is built from them.
+    the capability ``lattice.indefinite_automorphism_group`` of
+    sage-indefinite-port (behind :mod:`engines`) on the indefinite one.
+    Either engine's output is row-convention generator matrices verified
+    against the Gram matrix before an isometry is built from them.
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
         indefinite_orthogonal_group_generator_matrices,
-        polyhedral_engine,
     )
+
     positive, negative = lattice.signature_pair()
     if 0 in (positive, negative):
         return _definite_isometry_group_generator_matrices(lattice)
-    assert polyhedral_engine() is not None, (
-        f"O({lattice}) is indefinite; its generating set is the "
-        "polyhedral_common engine's (INDEF_FORM_AutomorphismGroup), which is "
-        "not provisioned -- see engines.sage.  Name a subgroup by its "
-        "generators, or cut one out by a membership predicate"
-    )
     return indefinite_orthogonal_group_generator_matrices(
         matrix(SageZZ, lattice.gram_matrix())
     )

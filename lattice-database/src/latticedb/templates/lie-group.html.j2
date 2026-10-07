@@ -1,0 +1,43 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ group.name }} · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker">Lie group</p>
+    <h1>\({{ group.latex }}\)</h1>
+    <p class="names">{{ group.name }}</p>
+  </header>
+
+  <section aria-labelledby="invariants">
+    <h2 id="invariants">Invariants</h2>
+    <table class="facts"><tbody>
+      <tr><th scope="row">Base field</th><td>{{ group.base_field }}</td></tr>
+      <tr><th scope="row">Dimension</th><td>{{ group.dimension }}</td></tr>
+      {% if group.real_rank is not none %}<tr><th scope="row">Real rank</th><td>{{ group.real_rank }}</td></tr>{% endif %}
+      {% if group.connected_components is not none %}<tr><th scope="row">Connected components</th><td>{{ group.connected_components }}</td></tr>{% endif %}
+      {% if group.lie_algebra %}<tr><th scope="row">Lie algebra</th><td>\({{ group.lie_algebra }}\)</td></tr>{% endif %}
+      {% if group.orthogonal_signature %}<tr><th scope="row">Orthogonal signature</th><td>\(({{ group.orthogonal_signature[0] }},{{ group.orthogonal_signature[1] }})\)</td></tr>{% endif %}
+    </tbody></table>
+  </section>
+
+  {% if group.maximal_compact_factors %}
+  <section aria-labelledby="maximal-compact">
+    <h2 id="maximal-compact">Maximal compact subgroup</h2>
+    <p>{% for slug in group.maximal_compact_factors %}<a href="{{ root }}lie-group/{{ slug }}.html">\({{ lie_groups[slug].latex }}\)</a>{% if not loop.last %} \(\times\) {% endif %}{% endfor %}</p>
+  </section>
+  {% endif %}
+
+  {% if lattices %}
+  <section aria-labelledby="lattices">
+    <h2 id="lattices">Lattices with this real orthogonal group</h2>
+    <ul>{% for lattice in lattices %}<li><a class="tag" href="{{ root }}tag/{{ lattice.tag }}.html">{{ lattice.tag }}</a> \({{ lattice.latex }}\)</li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  {% if group.references %}
+  <section aria-labelledby="references"><h2 id="references">References</h2><ul>{% for reference in group.references %}<li>{% if reference.url %}<a href="{{ reference.url }}">{{ reference.citation }}</a>{% else %}{{ reference.citation }}{% endif %}</li>{% endfor %}</ul></section>
+  {% endif %}
+
+  {% if prose %}<section aria-labelledby="notes"><h2 id="notes">Notes</h2>{{ prose }}</section>{% endif %}
+</article>
+{% endblock %}

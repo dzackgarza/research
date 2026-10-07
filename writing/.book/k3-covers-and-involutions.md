@@ -1,1 +1,0 @@
-coble/surfaces-and-moduli/k3-covers-and-involutions.md

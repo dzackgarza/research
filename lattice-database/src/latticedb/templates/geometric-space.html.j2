@@ -1,0 +1,63 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ geometric.name }} · {% endblock %}
+{% block main %}
+<article>
+  <header class="page-heading">
+    <p class="kicker">{% if geometric.kind == "complex_manifold" %}Complex manifold{% elif geometric.kind == "hermitian_symmetric_space" %}Hermitian symmetric space{% else %}Riemannian symmetric space{% endif %}</p>
+    <h1>{{ geometric.name }}</h1>
+    {% if geometric.kind == "complex_manifold" %}
+    <p class="lede">Complex dimension {{ geometric.complex_dimension }}.</p>
+    {% else %}
+    <p class="lede">Real dimension {{ geometric.real_dimension }}; symmetric-space rank {{ geometric.rank }}.</p>
+    {% endif %}
+  </header>
+
+  {% if geometric.kind == "complex_manifold" %}
+  {% if geometric.algebraic_model %}<p>Algebraic model: <a href="{{ root }}geometric-objects/{{ geometric.algebraic_model }}.html">{{ geometric.algebraic_model }}</a>.</p>{% endif %}
+  {% else %}
+  <section aria-labelledby="symmetric-presentation">
+    <h2 id="symmetric-presentation">Symmetric presentation</h2>
+    <p>Group: {{ geometric.group }}. Isotropy group: {{ geometric.isotropy_group }}.</p>
+    <p>Involution: {{ geometric.involution }}. Metric: {{ geometric.metric_normalization }}.</p>
+    <p>Curvature type: {{ geometric.curvature_type }}. Compact: {{ "yes" if geometric.compact else "no" }}.</p>
+    {% if geometric.lie_algebra %}<p>Lie algebra: {{ geometric.lie_algebra }}.</p>{% endif %}
+    {% if geometric.classification %}<p>Classification: {% for label in geometric.classification %}{% if not loop.first %}; {% endif %}{{ label.convention }} {{ label.label }}{% endfor %}.</p>{% endif %}
+    {% if geometric.diagrams %}<p>Diagrams: {% for diagram in geometric.diagrams %}{% if not loop.first %}; {% endif %}<a href="{{ root }}graphs/{{ diagram }}.html">{{ diagram }}</a>{% endfor %}.</p>{% endif %}
+    {% if geometric.restricted_roots %}<p>Restricted roots: {{ geometric.restricted_roots }}{% if geometric.root_multiplicities %}; multiplicities: {{ geometric.root_multiplicities }}{% endif %}.</p>{% endif %}
+    {% if geometric.holonomy %}<p>Holonomy: {{ geometric.holonomy }}.</p>{% endif %}
+    {% if geometric.compact_dual %}<p>Compact dual: <a href="{{ root }}geometric-objects/{{ geometric.compact_dual }}.html">{{ geometric.compact_dual }}</a>.</p>{% endif %}
+    {% if geometric.noncompact_dual %}<p>Noncompact dual: <a href="{{ root }}geometric-objects/{{ geometric.noncompact_dual }}.html">{{ geometric.noncompact_dual }}</a>.</p>{% endif %}
+  </section>
+  {% if geometric.iwasawa %}
+  <section aria-labelledby="iwasawa">
+    <h2 id="iwasawa">Iwasawa decomposition</h2>
+    <p>Positive restricted roots: {{ geometric.iwasawa.positive_restricted_roots }}.</p>
+    <p>K = {{ geometric.iwasawa.k }}; A = {{ geometric.iwasawa.a }}; N = {{ geometric.iwasawa.n }}.</p>
+  </section>
+  {% endif %}
+  {% if geometric.kind == "hermitian_symmetric_space" %}
+  <section aria-labelledby="hermitian-structure">
+    <h2 id="hermitian-structure">Hermitian structure</h2>
+    <p>Complex dimension {{ geometric.complex_dimension }}.</p>
+    {% if geometric.algebraic_model %}<p>Algebraic model: <a href="{{ root }}geometric-objects/{{ geometric.algebraic_model }}.html">{{ geometric.algebraic_model }}</a>.</p>{% endif %}
+    {% if geometric.hermitian_classification %}<p>Classification: {% for label in geometric.hermitian_classification %}{% if not loop.first %}; {% endif %}{{ label.convention }} {{ label.label }}{% endfor %}.</p>{% endif %}
+    {% if geometric.tube_type is not none %}<p>Tube type: {{ "yes" if geometric.tube_type else "no" }}.</p>{% endif %}
+    {% if geometric.bounded_realization %}<p>Bounded realization: {{ geometric.bounded_realization }}.</p>{% endif %}
+    {% if geometric.compact_dual_parabolic %}<p>Compact-dual parabolic: {{ geometric.compact_dual_parabolic }}.</p>{% endif %}
+  </section>
+  {% endif %}
+  {% if geometric.homotopy_groups or geometric.cohomology_groups %}
+  <section aria-labelledby="topology">
+    <h2 id="topology">Topology</h2>
+    {% if geometric.homotopy_groups %}<ul>{% for group in geometric.homotopy_groups %}<li>π<sub>{{ group.degree }}</sub>: {{ group.name }}.</li>{% endfor %}</ul>{% endif %}
+    {% if geometric.cohomology_groups %}<ul>{% for group in geometric.cohomology_groups %}<li>H<sup>{{ group.degree }}</sup>(X; {{ group.coefficients }}): {{ group.group }}.</li>{% endfor %}</ul>{% endif %}
+  </section>
+  {% endif %}
+  {% endif %}
+
+  <section aria-labelledby="notes">
+    <h2 id="notes">Notes</h2>
+    {{ prose }}
+  </section>
+</article>
+{% endblock %}

@@ -1,0 +1,21 @@
+---
+tag: 3DAP
+name: brandt_intrau Brandt_2.html:29105
+latex: brandt_intrau Brandt_2.html:29105
+aliases: []
+rank: 3
+gram_tensor:
+- [10, 3, 0]
+- [3, 14, 4]
+- [0, 4, 16]
+signature: [3, 0]
+determinant: 1936
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:29105.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+---
+
+Source entry `brandt_intrau:Brandt_2.html:29105` gives this Gram tensor.

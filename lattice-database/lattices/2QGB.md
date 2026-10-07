@@ -1,0 +1,21 @@
+---
+tag: 2QGB
+name: brandt_intrau Brandt_1.html:4955
+latex: brandt_intrau Brandt_1.html:4955
+aliases: []
+rank: 3
+gram_tensor:
+- [3, 0, 0]
+- [0, 5, 1]
+- [0, 1, 16]
+signature: [3, 0]
+determinant: 237
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_1.html:4955.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_1.html
+---
+
+Source entry `brandt_intrau:Brandt_1.html:4955` gives this Gram tensor.

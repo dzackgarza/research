@@ -52,6 +52,9 @@ def test_the_invariants_of_a2() -> None:
     assert not lattice.is_unimodular()
     assert lattice.level() == 3
     assert lattice.radical().module_rank() == 0
+    assert tuple(int(prime) for prime in lattice.bad_reduction_primes()) == (2, 3)
+    assert int(lattice.discriminant_character_discriminant()) == -3
+    assert lattice.is_voronoi_perfect()
 
 
 def test_the_roots_and_isometries_of_a2() -> None:
@@ -63,6 +66,9 @@ def test_the_roots_and_isometries_of_a2() -> None:
     assert Lattices(ZZ)("A1").Emb(lattice).cardinality() == 6
     assert lattice.root_sublattice().module_rank() == 2
     assert lattice.root_sublattice().determinant() == 3
+    reflective = lattice.reflective_roots()
+    assert int(reflective.cardinality()) == 12
+    assert {int(root.q()) for root in reflective} == {-2, -6}
 
 
 def test_the_dual_lattice_of_a2() -> None:
@@ -87,9 +93,13 @@ def test_the_discriminant_bilinear_form_of_a2() -> None:
     form = a2().discriminant_bilinear_form()
     values = FractionFieldQuotients(ZZ)(1)
     generator = form.module_generator(0)
+    one_third = values(1/3)
     assert form.cardinality() == 3
-    assert form.b(generator, generator) == values(1/3)
-    assert form.b(2 * generator, 2 * generator) == values(1/3)
+    assert form.b(generator, generator) == one_third
+    assert form.b(2 * generator, 2 * generator) == one_third
+    assert one_third + one_third == values(2/3)
+    assert -one_third == values(2/3)
+    assert 2 * one_third == values(2/3)
     assert 3 * generator == form.zero()
 
 

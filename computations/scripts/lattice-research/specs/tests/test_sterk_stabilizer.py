@@ -4,7 +4,7 @@ Verify generators of Stab_{O(T_En)}(h) where h = e+f in the U(2) block.
 T_En = U (+) U(2) (+) E_8(2),  signature (2,10), rank 12.
 h = [0,0,1,1,0,...,0], h^2 = 4.
 
-Uses INDEF_FORM_StabilizerVector from polyhedral_common (Dutour-Sikiric).
+Uses the capability vector_stabilizer_generators of sage-indefinite-port.
 
 Reference: Sterk 1991, vector stabilizer in the transcendental lattice.
 """
@@ -12,7 +12,7 @@ Reference: Sterk 1991, vector stabilizer in the transcendental lattice.
 from __future__ import annotations
 
 import pytest
-from src.backends.external.py_polyhedral.binaries import indefinite_form_stabilizer_vector
+from sage_indefinite_port.indefinite import recursive
 from src.lattices.lattices import Lattice
 
 
@@ -42,7 +42,7 @@ def h_vector():
 
 @pytest.fixture(scope="module")
 def stabilizer_gens(gram, h_vector):
-    return indefinite_form_stabilizer_vector(gram, h_vector)
+    return recursive.vector_stabilizer_generators(gram, h_vector)
 
 
 class TestSterkVectorStabilizer:

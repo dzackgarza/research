@@ -1,0 +1,20 @@
+{
+  "name": "KAPPA8",
+  "title": "KAPPA8",
+  "url": "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/KAPPA8.html",
+  "dimension": 8,
+  "determinant": 576,
+  "minimal_norm": 4,
+  "kissing_number": 132,
+  "references": [],
+  "gram_tensor": [
+    [4, -2, 0, 0, 0, 0, 0, 0],
+    [-2, 4, -2, 2, 0, 0, 0, 0],
+    [0, -2, 4, 0, 0, 2, 0, 2],
+    [0, 2, 0, 4, 2, 2, 0, 2],
+    [0, 0, 0, 2, 4, 2, 2, 1],
+    [0, 0, 2, 2, 2, 4, 1, 2],
+    [0, 0, 0, 0, 2, 1, 4, 1],
+    [0, 0, 2, 2, 1, 2, 1, 4]
+  ]
+}

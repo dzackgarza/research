@@ -1,0 +1,21 @@
+---
+tag: 3BJP
+name: brandt_intrau Brandt_2.html:26885
+latex: brandt_intrau Brandt_2.html:26885
+aliases: []
+rank: 3
+gram_tensor:
+- [10, 5, 4]
+- [5, 16, 5]
+- [4, 5, 16]
+signature: [3, 0]
+determinant: 1854
+definiteness: positive_definite
+families: []
+related: []
+references:
+- citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:26885.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+---
+
+Source entry `brandt_intrau:Brandt_2.html:26885` gives this Gram tensor.

@@ -323,14 +323,17 @@ class AdditiveMor(CategoricalMor):
     def __init__(self, family, domain, codomain) -> None:
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
-        self._base_ring = _own_ring(SageZZ)
-        self._preamble_base_ring = self._base_ring
-        category = AdditiveEndomorphismRings(self._base_ring) if domain is codomain else AdditiveMorGroups()
+        # The integer scalar ring is the datum ``Modules.ParentMethods`` reads
+        # through ``_preamble_base_ring``; that category method precedes this
+        # class in the refined MRO, and the Sage Homset base stays unset.
+        self._preamble_base_ring = _own_ring(SageZZ)
+        self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
+        category = AdditiveEndomorphismRings(self._preamble_base_ring) if domain is codomain else AdditiveMorGroups()
         super().__init__(family, domain, codomain, category=category)
 
     def base_ring(self):
         r"""The integer scalar ring of this additive Mor group."""
-        return self._base_ring
+        return self._preamble_base_ring
 
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):
@@ -348,7 +351,7 @@ class AdditiveMor(CategoricalMor):
             f"{self.codomain()}: a scalar is a multiple of the identity, which exists only "
             f"when the domain and codomain are the same group"
         )
-        return self._owned_scalar_multiple(self._base_ring(datum), self.identity())
+        return self._owned_scalar_multiple(self._preamble_base_ring(datum), self.identity())
 
     def elementwise(self, function):
         r"""Construct the additive map declared by ``function``."""
@@ -359,8 +362,7 @@ class AdditiveMor(CategoricalMor):
         return self.element_class(self, function)
 
     def _apply_pointwise_scalar(self, scalar, element):
-        action = IntegerMulAction(SageZZ, self.codomain(), m=self.codomain().zero())
-        return action(int(self._base_ring(scalar)), element)
+        return self._integer_action(int(self._preamble_base_ring(scalar)), element)
 
     def _scalar_identity(self, scalar):
         return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
@@ -369,8 +371,6 @@ class AdditiveMor(CategoricalMor):
         r"""Realize the canonical integer action through Sage's additive action."""
         coefficient = _scalar_identity_coefficient(morphism)
         if coefficient is not None:
-            return self._scalar_identity(self._base_ring(scalar) * coefficient)
-        integer = int(self._base_ring(scalar))
-        return self.elementwise(
-            lambda element: self._apply_pointwise_scalar(integer, morphism(element))
-        )
+            return self._scalar_identity(self._preamble_base_ring(scalar) * coefficient)
+        integer = int(self._preamble_base_ring(scalar))
+        return self.elementwise(lambda element: self._integer_action(integer, morphism(element)))

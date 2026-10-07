@@ -1,0 +1,22 @@
+{
+  "name": "LAMBDA10",
+  "title": "LAMBDA10",
+  "url": "https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/LAMBDA10.html",
+  "dimension": 10,
+  "determinant": 768,
+  "minimal_norm": 4,
+  "kissing_number": 336,
+  "references": ["SPLAG p. 157."],
+  "gram_tensor": [
+    [4, -2, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-2, 4, -2, 2, 0, 0, 0, 0, 0, 0],
+    [0, -2, 4, 0, 0, 2, 0, 0, 0, 0],
+    [0, 2, 0, 4, 2, 2, 0, 0, 0, 0],
+    [0, 0, 0, 2, 4, 2, 0, 0, 2, 1],
+    [0, 0, 2, 2, 2, 4, 2, 2, 1, 2],
+    [0, 0, 0, 0, 0, 2, 4, 2, 0, 2],
+    [0, 0, 0, 0, 0, 2, 2, 4, 0, 2],
+    [0, 0, 0, 0, 2, 1, 0, 0, 4, 2],
+    [0, 0, 0, 0, 1, 2, 2, 2, 2, 4]
+  ]
+}

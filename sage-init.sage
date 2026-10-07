@@ -31,13 +31,17 @@ import sys
 from pathlib import Path
 
 import IPython.core.ultratb
+from IPython.core.interactiveshell import InteractiveShell
 from sage.env import SAGE_STARTUP_FILE
 from sage.libs.gap.libgap import libgap
 from sage.misc.latex import latex
 
+from dzack_research.static_types import DisplayedValue
+
 # Sage loads this file with ``run_cell(source)``, so ``__file__`` is never
 # set.  ``SAGE_STARTUP_FILE`` is the symlink (or the file itself); resolve
 # it to the tracked copy in the repo.
+assert SAGE_STARTUP_FILE is not None, "Sage runs this file only as its startup file"
 _VENDOR_DIR = Path(SAGE_STARTUP_FILE).resolve().parent / "computations" / "vendor"
 if _VENDOR_DIR.is_dir():
     _vendor = str(_VENDOR_DIR)
@@ -45,7 +49,7 @@ if _VENDOR_DIR.is_dir():
         sys.path.append(_vendor)
 
 
-def typesets_itself(obj):
+def typesets_itself(obj: DisplayedValue) -> bool:
     if hasattr(type(obj), "_latex_"):
         return True
     if isinstance(obj, (list, tuple, set, frozenset)):
@@ -55,14 +59,16 @@ def typesets_itself(obj):
     return False
 
 
-def latex_if_typesettable(obj):
+def latex_if_typesettable(obj: DisplayedValue) -> str | None:
     if not typesets_itself(obj):
         return None
     return "$\\displaystyle " + str(latex(obj)) + "$"
 
 
-def install_implicit_typesetting(shell):
-    formatter = shell.display_formatter.formatters["text/latex"]
+def install_implicit_typesetting(shell: InteractiveShell) -> None:
+    display_formatter = shell.display_formatter
+    assert display_formatter is not None, "an IPython shell has a display formatter"
+    formatter = display_formatter.formatters["text/latex"]
     formatter.enabled = True
     formatter.for_type(object, latex_if_typesettable)
 
@@ -76,8 +82,8 @@ from dzack_research.preamble.all import *
 Σ = sum
 Π = prod
 
-libgap.LoadPackage("PackageManager")
-IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
+libgap.load_package("PackageManager")
+IPython.core.ultratb.VerboseTB.tb_highlight = "bg:ansired"
 
 # Before the Julia bridge, because a session that cannot reach Julia is still
 # a session and should still typeset.  The bridge is a computational backend

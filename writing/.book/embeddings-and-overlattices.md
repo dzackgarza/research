@@ -1,1 +1,0 @@
-coble/lattices-and-moduli/embeddings-and-overlattices.md
