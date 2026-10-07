@@ -453,7 +453,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
                     quotient_projection.lift(quotient_element)
                 )
             )
-            return Sets().Core().Mor(self, quotient)(forward, inverse)
+            return Sets().Core().Mor(self, quotient)._from_known_inverse_pair(forward, inverse)
 
 
 class GSetMor(GObjectMor):

@@ -189,7 +189,6 @@ from dzack_research.preamble.groups import (
     FiniteGaloisExtension,
     FiniteGaloisQuotient,
     FiniteGaloisSubgroup,
-    FiniteGroupClassFunction,
     FiniteGroups,
     FiniteGSets,
     FinitelyGeneratedGroups,

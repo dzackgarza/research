@@ -14,8 +14,6 @@ from dzack_research.preamble.categories.group.g_sets import (
     Torsors,
 )
 
-from dzack_research.preamble.categories.group.class_functions import FiniteGroupClassFunction
-
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 
 from dzack_research.preamble.categories.group.groups import (
@@ -102,7 +100,6 @@ __all__ = [
     'FiniteGaloisQuotient',
     'FiniteGaloisSubgroup',
     'FiniteGroups',
-    'FiniteGroupClassFunction',
     'FinitelyGeneratedGroups',
     'FinitelyPresentedGroups',
     'FrobeniusConjugacyClass',

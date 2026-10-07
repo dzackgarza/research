@@ -804,10 +804,12 @@ class ModulesOverGroupAlgebra(Modules):
             representatives = group.conjugacy_classes_representatives()
             traces = tuple(self.action_of(group_element).trace() for group_element in representatives)
 
-            return group.class_function(
-                coefficient_ring,
-                traces,
-                representatives=representatives,
+            return group.character_set()(
+                group.class_function(
+                    coefficient_ring,
+                    traces,
+                    representatives=representatives,
+                )
             )
 
         def brauer_character(self):
