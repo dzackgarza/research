@@ -772,8 +772,11 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
 
             ambient = self.ambient_discriminant_module()
             engine_subgroup = self._preamble_discriminant_engine_subgroup
+            unformed = ambient.unformed_module()
             return ambient.elements().filtered(
-                lambda element: ambient._to_smith_engine_element(element)
+                lambda element: unformed._to_smith_engine_element(
+                    ambient._element_of_unformed_module(element)
+                )
                 in engine_subgroup,
             )
 
@@ -852,9 +855,15 @@ def _discriminant_subgroup(ambient, generators):
 
     # The subgroup is decomposed into cyclic summands on the Smith engine;
     # every generator is returned as an element of the owned ambient module.
-    smith_engine = ambient._smith_engine()
+    unformed = ambient.unformed_module()
+    smith_engine = unformed._smith_engine()
     engine_subgroup = smith_engine.submodule(
-        [ambient._to_smith_engine_element(generator) for generator in generators]
+        [
+            unformed._to_smith_engine_element(
+                ambient._element_of_unformed_module(generator)
+            )
+            for generator in generators
+        ]
     )
     ring = ambient.base_ring()
     invariants = tuple(
@@ -873,7 +882,9 @@ def _discriminant_subgroup(ambient, generators):
     if invariants:
         prototype = Modules(ring).FinitelyPresented().Torsion().direct_sum_of_cyclics(invariants)
         ambient_generators = tuple(
-            ambient._from_smith_engine_element(generator)
+            ambient._element_from_unformed_module(
+                unformed._from_smith_engine_element(generator)
+            )
             for generator in engine_subgroup.smith_form_gens()
         )
         images = {
@@ -907,7 +918,8 @@ def _all_discriminant_subgroups(ambient):
     r"""Return the subgroup lattice through GAP's finite-abelian routine."""
     from sage.groups.abelian_gps.abelian_group_gap import AbelianGroupGap
 
-    smith_engine = ambient._smith_engine()
+    unformed = ambient.unformed_module()
+    smith_engine = unformed._smith_engine()
     assert smith_engine is not None, (
         f"the subgroups of {ambient} are enumerated from its invariant factor decomposition, "
         f"which has not been computed for {ambient}, in {ambient.category()}"
@@ -917,9 +929,11 @@ def _all_discriminant_subgroups(ambient):
         tuple(
             ambient.subgroup_on(
                 tuple(
-                    ambient._from_smith_engine_element(
-                        smith_engine.linear_combination_of_smith_form_gens(
-                            additive_group(generator).exponents()
+                    ambient._element_from_unformed_module(
+                        unformed._from_smith_engine_element(
+                            smith_engine.linear_combination_of_smith_form_gens(
+                                additive_group(generator).exponents()
+                            )
                         )
                     )
                     for generator in subgroup.gens()

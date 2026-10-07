@@ -3037,7 +3037,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             bilinear_values = discriminant.bilinear_value_module()
             field = self.base_ring().fraction_field()
             target = field(square)
-            engine = discriminant._smith_engine()
+            unformed = discriminant.unformed_module()
+            engine = unformed._smith_engine()
             assert engine is not None, (
                 f"the covering discriminant classes of {self} cannot be enumerated: "
                 f"the Smith normal form of {discriminant} is not available"
@@ -3071,7 +3072,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 value = values(_owned_engine_element(field, raw_value))
                 if value == target_value:
                     matches.append(
-                        discriminant._from_smith_engine_element(engine_element)
+                        discriminant._element_from_unformed_module(
+                            unformed._from_smith_engine_element(engine_element)
+                        )
                     )
             return finite_ordered_set(tuple(matches))
 
