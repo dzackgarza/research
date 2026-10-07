@@ -19,14 +19,12 @@ from sage.structure.element import parent as element_parent
 from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
-    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
-from dzack_research.preamble.categories.rings.embeddings import NumberFieldMor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
@@ -77,15 +75,13 @@ def _number_field(polynomial, *args, **kwargs):
     return field
 
 
-class NumberFieldMorCategoryConstruction(MorCategoryConstruction):
-    def fixed_category_class(self):
-        return NumberFieldMor
-
-
 class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
-    r"""Finite extensions of ``QQ``."""
+    r"""Finite extensions of ``QQ``.
 
-    _MorCategory = NumberFieldMorCategoryConstruction
+    Number fields are a full subcategory of fields, hence of rings, so the
+    maps between them are the ring maps and this category inherits the ring
+    ``Mor``.
+    """
 
     def an_object(self):
         r"""The rational field as the degree-one number field."""
@@ -99,19 +95,17 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [OwnedRings().Division().Commutative()]
 
-    def Mor(self, domain, codomain):
-        if domain not in self or codomain not in self:
-            raise TypeError(
-                f"embeddings of number fields need a number field as domain and codomain, but got "
-                f"{domain} and {codomain}"
-            )
-        return self.MorCategory().Of(domain, codomain)
-
     class ParentMethods:
         def Mor(self, codomain, category=None):
-            number_fields = OwnedNumberFields()
-            if category is None or category.is_subcategory(number_fields):
-                return number_fields.Mor(self, codomain)
+            r"""The ring ``Mor``, unless another category is requested.
+
+            A number field is also placed among the ``QQ``-algebras, whose
+            ``Mor`` would otherwise be found first; every ring map between
+            fields of characteristic zero is ``QQ``-linear, so the ring maps
+            are the maps of number fields.
+            """
+            if category is None or category.is_subcategory(OwnedNumberFields()):
+                return OwnedRings.ParentMethods.Mor(self, codomain)
             return super().Mor(codomain, category=category)
 
         def degree(self):
@@ -223,11 +217,9 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def embeddings(self, target):
             r"""Return the owned field embeddings ``K -> target``.
 
-            If the target is again a number field, the arrows live in the
-            specialized number-field Mor.  Embeddings into a larger owned
-            field such as ``AA``, ``RR`` or ``CC`` are ring morphisms in the
-            ambient field category; the codomain is not falsely promoted to a
-            finite extension of ``QQ``.
+            Every embedding is a ring map, an element of ``Mor(K, target)``.
+            The codomain ``AA``, ``RR`` or ``CC`` is not promoted to a finite
+            extension of ``QQ``.
             """
 
             if target not in OwnedRings().Division().Commutative():

@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
 from dzack_research.preamble.categories.rings.commutative_ideals import (
     CommutativeIdeals,
 )
-from dzack_research.preamble.categories.rings.field_morphisms import ExactFieldMorphism
 from dzack_research.preamble.categories.rings.number_fields import (
     CyclotomicField as _CyclotomicField,
 )
@@ -234,7 +233,6 @@ __all__ = [
     "CyclotomicField",
     "DistinguishedOpenSubobjects",
     "DivisionRings",
-    "ExactFieldMorphism",
     "ExactRealField",
     "ExactRealNumber",
     "Fields",

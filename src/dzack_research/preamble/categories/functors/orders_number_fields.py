@@ -13,12 +13,13 @@ restricts to maximal orders because integrality is preserved.
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.rings.embeddings import (
-    NumberFieldEmbedding,
-    OrderEmbedding,
-)
+from dzack_research.preamble.categories.rings.embeddings import OrderEmbedding
 from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedOrders, _engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedOrders,
+    RingMorphism,
+    _engine_ring,
+)
 
 
 class _FractionFieldFunctor(Functor):
@@ -48,7 +49,7 @@ class _RingOfIntegersFunctor(Functor):
     def _apply_object(self, field):
         return field.ring_of_integers()
 
-    def _apply_morphism(self, embedding: NumberFieldEmbedding):
+    def _apply_morphism(self, embedding: RingMorphism):
         source = self(embedding.domain())
         target = self(embedding.codomain())
         return source.Mor(target)(embedding)
@@ -75,11 +76,10 @@ class _OrderNumberFieldAdjunction(Adjunction):
         if _engine_ring(source) is _engine_ring(field):
             if source is field:
                 return field.Mor(field).identity()
-            if _engine_ring(source).degree() == 1:
-                return source.Mor(field)(
-                    _engine_ring(source).hom(_engine_ring(field))
-                )
-            return source.Mor(field)(field.primitive_element())
+            # The two fields share one engine field, so the counit is its identity.
+            return source.Mor(field)(
+                _engine_ring(source).hom(_engine_ring(field))
+            )
         embeddings = source.Mor(field).embeddings()
         if len(embeddings) != 1:
             raise ValueError(
