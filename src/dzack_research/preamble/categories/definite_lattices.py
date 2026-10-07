@@ -326,17 +326,20 @@ def _simple_roots(lattice, roots):
     when it is not the sum of two positive roots (Humphreys, *Introduction to
     Lie Algebras and Representation Theory*, §10.1).
     """
-    coordinates = {root: _coordinate_tuple(lattice, root) for root in roots}
     zero = (SageZZ.zero(),) * int(lattice.module_rank())
-    positive = tuple(root for root in roots if coordinates[root] > zero)
-    positive_coordinates = {coordinates[root] for root in positive}
+    positive = tuple(
+        (root, coordinates)
+        for root in roots
+        if (coordinates := _coordinate_tuple(lattice, root)) > zero
+    )
+    positive_coordinates = {coordinates for _root, coordinates in positive}
     return tuple(
         candidate
-        for candidate in positive
+        for candidate, candidate_coordinates in positive
         if not any(
-            tuple(left - right for left, right in zip(coordinates[candidate], coordinates[other], strict=True)) in positive_coordinates
-            for other in positive
-            if other is not candidate
+            tuple(left - right for left, right in zip(candidate_coordinates, other_coordinates, strict=True)) in positive_coordinates
+            for other_coordinates in positive_coordinates
+            if other_coordinates != candidate_coordinates
         )
     )
 

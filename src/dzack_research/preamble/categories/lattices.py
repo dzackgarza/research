@@ -3679,26 +3679,32 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the full-block BKZ (HKZ) reframing."""
             return self.hkz_reduction().reduced
 
+        @cached_method
         def minimum(self):
 
             return _minimum(self)
 
+        @cached_method
         def vectors_of_square(self, square):
 
             return _vectors_of_square(self, square)
 
+        @cached_method
         def vectors_of_square_and_divisibility(self, square, divisibility):
 
             return _vectors_of_square_and_divisibility(self, square, divisibility)
 
+        @cached_method
         def roots(self):
 
             return _roots(self)
 
+        @cached_method
         def roots_of_square(self, square):
 
             return _roots_of_square(self, square)
 
+        @cached_method
         def possible_root_lengths(self):
             r"""Return the possible absolute self-pairings of reflective roots."""
             assert self.module_rank().is_finite(), (
@@ -3712,6 +3718,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 tuple((self.base_ring()(2) * exponent).divisors())
             )
 
+        @cached_method
         def reflective_roots(self):
             r"""Return all primitive reflective roots of a definite lattice."""
             match self.is_positive_definite(), self.is_negative_definite():
@@ -3732,10 +3739,12 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             )
 
+        @cached_method
         def root_sublattice(self):
 
             return _root_sublattice(self)
 
+        @cached_method
         def reflective_root_system_components(self):
             r"""Return the irreducible components of the reflective root system.
 
@@ -4038,6 +4047,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def isotropic_flag_orbit_representatives(self, rank=2):
             return self.O().isotropic_orbit_representatives(rank, flag=True)
 
+        @cached_method
         def shortest_vectors(self):
 
             return _shortest_vectors(self)
