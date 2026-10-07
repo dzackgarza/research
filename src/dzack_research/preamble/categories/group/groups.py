@@ -499,6 +499,21 @@ def _free_group_conjugacy(group, source, target) -> bool:
     return bool(finite_source.is_conjugate(finite_target))
 
 
+def _reduced_word_syllables(group, element):
+    r"""Return the reduced word as syllables ``(s, e)``: a basis point and its nonzero exponent.
+
+    Consecutive letters on the same basis point merge into one syllable, so
+    both engines give the same syllables for the same element.
+    """
+    syllables = []
+    for label, exponent in _reduced_word_data(group, element):
+        if syllables and syllables[-1][0] == label:
+            syllables[-1] = (label, syllables[-1][1] + int(exponent))
+        else:
+            syllables.append((label, int(exponent)))
+    return tuple(syllables)
+
+
 def _reduced_word(group, element):
     r"""Return the reduced word as an owned finite family of signed generators."""
     from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -648,7 +663,7 @@ def _engine_element_text(group, backend_element) -> str:
     r"""Return the owned notation for an engine element, or the empty string."""
     engine = _engine_group(group)
     match engine:
-        case FreeGroup_class() | FinitelyPresentedGroup():
+        case FinitelyPresentedGroup():
             return " ".join(
                 f"g_{abs(letter)}" if letter > 0 else f"g_{abs(letter)}^-1"
                 for letter in _engine_word(group, backend_element)
@@ -663,7 +678,7 @@ def _engine_element_text(group, backend_element) -> str:
 def _engine_element_latex(group, backend_element) -> str:
     r"""Return the owned LaTeX for an engine element, or the empty string."""
     match _engine_group(group):
-        case FreeGroup_class() | FinitelyPresentedGroup():
+        case FinitelyPresentedGroup():
             return " ".join(
                 rf"g_{{{abs(letter)}}}" if letter > 0 else rf"g_{{{abs(letter)}}}^{{-1}}"
                 for letter in _engine_word(group, backend_element)
@@ -1185,7 +1200,7 @@ class _GroupElement(MultiplicativeGroupElement):
         text = _engine_element_text(self.parent(), self._backend())
         if text:
             return text
-        return f"element of {self.parent()} of order {self.order()}"
+        return f"group element of order {self.order()}"
 
     def _latex_(self):
         if self.is_one():
@@ -1193,7 +1208,7 @@ class _GroupElement(MultiplicativeGroupElement):
         text = _engine_element_latex(self.parent(), self._backend())
         if text:
             return text
-        return rf"\text{{element of }}{latex(self.parent())}"
+        return rf"\text{{group element of order }}{latex(self.order())}"
 
 
 def _owned_group(group):
@@ -3941,6 +3956,24 @@ class GroupsWithChosenFreeBasis(OwnedCategory):
 
     def super_categories(self):
         return [OwnedGroups()]
+
+    class ElementMethods:
+        def _repr_(self):
+            r"""The reduced word in the free generators ``g_s``, ``s`` a point of the free basis."""
+            syllables = _reduced_word_syllables(self.parent(), self)
+            if not syllables:
+                return "1"
+            return " ".join(f"g_{label}" if exponent == 1 else f"g_{label}^{exponent}" for label, exponent in syllables)
+
+        def _latex_(self):
+            r"""The reduced word in the free generators ``g_s``, ``s`` a point of the free basis."""
+            syllables = _reduced_word_syllables(self.parent(), self)
+            if not syllables:
+                return "1"
+            return " ".join(
+                rf"g_{{{latex(label)}}}" if exponent == 1 else rf"g_{{{latex(label)}}}^{{{exponent}}}"
+                for label, exponent in syllables
+            )
 
     class ParentMethods:
         def __init__(self, free_basis, **rest) -> None:
