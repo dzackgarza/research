@@ -1195,11 +1195,23 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _formed_form(self):
-            r"""The selected form read on this module: its arguments coerce to the unformed module."""
+            r"""The selected form read on this module.
+
+            This module is built on the framing of the unformed module, so a
+            bilinear form with values in a ring on a finite framing reads here
+            with the same Gram tensor.  Otherwise its arguments coerce to the
+            unformed module.
+            """
             form = self.form()
             module = self.unformed_module()
             if form.module() is self:
                 return form
+            if (
+                _is_bilinear_form(form)
+                and form.codomain() in OwnedRings()
+                and _has_finite_framing(module)
+            ):
+                return self.bilinear_forms(self.value_module())(form.gram_tensor())
             if _is_quadratic_form(form):
                 return self.quadratic_map(
                     self.value_module(),
@@ -1357,9 +1369,13 @@ class FormModules(OwnedCategoryOverBaseRing):
             return tensor.lower_index(self, slot)
 
         def twist(self, scalar):
-
+            r"""This module with the form scaled by ``scalar``: Gram tensor ``m G`` when it has one."""
             form = self._formed_form()
             if _is_bilinear_form(form):
+                if form.codomain() in OwnedRings() and _has_finite_framing(form.module()):
+                    return FormModules(self.base_ring())(
+                        self.bilinear_forms(self.value_module())(scalar * form.gram_tensor())
+                    )
                 if _has_finite_framing(form.module()):
                     values = form.coordinate_values().map(
                         lambda value: scalar * value,

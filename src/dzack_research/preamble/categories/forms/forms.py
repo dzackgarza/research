@@ -52,6 +52,9 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     _coordinate_pair,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
+    _coordinate_rows,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
     _finite_framing,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -269,13 +272,62 @@ def _descended_bilinear_form(form, morphism, value_projection):
 
 
 class _CallableFormMethods:
-    r"""A bilinear or quadratic map given by its evaluation.
+    r"""A bilinear or quadratic map given by its Gram tensor or by its evaluation.
 
-    Used only when no universal classifier is represented.  The datum is the
-    evaluation itself, and for a quadratic map built from coordinates the
-    chosen symmetric bilinear lift ``b`` with ``q(x) = b(x, x)``; the space's
-    element constructor computes both from whatever the caller supplied.
+    Used only when no universal classifier is represented.  On finitely
+    framed modules with values in a ring, a bilinear form is its Gram tensor
+    ``G`` in ``X^* \otimes Y^*``, and ``b(x, y) = G(x, y)`` is one contraction
+    (`OWN-24`); a quadratic map given by coordinates is ``q(x) = G(x, x)`` for
+    its chosen symmetric bilinear lift ``G``.  Any other map is given by its
+    evaluation, and for a quadratic map built from coordinates with values
+    outside a ring, also by the evaluation of its chosen lift.
     """
+
+    def _coordinate_vector(self, module, element):
+        r"""The coordinates of ``element`` on the finite framing of ``module``, over the values."""
+        return tensor.vector(self.codomain(), tuple(module.framing_morphism().lift(element)))
+
+    def _contract_gram_tensor(self, left, right):
+        r"""``G(x, y)``: the defining Gram tensor contracted with the coordinates of ``x`` and ``y``."""
+        return self._defining_gram_tensor.contract(
+            self._coordinate_vector(self.left_module(), left),
+            self._coordinate_vector(self.right_module(), right),
+        )
+
+    def _evaluate(self, *arguments):
+        r"""The value of this map: a contraction of its Gram tensor, else its evaluation."""
+        match self._defining_gram_tensor, self.parent().kind():
+            case None, _:
+                return self._evaluation(*arguments)
+            case _, "quadratic":
+                (element,) = arguments
+                return self._contract_gram_tensor(element, element)
+            case _:
+                return self._contract_gram_tensor(*arguments)
+
+    def _evaluate_lift(self, left, right):
+        r"""The chosen bilinear lift of this quadratic map at ``(x, y)``."""
+        match self._defining_gram_tensor:
+            case None:
+                return self._lift_evaluation(left, right)
+            case _:
+                return self._contract_gram_tensor(left, right)
+
+    def _gram_coordinate_values(self):
+        r"""The entries ``G[i, j]`` of the defining Gram tensor, indexed by the two framings."""
+        gram = self._defining_gram_tensor
+        left_labels = _finite_framing(self.left_module())
+        right_labels = _finite_framing(self.right_module())
+        return _coordinate_family_from_rows(
+            left_labels,
+            right_labels,
+            self.codomain(),
+            (
+                (gram[i, j] for j in range(int(right_labels.cardinality())))
+                for i in range(int(left_labels.cardinality()))
+            ),
+            name=f"Gram tensor of a {self.parent().kind()} form",
+        )
 
     def left_module(self):
         return self.parent().left_module()
@@ -318,7 +370,7 @@ class _CallableFormMethods:
                 raise TypeError(
                     f"the quadratic form {self} is defined on {self.module()}, and {element} is not in it"
                 )
-            return _coerce_value(self.codomain(), self._evaluation(element))
+            return _coerce_value(self.codomain(), self._evaluate(element))
         if len(arguments) != 2:
             raise TypeError(f"the pairing {self} takes two arguments, but got {len(arguments)}")
         left, right = arguments
@@ -327,7 +379,7 @@ class _CallableFormMethods:
                 f"the pairing {self} takes an element of {self.left_module()} and an element of "
                 f"{self.right_module()}, but got {left} and {right}"
             )
-        return _coerce_value(self.codomain(), self._evaluation(left, right))
+        return _coerce_value(self.codomain(), self._evaluate(left, right))
 
     def norm(self, element):
         if self.parent().kind() != "bilinear" or self.left_module() is not self.right_module():
@@ -341,6 +393,8 @@ class _CallableFormMethods:
             raise TypeError(
                 f"{self} is a quadratic form, so it has no bilinear coordinate values; use lift_coordinate_values()"
             )
+        if self._defining_gram_tensor is not None:
+            return self._gram_coordinate_values()
         labels = _finite_framing(self.module())
         return _coordinate_family_from_function(
             labels,
@@ -355,9 +409,8 @@ class _CallableFormMethods:
 
     def has_selected_bilinear_lift(self) -> bool:
         r"""Whether this quadratic map retains a chosen bilinear lift."""
-        return (
-            self.parent().kind() == "quadratic"
-            and self._lift_evaluation is not None
+        return self.parent().kind() == "quadratic" and (
+            self._defining_gram_tensor is not None or self._lift_evaluation is not None
         )
 
     def lift_coordinate_values(self):
@@ -365,6 +418,8 @@ class _CallableFormMethods:
             raise TypeError(
                 f"{self} is not a quadratic form with a chosen bilinear lift, so it has no lift coordinate values"
             )
+        if self._defining_gram_tensor is not None:
+            return self._gram_coordinate_values()
         labels = _finite_framing(self.module())
         return _coordinate_family_from_function(
             labels,
@@ -378,9 +433,9 @@ class _CallableFormMethods:
         )
 
     def lift_pairing(self, left, right):
-        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+        if not self.has_selected_bilinear_lift():
             raise TypeError(f"{self} is not a quadratic form with a chosen bilinear lift")
-        return _coerce_value(self.codomain(), self._lift_evaluation(left, right))
+        return _coerce_value(self.codomain(), self._evaluate_lift(left, right))
 
     def lift_form(self):
         r"""Return the chosen bilinear lift of this quadratic form.
@@ -391,15 +446,24 @@ class _CallableFormMethods:
         :meth:`polar_form`, which is twice this lift in the ordinary
         characteristic-not-two situation.
         """
-        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+        if not self.has_selected_bilinear_lift():
             raise TypeError(f"{self} is not a quadratic form with a chosen bilinear lift")
-        return self.module().bilinear_forms(self.codomain())(
-            lambda left, right: self._lift_evaluation(left, right)
-        )
+        forms = self.module().bilinear_forms(self.codomain())
+        match self._defining_gram_tensor:
+            case None:
+                return forms(lambda left, right: self._lift_evaluation(left, right))
+            case gram:
+                return forms(gram)
 
     @cached_method
     def gram_tensor(self):
+        r"""The Gram tensor ``G[i, j] = b(e_i, e_j)`` on the finite framing.
 
+        For a form defined by its Gram tensor, that tensor.  For a form given
+        by its evaluation, pairing the framing generators is the definition.
+        """
+        if self._defining_gram_tensor is not None:
+            return self._defining_gram_tensor
         if self.codomain() not in OwnedRings():
             raise TypeError(
                 f"the Gram tensor of {self} needs values in a ring, but its values lie in {self.codomain()}"
@@ -498,8 +562,13 @@ class _CallableFormMethods:
             return True
         if element_parent(other) is not self.parent():
             return False
-        if self._evaluation is other._evaluation:
-            return True
+        match self._defining_gram_tensor, other._defining_gram_tensor, self.parent().kind():
+            case None, None, _ if self._evaluation is other._evaluation:
+                return True
+            case left, right, "bilinear" if left is not None and right is not None:
+                return left == right
+            case _:
+                pass
         left_module = self.left_module()
         right_module = self.right_module()
         ring = left_module.base_ring()
@@ -541,11 +610,15 @@ class _CallableFormMethods:
 
 
 class _CallableForm(_CallableFormMethods):
-    r"""The evaluation held by the private set realization of forms."""
+    r"""The defining datum held by the private set realization of forms.
 
-    def __init__(self, parent, evaluation, lift_evaluation=None) -> None:
+    Exactly one of the Gram tensor and the evaluation is the defining datum.
+    """
+
+    def __init__(self, parent, evaluation=None, lift_evaluation=None, *, gram_tensor=None) -> None:
         self._evaluation = evaluation
         self._lift_evaluation = lift_evaluation
+        self._defining_gram_tensor = gram_tensor
         super().__init__(parent)
 
 
@@ -591,30 +664,25 @@ class _CallableFormSpace:
     def _element_constructor_(self, datum):
         r"""Admit a map of this space: one of its elements, finite coordinates, or an evaluation.
 
-        This is the one boundary that reads the shape of foreign data.  An
-        indexed family over the two framings or an iterable of rows is finite
-        coordinate data; any other callable is the evaluation itself.
+        This is the one boundary that reads the shape of foreign data.  A
+        type-``(0, 2)`` tensor, an indexed family over the two framings or an
+        iterable of rows is finite coordinate data; any other callable is the
+        evaluation itself.
         """
         if element_parent(datum) is self:
             return datum
-        name = f"Callable {self.kind()} coordinate input"
         match datum:
             case Tensor():
-                left_labels = _finite_framing(self.left_module())
-                right_labels = _finite_framing(self.right_module())
-                return self._from_coordinate_values(
-                    _coordinate_family_from_rows(
-                        left_labels,
-                        right_labels,
-                        self.codomain(),
-                        _covariant_bilinear_coordinate_rows(
-                            datum,
-                            left_labels.cardinality(),
-                            right_labels.cardinality(),
-                        ),
-                        name=name,
-                    )
+                rows = _covariant_bilinear_coordinate_rows(
+                    datum,
+                    _finite_framing(self.left_module()).cardinality(),
+                    _finite_framing(self.right_module()).cardinality(),
                 )
+                match datum.base_ring() is self.codomain():
+                    case True:
+                        return self._from_gram_tensor(datum)
+                    case False:
+                        return self._from_coordinate_rows(rows)
             case _:
                 pass
         if isinstance(datum, IndexedFamily):
@@ -624,19 +692,11 @@ class _CallableFormSpace:
                     _finite_framing(self.right_module()),
                     self.codomain(),
                     datum,
-                    name=name,
+                    name=f"Callable {self.kind()} coordinate input",
                 )
             )
         if isinstance(datum, Iterable) and not isinstance(datum, (str, bytes)):
-            return self._from_coordinate_values(
-                _coordinate_family_from_rows(
-                    _finite_framing(self.left_module()),
-                    _finite_framing(self.right_module()),
-                    self.codomain(),
-                    datum,
-                    name=name,
-                )
-            )
+            return self._from_coordinate_rows(datum)
         if not callable(datum):
             raise TypeError(
                 f"cannot build an element of {self} from {datum!r}: give a function to evaluate it or its "
@@ -644,16 +704,64 @@ class _CallableFormSpace:
             )
         return self.element_class(self, datum)
 
+    def _from_gram_tensor(self, gram):
+        r"""The map with Gram tensor ``gram``: ``b(x, y) = G(x, y)``, or ``q(x) = G(x, x)``.
+
+        For a quadratic space ``G`` is the chosen bilinear lift, which must be
+        symmetric.
+        """
+        if self.kind() == "quadratic" and not gram.is_symmetric():
+            raise ValueError(
+                f"the bilinear lift of a quadratic form must be symmetric, but the Gram tensor {gram} is not"
+            )
+        return self.element_class(self, gram_tensor=gram)
+
+    def _from_coordinate_rows(self, rows):
+        r"""The map whose values on pairs of framing generators are the rows ``rows``.
+
+        With values in a ring these rows are the Gram tensor of the map.
+        """
+        left_labels = _finite_framing(self.left_module())
+        right_labels = _finite_framing(self.right_module())
+        name = f"Callable {self.kind()} coordinate input"
+        match self.codomain() in OwnedRings():
+            case True:
+                return self._from_gram_tensor(
+                    tensor(
+                        self.codomain(),
+                        (),
+                        (int(left_labels.cardinality()), int(right_labels.cardinality())),
+                        _coordinate_rows(left_labels, right_labels, self.codomain(), rows, name=name),
+                    )
+                )
+            case False:
+                return self._from_coordinate_values(
+                    _coordinate_family_from_rows(left_labels, right_labels, self.codomain(), rows, name=name)
+                )
+
     def _from_coordinate_values(self, values):
         r"""The map whose values on pairs of framing generators are the family ``values``.
 
-        Bilinear extension ``b(x, y) = \sum_{s,t} x_s y_t\, b(s, t)`` over the two
-        framings.  For a quadratic space the coordinates are the chosen bilinear
-        lift ``b``, which must be symmetric, and the map is ``q(x) = b(x, x)``.
+        With values in a ring the family is read once into the Gram tensor of
+        the map.  Otherwise the map is the bilinear extension
+        ``b(x, y) = \sum_{s,t} x_s y_t\, b(s, t)`` over the two framings; for a
+        quadratic space the coordinates are the chosen bilinear lift ``b``,
+        which must be symmetric, and the map is ``q(x) = b(x, x)``.
         """
         left_module = self.left_module()
         right_module = self.right_module()
         left_labels = _finite_framing(left_module)
+        right_labels = _finite_framing(right_module)
+        match self.codomain() in OwnedRings():
+            case True:
+                return self._from_coordinate_rows(
+                    (
+                        (_coordinate_pair(values, left_label, right_label) for right_label in right_labels)
+                        for left_label in left_labels
+                    )
+                )
+            case False:
+                pass
         zero = self.codomain().zero()
 
         def bilinear(left, right):
@@ -704,6 +812,10 @@ class _CallableFormModuleElement(_CallableFormMethods):
     @property
     def _lift_evaluation(self):
         return self.underlying_element()._lift_evaluation
+
+    @property
+    def _defining_gram_tensor(self):
+        return self.underlying_element()._defining_gram_tensor
 
 
 class _CallableFormModule:
