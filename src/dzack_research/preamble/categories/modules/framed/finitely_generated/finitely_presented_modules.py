@@ -384,17 +384,25 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             A selected finite presentation determines the represented cokernel,
             so refinements such as localization or a chosen subobject inclusion
-            do not create a new underlying module.  Ideals retain their stronger
-            extensional equality as submodules of the ambient ring.
+            do not create a new underlying module.  Ideals and subgroups of a
+            discriminant module are subobjects, compared by their images.
             """
+            from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
+                DiscriminantSubmodules,
+            )
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 CommutativeIdeals,
             )
 
             ideals = CommutativeIdeals(self.base_ring())
-            if self in ideals and other in ideals:
-                return self._engine_ideal() == other._engine_ideal()
-            return self._same_selected_presentation_as(other)
+            subgroups = DiscriminantSubmodules(self.base_ring())
+            match other:
+                case _ if self in ideals and other in ideals:
+                    return self._engine_ideal() == other._engine_ideal()
+                case _ if self in subgroups and other in subgroups:
+                    return self.has_same_image_as(other)
+                case _:
+                    return self._same_selected_presentation_as(other)
 
         def __ne__(self, other):
             return not self == other

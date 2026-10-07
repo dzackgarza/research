@@ -677,6 +677,20 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
         def ambient_discriminant_module(self):
             return self._preamble_ambient_discriminant_module
 
+        def has_same_image_as(self, other) -> bool:
+            r"""Return whether ``other`` is a subgroup of the same discriminant module with the same image.
+
+            A subgroup is a subobject ``(H, H -> A)``, and subobjects of ``A``
+            are compared by their images, not by the presented modules ``H``:
+            the three subgroups of order two of ``(ZZ/2)^2`` have one presented
+            module and are three subgroups.
+            """
+            assert other in DiscriminantSubmodules(self.base_ring())
+            return (
+                other.ambient_discriminant_module() is self.ambient_discriminant_module()
+                and other._preamble_discriminant_engine_subgroup == self._preamble_discriminant_engine_subgroup
+            )
+
         @cached_method
         def embedded_elements(self):
 
