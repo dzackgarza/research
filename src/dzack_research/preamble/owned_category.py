@@ -1312,6 +1312,9 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
         # records the provider as ``_doccls`` (``dynamic_class_internal``,
         # sage/structure/dynamic_class.py).  An owned join lists the provider
         # class itself among its bases, so both name the owner's providers.
+        # The engine also precedes every base it specializes: a join may
+        # place the root ``Objects.ParentMethods``, which an engine of a
+        # Sage-built owner names as its base, before that owner's providers.
         owner_mro = frozenset(owner.__mro__) | frozenset(
             provider.__dict__["_doccls"][0]
             for provider in owner.__mro__
@@ -1320,7 +1323,7 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
         anchors = tuple(
             index
             for index, base in enumerate(implementation.__bases__)
-            if base in owner_mro
+            if base in owner_mro or issubclass(engine, base)
         )
         assert anchors, (
             f"cannot insert the computation class {engine.__name__} for objects of type "

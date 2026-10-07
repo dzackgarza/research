@@ -540,7 +540,6 @@ constructs on its module.
 constructed through the owner of `C` on the data of the exact `A`. Owners do
 not supply this construction uniformly:
 - modules supply `_module_with_structure`;
-- schemes supply `_scheme_with_structure`;
 - rings construct through `Algebras.ParentMethods._with_structure`, the
   algebra on the data of the received ring with the categories and data of
   the added levels;
@@ -553,11 +552,12 @@ not supply this construction uniformly:
 the slice and coslice levels thread `p` on that construction -> a Galois stage
 is the field `F_{q^d}` with its two embeddings -> the stage has the
 cardinality of its field.
-**Existing capability:** the route through the owners of rings, modules,
-schemes and of every object built by `_object_of`, sets and categories
-included (`Objects.ParentMethods._with_structure`, `OWN-05`).
+**Existing capability:** the route through the owners of rings, modules
+and of every object built by `_object_of`, schemes, sets and categories
+included (`Objects.ParentMethods._with_structure`, `OWN-05`). A paired module
+is constructed on this route as an object of `Modules(R)/W`.
 **Consumers:** the slices of
-`form_modules.py`, `analytic_families.py`, `relative_spec.py`,
+`analytic_families.py`, `relative_spec.py`,
 `base_change.py`, `relative_proj.py`, `ringed_spaces.py` and `schemes.py`,
 each still to be moved onto the route of its base owner.
 Repair: `finite-galois-stages-answer-as-their-fields`, in TODO.

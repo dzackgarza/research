@@ -2228,28 +2228,6 @@ class Schemes(OwnedCategoryOverBaseRing):
             self._scheme_engine_realization = scheme_engine
             super().__init__(base=scheme_base_ring, **rest)
 
-        def _with_structure(self, categories, construction_data, *, engine=None):
-            r"""The protected construction contract of ``Objects``, supplied by the scheme owner.
-
-            The scheme owner constructs on this exact scheme's base ring and
-            realization (``OWN-16``), in the join of this scheme's categories
-            with ``categories``, and keeps the structure this scheme already
-            adds.
-            """
-            from dzack_research.preamble.owned_category import owned_category_join
-
-            added_categories, added_data = self._added_structure()
-            assert added_data.keys().isdisjoint(construction_data), (
-                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
-                f"the data {sorted(added_data)} of the same names"
-            )
-            return _scheme_with_structure(
-                self,
-                owned_category_join((self.category(), *added_categories, *categories)),
-                _engine=engine,
-                construction_data={**added_data, **construction_data},
-            )
-
         def _scheme_engine(self):
             r"""The private Sage scheme realizing this scheme (``OWN-06``)."""
             assert self._scheme_engine_realization is not None, (

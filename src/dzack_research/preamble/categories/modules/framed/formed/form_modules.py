@@ -94,7 +94,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
@@ -1061,7 +1060,9 @@ class PairedModules(OwnedParameterizedCategory):
             f"a pairing in {self} is a morphism out of a tensor product of {ring}-modules, "
             f"but {pairing} has domain {pairing.domain()} in {pairing.domain().category()}"
         )
-        return _object_of(self, arrow=pairing)
+        # A paired module is the tensor product ``X (x) Y`` with its arrow
+        # to ``W``: the module owner constructs it on that tensor product.
+        return Modules(ring).SliceOver(value).object(pairing, categories=(self,))
 
     class ParentMethods:
         def _pairing_value(self, left, right):
