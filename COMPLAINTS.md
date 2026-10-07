@@ -523,8 +523,8 @@ coslice `X/C` is a pair `(B, i: X -> B)`. `SliceCategory` and
 or `B` did not reach them. They now declare `C` and construct through the
 owner of `C`. Over rings this delivers: the degree-3 stage of `G_{F_5}` is
 `F_125` with its embeddings and has cardinality `125`. Over sets, a subset
-is the received set with its inclusion and has that set's points. Over `Cat`
-the owner has no route, so those slices do not construct (below).
+is the received set with its inclusion and has that set's points. Over `Cat`,
+a covering family is its presentation `J -> C`, an object of `Cat/C`.
 **Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C`, and only `C`.
 By `CAT-16`, an object `(A, p)` with `p` forgotten is `A`, an object of `C`
 over the same parameters. The projection of `lean-categories` `FOUNDATIONS.md`
@@ -544,26 +544,23 @@ not supply this construction uniformly:
 - rings construct through `Algebras.ParentMethods._with_structure`, the
   algebra on the data of the received ring with the categories and data of
   the added levels;
-- every other object that `_object_of` builds constructs at the root,
-  `Objects.ParentMethods._with_structure`, which builds the object again
-  from the category, computation class and data that `_object_of` records,
-  in the join with the added categories;
-- `Cat().object` builds `CategoryObject` without `_object_of`, so a
-  received category has no recorded construction.
+- every other object that `_object_of` builds, an object of `Cat()`
+  included, constructs at the root, `Objects.ParentMethods._with_structure`,
+  which builds the object again from the category, computation class and
+  data that `_object_of` records, in the join with the added categories.
 
 **Dependency path:** the owner of `C` constructs on the data of `A` ->
 the slice and coslice levels thread `p` on that construction -> a Galois stage
 is the field `F_{q^d}` with its two embeddings -> the stage has the
 cardinality of its field.
 **Existing capability:** the route through the owners of rings, modules,
-schemes and of every object built by `_object_of`, sets included
-(`Objects.ParentMethods._with_structure`, `OWN-05`).
-**Consumers:** presheaf sites (`CoveringFamilies`), and the slices of
+schemes and of every object built by `_object_of`, sets and categories
+included (`Objects.ParentMethods._with_structure`, `OWN-05`).
+**Consumers:** the slices of
 `form_modules.py`, `analytic_families.py`, `relative_spec.py`,
 `base_change.py`, `relative_proj.py`, `ringed_spaces.py` and `schemes.py`,
 each still to be moved onto the route of its base owner.
-Repair: `categories-construct-with-added-structure`, then
-`finite-galois-stages-answer-as-their-fields`, in TODO.
+Repair: `finite-galois-stages-answer-as-their-fields`, in TODO.
 
 ### A finite owned ring does not enumerate its points
 

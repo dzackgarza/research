@@ -1307,7 +1307,16 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
         # such base, preserving the same semantic precedence as the ordinary
         # subclass path below: stronger providers first, engine computation,
         # then the owner's defaults and the weaker structure underneath it.
-        owner_mro = frozenset(owner.__mro__)
+        # The owner of a category that Sage builds (``Cat``) copies each
+        # method provider into its own class rather than inheriting it, and
+        # records the provider as ``_doccls`` (``dynamic_class_internal``,
+        # sage/structure/dynamic_class.py).  An owned join lists the provider
+        # class itself among its bases, so both name the owner's providers.
+        owner_mro = frozenset(owner.__mro__) | frozenset(
+            provider.__dict__["_doccls"][0]
+            for provider in owner.__mro__
+            if "_doccls" in provider.__dict__
+        )
         anchors = tuple(
             index
             for index, base in enumerate(implementation.__bases__)

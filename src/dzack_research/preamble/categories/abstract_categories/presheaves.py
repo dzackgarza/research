@@ -567,10 +567,11 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
     r"""The covering family of ``target`` by ``members`` in ``category``, a category of covering families.
 
     ``members`` are the cover arrows ``U_i -> U``; ``overlaps`` maps each pair
-    of member labels to ``(U_ij, U_ij -> U_i, U_ij -> U_j)``, in either order
-    of the pair.  Each overlap is checked to commute over ``U`` and becomes
-    the span ``U_i <- U_ij -> U_j`` of the site; the family is then built by
-    ``category``'s entry on the target, the members and the overlap spans.
+    of member labels to the span ``U_i <- U_ij -> U_j`` of the site, built by
+    ``site.span``.  A pair given in the reverse order ``(j, i)`` carries the
+    span ``U_j <- U_ij -> U_i``.  Each overlap is checked to commute over
+    ``U``; the family is then built by ``category``'s entry on the target, the
+    members and the overlap spans.
     """
     site = category.site_category()
     if target not in site:
@@ -603,14 +604,18 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
     ranking = family.index_set().ranking_map()
     expected_pairs = tuple(combinations(tuple(family.index_set()), 2))
     normalized = {}
-    for raw_pair, datum in dict(overlaps).items():
+    for raw_pair, span in dict(overlaps).items():
         left_index, right_index = raw_pair
-        if ranking(left_index) > ranking(right_index):
-            left_index, right_index = right_index, left_index
-            overlap_object, right_map, left_map = datum
-        else:
-            overlap_object, left_map, right_map = datum
-        normalized[left_index, right_index] = (overlap_object, left_map, right_map)
+        if span.target_category() is not site:
+            raise ValueError(
+                f"the overlap of the members {left_index} and {right_index} must be a span of {site}, "
+                f"but it is {span}"
+            )
+        match ranking(left_index) < ranking(right_index):
+            case True:
+                normalized[left_index, right_index] = span
+            case False:
+                normalized[right_index, left_index] = site.span(span.right_leg(), span.left_leg())
     if set(normalized) != set(expected_pairs):
         raise ValueError(
             f"a covering family needs one overlap for each pair of members {expected_pairs}, but the "
@@ -619,7 +624,8 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
 
     spans = {}
     for pair in expected_pairs:
-        overlap_object, left_map, right_map = normalized[pair]
+        span = normalized[pair]
+        overlap_object, left_map, right_map = span.apex(), span.left_leg(), span.right_leg()
         left = family[pair[0]]
         right = family[pair[1]]
         if overlap_object not in site:
@@ -649,7 +655,7 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
                 f"the overlap {overlap_object} of {left} and {right} does not commute: "
                 f"{left} o {left_map} != {right} o {right_map}"
             )
-        spans[pair] = site.span(left_map, right_map)
+        spans[pair] = span
     overlap_family = finite_indexed_family(
         finite_ordered_set(expected_pairs),
         lambda pair: spans[pair],
@@ -657,17 +663,20 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
     )
     presentation = _CoverPresentationDiagram(site, target, family, overlap_family)
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        _walking_arrow_functor,
+        SliceCategory,
     )
 
-    return _object_of(
-        category,
-        functor=_walking_arrow_functor(Cat(), Cat().arrow(presentation)),
-        fixed_mor_category=category,
-        covered_object=target,
-        members=family,
-        overlaps=overlap_family,
-        **data,
+    # The family is its index category ``J`` with the presentation
+    # ``J -> C``, an object of ``Cat/C``, together with the cover data.
+    return SliceCategory(Cat(), Cat().object(site)).object(
+        Cat().arrow(presentation),
+        categories=(category,),
+        construction_data={
+            "covered_object": target,
+            "members": family,
+            "overlaps": overlap_family,
+            **data,
+        },
     )
 
 
