@@ -66,14 +66,14 @@ Eichler's criterion asserts that, in the presence of two hyperbolic summands, th
 ::: {.theorem #thm:scattone-eichler-criterion title="Eichler’s criterion"}
 
 Let $L \isoto U^{2}\oplus M$ be an even lattice containing two orthogonal copies of the hyperbolic plane $U$, and let $v, w\in L$ be primitive vectors.
-Then $v$ and $w$ lie in the same $\OStab(L)$-orbit (where $\OStab(L)$ is the stable orthogonal group, acting trivially on $A_L$) if and only if
+Then $v$ and $w$ lie in the same $\discriminantkernel{L}$-orbit (where $\discriminantkernel{L}$ acts trivially on $A_L$) if and only if
 $$
 v^2 = w^2
 \qquad\text{and}\qquad
 [v^*] = [w^*]\in A_L
 .
 $$
-Equivalently, the $\OStab(L)$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group [@Eic74; @Sca87].
+Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group [@Eic74; @Sca87].
 :::
 
 ::: {.theorem #thm:eichler-transvection title="Scattone’s condition for Eichler transvection orbits"}
@@ -111,12 +111,12 @@ Let $\eta_1, \eta_2\in T$ be primitive isotropic vectors satisfying
 
 3. $\eta_1 \equiv \eta_2 \pmod{pT}$.
 
-Then there exists an isometry $\phi\in\OStab(T)$ with $\phi(\eta_1) = \eta_2$ [@Ste91].
+Then there exists an isometry $\phi\in\discriminantkernel{T}$ with $\phi(\eta_1) = \eta_2$ [@Ste91].
 :::
 
 ::: {.remark}
 
-@thm:sterk-orbit generalizes the Eichler transvection method of @thm:eichler-transvection to classify primitive isotropic vectors by the triple (length, divisibility, residue mod $pT$). In particular it shows that all divisibility-one isotropic vectors of a given length in $\ten$ lie in a single $\OStab(\ten)$-orbit; this is the statement used to collapse the divisibility-one cusps in the Cusp Correspondence computations.
+@thm:sterk-orbit generalizes the Eichler transvection method of @thm:eichler-transvection to classify primitive isotropic vectors by the triple (length, divisibility, residue mod $pT$). In particular it shows that all divisibility-one isotropic vectors of a given length in $\ten$ lie in a single $\discriminantkernel{\ten}$-orbit; this is the statement used to collapse the divisibility-one cusps in the Cusp Correspondence computations.
 :::
 
 ## Enumeration via Niemeier lattices

@@ -1,35 +1,40 @@
 """Stored transcription of the Höhn--Mason Leech-lattice ancillary file.
 
 G. Höhn and G. Mason, "The 290 fixed-point sublattices of the Leech lattice",
-arXiv:1505.06420.  This module parses the archived source and its card/tag
-locators only. Coordinate changes, isometries, stabilizer actions and group
-orders are mathematical computations owned by the research preamble.
+arXiv:1505.06420.  This module is source intake.  It parses the archived source
+and its card/tag locators, states each printed basis and generator matrix as a
+module map between preamble modules with forms, and compares the results with
+the lattice cards.  Containment, orthogonality, rank, form preservation,
+bijectivity, factorization, composition and group orders are preamble
+operations.
+
+The source prints a coordinate space ``V = Z^24`` with a rational form, the
+Leech lattice ``leech[1]`` by the rows of a basis in ``V``, the sublattices
+``A`` and ``B`` of each entry by rows in ``V``, and the generators of ``C`` by
+matrices acting on row vectors in the coordinates of that basis.  A card matrix
+has the images of the source generators as its columns.
 """
 
-from pathlib import Path
 from collections.abc import Mapping
+from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
-from dzack_research.preamble.categories.hoehn_mason_source_invariants import (
-    actions_are_integral,
-    automorphism_matrices,
-    complementary_orthogonal_sublattices,
-    embedding_matrix,
-    generated_group_order,
-    leech_record_basis_isometry,
-    record_basis_isometry,
-    stabilizers_fix_second_and_preserve_gram,
-)
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    FormModules,
+)
 from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import corpus, hashimoto
 from latticedb.corpus import Matrix
-from latticedb.model import Lattice, Tag
+from latticedb.model import Lattice, Tag, rational
 
-ZZ = session_ring_objects()["ZZ"]
+_SESSION_RINGS = session_ring_objects()
+ZZ = _SESSION_RINGS["ZZ"]
+QQ = _SESSION_RINGS["QQ"]
 LEECH_RANK = 24
+
 
 class Leech(BaseModel):
     """The stored ``leech[1]`` source datum and its card locator."""
@@ -68,31 +73,162 @@ def stored(directory: Path) -> tuple[Leech, tuple[Entry, ...]]:
     return leech, entries
 
 
-def embedding(leech: Leech, entry: Entry) -> Matrix:
-    """Return the source-record inclusion into the Leech record, computed by preamble."""
-    return embedding_matrix(
-        leech.basis,
-        leech.record_basis,
-        entry.coinvariant_basis,
-        entry.record_basis,
+def _formed(gram):
+    """The free module ``Z^n`` with the rational bilinear form of Gram tensor ``gram``."""
+    return ZZ.free_module(len(gram)).equip_bilinear_form(QQ, gram)
+
+
+def _rows(target, rows: Matrix):
+    """The module map ``Z^k -> target`` taking the ``i``-th generator to the ``i``-th row."""
+    source = ZZ.free_module(len(rows))
+    return source.module_category().Mor(source, target)(
+        tuple(target(row) for row in rows)
     )
 
 
-def automorphisms(leech: Leech, entry: Entry) -> list[Matrix]:
-    """Return the stabilizer-generator matrices on the selected record basis."""
-    return list(
-        automorphism_matrices(
-            leech.basis,
-            entry.coinvariant_basis,
-            entry.stabilizer_generators,
-            entry.record_basis,
+def _leech_lattice(leech: Leech):
+    """``(V, leech[1], φ)``: the coordinate space, the lattice on the printed basis, and ``φ: Z^24 -> V``.
+
+    ``φ`` takes the printed basis to its rows in ``V``; the form of
+    ``leech[1]`` is the form of ``V`` pulled back along ``φ``.
+    """
+    space = _formed(
+        tuple(tuple(rational(value) for value in row) for row in leech.inner_product)
+    )
+    basis = _rows(space.unformed_module(), leech.basis)
+    return space, FormModules(ZZ)(space.form().pullback(basis)), basis
+
+
+def _sublattice(space, lattice, basis, rows: Matrix):
+    """The printed rows as a sublattice ``S`` of ``leech[1]``, with the restricted form, and its inclusion.
+
+    The map ``Z^k -> V`` given by the rows factors through ``φ`` exactly when
+    every row is a vector of ``leech[1]``; otherwise the answer is ``None``.
+    """
+    inclusion = _rows(space.unformed_module(), rows).factor_through_or_none(basis)
+    if inclusion is None:
+        return None
+    sublattice = FormModules(ZZ)(lattice.form().pullback(inclusion))
+    generators = inclusion.domain()
+    return sublattice, sublattice.module_category().Mor(sublattice, lattice)(
+        lambda label: lattice(inclusion(generators.module_generator(label)))
+    )
+
+
+def _complementary(space, coinvariant_inclusion, fixed_inclusion, entry: Entry) -> bool:
+    """Whether ``A`` and ``B`` are orthogonal in ``leech[1]`` and their ranks sum to 24."""
+    ranks = int(coinvariant_inclusion.image().module_rank()) + int(
+        fixed_inclusion.image().module_rank()
+    )
+    return ranks == LEECH_RANK and all(
+        space(left).is_orthogonal_to(space(right))
+        for left in entry.coinvariant_basis
+        for right in entry.fixed_basis
+    )
+
+
+def _endomorphism(lattice, generator: Matrix):
+    """The stored generator as the endomorphism of ``leech[1]`` taking the ``i``-th basis vector to row ``i``."""
+    return lattice.module_category().Mor(lattice, lattice)(
+        tuple(lattice(row) for row in generator)
+    )
+
+
+def _fixes(endomorphism, inclusion) -> bool:
+    """Whether ``g`` is the identity on the sublattice included by ``inclusion``, checked on its generators."""
+    sublattice = inclusion.domain()
+    return all(
+        endomorphism(inclusion(sublattice.module_generator(label)))
+        == inclusion(sublattice.module_generator(label))
+        for label in sublattice.module_generating_set()
+    )
+
+
+def _restriction(endomorphism, inclusion):
+    """``g|_A: A -> A``, the factor of ``g ∘ ι`` through ``ι``; ``None`` when ``g(A)`` is not contained in ``A``."""
+    return (endomorphism * inclusion).factor_through_or_none(inclusion)
+
+
+def _record_isometry(record: Lattice, twist: int, sublattice, record_basis: Matrix):
+    """The isometry ``R(t) -> S`` whose matrix is the stored record basis, or ``None``."""
+    return hashimoto.basis_isometry(
+        _formed(record.gram_tensor).twist(twist), sublattice, record_basis
+    )
+
+
+def _matrix(morphism) -> Matrix:
+    """The card matrix of ``morphism``: the images of the source generators as columns."""
+    source = morphism.domain()
+    images = tuple(
+        morphism(source.module_generator(label)).to_vector()
+        for label in source.module_generating_set()
+    )
+    return tuple(
+        tuple(int(image(label)) for image in images)
+        for label in morphism.codomain().module_generating_set()
+    )
+
+
+def _record_matrices(isometry, restrictions) -> tuple[Matrix, ...]:
+    """The matrices of ``ψ^{-1} ∘ g|_A ∘ ψ`` for the record isometry ``ψ: R(t) -> A``."""
+    inverse = isometry.inverse()
+    return tuple(_matrix(inverse * restriction * isometry) for restriction in restrictions)
+
+
+def automorphisms(leech: Leech, entry: Entry, record: Lattice) -> tuple[Matrix, ...]:
+    """The generators of ``C`` restricted to ``A``, as self-isometries of the record ``R`` of the entry."""
+    space, lattice, basis = _leech_lattice(leech)
+    coinvariant = _sublattice(space, lattice, basis, entry.coinvariant_basis)
+    assert coinvariant is not None, (
+        f"lattices[{entry.i},{entry.j}]: a row of A is not a vector of leech[1]"
+    )
+    sublattice, inclusion = coinvariant
+    isometry = _record_isometry(record, entry.twist, sublattice, entry.record_basis)
+    assert isometry is not None, (
+        f"lattices[{entry.i},{entry.j}]: the stored basis is not an isometry from {entry.record}({entry.twist}) to A"
+    )
+    restrictions = tuple(
+        _restriction(_endomorphism(lattice, generator), inclusion)
+        for generator in entry.stabilizer_generators
+    )
+    assert all(restriction is not None for restriction in restrictions), (
+        f"lattices[{entry.i},{entry.j}]: a generator of C does not map A to itself"
+    )
+    return _record_matrices(isometry, restrictions)
+
+
+def embedding(leech: Leech, entry: Entry, leech_record: Lattice, record: Lattice) -> Matrix:
+    """The inclusion of ``A`` into ``leech[1]`` as a map of the records ``R(t) -> L``."""
+    space, lattice, basis = _leech_lattice(leech)
+    leech_isometry = hashimoto.basis_isometry(
+        _formed(leech_record.gram_tensor), lattice, leech.record_basis
+    )
+    assert leech_isometry is not None, (
+        f"leech[1]: the stored basis is not an isometry from {leech.record} to leech[1]"
+    )
+    coinvariant = _sublattice(space, lattice, basis, entry.coinvariant_basis)
+    assert coinvariant is not None, (
+        f"lattices[{entry.i},{entry.j}]: a row of A is not a vector of leech[1]"
+    )
+    sublattice, inclusion = coinvariant
+    isometry = _record_isometry(record, entry.twist, sublattice, entry.record_basis)
+    assert isometry is not None, (
+        f"lattices[{entry.i},{entry.j}]: the stored basis is not an isometry from {entry.record}({entry.twist}) to A"
+    )
+    return _matrix(leech_isometry.inverse() * inclusion * isometry)
+
+
+def group_order(record: Lattice, generators: tuple[Matrix, ...]) -> int:
+    """The order of the subgroup of ``O(R)`` generated by the card matrices ``generators``."""
+    lattice = Lattices(ZZ)(record.gram_tensor)
+    group = lattice.orthogonal_group()
+    subgroup = group.subgroup(
+        tuple(
+            tuple(lattice(column) for column in zip(*generator, strict=True))
+            for generator in generators
         )
     )
-
-
-def group_order(generators: list[Matrix]) -> int:
-    """Return the order of the generated matrix group through the preamble owner."""
-    return generated_group_order(generators)
+    return int(subgroup.order())
 
 
 def check(
@@ -104,10 +240,12 @@ def check(
 ) -> list[str]:
     """Compare the archived ancillary data to card data through preamble computations."""
     found: list[str] = []
-    leech_lattice = Lattices(ZZ)(lattices[leech.record].gram_tensor)
-    if not leech_record_basis_isometry(
-        leech.inner_product, leech.basis, leech.record_basis, leech_lattice
-    ):
+    space, lattice, basis = _leech_lattice(leech)
+    leech_isometry = hashimoto.basis_isometry(
+        _formed(lattices[leech.record].gram_tensor), lattice, leech.record_basis
+    )
+    leech_inverse = None if leech_isometry is None else leech_isometry.inverse()
+    if leech_isometry is None:
         found.append(
             f"leech[1]: the stored basis is not an isometry from {leech.record} to leech[1]"
         )
@@ -120,41 +258,39 @@ def check(
         )
     for entry in entries:
         name = f"lattices[{entry.i},{entry.j}]"
-        if not complementary_orthogonal_sublattices(
-            leech.inner_product,
-            leech.basis,
-            entry.coinvariant_basis,
-            entry.fixed_basis,
+        coinvariant = _sublattice(space, lattice, basis, entry.coinvariant_basis)
+        fixed = _sublattice(space, lattice, basis, entry.fixed_basis)
+        if (
+            coinvariant is None
+            or fixed is None
+            or not _complementary(space, coinvariant[1], fixed[1], entry)
         ):
             found.append(
                 f"{name}: A and B are not orthogonal sublattices of leech[1] of complementary rank"
             )
             continue
-        if not stabilizers_fix_second_and_preserve_gram(
-            leech.inner_product,
-            leech.basis,
-            entry.fixed_basis,
-            entry.stabilizer_generators,
+        sublattice, inclusion = coinvariant
+        endomorphisms = tuple(
+            _endomorphism(lattice, generator) for generator in entry.stabilizer_generators
+        )
+        if not all(
+            lattice.Mor(lattice).preserves_forms(endomorphism)
+            and _fixes(endomorphism, fixed[1])
+            for endomorphism in endomorphisms
         ):
             found.append(
                 f"{name}: a generator of C is not an isometry of leech[1] that fixes B"
             )
             continue
-        if not actions_are_integral(
-            leech.basis, entry.coinvariant_basis, entry.stabilizer_generators
-        ):
+        restrictions = tuple(
+            _restriction(endomorphism, inclusion) for endomorphism in endomorphisms
+        )
+        if any(restriction is None for restriction in restrictions):
             found.append(f"{name}: a generator of C does not map A to itself")
             continue
-        lattice = lattices[entry.record]
-        owned = Lattices(ZZ)(lattice.gram_tensor)
-        if not record_basis_isometry(
-            leech.inner_product,
-            leech.basis,
-            entry.coinvariant_basis,
-            entry.record_basis,
-            entry.twist,
-            owned,
-        ):
+        record = lattices[entry.record]
+        isometry = _record_isometry(record, entry.twist, sublattice, entry.record_basis)
+        if isometry is None:
             found.append(
                 f"{name}: the stored basis is not an isometry from {entry.record}({entry.twist}) to A"
             )
@@ -165,15 +301,16 @@ def check(
             found.append(
                 f"{name}: Table 10.2 row {entry.row} gives Lambda_G(-1) = {stated}, the entry gives {(entry.record, entry.twist)}"
             )
-        generated = automorphisms(leech, entry)
-        order = group_order(generated)
+        generated = _record_matrices(isometry, restrictions)
+        order = group_order(record, generated)
         if order != row.order:
             found.append(
                 f"{name}: C acts on A with a group of order {order}, Table 10.2 row {entry.row} states |G| = {row.order}"
             )
-        if (embedding(leech, entry), entry.twist) not in morphisms.get(
-            (entry.record, leech.record), ()
-        ):
+        if leech_inverse is not None and (
+            _matrix(leech_inverse * inclusion * isometry),
+            entry.twist,
+        ) not in morphisms.get((entry.record, leech.record), ()):
             found.append(
                 f"lattice card {entry.record} does not hold the inclusion of {name} into {leech.record}"
             )

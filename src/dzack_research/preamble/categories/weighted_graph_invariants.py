@@ -335,17 +335,3 @@ class WeightedGraphInvariants:
                 ):
                     return False
         return True
-
-    def properties(self) -> tuple[str, ...]:
-        properties = []
-        if self.is_coxeter():
-            properties.append("Coxeter")
-        if self.is_dynkin():
-            properties.append("Dynkin")
-        if self.is_simply_laced():
-            properties.append("simply laced")
-        if self.is_satake():
-            properties.append("Satake")
-        if self.is_rational_coxeter_vinberg():
-            properties.append("rational Coxeter–Vinberg")
-        return tuple(properties)

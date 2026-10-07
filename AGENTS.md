@@ -144,6 +144,45 @@ Select subsequent work from the current `TODO.md` dependency graph and its prior
 Recurrence of an older scheduled pause does not supersede this resume; only a later
 explicit owner instruction stops the repository again.
 
+## Every subagent reads the contributing guidelines before it touches code (always-on)
+
+No agent edits code in this repository, or in `lattice-database/`, until it has read
+the contributing guidelines in full. This applies to every subagent, worker and
+delegate, whatever its task size. A brief that cites rule codes, or that summarizes
+the rules, does not satisfy it.
+
+A brief that dispatches code work names these files as required reading before
+the first edit, and requires the report to list the files that were read:
+
+- `INTENT.md` and this file;
+- `CONTRIBUTING.md` in full, including the preamble architecture specification;
+- `TODO.md` and `COMPLAINTS.md`;
+- `docs/preamble-megadoc.md`;
+- the `AGENTS.md` and `README.md` of the subtree that the work edits.
+
+An agent that has edited code before reading them checks every such edit against
+the guidelines before it continues.
+
+## Subagents commit; only the orchestrator accepts and pushes (always-on)
+
+A subagent never runs a full test suite, a QC gate or a push. It commits each
+unit with `git commit --no-verify`. It runs a test only when one specific test
+decides a specific question about its own edit, and then it runs that test alone.
+A preamble import, `just test`, a collection run or a subtree suite is not
+targeted.
+
+Only the orchestrating agent:
+
+- decides whether the delivered work is accepted;
+- runs any further tests or gates;
+- decides whether to fix, amend or add to a subagent's commits;
+- pushes.
+
+A brief never gives a subagent verification work that this rule or an exemption
+in this file removes. A brief that told a worker to run the import and the
+lattice-db tests after each unit cost it hours of runs that decided nothing. Accept no delivery whose report does not list
+this reading.
+
 ## Preamble coding prerequisites
 
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
@@ -1033,9 +1072,11 @@ Optimize **waste**, which is a different thing entirely:
 Removing waste usually makes the code *more* legible, because what remains is the
 mathematics. That is the tell that it was waste.
 
-Genuine hot paths may later need `case`/`match` dispatch or caching. That is a
-design change: propose it and discuss it explicitly first. Reaching for a cache,
-or for a literature constant in place of a computation, before finding out *why*
+Caching is the default shape of a method that computes a datum of an object
+(*Construction is instant* below), not an optimization. A genuine hot path that
+needs `case`/`match` dispatch is a design change: propose it and discuss it
+explicitly first. Reaching for a cache to make one slow call fast, or for a
+literature constant in place of a computation, before finding out *why*
 something is slow, is not optimization — it is hiding the defect. Reaching for a
 different library is the same move with a worse consequence: it also deletes
 the site where the cost would have been measured (`ENG-07`, `ENG-08`).
@@ -1046,6 +1087,58 @@ lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
 combinations; their orthogonal groups are finite and their invariants and
 coinvariants are quick. Reach for a large specimen only when the claim is about
 that specimen.
+
+# Construction is instant; checking is asked for; loops are tensors (always-on)
+
+The preamble is a symbolic system. It proves nothing, so construction has
+nothing to establish. The caller who places an object in a category, or builds
+a morphism from its data, is trusted to have supplied data with the properties
+the category states. Every construction in the tree moves to this shape;
+`OWN-22` and `OWN-24` are the reviewable rules.
+
+- **Construction is almost instant.** It stores the defining datum and fixes
+  the category, and nothing else. It computes no invariant, no inverse, no
+  group generators, no presentation and no check.
+- **Computation is lazy and cached.** A datum of an object (`O(L)`'s group
+  generators, an inverse, a Gram matrix of a sublattice, a genus symbol) is
+  computed on the first request, cached on the object, and reused by every
+  method that needs it.
+- **Checking is a validator, never inline.** A well-definedness condition
+  (linearity, isometry, equivariance, injectivity, an algebra's relations) is a
+  validator method of the object. Construction calls the validators once,
+  after the object exists, and each validator returns at once unless the
+  global strict-checking flag is on. The pattern is pydantic's post-init
+  validator with an early bail. Anyone can call a validator by hand, for a
+  critical result or for extra assertion guarding. No check is written into
+  `__init__`, an element constructor or a computation.
+- **The strict flag is global and is for exploration.** One session-wide
+  setting turns every validator on. It is off by default, and no code turns it
+  on for its own benefit.
+- **A loop over pairings is a tensor contraction.** Mathematics written as an
+  imperative loop is almost always one tensor operation done slowly: the
+  pairings of many vectors are one matrix product, `f` being an isometry is the
+  one equation `M^T G' M = G`, a family of evaluations is one contraction.
+  Write the tensor equation. Numerical optimization lives behind the tensor
+  interface (vectors, covectors, matrices, morphism tensors), never in the
+  mathematical code that calls it.
+
+Some conditions cannot be checked at all. The Fourier transform is an isometry
+of `L^2(RR)`, and no finite computation confirms it. A construction that
+checked its laws could not build that morphism, so a construction never checks
+its laws.
+
+*The false belief:* "constructing an object verifies it". It makes every
+construction pay for a proof the system cannot give, and the cost compounds
+through every construction built on top. On 2026-10-07 the test that builds
+`O(E_6)`, a group of order 103680, took 72.8 s. Almost all of that time was preamble
+overhead: each isometry was checked at construction, and each check rebuilt
+the form at 60 ms a call.
+
+*The tell:* a check, `assert`, `.inverse()`, `is_injective()` or generator
+computation inside `__init__` or `_element_constructor_`; a `check=True`
+default; a `for` loop over pairs of vectors, roots or basis elements; a
+`sum(... for ...)` over pairings; a method that recomputes a datum on every
+call.
 
 # Every task is an instrument; the product is a map of Sage (always-on)
 
@@ -1424,6 +1517,16 @@ research and to every implementation. It is never hand-rolled in research or
 in a leaf: not as a local definition, a substitute category, a temporary notion
 to reconcile later, or a Lean file here. Until `lean-categories` formalizes and
 releases it, research has no such notion.
+
+**`lean-categories` is Lean, not implementation code, and its gaps never park a
+computation.** No algorithm moves to `lean-categories`, and no computation waits
+for it. An algorithm or computation that research needs is a method of the
+preamble category whose objects it acts on, written now, whether or not
+`lean-categories` has formalized the notion yet. The request upstream, when one
+is owed, runs beside that work and never blocks it. On 2026-10-07 a worker
+parked the Coxeter, Dynkin, Satake and Vinberg recognition, the Hodge-number
+arithmetic and the root-system typing in leaf-named modules, with a TODO node
+waiting on a `lean-categories` release, and the owner rejected the parking.
 
 You never proceed past an observed mathematical deficiency. Not with a note
 attached, not with a substitute in place, not with a `TODO` at the site. The
@@ -1934,6 +2037,40 @@ never re-established at runtime, and no computed answer is a proof.
 (Vault: `sage-is-a-cas-not-a-proof-assistant-runtime-verification-of-a-theorem-is-triple-slop`,
 `undecidable-problem-pseudo-booleans`; the undecidability audit under *Work-selection
 discipline* is the sibling rule.)
+
+**The data a caller holds presents an object; it never selects the owner of an
+operation.** A lattice-db card stores a presentation: a configuration matrix
+of multidegrees in $\mathbb{P}^{n_1}\times\cdots\times\mathbb{P}^{n_m}$, a
+decorated graph, a table of numbers. The false belief: "the operation belongs
+to the category whose objects look like this data", so every function that
+reads a configuration matrix goes to complete intersections, and every function
+that reads a decorated graph goes to a "weighted graph" owner. The correct
+sequence has four steps:
+1. Name the object the data presents: a smooth complete intersection $X$, a
+   root system, a real form of a semisimple Lie algebra, a hyperbolic
+   reflection group.
+2. Construct it through its category. The presenting category introduces only
+   its own datum. For a complete intersection, that datum is the ambient
+   product and the multidegrees.
+3. Answer the asked value with the method of the category whose definition
+   defines it, reached by inheritance. Examples: $\chi$ and $b_k$ of a space;
+   $h^{p,q} = \dim H^q(X,\Omega^p)$ of a smooth proper variety; $\dim$ of a
+   scheme; Calabi–Yau ($K_X$ trivial) as an axiom on the base that states it.
+4. A formula in the presenting data is a realization on the subcategory,
+   justified by a cited theorem. Examples: $\dim = \sum n_i - r$;
+   $\sum_j d_{j,i} = n_i+1$ by adjunction; Hirzebruch's generating function.
+   It is never the definition and never the placement.
+
+A function that checks a stored value against a theorem (Hodge symmetry,
+Serre duality, Vinberg's criterion on a stored Gram matrix) is not mathematics
+to relocate. Either the object is constructed and the value is computed and
+compared (certification), or the value is a transcription. Relocating the
+functions of a leaf module one by one is the same false belief: the unit is
+the notion asked, not the function that happened to compute it.
+*The tell:* a class or module named for a data shape (`WeightedGraphInvariants`,
+`HodgePoincareInvariants`, `catalogue_invariants`); a method whose arguments
+are the presentation's raw numbers rather than the object; an owner chosen
+because "that is where the formula can be evaluated".
 
 **Morphisms are constructed by the caller, in the categories they live in.** A
 $G$-action on $M$ is a group morphism $\rho: G\to\operatorname{Aut}(M)$ that the

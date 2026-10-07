@@ -464,16 +464,16 @@ def _lattice_object(
 
 
 @cached_function
-def _lattice_on_gram(category, module, gram, names, cartan_type):
+def _lattice_on_gram(category, module, gram, names, root_system_label):
     r"""The lattice on ``module`` with Gram presentation ``gram``.
 
     A lattice is its module together with its form, so two constructions
     naming one module and one Gram presentation name one lattice; equal Grams
-    hash equally, so this is Sage's own construction cache.  A finite
-    crystallographic ``cartan_type`` over \(\mathbb Z\) places the lattice in
-    ``RootLattices`` with that Cartan type as its datum.
+    hash equally, so this is Sage's own construction cache.  A
+    ``root_system_label`` over \(\mathbb Z\) places the lattice in
+    ``RootLattices`` with the type of its root system as its datum.
     """
-    match cartan_type:
+    match root_system_label:
         case None:
             return _lattice_object(category, module, gram, names=names)
         case _:
@@ -485,7 +485,7 @@ def _lattice_on_gram(category, module, gram, names, cartan_type):
                 gram,
                 names=names,
                 extra_categories=(RootLattices(),),
-                construction_data={"cartan_type": cartan_type},
+                construction_data={"root_system_label": root_system_label},
             )
 
 
@@ -1494,6 +1494,23 @@ def _finite_crystallographic_cartan_type(data):
     return cartan_type
 
 
+def _root_system_label(cartan_type) -> str:
+    r"""Return the label of a finite Cartan type, as ``A2`` or ``A2xA1``.
+
+    The label is the name that ``Lattices(ZZ)(label)`` reads back: the
+    letter and rank of each irreducible component, joined by ``x`` in the
+    order of the components of the type.
+    """
+    match cartan_type.is_irreducible():
+        case True:
+            return f"{cartan_type.type()}{int(cartan_type.rank())}"
+        case False:
+            return "x".join(
+                _root_system_label(component)
+                for component in cartan_type.component_types()
+            )
+
+
 def _hyperbolic_plane_gram_tensor(ring) -> Tensor:
     r"""Return the Gram tensor of the hyperbolic plane \(U\).
 
@@ -1550,7 +1567,7 @@ def _lattice_from_gram_tensor(
     names,
     module_generators,
     category,
-    cartan_type=None,
+    root_system_label=None,
 ):
     r"""The lattice with Gram presentation ``gram_tensor``.
 
@@ -1581,8 +1598,8 @@ def _lattice_from_gram_tensor(
         if module_generators is None
         else ring._fresh_free_module_on(generating_set)
     )
-    root_cartan_type = cartan_type if ring is _own_ring(SageZZ) else None
-    return _lattice_on_gram(category, module, gram_tensor, selected_names, root_cartan_type)
+    root_label = root_system_label if ring is _own_ring(SageZZ) else None
+    return _lattice_on_gram(category, module, gram_tensor, selected_names, root_label)
 
 
 def _basis_keys(module):
@@ -1629,7 +1646,7 @@ def _root_lattice(cartan_type, ring, names, module_generators, category):
         names,
         module_generators,
         category,
-        cartan_type=cartan_type,
+        root_system_label=_root_system_label(cartan_type),
     )
 
 

@@ -2,7 +2,7 @@
 
 import frontmatter
 
-from latticedb import certificates, corpus, genus
+from latticedb import certificates, corpus, genus, records
 from latticedb.certificates import Certificates
 from latticedb.corpus import Corpus
 
@@ -46,4 +46,8 @@ def problems(loaded: Corpus, held: Certificates) -> list[str]:
                 found.append(
                     f"{entry.path}: {block_name}.{field} contradicts its completed computation certificate"
                 )
+        found.extend(
+            f"{entry.path}: {problem}"
+            for problem in records.local_admission_problems(entry.lattice)
+        )
     return found

@@ -15,7 +15,7 @@ notes: >-
 
 ::: {.remark title="What open problem this addresses"}
 
-[[open-problems|Open problems]] records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\OStab(T)$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
+[[open-problems|Open problems]] records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
 This note records the concrete candidate list and the machinery assembled to settle it.
 :::
 

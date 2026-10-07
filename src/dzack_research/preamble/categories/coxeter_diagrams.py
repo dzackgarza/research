@@ -7,7 +7,7 @@ from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix as engine_matrix
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
@@ -238,9 +238,11 @@ class CoxeterDiagrams(OwnedCategory):
             roots=None,
             root_gram=None,
             positions=None,
+            type_label=None,
             **rest,
         ) -> None:
             self._coxeter_matrix = CoxeterMatrix(coxeter_matrix)
+            self._type_label = type_label
             self._index_set = finite_ordered_set(tuple(self._coxeter_matrix.index_set()))
             if names is None:
                 names = (f"s_{index}" for index in self._index_set)
@@ -523,8 +525,8 @@ class CoxeterDiagrams(OwnedCategory):
             has only the bond labels, so its infinite bond is necessarily the
             parallel boundary value ``-1``.
             """
-            from sage.all import AA as SageAA
             from sage.all import cos, pi
+            from sage.rings.qqbar import AA as SageAA
 
             real_algebraics = _own_ring(SageAA)
             rooted_gram = self.root_gram_tensor() if self.is_rooted() else None
@@ -928,63 +930,132 @@ class CoxeterDiagrams(OwnedCategory):
             position = int(self.index_set().ranking_map()(normalized))
             return self.roots()[position]
 
-        def scaled_cartan_type(self):
-            r"""Recognize a connected elliptic crystallographic rooted diagram as ``(type, scale)``."""
-            if not self.is_rooted() or self.cardinality() == 0:
-                return None
-            if not self.is_connected() or not self.is_elliptic():
-                raise ValueError(
-                    f"cannot recognize a Cartan type of {self}: the diagram must be connected and "
-                    f"elliptic (spherical), and it is not both"
-                )
+        def _engine_root_squares(self):
+            r"""Return the squares of the roots, lowered to rationals, in vertex order."""
             gram = self.root_gram_tensor()
-            rank = int(self.cardinality())
-            squares = tuple(-SageZZ(gram[index, index]) for index in range(rank))
-            shortest = min(squares)
-            if shortest <= 0 or shortest % 2:
-                raise ValueError(
-                    f"cannot recognize a scaled Cartan type of {self}: the shortest root must "
-                    f"have square -2k for a positive integer k, but the squares are {squares}"
-                )
-            scale = SageZZ(shortest // 2)
+            return tuple(
+                QQ(_engine_element(gram.base_ring(), gram[index, index]))
+                for index in range(int(self.cardinality()))
+            )
+
+        def _engine_root_scale(self):
+            r"""Return :meth:`root_scale` as a private rational."""
+            squares = self._engine_root_squares()
+            assert squares and (
+                all(square > 0 for square in squares) or all(square < 0 for square in squares)
+            ), (
+                f"{self} has no root scale: its root squares {squares} must be nonempty and of "
+                f"one sign, as the squares of a root basis are"
+            )
+            return min(squares, key=abs) / 2
+
+        def root_scale(self):
+            r"""Return \(s=q(r)/2\) for a shortest root \(r\) of this rooted diagram.
+
+            The scale keeps the sign of the form: a root basis of a
+            negative-definite ADE root lattice has \(s=-1\), the roots of square
+            \(-4\) in a Sterk diagram have \(s=-2\), and the root of the lattice
+            \([1]\) has \(s=1/2\).  The roots of a root basis have squares of one
+            sign, since its Gram matrix is a scalar multiple of a symmetrized
+            Cartan matrix.
+            """
+            return _cross_engine_ring_value(self._engine_root_scale())
+
+        @cached_method
+        def scaled_cartan_type(self):
+            r"""Return the reference diagram of the type of this connected elliptic diagram.
+
+            A connected elliptic Coxeter diagram is the diagram of exactly one
+            finite irreducible Coxeter group (Humphreys, *Reflection Groups and
+            Coxeter Groups*, §2.7), and the reference diagram of that type is
+            returned.  Its :meth:`label` names the type, as ``A2`` or ``I2(5)``.
+
+            A rooted diagram is a root basis in its realization, and its roots
+            determine more than the Coxeter matrix.  The type B/C splits by the
+            root squares: \(B_n\) has one short simple root and \(C_n\) has one
+            long one (Humphreys, *Introduction to Lie Algebras and
+            Representation Theory*, §11.4).  At rank two they are one root
+            system, whose reference is ``C2``.  The rooted reference is the
+            simple-root diagram of the root lattice of the recognized type,
+            twisted so that its shortest root has square \(2s\) for the
+            :meth:`root_scale` \(s\); :meth:`reference_isomorphism` identifies it
+            with this diagram.  Recognition of a rooted diagram is implemented
+            for crystallographic root bases.
+            """
+            assert self.is_connected() and self.is_elliptic(), (
+                f"{self} has no type: only a connected elliptic Coxeter diagram is the diagram "
+                f"of a finite irreducible Coxeter group"
+            )
             coxeter_type = self.coxeter_matrix().coxeter_type()
-            if coxeter_type is self.coxeter_matrix():
-                raise ValueError(
-                    f"{self} is elliptic, but its Coxeter matrix {self.coxeter_matrix()} was not "
-                    f"recognized as a finite Coxeter type"
-                )
+            assert coxeter_type is not self.coxeter_matrix(), (
+                f"{self} is elliptic, but its Coxeter matrix {self.coxeter_matrix()} was not "
+                f"recognized as a finite Coxeter type"
+            )
             cartan = coxeter_type.cartan_type()
-            if str(cartan[0]) == "H":
-                raise ValueError(
-                    f"{self} has Coxeter type {cartan}, which is not crystallographic, so it has "
-                    f"no Cartan type and no integral root scale"
-                )
-            if str(cartan[0]) == "B":
-                short_count = sum(square == 2 * scale for square in squares)
-                if rank == 2:
-                    cartan = CartanType(["C", 2])
-                elif short_count == 1:
-                    cartan = CartanType(["B", rank])
-                elif short_count == rank - 1:
-                    cartan = CartanType(["C", rank])
-                else:
-                    raise ArithmeticError(
-                        f"{self} has Coxeter type B/C of rank {rank}, but its root squares {squares} "
-                        f"match neither B (one short root) nor C (one long root)"
+            letter = str(cartan.type())
+            rank = int(cartan.rank())
+            match self.is_rooted(), letter:
+                case False, "I":
+                    order = self.coxeter_entry(self.vertex(0), self.vertex(1))
+                    return _unrooted_reference_diagram(letter, int(order))
+                case False, _:
+                    return _unrooted_reference_diagram(letter, rank)
+            assert letter not in ("H", "I"), (
+                f"the type of the rooted {self} is recognized for crystallographic root bases, "
+                f"and its Coxeter type {cartan} is not crystallographic"
+            )
+            engine_scale = self._engine_root_scale()
+            squares = self._engine_root_squares()
+            match letter:
+                case "B" if rank == 2:
+                    letter = "C"
+                case "B":
+                    short_count = sum(square == 2 * engine_scale for square in squares)
+                    assert short_count in (1, rank - 1), (
+                        f"{self} has Coxeter type B/C of rank {rank}, but its root squares "
+                        f"{squares} match neither B (one short root) nor C (one long root)"
                     )
-            reference = Lattices.root_lattice(str(cartan[0]), int(cartan[1])).twist(scale)
-            reference_diagram = CoxeterDiagrams().from_roots(tuple(reference.module_generators()))
-            if not self.root_intersection_graph().is_isomorphic(
-                reference_diagram.root_intersection_graph(), edge_labels=True
-            ):
-                raise ArithmeticError(
-                    f"{self} was recognized as Cartan type {cartan} with scale {scale}, but the "
-                    f"roots of that type do not have the same Gram data as the roots of {self}"
-                )
-            return cartan, scale
+                    letter = "B" if short_count == 1 else "C"
+            reference = _rooted_reference_diagram(letter, rank, engine_scale)
+            assert reference.root_intersection_graph().is_isomorphic(
+                self.root_intersection_graph(), edge_labels=True
+            ), (
+                f"{self} was recognized as type {letter}{rank} with root scale {engine_scale}, but "
+                f"the simple roots of that type do not have the Gram data of the roots of {self}"
+            )
+            return reference
+
+        def label(self):
+            r"""Return the name of the type of this connected elliptic diagram.
+
+            It is the label of the reference diagram :meth:`scaled_cartan_type`,
+            as ``A2``, ``C2`` or ``I2(5)``.
+            """
+            return self.scaled_cartan_type()._type_label
+
+        def reference_isomorphism(self):
+            r"""Return an isomorphism from the reference diagram of the type onto this diagram.
+
+            For a rooted diagram it also preserves the root squares and
+            pairings, so it carries the ordered simple roots of the reference to
+            an ordering of the roots of this diagram.
+            """
+            reference = self.scaled_cartan_type()
+            match self.is_rooted():
+                case True:
+                    source = reference.root_intersection_graph()
+                    target = self.root_intersection_graph()
+                case False:
+                    source = reference.graph()
+                    target = self.graph()
+            isomorphic, certificate = source.is_isomorphic(
+                target, edge_labels=True, certificate=True
+            )
+            assert isomorphic, f"the reference diagram {reference} is not isomorphic to {self}"
+            return reference.Mor(self)(certificate.__getitem__)
 
         def component_scaled_cartan_types(self):
-            r"""Return the component-indexed family of scaled Cartan types, retaining multiplicity."""
+            r"""Return the component-indexed family of the reference diagrams of the components."""
             from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             components = self.connected_components()
@@ -992,7 +1063,7 @@ class CoxeterDiagrams(OwnedCategory):
             return indexed_family(
                 labels,
                 lambda position: components[int(position)].scaled_cartan_type(),
-                name="Scaled Cartan types of Coxeter components",
+                name="Reference diagrams of Coxeter components",
             )
 
         def drawing_conventions(self):
@@ -1190,53 +1261,100 @@ class CoxeterDiagrams(OwnedCategory):
         return self.from_roots(tuple(lattice.module_generators()), names=names, positions=positions)
 
     def from_roots(self, roots, names=None, index_set=None, positions=None):
-        roots = tuple(roots)
-        if not roots:
-            raise ValueError(
-                "cannot form a Coxeter diagram from roots: no roots were given, and the "
-                "diagram needs at least one to determine its lattice"
-            )
-        realization = roots[0].parent()
-        if any(root.parent() is not realization for root in roots):
-            raise ValueError(
-                f"the roots {roots} do not all lie in one lattice: the first lies in "
-                f"{realization}, and a Coxeter diagram of roots needs a single lattice"
-            )
-        # The roots carry their own enumeration; the vertices are indexed by it
-        # unless the caller names them otherwise.
-        root_positions = finite_ordered_set(
-            tuple(position for position, _root in enumerate(roots))
+        return _root_basis_diagram(roots, names=names, index_set=index_set, positions=positions)
+
+
+def _root_basis_diagram(roots, names=None, index_set=None, positions=None, type_label=None):
+    r"""Return the rooted diagram of ``roots``, named ``type_label`` when it is a reference diagram."""
+    roots = tuple(roots)
+    if not roots:
+        raise ValueError(
+            "cannot form a Coxeter diagram from roots: no roots were given, and the "
+            "diagram needs at least one to determine its lattice"
         )
-        mirrors = root_positions if index_set is None else finite_ordered_set(index_set)
-        if mirrors.cardinality() != root_positions.cardinality():
-            raise ValueError(
-                f"the index set {index_set} does not label the {len(roots)} roots: it has "
-                f"{mirrors.cardinality()} elements, and there must be one per root"
-            )
-        gram = tensor(
-            realization.base_ring(),
-            (),
-            (mirrors.cardinality(), mirrors.cardinality()),
-            [[left.b(right) for right in roots] for left in roots],
+    realization = roots[0].parent()
+    if any(root.parent() is not realization for root in roots):
+        raise ValueError(
+            f"the roots {roots} do not all lie in one lattice: the first lies in "
+            f"{realization}, and a Coxeter diagram of roots needs a single lattice"
         )
-        entries = [
-            [
-                SageZZ.one()
-                if i == j
-                else _coxeter_entry(gram[i, i], gram[j, j], gram[i, j])
-                for j, _right in enumerate(roots)
-            ]
-            for i, _left in enumerate(roots)
+    # The roots carry their own enumeration; the vertices are indexed by it
+    # unless the caller names them otherwise.
+    root_positions = finite_ordered_set(
+        tuple(position for position, _root in enumerate(roots))
+    )
+    mirrors = root_positions if index_set is None else finite_ordered_set(index_set)
+    if mirrors.cardinality() != root_positions.cardinality():
+        raise ValueError(
+            f"the index set {index_set} does not label the {len(roots)} roots: it has "
+            f"{mirrors.cardinality()} elements, and there must be one per root"
+        )
+    gram = tensor(
+        realization.base_ring(),
+        (),
+        (mirrors.cardinality(), mirrors.cardinality()),
+        [[left.b(right) for right in roots] for left in roots],
+    )
+    entries = [
+        [
+            SageZZ.one()
+            if i == j
+            else _coxeter_entry(gram[i, i], gram[j, j], gram[i, j])
+            for j, _right in enumerate(roots)
         ]
-        return _coxeter_diagram(
-            CoxeterMatrix(entries, index_set=tuple(mirrors)),
-            names=names,
-            roots=roots,
-            root_gram=gram,
-            positions=positions,
-        )
+        for i, _left in enumerate(roots)
+    ]
+    return _coxeter_diagram(
+        CoxeterMatrix(entries, index_set=tuple(mirrors)),
+        names=names,
+        roots=roots,
+        root_gram=gram,
+        positions=positions,
+        type_label=type_label,
+    )
 
 
+@cached_function
+def _unrooted_reference_diagram(letter, index):
+    r"""Return the reference diagram of the finite irreducible Coxeter type ``(letter, index)``.
+
+    ``index`` is the rank, except for the dihedral type \(I_2(p)\), whose index
+    is \(p\).  The diagram is labelled ``I2(p)`` or by letter and rank.
+    """
+    cartan_type = CartanType([letter, index])
+    match letter:
+        case "I":
+            type_label = f"I2({index})"
+        case _:
+            type_label = f"{letter}{index}"
+    return _coxeter_diagram(CoxeterMatrix(cartan_type), type_label=type_label)
+
+
+@cached_function
+def _rooted_reference_diagram(letter, rank, engine_scale):
+    r"""Return the reference root basis of type ``letter``/``rank`` at root scale ``engine_scale``.
+
+    The roots are the simple roots of ``Lattices.root_lattice(letter, rank)``,
+    whose shortest root has square \(-2\), twisted by \(-s\) so that the
+    shortest root has square \(2s\).  A fractional \(s\) first extends the
+    scalars to the rationals.
+    """
+    reference = Lattices.root_lattice(letter, rank)
+    integers = reference.base_ring()
+    twist = -engine_scale
+    match twist.denominator():
+        case 1:
+            factor = integers(int(twist))
+        case denominator:
+            fraction_map = integers.fraction_field_map()
+            reference = reference.base_change(fraction_map)
+            factor = fraction_map(integers(int(twist.numerator()))) / reference.base_ring()(
+                int(denominator)
+            )
+    reference = reference.twist(factor)
+    return _root_basis_diagram(
+        tuple(reference.module_generators()), type_label=f"{letter}{rank}"
+    )
 
 
 __all__ = ["CoxeterDiagrams"]

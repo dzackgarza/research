@@ -1,9 +1,11 @@
 """Stored transcription of Tables 10.2 and 10.3 of Hashimoto.
 
 K. Hashimoto, "Finite symplectic actions on the K3 lattice", arXiv:1012.2682.
-This module is source intake only: it parses the archived transcription and its
-card/tag locators.  Mathematical verification of the stated lattices, forms,
-embeddings and complements belongs to the research preamble, not to latticedb.
+This module is source intake: it parses the archived transcription and its
+card/tag locators, and compares each printed row with the values that public
+preamble operations return for the named cards.  The signatures, discriminant
+groups, form preservation, bijectivity and primitivity it compares are computed
+by the preamble.
 """
 
 import re
@@ -12,12 +14,6 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
-from dzack_research.preamble.categories.hashimoto_source_invariants import (
-    basis_gives_isometry,
-    lattice_summary,
-    printed_summary,
-    primitive_orthogonal_complements,
-)
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.rings import session_ring_objects
 
@@ -100,20 +96,113 @@ def symbol_group(symbol: str) -> list[int]:
     )
 
 
+def _discriminant_prime_powers(lattice) -> tuple[int, ...]:
+    """The orders of the cyclic prime-power factors of the discriminant group, in increasing order.
+
+    The preamble splits the discriminant group into its primary components; the
+    invariant factors of the `p`-primary component are powers of `p`.
+    """
+    components = lattice.discriminant_group().primary_components()
+    return tuple(
+        sorted(
+            abs(int(order))
+            for prime in components.index_set()
+            for order in components[prime].invariant_factors()
+        )
+    )
+
+
+def _coinvariant_summary(lattice) -> tuple[int, int, int, tuple[int, ...]]:
+    """`(c, n_+, |q|, group of q)` as Table 10.2 prints them."""
+    signature = lattice.signature_pair()
+    return (
+        int(lattice.module_rank()),
+        int(signature.first()),
+        abs(int(lattice.determinant())),
+        _discriminant_prime_powers(lattice),
+    )
+
+
+def _printed_summary(lattice) -> tuple[int, tuple[int, int], int, tuple[int, ...]]:
+    """`(rank, signature, |q|, group of q)` as Table 10.3 states them for a printed Gram tensor."""
+    signature = lattice.signature_pair()
+    return (
+        int(lattice.module_rank()),
+        (int(signature.first()), int(signature.second())),
+        abs(int(lattice.determinant())),
+        _discriminant_prime_powers(lattice),
+    )
+
+
+def basis_isometry(source, target, basis_rows):
+    """The printed change of basis `P` as an isometry from `source` onto `target`, or `None`.
+
+    The columns of `P` are the images of the generators of `source` in the
+    coordinates of `target`.  The module map they define is an isometry when it
+    preserves the forms and is bijective.
+    """
+    images = tuple(target(column) for column in zip(*basis_rows, strict=True))
+    module_map = source.module_category().Mor(source, target)(images)
+    if (
+        source.Mor(target).preserves_forms(module_map)
+        and module_map.is_injective()
+        and module_map.is_surjective()
+    ):
+        return module_map
+    return None
+
+
+def _primitive_orthogonal_pair(ambient, first, second) -> bool:
+    """Whether the column spans of two stored embedding matrices are complementary in `ambient`.
+
+    The two spans must be orthogonal, of ranks summing to the rank of `ambient`,
+    each spanned freely by its columns, and each primitive.
+    """
+    first_columns = tuple(zip(*first, strict=True))
+    second_columns = tuple(zip(*second, strict=True))
+    if len(first_columns) + len(second_columns) != int(ambient.module_rank()):
+        return False
+    orthogonal = all(
+        ambient(left).is_orthogonal_to(ambient(right))
+        for left in first_columns
+        for right in second_columns
+    )
+    if not orthogonal:
+        return False
+    module = ambient.unformed_module()
+    for columns in (first_columns, second_columns):
+        span = module.subobject_on(tuple(module(column) for column in columns))
+        if int(span.module_rank()) != len(columns) or not span.is_primitive():
+            return False
+    return True
+
+
 def complements(
     invariant: tuple[Tag, int],
     coinvariant: tuple[Tag, int],
     k3: Lattice,
     morphisms: corpus.Held,
 ) -> bool:
-    """Whether stored source morphisms contain primitive orthogonal complements in the K3 lattice."""
+    """Whether stored source morphisms contain primitive orthogonal complements in the K3 lattice.
+
+    Each stored morphism is `(matrix rows, scale)`; only the morphisms whose scale
+    is the stated twist are candidates.
+    """
     ambient = Lattices(ZZ)(k3.gram_tensor)
-    return primitive_orthogonal_complements(
-        ambient,
-        morphisms.get((invariant[0], K3_RECORD), ()),
-        invariant[1],
-        morphisms.get((coinvariant[0], K3_RECORD), ()),
-        coinvariant[1],
+    first_candidates = tuple(
+        rows
+        for rows, scale in morphisms.get((invariant[0], K3_RECORD), ())
+        if int(scale) == invariant[1]
+    )
+    second_candidates = tuple(
+        rows
+        for rows, scale in morphisms.get((coinvariant[0], K3_RECORD), ())
+        if int(scale) == coinvariant[1]
+    )
+    return any(
+        _primitive_orthogonal_pair(ambient, first, second)
+        for first in first_candidates
+        for second in second_candidates
     )
 
 
@@ -146,7 +235,7 @@ def check(
         assert row.coinvariant is not None and row.discriminant_form is not None
         lattice = lattices[row.coinvariant.record]
         owned = Lattices(ZZ)(lattice.gram_tensor).twist(row.coinvariant.twist)
-        computed = lattice_summary(owned)
+        computed = _coinvariant_summary(owned)
         stated = (
             row.rank,
             0,
@@ -164,7 +253,7 @@ def check(
                 printed.twist
             )
             source = Lattices(ZZ)(printed.gram_tensor)
-            if not basis_gives_isometry(source, target, printed.basis):
+            if basis_isometry(source, target, printed.basis) is None:
                 found.append(
                     f"Table 10.3 row {invariant.n}: P is not an isometry from the printed Gram tensor to {printed.record}({printed.twist})"
                 )
@@ -176,7 +265,7 @@ def check(
                 row.discriminant_order,
                 tuple(symbol_group(row.discriminant_form)),
             )
-            computed_invariants = printed_summary(source)
+            computed_invariants = _printed_summary(source)
             if computed_invariants != stated_invariants:
                 found.append(
                     f"Table 10.3 row {invariant.n}: (rank, signature, |q|, group of q) is {stated_invariants}, the printed Gram tensor gives {computed_invariants}"

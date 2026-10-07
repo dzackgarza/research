@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.schemes.catalogue_invariants import (
     complete_intersection_is_calabi_yau,
     hermitian_dimensions_are_consistent,
     pontryagin_indices_are_top_degree,
-    surface_data_fits_dimension,
     symmetric_space_dual_types_are_consistent,
     symmetric_space_rank_fits_dimension,
 )
@@ -210,9 +209,9 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
 
     @model_validator(mode="after")
     def check_hodge_poincare(self) -> Self:
-        invariants = self._hodge_invariants()
-        if not invariants.has_unique_bidegrees():
+        if len({(term.p, term.q) for term in self.hodge_poincare}) != len(self.hodge_poincare):
             raise PydanticCustomError("hodge_duplicate", "a Hodge–Poincaré monomial occurs more than once")
+        invariants = self._hodge_invariants()
         if not invariants.exponents_within_dimension():
             raise PydanticCustomError("hodge_degree", "a Hodge–Poincaré exponent exceeds the dimension")
         if not invariants.is_connected():
@@ -242,7 +241,7 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
             raise PydanticCustomError("pontryagin_degree", "Pontryagin class products must have real degree twice the complex dimension")
         if len({tuple(number.indices) for number in self.pontryagin_numbers}) != len(self.pontryagin_numbers):
             raise PydanticCustomError("pontryagin_duplicate", "a Pontryagin number occurs more than once")
-        if self.surface is not None and not surface_data_fits_dimension(self.dimension):
+        if self.surface is not None and self.dimension != 2:
             raise PydanticCustomError("surface_dimension", "surface data require complex dimension two")
         if len({group.degree for group in self.homotopy_groups}) != len(self.homotopy_groups):
             raise PydanticCustomError("homotopy_duplicate", "a homotopy degree occurs more than once")
@@ -267,7 +266,11 @@ class ProjectiveComplexVariety(LocallyRingedSpace):
         return self._hodge_invariants().betti_number(degree)
 
     def hodge_number(self, p: int, q: int) -> int:
-        return self._hodge_invariants().hodge_number(p, q)
+        """The stored coefficient of u^p v^q in the Hodge–Poincaré series; zero when the card omits it."""
+        return next(
+            (term.coefficient for term in self.hodge_poincare if (term.p, term.q) == (p, q)),
+            0,
+        )
 
     def euler_characteristic(self) -> int:
         return self._hodge_invariants().euler_characteristic()

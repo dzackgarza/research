@@ -2,7 +2,7 @@
 
 #### Cusp Diagrams
 
-Let $T$ be an even nondegenerate lattice of signature $(2,n)$ and $\Gamma \leq \OStab(T)$ a finite index arithmetic subgroup.
+Let $T$ be an even nondegenerate lattice of signature $(2,n)$ and $\Gamma \leq \discriminantkernel{T}$ a finite index arithmetic subgroup.
 As we have seen and will explore in more detail in @sec:chapter-4, the quotient $\FG \definedas \dmodgamma{ \halfpd{T} }{\Gamma}$ admits a Baily–Borel compactification $\bbcpt{\FG}$.
 The rational boundary components (or **cusps**) of $\bd\bbcpt{\FG}$ are indexed by $\Gamma$-orbits of isotropic sublattices of $L$.
 In particular, **0-cusps** correspond to orbits of isotropic lines $\eta \subset L$, and **1-cusps** correspond to orbits of isotropic planes $I \subset L$.
@@ -98,7 +98,7 @@ The standard example is the hyperbolic lattice $U$.
 The intersection pairing on $L$ induces a hyperbolic metric $\rho(v,w) \definedas  \operatorname{arccosh}(v\cdot w)$ on $L_\RR$.
 The group of orientation-preserving isometries of $\HH^n_L$ is:
 $$
-\Isom^+(\HH^n_L) \cong \OStab(L_\RR) \definedas  \Stab_{\Orth(L_\RR)}(\thecone{C}_L^+),
+\Isom^+(\HH^n_L) \cong \Orth^+(L_\RR) \definedas  \Stab_{\Orth(L_\RR)}(\thecone{C}_L^+),
 $$
 Moreover, the associated hyperbolic space $\HH_L^n$ admits several standard models:
 

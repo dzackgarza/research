@@ -287,12 +287,12 @@ If $L$ is unimodular, this implies $A_{L(m)} \cong L/mL$.
 Similarly, by functoriality, any isometry $f \in \Orth(L)$ lifts to an isometry of $\dualof{L}$ and thus induces an isometry on the discriminant group $A_L$.
 This defines a group homomorphism $\psi: \Orth(L) \to \Orth(A_L)$, which fits into an exact sequence:
 $$
-0 \to \OStab(L) \to \Orth(L) \xrightarrow{\psi} \Orth(A_L) \to \OStab(A_L) \to 0
+0 \to \discriminantkernel{L} \to \Orth(L) \xrightarrow{\psi} \Orth(A_L) \to \discriminantcokernel{A_L} \to 0
 $$
-where $\OStab(L) \definedas \ker(\psi)$ and $\OStab(A_L) \definedas \coker(\psi)$ are the **stable orthogonal groups** of $L$ and $A_L$.
-The cokernel, $\OStab(A_L) \definedas \coker(\psi)$, measures the obstruction to lifting isometries from the discriminant form $A_L$ to the lattice $L$.
-We note that $\psi$ is surjective (i.e., $\OStab(A_L) = 0$) when $L$ is indefinite and satisfies $\ell(A_L) + 2 \leq \rank(L)$, where $\ell(A_L)$ is the minimal number of generators of $A_L$.
-For unimodular lattices like $U$ and $E_8$, the discriminant group is trivial, so $\OStab(L) = \Orth(L)$.
+where $\discriminantkernel{L} \definedas \ker(\psi)$ is the **discriminant kernel** and $\discriminantcokernel{A_L} \definedas \coker(\psi)$ is the **discriminant cokernel**.
+The group $\discriminantcokernel{A_L}$ measures the obstruction to lifting isometries from the discriminant form $A_L$ to the lattice $L$.
+We note that $\psi$ is surjective (i.e., $\discriminantcokernel{A_L} = 0$) when $L$ is indefinite and satisfies $\ell(A_L) + 2 \leq \rank(L)$, where $\ell(A_L)$ is the minimal number of generators of $A_L$.
+For unimodular lattices like $U$ and $E_8$, the discriminant group is trivial, so $\discriminantkernel{L} = \Orth(L)$.
 :::
 
 ::: {.example title="$U$ and $U(2)$" #ex:hyperbolic-duals}

@@ -9,6 +9,7 @@ other geometric objects that it names.
 
 from pathlib import Path
 
+from latticedb import records
 from latticedb.corpus import FAMILIES_FILE, Corpus
 from latticedb.geometric import (
     ComplexManifold,
@@ -17,7 +18,8 @@ from latticedb.geometric import (
     RiemannianSymmetricSpace,
 )
 from latticedb.graphs import WeightedGraph
-from latticedb.model import GramTensor
+from latticedb.model import GramTensor, Lattice
+from latticedb.relations import hyperbolic_index_bounds
 
 SOURCE_DIRECTORY = "lattices/source"
 """Where `seed` reads rows that have not yet become permanent cards."""
@@ -42,6 +44,7 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
     )
     by_name: dict[str, Path] = {}
     by_components: dict[GramTensor, Path] = {}
+    earlier_definite: dict[str, Lattice] = {}
     for entry in entries:
         lattice = entry.lattice
         if entry.path.stem != lattice.tag:
@@ -75,11 +78,19 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
                 found.append(
                     f"{entry.path}: the related tag {related.tag} is not in the corpus"
                 )
+        found.extend(
+            f"{entry.path}: {problem}"
+            for problem in records.relational_admission_problems(
+                lattice, by_tag, isometry_records=earlier_definite
+            )
+        )
+        if lattice.definite is not None and lattice.gram_tensor is not None:
+            earlier_definite[lattice.tag] = lattice
     return found
 
 
 def morphism_problems(loaded: Corpus) -> list[str]:
-    """Reference problems of morphisms stored on their source lattice cards."""
+    """Reference and preamble-backed mathematical problems of stored morphisms."""
     entries = loaded.entries
     retired = loaded.retired
     found: list[str] = []
@@ -95,6 +106,22 @@ def morphism_problems(loaded: Corpus) -> list[str]:
                     )
                 else:
                     found.append(f"{entry.path}: morphism target {morphism.target} is not in the corpus")
+                continue
+            found.extend(
+                f"{entry.path}: morphisms.{morphism.name}: {problem}"
+                for problem in records.morphism_problems(morphism, source, target)
+            )
+    for tag, bound in hyperbolic_index_bounds(entries).items():
+        target = by_tag.get(tag)
+        stored = (
+            target.integral.hyperbolic_index
+            if target is not None and target.integral is not None
+            else None
+        )
+        if stored is not None and stored < bound:
+            found.append(
+                f"{tag}: integral.hyperbolic_index is {stored}, and a stored morphism embeds U^{bound} into it"
+            )
     return found
 
 

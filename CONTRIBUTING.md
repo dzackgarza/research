@@ -1435,20 +1435,61 @@ of this specification.
   category: constructing it fixes its endpoints and composition, and never
   computes a presentation of it as a module or of its composition as a map
   out of a tensor product.
+
+  Construction is therefore almost instant: it stores the defining datum and
+  fixes the category.  Every other datum of the object (an inverse, a group's
+  generators, a sublattice's Gram matrix, a genus symbol) is computed on its
+  first request, cached on the object, and reused by every method that needs
+  it.
+
+  A well-definedness condition is a validator method of the object.
+  Construction calls the object's validators once, after the object exists,
+  in the manner of a pydantic post-init validator, and each validator returns
+  at once unless the global strict-checking flag is on.  The flag is one
+  session-wide setting, off by default, for exploratory work; no construction
+  turns it on for itself.  A caller may call any validator by hand.  A
+  constructor's `check=True` runs that constructor's validators for that one
+  call.  No check is written into `__init__`, an element constructor or a
+  computation, because some laws cannot be checked at all: no finite
+  computation shows that the Fourier transform is an isometry of `L^2(RR)`.
 - **Rationale:** An eager check or an eager structure table costs what the
   construction never needed, and it compounds: building `End_R(C)` for a
   presented `C` built its multiplication `End ⊗ End -> End` through another
   presented Mor module, so `End(Z/2 + Z^(n-1))` took 0.42 s, 2.76 s and 329 s
-  for n = 1, 2, 3 (measured 2026-09-25).
+  for n = 1, 2, 3 (measured 2026-09-25).  On 2026-10-07 the test that builds
+  `O(E_6)` took 72.8 s, almost all of it preamble overhead: each isometry
+  checked its form and inverted its matrix at construction.
 - **Violation Example:** a Mor constructor that computes the presented
   internal-Hom model of its endpoints; an `End` constructor that builds its
   multiplication as a morphism out of `End ⊗ End`; a constructor that checks
-  linearity or equivariance unless the caller asked it to.
+  linearity or equivariance unless the caller asked it to; an isometry
+  constructor that inverts its matrix; an orthogonal group whose constructor
+  computes its group generators.
 - **Correct Example:** `End_R(M)` multiplies by composing its elements;
   `f.is_equivariant()` checks equivariance when called; a constructor's
   `check=True` checks the caller's data; `A.multiplication()` returns the
   multiplication as a morphism when asked, and its matrix only through an
-  explicit matrix extraction.
+  explicit matrix extraction; `O(L).group_generators()` is computed on the
+  first call and cached.
+
+### `OWN-24`: A loop over pairings is a tensor contraction
+
+- **Rule:** Mathematical code states a computation over a family as the tensor
+  operation it is.  The pairings `b(v_i, w_j)` of two families are one matrix
+  product; `f` is an isometry of `(L, G)` to `(L', G')` when `M^T G' M = G`, one
+  equation; a family of evaluations is one contraction.  Numerical work lives
+  behind the tensor interface (vectors, covectors, matrices, morphism tensors),
+  and the engine call sits in its private adapter (`OWN-06`).
+- **Rationale:** An imperative loop over elements re-enters the preamble's
+  element and form machinery once per pair, so its cost is the overhead of
+  that machinery times the square of the family.  The tensor equation is one
+  engine call, and it reads as the definition.
+- **Violation Example:** `for` loops over pairs of roots, basis vectors or
+  generators; `all(b(x, y) == ... for x ... for y ...)`; `sum(...)` of
+  pairings built element by element.
+- **Correct Example:** the isometry validator compares `M^T G' M` with `G`;
+  the Gram matrix of a set of simple roots is `S G S^T` for the matrix `S`
+  of their coordinates.
 
 ### `OWN-23`: Lazy realization fixes all defining choices before exposure
 

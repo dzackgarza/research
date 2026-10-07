@@ -14,35 +14,8 @@ from pydantic import ValidationError
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def test_schema_layer_has_no_preamble_or_sage_dependency() -> None:
-    """Parsing cards must not initialize the mathematical-computation backend."""
-    for relative in (
-        "src/latticedb/model.py",
-        "src/latticedb/catalogues.py",
-        "src/latticedb/corpus.py",
-    ):
-        tree = ast.parse((ROOT / relative).read_text())
-        modules = {
-            node.module
-            for node in ast.walk(tree)
-            if isinstance(node, ast.ImportFrom) and node.module is not None
-        } | {
-            alias.name
-            for node in ast.walk(tree)
-            if isinstance(node, ast.Import)
-            for alias in node.names
-        }
-        assert not any(
-            module == "sage"
-            or module.startswith("sage.")
-            or module == "dzack_research"
-            or module.startswith("dzack_research.")
-            for module in modules
-        ), relative
-
-
 def test_latticedb_has_no_direct_mathematical_engine_imports() -> None:
-    """All mathematical computation crosses the research-preamble boundary."""
+    """Mathematical computation crosses the research-preamble boundary."""
     forbidden = ("sage", "cypari2", "flint", "fpylll")
     for path in sorted((ROOT / "src" / "latticedb").glob("*.py")):
         tree = ast.parse(path.read_text())

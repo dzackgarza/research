@@ -243,22 +243,12 @@ def _root_sublattice(lattice):
     from sage.combinat.root_system.cartan_type import CartanType
     from sage.graphs.graph import Graph
 
+    from dzack_research.preamble.categories._lattice import _root_system_label
+
     root_vectors = tuple(lattice.roots())
     if not root_vectors:
         return lattice.subobject_on(())
-    coordinates = {root: _coordinate_tuple(lattice, root) for root in root_vectors}
-    zero = (SageZZ.zero(),) * int(lattice.module_rank())
-    positive = tuple(root for root in root_vectors if coordinates[root] > zero)
-    positive_coordinates = {coordinates[root] for root in positive}
-    simple = tuple(
-        candidate
-        for candidate in positive
-        if not any(
-            tuple(left - right for left, right in zip(coordinates[candidate], coordinates[other], strict=True)) in positive_coordinates
-            for other in positive
-            if other is not candidate
-        )
-    )
+    simple = _simple_roots(lattice, root_vectors)
     graph = Graph(multiedges=False, loops=False)
     graph.add_vertices(range(len(simple)))
     graph.add_edges((left, right) for left in range(len(simple)) for right in range(left + 1, len(simple)) if simple[left].b(simple[right]) != 0)
@@ -294,8 +284,50 @@ def _root_sublattice(lattice):
     recognized = component_types[0] if len(component_types) == 1 else CartanType(component_types)
 
     if lattice.is_negative_definite():
-        return lattice._root_subobject_on(ordered, recognized)
+        return lattice._root_subobject_on(ordered, _root_system_label(recognized))
     return lattice.subobject_on(ordered)
+
+
+def _simple_roots(lattice, roots):
+    r"""Return the simple roots of the positive system of ``roots`` in the coordinate order.
+
+    The positive roots are those whose first nonzero coordinate in the
+    framing of ``lattice`` is positive, and a positive root is simple exactly
+    when it is not the sum of two positive roots (Humphreys, *Introduction to
+    Lie Algebras and Representation Theory*, §10.1).
+    """
+    coordinates = {root: _coordinate_tuple(lattice, root) for root in roots}
+    zero = (SageZZ.zero(),) * int(lattice.module_rank())
+    positive = tuple(root for root in roots if coordinates[root] > zero)
+    positive_coordinates = {coordinates[root] for root in positive}
+    return tuple(
+        candidate
+        for candidate in positive
+        if not any(
+            tuple(left - right for left, right in zip(coordinates[candidate], coordinates[other], strict=True)) in positive_coordinates
+            for other in positive
+            if other is not candidate
+        )
+    )
+
+
+def _reflective_root_system_components(lattice):
+    r"""Return the irreducible components of the reflective root system of a definite lattice.
+
+    The primitive reflective roots of a definite lattice form a finite reduced
+    crystallographic root system.  Its simple roots span one connected rooted
+    Coxeter diagram per irreducible component, since a root system is
+    irreducible exactly when its Coxeter graph is connected (Humphreys,
+    *Introduction to Lie Algebras and Representation Theory*, §10.4 and
+    §11.3).
+    """
+    from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+
+    simple = _simple_roots(lattice, tuple(lattice.reflective_roots()))
+    match simple:
+        case ():
+            return finite_ordered_set(())
+    return CoxeterDiagrams().from_roots(simple).connected_components()
 
 
 def _vectors_of_square_and_divisibility(lattice, square, divisibility):

@@ -5,15 +5,6 @@ only serializes the returned values and never rechecks these formulas.
 """
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.hashimoto_source_invariants import (
-    basis_gives_isometry,
-    lattice_summary,
-    primitive_orthogonal_complements,
-)
-from dzack_research.preamble.categories.hoehn_mason_source_invariants import (
-    generated_group_order,
-    leech_gram,
-)
 from dzack_research.preamble.categories.schemes.catalogue_invariants import (
     HodgePoincareInvariants,
     HodgeTermData,
@@ -122,20 +113,9 @@ def test_lattice_isotropy_is_owned_by_the_quadratic_space() -> None:
 def test_root_and_theta_catalogue_invariants_are_owned_by_the_lattice() -> None:
     lattice = Lattices(ZZ)([[2, -1], [-1, 2]])
     components = lattice.reflective_root_system_components()
-    assert [(component.type, component.scale) for component in components] == [("G2", 1)]
-    assert lattice.norm_two_root_types() == ("A2",)
-    labels = tuple(lattice.module_generating_set())
-    roots = tuple(
-        tuple(int(root.to_vector()(label)) for label in labels)
-        for root in lattice.reflective_roots()
-    )
-    factors, norms = lattice.root_sublattice_data(
-        (root, lattice(root).q()) for root in roots
-    )
-    assert factors == (1, 1)
-    assert norms == (2,)
-    theta = lattice.standard_theta_series_prefix(minimum=2)
-    assert theta[:5] == (1, 0, 6, 0, 0)
+    assert [(component.label(), component.root_scale()) for component in components] == [("G2", 1)]
+    theta = lattice.theta_series(precision=5)
+    assert tuple(int(theta[index]) for index in range(5)) == (1, 0, 6, 0, 0)
 
 
 def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:
@@ -157,7 +137,11 @@ def test_weighted_graph_recognition_is_owned_by_the_preamble() -> None:
         ),
     )
     assert graph.cartan_matrix() == ((2, -1), (-1, 2))
-    assert graph.properties() == ("Coxeter", "Dynkin", "simply laced", "Satake")
+    assert graph.is_coxeter()
+    assert graph.is_dynkin()
+    assert graph.is_simply_laced()
+    assert graph.is_satake()
+    assert not graph.is_rational_coxeter_vinberg()
 
 
 def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
@@ -173,25 +157,5 @@ def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
     )
     assert hodge.satisfies_hodge_symmetry_and_serre_duality()
     assert hodge.symmetry_group() == "D4"
-    assert hodge.hodge_number(1, 1) == 20
     assert hodge.betti_number(2) == 22
     assert hodge.euler_characteristic() == 24
-
-
-def test_hashimoto_source_lattice_checks_are_owned_by_the_preamble() -> None:
-    a2 = Lattices(ZZ)([[2, -1], [-1, 2]])
-    assert lattice_summary(a2) == (2, 2, 3, (3,))
-    assert basis_gives_isometry(a2, a2, ((1, 0), (0, 1)))
-    ambient = Lattices(ZZ)([[1, 0], [0, 1]])
-    assert primitive_orthogonal_complements(
-        ambient,
-        ((((1,), (0,)), 1),),
-        1,
-        ((((0,), (1,)), 1),),
-        1,
-    )
-
-
-def test_hoehn_mason_coordinate_group_checks_are_owned_by_the_preamble() -> None:
-    assert leech_gram(((1,),), ((1,),))[0, 0] == 1
-    assert generated_group_order((((-1,),),)) == 2

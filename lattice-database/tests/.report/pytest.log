@@ -1,0 +1,6 @@
+DEBUG    dzack_research.preamble.categories.modules.general_modules:general_modules.py:363 General module over Real Field retains an Unknown module-law hypothesis
+DEBUG    dzack_research.preamble.categories.modules.module_morphisms.module_morphisms:module_morphisms.py:483 Elementwise module morphism Module over Real Field on Classes in the multilinear tensor presentation -> Lebesgue direct sum over Nonnegative extended real numbers accepted without exhaustive linearity verification; the source is not represented as finite
+DEBUG    dzack_research.preamble.categories.modules.general_modules:general_modules.py:363 General module over Real Field retains an Unknown module-law hypothesis
+DEBUG    dzack_research.preamble.categories.modules.general_modules:general_modules.py:363 General module over Real Field retains an Unknown module-law hypothesis
+DEBUG    dzack_research.preamble.categories.modules.module_morphisms.module_morphisms:module_morphisms.py:483 Elementwise module morphism Module over Real Field on Classes in the multilinear tensor presentation -> L^1(R), modulo almost-everywhere equality accepted without exhaustive linearity verification; the source is not represented as finite
+DEBUG    dzack_research.preamble.categories.modules.general_modules:general_modules.py:363 General module over Real Field retains an Unknown module-law hypothesis
