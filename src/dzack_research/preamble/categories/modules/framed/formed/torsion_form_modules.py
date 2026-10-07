@@ -63,6 +63,7 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_row_family_gram,
     tensor,
 )
+from dzack_research.preamble.validation import validator
 
 
 def _gram_rows(gram, rank):
@@ -145,16 +146,27 @@ def _quadratic_descends(relation_images, gram, value_module) -> bool:
 class TorsionFormIsometry(CategoricalIsomorphism):
     r"""An explicit isomorphism of finite framed torsion modules preserving a form."""
 
-    def __init__(self, parent, forward, inverse, *, quadratic: bool) -> None:
+    def __init__(self, parent, forward, inverse, *, quadratic: bool, check: bool = False) -> None:
+        r"""Store the mutually inverse module maps and the form flavour (``OWN-22``).
+
+        ``check=True``, or strict checking, runs the validators
+        :meth:`validate_inverse` and :meth:`validate_form_preservation`.
+        """
         super().__init__(parent, forward, inverse, verify=False)
         self._quadratic = bool(quadratic)
+        self.validate_inverse(check=check)
+        self.validate_form_preservation(check=check)
+
+    @validator
+    def validate_inverse(self) -> None:
+        r"""Check that the stored inverse composes to the identity on both sides, on the selected generators."""
+        forward = self.forward()
+        inverse = self.inverse_morphism()
         source = self.domain()
         target = self.codomain()
-        source_generators = tuple(source.module_generators())
-        target_generators = tuple(target.module_generators())
         if any(
             inverse(forward(generator)) != generator
-            for generator in source_generators
+            for generator in source.module_generators()
         ):
             raise ValueError(
                 f"{inverse} is not a left inverse of {forward}: their composition "
@@ -162,13 +174,20 @@ class TorsionFormIsometry(CategoricalIsomorphism):
             )
         if any(
             forward(inverse(generator)) != generator
-            for generator in target_generators
+            for generator in target.module_generators()
         ):
             raise ValueError(
                 f"{inverse} is not a right inverse of {forward}: their composition "
                 f"does not fix every selected generator of {target}"
             )
-        generators = source_generators
+
+    @validator
+    def validate_form_preservation(self) -> None:
+        r"""Check that the forward map preserves ``q`` (quadratic) or ``b`` (bilinear) on generator probes."""
+        forward = self.forward()
+        source = self.domain()
+        target = self.codomain()
+        generators = tuple(source.module_generators())
         if self._quadratic:
             probes = generators + tuple(
                 left + right
@@ -1194,27 +1213,27 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         """
         return self._from_engine(self._engine_group()(engine_matrix))
 
-    def _from_engine(self, engine_automorphism):
-        engine_automorphism = self._engine_group()(engine_automorphism)
+    def _transported_map(self, engine_automorphism):
+        r"""Return ``n^{-1} a n`` on the form, for the normalization ``n`` and engine automorphism ``a``."""
         normalization = self.normalization_isometry()
-        normalized_forward = self._normalized_map(engine_automorphism)
-
+        normalized = self._normalized_map(engine_automorphism)
         original = normalization.domain()
-        forward = original.module_category().Mor(original, original)(
+        return original.module_category().Mor(original, original)(
             {
                 label: normalization.inverse()(
-                    normalized_forward(
-                        normalization.forward()(original.module_generator(label))
-                    )
+                    normalized(normalization.forward()(original.module_generator(label)))
                 )
                 for label in original.module_generating_set()
             }
         )
-        inverse = forward.inverse()
+
+    def _from_engine(self, engine_automorphism):
+        r"""Raise one engine automorphism ``a``; its inverse is the transport of ``a^{-1}``."""
+        engine_automorphism = self._engine_group()(engine_automorphism)
         return self.element_class(
             self,
-            forward,
-            inverse,
+            self._transported_map(engine_automorphism),
+            self._transported_map(engine_automorphism.inverse()),
             engine_automorphism,
         )
 
