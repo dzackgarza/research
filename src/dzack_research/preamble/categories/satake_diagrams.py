@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.validation import validator
 
 
 def _engine_cartan_entry(diagram, left, right):
@@ -128,7 +129,7 @@ class SatakeDiagrams(OwnedCategory):
         return self(diagram, (), diagram.Mor(diagram)((second, first)))
 
     def _call_(self, diagram, black_nodes, involution):
-        return _object_of(
+        satake = _object_of(
             self,
             coxeter_matrix=diagram._engine_coxeter_matrix(),
             names=diagram.vertex_names(),
@@ -138,6 +139,8 @@ class SatakeDiagrams(OwnedCategory):
             black_nodes=finite_ordered_set(tuple(black_nodes)),
             involution=involution,
         )
+        satake.validate_admissibility(check=False)
+        return satake
 
     class ParentMethods:
         def __init__(self, dynkin_diagram, black_nodes, involution, **rest) -> None:
@@ -194,14 +197,16 @@ class SatakeDiagrams(OwnedCategory):
                 if vertex not in self._black_nodes and tau(vertex) == vertex
             )
 
+        @validator
         def validate_admissibility(self) -> None:
-            r"""Assert that \((X,\tau)\) is admissible (Kolb, 2014, Definition 2.3; Araki, 1962)."""
-            assert self.is_admissible(), (
-                f"{self} is not a Satake diagram: its black nodes {self._black_nodes} and "
-                f"involution {self._involution} are not an admissible pair, which needs X of "
-                f"finite type, tau a Cartan-matrix automorphism with tau(X) = X and tau^2 = id, "
-                f"tau = -w_X on X, and alpha_j(rho_X^vee) integral at every tau-fixed white node j"
-            )
+            r"""Check that \((X,\tau)\) is admissible (Kolb, 2014, Definition 2.3; Araki, 1962)."""
+            if not self.is_admissible():
+                raise ValueError(
+                    f"{self} is not a Satake diagram: its black nodes {self._black_nodes} and "
+                    f"involution {self._involution} are not an admissible pair, which needs X of "
+                    f"finite type, tau a Cartan-matrix automorphism with tau(X) = X and tau^2 = id, "
+                    f"tau = -w_X on X, and alpha_j(rho_X^vee) integral at every tau-fixed white node j"
+                )
 
 
 __all__ = ["SatakeDiagrams"]

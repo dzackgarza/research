@@ -57,6 +57,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.validation import validator
 
 
 def _projective_line_over(base_ring):
@@ -259,8 +260,9 @@ class VinbergInvariantMatrices(OwnedCategory):
             )
             return self._root_gram
 
+        @validator
         def validate_mirror_normals(self) -> None:
-            r"""Assert that every stated normal is the normal of a mirror.
+            r"""Check that every stated normal is the normal of a mirror.
 
             The normal of a mirror is not isotropic, so every diagonal entry
             \(q(r_v)\) of the Gram tensor is nonzero.  This is the validator of
@@ -268,11 +270,12 @@ class VinbergInvariantMatrices(OwnedCategory):
             """
             gram = self.root_gram_tensor()
             squares = tuple(gram[i, i] for i in range(gram.tensor_shape()[0]))
-            assert all(square != 0 for square in squares), (
-                f"the Gram tensor {gram} of {self} is not the Gram tensor of the normals "
-                f"of a family of mirrors: its diagonal {squares} has a zero, and the "
-                f"normal of a mirror is not isotropic"
-            )
+            if any(square == 0 for square in squares):
+                raise ValueError(
+                    f"the Gram tensor {gram} of {self} is not the Gram tensor of the normals "
+                    f"of a family of mirrors: its diagonal {squares} has a zero, and the "
+                    f"normal of a mirror is not isotropic"
+                )
 
         def is_acute_angled_hyperbolic_polytope_gram(self) -> bool:
             r"""Return whether the normals are the walls of an acute-angled hyperbolic polytope.
@@ -310,14 +313,16 @@ class VinbergInvariantMatrices(OwnedCategory):
                 and signature.first() + signature.second() == walls
             )
 
+        @validator
         def validate_acute_angled_hyperbolic_polytope_gram(self) -> None:
-            r"""Assert :meth:`is_acute_angled_hyperbolic_polytope_gram`."""
-            assert self.is_acute_angled_hyperbolic_polytope_gram(), (
-                f"the Gram tensor {self.root_gram_tensor()} of {self} is not the Gram "
-                f"tensor of the walls of an acute-angled hyperbolic Coxeter polytope: "
-                f"that needs at least three walls, positive norms, nonpositive "
-                f"off-diagonal entries and signature (n - 1, 1, 0)"
-            )
+            r"""Check :meth:`is_acute_angled_hyperbolic_polytope_gram`."""
+            if not self.is_acute_angled_hyperbolic_polytope_gram():
+                raise ValueError(
+                    f"the Gram tensor {self.root_gram_tensor()} of {self} is not the Gram "
+                    f"tensor of the walls of an acute-angled hyperbolic Coxeter polytope: "
+                    f"that needs at least three walls, positive norms, nonpositive "
+                    f"off-diagonal entries and signature (n - 1, 1, 0)"
+                )
 
         def _positions(self, left, right):
             ranking = self._index_set.ranking_map()
@@ -536,13 +541,15 @@ class VinbergInvariantMatrices(OwnedCategory):
         if index_set is None:
             index_set = range(rank)
         squares = [gram[i, i] for i in range(rank)]
-        return _vinberg_invariant_matrix(
+        matrix = _vinberg_invariant_matrix(
             gram.base_ring(),
             tuple(index_set),
             [[4 * gram[i, j] ** 2 for j in range(rank)] for i in range(rank)],
             [[squares[i] * squares[j] for j in range(rank)] for i in range(rank)],
             gram,
         )
+        matrix.validate_mirror_normals(check=False)
+        return matrix
 
     def from_coxeter_diagram(self, diagram):
         r"""Return the invariant matrix of a Coxeter diagram.

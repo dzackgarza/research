@@ -205,7 +205,7 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
     invalid_satake["edges"] = invalid_satake["edges"][:1]
     inadmissible = WeightedGraph.model_validate(invalid_satake)
     assert inadmissible.properties() == ("Coxeter", "Dynkin", "simply laced")
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         inadmissible.satake_diagram().validate_admissibility()
     arbitrary = WeightedGraph.model_validate(
         {
