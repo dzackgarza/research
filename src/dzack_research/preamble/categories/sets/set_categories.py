@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
@@ -562,15 +563,29 @@ class OwnedSetMorphism(SetMorphism):
         The right operand is arbitrary, which is Python's binary-operator
         protocol: like ``__eq__``, this decides about anything and answers
         ``NotImplemented`` for what is not a composable arrow.
+
+        This root host routes ``*`` to ``_composition``, Sage's ``Map``
+        composition protocol, so the most specific arrow type on the Mor
+        composes: a composite of two group homomorphisms is a group
+        homomorphism of the composite's endpoints.
         """
         if not isinstance(other, Morphism) or other.codomain() is not self.domain():
             return NotImplemented
-        mor = Sets().Mor(other.domain(), self.codomain())
-        if self.domain() is self.codomain() and self is self.parent().identity() and other.parent() is mor:
-            return other
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        return mor(lambda element: self(other(element)))
+        return self._composition(other)
+
+    def _composition(self, right):
+        r"""``self ∘ right`` as a map of sets, ``x |-> self(right(x))``.
+
+        An arrow type with more structure overrides this, and passes a right
+        factor outside its own category here: the composite of a structured
+        map with a set map is a set map.
+        """
+        mor = Sets().Mor(right.domain(), self.codomain())
+        if self.domain() is self.codomain() and self is self.parent().identity() and right.parent() is mor:
+            return right
+        return mor(lambda element: self(right(element)))
 
 
 class SetMorCategory(CategoricalMor):
@@ -1423,12 +1438,24 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             r"""Whether the candidate belongs to this represented set."""
             return element in self
 
+        @RealizationHook
         def _finiteness_decision(self):
-            r"""Protected computation of finiteness when placement does not decide it."""
+            r"""Protected computation of finiteness when placement does not decide it.
+
+            ``is_finite`` is the only caller.  A realization or a more specific
+            category supplies the answer; ``Unknown`` here means undecided.
+            """
             return Unknown
 
+        @RealizationHook
         def _cardinality_decision(self):
-            r"""Protected exact cardinality supplied by a construction-specific realization."""
+            r"""Protected exact cardinality supplied by a construction-specific realization.
+
+            ``cardinality`` is the only caller.  A realization or a more
+            specific category supplies the answer as a cardinal; ``Unknown``
+            here means undecided, and ``cardinality`` then reads the standard
+            set constructions.
+            """
             return Unknown
 
         def is_finite(self):

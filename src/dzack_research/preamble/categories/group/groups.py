@@ -1170,6 +1170,24 @@ def _finite_if_bounded_by(group):
             return ()
 
 
+def _group_mor_placement(domain, codomain, *categories):
+    r"""The placement of ``Mor(G, H)``, the homomorphisms ``G -> H``, at construction.
+
+    A homomorphism ``G -> H`` is a function ``G -> H``, so ``Mor(G, H)`` is a
+    subset of ``H^G``: a set, and a finite set of at most ``|H|^|G|``
+    elements when ``G`` and ``H`` are finite.  ``Mor(G, G)`` is a monoid under
+    composition.  No homomorphism is counted here; the cardinality is
+    computed when it is asked.
+    """
+    match domain, codomain:
+        case _ if domain in OwnedFiniteGroups() and codomain in OwnedFiniteGroups():
+            sets = FiniteSets()
+        case _:
+            sets = Sets()
+    monoids = (Monoids(),) if domain is codomain else ()
+    return Cat().meet((sets, *monoids, *categories))
+
+
 @cached_function(
     key=lambda group, refinements, description, free_basis, presentation_source_group: (
         id(group),
@@ -1860,12 +1878,12 @@ class IndexedFreeGroupMorphism:
     def _composition(self, right):
         r"""``self ∘ right`` for a group morphism ``right`` out of a free group, read on its basis.
 
-        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
-        morphism's domain.
+        The root arrow host has checked that ``right`` is a map into this
+        morphism's domain; a map outside the group Mor composes one level up.
         """
         source = right.domain()
         if source not in GroupsWithChosenFreeBasis() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
-            return NotImplemented
+            return super()._composition(right)
         return source.Mor(self.codomain())(
             Sets().Mor(source.free_basis(), self.codomain())(
                 lambda index: self(right(source.free_generator(index)))
@@ -1898,13 +1916,12 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = IndexedFreeGroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        category = Monoids() if domain is codomain else None
         CategoricalMor.__init__(
             self,
             mor_family,
             domain,
             codomain,
-            category=category,
+            category=_group_mor_placement(domain, codomain),
         )
         realize_owned_category(self)
 
@@ -2101,12 +2118,12 @@ class GroupMorphism:
     def _composition(self, right):
         r"""``self ∘ right`` for a group morphism ``right``, computed on the generators of its source.
 
-        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
-        morphism's domain; a map outside the group Mor is not composed here.
+        The root arrow host has checked that ``right`` is a map into this
+        morphism's domain; a map outside the group Mor composes one level up.
         """
         source = right.domain()
         if source not in OwnedGroups() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
-            return NotImplemented
+            return super()._composition(right)
         if source in GroupsWithChosenFreeBasis():
             return right.postcompose(self)
         if source.has_selected_group_resolution():
@@ -2226,17 +2243,14 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return typecall(cls, family, domain, codomain)
 
     def __init__(self, mor_family, domain, codomain, *, category=None):
-        placement = []
-        if domain is codomain:
-            placement.append(Monoids())
-        if category is not None:
-            placement.append(category)
         CategoricalMor.__init__(
             self,
             mor_family,
             domain,
             codomain,
-            category=Cat().meet(tuple(placement)) if placement else None,
+            category=_group_mor_placement(
+                domain, codomain, *(() if category is None else (category,))
+            ),
         )
 
     @cached_method
@@ -2529,9 +2543,8 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = GroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        category = Monoids() if domain is codomain else None
         CategoricalMor.__init__(
-            self, mor_family, domain, codomain, category=category
+            self, mor_family, domain, codomain, category=_group_mor_placement(domain, codomain)
         )
 
     def _element_constructor_(self, datum):

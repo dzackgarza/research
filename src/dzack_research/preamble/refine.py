@@ -2,15 +2,17 @@
 
 Sage's ``_refine_category_`` joins categories but leaves the concrete class
 before category methods in the MRO.  For an owned parent, this helper rebuilds
-its dispatch class so owned category methods win; an abstract contract of the
-category is fulfilled by the implementation the object already has.  Adoption of Sage parents is
+its dispatch class so owned category methods win; an abstract contract or a
+realization hook of the category is fulfilled by the implementation the object
+already has.  Adoption of Sage parents is
 not performed here: free modules, groups, rings and other adopted objects enter
 through owned facades that hold the Sage parent as a private engine.
 """
 
 import inspect
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
+from functools import update_wrapper
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
@@ -60,27 +62,57 @@ def _owned_mixins(category: Category, attr: str) -> tuple[type, ...]:
     return tuple(providers)
 
 
-def _supply_abstract_contracts(new_class: type, mixins: tuple[type, ...], inherited: type) -> None:
-    """Let an implementation the object already has fulfil each abstract contract it reaches.
+class RealizationHook:
+    r"""A protected decision procedure that a realization of the category may supply.
+
+    The owner is the category whose ``ParentMethods`` declares the hook; the
+    hook's body there is the undecided answer (``Unknown``), and the public
+    operation of that category is its only caller.  A realization whose
+    construction determines the answer (``Mor(G, H)`` of finite groups counts
+    its homomorphisms) supplies the hook on its own class; a more specific
+    category supplies it on its ``ParentMethods``.  The public operation
+    cannot be overridden for this, because it also owns every standard case
+    the realization does not decide.
+
+    :func:`_rebuild_parent_class` puts the category's method classes before
+    the realization, so the undecided default would shadow the realization's
+    answer.  A hook declared with this marker is therefore resolved like an
+    abstract contract (:func:`_supply_participant_implementations`): the
+    implementation the realization already has wins over the default.
+    """
+
+    def __init__(self, default: Callable) -> None:
+        self._default = default
+        update_wrapper(self, default)
+
+    def __get__(self, instance, owner=None):
+        return self._default.__get__(instance, owner)
+
+
+def _supply_participant_implementations(new_class: type, mixins: tuple[type, ...], inherited: type) -> None:
+    """Let an implementation the object already has fulfil each contract and hook it reaches.
 
     The rebuilt class puts the owned methods of the category before the
     class they refine, so a category operation wins over a class method of
     the same name.  An ``abstract_method`` is not an operation: it states that
-    a participant of the category supplies one (``STY-48``).  When the
-    winner for a name is such a contract and ``inherited`` already resolves
-    that name to a preamble implementation, that implementation is the
-    participant's answer, and it is aliased onto ``new_class`` ahead of the
-    contract.  An implementation defined outside the preamble, by a Sage host
-    class, does not fulfil an owned contract.
+    a participant of the category supplies one (``STY-48``).  A
+    :class:`RealizationHook` is not one either: its body is the answer when
+    no participant decides.  When the winner for a name is such a contract
+    or hook and ``inherited`` already resolves that name to a preamble
+    implementation, that implementation is the participant's answer, and it
+    is aliased onto ``new_class`` ahead of the contract.  An implementation
+    defined outside the preamble, by a Sage host class, does not fulfil an
+    owned contract.
     """
+    declarations = (AbstractMethod, RealizationHook)
     contracts = {
         name
         for provider in mixins
         for name, value in vars(provider).items()
-        if isinstance(value, AbstractMethod)
+        if isinstance(value, declarations)
     }
     for name in contracts:
-        if not isinstance(inspect.getattr_static(new_class, name), AbstractMethod):
+        if not isinstance(inspect.getattr_static(new_class, name), declarations):
             continue
         definer = next(
             (klass for klass in inherited.__mro__ if name in vars(klass)),
@@ -89,7 +121,7 @@ def _supply_abstract_contracts(new_class: type, mixins: tuple[type, ...], inheri
         if definer is None or not definer.__module__.startswith(_PREAMBLE_PACKAGE):
             continue
         supplied = vars(definer)[name]
-        if isinstance(supplied, AbstractMethod):
+        if isinstance(supplied, declarations):
             continue
         setattr(new_class, name, supplied)
 
@@ -136,7 +168,7 @@ def _rebuild_parent_class(parent: Parent, category: Category) -> None:
     )
     for name, value in preferred.items():
         setattr(new_class, name, value)
-    _supply_abstract_contracts(new_class, mixins, inherited)
+    _supply_participant_implementations(new_class, mixins, inherited)
     new_class._preamble_concrete = concrete
     new_class._preamble_inherited = inherited
     parent.__class__ = new_class
@@ -164,7 +196,7 @@ def _rebuild_element_class(parent: Parent, category: Category) -> None:
         (*mixins, native),
         doccls=native,
     )
-    _supply_abstract_contracts(element_class, mixins, native)
+    _supply_participant_implementations(element_class, mixins, native)
     parent.element_class = element_class
 
 
@@ -183,7 +215,7 @@ def _rebuild_morphism_class(morphism: Morphism, category: Category) -> None:
         (*mixins, inherited),
         doccls=concrete,
     )
-    _supply_abstract_contracts(new_class, mixins, inherited)
+    _supply_participant_implementations(new_class, mixins, inherited)
     new_class._preamble_concrete = concrete
     new_class._preamble_inherited = inherited
     morphism.__class__ = new_class
