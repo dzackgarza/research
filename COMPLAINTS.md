@@ -252,6 +252,33 @@ Magma's documented real-reflection/reflection-subgroup APIs were inspected.
 No exact backend was found for either missing construction. Repair requires
 the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
+### A Vinberg invariant is not yet a point of the projective line
+
+The Vinberg invariant of two mirrors is the point
+`[4 b(r,s)^2 : q(r) q(s)]` of `P^1`, and an `R`-point of `P^1_R` is a
+morphism `Spec R -> P^1_R` (Vinberg, *Hyperbolic reflection groups*, 1985,
+section 1). `VinbergInvariantMatrices.vinberg_invariant`
+(`categories/vinberg_invariants.py`) asks the owned scheme
+`ProjectiveSpaces(R)(1)` to accept the pair `[numerator, denominator]`, and
+that scheme has no element constructor: the call raises `AttributeError`
+for `_element_constructor_`. So `vinberg_invariant`, `vertex_label`,
+`edge_label` and `weighted_graph` fail on every invariant matrix, while
+`vinberg_ratio` (the dehomogenized value) works.
+**Dependency path:** owned `ProjectiveSpaces(R)(n)` -> its `R`-points as
+`Mor(Spec R, P^n_R)` -> the Vinberg invariant -> the labelled graph of
+mirrors. `Schemes(R).projective_morphism_from_coordinates` builds such a
+morphism from a basepoint-free coordinate family; over `ZZ` the pair
+`(4 b^2, q(r) q(s))` need not generate the unit ideal (`(4, 4)` for two
+roots of square `-2` with product `1`), so the point is that of the
+primitive pair, which exists because `P^1(ZZ) = P^1(QQ)`.
+**Consumers:** `VinbergInvariantMatrices.vinberg_invariant`, its graph
+labels and `weighted_graph`; the lattice-db graph cards that read them.
+**Coverage boundary:** the scheme route was not executed on 2026-10-07:
+`Spec ZZ.projective_morphism_from_coordinates` failed earlier, in
+`_restriction_to_base`, with `RngMorphism.__init__() got an unexpected
+keyword argument 'evaluator'` from the module-morphism construction.
+Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
