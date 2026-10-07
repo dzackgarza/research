@@ -14,7 +14,6 @@ import logging
 import operator
 
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -31,6 +30,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Set,
 )
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of
 
 _LOGGER = logging.getLogger(__name__)
@@ -187,10 +187,11 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
             ``True`` means the laws were either supplied by the defining ring
             morphism ``rho : R -> End(A)`` or exhaustively decided on the
-            represented finite data.  ``Unknown`` means an elementwise
-            operation presentation retains the module laws as its defining
-            hypothesis because the represented data do not supply an exact
-            decision procedure.
+            represented finite data.  The proposition
+            ``satisfies_module_laws(A)`` means an elementwise operation
+            presentation retains the module laws as its defining hypothesis
+            because the represented data do not supply an exact decision
+            procedure.
             """
             return self._module_laws_decision
 
@@ -228,13 +229,11 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self.underlying_set().cardinality()
 
         def _finiteness_decision(self):
-            r"""Whether the underlying set is placed as finite: ``True``, ``False`` or ``Unknown``.
+            r"""Whether the underlying set is placed as finite: ``True``, ``False`` or the proposition ``is_finite``.
 
             Read from placement rather than from ``cardinality``, which asserts
             where no cardinality of the underlying set is represented.
             """
-            from sage.misc.unknown import Unknown
-
             from dzack_research.preamble.categories.sets.set_categories import Sets
 
             underlying = self.underlying_set()
@@ -244,7 +243,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 case _ if underlying in Sets().Infinite():
                     return False
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_finite", self)
 
         def _element_constructor_(self, value):
             r"""Read foreign data as an element of the underlying set.
@@ -352,24 +351,25 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             laws already carried by that datum.  For raw operations, a finite
             underlying set decides the additive laws exactly and an enumerable
             finite scalar ring decides the remaining module laws exactly.
-            Outside those regimes the object explicitly retains ``Unknown`` as
-            the module-law hypothesis rather than silently promoting it to a
+            Outside those regimes the decision is the proposition
+            ``satisfies_module_laws(A)`` rather than a silent promotion to a
             theorem.
             """
             if self._rho is not None:
                 return True
+            undecided = AtomicProposition("satisfies_module_laws", self)
             if self.underlying_set() not in FiniteSets():
                 _LOGGER.debug(
-                    "General module over %s retains an Unknown module-law hypothesis",
+                    "General module over %s retains its module laws as an undecided proposition",
                     self.base_ring(),
                 )
-                return Unknown
+                return undecided
             if self.underlying_set() not in EnumeratedSets():
                 _LOGGER.debug(
-                    "Finite general module over %s retains an Unknown module-law hypothesis; its underlying set has no selected enumeration",
+                    "Finite general module over %s retains its module laws as an undecided proposition; its underlying set has no selected enumeration",
                     self.base_ring(),
                 )
-                return Unknown
+                return undecided
             elements = tuple(self)
 
             zero = self.zero()
@@ -398,11 +398,11 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             if scalars is None:
                 _LOGGER.debug(
                     "Additive group laws for the finite set %s were exhaustively checked, but "
-                    "scalar-module laws over non-enumerated %s remain an Unknown hypothesis",
+                    "scalar-module laws over non-enumerated %s remain an undecided proposition",
                     self.underlying_set(),
                     self.base_ring(),
                 )
-                return Unknown
+                return undecided
 
             one = self.base_ring().one()
             zero_scalar = self.base_ring().zero()

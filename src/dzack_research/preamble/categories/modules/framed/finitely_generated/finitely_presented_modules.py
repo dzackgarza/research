@@ -11,7 +11,6 @@ and every Smith-form computation is an explicit crossing into it.
 from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
 from sage.misc.repr import repr_lincomb
-from sage.misc.unknown import Unknown
 from sage.all import PolynomialRing as _SagePolynomialRing
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
@@ -64,6 +63,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     SetInclusion,
     Sets,
 )
+from dzack_research.preamble.logic import AtomicProposition, negation
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -1175,8 +1175,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             zero.  A localization answers through the localization of its
             numerator module.  Over any other ring ``M = coker(F_1 -> F_0)``
             vanishes exactly when every chosen generator is zero, which is
-            relation membership in the free cover; that answer is ``Unknown``
-            where the ring decides no such membership.
+            relation membership in the free cover; that answer is the
+            proposition ``is_zero(M)`` where the ring decides no such membership.
             """
             ring = self.base_ring()
             match ring:
@@ -1196,7 +1196,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                         return False
                     if all(status is True for status in statuses):
                         return True
-                    return Unknown
+                    return AtomicProposition("is_zero", self)
 
         def cardinality(self):
             r"""Return ``|M|`` from the base cardinal and the invariant-factor decomposition.
@@ -1782,8 +1782,9 @@ class _GeneralPresentedElement(ModuleElement):
             return NotImplemented
         if not isinstance(other, _GeneralPresentedElement) or other.parent() is not self.parent():
             return op == op_NE
-        equal = self.parent()._relation_contains(self._lift - other._lift)
-        return equal if op == op_EQ else (Unknown if equal is Unknown else not equal)
+        contained = self.parent()._relation_contains(self._lift - other._lift)
+        equal = AtomicProposition("equal", self, other) if contained is None else contained
+        return equal if op == op_EQ else negation(equal)
 
     def __hash__(self):
         parent = self.parent()
@@ -2006,7 +2007,8 @@ class _GeneralPresentedModule:
         )
         return _singular_module_lift(relations, requested) is not None
 
-    def _relation_contains(self, vector) -> bool:
+    def _relation_contains(self, vector) -> bool | None:
+        r"""Decide membership of ``vector`` in the relation submodule; ``None`` where no procedure decides it."""
         if vector == self._free_module.zero():
             return True
         if self._relation_submodule is None:
@@ -2021,7 +2023,7 @@ class _GeneralPresentedModule:
                     else coordinates(label) in ring.ideal(scalar)
                     for label, scalar in zip(labels, diagonal, strict=True)
                 )
-            return Unknown
+            return None
         lifted_backend = self._lifted_relation_backend()
         if lifted_backend is None:
             polynomial_contains = self._singular_polynomial_relation_contains(vector)
@@ -2838,7 +2840,7 @@ def _presented_module_from_morphism(
     added_images = tuple(added_image(source_label) for source_label in added_labels)
     relation_images = existing_images + added_images
 
-    torsion_decision = Unknown
+    torsion_decision = None
     match base_ring in PrincipalIdealDomains():
         case True:
             # The cokernel is torsion exactly when the relation morphism

@@ -7,7 +7,6 @@ from itertools import product
 
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -39,6 +38,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.validation import validator
 
 _LOGGER = logging.getLogger(__name__)
@@ -217,7 +217,7 @@ class ModuleMorphismMethods:
                     parent,
                     scalar_map,
                     evaluator=self._call_,
-                    linearity_decision=Unknown,
+                    linearity_decision=None,
                 )
             case _:
                 super().__init__(parent, self._call_)
@@ -462,7 +462,7 @@ class ModuleMorphismMethods:
 
     @cached_method
     def linearity_decision(self):
-        r"""Return ``True`` when linearity is established, otherwise ``Unknown``.
+        r"""Return ``True`` when linearity is established, otherwise the proposition ``is_linear(f)``.
 
         Computed on the first request, not at construction (``OWN-22``).  A
         computation that refutes linearity raises ``ValueError`` naming the
@@ -500,9 +500,9 @@ class ModuleMorphismMethods:
         verification, and the scalars an additive map commutes with form a
         subring, so a ring generating set decides scalar-linearity over all of
         ``R``.  Over ``ZZ`` that generating set is empty: every additive-group
-        map is automatically ``ZZ``-linear.  Outside such regimes the callable
-        retains an ``Unknown`` linearity hypothesis; a DEBUG diagnostic records
-        that no exhaustive verification was available.
+        map is automatically ``ZZ``-linear.  Outside such regimes the linearity decision is the
+        proposition ``is_linear(f)``; a DEBUG diagnostic records that no
+        exhaustive verification was available.
 
         A map given by images of a framing is not reached here at all.  Its
         linear extension is linear by construction, and the relations of the
@@ -530,7 +530,7 @@ class ModuleMorphismMethods:
                     domain,
                     codomain,
                 )
-                return Unknown
+                return AtomicProposition("is_linear", self)
             case _ if domain in EnumeratedSets() or domain in Modules(ring).FinitelyPresented().Torsion():
                 return self._verify_elementwise_on_finite_source(tuple(domain))
             case _:
@@ -540,7 +540,7 @@ class ModuleMorphismMethods:
                     domain,
                     codomain,
                 )
-                return Unknown
+                return AtomicProposition("is_linear", self)
 
     def _refute_elementwise_linearity_on_selected_generators(self) -> None:
         r"""Reject witnessed law failures without promoting finite probes to a proof.
@@ -549,7 +549,7 @@ class ModuleMorphismMethods:
         module.  It does, however, supply sound counterexamples when additivity
         already fails on two selected generators, or scalar-linearity fails on
         a represented ring generator and one selected module generator.  Passing
-        these probes leaves the decision ``Unknown``.
+        these probes leaves linearity undecided.
         """
         generators = _finite_generating_elements(self.domain())
         if generators is None:
@@ -625,20 +625,21 @@ class ModuleMorphismMethods:
         codomain = self.codomain()
         ring = domain.base_ring()
         zero = domain.zero()
+        undecided = AtomicProposition("is_linear", self)
 
         decision = True
         zero_holds = function(zero) == codomain.zero()
         if zero_holds is False:
             raise ValueError(f"the given map {domain} -> {codomain} is not linear: it sends 0 to {function(zero)}, not to 0")
         if zero_holds is not True:
-            decision = Unknown
+            decision = undecided
         for left in source_elements:
             for right in source_elements:
                 additive = function(left + right) == function(left) + function(right)
                 if additive is False:
                     raise ValueError(f"the given map {domain} -> {codomain} is not additive: f(x + y) != f(x) + f(y) for x = {left}, y = {right}")
                 if additive is not True:
-                    decision = Unknown
+                    decision = undecided
 
         from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -655,7 +656,7 @@ class ModuleMorphismMethods:
                 codomain,
                 ring,
             )
-            return Unknown
+            return undecided
         for scalar in scalars:
             for element in source_elements:
                 scalar_linear = (
@@ -665,15 +666,14 @@ class ModuleMorphismMethods:
                 if scalar_linear is False:
                     raise ValueError(f"the given map {domain} -> {codomain} is not {ring}-linear: f(r x) != r f(x) for r = {scalar}, x = {element}")
                 if scalar_linear is not True:
-                    decision = Unknown
+                    decision = undecided
         return decision
 
-    def _check_elementwise_zero(self):
-        r"""A linear map sends zero to zero."""
+    def _check_elementwise_zero(self) -> None:
+        r"""Refute linearity of a map that does not send zero to zero."""
         zero_holds = self._element_function(self.domain().zero()) == self.codomain().zero()
         if zero_holds is False:
             raise ValueError(f"the given map {self.domain()} -> {self.codomain()} is not linear: it does not send 0 to 0")
-        return True if zero_holds is True else Unknown
 
     def _check_selected_domain_relations(self):
         if self._element_function is not None:
@@ -686,8 +686,9 @@ class ModuleMorphismMethods:
         if domain in FramedFreeModules(domain.base_ring()):
             return True
         relations = domain._selected_relation_morphism()
+        undecided = AtomicProposition("is_linear", self)
         if relations is None:
-            return Unknown
+            return undecided
         zero = self.codomain().zero()
         decision = True
         for relation_label in relations.domain().module_generating_set():
@@ -699,7 +700,7 @@ class ModuleMorphismMethods:
             if relation_holds is False:
                 raise ValueError(f"the generator images do not define a linear map {domain} -> {self.codomain()}: the relation {relation} of {domain} is sent to {relation_image}, not to 0")
             if relation_holds is not True:
-                decision = Unknown
+                decision = undecided
         return decision
 
     def has_module_generator_images(self) -> bool:
@@ -750,7 +751,8 @@ class ModuleMorphismMethods:
     def _richcmp_(self, other, op):
         r"""Compare admitted linear maps on an available finite spanning family.
 
-        A missing finite family or undecided value comparison remains Unknown;
+        A missing finite family, an undecided value comparison, or a linearity
+        that is not established answers the proposition ``equal(f, g)``;
         neither failed normalization nor a finite sample disproves equality.
         """
         if op not in (op_EQ, op_NE):
@@ -764,9 +766,10 @@ class ModuleMorphismMethods:
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
+        undecided = AtomicProposition("equal", self, other)
         elements = _finite_generating_elements(self.domain())
         if elements is None:
-            return Unknown
+            return undecided if op == op_EQ else negation(undecided)
         comparisons = tuple(self(element) == other(element) for element in elements)
         established_linear = (
             self.linearity_decision() is True
@@ -782,8 +785,8 @@ class ModuleMorphismMethods:
             case (_, True, True):
                 equal = True
             case _:
-                equal = Unknown
-        return equal if op == op_EQ else (Unknown if equal is Unknown else not equal)
+                equal = undecided
+        return equal if op == op_EQ else negation(equal)
 
     def __hash__(self) -> int:
         # Equality is decided within one Mor, whatever class realizes each
@@ -1382,14 +1385,16 @@ class ModuleMorphismMethods:
         r"""Return whether absence reported by the selected lift is construction-derived.
 
         ``True`` with no selected lift, or when the lift's own construction
-        shows it is a section; otherwise ``Unknown``.  Asked on the first
-        request (``OWN-22``).
+        shows it is a section; otherwise the proposition that states it.
+        Asked on the first request (``OWN-22``).
         """
         match self._lift_function:
             case None:
                 return True
             case _:
-                return True if self._selected_lift_derivation() is True else Unknown
+                if self._selected_lift_derivation() is True:
+                    return True
+                return AtomicProposition("selected_lift_exactness_decision", self)
 
     def factor_through(self, target_embedding):
         r"""Return the unique factor through a represented module embedding.
@@ -1947,22 +1952,18 @@ class ModuleMorphismMethods:
 
 
 def _combined_linearity_decision(morphisms):
-    r"""Conjoin the linearity decisions of the morphisms of ``morphisms``."""
+    r"""Conjoin the linearity decisions of the morphisms of ``morphisms``.
+
+    An infinite family answers the proposition that every member is linear.
+    """
     match morphisms:
         case IndexedFamily():
             size = morphisms.cardinality()
             if not size.is_finite():
-                return Unknown
+                return AtomicProposition("are_linear", morphisms)
         case _:
             pass
-    decision = True
-    for morphism in morphisms:
-        current = morphism.linearity_decision()
-        if current is False:
-            return False
-        if current is not True:
-            decision = Unknown
-    return decision
+    return conjunction(morphism.linearity_decision() for morphism in morphisms)
 
 
 class ModuleMorphism(ModuleMorphismMethods, Morphism):
@@ -2551,8 +2552,8 @@ class _ModuleMorCommonMethods:
 
         Exact verification is performed when the represented source/scalar
         underlying sets make it decidable (notably finite ones).  Otherwise the
-        callable is retained with ``Unknown`` linearity and a DEBUG diagnostic
-        records that no decision procedure was available.  For finitely
+        linearity decision is the proposition ``is_linear(f)`` and a DEBUG
+        diagnostic records that no decision procedure was available.  For finitely
         generated/presented objects, prefer the
         generator-assignment constructor when possible: its linear extension
         is linear by construction and presentation relations are checked.
@@ -2870,8 +2871,9 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
     admission still rejects any selected tensor relation that those values do
     not kill.  A Python callable, however, does not establish that its values
     on arbitrary factor elements agree with that bilinear extension.  So the
-    linearity decision is ``Unknown``: agreement on the selected framing does
-    not decide bilinearity.
+    linearity is not decided by construction: agreement on the selected framing does
+    not decide bilinearity, and the linearity decision is the proposition
+    ``is_linear(f)``.
     """
 
     def __init__(self, parent, evaluation) -> None:
@@ -2895,9 +2897,9 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
 
     @cached_method
     def linearity_decision(self):
-        r"""Reject a selected tensor relation the values do not kill; otherwise return ``Unknown``."""
+        r"""Reject a selected tensor relation the values do not kill; otherwise return ``is_linear(f)``."""
         self._check_selected_domain_relations()
-        return Unknown
+        return AtomicProposition("is_linear", self)
 
     def __call__(self, *arguments):
         match len(arguments):
@@ -2963,7 +2965,7 @@ class ModuleAutomorphismMethods:
         if self is other:
             return op == op_EQ
         equal = self.forward() == other.forward()
-        return equal if op == op_EQ or equal is Unknown else not equal
+        return equal if op == op_EQ else negation(equal)
 
     def __hash__(self):
         return hash(id(self.parent()))
@@ -3078,7 +3080,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
         return self.domain()
 
     def _finiteness_decision(self):
-        r"""A finite module has finitely many automorphisms; otherwise this is not decided here.
+        r"""A finite module has finitely many automorphisms; otherwise answer the proposition ``is_finite``.
 
         An infinite module can have a finite automorphism group (``Aut_Z(Z)``
         has two elements), so finiteness of the module is sufficient and not
@@ -3088,7 +3090,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
             case True:
                 return True
             case _:
-                return Unknown
+                return AtomicProposition("is_finite", self)
 
     def super_categories(self):
         packet = self.base_category().category_packet()
