@@ -30,6 +30,7 @@ data are only a realization of the categorical action.
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -48,6 +49,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
 
 
@@ -999,6 +1001,76 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             r"""Return ``group_element . element``."""
             assert element in self, f"{element} is not an element of {self}"
             return self.action_of(group_element)(element)
+
+        @RealizationHook
+        def _orbit_relation_decision(self, source, target):
+            r"""Protected decision of ``target in G . source`` for two points of this object.
+
+            ``in_same_orbit`` is the only caller.  A realization or a more
+            specific category whose construction supplies a procedure
+            answers ``True`` or ``False``; ``Unknown`` here means that no
+            procedure decides the relation.
+            """
+            return Unknown
+
+        def in_same_orbit(self, source, target) -> bool:
+            r"""Whether some ``g`` in ``G`` carries ``source`` to ``target``.
+
+            This is the orbit relation: ``x ~ y`` exactly when
+            ``y in G . x``.  Its classes are the points of ``X/G``.  It is
+            decided by the procedure this object's construction supplies,
+            and assertion-gated where none is supplied.
+            """
+            assert source in self, f"{source} is not a point of {self}"
+            assert target in self, f"{target} is not a point of {self}"
+            decision = self._orbit_relation_decision(source, target)
+            assert decision is not Unknown, (
+                f"whether {target} lies in the orbit of {source} under {self.acting_group()} is "
+                f"defined, but no procedure supplied by {self} decides it"
+            )
+            return decision
+
+        @cached_method
+        def orbits(self):
+            r"""The orbit set ``X/G``, whose points are the orbits ``G . x``.
+
+            ``X/G`` is the coequalizer in ``Sets()`` of the action and the
+            projection ``G x X -> X`` (``CON-09``).  Its projection
+            ``X -> X/G`` sends a point to its orbit, and two orbits are
+            equal exactly when they meet.
+            """
+            from dzack_research.preamble.categories.group.g_sets import _orbit_set
+
+            category = self.underlying_category()
+            match category:
+                case _ if category is Sets():
+                    return _orbit_set(self)
+                case _:
+                    assert False, (
+                        f"the orbit object of {self} under {self.acting_group()} is a colimit "
+                        f"in {category}, and the preamble constructs it only for G-sets"
+                    )
+
+        def stabilizer(self, point):
+            r"""The subgroup ``G_point = {g in G : g.point = point}``.
+
+            This is a predicate subgroup of the acting group.  Membership is
+            exact from the represented action and does not require choosing
+            group generators for the stabilizer.
+            """
+            if point not in self:
+                raise ValueError(f"{point} is not a point of {self}")
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                StabilizerSubgroups,
+            )
+
+            group = self.acting_group()
+            return StabilizerSubgroups(group)(
+                point,
+                "pointwise",
+                lambda group_element: self.act(group_element, point) == point,
+                description=f"stabilizer of {point} in {self}",
+            )
 
         def restrict_action(self, group_morphism):
             r"""Return this object acted on by ``H`` through ``phi: H -> G``."""

@@ -3,6 +3,7 @@ r"""Owned categories for absolute Galois groups."""
 from sage.categories.finite_fields import FiniteFields
 from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -70,6 +71,65 @@ class AbsoluteGaloisGroups(OwnedCategory):
         def has_computed_group_generators(self) -> bool:
             r"""Whether an algebraic generating set has been materialized."""
             return False
+
+        def conjugate_subgroup(self, group_element, subgroup):
+            r"""Return ``g H g^-1``; for an open ``H = G_E`` it is ``G_{g(E)}``.
+
+            ``G_E`` fixes the image of the chosen embedding
+            ``iota : E -> Kbar``, so ``g G_E g^-1`` fixes the image of
+            ``g o iota``.  It is the open subgroup of the same ``K``-extension
+            ``E`` with that embedding into ``Kbar``.
+            """
+            assert group_element in self, f"{group_element} is not an element of {self}"
+            match subgroup:
+                case _ if subgroup in OpenAbsoluteGaloisSubgroups(self):
+                    field = subgroup.fixed_field()
+                    embedding = subgroup.embedding()
+                    conjugated = tuple(
+                        candidate
+                        for candidate in field.exact_embeddings(self.algebraic_closure())
+                        if all(
+                            candidate(generator) == group_element(embedding(generator))
+                            for generator in field.field_generators()
+                        )
+                    )
+                    assert conjugated, (
+                        f"{field} has no embedding into {self.algebraic_closure()} equal to "
+                        f"{group_element} composed with {embedding}"
+                    )
+                    return self.open_subgroup(
+                        self.extension_data(
+                            field,
+                            embedding=conjugated[0],
+                            base_embedding=subgroup.fixed_extension().base_embedding(),
+                        )
+                    )
+                case _:
+                    return super().conjugate_subgroup(group_element, subgroup)
+
+        def _subgroup_conjugacy_decision(self, left, right):
+            r"""Two open subgroups ``G_E`` and ``G_F`` are conjugate exactly when ``E`` and ``F`` are ``K``-isomorphic.
+
+            By Galois theory ``g G_E g^-1 = G_{g(E)}``, and every
+            ``K``-embedding ``E -> Kbar`` is ``g o iota`` for some ``g`` in
+            ``G_K``.  Other subgroups are undecided.
+            """
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+                _same_k_extension,
+            )
+
+            open_subgroups = OpenAbsoluteGaloisSubgroups(self)
+            match (left, right):
+                case _ if left in open_subgroups and right in open_subgroups:
+                    return _same_k_extension(
+                        self,
+                        left.fixed_field(),
+                        left.fixed_extension().base_embedding(),
+                        right.fixed_field(),
+                        right.fixed_extension().base_embedding(),
+                    )
+                case _:
+                    return Unknown
 
         def _cardinality_decision(self):
             r"""``|G_K| = 2^{aleph_0}`` for a finite field or a number field ``K``.

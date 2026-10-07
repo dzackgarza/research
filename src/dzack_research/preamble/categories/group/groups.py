@@ -46,6 +46,7 @@ from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.latex import latex
+from sage.misc.unknown import Unknown
 from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -106,7 +107,7 @@ from dzack_research.preamble.owned_category import (
     _object_of,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category, refine
 from dzack_research.preamble.validation import validator
 
 # Finite generation reuses Sage's axiom for it, ``FinitelyGeneratedAsMagma``.
@@ -3341,50 +3342,74 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def conjugation_g_set(self):
-            r"""Return ``G`` with its conjugation action ``g.x = g x g^-1``."""
+            r"""Return ``G`` with its conjugation action ``g.x = g x g^-1``.
+
+            Two elements are conjugate when one is the other; in an abelian
+            group exactly then.  A finite group decides the relation from
+            its orbits; elsewhere it is undecided.
+            """
+            from dzack_research.preamble.categories.group.g_sets import (
+                FiniteGSets,
+                _g_set_on_points,
+            )
+
+            def conjugate(group_element, point):
+                return group_element * point * group_element.inverse()
+
             match self:
                 case _ if self in OwnedFiniteGroups():
-                    from dzack_research.preamble.categories.group.g_sets import (
-                        FiniteGSets,
-                    )
-
-                    points = finite_ordered_set(tuple(self))
-                    return FiniteGSets(self)(
-                        points,
-                        lambda group_element, point: (
-                            group_element * point * group_element.inverse()
-                        ),
-                    )
+                    return FiniteGSets(self)(finite_ordered_set(tuple(self)), conjugate)
                 case _:
-                    assert False, (
-                        f"the conjugation action of {self} is defined for every group, but the "
-                        "current preamble materializes orbit actions only for finite represented "
-                        "groups; a general G-set orbit realization is still missing"
-                    )
+
+                    def conjugacy(source, target):
+                        if source == target:
+                            return True
+                        if self.is_abelian() is True:
+                            return False
+                        return Unknown
+
+                    return _g_set_on_points(self, self, conjugate, conjugacy)
 
         @cached_method
         def conjugacy_classes(self):
-            r"""Return the orbit set of the conjugation action."""
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return self.conjugation_g_set().orbits()
-                case _:
-                    assert False, (
-                        f"the conjugacy classes of {self} are defined for every group, but the "
-                        "current preamble computes orbit sets only for finite represented groups"
-                    )
+            r"""Return the orbit set ``G / G`` of the conjugation action."""
+            return self.conjugation_g_set().orbits()
 
         def conjugacy_class(self, representative):
             r"""Return the conjugacy orbit of ``representative``."""
-            representative = self(representative)
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return self.conjugacy_classes().orbit_of(representative)
-                case _:
-                    assert False, (
-                        f"the conjugacy class of {representative} in {self} is defined, but the "
-                        "current preamble computes conjugacy orbits only for finite represented groups"
-                    )
+            return self.conjugacy_classes().orbit_of(self(representative))
+
+        def conjugate_subgroup(self, group_element, subgroup):
+            r"""Return ``g H g^-1``, the image of ``H`` under conjugation by ``g``."""
+            assert group_element in self, f"{group_element} is not an element of {self}"
+            assert subgroup in self.subgroups(), f"{subgroup} is not a subgroup of {self}"
+            inverse = group_element.inverse()
+            return self.predicate_subgroup(
+                lambda element: inverse * element * group_element in subgroup,
+                description=f"conjugate of {subgroup} by {group_element}",
+            )
+
+        @RealizationHook
+        def _subgroup_conjugacy_decision(self, left, right):
+            r"""Protected decision whether ``right = g left g^-1`` for some ``g``.
+
+            ``subgroup_conjugation_g_set`` is the only caller.  A category
+            whose objects supply a procedure answers ``True`` or ``False``;
+            ``Unknown`` means that no procedure decides it.
+            """
+            return Unknown
+
+        @cached_method
+        def subgroup_conjugation_g_set(self):
+            r"""The set of subgroups of ``G`` with the conjugation action ``g.H = g H g^-1``."""
+            from dzack_research.preamble.categories.group.g_sets import _g_set_on_points
+
+            return _g_set_on_points(
+                self,
+                self.subgroups(),
+                self.conjugate_subgroup,
+                self._subgroup_conjugacy_decision,
+            )
 
         def left_cosets(self, subgroup):
             r"""Return the represented left-coset space ``G/H``."""
@@ -3531,6 +3556,24 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
+            def conjugate_subgroup(self, group_element, subgroup):
+                r"""Return ``g H g^-1``; GAP's ``ConjugateSubgroup(H, x)`` is ``x^-1 H x``."""
+                assert group_element in self, f"{group_element} is not an element of {self}"
+                assert subgroup in self.subgroups(), f"{subgroup} is not a subgroup of {self}"
+                return _subgroup_from_gap(
+                    self,
+                    libgap.ConjugateSubgroup(
+                        _gap_model(subgroup),
+                        _element_to_engine(self, group_element.inverse()),
+                    ),
+                )
+
+            def _subgroup_conjugacy_decision(self, left, right) -> bool:
+                r"""GAP's ``IsConjugate`` decides conjugacy of subgroups of a finite group."""
+                return bool(
+                    libgap.IsConjugate(_gap_model(self), _gap_model(left), _gap_model(right))
+                )
+
             def order_is_invertible_in(self, ring) -> bool:
                 r"""Return whether the finite order ``|G|`` is a unit in ``ring``."""
                 return bool(ring(int(self.order())).is_unit())

@@ -12,14 +12,14 @@ from sage.categories.category import Category
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    OwnedCategory,
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import NaturalTransformation
@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -246,34 +245,49 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""Return the equivariant Mor from this G-set to ``codomain``."""
             return FiniteGSets(self.acting_group()).Mor(self, codomain)
 
-        def orbits(self):
-            r"""The orbit set ``X / G``."""
-            return FiniteGSets(self.acting_group()).orbits_functor()(self)
-
         def fixed_points(self):
             r"""The fixed-point set ``X^G``."""
             return FiniteGSets(self.acting_group()).fixed_points_functor()(self)
 
-        def stabilizer(self, point):
-            r"""The subgroup ``G_point = {g in G : g.point = point}``.
+        @cached_method
+        def _orbit_labels(self):
+            r"""The rank of the first point of each point's orbit, keyed by the point's rank.
 
-            This is a predicate subgroup of the acting group.  Membership is
-            exact from the represented action and does not require choosing
-            generators for the stabilizer.
+            The orbits are those of the image of ``G`` in ``Sym(X)``, which
+            GAP computes from the images of the chosen group generators, or
+            of every element of a finite group without them.
             """
-            if point not in self:
-                raise ValueError(f"{point} is not a point of {self}")
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                StabilizerSubgroups,
-            )
-
             group = self.acting_group()
-            return StabilizerSubgroups(group)(
-                point,
-                "pointwise",
-                lambda group_element: self.act(group_element, point) == point,
-                description=f"stabilizer of {point} in {self}",
+            match group:
+                case _ if group.has_selected_group_resolution():
+                    action_generators = group.group_generators()
+                case _ if group.is_finite() is True:
+                    action_generators = group
+                case _:
+                    assert False, (
+                        f"cannot compute the orbits of {self}: the acting group {group} "
+                        f"has no chosen group generators and is not known to be finite"
+                    )
+            ranking = self.ranking_map()
+            representation = self.permutation_representation()
+            image_group = representation.codomain().subgroup(
+                tuple(representation(generator) for generator in action_generators)
             )
+            image_engine = _engine_group(image_group)
+            labels = {}
+            for point in self:
+                ranks = tuple(
+                    int(ranking(_owned_point(image)))
+                    for image in image_engine.orbit(_engine_point(image_engine, point))
+                )
+                labels[int(ranking(point))] = min(ranks)
+            return labels
+
+        def _orbit_relation_decision(self, source, target) -> bool:
+            r"""Two points share an orbit exactly when their orbits have the same first point."""
+            labels = self._orbit_labels()
+            ranking = self.ranking_map()
+            return labels[int(ranking(source))] == labels[int(ranking(target))]
 
         def orbit_stabilizers(self):
             r"""The family of point stabilizers indexed by the orbit classes."""
@@ -505,175 +519,207 @@ class GSetMor(GObjectMor):
         return self(lambda point: point)
 
 
-class OrbitSets(OwnedCategory):
-    r"""The finite orbit quotients \(X/G\) of a finite \(G\)-set."""
+class _Orbit:
+    r"""The orbit ``G . x`` of one point ``x``, a point of the orbit set ``X/G``.
 
-    def an_object(self):
-        r"""The orbits of a trivial action on three points."""
-        from dzack_research.preamble.categories.group.groups import Groups
+    Two orbits are equal exactly when they meet, so the selected point
+    ``x`` is a representative and not part of the orbit's identity.
+    """
 
-        group = Groups.S(3)
-        return FiniteGSets(group).orbits_trivial_adjunction().left_adjoint()(
-            FiniteGSets(group).trivial(Sets.Δ[2])
+    def __init__(self, parent, representative) -> None:
+        self._representative = representative
+        super().__init__(parent)
+
+    def representative(self):
+        r"""The point this orbit was named by."""
+        return self._representative
+
+    def g_set(self):
+        return self.parent().g_set()
+
+    def acting_group(self):
+        return self.g_set().acting_group()
+
+    def __contains__(self, point) -> bool:
+        g_set = self.g_set()
+        return point in g_set and g_set.in_same_orbit(self.representative(), point)
+
+    @cached_method
+    def points(self):
+        r"""The subset ``G . x`` of ``X``, cut out by the orbit relation."""
+        g_set = self.g_set()
+        representative = self.representative()
+        return g_set.condition_set(
+            lambda point: g_set.in_same_orbit(representative, point)
         )
 
-    def super_categories(self):
-        return [FiniteSets()]
+    def cardinality(self):
+        r"""``|G . x|``, the cardinality of the subset of ``X`` this orbit is."""
+        return self.points().cardinality()
 
-    class ElementMethods(Element):
-        r"""What an orbit is."""
+    def stabilizer(self):
+        r"""The stabilizer of the representative; other points have conjugate stabilizers."""
+        return self.g_set().stabilizer(self.representative())
 
-        def __init__(self, parent, index) -> None:
-            Element.__init__(self, parent)
-            self._index = index
+    def transporter_from(self, point):
+        r"""One group element carrying ``point`` to the representative."""
+        assert point in self, f"{point} is not a point of {self}"
+        return self.g_set().transporter_witness(point, self.representative())
 
-        def representative(self):
-            return self.parent().orbit_points(self)[0]
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if element_parent(other) is not self.parent():
+            return op == op_NE
+        meet = self.g_set().in_same_orbit(self.representative(), other.representative())
+        return meet if op == op_EQ else not meet
 
-        def points(self):
-            return self.parent().orbit_points(self)
+    def __hash__(self) -> int:
+        # Equal orbits may have different representatives, and the orbit
+        # set supplies no invariant of an orbit beyond its parent.
+        return hash(id(self.parent()))
 
-        elements = points
-        members = points
+    def _repr_(self) -> str:
+        return f"Orbit of {self.representative()} under {self.acting_group()}"
 
-        def acting_group(self):
-            return self.parent().g_set().acting_group()
 
-        group = acting_group
-        supergroup = acting_group
+class _OrbitSet:
+    r"""The orbit set ``X/G`` of a ``G``-set ``X``.
 
-        def __contains__(self, point) -> bool:
-            return point in self.points()
+    It is the coequalizer in ``Sets()`` of the action and the projection
+    ``G x X -> X``.  The datum is ``X``; a point is an orbit named by one of
+    its points, and equality of orbits is the orbit relation of ``X``.
+    """
 
-        def stabilizer(self):
-            r"""Return the stabilizer of the selected representative."""
-            return self.parent().g_set().stabilizer(self.representative())
+    def __init__(self, g_set, **rest) -> None:
+        self._g_set = g_set
+        super().__init__(**rest)
 
-        def transporter_from(self, point):
-            r"""Return one group element carrying ``point`` to the representative."""
-            if point not in self:
-                return None
-            return self.parent().g_set().transporter_witness(
-                point,
-                self.representative(),
-            )
+    def g_set(self):
+        return self._g_set
 
-        def __eq__(self, other) -> bool:
-            return other in self.parent() and other._index == self._index
+    def orbit_of(self, point):
+        r"""The orbit ``G . point``, the image of ``point`` under the projection ``X -> X/G``."""
+        assert point in self.g_set(), f"{point} is not a point of {self.g_set()}"
+        return self.element_class(self, self.g_set()(point))
 
-        def __ne__(self, other) -> bool:
-            return not self == other
+    @cached_method
+    def projection(self):
+        r"""The projection ``X -> X/G`` of the coequalizer."""
+        return Sets().Mor(self.g_set(), self)(self.orbit_of)
 
-        def __hash__(self):
-            return hash((id(self.parent()), self._index))
+    def __contains__(self, orbit) -> bool:
+        return element_parent(orbit) is self
 
-        def _repr_(self):
-            return "Orbit(" + ", ".join(repr(point) for point in self.points()) + ")"
+    def __call__(self, orbit):
+        return self._element_constructor_(orbit)
 
-    class ParentMethods:
-        def __init__(self, g_set, **rest) -> None:
-            self._g_set = g_set
-            group = g_set.acting_group()
-            match group:
-                case _ if group.has_selected_group_resolution():
-                    action_generators = group.group_generators()
-                case _ if group.is_finite() is True:
-                    action_generators = group
-                case _:
-                    assert False, (
-                        f"cannot compute the orbits of {g_set}: the acting group {group} "
-                        f"has no chosen group generators and is not known to be finite"
-                    )
+    def _element_constructor_(self, orbit):
+        assert orbit in self, f"{orbit} is not an orbit of {self}"
+        return orbit
 
-            point_set = finite_ordered_set(g_set)
-            point_ranking = point_set.ranking_map()
-            point_at = point_ranking.inverse()
-            representation = g_set.permutation_representation()
-            permutation_group = representation.codomain()
-            image_group = permutation_group.subgroup(
-                tuple(representation(generator) for generator in action_generators)
-            )
-            image_engine = _engine_group(image_group)
-            orbit_rank_sets = sorted(
-                {
-                    tuple(
-                        sorted(
-                            int(point_ranking(_owned_point(image)))
-                            for image in image_engine.orbit(
-                                _engine_point(image_engine, point)
-                            )
-                        )
-                    )
-                    for point in point_set
-                },
-                key=lambda orbit: orbit[0],
-            )
-            orbit_families = {
-                orbit_index: FiniteOrderedSets().from_indexed(
-                    Sets.Δ[len(orbit_ranks) - 1],
-                    lambda position, orbit_ranks=orbit_ranks: point_at(
-                        orbit_ranks[int(position)]
-                    ),
-                    name=f"Orbit {orbit_index}",
-                )
-                for orbit_index, orbit_ranks in enumerate(orbit_rank_sets)
-            }
-            orbit_count = len(orbit_rank_sets)
+    @cached_method
+    def _orbits(self):
+        r"""One orbit through each point, the first time the points meet it."""
+        g_set = self.g_set()
+        assert g_set in FiniteSets(), (
+            f"the orbits of {g_set} are listed only when it is a finite set"
+        )
+        found = []
+        for point in g_set:
+            orbit = self.orbit_of(point)
+            if orbit not in found:
+                found.append(orbit)
+        return tuple(found)
 
-            self._orbit_indices = Sets.Δ[orbit_count - 1]
-            self._orbit_points = finite_indexed_family(
-                self._orbit_indices,
-                lambda index: orbit_families[int(index)],
-                name="Orbit point families",
-            )
-            super().__init__(**rest)
-            self._orbit_classes = FiniteOrderedSets().from_indexed(
-                self._orbit_indices,
-                lambda index: self.element_class(self, index),
-                name="Orbit classes",
-            )
+    def __iter__(self):
+        return iter(self._orbits())
 
-        def g_set(self):
-            return self._g_set
+    @cached_method
+    def ranking_map(self):
+        r"""The orbits in the order of their first points in the enumeration of ``X``."""
+        orbits = self._orbits()
+        return self._ranking_isomorphism(
+            lambda orbit: orbits.index(self(orbit)),
+            lambda position: orbits[position],
+        )
 
-        def __iter__(self):
-            return iter(self._orbit_classes)
+    def _repr_(self) -> str:
+        return f"Orbit set of {self.g_set()}"
 
-        def __contains__(self, orbit) -> bool:
-            return isinstance(orbit, Element) and orbit.parent() is self
 
-        def _element_constructor_(self, orbit):
-            assert orbit in self, f"{orbit} is not an orbit of {self}"
-            return orbit
+def _orbit_set(g_set):
+    r"""The orbit set ``X/G`` of the ``G``-set ``X``, finite and enumerated with ``X``."""
+    match g_set:
+        case _ if g_set in FiniteSets() and g_set in EnumeratedSets():
+            category = owned_category_join((FiniteSets(), EnumeratedSets()))
+        case _ if g_set in FiniteSets():
+            category = FiniteSets()
+        case _:
+            category = Sets()
+    return _object_of(category, _engine=(category, _OrbitSet, _Orbit), g_set=g_set)
 
-        @cached_method
-        def ranking_map(self):
-            r"""The enumeration the orbit classes were built with."""
 
-            def position_of(orbit):
-                assert orbit in self, f"{orbit} is not an orbit of {self}"
-                return int(orbit._index)
+class _GSetOnPoints:
+    r"""A ``G``-set on a given set of points, with the procedure deciding its orbit relation.
 
-            return self._ranking_isomorphism(
-                position_of, self._orbit_classes.ranking_map().inverse()
-            )
+    The data are the point set and the relation, a function of two points
+    answering ``True``, ``False`` or ``Unknown``; the action is the
+    ``GObjects`` datum.
+    """
 
-        def orbit_points(self, orbit):
-            assert orbit in self, f"{orbit} is not an orbit of {self}"
-            return self._orbit_points[orbit._index]
+    def __init__(self, point_set, orbit_relation, **rest) -> None:
+        self._point_set = point_set
+        self._orbit_relation = orbit_relation
+        super().__init__(**rest)
 
-        def orbit_of(self, point):
-            assert point in self.g_set(), f"{point} is not a point of {self.g_set()}"
-            for orbit in self:
-                if point in self.orbit_points(orbit):
-                    return orbit
-            raise AssertionError(
-                f"the point {point} of {self.g_set()} lies in no orbit of {self}; the "
-                f"orbits of a G-set must cover its points"
-            )
+    def point_set(self):
+        return self._point_set
 
-        def _repr_(self):
-            return f"Orbit set of {self.g_set()}"
+    def __contains__(self, point) -> bool:
+        return point in self.point_set()
+
+    is_parent_of = __contains__
+
+    def __call__(self, point):
+        return self._element_constructor_(point)
+
+    def _element_constructor_(self, point):
+        assert point in self.point_set(), f"{point!r} is not a point of {self}"
+        return self.point_set()(point)
+
+    def __iter__(self):
+        return iter(self.point_set())
+
+    def _orbit_relation_decision(self, source, target):
+        return self._orbit_relation(source, target)
+
+    def _repr_(self) -> str:
+        return f"{self.point_set()} with {self.acting_group()}-action"
+
+
+def _g_set_on_points(group, point_set, action, orbit_relation):
+    r"""The ``G``-set on ``point_set`` with the action ``action(g, x)``.
+
+    ``orbit_relation(x, y)`` decides whether ``y in G . x``, answering
+    ``Unknown`` where no procedure decides it.
+    """
+    g_sets = GObjects(group, Sets())
+    match point_set:
+        case _ if point_set in FiniteSets():
+            category = owned_category_join((g_sets, FiniteSets()))
+        case _:
+            category = g_sets
+    return _object_of(
+        category,
+        _engine=(category, _GSetOnPoints, None),
+        point_set=point_set,
+        orbit_relation=orbit_relation,
+        acting_group=group,
+        action=lambda group_element: (lambda point: action(group_element, point)),
+        underlying_category=Sets(),
+        facade=point_set,
+    )
 
 
 def _permutation_from_point_map(permutation_group, point_set, mapping):
@@ -887,6 +933,5 @@ __all__ = [
     "LeftCosetGSets",
     "GSetMor",
     "GSetMorphism",
-    "OrbitSets",
     "Torsors",
 ]

@@ -16,7 +16,6 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.g_sets import (
     FiniteGSets,
-    OrbitSets,
     _fixed_point_set,
 )
 from dzack_research.preamble.categories.group.g_objects import GObjects
@@ -64,9 +63,7 @@ class GSetOrbitsFunctor(Functor):
         return self._group
 
     def _apply_object(self, g_set):
-        from dzack_research.preamble.owned_category import _object_of
-
-        return _object_of(OrbitSets(), g_set=g_set)
+        return g_set.orbits()
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
