@@ -5,15 +5,9 @@ def values():
     return FractionFieldQuotients(ZZ)(2)
 
 
-def relations():
-    r"""$r: \mathbb Z \to \mathbb Z$, $e \mapsto 2e$, whose cokernel is $\mathbb Z/2$."""
-    line = ZZ.free_module(1)
-    return line.End()({0: 2 * line.module_generator(0)})
-
-
 def from_data():
     r"""$\mathbb Z/2$ with $q(x) = -1/2 \bmod 2\mathbb Z$."""
-    return TorsionQuadraticFormModules(ZZ).from_relations_and_gram(relations(), [[-1/2]], values())
+    return TorsionQuadraticFormModules(ZZ).from_relations_and_gram([[2]], [[-1/2]], values())
 
 
 def test_the_data_and_the_lattice_constructions_agree() -> None:
