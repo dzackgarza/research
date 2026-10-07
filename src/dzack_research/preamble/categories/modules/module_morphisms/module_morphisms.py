@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _engine_ele
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
+    PrincipalIdealDomains,
     OwnedCategoryOverBaseRing,
     OwnedRings,
     _engine_ring,
@@ -970,8 +971,13 @@ class ModuleMorphismMethods:
         from dzack_research.preamble.categories.modules.localizations import (
             LocalizedModules,
         )
+        from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import (
+            FractionFieldQuotients,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import (
+            InternalMorModules,
             ModuleSubobjects,
+            ModulesWithChosenFinitePresentation,
         )
         from dzack_research.preamble.categories.rings.commutative_algebra import (
             AdicCompletions,
@@ -1053,6 +1059,14 @@ class ModuleMorphismMethods:
                     f"{domain}, but lands in {localized_inclusion.codomain()}"
                 )
                 return localized_kernel
+            case _ if (
+                ring in PrincipalIdealDomains()
+                and domain in ModulesWithChosenFinitePresentation(ring)
+                and codomain in InternalMorModules(ring)
+                and codomain.codomain() in FractionFieldQuotients(ring)
+                and codomain.domain().module_generating_set().cardinality().is_finite()
+            ):
+                return self._kernel_through_generator_evaluation()
 
         represented = NotImplemented
         for owner in (domain, codomain):
@@ -1064,6 +1078,61 @@ class ModuleMorphismMethods:
             f"(domain in {domain.category()}, codomain in {codomain.category()})"
         )
         return represented
+
+    def _kernel_through_generator_evaluation(self):
+        r"""Return ``ker(f)`` for ``f: A -> Mor_R(X, K/aR)`` with ``X`` finitely generated over a PID ``R``.
+
+        A map out of ``X`` is determined by its values on the generators
+        ``x_1, ..., x_n`` of ``X``, so evaluation
+        ``Mor_R(X, K/aR) -> (K/aR)^n`` is injective and ``ker(f)`` is the
+        kernel of ``a |-> (f(a)(x_j))_j``.  The finitely many values
+        ``f(a_i)(x_j)`` on the generators ``a_i`` of ``A`` generate a cyclic
+        submodule ``S = R s ~= R/(m)`` of ``K/aR``, which
+        :meth:`FractionFieldQuotients.ParentMethods.subobject_on` classifies.
+        Writing ``f(a_i)(x_j) = c_ij s`` gives the map
+        ``g: A -> (R/(m))^n``, ``a_i |-> (c_ij)_j``, and ``S^n -> (K/aR)^n``
+        is injective, so ``ker(f) = ker(g)``.  The kernel of ``g``, a map
+        between finitely presented modules, is the linear solve over ``R``
+        that the presented-module kernel owner performs.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        domain = self.domain()
+        codomain = self.codomain()
+        ring = domain.base_ring()
+        source = codomain.domain()
+        values = codomain.codomain()
+        domain_labels = tuple(domain.module_generating_set())
+        source_labels = tuple(source.module_generating_set())
+        evaluations = {
+            (domain_label, source_label): self(domain.module_generator(domain_label))(
+                source.module_generator(source_label)
+            )
+            for domain_label in domain_labels
+            for source_label in source_labels
+        }
+        if all(value == values.zero() for value in evaluations.values()):
+            return domain.whole_subobject()
+        cyclic = values.subobject_on(tuple(evaluations.values()))
+        (cyclic_label,) = tuple(cyclic.module_generating_set())
+        order = cyclic.presentation_matrix()[0, 0]
+        coefficient = {
+            pair: cyclic.framing_morphism().lift(cyclic.inclusion().lift(value))(cyclic_label)
+            for pair, value in evaluations.items()
+        }
+        target = Modules(ring).FinitelyPresented().Torsion().direct_sum_of_cyclics(
+            tuple(order for _ in source_labels)
+        )
+        target_labels = tuple(target.module_generating_set())
+        evaluation = domain.module_category().Mor(domain, target)(
+            lambda domain_label: target.linear_combination(
+                {
+                    target_label: coefficient[(domain_label, source_label)]
+                    for source_label, target_label in zip(source_labels, target_labels, strict=True)
+                }
+            )
+        )
+        return evaluation.kernel()
 
     def subobject_image_adjunction(self):
         r"""Return ``f_* ⊣ f^{-1}`` on fixed-ambient module subobjects."""
