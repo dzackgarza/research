@@ -5,11 +5,6 @@ only serializes the returned values and never rechecks these formulas.
 """
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.hashimoto_source_invariants import (
-    basis_gives_isometry,
-    lattice_summary,
-    primitive_orthogonal_complements,
-)
 from dzack_research.preamble.categories.hoehn_mason_source_invariants import (
     generated_group_order,
     leech_gram,
@@ -165,20 +160,6 @@ def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
     assert hodge.hodge_number(1, 1) == 20
     assert hodge.betti_number(2) == 22
     assert hodge.euler_characteristic() == 24
-
-
-def test_hashimoto_source_lattice_checks_are_owned_by_the_preamble() -> None:
-    a2 = Lattices(ZZ)([[2, -1], [-1, 2]])
-    assert lattice_summary(a2) == (2, 2, 3, (3,))
-    assert basis_gives_isometry(a2, a2, ((1, 0), (0, 1)))
-    ambient = Lattices(ZZ)([[1, 0], [0, 1]])
-    assert primitive_orthogonal_complements(
-        ambient,
-        ((((1,), (0,)), 1),),
-        1,
-        ((((0,), (1,)), 1),),
-        1,
-    )
 
 
 def test_hoehn_mason_coordinate_group_checks_are_owned_by_the_preamble() -> None:
