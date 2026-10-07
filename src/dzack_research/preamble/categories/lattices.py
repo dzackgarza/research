@@ -146,7 +146,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _solve_left_integrally,
+    _solve_preimage_integrally,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjectConstruction,
@@ -2819,7 +2819,25 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ),
             )
 
-            basis_map = rationals.matrix_space(rank, rank).from_rows(tuple(tuple(basis_rows[column, row] for column in range(rank)) for row in range(rank)))
+            def basis_inclusion(scalars, rows):
+                # The map scalars^rank -> L sending e_j to the j-th basis
+                # vector of L', whose coordinates in L are rows[j].
+                space = scalars.matrix_space(rank, rank)
+                coordinates = space.codomain()
+                coordinate_labels = tuple(coordinates.module_generating_set())
+                return space(
+                    tuple(
+                        coordinates.linear_combination(
+                            {label: entry for label, entry in zip(coordinate_labels, row, strict=True) if entry}
+                        )
+                        for row in rows
+                    )
+                )
+
+            basis_map = basis_inclusion(
+                rationals,
+                tuple(tuple(basis_rows[row, column] for column in range(rank)) for row in range(rank)),
+            )
             gram = self.gram_tensor().change_ring(rationals).pullback(basis_map)
             if not all(gram[i, j] in ring for i in range(rank) for j in range(rank)):
                 raise ValueError(
@@ -2838,17 +2856,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 integral_gram,
                 module_generators=labels,
             )
-            # The system every generator is solved against: the basis of L'
-            # in the coordinates of L, as the owned matrix the solver takes.
-            integral_basis = ring.matrix_space(rank, rank).from_rows(tuple(tuple(row) for row in integral_basis_rows))
+            # The image of e_s is the preimage of d e_s under the inclusion of
+            # d L' into L, read in the basis of L'.
+            integral_basis = basis_inclusion(ring, integral_basis_rows)
             images = {}
             for source_position, source_label in enumerate(self.module_generating_set()):
                 target = [denominator if index == source_position else ring.zero() for index in range(rank)]
-                coefficients = _solve_left_integrally(
-                    integral_basis,
-                    target,
-                    ring,
-                )
+                coefficients = _solve_preimage_integrally(integral_basis, target, ring)
                 images[source_label] = enlarged.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             return self.Emb(enlarged)(images)
 

@@ -139,15 +139,20 @@ class VectorPrimitiveExtension:
             )
 
         discriminant_form = lattice.discriminant_group()
-        dual_restriction = _module_matrix(inclusion).transpose()
-        lattice_rank = int(lattice.module_rank())
+        # Restricting along i: M -> L sends the dual basis vector e^p of L^#
+        # to the functional m_r |-> e^p(i m_r), the e_p-coordinate of i(m_r).
+        image_coordinates = tuple(
+            inclusion(generator).to_vector() for generator in sum_generators
+        )
         discriminant_representatives = []
-        for position in range(lattice_rank):
+        for label in lattice.module_generating_set():
             dual_element = sum_dual.linear_combination(
                 {
-                    dual_labels[row]: dual_restriction[row, position]
-                    for row in range(dual_restriction.parent().nrows())
-                    if dual_restriction[row, position]
+                    dual_label: coordinates(label)
+                    for dual_label, coordinates in zip(
+                        dual_labels, image_coordinates, strict=True
+                    )
+                    if coordinates(label)
                 }
             )
             discriminant_representatives.append(sum_form.projection()(dual_element))

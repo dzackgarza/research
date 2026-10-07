@@ -1,6 +1,6 @@
 r"""Affine semigroup algebras from finite lattice-generator presentations."""
 
-from sage.matrix.constructor import matrix as _engine_matrix
+from sage.matrix.constructor import column_matrix as _engine_column_matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.toric.ideal import ToricIdeal as _SageToricIdeal
 
@@ -122,7 +122,8 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         base = self.base_ring()
         presentation = base.polynomial_ring(names)
         engine_presentation = _engine_ring(presentation)
-        columns = _engine_matrix(SageZZ, coordinates).transpose()
+        # ToricIdeal reads the semigroup generators from the columns of its matrix.
+        columns = _engine_column_matrix(SageZZ, coordinates)
         engine_ideal = _SageToricIdeal(
             columns,
             names=names,

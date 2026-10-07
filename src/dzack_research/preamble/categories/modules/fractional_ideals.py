@@ -612,28 +612,27 @@ def _principal_generator_from_order_values(base_ring, module_generator_values):
 
     rationals = _own_ring(SageQQ)
     rank = int(order.module_rank())
-    order_basis = rationals.matrix_space(rank, rank).from_rows(
-        (
-            _owned_engine_element(rationals, SageQQ(coefficient))
-            for coefficient in field(basis_element).vector()
-        )
-        for basis_element in order.basis()
-    )
-    basis_map = order_basis.transpose()
-    denominator = SageZZ.one()
-    for value in basis_values:
-        backend_coordinates = field(value).vector()
-        target = basis_map.codomain().linear_combination(
+    # The map QQ^rank -> K sending e_j to the j-th basis element of the order,
+    # written in the power basis of K.
+    basis_map_space = rationals.matrix_space(rank, rank)
+    power_basis = basis_map_space.codomain()
+    power_basis_labels = tuple(power_basis.module_generating_set())
+
+    def power_basis_coordinates(value):
+        return power_basis.linear_combination(
             {
-                label: _owned_engine_element(rationals,
-                    SageQQ(backend_coordinates[position])
-                )
-                for position, label in enumerate(
-                    basis_map.codomain().module_generating_set()
-                )
-                if backend_coordinates[position]
+                label: _owned_engine_element(rationals, SageQQ(coefficient))
+                for label, coefficient in zip(power_basis_labels, field(value).vector(), strict=True)
+                if coefficient
             }
         )
+
+    basis_map = basis_map_space(
+        tuple(power_basis_coordinates(basis_element) for basis_element in order.basis())
+    )
+    denominator = SageZZ.one()
+    for value in basis_values:
+        target = power_basis_coordinates(value)
         coordinates = basis_map.domain()(basis_map.solve_right(target)).to_vector()
         for label in coordinates.support().domain():
             denominator = denominator.lcm(

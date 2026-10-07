@@ -28,6 +28,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import _matrix_group_element_matrix
+from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _owned_engine_element
 from sage.matrix.constructor import matrix
 
@@ -587,7 +588,6 @@ class TwoUEichlerModel(SageObject):
             )
         target = lattice.base_change(ring_map)
         target_engine = _engine_ring(target.base_ring())
-        source_automorphisms = lattice.O()
         special_linear_generators = self.special_linear_group().group_generators()
         isotropic_vectors = self.hyperbolic_basis()
         complement_basis = self._embedded_complement_basis()
@@ -608,15 +608,15 @@ class TwoUEichlerModel(SageObject):
             )
         )
 
+        module_maps = lattice.module_category().Mor(lattice, lattice)
+
         def generator_matrix(label):
             kind = label[0]
             match kind:
                 case "left-SL2":
-                    integral = self.left_action(label[1])
-                    transformation = source_automorphisms._row_action_matrix(integral).transpose()
+                    transformation = _engine_matrix(module_maps(self.left_action(label[1])))
                 case "right-SL2":
-                    integral = self.right_action(label[1])
-                    transformation = source_automorphisms._row_action_matrix(integral).transpose()
+                    transformation = _engine_matrix(module_maps(self.right_action(label[1])))
                 case "Eichler":
                     position, vector_position = label[1], label[2]
                     orthogonal = perpendicular_bases[position][vector_position]

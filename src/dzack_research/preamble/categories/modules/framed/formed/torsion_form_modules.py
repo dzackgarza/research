@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     ModuleMorphismMethods,
-    _integral_left_solver,
+    _integral_preimage_solver,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
@@ -299,36 +299,56 @@ def _underlying_element(form, element):
     return form.unformed_module()(element)
 
 
-def _coordinate_rows(form, generators):
+def _generator_and_relation_map(form, generators):
+    r"""Return ``F(generators) + F(relations) -> F(S)`` for the framing ``F(S) ->> form``.
 
+    The ``i``-th generator goes to the framing coordinates of
+    ``generators[i]`` and the ``j``-th relation to the ``j``-th selected
+    relation of the underlying presented module.  An element of the kernel,
+    read on the first summand, is a relation among ``generators``; a preimage
+    of a framing generator, read on the first summand, writes it in
+    ``generators``.
+    """
     module = _underlying_presented_module(form)
     ring = module.base_ring()
-    labels = module.module_generating_set()
-    def coordinate_rows():
-        for generator in generators:
-            coordinates = module.framing_morphism().lift(_underlying_element(form, generator))
-            yield (coordinates(label) for label in labels)
+    framing_labels = tuple(module.module_generating_set())
+    relation_rows = tuple(_matrix_coordinate_rows(_presentation_matrix(module)))
+    lift_space = ring.matrix_space(len(framing_labels), len(generators))
+    coordinate_module = lift_space.codomain()
+    coordinate_labels = tuple(coordinate_module.module_generating_set())
 
-    return ring.matrix_space(len(generators), int(labels.cardinality())).from_rows(coordinate_rows())
+    def coordinate_vector(values):
+        return coordinate_module.linear_combination(
+            {
+                label: value
+                for label, value in zip(coordinate_labels, values, strict=True)
+                if value
+            }
+        )
+
+    lifts = lift_space(
+        tuple(
+            coordinate_vector(tuple(coordinates(label) for label in framing_labels))
+            for coordinates in (
+                module.framing_morphism().lift(_underlying_element(form, generator))
+                for generator in generators
+            )
+        )
+    )
+    known = ring.matrix_space(len(framing_labels), len(relation_rows))(
+        tuple(coordinate_vector(row) for row in relation_rows)
+    )
+    summands = Modules(ring).biproduct((lifts.domain(), known.domain()))
+    return summands.from_summands(lifts, known)
 
 
 def _relations_among_generators(form, generators):
     r"""Return the relation matrix for a selected generating family of ``form``."""
 
-    module = _underlying_presented_module(form)
-    ring = module.base_ring()
-    lifts = _coordinate_rows(form, generators)
-    selected_relations = _presentation_matrix(module)
-    known = ring.matrix_space(selected_relations.nrows(), selected_relations.ncols()).from_rows(_matrix_coordinate_rows(selected_relations))
-    combined = lifts.stack(known)
-    # Transpose the owned morphism, not its matrix presentation.  The codomain
-    # of ``combined`` is the biproduct separating the selected-generator rows
-    # from the pre-existing relation rows; matrix-level transposition rebuilds
-    # an equal-rank generic free module and loses that biproduct endpoint, so
-    # its kernel cannot compose with the biproduct projection below.
-    kernel = combined.transpose().kernel()
+    combined = _generator_and_relation_map(form, generators)
+    kernel = combined.kernel()
     relations = (
-        combined.codomain().left_projection() * kernel.inclusion()
+        combined.domain().left_projection() * kernel.inclusion()
     ).image()
     inclusion = relations.inclusion()
     linear_inclusion = inclusion.domain().module_category().Mor(
@@ -674,29 +694,23 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
         {label: generator for label, generator in zip(labels, generators, strict=True)}
     )
 
-
-    lifts = _coordinate_rows(form, generators)
-    selected_relations = _presentation_matrix(module)
-    known = ring.matrix_space(selected_relations.nrows(), selected_relations.ncols()).from_rows(_matrix_coordinate_rows(selected_relations))
-    # Keep the actual biproduct codomain: the integral solver works on every
-    # finite framed free Mor, and its solution therefore lands in the same
-    # biproduct whose left projection selects the coefficients of the new
-    # generators.  Passing through ``matrix()`` would replace that endpoint by
-    # a rank-only coordinate module and discard the projection.
-    system = lifts.stack(known)
+    # A framing generator e_s of form is written in the new generators by a
+    # preimage of e_s under F(generators) + F(relations) -> F(S); its first
+    # summand holds the coefficients of the new generators.
+    system = _generator_and_relation_map(form, generators)
+    generator_module = system.domain().left_projection().codomain()
+    lift_labels = generator_module.module_generating_set()
     source_labels = tuple(form.module_generating_set())
     regenerated_generators = tuple(regenerated.module_generators())
     forward_images = {}
-    solve = _integral_left_solver(system, ring)
+    solve = _integral_preimage_solver(system, ring)
     for position, source_label in enumerate(source_labels):
         target = [
             ring.one() if index == position else ring.zero()
             for index in range(len(source_labels))
         ]
         solution = solve(target)
-        generator_solution = system.codomain().left_projection()(solution)
-        generator_coordinates = lifts.codomain()(generator_solution).to_vector()
-        lift_labels = lifts.codomain().module_generating_set()
+        generator_coordinates = system.domain().left_projection()(solution).to_vector()
         forward_images[source_label] = sum(
             (
                 regenerated.scalar_multiple(
