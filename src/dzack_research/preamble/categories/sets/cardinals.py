@@ -902,11 +902,17 @@ class Cardinalities(OwnedCategory):
         self,
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
-    ) -> bool | Predicate:
-        r"""The proposition that neither ``source <= target`` nor ``target <= source``."""
-        from dzack_research.preamble.logic import conjunction, negation
+    ) -> bool:
+        r"""Whether the represented cardinal laws leave both ``source <= target`` and ``target <= source`` undecided.
 
-        return conjunction((negation(self.le(source, target)), negation(self.le(target, source))))
+        ``True`` exactly when neither comparison is decided ``True`` or
+        ``False``.  This is a statement about the represented laws, not
+        incomparability in ZFC: under the axiom of choice any two cardinals
+        are comparable.
+        """
+        forward = self.le(source, target)
+        backward = self.le(target, source)
+        return forward is not True and forward is not False and backward is not True and backward is not False
 
 
 Cardinal = Cardinalities().ObjectType
