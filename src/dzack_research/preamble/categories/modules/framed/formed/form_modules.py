@@ -2283,13 +2283,17 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                         self, self.isotropic_subobjects(), acting
                     )
 
-                def is_anisotropic(self) -> bool:
-                    zero = self.zero()
-                    return all(
-                        not self.form_vanishes_on((element,))
-                        for element in self.elements()
-                        if element != zero
+                @cached_method
+                def isotropic_elements(self):
+                    r"""Return the elements on which the quadratic form vanishes."""
+                    zero = self.value_module().zero()
+                    return finite_ordered_set(self.elements()).filtered(
+                        lambda element: self.q(element) == zero,
                     )
+
+                def is_anisotropic(self) -> bool:
+                    r"""Return whether zero is the only element on which ``q`` vanishes."""
+                    return self.isotropic_elements().cardinality() == 1
 
                 def orthogonal_subobject(self, subobject):
                     return _torsion_form_orthogonal_subobject(
@@ -2378,39 +2382,40 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 def O(self):  # noqa: E743 - standard mathematical notation O(A,q)
                     return self.automorphism_group()
 
-                def associated_bilinear_form(self):
-                    r"""Polarize ``q:A->QQ/2ZZ`` to ``b_q:A^2->QQ/ZZ``.
+                def b(self, left, right):
+                    r"""The bilinear form ``b: A x A -> K/R`` of ``q: A -> K/2R``.
 
-                    If ``q(x)=x^T G x`` modulo ``2ZZ``, then
-                    ``b_q(x,y)=x^T G y`` modulo ``ZZ``.  The halving of the ordinary
-                    polar value is well defined precisely because changing a lift in
-                    ``QQ/2ZZ`` by ``2ZZ`` changes its half by ``ZZ``.
+                    ``q(x + y) - q(x) - q(y) = 2 b(x, y)`` in ``K/2R``, and halving
+                    ``K/2R -> K/R``, ``t + 2R |-> t/2 + R``, is an isomorphism, so
+                    ``b`` is determined by ``q``: a change of lift by ``2R`` changes
+                    its half by ``R``.
                     """
-                    value_module = self.value_module()
-                    if (
-                        value_module not in FractionFieldQuotients(self.base_ring())
-                        or value_module.modulus() != 2
-                    ):
-                        raise TypeError(
-                            f"the polarization of {self} is computed only for quadratic forms valued in QQ/2ZZ, "
-                            f"but q takes values in {value_module}"
-                        )
-
+                    values = self.value_module()
+                    assert values in FractionFieldQuotients(self.base_ring()) and values.modulus() == 2, (
+                        f"the bilinear form of {self} is the half of its polar value, which is defined here "
+                        f"for q valued in K/2R, but q takes values in {values}"
+                    )
+                    polar = self.q(left + right) - self.q(left) - self.q(right)
                     bilinear_values = FractionFieldQuotients(self.base_ring())(1)
-                    quadratic_form = self.form()
-                    module = self.unformed_module()
+                    return bilinear_values(values.lift(polar) / values.fraction_field()(2))
 
-                    associated = FormModules(module.base_ring())(
+                def associated_bilinear_form(self):
+                    r"""Forget ``q:A->K/2R`` to its bilinear form ``b:A^2->K/R``.
+
+                    The result is a distinct object on the same unformed module,
+                    whose pairing is :meth:`b`.
+                    """
+                    module = self.unformed_module()
+                    bilinear_values = FractionFieldQuotients(self.base_ring())(1)
+                    return FormModules(module.base_ring())(
                         module.bilinear_forms(bilinear_values)(
-                            lambda left, right: bilinear_values(
-                                value_module.lift(
-                                    quadratic_form.lift_pairing(left, right)
-                                )
+                            lambda left, right: self.b(
+                                self._element_from_unformed_module(left),
+                                self._element_from_unformed_module(right),
                             )
                         ),
                         _extra_categories=(TorsionBilinearFormModules(self.base_ring()),),
                     )
-                    return associated
 
 
 SymmetricBilinearFormModules = BilinearFormModules.Symmetric

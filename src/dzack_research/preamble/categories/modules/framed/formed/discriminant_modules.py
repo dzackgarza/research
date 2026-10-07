@@ -453,18 +453,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
 
         @cached_method
-        def isotropic_elements(self):
-            r"""Return the classes on which the quadratic form vanishes."""
-
-            zero = self.quadratic_value_module().zero()
-            return finite_ordered_set(self.elements()).filtered(
-                lambda element: self.q(element) == zero,
-            )
-
-        def is_anisotropic(self) -> bool:
-            return len(self.isotropic_elements()) == 1
-
-        @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which ``q`` vanishes identically."""
 

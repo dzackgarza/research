@@ -351,7 +351,6 @@ def _relations_among_generators(form, generators):
 
 def _quadratic_gram_on(form, generators):
     quadratic_values = _value_module(form, quadratic=True)
-    bilinear_values = form.associated_bilinear_form().value_module()
     rows = []
     for i, left in enumerate(generators):
         row = []
@@ -359,7 +358,7 @@ def _quadratic_gram_on(form, generators):
             if i == j:
                 row.append(form.q(left))
             else:
-                row.append(quadratic_values(bilinear_values.lift(form.b(left, right))))
+                row.append(quadratic_values(form.b(left, right).lift()))
         rows.append(tuple(row))
     return tuple(rows)
 
