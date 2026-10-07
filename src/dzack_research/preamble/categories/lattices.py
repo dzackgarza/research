@@ -21,6 +21,7 @@ from typing import overload
 
 from sage.arith.misc import gcd
 from sage.categories.morphism import SetMorphism
+from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
@@ -79,6 +80,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _minimum,
     _packing_density,
     _packing_radius,
+    _reflective_root_system_components,
     _root_sublattice,
     _roots,
     _roots_of_square,
@@ -276,19 +278,19 @@ def _indecomposable_name(lattice):
 
 
 @cached_function(
-    key=lambda module, basis, root_cartan_type=None: (
+    key=lambda module, basis, root_system_label=None: (
         id(module),
         basis,
-        root_cartan_type,
+        root_system_label,
     )
 )
-def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
+def _lattice_subobject_spanning(module, basis, root_system_label=None):
     r"""Return the canonical lattice subobject on a finite span basis.
 
     The subobject is the lattice on the free module framed by the span basis,
     with the restricted Gram \(b(v_i,v_j)\), built in one construction that
-    retains its inclusion into ``module``.  A ``root_cartan_type`` places it
-    in ``RootLattices`` with that Cartan type as its datum.
+    retains its inclusion into ``module``.  A ``root_system_label`` places it
+    in ``RootLattices`` with that root-system label as its datum.
     """
     ring = module.base_ring()
     rank = int(basis.cardinality())
@@ -311,12 +313,12 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
 
     extra_categories = ()
     construction_data = {}
-    match root_cartan_type:
+    match root_system_label:
         case None:
             pass
         case _:
             extra_categories = (RootLattices(),)
-            construction_data = {"cartan_type": root_cartan_type}
+            construction_data = {"root_system_label": root_system_label}
     return _lattice_object(
         Lattices(ring),
         source_module,
@@ -750,7 +752,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         match lattice in RootLattices():
             case True:
                 carried_categories.append(RootLattices())
-                carried_data["cartan_type"] = lattice.cartan_type()
+                carried_data["root_system_label"] = lattice.label()
         match lattice in NoncrystallographicRootLattices(ring):
             case True:
                 carried_categories.append(NoncrystallographicRootLattices(ring))
@@ -1253,13 +1255,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Synonym for :meth:`orthogonal_complement`."""
             return self.orthogonal_complement(sublattice)
 
-        def _root_subobject_on(self, module_generating_set, cartan_type):
-            r"""Return the selected root sublattice with Cartan data at construction."""
+        def _root_subobject_on(self, module_generating_set, root_system_label):
+            r"""Return the selected root sublattice with its root-system label at construction."""
             basis = _span_basis_elements(self, module_generating_set)
             return _lattice_subobject_spanning(
                 self,
                 basis,
-                root_cartan_type=cartan_type,
+                root_system_label=root_system_label,
             )
 
         def Mor(self, codomain, category=None):
@@ -3367,16 +3369,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             return _root_sublattice(self)
 
         def reflective_root_system_components(self):
-            r"""Return the irreducible components of the full reflective root system.
+            r"""Return the irreducible components of the reflective root system.
 
-            Each component records its type, scale, and simple roots in the selected
-            basis of this lattice.
+            Each component is a connected rooted Coxeter diagram whose roots are
+            simple roots in this lattice; its :meth:`label`, :meth:`root_scale`
+            and :meth:`reference_isomorphism` give its type, scale and the
+            reference order of its simple roots.
             """
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                reflective_root_system_components,
-            )
-
-            return reflective_root_system_components(self)
+            return _reflective_root_system_components(self)
 
         def reduction_cell(self, inequalities, *, equations=()):
             r"""Return the homogeneous rational cell ``{x : a(x) >= 0, e(x) = 0}`` in this lattice.
@@ -5108,31 +5108,55 @@ class RootLattices(OwnedCategory):
         return [Lattices(_own_ring(SageZZ)).FinitelyGenerated().Nondegenerate().Even()]
 
     class ParentMethods:
-        def __init__(self, cartan_type, **rest) -> None:
-            self._preamble_cartan_type = cartan_type
+        def __init__(self, root_system_label, **rest) -> None:
+            self._preamble_root_system_label = root_system_label
             super().__init__(**rest)
 
+        def label(self):
+            r"""Return the name of the root system of the simple roots, as ``A2`` or ``A2xA1``."""
+            return self._preamble_root_system_label
+
+        def _engine_cartan_type(self):
+            r"""Return the private engine Cartan type named by :meth:`label`."""
+            return CartanType(self.label())
+
         def cartan_type(self):
-            return self._preamble_cartan_type
+            r"""Return the reference root lattice of the type of this root lattice.
+
+            It is ``Lattices(ZZ)(label)``: the root lattice whose framing is the
+            simple roots of the type named by :meth:`label`.
+            """
+            return Lattices(_own_ring(SageZZ))(self.label())
+
+        def dynkin_diagram(self):
+            r"""Return the rooted Coxeter diagram of the simple roots.
+
+            Its vertices are the simple roots, with their squares and pairings,
+            which is the datum a Dynkin diagram draws; its connected components
+            are the irreducible components of the root system.
+            """
+            from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+
+            return CoxeterDiagrams().from_roots(tuple(self.simple_roots()))
 
         def simple_roots(self):
             r"""Return the selected framing, which is the chosen simple system."""
             return self.module_generators()
 
         def coxeter_number(self):
-            cartan_type = self.cartan_type()
+            cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(
-                    f"{self!r} has no single Coxeter number: its root system of type {cartan_type} is reducible, and each irreducible component has its own Coxeter number"
+                    f"{self!r} has no single Coxeter number: its root system of type {self.label()} is reducible, and each irreducible component has its own Coxeter number"
                 )
-            return cartan_type.coxeter_number()
+            return self.base_ring()(int(cartan_type.coxeter_number()))
 
         def highest_root(self):
             r"""Return the highest root in the selected simple-root framing."""
-            cartan_type = self.cartan_type()
+            cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(
-                    f"{self!r} has no single highest root: its root system of type {cartan_type} is reducible, and each irreducible component has its own highest root"
+                    f"{self!r} has no single highest root: its root system of type {self.label()} is reducible, and each irreducible component has its own highest root"
                 )
             coefficients = tuple(RootSystem(cartan_type).root_lattice().highest_root().to_vector())
             return sum(

@@ -113,7 +113,7 @@ def test_lattice_isotropy_is_owned_by_the_quadratic_space() -> None:
 def test_root_and_theta_catalogue_invariants_are_owned_by_the_lattice() -> None:
     lattice = Lattices(ZZ)([[2, -1], [-1, 2]])
     components = lattice.reflective_root_system_components()
-    assert [(component.type, component.scale) for component in components] == [("G2", 1)]
+    assert [(component.label(), component.root_scale()) for component in components] == [("G2", 1)]
     theta = lattice.theta_series(precision=5)
     assert tuple(int(theta[index]) for index in range(5)) == (1, 0, 6, 0, 0)
 

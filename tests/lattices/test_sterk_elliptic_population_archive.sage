@@ -151,8 +151,12 @@ def test_sterk_connected_elliptic_subdiagrams_have_the_recorded_types() -> None:
     diagrams = Sterk.diagrams()
 
     def scaled_type(subdiagram):
-        cartan, scale = subdiagram.scaled_cartan_type()
-        return (cartan.rank(), cartan.type(), scale)
+        # B_n and C_n have one Coxeter diagram, which the archive records as B;
+        # the scale there is positive, and root_scale() keeps the sign of the
+        # negative-definite Sterk roots.
+        letter = subdiagram.label()[0]
+        letter = "B" if letter == "C" else letter
+        return (subdiagram.cardinality(), letter, -subdiagram.root_scale())
 
     for name, expected in _CONNECTED_ELLIPTIC_TYPES.items():
         connected = diagrams[name].elliptic_subdiagrams(connected=True)

@@ -199,13 +199,9 @@ def _norm_two_root_types(lattice) -> tuple[str, ...]:
     root_sublattice = negative.root_sublattice()
     if root_sublattice.module_rank() == 0:
         return ()
-    cartan_type = root_sublattice.cartan_type()
-    components = (
-        cartan_type.component_types() if cartan_type.is_reducible() else (cartan_type,)
-    )
+    components = root_sublattice.dynkin_diagram().connected_components()
     ranked = sorted(
-        (-int(component.rank()), f"{component.type()}{component.rank()}")
-        for component in components
+        (-int(component.cardinality()), component.label()) for component in components
     )
     return tuple(name for _rank, name in ranked)
 
@@ -251,6 +247,33 @@ def _integral(
     return _ordered(block, tuple(model.IntegralData.model_fields))
 
 
+def _root_component(
+    lattice, component, rescaling: Fraction
+) -> tuple[str, Fraction, tuple[tuple[int, ...], ...]]:
+    """Serialize one root-system component: its type, signed scale and ordered simple roots.
+
+    The simple roots are listed in the vertex order of the component's reference
+    diagram, in the coordinates of the lattice's module generators.  The card names
+    the rank-two type B2, where the preamble's reference diagram is C2.
+    """
+    reference_isomorphism = component.reference_isomorphism()
+    labels = tuple(lattice.module_generating_set())
+    roots = tuple(
+        tuple(
+            int(component.root(reference_isomorphism(vertex)).to_vector()(label))
+            for label in labels
+        )
+        for vertex in reference_isomorphism.domain().vertices()
+    )
+    scale = component.root_scale()
+    root_type = "B2" if component.label() == "C2" else component.label()
+    return (
+        root_type,
+        Fraction(int(scale.numerator()), int(scale.denominator())) / rescaling,
+        roots,
+    )
+
+
 def _definite(
     record: dict[str, Yaml],
     gram: GramTensor,
@@ -276,14 +299,15 @@ def _definite(
             _theta_series_prefix(integral_lattice, minimum, existing_length)
         )
         block["root_system"] = list(_norm_two_root_types(integral_lattice))
-    components = computation_lattice.reflective_root_system_components()
     block["roots"] = [
-        {
-            "type": component.type,
-            "scale": rational(component.scale / rescaling),
-            "simple_roots": [list(root) for root in component.simple_roots],
-        }
-        for component in components
+        {"type": root_type, "scale": rational(scale), "simple_roots": [list(root) for root in roots]}
+        for root_type, scale, roots in sorted(
+            (
+                _root_component(computation_lattice, component, rescaling)
+                for component in computation_lattice.reflective_root_system_components()
+            ),
+            key=lambda entry: (-len(entry[2]), entry[0], entry[2]),
+        )
     ]
     for field in model.DefiniteData.model_fields:
         if field not in block and field in declared:
