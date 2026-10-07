@@ -288,6 +288,63 @@ class TopologicalSpaces(OwnedCategory):
         def continuous_map(self, codomain, map_):
             return self.Mor(codomain)(map_)
 
+        def integral_singular_cohomology(self, degree):
+            r"""``H^degree(X; ZZ)``, the singular cohomology of this space with integer coefficients.
+
+            A realization that computes the group supplies this method; the
+            spaces without such a realization stop here.
+            """
+            assert False, (
+                f"the integral singular cohomology H^{degree}({self}; ZZ) is computed only for the "
+                "complex realizations of smooth complete toric varieties and smooth projective "
+                "complete intersections over QQ"
+            )
+
+        def betti_number(self, degree):
+            r"""``b_k(X) = rank H^k(X; ZZ)``, the ``k``-th Betti number.
+
+            Hatcher, *Algebraic Topology* [Hat02], §2.2 (before Thm. 2.44),
+            defines ``b_k`` as the rank of ``H_k(X; ZZ)``.  When ``H_k`` and
+            ``H_{k-1}`` are finitely generated, Cor. 3.3 (universal
+            coefficients) gives ``H^k = H_k / T_k + T_{k-1}`` with ``T`` the
+            torsion, so ``H^k`` and ``H_k`` have the same rank.
+            """
+            return self.integral_singular_cohomology(degree).module_rank()
+
+        def euler_characteristic(self):
+            r"""``chi(X) = sum_k (-1)^k b_k(X)``.
+
+            Hatcher [Hat02], Thm. 2.44: for a finite CW complex ``X``,
+            ``chi(X) = sum_n (-1)^n rank H_n(X)``.  The sum runs over the
+            degrees up to the dimension of a finite CW complex homotopy
+            equivalent to ``X``, which the realization states in
+            :meth:`_finite_cw_dimension`.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            integers = _own_ring(SageZZ)
+            total = integers.zero()
+            for degree in range(int(self._finite_cw_dimension()) + 1):
+                betti = integers(int(self.betti_number(degree)))
+                total += betti if degree % 2 == 0 else -betti
+            return total
+
+        def _finite_cw_dimension(self):
+            r"""A bound ``d`` with ``X`` homotopy equivalent to a finite CW complex of dimension ``<= d``.
+
+            Protected contract of :class:`TopologicalSpaces`.  The owner is
+            this category; a realization engine that knows a finite CW
+            structure up to homotopy overrides it and returns a Python
+            ``int``.  The only caller is :meth:`euler_characteristic`, which
+            needs the degrees where ``H^k`` can be nonzero.  A space without
+            such a statement stops here.
+            """
+            assert False, (
+                f"{self} is not known to have the homotopy type of a finite CW complex, so its "
+                "Euler characteristic is not defined by Hatcher, Thm. 2.44"
+            )
+
 
 __all__ = [
     "ContinuousMap",

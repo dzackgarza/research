@@ -1,8 +1,10 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
+from sage.all import CC as SageCC
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -31,6 +33,8 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.owned_category import _object_of
 
 
 class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
@@ -1317,6 +1321,202 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
 def _toric_hodge_structure(scheme):
     r"""Return the pure diagonal Hodge data of a smooth complete toric complex realization."""
     return _ToricHodgeData(scheme)
+
+
+def _complete_intersection_integral_singular_cohomology(scheme, degree):
+    r"""``H^degree(X(CC), ZZ)`` of a smooth projective complete intersection ``X`` over ``QQ``.
+
+    Let ``X <= P^{n+c}`` be smooth of dimension ``n >= 1``, cut out by
+    equations of degrees ``d_1, ..., d_c``.  Dimca, *Singularities and
+    Topology of Hypersurfaces* [Dim92], Ch. 5, §3:
+
+    - Lemma (3.1): ``H^*(X; ZZ)`` is torsion-free;
+    - (3.2): ``H^k(X) = H^k(P^n)`` for ``k != n`` (the Lefschetz
+      hyperplane theorem, Lazarsfeld [Laz04] Thm. 3.1.17 and
+      Example 3.1.31 for complete intersections, with Poincare duality);
+    - (3.4): ``chi(X) = <c_n(X), [X]>``, and the normal bundle sequence gives
+      ``(1 + a)^{n+c+1} = c(X) (1 + d_1 a) ... (1 + d_c a)`` with
+      ``a^n = d_1 ... d_c g`` for ``g`` a generator of ``H^{2n}(X)``.
+
+    So ``chi(X) = d_1 ... d_c [t^n] (1 + t)^{n+c+1} / prod (1 + d_i t)``, and
+    the even degrees ``k != n`` contribute ``n + 1 - [n even]`` to the
+    alternating sum, which leaves
+    ``b_n = (-1)^n (chi(X) - (n + 1) + [n even])``.
+
+    A smooth quartic surface is a K3 surface, and its middle cohomology with
+    the cup product is the K3 lattice (Huybrechts, *Lectures on K3
+    Surfaces* [Huy16], Ch. 1, Prop. 3.5); that case returns the groups of
+    the marked K3 topology, which carry the cup product.
+    """
+    from sage.rings.power_series_ring import PowerSeriesRing
+
+    from dzack_research.preamble.categories.schemes.complete_intersections import (
+        ProjectiveCompleteIntersections,
+    )
+
+    base = scheme.scheme_base_ring()
+    assert scheme in ProjectiveCompleteIntersections(base), (
+        f"the Lefschetz computation of H^*({scheme}(CC); ZZ) needs a projective complete "
+        f"intersection, but {scheme} is in {scheme.category()}"
+    )
+    assert bool(scheme.is_smooth()), (
+        f"the Lefschetz computation of H^*({scheme}(CC); ZZ) (Dimca, Ch. 5, §3) needs a smooth "
+        f"complete intersection, and {scheme} is singular"
+    )
+    dimension = int(scheme.expected_dimension())
+    assert dimension >= 1, (
+        f"the Lefschetz computation of H^*({scheme}(CC); ZZ) (Dimca, Ch. 5, (2.1)) needs "
+        f"dimension n >= 1, but {scheme} has dimension {dimension}"
+    )
+    degree = int(degree)
+    degrees = tuple(int(value) for value in scheme.defining_degrees())
+    if (dimension, degrees) == (2, (4,)):
+        return scheme.integral_topology().integral_cohomology(degree)
+    realization = "complex analytic realization under the selected QQ-to-CC embedding"
+    if degree < 0 or degree > 2 * dimension:
+        return _free_integral_topology_group(scheme, degree, 0, realization)
+    if degree != dimension:
+        return _free_integral_topology_group(scheme, degree, 1 - degree % 2, realization)
+    series = PowerSeriesRing(SageZZ, "t", default_prec=dimension + 1)
+    t = series.gen()
+    chern = (1 + t) ** (dimension + len(degrees) + 1)
+    for equation_degree in degrees:
+        chern *= ~(1 + equation_degree * t)
+    euler = chern[dimension]
+    for equation_degree in degrees:
+        euler *= equation_degree
+    middle = (-1) ** dimension * (euler - (dimension + 1) + (1 - dimension % 2))
+    return _free_integral_topology_group(scheme, degree, int(middle), realization)
+
+
+class _ComplexRealizationTopologyData(SageObject):
+    r"""The analytic topology of ``X(CC)``.
+
+    The open sets are those of the topology induced on each affine chart by
+    the Euclidean topology of ``CC^r``.  No subset of ``X(CC)`` other than
+    the empty set and the whole space is represented, so openness is decided
+    for those two only.
+    """
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+
+    def open_subsets(self, space):
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
+
+    def is_open_subset(self, space, subset) -> bool:
+        power = space.power_set()
+        selected = power(subset)
+        match selected:
+            case _ if selected == power.bottom():
+                return True
+            case _ if selected == power.top():
+                return True
+            case _:
+                assert False, (
+                    f"whether {subset} is open in {space} is decided only for the empty set and "
+                    "the whole space: no other subset of the complex points is represented"
+                )
+
+
+class _ComplexRealizationEngine:
+    r"""Private realization of ``X(CC)`` along ``sigma: k -> CC`` in ``TopologicalSpaces``."""
+
+    def __init__(self, scheme, scalar_embedding, **rest) -> None:
+        self._scheme = scheme
+        self._scalar_embedding = scalar_embedding
+        super().__init__(**rest)
+
+    def scheme(self):
+        return self._scheme
+
+    def scalar_embedding(self):
+        return self._scalar_embedding
+
+    def __contains__(self, point) -> bool:
+        return element_parent(point) is self
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, point):
+        match element_parent(point) is self:
+            case True:
+                return point
+            case False:
+                assert False, (
+                    f"{point} is not a point of {self}: no complex point of {self.scheme()} is "
+                    "constructed"
+                )
+
+    @cached_method
+    def integral_singular_cohomology(self, degree):
+        r"""``H^degree(X(CC); ZZ)``, through the theorem that computes it for the category of ``X``.
+
+        - a smooth complete toric variety: the cycle map ``CH^k -> H^{2k}`` is
+          an isomorphism and odd cohomology vanishes (Danilov--Jurkiewicz);
+        - a smooth projective complete intersection: the Lefschetz hyperplane
+          theorem and the Euler number of its Chern class (Dimca, Ch. 5, §3).
+        """
+        from dzack_research.preamble.categories.schemes.complete_intersections import (
+            ProjectiveCompleteIntersections,
+        )
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+            ToricSchemes,
+        )
+
+        scheme = self.scheme()
+        base = scheme.scheme_base_ring()
+        match scheme:
+            case _ if scheme in ToricSchemes(base):
+                return _toric_integral_singular_cohomology(scheme, degree)
+            case _ if scheme in ProjectiveCompleteIntersections(base):
+                return _complete_intersection_integral_singular_cohomology(scheme, degree)
+            case _:
+                assert False, (
+                    f"H^{degree}({self}; ZZ) is computed only for smooth complete toric varieties "
+                    f"and smooth projective complete intersections, and {scheme} is in "
+                    f"{scheme.category()}"
+                )
+
+    def _finite_cw_dimension(self):
+        r"""``2 dim X`` for smooth ``X``: the protected contract of :class:`TopologicalSpaces`.
+
+        Dimca [Dim92], Ch. 1, (6.10): an algebraic variety has the homotopy
+        type of a finite CW complex.  Lazarsfeld [Laz04], §3.1.A: a
+        nonsingular complex variety of dimension ``n`` is a ``C^infty``
+        manifold of real dimension ``2n``, hence of the homotopy type of a CW
+        complex of dimension ``<= 2n``.
+        """
+        scheme = self.scheme()
+        assert bool(scheme.is_smooth()), (
+            f"the bound 2 dim X on the CW dimension of {self} is stated (Lazarsfeld, §3.1.A) for "
+            f"nonsingular X, and {scheme} is singular"
+        )
+        return 2 * int(scheme.dimension())
+
+    def _repr_(self) -> str:
+        return f"Complex points of {self.scheme()} along {self.scalar_embedding()}"
+
+
+@cached_function(key=lambda scheme, scalar_embedding: (id(scheme), id(scalar_embedding)))
+def _complex_realization(scheme, scalar_embedding):
+    return _object_of(
+        TopologicalSpaces(),
+        _engine=(TopologicalSpaces(), _ComplexRealizationEngine, None),
+        topology_data=_ComplexRealizationTopologyData(scheme),
+        scheme=scheme,
+        scalar_embedding=scalar_embedding,
+    )
+
+
+@cached_function
+def _rational_complex_embedding():
+    r"""The embedding ``QQ -> CC``; it is the only one, since ``QQ`` is the prime field."""
+    rationals = _own_ring(SageQQ)
+    complexes = _own_ring(SageCC)
+    return rationals.Mor(complexes)(lambda scalar: complexes(scalar))
 
 
 __all__ = [

@@ -16,6 +16,7 @@ is ``X_{R'} -> X`` and its right projection is the structure morphism.
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -343,7 +344,16 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return _QuarticK3IntegralTopology(self)
 
         def integral_singular_cohomology(self, degree):
-            return self.integral_topology().integral_cohomology(degree)
+            r"""``H^degree(X(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _rational_complex_embedding,
+            )
+
+            assert _engine_ring(self.scheme_base_ring()) is SageQQ, (
+                f"H^{degree}({self}(CC); ZZ) is computed along the unique embedding QQ -> CC, but "
+                f"{self} is over {self.scheme_base_ring()}"
+            )
+            return self.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
 
         @cached_method
         def hodge_structure(self):

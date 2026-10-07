@@ -2499,83 +2499,6 @@ class Schemes(OwnedCategoryOverBaseRing):
                 case _:
                     return bool(_engine_scheme(self).is_smooth())
 
-        def betti_number(self, degree):
-            r"""``b_k(X) = rank H^k(X(CC), ZZ)``, the ``k``-th Betti number of the complex realization.
-
-            Hatcher, *Algebraic Topology* [Hat02], §2.2 (before Thm. 2.44):
-            the ``k``-th Betti number of a space is the rank of its ``k``-th
-            integral (co)homology group; for a finite CW complex the universal
-            coefficient theorem makes the ranks of ``H_k`` and ``H^k`` equal.
-            The space is the complex realization whose integral singular
-            cohomology :meth:`integral_singular_cohomology` returns, so the
-            routed cases are those whose category supplies that cohomology.
-            """
-            from dzack_research.preamble.categories.schemes.complete_intersections import (
-                ProjectiveCompleteIntersections,
-            )
-            from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-                ToricSchemes,
-            )
-
-            base = self.scheme_base_ring()
-            match self:
-                case _ if self in ToricSchemes(base):
-                    return self.integral_singular_cohomology(degree).module_rank()
-                case _ if self in ProjectiveCompleteIntersections(base):
-                    return self.integral_singular_cohomology(degree).module_rank()
-                case _:
-                    assert False, (
-                        f"the Betti number b_{degree} of {self} is the rank of the integral singular "
-                        "cohomology of its complex realization, which the preamble constructs only for "
-                        "toric schemes and projective complete intersections"
-                    )
-
-        def euler_characteristic(self):
-            r"""``chi(X) = sum_k (-1)^k b_k(X)`` of the complex realization.
-
-            Hatcher [Hat02], §2.2, Thm. 2.44: for a finite CW complex the
-            Euler characteristic is the alternating sum of the ranks of its
-            homology groups.  The complex realization of a scheme of complex
-            dimension ``n`` is a finite CW complex of real dimension ``2n``,
-            so the sum runs over ``0 <= k <= 2n``.
-            """
-            integers = _own_ring(SageZZ)
-            total = integers.zero()
-            for degree in range(2 * int(self.dimension()) + 1):
-                betti = integers(int(self.betti_number(degree)))
-                total += betti if degree % 2 == 0 else -betti
-            return total
-
-        def hodge_number(self, p, q):
-            r"""``h^{p,q}(X) = dim H^q(X, Omega^p_X)`` of a smooth proper scheme over a field.
-
-            Huybrechts, *Complex Geometry* [Huy05], Def. 2.2.23: the Hodge
-            numbers of a compact complex manifold ``X`` are
-            ``h^{p,q}(X) = dim H^q(X, Omega^p_X)``.  The routed cases are the
-            categories whose pure Hodge structure the preamble constructs;
-            each realization states the theorem it uses to compute the
-            dimension.
-            """
-            from dzack_research.preamble.categories.schemes.complete_intersections import (
-                ProjectiveCompleteIntersections,
-            )
-            from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-                ToricSchemes,
-            )
-
-            base = self.scheme_base_ring()
-            match self:
-                case _ if self in ToricSchemes(base):
-                    return self.hodge_structure().hodge_number(p, q)
-                case _ if self in ProjectiveCompleteIntersections(base):
-                    return self.hodge_structure().hodge_number(p, q)
-                case _:
-                    assert False, (
-                        f"the Hodge number h^({p},{q}) of {self} is dim H^{q}(X, Omega^{p}) for a smooth "
-                        "proper scheme over a field, which the preamble computes only for smooth complete "
-                        "toric schemes and projective complete intersections"
-                    )
-
         def is_calabi_yau(self) -> bool:
             r"""Whether ``X`` is smooth and proper with ``omega_X ~= O_X``.
 
@@ -2850,6 +2773,35 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_finite_type(self):
                 return True
 
+            def complex_realization(self, scalar_embedding):
+                r"""``X(CC)`` along ``sigma: k -> CC``, an object of :class:`TopologicalSpaces`.
+
+                The points are the ``CC``-points of the base change
+                ``X x_{k, sigma} CC``, and the topology is the analytic one:
+                on each affine chart ``X_i <= A^r``, the topology induced by
+                the Euclidean topology of ``CC^r``.  Finite type is the
+                hypothesis that makes each chart a closed subset of some
+                ``CC^r``.  The space depends on ``sigma``, so the embedding is
+                part of the input.  Dimca [Dim92], Ch. 1, (6.10): ``X(CC)``
+                has the homotopy type of a finite CW complex.
+                """
+                from sage.all import CC as SageCC
+
+                from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                    _complex_realization,
+                )
+
+                assert scalar_embedding.domain() is self.scheme_base_ring(), (
+                    f"the complex points of {self} are taken along an embedding of its base "
+                    f"{self.scheme_base_ring()} into CC, but {scalar_embedding} has domain "
+                    f"{scalar_embedding.domain()}"
+                )
+                assert _engine_ring(scalar_embedding.codomain()) is SageCC, (
+                    f"the complex points of {self} are taken along an embedding into CC, but "
+                    f"{scalar_embedding} has codomain {scalar_embedding.codomain()}"
+                )
+                return _complex_realization(self, scalar_embedding)
+
         def an_object(self):
             r"""The affine line, of finite type over the base ring."""
             return AffineSpaces(self.base_ring())(1)
@@ -2876,6 +2828,53 @@ class Schemes(OwnedCategoryOverBaseRing):
         def an_object(self):
             r"""The projective line, proper because it is projective (Stacks, Tag 01WC)."""
             return ProjectiveSpaces(self.base_ring())(1)
+
+        class Smooth(CategoryWithAxiom):
+            r"""Smooth proper schemes over the base.
+
+            Over a field ``k`` these are the schemes whose Hodge numbers
+            ``h^{p,q} = dim_k H^q(X, Omega^p_{X/k})`` are defined: the
+            cohomology of a coherent sheaf on a proper scheme over a field is
+            finite-dimensional, and smoothness makes ``Omega^p_{X/k}``
+            locally free.
+            """
+
+            def an_object(self):
+                r"""The projective line, smooth and proper over the base."""
+                return ProjectiveSpaces(self.base_ring())(1)
+
+            class ParentMethods:
+                def hodge_number(self, p, q):
+                    r"""``h^{p,q}(X) = dim_k H^q(X, Omega^p_{X/k})``.
+
+                    Huybrechts, *Complex Geometry* [Huy05], Def. 2.2.23,
+                    states it for a compact complex manifold.  The routed
+                    categories are those whose pure Hodge structure the
+                    preamble constructs; each realization cites the theorem
+                    it computes the dimension by.
+                    """
+                    from dzack_research.preamble.categories.schemes.complete_intersections import (
+                        ProjectiveCompleteIntersections,
+                    )
+                    from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+                        ToricSchemes,
+                    )
+
+                    base = self.scheme_base_ring()
+                    assert base in OwnedFields(), (
+                        f"the Hodge number h^({p},{q}) = dim H^{q}(X, Omega^{p}) is a dimension over "
+                        f"the base field, but {self} is over {base}, which is not a field"
+                    )
+                    match self:
+                        case _ if self in ToricSchemes(base):
+                            return self.hodge_structure().hodge_number(p, q)
+                        case _ if self in ProjectiveCompleteIntersections(base):
+                            return self.hodge_structure().hodge_number(p, q)
+                        case _:
+                            assert False, (
+                                f"h^({p},{q})({self}) is computed only for smooth complete toric "
+                                "varieties over QQ and smooth quartic K3 surfaces over QQ"
+                            )
 
     class Integral(CategoryWithAxiom):
         r"""Schemes that are reduced and irreducible."""
