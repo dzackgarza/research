@@ -1490,7 +1490,7 @@ of this specification.
   spelling of Sage's `proof.arithmetic()`; the session import exports it.  A
   validator is a method decorated with `@validator`, named `validate_<law>`
   (`validate_linearity`, `validate_injectivity`, `validate_surjectivity`,
-  `validate_form_square`, `validate_lift`), that raises `ValueError` when the
+  `validate_form_preservation`, `validate_lift`), that raises `ValueError` when the
   object fails the law.  It takes `check=True` by default, so a call by hand
   runs; an element constructor calls each validator of its category with its
   own `check` argument, which defaults to `False`.  A membership that states a

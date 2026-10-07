@@ -632,16 +632,17 @@ class GradedDerivation(ModuleElement):
         self._function = function
 
     def _graded_derivation_derivation(self):
-        r"""Return a construction-derived graded-derivation premise, or ``None`` for a stated map."""
+        r"""Return the decision a construction supplies, or ``None`` for a map given as a function on elements."""
         return None
 
     @cached_method
     def _graded_derivation_decision(self):
-        r"""The decision on linearity, degree and graded Leibniz that the construction supplies.
+        r"""Return the decision on linearity, degree preservation and the graded Leibniz rule.
 
-        A stated map carries no theorem, so its laws are ``Unknown``; a
-        construction-derived map carries ``True`` or ``Unknown``.  Read on the
-        first request, not at construction (``OWN-22``).
+        For a map given as a function on elements the decision is ``Unknown``;
+        for a map that a construction produced it is the decision that
+        construction supplies, ``True`` or ``Unknown``.  Read on the first
+        request, not at construction (``OWN-22``).
         """
         derived = self._graded_derivation_derivation()
         match derived:
@@ -828,14 +829,14 @@ def _combined_graded_derivation_decision(derivations):
 
 
 class _DerivedGradedDerivation(GradedDerivation):
-    r"""A graded derivation whose law premise is transferred from its operands."""
+    r"""A graded derivation whose decision is the conjunction of its operands' decisions."""
 
-    def __init__(self, parent, function, premise) -> None:
-        self._derived_graded_derivation_premise = premise
+    def __init__(self, parent, function, operand_decision) -> None:
+        self._operand_graded_derivation_decision = operand_decision
         super().__init__(parent, function)
 
     def _graded_derivation_derivation(self):
-        return self._derived_graded_derivation_premise
+        return self._operand_graded_derivation_decision
 
 
 class _ConstructedGradedDerivation(GradedDerivation):

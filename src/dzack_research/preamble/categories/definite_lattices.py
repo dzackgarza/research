@@ -256,7 +256,7 @@ def _root_sublattice(lattice):
     from sage.combinat.root_system.cartan_type import CartanType
     from sage.graphs.graph import Graph
 
-    from dzack_research.preamble.categories._lattice import _root_system_label
+    from dzack_research.preamble.categories._lattice import _root_system_type_name
 
     root_vectors = tuple(lattice.roots())
     if not root_vectors:
@@ -297,7 +297,7 @@ def _root_sublattice(lattice):
     recognized = component_types[0] if len(component_types) == 1 else CartanType(component_types)
 
     if lattice.is_negative_definite():
-        return lattice._root_subobject_on(ordered, _root_system_label(recognized))
+        return lattice._root_subobject_on(ordered, _root_system_type_name(recognized))
     return lattice.subobject_on(ordered)
 
 

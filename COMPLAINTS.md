@@ -279,10 +279,11 @@ the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
 ### A Vinberg invariant is not yet a point of the projective line
 
-The Vinberg invariant of two mirrors is the point
-`[4 b(r,s)^2 : q(r) q(s)]` of `P^1`, and an `R`-point of `P^1_R` is a
-morphism `Spec R -> P^1_R` (Vinberg, *Hyperbolic reflection groups*, 1985,
-section 1). `VinbergInvariantMatrices.vinberg_invariant`
+The invariant of two mirrors is the point `[4 b(r,s)^2 : q(r) q(s)]` of
+`P^1`; for normals of positive square it dehomogenizes to `4 g^2`, where `g`
+is the entry of the Gram matrix of the unit normals (Vinberg, *Hyperbolic
+reflection groups*, 1985, section 1). An `R`-point of `P^1_R` is a morphism
+`Spec R -> P^1_R`. `VinbergInvariantMatrices.vinberg_invariant`
 (`categories/vinberg_invariants.py`) asks the owned scheme
 `ProjectiveSpaces(R)(1)` to accept the pair `[numerator, denominator]`, and
 that scheme has no element constructor: the call raises `AttributeError`
@@ -363,7 +364,7 @@ Repair: `a-finite-cardinal-is-a-natural-number` in TODO.
 
 The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
 their vertex sets, form a finite partially ordered set, and so do the
-`Aut`-orbits of subdiagrams under the orbit order. `CoxeterDiagrams`
+`Aut`-orbits of subdiagrams under the order that inclusion induces on orbits. `CoxeterDiagrams`
 (`categories/coxeter_diagrams.py`) returns both as Sage `Poset` objects
 through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on`: the six
 public methods `subdiagram_poset`, `elliptic_subdiagram_poset`,
@@ -380,7 +381,8 @@ and `Groups.Coxeter` (`categories/group/groups.py`) passes any argument
 other than the owned Coxeter matrix to Sage's `CoxeterGroup` unchanged
 (`OWN-04`). `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
 **Dependency path:** finite posets in `PartiallyOrderedSets()` from
-`(X, <=)` -> the subdiagram and orbit orders -> the public poset methods.
+`(X, <=)` -> inclusion of subdiagrams and the order it induces on
+`Aut`-orbits -> the public poset methods.
 **Partial capability:** the Coxeter matrix is the owned function
 `m: V x V -> Card` (`coxeter_matrix()`), and the Coxeter graph and the root
 intersection graph are objects of `LabelledGraphs()`.

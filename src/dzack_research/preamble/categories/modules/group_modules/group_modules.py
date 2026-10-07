@@ -998,7 +998,7 @@ class GroupModuleMorphismMethods:
             elementwise=elementwise,
         )
         self._coefficient_morphism = underlying
-        self._equivariance_premise = equivariance_decision
+        self._supplied_equivariance_decision = equivariance_decision
         self._selected_group_module_lift_exact = bool(selected_lift_exact)
         super().__init__(
             parent,
@@ -1016,14 +1016,14 @@ class GroupModuleMorphismMethods:
     def equivariance_decision(self):
         r"""Return whether ``f rho_M(g) = rho_N(g) f`` for all ``g``, computed on first request.
 
-        A construction that gives equivariance supplies it as its premise;
+        A construction that decides equivariance supplies that decision;
         otherwise the parent decides it on the selected group generators.
         """
-        match self._equivariance_premise:
+        match self._supplied_equivariance_decision:
             case None:
                 return self.parent().is_equivariant(self._coefficient_morphism)
-            case premise:
-                return premise
+            case decision:
+                return decision
 
     @validator
     def validate_equivariance(self) -> None:

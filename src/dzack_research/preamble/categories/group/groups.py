@@ -613,8 +613,8 @@ def _computed_finitely_presented_engine(group):
             assert False, f"no finite presentation of {group} can be computed: this is available only for permutation groups, finite abelian groups, and finite matrix groups"
 
 
-def _group_framing_morphism(group, source, labels, generator_morphism):
-    r"""Realize one selected set-of-generators map as the induced group morphism."""
+def _group_generating_epimorphism(group, source, labels, generator_morphism):
+    r"""Return the group morphism ``F(S) -> group`` induced by a map of the free basis ``S`` into ``group``."""
     assert source.free_basis() is labels, (
         f"the free group {source} does not have {labels} as its free basis, so it cannot map onto {group} by sending the free generators to the elements indexed by {labels}"
     )
@@ -662,7 +662,7 @@ def _selected_group_resolution(group, source, labels, generator_morphism):
         Resolutions,
     )
 
-    augmentation = _group_framing_morphism(group, source, labels, generator_morphism)
+    augmentation = _group_generating_epimorphism(group, source, labels, generator_morphism)
     free = GroupsWithChosenFreeBasis()
     return Resolutions(OwnedGroups(), free, 0, free).selected_degree_zero(
         group,
@@ -740,7 +740,7 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
                 lambda label: degree_one.free_generator(("generator", label))
             )
         )
-        augmentation = _group_framing_morphism(
+        augmentation = _group_generating_epimorphism(
             group, source, labels, generator_morphism
         )
         return OwnedGroups().FinitelyPresentedAsGroup().resolution_category().selected_presentation(
@@ -1138,7 +1138,7 @@ def _own_group(
     object, the proved refinements, the catalogue notation, the chosen free
     basis, and—when this is a computed presented model—the exact source group.
     Its comparison images are derived from that source group's selected
-    framing rather than retained a second time.  Sage groups compare
+    group resolution rather than retained a second time.  Sage groups compare
     structurally, so the engine enters the key by identity, and the cache keeps
     the engine alive while its owned group is.
     """
@@ -2129,9 +2129,9 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         r"""An elementwise group map on a finite domain.
 
         This is the finite analogue of specifying a map on chosen generators:
-        when no framing has been selected, the multiplication table itself is
-        a finite determining family, on which ``validate_homomorphism``
-        decides the law.
+        when no group generating set has been selected, ``validate_homomorphism``
+        decides the law ``f(gh) = f(g) f(h)`` on all pairs of elements of the
+        finite domain.
         """
         domain = self.domain()
         assert domain.is_finite() is True, (
@@ -3959,9 +3959,9 @@ class Subgroups(OwnedParameterizedCategory):
 class GeneratedSubgroups(OwnedParameterizedCategory):
     r"""Subgroups equipped with the selected family used to generate them.
 
-    The map from the free group on that family is the selected framing
-    epimorphism. Its generator images are the supplied ambient elements,
-    not a new generating family chosen by the engine.
+    The map from the free group on that set is the selected generating
+    epimorphism. Its generator images are the supplied elements of the
+    supergroup, not a new generating set chosen by the engine.
     """
 
     @staticmethod

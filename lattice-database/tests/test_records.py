@@ -78,7 +78,7 @@ def test_derive_serializes_preamble_reduction_fields_when_available() -> None:
     assert site.zeta_tex(lattice, cone=True) == "\\frac{\\zeta^\\Sigma(s - 1)\\, L^\\Sigma(s - 1, \\chi_{-3})}{L^\\Sigma(s, \\chi_{-3})}"
 
 
-def test_derive_computes_rational_definite_invariants_through_the_integral_reflection_model() -> None:
+def test_derive_computes_rational_definite_invariants_through_the_integral_twist() -> None:
     record = records.derive(declared("A2 dual", [["2/3", "1/3"], ["1/3", "2/3"]]))
     lattice = Lattice.model_validate(record)
     assert lattice.integral is None

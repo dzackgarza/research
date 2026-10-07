@@ -567,9 +567,15 @@ class _OscarLatticeAdapter:
         r"""Decide whether ``(ZZ^n, first)`` and ``(ZZ^n, second)`` are isometric, by Hecke's ``is_isometric``.
 
         ``first`` and ``second`` are Sage integer Gram matrices of
-        nondegenerate lattices.  For an indefinite genus of rank at least 3
-        Hecke approximates a ``p``-adic isometry and decides whether its
-        spinor norm lies in the kernel of the improper spinor operators.
+        nondegenerate lattices ``L`` and ``M``.  For an indefinite genus of rank
+        at least 3 Hecke (``_is_isometric_indef``) answers ``False`` when the
+        genera differ and ``True`` when the genus has no improper spinor
+        generators.  Otherwise it approximates an isometry ``f`` of the rational
+        quadratic spaces with ``f(L_p) = M_p`` at every prime ``p`` dividing
+        ``2 det L``, and answers whether the index ``r = [M : f(L) cap M]`` is
+        improperly automorphous (Conway and Sloane, *Sphere Packings, Lattices
+        and Groups*, chapter 15, Theorem 15, as Hecke's
+        ``improper_spinor_generators`` cites it).
         """
         answer = SageZZ(
             self._bridge().call(

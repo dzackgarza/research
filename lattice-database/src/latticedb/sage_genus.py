@@ -65,7 +65,7 @@ def _matrix_rows(morphism) -> list[list[int]]:
 
 def _orthogonal_group_data(lattice) -> tuple[int, list[list[list[int]]]]:
     """Serialize the preamble-owned ``O(L)`` and its selected generators."""
-    group = lattice.orthogonal_group().framing()
+    group = lattice.orthogonal_group().select_group_resolution()
     generators = [_matrix_rows(generator) for generator in group.group_generators()]
     return int(group.cardinality()), generators
 

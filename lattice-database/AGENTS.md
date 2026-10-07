@@ -52,7 +52,7 @@ check structural/reference/certificate coherence, and may construct the correspo
 objects and morphisms to validate stored mathematical claims. The mathematics remains owned by
 the preamble; verification only orchestrates those public operations and reports disagreements.
 Source-to-card collation is a separate provenance workflow. The site build reads cards and may
-request preamble-owned mathematical projections needed for publication.
+request the values that publication needs from preamble operations.
 
 No module under `src/latticedb` may import Sage, PARI/cypari2, python-flint or another mathematical
 engine directly. Preamble imports are the computational boundary and are expected wherever database

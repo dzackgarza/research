@@ -262,10 +262,12 @@ def _engine_affine_spectrum(algebra, base):
 
 
 def _engine_coercion_agreeing_on(pullback, determining):
-    r"""The canonical Sage coercion realizing ``pullback``, checked on a determining family.
+    r"""The canonical Sage coercion realizing ``pullback``, checked on ``determining``.
 
-    Agreement on a family on which two maps out of the source already agree is
-    agreement everywhere, so the coercion is an admissible realization exactly
+    ``determining`` is a set of elements of the source on which ring maps out
+    of the source are determined: the polynomial ring on them maps to the
+    source by an epimorphism of rings.  So agreement there is agreement
+    everywhere, so the coercion is an admissible realization exactly
     when it exists and matches the owned morphism there.
     """
     source = pullback.domain()
@@ -454,8 +456,9 @@ def _elements_determining_maps_out_of(algebra, base):
     recursively by a finite family for ``R/k``, carried into the algebra by its
     structure morphism.  A map out of ``S^{-1}A`` is fixed by its restriction
     along ``A -> S^{-1}A``, so localization towers recurse to the framed
-    algebra at their foot.  ``None`` states that no represented finite
-    determining family is available.
+    algebra at their foot.  So the polynomial ring over ``base`` on the
+    returned elements maps to ``algebra`` by an epimorphism of rings.  ``None``
+    states that no such finite set of elements is represented.
     """
     if algebra is base:
         return ()
@@ -975,9 +978,10 @@ class SchemeMorphismMethods:
     def __eq__(self, other) -> bool:
         r"""Decide equality on represented pullbacks, else on the native realizations.
 
-        Two affine morphisms are equal when their pullbacks agree on a family
-        determining maps out of the codomain algebra; a finite framing or the
-        foot of a localization tower supplies one.
+        Two affine morphisms are equal when their pullbacks agree on a set of
+        elements on which maps out of the codomain algebra are determined; a
+        finite set of algebra generators, or the one at the foot of a
+        localization tower, supplies it.
         """
         if self is other:
             return True

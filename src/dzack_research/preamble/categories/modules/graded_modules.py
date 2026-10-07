@@ -164,7 +164,7 @@ class GradedModuleMorphismMethods:
         degree_preservation=None,
     ) -> None:
         super().__init__(parent, images, elementwise=elementwise)
-        self._degree_preservation_premise = degree_preservation
+        self._supplied_degree_preservation_decision = degree_preservation
 
     def _degree_preservation_derivation(self):
         r"""Return a construction-derived degree-preservation decision, or ``None``."""
@@ -174,13 +174,13 @@ class GradedModuleMorphismMethods:
     def degree_preservation_decision(self):
         r"""Return the decision that this map preserves degree.
 
-        A premise supplied at construction, or one derived from the
+        A decision supplied at construction, or one derived from the
         construction, is returned as given; otherwise the decision is computed
         on the selected homogeneous generators on the first request
         (``OWN-22``).
         """
-        if self._degree_preservation_premise is not None:
-            return self._degree_preservation_premise
+        if self._supplied_degree_preservation_decision is not None:
+            return self._supplied_degree_preservation_decision
         derived = self._degree_preservation_derivation()
         return self._decide_degree_preservation() if derived is None else derived
 

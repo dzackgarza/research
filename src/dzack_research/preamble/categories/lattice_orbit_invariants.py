@@ -3,7 +3,7 @@
 This module owns the algorithms migrated from the former
 ``lattice-database/src/latticedb/sage_genus.py`` implementation.  The
 orthogonal group itself is never recomputed here: definite orbit calculations
-consume ``L.orthogonal_group().framing().group_generators()``.
+consume ``L.orthogonal_group().select_group_resolution().group_generators()``.
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def _isometry_matrix(isometry) -> Matrix_integer_dense:
 def _orthogonal_generator_matrices(lattice) -> list[Matrix_integer_dense]:
     return [
         _isometry_matrix(generator)
-        for generator in lattice.orthogonal_group().framing().group_generators()
+        for generator in lattice.orthogonal_group().select_group_resolution().group_generators()
     ]
 
 

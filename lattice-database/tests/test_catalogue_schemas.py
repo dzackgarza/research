@@ -189,7 +189,7 @@ def test_a_lattice_family_rejects_a_malformed_template() -> None:
         [0 if value == "-2*d" else value for value in row]
         for row in base["gram_template"]
     ]
-    with pytest.raises(ValidationError, match="occurs in the template"):
+    with pytest.raises(ValidationError, match="occurs in gram_template"):
         LatticeFamily.model_validate(base | {"gram_template": plain})
     # Mathematical claims are accepted by the schema and checked through the preamble in CI.
     rows = [list(row) for row in base["gram_template"]]

@@ -464,16 +464,16 @@ def _lattice_object(
 
 
 @cached_function
-def _lattice_on_gram(category, module, gram, names, root_system_label):
+def _lattice_on_gram(category, module, gram, names, root_system_type_name):
     r"""The lattice on ``module`` with Gram presentation ``gram``.
 
     A lattice is its module together with its form, so two constructions
     naming one module and one Gram presentation name one lattice; equal Grams
     hash equally, so this is Sage's own construction cache.  A
-    ``root_system_label`` over \(\mathbb Z\) places the lattice in
+    ``root_system_type_name`` over \(\mathbb Z\) places the lattice in
     ``RootLattices`` with the type of its root system as its datum.
     """
-    match root_system_label:
+    match root_system_type_name:
         case None:
             return _lattice_object(category, module, gram, names=names)
         case _:
@@ -485,7 +485,7 @@ def _lattice_on_gram(category, module, gram, names, root_system_label):
                 gram,
                 names=names,
                 extra_categories=(RootLattices(),),
-                construction_data={"root_system_label": root_system_label},
+                construction_data={"root_system_type_name": root_system_type_name},
             )
 
 
@@ -1494,7 +1494,7 @@ def _finite_crystallographic_cartan_type(data):
     return cartan_type
 
 
-def _root_system_label(cartan_type) -> str:
+def _root_system_type_name(cartan_type) -> str:
     r"""Return the label of a finite Cartan type, as ``A2`` or ``A2xA1``.
 
     The label is the name that ``Lattices(ZZ)(label)`` reads back: the
@@ -1506,7 +1506,7 @@ def _root_system_label(cartan_type) -> str:
             return f"{cartan_type.type()}{int(cartan_type.rank())}"
         case False:
             return "x".join(
-                _root_system_label(component)
+                _root_system_type_name(component)
                 for component in cartan_type.component_types()
             )
 
@@ -1567,7 +1567,7 @@ def _lattice_from_gram_tensor(
     names,
     module_generators,
     category,
-    root_system_label=None,
+    root_system_type_name=None,
 ):
     r"""The lattice with Gram presentation ``gram_tensor``.
 
@@ -1598,7 +1598,7 @@ def _lattice_from_gram_tensor(
         if module_generators is None
         else ring._fresh_free_module_on(generating_set)
     )
-    root_label = root_system_label if ring is _own_ring(SageZZ) else None
+    root_label = root_system_type_name if ring is _own_ring(SageZZ) else None
     return _lattice_on_gram(category, module, gram_tensor, selected_names, root_label)
 
 
@@ -1646,7 +1646,7 @@ def _root_lattice(cartan_type, ring, names, module_generators, category):
         names,
         module_generators,
         category,
-        root_system_label=_root_system_label(cartan_type),
+        root_system_type_name=_root_system_type_name(cartan_type),
     )
 
 

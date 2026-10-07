@@ -531,7 +531,7 @@ class DGAMor(CategoricalMor):
         )
 
     def _from_differential_preserving_underlying_morphism(self, morphism, decision=True):
-        r"""Lift an actual graded algebra morphism with a retained differential-law premise."""
+        r"""Lift a graded algebra morphism, with ``decision`` as its decision that it commutes with the differentials."""
         return self.element_class(
             self,
             morphism,

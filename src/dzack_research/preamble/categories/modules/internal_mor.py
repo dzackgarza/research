@@ -34,7 +34,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _InternalMorFunctorialMorphism(ModuleMorphism):
-    r"""Pre/postcomposition on an internal Mor with its actual linear premises."""
+    r"""Pre- and postcomposition on an internal Mor; its linearity decision conjoins those of the two maps."""
 
     def __init__(self, parent, source_map, target_map) -> None:
         self._source_map = source_map
