@@ -169,7 +169,7 @@ def _integral(
             if abs(int(factor)) > 1
         )
         block["discriminant_group"] = list(invariants)
-        if block["parity"] == "even" and all(factor == 2 for factor in invariants):
+        if lattice.is_even() and lattice.is_p_elementary(2):
             block["delta"] = int(lattice.delta())
         block["bad_reduction_primes"] = [
             int(prime) for prime in lattice.bad_reduction_primes()
@@ -427,21 +427,31 @@ def gram_problems(gram: GramTensor) -> list[str]:
     return []
 
 
-def isometry_invariants(lattice: Lattice):
-    """Cheap stored invariants used only to shortlist definite isometry comparisons."""
-    definite = lattice.definite
-    assert definite is not None
-    integral = lattice.integral
-    return (
-        lattice.rank,
-        lattice.definiteness,
-        lattice.determinant,
-        definite.minimum,
-        definite.kissing_number,
-        definite.root_system,
-        definite.theta_series,
-        None if integral is None else integral.discriminant_group,
+def _generator_blocks(formed, lines):
+    """The module generators of `formed`, cut into consecutive blocks at the card's subdivision lines."""
+    bounds = (0, *lines, int(formed.module_rank()))
+    labels = tuple(formed.module_generating_set())
+    return tuple(
+        tuple(formed.module_generator(label) for label in labels[low:high])
+        for low, high in zip(bounds, bounds[1:], strict=False)
     )
+
+
+def _mutually_orthogonal(blocks) -> bool:
+    """Whether every element of each block is orthogonal to every element of every later block."""
+    return all(
+        left.is_orthogonal_to(right)
+        for index, block in enumerate(blocks)
+        for later in blocks[index + 1 :]
+        for left in block
+        for right in later
+    )
+
+
+def _preserves_forms(source, target, images) -> bool:
+    """Whether the module map `source -> target` with these generator images preserves the forms."""
+    module_map = source.module_category().Mor(source, target)(images)
+    return source.Mor(target).preserves_forms(module_map)
 
 
 def local_admission_problems(lattice: Lattice) -> list[str]:
@@ -491,17 +501,14 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
                             f"integral.discriminant_group: stated {integral.discriminant_group}, computed {factors}"
                         )
                 if integral.delta is not None:
-                    try:
-                        delta = int(owned.delta())
-                    except (AssertionError, ValueError):
+                    if not (owned.is_even() and owned.is_p_elementary(2)):
                         found.append(
-                            "integral.delta: delta is stated outside the preamble domain where it is defined"
+                            "integral.delta: delta is defined only for an even 2-elementary lattice"
                         )
-                    else:
-                        if integral.delta != delta:
-                            found.append(
-                                f"integral.delta: stated {integral.delta}, computed {delta}"
-                            )
+                    elif integral.delta != int(owned.delta()):
+                        found.append(
+                            f"integral.delta: stated {integral.delta}, computed {int(owned.delta())}"
+                        )
     definite = lattice.definite
     if definite is not None:
         if formed.definiteness() not in ("positive_definite", "negative_definite"):
@@ -573,33 +580,27 @@ def relational_admission_problems(
                 if source_record.rank is None or source_record.gram_tensor is None:
                     valid = False
                     break
+                if offset + source_record.rank > len(span.embedding):
+                    valid = False
+                    break
                 source = ZZ.free_module(source_record.rank).equip_bilinear_form(
                     QQ, source_record.gram_tensor
                 ).twist(summand.scale)
                 rows = span.embedding[offset : offset + source_record.rank]
                 images = tuple(target(row) for row in rows)
                 offset += source_record.rank
-                try:
-                    source.Mor(target)(images)
-                except ValueError:
+                if not _preserves_forms(source, target, images):
                     valid = False
                 blocks.append(images)
             if offset != len(span.embedding):
                 valid = False
-            if valid and any(
-                left.b(right) != 0
-                for left_index, left_block in enumerate(blocks)
-                for right_block in blocks[left_index + 1 :]
-                for left in left_block
-                for right in right_block
-            ):
+            if valid and not _mutually_orthogonal(blocks):
                 valid = False
             if not valid:
                 found.append(
                     "root_span.embedding: the rows do not realize the stated orthogonal sum"
                 )
     if lattice.definite is not None:
-        invariants = isometry_invariants(lattice)
         compared = written if isometry_records is None else isometry_records
         source_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(
             QQ, lattice.gram_tensor
@@ -611,7 +612,6 @@ def relational_admission_problems(
                 or other.definite is None
                 or other.rank is None
                 or other.gram_tensor is None
-                or isometry_invariants(other) != invariants
                 or other.gram_tensor == lattice.gram_tensor
             ):
                 continue
@@ -619,8 +619,9 @@ def relational_admission_problems(
                 QQ, other.gram_tensor
             )
             other_lattice, other_multiplier = integral_reflection_model(other_formed)
-            if source_multiplier == other_multiplier and source_lattice.is_isometric(
-                other_lattice
+            if (
+                source_multiplier == other_multiplier
+                and source_lattice.is_isometric(other_lattice) is True
             ):
                 found.append(
                     f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
@@ -663,35 +664,21 @@ def morphism_problems(morphism, source: Lattice, target: Lattice) -> list[str]:
         QQ, target.gram_tensor
     )
     found: list[str] = []
-    try:
-        source_formed.Mor(target_formed)(
-            tuple(target_formed(image) for image in morphism.images)
-        )
-    except ValueError:
+    if not _preserves_forms(
+        source_formed,
+        target_formed,
+        tuple(target_formed(image) for image in morphism.images),
+    ):
         found.append(
             f"{morphism.name}: the matrix does not define the stated form-preserving morphism"
         )
-
-    def crosses_parts(formed, lines) -> bool:
-        bounds = (0, *lines, int(formed.module_rank()))
-        labels = tuple(formed.module_generating_set())
-        blocks = [
-            tuple(formed.module_generator(label) for label in labels[low:high])
-            for low, high in zip(bounds, bounds[1:], strict=False)
-        ]
-        return any(
-            left.b(right) != 0
-            for left_index, left_block in enumerate(blocks)
-            for right_block in blocks[left_index + 1 :]
-            for left in left_block
-            for right in right_block
-        )
-
-    if crosses_parts(target_formed, morphism.row_subdivisions):
+    if not _mutually_orthogonal(_generator_blocks(target_formed, morphism.row_subdivisions)):
         found.append(
             f"{morphism.name}: row_subdivisions do not cut orthogonal summands of the target"
         )
-    if crosses_parts(source_formed, morphism.column_subdivisions):
+    if not _mutually_orthogonal(
+        _generator_blocks(source_formed, morphism.column_subdivisions)
+    ):
         found.append(
             f"{morphism.name}: column_subdivisions do not cut orthogonal summands of the source"
         )

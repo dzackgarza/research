@@ -44,7 +44,7 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
     )
     by_name: dict[str, Path] = {}
     by_components: dict[GramTensor, Path] = {}
-    by_isometry_invariants: dict[object, dict[str, Lattice]] = {}
+    earlier_definite: dict[str, Lattice] = {}
     for entry in entries:
         lattice = entry.lattice
         if entry.path.stem != lattice.tag:
@@ -78,24 +78,14 @@ def lattice_problems(loaded: Corpus, root: Path) -> list[str]:
                 found.append(
                     f"{entry.path}: the related tag {related.tag} is not in the corpus"
                 )
-        invariants = (
-            records.isometry_invariants(lattice)
-            if lattice.definite is not None and lattice.gram_tensor is not None
-            else None
-        )
-        candidates = (
-            by_isometry_invariants.get(invariants, {})
-            if invariants is not None
-            else {}
-        )
         found.extend(
             f"{entry.path}: {problem}"
             for problem in records.relational_admission_problems(
-                lattice, by_tag, isometry_records=candidates
+                lattice, by_tag, isometry_records=earlier_definite
             )
         )
-        if invariants is not None:
-            by_isometry_invariants.setdefault(invariants, {})[lattice.tag] = lattice
+        if lattice.definite is not None and lattice.gram_tensor is not None:
+            earlier_definite[lattice.tag] = lattice
     return found
 
 

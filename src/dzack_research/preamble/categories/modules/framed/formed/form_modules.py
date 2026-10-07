@@ -173,6 +173,60 @@ def _value_from_module_element(formed_module, element):
     return formed_module.value_module()(coordinates(unit_label))
 
 
+def _mapped_value(domain, codomain, value_morphism, value):
+    r"""Return ``h(v)`` for a form value ``v`` of ``domain`` and the value map ``h``."""
+    return _value_from_module_element(
+        codomain, value_morphism(_value_as_module_element(domain, value))
+    )
+
+
+def _form_square_commutes(domain, codomain, module_morphism, value_morphism) -> bool:
+    r"""Whether ``h(b_M(x, y)) = b_N(f(x), f(y))`` for the pair ``(f, h)`` from ``M`` to ``N``.
+
+    A bilinear form is determined by its values on pairs of module generators,
+    and a quadratic form ``q`` by ``q(s)`` and ``q(s + t)`` on generators, so
+    the square is decided on those finitely many elements.
+    """
+    source_form = domain.form()
+    target_form = codomain.form()
+    source_generators = tuple(domain.module_generators())
+
+    def map_value(value):
+        return _mapped_value(domain, codomain, value_morphism, value)
+
+    if _is_bilinear_form(source_form):
+        if not _is_bilinear_form(target_form):
+            raise TypeError(
+                f"{domain} has a bilinear form, so a morphism out of it must land in a "
+                f"module with a bilinear form, but {codomain} has form {target_form}"
+            )
+        return all(
+            map_value(domain.b(left, right))
+            == codomain.b(module_morphism(left), module_morphism(right))
+            for left in source_generators
+            for right in source_generators
+        )
+    if _is_quadratic_form(source_form):
+        if not _is_quadratic_form(target_form):
+            raise TypeError(
+                f"{domain} has a quadratic form, so a morphism out of it must land in a "
+                f"module with a quadratic form, but {codomain} has form {target_form}"
+            )
+        probes = source_generators + tuple(
+            left + right
+            for index, left in enumerate(source_generators)
+            for right in source_generators[index + 1 :]
+        )
+        return all(
+            map_value(domain.norm(element)) == codomain.norm(module_morphism(element))
+            for element in probes
+        )
+    raise TypeError(
+        f"a morphism of formed modules requires a bilinear or quadratic form on its domain, "
+        f"but {domain} has form {source_form}"
+    )
+
+
 class FormedModuleMorphism:
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
@@ -225,52 +279,12 @@ class FormedModuleMorphism:
         return value_morphism is values.module_category().Mor(values, values).identity()
 
     def map_value(self, value):
-        source_element = _value_as_module_element(self.domain(), value)
-        return _value_from_module_element(
-            self.codomain(), self.value_morphism()(source_element)
-        )
+        return _mapped_value(self.domain(), self.codomain(), self.value_morphism(), value)
 
     def _check_form_square(self) -> None:
-        domain = self.domain()
-        source_form = self.domain().form()
-        target_form = self.codomain().form()
-        source_generators = tuple(self.domain().module_generators())
-        if _is_bilinear_form(source_form):
-            if not _is_bilinear_form(target_form):
-                raise TypeError(
-                    f"{self.domain()} has a bilinear form, so a morphism out of it must land in a "
-                    f"module with a bilinear form, but {self.codomain()} has form {target_form}"
-                )
-            commutes = all(
-                self.map_value(self.domain().b(left, right))
-                == self.codomain().b(
-                    self(left), self(right)
-                )
-                for left in source_generators
-                for right in source_generators
-            )
-        elif _is_quadratic_form(source_form):
-            if not _is_quadratic_form(target_form):
-                raise TypeError(
-                    f"{self.domain()} has a quadratic form, so a morphism out of it must land in a "
-                    f"module with a quadratic form, but {self.codomain()} has form {target_form}"
-                )
-            probes = source_generators + tuple(
-                left + right
-                for index, left in enumerate(source_generators)
-                for right in source_generators[index + 1 :]
-            )
-            commutes = all(
-                self.map_value(self.domain().norm(element))
-                == self.codomain().norm(self(element))
-                for element in probes
-            )
-        else:
-            raise TypeError(
-                f"a morphism of formed modules requires a bilinear or quadratic form on its domain, "
-                f"but {self.domain()} has form {source_form}"
-            )
-        if not commutes:
+        if not _form_square_commutes(
+            self.domain(), self.codomain(), self, self.value_morphism()
+        ):
             raise ValueError(
                 f"({self}, {self.value_morphism()}) is not a morphism of formed modules "
                 f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not equal "
@@ -523,6 +537,31 @@ class FormedModuleMor(CategoricalMor):
             datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
+
+    def preserves_forms(self, module_morphism) -> bool:
+        r"""Whether the module map ``f: M -> N`` preserves the forms: ``b_N(f(x), f(y)) = b_M(x, y)``.
+
+        These are the module maps that underlie the elements of this Mor
+        object whose value map is the identity, so the answer says whether
+        ``self(f)`` exists.  Both forms take values in one module.
+        """
+        domain = self.domain()
+        codomain = self.codomain()
+        assert module_morphism.domain() is domain and module_morphism.codomain() is codomain, (
+            f"{self} preserves forms along module maps {domain} -> {codomain}, but {module_morphism} is "
+            f"{module_morphism.domain()} -> {module_morphism.codomain()}"
+        )
+        values = _represented_value_module(domain)
+        assert _represented_value_module(codomain) is values, (
+            f"the forms of {domain} and {codomain} take values in {values} and "
+            f"{_represented_value_module(codomain)}, so a module map alone does not compare them"
+        )
+        return _form_square_commutes(
+            domain,
+            codomain,
+            module_morphism,
+            values.module_category().Mor(values, values).identity(),
+        )
 
     @cached_method
     def identity(self):
