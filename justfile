@@ -419,6 +419,28 @@ test-universe:
     fi
     echo "The proof surface stays inside the universe."
 
+# List coordinate conventions written outside the tensor package (OWN-24).
+# Which side a matrix acts on is fixed once in preamble/tensors/; anywhere
+# else a transpose or a matrix action is a convention chosen at a call site.
+tensor-boundary:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    files=$(git ls-files 'src/dzack_research/preamble/*.py' 'lattice-database/src/*.py' \
+        | grep -v '^src/dzack_research/preamble/tensors/')
+    total=0
+    for pattern in '$X.transpose()' '$X.T' '$X.matrix_action_right($$$A)' '$X.matrix_action_left($$$A)'; do
+        n=$(ast-grep run --lang python --pattern "$pattern" --json $files 2>/dev/null \
+            | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
+        total=$((total + n))
+        printf '%4d  %s\n' "$n" "$pattern"
+        [ "$n" -gt 0 ] && ast-grep run --lang python --pattern "$pattern" $files 2>/dev/null | grep -E '^[^ ].*:[0-9]+:' | head -40
+    done
+    if [ "$total" -gt 0 ]; then
+        echo "$total coordinate conventions outside preamble/tensors/: state pullback, composition, inverse or application instead."
+        exit 1
+    fi
+    echo "Every coordinate convention lives in preamble/tensors/."
+
 # Assemble the LLM-review context packet (review-packet.tar).
 #
 # The packet is the extensible context surface for the advisory review
