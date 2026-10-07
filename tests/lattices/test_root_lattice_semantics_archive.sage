@@ -17,7 +17,7 @@ def test_archived_a2_selected_simple_system_and_highest_root_are_live() -> None:
 
     diagram = lattice.dynkin_diagram()
     # The irreducible finite root systems of rank two are A2, B2 and G2, and
-    # only A2 is simply laced: its one bond has Coxeter exponent 3.
+    # only A2 is simply laced: its one bond has Coxeter matrix entry 3.
     assert diagram.is_connected()
     assert diagram.is_elliptic()
     assert diagram.coxeter_entry(diagram.vertex(0), diagram.vertex(1)) == 3

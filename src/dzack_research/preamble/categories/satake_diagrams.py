@@ -30,7 +30,7 @@ from sage.rings.rational_field import QQ
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.coxeter_diagrams import (
     CoxeterDiagrams,
-    _engine_coxeter_exponent,
+    _engine_coxeter_matrix_entry,
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -65,7 +65,7 @@ def _engine_opposition_images(diagram, black):
     group = CoxeterGroup(
         CoxeterMatrix(
             [
-                [_engine_coxeter_exponent(diagram.coxeter_entry(left, right)) for right in black]
+                [_engine_coxeter_matrix_entry(diagram.coxeter_entry(left, right)) for right in black]
                 for left in black
             ]
         ),

@@ -47,11 +47,11 @@ def _engine_cartan_type_data(value):
 
 
 def _coxeter_entry(q1, q2, pairing):
-    r"""Return the Coxeter exponent of the mirrors of two roots with squares ``q1``, ``q2``.
+    r"""Return the Coxeter matrix entry of the mirrors of two roots with squares ``q1``, ``q2``.
 
     The angle \(\theta\) between the mirrors satisfies
     \(4\cos^2\theta = 4b^2/(q_1 q_2)\) for the pairing \(b\), a rational number
-    for roots of a rational form whatever its scale.  The exponent is \(m\)
+    for roots of a rational form whatever its scale.  The entry is \(m\)
     with \(4\cos^2(\pi/m)\) equal to it: \(0, 1, 2, 3\) give \(m = 2, 3, 4, 6\),
     and a value of at least \(4\) means parallel or divergent mirrors, \(m=\infty\).
     """
@@ -82,10 +82,10 @@ def _coxeter_entry(q1, q2, pairing):
     )
 
 
-def _engine_coxeter_exponent(entry):
-    r"""Lower a Coxeter exponent to Sage's matrix entry, which writes \(\aleph_0\) as ``-1``.
+def _engine_coxeter_matrix_entry(entry):
+    r"""Lower a Coxeter matrix entry to Sage's matrix entry, which writes \(\aleph_0\) as ``-1``.
 
-    An exponent is the order of \(s_v s_w\), so an owned cardinal is finite or
+    The entry \(m_{vw}\) is the order of \(s_v s_w\), so an owned cardinal is finite or
     \(\aleph_0\); an integer literal is lowered to Sage's integers.
     """
     match entry:
@@ -111,13 +111,13 @@ def _engine_coxeter_matrix_of(coxeter_matrix):
     values = {(pair[0], pair[1]): value for pair, value in coxeter_matrix.items()}
     vertices = tuple(dict.fromkeys(left for left, _right in values))
     return CoxeterMatrix(
-        [[_engine_coxeter_exponent(values[left, right]) for right in vertices] for left in vertices],
+        [[_engine_coxeter_matrix_entry(values[left, right]) for right in vertices] for left in vertices],
         index_set=vertices,
     )
 
 
 class CoxeterDiagramMorphism:
-    r"""A vertex map preserving every Coxeter exponent.
+    r"""A vertex map preserving every Coxeter matrix entry.
 
     A Coxeter diagram is its symmetric matrix ``(m_vw)``.  A morphism sends
     vertices to vertices and preserves that entire matrix, including the
@@ -1166,7 +1166,7 @@ class CoxeterDiagrams(OwnedCategory):
             return {
                 "root squares": "the vertex labels of root_intersection_graph(), omitted from TikZ",
                 "ordinary Coxeter bond": "m=3 is drawn without a label",
-                "other Coxeter bonds": "the Coxeter exponent labels the edge",
+                "other Coxeter bonds": "the Coxeter matrix entry m_vw labels the edge",
             }
 
         def node_color(self, vertex):
@@ -1347,7 +1347,7 @@ class CoxeterDiagrams(OwnedCategory):
                 coxeter_matrix = _engine_coxeter_matrix_of(coxeter_matrix)
             case list() | tuple():
                 entries = tuple(
-                    tuple(_engine_coxeter_exponent(entry) for entry in row) for row in coxeter_matrix
+                    tuple(_engine_coxeter_matrix_entry(entry) for entry in row) for row in coxeter_matrix
                 )
                 coxeter_matrix = CoxeterMatrix(
                     entries,
