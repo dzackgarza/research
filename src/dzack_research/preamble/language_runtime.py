@@ -9,13 +9,11 @@ from __future__ import annotations
 
 from typing import cast
 
-from sage.structure.element import parent as element_parent
 from sageparse import Context, Node, splice
 from sageparse.extensions.research import EXTENSION as _RESEARCH_EXTENSION
 
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedRings,
     _OwnedIntegerElement,
     _own_ring,
 )
@@ -60,36 +58,6 @@ def ComplexNumber(real, imag=None):
     return _owned_engine_element(parent, backend)
 
 
-def matrix(rows):
-    r"""Construct the owned matrix-Mor represented by a rectangular row family."""
-    rows = tuple(tuple(row) for row in rows)
-    if rows:
-        width = len(rows[0])
-        if any(len(row) != width for row in rows):
-            raise ValueError(
-                f"a matrix needs rows of one common length, but the given rows have "
-                f"lengths {tuple(len(row) for row in rows)}"
-            )
-    else:
-        width = 0
-
-    from sage.rings.integer_ring import ZZ as SageZZ
-
-    ring = None
-    for row in rows:
-        for entry in row:
-            parent = element_parent(entry)
-            if parent in OwnedRings():
-                ring = parent
-                break
-        if ring is not None:
-            break
-    if ring is None:
-        ring = _own_ring(SageZZ)
-    matrix_space = ring.matrix_space(len(rows), width)
-    return matrix_space.from_rows(rows)
-
-
 def Set(iterable):
 
     return owned_set(iterable)
@@ -122,7 +90,6 @@ _RUNTIME = {
     "ellipsis_range": ellipsis_range,
     "ellipsis_iter": ellipsis_iter,
     "factorial": factorial,
-    "matrix": matrix,
     "Set": Set,
 }
 _IMPORTS = {

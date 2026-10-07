@@ -10,9 +10,9 @@ def test_sl2z_is_generated_by_elements_of_orders_four_and_six_amalgamated_over_m
     abelianization $\mathbf{Z}/12$ (Serre, *Trees*, I.4.2).
     """
     group = Groups.SL(2, ZZ)
-    s = group(matrix(ZZ, [[0, -1], [1, 0]]))
-    t = group(matrix(ZZ, [[1, 1], [0, 1]]))
-    minus_one = group(matrix(ZZ, [[-1, 0], [0, -1]]))
+    s = group([[0, -1], [1, 0]])
+    t = group([[1, 1], [0, 1]])
+    minus_one = group([[-1, 0], [0, -1]])
 
     assert s.order() == 4
     assert (s * t).order() == 6

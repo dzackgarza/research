@@ -11,7 +11,7 @@ def test_the_category_applied_to_the_cartan_type_agrees() -> None:
 
 def test_the_category_applied_to_the_coxeter_matrix_agrees() -> None:
     r"""$A_2$: two nodes with $m_{12} = 3$."""
-    assert CoxeterDiagrams()(matrix([[1, 3], [3, 1]])) == diagram()
+    assert CoxeterDiagrams()(tensor.matrix(ZZ, [[1, 3], [3, 1]])) == diagram()
 
 
 def test_the_categories_of_the_diagram() -> None:

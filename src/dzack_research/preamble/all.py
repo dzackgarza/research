@@ -582,7 +582,6 @@ QQ: _OwnedRingParent = _cast(_OwnedRingParent, _session_rings["QQ"])
 Integer = _language_runtime.Integer
 RealNumber = _language_runtime.RealNumber
 ComplexNumber = _language_runtime.ComplexNumber
-matrix = _language_runtime.matrix
 factorial = _language_runtime.factorial
 ellipsis_range = _language_runtime.ellipsis_range
 ellipsis_iter = _language_runtime.ellipsis_iter
