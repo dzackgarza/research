@@ -21,7 +21,6 @@ from typing import SupportsInt, TypeVar
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.infinity import AnInfinity, Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -344,12 +343,14 @@ class CardinalityMor(CategoricalMor):
             case (_, True):
                 return True
             case _:
-                return Unknown
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("is_empty", self)
 
     def cardinality(self) -> Cardinal:
         r"""Zero or one when the cardinal comparison decides the Mor's emptiness."""
         empty = self.is_empty()
-        assert empty is not Unknown, (
+        assert empty is True or empty is False, (
             f"cannot compute the cardinality of {self}: it is undecided whether {self.domain()} <= "
             f"{self.codomain()}, so it is undecided whether this set of morphisms is empty"
         )

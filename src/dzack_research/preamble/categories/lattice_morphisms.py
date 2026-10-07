@@ -6,7 +6,6 @@ from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -59,6 +58,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
     _engine_binary_form_pullback,
@@ -210,7 +210,7 @@ def _proper_split_binary_equivalence_matrix(source, target):
 
 
 def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
-    r"""Return a binary indefinite isometry matrix, ``False``, or ``Unknown``.
+    r"""Return a binary indefinite isometry matrix, or ``False`` when there is none.
 
     A returned matrix ``P`` pulls the codomain form back to the domain form,
     ``P^* codomain_gram = domain_gram``.  It is an engine answer: the
@@ -795,7 +795,7 @@ class LatticeIsometryMethods:
                 if candidate * self == other * candidate:
                     return candidate
             return None
-        assert empty is not Unknown, (
+        assert empty is False, (
             f"cannot find an isometry h: {source} -> {target} with h*{self} = {other}*h: "
             f"{target} is indefinite or of infinite rank, and whether {source} and {target} "
             f"are isometric at all could not be decided"
@@ -1342,12 +1342,14 @@ class LatticeEmbeddingMor(CategoricalMor):
         if target_embedding_data is not None:
             return False
         if self._codomain_is_even_unimodular_indefinite():
-            if not source.is_even():
-                return True
-            _signature = self.codomain().signature_pair()
-            positive, negative = _signature.first(), _signature.second()
-            return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
-        return Unknown
+            match source.is_even():
+                case False:
+                    return True
+                case True:
+                    _signature = self.codomain().signature_pair()
+                    positive, negative = _signature.first(), _signature.second()
+                    return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
+        return AtomicProposition("is_empty", self)
 
     def an_element(self):
         if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
@@ -1482,15 +1484,17 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
         An empty isometry Mor has cardinality zero.  A nonempty one is a
         torsor under ``O(M)`` by postcomposition and therefore has the same
-        cardinality as ``O(M)``.  When emptiness is genuinely undecided, keep
-        that three-valued boundary instead of turning it into a cardinal.
+        cardinality as ``O(M)``.  When emptiness is undecided, the cardinality
+        is not computed (`CAT-01`).
         """
         empty = self.is_empty()
-        if empty is True:
+        assert empty is True or empty is False, (
+            f"cannot compute the cardinality of {self}: it is undecided whether "
+            f"{self.domain()} and {self.codomain()} are isometric"
+        )
+        if empty:
             return cardinal(0)
-        if empty is False:
-            return self.acting_group().cardinality()
-        return Unknown
+        return self.acting_group().cardinality()
 
     def act(self, automorphism, isometry):
         r"""Postcompose an isometry by a codomain automorphism."""
@@ -2096,8 +2100,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""The decision of this isometry Mor object, with the witness that decided it.
 
         Private computation record of :meth:`is_empty` and :meth:`an_element`:
-        the triple of the emptiness answer (``True``, ``False`` or
-        ``Unknown``), an explicit isometry when the deciding computation
+        the triple of the emptiness answer (``True``, ``False`` or the
+        proposition that the Mor is empty), an explicit isometry when the deciding computation
         exhibits one (else ``None``), and the theorem that proves
         nonemptiness without a witness (else ``None``).
         """
@@ -2105,14 +2109,15 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         codomain = self.codomain()
         if domain is codomain:
             return (False, self.identity(), None)
+        undecided = AtomicProposition("is_empty", self)
         if not domain.module_rank().is_finite() or not codomain.module_rank().is_finite():
-            return (Unknown, None, None)
+            return (undecided, None, None)
         if domain.module_rank() != codomain.module_rank():
             return (True, None, None)
         if domain.signature_pair() != codomain.signature_pair():
             return (True, None, None)
         if _engine_ring(domain.base_ring()) is not SageZZ or _engine_ring(codomain.base_ring()) is not SageZZ:
-            return (Unknown, None, None)
+            return (undecided, None, None)
 
         domain_gram = _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ)
         codomain_gram = _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ)
@@ -2128,7 +2133,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
             return (True, None, None)
         if not domain.is_nondegenerate():
-            return (Unknown, None, None)
+            return (undecided, None, None)
         if domain.is_even() != codomain.is_even():
             return (True, None, None)
         if domain.discriminant() != codomain.discriminant():
@@ -2178,8 +2183,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             )
             if binary_witness is False:
                 return (True, None, None)
-            if binary_witness is not Unknown:
-                return (False, self._isometry_from_column_matrix(binary_witness), None)
+            return (False, self._isometry_from_column_matrix(binary_witness), None)
 
         from sage_indefinite_port.indefinite.recursive import isometry
 
@@ -2191,7 +2195,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def an_element(self):
         r"""Return an explicit isometry when the exact decision exhibits one."""
         empty, witness, reason = self._isometry_decision()
-        assert empty is not Unknown, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
+        assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
         if empty:
             raise ValueError(f"there is no isometry from {self.domain()} to {self.codomain()}: the lattices are not isometric")
         assert witness is not None, f"{self.domain()} and {self.codomain()} are isometric by {reason}, but no explicit isometry between them can be constructed"
