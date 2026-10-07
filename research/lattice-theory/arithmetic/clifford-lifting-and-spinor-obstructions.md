@@ -107,6 +107,19 @@ $$
 $$
 For a domain $R$ with fraction field $F$, a generically nondegenerate form therefore always has the *generic* obstruction $\theta_F(g_F)$. Its vanishing means a norm-one lift over $F$, not necessarily over $R$.
 
+More explicitly, assume $\operatorname{char}F\ne2$ and put $V=M\otimes_R F$. Let $\operatorname{Pin}(V)$ denote the norm-one homogeneous Clifford group with the conjugation convention above. The pullback group
+$$
+E_R^{\mathrm{gen}}
+=O(M,q)(R)\mathbin{\times}_{O(V,q_F)(F)}\operatorname{Pin}(V)(F)
+$$
+gives an exact sequence
+$$
+1\longrightarrow\mu_2(F)\longrightarrow E_R^{\mathrm{gen}}
+\longrightarrow O(M,q)(R)
+\xrightarrow{\,g\mapsto\theta_F(g_F)\,}F^\times/(F^\times)^2.
+$$
+Indeed, projection from the pullback has the same kernel as the field Clifford map, and its image consists precisely of isometries whose generic lift exists. This exact sequence needs no perfectness over $R$. It classifies generic lifts of integral isometries; requiring the lift itself to be integral is the separate problem in the next section.
+
 The further map $\mathbb Q^\times/(\mathbb Q^\times)^2\to\mathbb R^\times/(\mathbb R^\times)^2$ retains only the sign. Its kernel contains every positive rational square class. Thus rational and real spinor kernels need not agree. For signature $(2,n)$, the real character with the reflection normalization above detects preservation of a connected component of the type-IV domain; this is the $O^+(L)$ used in that setting. [Dawes, *Orbits in lattices*, §§1.3–1.4](https://arxiv.org/html/2205.10601).
 
 ## Nonperfect forms: what changes
