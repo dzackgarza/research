@@ -9,6 +9,7 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -325,12 +326,27 @@ class ModuleMorphismMethods:
             size = labels.cardinality()
             if not size.is_finite():
                 raise TypeError(f"cannot define a linear map {domain} -> {codomain} by a dictionary of generator images: {domain} has infinitely many generators {labels}; give the images as a function or an indexed family")
+
+            def generator_label(key):
+                # A key is a label of the generating set S, or the module
+                # generator it names: the image of that label under S -> M.
+                match element_parent(key) is domain:
+                    case True:
+                        named = [label for label in labels if domain.module_generator(label) == key]
+                        assert named and all(label == named[0] for label in named), (
+                            f"cannot define a linear map {domain} -> {codomain}: {key} is not exactly one "
+                            f"of the module generators of {domain}, so it names no generator image"
+                        )
+                        return named[0]
+                    case False:
+                        return labels(key)
+
             if labels in EnumeratedSets():
                 ranking = labels.ranking_map()
                 missing_value = object()
                 normalized_values = [missing_value] * int(size.finite_value())
                 for label, value in images.items():
-                    normalized_label = labels(label)
+                    normalized_label = generator_label(label)
                     normalized_values[int(ranking(normalized_label))] = value
                 missing = [
                     label
@@ -347,7 +363,7 @@ class ModuleMorphismMethods:
             else:
                 normalized_images = {}
                 for label, value in images.items():
-                    normalized_label = labels(label)
+                    normalized_label = generator_label(label)
                     normalized_images[normalized_label] = value
                 missing = [label for label in labels if label not in normalized_images]
                 if missing:
@@ -741,16 +757,12 @@ class ModuleMorphismMethods:
         A missing finite family or undecided value comparison remains Unknown;
         neither failed normalization nor a finite sample disproves equality.
         """
-        from sage.structure.richcmp import op_EQ, op_NE
-
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if not isinstance(other, ModuleMorphismMethods) or other.parent() is not self.parent():
+        if element_parent(other) is not self.parent():
             return op == op_NE
         if self is other:
             return op == op_EQ
-        from sage.misc.unknown import Unknown
-
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
@@ -776,6 +788,11 @@ class ModuleMorphismMethods:
             case _:
                 equal = Unknown
         return equal if op == op_EQ else (Unknown if equal is Unknown else not equal)
+
+    def __hash__(self) -> int:
+        # Equality is decided within one Mor, whatever class realizes each
+        # arrow, so equal arrows share the hash of their Mor.
+        return hash(id(self.parent()))
 
     def __rmul__(self, actor):
         # A specialized right operand such as ModuleEmbedding gets reflected
@@ -2872,18 +2889,14 @@ class ModuleAutomorphismMethods:
         )
         return linear.multiplicative_order()
 
-    def __eq__(self, other):
+    def _richcmp_(self, other, op):
+        r"""Two automorphisms of ``M`` are equal when their forward maps are equal."""
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
         if self is other:
-            return True
-        if not isinstance(other, ModuleAutomorphismMethods) or other.parent() is not self.parent():
-            return False
-        return self.forward() == other.forward()
-
-    def __ne__(self, other):
-        equal = self == other
-        from sage.misc.unknown import Unknown
-
-        return Unknown if equal is Unknown else not equal
+            return op == op_EQ
+        equal = self.forward() == other.forward()
+        return equal if op == op_EQ or equal is Unknown else not equal
 
     def __hash__(self):
         return hash(id(self.parent()))

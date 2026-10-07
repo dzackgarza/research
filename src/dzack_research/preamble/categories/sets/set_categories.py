@@ -21,6 +21,7 @@ from sage.sets.set import Set as SageSet
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
@@ -428,32 +429,44 @@ class OwnedSetMorphism(SetMorphism):
         return self.codomain()(self._owned_function(point, *args, **kwargs))
 
     def __eq__(self, other: Any) -> bool | UnknownClass:
+        r"""Compare two arrows of one Mor through ``_richcmp_``.
+
+        Sage's ``SetMorphism`` compares the stored functions and never calls
+        ``_richcmp_``.  This root host restores Sage's element protocol, so
+        the most specific arrow type on the Mor decides equality
+        (``STY-167``).
+        """
+        if element_parent(other) is not self.parent():
+            return False
+        return self._richcmp_(other, op_EQ)
+
+    def __ne__(self, other: Any) -> bool | UnknownClass:
+        if element_parent(other) is not self.parent():
+            return True
+        return self._richcmp_(other, op_NE)
+
+    def _richcmp_(self, other: Self, op: int) -> bool | UnknownClass:
         r"""Two set maps agree when they agree at every point.
 
         That is decidable when the source is a finite enumerated set, and not
         otherwise.
         """
-        if not isinstance(other, SetMorphism):
-            return False
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
         if self is other:
-            return True
-        if self.parent() is not other.parent():
-            return False
+            return op == op_EQ
         domain = self.domain()
         if domain not in FiniteSets() or domain not in EnumeratedSets():
             return Unknown
-        answer = True
-        for element in domain:
-            equal = self(element) == other(element)
-            if equal is False:
-                return False
-            if equal is not True:
-                answer = Unknown
-        return answer
-
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        decisions = tuple(self(element) == other(element) for element in domain)
+        match any(value is False for value in decisions), all(value is True for value in decisions):
+            case True, _:
+                equal = False
+            case _, True:
+                equal = True
+            case _:
+                equal = Unknown
+        return equal if op == op_EQ or equal is Unknown else not equal
 
     def __hash__(self) -> int:
         # Equality is extensional within one Mor.  An identity-based hash of
