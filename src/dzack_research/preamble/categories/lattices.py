@@ -5144,17 +5144,22 @@ class RootLattices(OwnedCategory):
             return self.base_ring()(int(cartan_type.coxeter_number()))
 
         def highest_root(self):
-            r"""Return the highest root in the selected simple-root framing."""
+            r"""Return the highest root in the selected simple-root framing.
+
+            It is the image under the framing morphism \(R^n \to L\), whose
+            basis vectors go to the simple roots, of the coefficient vector of
+            the highest root in the basis of simple roots.
+            """
             cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(
                     f"{self!r} has no single highest root: its root system of type {self.label()} is reducible, and each irreducible component has its own highest root"
                 )
-            coefficients = tuple(RootSystem(cartan_type).root_lattice().highest_root().to_vector())
-            return sum(
-                (self.scalar_multiple(self.base_ring()(int(coefficient)), root) for coefficient, root in zip(coefficients, self.simple_roots(), strict=True)),
-                self.zero(),
+            coefficients = RootSystem(cartan_type).root_lattice().highest_root().to_vector()
+            vector = self.framing_source()(
+                {label: self.base_ring()(int(coefficient)) for label, coefficient in zip(self.module_generating_set(), coefficients, strict=True)}
             )
+            return self.framing_morphism()(vector)
 
         def simple_reflections(self):
             return finite_ordered_set(tuple(self.reflection(root) for root in self.simple_roots()))
