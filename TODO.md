@@ -440,7 +440,14 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner and delta:** each exact predicate on the list decides the cases its data decides and otherwise returns a `Predicate` whose `_ask_` owns the remaining procedures. A soft knowledge predicate (`has_computed_group_generators()`) keeps its three-valued codomain. Sites that return `Unknown` from `_ask_` or from `ask` are the proposition's own evaluation and stay.
   **Closure:** the tell lists only `_ask_` bodies and soft knowledge predicates; `ask(Sets().Mor(QQ, QQ)(lambda q: QQ(0)).is_injective())` is `Unknown`, and the call itself returns a `Predicate`.
 
-- [ ] **`absolute-galois-groups-decide-commutativity`**. **Needs:** none.
+- [ ] **`absolute-galois-groups-of-number-fields-are-infinite`**. **Needs:** none.
+  **Violated statement:** `STY-146`, Bad: "return `Unknown` as the “cardinality” of a set"; `DEF-06`: an exact operation keeps its mathematical codomain.
+  **Evidence:** `AbsoluteGaloisGroup.order()` (`group/profinite/absolute_galois_group.py`), which is also `cardinality`, returns `Infinity` for a finite field and a bare `Unknown` for every other base field, so `AbsoluteGaloisGroup(QQ).is_finite()` answers `Unknown` and `not galois.is_finite()` raises in `tests/constructions/test_galois_construct.sage::test_the_absolute_galois_group_of_the_rationals_and_its_open_subgroups`. The same file's `_finite_generation_decision` already states that a number field `K` has finite Galois quotients `(C_2)^r` for every `r`, so `G_K` is infinite.
+  **Policy search:** `CAT-01` keeps an assertion frontier for cases no algorithm covers; a number field is covered by the argument above, so no frontier applies there.
+  **Owner and delta:** the cardinality of `G_K` is infinite for a number field `K`, from its unbounded finite Galois quotients, as for a finite field; other base fields keep the `CAT-01` frontier.
+  **Closure:** `AbsoluteGaloisGroup(QQ).is_finite()` is `False`, and the closure test of `absolute-galois-groups-decide-commutativity` passes its `is_finite` line.
+
+- [ ] **`absolute-galois-groups-decide-commutativity`**. **Needs:** `absolute-galois-groups-of-number-fields-are-infinite`.
   **Violated statement:** `DEF-06`: "where the question is computable or decidable and is decided" the predicate returns `True` or `False`.
   **Evidence:** `AbsoluteGaloisGroup(QQ).is_abelian()` answers `Unknown` (`group/groups.py`, `_abelianity_decision`, which decides only finite groups). A quotient of an abelian group is abelian, and `G_QQ` surjects onto `Gal(QQ(2^{1/3}, zeta_3)/QQ)`, which is `S_3`, so `G_QQ` is not abelian, and the object already constructs its finite Galois quotients.
   **Policy search:** `DEF-06` and `AGENTS.md` (*A predicate is decided on the data that determines it*) ask for the decision when the data decides it; no rule allows `Unknown` where a finite quotient decides the question.
