@@ -51,6 +51,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+from dzack_research.preamble.validation import validator
 
 
 class GSetMorCategoryConstruction(MorCategoryConstruction):
@@ -159,24 +160,6 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 permutation = permutations(permutation_representation(group_element))
                 return _owned_point(permutation(_integer_engine_point(point)))
 
-            match group:
-                case _ if group.has_selected_group_resolution():
-                    determining = group.group_generators()
-                case _ if group.is_finite() is True:
-                    determining = group
-                case _:
-                    assert False, (
-                        f"cannot check that {permutation_representation} is an action of "
-                        f"{group} on {point_set}: {group} has no chosen group generators "
-                        f"and is not known to be finite"
-                    )
-            for group_generator in determining:
-                for point in point_set:
-                    assert permute(group_generator, point) in point_set, (
-                        f"{permutation_representation} is not an action of {group} on "
-                        f"{point_set}: {group_generator} sends {point} outside {point_set}"
-                    )
-
             def point_map(group_element):
                 return lambda point: self(permute(group_element, point))
 
@@ -187,6 +170,41 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 facade=point_set,
                 **rest,
             )
+            self.validate_point_closure(check=False)
+
+        @validator
+        def validate_point_closure(self) -> None:
+            r"""Raise ``ValueError`` unless ``G`` maps the point set into itself (``OWN-22``).
+
+            The permutation representation ``G -> Sym(n)`` is a group
+            morphism, so it restricts to an action on the point set ``X``
+            exactly when ``X`` is stable under it.  Stability is decided on
+            the chosen group generators, or on every element of a finite
+            group without them.
+            """
+            group = self.acting_group()
+            representation = self.permutation_representation()
+            permutations = representation.codomain()
+            match group:
+                case _ if group.has_selected_group_resolution():
+                    determining = group.group_generators()
+                case _ if group.is_finite() is True:
+                    determining = group
+                case _:
+                    assert False, (
+                        f"cannot check that {representation} is an action of {group} on "
+                        f"{self.point_set()}: {group} has no chosen group generators and is "
+                        f"not known to be finite"
+                    )
+            for group_generator in determining:
+                permutation = permutations(representation(group_generator))
+                for point in self.point_set():
+                    image = _owned_point(permutation(_integer_engine_point(point)))
+                    if image not in self.point_set():
+                        raise ValueError(
+                            f"{representation} is not an action of {group} on "
+                            f"{self.point_set()}: {group_generator} sends {point} outside it"
+                        )
 
         def permutation_representation(self):
             r"""Return the chosen action as the group morphism ``G -> Sym(X)``."""
@@ -418,11 +436,21 @@ class GSetMorphismMethods:
 
     def __init__(self, parent, function) -> None:
         super().__init__(parent, function)
-        if parent.is_equivariant(self) is not True:
+        self.validate_equivariance(check=False)
+
+    @cached_method
+    def equivariance_decision(self):
+        r"""Return whether ``f(g x) = g f(x)``, decided by the parent on first request."""
+        return self.parent().is_equivariant(self)
+
+    @validator
+    def validate_equivariance(self) -> None:
+        r"""Raise ``ValueError`` unless this map commutes with the actions (``OWN-22``)."""
+        if self.equivariance_decision() is not True:
             raise ValueError(
-                f"the map {parent.domain()} -> {parent.codomain()} is not a morphism of "
-                f"G-sets: it does not commute with the action of "
-                f"{parent.domain().acting_group()}"
+                f"the map {self.domain()} -> {self.codomain()} is not a morphism of "
+                f"G-sets: it is not known to commute with the action of "
+                f"{self.domain().acting_group()}"
             )
 
     def __mul__(self, other):

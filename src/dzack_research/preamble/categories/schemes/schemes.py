@@ -3846,7 +3846,7 @@ class AffineGSchemes(OwnedCategory):
         def action_pullback(group_element):
             return source_endomorphisms(action(group_element)).coordinate_algebra_morphism()
 
-        return _affine_scheme(
+        acted = _affine_scheme(
             scheme.coordinate_algebra(),
             base,
             (self,),
@@ -3855,6 +3855,8 @@ class AffineGSchemes(OwnedCategory):
             underlying_category=Schemes(base),
             unacted_scheme=scheme,
         )
+        acted.validate_action(check=False)
+        return acted
 
     class ParentMethods:
         def __init__(self, unacted_scheme, **rest) -> None:

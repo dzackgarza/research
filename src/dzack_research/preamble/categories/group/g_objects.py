@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.validation import validator
 
 
 def _verify_relators(action, group, endomorphisms) -> None:
@@ -59,7 +60,8 @@ def _verify_relators(action, group, endomorphisms) -> None:
     relator, composed in that order, is the identity.  When no presentation
     has been selected but the group is finite, the same claim is decided
     directly on all pairs.  Finite presentability alone never triggers a
-    presentation search.
+    presentation search.  It is the body of the action validators
+    (``OWN-22``), so a failed law raises ``ValueError``.
     """
     if group in GroupsWithChosenFinitePresentation():
         identity = endomorphisms.identity()
@@ -68,18 +70,20 @@ def _verify_relators(action, group, endomorphisms) -> None:
             composite = identity
             for letter in relator.parent().reduced_word(relator):
                 composite = composite * action(presentation_projection(letter))
-            assert composite == identity, (
-                f"the generator images do not satisfy the relator {relator}, "
-                f"so they define no left action of {group}"
-            )
+            if (composite == identity) is not True:
+                raise ValueError(
+                    f"the generator images do not satisfy the relator {relator}, "
+                    f"so they define no left action of {group}"
+                )
         return
     if group in OwnedFiniteGroups():
         for left in group:
             for right in group:
-                assert action(left * right) == action(left) * action(right), (
-                    f"the given automorphisms do not define a left action of {group}: "
-                    f"rho({left} * {right}) differs from rho({left}) rho({right})"
-                )
+                if (action(left * right) == action(left) * action(right)) is not True:
+                    raise ValueError(
+                        f"the given automorphisms do not define a left action of {group}: "
+                        f"rho({left} * {right}) differs from rho({left}) rho({right})"
+                    )
 
 
 def _product_projections(construction):
@@ -574,22 +578,32 @@ class EquivariantMorphismMethods:
 
     def __init__(self, parent, arrow, *, equivariance_decision=None) -> None:
         arrow = parent.underlying_mor()(arrow)
-        decision = (
-            parent.is_equivariant(arrow)
-            if equivariance_decision is None
-            else equivariance_decision
-        )
-        if decision is not True:
-            raise ValueError(
-                f"{arrow} is not known to be equivariant from {parent.domain()} to {parent.codomain()}"
-            )
-        if not hasattr(arrow, "_transport_initialization_to_mor"):
-            raise TypeError(
-                f"cannot thread the arrow type of {parent} through {arrow.parent()}: "
-                f"{arrow} has no representation-transport protocol"
-            )
+        self._equivariance_premise = equivariance_decision
         args, options = arrow._transport_initialization_to_mor(parent)
         super().__init__(*args, **options)
+        self.validate_equivariance(check=False)
+
+    @cached_method
+    def equivariance_decision(self):
+        r"""Return whether ``f rho_X(g) = rho_Y(g) f`` for all ``g``, computed on first request.
+
+        A construction that gives equivariance supplies it as its premise;
+        otherwise the parent decides it on a determining family of ``G``.
+        """
+        match self._equivariance_premise:
+            case None:
+                return self.parent().is_equivariant(self.underlying_arrow())
+            case premise:
+                return premise
+
+    @validator
+    def validate_equivariance(self) -> None:
+        r"""Raise ``ValueError`` unless this arrow is known to be ``G``-equivariant (``OWN-22``)."""
+        if self.equivariance_decision() is not True:
+            raise ValueError(
+                f"{self.underlying_arrow()} is not known to be equivariant from "
+                f"{self.domain()} to {self.codomain()}"
+            )
 
     def underlying_arrow(self):
         r"""Return the same morphism read in the underlying category."""
@@ -942,30 +956,31 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
             endomorphisms = self.underlying_category().Mor(self, self)
             datum = self._action_datum
-            functor = GroupActionFunctor(
+            return GroupActionFunctor(
                 self.acting_group(),
                 self.underlying_category(),
                 self,
                 lambda group_element: endomorphisms(datum(group_element)),
             )
-            action = Sets().Mor(self.acting_group(), endomorphisms)(
-                lambda group_element: functor(
-                    functor.domain().Mor(
-                        functor.domain().an_object(),
-                        functor.domain().an_object(),
-                    )(group_element)
-                )
-            )
-            _verify_relators(action, self.acting_group(), endomorphisms)
-            return functor
+
+        @validator
+        def validate_action(self) -> None:
+            r"""Raise ``ValueError`` unless the chosen action is a left action of ``G`` (``OWN-22``).
+
+            The action images must satisfy the group's chosen relators, or,
+            on a finite group without chosen relators, the law
+            ``rho(s_1 s_2) = rho(s_1) rho(s_2)`` on all pairs.
+            """
+            endomorphisms = self.underlying_category().Mor(self, self)
+            _verify_relators(self.action(), self.acting_group(), endomorphisms)
 
         @cached_method
         def action(self):
             r"""Return the chosen action as the set morphism ``G -> Mor_C(X, X)``.
 
             Its values are automorphisms of ``X`` in ``C``, and the action is
-            a left action: ``rho(s_1 s_2) = rho(s_1) rho(s_2)``.  The generator
-            images are checked against the group's chosen relators once, here.
+            a left action: ``rho(s_1 s_2) = rho(s_1) rho(s_2)``.  The law is
+            the validator :meth:`validate_action`.
             """
             endomorphisms = self.underlying_category().Mor(self, self)
             functor = self.action_functor()
