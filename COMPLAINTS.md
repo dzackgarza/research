@@ -488,6 +488,104 @@ comparison of a card with the preamble's realization.
 `lattice-database/geometric-objects/` was read. Repair is the
 `geometric-cards-store-betti-numbers` node in [TODO.md](TODO.md).
 
+### Arrows of one Mor are built on handwritten hosts beside its element class
+
+A morphism `A -> B` of a category `C` is an element of `C.Mor(A, B)`, and its
+type is the one the Mor category graph generates. The Mors of sets, of
+injections and surjections, of finite `G`-sets, of modules, of graded modules
+and of the core of a category now construct every arrow as their element
+class. Schemes, cones, connections, framings, scalar change, localization,
+algebra augmentations, tensor classifiers and sheaf modules still construct
+their arrows as instances of handwritten classes (41 private hosts and the
+public bases `SchemeMorphism`, `ConeMorphism`, `ConnectionMorphism`,
+`FramingMorphism` and `ModuleMorphism`), so one Mor holds arrows on several
+classes and none of them is its element class. `SetInclusion`,
+`SubgroupInclusion` and `FiniteGroupClassFunction` are set arrows built the
+same way. Two `R[G]`-module isomorphisms are built by hand under the plain Mor
+and composed both ways at construction.
+
+**Dependency path:** category `C` -> `C.Mor(A, B)` -> generated arrow type ->
+the Mor's private operation that applies its element class to the arrow's
+defining data, with the linearity or invertibility the operation gives as a
+premise.
+**Consumers:** every comparison, composition and category membership test on
+those Mors; the scheme, cone and connection constructions.
+**Coverage boundary:** the two population tells of the node were run over
+`src/dzack_research/preamble` on 2026-10-08, and the constructor sites of the
+public bases were listed. Repair is the `every-arrow-is-an-element-of-its-mor`
+node in [TODO.md](TODO.md).
+
+### The classifying category of a group has no object set
+
+An action of `G` on an object of `C` is a functor `BG -> C`, where `BG` is the
+one-object groupoid of `G` (`lean-categories` FOUNDATIONS, Definition 34.1).
+`BG` is a small category with the one-point object set. `ClassifyingCategory`
+(`categories/group/classifying_categories.py`) answers `object()` but not
+`object_set()`, which discrete categories, fixed Mor categories and products
+answer. `Groups.S(3).classifying_category().object_set()` raises
+`AttributeError`.
+
+**Dependency path:** group `G` -> `BG` -> its object set `{*}` -> the
+components of a natural transformation between action functors.
+**Consumers:** `tests/constructions/test_g_object_mor_construct.sage` and
+`test_group_module_morphism_surface_construct.sage`, which read a component at
+the element of that set.
+**Coverage boundary:** `classifying_categories.py` and the `object_set`
+owners in `abstract_categories/` were read. Repair is the
+`classifying-categories-have-an-object-set` node in [TODO.md](TODO.md).
+
+### Equivariant maps answer their natural transformation in two kinds
+
+A map of actions is a natural transformation between the action functors
+`BG -> C`, and `GObjects(G, Modules(R)) ≃ Modules(R[G])` is an explicit
+equivalence. `EquivariantMorphismMethods.natural_transformation`
+(`categories/group/g_objects.py`) returns the `NaturalTransformation`;
+`GroupModuleMorphismMethods.natural_transformation` (`group_modules.py`)
+returns its arrow in the functor category, and the restriction functor along a
+subgroup inclusion consumes that arrow.
+
+**Dependency path:** `R[G]`-module map -> the equivalence with
+`GObjects(G, Modules(R))` -> the natural transformation between the action
+functors.
+**Consumers:** `_RestrictionAlongGroupInclusionFunctor._apply_morphism`;
+`test_group_module_morphism_surface_construct.sage`.
+**Coverage boundary:** source reading only. No `R[G]`-module constructs while
+`modules-over-a-group-algebra-keep-the-module-axioms` is open, so the group
+module route was not run. Repair is the
+`equivariant-module-maps-give-their-natural-transformation` node in
+[TODO.md](TODO.md).
+
+### A graded module asks the ungraded Mor of its endpoints
+
+A morphism of graded `R`-modules preserves degree (`lean-categories`,
+`LeanCategories/Modules/Graded.lean`: `GradedObject ι (ModuleCat R)`). The
+endpoint hook `Modules.ParentMethods.Mor` (`modules/pure/modules.py`) names
+`Modules(self.base_ring())`, and the graded level declares no hook of its own.
+For `M = GradedModules(QQ).an_object()`, `M.Mor(M)` is the Mor of `Modules(QQ)`
+and `GradedModules(QQ).Mor(M, M)` is the graded Mor.
+
+**Dependency path:** graded module -> its category `GradedModules(R)` -> the
+endpoint hook -> `GradedModules(R).Mor(M, N)`.
+**Consumers:** every graded construction that asks `M.Mor(N)` and expects a
+degree-preserving map.
+**Coverage boundary:** the endpoint hooks of `Modules`, the lattice level,
+`Modules(R[G])` and `GradedModules` were read. Repair is the
+`graded-modules-ask-their-mor-of-the-endpoints` node in [TODO.md](TODO.md).
+
+### Objects of Sets do not answer their endomorphisms or automorphisms
+
+`End(X) = Mor(X, X)` and `Aut(X)` are asked of `X`. Objects of `Sets()` answer
+`Mor` through their category's hook but not `End` or `Aut`;
+`Sets.Δ[0].End()` raises `AttributeError`.
+
+**Dependency path:** object `X` of `Sets()` -> its category's hook ->
+`End(X)` and `Aut(X)`.
+**Consumers:** `tests/constructions/test_mor_categories_construct.sage`, whose
+specimens start from `Sets.Δ[0].End()`.
+**Coverage boundary:** the `ParentMethods` of `Sets()` in
+`categories/sets/set_categories.py` were read. Repair is the
+`objects-of-sets-answer-their-endomorphisms` node in [TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
