@@ -1108,9 +1108,9 @@ class _GroupEngine:
             escaped = self._description.replace("_", r"\_")
             return rf"\text{{{escaped}}}"
         match self:
-            case _ if self.has_selected_group_resolution():
-                count = self.group_generators().cardinality()
-                return rf"\langle g_1,\ldots,g_{{{count}}}\rangle"
+            case _ if self.has_selected_group_resolution() and self.group_generators().index_set() in FiniteSets():
+                generators = ", ".join(latex(value) for value in self.group_generators().values())
+                return rf"\langle {generators}\rangle"
             case _:
                 return r"\mathrm{Group}"
 
