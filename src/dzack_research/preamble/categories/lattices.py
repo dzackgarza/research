@@ -20,7 +20,6 @@ from collections.abc import Hashable, Mapping, Sequence
 from typing import TYPE_CHECKING, overload
 
 from sage.arith.misc import gcd
-from sage.categories.morphism import SetMorphism
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
@@ -1635,7 +1634,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 )
 
-            return SetMorphism(self.Aut().Mor(target), extend)
+            return self.Aut().Mor(target)(extend)
 
         @cached_method
         def witt_index(self):
@@ -1758,14 +1757,13 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             match field_map:
                 case None:
-                    return SetMorphism(self.Aut().Mor(square_classes), spinor_norm_class)
+                    return self.Aut().Mor(square_classes)(spinor_norm_class)
                 case _:
                     assert field_map.domain() is field, (
                         f"the spinor norm of {self!r} is carried along a map out of Frac(R) = {field}, but {field_map} starts at {field_map.domain()}"
                     )
                     change_of_field = CommutativeRings().square_class_group()(field_map)
-                    return SetMorphism(
-                        self.Aut().Mor(change_of_field.codomain()),
+                    return self.Aut().Mor(change_of_field.codomain())(
                         lambda isometry: change_of_field(spinor_norm_class(isometry)),
                     )
 
@@ -1848,8 +1846,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             target = OwnedGroups().C(2)
             exchange = target.group_generators()[0]
-            return SetMorphism(
-                self.Aut().Mor(target),
+            return self.Aut().Mor(target)(
                 lambda isometry: target.one() if isometry.preserves_positive_cone() else exchange,
             )
 
@@ -4664,8 +4661,7 @@ class RankOneParabolicLeviExactSequence:
     def projection(self):
         target = self.target()
         levi = self.reduction().levi_action()
-        return SetMorphism(
-            self.source().Mor(target),
+        return self.source().Mor(target)(
             lambda isometry: target(levi(isometry)),
         )
 
@@ -4890,7 +4886,7 @@ class SpinorNormSequence:
         assert field in PrimeFields() and field.characteristic() == 0, f"the K-spinor norm cokernel of {self._lattice!r} is computed here only for K = QQ, and K = {field}"
         dimension = int(space.module_rank())
         trivial = OwnedGroups().C(1)
-        onto = SetMorphism(target.Mor(trivial), lambda _square_class: trivial.one())
+        onto = target.Mor(trivial)(lambda _square_class: trivial.one())
         match dimension:
             case 1 | 2 if space.witt_index() == 0:
                 return self.image().inclusion().cokernel_projection()
@@ -4903,8 +4899,7 @@ class SpinorNormSequence:
                     return onto
                 signs = OwnedGroups().C(2)
                 negative = signs.group_generators()[0]
-                return SetMorphism(
-                    target.Mor(signs),
+                return target.Mor(signs)(
                     lambda square_class: signs.one() if square_class.representative() > 0 else negative,
                 )
             case _:
@@ -5287,7 +5282,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             def descend(isometry):
                 return automorphisms(lambda label: projection(perpendicular_inclusion.lift(isometry(perpendicular_inclusion(lifts(label))))))
 
-            return SetMorphism(self.parabolic_subgroup().Mor(automorphisms), descend)
+            return self.parabolic_subgroup().Mor(automorphisms)(descend)
 
         @cached_method
         def _parabolic_levi_generator_pairs(self):
