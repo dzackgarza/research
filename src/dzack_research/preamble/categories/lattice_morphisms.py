@@ -1067,7 +1067,7 @@ class LatticeMor(CategoricalMor):
         r"""Construct the lattice morphism; ``check=True`` runs its validators (``OWN-22``)."""
         morphism = self._morphism_from_images(images)
         morphism.validate_linearity(check=check)
-        morphism.validate_form_square(check=check)
+        morphism.validate_form_preservation(check=check)
         return morphism
 
     def _morphism_from_images(self, images):
@@ -1132,7 +1132,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         r"""Construct the lattice embedding; ``check=True`` runs its validators (``OWN-22``)."""
         embedding = self._morphism_from_images(images)
         embedding.validate_linearity(check=check)
-        embedding.validate_form_square(check=check)
+        embedding.validate_form_preservation(check=check)
         embedding.validate_injectivity(check=check)
         return embedding
 
@@ -1426,7 +1426,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Construct the isometry; ``check=True`` runs its validators (``OWN-22``)."""
         isometry = self._morphism_from_images(images)
         isometry.validate_linearity(check=check)
-        isometry.validate_form_square(check=check)
+        isometry.validate_form_preservation(check=check)
         isometry.validate_injectivity(check=check)
         isometry.validate_surjectivity(check=check)
         return isometry
