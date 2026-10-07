@@ -3152,6 +3152,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _:
                     return AtomicProposition("is_abelian", self)
 
+        def _commutativity_decision(self):
+            r"""Commutativity of the group law is abelianity: the magma predicate asks ``is_abelian``."""
+            return self._abelianity_decision()
+
         def is_finitely_generated(self):
             match self:
                 case _ if self in OwnedGroups().FinitelyGeneratedAsMagma():

@@ -107,6 +107,15 @@ The preamble meets it at `ModulesOverGroupAlgebra(Modules)` (`modules/group_modu
 Consequence: a category class whose objects use Sage's axiom classes cannot be refined by a Python subclass.
 Route chosen: none yet; the owner rules (`TODO.md`, `modules-over-a-group-algebra-keep-the-module-axioms`).
 
+### An axiom that no class on the path implements returns the category itself
+
+`Category._with_axiom_as_tuple` (sage/categories/category.py, Sage 10.10.beta8) returns `(self,)` when `getattr(self.__class__, axiom)` is `None`. When the attribute exists but the base class does not hold it in its own `__dict__`, it returns `self` joined with the same axiom applied to each supercategory. A `SubcategoryMethods.Commutative` that calls `self._with_axiom("Commutative")` satisfies the first test, because the dynamic class inherits that method. So if no category on the path declares a nested `Commutative(CategoryWithAxiom)`, `C.Commutative()` is `C`, and nothing warns.
+
+Observed 2026-10-07 in a preamble session: `Magmas().Commutative() is Magmas()` was `True`. `Magmas.ParentMethods.is_commutative` answers `True` on membership in `Magmas().Commutative()`, so every owned magma that does not override `is_commutative` answered `True`. This was observed on `T(QQ^2)`. For `End(QQ^2)` and `S_3` it follows from the same membership test and was not run. `_algebra_from_native_ring` then placed the tensor algebra in the commutative algebras on that answer.
+
+Consequence: a category that introduces a law must declare the nested axiom class for every axiom its `SubcategoryMethods` names.
+Route chosen: `Magmas.Commutative(CategoryWithAxiom)` in `categories/group/magmas.py`. Sage joins it into every category with the `Commutative` axiom whose path reaches `Magmas()`.
+
 ### `DiGraph.longest_path()` is a MILP by default; a DAG's longest chain is `level_sets()`
 
 `longest_path(algorithm='MILP')` is the default and `'heuristic'` the only alternative (its docstring).
