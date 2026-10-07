@@ -184,6 +184,15 @@ lattice-database cards. Twenty cards took 44.6 s to build into lattices, almost
 all of it in re-deriving each Gram tensor entry by entry, while partitioning them
 took 0.11 s.
 
+A probe or test in a worktree imports the main checkout unless it is told
+otherwise. `dzack_research` is installed editable from the main checkout, and
+the main checkout's `.envrc` puts its own `src/` on `PYTHONPATH`. So a worker
+runs every probe as
+`direnv exec /home/dzack/research env PYTHONPATH=<worktree>/src <command>`.
+The probe prints `dzack_research.__file__`, and that path shows whether the
+worktree source was loaded. On 2026-10-07 a worker's first run of a protected test
+loaded the main checkout and so did not test its change.
+
 Only the orchestrating agent:
 
 - decides whether the delivered work is accepted;
