@@ -1,5 +1,6 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
+from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -82,6 +83,29 @@ def _rational_engine_matrix(value):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
         raise TypeError(f"{value} cannot be passed to OSCAR as a rational matrix: it must be a tensor with two indices")
     return _engine_component_matrix(value).change_ring(SageQQ)
+
+
+def _gap_rational_spinor_norm_class(gram, isometry):
+    r"""Return a representative in \(\mathbb Q^\times\) of the spinor norm of ``isometry`` on \((\mathbb Q^n, b)\), ``gram`` the Gram tensor of \(b\).
+
+    Private adapter for ``_rational_spinor_norm_representative`` in
+    ``lattice_morphisms.py``.  For \(g\in O(V)\) let \(W=\operatorname{im}(1-g)\)
+    and \([w, w']=2b(u, w')\) for \(w=u(1-g)\): the discriminant of this Wall
+    form on \(W\) is the class \(b(v_1,v_1)\cdots b(v_m,v_m)\) for
+    \(g=s_{v_1}\cdots s_{v_m}\) (Taylor, *The Geometry of the Classical
+    Groups*, p. 163).  GAP's ``WallForm`` (``grp/classic.gi``) computes the
+    Wall form over any field; both GAP and the lowered isometry act on rows.
+    For \(g=1\), \(W=0\) and the class is \(1\).  The route and its
+    measurement are the ``TRAPS.md`` row on the rational spinor norm.
+    """
+    row_action = _engine_row_action_matrix(isometry).change_ring(SageQQ)
+    if row_action.is_one():
+        return SageQQ.one()
+    wall_form = libgap.WallForm(libgap(2 * _rational_engine_matrix(gram)), libgap(row_action))
+    value = SageQQ(libgap.DeterminantMat(wall_form["form"]).sage())
+    if value == 0:
+        raise ArithmeticError(f"GAP computed a degenerate Wall form for the isometry {isometry} of the form {gram}, but the Wall form of an isometry of a nondegenerate space is nondegenerate")
+    return value
 
 
 def _owned_embedding_from_row_action(ring, row_action):
@@ -178,21 +202,6 @@ function _number_field_matrix(K, a, entries)
             for i in 1:rows for j in 1:columns
         ],
     )
-end
-
-function rational_spinor_norm_class(gram_entries, isometry_entries)
-    space = quadratic_space(QQ, _qq_matrix(gram_entries))
-    space_with_isometry = quadratic_space_with_isometry(
-        space,
-        _qq_matrix(isometry_entries);
-        check = true,
-    )
-    # Ask explicitly for the untwisted form b: OSCAR decomposes the isometry
-    # into reflections s_{v_1} ... s_{v_m} over a diagonalized Gram matrix and
-    # returns b(v_1, v_1) ... b(v_m, v_m), a representative of the whole square
-    # class (Oscar.spin).  Its default is b = -1; the owned spinor norm applies
-    # its own multiplier at the owning morphism.
-    return rational_spinor_norm(space_with_isometry; b = 1)
 end
 
 function rational_witt_index(gram_entries)
@@ -367,20 +376,6 @@ class _OscarLatticeAdapter:
         if not module_loaded:
             julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
         return julia
-
-    def rational_spinor_norm_class(self, gram, isometry):
-        r"""Return ``b(v_1,v_1)...b(v_m,v_m)`` for ``isometry = s_{v_1}...s_{v_m}`` of ``(QQ^n, gram)``."""
-        bridge = self._bridge()
-        value = SageQQ(
-            bridge.call(
-                "DzackResearchOscarLatticeAdapter.rational_spinor_norm_class",
-                _rational_engine_matrix(gram),
-                _engine_row_action_matrix(isometry).change_ring(SageQQ),
-            )
-        )
-        if value == 0:
-            raise ArithmeticError(f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram}, but a spinor norm is a nonzero square class")
-        return value
 
     def rational_witt_index(self, gram):
         r"""Return the Witt index of the quadratic space ``(QQ^n, gram)``."""

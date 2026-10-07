@@ -1720,11 +1720,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             real place \(\mathbb Q\to\mathbb R\) it is the real spinor norm
             whose kernel is :meth:`O_plus`.
 
-            The private computation diagonalizes the Gram matrix and uses
-            OSCAR's reflection factorization.  The rational specialization
-            retains OSCAR's ``rational_spinor_norm`` wrapper; represented
-            absolute number fields use the same generic ``spin`` algorithm
-            through their selected primitive-element presentation.
+            Over \(\mathbb Q\) the private computation is the discriminant of
+            the Wall form of the isometry, by GAP's ``WallForm``; represented
+            absolute number fields diagonalize the Gram matrix and use OSCAR's
+            reflection factorization ``spin`` through their selected
+            primitive-element presentation.
             """
             ring = self.base_ring()
             field = ring.fraction_field()
