@@ -249,6 +249,26 @@ Reproduce with `~/.local/bin/sage probe.sage`, where the probe times the calls a
 Route chosen: the private engine of `O(L)` (`LatticeIsometryMor._engine_group`, `src/dzack_research/preamble/categories/lattice_morphisms.py`) records the PARI order on the GAP model with `SetSize`, so the group's cardinality is the engine's order and never a GAP orbit computation.
 Depends on this: `O(L).cardinality()` for every definite lattice.
 
+### `TorsionQuadraticModule.orthogonal_group()` enumerates isometries by brute force in `_isom_fqf`
+
+With no generators given, `TorsionQuadraticModule.orthogonal_group()` calls `sage.groups.fqf_orthogonal._isom_fqf`, which its own docstring calls "a slow brute force approach", and caches the generators on the module as `_orthogonal_group_gens`.
+At `n = 6` almost all of the time is in `_isom_fqf`: 394 calls of `fgp_module.submodule` take 2.49 s cumulative, `free_quadratic_module.span` and `FreeModule.__init__` about 2.3 s, `TorsionQuadraticModule._mul_` 1.40 s, and `matrix_space._element_constructor_` 1.02 s of own time.
+`.order()` after construction costs 0.001 s.
+The first GAP call in a process costs about 0.6 s; the times below exclude it, because the probe calls `libgap.eval("1")` first.
+First call, minimum of three fresh processes, SageMath 10.10.beta8, 2026-10-07, specimen `IntegralLattice(2*identity_matrix(n)).discriminant_group()`, the discriminant form of `A1^n`:
+
+| n | `orthogonal_group().order()` | order |
+| --- | --- | --- |
+| 2 | 0.113 s | 2 |
+| 3 | 0.197 s | 6 |
+| 4 | 0.356 s | 24 |
+| 6 | 4.90 s | 1440 |
+
+Reproduce with `sage -python probe.py n`, where the probe warms GAP, builds the specimen and times `orthogonal_group().order()`.
+Route chosen: the private engine of the orthogonal group of a torsion form (`_engine_group` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`) calls this method on the engine module of the invariant-factor form, so its first `cardinality()` is bounded below by this curve.
+Sage ships no other route to the full orthogonal group of a torsion quadratic form; whether Hecke/Oscar's `orthogonal_group(::TorQuadModule)` is faster is untested.
+Depends on this: `D.orthogonal_group()` for every discriminant form `D`, and through it `rho_L` and the stable orthogonal group.
+
 ### PARI's definite isometry test costs the number of vectors up to the largest diagonal entry, and Sage has no other route
 
 Sage's `QuadraticForm.is_globally_equivalent_to` calls PARI `qfisom`, so PARI is the only definite isometry test Sage ships.
