@@ -483,10 +483,14 @@ class PrimeSpectra(OwnedCategory):
         def _element_constructor_(self, ideal):
             if isinstance(ideal, self.category().ElementType) and ideal.parent() is self:
                 return ideal
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeals,
+            )
+
             candidate = _owned_ideal(self.ring(), ideal)
             if not bool(candidate.is_prime()):
                 raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
-            return self.element_class(self, candidate)
+            return self.element_class(self, CommutativeIdeals(self.ring()).PrimeAsIdeal()(candidate))
 
         def __contains__(self, candidate) -> bool:
             if isinstance(candidate, self.category().ElementType):
@@ -1615,9 +1619,17 @@ class PrimeLocalizations(OwnedCategory):
             a non-unit of ``R_p`` exactly when ``a`` lies in ``p``, so the
             non-units are the ideal ``p`` generates here.  Constructing it as
             the extension of ``p`` is what gives it the operations of an ideal
-            rather than a name and a generating set.
+            rather than a name and a generating set.  It is constructed in the
+            maximal ideals of ``R_p`` (Mathlib
+            ``IsLocalization.AtPrime.map_eq_maximalIdeal``).
             """
-            return self.localized_prime().extension_to_localization(self)
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeals,
+            )
+
+            return CommutativeIdeals(self).Maximal()(
+                self.localized_prime().extension_to_localization(self)
+            )
 
         def localize_module(self, module):
             r"""Return ``R_p tensor_R M`` through the module-localization theory."""
@@ -1708,11 +1720,16 @@ class AdicCompletions(Category):
         so repeated routes to the same ``(R,I,precision)`` return the same
         mathematical parent rather than parallel completion objects.
         """
+        from dzack_research.preamble.categories.rings.commutative_ideals import (
+            _ideal_placement,
+        )
+
         source = _own_ring(ring)
         defining = _owned_ideal(source, ideal)
         return _adic_completion_from_owned_data(
             source,
             defining,
+            _ideal_placement(defining),
             int(precision),
         )
 
@@ -2344,15 +2361,19 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
 
         # A formal-power-series specialization knows the quotient by its
         # represented ideal of variables exactly. For an arbitrary adic
-        # completion, maximality is the defining ideal owner's computation;
-        # a failure of that selected computation is a failure, not a category
-        # decision.
+        # completion, the defining ideal is maximal when it was constructed
+        # in the maximal ideals; a computed predicate never places the
+        # completion (CON-07).
         if formal_parameter_labels is not None and formal_base is not None:
             defining_ideal_is_maximal = (
                 True if formal_base in OwnedRings().Division().Commutative() else None
             )
         else:
-            defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeals,
+            )
+
+            defining_ideal_is_maximal = defining_ideal in CommutativeIdeals(source).Maximal()
 
         match (
             defining_ideal_is_maximal,
@@ -2505,13 +2526,19 @@ def _maximal_ideal_over_local_base(algebra, base, uniformizers):
 
 
 @cached_function
-def _quotient_ring(source, defining_ideal):
-    r"""Return the one ``R/I`` for this ring and this ideal.
+def _quotient_ring(source, defining_ideal, ideal_placement):
+    r"""Return the one ``R/I`` for this ring, this ideal and its placement.
 
-    ``R/I`` is determined by ``R`` and ``I``, so it is interned on them.  The
-    key is the ideal itself rather than a generating set, and ideals decide
-    their own equality, so ``(2)`` and ``(2,4)`` reach the same quotient of the
-    integers.
+    ``R/I`` is determined by ``R``, ``I`` and the category of ideals that
+    ``I`` was constructed in, so it is interned on all three.  The ideal is
+    compared by its own equality, so ``(2)`` and ``(2,4)`` reach the same
+    quotient of the integers.  The placement is part of the key because it
+    places ``R/I``: a field when ``I`` was constructed as a maximal ideal
+    (Mathlib ``Ideal.Quotient.field``), a domain when it was constructed as a
+    prime ideal (``Ideal.Quotient.isDomain``).  An equal ideal constructed
+    with another placement reaches its own quotient, so the category of
+    ``R/I`` never depends on which caller filled the cache (``ARC-13``,
+    ``OWN-10``), and a computed predicate never places it (``CON-07``).
 
     A localization keeps its localization engine as a private realization of
     fractions, not as quotient-construction data. Its quotient is therefore
@@ -2555,13 +2582,15 @@ def _quotient_ring(source, defining_ideal):
     elif quotient_engine is not None and source in OwnedRings().Noetherian() and not defining.is_one():
         dimension = _krull_dimension_of_engine(quotient_engine)
 
-    quotient_is_field = False
-    quotient_is_domain = False
-    if source not in LocalizationRings():
-        quotient_is_field = bool(defining_ideal.is_maximal())
-        quotient_is_domain = quotient_is_field or bool(defining_ideal.is_prime())
-        if quotient_is_domain and dimension == 0:
-            quotient_is_field = True
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+    )
+
+    ideals = CommutativeIdeals(source)
+    quotient_is_field = ideal_placement.is_subcategory(ideals.Maximal())
+    quotient_is_domain = ideal_placement.is_subcategory(ideals.PrimeAsIdeal())
+    if quotient_is_domain and dimension == 0:
+        quotient_is_field = True
     placements = []
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
@@ -3217,12 +3246,18 @@ def _quotient_completion_comparison(source_quotient, source_ideal, *, precision=
 
 
 def _residue_field_at(source, ideal):
-    r"""Return ``R/m`` for a represented maximal ideal ``m`` of ``R``."""
-    defining = _owned_ideal(source, ideal)
-    if not bool(defining.is_maximal()):
-        raise ValueError(
-            f"the residue field R/m needs a maximal ideal m, but {defining} is not maximal in {source}"
-        )
+    r"""Return ``R/m`` for a represented maximal ideal ``m`` of ``R``.
+
+    The residue field receives ``m`` as a maximal ideal: ``m`` is constructed
+    in ``CommutativeIdeals(R).Maximal()``, which places ``R/m`` as a field
+    (Mathlib ``Ideal.Quotient.field``).  The caller states that ``m`` is
+    maximal; the maximality validator decides it under strict checking.
+    """
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+    )
+
+    defining = CommutativeIdeals(source).Maximal()(_owned_ideal(source, ideal))
     quotient = source.quotient_ring(defining)
     if quotient not in OwnedRings().Division().Commutative():
         raise ArithmeticError(
@@ -3282,28 +3317,41 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
 
 
 def _prime_localization_from_input(source, prime):
-    r"""Return ``R_p`` using the submonoid ``R \ p -> (R,*)``."""
+    r"""Return ``R_p`` using the submonoid ``R \ p -> (R,*)``.
+
+    The localization receives ``p`` as a prime ideal: ``p`` is constructed in
+    ``CommutativeIdeals(R).PrimeAsIdeal()``.  The caller states that ``p`` is
+    prime; the primality validator decides it under strict checking.
+    """
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+        _ideal_placement,
+    )
+
     if source not in OwnedRings().Commutative():
         raise TypeError(
             f"the localization R_p needs a commutative ring R, but {source} is in {source.category()}"
         )
-    prime_ideal = _owned_ideal(source, prime)
-    if not prime_ideal.is_prime():
-        raise ValueError(
-            f"the localization R_p needs a prime ideal p, but {prime_ideal} is not prime in {source}"
-        )
-    return _prime_localization(source, prime_ideal)
+    prime_ideal = CommutativeIdeals(source).PrimeAsIdeal()(_owned_ideal(source, prime))
+    return _prime_localization(source, prime_ideal, _ideal_placement(prime_ideal))
 
 
 @cached_function
-def _prime_localization(source, prime_ideal):
-    r"""Return the one ``R_p`` for this ring and this prime.
+def _prime_localization(source, prime_ideal, prime_placement):
+    r"""Return the one ``R_p`` for this ring, this prime and its placement.
 
     The complement of a prime is a predicate submonoid, freshly built on each
     call and never recognizable as a copy of itself, so the interning is keyed
-    on the prime instead.  That key is exact, because the prime is an ideal and
-    ideals decide their own equality.
+    on the prime instead.  The prime is compared by its own equality.  Its
+    placement, prime or maximal, is part of the key, because ``R_p`` stores
+    ``p`` and every construction from ``p`` reads that placement; so the
+    placement of the stored prime never depends on which caller filled the
+    cache (``ARC-13``, ``OWN-10``).
     """
+    assert prime_ideal in prime_placement, (
+        f"the prime {prime_ideal} of {source} is keyed with the placement {prime_placement}, "
+        "which it was not constructed in"
+    )
     prime_engine = _engine_ideal(source, prime_ideal)
     complement = source.predicate_submonoid(
         lambda element: _engine_ring_value(source, element) not in prime_engine,
@@ -3314,14 +3362,21 @@ def _prime_localization(source, prime_ideal):
 
 
 @cached_function
-def _adic_completion_from_owned_data(source, defining, precision):
+def _adic_completion_from_owned_data(source, defining, defining_placement, precision):
     r"""Private implementation of the represented adic completion ``R^``.
 
     ``source`` and ``defining`` are already owned and normalized by
     :class:`AdicCompletions`.  This is the sole implementation factory for the
     family; public notation is defined below and delegates back to the category
-    constructor.
+    constructor.  The placement of the defining ideal is part of the key: the
+    completion at an ideal constructed as maximal is placed as a complete
+    local ring, so an equal ideal with another placement reaches its own
+    completion (``ARC-13``, ``OWN-10``).
     """
+    assert defining in defining_placement, (
+        f"the ideal {defining} of {source} is keyed with the placement {defining_placement}, "
+        "which it was not constructed in"
+    )
     if source in PrimeLocalizations() and defining == source.maximal_ideal():
         bottom = source.localization_source()
         prime = source.localized_prime()
@@ -3646,7 +3701,12 @@ def Zp(*args, **kwargs):
     if not args and "p" in engine_kwargs:
         engine_kwargs["p"] = prime
     parser = _SageZp(*engine_args, **engine_kwargs)
-    defining = source.ideal(owned_prime)
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+    )
+
+    # ZZ_p is the completion of ZZ at the maximal ideal (p).
+    defining = CommutativeIdeals(source).Maximal()(owned_prime)
     return AdicCompletions()(
         source,
         defining,

@@ -1995,8 +1995,12 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return embeddings[0]
 
                 def maximal_ideal(self):
-                    r"""Return the zero ideal, the unique maximal ideal of a field."""
-                    return self.ideal(self.zero())
+                    r"""Return the zero ideal, the unique maximal ideal of a field (Mathlib ``Ideal.bot_isMaximal``)."""
+                    from dzack_research.preamble.categories.rings.commutative_ideals import (
+                        CommutativeIdeals,
+                    )
+
+                    return CommutativeIdeals(self).Maximal()(self.zero())
 
                 def residue_field(self):
                     return self
@@ -2302,27 +2306,33 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 built the same way.
                 """
                 from dzack_research.preamble.categories.rings.commutative_ideals import (
-                    _commutative_ideal,
+                    CommutativeIdeals,
+                    _ideal_in,
                 )
 
                 if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
                     generators = tuple(generators[0])
-                if self in LocalizationRings():
-                    source = self.localization_source()
-                    numerators = tuple(
-                        self.localization_fraction_data(generator)[0]
-                        for generator in generators
-                    )
-                    return source.ideal(*numerators).extension_to_localization(self)
-                return _commutative_ideal(self, tuple(generators))
+                return _ideal_in(CommutativeIdeals(self), tuple(generators))
 
             def quotient_ring(self, ideal):
+                r"""Return ``R/I``, placed by the category ``I`` was constructed in.
+
+                ``R/I`` is a field when ``I`` is constructed as a maximal
+                ideal (Mathlib ``Ideal.Quotient.field``) and a domain when
+                ``I`` is constructed as a prime ideal
+                (``Ideal.Quotient.isDomain``); a computed predicate never
+                places it (``CON-07``).
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     _owned_ideal,
                     _quotient_ring,
                 )
+                from dzack_research.preamble.categories.rings.commutative_ideals import (
+                    _ideal_placement,
+                )
 
-                return _quotient_ring(self, _owned_ideal(self, ideal))
+                defining_ideal = _owned_ideal(self, ideal)
+                return _quotient_ring(self, defining_ideal, _ideal_placement(defining_ideal))
 
             def localization(self, *elements):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (

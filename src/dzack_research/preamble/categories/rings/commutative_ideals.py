@@ -1,6 +1,7 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.rings import Rings as SageRings
 from sage.matrix.constructor import matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
@@ -37,6 +38,17 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import owned_category_join
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.validation import validator
+
+
+# ``Prime`` already names the prime fields on ``OwnedRings``, so primality of
+# an ideal takes the qualified name (``CAT-19``).  It is registered before
+# ``Maximal``, which implies it.
+if "PrimeAsIdeal" not in all_axioms:
+    all_axioms.add("PrimeAsIdeal")
+if "Maximal" not in all_axioms:
+    all_axioms.add("Maximal")
 
 
 def _engine_commutative_ideal(ideal):
@@ -69,12 +81,13 @@ def _maximal_order_number_field_ideal(ideal):
 
 
 @cached_function
-def _localized_commutative_ideal(source_ideal, localization_ring):
-    r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal.
+def _localized_commutative_ideal(source_ideal, localization_ring, category):
+    r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal, in ``category``.
 
-    Interned on the source ideal and the localization, which together
-    determine it, so an ideal of a localization is one object however often
-    it is asked for.
+    Interned on the source ideal, the localization and the category of ideals
+    of ``S^{-1}R`` that the caller constructs it in.  These determine it, so
+    an ideal of a localization is one object however often it is asked for,
+    and a prime or maximal ideal is constructed as one.
     """
     localization_map = localization_ring.localization_map()
     source_regular_module = source_ideal.ring().regular_module()
@@ -106,7 +119,7 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
         localization_ring.localization_functor(),
         subobject_ambient=target_regular_module,
         subobject_generator_images=embedded,
-        extra_categories=(CommutativeIdeals(localization_ring),),
+        extra_categories=(category,),
         extra_construction_data={
             "ideal_generators": tuple(
                 localization_map(generator)
@@ -141,6 +154,91 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         )
 
         return _FractionalIdealExtension(self)
+
+    class SubcategoryMethods:
+        def PrimeAsIdeal(self):
+            r"""Return the full subcategory of prime ideals (lean-categories ``PrimeIdealCat R``)."""
+            return self._with_axiom("PrimeAsIdeal")
+
+        def Maximal(self):
+            r"""Return the full subcategory of maximal ideals (lean-categories ``MaximalIdealCat R``)."""
+            return self._with_axiom("Maximal")
+
+    class PrimeAsIdeal(CategoryWithAxiom):
+        r"""Prime ideals of ``R``: proper ideals ``p`` with ``ab in p`` only if ``a in p`` or ``b in p``.
+
+        The full subcategory ``PrimeIdealCat R`` of lean-categories
+        (``LeanCategories/Algebra/Ideals.lean``), cut out of the ideals by
+        ``Ideal.IsPrime``.  The caller who constructs an ideal here states
+        that it is prime; construction stores that placement and checks
+        nothing (``OWN-22``), and :meth:`validate_primality` decides the law
+        on request.
+        """
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "prime ideals"
+
+        def an_object(self):
+            r"""The zero ideal of an integral domain, which is prime."""
+            ring = self.base_ring()
+            assert ring in OwnedRings().Commutative().NoZeroDivisors(), (
+                f"the zero ideal is the sample prime ideal of an integral domain, and {ring} is not one"
+            )
+            return self(ring.zero())
+
+        def _call_(self, *data):
+            ideal = _ideal_in(self, _ideal_generating_data(self.base_ring(), data))
+            ideal.validate_primality(check=False)
+            return ideal
+
+        class ParentMethods:
+            @validator
+            def validate_primality(self):
+                if not self._decide_primality():
+                    raise ValueError(
+                        f"the ideal {self} of {self.ring()} was constructed as a prime ideal, but it is not prime"
+                    )
+
+    class Maximal(CategoryWithAxiom):
+        r"""Maximal ideals of ``R``: proper ideals contained in no larger proper ideal.
+
+        The full subcategory ``MaximalIdealCat R`` of lean-categories
+        (``LeanCategories/Algebra/Ideals.lean``), cut out of the ideals by
+        ``Ideal.IsMaximal``.  The caller who constructs an ideal here states
+        that it is maximal; construction stores that placement and checks
+        nothing (``OWN-22``), and :meth:`validate_maximality` decides the law
+        on request.
+        """
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "maximal ideals"
+
+        def an_object(self):
+            r"""The zero ideal of a field, which is maximal."""
+            ring = self.base_ring()
+            assert ring in OwnedRings().Division().Commutative(), (
+                f"the zero ideal is the sample maximal ideal of a field, and {ring} is not one"
+            )
+            return self(ring.zero())
+
+        def extra_super_categories(self):
+            r"""A maximal ideal is prime (Mathlib ``Ideal.IsMaximal.isPrime``)."""
+            return [CommutativeIdeals(self.base_ring()).PrimeAsIdeal()]
+
+        def _call_(self, *data):
+            ideal = _ideal_in(self, _ideal_generating_data(self.base_ring(), data))
+            ideal.validate_maximality(check=False)
+            return ideal
+
+        class ParentMethods:
+            @validator
+            def validate_maximality(self):
+                if not self._decide_maximality():
+                    raise ValueError(
+                        f"the ideal {self} of {self.ring()} was constructed as a maximal ideal, but it is not maximal"
+                    )
 
     class ParentMethods:
         def __init__(
@@ -248,9 +346,36 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     f"cannot extend the ideal {self} of {self.ring()} to {localization_ring}: that ring is a "
                     f"localization of {localization_ring.localization_source()}, not of {self.ring()}"
                 )
-            return _localized_commutative_ideal(self, localization_ring)
+            return _localized_commutative_ideal(
+                self, localization_ring, CommutativeIdeals(localization_ring)
+            )
 
         def is_prime(self):
+            r"""Return whether this ideal is prime.
+
+            An ideal constructed in the prime ideals is prime by placement;
+            any other ideal is decided by computation.
+            """
+            match self:
+                case _ if self in CommutativeIdeals(self.ring()).PrimeAsIdeal():
+                    return True
+                case _:
+                    return self._decide_primality()
+
+        def is_maximal(self):
+            r"""Return whether this ideal is maximal.
+
+            An ideal constructed in the maximal ideals is maximal by
+            placement; any other ideal is decided by computation.
+            """
+            match self:
+                case _ if self in CommutativeIdeals(self.ring()).Maximal():
+                    return True
+                case _:
+                    return self._decide_maximality()
+
+        def _decide_primality(self):
+            r"""Decide primality by computation in the selected computation model."""
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_prime())
@@ -266,7 +391,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 case _:
                     return bool(selected.is_prime())
 
-        def is_maximal(self):
+        def _decide_maximality(self):
+            r"""Decide maximality by computation in the selected computation model."""
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_maximal())
@@ -845,13 +971,18 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
 
 
 @cached_function
-def _commutative_ideal(source, generators):
-    r"""Return the one ideal of ``R`` built from this generating family.
+def _commutative_ideal(source, generators, category):
+    r"""Return the one ideal of ``R`` built from this generating family, in ``category``.
 
     An ideal is determined by its ring and its elements, so two calls that
     write the same generators name one subobject and get one object.  The key
     is the family as written: ``(2)`` and ``(2,4)`` are equal ideals but reach
-    two entries here, and they compare equal afterwards.
+    two entries here, and they compare equal afterwards.  The key also holds
+    the category of ideals of ``R`` that the caller constructs in: ``(5)``
+    constructed as a maximal ideal and ``(5)`` constructed as an ideal are
+    two objects that compare equal, because the placement is a choice made at
+    construction and a cache never transfers it to another caller (``ARC-13``,
+    ``OWN-10``).
     """
     engine = _engine_ring(source)
     values = tuple(_engine_ring_value(source, generator) for generator in generators)
@@ -867,7 +998,7 @@ def _commutative_ideal(source, generators):
                 Sets.Δ[-1],
                 _subobject_ambient=ambient_module,
                 _subobject_generator_images={},
-                _extra_categories=(CommutativeIdeals(source),),
+                _extra_categories=(category,),
                 _extra_construction_data={
                     "engine_ideal": backend,
                     "ideal_generators": (
@@ -885,7 +1016,7 @@ def _commutative_ideal(source, generators):
                         _owned_engine_value(source, generator),
                     )
                 },
-                _extra_categories=(CommutativeIdeals(source),),
+                _extra_categories=(category,),
                 _extra_construction_data={
                     "engine_ideal": backend,
                     "ideal_generators": (
@@ -923,7 +1054,7 @@ def _commutative_ideal(source, generators):
             )
             for position, label in enumerate(labels)
         },
-        category=owned_category_join((CommutativeIdeals(source),)),
+        category=owned_category_join((category,)),
         **{
             "engine_ideal": backend,
             "ideal_generators": tuple(
@@ -933,6 +1064,53 @@ def _commutative_ideal(source, generators):
         },
     )
     return ideal
+
+
+def _ideal_in(category, generators):
+    r"""Return the ideal of ``R`` generated by ``generators``, constructed in ``category``.
+
+    ``category`` is ``CommutativeIdeals(R)`` or one of its axiom
+    subcategories.  In a localization every denominator is a unit, so
+    ``(a_1/s_1, ..., a_r/s_r)`` is the extension of the source ideal
+    ``(a_1, ..., a_r)`` along ``R -> S^{-1}R``; the extension is constructed
+    in ``category``.
+    """
+    ring = category.base_ring()
+    match ring:
+        case _ if ring in LocalizationRings():
+            source = ring.localization_source()
+            numerators = tuple(
+                ring.localization_fraction_data(generator)[0]
+                for generator in generators
+            )
+            return _localized_commutative_ideal(source.ideal(*numerators), ring, category)
+        case _:
+            return _commutative_ideal(ring, tuple(generators), category)
+
+
+def _ideal_generating_data(ring, data):
+    r"""Return the generators that the constructor data of an ideal of ``ring`` names.
+
+    The data is one ideal of ``ring``, whose ideal generators are taken, or
+    elements of ``ring``.
+    """
+    match data:
+        case (ideal,) if ideal in CommutativeIdeals(ring):
+            return tuple(ideal.ideal_generators())
+        case _:
+            return data
+
+
+def _ideal_placement(ideal):
+    r"""Return the most specific of the maximal, prime and all ideals that ``ideal`` is constructed in."""
+    ideals = CommutativeIdeals(ideal.ring())
+    match ideal:
+        case _ if ideal in ideals.Maximal():
+            return ideals.Maximal()
+        case _ if ideal in ideals.PrimeAsIdeal():
+            return ideals.PrimeAsIdeal()
+        case _:
+            return ideals
 
 
 __all__ = ["CommutativeIdeals"]
