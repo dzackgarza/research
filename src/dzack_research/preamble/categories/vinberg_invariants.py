@@ -42,12 +42,21 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.coxeter_diagrams import (
+    CoxeterDiagrams,
+    _engine_coxeter_exponent,
+)
 from dzack_research.preamble.categories.graph_categories import (
     LabelledDigraphs,
     LabelledGraphs,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _cross_engine_ring_value,
+    _engine_numeral,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     OrderedEnumeratedSets,
     finite_ordered_set,
@@ -531,24 +540,23 @@ class VinbergInvariantMatrices(OwnedCategory):
             This is the conversion to Coxeter data, and it is partial: an
             invariant that is not \(4\cos^2(\pi/m)\) for an integer \(m\) names
             a pair of mirrors at an angle no Coxeter matrix can record, and the
-            conversion refuses rather than rounding to a nearby bond.
+            conversion refuses rather than rounding to a nearby bond.  The bond is
+            the order of the product of the two reflections, a cardinal, and
+            \(\aleph_0\) when the mirrors do not meet.
             """
             if left == right:
-                return SageZZ.one()
-            return _coxeter_bond(self.vinberg_ratio(left, right))
+                return cardinal(1)
+            ratio = _engine_numeral(self._base_ring, self.vinberg_ratio(left, right))
+            return cardinal(_coxeter_bond(ratio))
 
         def coxeter_matrix(self):
             r"""Return the Coxeter matrix this invariant matrix determines."""
             from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 
             vertices = tuple(self._index_set)
-            bonds = [
-                [self.coxeter_entry(left, right) for right in vertices]
-                for left in vertices
-            ]
-            # Sage writes an infinite Coxeter bond as the matrix entry -1.
             entries = [
-                [-1 if bond is Infinity else bond for bond in row] for row in bonds
+                [_engine_coxeter_exponent(self.coxeter_entry(left, right)) for right in vertices]
+                for left in vertices
             ]
             return CoxeterMatrix(entries, index_set=vertices)
 
@@ -737,15 +745,21 @@ class VinbergInvariantMatrices(OwnedCategory):
                 diagram.root_gram_tensor(), index_set=tuple(diagram.index_set())
             )
         vertices = tuple(diagram.index_set())
+        real_algebraics = _own_ring(AA)
         values = [
-            [_vinberg_invariant_of_bond(diagram.coxeter_entry(left, right)) for right in vertices]
+            [
+                _cross_engine_ring_value(
+                    _vinberg_invariant_of_bond(diagram.coxeter_entry(left, right))
+                )
+                for right in vertices
+            ]
             for left in vertices
         ]
         return _vinberg_invariant_matrix(
-            AA,
+            real_algebraics,
             vertices,
             values,
-            [[AA.one() for _ in vertices] for _ in vertices],
+            [[real_algebraics.one() for _ in vertices] for _ in vertices],
         )
 
     def from_invariants(self, base_ring, values, index_set=None):
@@ -776,15 +790,15 @@ class VinbergInvariantMatrices(OwnedCategory):
 
 
 def _vinberg_invariant_of_bond(bond):
-    r"""Return \(t=4\cos^2(\pi/m)\) for a Coxeter bond ``m``.
+    r"""Return \(t=4\cos^2(\pi/m)\) for a Coxeter bond ``m``, a cardinal.
 
-    At \(m=\infty\) the mirrors are parallel, \(\cos 0 = 1\), and \(t=4\).
+    At \(m=\aleph_0\) the mirrors are parallel, \(\cos 0 = 1\), and \(t=4\).
     That is the smallest value at which the mirrors fail to meet, so the
     unrooted diagram records the parallel case and cannot record divergence.
     """
-    if bond is Infinity or bond == -1:
+    if bond.is_countably_infinite():
         return AA(4)
-    return 4 * _reflection_cosine(bond) ** 2
+    return 4 * _reflection_cosine(int(bond)) ** 2
 
 
 def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators):

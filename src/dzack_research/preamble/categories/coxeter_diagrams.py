@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_numeral,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -80,6 +80,25 @@ def _coxeter_entry(q1, q2, pairing):
         f"Coxeter angle pi/m: 4 cos^2(pi/m) would be {four_cos_squared}, which is not 0, 1, 2, 3 "
         f"or at least 4"
     )
+
+
+def _engine_coxeter_exponent(entry):
+    r"""Lower a Coxeter exponent to Sage's matrix entry, which writes \(\aleph_0\) as ``-1``.
+
+    An exponent is the order of \(s_v s_w\), so an owned cardinal is finite or
+    \(\aleph_0\); an integer literal is lowered to Sage's integers.
+    """
+    match entry:
+        case _ if entry in Cardinalities() and entry.is_countably_infinite():
+            return SageZZ(-1)
+        case _ if entry in Cardinalities():
+            assert entry.is_finite(), (
+                f"{entry} is not the order of an element of a Coxeter group: that order is a "
+                f"positive integer or aleph_0"
+            )
+            return SageZZ(int(entry))
+        case _:
+            return _engine_cartan_type_data(entry)
 
 
 class CoxeterDiagramMorphism:
@@ -362,8 +381,13 @@ class CoxeterDiagrams(OwnedCategory):
             return self._coxeter_matrix
 
         def coxeter_entry(self, left, right):
+            r"""Return \(m_{vw}\), the order of \(s_v s_w\) in the Coxeter group, as a cardinal.
+
+            An order is a cardinality: a positive integer, or \(\aleph_0\) when
+            \(s_v s_w\) has infinite order, the bond Sage writes as ``-1``.
+            """
             entry = self._coxeter_matrix[left, right]
-            return Infinity if entry == -1 else entry
+            return aleph0 if entry == -1 else cardinal(entry)
 
         def is_rooted(self) -> bool:
             return self._roots is not None
@@ -422,7 +446,7 @@ class CoxeterDiagrams(OwnedCategory):
                 if bond == 3:
                     label = ""
                 else:
-                    bond_label = r"\infty" if bond == Infinity else str(bond)
+                    bond_label = r"\infty" if bond.is_countably_infinite() else str(bond)
                     label = (
                         rf" node[midway,fill=white,draw=none] {{$ {bond_label} $}}"
                     )
@@ -562,10 +586,10 @@ class CoxeterDiagrams(OwnedCategory):
                         row.append(_cross_engine_ring_value(normalized))
                         continue
                     m = self.coxeter_entry(left, right)
-                    if m == Infinity:
+                    if m.is_countably_infinite():
                         row.append(-real_algebraics.one())
                     else:
-                        row.append(_cross_engine_ring_value(-SageAA(cos(pi / m))))
+                        row.append(_cross_engine_ring_value(-SageAA(cos(pi / int(m)))))
                 values.append(row)
             mirrors = self.cardinality()
             return tensor(real_algebraics, (), (mirrors, mirrors), values)
@@ -1223,8 +1247,15 @@ class CoxeterDiagrams(OwnedCategory):
             return f"{rooted}Coxeter diagram on {self.cardinality()} vertices"
 
     def from_coxeter_matrix(self, coxeter_matrix, names=None, positions=None):
+        r"""Return the diagram of a Coxeter matrix.
+
+        An entry \(m_{vw}\) is the order of \(s_v s_w\): a positive integer, or the
+        cardinal \(\aleph_0\) (``aleph0``) for an element of infinite order.
+        """
         if isinstance(coxeter_matrix, (list, tuple)):
-            entries = tuple(tuple(row) for row in coxeter_matrix)
+            entries = tuple(
+                tuple(_engine_coxeter_exponent(entry) for entry in row) for row in coxeter_matrix
+            )
             coxeter_matrix = CoxeterMatrix(
                 entries,
                 index_set=tuple(position for position, _row in enumerate(entries)),
