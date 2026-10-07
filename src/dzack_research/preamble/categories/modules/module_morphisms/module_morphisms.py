@@ -215,6 +215,7 @@ class ModuleMorphismMethods:
     _scalar_extension_of = None
     _scalar_extension_functor = None
     _lift_function = None
+    _linearity_premises = None
 
     def _initialize_lower_arrow(self, parent) -> None:
         domain = parent.domain()
@@ -237,17 +238,11 @@ class ModuleMorphismMethods:
     def _elementwise_linearity_derivation(self):
         r"""Return the construction-derived linearity decision, or ``None``.
 
-        An arrow built by a Mor-module operation conjoins the linearity
-        decisions of its premises; a linear map read into another Mor with
-        the same endpoints keeps the decision of that map.  Ordinary
-        elementwise callables have no derivation.  No caller selects a
-        derivation with a string or boolean flag.
+        A linear map read into another Mor with the same endpoints keeps the
+        decision of that map.  Ordinary elementwise callables have no
+        derivation.  No caller selects a derivation with a string or boolean
+        flag.
         """
-        match self._linearity_premises:
-            case None:
-                pass
-            case premises:
-                return _combined_linearity_decision(premises)
         source_morphism = self._source_module_morphism
         if source_morphism is not None:
             return source_morphism.linearity_decision()
@@ -492,8 +487,15 @@ class ModuleMorphismMethods:
         Generator-image maps are linear extensions after their source
         relations are checked.  Elementwise maps are either decided in an
         effective regime, derived by a named universal construction, or retain
-        the unresolved hypothesis explicitly.
+        the unresolved hypothesis explicitly.  An arrow built by a Mor
+        operation from a family of linear maps, on elements or by generator
+        images, has the conjoined decision of that family.
         """
+        match self._linearity_premises:
+            case None:
+                pass
+            case premises:
+                return _combined_linearity_decision(premises)
         match self._element_function:
             case None:
                 return self._check_selected_domain_relations()
@@ -2328,6 +2330,25 @@ class _ModuleMorCommonMethods:
         """
         return self._preamble_base_ring
 
+    def _from_constructed_element_map(self, function, premises=()):
+        r"""The elementwise map of a construction that makes it linear when the maps of ``premises`` are.
+
+        The empty family means the construction alone makes it linear, as
+        for a unit or counit given by its defining formula.  The image of a
+        linear map ``f`` under a functor has the premise ``f``.
+        """
+        if not callable(function):
+            raise TypeError(
+                f"a constructed linear map {self.domain()} -> {self.codomain()} needs a function on elements, "
+                f"but got {function!r}"
+            )
+        return self.element_class(
+            self,
+            function,
+            elementwise=True,
+            linearity_premises=premises,
+        )
+
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the linear map with these images; ``check=True`` runs its validators (``OWN-22``)."""
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
@@ -2594,18 +2615,20 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         r"""Construct a module morphism without Sage coercion discovery."""
         return self._element_constructor_(images)
 
-    def _from_constructed_element_map(self, function):
-        r"""The elementwise map of a construction that makes it linear: a premise-free Mor operation."""
-        if not callable(function):
-            raise TypeError(
-                f"a constructed linear map {self.domain()} -> {self.codomain()} needs a function on elements, "
-                f"but got {function!r}"
-            )
+    def _from_scalar_extension(self, morphism, datum, functor, *, elementwise=False):
+        r"""``S tensor_R f`` for ``f = morphism``, given by its images on the extended framing or on elements.
+
+        Scalar extension is a functor on linear maps, so ``S tensor_R f`` is
+        linear exactly when ``f`` is.  A localization ``S^{-1} f`` is the
+        scalar extension along ``R -> S^{-1}R``.
+        """
         return self.element_class(
             self,
-            function,
-            elementwise=True,
-            linearity_premises=(),
+            datum,
+            elementwise=elementwise,
+            scalar_extension_of=morphism,
+            scalar_extension_functor=functor,
+            linearity_premises=(morphism,),
         )
 
     def presentation_matrix(self):
