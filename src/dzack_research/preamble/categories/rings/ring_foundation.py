@@ -4386,7 +4386,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
     from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.qqbar import QQbar as SageQQbar
-    from sage.symbolic.ring import SymbolicRing
 
     from dzack_research.preamble.categories.rings.number_fields import (
         NumberFieldsWithChosenPrimitiveElement,
@@ -4533,10 +4532,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             matrix_noetherian = (noetherian,) if coefficients in OwnedRings().Noetherian() else ()
             finite = (owned_sets.FiniteSets(),) if coefficients in owned_sets.FiniteSets() else ()
             placements = (*commutative, *matrix_noetherian, *finite)
-        case SymbolicRing():
-            # Sage's symbolic expressions are built with a commutative
-            # product; that is the only datum of the construction.
-            placements = (OwnedRings().Commutative(),)
         case _:
             placements = ()
     joined = owned_category_join((OwnedRings(), *placements))
