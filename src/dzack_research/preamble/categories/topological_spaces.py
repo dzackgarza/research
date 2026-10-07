@@ -9,7 +9,6 @@ assert at the computational frontier when arbitrary openness is not
 represented.
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
@@ -97,27 +96,89 @@ class _FiniteTopologyData(SageObject):
                     )
 
     def open_subsets(self, space):
+        r"""The open sets of ``space``, the points of ``space`` at the members of each open of ``tau``."""
         power = space.power_set()
         return finite_ordered_set(
-            tuple(power(members) for members in self._open_member_families)
+            tuple(
+                power(tuple(space(member) for member in members))
+                for members in self._open_member_families
+            )
         )
 
     def is_open_subset(self, space, candidate) -> bool:
-        members = _members_of_subset(space, candidate)
+        r"""Whether the subset ``candidate`` of ``space`` is the image of an open of ``tau``."""
+        index_of = space.enumeration_inverse()
+        members = tuple(index_of(point) for point in _members_of_subset(space, candidate))
         return members in self._open_member_families
+
+
+class _FiniteSpacePoint:
+    r"""A point of a finite space ``X = (S, tau)``: the point of ``X`` at a point ``s`` of ``S``."""
+
+    def __init__(self, parent, index) -> None:
+        self._index = index
+        super().__init__(parent)
+
+    def index(self):
+        r"""The point ``s`` of ``S`` at which the enumeration ``S -> X`` places this point."""
+        return self._index
+
+    def _repr_(self) -> str:
+        return repr(self._index)
+
+    def __eq__(self, other) -> bool:
+        r"""Equal to the point of the same space at the same point of ``S``.
+
+        The points of two spaces on one ``S`` are different points, so a datum
+        of another parent is unequal here rather than sent through coercion.
+        """
+        return element_parent(other) is self.parent() and other.index() == self.index()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(self._index)
 
 
 class _FiniteTopologicalSpaceEngine:
     r"""A finite topological space ``X = (S, tau)``, constructed on its set of points ``S``.
 
-    The set level of ``X`` is the finite ordered set enumerated by ``S``
-    through the identity of ``S``: its points are the points of ``S``, and
-    its finiteness, enumeration, counting well-order and cardinality are the
-    ones that set level derives from ``S``.  This level adds only ``tau``.
+    A topology is chosen structure: many topologies sit on one ``S``, so each
+    space is its own object with its own points.  The set level of ``X`` is the
+    finite ordered set enumerated by ``S``, whose point at ``s`` is the point
+    of ``X`` at ``s``; its finiteness, counting well-order and cardinality are
+    the ones that level derives from ``S``.  A point of ``S`` names a point of
+    ``X`` through that enumeration, which is the element constructor of ``X``.
+    ``S`` is retained as defining data, and this level adds only ``tau``.
     """
 
+    _derived_construction_parameters = frozenset({"index_set", "element_at", "index_of"})
+
+    def __init__(self, point_set, **rest) -> None:
+        super().__init__(
+            index_set=point_set,
+            element_at=self._point_at,
+            index_of=self._index_of,
+            **rest,
+        )
+
+    def _point_at(self, index):
+        r"""The point of ``X`` at the point ``index`` of ``S``."""
+        return self.element_class(self, index)
+
+    def _index_of(self, datum):
+        r"""The point of ``S`` that names ``datum``, or ``None`` when ``datum`` names no point of ``X``."""
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum.index()
+            case _ if datum in self.index_set():
+                return self.index_set()(datum)
+            case _:
+                return None
+
     def unstructured_set(self):
-        r"""The set ``S`` on which this topology was placed, the index set of its enumeration."""
+        r"""The set ``S`` on which this topology was placed, retained as defining data."""
         return self.index_set()
 
     underlying_set = unstructured_set
@@ -164,35 +225,18 @@ class ContinuousMap:
 
 
 class TopologicalSpaceMor(CategoricalMor):
-    r"""``Mor_Top(X, Y)``: the subset of ``Mor_Set(UX, UY)`` of the continuous maps.
+    r"""``Mor_Top(X, Y)``: the subset of ``Mor_Set(X, Y)`` of the continuous maps.
 
-    The forgetful functor ``U: Top -> Set`` is faithful, so a continuous map
-    ``X -> Y`` is a set map ``UX -> UY`` with a property: the preimage of each
-    open set of ``Y`` is open in ``X``.  The supercategory of this Mor is
-    ``Mor_Set(X, Y)`` (``CategoricalMor.super_categories``), and a set map of
-    the underlying sets lies in it exactly when it is continuous (``CON-17``).
-
-    The underlying set ``UX`` has two parents: ``X`` itself, an object of
-    ``Sets()``, and the point set ``X.underlying_set()`` that its topology was
-    placed on.  ``X`` is a facade over that point set, so the two parents have
-    the same points, and a set map out of either is a map of ``UX``.
+    The forgetful functor ``U: Top -> Set`` is faithful and is the identity on
+    objects, since ``X`` is an object of ``Sets()`` through its construction.
+    A continuous map ``X -> Y`` is therefore a set map ``X -> Y`` with a
+    property: the preimage of each open set of ``Y`` is open in ``X``.  The
+    supercategory of this Mor is ``Mor_Set(X, Y)``
+    (``CategoricalMor.super_categories``), and a set map lies in this Mor
+    exactly when it is continuous (``CON-17``).
     """
 
     ElementMethods = ContinuousMap
-
-    def _presents_underlying_set(self, space, candidate) -> bool:
-        r"""Whether the set ``candidate`` is ``U(space)``, by one of its two parents."""
-        return candidate is space or candidate is space.underlying_set()
-
-    def _is_map_of_underlying_sets(self, arrow) -> bool:
-        r"""Whether ``arrow`` is a set map ``UX -> UY`` for the endpoints of this Mor."""
-        domain = arrow.domain()
-        codomain = arrow.codomain()
-        return (
-            self._presents_underlying_set(self.domain(), domain)
-            and self._presents_underlying_set(self.codomain(), codomain)
-            and arrow in Sets().Mor(domain, codomain)
-        )
 
     def _preimages_of_opens_are_open(self, set_map) -> bool:
         r"""Continuity of ``set_map: UX -> UY``, decided from its definition.
@@ -218,27 +262,23 @@ class TopologicalSpaceMor(CategoricalMor):
         )
 
     def accepts(self, arrow) -> bool:
-        r"""Membership: a continuous map ``X -> Y``, or a continuous set map ``UX -> UY``."""
+        r"""Membership: a continuous map ``X -> Y``, or a continuous set map ``X -> Y``."""
         if self._already_parented_arrow(arrow):
             return True
-        return self._is_map_of_underlying_sets(arrow) and self._preimages_of_opens_are_open(arrow)
+        return (
+            arrow in Sets().Mor(self.domain(), self.codomain())
+            and self._preimages_of_opens_are_open(arrow)
+        )
 
     def _element_constructor_(self, datum):
-        r"""A continuous map, given by a set map ``UX -> UY`` or by a function on points.
+        r"""A continuous map, given by a set map ``X -> Y`` or by a function on points.
 
         The datum is read as a set map in ``Mor_Set(X, Y)`` and admitted by
         continuity, the condition that cuts this subset out of it.
         """
         if element_parent(datum) is self:
             return datum
-        maps = Sets().Mor(self.domain(), self.codomain())
-        match datum:
-            case Morphism() if (
-                element_parent(datum) is not maps and self._is_map_of_underlying_sets(datum)
-            ):
-                set_morphism = maps(lambda point: datum(point))
-            case _:
-                set_morphism = maps(datum)
+        set_morphism = Sets().Mor(self.domain(), self.codomain())(datum)
         if not self._preimages_of_opens_are_open(set_morphism):
             raise ValueError(
                 f"{set_morphism} is not continuous from {self.domain()} to {self.codomain()}: "
@@ -293,19 +333,20 @@ class TopologicalSpaces(OwnedCategory):
         r"""Construct the exact finite topology ``open_subsets`` on ``point_set``.
 
         The space is constructed on ``S = point_set`` through its set level:
-        the finite ordered set enumerated by ``S`` through the identity of
-        ``S``.  The topology level adds the open sets.
+        the finite ordered set enumerated by ``S``, with a point of its own at
+        each point of ``S``.  The topology level adds the open sets, given as
+        subsets of ``S``.
         """
         point_set = Sets()(point_set)
         topology_data = _FiniteTopologyData(point_set, open_subsets)
+        # The engine serves the join: it derives the enumeration that the
+        # ordered-set level of the join consumes, so it precedes that level.
+        finite_spaces = owned_category_join((self, FiniteOrderedSets()))
         return _object_of(
-            owned_category_join((self, FiniteOrderedSets())),
-            _engine=(self, _FiniteTopologicalSpaceEngine, None),
+            finite_spaces,
+            _engine=(finite_spaces, _FiniteTopologicalSpaceEngine, _FiniteSpacePoint),
             topology_data=topology_data,
-            index_set=point_set,
-            element_at=Sets().Mor(point_set, point_set).identity(),
-            index_of=lambda point: point_set(point) if point in point_set else None,
-            contains=lambda point: point in point_set,
+            point_set=point_set,
         )
 
     @classmethod
