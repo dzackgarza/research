@@ -2275,25 +2275,20 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
             case tuple() | list():
                 morphism = self._from_gap_generator_images(images)
             case _ if callable(images):
-                morphism = self._from_finite_elementwise_rule(images)
+                morphism = self._from_elementwise_rule(images)
             case _:
                 raise TypeError(f"unable to convert {images!r} to an element of {self}")
         morphism.validate_homomorphism(check=check)
         return morphism
 
-    def _from_finite_elementwise_rule(self, function):
-        r"""An elementwise group map on a finite domain.
+    def _from_elementwise_rule(self, function):
+        r"""The group map given by its rule on elements.
 
-        This is the finite analogue of specifying a map on chosen generators:
-        when no group generating set has been selected, ``validate_homomorphism``
-        decides the law ``f(gh) = f(g) f(h)`` on all pairs of elements of the
-        finite domain.
+        Construction stores the rule and checks nothing (``OWN-22``).  The
+        law ``f(gh) = f(g) f(h)`` is decided by ``validate_homomorphism``,
+        which decides it on all pairs of elements and so asks the domain to
+        be finite.
         """
-        domain = self.domain()
-        assert domain.is_finite() is True, (
-            f"a function on elements defines a homomorphism {domain} -> {self.codomain()} here only when {domain} is "
-            f"finite, so that the homomorphism law can be checked on all pairs of elements; {domain} is not known to be finite"
-        )
         return self.element_class(self, function)
 
     def _engine_homomorphism(self, generator_models, image_models):

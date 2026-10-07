@@ -750,7 +750,7 @@ def _finite_g_set_from_action(
                 }
             )
         case _ if group.is_finite() is True:
-            permutation_representation = mor._from_finite_elementwise_rule(
+            permutation_representation = mor._from_elementwise_rule(
                 lambda group_element: _permutation_from_point_map(
                     permutations,
                     point_set,
