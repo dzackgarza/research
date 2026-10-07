@@ -38,6 +38,7 @@ from itertools import combinations
 from sage.matrix.constructor import matrix as _engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
@@ -55,6 +56,7 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedIntegralDomains,
     _engine_ring,
     _own_ring,
@@ -1415,14 +1417,17 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 name=f"Line-bundle cohomology dimensions of {divisor}",
             )
 
-        @cached_method
         def integral_singular_cohomology(self, degree):
-            r"""Return ``H^degree(X(CC),ZZ)`` in the supported smooth complete toric ``QQ`` regime."""
+            r"""``H^degree(X(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                _toric_integral_singular_cohomology,
+                _rational_complex_embedding,
             )
 
-            return _toric_integral_singular_cohomology(self, degree)
+            assert _engine_ring(self.scheme_base_ring()) is SageQQ, (
+                f"H^{degree}({self}(CC); ZZ) is computed along the unique embedding QQ -> CC, but "
+                f"{self} is over {self.scheme_base_ring()}"
+            )
+            return self.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
 
         @cached_method
         def cycle_class_isomorphism(self, codimension):
@@ -1913,7 +1918,8 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     chart is asked for by the cone it belongs to.  The gluing constructs it
     in ``ToricSchemes(R)`` with the fan and the polarizing polytope as that
     level's data, together with the placements the fan decides at
-    construction (smooth exactly when the fan is, CLS Thm. 3.1.19; a curve or
+    construction (smooth exactly when the fan is, CLS Thm. 3.1.19; over a
+    field, proper exactly when the fan is complete, CLS Thm. 3.4.1; a curve or
     a surface by the rank of ``N``) and the further ``placements`` a caller
     constructs it in.  Over a field, Sage's ``ToricVariety`` of the same fan
     is retained as a private realization; over a general base the owned affine
@@ -1926,6 +1932,8 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     decided = [ToricSchemes(base)]
     if fan.is_smooth():
         decided.append(Schemes(base).Smooth())
+    if base in OwnedFields() and fan.is_complete():
+        decided.append(Schemes(base).Proper())
     if base in OwnedIntegralDomains():
         match int(fan.dimension()):
             case 1:

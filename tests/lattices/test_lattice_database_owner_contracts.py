@@ -5,10 +5,6 @@ only serializes the returned values and never rechecks these formulas.
 """
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.schemes.catalogue_invariants import (
-    HodgePoincareInvariants,
-    HodgeTermData,
-)
 
 
 def test_positive_a2_genus_and_orthogonal_group_are_owned_by_the_lattice() -> None:
@@ -118,20 +114,3 @@ def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:
     factorization = lattice.quadratic_hypersurface_zeta_factorization(cone=True)
     assert [(factor.shift, factor.character.coefficient) for factor in factorization.numerator] == [(1, 1), (1, -3)]
     assert [(factor.shift, factor.character.coefficient) for factor in factorization.denominator] == [(0, -3)]
-
-
-def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
-    hodge = HodgePoincareInvariants(
-        2,
-        (
-            HodgeTermData(0, 0, 1),
-            HodgeTermData(2, 0, 1),
-            HodgeTermData(1, 1, 20),
-            HodgeTermData(0, 2, 1),
-            HodgeTermData(2, 2, 1),
-        ),
-    )
-    assert hodge.satisfies_hodge_symmetry_and_serre_duality()
-    assert hodge.symmetry_group() == "D4"
-    assert hodge.betti_number(2) == 22
-    assert hodge.euler_characteristic() == 24

@@ -245,7 +245,7 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
     assert arbitrary.properties() == ()
 
 
-def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> None:
+def test_cohomology_link_must_match_the_stored_betti_number(tmp_path: Path) -> None:
     lattices = tmp_path / "lattices"
     lattices.mkdir()
     (lattices / "0016.md").symlink_to(ROOT / "lattices" / "0016.md")
@@ -262,18 +262,14 @@ def test_cohomology_link_must_match_the_hodge_betti_number(tmp_path: Path) -> No
     )
 
 
-def test_hodge_series_determines_symmetry_and_chern_number() -> None:
+def test_k3_card_reads_its_transcribed_topology_and_hodge_numbers() -> None:
     source = frontmatter.load(str(ROOT / "geometric-objects" / "k3-surface.md"))
     record = ProjectiveComplexVariety.model_validate(source.metadata)
-    assert record.betti_number(2) == 22
-    assert record.euler_characteristic() == 24
+    assert record.betti_numbers == (1, 0, 22, 0, 1)
+    assert record.euler_characteristic == 24
     assert record.hodge_number(1, 1) == 20
+    assert record.hodge_number(1, 0) == 0
 
-    source.metadata["symmetry_group"] = "V4"
-    with pytest.raises(ValidationError, match="declared symmetry group"):
-        ProjectiveComplexVariety.model_validate(source.metadata)
-
-    source.metadata["symmetry_group"] = "D4"
-    source.metadata["chern_numbers"][0]["value"] = 25
-    with pytest.raises(ValidationError, match="top Chern number"):
+    source.metadata["betti_numbers"] = [1, 0, 22, 0]
+    with pytest.raises(ValidationError, match="b_0 through b_"):
         ProjectiveComplexVariety.model_validate(source.metadata)

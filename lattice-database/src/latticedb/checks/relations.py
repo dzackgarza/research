@@ -208,9 +208,12 @@ def geometric_problems(loaded: Corpus) -> list[str]:
                     found.append(
                         f"{geometric_entry.path}: cohomology lattice tag {link.tag} is not in the corpus"
                     )
-                elif lattice.rank != record.betti_number(link.degree):
+                elif (
+                    link.degree < len(record.betti_numbers)
+                    and lattice.rank != record.betti_numbers[link.degree]
+                ):
                     found.append(
-                        f"{geometric_entry.path}: H^{link.degree} has Betti number {record.betti_number(link.degree)}, but lattice {link.tag} has rank {lattice.rank}"
+                        f"{geometric_entry.path}: H^{link.degree} has Betti number {record.betti_numbers[link.degree]}, but lattice {link.tag} has rank {lattice.rank}"
                     )
             if record.analytic_space is not None:
                 analytic = by_geometric.get(record.analytic_space)

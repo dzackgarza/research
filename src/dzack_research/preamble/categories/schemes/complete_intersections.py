@@ -16,6 +16,7 @@ is ``X_{R'} -> X`` and its right projection is the structure morphism.
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -42,6 +43,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _structure_morphism_rule,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
 def _complete_intersection_base_supported(base) -> bool:
@@ -156,6 +158,56 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [Schemes(self.base_ring()).Projective(), ClosedSubschemes(self.base_ring())]
+
+    class Smooth(CategoryWithAxiom):
+        r"""Projective complete intersections smooth over the base.
+
+        Smoothness is a property, so it is placement (``CON-07``): applying
+        this category to ``(P^n, f_1, ..., f_r)`` is the caller's statement
+        that ``V_+(f_1, ..., f_r) -> Spec R`` is smooth, and the object is
+        constructed here without computing it (``OWN-22``).  The check is the
+        validator :meth:`ParentMethods.validate_smoothness`, called by hand.
+        """
+
+        def an_object(self):
+            r"""The point ``V_+(x) <= P^1``, smooth because it is ``Spec R``."""
+            line = ProjectiveSpaces(self.base_ring())(1)
+            x, _y = line.homogeneous_coordinate_generators()
+            return self(line, x)
+
+        def _call_(self, ambient, *equations):
+            r"""``V_+(f_1, ..., f_r) <= P^n_R``, stated smooth by the caller."""
+            assert ambient.scheme_base_ring() is self.base_ring(), (
+                f"cannot construct a complete intersection of {self} in {ambient}: it lies over "
+                f"{ambient.scheme_base_ring()}, not over {self.base_ring()}"
+            )
+            return _projective_complete_intersection(ambient, equations, placements=(self,))
+
+        class ParentMethods:
+            def validate_smoothness(self) -> None:
+                r"""Check the caller's statement that ``X -> Spec k`` is smooth.
+
+                Hartshorne, *Algebraic Geometry* [Har10a], III Thm. 10.2:
+                ``X -> Spec k`` is smooth of relative dimension ``m`` exactly
+                when ``X_{kbar}`` is equidimensional of dimension ``m`` and
+                regular.  By I §5 (the definition before Thm. 5.1, and
+                Thm. 5.1) with Ex. I.5.8 for the projective form, a point of
+                ``V_+(f_1, ..., f_r) <= P^n_{kbar}`` of dimension ``n - r``
+                is regular exactly when the Jacobian matrix
+                ``(df_i/dx_j)`` has rank ``r`` there.  Sage's maintained
+                ``is_smooth`` of the projective subscheme computes this
+                criterion.  The answer is an untrusted computation and a
+                diagnostic for the caller; construction does not run it.
+                """
+                base = self.scheme_base_ring()
+                assert base in OwnedFields(), (
+                    f"the Jacobian criterion for the smoothness of {self} is applied over a "
+                    f"field, but the base ring is {base}"
+                )
+                assert bool(_engine_scheme(self).is_smooth()), (
+                    f"{self} was constructed as smooth over {base}, but the Jacobian criterion "
+                    "finds a singular point"
+                )
 
     class ParentMethods:
         def is_complete_intersection(self) -> bool:
@@ -343,7 +395,16 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return _QuarticK3IntegralTopology(self)
 
         def integral_singular_cohomology(self, degree):
-            return self.integral_topology().integral_cohomology(degree)
+            r"""``H^degree(X(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _rational_complex_embedding,
+            )
+
+            assert _engine_ring(self.scheme_base_ring()) is SageQQ, (
+                f"H^{degree}({self}(CC); ZZ) is computed along the unique embedding QQ -> CC, but "
+                f"{self} is over {self.scheme_base_ring()}"
+            )
+            return self.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
 
         @cached_method
         def hodge_structure(self):

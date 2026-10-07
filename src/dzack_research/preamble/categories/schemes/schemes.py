@@ -126,6 +126,8 @@ for _scheme_axiom in (
     "FiniteType",
     "Integral",
     "Normal",
+    "Proper",
+    "CalabiYau",
 ):
     if _scheme_axiom not in all_axioms:
         all_axioms.add(_scheme_axiom)
@@ -1785,6 +1787,41 @@ def _affine_spec_morphism(algebra_morphism):
 # ---------------------------------------------------------------------------
 
 
+def _etale_comparison_embedding(scheme, invariant):
+    r"""The embedding ``sigma: k -> CC`` along which the etale ``invariant`` of ``scheme`` is computed.
+
+    Artin's comparison theorem (Freitag--Kiehl [FK88], Ch. I, Thm. 11.6)
+    computes etale cohomology of ``X_{kbar}`` as singular cohomology of
+    ``X(CC)`` when ``char k = 0``.  The embedding constructed here is the
+    unique one ``QQ -> CC``; any other base is a stated gap.
+    """
+    from sage.rings.rational_field import QQ as SageQQ
+
+    from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+        _rational_complex_embedding,
+    )
+
+    base = scheme.scheme_base_ring()
+    assert base in OwnedFields(), (
+        f"the etale invariant {invariant} of {scheme} is defined through X_kbar for X over a "
+        f"field k, but {scheme} is over {base}, which is not a field"
+    )
+    match base:
+        case _ if _engine_ring(base) is SageQQ:
+            return _rational_complex_embedding()
+        case _ if base.characteristic() == 0:
+            assert False, (
+                f"the etale invariant {invariant} of {scheme} is computed by comparison along an "
+                f"embedding {base} -> CC, and such an embedding is constructed only for QQ"
+            )
+        case _:
+            assert False, (
+                f"the etale invariant {invariant} of {scheme} over {base}, of characteristic "
+                f"{base.characteristic()}, has no comparison with a complex realization, and "
+                "etale cohomology in positive characteristic is not computed"
+            )
+
+
 def _normal_placement(base_ring) -> bool:
     r"""Whether \(\mathbb{A}^n_R\) and \(\mathbb{P}^n_R\) over ``base_ring`` are placed as normal.
 
@@ -2077,6 +2114,14 @@ class Schemes(OwnedCategoryOverBaseRing):
         def FiniteType(self):
             r"""Return this category with the axiom that its objects are of finite type over the base."""
             return self._with_axiom("FiniteType")
+
+        def Proper(self):
+            r"""Return this category with the axiom that its objects are proper over the base."""
+            return self._with_axiom("Proper")
+
+        def CalabiYau(self):
+            r"""Return this category with the axiom that its objects are Calabi--Yau over the base."""
+            return self._with_axiom("CalabiYau")
 
         def Integral(self):
             r"""Return this category with the axiom that its objects are integral."""
@@ -2489,6 +2534,56 @@ class Schemes(OwnedCategoryOverBaseRing):
                 case _:
                     return bool(_engine_scheme(self).is_smooth())
 
+        def is_calabi_yau(self) -> bool:
+            r"""Whether ``X`` is smooth and proper with ``omega_X ~= O_X``.
+
+            The definition is the one :class:`Schemes.CalabiYau` states
+            [Huy05, §6.1].  Placement answers first.  Otherwise the
+            canonical bundle decides, through the realization of its
+            category:
+
+            - a projective complete intersection has ``omega_X = O_X(d)``
+              through its adjunction isomorphism.  In positive dimension
+              ``O_X(d)`` is trivial exactly when ``d = 0``: were
+              ``O_X(d) ~= O_X`` with ``d != 0``, the ample ``O_X(1)`` would make
+              ``O_X`` ample, so ``X`` would be quasi-affine and proper, hence
+              finite;
+            - a smooth toric scheme has ``Pic(X) = Cl(X)`` (Cox--Little--Schenck,
+              Prop. 4.2.6), so ``omega_X = O_X(K_X)`` is trivial exactly when the
+              class of ``K_X = -sum_rho D_rho`` in ``Cl(X)`` is zero; it is
+              complete, that is proper, exactly when its fan is complete
+              (CLS Thm. 3.4.1).
+            """
+            from dzack_research.preamble.categories.schemes.complete_intersections import (
+                ProjectiveCompleteIntersections,
+            )
+            from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+                ToricSchemes,
+            )
+
+            base = self.scheme_base_ring()
+            match self:
+                case _ if self in Schemes(base).CalabiYau():
+                    return True
+                case _ if self in ToricSchemes(base):
+                    if not (self.is_smooth() and self.is_complete()):
+                        return False
+                    return bool(self.divisor_class(self.canonical_divisor()).is_zero())
+                case _ if self in ProjectiveCompleteIntersections(base):
+                    assert int(self.dimension()) >= 1, (
+                        f"the canonical-bundle criterion for {self} needs positive dimension, so that "
+                        "O_X(1) is ample on a positive-dimensional scheme"
+                    )
+                    if not self.is_smooth():
+                        return False
+                    return int(self.canonical_line_bundle().degree()) == 0
+                case _:
+                    assert False, (
+                        f"whether {self} is Calabi--Yau is decided from its canonical bundle, which the "
+                        "preamble decides to be trivial only for toric schemes and projective complete "
+                        "intersections"
+                    )
+
         def base_change(self, ring_map):
             r"""``X_{R'} = X x_{Spec R} Spec R'`` along a scalar morphism ``R -> R'``.
 
@@ -2713,9 +2808,138 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_finite_type(self):
                 return True
 
+            def complex_realization(self, scalar_embedding):
+                r"""``X(CC)`` along ``sigma: k -> CC``, an object of :class:`TopologicalSpaces`.
+
+                The points are the ``CC``-points of the base change
+                ``X x_{k, sigma} CC``, and the topology is the analytic one:
+                on each affine chart ``X_i <= A^r``, the topology induced by
+                the Euclidean topology of ``CC^r``.  Finite type is the
+                hypothesis that makes each chart a closed subset of some
+                ``CC^r``.  The space depends on ``sigma``, so the embedding is
+                part of the input.  Dimca [Dim92], Ch. 1, (6.10): ``X(CC)``
+                has the homotopy type of a finite CW complex.
+                """
+                from sage.all import CC as SageCC
+
+                from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                    _complex_realization,
+                )
+
+                assert scalar_embedding.domain() is self.scheme_base_ring(), (
+                    f"the complex points of {self} are taken along an embedding of its base "
+                    f"{self.scheme_base_ring()} into CC, but {scalar_embedding} has domain "
+                    f"{scalar_embedding.domain()}"
+                )
+                assert _engine_ring(scalar_embedding.codomain()) is SageCC, (
+                    f"the complex points of {self} are taken along an embedding into CC, but "
+                    f"{scalar_embedding} has codomain {scalar_embedding.codomain()}"
+                )
+                return _complex_realization(self, scalar_embedding)
+
+            def betti_number(self, degree):
+                r"""``b_k(X) = dim_{Q_l} H^k_et(X_{kbar}, Q_l)`` for a prime ``l != char k``.
+
+                Freitag--Kiehl, *Etale Cohomology and the Weil Conjecture*
+                [FK88], Ch. I, §12: ``H^k(X, Q_l) = H^k(X, Z_l) (x) Q_l`` with
+                ``H^k(X, Z_l) = lim_n H^k(X, Z/l^n)``.  When ``char k = 0`` and
+                ``sigma: k -> CC`` is an embedding, Artin's comparison theorem
+                ([FK88], Ch. I, Thm. 11.6, for ``X x_{k, sigma} CC -> Spec CC``)
+                identifies ``H^k_et(X_{kbar}, Z/l^n)`` with
+                ``H^k(X(CC), Z/l^n)``.  Passing to the limit and tensoring
+                with ``Q_l`` gives ``b_k(X) = b_k(X(CC))``, the Betti number
+                of :meth:`complex_realization`.
+                """
+                return self.complex_realization(
+                    _etale_comparison_embedding(self, f"b_{degree}")
+                ).betti_number(degree)
+
+            def euler_characteristic(self):
+                r"""``chi(X) = sum_k (-1)^k b_k(X)``, with ``b_k`` the etale Betti numbers.
+
+                By :meth:`betti_number`, each ``b_k(X)`` equals
+                ``b_k(X(CC))`` along ``sigma: k -> CC``, so the alternating
+                sum is the Euler characteristic of the complex realization,
+                which :class:`TopologicalSpaces` computes as the contraction
+                of the Betti vector with ``((-1)^k)``.
+                """
+                return self.complex_realization(
+                    _etale_comparison_embedding(self, "chi")
+                ).euler_characteristic()
+
         def an_object(self):
             r"""The affine line, of finite type over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+    class Proper(CategoryWithAxiom):
+        r"""Schemes proper over the base.
+
+        ``X -> Spec R`` is proper when it is separated, of finite type and
+        universally closed (Stacks, Tag 01W0, Definition 29.42.1).  The two
+        immediate supercategories are the first two conditions; universal
+        closedness is the datum this axiom adds.
+        """
+
+        def extra_super_categories(self):
+            return [
+                Schemes(self.base_ring()).Separated(),
+                Schemes(self.base_ring()).FiniteType(),
+            ]
+
+        class ParentMethods:
+            def is_proper(self):
+                return True
+
+        def an_object(self):
+            r"""The projective line, proper because it is projective (Stacks, Tag 01WC)."""
+            return ProjectiveSpaces(self.base_ring())(1)
+
+        class Smooth(CategoryWithAxiom):
+            r"""Smooth proper schemes over the base.
+
+            Over a field ``k`` these are the schemes whose Hodge numbers
+            ``h^{p,q} = dim_k H^q(X, Omega^p_{X/k})`` are defined: the
+            cohomology of a coherent sheaf on a proper scheme over a field is
+            finite-dimensional, and smoothness makes ``Omega^p_{X/k}``
+            locally free.
+            """
+
+            def an_object(self):
+                r"""The projective line, smooth and proper over the base."""
+                return ProjectiveSpaces(self.base_ring())(1)
+
+            class ParentMethods:
+                def hodge_number(self, p, q):
+                    r"""``h^{p,q}(X) = dim_k H^q(X, Omega^p_{X/k})``.
+
+                    Huybrechts, *Complex Geometry* [Huy05], Def. 2.2.23,
+                    states it for a compact complex manifold.  The routed
+                    categories are those whose pure Hodge structure the
+                    preamble constructs; each realization cites the theorem
+                    it computes the dimension by.
+                    """
+                    from dzack_research.preamble.categories.schemes.complete_intersections import (
+                        ProjectiveCompleteIntersections,
+                    )
+                    from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+                        ToricSchemes,
+                    )
+
+                    base = self.scheme_base_ring()
+                    assert base in OwnedFields(), (
+                        f"the Hodge number h^({p},{q}) = dim H^{q}(X, Omega^{p}) is a dimension over "
+                        f"the base field, but {self} is over {base}, which is not a field"
+                    )
+                    match self:
+                        case _ if self in ToricSchemes(base):
+                            return self.hodge_structure().hodge_number(p, q)
+                        case _ if self in ProjectiveCompleteIntersections(base):
+                            return self.hodge_structure().hodge_number(p, q)
+                        case _:
+                            assert False, (
+                                f"h^({p},{q})({self}) is computed only for smooth complete toric "
+                                "varieties over QQ and smooth quartic K3 surfaces over QQ"
+                            )
 
     class Integral(CategoryWithAxiom):
         r"""Schemes that are reduced and irreducible."""
@@ -2758,6 +2982,29 @@ class Schemes(OwnedCategoryOverBaseRing):
         def an_object(self):
             r"""The affine line, which is smooth over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+    class CalabiYau(CategoryWithAxiom):
+        r"""Calabi--Yau schemes: smooth and proper, with trivial canonical bundle.
+
+        Huybrechts, *Complex Geometry* [Huy05], §6.1 (before Prop. 6.1.11):
+        a Calabi--Yau manifold is a compact Kahler manifold ``X`` of
+        dimension ``n`` whose canonical bundle ``K_X = Lambda^n Omega_X`` is
+        trivial.  Over a base field the algebraic statement is a smooth
+        proper scheme ``X`` with ``omega_{X/k} ~= O_X``.  Smoothness and
+        properness are the immediate supercategories; triviality of the
+        canonical bundle is the property this axiom adds.  Membership is
+        decided from the canonical bundle by :meth:`Schemes.ParentMethods.is_calabi_yau`.
+        """
+
+        def extra_super_categories(self):
+            return [
+                Schemes(self.base_ring()).Smooth(),
+                Schemes(self.base_ring()).Proper(),
+            ]
+
+        class ParentMethods:
+            def is_calabi_yau(self):
+                return True
 
     class Affine(CategoryWithAxiom):
         r"""Schemes isomorphic to ``Spec A``.
@@ -3053,9 +3300,16 @@ class Schemes(OwnedCategoryOverBaseRing):
             return ProjectiveSpaces(self.base_ring())(1)
 
         def extra_super_categories(self):
+            r"""Projective schemes are quasi-projective and proper.
+
+            A projective morphism is locally projective, with the one-member
+            cover of the base (Stacks, Tag 01W8, Definition 29.44.1), and a
+            locally projective morphism is proper (Stacks, Tag 01WC,
+            Lemma 29.44.5); finite type is reached through properness.
+            """
             return [
                 Schemes(self.base_ring()).QuasiProjective(),
-                Schemes(self.base_ring()).FiniteType(),
+                Schemes(self.base_ring()).Proper(),
             ]
 
         class ParentMethods:
