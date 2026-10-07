@@ -95,7 +95,7 @@ Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogon
 
 ::: {.proposition #prop:coinvariant_involution_2elementary}
 
-Let $L$ be a $2$-elementary lattice and let $I\in\OStab(L)$ be an involution lying in the stable orthogonal group $\OStab(L) = \tilde\Orth(L)$.
+Let $L$ be a $2$-elementary lattice and let $I\in\discriminantkernel{L}$ be an involution lying in the discriminant kernel $\discriminantkernel{L} = \tilde\Orth(L)$.
 Then both the invariant lattice $L^I$ and the coinvariant lattice $L_I$ are again $2$-elementary.
 :::
 

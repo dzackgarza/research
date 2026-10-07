@@ -63,7 +63,7 @@ These may fail to be locally finite -- the boundary decomposition then glues tog
 #### Construction
 
 ::: {.theorem title="Existence of semitoroidal compactifications [@Loo03]"}
-Let $T$ be an even lattice of signature $(2, n)$, $\Gamma \leq \OStab(T)$ a neat arithmetic group, and $\FG$ the associated locally symmetric modular variety.
+Let $T$ be an even lattice of signature $(2, n)$, $\Gamma \leq \discriminantkernel{T}$ a neat arithmetic group, and $\FG$ the associated locally symmetric modular variety.
 Let $\semitorfan$ be a compatible system of $\Gamma$-admissible semifans ranging over Baily-Borel cusps $I$ of $\bd\bbcpt{\FG}$, as defined above.
 Then there exists a normal compactification $\semitorcpt{\FG}$ containing $\FG$ as an open dense subset, called the **semitoroidal compactification** associated to $\semitorfan$, with the following properties:
 

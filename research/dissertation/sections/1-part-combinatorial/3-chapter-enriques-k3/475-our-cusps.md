@@ -272,13 +272,13 @@ Let $\eta_1,\;\eta_2\;\in T$ be primitive isotropic vectors satisfying
 
 3. $\eta_1\equiv \eta_2\pmod{pT}$.
 
-Then there exists an isometry $\phi \in \OStab(T)$ such that $\phi(\eta_1) = \eta_2$.
-In particular, $\eta_1$ and $\eta_2$ lie in the same $\OStab(T)$-orbit.
+Then there exists an isometry $\phi \in \discriminantkernel{T}$ such that $\phi(\eta_1) = \eta_2$.
+In particular, $\eta_1$ and $\eta_2$ lie in the same $\discriminantkernel{T}$-orbit.
 :::
 
 ::: {.proof title="Sketch"} 
 The idea is to let $\eta_i = a_i e + b_i e + c_i$ where $c_i\in \bdlattice{T}{\eta}$, and then put both $\eta_i$ into normal form.
-Sterk shows that you can arrange for $\eta_1\cdot e = p$, so $a_1 = 0, b_1 = p$ by some $g\in \OStab(T)$, and that you can arrange for $\eta_2\cdot e =p$ simultaneously, so $a_2=0,v_2=p$.
+Sterk shows that you can arrange for $\eta_1\cdot e = p$, so $a_1 = 0, b_1 = p$ by some $g\in \discriminantkernel{T}$, and that you can arrange for $\eta_2\cdot e =p$ simultaneously, so $a_2=0,v_2=p$.
 Thus
 $$
 \eta_1 = pe + c_1, \eta_2 = pe + c_2, \qquad \eta_1 f = \eta_2 f = p

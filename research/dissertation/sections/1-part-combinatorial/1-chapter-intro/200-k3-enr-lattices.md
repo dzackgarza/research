@@ -14,9 +14,9 @@ T_X \definedas S_X^{\perp_{H^2(X; \ZZ)}}
 ,$$
 where $\NS(X) \definedas \Pic(X)/\Pic^0(X)$ is the Neron-Severi lattice, and we take the orthogonal complement with respect to the bilinear form induced by the intersection pairing in cohomology.
 If the signature of $H^2(X; \ZZ)$ is $(p, q)$, then we must have $\signature(S_X) + \signature(T_X) = (p, q)$  since $T_X \oplus S_X \injects H^2(X;\ZZ)$ embeds as a finite-index submodule. In particular, if one chooses $S$ such that $\signature(S_X) = (1, \rho(X) - 1)$, this forces $\signature(T_X) = (p-1, q-\rho(X)-1)$.
-When $p=3$ on obtains a lattice $T_X$ of signature $(2, n)$. For such lattices, there is a well-defined Type $\IV$ Hermitian symmetric domain $\halfpd{T_X}$, and for any choice of neat arithmetic subgroup $\Gamma \leq \OStab(T_X)$ of the *stable orthogonal group* of $T_X$, there is a well-defined arithmetic quotient
+When $p=3$ on obtains a lattice $T_X$ of signature $(2, n)$. For such lattices, there is a well-defined Type $\IV$ Hermitian symmetric domain $\halfpd{T_X}$, and for any choice of neat arithmetic subgroup $\Gamma \leq \discriminantkernel{T_X}$, there is a well-defined arithmetic quotient
 $$
-F_{\Gamma} \definedas \dmodgamma{ \halfpd{T_X} }{\Gamma}, \qquad \Gamma \leq \OStab(T_X)
+F_{\Gamma} \definedas \dmodgamma{ \halfpd{T_X} }{\Gamma}, \qquad \Gamma \leq \discriminantkernel{T_X}
 .$$
 The $S$ and $T$ lattices are dual in many senses -- for projective surfaces, $S_X$ contains ample line bundles, and hence the algebraic/projective structure of $X$ (as determined by its polarizations) are governed by $S_X$, while its complement $T_X$ governs transcendental data such as periods and variations of Hodge structure, which are typically orthogonal to the polarization.
 For K3 surfaces, by the global Torelli theorem, its isomorphism is determined by its polarized weight 2 Hodge structure on $H^2(X;\CC)$, and since period domains of the form $\halfpd{T_X}$ classify such Hodge structures, they can be used to construct coarse moduli spaces of $S_X$-polarized marked K3 surfaces.
