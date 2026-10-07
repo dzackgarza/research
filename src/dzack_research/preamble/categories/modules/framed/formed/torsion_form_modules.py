@@ -62,6 +62,8 @@ from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_component_matrix,
+    _engine_dual_row_family,
+    _engine_row_family_gram,
     tensor,
 )
 
@@ -820,7 +822,7 @@ def _bilinear_p_adic_jordan_decomposition(form):
             split = integral.hermite_form(transformation=True)[1]
         degenerate = split[rank:, :]
         nondegenerate = split[:rank, :]
-        nondegenerate_form = nondegenerate * engine * nondegenerate.transpose()
+        nondegenerate_form = _engine_row_family_gram(engine, nondegenerate)
 
         if rank:
 
@@ -832,12 +834,11 @@ def _bilinear_p_adic_jordan_decomposition(form):
                 backend_prime,
                 precision=precision + 5,
             )
-            transform = transform.change_ring(SageZZ).inverse().transpose()
+            # The engine reduced the inverse form; its dual family reduces the form.
+            transform = _engine_dual_row_family(transform.change_ring(SageZZ))
             transform = transform.change_ring(padics).change_ring(SageZZ)
             scaled = (
-                transform
-                * nondegenerate_form
-                * transform.transpose()
+                _engine_row_family_gram(nondegenerate_form, transform)
                 * backend_prime ** nondegenerate_form.denominator().valuation(backend_prime)
             )
             transform = (

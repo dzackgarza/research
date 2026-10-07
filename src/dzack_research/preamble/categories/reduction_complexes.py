@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, _engine_row_action_from_images
 
 
 class ReductionCellAdjacency(SageObject):
@@ -536,21 +536,14 @@ def _row_action_from_ray_permutation(rays, permutation):
     if len(permutation) != len(rows):
         raise ArithmeticError(f"the permutation {permutation} of the rays of a perfect domain has degree {len(permutation)}, but the domain has {len(rows)} rays")
     ext = engine_matrix(SageQQ, rows)
-    pivot_rows = tuple(ext.transpose().pivots())
-    if len(pivot_rows) != ext.ncols():
-        raise ArithmeticError(f"the rays {rows} of a perfect domain span a space of rank {len(pivot_rows)}, not the whole lattice of rank {ext.ncols()}")
-    basis = engine_matrix(SageQQ, tuple(rows[index] for index in pivot_rows))
-    image_basis = engine_matrix(
-        SageQQ,
-        tuple(rows[int(permutation[index])] for index in pivot_rows),
-    )
-    action = basis.inverse() * image_basis
+    if ext.rank() != ext.ncols():
+        raise ArithmeticError(f"the rays {rows} of a perfect domain span a space of rank {ext.rank()}, not the whole lattice of rank {ext.ncols()}")
     permuted = engine_matrix(
         SageQQ,
         tuple(rows[int(permutation[index])] for index in range(len(rows))),
     )
-    if ext * action != permuted:
-        raise ArithmeticError(f"the permutation {permutation} of the rays of a perfect domain is not induced by a linear map")
+    # The rays span, so the map carrying each ray to its image is unique.
+    action = _engine_row_action_from_images(ext, permuted)
     if any(entry.denominator() != 1 for entry in action.list()):
         raise ArithmeticError(
             f"the permutation {permutation} of the rays of a perfect domain is induced by the matrix {action}, which is not integral, so it is not an isometry of the lattice"
