@@ -80,7 +80,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
     VectorSpaces,
-    _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -118,6 +117,32 @@ def _has_finite_framing(module) -> bool:
     return (
         module.has_selected_module_resolution()
         and module.module_generating_set().cardinality().is_finite()
+    )
+
+
+def _relation_morphism(ring, relation_rows):
+    r"""Return ``r: F(relations) -> F(module_generators)`` for a family of relation rows.
+
+    Each row writes one relation by its coordinates in the module
+    generators, so ``r`` sends the ``i``-th relation generator to the
+    linear combination the ``i``-th row states.  This is the one place
+    where relation rows enter as data; the presented module is ``coker(r)``.
+    """
+
+    rows = tuple(tuple(row) for row in relation_rows)
+    target = ring.free_module(len(rows[0]) if rows else 0)
+    source = ring.free_module(len(rows))
+    return source.module_category().Mor(source, target)(
+        {
+            relation: target.linear_combination(
+                {
+                    label: ring(coefficient)
+                    for label, coefficient in zip(target.module_generating_set(), row, strict=True)
+                    if coefficient
+                }
+            )
+            for relation, row in zip(source.module_generating_set(), rows, strict=True)
+        }
     )
 
 
@@ -1732,10 +1757,16 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 )
                 return formed
 
-            def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
-                r"""Construct a torsion bilinear form from presentation and Gram data."""
+            def from_relations_and_gram(self, relation_rows, gram, value_module):
+                r"""Construct a torsion bilinear form on ``coker(r)`` from relation rows and a Gram matrix.
 
-                module = _torsion_module_presented_by_matrix(relations, module_generating_set)
+                ``relation_rows`` write the relations in the module generators and
+                define ``r: F(relations) -> F(module_generators)``; ``gram`` gives
+                ``b`` on the module generators, valued in ``value_module``.
+                """
+
+                relations = _relation_morphism(self.base_ring(), relation_rows)
+                module = Modules(self.base_ring()).FinitelyPresented().Torsion()(relations)
                 return self.from_module(module, gram, value_module)
 
             def cokernel(self, morphism):
@@ -2104,10 +2135,17 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 )
                 return formed
 
-            def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
-                r"""Construct a torsion quadratic form from presentation and Gram data."""
+            def from_relations_and_gram(self, relation_rows, gram, value_module):
+                r"""Construct a torsion quadratic form on ``coker(r)`` from relation rows and a Gram matrix.
 
-                module = _torsion_module_presented_by_matrix(relations, module_generating_set)
+                ``relation_rows`` write the relations in the module generators and
+                define ``r: F(relations) -> F(module_generators)``; ``gram`` gives
+                ``q`` on the diagonal and ``b`` off it on the module generators,
+                valued in ``value_module``.
+                """
+
+                relations = _relation_morphism(self.base_ring(), relation_rows)
+                module = Modules(self.base_ring()).FinitelyPresented().Torsion()(relations)
                 return self.from_module(module, gram, value_module)
 
             def cokernel(self, morphism):

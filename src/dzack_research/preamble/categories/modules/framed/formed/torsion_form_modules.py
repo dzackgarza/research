@@ -41,7 +41,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleSubobjects,
     Modules,
-    _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -674,9 +673,10 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
         )
     module = _underlying_presented_module(form)
     ring = module.base_ring()
-    labels = finite_ordered_set(range(len(generators)))
-    relations = _relations_among_generators(form, generators)
-    regenerated_module = _torsion_module_presented_by_matrix(relations, labels)
+    regenerated_module = Modules(ring).FinitelyPresented().Torsion()(
+        _relations_among_generators(form, generators)
+    )
+    labels = tuple(regenerated_module.module_generating_set())
     regenerated = _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
         regenerated_module,
         _form_gram_on(form, generators, quadratic=quadratic),
@@ -747,19 +747,22 @@ def _p_adic_jordan_decomposition(form, *, quadratic: bool):
     normalized = normalization.codomain()
     engine = _engine_torsion_form(normalized, quadratic=quadratic)
     cover = engine.V()
+    ring = normalized.base_ring()
     labels = tuple(normalized.module_generating_set())
+    # The engine's coordinates are representatives in the cover; each is raised
+    # as its class modulo the order of the generator it multiplies.
+    orders = tuple(_engine_element(ring, order) for order in normalized.invariant_factors())
     result = {}
     for prime in engine.annihilator().gen().prime_divisors():
         normal = engine.primary_part(prime).normal_form()
         generators = []
         for engine_generator in normal.gens():
             coordinates = cover.coordinates(engine_generator.lift())
-            ring = normalized.base_ring()
             normalized_element = normalized.linear_combination(
                 {
-                    label: _owned_engine_element(ring, SageZZ(coefficient))
-                    for label, coefficient in zip(labels, coordinates, strict=True)
-                    if coefficient
+                    label: _owned_engine_element(ring, SageZZ(coefficient) % order)
+                    for label, coefficient, order in zip(labels, coordinates, orders, strict=True)
+                    if SageZZ(coefficient) % order
                 }
             )
             generators.append(normalization.inverse()(normalized_element))
@@ -790,6 +793,7 @@ def _bilinear_p_adic_jordan_decomposition(form):
     result = {}
     for prime in exponent.prime_divisors():
         primary_generators = []
+        primary_orders = []
         for order, generator in zip(invariants, normalized_generators, strict=True):
             valuation = int(order.valuation(prime))
             if valuation:
@@ -797,7 +801,9 @@ def _bilinear_p_adic_jordan_decomposition(form):
                 primary_generators.append(
                     normalized.scalar_multiple(coefficient, generator)
                 )
+                primary_orders.append(_engine_element(ring, prime) ** valuation)
         primary_generators = tuple(primary_generators)
+        primary_orders = tuple(primary_orders)
         values = normalized.value_module()
         rationals = values.fraction_field()
         representative = tensor(
@@ -850,15 +856,22 @@ def _bilinear_p_adic_jordan_decomposition(form):
             transform = nondegenerate
         transform = transform.stack(degenerate).change_ring(SageZZ)
 
+        # The engine's coefficients are representatives modulo the p-adic
+        # precision; each is raised as its class modulo the order p^v of the
+        # primary generator it multiplies.
         jordan_generators = []
         for row in transform.rows():
+            classes = tuple(
+                SageZZ(coefficient) % order
+                for coefficient, order in zip(row, primary_orders, strict=True)
+            )
             normalized_element = sum(
                 (
                     normalized.scalar_multiple(
-                        _owned_engine_element(ring, SageZZ(coefficient)), generator
+                        _owned_engine_element(ring, coefficient), generator
                     )
                     for coefficient, generator in zip(
-                        row, primary_generators, strict=True
+                        classes, primary_generators, strict=True
                     )
                     if coefficient
                 ),
