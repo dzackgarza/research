@@ -5,7 +5,6 @@ from sage.categories.morphism import SetMorphism
 from dzack_research.preamble.categories.group.groups import _conjugacy_class_elements
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -91,7 +90,7 @@ def _finite_group_class_function(group, codomain, values, *, representatives=Non
     if representatives is None:
         representatives = group.conjugacy_classes_representatives()
     if representatives not in FiniteOrderedSets():
-        representatives = finite_ordered_set(tuple(representatives))
+        representatives = FiniteOrderedSets()(tuple(representatives))
     return FiniteGroupClassFunction(group, codomain, representatives, values)
 
 

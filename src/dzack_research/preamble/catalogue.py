@@ -10,14 +10,12 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.lattices import (
     Lattices,
     _register_indecomposable_gram,
-    nikulin_invariants,
     _register_indecomposable,
-    signature_pair,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
@@ -955,7 +953,7 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
         0,
         (),
     )
-    return finite_ordered_set(tuple(realizations))
+    return FiniteOrderedSets()(tuple(realizations))
 
 
 def signature_orthogonal_sums(target_signature, blocks):
@@ -1005,7 +1003,7 @@ def signature_orthogonal_sums(target_signature, blocks):
             count += 1
 
     extend(0, positive_target, negative_target, ())
-    return finite_ordered_set(tuple(realizations))
+    return FiniteOrderedSets()(tuple(realizations))
 
 
 

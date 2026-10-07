@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -255,14 +255,12 @@ class PosetCategory(OwnedCategory):
             f"cannot list the arrows of {self}: its set of objects {self.object_set()} is not finite; an "
             "infinite poset is given by its order relation"
         )
-        return finite_ordered_set(
-            tuple(
-                self.Mor(self(left), self(right)).unique()
-                for left in self.object_set()
-                for right in self.object_set()
-                if self.le(left, right)
-            )
-        )
+        return FiniteOrderedSets()(tuple(
+            self.Mor(self(left), self(right)).unique()
+            for left in self.object_set()
+            for right in self.object_set()
+            if self.le(left, right)
+        ))
 
 
 class FiniteOrdinalMorphism(Morphism):
@@ -384,14 +382,12 @@ class FiniteOrdinalCategory(OwnedCategory):
 
     @cached_method
     def arrows(self):
-        return finite_ordered_set(
-            tuple(
-                self.Mor(self(i), self(j)).unique()
-                for i in self.object_set()
-                for j in self.object_set()
-                if int(i) <= int(j)
-            )
-        )
+        return FiniteOrderedSets()(tuple(
+            self.Mor(self(i), self(j)).unique()
+            for i in self.object_set()
+            for j in self.object_set()
+            if int(i) <= int(j)
+        ))
 
 
 class FiniteSequenceDiagram(Functor):
@@ -552,7 +548,7 @@ class ParallelPairCategory(OwnedCategory):
             return str(self.position())
 
     def __init__(self) -> None:
-        self._positions = finite_ordered_set((0, 1))
+        self._positions = FiniteOrderedSets()((0, 1))
         self._objects = indexed_family(
             self._positions,
             lambda position: _object_of(self, position=position),
@@ -783,7 +779,7 @@ class ParallelFamilyCategory(OwnedCategory):
                 f"a parallel-family category is indexed by a set, but {index_set} is not a set"
             )
         self._index_set = index_set
-        self._positions = finite_ordered_set((0, 1))
+        self._positions = FiniteOrderedSets()((0, 1))
         self._objects = indexed_family(
             self._positions,
             lambda position: _object_of(self, position=position),
@@ -1323,11 +1319,11 @@ class _ConeCategory(OwnedCategory):
     Unverified specimens test nonidentity maps of cones and cocones, including
     the identity on an object with nontrivial legs::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: labels = finite_ordered_set(("j",))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: labels = FiniteOrderedSets()(("j",))
         sage: index = DiscreteCategory(labels)
-        sage: points = finite_ordered_set(("a", "b"))
-        sage: one = finite_ordered_set(("*",))
+        sage: points = FiniteOrderedSets()(("a", "b"))
+        sage: one = FiniteOrderedSets()(("*",))
         sage: diagram = Cat().Mor(index, Sets()).constant_functor(one)
         sage: category = diagram.Cones()
         sage: leg = Sets().Mor(points, one)(lambda point: "*")
@@ -1354,7 +1350,7 @@ class _ConeCategory(OwnedCategory):
     non-morphism into a permitted apex map::
 
         sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
-        sage: empty_shape = DiscreteCategory(finite_ordered_set(()))
+        sage: empty_shape = DiscreteCategory(FiniteOrderedSets()(()))
         sage: diagram = Cat().Mor(empty_shape, injections).constant_functor(points)
         sage: category = diagram.Cones()
         sage: cone = category.cone(points, lambda obj: injections.identity(points))

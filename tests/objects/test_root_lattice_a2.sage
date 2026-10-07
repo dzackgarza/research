@@ -18,7 +18,7 @@ def test_the_positive_definite_gram_is_the_twist_by_minus_one() -> None:
     r"""$\begin{pmatrix}2&1\\1&2\end{pmatrix}$ is $A_2(-1)$: send $e_1 \mapsto -e_1$ in $A_2(-1)$."""
     positive = Lattices(ZZ)([[2, 1], [1, 2]])
     assert positive.is_isometric(a2().twist(-1))
-    assert positive.signature_pair() == signature_pair(2, 0)
+    assert positive.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 0)
     assert positive.determinant() == 3
 
 
@@ -46,7 +46,7 @@ def test_the_invariants_of_a2() -> None:
     assert lattice.b(e0 + e1, e0 + e1) == -2
     assert lattice.q(e0) == -1
     assert lattice.determinant() == 3
-    assert lattice.signature_pair() == signature_pair(0, 2)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 2)
     assert lattice.is_even()
     assert lattice.is_negative_definite()
     assert not lattice.is_unimodular()

@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -212,10 +212,8 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         lattice = self.lattice()
         labels = lattice.module_generating_set()
         integers = _integers()
-        rays = finite_ordered_set(
-            tuple(lattice.module_generator(label) for label in labels)
-            + (lattice.linear_combination({label: -integers.one() for label in labels}),)
-        )
+        rays = FiniteOrderedSets()(tuple(lattice.module_generator(label) for label in labels)
+        + (lattice.linear_combination({label: -integers.one() for label in labels}),))
         return self(
             tuple(
                 tuple(ray for ray in rays if ray != omitted) for omitted in rays
@@ -237,9 +235,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         # they are presented by the graph of that family: pairing each weight
         # with its coordinate keeps repeated weights apart, which a set of the
         # weights alone would not.
-        homogeneous_weights = finite_ordered_set(
-            tuple(enumerate(int(weight) for weight in weights))
-        )
+        homogeneous_weights = FiniteOrderedSets()(tuple(enumerate(int(weight) for weight in weights)))
         assert all(weight > 0 for _, weight in homogeneous_weights), (
             f"the weights of a weighted projective space P(q_0, ..., q_n) must be positive, but "
             f"they are {tuple(weights)}"
@@ -313,21 +309,15 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
         def cones(self, dimension):
             r"""The cones of the stated dimension, as a finite ordered set."""
-            return finite_ordered_set(
-                tuple(self._cone(cone) for cone in self._engine_fan().cones(int(dimension)))
-            )
+            return FiniteOrderedSets()(tuple(self._cone(cone) for cone in self._engine_fan().cones(int(dimension))))
 
         def maximal_cones(self):
-            return finite_ordered_set(
-                tuple(self._cone(cone) for cone in self._engine_fan().generating_cones())
-            )
+            return FiniteOrderedSets()(tuple(self._cone(cone) for cone in self._engine_fan().generating_cones()))
 
         def rays(self):
             r"""The primitive ray generators, as elements of ``N``."""
             lattice = self.lattice()
-            return finite_ordered_set(
-                tuple(_owned_vector(lattice, ray) for ray in self._engine_fan().rays())
-            )
+            return FiniteOrderedSets()(tuple(_owned_vector(lattice, ray) for ray in self._engine_fan().rays()))
 
         def __iter__(self):
             for dimension in range(int(self.dimension()) + 1):
@@ -458,9 +448,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         def rays(self):
             r"""The primitive ray generators of this cone, as elements of ``N``."""
             lattice = self.lattice()
-            return finite_ordered_set(
-                tuple(_owned_vector(lattice, ray) for ray in self._engine_cone().rays())
-            )
+            return FiniteOrderedSets()(tuple(_owned_vector(lattice, ray) for ray in self._engine_cone().rays()))
 
         def is_smooth(self) -> bool:
             return bool(self._engine_cone().is_smooth())
@@ -471,9 +459,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         def faces(self, dimension):
             r"""The faces of the stated dimension, as cones of the same fan."""
             fan = self.parent()
-            return finite_ordered_set(
-                tuple(fan._cone(face) for face in self._engine_cone().faces(int(dimension)))
-            )
+            return FiniteOrderedSets()(tuple(fan._cone(face) for face in self._engine_cone().faces(int(dimension))))
 
         def is_face_of(self, other) -> bool:
             assert other.parent() is self.parent(), (
@@ -521,12 +507,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             computation is Sage's ``Cone.Hilbert_basis``.
             """
             characters = self.character_lattice()
-            return finite_ordered_set(
-                tuple(
-                    _owned_vector(characters, generator)
-                    for generator in self._engine_cone().dual().Hilbert_basis()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                _owned_vector(characters, generator)
+                for generator in self._engine_cone().dual().Hilbert_basis()
+            ))
 
         def semigroup_coefficients(self, character):
             r"""The multiplicities writing ``m`` over the chosen generators of ``S_sigma``.
@@ -564,13 +548,11 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             set is determined by the two cones, so it is computed once per face.
             """
             assert face.is_face_of(self), f"{face} is not a face of {self}"
-            return finite_ordered_set(
-                tuple(
-                    generator
-                    for generator in self.semigroup_generators()
-                    if face.orthogonal_contains(generator)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                generator
+                for generator in self.semigroup_generators()
+                if face.orthogonal_contains(generator)
+            ))
 
         @cached_method
         def face_supporting_character(self, face):
@@ -588,12 +570,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             Returned as the finite ordered set of values ``<m, u>``, one for
             each primitive ray generator ``u`` of the cone.
             """
-            return finite_ordered_set(
-                tuple(
-                    self.parent().character_cocharacter_value(character, ray)
-                    for ray in self.rays()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                self.parent().character_cocharacter_value(character, ray)
+                for ray in self.rays()
+            ))
 
         def dual_cone_contains(self, character) -> bool:
             r"""Whether ``m`` is in ``sigma^vee``, i.e. ``<m,u> >= 0`` on every ray."""

@@ -46,13 +46,10 @@ from dzack_research.preamble.categories._lattice import (
     _nested_gram_tensor,
     _normalized_lattice_names,
     _orthogonal_sum,
-    signature_pair,
     _signature_pair_of_gram,
     _tensor_product_lattice,
 )
-from dzack_research.preamble.categories._lattice import (
-    signature_pairs as signature_pairs,
-)
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
     DirectSumObjects,
 )
@@ -165,11 +162,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
@@ -195,12 +191,6 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
 )
-
-
-def nikulin_invariants(rank, discriminant_length, delta):
-    r"""Return \((r,a,\delta)\) as a point of \(\mathbb N^3\)."""
-
-    return (NN**3)((int(rank), int(discriminant_length), int(delta)))
 
 
 _Rings = OwnedRings()
@@ -410,7 +400,7 @@ class Genus:
     r"""The genus determined by signature and discriminant quadratic form."""
 
     def __init__(self, signature, discriminant_quadratic_form) -> None:
-        r"""``signature`` is the archimedean signature pair, an object of ``signature_pairs()``."""
+        r"""``signature`` is the archimedean signature pair, an object of ``Cat().product((Cardinalities(), Cardinalities()))``."""
         self._signature_pair = signature
         self._discriminant_quadratic_form = discriminant_quadratic_form
 
@@ -494,12 +484,10 @@ class Genus:
     def representatives(self):
         r"""Return the owned representatives enumerated by the exact genus computation."""
         integers = _own_ring(SageZZ)
-        return finite_ordered_set(
-            tuple(
-                Lattices(integers)([[_owned_engine_element(integers, entry) for entry in row] for row in representative.rows()])
-                for representative in self._engine().representatives()
-            )
-        )
+        return FiniteOrderedSets()(tuple(
+            Lattices(integers)([[_owned_engine_element(integers, entry) for entry in row] for row in representative.rows()])
+            for representative in self._engine().representatives()
+        ))
 
     def class_number(self):
         integers = _own_ring(SageZZ)
@@ -2071,6 +2059,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(\mathbb{Q}\) obtained by extending scalars along
             \(\operatorname{Frac}(R)\) when that field is \(\mathbb{Q}\).
 
+            An index of inertia can be infinite -- \(\mathbb Z^{(\mathbb N)}\)
+            with its standard form has \((p,q)=(\aleph_0,0)\) -- so each entry
+            is a cardinal and the pair is an object of the product category
+            ``Cat().product((Cardinalities(), Cardinalities()))``.
+
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
@@ -2170,9 +2163,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert determinant != ring.zero(), (
                 f"the bad-reduction prime set of {self} is not finite because its form is degenerate"
             )
-            return finite_ordered_set(
-                tuple((ring(2) * abs(determinant)).prime_divisors())
-            )
+            return FiniteOrderedSets()(tuple((ring(2) * abs(determinant)).prime_divisors()))
 
         def discriminant_character_discriminant(self):
             r"""Return the discriminant ``d`` of the field ``Q(sqrt(D))``, ``D = (-1)^m det(L)`` in rank ``2m``.
@@ -2831,7 +2822,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             integral_entries = [[ring(gram[i, j]) for j in range(rank)] for i in range(rank)]
 
-            labels = finite_ordered_set(range(rank))
+            labels = FiniteOrderedSets()(range(rank))
             integral_gram = tensor(
                 ring,
                 (),
@@ -2897,12 +2888,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                     f"cannot enumerate the integral overlattices of {self!r}: Nikulin's correspondence needs a nondegenerate lattice of finite rank"
                 )
             form = self.discriminant_bilinear_form()
-            return finite_ordered_set(
-                tuple(
-                    form.overlattice_from_isotropic_subobject(subgroup)
-                    for subgroup in form.isotropic_subgroups()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                form.overlattice_from_isotropic_subobject(subgroup)
+                for subgroup in form.isotropic_subgroups()
+            ))
 
         def local_modification(self, prime, *discriminant_classes):
             r"""Return the isotropic ``p``-primary overlattice modification.
@@ -2941,7 +2930,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     f"cannot enumerate the even overlattices of {self!r}: Nikulin's correspondence with isotropic subgroups of the discriminant quadratic form needs an even nondegenerate lattice of finite rank, and {self!r} fails one of these"
                 )
             form = self.discriminant_quadratic_form()
-            return finite_ordered_set(tuple(form.overlattice_from_isotropic_subobject(subgroup) for subgroup in form.isotropic_subgroups()))
+            return FiniteOrderedSets()(tuple(form.overlattice_from_isotropic_subobject(subgroup) for subgroup in form.isotropic_subgroups()))
 
         def embeds_in_even_unimodular(self, positive, negative) -> bool:
             r"""Decide primitive embeddability into an even unimodular ``II_{p,q}``.
@@ -2966,7 +2955,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return False
             if positive < source_positive or negative < source_negative:
                 return False
-            complement_signature = signature_pair(
+            complement_signature = Cat().product((Cardinalities(), Cardinalities()))(
                 positive - source_positive,
                 negative - source_negative,
             )
@@ -2999,7 +2988,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             embedding = self.Emb(target)(images)
             if not embedding.is_primitive():
                 raise ArithmeticError(f"the embedding of {self!r} into II_{{{positive},{negative}}} computed by OSCAR is not primitive: its cokernel has torsion")
-            if target.signature_pair() != signature_pair(positive, negative):
+            if target.signature_pair() != Cat().product((Cardinalities(), Cardinalities()))(positive, negative):
                 raise ArithmeticError(
                     f"the target lattice {target!r} computed by OSCAR for a primitive embedding of {self!r} has signature {target.signature_pair()}, not ({positive}, {negative})"
                 )
@@ -3288,7 +3277,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"{self!r} has no Nikulin invariants (r, a, delta): they are defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary"
                 )
-            return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
+            return (NN**3)((int(self.module_rank()), int(self.discriminant_length()), int(self.delta())))
 
         def two_u_eichler_model(self):
             r"""Return the represented ``U + U + self`` Eichler model."""
@@ -3482,11 +3471,11 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def is_positive_definite(self) -> bool:
             rank = self.module_rank()
-            return self.signature_pair() == signature_pair(rank, 0)
+            return self.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(rank, 0)
 
         def is_negative_definite(self) -> bool:
             rank = self.module_rank()
-            return self.signature_pair() == signature_pair(0, rank)
+            return self.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, rank)
 
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
@@ -3543,7 +3532,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             finite_rank = int(rank.finite_value())
             if finite_rank < 2:
                 return False
-            return self.signature_pair() == signature_pair(0, finite_rank - 1)
+            return self.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, finite_rank - 1)
 
         def lll_reduction(self):
 
@@ -3598,9 +3587,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"the root-length bound of {self} requires a nondegenerate form"
             )
             exponent = abs(self.discriminant_group().exponent())
-            return finite_ordered_set(
-                tuple((self.base_ring()(2) * exponent).divisors())
-            )
+            return FiniteOrderedSets()(tuple((self.base_ring()(2) * exponent).divisors()))
 
         def reflective_roots(self):
             r"""Return all primitive reflective roots of a definite lattice."""
@@ -3614,13 +3601,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                         f"cannot finitely enumerate all reflective roots of {self}: "
                         "this computational case is available for definite lattices"
                     )
-            return finite_ordered_set(
-                tuple(
-                    root
-                    for length in self.possible_root_lengths()
-                    for root in self.roots_of_square(sign * length)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                root
+                for length in self.possible_root_lengths()
+                for root in self.roots_of_square(sign * length)
+            ))
 
         def root_sublattice(self):
 
@@ -3739,7 +3724,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 subobject,
                 PrimitiveIsotropicSubobjects(self.base_ring()),
             )
-            assert subobject.module_rank() == finite_ordered_set(elements).cardinality(), (
+            assert subobject.module_rank() == FiniteOrderedSets()(elements).cardinality(), (
                 f"the vectors {elements!r} in {self!r} are linearly dependent: they span a sublattice of rank {subobject.module_rank()}, so they are not a basis of it"
             )
             return subobject
@@ -3808,7 +3793,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                             unformed._from_smith_engine_element(engine_element)
                         )
                     )
-            return finite_ordered_set(tuple(matches))
+            return FiniteOrderedSets()(tuple(matches))
 
         def hyperbolic_plane_summand_count(self):
             r"""Return the number of represented indecomposable hyperbolic-plane summands."""
@@ -5300,7 +5285,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             group is a finite represented group in which the image subgroup
             can be materialized exactly.
             """
-            return finite_ordered_set(tuple(image for _generator, image in self._parabolic_levi_generator_pairs()))
+            return FiniteOrderedSets()(tuple(image for _generator, image in self._parabolic_levi_generator_pairs()))
 
         @cached_method
         def levi_image(self):
@@ -5529,14 +5514,12 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             engine_order = _engine_ring(ring)
             labels = tuple(self.module_generating_set())
-            return finite_ordered_set(
-                tuple(
-                    self.linear_combination(
-                        {label: _owned_engine_element(ring, engine_order(coefficient)) for label, coefficient in zip(labels, tuple(root), strict=True) if coefficient}
-                    )
-                    for root in backend_roots
+            return FiniteOrderedSets()(tuple(
+                self.linear_combination(
+                    {label: _owned_engine_element(ring, engine_order(coefficient)) for label, coefficient in zip(labels, tuple(root), strict=True) if coefficient}
                 )
-            )
+                for root in backend_roots
+            ))
 
         def coxeter_number(self):
             family, rank = self.coxeter_type()
@@ -5545,7 +5528,7 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
             return self.base_ring().base_ring()(10 if rank == 3 else 30)
 
         def simple_reflections(self):
-            return finite_ordered_set(tuple(self.reflection(root) for root in self.simple_roots()))
+            return FiniteOrderedSets()(tuple(self.reflection(root) for root in self.simple_roots()))
 
 
 class RootLattices(OwnedCategory):
@@ -5618,7 +5601,7 @@ class RootLattices(OwnedCategory):
             return self.framing_morphism()(vector)
 
         def simple_reflections(self):
-            return finite_ordered_set(tuple(self.reflection(root) for root in self.simple_roots()))
+            return FiniteOrderedSets()(tuple(self.reflection(root) for root in self.simple_roots()))
 
         def fundamental_weights(self):
             r"""Return the weights dual to the simple coroots."""

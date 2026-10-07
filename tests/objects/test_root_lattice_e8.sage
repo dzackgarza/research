@@ -28,7 +28,7 @@ def test_the_invariants_of_e8() -> None:
     lattice = e8()
     assert lattice.module_rank() == 8
     assert lattice.determinant() == 1
-    assert lattice.signature_pair() == signature_pair(0, 8)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 8)
     assert lattice.is_even()
     assert lattice.is_unimodular()
     assert lattice.discriminant_group().cardinality() == 1
@@ -43,7 +43,7 @@ def test_the_twist_by_two() -> None:
     assert twisted.determinant() == 256
     assert twisted.discriminant_group().cardinality() == 256
     assert twisted.is_p_elementary(2)
-    assert twisted.two_elementary_invariants() == nikulin_invariants(8, 8, 0)
+    assert twisted.two_elementary_invariants() == (NN**3)((8, 8, 0))
     assert twisted.is_isometric(NamedLattices.E8_2)
 
 

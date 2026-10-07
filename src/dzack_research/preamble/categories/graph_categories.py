@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -36,9 +36,9 @@ class _FiniteDigraphEngine:
         edge_labels=None,
         **rest,
     ) -> None:
-        self._vertices = finite_ordered_set(vertices)
+        self._vertices = FiniteOrderedSets()(vertices)
         self._edge_space = self._vertices**2
-        self._edges = finite_ordered_set(edges)
+        self._edges = FiniteOrderedSets()(edges)
         self._symmetric = bool(symmetric)
         self._vertex_labels = vertex_labels
         self._edge_labels = edge_labels
@@ -246,9 +246,9 @@ class Digraphs(OwnedCategory):
         return self.from_edges((0, 1), ((0, 1),))
 
     def from_edges(self, vertices, edges):
-        vertices = finite_ordered_set(vertices)
+        vertices = FiniteOrderedSets()(vertices)
         edge_space = vertices**2
-        normalized = finite_ordered_set(tuple(edge_space(edge) for edge in edges))
+        normalized = FiniteOrderedSets()(tuple(edge_space(edge) for edge in edges))
         if any(
             edge[0] not in vertices or edge[1] not in vertices
             for edge in normalized
@@ -282,9 +282,9 @@ class Graphs(OwnedCategory):
         return self.from_edges((0, 1), ((0, 1),))
 
     def from_edges(self, vertices, edges):
-        vertices = finite_ordered_set(vertices)
+        vertices = FiniteOrderedSets()(vertices)
         edge_space = vertices**2
-        normalized = finite_ordered_set(tuple(edge_space(edge) for edge in edges))
+        normalized = FiniteOrderedSets()(tuple(edge_space(edge) for edge in edges))
         if any(
             edge[0] not in vertices or edge[1] not in vertices
             for edge in normalized
@@ -331,9 +331,9 @@ class LabelledDigraphs(OwnedCategory):
         )
 
     def from_labels(self, vertices, edges, vertex_labels, edge_labels):
-        vertices = finite_ordered_set(vertices)
+        vertices = FiniteOrderedSets()(vertices)
         edge_space = vertices**2
-        edges = finite_ordered_set(tuple(edge_space(edge) for edge in edges))
+        edges = FiniteOrderedSets()(tuple(edge_space(edge) for edge in edges))
         if any(
             edge[0] not in vertices or edge[1] not in vertices
             for edge in edges
@@ -403,9 +403,9 @@ class LabelledGraphs(OwnedCategory):
         mathematical specialization supplies only its additional category and
         construction data; it never imports or subclasses that private engine.
         """
-        vertices = finite_ordered_set(vertices)
+        vertices = FiniteOrderedSets()(vertices)
         edge_space = vertices**2
-        edges = finite_ordered_set(tuple(edge_space(edge) for edge in edges))
+        edges = FiniteOrderedSets()(tuple(edge_space(edge) for edge in edges))
         if any(
             edge[0] not in vertices or edge[1] not in vertices
             for edge in edges

@@ -67,8 +67,8 @@ def test_real_and_imaginary_quadratic_fields_have_signatures_two_zero_and_zero_o
     order = real_quadratic.order_generated_by(real_quadratic.primitive_element())
     gaussian = gaussian_field.ring_of_integers()
 
-    assert real_quadratic.signature() == signature_pair(2, 0)
-    assert gaussian_field.signature() == signature_pair(0, 1)
+    assert real_quadratic.signature() == Cat().product((Cardinalities(), Cardinalities()))(2, 0)
+    assert gaussian_field.signature() == Cat().product((Cardinalities(), Cardinalities()))(0, 1)
     assert order.module_rank() == 2
     assert order.cardinality() == aleph0
     assert gaussian.cardinality() == aleph0

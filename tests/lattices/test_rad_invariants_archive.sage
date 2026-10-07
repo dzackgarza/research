@@ -22,7 +22,7 @@ def _period_lattices():
 
 def test_archived_period_lattices_retain_the_recorded_two_elementary_rows() -> None:
     for lattice, (rank, length, delta) in _period_lattices():
-        assert lattice.two_elementary_invariants() == nikulin_invariants(rank, length, delta)
+        assert lattice.two_elementary_invariants() == (NN**3)((rank, length, delta))
 
 
 def test_all_six_archived_period_rows_are_coeven() -> None:

@@ -33,9 +33,7 @@ from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobj
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -135,7 +133,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                 for position in canonical_to_source
             )
             canonical_matrix = self.gram_matrix(canonical_basis)
-            canonical_positions = finite_ordered_set(range(size))
+            canonical_positions = FiniteOrderedSets()(range(size))
             certificate_family = finite_indexed_family(
                 positions,
                 lambda position: canonical_positions[
@@ -259,12 +257,10 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def diagram_automorphism_isometries(self):
             r"""Return the sublattice isometries lifted from every graph automorphism."""
             automorphisms = self.configuration_automorphism_group()
-            return finite_ordered_set(
-                tuple(
-                    self.configuration_isometry_from_automorphism(automorphism)
-                    for automorphism in automorphisms
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                self.configuration_isometry_from_automorphism(automorphism)
+                for automorphism in automorphisms
+            ))
 
 
 __all__ = ["VectorConfigurations"]

@@ -76,9 +76,7 @@ from dzack_research.preamble.categories.functors.core import (
     Functor,
     NaturalTransformation,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -237,10 +235,10 @@ def _finite_family(values, *, name: str) -> IndexedFamily:
                 )
             return values
         case Mapping():
-            labels = finite_ordered_set(tuple(values))
+            labels = FiniteOrderedSets()(tuple(values))
             return finite_indexed_family(labels, lambda label: values[label], name=name)
     entries = tuple(values)
-    labels = finite_ordered_set(range(len(entries)))
+    labels = FiniteOrderedSets()(range(len(entries)))
     return finite_indexed_family(
         labels,
         lambda label: entries[int(labels.ranking_map()(label))],
@@ -312,13 +310,11 @@ class _CoverPresentationDiagram(Functor):
         self._overlaps = overlaps
         self._member_labels = tuple(members.index_set())
         self._pair_labels = tuple(overlaps.index_set())
-        shape_labels = finite_ordered_set(
-            (
-                ("target", 0),
-                *(("member", position) for position in range(len(self._member_labels))),
-                *(("overlap", position) for position in range(len(self._pair_labels))),
-            )
-        )
+        shape_labels = FiniteOrderedSets()((
+            ("target", 0),
+            *(("member", position) for position in range(len(self._member_labels))),
+            *(("overlap", position) for position in range(len(self._pair_labels))),
+        ))
 
         def precedes(left, right):
             if left == right:
@@ -651,7 +647,7 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
             )
         spans[pair] = site.span(left_map, right_map)
     overlap_family = finite_indexed_family(
-        finite_ordered_set(expected_pairs),
+        FiniteOrderedSets()(expected_pairs),
         lambda pair: spans[pair],
         name="Pair overlaps of a covering family",
     )
@@ -688,8 +684,8 @@ class CoveringFamilies(OwnedCategory):
     functor, not recognized afterwards from methods on an arbitrary object::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: identity = Sets().Mor(points, points).identity()
         sage: covers = CoveringFamilies(Sets())
         sage: cover = covers.family(points, (identity,), {})
@@ -1235,9 +1231,9 @@ class DescentData(SageObject):
     two-member cover but has canonical descent data for the trivial coverage::
 
         sage: from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: labels = finite_ordered_set(("U", "U0", "U1", "U01"))
+        sage: labels = FiniteOrderedSets()(("U", "U0", "U1", "U01"))
         sage: relations = {("U0", "U"), ("U1", "U"), ("U01", "U0"), ("U01", "U1"), ("U01", "U")}
         sage: site = PosetCategory(labels, le=lambda left, right: left == right or (left, right) in relations)
         sage: families = CoveringFamilies(site)
@@ -1256,7 +1252,7 @@ class DescentData(SageObject):
         sage: coverage = Coverage(site, families)
         sage: coverage is families
         True
-        sage: two = finite_ordered_set((0, 1)); one = finite_ordered_set((0,))
+        sage: two = FiniteOrderedSets()((0, 1)); one = FiniteOrderedSets()((0,))
         sage: class FailingPresheaf(Functor):
         ....:     def __init__(self):
         ....:         super().__init__(site.opposite(), Sets())

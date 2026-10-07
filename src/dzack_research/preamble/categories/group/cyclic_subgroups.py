@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -72,9 +72,9 @@ class CyclicGroups(OwnedCategory):
             self._group_generator = group_generator
             super().__init__(**rest)
             generators = (
-                finite_ordered_set(())
+                FiniteOrderedSets()(())
                 if self.group_generator() == self.supergroup().one()
-                else finite_ordered_set((self.group_generator(),))
+                else FiniteOrderedSets()((self.group_generator(),))
             )
             source = Groups.Free(index_set=generators)
             generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)

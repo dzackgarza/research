@@ -18,7 +18,7 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -73,7 +73,7 @@ class DirectSumObjects(OwnedCategory):
                 labels = (
                     Sets.Δ[len(values) - 1]
                     if summand_index_set is None
-                    else finite_ordered_set(summand_index_set)
+                    else FiniteOrderedSets()(summand_index_set)
                 )
                 if labels.cardinality() != cardinal(len(values)):
                     raise ValueError(

@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -24,11 +24,11 @@ class _FiniteChamberSystemEngine:
     r"""Private realization of a finite chamber system by typed adjacencies."""
 
     def __init__(self, chambers, type_set, adjacent_pairs, **rest) -> None:
-        self._chambers = finite_ordered_set(chambers)
+        self._chambers = FiniteOrderedSets()(chambers)
         self._chamber_pair_space = self._chambers**2
-        self._type_set = finite_ordered_set(type_set)
+        self._type_set = FiniteOrderedSets()(type_set)
         self._adjacent_pairs = {
-            type_: finite_ordered_set(pairs)
+            type_: FiniteOrderedSets()(pairs)
             for type_, pairs in adjacent_pairs.items()
         }
         super().__init__(facade=True, **rest)
@@ -169,13 +169,11 @@ class ChamberSystems(OwnedCategory):
         )
 
     def from_adjacencies(self, chambers, type_set, adjacent_pairs):
-        chambers = finite_ordered_set(chambers)
+        chambers = FiniteOrderedSets()(chambers)
         chamber_pair_space = chambers**2
-        type_set = finite_ordered_set(type_set)
+        type_set = FiniteOrderedSets()(type_set)
         normalized = {
-            type_: finite_ordered_set(
-                tuple(chamber_pair_space(pair) for pair in adjacent_pairs[type_])
-            )
+            type_: FiniteOrderedSets()(tuple(chamber_pair_space(pair) for pair in adjacent_pairs[type_]))
             for type_ in type_set
         }
         for type_ in type_set:

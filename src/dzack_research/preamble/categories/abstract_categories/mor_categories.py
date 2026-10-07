@@ -1652,9 +1652,9 @@ def _category_packet(category: Category) -> CategoryPacket:
     two categories whose endpoint parents are distinct::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: left = finite_ordered_set(("a", "b"))
-        sage: right = finite_ordered_set(("a", "b"))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: left = FiniteOrderedSets()(("a", "b"))
+        sage: right = FiniteOrderedSets()(("a", "b"))
         sage: left == right and left is not right
         True
         sage: first, second = Sets().Mor(left, left), Sets().Mor(right, right)
@@ -1788,8 +1788,8 @@ class _MorCategoryOf(OwnedCategoryBase):
         a restricted category shares the underlying Mor object, not its predicate::
 
             sage: from dzack_research.preamble.categories.sets.set_categories import Sets, FiniteSets
-            sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-            sage: points = finite_ordered_set(("a", "b"))
+            sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+            sage: points = FiniteOrderedSets()(("a", "b"))
             sage: Mor = FiniteSets().category_packet().Mors().Of(points, points)
             sage: Mor is Sets().Mor(points, points)
             True
@@ -1930,9 +1930,9 @@ class _DiscreteTwoMorCategoryOf(_MorCategoryOf):
     and an ordinary identity functor can act on its actual identity arrow::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: Mor = Sets().Mor(points, points)
         sage: swap = Mor(lambda point: {"a": "b", "b": "a"}[point])
         sage: obj = Mor.object(swap)

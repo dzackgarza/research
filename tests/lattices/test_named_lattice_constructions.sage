@@ -24,7 +24,7 @@ from dzack_research.preamble.all import *
 def test_the_odd_unimodular_lattice_i_2_1() -> None:
     lattice = Lattices.IPQ(2, 1)
 
-    assert lattice.signature_pair() == signature_pair(2, 1)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 1)
     assert lattice.determinant() == -1
     assert lattice.is_unimodular()
     assert not lattice.is_even()
@@ -34,11 +34,11 @@ def test_the_even_unimodular_lattices_ii_1_9_and_ii_9_1() -> None:
     negative = Lattices.IIPQ(1, 9)
     positive = Lattices.IIPQ(9, 1)
 
-    assert negative.signature_pair() == signature_pair(1, 9)
+    assert negative.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 9)
     assert negative.determinant() == -1
     assert negative.is_even()
     assert negative.is_unimodular()
-    assert positive.signature_pair() == signature_pair(9, 1)
+    assert positive.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(9, 1)
     assert positive.is_even()
     assert positive.determinant() == -1
 
@@ -51,7 +51,7 @@ def test_there_is_no_even_unimodular_lattice_of_signature_1_2() -> None:
 def test_the_k3_complement_of_a_degree_two_polarization() -> None:
     lattice = Lattices.LK3_2d(1)
 
-    assert lattice.signature_pair() == signature_pair(2, 19)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 19)
     assert lattice.determinant() == -2
     assert lattice.is_even()
 
@@ -68,7 +68,7 @@ def test_the_tensor_product_of_a2_with_u_and_with_itself() -> None:
     plane = Lattices(ZZ)("U")
 
     assert (root_lattice @ plane).determinant() == 9
-    assert (root_lattice @ plane).signature_pair() == signature_pair(2, 2)
+    assert (root_lattice @ plane).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 2)
     assert (root_lattice @ root_lattice).determinant() == 81
     assert (root_lattice @ root_lattice).is_positive_definite()
 
@@ -88,7 +88,7 @@ def test_an_orthogonal_sum_splits_into_its_indecomposable_summands() -> None:
     assert lattice.is_decomposable()
     assert summands[0].determinant() == 3
     assert summands[1].is_unimodular()
-    assert summands[1].signature_pair() == signature_pair(1, 1)
+    assert summands[1].signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert summands[2].is_negative_definite()
 
 

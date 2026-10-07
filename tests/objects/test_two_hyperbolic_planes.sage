@@ -25,7 +25,7 @@ def test_the_invariants_of_u_plus_u() -> None:
     lattice = two_planes()
     assert lattice.module_rank() == 4
     assert lattice.determinant() == 1
-    assert lattice.signature_pair() == signature_pair(2, 2)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 2)
     assert lattice.is_unimodular()
     assert lattice.summands().cardinality() == 2
 

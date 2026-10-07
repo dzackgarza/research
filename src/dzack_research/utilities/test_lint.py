@@ -84,7 +84,7 @@ BANNED_SPELLINGS = {
 # As a bare name only these are spellings; a variable named ``dual`` can name the dual numbers.
 BANNED_BARE_NAMES = frozenset({"Hom", "generators"})
 BYPASS_CONSTRUCTORS = frozenset({
-    "finite_ordered_set", "finite_ordinal_set", "indexed_family", "finite_family",
+    "finite_ordinal_set", "indexed_family", "finite_family",
     "finite_indexed_family", "finite_indexed_family_from_values",
 })
 PROPERTY_REFINEMENTS = frozenset({

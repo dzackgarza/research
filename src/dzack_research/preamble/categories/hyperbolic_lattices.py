@@ -34,7 +34,8 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories._lattice import signature_pair
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
@@ -44,9 +45,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
@@ -210,7 +209,7 @@ def _signature_at_real_embedding(lattice, embedding):
             f"zero eigenvalues there, and Vinberg's algorithm needs a nondegenerate form "
             f"at every real place"
         )
-    return signature_pair(int(positive), int(negative))
+    return Cat().product((Cardinalities(), Cardinalities()))(int(positive), int(negative))
 
 
 class NumberFieldVinbergLattice(SageObject):
@@ -260,9 +259,7 @@ class NumberFieldVinbergLattice(SageObject):
         rank = int(lattice.module_rank())
         if selected_signature.first() != rank - 1 or selected_signature.second() != 1:
             raise ValueError(f"{lattice} is not hyperbolic at the real place {real_embedding}: it must have signature ({rank - 1}, 1) there, but has {selected_signature}")
-        other_signatures = finite_ordered_set(
-            tuple(_signature_at_real_embedding(lattice, embeddings[position]) for position in embeddings.index_set() if position != selected_position)
-        )
+        other_signatures = FiniteOrderedSets()(tuple(_signature_at_real_embedding(lattice, embeddings[position]) for position in embeddings.index_set() if position != selected_position))
         if any(other.first() != rank or other.second() != 0 for other in other_signatures):
             raise ValueError(
                 f"cannot run Vinberg's algorithm on {lattice} with hyperbolic place "
@@ -349,7 +346,7 @@ class NumberFieldVinbergLattice(SageObject):
             self._selected_primitive_approximation(),
             int(count),
         )
-        roots = finite_ordered_set(tuple(self._cross_root(row) for row in rows))
+        roots = FiniteOrderedSets()(tuple(self._cross_root(row) for row in rows))
         return complete, roots
 
     def __repr__(self) -> str:
@@ -391,9 +388,9 @@ class AllcockEdgewalkReport(SageObject):
     ) -> None:
         self._lattice = lattice
         self._reflective = bool(reflective)
-        self._simple_roots = finite_ordered_set(tuple(simple_roots))
-        self._vertices = finite_ordered_set(tuple(vertices))
-        self._isometry_generators = finite_ordered_set(tuple(isometry_generators))
+        self._simple_roots = FiniteOrderedSets()(tuple(simple_roots))
+        self._vertices = FiniteOrderedSets()(tuple(vertices))
+        self._isometry_generators = FiniteOrderedSets()(tuple(isometry_generators))
 
     def lattice(self):
         return self._lattice
@@ -514,7 +511,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             negative square for itself.
             """
             _complete, roots = self._vinberg_search(controlling_vector, max_roots, max_decompositions)
-            return finite_ordered_set(roots)
+            return FiniteOrderedSets()(roots)
 
         def vinberg_algorithm(self, controlling_vector=None, *, max_roots=None, max_decompositions=None):
             r"""Return the roots accepted by Vinberg's algorithm.
@@ -789,7 +786,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                             f"not {pairing}"
                         )
                     isotropic.append(candidate)
-            return finite_ordered_set(tuple(isotropic))
+            return FiniteOrderedSets()(tuple(isotropic))
 
         @cached_method
         def _edgewalk(self):

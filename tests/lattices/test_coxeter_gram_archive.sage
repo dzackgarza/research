@@ -22,7 +22,7 @@ def test_the_a2_root_lattice_has_determinant_three_and_is_negative_definite() ->
     lattice = CoxeterDiagrams()(path_coxeter_matrix(2)).root_lattice()
 
     assert lattice.gram_matrix().determinant() == 3
-    assert lattice.signature_pair() == signature_pair(0, 2)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 2)
     assert lattice.is_nondegenerate()
 
 
@@ -38,7 +38,7 @@ def test_the_a_n_root_lattice_has_determinant_signed_n_plus_one() -> None:
 
         assert lattice.module_rank() == rank
         assert lattice.gram_matrix().determinant() == determinant
-        assert lattice.signature_pair() == signature_pair(0, rank)
+        assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, rank)
 
 
 def test_the_affine_a2_gram_is_degenerate_with_a_rank_one_radical() -> None:
@@ -52,7 +52,7 @@ def test_the_affine_a2_gram_is_degenerate_with_a_rank_one_radical() -> None:
     diagram = CoxeterDiagrams()([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
 
     assert lattice.gram_matrix().determinant() == 0
-    assert lattice.signature_pair() == signature_pair(0, 2)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 2)
     assert lattice.radical().module_rank() == 1
     assert diagram.is_parabolic()
     assert not diagram.is_elliptic()
@@ -68,7 +68,7 @@ def test_two_roots_pairing_to_three_span_a_hyperbolic_plane_and_a_hyperbolic_dia
     diagram = CoxeterDiagrams()(lattice.module_generators())
 
     assert lattice.gram_matrix().determinant() == -5
-    assert lattice.signature_pair() == signature_pair(1, 1)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert not diagram.is_elliptic()
     assert not diagram.is_parabolic()
     assert diagram.is_hyperbolic()

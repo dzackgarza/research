@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import owned_category_join
 
 
@@ -251,7 +251,7 @@ def _construct_kahler_differentials(algebra):
         # Thus Omega^1_{A/A} is the zero A-module, independently of any
         # presentation or computation backend for A.
         return algebra._fresh_free_module_on(
-            finite_ordered_set(()),
+            FiniteOrderedSets()(()),
             _extra_categories=(KahlerDifferentialModules(algebra),),
             _extra_construction_data={
                 "source_algebra": algebra,
@@ -292,9 +292,7 @@ def _construct_kahler_differentials(algebra):
     presentation, labels, _variables, relations, _lift = _commutative_presentation_data(
         algebra
     )
-    differential_labels = finite_ordered_set(
-        tuple(("d", label) for label in labels)
-    )
+    differential_labels = FiniteOrderedSets()(tuple(("d", label) for label in labels))
     if relations.cardinality() != 0:
         presentation_ideal = presentation.ideal(*tuple(relations))
         presentation_omega = presentation.kahler_differentials()

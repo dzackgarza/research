@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
@@ -71,7 +71,7 @@ class IsotypicDecompositions(OwnedCategoryOverBaseRing):
                 )
             self._preamble_isotypic_characters = characters
             self._preamble_isotypic_components = components
-            index_set = finite_ordered_set(characters)
+            index_set = FiniteOrderedSets()(characters)
             super().__init__(
                 summands=indexed_family(
                     index_set,
@@ -82,7 +82,7 @@ class IsotypicDecompositions(OwnedCategoryOverBaseRing):
             )
 
         def isotypic_characters(self):
-            return finite_ordered_set(self._preamble_isotypic_characters)
+            return FiniteOrderedSets()(self._preamble_isotypic_characters)
 
         def isotypic_component(self, character):
             labels = self.isotypic_characters()
@@ -103,17 +103,15 @@ class IsotypicDecompositions(OwnedCategoryOverBaseRing):
             )
 
         def nontrivial_components(self):
-            return finite_ordered_set(
-                tuple(
-                    component
-                    for character, component in zip(
-                        self._preamble_isotypic_characters,
-                        self._preamble_isotypic_components,
-                        strict=True,
-                    )
-                    if not character.is_trivial()
+            return FiniteOrderedSets()(tuple(
+                component
+                for character, component in zip(
+                    self._preamble_isotypic_characters,
+                    self._preamble_isotypic_components,
+                    strict=True,
                 )
-            )
+                if not character.is_trivial()
+            ))
 
 
 def _character_rows(group):

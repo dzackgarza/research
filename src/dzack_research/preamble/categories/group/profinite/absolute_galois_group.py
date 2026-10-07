@@ -46,7 +46,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of
@@ -100,9 +100,7 @@ class AbsoluteGaloisGroupElement(Element):
         return self._exact_action
 
     def realized_stages(self):
-        return finite_ordered_set(
-            tuple(stage for stage, _coordinate in self._coordinates)
-        )
+        return FiniteOrderedSets()(tuple(stage for stage, _coordinate in self._coordinates))
 
     def restriction_coordinate(self, stage):
         for known_stage, coordinate in self._coordinates:

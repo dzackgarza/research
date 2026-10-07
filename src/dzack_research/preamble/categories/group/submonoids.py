@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.group.magmas import (
     MonoidMorphism,
     Monoids,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -74,7 +74,7 @@ class _SubmonoidEngine:
         self._description = description
         self._submonoid_structure_data = dict(structure_data or {})
         self._monoid_generators = (
-            None if generators is None else finite_ordered_set(tuple(generators))
+            None if generators is None else FiniteOrderedSets()(tuple(generators))
         )
         super().__init__(facade=ambient, **rest)
         if predicate is not None and not bool(predicate(ambient.one())):

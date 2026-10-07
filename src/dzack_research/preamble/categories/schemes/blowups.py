@@ -42,9 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
 )
 from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
 
 def _integers():
@@ -332,7 +330,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
                 "this point-blowup presentation computes its Picard group directly"
             )
             module = _integers()._fresh_free_module_on(
-                finite_ordered_set(("H", "E")),
+                FiniteOrderedSets()(("H", "E")),
             )
             return PicardGroups()(module, scheme=self)
 

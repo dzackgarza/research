@@ -11,7 +11,7 @@ def test_the_orthogonal_power_adds_signatures_and_multiplies_discriminants() -> 
     plane = Lattices(ZZ)("U")
 
     assert (plane ** 3).module_rank() == 6
-    assert (plane ** 3).signature_pair() == signature_pair(3, 3)
+    assert (plane ** 3).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(3, 3)
     assert (plane ** 3).determinant() == -1
     assert (plane ** 3).is_unimodular()
 
@@ -19,6 +19,6 @@ def test_the_orthogonal_power_adds_signatures_and_multiplies_discriminants() -> 
 def test_a_definite_power_keeps_its_definiteness_and_squares_its_discriminant() -> None:
     root_lattice = Lattices(ZZ)("A2")
 
-    assert (root_lattice ** 2).signature_pair() == signature_pair(0, 4)
+    assert (root_lattice ** 2).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 4)
     assert (root_lattice ** 2).determinant() == 9
     assert (root_lattice ** 2).is_negative_definite()

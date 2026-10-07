@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
@@ -126,7 +125,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             # The primes are the index set, and A_p the value there: two primes
             # may carry isomorphic subgroups, which a set of subgroups would
             # collapse.
-            index = finite_ordered_set(tuple(primes))
+            index = FiniteOrderedSets()(tuple(primes))
             return indexed_family(
                 index,
                 lambda prime: components[prime],
@@ -789,7 +788,7 @@ def _discriminant_subgroup(ambient, generators):
     else:
         # The zero finite module is presented by the identity on one generator.
 
-        free = ambient.base_ring().free_module(finite_ordered_set((0,)))
+        free = ambient.base_ring().free_module(FiniteOrderedSets()((0,)))
         source = _presented_module_from_morphism(
             free.module_category().Mor(free, free).identity(),
             _subobject_ambient=ambient,
@@ -811,23 +810,21 @@ def _all_discriminant_subgroups(ambient):
         f"which has not been computed for {ambient}, in {ambient.category()}"
     )
     additive_group = AbelianGroupGap(smith_engine.invariants())
-    return finite_ordered_set(
-        tuple(
-            ambient.subgroup_on(
-                tuple(
-                    ambient._element_from_unformed_module(
-                        unformed._from_smith_engine_element(
-                            smith_engine.linear_combination_of_smith_form_gens(
-                                additive_group(generator).exponents()
-                            )
+    return FiniteOrderedSets()(tuple(
+        ambient.subgroup_on(
+            tuple(
+                ambient._element_from_unformed_module(
+                    unformed._from_smith_engine_element(
+                        smith_engine.linear_combination_of_smith_form_gens(
+                            additive_group(generator).exponents()
                         )
                     )
-                    for generator in subgroup.gens()
                 )
+                for generator in subgroup.gens()
             )
-            for subgroup in additive_group.all_subgroups()
         )
-    )
+        for subgroup in additive_group.all_subgroups()
+    ))
 
 
 def _descended_bilinear_gram(dual_lattice, labels, bilinear_values):

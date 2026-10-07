@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedNoetherianRings,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -39,7 +39,7 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
         scheme = Schemes(self.base_ring()).base_scheme()
-        return self(scheme, 0, finite_ordered_set(()))
+        return self(scheme, 0, FiniteOrderedSets()(()))
 
     def super_categories(self):
         return [FreeModules(self.base_ring())]

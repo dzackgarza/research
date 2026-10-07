@@ -83,7 +83,6 @@ from dzack_research.preamble.categories.schemes.varieties import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
@@ -650,7 +649,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             orbit-cone correspondence restricted to codimension one: ``D_rho``
             is the closure of the orbit of ``rho``.
             """
-            return WeilDivisorGroups()(self, finite_ordered_set(tuple(self.fan().cones(1))))
+            return WeilDivisorGroups()(self, FiniteOrderedSets()(tuple(self.fan().cones(1))))
 
         def weil_divisor_group(self, *args, **kwargs):
             return self.torus_invariant_divisor_group(*args, **kwargs)
@@ -871,7 +870,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def local_divisor_group(self, cone):
             r"""``Div_T(U_sigma)``, free on the rays of one cone (CLS §4.1)."""
             return _integers()._fresh_free_module_on(
-                finite_ordered_set(tuple(cone.faces(1))),
+                FiniteOrderedSets()(tuple(cone.faces(1))),
             )
 
         @cached_method
@@ -1432,12 +1431,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             divisor = self.weil_divisor_group()(divisor)
             support = self._engine_toric_divisor(divisor)._sheaf_cohomology_support()
             characters = self.character_lattice()
-            return finite_ordered_set(
-                tuple(
-                    _owned_vector(characters, point)
-                    for point in support.integral_points()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                _owned_vector(characters, point)
+                for point in support.integral_points()
+            ))
 
         def weight_cohomology(self, divisor, weight, degree):
             r"""Return one weight piece ``H^degree(X,O_X(D))_weight``."""
@@ -1476,9 +1473,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
         def line_bundle_cohomology_dimensions(self, divisor):
             r"""Return the degree-indexed dimensions of represented ``H^i(X,O_X(D))``."""
-            degrees = finite_ordered_set(
-                tuple(NN(degree) for degree in range(int(self.dimension()) + 1))
-            )
+            degrees = FiniteOrderedSets()(tuple(NN(degree) for degree in range(int(self.dimension()) + 1)))
             return finite_indexed_family(
                 degrees,
                 lambda degree: NN(

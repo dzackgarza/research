@@ -521,9 +521,7 @@ class TwoUEichlerModel(SageObject):
         ``E_{e,x}E_{e,y}=E_{e,x+y}`` supplies all transvections for a fixed
         ``e``.
         """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         from dzack_research.preamble.categories.sets.indexed_families import (
             finite_indexed_family,
         )
@@ -538,15 +536,13 @@ class TwoUEichlerModel(SageObject):
             (e, f, e_prime) + complement_basis,
             (e, f, f_prime) + complement_basis,
         )
-        labels = finite_ordered_set(
-            tuple(("left-SL2", generator) for generator in special_linear_generators)
-            + tuple(("right-SL2", generator) for generator in special_linear_generators)
-            + tuple(
-                ("Eichler", position, vector_position)
-                for position, basis in enumerate(perpendicular_bases)
-                for vector_position in range(len(basis))
-            )
-        )
+        labels = FiniteOrderedSets()(tuple(("left-SL2", generator) for generator in special_linear_generators)
+        + tuple(("right-SL2", generator) for generator in special_linear_generators)
+        + tuple(
+            ("Eichler", position, vector_position)
+            for position, basis in enumerate(perpendicular_bases)
+            for vector_position in range(len(basis))
+        ))
 
         def generator(label):
             kind = label[0]
@@ -573,9 +569,7 @@ class TwoUEichlerModel(SageObject):
 
     def _approximate_generator_column_matrices_after_base_change(self, ring_map):
         r"""Return the private exact generator matrices after scalar extension."""
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         from dzack_research.preamble.categories.sets.indexed_families import (
             finite_indexed_family,
         )
@@ -598,15 +592,13 @@ class TwoUEichlerModel(SageObject):
             (e, f, e_prime) + complement_basis,
             (e, f, f_prime) + complement_basis,
         )
-        labels = finite_ordered_set(
-            tuple(("left-SL2", generator) for generator in special_linear_generators)
-            + tuple(("right-SL2", generator) for generator in special_linear_generators)
-            + tuple(
-                ("Eichler", position, vector_position)
-                for position, basis in enumerate(perpendicular_bases)
-                for vector_position in range(len(basis))
-            )
-        )
+        labels = FiniteOrderedSets()(tuple(("left-SL2", generator) for generator in special_linear_generators)
+        + tuple(("right-SL2", generator) for generator in special_linear_generators)
+        + tuple(
+            ("Eichler", position, vector_position)
+            for position, basis in enumerate(perpendicular_bases)
+            for vector_position in range(len(basis))
+        ))
 
         module_maps = lattice.module_category().Mor(lattice, lattice)
 
@@ -823,9 +815,7 @@ class TwoUEichlerModel(SageObject):
         the full orthogonal group.  That equality belongs to the recursive
         generation theorem and its parabolic-stabilizer hypotheses.
         """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         from dzack_research.preamble.categories.sets.indexed_families import (
             finite_indexed_family,
         )
@@ -834,13 +824,11 @@ class TwoUEichlerModel(SageObject):
         complement_generators = self.orthogonal_complement().O().group_generators()
         eichler = self.complement_eichler_transvections()
         discriminant_lifts = self.discriminant_generator_lifts()
-        labels = finite_ordered_set(
-            tuple(("left-SL2", generator) for generator in special_linear_generators)
-            + tuple(("right-SL2", generator) for generator in special_linear_generators)
-            + tuple(("O(K)", generator) for generator in complement_generators)
-            + tuple(("Eichler", label) for label in eichler.index_set())
-            + tuple(("discriminant-lift", label) for label in discriminant_lifts.index_set())
-        )
+        labels = FiniteOrderedSets()(tuple(("left-SL2", generator) for generator in special_linear_generators)
+        + tuple(("right-SL2", generator) for generator in special_linear_generators)
+        + tuple(("O(K)", generator) for generator in complement_generators)
+        + tuple(("Eichler", label) for label in eichler.index_set())
+        + tuple(("discriminant-lift", label) for label in discriminant_lifts.index_set()))
 
         def generator(label):
             kind, datum = label
@@ -983,9 +971,7 @@ class TwoUEichlerModel(SageObject):
         base stabilizer.  The approximate-oracle property then proves the
         returned finite family generates the whole orthogonal group.
         """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         from dzack_research.preamble.categories.sets.indexed_families import (
             finite_indexed_family,
         )
@@ -1011,7 +997,7 @@ class TwoUEichlerModel(SageObject):
                 continue
             selected_labels.append(label)
             transporters[label] = transporter
-        orbit_labels = finite_ordered_set(tuple(selected_labels))
+        orbit_labels = FiniteOrderedSets()(tuple(selected_labels))
         orbit_representatives = finite_indexed_family(
             orbit_labels,
             lambda label: representatives[label],
@@ -1024,11 +1010,9 @@ class TwoUEichlerModel(SageObject):
         )
         approximate = self.approximate_generating_family()
         stabilizer = orthogonal_group.vector_stabilizer_generators(base_vector)
-        generation_labels = finite_ordered_set(
-            tuple(("approximate", label) for label in approximate.index_set())
-            + tuple(("stabilizer", generator) for generator in stabilizer)
-            + tuple(("transporter", label) for label in orbit_labels)
-        )
+        generation_labels = FiniteOrderedSets()(tuple(("approximate", label) for label in approximate.index_set())
+        + tuple(("stabilizer", generator) for generator in stabilizer)
+        + tuple(("transporter", label) for label in orbit_labels))
 
         def generator(label):
             kind, datum = label

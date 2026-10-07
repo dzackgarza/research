@@ -52,7 +52,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -228,7 +227,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
         selected_labels = (
             self.algebra_generating_set()
             if labels is None
-            else finite_ordered_set(labels)
+            else FiniteOrderedSets()(labels)
         )
         generating = self.generating_module()
         if selected_labels == self.algebra_generating_set():
@@ -262,8 +261,8 @@ def _finite_labels(labels):
     if labels in FiniteOrderedSets():
         return labels
     if isinstance(labels, int):
-        return finite_ordered_set(range(labels))
-    return finite_ordered_set(labels)
+        return FiniteOrderedSets()(range(labels))
+    return FiniteOrderedSets()(labels)
 
 
 def _variable_names(labels) -> tuple[str, ...]:
@@ -1093,7 +1092,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             if degree < 0:
                 raise ValueError(f"graded pieces of {self} are in degrees n >= 0, but n = {degree}")
             if degree == 0:
-                labels = finite_ordered_set((0,))
+                labels = FiniteOrderedSets()((0,))
             else:
                 labels = self.graded_piece(degree).module_generating_set()
             return indexed_family(

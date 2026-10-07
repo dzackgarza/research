@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
 from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
@@ -771,7 +771,7 @@ class DistinguishedAffineCovers(OwnedCategory):
             f"the opens D(f_i) for f_i in {values} do not cover {scheme}: these elements do not "
             f"generate the unit ideal of {algebra}"
         )
-        labels = finite_ordered_set(range(len(values)))
+        labels = FiniteOrderedSets()(range(len(values)))
         defining_elements = finite_indexed_family(
             labels, lambda label: values[int(labels.ranking_map()(label))],
             name="Defining elements of the distinguished opens",
@@ -879,9 +879,7 @@ class DistinguishedAffineCovers(OwnedCategory):
             assert labels, (
                 f"an intersection of charts of {self} needs at least one chart, but none were named"
             )
-            return finite_ordered_set(
-                tuple(sorted(labels, key=self.atlas().ranking_map()))
-            )
+            return FiniteOrderedSets()(tuple(sorted(labels, key=self.atlas().ranking_map())))
 
         def intersection(self, *indices):
             r"""Return ``D(prod_i f_i)``, the intersection of the selected charts."""
@@ -915,7 +913,7 @@ class DistinguishedAffineCovers(OwnedCategory):
             labels.extend((index,) for index in self.atlas())
             labels.extend(combinations(tuple(self.atlas()), 2))
             return PosetCategory(
-                finite_ordered_set(tuple(labels)),
+                FiniteOrderedSets()(tuple(labels)),
                 le=lambda finer, coarser: set(coarser).issubset(set(finer)),
             )
 

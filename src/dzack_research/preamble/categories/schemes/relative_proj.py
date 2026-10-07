@@ -52,9 +52,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -636,7 +634,7 @@ class RelativeProjectivizations(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         base_scheme = Schemes(self.base_ring()).base_scheme()
-        module = self.base_ring().free_module(finite_ordered_set(("e",)))
+        module = self.base_ring().free_module(FiniteOrderedSets()(("e",)))
         return base_scheme.associated_module_sheaf(module).projectivization().arrow().domain()
 
     def _exact_object(self, source_sheaf):
@@ -2048,7 +2046,7 @@ def _projectivization_map(sheaf_morphism):
                                 target_label,
                             )
 
-    fine_indices = finite_ordered_set(tuple(fine_data))
+    fine_indices = FiniteOrderedSets()(tuple(fine_data))
     local_opens = {}
     coarse_indices = {}
     for fine_index in fine_indices:
@@ -2425,11 +2423,11 @@ def _projectivization_chart_family(module_datum, scheme_base_ring):
         )
         roles = ((first_index, "empty"),)
         return finite_indexed_family(
-            finite_ordered_set(roles),
+            FiniteOrderedSets()(roles),
             lambda _role: empty,
             name="The empty affine atlas of a zero sheaf projectivization",
         )
-    index_set = finite_ordered_set(roles)
+    index_set = FiniteOrderedSets()(roles)
     return finite_indexed_family(
         index_set,
         lambda role: _chart_algebra(
@@ -3007,7 +3005,7 @@ def _affine_projectivization(sheaf):
         return _exact_relative_projectivization(sheaf)
     match int(labels.cardinality()):
         case 0:
-            empty_labels = finite_ordered_set(("empty",))
+            empty_labels = FiniteOrderedSets()(("empty",))
             empty = scheme.closed_subscheme(scheme.coordinate_algebra().one())
             charts = finite_indexed_family(
                 empty_labels,

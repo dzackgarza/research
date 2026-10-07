@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
@@ -98,12 +97,10 @@ class _FiniteTopologyData(SageObject):
     def open_subsets(self, space):
         r"""The open sets of ``space``, the points of ``space`` at the members of each open of ``tau``."""
         power = space.power_set()
-        return finite_ordered_set(
-            tuple(
-                power(tuple(space(member) for member in members))
-                for members in self._open_member_families
-            )
-        )
+        return FiniteOrderedSets()(tuple(
+            power(tuple(space(member) for member in members))
+            for members in self._open_member_families
+        ))
 
     def is_open_subset(self, space, candidate) -> bool:
         r"""Whether the subset ``candidate`` of ``space`` is the image of an open of ``tau``."""

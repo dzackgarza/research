@@ -11,7 +11,7 @@ from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -195,13 +195,9 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
         ):
             self._lattice = lattice
             dual = lattice.dual_module()
-            self._halfspace_covectors = finite_ordered_set(
-                tuple(dual(covector) for covector in halfspace_covectors)
-            )
-            self._equation_covectors = finite_ordered_set(
-                tuple(dual(covector) for covector in equation_covectors)
-            )
-            self._wall_roots = None if wall_roots is None else finite_ordered_set(tuple(wall_roots))
+            self._halfspace_covectors = FiniteOrderedSets()(tuple(dual(covector) for covector in halfspace_covectors))
+            self._equation_covectors = FiniteOrderedSets()(tuple(dual(covector) for covector in equation_covectors))
+            self._wall_roots = None if wall_roots is None else FiniteOrderedSets()(tuple(wall_roots))
             self._complete = complete
             labels = tuple(dual.module_generating_set())
 
@@ -350,15 +346,11 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
 
         def primitive_rays(self):
             lattice = self.ambient_lattice()
-            return finite_ordered_set(
-                tuple(_owned_vector(lattice, _primitive_integral_coordinates(ray)) for ray in self._engine.rays())
-            )
+            return FiniteOrderedSets()(tuple(_owned_vector(lattice, _primitive_integral_coordinates(ray)) for ray in self._engine.rays()))
 
         def lineality_generators(self):
             lattice = self.ambient_lattice()
-            return finite_ordered_set(
-                tuple(_owned_vector(lattice, _primitive_integral_coordinates(line)) for line in self._engine.lines())
-            )
+            return FiniteOrderedSets()(tuple(_owned_vector(lattice, _primitive_integral_coordinates(line)) for line in self._engine.lines()))
 
         def face_on_covector(self, covector):
             r"""Intersect this cone with the homogeneous wall ``covector=0``."""
@@ -406,13 +398,11 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             """
             dimension = int(dimension)
             if dimension < 0 or dimension > int(self.dimension()):
-                return finite_ordered_set(())
-            return finite_ordered_set(
-                tuple(
-                    self._face_from_engine_face(face)
-                    for face in self._engine.faces(dimension)
-                )
-            )
+                return FiniteOrderedSets()(())
+            return FiniteOrderedSets()(tuple(
+                self._face_from_engine_face(face)
+                for face in self._engine.faces(dimension)
+            ))
 
         def ambient_dimension(self):
             r"""Return the rank of the ambient lattice, the dimension of ``L tensor QQ``."""
@@ -559,23 +549,19 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
 
         def nonempty_faces(self):
             r"""Return every geometric face, from the zero face through this cone."""
-            return finite_ordered_set(
-                tuple(
-                    face
-                    for dimension in range(int(self.dimension()) + 1)
-                    for face in self.faces(dimension)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                face
+                for dimension in range(int(self.dimension()) + 1)
+                for face in self.faces(dimension)
+            ))
 
         def facet_covectors(self):
             if self._engine.dim() <= 0:
-                return finite_ordered_set(())
-            return finite_ordered_set(
-                tuple(
-                    self._covector_from_engine_hrepresentation(inequality)
-                    for inequality in self._engine.inequalities()
-                )
-            )
+                return FiniteOrderedSets()(())
+            return FiniteOrderedSets()(tuple(
+                self._covector_from_engine_hrepresentation(inequality)
+                for inequality in self._engine.inequalities()
+            ))
 
         def facets(self):
             from dzack_research.preamble.categories.sets.indexed_families import (
@@ -597,7 +583,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             lattice = self.ambient_lattice()
             rows = [tuple(int(entry) for entry in ray.to_tuple()) for ray in self.primitive_rays()]
             cone = SageCone(rows)
-            return finite_ordered_set(tuple(_owned_vector(lattice, row) for row in cone.Hilbert_basis()))
+            return FiniteOrderedSets()(tuple(_owned_vector(lattice, row) for row in cone.Hilbert_basis()))
 
         def ideal_rays(self):
             r"""Return the isotropic extremal rays when the ambient module is a lattice."""
@@ -609,7 +595,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                     f"{self} has no isotropic rays: it lies in {lattice}, which has no "
                     f"quadratic form; it is in {lattice.category()}"
                 )
-            return finite_ordered_set(tuple(ray for ray in self.primitive_rays() if lattice.q(ray) == 0))
+            return FiniteOrderedSets()(tuple(ray for ray in self.primitive_rays() if lattice.q(ray) == 0))
 
         def timelike_rays(self):
             r"""Return the positive-square extremal rays in the repository's hyperbolic convention."""
@@ -621,7 +607,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                     f"{self} has no timelike rays: it lies in {lattice}, which has no "
                     f"quadratic form; it is in {lattice.category()}"
                 )
-            return finite_ordered_set(tuple(ray for ray in self.primitive_rays() if lattice.q(ray) > 0))
+            return FiniteOrderedSets()(tuple(ray for ray in self.primitive_rays() if lattice.q(ray) > 0))
 
         def lies_in_closed_positive_cone(self, timelike) -> bool:
             r"""Whether this cone lies in one closed sheet of a signature ``(1,n)`` light cone.

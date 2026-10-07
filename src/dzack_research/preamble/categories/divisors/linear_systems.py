@@ -27,9 +27,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _projective_space,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
@@ -636,7 +634,7 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
         monomials.append(monomial)
         exponent_data[monomial] = exponents
     return base._fresh_free_module_on(
-        finite_ordered_set(tuple(monomials)),
+        FiniteOrderedSets()(tuple(monomials)),
         _extra_categories=(HomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data={
             "section_scheme": projective_scheme,
@@ -716,7 +714,7 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         exponent_data[monomial] = tuple(tuple(block) for block in blocks)
 
     return base._fresh_free_module_on(
-        finite_ordered_set(tuple(monomials)),
+        FiniteOrderedSets()(tuple(monomials)),
         _extra_categories=(MultihomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data={
             "section_scheme": projective_product,
@@ -877,7 +875,7 @@ def _projective_section_restriction(
                 monomials.append(monomial)
 
     ambient = base._fresh_free_module_on(
-        finite_ordered_set(tuple(monomials)),
+        FiniteOrderedSets()(tuple(monomials)),
     )
     ambient_map = source.module_category().Mor(source, ambient)(
         {
@@ -1036,7 +1034,7 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     )
     source = line_bundle.global_sections()
     target = base._fresh_free_module_on(
-        finite_ordered_set(local_monomials),
+        FiniteOrderedSets()(local_monomials),
         _extra_categories=(ProjectiveJetSpaces(base),),
         _extra_construction_data={
             "jet_line_bundle": line_bundle,

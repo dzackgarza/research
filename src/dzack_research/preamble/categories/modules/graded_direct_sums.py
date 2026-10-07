@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenComponentPresentation,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
@@ -94,7 +94,7 @@ class GradedDirectSumElement(ModuleElement):
         self._components = normalized
 
     def homogeneous_components(self):
-        support = finite_ordered_set(tuple(self._components))
+        support = FiniteOrderedSets()(tuple(self._components))
         return finite_indexed_family(
             support,
             self._components.__getitem__,

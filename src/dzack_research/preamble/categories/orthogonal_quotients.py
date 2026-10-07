@@ -3,7 +3,7 @@ from sage.libs.gap.libgap import libgap
 
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import Subgroups
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Set, Sets
 
@@ -63,9 +63,7 @@ class OrthogonalCharacterQuotient:
                         f"O(L) -> O(A_L) for L = {self.lattice}, but {target} is not a "
                         f"subgroup of O(A_L) = {self._discriminant_group}"
                     )
-        signs = finite_ordered_set(
-            (self.lattice.base_ring()(-1), self.lattice.base_ring()(1))
-        )
+        signs = FiniteOrderedSets()((self.lattice.base_ring()(-1), self.lattice.base_ring()(1)))
         if self.determinant_kernel:
             labels.append("determinant")
             factors["determinant"] = signs
@@ -75,7 +73,7 @@ class OrthogonalCharacterQuotient:
             self._real_spinor_norm = self.lattice.O_plus().preimage_morphism()
             labels.append("spinor")
             factors["spinor"] = signs
-        self._image_labels = finite_ordered_set(tuple(labels))
+        self._image_labels = FiniteOrderedSets()(tuple(labels))
         self._image_space = Sets().product(
             finite_indexed_family(
                 self._image_labels,
@@ -247,12 +245,10 @@ class OrthogonalCharacterQuotient:
                 f"character image of O({self.lattice}): they cover {len(covered)} of its "
                 f"elements"
             )
-        return finite_ordered_set(
-            tuple(
-                self._witnesses[representative]
-                for representative in quotient_representatives
-            )
-        )
+        return FiniteOrderedSets()(tuple(
+            self._witnesses[representative]
+            for representative in quotient_representatives
+        ))
 
     def splitting_isometries(self, stabilizer_generators):
         r"""Return one lift per ``Stab\image(O(L))/Gamma`` double coset."""
@@ -285,7 +281,7 @@ class OrthogonalCharacterQuotient:
                     f"of O({self.lattice})"
                 )
             representatives.append(self._witnesses[quotient_representative])
-        return finite_ordered_set(tuple(representatives))
+        return FiniteOrderedSets()(tuple(representatives))
 
     def witness_meets_subgroup(self, witness, stabilizer_generators) -> bool:
         return self.adjust_witness_into_subgroup(witness, stabilizer_generators) is not None
@@ -355,9 +351,7 @@ def _finite_subgroup_vector_orbit_representatives(subgroup, square):
         lattice.vectors_of_square(square),
         lambda automorphism, vector: automorphism(vector),
     )
-    return finite_ordered_set(
-        tuple(orbit.representative() for orbit in action.orbits())
-    )
+    return FiniteOrderedSets()(tuple(orbit.representative() for orbit in action.orbits()))
 
 
 def _subgroup_vector_orbit_representatives(subgroup, square):
@@ -371,7 +365,7 @@ def _subgroup_vector_orbit_representatives(subgroup, square):
             for splitting in quotient.splitting_isometries(stabilizer):
                 yield splitting(representative)
 
-    return finite_ordered_set(split_representatives())
+    return FiniteOrderedSets()(split_representatives())
 
 
 def _subgroup_vector_equivalence_witness(subgroup, left, right):
@@ -430,7 +424,7 @@ def _subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
             splitting.transport_isotropic_object(representative)
             for splitting in quotient.splitting_isometries(stabilizer)
         )
-    return finite_ordered_set(tuple(representatives))
+    return FiniteOrderedSets()(tuple(representatives))
 
 
 def _subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False):

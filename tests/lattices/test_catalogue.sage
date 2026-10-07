@@ -3,13 +3,13 @@ from dzack_research.preamble.all import *
 
 def test_named_surface_lattices_have_their_expected_signatures_and_ranks() -> None:
     assert NamedLattices.Tco.module_rank() == 11
-    assert NamedLattices.Tco.signature_pair() == signature_pair(2, 9)
+    assert NamedLattices.Tco.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 9)
     assert NamedLattices.TEn.module_rank() == 12
-    assert NamedLattices.TEn.signature_pair() == signature_pair(2, 10)
+    assert NamedLattices.TEn.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 10)
     assert NamedLattices.TdP.module_rank() == 20
-    assert NamedLattices.TdP.signature_pair() == signature_pair(2, 18)
+    assert NamedLattices.TdP.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 18)
     assert NamedLattices.LK3.module_rank() == 22
-    assert NamedLattices.LK3.signature_pair() == signature_pair(3, 19)
+    assert NamedLattices.LK3.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(3, 19)
     assert Lattices.TEn is NamedLattices.TEn
     assert Lattices.TdP is NamedLattices.TdP
     assert Lattices.LK3 is NamedLattices.LK3
@@ -101,11 +101,11 @@ def test_remaining_named_embeddings_are_primitive_and_form_preserving() -> None:
 
 def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
     candidates = signature_orthogonal_sums(
-        signature_pair(0, 4), (NamedLattices.A1, NamedLattices.D4)
+        Cat().product((Cardinalities(), Cardinalities()))(0, 4), (NamedLattices.A1, NamedLattices.D4)
     )
     assert candidates.cardinality() == 2
     assert all(
-        candidate.signature_pair() == signature_pair(0, 4) for candidate in candidates
+        candidate.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 4) for candidate in candidates
     )
 
 

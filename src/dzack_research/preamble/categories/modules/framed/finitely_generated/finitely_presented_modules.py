@@ -52,7 +52,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
@@ -120,7 +119,7 @@ def _finite_generating_family(module_generators):
             "it is indexed by an infinite set"
         )
         return module_generators
-    generators = finite_ordered_set(module_generators)
+    generators = FiniteOrderedSets()(module_generators)
     positions = Sets.Δ[int(generators.cardinality()) - 1]
     return finite_indexed_family(
         positions,
@@ -839,7 +838,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             module its annihilator rather than only the module its own.
             """
             ring = self.base_ring()
-            coordinate = finite_ordered_set(("r",))
+            coordinate = FiniteOrderedSets()(("r",))
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
             line = _fresh_free_module_on(self.presentation().codomain().base_ring(), coordinate)
             multiplication = line.module_category().Mor(line, self)({"r": self(element)})
@@ -952,9 +951,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             relation_matrix = _engine_matrix(_relation_morphism(self))
             pivot_generators = frozenset(relation_matrix.pivot_rows())
             labels = self.module_generating_set()
-            positions = finite_ordered_set(
-                Sets.Δ[int(self.number_of_module_generators()) - 1]
-            ).filtered(
+            positions = FiniteOrderedSets()(Sets.Δ[int(self.number_of_module_generators()) - 1]).filtered(
                 lambda position: int(position) not in pivot_generators,
                 name="Vector-space basis generator positions",
             )
@@ -1273,8 +1270,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             diagonal_backend, target_change_backend, source_change_backend = self._selected_presentation_smith_backend()
 
-            source_labels = finite_ordered_set(range(int(presentation.domain().module_generating_set().cardinality())))
-            target_labels = finite_ordered_set(range(int(presentation.codomain().module_generating_set().cardinality())))
+            source_labels = FiniteOrderedSets()(range(int(presentation.domain().module_generating_set().cardinality())))
+            target_labels = FiniteOrderedSets()(range(int(presentation.codomain().module_generating_set().cardinality())))
             normalized_source = _cover_free_module(self, source_labels)
             normalized_target = _cover_free_module(self, target_labels)
 
@@ -1365,7 +1362,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             r"""Return the indexed family of non-unit invariant factors."""
 
             invariants = self._invariants_with_units()
-            positions = finite_ordered_set(Sets.Δ[len(invariants) - 1])
+            positions = FiniteOrderedSets()(Sets.Δ[len(invariants) - 1])
             retained = positions.filtered(
                 lambda position: not invariants[int(position)].is_unit(),
             )
@@ -1513,7 +1510,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized = normalization.codomain()
             invariants = self._invariants_with_units()
 
-            positions = finite_ordered_set(Sets.Δ[len(invariants) - 1])
+            positions = FiniteOrderedSets()(Sets.Δ[len(invariants) - 1])
             retained_positions = positions.filtered(
                 lambda position: not invariants[int(position)].is_unit(),
             )
@@ -1634,15 +1631,13 @@ def _module_invariant_factor_form(module):
     diagonal_presentation = presentation_iso.codomain().arrow()
     invariants = module._invariants_with_units()
 
-    invariant_positions = finite_ordered_set(Sets.Δ[len(invariants) - 1])
+    invariant_positions = FiniteOrderedSets()(Sets.Δ[len(invariants) - 1])
     retained_positions = invariant_positions.filtered(
         lambda position: not invariants[int(position)].is_unit(),
     )
 
     ring = module.base_ring()
-    reduced_labels = finite_ordered_set(
-        Sets.Δ[int(retained_positions.cardinality()) - 1]
-    )
+    reduced_labels = FiniteOrderedSets()(Sets.Δ[int(retained_positions.cardinality()) - 1])
     reduced_target = _cover_free_module(module, reduced_labels)
     relation_labels = reduced_labels.filtered(
         lambda reduced_position: invariants[int(retained_positions[int(reduced_position)])] != ring.zero(),
@@ -2202,7 +2197,7 @@ def _resolution_over_degrees(module, terms, differentials, augmentation, zero):
     ordered sets, and the terms and differentials are families over them.
     """
 
-    degrees = finite_ordered_set(Sets.Δ[max(terms)])
+    degrees = FiniteOrderedSets()(Sets.Δ[max(terms)])
     carrying = degrees.filtered(
         lambda degree: int(degree) in differentials,
     )

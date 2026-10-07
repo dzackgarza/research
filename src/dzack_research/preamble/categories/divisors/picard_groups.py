@@ -14,7 +14,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category_bases import Category
 
 
@@ -56,7 +56,7 @@ class PicardGroups(Category):
 
     def trivial(self, scheme):
         r"""The zero Picard group of ``scheme``, the free group on no classes."""
-        return self.free(scheme, finite_ordered_set(()))
+        return self.free(scheme, FiniteOrderedSets()(()))
 
     def projective_bundle(self, projective_space, base_picard_group):
         r"""\(\operatorname{Pic}(\mathbb{P}^n_S) = \operatorname{Pic}(S) \oplus \mathbb{Z}[\mathcal{O}(1)]\).
@@ -76,7 +76,7 @@ class PicardGroups(Category):
             f"of the base {projective_space.base_scheme()}"
         )
         integers = _integers()
-        hyperplane = integers.free_module(finite_ordered_set(("O(1)",)))
+        hyperplane = integers.free_module(FiniteOrderedSets()(("O(1)",)))
         return Modules(integers).biproduct(
             (base_picard_group, hyperplane),
             extra_categories=(self,),

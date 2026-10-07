@@ -61,9 +61,9 @@ class IndexedFamily[IndexT, ValueT]:
         Unverified specimen: a family chooses its value once, not each time
         a Python list is used to address the same point of its index set::
 
-            sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-            sage: labels = finite_ordered_set(([0], [1]))
-            sage: family = indexed_family(labels, lambda label: finite_ordered_set((label[0],)))
+            sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+            sage: labels = FiniteOrderedSets()(([0], [1]))
+            sage: family = indexed_family(labels, lambda label: FiniteOrderedSets()((label[0],)))
             sage: family.value([0]) is family.value([0])
             True
         """
@@ -271,15 +271,13 @@ def finite_indexed_family_from_values(
     here, at the indexed-family owner; mathematical consumers only state the
     index set they require.
     """
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_set,
-    )
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
     match values:
         case IndexedFamily():
             match index_set:
                 case None:
-                    labels = finite_ordered_set(tuple(values.index_set()))
+                    labels = FiniteOrderedSets()(tuple(values.index_set()))
                 case _:
                     labels = index_set
             family = indexed_family(labels, values.value, name=name)
@@ -295,7 +293,7 @@ def finite_indexed_family_from_values(
         case Mapping():
             match index_set:
                 case None:
-                    labels = finite_ordered_set(tuple(values))
+                    labels = FiniteOrderedSets()(tuple(values))
                 case _:
                     labels = index_set
             family = indexed_family(labels, values.__getitem__, name=name)
@@ -304,7 +302,7 @@ def finite_indexed_family_from_values(
             entries = tuple(values)
             match index_set:
                 case None:
-                    labels = finite_ordered_set(range(len(entries)))
+                    labels = FiniteOrderedSets()(range(len(entries)))
                 case _:
                     labels = index_set
             family = indexed_family(

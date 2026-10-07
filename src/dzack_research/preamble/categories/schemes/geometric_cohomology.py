@@ -26,9 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -202,7 +200,7 @@ def _affine_geometric_cohomology_complex(sheaf, cover=None):
             )
     module = sheaf.global_sections()
     base = module.base_ring()
-    zero = base._fresh_free_module_on(finite_ordered_set(()))
+    zero = base._fresh_free_module_on(FiniteOrderedSets()(()))
     return CochainComplexes(base)(
         {0: module, 1: zero},
         {0: module.module_category().Mor(module, zero).zero()},
@@ -255,7 +253,7 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
 
         point = Schemes(_own_ring(SageQQ)).base_scheme()
         return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
+            FiniteOrderedSets()(("H0",)),
             _extra_categories=(self,),
             _extra_construction_data=_integral_topology_construction_data(
                 point,
@@ -316,7 +314,7 @@ class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
 
         point = Schemes(_own_ring(SageQQ)).base_scheme()
         return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
+            FiniteOrderedSets()(("H0",)),
             _extra_categories=(self,),
             _extra_construction_data=_integral_topology_construction_data(
                 point,
@@ -343,7 +341,7 @@ class ResolutionIntegralCohomologyGroups(OwnedCategoryOverBaseRing):
 
         point = Schemes(_own_ring(SageQQ)).base_scheme()
         return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
+            FiniteOrderedSets()(("H0",)),
             _extra_categories=(self,),
             _extra_construction_data=_integral_topology_construction_data(
                 point,
@@ -370,7 +368,7 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
 
         projective_line = ToricSchemes(_own_ring(SageQQ)).an_object()
         return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
+            FiniteOrderedSets()(("H0",)),
             _extra_categories=(self,),
             _extra_construction_data=_integral_topology_construction_data(
                 projective_line,
@@ -483,7 +481,7 @@ def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
     mathematical set elements rather than Python tuple/integer payloads.
     """
     bidegrees = Sets().product((NN, NN))
-    labels = finite_ordered_set(tuple(bidegrees((NN(p), NN(degree - p))) for p in p_values if 0 <= degree - p <= q_bound))
+    labels = FiniteOrderedSets()(tuple(bidegrees((NN(p), NN(degree - p))) for p in p_values if 0 <= degree - p <= q_bound))
     return finite_indexed_family(
         labels,
         lambda bidegree: NN(hodge_data.hodge_number(int(bidegree[0]), int(bidegree[1]))),
@@ -610,7 +608,7 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
         for weight in candidate_weights
     }
     pieces = {weight: piece for weight, piece in pieces.items() if int(piece.dimension()) != 0}
-    weights = finite_ordered_set(tuple(pieces))
+    weights = FiniteOrderedSets()(tuple(pieces))
     base = scheme.scheme_base_ring()
     weight_pieces = finite_indexed_family(
         weights,
@@ -626,7 +624,7 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
     }
     if weights.cardinality() == 0:
         total = base._fresh_free_module_on(
-            finite_ordered_set(()),
+            FiniteOrderedSets()(()),
             _extra_categories=(ToricGeometricLineBundleCohomologySpaces(base),),
             _extra_construction_data=construction_data,
         )
@@ -701,9 +699,9 @@ class _QuarticK3IntegralTopology(SageObject):
             return self.middle_cohomology_lattice()
         if degree in (0, 4):
             return integers._fresh_free_module_on(
-                finite_ordered_set((f"H{degree}",)),
+                FiniteOrderedSets()((f"H{degree}",)),
             )
-        return integers._fresh_free_module_on(finite_ordered_set(()))
+        return integers._fresh_free_module_on(FiniteOrderedSets()(()))
 
     @cached_method
     def cup_product(self, left_degree, right_degree):
@@ -908,7 +906,7 @@ def _free_integral_topology_group(
     integers = _own_ring(SageZZ)
     category = IntegralSingularCohomologyGroups(integers) if category is None else category
     return integers._fresh_free_module_on(
-        finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
+        FiniteOrderedSets()(tuple(f"H{degree}_{index}" for index in range(rank))),
         _extra_categories=(category,),
         _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization, theory),
     )
@@ -1233,7 +1231,7 @@ def _toric_integral_singular_cohomology(scheme, degree):
     )
     if degree % 2:
         return integers._fresh_free_module_on(
-            finite_ordered_set(()),
+            FiniteOrderedSets()(()),
             _extra_categories=(ToricIntegralSingularCohomologyGroups(integers),),
             _extra_construction_data=construction_data,
         )

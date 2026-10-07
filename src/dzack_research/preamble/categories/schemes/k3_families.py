@@ -43,9 +43,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -60,7 +58,7 @@ class HorikawaK3Family(SageObject):
             f"the Horikawa family of K3 double covers of P^1 x P^1 needs a base ring of "
             f"characteristic zero, but {base} has characteristic {base.characteristic()}"
         )
-        labels = finite_ordered_set(("left", "right"))
+        labels = FiniteOrderedSets()(("left", "right"))
         line = ProjectiveSpaces(base)(1, names=("x0", "x1"))
         factors = finite_indexed_family(
             labels,
@@ -331,7 +329,7 @@ class _HorikawaK3DoubleCoverEngine:
         return -self.base_ring().one()
 
     def fixed_subschemes(self):
-        labels = finite_ordered_set(("enriques", "nikulin"))
+        labels = FiniteOrderedSets()(("enriques", "nikulin"))
         fixed = {
             "enriques": self.enriques_lift().fixed_subscheme(),
             "nikulin": self.nikulin_lift().fixed_subscheme(),

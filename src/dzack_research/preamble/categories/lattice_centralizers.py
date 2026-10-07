@@ -31,7 +31,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -148,9 +148,7 @@ class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
             )
         self._square = lattice.base_ring()(square)
         centralizer = isometry.centralizer_group()
-        points = finite_ordered_set(
-            tuple(lattice.vectors_of_square(self._square))
-        )
+        points = FiniteOrderedSets()(tuple(lattice.vectors_of_square(self._square)))
         self._action = FiniteGSets(centralizer)(
             points,
             lambda automorphism, vector: automorphism(vector),
@@ -185,7 +183,7 @@ class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
         return self.action()(vector)
 
     def representatives(self):
-        return finite_ordered_set(tuple(orbit.representative() for orbit in self))
+        return FiniteOrderedSets()(tuple(orbit.representative() for orbit in self))
 
     def orbit_of(self, vector):
         return self.action().orbits().orbit_of(self.point(vector))
@@ -249,10 +247,10 @@ class EquivariantSublatticeFlag(SageObject):
         return self.isometry().domain()
 
     def terms(self):
-        return finite_ordered_set(self._terms)
+        return FiniteOrderedSets()(self._terms)
 
     def ranks(self):
-        return finite_ordered_set(tuple(term.module_rank() for term in self._terms))
+        return FiniteOrderedSets()(tuple(term.module_rank() for term in self._terms))
 
     def __repr__(self) -> str:
         return f"Equivariant sublattice flag of ranks {tuple(self.ranks())} in {self.lattice()}"
@@ -286,7 +284,7 @@ class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
         self._isometry = isometry
         self._candidate_action = action
         self._equality = equality
-        self._points = finite_ordered_set(candidates)
+        self._points = FiniteOrderedSets()(candidates)
 
         def acted_point(automorphism, candidate):
             image = self.act(automorphism, candidate)
@@ -331,7 +329,7 @@ class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
         return matches[0]
 
     def representatives(self):
-        return finite_ordered_set(tuple(orbit.representative() for orbit in self))
+        return FiniteOrderedSets()(tuple(orbit.representative() for orbit in self))
 
     def orbit_of(self, candidate):
         return self.action().orbits().orbit_of(self.point(candidate))
@@ -410,7 +408,7 @@ class CyclotomicDecomposition(SageObject):
                     f"{proper_divisor}-th power is the identity of {lattice}"
                 )
 
-        self._divisors = finite_ordered_set(tuple(divisors(self._order)))
+        self._divisors = FiniteOrderedSets()(tuple(divisors(self._order)))
         self._summands = finite_indexed_family(
             self._divisors,
             lambda divisor: isometry.cyclotomic_summand(int(divisor)),
@@ -423,7 +421,7 @@ class CyclotomicDecomposition(SageObject):
                 f"{self._order}, has rank zero; for an isometry of finite order they "
                 f"span L tensor QQ"
             )
-        self._nonzero_divisors = finite_ordered_set(nonzero)
+        self._nonzero_divisors = FiniteOrderedSets()(nonzero)
 
         lattice = self.lattice()
         total_rank = sum(int(self._summands[divisor].module_rank()) for divisor in self._nonzero_divisors)
@@ -1010,7 +1008,7 @@ class IsometryPrimitiveExtension:
         gluing = glue.domain()
         into_invariant = gluing.inclusion()
         into_coinvariant = glue.codomain().inclusion()
-        return finite_ordered_set(tuple((into_invariant(element), into_coinvariant(glue(element))) for element in gluing.elements()))
+        return FiniteOrderedSets()(tuple((into_invariant(element), into_coinvariant(glue(element))) for element in gluing.elements()))
 
     def _discriminant_action(self, automorphism, ambient, element):
         r"""Return the image of a class of ``ambient`` under ``Disc(automorphism)``.

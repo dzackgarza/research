@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import _engine_ele
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -104,7 +103,7 @@ class RegularPolytopes(OwnedCategory):
         )
         return _object_of(
             self,
-            schlafli_bonds=finite_ordered_set(bonds),
+            schlafli_bonds=FiniteOrderedSets()(bonds),
             symmetry_coxeter_diagram=diagram,
         )
 
@@ -312,44 +311,38 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
         def vertices(self):
             if self.is_lattice_polytope():
-                return finite_ordered_set(
-                    tuple(
-                        self.ambient_lattice()(
-                            tuple(
-                                self._owned_integral_coordinate(coordinate)
-                                for coordinate in vertex
-                            )
-                        )
-                        for vertex in self._engine_polyhedron().vertices()
-                    )
-                )
-            rationals = _own_ring(SageQQ)
-            return finite_ordered_set(
-                tuple(
-                    self.ambient_space()(
+                return FiniteOrderedSets()(tuple(
+                    self.ambient_lattice()(
                         tuple(
-                            self._owned_rational_coordinate(coordinate)
+                            self._owned_integral_coordinate(coordinate)
                             for coordinate in vertex
-                        ),
+                        )
                     )
                     for vertex in self._engine_polyhedron().vertices()
+                ))
+            rationals = _own_ring(SageQQ)
+            return FiniteOrderedSets()(tuple(
+                self.ambient_space()(
+                    tuple(
+                        self._owned_rational_coordinate(coordinate)
+                        for coordinate in vertex
+                    ),
                 )
-            )
+                for vertex in self._engine_polyhedron().vertices()
+            ))
 
         def n_vertices(self):
             return _own_ring(SageZZ)(int(self._engine_polyhedron().n_vertices()))
 
         def facets(self):
             r"""Return the codimension-one faces as owned polytopes."""
-            return finite_ordered_set(
-                tuple(
-                    _convex_polytope(
-                        engine_polyhedron=facet.as_polyhedron(),
-                        lattice=self.ambient_lattice(),
-                    )
-                    for facet in self._engine_polyhedron().facets()
+            return FiniteOrderedSets()(tuple(
+                _convex_polytope(
+                    engine_polyhedron=facet.as_polyhedron(),
+                    lattice=self.ambient_lattice(),
                 )
-            )
+                for facet in self._engine_polyhedron().facets()
+            ))
 
         def _engine_normal_fan(self):
             r"""Return the private normal-fan computation object."""
@@ -463,9 +456,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
         def integral_points(self):
 
-            engine_points = finite_ordered_set(
-                tuple(self._engine_polyhedron().integral_points())
-            )
+            engine_points = FiniteOrderedSets()(tuple(self._engine_polyhedron().integral_points()))
             return FiniteOrderedSets().from_indexed(
                 engine_points,
                 lambda point: self.ambient_lattice()(
@@ -646,17 +637,15 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 f"reflexive polytopes of dimension {dimension} do not lie in the lattice "
                 f"{self.ambient_lattice()} of rank {self.ambient_lattice().module_rank()}"
             )
-            return finite_ordered_set(
-                tuple(
-                    self(
-                        tuple(
-                            tuple(int(coordinate) for coordinate in vertex)
-                            for vertex in classified.vertices()
-                        )
+            return FiniteOrderedSets()(tuple(
+                self(
+                    tuple(
+                        tuple(int(coordinate) for coordinate in vertex)
+                        for vertex in classified.vertices()
                     )
-                    for classified in ReflexivePolytopes(dimension)
                 )
-            )
+                for classified in ReflexivePolytopes(dimension)
+            ))
 
         class Polygon(CategoryWithAxiom):
             r"""Lattice polytopes of affine dimension two."""

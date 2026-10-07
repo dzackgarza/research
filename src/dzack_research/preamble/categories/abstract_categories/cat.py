@@ -1275,8 +1275,8 @@ class _FunctorCategory(FixedMorCategory):
     category, whose morphisms are actual natural transformations::
 
         sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: category = DiscreteCategory(points)
         sage: cat = Cat()
         sage: Mor = cat.Mor(category, category)

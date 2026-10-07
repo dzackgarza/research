@@ -39,7 +39,7 @@ class OrderedEnumeratedSets(OwnedCategory):
 
     def an_object(self) -> ObjectOfCategory:
         r"""The ordinal on three points."""
-        return finite_ordered_set((0, 1, 2))
+        return FiniteOrderedSets()((0, 1, 2))
 
     def super_categories(self):
         return [EnumeratedSets()]
@@ -226,7 +226,7 @@ class FiniteOrderedSets(OwnedCategory):
 
     def an_object(self) -> ObjectOfCategory:
         r"""The three-point ordered set."""
-        return finite_ordered_set((0, 1, 2))
+        return FiniteOrderedSets()((0, 1, 2))
 
     def super_categories(self):
         # The owned finiteness, not Sage's: Sage's
@@ -529,10 +529,3 @@ class _EnumeratedImageSet(OrderedEnumeratedSets().ObjectType):
     def is_injective_image(self) -> bool:
         r"""The supplied inverse satisfies ``g(f(a)) = a`` on the source."""
         return True
-
-
-def finite_ordered_set[PointT](
-    elements: Parent | Iterable[PointT],
-) -> FiniteOrderedSets().ObjectType:
-    r"""The finite ordered set a finite set or finitely many points present."""
-    return FiniteOrderedSets()(elements)

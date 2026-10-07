@@ -73,7 +73,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.morphism_matric
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
@@ -2516,7 +2515,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 generators = tuple(group.group_generators())
                 ring = self.base_ring()
                 # The relation morphism r: F(relations) -> F(group generators).
-                target = ring.free_module(finite_ordered_set(generators))
+                target = ring.free_module(FiniteOrderedSets()(generators))
                 if not generators:
                     source = ring.free_module(0)
                     return self(source.module_category().Mor(source, target)({}))
@@ -5199,7 +5198,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             # Thus D = right * A * left^{-1} in matrix notation.
             left_change = normalization.forward().right()
             right_change = normalization.inverse().left()
-            labels = finite_ordered_set((
+            labels = FiniteOrderedSets()((
                 "diagonal",
                 "left_change",
                 "right_change",

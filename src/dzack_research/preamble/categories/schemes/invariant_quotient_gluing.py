@@ -35,9 +35,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     Schemes,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -93,7 +91,7 @@ class FiniteGluedInvariantQuotient(SageObject):
         )
         self._base_ring = base_ring
         self._group = acting_group
-        self._chart_index_set = finite_ordered_set(acted_charts.index_set())
+        self._chart_index_set = FiniteOrderedSets()(acted_charts.index_set())
         self._acted_charts = acted_charts
         for index in self.chart_index_set():
             assert acted_charts[index] in AffineGSchemes(acting_group, base_ring), (
@@ -103,7 +101,7 @@ class FiniteGluedInvariantQuotient(SageObject):
         assert int(self.chart_index_set().cardinality().finite_value()) > 0, (
             f"the quotient by {acting_group} is glued from affine charts, but no charts were given"
         )
-        self._pair_index_set = finite_ordered_set(tuple(combinations(tuple(self.chart_index_set()), 2)))
+        self._pair_index_set = FiniteOrderedSets()(tuple(combinations(tuple(self.chart_index_set()), 2)))
         assert tuple(source_transitions.index_set()) == tuple(self._pair_index_set), (
             f"the gluing maps of the charts must be indexed by the pairs of charts "
             f"{tuple(self._pair_index_set)}, but they are indexed by {tuple(source_transitions.index_set())}"
@@ -560,7 +558,7 @@ def _c2_chartwise_glued_invariant_quotient(
         ),
         name="Acted affine charts of a chartwise C2 quotient",
     )
-    pair_indices = finite_ordered_set(tuple(datum.transition_index_set()))
+    pair_indices = FiniteOrderedSets()(tuple(datum.transition_index_set()))
     source_transitions = finite_indexed_family(
         pair_indices,
         lambda pair: datum.transition_between(*pair),

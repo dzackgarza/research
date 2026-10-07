@@ -24,7 +24,7 @@ def test_cos_pi_over_n_are_the_reflection_cosines_and_one_third_is_not() -> None
     r"""\(1/2 = \cos(\pi/3)\), \((1+\sqrt5)/4 = \cos(\pi/5)\), \(0 = \cos(\pi/2)\);
     \(1/3\) is not \(\cos(\pi/n)\) since \(1/3 + i\sqrt{8}/3\) is not a root of unity
     (its minimal polynomial \(3x^2 - 2x + 3\) is not monic over \(\mathbb Z\))."""
-    cosines = reflection_cosines()
+    cosines = VinbergInvariantMatrices().reflection_cosines()
 
     assert AA(1) / 2 in cosines
     assert (1 + AA(5).sqrt()) / 4 in cosines

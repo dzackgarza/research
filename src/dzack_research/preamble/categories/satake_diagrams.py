@@ -37,7 +37,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.validation import validator
 
@@ -136,7 +136,7 @@ class SatakeDiagrams(OwnedCategory):
             roots=diagram.roots(),
             root_gram=diagram.root_gram_tensor(),
             dynkin_diagram=diagram,
-            black_nodes=finite_ordered_set(tuple(black_nodes)),
+            black_nodes=FiniteOrderedSets()(tuple(black_nodes)),
             involution=involution,
         )
         satake.validate_admissibility(check=False)

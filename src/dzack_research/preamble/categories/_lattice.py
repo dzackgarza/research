@@ -57,7 +57,6 @@ from dzack_research.preamble.categories.sets.cardinals import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
@@ -134,7 +133,7 @@ def _as_generating_set(keys, rank):
     An owned enumerated set is taken as given; a finite literal enumeration
     becomes the finite ordered set it enumerates.
     """
-    selected = keys if keys in EnumeratedSets() else finite_ordered_set(keys)
+    selected = keys if keys in EnumeratedSets() else FiniteOrderedSets()(keys)
     size = cardinal(rank)
     key_cardinality = cardinal(selected.cardinality())
     assert key_cardinality == size, (
@@ -145,7 +144,7 @@ def _as_generating_set(keys, rank):
 
 def _generating_set_from_names(names):
     r"""Return the SR symbols named by the normalized generator ``names``."""
-    name_source = finite_ordered_set(names)
+    name_source = FiniteOrderedSets()(names)
     return FiniteOrderedSets().from_indexed(
         name_source,
         lambda name: SR.var(str(name)),
@@ -511,13 +510,13 @@ class _PairingGram(ModuleElement, Tensor):
 
     def contravariant_index_generating_sets(self):
         r"""Return the empty contravariant index family of this covariant Gram tensor."""
-        return finite_ordered_set(())
+        return FiniteOrderedSets()(())
 
     def covariant_index_generating_sets(self):
         r"""Return the two copies of the lattice's actual selected basis set."""
         keys = _basis_keys(self._module)
         return FiniteOrderedSets().from_indexed(
-            finite_ordered_set((0, 1)),
+            FiniteOrderedSets()((0, 1)),
             lambda _slot: keys,
             name="Gram-tensor index generating sets",
         )
@@ -704,13 +703,13 @@ class _ScaledGram(_PairingGram):
 
     def _inertia(self):
         if self._scalar == 0:
-            return signature_pair(0, 0)
+            return Cat().product((Cardinalities(), Cardinalities()))(0, 0)
         scaled = self._gram._inertia()
         if scaled is None:
             return None
         if self._scalar > 0:
             return scaled
-        return signature_pair(scaled.second(), scaled.first())
+        return Cat().product((Cardinalities(), Cardinalities()))(scaled.second(), scaled.first())
 
     def is_nondegenerate(self):
         r"""Scaling a free-module form preserves injectivity exactly for a regular scalar."""
@@ -798,10 +797,10 @@ class _DiagonalGram(_PairingGram):
         negative_exceptions = sum(1 for value in self._exceptions.values() if value < 0)
         positive_exceptions = sum(1 for value in self._exceptions.values() if value > 0)
         if default > 0:
-            return signature_pair(cardinal(self._module.module_rank()), negative_exceptions)
+            return Cat().product((Cardinalities(), Cardinalities()))(cardinal(self._module.module_rank()), negative_exceptions)
         if default < 0:
-            return signature_pair(positive_exceptions, cardinal(self._module.module_rank()))
-        return signature_pair(positive_exceptions, negative_exceptions)
+            return Cat().product((Cardinalities(), Cardinalities()))(positive_exceptions, cardinal(self._module.module_rank()))
+        return Cat().product((Cardinalities(), Cardinalities()))(positive_exceptions, negative_exceptions)
 
     def is_nondegenerate(self):
         r"""A diagonal correlation is injective exactly when each entry is regular."""
@@ -896,7 +895,7 @@ class _IdentityGram(_DiagonalGram):
 
     def _inertia(self):
         _rational_fraction_field(self.base_ring())
-        return signature_pair(cardinal(self._module.module_rank()), 0)
+        return Cat().product((Cardinalities(), Cardinalities()))(cardinal(self._module.module_rank()), 0)
 
     def dual_gram_on(self, dual_module):
         r"""The identity form is its own metric dual."""
@@ -992,7 +991,7 @@ class _BiproductGram(_PairingGram):
         pairs = tuple(_signature_pair_of_gram(block.gram_tensor()) for block in self._blocks)
         if any(pair is None for pair in pairs):
             return None
-        return signature_pair(
+        return Cat().product((Cardinalities(), Cardinalities()))(
             sum(pair.first() for pair in pairs),
             sum(pair.second() for pair in pairs),
         )
@@ -1102,7 +1101,7 @@ class _TensorProductGram(_PairingGram):
             new_positive = positive * pair.first() + negative * pair.second()
             new_negative = positive * pair.second() + negative * pair.first()
             positive, negative = new_positive, new_negative
-        return signature_pair(positive, negative)
+        return Cat().product((Cardinalities(), Cardinalities()))(positive, negative)
 
     def _latex_(self) -> str:
         return r" \otimes ".join(
@@ -1353,23 +1352,6 @@ def _ordered_fraction_field(ring):
     return _engine_ring(field)
 
 
-def signature_pairs():
-    r"""Return \(\mathbf{Card}\times\mathbf{Card}\), where a signature pair lives.
-
-    An index of inertia can be infinite -- \(\mathbb Z^{(\mathbb N)}\) with
-    its standard form has \((p,q)=(\aleph_0,0)\) -- so each entry is a
-    cardinal and the pair is an object of the product category.
-    """
-
-    return Cat().product((Cardinalities(), Cardinalities()))
-
-
-def signature_pair(positive, negative):
-    r"""Return \((p,q)\) as an object of :func:`signature_pairs`."""
-
-    return signature_pairs().pair(cardinal(positive), cardinal(negative))
-
-
 def _sylvester(gram: Tensor):
     r"""Return $(p,q)$ by Sylvester's law over the represented ordered fraction field."""
     field = _ordered_fraction_field(gram.base_ring())
@@ -1377,7 +1359,7 @@ def _sylvester(gram: Tensor):
     positive, negative, _radical = QuadraticForm(
         field, engine_gram
     ).signature_vector()
-    return signature_pair(int(positive), int(negative))
+    return Cat().product((Cardinalities(), Cardinalities()))(int(positive), int(negative))
 
 
 def _signature_pair_of_gram(gram: Tensor):

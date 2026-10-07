@@ -32,7 +32,7 @@ def test_the_invariants_of_u() -> None:
     assert plane.b(e, f) == 1
     assert plane.b(e + f, e + f) == 2
     assert plane.determinant() == -1
-    assert plane.signature_pair() == signature_pair(1, 1)
+    assert plane.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert plane.is_even()
     assert plane.is_unimodular()
     assert not plane.is_definite()

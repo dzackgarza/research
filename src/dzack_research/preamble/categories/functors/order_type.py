@@ -17,9 +17,9 @@ class _OrderTypeFunctor(Functor):
 
     Unverified source specimen::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         sage: from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-        sage: labels = finite_ordered_set(("a", "b", "c"))
+        sage: labels = FiniteOrderedSets()(("a", "b", "c"))
         sage: three = finite_ordinal_set(3)
         sage: well_orders = WellOrderedSets()
         sage: forward = well_orders.Mor(labels, three)(lambda point: labels.ranking_map()(point))

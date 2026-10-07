@@ -31,9 +31,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_vector,
@@ -108,9 +106,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             self._module_generator_values = tuple(module_generator_values)
             super().__init__(
                 base_ring=ring,
-                module_generating_set=finite_ordered_set(
-                    range(len(self._module_generator_values))
-                ),
+                module_generating_set=FiniteOrderedSets()(range(len(self._module_generator_values))),
                 module_generator_function=self._generator_of_selected_value,
                 subobject_inclusion_factory=_fractional_ideal_inclusion,
                 **rest,

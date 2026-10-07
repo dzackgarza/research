@@ -56,7 +56,7 @@ class Functor:
     functor to the category of injections when applied to a noninjective map::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
         sage: class ProposedInclusion(Functor):
         ....:     def __init__(self):
@@ -65,7 +65,7 @@ class Functor:
         ....:         return obj
         ....:     def _apply_morphism(self, arrow):
         ....:         return arrow
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: maps = Sets().Mor(points, points)
         sage: swap = maps(lambda point: {"a": "b", "b": "a"}[point])
         sage: proposed = ProposedInclusion()

@@ -100,7 +100,7 @@ def test_natural_sums_of_initial_ordinals_commute_and_omega_one_follows_omega() 
 
 
 def test_order_type_is_a_functor_from_well_orders_to_ord() -> None:
-    labels = finite_ordered_set(("a", "b", "c"))
+    labels = FiniteOrderedSets()(("a", "b", "c"))
     standard = Sets.Δ[2]
     well_orders = WellOrderedSets()
 

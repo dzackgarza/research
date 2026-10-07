@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules, ModuleSubobjects,
     ModulesWithChosenComponentPresentation, ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
@@ -562,12 +562,10 @@ class _WordModule:
                 return piece(self(selected).underlying_element())
 
     def homogeneous_components(self, element):
-        degrees = finite_ordered_set(
-            tuple(
-                self.grading_monoid()(int(label.summand_index()))
-                for label in self._framing_lift(self(element)).support().domain()
-            )
-        )
+        degrees = FiniteOrderedSets()(tuple(
+            self.grading_monoid()(int(label.summand_index()))
+            for label in self._framing_lift(self(element)).support().domain()
+        ))
         return finite_indexed_family(
             degrees,
             lambda degree: self.homogeneous_component(element, degree),

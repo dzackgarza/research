@@ -72,7 +72,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
@@ -707,13 +706,11 @@ def _fix_selected_algebra_presentation(
         case True:
             pass
     labels = degree_zero.generating_set()
-    relation_labels = finite_ordered_set(tuple(relations.index_set()))
+    relation_labels = FiniteOrderedSets()(tuple(relations.index_set()))
 
     def selected_resolution():
-        degree_one_labels = finite_ordered_set(
-            tuple(("generator", label) for label in labels)
-            + tuple(("relation", index) for index in relation_labels)
-        )
+        degree_one_labels = FiniteOrderedSets()(tuple(("generator", label) for label in labels)
+        + tuple(("relation", index) for index in relation_labels))
         base = algebra.base_ring()
         degree_one = base.free_module(degree_one_labels).tensor_algebra()
         relation_source = base.free_module(relation_labels).tensor_algebra()
@@ -2346,7 +2343,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self._selected_algebra_presentation_backend.presentation_ideal()
 
         def presentation(self):
-            labels = finite_ordered_set(("presentation_ring", "relations"))
+            labels = FiniteOrderedSets()(("presentation_ring", "relations"))
             values = {
                 "presentation_ring": self.presentation_ring(),
                 "relations": self.relations(),
@@ -3219,7 +3216,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         for name, value in construction_data:
             setattr(self, name, value)
         self._realized_scalar_structure = (lambda scalar: self(scalar)) if scalar_structure is None else scalar_structure
-        selected_labels = None if labels is None else finite_ordered_set(labels)
+        selected_labels = None if labels is None else FiniteOrderedSets()(labels)
         associative = Algebras(base).Associative().Unital()
         framing_owner = associative
         placement = [associative]

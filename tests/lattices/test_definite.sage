@@ -102,7 +102,7 @@ def test_indefinite_isometry_ladder_uses_parity_as_an_exact_obstruction() -> Non
     even = Lattices(ZZ)("U")
     odd = Lattices(ZZ)([[1, 0], [0, -1]])
 
-    assert even.signature_pair() == odd.signature_pair() == signature_pair(1, 1)
+    assert even.signature_pair() == odd.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert even.Isom(odd).is_empty() is True
     assert even.is_isometric(odd) is False
 

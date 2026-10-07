@@ -20,9 +20,7 @@ from dzack_research.preamble.categories.group.g_sets import (
 )
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import _owned_group
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
@@ -157,7 +155,7 @@ class FreeGSetFunctor(Functor):
         return self._group
 
     def _apply_object(self, set_object):
-        group_points = finite_ordered_set(self.group())
+        group_points = FiniteOrderedSets()(self.group())
         point_set = Sets().product(
             indexed_family(
                 Sets.Δ[1],
@@ -228,7 +226,7 @@ class CofreeGSetFunctor(Functor):
             f"Map(G, S) is a finite G-set for every finite set S only when G is finite, but {self._group} is "
             "not known to be finite"
         )
-        self._group_points = finite_ordered_set(self._group)
+        self._group_points = FiniteOrderedSets()(self._group)
         super().__init__(FiniteSets(), FiniteGSets(self._group))
 
     def group(self):

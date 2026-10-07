@@ -28,9 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -443,7 +441,7 @@ class TopologicalManifolds(OwnedCategory):
             return self(coordinates, chart_label)
 
         def chart_labels(self):
-            return finite_ordered_set(tuple(self._preamble_charts))
+            return FiniteOrderedSets()(tuple(self._preamble_charts))
 
         def atlas(self):
             labels = self.chart_labels()
@@ -515,7 +513,7 @@ class TopologicalManifolds(OwnedCategory):
             return self._preamble_transitions[source_label, target_label]
 
         def transitions(self):
-            index_set = finite_ordered_set(tuple(self._preamble_transitions))
+            index_set = FiniteOrderedSets()(tuple(self._preamble_transitions))
             return finite_indexed_family(
                 index_set,
                 lambda pair: self._preamble_transitions[pair],

@@ -4,7 +4,7 @@ from sage.rings.rational_field import QQ
 
 from dzack_research.preamble.catalogue import NamedLattices
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
 
 def _named_generators(lattice):
@@ -234,7 +234,7 @@ class Sterk:
             ),
         }
         configurations = {
-            name: finite_ordered_set(roots) for name, roots in configurations.items()
+            name: FiniteOrderedSets()(roots) for name, roots in configurations.items()
         }
         for name, roots in configurations.items():
             for root in roots:

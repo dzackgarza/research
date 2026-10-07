@@ -21,7 +21,7 @@ def test_the_invariants_of_a1_plus_a2() -> None:
     lattice = a1_plus_a2()
     assert lattice.module_rank() == 3
     assert lattice.determinant() == -6
-    assert lattice.signature_pair() == signature_pair(0, 3)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 3)
     assert lattice.discriminant_group().cardinality() == 6
     assert lattice.number_of_summands() == 2
     assert lattice.summands().cardinality() == 2

@@ -61,7 +61,7 @@ def test_isotropic_reduction_of_a_line_in_u_plus_u_is_u() -> None:
 
     assert reduction.module_rank() == 2
     assert reduction.gram_tensor() == tensor(ZZ, (), (2, 2), [[0, 1], [1, 0]])
-    assert reduction.signature_pair() == signature_pair(1, 1)
+    assert reduction.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert reduction.is_unimodular()
 
 

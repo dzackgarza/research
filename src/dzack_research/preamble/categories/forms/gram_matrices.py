@@ -7,7 +7,7 @@ import networkx as nx
 from dzack_research.preamble.categories.graph_categories import (
     LabelledGraphs,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
@@ -54,7 +54,7 @@ class _GramTensorGraphEngine:
         """
         n = int(self.vertices().cardinality())
         if n <= 1:
-            return finite_ordered_set(())
+            return FiniteOrderedSets()(())
         graph = self._engine_graph()
         graph.remove_edges_from(list(nx.selfloop_edges(graph)))
         components = sorted(
@@ -62,10 +62,8 @@ class _GramTensorGraphEngine:
             key=lambda component: component[0],
         )
         if [index for component in components for index in component] != list(range(n)):
-            return finite_ordered_set(())
-        return finite_ordered_set(
-            tuple(NN(cut) for cut in accumulate(len(component) for component in components[:-1]))
-        )
+            return FiniteOrderedSets()(())
+        return FiniteOrderedSets()(tuple(NN(cut) for cut in accumulate(len(component) for component in components[:-1])))
 
     def _repr_(self) -> str:
         return f"Gram graph on {self.vertices().cardinality()} framing positions"
@@ -82,16 +80,14 @@ def _gram_tensor_graph(gram):
         raise ValueError(f"a Gram tensor is square, but {gram} has shape {n} x {m}")
     if any(gram[i, j] != gram[j, i] for i in range(n) for j in range(i, n)):
         raise ValueError(f"a Gram tensor is symmetric, but {gram} is not")
-    vertices = finite_ordered_set(tuple(range(n)))
+    vertices = FiniteOrderedSets()(tuple(range(n)))
     edge_space = vertices**2
-    edges = finite_ordered_set(
-        tuple(
-            edge_space((i, j))
-            for i in range(n)
-            for j in range(i, n)
-            if gram[i, j] != gram.base_ring().zero()
-        )
-    )
+    edges = FiniteOrderedSets()(tuple(
+        edge_space((i, j))
+        for i in range(n)
+        for j in range(i, n)
+        if gram[i, j] != gram.base_ring().zero()
+    ))
     return LabelledGraphs().object(
         vertices,
         edges,

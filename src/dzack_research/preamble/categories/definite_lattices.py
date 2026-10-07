@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytopes
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -151,9 +151,7 @@ def _reduction_from_transformation(lattice, basis_map):
 
         ambient = lattice.ambient_lattice()
         old_inclusion = lattice.inclusion()
-        embedded_reduced_basis = finite_ordered_set(
-            tuple(old_inclusion(image) for image in images)
-        )
+        embedded_reduced_basis = FiniteOrderedSets()(tuple(old_inclusion(image) for image in images))
         reduced = _lattice_subobject_spanning(
             ambient,
             embedded_reduced_basis,
@@ -226,12 +224,12 @@ def _vectors_of_square(lattice, square):
     square = lattice.base_ring()(square)
     target = sign * square
     if target < 0:
-        return finite_ordered_set(())
+        return FiniteOrderedSets()(())
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
     lists = backend.short_vectors(int(target) + 1)
     if int(target) >= len(lists):
-        return finite_ordered_set(())
-    return finite_ordered_set(tuple(
+        return FiniteOrderedSets()(())
+    return FiniteOrderedSets()(tuple(
         _element_from_coordinates(lattice, coordinates)
         for coordinates in lists[int(target)]
     ))
@@ -245,8 +243,8 @@ def _roots(lattice):
 def _roots_of_square(lattice, square):
     square = lattice.base_ring()(square)
     if square == 0:
-        return finite_ordered_set(())
-    return finite_ordered_set(tuple(
+        return FiniteOrderedSets()(())
+    return FiniteOrderedSets()(tuple(
         vector for vector in lattice.vectors_of_square(square) if vector.is_root()
     ))
 
@@ -339,13 +337,13 @@ def _reflective_root_system_components(lattice):
     simple = _simple_roots(lattice, tuple(lattice.reflective_roots()))
     match simple:
         case ():
-            return finite_ordered_set(())
+            return FiniteOrderedSets()(())
     return CoxeterDiagrams().from_roots(simple).connected_components()
 
 
 def _vectors_of_square_and_divisibility(lattice, square, divisibility):
     divisibility = lattice.base_ring()(divisibility)
-    return finite_ordered_set(tuple(
+    return FiniteOrderedSets()(tuple(
         vector
         for vector in lattice.vectors_of_square(square)
         if vector.div() == divisibility
@@ -643,9 +641,7 @@ class _ExactCVPEngine:
                 vector,
                 signed_square,
             )
-        vectors = finite_ordered_set(
-            tuple(vector for vector, _square in candidates.values())
-        )
+        vectors = FiniteOrderedSets()(tuple(vector for vector, _square in candidates.values()))
         by_coordinates = {
             coordinates: square
             for coordinates, (_vector, square) in candidates.items()
@@ -835,7 +831,7 @@ def _voronoi_relevant_vectors(lattice):
         candidate = _relevant_vector_of_inequality(lattice, inequality)
         if candidate is not None and candidate != lattice.zero() and candidate not in relevant:
             relevant.append(candidate)
-    return finite_ordered_set(tuple(relevant))
+    return FiniteOrderedSets()(tuple(relevant))
 
 
 def _voronoi_facets(lattice):
@@ -869,7 +865,7 @@ def _voronoi_facets(lattice):
             face.as_polyhedron().vertices_list()
         )
     return finite_indexed_family(
-        finite_ordered_set(tuple(facets)),
+        FiniteOrderedSets()(tuple(facets)),
         lambda vector: facets[vector],
         name=f"Voronoi facets of {lattice}",
     )

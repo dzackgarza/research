@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _is_integral_multivariate_ideal,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import owned_category_join
@@ -550,12 +550,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ).from_rows(owned_rows)
 
         def primary_decomposition(self):
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(self.ring(), ideal)
-                    for ideal in self._engine_ideal().primary_decomposition()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                _from_engine_ideal(self.ring(), ideal)
+                for ideal in self._engine_ideal().primary_decomposition()
+            ))
 
         def hilbert_polynomial_value(self, argument):
             r"""Return the value at \`argument\` of the Hilbert polynomial of \`R/I\`.
@@ -571,12 +569,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _owned_engine_element(SageZZ, SageZZ(value))
 
         def associated_primes(self):
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(self.ring(), ideal)
-                    for ideal in self._engine_ideal().associated_primes()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                _from_engine_ideal(self.ring(), ideal)
+                for ideal in self._engine_ideal().associated_primes()
+            ))
 
         def _repr_(self):
             listed = ", ".join(str(generator) for generator in self.ideal_generators())
@@ -896,8 +892,8 @@ def _commutative_ideal(source, generators):
         return ideal
 
     syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
-    labels = finite_ordered_set(range(len(selected)))
-    relation_labels = finite_ordered_set(range(len(syzygy_rows)))
+    labels = FiniteOrderedSets()(range(len(selected)))
+    relation_labels = FiniteOrderedSets()(range(len(syzygy_rows)))
     free_generators = source.free_module(labels)
     free_relations = source.free_module(relation_labels)
     presentation = free_relations.module_category().Mor(free_relations, free_generators)(

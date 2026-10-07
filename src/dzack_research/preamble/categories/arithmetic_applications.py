@@ -11,7 +11,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.catalogue import Involutions, NamedLattices
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
 
 class AmbientEquivariantCuspIncidence(SageObject):
@@ -223,12 +223,10 @@ class EnriquesEquivariantK3Application(SageObject):
     @cached_method
     def ambient_anti_invariant_tits_building_incidence(self):
         r"""Return the same cusp incidences with transporters in the full K3 centralizer."""
-        return finite_ordered_set(
-            tuple(
-                AmbientEquivariantCuspIncidence(self, incidence)
-                for incidence in self.anti_invariant_tits_building_incidence()
-            )
-        )
+        return FiniteOrderedSets()(tuple(
+            AmbientEquivariantCuspIncidence(self, incidence)
+            for incidence in self.anti_invariant_tits_building_incidence()
+        ))
 
 
 def lorentzian_e10_application():

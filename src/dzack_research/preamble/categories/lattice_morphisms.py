@@ -55,7 +55,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import _engine_rin
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition
@@ -1290,7 +1289,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             classification,
         )
         assert data is not None, f"OSCAR returned no classification of primitive embeddings of {source} into {target}"
-        return finite_ordered_set(tuple(self._reconstruct_target_primitive_embedding(record) for record in data))
+        return FiniteOrderedSets()(tuple(self._reconstruct_target_primitive_embedding(record) for record in data))
 
     def __iter__(self):
         r"""Enumerate all embeddings when the target lattice is definite.
@@ -1921,7 +1920,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             return vector_stabilizer_generators(self, element)
         stabilizer_elements = tuple(automorphism for automorphism in self if automorphism(element) == element)
         engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements))
-        return finite_ordered_set(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
+        return FiniteOrderedSets()(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
 
     def vector_orbit_representatives(self, square):
         r"""Return one representative of each ``O(L)``-orbit of square ``square``.
@@ -1945,7 +1944,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             for automorphism in self:
                 image = automorphism(representative)
                 remaining.pop(_framing_tuple(image), None)
-        return finite_ordered_set(representatives)
+        return FiniteOrderedSets()(representatives)
 
     def isotropic_orbit_representatives(self, rank, *, flag=False):
 
@@ -1955,7 +1954,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return the ``O(L)``-orbits of primitive isotropic rank-``rank`` subobjects."""
         from dzack_research.preamble.categories.isotropic_orbits import _cusp
 
-        return finite_ordered_set(tuple(_cusp(representative) for representative in self.isotropic_orbit_representatives(rank)))
+        return FiniteOrderedSets()(tuple(_cusp(representative) for representative in self.isotropic_orbit_representatives(rank)))
 
     def tits_building_incidence(self):
         r"""Return the line/plane incidence in the full orthogonal-group quotient building."""
@@ -1996,7 +1995,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 )
             )
         assert all(incidence.lattice() is lattice for incidence in incidences), f"an incidence of cusps of O({lattice}) belongs to a different lattice than {lattice}"
-        return finite_ordered_set(tuple(incidences))
+        return FiniteOrderedSets()(tuple(incidences))
 
     def orbit_decomposition(self, locus):
         r"""Return exact orbit data on a represented locus supported by this group.

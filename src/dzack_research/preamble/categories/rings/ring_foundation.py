@@ -233,7 +233,7 @@ class RingMorphism:
             f"{embedding.codomain()} of {embedding}"
         )
         generators = field.field_generators()
-        restrictions = owned_sets.finite_ordered_set(tuple(
+        restrictions = owned_sets.FiniteOrderedSets()(tuple(
             candidate
             for candidate in field.Mor(field).embeddings()
             if all(
@@ -259,7 +259,7 @@ class RingMorphism:
             f"finite or number field, but {field} is neither"
         )
         generators = field.field_generators()
-        return owned_sets.finite_ordered_set(tuple(
+        return owned_sets.FiniteOrderedSets()(tuple(
             candidate
             for candidate in candidates
             if all(
@@ -635,7 +635,7 @@ def _field_generators(field):
         f"cannot list field generators of {field}: generators are computed only for finite fields "
         f"and number fields, and {field} is neither"
     )
-    return owned_sets.finite_ordered_set(tuple(
+    return owned_sets.FiniteOrderedSets()(tuple(
         _owned_engine_element(field, generator)
         for generator in _native_field_generators(_engine_ring(field))
     ))
@@ -767,7 +767,7 @@ class RingMor(CategoricalMor):
             f"cannot enumerate the embeddings in {self}: embeddings are enumerated between fields, "
             f"but {domain} -> {codomain} is not a pair of fields"
         )
-        return owned_sets.finite_ordered_set(tuple(
+        return owned_sets.FiniteOrderedSets()(tuple(
             self(engine_embedding)
             for engine_embedding in _engine_ring(domain).embeddings(_engine_ring(codomain))
         ))
@@ -2710,7 +2710,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def _exact_coefficient_presentation_relations(self):
             r"""Return the selected coefficient relations in the computation ring."""
 
-            return owned_sets.finite_ordered_set(())
+            return owned_sets.FiniteOrderedSets()(())
 
         def _lift_coefficient_to_presentation(self, value):
             return self(value)
@@ -3153,7 +3153,7 @@ class OwnedFactorization(SageObject):
         owned_factors = tuple(
             _owned_engine_element(parent, factor) for factor, _multiplicity in engine_pairs
         )
-        indices = owned_sets.finite_ordered_set(owned_factors)
+        indices = owned_sets.FiniteOrderedSets()(owned_factors)
         multiplicities = {
             factor: _owned_engine_element(SageZZ, SageZZ(multiplicity))
             for factor, (_engine_factor, multiplicity) in zip(
@@ -3585,7 +3585,7 @@ class _OwnedRingElement(RingElement):
 
     def prime_divisors(self):
         r"""Return the distinct prime divisors as an owned finite ordered set."""
-        return owned_sets.finite_ordered_set(
+        return owned_sets.FiniteOrderedSets()(
             tuple(
                 _owned_engine_element(self.parent(), prime)
                 for prime in self._backend().prime_divisors()
@@ -3597,7 +3597,7 @@ class _OwnedRingElement(RingElement):
 
     def divisors(self):
         r"""Return the positive divisors as an owned finite ordered set."""
-        return owned_sets.finite_ordered_set(
+        return owned_sets.FiniteOrderedSets()(
             tuple(
                 _owned_engine_element(self.parent(), divisor)
                 for divisor in self._backend().divisors()
@@ -3651,7 +3651,7 @@ class _OwnedRingElement(RingElement):
                 )
                 for root, multiplicity in backend_roots
             )
-        indices = owned_sets.finite_ordered_set(tuple(root for root, _multiplicity in owned_pairs))
+        indices = owned_sets.FiniteOrderedSets()(tuple(root for root, _multiplicity in owned_pairs))
         multiplicities = dict(owned_pairs)
         return owned_sets.finite_indexed_family(
             indices,
@@ -4095,7 +4095,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             raise ValueError(
                 f"elements() lists the elements of a finite ring, but {self} is not known to be finite"
             )
-        return owned_sets.finite_ordered_set(
+        return owned_sets.FiniteOrderedSets()(
             tuple(self._from_engine_element(element) for element in self._engine.list())
         )
 
@@ -4444,7 +4444,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
             )
 
             integers = _own_ring(SageZZ)
-            labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
+            labels = owned_sets.FiniteOrderedSets()(range(int(engine.rank())))
             source = integers.free_module(labels)
             _fix_selected_module_resolution(
                 ring,

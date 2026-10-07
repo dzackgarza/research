@@ -26,8 +26,8 @@ def test_vinberg_on_the_belolipetsky_lattice_over_the_golden_integers_finds_four
     place = next(p for p in field.embeddings(AA) if p(s) > 0)
     conjugate = next(p for p in field.embeddings(AA) if p(s) < 0)
 
-    assert lattice.base_change(place).signature_pair() == signature_pair(3, 1)
-    assert lattice.base_change(conjugate).signature_pair() == signature_pair(4, 0)
+    assert lattice.base_change(place).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(3, 1)
+    assert lattice.base_change(conjugate).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(4, 0)
 
     complete, roots = lattice.number_field_vinberg(place).vinberg_simple_roots(count=4)
 

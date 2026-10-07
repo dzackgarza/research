@@ -331,8 +331,8 @@ class _ProductCategory(OwnedCategory):
     ownership and the reversed composition in an opposite category::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
         sage: collapse = Sets().Mor(points, points)(lambda point: "a")
         sage: category = Cat().product((Sets(), Sets()))
@@ -439,8 +439,14 @@ class _ProductCategory(OwnedCategory):
             )
         return _object_of(self, first=first, second=second)
 
-    def __call__(self, *args, **kwargs):
-        return self.pair(*args, **kwargs)
+    def __call__(self, first, second) -> ObjectOfCategory:
+        r"""The object ``(X, Y)`` of ``C x D`` on the data of its two factors.
+
+        Each factor category is applied to its own datum, so ``X`` is
+        ``C(first)`` and ``Y`` is ``D(second)``: an object already in a factor
+        is itself, and anything else is that factor's construction on it.
+        """
+        return self.pair(self.first_category()(first), self.second_category()(second))
 
     def Mor(self, domain: Parent, codomain: Parent) -> ProductMor:
         if domain not in self or codomain not in self:

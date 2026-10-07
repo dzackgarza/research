@@ -93,7 +93,7 @@ def test_the_root_sublattice_of_d4_is_all_of_d4() -> None:
     root_sublattice = Lattices(ZZ)("D4").root_sublattice()
 
     assert root_sublattice.determinant() == 4
-    assert root_sublattice.signature_pair() == signature_pair(0, 4)
+    assert root_sublattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 4)
 
 
 def test_the_closest_point_of_a2_to_a_point_near_a_simple_root() -> None:

@@ -14,9 +14,7 @@ from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilies,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -40,7 +38,7 @@ def _family(values, *, index_set=None, name):
         case Mapping():
             match index_set:
                 case None:
-                    index_set = finite_ordered_set(tuple(values))
+                    index_set = FiniteOrderedSets()(tuple(values))
                 case _:
                     pass
             if set(values) != set(index_set):
@@ -53,7 +51,7 @@ def _family(values, *, index_set=None, name):
             sequence = tuple(values)
             match index_set:
                 case None:
-                    index_set = finite_ordered_set(range(len(sequence)))
+                    index_set = FiniteOrderedSets()(range(len(sequence)))
                 case _:
                     pass
             if len(sequence) != int(index_set.cardinality().finite_value()):

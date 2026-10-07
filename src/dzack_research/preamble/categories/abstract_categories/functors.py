@@ -138,8 +138,8 @@ class DiscreteCategory(OwnedCategory):
     Unverified specimens retain unhashable labels and distinguish two equal
     underlying sets supplied as different objects::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: labels = finite_ordered_set(([0], [1]))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: labels = FiniteOrderedSets()(([0], [1]))
         sage: category = DiscreteCategory(labels)
         sage: category([0]) is category([0])
         True
@@ -150,7 +150,7 @@ class DiscreteCategory(OwnedCategory):
         sage: identity = category.identity(category([0]))
         sage: identity * identity == identity
         True
-        sage: other_labels = finite_ordered_set(([0], [1]))
+        sage: other_labels = FiniteOrderedSets()(([0], [1]))
         sage: DiscreteCategory(other_labels).object_set() is other_labels
         True
         sage: DiscreteCategory(other_labels) is not category

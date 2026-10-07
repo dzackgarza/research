@@ -680,11 +680,9 @@ class ModulesOverGroupAlgebra(Modules):
             ``QQ``; a character is present when its isotypic component is
             nonzero.
             """
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
-            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
-            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if self.isotypic_component(character).module_rank() != 0))
+            return FiniteOrderedSets()(tuple(character for character in _split_irreducible_characters(self) if self.isotypic_component(character).module_rank() != 0))
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""

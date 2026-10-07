@@ -2,9 +2,9 @@ from dzack_research.preamble.all import *
 
 
 def test_delta_distinguishes_coeven_and_coodd_discriminant_forms() -> None:
-    assert NamedLattices.U_2.two_elementary_invariants() == nikulin_invariants(2, 2, 0)
-    assert NamedLattices.Z_2.two_elementary_invariants() == nikulin_invariants(1, 1, 1)
-    assert NamedLattices.E10_2.two_elementary_invariants() == nikulin_invariants(10, 10, 0)
+    assert NamedLattices.U_2.two_elementary_invariants() == (NN**3)((2, 2, 0))
+    assert NamedLattices.Z_2.two_elementary_invariants() == (NN**3)((1, 1, 1))
+    assert NamedLattices.E10_2.two_elementary_invariants() == (NN**3)((10, 10, 0))
 
 
 def test_block_search_recovers_the_hand_counted_rows() -> None:
@@ -15,10 +15,10 @@ def test_block_search_recovers_the_hand_counted_rows() -> None:
     }
     for (rank, length, delta), expected in expected_counts.items():
         candidates = two_elementary_orthogonal_sums(
-            signature_pair(1, rank - 1), length, delta
+            Cat().product((Cardinalities(), Cardinalities()))(1, rank - 1), length, delta
         )
         assert candidates.cardinality() == expected
-        expected_invariants = nikulin_invariants(rank, length, delta)
+        expected_invariants = (NN**3)((rank, length, delta))
         assert all(
             candidate.two_elementary_invariants() == expected_invariants
             for candidate in candidates
@@ -38,7 +38,7 @@ def test_gluing_A1_to_the_8_along_the_all_ones_class_gives_the_8_6_0_genus() -> 
     discriminant = lattice.discriminant_module()
     all_ones = sum(discriminant.module_generators(), discriminant.zero())
 
-    assert lattice.two_elementary_invariants() == nikulin_invariants(8, 8, 1)
+    assert lattice.two_elementary_invariants() == (NN**3)((8, 8, 1))
     assert all_ones.q() == discriminant.quadratic_value_module().zero()
 
     inclusion = lattice.overlattice(all_ones)
@@ -46,5 +46,5 @@ def test_gluing_A1_to_the_8_along_the_all_ones_class_gives_the_8_6_0_genus() -> 
 
     assert inclusion.index() == 2
     assert overlattice.is_even()
-    assert overlattice.two_elementary_invariants() == nikulin_invariants(8, 6, 0)
+    assert overlattice.two_elementary_invariants() == (NN**3)((8, 6, 0))
     assert overlattice.genus() == NegativeDefTwoElementary[(8, 6, 0)][0].genus()

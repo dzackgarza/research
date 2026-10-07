@@ -646,11 +646,11 @@ class SliceCategory(_SubcategoryOfArrows):
     Unverified specimens retain equal-but-distinct base sets and keep the
     slice and coslice fixed edges under nonidentity composition::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: points = finite_ordered_set(("a", "b"))
-        sage: other_points = finite_ordered_set(("a", "b"))
+        sage: points = FiniteOrderedSets()(("a", "b"))
+        sage: other_points = FiniteOrderedSets()(("a", "b"))
         sage: points == other_points and points is not other_points
         True
         sage: SliceCategory(Sets(), points).base_object() is points
@@ -661,7 +661,7 @@ class SliceCategory(_SubcategoryOfArrows):
         True
         sage: SubobjectCategory(Sets(), other_points).base_object() is other_points
         True
-        sage: one = finite_ordered_set(("*",))
+        sage: one = FiniteOrderedSets()(("*",))
         sage: swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
         sage: slice_category = SliceCategory(Sets(), one)
         sage: obj = slice_category(Sets().Mor(points, one)(lambda point: "*"))
@@ -1450,10 +1450,10 @@ class _WideSubcategory(OwnedCategoryBase):
     Unverified specimens: injections form a wide subcategory of sets. A
     noninjective map is an underlying set map, but is not an arrow here::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor, NaturalTransformation
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
         sage: maps = Sets().Mor(points, points)
         sage: Mor = injections.Mor(points, points)

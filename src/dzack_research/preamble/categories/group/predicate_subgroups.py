@@ -271,16 +271,12 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def cusps(self, rank=1):
             r"""Return this arithmetic subgroup's primitive-isotropic cusp orbits."""
             from dzack_research.preamble.categories.isotropic_orbits import _arithmetic_cusp
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
-            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
-            return finite_ordered_set(
-                tuple(
-                    _arithmetic_cusp(self, representative)
-                    for representative in self.isotropic_orbit_representatives(rank)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                _arithmetic_cusp(self, representative)
+                for representative in self.isotropic_orbit_representatives(rank)
+            ))
 
         def tits_building_incidence(self):
             r"""Return this subgroup's line/plane quotient-building incidence.
@@ -293,9 +289,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             from dzack_research.preamble.categories.isotropic_orbits import (
                 ArithmeticCuspIncidence,
             )
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
-            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
             lattice = self.supergroup().domain()
             line_cusps = self.cusps(1)
@@ -336,7 +330,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                     f"the Tits building incidence of {self} has a cusp incidence in a lattice "
                     f"other than {lattice}, the lattice {self.supergroup()} acts on"
                 )
-            return finite_ordered_set(tuple(incidences))
+            return FiniteOrderedSets()(tuple(incidences))
 
         def _repr_(self):
             return f"{{g in {self.supergroup()} : {self._description}}}"

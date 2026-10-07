@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction
 from dzack_research.preamble.validation import validator
@@ -77,7 +76,7 @@ def _commutative_presentation_data(algebra):
         lift = algebra.lift_to_presentation
     elif algebra in SymmetricAlgebras(base):
         presentation = algebra
-        relations = finite_ordered_set(())
+        relations = FiniteOrderedSets()(())
         lift = presentation
 
     labels = presentation.algebra_generating_set()

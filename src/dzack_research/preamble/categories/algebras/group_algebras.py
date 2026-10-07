@@ -36,9 +36,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
 
 class GroupAlgebras(OwnedCategoryOverBaseRing):
@@ -91,17 +89,15 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                 f"the centre of {self} is computed from conjugacy-class sums, which needs a finite group, but "
                 f"{group} is not known to be finite"
             )
-            class_sums = finite_ordered_set(
-                [
-                    sum(
-                        self.module_generator(element)
-                        for element in {
-                            g * representative * g.inverse() for g in group
-                        }
-                    )
-                    for representative in group.conjugacy_classes_representatives()
-                ]
-            )
+            class_sums = FiniteOrderedSets()([
+                sum(
+                    self.module_generator(element)
+                    for element in {
+                        g * representative * g.inverse() for g in group
+                    }
+                )
+                for representative in group.conjugacy_classes_representatives()
+            ])
             return _center_algebra(self, self.subobject_on(class_sums))
 
         @cached_method

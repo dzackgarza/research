@@ -24,9 +24,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
 
 def _finite_field_absolute_galois_group():
@@ -238,7 +236,7 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
 
     class ParentMethods:
         def topological_group_generators(self):
-            return finite_ordered_set((self.frobenius(),))
+            return FiniteOrderedSets()((self.frobenius(),))
 
         def topological_generating_family(self):
             r"""Return the selected owned family topologically generating ``G_K``.

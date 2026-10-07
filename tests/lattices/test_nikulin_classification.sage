@@ -24,13 +24,13 @@ def test_small_hyperbolic_table_rows_realise_one_block_and_biproduct_routes() ->
     for triple in ((1, 1, 1), (3, 1, 1)):
         rank, _length, _delta = triple
         lattice = TwoElementary[triple]
-        assert lattice.signature_pair() == signature_pair(1, rank - 1)
-        assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
+        assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, rank - 1)
+        assert lattice.two_elementary_invariants() == (NN**3)(triple)
 
 
 def test_small_negative_definite_table_row_is_realised() -> None:
     triple = (1, 1, 1)
     (lattice,) = NegativeDefTwoElementary[triple]
     rank, _length, _delta = triple
-    assert lattice.signature_pair() == signature_pair(0, rank)
-    assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, rank)
+    assert lattice.two_elementary_invariants() == (NN**3)(triple)

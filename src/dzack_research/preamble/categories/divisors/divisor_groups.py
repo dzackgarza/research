@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.owned_category import owned_category_join
@@ -44,7 +44,7 @@ def _cokernel_in_category(presentation, category, **data):
 def _free_presentation(generators):
     r"""The zero morphism \(0 \to \mathbb{Z}^{(S)}\), presenting the free abelian group on ``generators``."""
     integers = _integers()
-    zero = integers.free_module(finite_ordered_set(()))
+    zero = integers.free_module(FiniteOrderedSets()(()))
     free = integers.free_module(generators)
     return zero.module_category().Mor(zero, free)({})
 
@@ -68,7 +68,7 @@ class DivisorGroups(Category):
 
     def an_object(self):
         r"""The free abelian group on one prime divisor."""
-        return self(finite_ordered_set(("D",)))
+        return self(FiniteOrderedSets()(("D",)))
 
     @classmethod
     def _repr_object_names(cls):
@@ -96,7 +96,7 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
     def _call_(self, prime_divisors):
         r"""Return the free formal-divisor group on the stated prime divisors."""
         return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(prime_divisors),
+            FiniteOrderedSets()(prime_divisors),
             _extra_categories=(self,),
         )
 
@@ -109,9 +109,7 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
         """
         ring = self.base_ring()
         terms = tuple(terms)
-        prime_divisors = finite_ordered_set(
-            tuple(prime_divisor for _, prime_divisor in terms)
-        )
+        prime_divisors = FiniteOrderedSets()(tuple(prime_divisor for _, prime_divisor in terms))
         group = self(tuple(prime_divisors))
         return group.linear_combination(
             {

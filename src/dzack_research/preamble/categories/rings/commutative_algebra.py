@@ -63,7 +63,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _ring_morphisms_equal,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
@@ -1061,24 +1061,20 @@ class QuotientRings(OwnedCategory):
 
             source = self.quotient_source()
             defining = _engine_ideal(source, self.defining_ideal())
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(source, prime)
-                    for prime in defining.minimal_associated_primes()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                _from_engine_ideal(source, prime)
+                for prime in defining.minimal_associated_primes()
+            ))
 
         @cached_method
         def minimal_primes(self):
             r"""Return the minimal prime ideals of this quotient ring."""
-            return finite_ordered_set(
-                tuple(
-                    self.ideal(
-                        *(self(generator) for generator in prime.ideal_generators())
-                    )
-                    for prime in self._presentation_minimal_primes()
+            return FiniteOrderedSets()(tuple(
+                self.ideal(
+                    *(self(generator) for generator in prime.ideal_generators())
                 )
-            )
+                for prime in self._presentation_minimal_primes()
+            ))
 
         @cached_method
         def irreducible_components(self):
@@ -1087,12 +1083,10 @@ class QuotientRings(OwnedCategory):
                 raise ValueError(
                     f"irreducible components R/p are computed here only for a reduced ring, but {self} is not reduced"
                 )
-            return finite_ordered_set(
-                tuple(
-                    self.quotient_source().quotient_ring(prime)
-                    for prime in self._presentation_minimal_primes()
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                self.quotient_source().quotient_ring(prime)
+                for prime in self._presentation_minimal_primes()
+            ))
 
         @cached_method
         def total_quotient_ring(self):
@@ -1309,7 +1303,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
 
             normalization_map = quotient.Mor(normalization)(into_product)
 
-        component_indices = finite_ordered_set(range(len(normalizations)))
+        component_indices = FiniteOrderedSets()(range(len(normalizations)))
         components = finite_indexed_family(
             component_indices,
             lambda position: (
@@ -2320,9 +2314,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             case None:
                 self._preamble_formal_parameter_labels = None
             case _:
-                self._preamble_formal_parameter_labels = finite_ordered_set(
-                    formal_parameter_labels
-                )
+                self._preamble_formal_parameter_labels = FiniteOrderedSets()(formal_parameter_labels)
         placements = [AdicCompletions(), *extra_categories]
         if source in OwnedRings().Noetherian():
             placements.append(OwnedRings().Noetherian())
@@ -3665,7 +3657,7 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
         )
 
         engine_map = engine.coerce_map_from(_engine_ring(polynomial))
-        basis_labels = finite_ordered_set((0, 1))
+        basis_labels = FiniteOrderedSets()((0, 1))
         basis_source = base.free_module(basis_labels)
 
         def basis_image(index):

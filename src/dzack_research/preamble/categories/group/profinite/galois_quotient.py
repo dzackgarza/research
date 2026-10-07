@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -78,17 +78,15 @@ class _FiniteGaloisExtensionEngine:
     def automorphisms_over_base_field(self):
         r"""The exact ``K``-automorphisms of ``L``: the self-embeddings of ``L`` fixing ``K``."""
         base_generators = self.base_field().field_generators()
-        return finite_ordered_set(
-            tuple(
-                candidate
-                for candidate in self.field().exact_embeddings(self.field())
-                if all(
-                    candidate(self.base_embedding()(generator))
-                    == self.base_embedding()(generator)
-                    for generator in base_generators
-                )
+        return FiniteOrderedSets()(tuple(
+            candidate
+            for candidate in self.field().exact_embeddings(self.field())
+            if all(
+                candidate(self.base_embedding()(generator))
+                == self.base_embedding()(generator)
+                for generator in base_generators
             )
-        )
+        ))
 
     def automorphisms(self):
         r"""The elements of ``Gal(L/K)``, as exact field maps; ``L/K`` is Galois."""
@@ -189,17 +187,15 @@ def FiniteGaloisExtension(
         factorization,
         _engine=_FiniteGaloisExtensionEngine,
     )
-    compatible_embeddings = finite_ordered_set(
-        tuple(
-            candidate
-            for candidate in field.exact_embeddings(closure)
-            if all(
-                candidate(base_embedding(generator))
-                == closure_embedding(base_embedding(generator))
-                for generator in base_field.field_generators()
-            )
+    compatible_embeddings = FiniteOrderedSets()(tuple(
+        candidate
+        for candidate in field.exact_embeddings(closure)
+        if all(
+            candidate(base_embedding(generator))
+            == closure_embedding(base_embedding(generator))
+            for generator in base_field.field_generators()
         )
-    )
+    ))
     assert compatible_embeddings.cardinality() == cardinal(stage.degree()), (
         f"{field} is not separable over {base_field}: it has "
         f"{compatible_embeddings.cardinality()} {base_field}-embeddings into {closure}, "
@@ -396,7 +392,7 @@ class _FiniteFieldAutomorphismEngine:
         identity = self.one()
         nonidentity = tuple(element for element in self if element != identity)
         if _engine_ring(self.top_field()) not in SageFiniteFields():
-            return finite_ordered_set(nonidentity)
+            return FiniteOrderedSets()(nonidentity)
         generators = tuple(
             element
             for element in nonidentity
@@ -406,7 +402,7 @@ class _FiniteFieldAutomorphismEngine:
             f"the Galois group {self} of an extension of finite fields must be cyclic, "
             f"but no element has order {self.order()}"
         )
-        return finite_ordered_set(generators[:1])
+        return FiniteOrderedSets()(generators[:1])
 
     def _abelianity_decision(self) -> bool:
         return all(left * right == right * left for left in self for right in self)

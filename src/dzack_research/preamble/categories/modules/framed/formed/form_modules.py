@@ -88,7 +88,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -1877,17 +1877,15 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 @cached_method
                 def primary_components(self):
                     r"""Return the prime-indexed family of primary form-bearing subobjects."""
-                    primes = finite_ordered_set(
-                        tuple(
-                            sorted(
-                                {
-                                    prime
-                                    for invariant in self.invariant_factors()
-                                    for prime in abs(invariant).prime_divisors()
-                                }
-                            )
+                    primes = FiniteOrderedSets()(tuple(
+                        sorted(
+                            {
+                                prime
+                                for invariant in self.invariant_factors()
+                                for prime in abs(invariant).prime_divisors()
+                            }
                         )
-                    )
+                    ))
                     return indexed_family(
                         primes,
                         lambda prime: self.primary_part(prime),
@@ -1913,9 +1911,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     r"""Return the orbit partition of the finite underlying module."""
                     acting = self.automorphism_group() if group is None else group
                     action = _torsion_form_element_action(self, acting)
-                    return finite_ordered_set(
-                        tuple(orbit.points() for orbit in action.orbits())
-                    )
+                    return FiniteOrderedSets()(tuple(orbit.points() for orbit in action.orbits()))
 
                 def orbits_on_subobjects(self, group=None):
                     r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
@@ -2275,17 +2271,15 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 @cached_method
                 def primary_components(self):
                     r"""Return the prime-indexed family of primary form-bearing subobjects."""
-                    primes = finite_ordered_set(
-                        tuple(
-                            sorted(
-                                {
-                                    prime
-                                    for invariant in self.invariant_factors()
-                                    for prime in abs(invariant).prime_divisors()
-                                }
-                            )
+                    primes = FiniteOrderedSets()(tuple(
+                        sorted(
+                            {
+                                prime
+                                for invariant in self.invariant_factors()
+                                for prime in abs(invariant).prime_divisors()
+                            }
                         )
-                    )
+                    ))
                     return indexed_family(
                         primes,
                         lambda prime: self.primary_part(prime),
@@ -2311,9 +2305,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     r"""Return the orbit partition of the finite underlying module."""
                     acting = self.automorphism_group() if group is None else group
                     action = _torsion_form_element_action(self, acting)
-                    return finite_ordered_set(
-                        tuple(orbit.points() for orbit in action.orbits())
-                    )
+                    return FiniteOrderedSets()(tuple(orbit.points() for orbit in action.orbits()))
 
                 def orbits_on_subobjects(self, group=None):
                     r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
@@ -2333,7 +2325,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 def isotropic_elements(self):
                     r"""Return the elements on which the quadratic form vanishes."""
                     zero = self.value_module().zero()
-                    return finite_ordered_set(self.elements()).filtered(
+                    return FiniteOrderedSets()(self.elements()).filtered(
                         lambda element: self.q(element) == zero,
                     )
 

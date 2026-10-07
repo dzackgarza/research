@@ -4338,7 +4338,6 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
                 f"but the base ring is {base}"
             )
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
             return ClassGroups().trivial(self)
 
         def _zeta_function(self):

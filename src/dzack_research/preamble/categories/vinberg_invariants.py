@@ -38,6 +38,7 @@ Coxeter bonds.
 
 from itertools import combinations
 
+from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
@@ -52,8 +53,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSets,
     OrderedEnumeratedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import _object_of
@@ -114,28 +115,6 @@ def _reflection_cosine_position(cosine):
     return None if index is None else NN(index - 1)
 
 
-def reflection_cosines():
-    r"""Return \(X_{\mathrm{ref}}=\{\cos(\pi/n) : n\in\mathbb Z_{\geq 1}\}\).
-
-    The values a Coxeter bond can take as a cosine, as an owned set: countably
-    infinite, enumerated by \(n\), and with exact membership through
-    :func:`_reflection_cosine_index`.  Position \(k\) of the enumeration
-    carries \(n=k+1\): the index set is \(\omega\) and the cosines start at
-    \(n=1\).
-
-    Membership is decided in \(\overline{\mathbb Q}\) and never by rounding,
-    so \(1/2\) and \((1+\sqrt 5)/4\) belong, being \(\cos(\pi/3)\) and
-    \(\cos(\pi/5)\), while \(1/3\) does not.
-    """
-    return OrderedEnumeratedSets()(
-        NN,
-        lambda position: _reflection_cosine(int(position) + 1),
-        index_of=_reflection_cosine_position,
-        contains=lambda value: _reflection_cosine_index(value) is not None,
-        name="Reflection cosines { cos(pi/n) : n >= 1 }",
-    )
-
-
 def _coxeter_bond(invariant):
     r"""Return the Coxeter bond \(m\) of the Vinberg invariant ``invariant``.
 
@@ -179,12 +158,35 @@ class VinbergInvariantMatrices(OwnedCategory):
     def super_categories(self):
         return [LabelledGraphs()]
 
+    @cached_method
+    def reflection_cosines(self):
+        r"""Return \(X_{\mathrm{ref}}=\{\cos(\pi/n) : n\in\mathbb Z_{\geq 1}\}\).
+
+        The values a Coxeter bond can take as a cosine, as an owned set:
+        countably infinite, enumerated by \(n\), and with exact membership
+        through :func:`_reflection_cosine_index`.  Position \(k\) of the
+        enumeration carries \(n=k+1\): the index set is \(\omega\) and the
+        cosines start at \(n=1\).  An invariant of this category dehomogenizes
+        to \(4\cos^2(\pi/m)\) with \(\cos(\pi/m)\) in this set.
+
+        Membership is decided in \(\overline{\mathbb Q}\) and never by
+        rounding, so \(1/2\) and \((1+\sqrt 5)/4\) belong, being
+        \(\cos(\pi/3)\) and \(\cos(\pi/5)\), while \(1/3\) does not.
+        """
+        return OrderedEnumeratedSets()(
+            NN,
+            lambda position: _reflection_cosine(int(position) + 1),
+            index_of=_reflection_cosine_position,
+            contains=lambda value: _reflection_cosine_index(value) is not None,
+            name="Reflection cosines { cos(pi/n) : n >= 1 }",
+        )
+
     class ParentMethods:
         def __init__(
             self, base_ring, index_set, numerators, denominators, root_gram, **rest
         ) -> None:
             self._base_ring = base_ring
-            self._index_set = finite_ordered_set(index_set)
+            self._index_set = FiniteOrderedSets()(index_set)
             self._numerators = numerators
             self._denominators = denominators
             self._root_gram = root_gram
@@ -215,13 +217,11 @@ class VinbergInvariantMatrices(OwnedCategory):
 
         def edges(self):
             edge_space = self.index_set()**2
-            return finite_ordered_set(
-                tuple(
-                    edge_space((left, right))
-                    for left, right in combinations(tuple(self.index_set()), 2)
-                    if self.has_edge(left, right)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                edge_space((left, right))
+                for left, right in combinations(tuple(self.index_set()), 2)
+                if self.has_edge(left, right)
+            ))
 
         def is_directed(self) -> bool:
             return False
@@ -396,7 +396,7 @@ class VinbergInvariantMatrices(OwnedCategory):
             vertices = tuple(mirrors)
             ranking = self._index_set.ranking_map()
             positions = tuple(ranking(vertex) for vertex in vertices)
-            selected = finite_ordered_set(positions)
+            selected = FiniteOrderedSets()(positions)
             root_gram = (
                 tensor(
                     self._root_gram.base_ring(),
@@ -464,14 +464,12 @@ class VinbergInvariantMatrices(OwnedCategory):
             r"""Return the subdiagrams obtained by deleting one mirror."""
             diagram = self.coxeter_diagram()
             vertices = tuple(diagram.index_set())
-            return finite_ordered_set(
-                tuple(
-                    diagram.induced_subdiagram(
-                        tuple(other for other in vertices if other != vertex)
-                    )
-                    for vertex in vertices
+            return FiniteOrderedSets()(tuple(
+                diagram.induced_subdiagram(
+                    tuple(other for other in vertices if other != vertex)
                 )
-            )
+                for vertex in vertices
+            ))
 
         def is_elliptic(self) -> bool:
             r"""Return whether the Schlaefli form is positive definite."""
@@ -594,10 +592,8 @@ class VinbergInvariantMatrices(OwnedCategory):
         rows = tuple(tuple(row) for row in values)
         # The rows carry their own enumeration; the mirrors are indexed by it
         # unless the caller names them otherwise.
-        row_positions = finite_ordered_set(
-            tuple(position for position, _row in enumerate(rows))
-        )
-        mirrors = row_positions if index_set is None else finite_ordered_set(index_set)
+        row_positions = FiniteOrderedSets()(tuple(position for position, _row in enumerate(rows)))
+        mirrors = row_positions if index_set is None else FiniteOrderedSets()(index_set)
         assert mirrors.cardinality() == row_positions.cardinality(), (
             f"the mirrors {mirrors} cannot index the invariant matrix: there are "
             f"{mirrors.cardinality()} of them, but the matrix has "
@@ -637,5 +633,4 @@ def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators, ro
 
 __all__ = [
     "VinbergInvariantMatrices",
-    "reflection_cosines",
 ]

@@ -13,7 +13,7 @@ def test_the_hyperbolic_plane_has_determinant_minus_one_and_signature_one_one() 
 
     assert U.module_rank() == 2
     assert U.determinant() == -1
-    assert U.signature_pair() == signature_pair(1, 1)
+    assert U.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert U.b(e, e) == 0
     assert U.b(f, f) == 0
     assert U.b(e, f) == 1

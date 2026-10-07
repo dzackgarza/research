@@ -77,9 +77,7 @@ _EXPORTS = {'AugmentedSimplexCategory': ('dzack_research.preamble.categories.set
  'FiniteOrderedSets': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
                        'FiniteOrderedSets'),
  'OrderedEnumeratedSets': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
-                           'OrderedEnumeratedSets'),
- 'finite_ordered_set': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
-                        'finite_ordered_set')}
+                           'OrderedEnumeratedSets')}
 
 __all__ = [ 'AugmentedSimplexCategory',
  'PowerSets',
@@ -129,7 +127,6 @@ __all__ = [ 'AugmentedSimplexCategory',
  'LaurentMonomials',
  'SincTranslates',
  'finite_indexed_family',
- 'finite_ordered_set',
  'indexed_family']
 
 def __getattr__(name):

@@ -12,7 +12,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
@@ -409,16 +409,12 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
         def ordinary_vertices(self):
             space = self.hyperbolic_space()
             lattice = space.lattice()
-            return finite_ordered_set(
-                tuple(space.rational_point(ray) for ray in self.cone().primitive_rays() if lattice.q(ray) > 0)
-            )
+            return FiniteOrderedSets()(tuple(space.rational_point(ray) for ray in self.cone().primitive_rays() if lattice.q(ray) > 0))
 
         def ideal_vertices(self):
             space = self.hyperbolic_space()
             lattice = space.lattice()
-            return finite_ordered_set(
-                tuple(space.ideal_point(ray) for ray in self.cone().primitive_rays() if lattice.q(ray) == 0)
-            )
+            return FiniteOrderedSets()(tuple(space.ideal_point(ray) for ray in self.cone().primitive_rays() if lattice.q(ray) == 0))
 
         def wall_roots(self):
             return self.cone().wall_roots()

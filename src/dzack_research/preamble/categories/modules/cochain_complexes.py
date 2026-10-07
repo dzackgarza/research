@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -403,7 +403,7 @@ def _cochain_complex(
             selected_differentials = {
                 int(degree): morphism for degree, morphism in differentials.items()
             }
-            zero_module = ring.free_module(finite_ordered_set(()))
+            zero_module = ring.free_module(FiniteOrderedSets()(()))
             family = indexed_family(
                 integers,
                 lambda degree: selected_pieces.get(int(degree), zero_module),

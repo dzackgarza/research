@@ -28,7 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
@@ -163,9 +163,7 @@ class CoxeterDiagramMorphism:
 
     def images(self):
         r"""Return the images in source-vertex order."""
-        return finite_ordered_set(
-            tuple(self(vertex) for vertex in self.domain().index_set())
-        )
+        return FiniteOrderedSets()(tuple(self(vertex) for vertex in self.domain().index_set()))
 
     def is_identity(self) -> bool:
         return self.domain() is self.codomain() and all(
@@ -255,9 +253,7 @@ class CoxeterDiagrams(OwnedCategory):
         r"""Return the five minimal integral rank-two mirror configurations."""
         from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
-        labels = finite_ordered_set(
-            ("orthogonal", "single", "double", "parallel", "ultraparallel")
-        )
+        labels = FiniteOrderedSets()(("orthogonal", "single", "double", "parallel", "ultraparallel"))
         grams = {
             "orthogonal": ((-2, 0), (0, -2)),
             "single": ((-2, 1), (1, -2)),
@@ -285,7 +281,7 @@ class CoxeterDiagrams(OwnedCategory):
         ) -> None:
             self._coxeter_matrix = CoxeterMatrix(coxeter_matrix)
             self._type_label = type_label
-            self._index_set = finite_ordered_set(tuple(self._coxeter_matrix.index_set()))
+            self._index_set = FiniteOrderedSets()(tuple(self._coxeter_matrix.index_set()))
             if names is None:
                 names = (f"s_{index}" for index in self._index_set)
             elif isinstance(names, str):
@@ -341,13 +337,11 @@ class CoxeterDiagrams(OwnedCategory):
 
         def edges(self):
             edge_space = self.index_set()**2
-            return finite_ordered_set(
-                tuple(
-                    edge_space((left, right))
-                    for left, right in combinations(tuple(self.index_set()), 2)
-                    if self.has_edge(left, right)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                edge_space((left, right))
+                for left, right in combinations(tuple(self.index_set()), 2)
+                if self.has_edge(left, right)
+            ))
 
         def is_directed(self) -> bool:
             return False
@@ -547,12 +541,10 @@ class CoxeterDiagrams(OwnedCategory):
 
         def connected_components(self):
             r"""Return the connected components, as induced subdiagrams."""
-            return finite_ordered_set(
-                tuple(
-                    self.induced_subdiagram(component)
-                    for component in self._engine_graph().connected_components(sort=False)
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                self.induced_subdiagram(component)
+                for component in self._engine_graph().connected_components(sort=False)
+            ))
 
         def is_connected(self) -> bool:
             r"""Return whether this diagram has exactly one connected component.
@@ -587,9 +579,7 @@ class CoxeterDiagrams(OwnedCategory):
             names = tuple(self._names[ranking(vertex)] for vertex in vertices)
             preferred_positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in vertices}
             if self.is_rooted():
-                selected = finite_ordered_set(
-                    tuple(self.index_set().ranking_map()(vertex) for vertex in vertices)
-                )
+                selected = FiniteOrderedSets()(tuple(self.index_set().ranking_map()(vertex) for vertex in vertices))
                 roots = tuple(self._roots[position] for position in selected)
                 gram = tensor(
                     self._root_gram.base_ring(),
@@ -708,7 +698,7 @@ class CoxeterDiagrams(OwnedCategory):
                     diagram = self.induced_subdiagram(subset)
                     if predicate(diagram) and (not connected or diagram.is_connected()):
                         selected.append(diagram)
-            return finite_ordered_set(tuple(selected))
+            return FiniteOrderedSets()(tuple(selected))
 
         def elliptic_subdiagrams(self, *, connected=False):
             r"""Return the elliptic induced subdiagrams.
@@ -863,7 +853,7 @@ class CoxeterDiagrams(OwnedCategory):
                     continue
                 seen.update(self._orbit_vertex_sets(diagram))
                 representatives.append(diagram)
-            return finite_ordered_set(tuple(representatives))
+            return FiniteOrderedSets()(tuple(representatives))
 
         def subdiagram_orbits(self):
             r"""Return one induced subdiagram per :meth:`Aut`-orbit."""
@@ -882,15 +872,13 @@ class CoxeterDiagrams(OwnedCategory):
         def _maximal_by_vertex_inclusion(self, subdiagrams):
             r"""Return the members maximal for inclusion of vertex sets."""
             vertex_sets = tuple(frozenset(diagram.index_set()) for diagram in subdiagrams)
-            return finite_ordered_set(
-                tuple(
-                    diagram
-                    for diagram, vertices in zip(subdiagrams, vertex_sets, strict=True)
-                    if not any(
-                        vertices < other for other in vertex_sets
-                    )
+            return FiniteOrderedSets()(tuple(
+                diagram
+                for diagram, vertices in zip(subdiagrams, vertex_sets, strict=True)
+                if not any(
+                    vertices < other for other in vertex_sets
                 )
-            )
+            ))
 
         def maximal_elliptic_subdiagrams(self, *, connected=False):
             r"""Return the elliptic induced subdiagrams maximal for inclusion."""
@@ -1156,7 +1144,7 @@ class CoxeterDiagrams(OwnedCategory):
             from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             components = self.connected_components()
-            labels = finite_ordered_set(tuple(range(int(components.cardinality()))))
+            labels = FiniteOrderedSets()(tuple(range(int(components.cardinality()))))
             return indexed_family(
                 labels,
                 lambda position: components[int(position)].scaled_cartan_type(),
@@ -1374,7 +1362,7 @@ class CoxeterDiagrams(OwnedCategory):
             if scale is not None and scale != 1:
                 lattice = lattice.twist(scale)
             roots = tuple(lattice.module_generators())
-            mirrors = finite_ordered_set(tuple(CoxeterMatrix(cartan_type).index_set()))
+            mirrors = FiniteOrderedSets()(tuple(CoxeterMatrix(cartan_type).index_set()))
             gram = tensor(
                 lattice.base_ring(),
                 (),
@@ -1413,10 +1401,8 @@ def _root_basis_diagram(roots, names=None, index_set=None, positions=None, type_
         )
     # The roots carry their own enumeration; the vertices are indexed by it
     # unless the caller names them otherwise.
-    root_positions = finite_ordered_set(
-        tuple(position for position, _root in enumerate(roots))
-    )
-    mirrors = root_positions if index_set is None else finite_ordered_set(index_set)
+    root_positions = FiniteOrderedSets()(tuple(position for position, _root in enumerate(roots)))
+    mirrors = root_positions if index_set is None else FiniteOrderedSets()(index_set)
     if mirrors.cardinality() != root_positions.cardinality():
         raise ValueError(
             f"the index set {index_set} does not label the {len(roots)} roots: it has "

@@ -14,9 +14,7 @@ from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -121,7 +119,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
         for line in group.isotropic_orbit_representatives(1):
             generator = line.module_generator(0)
             representatives.append(line.inclusion()(generator))
-        self._orbits = finite_ordered_set(tuple(_primitive_isotropic_vector_orbit(group, locus, representative) for representative in representatives))
+        self._orbits = FiniteOrderedSets()(tuple(_primitive_isotropic_vector_orbit(group, locus, representative) for representative in representatives))
         super().__init__(facade=True, **rest)
 
     def group(self):
@@ -131,7 +129,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
         return self._locus
 
     def representatives(self):
-        return finite_ordered_set(tuple(orbit.representative() for orbit in self))
+        return FiniteOrderedSets()(tuple(orbit.representative() for orbit in self))
 
     def orbit_of(self, vector):
         if vector not in self.locus():
@@ -225,7 +223,7 @@ class _PrimitiveIsotropicSublatticeOrbitDecompositionEngine(_FiniteOrbitDecompos
         return self._locus
 
     def representatives(self):
-        return finite_ordered_set(tuple(cusp.representative() for cusp in self))
+        return FiniteOrderedSets()(tuple(cusp.representative() for cusp in self))
 
     def orbit_of(self, sublattice):
         if sublattice not in self.locus():
@@ -389,7 +387,7 @@ class IsotropicFlag:
         return self.top().module_rank()
 
     def terms(self):
-        return finite_ordered_set(self._terms)
+        return FiniteOrderedSets()(self._terms)
 
     def flag_length(self):
         r"""Return how many terms this flag has.
@@ -398,7 +396,7 @@ class IsotropicFlag:
         subobjects of growing rank, and the flag's own invariant is how many
         of them there are.
         """
-        return finite_ordered_set(self._terms).cardinality()
+        return FiniteOrderedSets()(self._terms).cardinality()
 
     def top(self):
         return self._terms[-1]

@@ -12,7 +12,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category_bases import Category
 
 
@@ -53,7 +53,7 @@ class ClassGroups(Category):
 
     def trivial(self, scheme):
         r"""The zero class group of ``scheme``, the free group on no classes."""
-        return self.free(scheme, finite_ordered_set(()))
+        return self.free(scheme, FiniteOrderedSets()(()))
 
     def projective_bundle(self, projective_space, base_class_group):
         r"""\(\operatorname{Cl}(\mathbb{P}^n_S) = \operatorname{Cl}(S) \oplus \mathbb{Z}[H]\).
@@ -73,7 +73,7 @@ class ClassGroups(Category):
             f"the base {projective_space.base_scheme()}"
         )
         integers = _integers()
-        hyperplane = integers.free_module(finite_ordered_set(("H",)))
+        hyperplane = integers.free_module(FiniteOrderedSets()(("H",)))
         return Modules(integers).biproduct(
             (base_class_group, hyperplane),
             extra_categories=(self,),

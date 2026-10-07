@@ -21,9 +21,7 @@ from dzack_research.preamble.categories.group.groups import (
     _conjugacy_class_size,
     _owned_group,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -159,13 +157,11 @@ class CharacterSets(OwnedParameterizedCategory):
 
         def irreducible_constituents(self):
             r"""Return the distinct irreducible characters occurring in ``self``."""
-            return finite_ordered_set(
-                tuple(
-                    irreducible
-                    for irreducible in self.group().irreducible_characters()
-                    if self._inner_product(irreducible) != 0
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                irreducible
+                for irreducible in self.group().irreducible_characters()
+                if self._inner_product(irreducible) != 0
+            ))
 
         def _repr_(self):
             return f"Character of degree {self.degree()} of {self.group()}"

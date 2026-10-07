@@ -47,7 +47,6 @@ from dzack_research.preamble.categories.sets.cardinals import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
@@ -621,7 +620,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             @cached_method
             def _identity_resolution(self):
-                zero = _fresh_free_module_on(self.base_ring(), finite_ordered_set(()))
+                zero = _fresh_free_module_on(self.base_ring(), FiniteOrderedSets()(()))
                 degrees = Sets.Δ[0]
                 return FreeResolution(
                     self,
@@ -700,7 +699,7 @@ def _known_finite_generator_family(module_generating_set):
 
     match module_generating_set:
         case tuple() | list() | range():
-            return finite_ordered_set(module_generating_set)
+            return FiniteOrderedSets()(module_generating_set)
         case IndexedFamily():
             # A family spans what its values span; kernels hand theirs over
             # this way, indexed by the finite set of solution vectors.
@@ -730,7 +729,7 @@ def _finite_support_labels(module, elements):
         for label in element.to_vector().support().domain():
             if not any(label == known for known in support):
                 support.append(label)
-    return finite_ordered_set(support)
+    return FiniteOrderedSets()(support)
 
 
 def _span_basis_elements(module, module_generating_set):
@@ -755,7 +754,7 @@ def _span_basis_elements(module, module_generating_set):
             # automatically a basis of the cyclic submodule it generates.
             # Retain that mathematical basis instead of echelon-normalizing it;
             # p-adic backends otherwise divide through nonunit pivots.
-            return finite_ordered_set((generator,))
+            return FiniteOrderedSets()((generator,))
     support_labels = _finite_support_labels(module, generators)
     support_points = tuple(support_labels)
 
@@ -947,7 +946,7 @@ def _module_generating_set(labels):
             )
             rank = labels.finite_value()
         case tuple() | list() | range():
-            return finite_ordered_set(labels)
+            return FiniteOrderedSets()(labels)
         case _:
             assert labels in Sets(), (
                 f"cannot form a free module on {labels!r}: give a rank or a set of basis labels"

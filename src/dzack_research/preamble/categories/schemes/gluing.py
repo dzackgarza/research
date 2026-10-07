@@ -73,9 +73,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_composition_mor,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -1017,9 +1015,7 @@ class _FiniteSchemeGluingDatum(SageObject):
                     f"affine charts over {self.base_ring()}, but {chart} is an object of {chart.category()}"
                 )
 
-        pair_indices = finite_ordered_set(
-            tuple(combinations(tuple(self.chart_indices()), 2))
-        )
+        pair_indices = FiniteOrderedSets()(tuple(combinations(tuple(self.chart_indices()), 2)))
         self._transitions = _family_on_finite_ordered_set(
             pair_indices,
             transitions,
@@ -1356,7 +1352,7 @@ class _FiniteAffineAtlasEngine:
         labels.extend((index,) for index in self.chart_index_set())
         labels.extend(tuple(pair) for pair in self.transition_index_set())
         return PosetCategory(
-            finite_ordered_set(tuple(labels)),
+            FiniteOrderedSets()(tuple(labels)),
             le=lambda finer, coarser: set(coarser).issubset(set(finer)),
         )
 
@@ -4208,7 +4204,7 @@ def _cover_pair_family(cover, transitions, *, noun):
             f"changes were given for the pairs {tuple(normalized)}"
         )
     return finite_indexed_family(
-        finite_ordered_set(expected),
+        FiniteOrderedSets()(expected),
         lambda pair: normalized[pair],
         name=f"Transition isomorphisms of {noun}",
     )
@@ -6504,7 +6500,7 @@ def _glued_chartwise_distinguished_open(
     the morphism obtained by gluing ``V_a -> U_i -> X``.  Thus callers retain
     an actual open subobject rather than only a chartwise predicate.
     """
-    fine_indices = finite_ordered_set(tuple(fine_indices))
+    fine_indices = FiniteOrderedSets()(tuple(fine_indices))
     coarse_index = _family_on_finite_ordered_set(
         fine_indices,
         coarse_indices,

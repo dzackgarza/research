@@ -16,7 +16,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories._lattice import signature_pair
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
 )
@@ -36,10 +36,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_ring,
     _set_owned_ring_display,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 def _own_number_field(engine):
@@ -137,9 +136,9 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
             engine = _engine_ring(self)
             if engine is SageQQ:
-                return signature_pair(1, 0)
+                return Cat().product((Cardinalities(), Cardinalities()))(1, 0)
             real, complex_pairs = engine.signature()
-            return signature_pair(real, complex_pairs)
+            return Cat().product((Cardinalities(), Cardinalities()))(real, complex_pairs)
 
         def class_number(self):
             r"""Return the class number of the ring of integers."""
@@ -176,7 +175,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     for generator in backend_ideal.gens()
                 )
                 ideals.append(order.ideal(*generators))
-            return finite_ordered_set(ideals)
+            return FiniteOrderedSets()(ideals)
 
         def ring_of_integers(self):
             r"""Return the maximal order ``O_K`` as an owned ring."""
@@ -211,7 +210,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def ramified_primes(self):
             r"""Return the rational primes ramified in ``K``."""
 
-            return finite_ordered_set(abs(self.discriminant()).prime_divisors())
+            return FiniteOrderedSets()(abs(self.discriminant()).prime_divisors())
 
         @cached_method
         def embeddings(self, target):
@@ -259,7 +258,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                             engine_embeddings[int(position)]
                         )
 
-            positions = finite_ordered_set(range(len(engine_embeddings)))
+            positions = FiniteOrderedSets()(range(len(engine_embeddings)))
 
             if source_engine is SageQQ:
                 def embedding_position(embedding):
@@ -407,7 +406,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 from_absolute, to_absolute = absolute.structure()
                 primitive = from_absolute(absolute.gen())
                 polynomial = absolute.defining_polynomial()
-                labels = finite_ordered_set(("absolute_generator",))
+                labels = FiniteOrderedSets()(("absolute_generator",))
                 def presentation_lift(element):
                     return to_absolute(element).lift()
 
@@ -417,7 +416,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             else:
                 primitive = engine.gen()
                 polynomial = engine.defining_polynomial()
-                labels = finite_ordered_set(engine.variable_names())
+                labels = FiniteOrderedSets()(engine.variable_names())
                 degree = int(engine.degree())
 
             presentation = rationals.free_module(labels).symmetric_algebra()

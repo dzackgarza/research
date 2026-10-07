@@ -20,7 +20,7 @@ def test_the_categories_of_the_k3_lattice() -> None:
 def test_the_invariants_of_the_k3_lattice() -> None:
     lattice = k3()
     assert lattice.module_rank() == 22
-    assert lattice.signature_pair() == signature_pair(3, 19)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(3, 19)
     assert lattice.is_even()
     assert lattice.is_unimodular()
     assert lattice.determinant() == -1
@@ -38,7 +38,7 @@ def test_the_displayed_hyperbolic_plane_splits_off_the_k3_lattice() -> None:
     assert hyperbolic.is_primitive()
     assert hyperbolic.gram_matrix() == Lattices.U.gram_matrix()
     assert complement.module_rank() == 20
-    assert complement.signature_pair() == signature_pair(2, 18)
+    assert complement.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 18)
     assert complement.is_unimodular()
     for left in hyperbolic.embedded_module_generators():
         for right in complement.embedded_module_generators():

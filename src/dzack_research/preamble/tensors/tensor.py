@@ -58,7 +58,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -1943,7 +1943,7 @@ class MixedTensorAlgebraElement(GradedDirectSumElement):
 
     def valences(self):
         r"""Return the finite set of bidegrees with nonzero component."""
-        return finite_ordered_set(tuple(self._components))
+        return FiniteOrderedSets()(tuple(self._components))
 
     def _repr_(self):
         if not self._components:

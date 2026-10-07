@@ -36,9 +36,9 @@ def test_the_negative_twist_swaps_the_signature() -> None:
     plane = Lattices(ZZ)("U")
     mixed = root_lattice + plane
 
-    assert root_lattice.twist(-1).signature_pair() == signature_pair(2, 0)
+    assert root_lattice.twist(-1).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(2, 0)
     assert root_lattice.twist(-1).is_positive_definite()
-    assert plane.twist(-1).signature_pair() == signature_pair(1, 1)
-    assert mixed.twist(-1).signature_pair() == signature_pair(3, 1)
+    assert plane.twist(-1).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
+    assert mixed.twist(-1).signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(3, 1)
     assert mixed.twist(-1).determinant() == mixed.determinant()
     assert mixed.twist(3).determinant() == 3 ** 4 * mixed.determinant()

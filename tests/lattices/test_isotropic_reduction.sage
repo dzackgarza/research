@@ -21,7 +21,7 @@ def test_reducing_a_hyperbolic_plane_off_an_isotropic_line_returns_the_complemen
     reduction = isotropic.isotropic_reduction()
 
     assert reduction.module_rank() == 2
-    assert reduction.signature_pair() == signature_pair(1, 1)
+    assert reduction.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
     assert reduction.determinant() == -1
     assert reduction.is_even()
     assert reduction.is_isometric(plane)
@@ -30,11 +30,11 @@ def test_reducing_a_hyperbolic_plane_off_an_isotropic_line_returns_the_complemen
 def test_the_reduction_drops_one_from_each_side_of_the_signature() -> None:
     root_lattice = Lattices(ZZ)("A2")
     lattice = Lattices(ZZ)("U") + root_lattice
-    assert lattice.signature_pair() == signature_pair(1, 3)
+    assert lattice.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 3)
 
     reduction = lattice.basis_vector(0).isotropic_reduction()
 
-    assert reduction.signature_pair() == signature_pair(0, 2)
+    assert reduction.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(0, 2)
     assert reduction.determinant() == 3
     assert reduction.is_isometric(root_lattice)
 

@@ -37,9 +37,7 @@ from dzack_research.preamble.categories.schemes.polytopes import (
     LatticePolygons,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -546,16 +544,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             """
             polygon = self.polarizing_polytope()
             integers = _own_ring(SageZZ)
-            labels = finite_ordered_set(
-                (
-                    "dimension",
-                    "volume",
-                    "normalized_volume",
-                    "n_integral_points",
-                    "n_interior_points",
-                    "n_boundary_points",
-                )
-            )
+            labels = FiniteOrderedSets()((
+                "dimension",
+                "volume",
+                "normalized_volume",
+                "n_integral_points",
+                "n_interior_points",
+                "n_boundary_points",
+            ))
             values = {
                 "dimension": integers(self.toric_scheme().relative_dimension()),
                 "volume": polygon.volume(),

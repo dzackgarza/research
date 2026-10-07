@@ -27,9 +27,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_morphism_from_pullback,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
@@ -417,7 +415,7 @@ class _ProjectiveLineBundleLinearization:
         if degree == 0:
             return self.section_group_module()
         base = self.section_scheme().scheme_base_ring()
-        zero = base._fresh_free_module_on(finite_ordered_set(()))
+        zero = base._fresh_free_module_on(FiniteOrderedSets()(()))
         return Modules(base).trivial_action(self.acting_group())(zero)
 
     def equivariant_section_restriction(self, divisor):

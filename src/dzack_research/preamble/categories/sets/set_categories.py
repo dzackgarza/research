@@ -108,11 +108,9 @@ def _finite_set_quotient_by_generated_relation(target, relation_pairs):
     ranking positions.  The returned quotient and projection are owned sets and
     maps; ``representative_point`` is used only to define the universal factor.
     """
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_set,
-    )
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
-    enumerated_target = finite_ordered_set(tuple(target))
+    enumerated_target = FiniteOrderedSets()(tuple(target))
     target_points = tuple(enumerated_target)
     target_ranking = enumerated_target.ranking_map()
 
@@ -394,8 +392,8 @@ class OwnedSetMorphism(SetMorphism):
     Unverified construction specimens, including a subset inclusion and maps
     of Python labels rather than Sage elements::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: labels = finite_ordered_set(("a", "b"))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: labels = FiniteOrderedSets()(("a", "b"))
         sage: swap = Sets().Mor(labels, labels)(lambda x: {"a": "b", "b": "a"}[x])
         sage: inclusion = labels.power_set()(("a",))
         sage: inclusion("a"), (swap * inclusion)("a")
@@ -715,9 +713,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         r"""Construct ``source`` as a represented set when syntactic ingress is needed."""
         if source in self:
             return source
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
         if source in SageSets():
             if source not in SageSets().Finite():
@@ -725,8 +721,8 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                     f"cannot use the Sage set {source} as a set of this session: it is infinite, and only finite "
                     "Sage sets convert directly"
                 )
-            return finite_ordered_set(tuple(source))
-        return finite_ordered_set(tuple(SageSet(source)))
+            return FiniteOrderedSets()(tuple(source))
+        return FiniteOrderedSets()(tuple(SageSet(source)))
 
     def condition_set(self, universe, predicate):
         r"""Return the subset \(\{x\in X : P(x)\}\) of ``universe`` cut out by ``predicate``, with its inclusion.
@@ -1844,7 +1840,7 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Sets().ObjectT
     ``Set`` is the ordinary-set constructor.  In particular, applying it to
     a finite ordered set forgets that order instead of returning the ordered
     object unchanged.  Constructions that require an order use
-    :func:`finite_ordered_set` explicitly.
+    ``FiniteOrderedSets()`` explicitly.
     """
     if isinstance(source, _FiniteLiteralSet):
         return source
@@ -2341,9 +2337,7 @@ class PowerSets(OwnedCategory):
 
         def _from_finite_members(self, members):
             r"""The finite subset on the stated members, as a finite ordered set with its inclusion."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
-            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
             base = self.base_set()
             normalized = []
@@ -2353,9 +2347,9 @@ class PowerSets(OwnedCategory):
                         f"{member!r} is not an element of {base}, so it cannot be a member of a subset of {base}"
                     )
                 normalized.append(base(member))
-            # ``finite_ordered_set`` identifies equal points; identifying them
+            # ``FiniteOrderedSets()`` identifies equal points; identifying them
             # here as well compared every pair twice.
-            inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
+            inclusion = SetInclusion(FiniteOrderedSets()(tuple(normalized)), base)
             return Sets().Subobjects(base)(inclusion)
 
         def __call__(self, *args, **kwargs):
@@ -2949,9 +2943,9 @@ class CartesianProductsOfSets(OwnedCategory):
 
     Unverified specimens for nonordinal labels and canonical finite products::
 
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: labels = finite_ordered_set(("red", "blue"))
-        sage: points = finite_ordered_set(("a", "b"))
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+        sage: labels = FiniteOrderedSets()(("red", "blue"))
+        sage: points = FiniteOrderedSets()(("a", "b"))
         sage: family = indexed_family(labels, lambda label: points)
         sage: product = Sets().product(family)
         sage: product.index_set() is labels
@@ -2970,7 +2964,7 @@ class CartesianProductsOfSets(OwnedCategory):
 
     Unverified specimens for unhashable labels and empty products::
 
-        sage: labels = finite_ordered_set(([0], [1]))
+        sage: labels = FiniteOrderedSets()(([0], [1]))
         sage: product = Sets().product(indexed_family(labels, lambda label: points))
         sage: section = product(("a", "b"))
         sage: product.projection([0])(section), product.projection([1])(section)

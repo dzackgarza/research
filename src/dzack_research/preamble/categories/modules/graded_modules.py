@@ -28,7 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     Zmod,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.lexicon.set_theory import SetObject
@@ -496,13 +496,11 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 f"cannot list the generators of {self} in degree {degree}: its chosen generating set {labels} "
                 f"is not known to be finite"
             )
-            return finite_ordered_set(
-                tuple(
-                    self.module_generator(label)
-                    for label in labels
-                    if self.degree_on_module_generator(self.module_generator(label)) == degree
-                )
-            )
+            return FiniteOrderedSets()(tuple(
+                self.module_generator(label)
+                for label in labels
+                if self.degree_on_module_generator(self.module_generator(label)) == degree
+            ))
 
         def graded_piece(self, degree):
             r"""Return the represented degree piece as a subobject of this module.

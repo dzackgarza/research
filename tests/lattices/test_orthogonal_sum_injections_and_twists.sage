@@ -37,7 +37,7 @@ def test_the_second_factor_of_a2_plus_u_is_unimodular() -> None:
 
     assert factor.determinant() == -1
     assert factor.is_unimodular()
-    assert factor.signature_pair() == signature_pair(1, 1)
+    assert factor.signature_pair() == Cat().product((Cardinalities(), Cardinalities()))(1, 1)
 
 
 def test_the_twist_functor_by_two_scales_the_form() -> None:

@@ -37,9 +37,7 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -426,7 +424,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         def regular_g_set(self):
             r"""Return ``G`` with its left regular action."""
             group = self.acting_group()
-            points = finite_ordered_set(tuple(group))
+            points = FiniteOrderedSets()(tuple(group))
             return FiniteGSets(group)(
                 points,
                 lambda group_element, point: group_element * point,
@@ -787,7 +785,7 @@ def _owned_point_set(point_set):
             case _:
                 return point
 
-    return finite_ordered_set(tuple(own_point(point) for point in point_set))
+    return FiniteOrderedSets()(tuple(own_point(point) for point in point_set))
 
 
 def _finite_g_set_from_action(
@@ -886,7 +884,7 @@ def _left_coset_g_set(group, subgroup):
 
 def _fixed_point_set(g_set):
     r"""Return the finite fixed-point set ``X^G``."""
-    return finite_ordered_set(g_set).filtered(g_set.is_invariant)
+    return FiniteOrderedSets()(g_set).filtered(g_set.is_invariant)
 
 
 class Torsors(OwnedParameterizedCategory):
@@ -912,7 +910,7 @@ class Torsors(OwnedParameterizedCategory):
             f"a torsor under {group} exists for every group, but the current finite-G-set realization can "
             "exhibit the regular torsor only when the acting group is represented as finite"
         )
-        points = finite_ordered_set(tuple(group))
+        points = FiniteOrderedSets()(tuple(group))
         return self(
             FiniteGSets(group)(
                 points,

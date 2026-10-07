@@ -49,7 +49,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -465,27 +464,23 @@ def _embedded_elements(subobject):
 
 def _torsion_form_isotropic_subobjects(form, *, quadratic: bool):
     r"""Return all form-bearing subobjects on which the selected form vanishes."""
-    return finite_ordered_set(
-        tuple(
-            subobject
-            for subobject in _torsion_form_all_subobjects(
-                form, quadratic=quadratic
-            )
-            if form.form_vanishes_on(_embedded_elements(subobject))
+    return FiniteOrderedSets()(tuple(
+        subobject
+        for subobject in _torsion_form_all_subobjects(
+            form, quadratic=quadratic
         )
-    )
+        if form.form_vanishes_on(_embedded_elements(subobject))
+    ))
 
 
 def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
     isotropic = _torsion_form_isotropic_subobjects(form, quadratic=quadratic)
     by_elements = tuple((subobject, _embedded_elements(subobject)) for subobject in isotropic)
-    return finite_ordered_set(
-        tuple(
-            subobject
-            for subobject, elements in by_elements
-            if not any(elements < larger for _other, larger in by_elements)
-        )
-    )
+    return FiniteOrderedSets()(tuple(
+        subobject
+        for subobject, elements in by_elements
+        if not any(elements < larger for _other, larger in by_elements)
+    ))
 
 
 def _torsion_form_all_subobjects(form, *, quadratic: bool):
@@ -521,19 +516,17 @@ def _torsion_form_all_subobjects(form, *, quadratic: bool):
         )
         return normalization.inverse()(normalized_element)
 
-    return finite_ordered_set(
-        tuple(
-            _torsion_form_subobject_on(
-                form,
-                tuple(
-                    owned_engine_generator(generator)
-                    for generator in engine_submodule.gens()
-                ),
-                quadratic=quadratic,
-            )
-            for engine_submodule in engine.all_submodules()
+    return FiniteOrderedSets()(tuple(
+        _torsion_form_subobject_on(
+            form,
+            tuple(
+                owned_engine_generator(generator)
+                for generator in engine_submodule.gens()
+            ),
+            quadratic=quadratic,
         )
-    )
+        for engine_submodule in engine.all_submodules()
+    ))
 
 
 def _torsion_form_orthogonal_subobject(form, subobject, *, quadratic: bool):
@@ -556,20 +549,18 @@ def _torsion_form_orthogonal_subobject(form, subobject, *, quadratic: bool):
 
 def _torsion_form_lagrangian_subobjects(form, *, quadratic: bool):
     r"""Return isotropic ``S`` satisfying ``S=S^perp``."""
-    return finite_ordered_set(
-        tuple(
-            subobject
-            for subobject in _torsion_form_isotropic_subobjects(
-                form, quadratic=quadratic
-            )
-            if _embedded_elements(subobject)
-            == _embedded_elements(
-                _torsion_form_orthogonal_subobject(
-                    form, subobject, quadratic=quadratic
-                )
+    return FiniteOrderedSets()(tuple(
+        subobject
+        for subobject in _torsion_form_isotropic_subobjects(
+            form, quadratic=quadratic
+        )
+        if _embedded_elements(subobject)
+        == _embedded_elements(
+            _torsion_form_orthogonal_subobject(
+                form, subobject, quadratic=quadratic
             )
         )
-    )
+    ))
 
 
 def _torsion_form_element_action(form, acting):
@@ -589,7 +580,7 @@ def _torsion_form_subobject_action(form, family, acting):
     torsion-form layer supplies the mathematical action while orbit and
     stabilizer structure is owned by :class:`FiniteGSets`.
     """
-    points = finite_ordered_set(tuple(family))
+    points = FiniteOrderedSets()(tuple(family))
     by_embedded_elements = {
         _embedded_elements(subobject): subobject
         for subobject in points
@@ -617,7 +608,7 @@ def _torsion_form_subobject_action(form, family, acting):
 def _torsion_form_subobject_orbits(form, family, acting):
     r"""Return the orbit partition through the represented finite G-set action."""
     action = _torsion_form_subobject_action(form, family, acting)
-    return finite_ordered_set(tuple(orbit.points() for orbit in action.orbits()))
+    return FiniteOrderedSets()(tuple(orbit.points() for orbit in action.orbits()))
 
 
 def _torsion_form_subquotient(form, subobject, over, *, quadratic: bool):
@@ -751,7 +742,7 @@ def _prime_indexed_generators(generators_by_prime):
             name="Jordan generators",
         )
 
-    primes = finite_ordered_set(tuple(sorted(generators_by_prime)))
+    primes = FiniteOrderedSets()(tuple(sorted(generators_by_prime)))
     return indexed_family(primes, generators_at, name="p-adic Jordan generators")
 
 
@@ -1104,9 +1095,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     @cached_method
     def _computed_group_generators(self):
         r"""Return the engine's generators of ``O(q)``, raised to form automorphisms."""
-        return finite_ordered_set(
-            tuple(self._from_engine(generator) for generator in self._engine_group().gens())
-        )
+        return FiniteOrderedSets()(tuple(self._from_engine(generator) for generator in self._engine_group().gens()))
 
     def is_quadratic(self) -> bool:
         return self._quadratic

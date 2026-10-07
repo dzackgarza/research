@@ -8,13 +8,13 @@ def test_two_elementary_catalogues_and_searches_retain_the_archive_mathematics()
     assert NegativeDefTwoElementary.cardinality() == 51
 
     target = TwoElementary[(10, 0, 0)]
-    candidates = two_elementary_orthogonal_sums(signature_pair(1, 9), 0, 0)
+    candidates = two_elementary_orthogonal_sums(Cat().product((Cardinalities(), Cardinalities()))(1, 9), 0, 0)
     assert candidates.cardinality() == 1
     candidate = candidates[0]
     assert candidate.gram_tensor().is_equal_tensor(target.gram_tensor())
 
     repeated = signature_orthogonal_sums(
-        signature_pair(0, 2), (NamedLattices.A1,)
+        Cat().product((Cardinalities(), Cardinalities()))(0, 2), (NamedLattices.A1,)
     )
     assert repeated.cardinality() == 1
     assert repeated[0].gram_tensor().is_equal_tensor(
