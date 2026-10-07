@@ -1,5 +1,13 @@
 # Clifford lifting and spinor obstructions {#sec-clifford-lifting}
 
+The occurrence of arithmetic orthogonal groups as monodromy groups motivates their intrinsic study. An identification
+$$
+\operatorname{Mon}(\mathcal L)=\widetilde O^+(L)
+$$
+is a theorem about a specified moduli problem and its integral variation $\mathcal L$. The algebraic group on the right is constructed from the lattice: it is the common kernel of the discriminant action and the real spinor character. These constructions, and the hypotheses under which their kernels agree with integral or rational Clifford lifting images, are the subject of this chapter.
+
+We begin with Clifford lifting over a commutative ring. For a perfect quadratic module, its obstruction is a discriminant module; square classes arise through the Kummer sequence. We then compare integral, rational, and real kernels and impose the discriminant-kernel condition. Kneser's theorem supplies an equality of these algebraic groups under explicit lattice hypotheses [@HO89, §7.2C; @GHS08, Theorem 1.1 and Corollary 1.2]. Period domains provide a geometric interpretation of the real character, and the lattice-polarized K3 example records an application [@Daw22, §§1.3–1.4; @Dol96, §3].
+
 ## Quadratic modules and Clifford lifts
 
 Let $R$ be a commutative ring, let $M$ be a finitely generated projective $R$-module, and let $q\colon M\to R$ be a quadratic form. Write
@@ -240,7 +248,14 @@ K_{\mathbb Z}(L)=K_{\mathbb Q}(L)=K_{\mathbb R}(L),
 $$
 For a nonunimodular lattice, the rational-to-real equality criterion still applies. The integral lifting subgroup is @def:integral-clifford-lifting-subgroup.
 
-## The moduli character and its algebraic identification
+## The real spinor kernel and its period interpretation
+
+For an integral lattice of signature $(2,n)$, write
+$$
+O_{\mathrm{sp}}^+(L)=K_{\mathbb R}(L)
+=\ker\bigl(\operatorname{sgn}\circ\theta_{\mathbb Q}^L\bigr).
+$$
+This is the group denoted $O^+(L)$ in [@Daw22, §1.3]. The subscript distinguishes it from Hahn–O'Meara's rotation group $O_{\mathrm{rot}}(L)$. The following proposition identifies its real spinor character with the action on period components.
 
 ::: {.definition #def:period-component-character title="Period-component character"}
 
@@ -250,12 +265,7 @@ $$
 b(\omega,\omega)=0,\ b(\omega,\bar\omega)>0\}.
 $$
 The map $[\omega]\mapsto\langle\operatorname{Re}\omega,\operatorname{Im}\omega\rangle$, with this ordered orientation, identifies it with the space of oriented positive-definite real two-planes. It has two connected components. The action on them defines
-$\chi_{\mathrm{per}}\colon O(L)\to\{+1,-1\}$, where $+1$ means that each component is preserved. Define
-$$
-O_{\mathrm{mod}}^+(L)=\ker\chi_{\mathrm{per}}
-=\operatorname{Stab}_{O(L)}(\Omega_L^+)
-$$
-for either component $\Omega_L^+$.
+$\chi_{\mathrm{per}}\colon O(L)\to\{+1,-1\}$, where $+1$ means that each component is preserved.
 :::
 
 ::: {.proposition #prop:period-spinor-character title="The period character is the real spinor character"}
@@ -264,11 +274,12 @@ With the conjugation normalization $\theta(s_v)=[-q(v)]$,
 $$
 \chi_{\mathrm{per}}=\chi_{\mathrm{sp}}
 =\operatorname{sgn}\circ\theta_{\mathbb Q}^L,\qquad
-O_{\mathrm{mod}}^+(L)=K_{\mathbb R}(L).
+O_{\mathrm{sp}}^+(L)=K_{\mathbb R}(L)
+=\operatorname{Stab}_{O(L)}(\Omega_L^+).
 $$
 In particular,
 $$
-O_{\mathrm{mod}}^+(L)=K_{\mathbb Q}(L)
+O_{\mathrm{sp}}^+(L)=K_{\mathbb Q}(L)
 \quad\Longleftrightarrow\quad
 \operatorname{im}(\theta_{\mathbb Q}^L)\cap
 \bigl(\mathbb Q_{>0}^\times/(\mathbb Q^\times)^2\bigr)=\{[1]\}.
@@ -290,7 +301,7 @@ For signature $(1,n)$ the analogous geometric character is the action on the two
 For an even unimodular lattice $L$ of signature $(2,n)$,
 $$
 O_{\mathrm{rot}}(L)=SO(L)=\ker\det,\qquad
-O_{\mathrm{mod}}^+(L)=\ker\chi_{\mathrm{sp}}.
+O_{\mathrm{sp}}^+(L)=\ker\chi_{\mathrm{sp}}.
 $$
 On a subgroup $\Gamma\subseteq O(L)$ their intersections agree exactly when
 $\det|_\Gamma=\chi_{\mathrm{sp}}|_\Gamma$: two sign characters with the same kernel are equal. Their common intersection without this hypothesis is
@@ -303,10 +314,10 @@ $$
 r(e)=f,\quad r(f)=e,\qquad
 s(e)=-f,\quad s(f)=-e.
 $$
-Hence $\det r=-1$ and $\theta_{\mathbb Z}(r)=[1]$, so $r\in O_{\mathrm{mod}}^+(L)\setminus SO(L)$. Conversely, $\det(rs)=+1$ and $\theta_{\mathbb Z}(rs)=[-1]$, so $rs\in SO(L)\setminus O_{\mathrm{mod}}^+(L)$. The integral, rational, and real spinor kernels coincide here, but neither inclusion between the rotation and moduli groups holds.
+Hence $\det r=-1$ and $\theta_{\mathbb Z}(r)=[1]$, so $r\in O_{\mathrm{sp}}^+(L)\setminus SO(L)$. Conversely, $\det(rs)=+1$ and $\theta_{\mathbb Z}(rs)=[-1]$, so $rs\in SO(L)\setminus O_{\mathrm{sp}}^+(L)$. The integral, rational, and real spinor kernels coincide here, but neither inclusion between the rotation and real spinor groups holds.
 :::
 
-## Discriminant kernels and monodromy
+## Discriminant kernels and spinor comparison
 
 For an even integral lattice $L$ of signature $(2,n)$, define
 $$
@@ -317,16 +328,16 @@ $$
 The induced action is $\rho_L\colon O(L)\to O(A_L,q_{A_L})$. Define
 $$
 \widetilde O(L)=\ker\rho_L,\qquad
-\widetilde O_{\mathrm{mod}}^+(L)
-=\ker(\rho_L,\chi_{\mathrm{per}})
+\widetilde O_{\mathrm{sp}}^+(L)
+=\ker(\rho_L,\chi_{\mathrm{sp}})
 =\widetilde O(L)\cap K_{\mathbb R}(L).
 $$
-The notation $\widetilde O^+(L)$ denotes $\widetilde O_{\mathrm{mod}}^+(L)$ in [@Daw22, §§1.2–1.4], with discriminant form normalized as $b(x,x)\bmod2\mathbb Z$.
+The notation $\widetilde O^+(L)$ denotes $\widetilde O_{\mathrm{sp}}^+(L)$ in [@Daw22, §§1.2–1.4], with discriminant form normalized as $b(x,x)\bmod2\mathbb Z$.
 
 There is also a stable rational spinor kernel $\widetilde K_{\mathbb Q}(L)=\ker\rho_L\cap K_{\mathbb Q}(L)$. Their precise comparison is
 $$
 1\longrightarrow\widetilde K_{\mathbb Q}(L)
-\longrightarrow\widetilde O_{\mathrm{mod}}^+(L)
+\longrightarrow\widetilde O_{\mathrm{sp}}^+(L)
 \xrightarrow{\theta_{\mathbb Q}^L}
 \theta_{\mathbb Q}^L(\ker\rho_L)\cap
 \bigl(\mathbb Q_{>0}^\times/(\mathbb Q^\times)^2\bigr)
@@ -334,51 +345,23 @@ $$
 $$
 If $L$ is even unimodular, $A_L=0$, and
 $$
-\widetilde K_{\mathbb Q}(L)=\widetilde O_{\mathrm{mod}}^+(L)
+\widetilde K_{\mathbb Q}(L)=\widetilde O_{\mathrm{sp}}^+(L)
 =K_{\mathbb Z}(L)=K_{\mathbb Q}(L)=K_{\mathbb R}(L).
 $$
-
-::: {.definition #def:vhs-monodromy title="Monodromy of a lattice-valued variation"}
-
-Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure of weight two on a connected complex manifold $B$, with a base point $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport defines
-$$
-m_{\mathbb V}\colon\pi_1(B,b)\longrightarrow O(L),\qquad
-\Gamma_{\mathbb V}=\operatorname{im}m_{\mathbb V}.
-$$
-For a moduli stack, use its orbifold fundamental group. A different choice of fiber isometry conjugates $\Gamma_{\mathbb V}$ in $O(L)$.
-:::
-
-For a weight-two variation of K3 type, with Hodge numbers $(1,n,1)$ and the type-IV sign convention, the period map from the connected universal cover of $B$ lands in one component of $\Omega_L$. Equivariance implies $\Gamma_{\mathbb V}\subseteq O_{\mathrm{mod}}^+(L)$. If the induced discriminant local system is constant, then $\rho_L\circ m_{\mathbb V}=1$, and consequently
-$$
-\Gamma_{\mathbb V}\subseteq\widetilde O_{\mathrm{mod}}^+(L).
-$$
-### Lattice-polarized K3 periods
-
-Fix a primitive embedding $P\hookrightarrow\Lambda_{\mathrm{K3}}$ of an even lattice of signature $(1,t)$, where $\Lambda_{\mathrm{K3}}$ is the even unimodular lattice of signature $(3,19)$. Put $T=P^\perp$. The group of changes of marking fixing the polarization pointwise is
-$$
-\Gamma(P)=\{\gamma\in O(\Lambda_{\mathrm{K3}}):\gamma|_P=1\}.
-$$
-Restriction to $T$ is injective. Its image $\Gamma_P$ is
-$$
-\Gamma_P=\ker\bigl(O(T)\to O(A_T,q_{A_T})\bigr)=\widetilde O(T),
-\qquad
-\operatorname{Stab}_{\Gamma_P}(\Omega_T^+)=\widetilde O_{\mathrm{mod}}^+(T).
-$$
-The first equality is [@Dol96, Proposition 3.3]; the second follows by intersecting with the period-component stabilizer. Dolgachev's ample lattice-polarized period space is the complement of the root hyperplanes in $\Omega_T$, modulo $\Gamma_P$ [@Dol96, §3, Corollary 3.2 and the discussion following Proposition 3.3].
 
 ### Kneser's comparison theorem
 
 For a prime $p$, define $\operatorname{rank}_p(L)$ as the maximal rank of a sublattice whose Gram determinant is prime to $p$. Define the *rational spinorial kernel*
 $$
 O'(L)=SO(L)\cap K_{\mathbb Q}(L),\qquad
-\widetilde{SO}_{\mathrm{mod}}^+(L)=SO(L)\cap\widetilde O_{\mathrm{mod}}^+(L).
+\widetilde{SO}_{\mathrm{sp}}^+(L)=SO(L)\cap\widetilde O_{\mathrm{sp}}^+(L).
 $$
 
 ::: {.theorem #thm:kneser-spinor-comparison title="Kneser conditions"}
 
 Let $L$ be an even lattice of signature $(2,n)$ with $n\geq2$. Suppose $L$ represents $-2$, $\operatorname{rank}_3(L)\geq5$, and $\operatorname{rank}_2(L)\geq6$. Then
 $$
-O'(L)=\widetilde{SO}_{\mathrm{mod}}^+(L)
+O'(L)=\widetilde{SO}_{\mathrm{sp}}^+(L)
 =\langle s_u s_v:u,v\in L,\ b(u,u)=b(v,v)=-2\rangle.
 $$
 The generation statement is Kneser's theorem, as stated in [@GHS08, Theorem 1.1]; the equality with the stable real kernel is [@GHS08, Corollary 1.2].
@@ -388,13 +371,13 @@ The generation statement is Kneser's theorem, as stated in [@GHS08, Theorem 1.1]
 
 Under the hypotheses of @thm:kneser-spinor-comparison,
 $$
-K_{\mathrm{lift},\mathbb Z}(L)=K_{\mathbb Q}(L)=\widetilde O_{\mathrm{mod}}^+(L)
+K_{\mathrm{lift},\mathbb Z}(L)=K_{\mathbb Q}(L)=\widetilde O_{\mathrm{sp}}^+(L)
 =\langle s_a:a\in L,\ b(a,a)=-2\rangle.
 $$
 Moreover,
 $$
 \operatorname{im}\bigl(\operatorname{Spin}(L)(\mathbb Z)\to O(L)\bigr)
-=O'(L)=\widetilde{SO}_{\mathrm{mod}}^+(L).
+=O'(L)=\widetilde{SO}_{\mathrm{sp}}^+(L).
 $$
 :::
 
@@ -403,10 +386,10 @@ $$
 Assume the Kneser conditions and choose a root $a\in L$.
 
 1. **Root reflection.** The formula $s_a(x)=x+b(x,a)a$ gives an integral isometry. For $x\in L^\vee$, its difference from $x$ lies in $L$, so $\rho_L(s_a)=1$. Also $\det(s_a)=-1$ and $\theta_{\mathbb Q}(s_a)=[1]$.
-2. **Even parts.** The determinant-one parts of $K_{\mathbb Q}(L)$ and $\widetilde O_{\mathrm{mod}}^+(L)$ coincide and are generated by pairs of root reflections, by @thm:kneser-spinor-comparison.
+2. **Even parts.** The determinant-one parts of $K_{\mathbb Q}(L)$ and $\widetilde O_{\mathrm{sp}}^+(L)$ coincide and are generated by pairs of root reflections, by @thm:kneser-spinor-comparison.
 3. **Odd parts.** Multiplication by $s_a$ identifies the determinant-minus-one part of each of these two groups with its determinant-one part, by step 1.
 4. **Integral lifts.** The Clifford vector $a$ has $a^2=q(a)=-1$ and $a\bar a=1$. It is an integral norm-one lift of $s_a$. Products of these vectors lift the group generated by the root reflections; products of pairs lie in $\operatorname{Spin}(L)(\mathbb Z)$.
-5. **Conclusion.** Steps 2–3 identify $K_{\mathbb Q}(L)$ with $\widetilde O_{\mathrm{mod}}^+(L)$ and give the stated generators. Step 4 and $K_{\mathrm{lift},\mathbb Z}(L)\subseteq K_{\mathbb Q}(L)$ identify the integral lifting subgroup. For the even subgroup, step 4 gives surjectivity onto $O'(L)$; scalar extension places the image of $\operatorname{Spin}(L)(\mathbb Z)$ in $O'(L)$.
+5. **Conclusion.** Steps 2–3 identify $K_{\mathbb Q}(L)$ with $\widetilde O_{\mathrm{sp}}^+(L)$ and give the stated generators. Step 4 and $K_{\mathrm{lift},\mathbb Z}(L)\subseteq K_{\mathbb Q}(L)$ identify the integral lifting subgroup. For the even subgroup, step 4 gives surjectivity onto $O'(L)$; scalar extension places the image of $\operatorname{Spin}(L)(\mathbb Z)$ in $O'(L)$.
 :::
 
 ::: {.example #ex:polarized-k3-spinor-kernel title="The polarized K3 period lattice"}
@@ -418,7 +401,7 @@ $$
 [@GHS08, equation (3)]. Its unimodular summand has rank $20$, so $\operatorname{rank}_2(L_{2d})$ and $\operatorname{rank}_3(L_{2d})$ are at least $20$. It contains $2U$ and a vector of square $-2$. Consequently @cor:kneser-full-spinor-kernel gives
 $$
 K_{\mathrm{lift},\mathbb Z}(L_{2d})
-=K_{\mathbb Q}(L_{2d})=\widetilde O_{\mathrm{mod}}^+(L_{2d}).
+=K_{\mathbb Q}(L_{2d})=\widetilde O_{\mathrm{sp}}^+(L_{2d}).
 $$
 By [@Dol96, Proposition 3.3], this is the component-preserving period group for the fixed primitive polarization embedding.
 :::
@@ -450,5 +433,35 @@ Let $M=\mathbb Z^2$ with $q(x,y)=x^2-2y^2$. Its polar Gram matrix is $\operatorn
 
 After passage to $\mathbb Z[1/2]$, the polar form is perfect and $2$ is a unit. The class is then represented by the discriminant line with pairing $2$, or equivalently by the $\mu_2$-torsor $t^2=2$.
 
-To obtain a type-IV example, take $L=M\oplus\langle2\rangle$, where the last summand has bilinear Gram matrix $(2)$, and extend $g$ by the identity. Then $L$ has signature $(2,1)$ and $\theta_{\mathbb Q}^L(g)=[2]$. Thus $g\in O_{\mathrm{mod}}^+(L)\setminus K_{\mathbb Q}(L)$.
+To obtain a type-IV example, take $L=M\oplus\langle2\rangle$, where the last summand has bilinear Gram matrix $(2)$, and extend $g$ by the identity. Then $L$ has signature $(2,1)$ and $\theta_{\mathbb Q}^L(g)=[2]$. Thus $g\in O_{\mathrm{sp}}^+(L)\setminus K_{\mathbb Q}(L)$.
 :::
+
+## Period groups and monodromy applications
+
+::: {.definition #def:vhs-monodromy title="Monodromy of a lattice-valued variation"}
+
+Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure of weight two on a connected complex manifold $B$, with a base point $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport defines
+$$
+m_{\mathbb V}\colon\pi_1(B,b)\longrightarrow O(L),\qquad
+\Gamma_{\mathbb V}=\operatorname{im}m_{\mathbb V}.
+$$
+For a moduli stack, use its orbifold fundamental group. A different choice of fiber isometry conjugates $\Gamma_{\mathbb V}$ in $O(L)$.
+:::
+
+For a weight-two variation of K3 type, with Hodge numbers $(1,n,1)$ and the type-IV sign convention, the period map from the connected universal cover of $B$ lands in one component of $\Omega_L$. Equivariance implies $\Gamma_{\mathbb V}\subseteq O_{\mathrm{sp}}^+(L)$. If the induced discriminant local system is constant, then $\rho_L\circ m_{\mathbb V}=1$, and consequently
+$$
+\Gamma_{\mathbb V}\subseteq\widetilde O_{\mathrm{sp}}^+(L).
+$$
+### Lattice-polarized K3 periods
+
+Fix a primitive embedding $P\hookrightarrow\Lambda_{\mathrm{K3}}$ of an even lattice of signature $(1,t)$, where $\Lambda_{\mathrm{K3}}$ is the even unimodular lattice of signature $(3,19)$. Put $T=P^\perp$. The group of changes of marking fixing the polarization pointwise is
+$$
+\Gamma(P)=\{\gamma\in O(\Lambda_{\mathrm{K3}}):\gamma|_P=1\}.
+$$
+Restriction to $T$ is injective. Its image $\Gamma_P$ is
+$$
+\Gamma_P=\ker\bigl(O(T)\to O(A_T,q_{A_T})\bigr)=\widetilde O(T),
+\qquad
+\operatorname{Stab}_{\Gamma_P}(\Omega_T^+)=\widetilde O_{\mathrm{sp}}^+(T).
+$$
+The first equality is [@Dol96, Proposition 3.3]; the second follows by intersecting with the period-component stabilizer. Dolgachev's ample lattice-polarized period space is the complement of the root hyperplanes in $\Omega_T$, modulo $\Gamma_P$ [@Dol96, §3, Corollary 3.2 and the discussion following Proposition 3.3].
