@@ -87,6 +87,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -1685,6 +1686,39 @@ class Modules(OwnedCategoryOverBaseRing):
                     raise AssertionError(
                         f"flatness is decided over a field or a principal ideal domain, and {ring} is neither"
                     )
+
+        @RealizationHook
+        def _rank_decision(self):
+            r"""Protected rank of this module when its data does not reach the general case.
+
+            ``module_rank`` is the only caller.  A realization or a more
+            specific category supplies the answer as a cardinal; ``Unknown``
+            here means undecided.
+            """
+            return Unknown
+
+        def module_rank(self):
+            r"""Return ``rank_R(M)`` (Mathlib ``Module.rank``), a cardinal.
+
+            Over a field ``k`` the rank is the dimension: the cardinality of a
+            basis.  A basis of cardinality ``n`` identifies ``M`` with ``k^n``
+            as a set, so when ``k`` and ``M`` are finite, ``|M| = |k|^n`` and
+            ``n`` is the exact logarithm of ``|M|`` to the base ``|k|``.  A
+            more specific category with a chosen basis or presentation answers
+            from that datum; any other module answers through
+            ``_rank_decision``.
+            """
+            ring = self.base_ring()
+            match self:
+                case _ if ring in OwnedFields() and ring.is_finite() is True and self.is_finite() is True:
+                    return cardinal(SageZZ(int(self.cardinality())).exact_log(int(ring.cardinality())))
+                case _:
+                    decided = self._rank_decision()
+                    assert decided is not Unknown, (
+                        f"the rank of {self} over {ring} is computed over a finite field for a finite "
+                        f"module, or from a chosen basis or presentation, and {self} supplies none of these"
+                    )
+                    return decided
 
         @abstract_method
         def base_change(self, ring_map):
