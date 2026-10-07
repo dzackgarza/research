@@ -1618,7 +1618,13 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _:
                     return self._finite_presentation_decision()
 
-        def _projectivity_decision(self):
+        def projectivity_decision(self):
+            r"""Decide projectivity from this module's data, never from its placement.
+
+            ``Modules(R).Projective()`` certifies its objects by this
+            statement, so a placement there is checked against it.  A module
+            whose data does not decide projectivity answers ``Unknown``.
+            """
             return Unknown
 
         def is_projective(self):
@@ -1626,7 +1632,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 case _ if self in Modules(self.base_ring()).Projective():
                     return True
                 case _:
-                    return self._projectivity_decision()
+                    return self.projectivity_decision()
 
         def _torsion_decision(self):
             return Unknown
@@ -2462,7 +2468,7 @@ class Modules(OwnedCategoryOverBaseRing):
     class Projective(CategoryWithAxiom):
         r"""Direct summands of free modules."""
 
-        _certifying_predicate = "is_projective"
+        _certifying_predicate = "projectivity_decision"
 
         def an_object(self):
             r"""The free module of rank one, which is projective."""
@@ -4632,6 +4638,21 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        def projectivity_decision(self):
+            r"""Decide projectivity of ``Hom_R(F_R(S), F_R(T))`` from its endpoints.
+
+            Over a commutative ring ``R``, the Mor object between finite
+            framed free modules is free on the matrix units ``T x S``, hence
+            projective.  The answer reads the base ring and the endpoints,
+            never this Mor's placement.
+            """
+            ring = self.domain().base_ring()
+            match ring.is_commutative():
+                case True if _coordinate_framed_free_module(self.domain(), ring) and _coordinate_framed_free_module(self.codomain(), ring):
+                    return True
+                case _:
+                    return Unknown
+
         def row_index_set(self):
             return self.codomain().module_generating_set()
 

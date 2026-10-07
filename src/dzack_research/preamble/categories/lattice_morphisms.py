@@ -59,7 +59,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
@@ -1125,8 +1124,6 @@ class LatticeEmbeddingMor(CategoricalMor):
             codomain,
             category=category,
         )
-        if category is not None:
-            realize_owned_category(self)
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the lattice embedding; ``check=True`` runs its validators (``OWN-22``)."""
