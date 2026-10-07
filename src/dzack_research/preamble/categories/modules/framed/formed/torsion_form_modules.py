@@ -23,10 +23,8 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
-    Groups,
     OwnedFiniteGroups,
-    OwnedGroups,
-    _fix_selected_group_resolution_data,
+    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _module_invariant_factor_form,
@@ -1066,14 +1064,14 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         *,
         quadratic: bool,
     ) -> None:
+        r"""Store the form and the quadratic flag, and fix the category (``OWN-22``).
+
+        The invariant-factor normalization, the engine group and the
+        generating set are computed on first request and cached.  The
+        selected free-group resolution is fixed on the generating set
+        computed when it is first read (``CAT-29``).
+        """
         self._quadratic = bool(quadratic)
-        self._normalization = form.invariant_factor_form()
-        self._normalized_form = self._normalization.codomain()
-        self._engine_module = _engine_torsion_form(
-            self._normalized_form,
-            quadratic=self._quadratic,
-        )
-        self._engine_group_parent = self._engine_module.orthogonal_group()
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -1082,14 +1080,13 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             category=OwnedFiniteGroups(),
         )
         realize_owned_category(self)
-        engine_generators = tuple(self._engine_group_parent.gens())
-        generators = finite_ordered_set(
-            tuple(self._from_engine(generator) for generator in engine_generators)
-        )
-        source = Groups.Free(index_set=generators)
-        generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-        _fix_selected_group_resolution_data(
-            self, source, generators, generator_morphism
+        _fix_selected_group_resolution_on(self, self._computed_group_generators)
+
+    @cached_method
+    def _computed_group_generators(self):
+        r"""Return the engine's generators of ``O(q)``, raised to form automorphisms."""
+        return finite_ordered_set(
+            tuple(self._from_engine(generator) for generator in self._engine_group().gens())
         )
 
     def is_quadratic(self) -> bool:
@@ -1120,15 +1117,26 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def invariant_form(self):
         return self.domain()
 
+    @cached_method
     def normalization_isometry(self):
-        return self._normalization
+        r"""Return the isometry from the form to its invariant-factor normal form."""
+        return self.domain().invariant_factor_form()
 
     def supergroup(self):
         return self
 
+    @cached_method
+    def _engine_module(self):
+        r"""Return the private Sage finite form on the invariant-factor framing."""
+        return _engine_torsion_form(
+            self.normalization_isometry().codomain(),
+            quadratic=self._quadratic,
+        )
+
+    @cached_method
     def _engine_group(self):
         r"""Return the private Sage orthogonal-group parent."""
-        return self._engine_group_parent
+        return self._engine_module().orthogonal_group()
 
     def _to_engine(self, automorphism):
         r"""Lower a live automorphism under the owned-group engine contract.
@@ -1138,11 +1146,11 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         """
         if not self.accepts(automorphism):
             raise ValueError(f"{automorphism} is not an element of the orthogonal group {self}")
-        return self._engine_group_parent(automorphism._engine())
+        return self._engine_group()(automorphism._engine())
 
     def _engine_subgroup_from_generators(self, generators):
         r"""Compute a generated subgroup without allocating another fixed Mor."""
-        return self._engine_group_parent.subgroup(
+        return self._engine_group().subgroup(
             [self._to_engine(generator) for generator in generators]
         )
 
@@ -1155,17 +1163,18 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         return self._from_engine(engine_element)
 
     def _normalized_map(self, engine_automorphism):
-
-        engine_automorphism = self._engine_group_parent(engine_automorphism)
-        cover = self._engine_module.V()
-        labels = tuple(self._normalized_form.module_generating_set())
+        normalized_form = self.normalization_isometry().codomain()
+        engine_module = self._engine_module()
+        engine_automorphism = self._engine_group()(engine_automorphism)
+        cover = engine_module.V()
+        labels = tuple(normalized_form.module_generating_set())
         images = {}
         for label, basis_vector in zip(labels, cover.basis(), strict=True):
-            image = self._engine_module(basis_vector) * engine_automorphism
+            image = engine_module(basis_vector) * engine_automorphism
             coordinates = cover.coordinates(image.lift())
-            images[label] = self._normalized_form.linear_combination(
+            images[label] = normalized_form.linear_combination(
                 {
-                    target_label: _owned_engine_element(self._normalized_form.base_ring(), SageZZ(coefficient))
+                    target_label: _owned_engine_element(normalized_form.base_ring(), SageZZ(coefficient))
                     for target_label, coefficient in zip(
                         labels,
                         coordinates,
@@ -1174,7 +1183,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
                     if coefficient
                 }
             )
-        return self._normalized_form.module_category().Mor(self._normalized_form, self._normalized_form)(images)
+        return normalized_form.module_category().Mor(normalized_form, normalized_form)(images)
 
     def _from_engine_matrix(self, engine_matrix):
         r"""Cross one private engine matrix to an owned form automorphism.
@@ -1183,10 +1192,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         :func:\`_torsion_form_automorphism_from_engine_matrix\`.  No
         engine-group parent escapes this object.
         """
-        return self._from_engine(self._engine_group_parent(engine_matrix))
+        return self._from_engine(self._engine_group()(engine_matrix))
 
     def _from_engine(self, engine_automorphism):
-        engine_automorphism = self._engine_group_parent(engine_automorphism)
+        engine_automorphism = self._engine_group()(engine_automorphism)
         normalization = self.normalization_isometry()
         normalized_forward = self._normalized_map(engine_automorphism)
 
@@ -1251,7 +1260,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             len(labels),
             [entry for row in engine_rows for entry in row],
         )
-        return self._from_engine(self._engine_group_parent(engine_matrix))
+        return self._from_engine(self._engine_group()(engine_matrix))
 
     def _element_constructor_(self, datum):
 
@@ -1281,13 +1290,13 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             case TorsionFormAutomorphism() if candidate.parent() is self:
                 return True
             case TorsionFormAutomorphism() if candidate.domain() is self.domain():
-                return candidate._engine() in self._engine_group_parent
+                return candidate._engine() in self._engine_group()
             case _:
                 return False
 
     @cached_method
     def one(self):
-        return self._from_engine(self._engine_group_parent.one())
+        return self._from_engine(self._engine_group().one())
 
     def identity(self, *args, **kwargs):
         return self.one(*args, **kwargs)
@@ -1295,12 +1304,12 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         return self.one(*args, **kwargs)
 
     def order(self):
-        return self.domain().base_ring()(int(self._engine_group_parent.order()))
+        return self.domain().base_ring()(int(self._engine_group().order()))
 
     cardinality = order
 
     def __iter__(self):
-        return (self._from_engine(element) for element in self._engine_group_parent)
+        return (self._from_engine(element) for element in self._engine_group())
 
     @cached_method
     def element_action(self):
