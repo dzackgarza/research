@@ -909,7 +909,7 @@ def _module_subobject_constructor_data(module, basis):
 def _module_generating_set(labels):
     r"""Read the labels a free module is constructed on.
 
-    A rank ``n`` names the ordinal ``{0, ..., n-1}``; an explicit finite
+    A rank ``n``, an integer or a finite cardinal, names the ordinal ``{0, ..., n-1}``; an explicit finite
     family of labels names the ordered set of them; an owned set is its own
     label set.
     """
@@ -919,6 +919,12 @@ def _module_generating_set(labels):
             rank = int(labels)
         case _ if element_parent(labels) is integers:
             rank = int(labels)
+        case _ if labels in Cardinalities():
+            assert labels.is_finite(), (
+                f"cannot form a free module of rank {labels}: a free module of infinite rank "
+                "is constructed on a set of basis labels of that cardinality, so give the set"
+            )
+            rank = labels.finite_value()
         case tuple() | list() | range():
             return finite_ordered_set(labels)
         case _:
