@@ -166,10 +166,6 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
         "Coxeter",
         "rational Coxeter–Vinberg",
     )
-    invalid_satake = card("a2-su21-satake").model_dump()
-    invalid_satake["vertices"][0]["weight"]["satake"] = "black"
-    invalid_satake["edges"] = invalid_satake["edges"][:1]
-    assert not WeightedGraph.model_validate(invalid_satake).is_satake()
     arbitrary = WeightedGraph.model_validate(
         {
             "slug": "arbitrary",

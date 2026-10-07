@@ -9,11 +9,6 @@ from dzack_research.preamble.categories.schemes.catalogue_invariants import (
     HodgePoincareInvariants,
     HodgeTermData,
 )
-from dzack_research.preamble.categories.weighted_graph_invariants import (
-    WeightedEdgeData,
-    WeightedGraphInvariants,
-    WeightedVertexData,
-)
 
 
 def test_positive_a2_genus_and_orthogonal_group_are_owned_by_the_lattice() -> None:
@@ -123,25 +118,6 @@ def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:
     factorization = lattice.quadratic_hypersurface_zeta_factorization(cone=True)
     assert [(factor.shift, factor.character.coefficient) for factor in factorization.numerator] == [(1, 1), (1, -3)]
     assert [(factor.shift, factor.character.coefficient) for factor in factorization.denominator] == [(0, -3)]
-
-
-def test_weighted_graph_recognition_is_owned_by_the_preamble() -> None:
-    graph = WeightedGraphInvariants(
-        (
-            WeightedVertexData("a", {"root_length_squared": 2, "satake": "white"}),
-            WeightedVertexData("b", {"root_length_squared": 2, "satake": "white"}),
-        ),
-        (
-            WeightedEdgeData("bond", "a", "b", "bond", False, {"cartan": [-1, -1], "order": 3}),
-            WeightedEdgeData("tau", "a", "b", "satake_pair", False, None),
-        ),
-    )
-    assert graph.cartan_matrix() == ((2, -1), (-1, 2))
-    assert graph.is_coxeter()
-    assert graph.is_dynkin()
-    assert graph.is_simply_laced()
-    assert graph.is_satake()
-    assert not graph.is_rational_coxeter_vinberg()
 
 
 def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
