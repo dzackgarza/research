@@ -514,19 +514,6 @@ module over a finite field.
 Repair: `restriction-along-a-finite-free-extension-is-framed` in TODO, which
 `restricted-scalars-modules-are-modules` needs.
 
-### A set map out of a field is reported injective
-
-`OwnedSetMorphism.is_injective` (`sets/set_categories.py`) answers `True`
-whenever the domain is a field or an order. That is a theorem about unital
-ring morphisms, which `RingMorphism.is_injective`
-(`rings/ring_foundation.py`) decides. On a set map it is false:
-`Sets().Mor(QQ, QQ)(lambda q: QQ(0)).is_injective()` returns `True`
-(observed 2026-10-07), and `SetMonoCategory.accepts` admits such a map as a
-monomorphism.
-**Consumers:** every caller of set-level `is_injective` and
-`Sets().Mono(...)`.
-Repair: `set-injectivity-is-decided-on-the-set-map` in TODO.
-
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
