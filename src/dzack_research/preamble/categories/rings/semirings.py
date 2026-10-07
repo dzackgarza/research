@@ -108,7 +108,7 @@ class OwnedSemirings(CategoryPacketMethods, OwnedCategory):
         return _own_ring(SageZZ)
 
     def super_categories(self):
-        return [Monoids(), AdditiveMonoids()]
+        return [Monoids(), AdditiveMonoids().AdditiveCommutative()]
 
     def initial_object(self):
         """Return the natural numbers, initial among unital semirings."""
