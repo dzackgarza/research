@@ -1884,8 +1884,12 @@ class SetInjectionMor(SetMorCategory):
     underlying_mor = arrow_set
 
     def accepts(self, arrow):
-        r"""Membership: an arrow of the Mor object decided injective."""
-        return arrow in self.arrow_set() and self.arrow_set()(arrow).is_injective() is True
+        r"""Membership: an arrow ``X -> Y`` that is a monomorphism of sets."""
+        return (
+            arrow.domain() is self.domain()
+            and arrow.codomain() is self.codomain()
+            and Sets().MonoCategory().accepts(arrow)
+        )
 
     @cached_method
     def identity(self):
@@ -1936,8 +1940,12 @@ class SetSurjectionMor(SetMorCategory):
     underlying_mor = arrow_set
 
     def accepts(self, arrow):
-        r"""Membership: an arrow of the Mor object decided surjective."""
-        return arrow in self.arrow_set() and self.arrow_set()(arrow).is_surjective() is True
+        r"""Membership: an arrow ``X -> Y`` that is an epimorphism of sets."""
+        return (
+            arrow.domain() is self.domain()
+            and arrow.codomain() is self.codomain()
+            and Sets().EpiCategory().accepts(arrow)
+        )
 
     @cached_method
     def identity(self):
@@ -1967,10 +1975,15 @@ class SetMonoCategoryConstruction(MonoCategoryConstruction):
         return SetInjectionMor
 
     def accepts(self, arrow):
-        r"""A monomorphism of sets is exactly an injective set map."""
+        r"""A monomorphism of sets is exactly an injective set map.
+
+        Decided on the arrow, in the ``Mor_Set(X, Y)`` it lies in: asking
+        whether an arrow is monic constructs no ``Mono_Set(X, Y)`` (``OWN-22``).
+        """
         if arrow.domain() not in Sets() or arrow.codomain() not in Sets():
             return False
-        return self.Of(arrow.domain(), arrow.codomain()).accepts(arrow)
+        maps = Sets().Mor(arrow.domain(), arrow.codomain())
+        return arrow in maps and maps(arrow).is_injective() is True
 
 
 class SetEpiCategoryConstruction(EpiCategoryConstruction):
@@ -1980,10 +1993,15 @@ class SetEpiCategoryConstruction(EpiCategoryConstruction):
         return SetSurjectionMor
 
     def accepts(self, arrow):
-        r"""An epimorphism of sets is exactly a surjective set map."""
+        r"""An epimorphism of sets is exactly a surjective set map.
+
+        Decided on the arrow, in the ``Mor_Set(X, Y)`` it lies in: asking
+        whether an arrow is epic constructs no ``Epi_Set(X, Y)`` (``OWN-22``).
+        """
         if arrow.domain() not in Sets() or arrow.codomain() not in Sets():
             return False
-        return self.Of(arrow.domain(), arrow.codomain()).accepts(arrow)
+        maps = Sets().Mor(arrow.domain(), arrow.codomain())
+        return arrow in maps and maps(arrow).is_surjective() is True
 
 
 Sets._MonoCategory = SetMonoCategoryConstruction
