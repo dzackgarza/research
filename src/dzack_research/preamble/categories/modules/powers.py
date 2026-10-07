@@ -53,6 +53,9 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     _coordinate_family_from_function,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
+    _coordinate_family_from_rows,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
     _coordinate_pair,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
@@ -68,6 +71,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.validation import validator
 from dzack_research.preamble.owned_category import owned_category_join
 
 
@@ -227,10 +231,53 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
             return self.power_source().divided_power_algebra()
 
 
-class QuadraticModuleMorphism:
-    r"""A classifier ``Gamma^2(M) -> W``, read as the quadratic map ``M -> W``."""
+def _gram_contraction(gram, module, left, right):
+    r"""``G(x, y)``: the Gram tensor ``G`` on the framing of ``module`` contracted with the coordinates of ``x`` and ``y``."""
+    lift = module.framing_morphism().lift
+    ring = gram.base_ring()
+    return gram.contract(
+        tensor.vector(ring, tuple(lift(left))),
+        tensor.vector(ring, tuple(lift(right))),
+    )
 
-    def __init__(self, parent, images, *, lift_coordinate_values=None) -> None:
+
+def _bilinear_extension(values, module, target, left, right):
+    r"""``b(x, y) = \sum_{s,t} x_s y_t\, b(s, t)``: the bilinear extension of ``values`` on pairs of framing generators.
+
+    The values lie in a module ``target`` that is not a ring, so they form no
+    tensor over the values; with values in a ring the extension is
+    :func:`_gram_contraction`.
+    """
+    framing = module.framing_morphism()
+    left_coordinates = framing.lift(left)
+    right_coordinates = framing.lift(right)
+    right_support = right_coordinates.support().domain()
+    result = target.zero()
+    for left_label in left_coordinates.support().domain():
+        for right_label in right_support:
+            scalar = left_coordinates(left_label) * right_coordinates(right_label)
+            if scalar:
+                result += target.scalar_multiple(
+                    scalar,
+                    _coordinate_pair(values, left_label, right_label),
+                )
+    return result
+
+
+class QuadraticModuleMorphism:
+    r"""A classifier ``Gamma^2(M) -> W``, read as the quadratic map ``M -> W``.
+
+    Its defining datum is the classifier, given by its images on the
+    generators of ``Gamma^2(M)``.  A quadratic map built from coordinates also
+    keeps the chosen bilinear lift ``G`` with ``q(x) = G(x, x)``: with values
+    in a ring ``W``, ``G`` is its Gram tensor in ``M^* \otimes M^*`` over
+    ``W``, and ``G(x, y)`` is one contraction (`OWN-24`); with values in any
+    other module, ``G`` is the family of its values ``G(s, t)`` on pairs of
+    framing generators.
+    """
+
+    def __init__(self, parent, images, *, lift_gram_tensor=None, lift_coordinate_values=None) -> None:
+        self._lift_gram_tensor = lift_gram_tensor
         self._lift_coordinate_values = lift_coordinate_values
         super().__init__(parent, images)
 
@@ -250,71 +297,81 @@ class QuadraticModuleMorphism:
         return self
 
     def has_selected_bilinear_lift(self) -> bool:
-        r"""Whether this quadratic classifier retains chosen bilinear coordinates."""
-        return self._lift_coordinate_values is not None
+        r"""Whether this quadratic classifier retains a chosen bilinear lift."""
+        return self._lift_gram_tensor is not None or self._lift_coordinate_values is not None
 
-    def lift_coordinate_values(self):
-        values = self._lift_coordinate_values
+    @validator
+    def validate_symmetric_lift(self) -> None:
+        r"""Check that the chosen bilinear lift is symmetric, ``G(s, t) = G(t, s)`` on framing generators."""
+        match self._lift_gram_tensor, self._lift_coordinate_values:
+            case None, None:
+                return
+            case None, values:
+                labels = _finite_framing(self.module())
+                for left in labels:
+                    for right in labels:
+                        forward = _coordinate_pair(values, left, right)
+                        backward = _coordinate_pair(values, right, left)
+                        if forward != backward:
+                            raise ValueError(
+                                f"the given values do not define a quadratic map on {self.module()}: the value "
+                                f"{forward} at ({left}, {right}) differs from the value {backward} at "
+                                f"({right}, {left}), but the bilinear lift must be symmetric"
+                            )
+            case gram, _:
+                if not gram.is_symmetric():
+                    raise ValueError(
+                        f"the given values do not define a quadratic map on {self.module()}: the bilinear lift "
+                        f"must be symmetric, but its Gram tensor {gram} is not"
+                    )
+
+    def _require_selected_bilinear_lift(self) -> None:
         if not self.has_selected_bilinear_lift():
             raise TypeError(
                 f"{self} has no chosen bilinear lift: it was not constructed from a matrix of values "
                 f"b(e_i, e_j) on a basis of {self.module()}"
             )
-        return values
 
-    def _gram_entry(self, left_label, right_label):
-        return _coordinate_pair(
-            self.lift_coordinate_values(), left_label, right_label
-        )
+    def lift_coordinate_values(self):
+        r"""The values ``G(s, t)`` of the chosen bilinear lift on pairs of framing generators."""
+        self._require_selected_bilinear_lift()
+        match self._lift_gram_tensor:
+            case None:
+                return self._lift_coordinate_values
+            case gram:
+                labels = _finite_framing(self.module())
+                size = int(labels.cardinality())
+                return _coordinate_family_from_rows(
+                    labels,
+                    labels,
+                    self.codomain(),
+                    ((gram[i, j] for j in range(size)) for i in range(size)),
+                    name="Quadratic lift coordinate values",
+                )
 
     def lift_pairing(self, left, right):
-
+        r"""``G(x, y)`` for the chosen bilinear lift ``G``."""
         module = self.module()
         if left not in module or right not in module:
             raise TypeError(
                 f"cannot evaluate the bilinear lift of {self} on ({left}, {right}): both arguments must "
                 f"be elements of {module}"
             )
-        framing = module.framing_morphism()
-        left_coordinates = framing.lift(left)
-        right_coordinates = framing.lift(right)
-        right_support = right_coordinates.support().domain()
-        target = self.codomain()
-        result = target.zero()
-        for left_label in left_coordinates.support().domain():
-            for right_label in right_support:
-                scalar = left_coordinates(left_label) * right_coordinates(right_label)
-                if scalar:
-                    result += target.scalar_multiple(
-                        scalar,
-                        self._gram_entry(left_label, right_label),
-                    )
-        return result
+        self._require_selected_bilinear_lift()
+        match self._lift_gram_tensor:
+            case None:
+                return _bilinear_extension(self._lift_coordinate_values, module, self.codomain(), left, right)
+            case gram:
+                return _gram_contraction(gram, module, left, right)
 
     def gram_tensor(self):
-
+        r"""The Gram tensor of the chosen bilinear lift, ``G[i, j] = G(e_i, e_j)``."""
         if self.codomain() not in OwnedRings():
             raise TypeError(
                 f"{self} has no Gram matrix: its values lie in {self.codomain()}, which is not a ring"
             )
-        labels = self.module().module_generating_set()
-        size = labels.cardinality()
-        if not size.is_finite():
-            raise TypeError(
-                f"{self} has no finite Gram matrix: the chosen generating set {labels} of "
-                f"{self.module()} is not finite"
-            )
-        rank = int(size.finite_value())
-        return tensor(
-            self.codomain(),
-            (),
-            (rank, rank),
-            (
-                self._gram_entry(labels[i], labels[j])
-                for i in range(rank)
-                for j in range(rank)
-            ),
-        )
+        self._require_selected_bilinear_lift()
+        return self._lift_gram_tensor
 
     def polar_form(self):
 
@@ -330,38 +387,63 @@ class QuadraticModuleMorphism:
     def polar_coordinate_values(self):
         return self.polar_form().coordinate_values()
 
+    def _framing_source_morphism(self, morphism):
+        r"""``f: V -> M`` read between framing sources: ``F(S_V) -> F(S_M)``, ``e_s |-> lift(f(e_s))``.
+
+        When ``V`` and ``M`` are their own framing sources, this is ``f``.
+        """
+        domain = morphism.domain()
+        source = domain.framing_morphism().domain()
+        target = self.module().framing_morphism().domain()
+        match source is domain and target is self.module():
+            case True:
+                return morphism
+            case False:
+                lift = self.module().framing_morphism().lift
+                return source.module_category().Mor(source, target)(
+                    lambda label: lift(morphism(domain.module_generator(label)))
+                )
+
     def pullback(self, morphism):
+        r"""The quadratic map ``q \circ f``; its chosen bilinear lift is the pullback ``f^* G``."""
         if morphism.codomain() is not self.module():
             raise ValueError(
                 f"cannot pull {self} back along {morphism}: its codomain {morphism.codomain()} is not "
                 f"the module {self.module()} of the quadratic map"
             )
-        induced = morphism.divided_square()
-        result = self * induced
-        values = self._lift_coordinate_values
-        pulled_values = None
+        result = self * morphism.divided_square()
+        parent = result.parent()
         pullback_domain = morphism.domain()
         has_finite_framing = (
             pullback_domain.has_selected_module_resolution()
             and pullback_domain.module_generating_set().cardinality().is_finite()
         )
-        if values is not None and has_finite_framing:
-            labels = _finite_framing(pullback_domain)
-            pulled_values = _coordinate_family_from_function(
-                labels,
-                labels,
-                self.codomain(),
-                lambda left_label, right_label: self.lift_pairing(
-                    morphism(pullback_domain.module_generator(left_label)),
-                    morphism(pullback_domain.module_generator(right_label)),
-                ),
-                name="Pulled-back quadratic lift coordinate values",
-            )
-        parent = result.parent()
-        return parent._from_classifying_morphism(
-            result,
-            lift_coordinate_values=pulled_values,
-        )
+        match self._lift_gram_tensor, self._lift_coordinate_values, has_finite_framing:
+            case _, _, False:
+                return parent._from_classifying_morphism(result)
+            case None, None, True:
+                return parent._from_classifying_morphism(result)
+            case None, values, True:
+                labels = _finite_framing(pullback_domain)
+                pulled_values = _coordinate_family_from_function(
+                    labels,
+                    labels,
+                    self.codomain(),
+                    lambda left_label, right_label: _bilinear_extension(
+                        values,
+                        self.module(),
+                        self.codomain(),
+                        morphism(pullback_domain.module_generator(left_label)),
+                        morphism(pullback_domain.module_generator(right_label)),
+                    ),
+                    name="Pulled-back quadratic lift coordinate values",
+                )
+                return parent._from_classifying_morphism(result, lift_coordinate_values=pulled_values)
+            case gram, _, True:
+                return parent._from_classifying_morphism(
+                    result,
+                    lift_gram_tensor=gram.pullback(self._framing_source_morphism(morphism)),
+                )
 
 
 class QuadraticModuleMor(ModuleMor):
@@ -369,7 +451,7 @@ class QuadraticModuleMor(ModuleMor):
 
     ElementMethods = QuadraticModuleMorphism
 
-    def _from_classifying_morphism(self, morphism, *, lift_coordinate_values=None):
+    def _from_classifying_morphism(self, morphism, *, lift_gram_tensor=None, lift_coordinate_values=None):
         if morphism.domain() is not self.domain() or morphism.codomain() is not self.codomain():
             raise ValueError(
                 f"{morphism} is not an element of {self}: it goes from {morphism.domain()} to "
@@ -378,10 +460,11 @@ class QuadraticModuleMor(ModuleMor):
         return self.element_class(
             self,
             morphism,
+            lift_gram_tensor=lift_gram_tensor,
             lift_coordinate_values=lift_coordinate_values,
         )
 
-    def from_quadratic_map(self, quadratic, *, lift_coordinate_values=None):
+    def from_quadratic_map(self, quadratic, *, lift_gram_tensor=None, lift_coordinate_values=None):
         square = self.domain()
         source = square.divided_square_source()
 
@@ -404,59 +487,51 @@ class QuadraticModuleMor(ModuleMor):
         return self.element_class(
             self,
             generator_image,
+            lift_gram_tensor=lift_gram_tensor,
             lift_coordinate_values=lift_coordinate_values,
         )
 
     def _from_coordinate_datum(self, datum):
+        r"""The quadratic map ``q(x) = G(x, x)`` for the chosen bilinear lift ``G`` given by its values.
+
+        With values in a ring the values are read once into the Gram tensor
+        ``G``; otherwise ``G`` is the bilinear extension of the family of
+        values.  Symmetry of ``G`` is the validator ``validate_symmetric_lift``
+        (`OWN-22`).
+        """
         source = self.domain().divided_square_source()
         labels = _finite_framing(source)
+        codomain = self.codomain()
         values = _coordinate_family(
             labels,
             labels,
-            self.codomain(),
+            codomain,
             datum,
             name="Quadratic lift coordinate values",
         )
-        size = int(labels.cardinality())
-        for i in range(size):
-            for j in range(i + 1, size):
-                left = labels[i]
-                right = labels[j]
-                indices = values.index_set()
-                lr = indices(lambda index: left if int(index) == 0 else right)
-                rl = indices(lambda index: right if int(index) == 0 else left)
-                if values[lr] != values[rl]:
-                    raise ValueError(
-                        f"the given values do not define a quadratic map on {source}: the value "
-                        f"{values[lr]} at ({left}, {right}) differs from the value {values[rl]} at "
-                        f"({right}, {left}), but the bilinear lift must be symmetric"
-                    )
-
-        def quadratic(element):
-            coordinates = source.framing_morphism().lift(element)
-            result = self.codomain().zero()
-            indices = values.index_set()
-            support = coordinates.support().domain()
-            for left_label in support:
-                for right_label in support:
-                    scalar = coordinates(left_label) * coordinates(right_label)
-                    if not scalar:
-                        continue
-                    pair = indices(
-                        lambda index: (
-                            left_label if int(index) == 0 else right_label
-                        )
-                    )
-                    result += self.codomain().scalar_multiple(
-                        scalar,
-                        values[pair],
-                    )
-            return result
-
-        return self.from_quadratic_map(
-            quadratic,
-            lift_coordinate_values=values,
-        )
+        match codomain in OwnedRings():
+            case True:
+                size = int(labels.cardinality())
+                gram = tensor(
+                    codomain,
+                    (),
+                    (size, size),
+                    tuple(
+                        tuple(_coordinate_pair(values, left, right) for right in labels)
+                        for left in labels
+                    ),
+                )
+                morphism = self.from_quadratic_map(
+                    lambda element: _gram_contraction(gram, source, element, element),
+                    lift_gram_tensor=gram,
+                )
+            case False:
+                morphism = self.from_quadratic_map(
+                    lambda element: _bilinear_extension(values, source, codomain, element, element),
+                    lift_coordinate_values=values,
+                )
+        morphism.validate_symmetric_lift(check=False)
+        return morphism
 
     def _element_constructor_(self, datum):
         if isinstance(datum, ModuleMorphismMethods):

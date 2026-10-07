@@ -920,7 +920,10 @@ class Tensor:
         For ``f: V -> W`` and ``T`` of type ``(0,q)`` on ``W``, return
         ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
         matrices are only an implementation of this transport: the endpoint
-        module Mor must itself be the finite framed-free matrix Mor.
+        module Mor must itself be the finite framed-free matrix Mor.  When
+        ``f`` is linear over ``R`` and ``T`` has components in an ``R``-algebra
+        ``S``, the pullback is along the base change ``f \otimes_R S``, whose
+        matrix is that of ``f`` read in ``S``.
         """
         if self._upper_index_ranks():
             raise TypeError(
@@ -937,12 +940,13 @@ class Tensor:
             morphism.domain(), morphism.codomain()
         )(morphism)
 
-        if matrix.parent() not in MatrixSpaces(self.base_ring()):
+        if matrix.parent() not in MatrixSpaces(matrix.parent().base_ring()):
             raise TypeError(
-                f"cannot pull back a tensor over {self.base_ring()} along {morphism}, "
-                f"whose matrix is over {matrix.parent().base_ring()}: both must be over "
-                f"the same ring"
+                f"cannot pull back a tensor along {morphism}: its domain and codomain must be "
+                f"free modules of finite rank with a chosen basis, but the module maps between "
+                f"them form {matrix.parent()}"
             )
+        ring = self.base_ring()
         target_rank, source_rank = matrix.parent().matrix_shape()
         if any(rank != target_rank for rank in self._lower_index_ranks()):
             raise ValueError(
@@ -959,10 +963,9 @@ class Tensor:
         # back before constructing the owned tensor.
         if q == 2:
 
-            backend_map = _engine_module_matrix(matrix)
+            backend_map = _engine_module_matrix(matrix).change_ring(_engine_ring(ring))
             backend_form = _engine_component_matrix(self)
             backend_pullback = backend_map.transpose() * backend_form * backend_map
-            ring = self.base_ring()
             entries = tuple(
                 _owned_engine_element(ring, entry) for entry in backend_pullback.list()
             )
@@ -979,17 +982,17 @@ class Tensor:
         target_positions = tuple(cartesian_product(range(target_rank), repeat=q))
         entries = []
         for source_indices in source_positions:
-            value = self.base_ring().zero()
+            value = ring.zero()
             for target_indices in target_positions:
                 coefficient = self[target_indices]
                 for target_index, source_index in zip(
                     target_indices, source_indices, strict=True
                 ):
-                    coefficient *= matrix[target_index, source_index]
+                    coefficient *= ring(matrix[target_index, source_index])
                 value += coefficient
             entries.append(value)
         return tensor(
-            self.base_ring(),
+            ring,
             (),
             (source_rank,) * q,
             _nested(tuple(entries), (source_rank,) * q),
