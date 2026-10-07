@@ -10,7 +10,6 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.matrix.constructor import matrix as engine_matrix
-from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
@@ -1720,14 +1719,69 @@ class Modules(OwnedCategoryOverBaseRing):
                     )
                     return decided
 
-        @abstract_method
         def base_change(self, ring_map):
-            r"""Return ``S tensor_R M`` along ``ring_map : R -> S``.
+            r"""Return ``f_! M = S tensor_R M`` along ``ring_map = f : R -> S``.
 
-            Every module has a scalar extension; each representation of modules
-            constructs it on its own data.
+            This is extension of scalars (lean-categories FOUNDATIONS,
+            Definition 83.2): the tensor product over ``R`` of ``S``, read as
+            an ``R``-module along ``f``, with ``M``, on which ``S`` acts
+            through the left factor, ``s (t tensor m) = (s t) tensor m``.
+            Multiplication by ``s`` on ``S`` is the ``S``-linear endomorphism
+            ``mu_s`` of the regular module when ``S`` is commutative, and it
+            acts on the left factor as ``Res_f(mu_s)``.  The tensor product is
+            the generators-and-relations quotient, which is defined for every
+            pair of modules.  A category whose objects carry a chosen basis or
+            presentation computes the same module on that datum and is the
+            more specific owner.
             """
-            ...
+            from dzack_research.preamble.categories.modules.general_modules import (
+                GeneralModules,
+            )
+            from dzack_research.preamble.categories.modules.tensor_quotients import (
+                _tensor_quotient,
+            )
+
+            ring = self.base_ring()
+            assert ring_map.domain() is ring, (
+                f"cannot extend the scalars of {self} along {ring_map}: the ring morphism must start at "
+                f"the base ring {ring}, but it starts at {ring_map.domain()}"
+            )
+            scalars = _owned_ring(ring_map.codomain())
+            assert scalars in OwnedRings().Commutative(), (
+                f"the extension of scalars of {self} along {ring_map} is constructed here for a commutative "
+                f"ring of scalars, where multiplication by s is S-linear, and {scalars} is in {scalars.category()}"
+            )
+            regular = scalars.regular_module()
+            restriction = Modules(scalars).restriction_of_scalars(ring_map)
+            scalars_over_ring = restriction(regular)
+            tensor = _tensor_quotient(
+                _finite_factor_family((scalars_over_ring, self), name="Scalar-extension factors")
+            )
+            classes = tensor.underlying_set()
+            endomorphisms = regular.module_category().Mor(regular, regular)
+
+            def scalar_action(scalar, value):
+                multiplication = restriction(
+                    endomorphisms(
+                        {
+                            label: regular.scalar_multiple(scalar, regular.module_generator(label))
+                            for label in regular.module_generating_set()
+                        }
+                    )
+                )
+                return classes.evaluate(
+                    value,
+                    tensor,
+                    lambda left, right: tensor.pure_tensor(multiplication(left), right),
+                ).underlying_element()
+
+            return GeneralModules(scalars).from_operations(
+                classes,
+                addition=classes.add,
+                zero=classes.zero(),
+                negation=lambda value: classes.scale(-ring.one(), value),
+                scalar_action=scalar_action,
+            )
 
         def vector_space(self):
             r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map."""

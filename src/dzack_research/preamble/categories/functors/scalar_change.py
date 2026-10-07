@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     Modules,
+    RestrictedScalarsModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
@@ -257,12 +258,20 @@ class _RestrictionOfScalarsFunctor(Functor):
         return restricted(element)
 
     def _extension_element(self, source_module, restricted, element):
-        r"""Read an element of ``restricted`` back in ``source_module``."""
+        r"""Read an element of ``restricted`` back in ``source_module``.
+
+        The restricted-scalars module of ``M`` holds each element of ``M``
+        as its underlying element.  The restriction of an algebra, and the
+        underlying ``R``-module of an ``R[G]``-module, are built on the
+        elements of ``M`` itself, which ``M`` reads directly.
+        """
         if self.ring_map().is_identity():
             return element
-        if self._restricts_group_modules():
-            return source_module(element)
-        return element.underlying_element()
+        match restricted:
+            case _ if restricted in RestrictedScalarsModules(self._source_ring):
+                return element.underlying_element()
+            case _:
+                return source_module(element)
 
     def _apply_morphism(self, morphism):
         # Restriction changes which ring acts and never the underlying map, so
@@ -422,12 +431,47 @@ class _BaseChangeAdjunction(Adjunction):
         )
 
     def _counit_component(self, module):
+        r"""``epsilon_N : S tensor_R Res_f(N) -> N``, ``s tensor n |-> s n``.
+
+        On a chosen generating set of ``Res_f(N)`` the counit is fixed by the
+        generator images ``1 tensor n_i |-> n_i``.  Otherwise it is the map
+        the tensor quotient classifies from the ``R``-bilinear evaluation
+        ``(s, n) |-> phi_n(s)``, where ``phi_n : S -> N`` is the ``S``-linear
+        map with ``phi_n(1) = n``.
+        """
         restricted = self.right_adjoint()(module)
         extended = self.left_adjoint()(restricted)
-        return extended.module_category().Mor(extended, module)(
-            lambda label: self.right_adjoint()._extension_element(
-                module, restricted, restricted.module_generator(label)
+        mor = extended.module_category().Mor(extended, module)
+        match restricted.has_selected_module_resolution():
+            case True:
+                return mor(
+                    lambda label: self.right_adjoint()._extension_element(
+                        module, restricted, restricted.module_generator(label)
+                    )
+                )
+            case False:
+                pass
+        restriction = self.right_adjoint()
+        regular = _owned_ring(self._ring_map.codomain()).regular_module()
+        module_maps = module.module_category().Mor(regular, module)
+
+        def acting(scalar, element):
+            image = restriction._extension_element(module, restricted, element)
+            through = module_maps(
+                {label: image for label in regular.module_generating_set()}
             )
+            return restriction(through)(scalar)
+
+        return _ScalarChangeStructureMorphism(
+            mor,
+            lambda value: restriction._extension_element(
+                module,
+                restricted,
+                extended.underlying_set().evaluate(
+                    extended(value).underlying_element(), restricted, acting
+                ),
+            ),
+            elementwise=True,
         )
 
 
