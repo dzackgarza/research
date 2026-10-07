@@ -2169,7 +2169,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             return level
 
         def bad_reduction_primes(self):
-            r"""Return the primes dividing ``2 det(L)`` for a nondegenerate integral lattice."""
+            r"""Return the primes of bad reduction of the quadric ``Q(x) = n``: the primes dividing ``2 det(L)``.
+
+            For an odd prime ``p``, ``Q`` modulo ``p`` is nondegenerate exactly
+            when ``p`` does not divide ``det(L)``; modulo 2, ``Q`` is the square
+            of a linear form, so 2 is always a prime of bad reduction
+            (``lattice-database/theory/zeta.md``, *Primes of bad reduction*).
+            """
             ring = self.base_ring()
             assert _engine_ring(ring) is SageZZ, (
                 f"the bad-reduction prime set here is defined for integral lattices over ZZ, but {self} is over {ring}"
@@ -2183,7 +2189,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         def discriminant_character_discriminant(self):
-            r"""Return the fundamental discriminant defining the even-rank discriminant character."""
+            r"""Return the discriminant ``d`` of the field ``Q(sqrt(D))``, ``D = (-1)^m det(L)`` in rank ``2m``.
+
+            It is 1 when ``D`` is a square.  For a prime ``p`` not dividing
+            ``2 det(L)``, the character ``chi_D(p)`` is the Kronecker symbol
+            ``(d/p)``, which is the Legendre symbol ``(D/p)``
+            (``lattice-database/theory/zeta.md``, *The character of the
+            discriminant*).
+            """
             from sage.arith.misc import fundamental_discriminant
 
             ring = self.base_ring()
