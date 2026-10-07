@@ -18,9 +18,6 @@ import itertools
 from functools import reduce
 
 from sage.categories.category_with_axiom import all_axioms
-from sage.categories.commutative_algebras import (
-    CommutativeAlgebras as SageCommutativeAlgebras,
-)
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
@@ -69,6 +66,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
+    _presented_ring_category,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -338,9 +336,14 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_b
     module = Modules(ring)(presentation)
     category = Algebras(ring).Associative().Unital()
     law_decisions = {"associativity": True, "unit": True}
-    if algebra.is_commutative() is True:
-        category = category.Commutative()
-        law_decisions["commutativity"] = True
+    # The ring's constructor placed it; its product is commutative exactly
+    # when that placement says so (ARC-08, CON-07).
+    match algebra:
+        case _ if algebra in Magmas().Commutative():
+            category = category.Commutative()
+            law_decisions["commutativity"] = True
+        case _:
+            pass
     # The ring's own product is its algebra structure (OWN-22): no map out of
     # the tensor square is built here; `multiplication()` builds it when asked.
     Algebras.ParentMethods._retain_algebra_law_decisions(module, law_decisions)
@@ -3223,9 +3226,17 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         associative = Algebras(base).Associative().Unital()
         framing_owner = associative
         placement = [associative]
-        if engine in SageCommutativeAlgebras(_engine_ring(base)):
-            framing_owner = associative.Commutative()
-            placement.append(framing_owner)
+        # The ring constructor that presents ``engine``, or a category the
+        # caller selected, places the product as commutative (ARC-08).
+        match (
+            _presented_ring_category(engine).is_subcategory(OwnedRings().Commutative())
+            or any(category.is_subcategory(Magmas().Commutative()) for category in categories)
+        ):
+            case True:
+                framing_owner = associative.Commutative()
+                placement.append(framing_owner)
+            case False:
+                pass
         placement.extend(categories)
         retained_laws = {"associativity": True, "unit": True}
         if framing_owner is not associative:
