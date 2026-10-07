@@ -493,6 +493,50 @@ def _engine_law_reversed(engine) -> bool:
             return False
 
 
+def _engine_generator_epimorphism(group, generators):
+    r"""GAP's epimorphism ``F(S) ->> G`` onto the chosen generators ``generators`` of ``group``.
+
+    Engine adapter (``OWN-06``).  ``PreImagesRepresentative`` of the result
+    writes an element of ``group`` as a word in ``generators``; free
+    generator ``i`` of ``F(S)`` is sent to the ``i``-th of ``generators``.
+    """
+    models = libgap([_element_to_engine(group, generator) for generator in generators])
+    free = libgap.FreeGroup(models.Length())
+    return libgap.GroupHomomorphismByImagesNC(
+        free,
+        _gap_model(group),
+        free.GeneratorsOfGroup(),
+        models,
+    )
+
+
+def _engine_generator_relators(group, epimorphism):
+    r"""Relators of ``group`` as words in the generators that ``epimorphism`` hits.
+
+    Engine adapter (``OWN-06``).  The words generate the kernel of the
+    epimorphism ``F(S) ->> G`` as a normal subgroup; letter ``i`` of each
+    word is generator ``i`` of ``epimorphism``.
+    """
+    generator_models = epimorphism.MappingGeneratorsImages()[1]
+    return libgap.IsomorphismFpGroupByGenerators(
+        _gap_model(group),
+        generator_models,
+    ).Range().RelatorsOfFpGroup()
+
+
+def _engine_word_letters(group, word):
+    r"""The letters ``(position, sign)`` of a GAP word in chosen generators of ``group``.
+
+    Engine adapter (``OWN-06``).  The letters are in the owned multiplication
+    order of ``group``; positions count from zero.
+    """
+    letters = tuple(
+        (abs(int(letter)) - 1, 1 if letter > 0 else -1)
+        for letter in word.LetterRepAssocWord().sage()
+    )
+    return letters[::-1] if _law_reversed(group) else letters
+
+
 def _integer_engine_point(point):
     r"""An owned integer as the engine's integer; any other point unchanged."""
     integers = _own_ring(ZZ)
@@ -1873,36 +1917,87 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
 
 
 class GroupMorphism:
-    r"""A group morphism, optionally carrying a private GAP realization."""
+    r"""A group morphism, given by generator images, an elementwise rule or a GAP homomorphism.
+
+    Images of the chosen generators of the domain are the defining datum of
+    a morphism out of a presented group: a GAP homomorphism into the
+    codomain's engine is then computed on the first request.
+    """
 
     def __init__(self, parent, realization) -> None:
         self._gap_homomorphism = None
+        self._generator_images = None
         match realization:
             case GapElement():
                 self._gap_homomorphism = realization
                 evaluator = self._evaluate_gap
+            case dict():
+                self._generator_images = realization
+                evaluator = self._evaluate_generator_word
             case _ if callable(realization):
                 evaluator = realization
             case _:
                 raise TypeError(
-                    f"a group morphism {parent.domain()} -> {parent.codomain()} needs an elementwise map or a GAP "
-                    f"homomorphism, but got {realization!r}"
+                    f"a group morphism {parent.domain()} -> {parent.codomain()} needs generator images, an "
+                    f"elementwise map or a GAP homomorphism, but got {realization!r}"
                 )
         super().__init__(parent, evaluator)
+
+    @cached_method
+    def _engine_generator_epimorphism(self):
+        r"""GAP's ``F(S) ->> G`` onto the generators whose images define this morphism."""
+        return _engine_generator_epimorphism(self.domain(), tuple(self._generator_images))
+
+    def _product_of_generator_images(self, word):
+        r"""``phi(w)`` for a GAP word ``w`` in the chosen generators, multiplied in the codomain."""
+        images = tuple(self._generator_images.values())
+        return reduce(
+            mul,
+            (
+                images[position] if sign > 0 else ~images[position]
+                for position, sign in _engine_word_letters(self.domain(), word)
+            ),
+            self.codomain().one(),
+        )
+
+    def _evaluate_generator_word(self, element):
+        r"""``rho(g) = phi(w)`` for a word ``w`` in the chosen generators with ``pi(w) = g``.
+
+        The universal property of the presentation ``pi: F(S) ->> G``: the
+        generator images define ``phi: F(S) -> H``, and ``rho`` is the
+        morphism with ``rho . pi = phi``.  The word is computed in the
+        domain's engine; the images are multiplied in the codomain.
+        """
+        word = self._engine_generator_epimorphism().PreImagesRepresentative(
+            _element_to_engine(self.domain(), element)
+        )
+        return self._product_of_generator_images(word)
 
     @validator
     def validate_homomorphism(self) -> None:
         r"""Raise ``ValueError`` unless ``f(xy) = f(x) f(y)`` (``OWN-22``).
 
-        A GAP realization is a map between the engine models of the two
+        Generator images define a homomorphism exactly when every relator of
+        the presentation by those generators maps to the identity.  A GAP
+        realization is a map between the engine models of the two
         endpoints, and its generator images must satisfy the relations of
         the source.  An elementwise rule on a finite source is decided on
         all pairs of elements.
         """
         domain = self.domain()
         codomain = self.codomain()
-        match self._gap_homomorphism:
-            case None:
+        match self._generator_images, self._gap_homomorphism:
+            case dict(), _:
+                relators = _engine_generator_relators(domain, self._engine_generator_epimorphism())
+                if not all(
+                    self._product_of_generator_images(relator) == codomain.one()
+                    for relator in relators
+                ):
+                    raise ValueError(
+                        f"the given images do not define a homomorphism {domain} -> {codomain}: they do not "
+                        f"satisfy the relations of {domain}"
+                    )
+            case None, None:
                 assert domain.is_finite() is True, (
                     f"whether {self} preserves multiplication is decided here on all pairs of elements, so "
                     f"{domain} must be finite, and it is not known to be"
@@ -1916,7 +2011,7 @@ class GroupMorphism:
                         f"the function does not define a homomorphism {domain} -> {codomain}: it does not "
                         f"preserve multiplication"
                     )
-            case engine:
+            case None, engine:
                 if engine.Source() != _gap_model(domain):
                     raise ValueError(
                         f"the GAP homomorphism is not a homomorphism out of {domain}: its source differs from {domain}"
@@ -1933,10 +2028,21 @@ class GroupMorphism:
                     )
 
     def _gap_morphism_crossing(self):
-        r"""Return the private GAP realization to the group computation owner."""
-        assert self._gap_homomorphism is not None, (
-            f"cannot compute with {self} through GAP: this group morphism was constructed without a GAP realization"
-        )
+        r"""Return the private GAP realization to the group computation owner.
+
+        A morphism given by generator images computes it on the first
+        request, in the engines of both endpoints.
+        """
+        if self._gap_homomorphism is None:
+            assert self._generator_images is not None, (
+                f"cannot compute with {self} through GAP: this group morphism was constructed as an "
+                f"elementwise rule, without generator images or a GAP realization"
+            )
+            codomain = self.codomain()
+            self._gap_homomorphism = self.parent()._engine_homomorphism(
+                [_element_to_engine(self.domain(), generator) for generator in self._generator_images],
+                [_element_to_engine(codomain, image) for image in self._generator_images.values()],
+            )
         return self._gap_homomorphism
 
     def __eq__(self, other):
@@ -1971,6 +2077,10 @@ class GroupMorphism:
             return NotImplemented
         if source in GroupsWithChosenFreeBasis():
             return right.postcompose(self)
+        if source.has_selected_group_resolution():
+            return source.Mor(self.codomain())(
+                {generator: self(right(generator)) for generator in source.group_generators()}
+            )
         backend_generators = _gap_model(source).GeneratorsOfGroup()
         return source.Mor(self.codomain())(
             tuple(
@@ -2140,15 +2250,23 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         )
         return self.element_class(self, function)
 
-    def _from_engine_generator_images(self, generator_models, image_models):
+    def _engine_homomorphism(self, generator_models, image_models):
+        r"""GAP's homomorphism between the endpoints' engine models with these generator images."""
         source = _gap_model(self.domain())
         target = _gap_model(self.codomain())
         if self._is_twisted():
             image_models = [model.Inverse() for model in image_models]
-        engine = libgap.GroupHomomorphismByImagesNC(source, target, generator_models, image_models)
-        return self.element_class(self, engine)
+        return libgap.GroupHomomorphismByImagesNC(source, target, generator_models, image_models)
+
+    def _from_engine_generator_images(self, generator_models, image_models):
+        return self.element_class(self, self._engine_homomorphism(generator_models, image_models))
 
     def _from_group_generator_images(self, images):
+        r"""The morphism out of a presented group given by the images of its chosen generators.
+
+        The images are the defining datum; construction stores them in the
+        order of the chosen generators and computes nothing in the codomain.
+        """
         domain = self.domain()
         codomain = self.codomain()
         if not domain.has_selected_group_resolution():
@@ -2158,9 +2276,9 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         generators = domain.group_generators()
         if not (all(generator in images for generator in generators) and all(key in generators for key in images)):
             raise ValueError(f"the dictionary does not define a homomorphism out of {domain}: its keys must be exactly the chosen generators {generators} of {domain}, but they are {tuple(images)}")
-        return self._from_engine_generator_images(
-            [_element_to_engine(domain, generator) for generator in generators],
-            [_element_to_engine(codomain, codomain(images[generator])) for generator in generators],
+        return self.element_class(
+            self,
+            {generator: codomain(images[generator]) for generator in generators},
         )
 
     def _from_gap_generator_images(self, images):
