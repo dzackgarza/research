@@ -262,6 +262,16 @@ class Modules(OwnedCategoryOverBaseRing):
                 pass
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
 
+    def free_module(self, labels):
+        r"""``F_R(S)``, the free object of this category on the set ``S`` of labels.
+
+        This is the object part of the free functor ``Sets().free_module(R)``
+        for the base ring ``R`` of this category.  A finite family of labels
+        names the ordered set of them, and a rank ``n`` names the ordinal
+        ``{0, ..., n-1}`` (``CON-14``).
+        """
+        return self.base_ring().free_module(labels)
+
     def _augmentation(self, group):
         r"""The augmentation ``epsilon: R[G] -> R``, ``g |-> 1``."""
         return self.base_ring()[group].augmentation()
