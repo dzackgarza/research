@@ -109,12 +109,12 @@ class GradedAlgebraMorphism:
     def __init__(self, parent, images, *, degree_preservation=None) -> None:
         if degree_preservation is None and isinstance(images, GradedModuleMorphismMethods):
             degree_preservation = images.degree_preservation_decision()
-        self._graded_algebra_degree_preservation_premise = degree_preservation
+        self._graded_algebra_degree_preservation_decision = degree_preservation
         super().__init__(parent, images)
 
     def _degree_preservation_derivation(self):
-        r"""Pass a construction-derived grading premise to the graded-module owner."""
-        return self._graded_algebra_degree_preservation_premise
+        r"""Return the degree-preservation decision supplied at construction, or ``None``."""
+        return self._graded_algebra_degree_preservation_decision
 
     def __mul__(self, other):
         if not isinstance(other, GradedAlgebraMorphism):

@@ -234,9 +234,9 @@ class ModuleMorphismMethods:
         morphisms override this at their declaration, so callers cannot select
         a derivation with a string or boolean flag.
         """
-        premise = self._direct_linearity_premise
-        if premise is not None:
-            return premise.linearity_decision()
+        source_morphism = self._source_module_morphism
+        if source_morphism is not None:
+            return source_morphism.linearity_decision()
         return None
 
     def _selected_lift_derivation(self):
@@ -267,7 +267,7 @@ class ModuleMorphismMethods:
         self._scalar_extension_of = scalar_extension_of
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
-        self._direct_linearity_premise = None
+        self._source_module_morphism = None
         self._element_function = None
         domain = self.domain()
         codomain = self.codomain()
@@ -284,7 +284,7 @@ class ModuleMorphismMethods:
             case Morphism() if images.domain() is domain and images.codomain() is codomain:
                 source_morphism = images
                 if isinstance(source_morphism, ModuleMorphismMethods):
-                    self._direct_linearity_premise = source_morphism
+                    self._source_module_morphism = source_morphism
                 images = lambda element: source_morphism(element)
                 elementwise = True
             case _:
@@ -475,7 +475,7 @@ class ModuleMorphismMethods:
                         return derivation
 
     def _require_established_linearity(self, operation: str) -> None:
-        r"""Require the linearity premise consumed by a linear-algebra conclusion."""
+        r"""Require that this map is known to be linear, as ``operation`` needs."""
         if self.linearity_decision() is not True:
             raise ValueError(
                 f"{operation} requires a linear map, but the map {self.domain()} -> {self.codomain()} was given as a "
@@ -1829,7 +1829,7 @@ class ModuleMorphismMethods:
 
 
 def _combined_linearity_decision(morphisms):
-    r"""Conjoin the linearity decisions of actual morphism premises."""
+    r"""Conjoin the linearity decisions of the morphisms of ``morphisms``."""
     match morphisms:
         case IndexedFamily():
             size = morphisms.cardinality()
@@ -1855,7 +1855,7 @@ class ModuleMorphism(ModuleMorphismMethods, Morphism):
 
 
 class _PointwiseSumModuleMorphism(ModuleMorphism):
-    r"""The sum of two admitted module maps, with exactly their law premises."""
+    r"""The sum of two module maps; its linearity decision conjoins theirs."""
 
     def __init__(self, parent, left, right) -> None:
         self._left_summand = left
@@ -1882,7 +1882,7 @@ class _PointwiseNegationModuleMorphism(ModuleMorphism):
 
 
 class _PointwiseScalarMultipleModuleMorphism(ModuleMorphism):
-    r"""A scalar multiple of an admitted linear map, retaining its premise."""
+    r"""A scalar multiple of a module map; its linearity decision is that of the map."""
 
     def __init__(self, parent, scalar, morphism) -> None:
         self._scalar = parent.base_ring()(scalar)
@@ -1901,7 +1901,7 @@ class _PointwiseScalarMultipleModuleMorphism(ModuleMorphism):
 
 
 class _CompositeModuleMorphism(ModuleMorphism):
-    r"""Composition of two admitted module maps with their law premises."""
+    r"""The composite of two module maps; its linearity decision conjoins theirs."""
 
     def __init__(self, parent, left, right) -> None:
         self._left_factor = left
@@ -2155,11 +2155,11 @@ class _TransportedModuleEmbedding(ModuleEmbedding):
         return True if self._transported_lift_is_exact else None
 
 
-class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
-    r"""A known linear map submitted to the Mono owner for injectivity admission."""
+class _ModuleMorphismAsEmbedding(ModuleEmbedding):
+    r"""A module map regarded as an element of the injective linear maps; its injectivity is checked by validation."""
 
     def __init__(self, parent, morphism, *, lift=None) -> None:
-        self._proposed_morphism = morphism
+        self._linear_map = morphism
         super().__init__(
             parent,
             lambda element: morphism(element),
@@ -2168,7 +2168,7 @@ class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
         )
 
     def _elementwise_linearity_derivation(self):
-        return self._proposed_morphism.linearity_decision()
+        return self._linear_map.linearity_decision()
 
 
 class ModuleEmbeddingMor(CategoricalMor):
@@ -2195,7 +2195,7 @@ class ModuleEmbeddingMor(CategoricalMor):
         elif isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            embedding = _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
+            embedding = _ModuleMorphismAsEmbedding(self, images, lift=lift)
         else:
             embedding = self.element_class(self, images, lift=lift)
         embedding.validate_linearity(check=check)
@@ -2421,7 +2421,7 @@ class _ModuleMorCommonMethods:
         return _ScalarIdentityModuleMorphism(self, scalar)
 
     def _compose_module_endomorphisms(self, left, right):
-        r"""Compose endomorphisms while retaining both module-linearity premises."""
+        r"""Compose two endomorphisms; the composite's linearity decision conjoins theirs."""
         from dzack_research.preamble.categories.group.additive_mors import (
             _scalar_identity_coefficient,
         )
@@ -2785,9 +2785,9 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
     from the values on pairs of factor generators, and ordinary module-Mor
     admission still rejects any selected tensor relation that those values do
     not kill.  A Python callable, however, does not establish that its values
-    on arbitrary factor elements agree with that bilinear extension.  Retain
-    that bilinearity premise as ``Unknown`` instead of promoting agreement on
-    the selected framing to a proof.
+    on arbitrary factor elements agree with that bilinear extension.  So the
+    linearity decision is ``Unknown``: agreement on the selected framing does
+    not decide bilinearity.
     """
 
     def __init__(self, parent, evaluation) -> None:
@@ -2811,7 +2811,7 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
 
     @cached_method
     def linearity_decision(self):
-        r"""Reject a selected tensor relation the values do not kill; otherwise the bilinearity premise stays ``Unknown``."""
+        r"""Reject a selected tensor relation the values do not kill; otherwise return ``Unknown``."""
         self._check_selected_domain_relations()
         return Unknown
 
