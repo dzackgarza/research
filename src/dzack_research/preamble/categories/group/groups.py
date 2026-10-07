@@ -124,9 +124,10 @@ if "FinitelyPresentedAsGroup" not in all_axioms:
 # its engine also supplies ``_engine_subgroup_from_generators(generators)``,
 # ``_to_subgroup_engine(element, engine_subgroup)`` and
 # ``_from_subgroup_engine(engine_element)``.  Implementers:
-# :class:`_GroupEngine`, selected privately at ``OwnedGroups``, and the
+# :class:`_GroupEngine`, selected privately at ``OwnedGroups``; the
 # group-automorphism, lattice orthogonal-group and torsion-form
-# orthogonal-group Mor parents.  Callers: the adapters in this section and the class-function,
+# orthogonal-group Mor parents; and predicate subgroups of a finite group,
+# realized as the engine subgroup on their elements.  Callers: the adapters in this section and the class-function,
 # character and ``G``-set adapters of this package.  Inputs and outputs are
 # owned elements on one side and the engine's elements on the other; a
 # crossing and its inverse compose to the identity on owned elements.  The
@@ -1153,6 +1154,22 @@ def _owned_group(group):
     return group
 
 
+def _finite_if_bounded_by(group):
+    r"""The finite-group placement of a group whose order is at most ``|group|``.
+
+    A subgroup ``H <= G`` and a quotient ``G/N`` of a finite group are finite
+    by Lagrange's theorem, ``|G| = |H| [G : H] = |N| |G/N|``, and a chosen
+    presentation of ``G`` presents a group isomorphic to ``G``.  So a
+    construction of one of these from ``group`` is placed in finite groups at
+    construction when ``group`` is, by that theorem, and no order is computed.
+    """
+    match group:
+        case _ if group in OwnedFiniteGroups():
+            return (OwnedFiniteGroups(),)
+        case _:
+            return ()
+
+
 @cached_function(
     key=lambda group, refinements, description, free_basis, presentation_source_group: (
         id(group),
@@ -1246,7 +1263,13 @@ def _own_group(
 def _transported_subgroup(group, engine_subgroup):
     r"""Return the subgroup of ``group`` computed by ``engine_subgroup``."""
     subgroup = _object_of(
-        Cat().meet((_owned_group_category(engine_subgroup), Subgroups(group))),
+        Cat().meet(
+            (
+                _owned_group_category(engine_subgroup),
+                Subgroups(group),
+                *_finite_if_bounded_by(group),
+            )
+        ),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
         supergroup=group,
@@ -1263,6 +1286,7 @@ def _generated_subgroup(group, engine_subgroup, generators):
             (
                 _owned_group_category(engine_subgroup),
                 GeneratedSubgroups(group),
+                *_finite_if_bounded_by(group),
             )
         ),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
@@ -1676,7 +1700,7 @@ class _AbelianSubgroupQuotientGroup:
 def _abelian_subgroup_quotient(subgroup):
     r"""Construct ``A/H`` from represented membership in ``H <= A`` for abelian ``A``."""
     return _object_of(
-        AbelianGroups(),
+        Cat().meet((AbelianGroups(), *_finite_if_bounded_by(subgroup.supergroup()))),
         _engine=(OwnedGroups(), _AbelianSubgroupQuotientGroup, _AbelianSubgroupQuotientElement),
         subgroup=subgroup,
     )
@@ -1724,17 +1748,12 @@ class SubgroupInclusion(SetMorphism):
         )
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             KernelSubgroups,
-            PredicateSubgroups,
         )
 
         match subgroup:
             case _ if subgroup in KernelSubgroups(ambient):
                 return subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
             case _:
-                assert subgroup not in PredicateSubgroups(ambient), (
-                    f"the subgroup {subgroup} of {ambient} cannot be computed: it is defined by a "
-                    f"predicate, and is computable here only when it is the kernel of a group homomorphism"
-                )
                 return _gap_model(subgroup)
 
     def is_normal(self) -> bool:
@@ -1758,19 +1777,32 @@ class SubgroupInclusion(SetMorphism):
 
     @cached_method
     def _cokernel_data(self):
-        r"""Return the quotient by the normal closure of this subgroup image."""
+        r"""Return the quotient by the normal closure of this subgroup image.
+
+        A finite ambient group is quotiented by GAP, which realizes the
+        quotient as a finite group with its own engine.  An abelian ambient
+        group not known to be finite is quotiented through subgroup
+        membership, since every subgroup of it is normal.
+        """
         ambient = self.codomain()
-        if ambient in OwnedAbelianGroups():
-            quotient = _abelian_subgroup_quotient(self.domain())
-            return quotient, quotient.quotient_projection()
-        normal_closure = libgap.NormalClosure(
-            _gap_model(ambient),
-            self._finite_subgroup_model(),
-        )
-        return _finite_group_quotient_by_gap_normal_subgroup(
-            ambient,
-            normal_closure,
-        )
+        match ambient:
+            case _ if ambient in OwnedFiniteGroups():
+                normal_closure = libgap.NormalClosure(
+                    _gap_model(ambient),
+                    self._finite_subgroup_model(),
+                )
+                return _finite_group_quotient_by_gap_normal_subgroup(
+                    ambient,
+                    normal_closure,
+                )
+            case _ if ambient in OwnedAbelianGroups():
+                quotient = _abelian_subgroup_quotient(self.domain())
+                return quotient, quotient.quotient_projection()
+            case _:
+                assert False, (
+                    f"the cokernel of the inclusion of {self.domain()} in {ambient} exists, but it is "
+                    f"computed here only when {ambient} is finite or abelian"
+                )
 
     def cokernel(self):
         return self._cokernel_data()[0]
@@ -3736,6 +3768,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 presented_engine = _computed_finitely_presented_engine(self)
                 return _own_group(
                     presented_engine,
+                    refinements=_finite_if_bounded_by(self),
                     presentation_source_group=self,
                 )
 
