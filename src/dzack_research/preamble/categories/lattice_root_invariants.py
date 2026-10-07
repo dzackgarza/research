@@ -14,10 +14,8 @@ from itertools import combinations
 
 
 def _fraction(value) -> Fraction:
-    if isinstance(value, int):
+    if isinstance(value, (int, Fraction)):
         return Fraction(value)
-    if isinstance(value, Fraction):
-        return value
     return Fraction(int(value.numerator()), int(value.denominator()))
 
 
