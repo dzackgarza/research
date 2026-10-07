@@ -46,8 +46,10 @@ jobs:
         sage_python=$("$sage_bin" -c 'import sys; print(sys.executable)')
         echo "SAGE_BIN=$sage_bin" >> "$GITHUB_ENV"
         echo "SAGE_PYTHON=$sage_python" >> "$GITHUB_ENV"
-    - name: Install lattice database into SageMath
-      run: uv pip install --python "$SAGE_PYTHON" -e . pytest
+    - name: Install lattice database dependencies into SageMath
+      run: |
+        uv pip install --python "$SAGE_PYTHON" +          'pydantic>=2.11' +          'pyyaml>=6.0' +          'python-frontmatter>=1.1' +          'jinja2>=3.1' +          'cyclopts>=3' +          'markdown-it-py>=4.2.0' +          'pytest>=8'
+        "$SAGE_PYTHON" -c 'import cypari2, flint, frontmatter, jinja2, markdown_it, pydantic, yaml'
     - name: Compute and certify uncertified card values
       env:
         LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
@@ -61,6 +63,7 @@ jobs:
       if: ${{ always() && steps.checkout.outcome == 'success' }}
       working-directory: ${{ github.workspace }}
       run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git add lattice-database/lattices lattice-database/certificates.yaml
         if git diff --cached --quiet; then
           echo "No newly completed computations."
