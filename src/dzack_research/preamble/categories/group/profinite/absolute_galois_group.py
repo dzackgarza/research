@@ -384,9 +384,30 @@ class _AbsoluteGaloisGroupEngine:
         )
 
     def order(self):
-        return Infinity if self._is_finite_field() else Unknown
+        r"""Return the order of ``G_K``, infinite for a finite or number field ``K``.
+
+        ``G_K`` surjects onto every ``Gal(L/K)`` with ``L`` finite Galois over
+        ``K`` inside the chosen closure, so finite quotients of unbounded
+        order make ``G_K`` infinite.  Over ``F_q`` the quotient
+        ``Gal(F_{q^d}/F_q)`` has order ``d`` for every ``d``.  Over a number
+        field ``K`` the quotient ``(C_2)^r`` exists for every ``r`` (see
+        ``_finite_generation_decision``), of order ``2^r``.
+        """
+        assert self._is_finite_field() or self._is_number_field(), (
+            f"the order of {self} is computed only when its base field is finite or a "
+            f"number field, but the base field is {self._field}"
+        )
+        return Infinity
 
     cardinality = order
+
+    def _finiteness_decision(self):
+        r"""Return ``False`` when :meth:`order` decides that ``G_K`` is infinite."""
+        match self:
+            case _ if self._is_finite_field() or self._is_number_field():
+                return False
+            case _:
+                return super()._finiteness_decision()
 
     def _finite_generation_decision(self):
         r"""Return whether this absolute Galois group is algebraically finitely generated.
@@ -399,15 +420,16 @@ class _AbsoluteGaloisGroupEngine:
         algebraic generating set of ``G_K`` can exist.  Outside these two
         represented regimes this parent does not decide the question.
         """
-        if self._is_finite_field():
-            return False
-        computation_field = _engine_ring(self._field)
-        if computation_field is SageQQ or computation_field in NumberFields():
+        if self._is_finite_field() or self._is_number_field():
             return False
         return Unknown
 
     def _is_finite_field(self) -> bool:
         return _engine_ring(self._field) in FiniteFields()
+
+    def _is_number_field(self) -> bool:
+        computation_field = _engine_ring(self._field)
+        return computation_field is SageQQ or computation_field in NumberFields()
 
     def base_field_order(self):
         if not self._is_finite_field():
