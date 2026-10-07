@@ -1366,20 +1366,27 @@ class CategoricalIsomorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        # An isomorphism composed with an isomorphism into its domain is an
-        # isomorphism; composed with any other arrow it is that composite.
+        r"""Compose with ``other``; a composite of isomorphisms is an element of the Iso Mor.
+
+        For isomorphisms ``f: A -> B`` and ``g: B -> C`` the composite ``g f``
+        has inverse ``f^{-1} g^{-1}``, so it is that known inverse pair in
+        ``Core(C).Mor(A, C)``, whose arrows are those of ``Iso_C(A, C)``.
+        Composed with an arrow that is not an isomorphism, it is the
+        composite of the forward arrow with that arrow.
+        """
         if not _precomposable(self, other):
             return NotImplemented
         core = self.parent().mor_category().Core()
         if other not in core.Mor(other.domain(), self.domain()):
             return self.forward() * other
-        forward = self.forward() * other.forward()
-        inverse = other.inverse() * self.inverse()
-        return CategoricalIsomorphism(
-            _category_mor_parent(self.parent().mor_category(), other.domain(), self.codomain()),
-            forward,
-            inverse,
-            verify=False,
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+
+        return _isomorphism_from_known_inverse_pair(
+            self.forward() * other.forward(),
+            other.inverse() * self.inverse(),
+            base_category=core,
         )
 
 
@@ -1431,12 +1438,8 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
                 f"the identity automorphism exists only on Aut(X), but {self} is "
                 f"Iso({self.domain_object()}, {self.codomain_object()})"
             )
-        identity = self.arrow_set().identity()
-        return self(
-            CategoricalIsomorphism(
-                identity.parent(), identity, identity, verify=False
-            )
-        )
+        obj = self.domain_object()
+        return self(self.base_category().Core().Mor(obj, obj).identity())
 
     one = identity_automorphism
 
@@ -1451,12 +1454,9 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
 
 class FixedAutCategory(FixedIsoCategory):
     def identity_automorphism(self) -> CategoricalIsomorphism:
-        identity = self.arrow_set().identity()
-        return self(
-            CategoricalIsomorphism(
-                identity.parent(), identity, identity, verify=False
-            )
-        )
+        r"""The identity of ``X``, an element of ``Core(C).Mor(X, X)``, placed in ``Aut_C(X)``."""
+        obj = self.domain_object()
+        return self(self.base_category().Core().Mor(obj, obj).identity())
 
     one = identity_automorphism
 
