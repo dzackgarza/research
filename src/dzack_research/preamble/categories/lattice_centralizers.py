@@ -196,7 +196,7 @@ class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
     def transporter(self, source, target):
         source_orbit = self.orbit_of(source)
         target_orbit = self.orbit_of(target)
-        if source_orbit is not target_orbit:
+        if source_orbit != target_orbit:
             return None
         return self.action().transporter_witness(self.point(source), self.point(target))
 
@@ -340,7 +340,7 @@ class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
         return self.orbit_of(candidate).stabilizer()
 
     def transporter(self, source, target):
-        if self.orbit_of(source) is not self.orbit_of(target):
+        if self.orbit_of(source) != self.orbit_of(target):
             return None
         return self.action().transporter_witness(self.point(source), self.point(target))
 

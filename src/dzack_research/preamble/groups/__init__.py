@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.group.g_sets import (
     FiniteGSets,
     GSetMor,
     GSetMorphism,
-    OrbitSets,
     Torsors,
 )
 
@@ -141,7 +140,6 @@ __all__ = [
     'OwnedGroups',
     'OwnedInfiniteGroups',
     'Subgroups',
-    'OrbitSets',
     'PredicateSubgroups',
     'PrimeProlongation',
     'ProfiniteCharacter',

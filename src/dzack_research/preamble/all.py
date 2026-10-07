@@ -215,7 +215,6 @@ from dzack_research.preamble.groups import (
     OpenAbsoluteGaloisSubgroup,
     OpenAbsoluteGaloisSubgroups,
     OpenGaloisSubgroupConjugacyClass,
-    OrbitSets,
     OwnedAbelianGroups,
     OwnedFiniteAbelianGroups,
     OwnedFiniteGroups,
