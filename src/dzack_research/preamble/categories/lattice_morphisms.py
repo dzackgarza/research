@@ -1556,29 +1556,21 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         return witnesses.get(automorphism)
 
     def discriminant_preimage(self, subgroup):
-        r"""Return ``rho_L^{-1}(subgroup)`` as a predicate subgroup of ``O(L)``."""
+        r"""Return ``rho_L^{-1}(subgroup)`` as a predicate subgroup of ``O(L)``.
+
+        ``subgroup`` is a subgroup ``H`` of ``O(A_L)``, given with its
+        inclusion ``H -> O(A_L)``.  The preimage is cut out of ``O(L)`` by the
+        one predicate ``rho_L(g) in H``.
+        """
         if self.domain() is not self.codomain():
             raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no orthogonal group O(L), so {subgroup} has no preimage under O(L) -> O(A_L)")
         target = self.domain().discriminant_group().orthogonal_group()
-        # A subgroup of the finite orthogonal group is a subcategory of it: its
-        # declared supercategory is the group it was cut out of.
-        if not (subgroup is target or subgroup.is_subcategory(target)):
-            raise ValueError(f"{subgroup} has no preimage under O(L) -> O(A_L) for L = {self.domain()}: it is not a subgroup of {target}")
-
-        if int(subgroup.cardinality()) == 1:
-            form = target.domain()
-            identity = form.module_category().Mor(form, form).identity()
-
-            def predicate(automorphism):
-                return automorphism._discriminant_forward_morphism() == identity
-        else:
-
-            def predicate(automorphism):
-                return automorphism.discriminant_morphism() in subgroup
-
+        assert subgroup.inclusion().codomain() is target, (
+            f"{subgroup} has no preimage under O(L) -> O(A_L) for L = {self.domain()}: "
+            f"it is a subgroup of {subgroup.inclusion().codomain()}, not of {target}"
+        )
         return self.discriminant_representation().preimage_subgroup(
             subgroup,
-            predicate=predicate,
             description=f"rho_L(g) lies in {subgroup}",
             character_data={"discriminant_preimages": (subgroup,)},
         )
