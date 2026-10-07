@@ -8,11 +8,12 @@ consume ``L.orthogonal_group().select_group_resolution().group_generators()``.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence, Sized
-from functools import partial
+from collections.abc import Mapping, Sized
 
 from sage.groups.fqf_orthogonal import FqfIsometry
+from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import column_matrix, matrix
+from sage.modules.free_module_element import vector
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.matrix.matrix_rational_dense import Matrix_rational_dense
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
@@ -89,73 +90,42 @@ def _discriminant_actions(
     return factors, actions
 
 
-def _orbit_counts(
-    vectors: Matrix_integer_dense,
-    generators: list[Matrix_integer_dense],
-    quotient: list[list[int]],
-    size: int,
-) -> list[int]:
-    columns = {tuple(column): index for index, column in enumerate(vectors.columns())}
-    parent = list(range(len(columns) * size))
-
-    def root(index: int) -> int:
-        while parent[index] != index:
-            parent[index] = parent[parent[index]]
-            index = parent[index]
-        return index
-
-    for generator, multiply in zip(generators, quotient, strict=True):
-        images = [columns[tuple(column)] for column in (generator * vectors).columns()]
-        for vector_index, image in enumerate(images):
-            for quotient_index in range(size):
-                left = root(vector_index * size + quotient_index)
-                right = root(image * size + multiply[quotient_index])
-                if left != right:
-                    parent[left] = right
-    return [root(index * size) for index in range(len(columns))]
-
-
-def _closure(
-    identity: tuple[int, ...],
-    generators: Sequence[Callable[[tuple[int, ...]], tuple[int, ...]]],
+def _discriminant_points(
+    factors: list[int], actions: list[Matrix_integer_dense]
 ) -> list[tuple[int, ...]]:
-    found = {identity: None}
-    frontier = [identity]
+    r"""Return the orbit of the Smith generators of ``A_L`` under the actions.
+
+    The Smith generators come first, in order.  An element of ``A_L`` is a
+    column of residues modulo ``factors``, and each action moves it by left
+    multiplication.
+    """
+    order = len(factors)
+    found = {
+        tuple(int(i == j) % factors[i] for i in range(order)): None for j in range(order)
+    }
+    frontier = list(found)
     while frontier:
-        element = frontier.pop()
-        for generator in generators:
-            image = generator(element)
+        element = vector(ZZ, frontier.pop())
+        for action in actions:
+            image = tuple(int(entry) % factor for entry, factor in zip(action * element, factors, strict=True))
             if image not in found:
                 found[image] = None
                 frontier.append(image)
     return list(found)
 
 
-def _quotient_action(
-    action: Matrix_integer_dense,
-    factors: list[int],
-    determinant: int,
-    with_determinant: bool,
-    with_discriminant: bool,
-    element: tuple[int, ...],
-) -> tuple[int, ...]:
-    sign_part = element[0] * determinant if with_determinant else 1
-    if not with_discriminant:
-        return (sign_part,)
-    order = len(factors)
-    current = matrix(ZZ, order, order, list(element[1:]))
-    product = action * current
-    return (
-        sign_part,
-        *(
-            int(product[i, j]) % factors[i]
-            for i in range(order)
-            for j in range(order)
-        ),
-    )
-
-
 def primitive_orbit_series(lattice, bound: int = ORBIT_NORM_BOUND):
+    r"""Count the orbits of ``O``, ``SO``, ``Otilde`` and ``SOtilde`` on primitive vectors by norm.
+
+    ``O(L)`` acts on the finite set ``X ⊔ D ⊔ {+1, -1}``: the vectors of
+    norm at most ``bound``, the orbit ``D ⊆ A_L`` of the Smith generators, and
+    the sign of the determinant.  Let ``P`` be the image permutation group.
+    ``SO`` is the image of the stabilizer of ``+1``, ``Otilde`` the pointwise
+    stabilizer of the Smith generators, and ``SOtilde`` both; GAP computes the
+    stabilizers by Schreier-Sims and the orbits on ``X`` directly.  An isometry
+    preserves primitivity, so one vector of each ``O``-orbit decides it for the
+    whole orbit.
+    """
     definiteness = lattice.definiteness()
     match definiteness:
         case "positive_definite":
@@ -166,62 +136,57 @@ def primitive_orbit_series(lattice, bound: int = ORBIT_NORM_BOUND):
             raise ValueError(f"primitive bounded orbit series requires a definite lattice, not {lattice}")
     gram = _gram_matrix(lattice)
     generators = _orthogonal_generator_matrices(lattice)
-    primitive_coordinates = []
+    vectors = []
     norms = []
     for absolute_norm in range(1, int(bound) + 1):
-        for vector in lattice.vectors_of_square(sign * absolute_norm):
-            if vector.is_primitive():
-                primitive_coordinates.append(_element_coordinates(vector))
-                norms.append(absolute_norm)
-    vectors = (
-        column_matrix(ZZ, primitive_coordinates)
-        if primitive_coordinates
+        for element in lattice.vectors_of_square(sign * absolute_norm):
+            vectors.append(element)
+            norms.append(absolute_norm)
+    coordinates = [_element_coordinates(element) for element in vectors]
+    vector_points = {point: index for index, point in enumerate(coordinates)}
+    factors, actions = _discriminant_actions(gram, generators)
+    discriminant = _discriminant_points(factors, actions)
+    discriminant_points = {point: len(coordinates) + index for index, point in enumerate(discriminant)}
+    positive = len(coordinates) + len(discriminant)
+    columns = (
+        column_matrix(ZZ, coordinates)
+        if coordinates
         else matrix(ZZ, int(lattice.module_rank()), 0)
     )
-    factors, actions = _discriminant_actions(gram, generators)
-    determinants = [int(generator.det()) for generator in generators]
-    discriminant_rank = len(factors)
-    counts: dict[str, list[int]] = {}
-    for group, flags in {
-        "O": (False, False),
-        "SO": (True, False),
-        "Otilde": (False, True),
-        "SOtilde": (True, True),
-    }.items():
-        with_determinant, with_discriminant = flags
-        identity = (
-            (
-                1,
-                *(
-                    int(i == j)
-                    for i in range(discriminant_rank)
-                    for j in range(discriminant_rank)
-                ),
-            )
-            if with_discriminant
-            else (1,)
-        )
-        moves = [
-            partial(
-                _quotient_action,
-                actions[index],
-                factors,
-                determinants[index],
-                with_determinant,
-                with_discriminant,
-            )
-            for index in range(len(generators))
+    permutations = []
+    for generator, action in zip(generators, actions, strict=True):
+        images = [vector_points[tuple(column)] for column in (generator * columns).columns()]
+        images += [
+            discriminant_points[
+                tuple(int(entry) % factor for entry, factor in zip(action * vector(ZZ, point), factors, strict=True))
+            ]
+            for point in discriminant
         ]
-        elements = _closure(identity, moves)
-        positions = {element: position for position, element in enumerate(elements)}
-        quotient = [
-            [positions[move(element)] for element in elements] for move in moves
-        ]
-        roots = _orbit_counts(vectors, generators, quotient, len(elements))
-        counts[group] = [
-            len({roots[index] for index in range(len(norms)) if norms[index] == norm})
+        images += [positive, positive + 1] if generator.det() == 1 else [positive + 1, positive]
+        permutations.append(libgap.PermList([image + 1 for image in images]))
+    group = libgap.GroupByGenerators(permutations, libgap.eval("()"))
+    primitive = [
+        point
+        for orbit in libgap.Orbits(group, list(range(1, len(coordinates) + 1))).sage()
+        if vectors[orbit[0] - 1].is_primitive()
+        for point in orbit
+    ]
+    smith_generators = [len(coordinates) + index + 1 for index in range(len(factors))]
+    subgroups = {
+        "O": group,
+        "SO": libgap.Stabilizer(group, positive + 1),
+        "Otilde": libgap.Stabilizer(group, smith_generators, libgap.OnTuples),
+        "SOtilde": libgap.Stabilizer(group, [positive + 1, *smith_generators], libgap.OnTuples),
+    }
+    counts = {
+        name: [
+            sum(1 for orbit in orbits if norms[orbit[0] - 1] == norm)
             for norm in range(1, int(bound) + 1)
         ]
+        for name, orbits in (
+            (name, libgap.Orbits(subgroup, primitive).sage()) for name, subgroup in subgroups.items()
+        )
+    }
     zeros = [0] * int(bound)
     plus = (
         {"O+": "SO", "SO+": "SO", "Otilde+": "SOtilde", "SOtilde+": "SOtilde"}

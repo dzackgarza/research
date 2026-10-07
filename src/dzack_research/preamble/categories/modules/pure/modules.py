@@ -2959,7 +2959,13 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             )
 
         def is_primitive(self) -> bool:
-            return self.inclusion().is_primitive()
+            r"""Return whether the cokernel of the inclusion is torsion-free.
+
+            The inclusion is the subobject's chosen monomorphism, so the
+            injectivity that ``Mor``-level primitivity decides first is
+            part of the datum.
+            """
+            return self.inclusion().cokernel().is_torsion_free()
 
         is_saturated = is_primitive
 
