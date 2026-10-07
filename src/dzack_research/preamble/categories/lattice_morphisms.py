@@ -1818,16 +1818,24 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
     @cached_method
     def _computed_group_generators(self):
-        r"""Return exact generators of ``O(L)`` when the backend computes them."""
+        r"""Return generators of ``O(L)``, computed by a backend, as a finite ordered set of ``O(L)``.
 
+        For definite ``L``, Sage's ``GroupOfIsometries`` computes the
+        generators of the finite group ``O(L)``. For indefinite ``L``,
+        ``sage_indefinite_port`` computes them. Both answers are untrusted
+        engine output: each computed isometry is constructed through ``O(L)``
+        into an element of ``O(L)``, and the family becomes one finite ordered
+        set of ``O(L)``.
+        """
         lattice = self.domain()
-        if not lattice.is_definite():
+        if lattice.is_definite():
+            generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
+        else:
             from sage_indefinite_port.indefinite.recursive import (
                 orthogonal_group_generators,
             )
 
-            return orthogonal_group_generators(self)
-        generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
+            generators = tuple(self(generator) for generator in orthogonal_group_generators(self))
         positions = Sets.Δ[len(generators) - 1]
         return FiniteOrderedSets().from_indexed(
             positions,
