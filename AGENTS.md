@@ -161,7 +161,12 @@ the first edit, and requires the report to list the files that were read:
 - the `AGENTS.md` and `README.md` of the subtree that the work edits.
 
 An agent that has edited code before reading them checks every such edit against
-the guidelines before it continues. Accept no delivery whose report does not list
+the guidelines before it continues.
+
+A brief never adds verification that this file exempts. Preamble work and its
+lattice-db callers skip test, import and execution runs (see the notebook workflow
+note); a brief that tells a worker to run them after each unit makes it spend
+hours on runs that decide nothing. Accept no delivery whose report does not list
 this reading.
 
 ## Preamble coding prerequisites
