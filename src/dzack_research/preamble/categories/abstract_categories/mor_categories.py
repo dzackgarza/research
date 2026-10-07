@@ -39,7 +39,6 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.lazy_attribute import lazy_attribute
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.category_object import CategoryObject as SageCategoryObject
 from sage.structure.dynamic_class import DynamicMetaclass, dynamic_class
 from sage.structure.element import parent
@@ -68,6 +67,7 @@ from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from dzack_research.preamble.logic import Predicate
     from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
     from dzack_research.preamble.lexicon.set_theory import SetObject
 
@@ -1342,7 +1342,7 @@ class CategoricalIsomorphism(Morphism):
     def _call_(self, element):
         return self.forward()(element)
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if self is other:
             return True
         # A represented isomorphism can be parented by an ordinary Mor object of
@@ -1353,13 +1353,14 @@ class CategoricalIsomorphism(Morphism):
             case _:
                 return False
         equalities = (self.forward() == other.forward(), self.inverse() == other.inverse())
-        if any(answer is False for answer in equalities):
-            return False
-        return True if all(answer is True for answer in equalities) else Unknown
+        from dzack_research.preamble.logic import conjunction
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return conjunction(equalities)
+
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))

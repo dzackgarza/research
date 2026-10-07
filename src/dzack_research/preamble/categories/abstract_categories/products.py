@@ -3,13 +3,12 @@ r"""Diagrams, cones, cocones, and selected finite product constructions."""
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
@@ -34,6 +33,9 @@ from dzack_research.preamble.categories.sets.set_categories import FiniteSets, S
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 
 class _DiagramCategory(_FunctorCategory):
@@ -1125,16 +1127,17 @@ class ConeMorphism(Morphism):
     def apex_map(self) -> Morphism:
         return self._apex_map
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if self is other:
             return True
         if parent(other) is not self.parent():
             return False
         return self.apex_map() == other.apex_map()
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
@@ -1193,16 +1196,17 @@ class CoconeMorphism(Morphism):
     def apex_map(self) -> Morphism:
         return self._apex_map
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if self is other:
             return True
         if parent(other) is not self.parent():
             return False
         return self.apex_map() == other.apex_map()
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))

@@ -165,41 +165,32 @@ class ResolutionMorphism(Morphism):
                 return False
             case True:
                 pass
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
+
         target_equal = self.target_morphism() == other.target_morphism()
         match target_equal:
             case False:
                 return False
-            case _ if target_equal is Unknown:
-                return Unknown
-            case True:
+            case _:
                 pass
         match self.domain().truncation():
             case _ if self.domain().truncation() is Infinity:
-                return Unknown
+                return AtomicProposition("equal", self, other)
             case truncation:
-                component_equalities = tuple(
-                    self.component(degree) == other.component(degree)
-                    for degree in range(truncation + 1)
+                return conjunction(
+                    (
+                        target_equal,
+                        *(
+                            self.component(degree) == other.component(degree)
+                            for degree in range(truncation + 1)
+                        ),
+                    )
                 )
-                match any(answer is False for answer in component_equalities):
-                    case True:
-                        return False
-                    case False:
-                        match all(
-                            answer is True for answer in component_equalities
-                        ):
-                            case True:
-                                return True
-                            case False:
-                                return Unknown
 
     def __ne__(self, other):
-        equal = self == other
-        match equal:
-            case _ if equal is Unknown:
-                return Unknown
-            case _:
-                return not equal
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def _repr_(self) -> str:
         return (

@@ -2,12 +2,11 @@ r"""Opposite categories and binary products of categories."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
 
@@ -21,6 +20,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 
 class OppositeMorphism(Morphism):
@@ -49,16 +51,17 @@ class OppositeMorphism(Morphism):
     def underlying_arrow(self) -> Morphism:
         return self._underlying_arrow
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if self is other:
             return True
         if parent(other) is not self.parent():
             return False
         return self.underlying_arrow() == other.underlying_arrow()
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
@@ -225,19 +228,20 @@ class ProductMorphism(Morphism):
     def second(self) -> Morphism:
         return self._second
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if self is other:
             return True
         if parent(other) is not self.parent():
             return False
         equalities = (self.first() == other.first(), self.second() == other.second())
-        if any(answer is False for answer in equalities):
-            return False
-        return True if all(answer is True for answer in equalities) else Unknown
+        from dzack_research.preamble.logic import conjunction
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return conjunction(equalities)
+
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))

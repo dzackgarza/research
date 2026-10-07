@@ -13,17 +13,19 @@ unit and counit.  ``Cat`` owns the functor category and its morphisms.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import final, overload
+from typing import TYPE_CHECKING, final, overload
 
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 
 def _functor_factor_family(factors):
@@ -75,7 +77,7 @@ class Functor:
         TypeError: the image is not a morphism of the functor's codomain
     """
 
-    _faithful = Unknown
+    _faithful: bool | None = None
 
     def __init__(self, domain: Category, codomain: Category) -> None:
         self._domain = domain
@@ -376,8 +378,16 @@ class Functor:
     def factors(self):
         return _functor_factor_family((self,))
 
-    def is_faithful(self) -> bool | UnknownClass:
-        r"""Return the declared faithfulness decision, or ``Unknown`` when none is declared."""
+    def is_faithful(self) -> bool | Predicate:
+        r"""Return the declared faithfulness decision.
+
+        A functor class that declares none answers the proposition that the
+        functor is faithful.
+        """
+        if self._faithful is None:
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_faithful", self)
         return self._faithful
 
     def _repr_(self) -> str:
@@ -486,7 +496,7 @@ class _CompositeFunctor(Functor):
         factors = tuple(self._first.factors()) + tuple(self._second.factors())
         return _functor_factor_family(factors)
 
-    def is_faithful(self) -> bool | UnknownClass:
+    def is_faithful(self) -> bool | Predicate:
         r"""Return what the factors' declarations prove about faithfulness of the composite."""
         first = self._first.is_faithful()
         second = self._second.is_faithful()
@@ -498,7 +508,9 @@ class _CompositeFunctor(Functor):
             return True
         # Nonfaithfulness of the second factor need not occur on the image of
         # the first, and an undeclared factor supplies no missing theorem.
-        return Unknown
+        from dzack_research.preamble.logic import AtomicProposition
+
+        return AtomicProposition("is_faithful", self)
 
     def _repr_(self):
         return f"{self._second} ∘ {self._first}"

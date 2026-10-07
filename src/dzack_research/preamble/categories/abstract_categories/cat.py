@@ -12,7 +12,6 @@ from sage.categories.objects import Objects as SageObjects
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.element import Element, parent
 from sage.structure.parent import Parent
@@ -38,6 +37,7 @@ from dzack_research.preamble.owned_category import _object_of
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from dzack_research.preamble.logic import Predicate
 
 
 class CategoryObject(OwnedParent, Parent):
@@ -113,7 +113,7 @@ class CategoryFunctorMorphism(Morphism):
     def _call_(self, value):
         return self.functor()(value)
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if self is other:
             return True
         if parent(other) is not self.parent():
@@ -124,11 +124,14 @@ class CategoryFunctorMorphism(Morphism):
         # functors, so lack of this equality proof is not inequality.
         if len(left) == len(right) and all(first is second for first, second in zip(left, right)):
             return True
-        return Unknown
+        from dzack_research.preamble.logic import AtomicProposition
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return AtomicProposition("equal", self, other)
+
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
@@ -1159,18 +1162,21 @@ class NaturalTransformationMorphism(Morphism):
     def naturality_square(self, morphism: Map):
         return self.transformation().naturality_square(morphism)
 
-    def __eq__(self, other: Any) -> bool | UnknownClass:
+    def __eq__(self, other: Any) -> bool | Predicate:
         if parent(other) is not self.parent():
             return False
         if self.transformation() is other.transformation():
             return True
         # Different component functions need not define different natural
         # transformations, and the source category need not be finite.
-        return Unknown
+        from dzack_research.preamble.logic import AtomicProposition
 
-    def __ne__(self, other: Any) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return AtomicProposition("equal", self, other)
+
+    def __ne__(self, other: Any) -> bool | Predicate:
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
