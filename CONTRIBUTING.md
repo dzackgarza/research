@@ -1472,25 +1472,6 @@ of this specification.
   explicit matrix extraction; `O(L).group_generators()` is computed on the
   first call and cached.
 
-### `OWN-24`: A loop over pairings is a tensor contraction
-
-- **Rule:** Mathematical code states a computation over a family as the tensor
-  operation it is.  The pairings `b(v_i, w_j)` of two families are one matrix
-  product; `f` is an isometry of `(L, G)` to `(L', G')` when `M^T G' M = G`, one
-  equation; a family of evaluations is one contraction.  Numerical work lives
-  behind the tensor interface (vectors, covectors, matrices, morphism tensors),
-  and the engine call sits in its private adapter (`OWN-06`).
-- **Rationale:** An imperative loop over elements re-enters the preamble's
-  element and form machinery once per pair, so its cost is the overhead of
-  that machinery times the square of the family.  The tensor equation is one
-  engine call, and it reads as the definition.
-- **Violation Example:** `for` loops over pairs of roots, basis vectors or
-  generators; `all(b(x, y) == ... for x ... for y ...)`; `sum(...)` of
-  pairings built element by element.
-- **Correct Example:** the isometry validator compares `M^T G' M` with `G`;
-  the Gram matrix of a set of simple roots is `S G S^T` for the matrix `S`
-  of their coordinates.
-
 ### `OWN-23`: Lazy realization fixes all defining choices before exposure
 
 - **Rule:** Distinguish a mathematical datum from its evaluated representation.
@@ -1522,6 +1503,48 @@ of this specification.
   framing sources; requesting generators, the framing arrow and a nested morphism
   space in different orders yields the same sources, maps and operations.
   A nonsurjective map is not a framing merely because it supplies some elements.
+
+### `OWN-24`: Computations over families are tensor operations, and coordinate conventions live only in the tensor package
+
+- **Rule:** Mathematical code states a computation over a family as the tensor
+  operation it is. It never states it as a loop and never as a matrix
+  product.  The pairings `b(v_i, w_j)` of two families are one contraction.
+  `f` preserves forms when `f^* b_W = b_V`, written
+  `codomain.gram_tensor().pullback(f)` compared with `domain.gram_tensor()`.
+  A change of basis of a form is its pullback along the change of basis.
+  Composition is `f * g`, inverse is `~f`, and application is `f(v)`.
+
+  Which side a matrix acts on, and where a transpose falls, is a coordinate
+  convention.  It is fixed once, inside `preamble/tensors/`, where
+  `Tensor.pullback` holds the only `A^t G A`.  The engine's own convention
+  (Sage matrix groups act on rows) is converted once, at the tensor package's
+  lowering and raising of a morphism.  Outside that package no code writes
+  `.transpose()`, `.T` or `matrix_action_*`, and no code multiplies coordinate
+  matrices to state a mathematical equation.  So `M^t G M` and `M G M^t` cannot
+  be written at all, and neither can choosing between them.
+
+  One equation has one owner.  A second statement of the same invariant, such
+  as a loop of form evaluations beside a pullback, is deleted.
+- **Rationale:** An imperative loop over elements re-enters the preamble's
+  element and form machinery once per pair. Its cost is that overhead times
+  the square of the family.  A side convention written at each call site
+  is a choice made again at each site, and a wrong choice there is a wrong
+  answer that no check sees on symmetric specimens.  On 2026-10-07 the
+  isometry check was stated three times in `lattice_morphisms.py`: as the
+  pullback, as `transformation.transpose() * codomain_gram * transformation`,
+  and as 64 `b(., .)` evaluations in `_check_form_square`. The last one cost
+  18 s of the `O(E_6)` test.
+- **Violation Example:** `for` loops over pairs of roots, basis vectors or
+  generators; `all(b(x, y) == ... for x ... for y ...)`; `P * G * P.transpose()`
+  in a reduction; `form.matrix_action_right(step)`; a helper whose docstring
+  says "Sage acts on rows, hence one transpose" outside the tensor package.
+- **Correct Example:** the isometry validator compares
+  `codomain.gram_tensor().pullback(f)` with `domain.gram_tensor()`; the form
+  in a reduced basis is the pullback along the reducing automorphism; the
+  Gram tensor of a family of roots is the pullback along the map that
+  sends the standard basis to the roots.
+- **Enforcement:** `just tensor-boundary` lists every transpose and matrix
+  action outside `preamble/tensors/`.
 
 ### Construction-chain review protocol
 

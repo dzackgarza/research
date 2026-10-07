@@ -1116,11 +1116,17 @@ the category states. Every construction in the tree moves to this shape;
   on for its own benefit.
 - **A loop over pairings is a tensor contraction.** Mathematics written as an
   imperative loop is almost always one tensor operation done slowly: the
-  pairings of many vectors are one matrix product, `f` being an isometry is the
-  one equation `M^T G' M = G`, a family of evaluations is one contraction.
-  Write the tensor equation. Numerical optimization lives behind the tensor
-  interface (vectors, covectors, matrices, morphism tensors), never in the
-  mathematical code that calls it.
+  pairings of many vectors are one contraction, and `f` preserves forms when
+  the pullback `f^* b_W` equals `b_V`. Write the tensor equation. Numerical
+  optimization lives behind the tensor interface (vectors, covectors,
+  matrices, morphism tensors), never in the mathematical code that calls it.
+- **Coordinate conventions exist only inside `preamble/tensors/`.** Which side
+  a matrix acts on, and where a transpose falls, is fixed once there.
+  `Tensor.pullback` holds the only `A^t G A`. Everywhere else, code states
+  pullback, composition `f * g`, inverse `~f` and application `f(v)`, so
+  `M^t G M` and `M G M^t` cannot be written, and no call site chooses between
+  them. `just tensor-boundary` lists every transpose and matrix action
+  outside the package.
 
 Some conditions cannot be checked at all. The Fourier transform is an isometry
 of `L^2(RR)`, and no finite computation confirms it. A construction that
