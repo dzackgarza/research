@@ -33,10 +33,10 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
 
     assert cardinals.compare(aleph(1), continuum) is CardinalComparison.LESS_OR_EQUAL
     assert cardinals.Mor(aleph(1), continuum).cardinality() == 1
-    assert cardinals.Mor(continuum, aleph(1)).is_empty() is Unknown
+    assert ask(cardinals.Mor(continuum, aleph(1)).is_empty()) is Unknown
     assert cardinals.compare(aleph(2), continuum) is CardinalComparison.INCOMPARABLE
-    assert cardinals.Mor(aleph(2), continuum).is_empty() is Unknown
-    assert cardinals.Mor(continuum, aleph(2)).is_empty() is Unknown
+    assert ask(cardinals.Mor(aleph(2), continuum).is_empty()) is Unknown
+    assert ask(cardinals.Mor(continuum, aleph(2)).is_empty()) is Unknown
     assert cardinals.Mor(continuum, aleph0).is_empty() is True
     assert cardinals.Mor(continuum, aleph0).cardinality() == 0
 
