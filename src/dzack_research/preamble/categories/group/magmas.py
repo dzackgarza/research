@@ -142,6 +142,28 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             """
             return self._with_axiom("Commutative")
 
+    class Commutative(CategoryWithAxiom):
+        r"""Magmas whose law satisfies ``xy = yx``.
+
+        The axiom is implemented here, at the level that introduces the law.
+        ``Category._with_axiom_as_tuple`` (``sage/categories/category.py``)
+        returns the category itself for an axiom no class on its path
+        implements, so without this class ``Magmas().Commutative()`` would be
+        ``Magmas()`` and every magma would be a commutative magma.  Sage then
+        joins this class into the supercategories of every category with the
+        ``Commutative`` axiom whose path reaches ``Magmas()``: commutative
+        rings, commutative algebras and abelian groups are commutative magmas
+        through it.
+        """
+
+        def an_object(self):
+            r"""The owned integers under multiplication."""
+            return Magmas().an_object()
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "commutative magmas"
+
 
 class MonoidMorCategoryConstruction(MorCategoryConstruction):
     r"""The fixed-endpoint Mor categories of owned monoids."""
