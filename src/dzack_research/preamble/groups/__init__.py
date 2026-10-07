@@ -1,7 +1,6 @@
 'Owned group-theoretic vocabulary: the public aggregated group surface.'
 
 from dzack_research.preamble.categories.group.g_objects import (
-    EquivariantMorphism,
     GObjectMor,
     GObjects,
     Grp,
@@ -12,7 +11,6 @@ from dzack_research.preamble.categories.group.g_objects import (
 from dzack_research.preamble.categories.group.g_sets import (
     FiniteGSets,
     GSetMor,
-    GSetMorphism,
     Torsors,
 )
 
@@ -96,7 +94,6 @@ __all__ = [
     'CyclotomicCharacter',
     'DecompositionGroupConjugacyClass',
     'ElementConjugacyClass',
-    'EquivariantMorphism',
     'FiniteAbelianGroups',
     'FiniteElementConjugacyClass',
     'FiniteGSets',
@@ -114,7 +111,6 @@ __all__ = [
     'GObjects',
     'Grp',
     'GSetMor',
-    'GSetMorphism',
     'GroupAutomorphism',
     'GroupAutomorphismGroup',
     'GroupMorphism',

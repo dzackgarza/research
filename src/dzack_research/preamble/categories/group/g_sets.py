@@ -7,7 +7,6 @@ the engine used to compute equivariance, fixed points, orbits, and the
 standard finite free/cofree constructions.
 """
 
-from sage.categories.morphism import SetMorphism
 from sage.categories.category import Category
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
@@ -22,7 +21,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.functors.core import NaturalTransformation
 from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
@@ -458,65 +456,13 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             return Sets().Core().Mor(self, quotient)(forward, inverse)
 
 
-class GSetMorphismMethods:
-    r"""A set map checked to commute with the represented group actions."""
-
-    def __init__(self, parent, function) -> None:
-        super().__init__(parent, function)
-        self.validate_equivariance(check=False)
-
-    @cached_method
-    def equivariance_decision(self):
-        r"""Return whether ``f(g x) = g f(x)``, decided by the parent on first request."""
-        return self.parent().is_equivariant(self)
-
-    @validator
-    def validate_equivariance(self) -> None:
-        r"""Raise ``ValueError`` unless this map commutes with the actions (``OWN-22``)."""
-        if self.equivariance_decision() is not True:
-            raise ValueError(
-                f"the map {self.domain()} -> {self.codomain()} is not a morphism of "
-                f"G-sets: it is not known to commute with the action of "
-                f"{self.domain().acting_group()}"
-            )
-
-    def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        return other.domain().Mor(self.codomain())(
-            lambda point: self(other(point))
-        )
-
-    def natural_transformation(self):
-        r"""Return this equivariant map as the corresponding transformation ``BG => Set``."""
-        source = self.domain().action_functor()
-        target = self.codomain().action_functor()
-        component = Sets().Mor(self.domain(), self.codomain())(
-            lambda point: self(point)
-        )
-        return NaturalTransformation(
-            source, target, lambda _obj: component
-        ).morphism()
-
-
-class GSetMorphism(GSetMorphismMethods, SetMorphism):
-    r"""Compatibility shell for private finite-G-set arrow realizations."""
-
-
 class GSetMor(GObjectMor):
-    r"""The equivariant Mor category between represented finite ``G``-sets."""
+    r"""The equivariant Mor category between represented finite ``G``-sets.
 
-    ElementMethods = GSetMorphismMethods
-
-    def _element_constructor_(self, function):
-        return self.element_class(self, function)
-
-    def identity(self):
-        assert self.domain() is self.codomain(), (
-            f"no identity morphism from {self.domain()} to {self.codomain()}: the domain "
-            f"and codomain are different G-sets"
-        )
-        return self(lambda point: point)
+    A morphism of finite ``G``-sets is a map of the underlying finite sets
+    that commutes with the actions, so its arrow is the ``GObjects(G, Sets())``
+    arrow threaded through the arrow of ``FiniteSets().Mor``.
+    """
 
 
 class _Orbit:
@@ -966,6 +912,5 @@ __all__ = [
     "FiniteGSets",
     "LeftCosetGSets",
     "GSetMor",
-    "GSetMorphism",
     "Torsors",
 ]

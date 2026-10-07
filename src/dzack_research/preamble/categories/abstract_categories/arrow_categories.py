@@ -1623,7 +1623,7 @@ class CoreMor(CategoricalMor):
         if inverse is None:
             forward, inverse = forward
         self._require_base_morphisms(forward, inverse)
-        return CategoricalIsomorphism(self, forward, inverse)
+        return self.element_class(self, forward, inverse)
 
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
@@ -1640,7 +1640,7 @@ class CoreMor(CategoricalMor):
     def _from_known_inverse_pair(self, forward, inverse):
         r"""Construct an isomorphism from an inverse pair proved by its owner."""
         self._require_base_morphisms(forward, inverse)
-        return CategoricalIsomorphism(self, forward, inverse, verify=False)
+        return self.element_class(self, forward, inverse, verify=False)
 
     def identity(self) -> CategoricalIsomorphism:
         if self.domain() is not self.codomain():

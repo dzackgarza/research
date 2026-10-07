@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     EpiCategoryConstruction,
     MonoCategoryConstruction,
+    MorCategories,
     MorCategoryConstruction,
     _category_accepts_morphism,
     _category_mor,
@@ -211,11 +212,12 @@ class EnumeratedSets(OwnedCategory):
             backward = Sets().Mor(counting_order, self)(
                 lambda position: point_at(int(position))
             )
-            return CategoricalIsomorphism(
-                _set_core().Mor(self, counting_order),
-                forward,
-                backward,
-                verify=False,
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _isomorphism_from_known_inverse_pair,
+            )
+
+            return _isomorphism_from_known_inverse_pair(
+                forward, backward, base_category=_set_core()
             )
 
         def fixed_size_selections(self, selection_size, *, repetition):
@@ -435,16 +437,25 @@ class OwnedSetMorphism(SetMorphism):
         Sage's ``SetMorphism`` compares the stored functions and never calls
         ``_richcmp_``.  This root host restores Sage's element protocol, so
         the most specific arrow type on the Mor decides equality
-        (``STY-167``).
+        (``STY-167``).  If ``D <= C``, an arrow of ``Mor_D(X, Y)`` is an arrow
+        of ``Mor_C(X, Y)``, so an equivariant map and a map of sets with the
+        same endpoints are compared in the weaker Mor, by its arrow type.
         """
-        if element_parent(other) is not self.parent():
-            return False
-        return self._richcmp_(other, op_EQ)
+        return self._compare_in_common_mor(other, op_EQ)
 
     def __ne__(self, other: Any) -> bool | Predicate:
-        if element_parent(other) is not self.parent():
-            return True
-        return self._richcmp_(other, op_NE)
+        return self._compare_in_common_mor(other, op_NE)
+
+    def _compare_in_common_mor(self, other: Any, op: int) -> bool | Predicate:
+        r"""``_richcmp_`` in the Mor that holds both arrows; distinct when none does."""
+        other_parent = element_parent(other)
+        match other:
+            case _ if other_parent is self.parent() or other in self.parent():
+                return self._richcmp_(other, op)
+            case _ if other_parent in MorCategories() and self in other_parent:
+                return other._richcmp_(self, op)
+            case _:
+                return op == op_NE
 
     def _richcmp_(self, other: Self, op: int) -> bool | Predicate:
         r"""Two set maps agree when they agree at every point.
@@ -468,10 +479,11 @@ class OwnedSetMorphism(SetMorphism):
         return equal if op == op_EQ else negation(equal)
 
     def __hash__(self) -> int:
-        # Equality is extensional within one Mor.  An identity-based hash of
-        # the function would give equal maps different hashes; hashing only
-        # the parent also works when points of either endpoint are unhashable.
-        return hash(id(self.parent()))
+        # Equality is extensional, within one Mor or across a stronger Mor
+        # with the same endpoints.  An identity-based hash of the function
+        # would give equal maps different hashes; hashing only the endpoints
+        # also works when points of either endpoint are unhashable.
+        return hash((id(self.domain()), id(self.codomain())))
 
     def is_identity(self) -> bool | Predicate:
         r"""Decide identity on a finite enumeration; return the proposition otherwise.
@@ -649,7 +661,7 @@ class SetMorCategory(CategoricalMor):
                 f"a map of sets {self.domain()} -> {self.codomain()} needs a function on points, but "
                 f"{datum!r} is not callable"
             )
-        return OwnedSetMorphism(self, datum)
+        return self.element_class(self, datum)
 
     @cached_method
     def identity(self) -> OwnedSetMorphism:
@@ -658,7 +670,7 @@ class SetMorCategory(CategoricalMor):
             raise ValueError(
                 f"the identity map exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        return OwnedSetMorphism(self, lambda element: element)
+        return self.element_class(self, lambda element: element)
 
     def identity_at(self, obj: Parent) -> OwnedSetMorphism:
         return Sets().Mor(obj, obj).identity()
@@ -1855,19 +1867,25 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Sets().ObjectT
 
 
 class SetInjection(OwnedSetMorphism):
-    r"""A set morphism whose injectivity is decided or construction-derived."""
+    r"""A set morphism whose injectivity is decided or construction-derived.
 
-    def _injectivity_derivation(self):
-        return None
+    A construction that gives injectivity -- the identity, a composite of
+    injections -- supplies it as its premise ``injectivity_decision``;
+    otherwise :meth:`is_injective` decides it on the map's own data.
+    """
+
+    def __init__(self, parent, function, *, injectivity_decision=None) -> None:
+        self._injectivity_premise = injectivity_decision
+        super().__init__(parent, function)
 
     @cached_method
     def is_injective(self) -> bool | Predicate:
         r"""Decide injectivity on first request, from the construction where it gives it."""
-        match self._injectivity_derivation():
+        match self._injectivity_premise:
             case None:
                 return super().is_injective()
-            case derived:
-                return derived
+            case premise:
+                return premise
 
     @validator
     def validate_injectivity(self) -> None:
@@ -1889,42 +1907,34 @@ class SetInjection(OwnedSetMorphism):
             return composite
         monomorphisms = Sets().Mono(other.domain(), self.codomain())
         if self.is_injective() is True and Sets().Mono(other.domain(), other.codomain()).accepts(other):
-            return _CompositeSetInjection(monomorphisms, self, other)
+            return monomorphisms.element_class(
+                monomorphisms,
+                lambda element: self(other(element)),
+                injectivity_decision=True,
+            )
         return composite
 
 
-class _IdentitySetInjection(SetInjection):
-    def __init__(self, parent) -> None:
-        super().__init__(parent, lambda element: element)
-
-    def _injectivity_derivation(self):
-        return True
-
-
-class _CompositeSetInjection(SetInjection):
-    def __init__(self, parent, left, right) -> None:
-        self._left = left
-        self._right = right
-        super().__init__(parent, lambda element: left(right(element)))
-
-    def _injectivity_derivation(self):
-        return True
-
-
 class SetSurjection(OwnedSetMorphism):
-    r"""A set morphism whose surjectivity is decided or construction-derived."""
+    r"""A set morphism whose surjectivity is decided or construction-derived.
 
-    def _surjectivity_derivation(self):
-        return None
+    A construction that gives surjectivity -- the identity, a composite of
+    surjections -- supplies it as its premise ``surjectivity_decision``;
+    otherwise :meth:`is_surjective` decides it on the map's own data.
+    """
+
+    def __init__(self, parent, function, *, surjectivity_decision=None) -> None:
+        self._surjectivity_premise = surjectivity_decision
+        super().__init__(parent, function)
 
     @cached_method
     def is_surjective(self) -> bool | Predicate:
         r"""Decide surjectivity on first request, from the construction where it gives it."""
-        match self._surjectivity_derivation():
+        match self._surjectivity_premise:
             case None:
                 return super().is_surjective()
-            case derived:
-                return derived
+            case premise:
+                return premise
 
     @validator
     def validate_surjectivity(self) -> None:
@@ -1946,30 +1956,18 @@ class SetSurjection(OwnedSetMorphism):
             return composite
         epimorphisms = Sets().Epi(other.domain(), self.codomain())
         if self.is_surjective() is True and Sets().Epi(other.domain(), other.codomain()).accepts(other):
-            return _CompositeSetSurjection(epimorphisms, self, other)
+            return epimorphisms.element_class(
+                epimorphisms,
+                lambda element: self(other(element)),
+                surjectivity_decision=True,
+            )
         return composite
-
-
-class _IdentitySetSurjection(SetSurjection):
-    def __init__(self, parent) -> None:
-        super().__init__(parent, lambda element: element)
-
-    def _surjectivity_derivation(self):
-        return True
-
-
-class _CompositeSetSurjection(SetSurjection):
-    def __init__(self, parent, left, right) -> None:
-        self._left = left
-        self._right = right
-        super().__init__(parent, lambda element: left(right(element)))
-
-    def _surjectivity_derivation(self):
-        return True
 
 
 class SetInjectionMor(SetMorCategory):
     r"""The declared injections between two sets."""
+
+    ElementMethods = SetInjection
 
     def _element_constructor_(self, datum, *, check=False):
         r"""An injection given by a set map or a function on points; injectivity is its validator."""
@@ -1986,7 +1984,7 @@ class SetInjectionMor(SetMorCategory):
                 f"an injection {self.domain()} -> {self.codomain()} needs a function on points, but "
                 f"{datum!r} is not callable"
             )
-        injection = SetInjection(self, datum)
+        injection = self.element_class(self, datum)
         injection.validate_injectivity(check=check)
         return injection
 
@@ -2009,7 +2007,7 @@ class SetInjectionMor(SetMorCategory):
             raise ValueError(
                 f"the identity map exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        return _IdentitySetInjection(self)
+        return self.element_class(self, lambda element: element, injectivity_decision=True)
 
     def super_categories(self):
         r"""An injection ``X -> Y`` is a map ``X -> Y``: ``Mono_Set(X, Y)`` is a full subcategory of ``Mor_Set(X, Y)``.
@@ -2027,6 +2025,8 @@ class SetInjectionMor(SetMorCategory):
 class SetSurjectionMor(SetMorCategory):
     r"""The declared surjections between two sets."""
 
+    ElementMethods = SetSurjection
+
     def _element_constructor_(self, datum, *, check=False):
         r"""A surjection given by a set map or a function on points; surjectivity is its validator."""
         if isinstance(datum, Morphism):
@@ -2042,7 +2042,7 @@ class SetSurjectionMor(SetMorCategory):
                 f"a surjection {self.domain()} -> {self.codomain()} needs a function on points, but "
                 f"{datum!r} is not callable"
             )
-        surjection = SetSurjection(self, datum)
+        surjection = self.element_class(self, datum)
         surjection.validate_surjectivity(check=check)
         return surjection
 
@@ -2065,7 +2065,7 @@ class SetSurjectionMor(SetMorCategory):
             raise ValueError(
                 f"the identity map exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        return _IdentitySetSurjection(self)
+        return self.element_class(self, lambda element: element, surjectivity_decision=True)
 
     def super_categories(self):
         r"""A surjection ``X -> Y`` is a map ``X -> Y``: ``Epi_Set(X, Y)`` is a full subcategory of ``Mor_Set(X, Y)``.

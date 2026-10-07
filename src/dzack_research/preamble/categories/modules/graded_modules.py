@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
     ModuleMorphismMethods,
     _initialize_module_mor_parent,
     _ModuleMorCommonMethods,
@@ -32,7 +31,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.lexicon.set_theory import SetObject
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
 
 
@@ -153,7 +152,12 @@ def _selected_homogeneous_degree(element):
 
 
 class GradedModuleMorphismMethods:
-    r"""A degree-zero morphism of graded modules."""
+    r"""A degree-zero morphism of graded modules.
+
+    An arrow built by an operation of its graded Mor (a composite) takes
+    ``degree_preservation_premises``: the family of graded maps it is built
+    from.  It preserves degree when every premise does.
+    """
 
     def __init__(
         self,
@@ -161,14 +165,26 @@ class GradedModuleMorphismMethods:
         images,
         *,
         elementwise=False,
+        linearity_premises=None,
         degree_preservation=None,
+        degree_preservation_premises=None,
     ) -> None:
-        super().__init__(parent, images, elementwise=elementwise)
+        super().__init__(
+            parent,
+            images,
+            elementwise=elementwise,
+            linearity_premises=linearity_premises,
+        )
         self._supplied_degree_preservation_decision = degree_preservation
+        self._degree_preservation_premises = degree_preservation_premises
 
     def _degree_preservation_derivation(self):
-        r"""Return a construction-derived degree-preservation decision, or ``None``."""
-        return None
+        r"""Conjoin the degree-preservation decisions of the premises, or return ``None``."""
+        match self._degree_preservation_premises:
+            case None:
+                return None
+            case premises:
+                return conjunction(premise.degree_preservation_decision() for premise in premises)
 
     @cached_method
     def degree_preservation_decision(self):
@@ -263,30 +279,14 @@ class GradedModuleMorphismMethods:
             return NotImplemented
         domain = other.domain()
         indices = domain.grading_index_set()
-        return _CompositeGradedModuleMorphism(
-            GradedModules(domain.base_ring(), indices).Mor(domain, self.codomain()),
-            self,
-            other,
+        mor = GradedModules(domain.base_ring(), indices).Mor(domain, self.codomain())
+        return mor.element_class(
+            mor,
+            lambda element: self(other(element)),
+            elementwise=True,
+            linearity_premises=(self, other),
+            degree_preservation_premises=(self, other),
         )
-
-
-class GradedModuleMorphism(GradedModuleMorphismMethods, ModuleMorphism):
-    r"""Compatibility shell for private graded-module arrow realizations."""
-
-
-class _CompositeGradedModuleMorphism(GradedModuleMorphism):
-    r"""Composition of degree-zero graded maps, linear by composition."""
-
-    def __init__(self, parent, left, right) -> None:
-        self._left_factor = left
-        self._right_factor = right
-        super().__init__(parent, lambda element: left(right(element)), elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-    def _degree_preservation_derivation(self):
-        return True
 
 
 class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):

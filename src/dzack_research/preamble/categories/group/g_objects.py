@@ -612,43 +612,40 @@ class EquivariantMorphismMethods:
         return self.parent().underlying_mor()(self)
 
     def natural_transformation(self):
-        r"""Return the corresponding natural transformation between action functors."""
+        r"""Return the corresponding natural transformation between action functors.
+
+        Its source and target are the action functors ``BG -> C`` of the
+        domain and codomain, and its one component is this arrow read in
+        ``C``; :meth:`NaturalTransformation.morphism` gives it as an arrow of
+        the functor category.
+        """
         from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         return NaturalTransformation(
             self.domain().action_functor(),
             self.codomain().action_functor(),
             lambda _obj: self.underlying_arrow(),
-        ).morphism()
-
-    def _call_(self, element):
-        return self.underlying_arrow()(element)
+        )
 
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        mor = self.parent().mor_family().Of(other.domain(), self.codomain())
-        return mor._from_equivariant_arrow(self.underlying_arrow() * other.underlying_arrow())
+        r"""Compose in ``C``, where this arrow is its own underlying arrow.
 
-    def __eq__(self, other) -> bool:
-        r"""Equal when the underlying morphisms of ``C`` are; ``other`` may be either."""
+        The composite is the one the arrow type of ``C`` forms.  When
+        ``other`` is equivariant as well, the composite commutes with the
+        actions, so it is an arrow of ``Mor_G``; composed with any other arrow
+        of ``C`` it stays an arrow of ``C``.
+        """
+        composite = super().__mul__(other)
+        objects = self.parent().mor_family().base_category()
+        source = other.domain()
         match other:
-            case EquivariantMorphismMethods():
-                other = other.underlying_arrow()
-        return self.underlying_arrow() == other
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        return hash((id(self.parent()), id(self)))
+            case _ if source in objects and other in objects.Mor(source, self.domain()):
+                return objects.Mor(source, self.codomain())._from_equivariant_arrow(composite)
+            case _:
+                return composite
 
     def _repr_(self) -> str:
-        return f"Equivariant {self.underlying_arrow()}"
-
-
-class EquivariantMorphism(EquivariantMorphismMethods, Morphism):
-    r"""Compatibility shell for private equivariant-arrow realizations."""
+        return f"Equivariant {super()._repr_()}"
 
 
 class ExternalInternalActionComparison(SageObject):
@@ -1189,7 +1186,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
 
 __all__ = [
-    "EquivariantMorphism",
     "ExternalInternalActionComparison",
     "GObjectMor",
     "GObjects",
