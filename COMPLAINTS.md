@@ -279,6 +279,32 @@ labels and `weighted_graph`; the lattice-db graph cards that read them.
 keyword argument 'evaluator'` from the module-morphism construction.
 Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
 
+### Products of equal families of sets are different sets
+
+The product \(\prod_{i\in I}X_i\) is determined by the family
+\(i\mapsto X_i\): two equal families have one product. `Sets().product`
+(`categories/sets/set_categories.py`) interns a finite product by
+`_finite_family_key`, the identity of the index set and of each factor
+object, and the product objects compare by identity. Finite ordered sets
+compare extensionally, so `V = finite_ordered_set((0, 1))` and
+`W = finite_ordered_set((0, 1))` satisfy `V == W`, but `V**2 == W**2` is
+`False`, and an element of `V**2` is refused by `W**2` with
+`ValueError: (0, 0) is an element of Product of the family over {0,...,1},
+not of the product Product of the family over {0,...,1}` (observed
+2026-10-07).
+**Dependency path:** equality of finite sets -> equality of their
+products -> extensional equality of functions on a product, as
+`IndexedFamily.__eq__` first compares index sets.
+**Consumers:** the Coxeter matrix `m: V x V -> Card` of a Coxeter diagram
+and of a Vinberg invariant matrix. Two diagrams built separately on the
+vertex set `{0, 1}` have unequal Coxeter matrices even with equal entries:
+`tests/lattices/test_coxeter.sage`, `test_vinberg_invariants.sage` and
+`test_coxeter_subdiagrams.sage` (parallel and divergent mirrors),
+`test_coxeter_diagrams_of_root_configurations.sage` (the `B_3` reference
+diagram) and `tests/schemes/test_regular_polytope_symmetry.sage` assert
+equalities that are true and answer `False`.
+Repair: `products-of-equal-families-are-equal` in TODO.
+
 ### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
 
 The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
@@ -308,6 +334,14 @@ intersection graph are objects of `LabelledGraphs()`.
 `tests/lattices/test_coxeter_subdiagrams.sage`, and the expectation files
 under `tests/constructions/` that ask for their cardinalities.
 Repair: `coxeter-diagram-orders-are-owned-posets` in TODO.
+
+**Observed 2026-10-07:** `Groups.Coxeter(["A", 2])` and
+`Groups.Coxeter(D.coxeter_matrix())` both raise `NotImplementedError`.
+`_own_group` places the raised group at construction, and
+`_owned_group_category` calls `_is_abelian_witness`, which calls
+`is_abelian()` on Sage's `CoxeterMatrixGroup`; Sage's `Group.is_abelian`
+raises for that class. Deciding commutativity is a computation done at
+construction (`OWN-22`). Repair: `construction-is-instant` in TODO.
 
 ### Satake diagrams and real forms have no formalization
 
