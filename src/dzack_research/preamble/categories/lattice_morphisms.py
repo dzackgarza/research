@@ -277,15 +277,15 @@ def _tensor_view(morphism):
 def _rational_spinor_norm_representative(isometry):
     r"""Return \(b(v_1,v_1)\cdots b(v_m,v_m)\) for an automorphism \(s_{v_1}\cdots s_{v_m}\) of a space over \(\mathbb Q\).
 
-    The private computation behind ``Lattices.spinor_norm``.  OSCAR's
-    ``rational_spinor_norm`` with ``b = 1`` factors the isometry into
-    reflections over a diagonalized Gram matrix and multiplies the values
-    \(b(v_i,v_i)\): a representative of the spinor norm of the form \(b\)
-    (O'Meara, *Introduction to Quadratic Forms*, §55), with the whole square
-    class and not only its sign.  The owning morphism applies its multiplier.
+    The private computation behind ``Lattices.spinor_norm``: a representative
+    of the spinor norm of the form \(b\) (O'Meara, *Introduction to Quadratic
+    Forms*, §55), with the whole square class and not only its sign, computed
+    as the discriminant of the Wall form of the isometry by GAP
+    (``_gap_rational_spinor_norm_class``).  The owning morphism applies its
+    multiplier.
     """
     space = isometry.domain()
-    value = lattice_engines._oscar_lattices.rational_spinor_norm_class(
+    value = lattice_engines._gap_rational_spinor_norm_class(
         space.gram_tensor(),
         isometry,
     )
