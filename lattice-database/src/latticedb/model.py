@@ -936,7 +936,7 @@ class Lattice(Record):
             ):
                 yield _problem(
                     "automorphism_group_generators",
-                    "each generator name occurs once in the generator list and names exactly one scale-one self-morphism on this lattice card",
+                    "each generator name occurs once in the generator list and names exactly one isometry L -> L (a morphism entry with scale 1) on this lattice card",
                     ("definite", "automorphism_group_generator_morphisms"),
                 )
         if data.roots is not None and any(
