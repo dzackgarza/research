@@ -11,7 +11,6 @@ from collections.abc import Iterable
 from itertools import chain, combinations, product
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -59,6 +58,7 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -547,7 +547,7 @@ class _CallableFormMethods:
         )
         return _descended_bilinear_form(self, morphism, value_projection)
 
-    def __eq__(self, other) -> bool | UnknownClass:
+    def __eq__(self, other) -> bool | Predicate:
         r"""Equality of two maps of this space, decided on finitely many generators.
 
         A bilinear map is determined by its values on pairs of module generators,
@@ -555,8 +555,8 @@ class _CallableFormMethods:
         ``q(\sum_s a_s s) = \sum_s a_s^2 q(s) + \sum_{s<t} a_s a_t (q(s+t) - q(s) - q(t))``.
         So equality is decided when the modules carry finite framings.  Equality of
         arbitrary extensional maps is not decidable, and otherwise the answer is
-        ``Unknown`` unless the two evaluations are one (`DEV-52`); a value comparison
-        that is itself undecided makes the answer ``Unknown``.
+        the proposition ``equal(b, c)`` unless the two evaluations are one
+        (`DEV-52`); undecided value comparisons make the answer their conjunction.
         """
         if self is other:
             return True
@@ -574,11 +574,11 @@ class _CallableFormMethods:
         ring = left_module.base_ring()
         framed = left_module.has_selected_module_resolution() and right_module.has_selected_module_resolution()
         if not framed:
-            return Unknown
+            return AtomicProposition("equal", self, other)
         left_labels = left_module.module_generating_set()
         right_labels = right_module.module_generating_set()
         if not (left_labels.cardinality().is_finite() and right_labels.cardinality().is_finite()):
-            return Unknown
+            return AtomicProposition("equal", self, other)
         match self.parent().kind():
             case "quadratic":
                 generator = left_module.module_generator
@@ -593,17 +593,10 @@ class _CallableFormMethods:
                     == other(left_module.module_generator(left), right_module.module_generator(right))
                     for left, right in product(left_labels, right_labels)
                 )
-        undecided = False
-        for answer in answers:
-            if answer is False:
-                return False
-            if answer is not True:
-                undecided = True
-        return Unknown if undecided else True
+        return conjunction(answers)
 
-    def __ne__(self, other) -> bool | UnknownClass:
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+    def __ne__(self, other) -> bool | Predicate:
+        return negation(self == other)
 
     def _repr_(self):
         return f"Extensional {self.parent().kind()} form with values in {self.codomain()}"

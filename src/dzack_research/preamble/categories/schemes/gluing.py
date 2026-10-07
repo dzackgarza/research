@@ -1122,7 +1122,7 @@ class _FiniteSchemeGluingDatum(SageObject):
                     f"cannot glue along the chart change from chart {source_index} to chart {target_index}: "
                     f"its codomain {target_overlap} must be an open subscheme of the chart {target_chart}"
                 )
-            if not source_overlap.is_distinguished_open() or not target_overlap.is_distinguished_open():
+            if source_overlap.is_distinguished_open() is not True or target_overlap.is_distinguished_open() is not True:
                 raise TypeError(
                     f"cannot glue along the chart change from chart {source_index} to chart {target_index}: "
                     "gluing is computed here only when both overlaps are distinguished open subschemes D(f) "

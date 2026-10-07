@@ -39,7 +39,6 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.categories.rings import Rings as _SageRings
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
@@ -116,6 +115,7 @@ from dzack_research.preamble.lexicon.category_theory import (
     ElementOfCategoryObject,
     ObjectOfCategory,
 )
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -1000,7 +1000,7 @@ class SchemeMorphismMethods:
                 and self.parent().mor_category().is_subcategory(relative)
                 and other.parent().mor_category().is_subcategory(relative)
             ):
-                return all(left_pullback(element) == right_pullback(element) for element in determining)
+                return conjunction(left_pullback(element) == right_pullback(element) for element in determining)
             return _ring_morphisms_equal(left_pullback, right_pullback)
         return bool(
             _engine_scheme_morphism(self)
@@ -1008,8 +1008,7 @@ class SchemeMorphismMethods:
         )
 
     def __ne__(self, other):
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash((id(self.domain()), id(self.codomain())))
@@ -1070,11 +1069,10 @@ class _ScalarStructureSchemeMorphism(SchemeMorphism):
         # scheme the converse needs its global-section pullback.
         if equal is True or self.domain() in ProjectiveSpaces(self.domain().scheme_base_ring()):
             return equal
-        return Unknown
+        return AtomicProposition("equal", self, other)
 
     def __ne__(self, other):
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return negation(self == other)
 
     __hash__ = SchemeMorphism.__hash__
 
@@ -1218,9 +1216,7 @@ def _scalar_maps_equal_on_scheme(scheme, left, right):
             _scalar_maps_equal_on_scheme(chart, left, right)
             for chart in scheme.gluing_datum().charts()
         )
-        if any(answer is False for answer in decisions):
-            return False
-        return True if all(answer is True for answer in decisions) else Unknown
+        return conjunction(decisions)
     base = scheme.scheme_base_ring()
     if scheme in Schemes(base).Affine():
         restriction = scheme.structure_morphism().coordinate_algebra_morphism()
@@ -1418,8 +1414,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         return coefficients_equal
 
     def __ne__(self, other):
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        return negation(self == other)
 
     __hash__ = SchemeMorphism.__hash__
 
@@ -2389,8 +2384,8 @@ class Schemes(OwnedCategoryOverBaseRing):
                 case True:
                     match all(
                         embedding.domain() in OpenImmersions(self)
-                        and embedding == embedding.domain().inclusion()
-                        and embedding.domain().is_distinguished_open()
+                        and (embedding == embedding.domain().inclusion()) is True
+                        and embedding.domain().is_distinguished_open() is True
                         for embedding in family
                     ):
                         case True:
@@ -6199,7 +6194,8 @@ class OpenImmersions(_SchemeSubobjectsOf):
             codomain's coordinate algebra at one element is that element's
             ``D(f)``.  Whether an open presented otherwise equals some ``D(f)``
             is whether its closed complement is ``V(f)`` up to radical, which is
-            not decided here, and the answer is then ``Unknown``.
+            not decided here, and the answer is then the proposition
+            ``is_distinguished_open(U)``.
             """
             codomain = self.inclusion().codomain()
             affine = Schemes(codomain.scheme_base_ring()).Affine()
@@ -6213,7 +6209,7 @@ class OpenImmersions(_SchemeSubobjectsOf):
                 ):
                     return True
                 case _:
-                    return Unknown
+                    return AtomicProposition("is_distinguished_open", self)
 
         def distinguished_open_element(self):
             r"""The element ``f`` with this open equal to ``D(f)``, read from its coordinate algebra ``A_f``."""
