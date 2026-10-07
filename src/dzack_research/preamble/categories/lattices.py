@@ -520,6 +520,83 @@ class Genus:
         return f"Genus of even integral lattices with signature {self.signature_pair()} and discriminant order {self.discriminant_form().cardinality()}"
 
 
+def _isometry_class_representatives(grams):
+    r"""Private computation of ``Lattices.isometry_classes``.
+
+    ``grams`` are the Gram matrices over Sage's ``ZZ`` of nondegenerate
+    integral lattices of finite rank.  Returns, for each position, the
+    position of the first Gram matrix isometric to it.
+
+    The positions are refined by rank, determinant and signature, then by
+    the genus, and only positions in one genus are compared.  Two forms are
+    in one genus when they are equivalent over ``ZZ_p`` for every prime and
+    over ``RR`` [CS10, Ch. 15, §7]; ``ZZ_p``-equivalence is equality of the
+    canonical ``p``-adic symbols [CS10, Ch. 15, §7.6].
+    """
+    from sage.libs.pari import pari
+    from sage.quadratic_forms.binary_qf import BinaryQF
+    from sage.quadratic_forms.genera.genus import Genus as SageGenus
+    from sage.quadratic_forms.genera.genus import signature_pair_of_matrix
+
+    representative = list(range(len(grams)))
+    invariant_blocks = {}
+    for position, gram in enumerate(grams):
+        key = (gram.nrows(), gram.det(), signature_pair_of_matrix(gram))
+        invariant_blocks.setdefault(key, []).append(position)
+    for (rank, _, (positive, negative)), invariant_block in invariant_blocks.items():
+        if len(invariant_block) == 1:
+            continue
+        # Sage's genus equality compares the canonical local symbols only;
+        # the signature is part of the key above.
+        genus_blocks = {}
+        for position in invariant_block:
+            genus = SageGenus(grams[position])
+            key = tuple(
+                (symbol.prime(), tuple(tuple(constituent) for constituent in symbol.canonical_symbol()))
+                for symbol in genus.local_symbols()
+            )
+            genus_blocks.setdefault(key, []).append(position)
+        for genus_block in genus_blocks.values():
+            if len(genus_block) == 1:
+                continue
+            match positive > 0 and negative > 0, rank >= 3:
+                case True, True:
+                    spinor_generators = SageGenus(grams[genus_block[0]]).spinor_generators(proper=False)
+                    assert not spinor_generators, (
+                        f"the lattices with Gram matrices {[grams[position] for position in genus_block]} lie in one "
+                        f"indefinite genus of rank {rank} that has {2 ** len(spinor_generators)} spinor genera; deciding "
+                        "which spinor genus a lattice lies in is not implemented"
+                    )
+                    # A spinor genus of indefinite forms of dimension at
+                    # least 3 is one class [CS10, Ch. 15, §9.1, Thm. 14, p. 388].
+                    for position in genus_block:
+                        representative[position] = genus_block[0]
+                case True, False:
+                    found = []
+                    for position in genus_block:
+                        gram = grams[position]
+                        form = BinaryQF(gram[0, 0], 2 * gram[0, 1], gram[1, 1])
+                        match next((first for first, first_form in found if form.is_equivalent(first_form, proper=False)), None):
+                            case None:
+                                found.append((position, form))
+                            case first:
+                                representative[position] = first
+                case False, _:
+                    sign = 1 if negative == 0 else -1
+                    # ``qfisominit`` of a class representative is computed
+                    # once and reused for every test against it; TRAPS.md
+                    # records the wall times.
+                    found = []
+                    for position in genus_block:
+                        gram = pari(sign * grams[position])
+                        match next((first for first, init in found if pari.qfisom(init, gram) != 0), None):
+                            case None:
+                                found.append((position, pari.qfisominit(gram)))
+                            case first:
+                                representative[position] = first
+    return tuple(representative)
+
+
 _BLACKBOARD_RING_NAMES = {
     "Z": "ZZ",
     "Q": "QQ",
@@ -627,6 +704,51 @@ class Lattices(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.functors.twist import TwistFunctor
 
         return TwistFunctor(scale)
+
+    def isometry_classes(self, lattices):
+        r"""Return the partition of a finite family of lattices into isometry classes.
+
+        ``lattices`` is a finite indexed family `(L_i)_{i \in I}` of
+        nondegenerate lattices of finite rank in this category.  The result
+        is the family of blocks of `I` under `L_i \cong L_j`, indexed by the
+        quotient `I/\cong`; each block is the finite ordered set of its
+        indices in the order of `I`, and the blocks are in the order of
+        their first indices.  No isometry is constructed.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.categories.lattices import Lattices
+            sage: from dzack_research.preamble.categories.sets.finite_families import finite_family
+            sage: C = Lattices(ZZ)
+            sage: family = finite_family((C([[2, -1], [-1, 2]]), C("U"), C([[2, 1], [1, 2]])))
+            sage: classes = C.isometry_classes(family)
+            sage: classes.cardinality()
+            2
+            sage: [tuple(int(index) for index in block) for block in classes]
+            [(0, 2), (1,)]
+        """
+        assert _engine_ring(self.base_ring()) is SageZZ, (
+            f"isometry classes are implemented for lattices over ZZ, but {self} has base ring {self.base_ring()}"
+        )
+        indices = tuple(lattices.index_set())
+        representatives = _isometry_class_representatives(
+            tuple(
+                _engine_component_matrix(lattices.value(index).gram_tensor()).change_ring(SageZZ)
+                for index in indices
+            )
+        )
+        blocks = {}
+        for index, representative in zip(indices, representatives, strict=True):
+            blocks.setdefault(representative, []).append(index)
+        members = tuple(tuple(block) for block in blocks.values())
+        return indexed_family(
+            Sets.Δ[len(members) - 1],
+            lambda label: FiniteOrderedSets().from_indexed(
+                Sets.Δ[len(members[int(label)]) - 1],
+                lambda position: members[int(label)][int(position)],
+            ),
+            name="Isometry classes",
+        )
 
     @overload  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
     def __call__(self, data: str | Sequence[Sequence[object]], *args: object, **options: object) -> Lattices.ParentMethods: ...

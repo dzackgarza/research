@@ -269,5 +269,21 @@ def test_admission_detects_a_definite_duplicate_in_another_basis() -> None:
     second_source["tag"] = "0002"
     first = Lattice.model_validate(records.derive(first_source))
     second = Lattice.model_validate(records.derive(second_source))
-    problems = records.relational_admission_problems(second, {"0001": first})
-    assert any("isometric to 0001" in problem for problem in problems)
+    problems = records.definite_isometry_problems((first, second))
+    assert list(problems) == ["0002"]
+    assert any("isometric to 0001" in problem for problem in problems["0002"])
+
+
+def test_isometric_twists_of_different_scales_are_not_duplicates() -> None:
+    sources = []
+    for tag, gram_tensor in (
+        ("0001", [[2, -1], [-1, 2]]),
+        ("0002", [[2, 1], [1, 2]]),
+        ("0003", [["1/2"]]),
+        ("0004", [["1/3"]]),
+    ):
+        source = declared(f"card {tag}", gram_tensor)
+        source["tag"] = tag
+        sources.append(Lattice.model_validate(records.derive(source)))
+    problems = records.definite_isometry_problems(tuple(sources))
+    assert list(problems) == ["0002"]
