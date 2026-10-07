@@ -243,11 +243,28 @@ def _roots(lattice):
 
 
 def _roots_of_square(lattice, square):
+    r"""Return the vectors ``v`` with ``b(v,v) = square`` whose reflection is integral.
+
+    The reflection ``w - 2 b(v,w)/b(v,v) v`` is integral exactly when
+    ``b(v,v)`` divides ``2 b(v,w)`` for every basis vector ``w``.  The
+    pairings of the whole shell against the basis are one product with the
+    symmetric Gram tensor, so only the roots are raised into the lattice.
+    """
     square = lattice.base_ring()(square)
-    if square == 0:
+    sign, positive_gram = _positive_gram(lattice)
+    target = int(sign * square)
+    if target <= 0:
         return finite_ordered_set(())
+    gram = _engine_component_matrix(positive_gram)
+    shells = IntegralLattice(gram).short_vectors(target + 1)
+    if target >= len(shells) or not shells[target]:
+        return finite_ordered_set(())
+    shell = engine_matrix(SageZZ, shells[target])
+    pairings = shell * gram
     return finite_ordered_set(tuple(
-        vector for vector in lattice.vectors_of_square(square) if vector.is_root()
+        _element_from_coordinates(lattice, coordinates)
+        for coordinates, row in zip(shell.rows(), pairings.rows(), strict=True)
+        if all((2 * pairing) % target == 0 for pairing in row)
     ))
 
 

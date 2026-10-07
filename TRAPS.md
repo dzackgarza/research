@@ -330,6 +330,25 @@ The PARI stack is left at Sage's default, so a lattice like `D_20^+` that reache
 The wall time of the whole partition as a function of the number of lattices is untested.
 Depends on this: `Lattices(ZZ).isometry_classes`, and through it lattice-db duplicate detection.
 
+### `IntegralLattice.short_vectors` enumerates a rank-8 shell of 66,805 vectors in about a second; a preamble element per vector costs about 2 ms
+
+`IntegralLattice(G).short_vectors(n)` returns every vector of norm below `n`, grouped by norm, through fplll.
+On `K8` (lattice-db record `0096`: rank 8, minimum 4, discriminant group `(Z/2)^2 + (Z/12)^2`), SageMath 10.10.beta8, 2026-10-08, one run each:
+
+| bound `n` | vectors of norm below `n` | `short_vectors(n)` |
+| --- | --- | --- |
+| 9 | 1,153 | 0.09 s |
+| 13 | 5,101 | 0.16 s |
+| 25 | 66,805 | 1.34 s |
+
+The preamble's cost is above the engine.  Raising one engine vector into the lattice by `_element_from_coordinates` costs about 1.8 ms (132, 828 and 2,796 vectors in 0.27, 1.24 and 5.04 s).  The element predicate `is_root()` costs about 32 ms, most of it in the pairings `b(v, e_i)` against each generator, each a separate form evaluation.
+`reflective_roots` asks every vector of norm dividing `2 exp(A_L)`, up to norm 24 on `K8`, so testing each element took about 35 min.
+Sage ships no reflective-root routine: `free_quadratic_module_integer_symmetric.py` has no root method.
+
+Reproduce with `.tmp/`-local probes that build `Lattices(ZZ)(G)` from the card and time `short_vectors`, `vectors_of_square` and `is_root`.
+Route chosen: `_roots_of_square` in `src/dzack_research/preamble/categories/definite_lattices.py` takes the shell from `short_vectors`, pairs it against the basis in one product with the symmetric Gram matrix, keeps the rows where `b(v,v)` divides `2 b(v,w)`, and raises only the roots.  `reflective_roots` on `K8` then takes 5.3 s, and its derive 11.9 s.
+Depends on this: `reflective_roots`, `reflective_root_system_components`, and through them the lattice-db `root_system` of a definite card.
+
 ### The rational spinor norm costs nothing per isometry; reaching it through OSCAR costs about 25 s once per process
 
 Sage has no spinor norm of an isometry of a rational quadratic space: `sage/quadratic_forms/genera/spinor_genus.py` and `genus.py` hold only spinor operators and the spinor kernel of a genus, and `sage/groups/matrix_gps/` has nothing.
