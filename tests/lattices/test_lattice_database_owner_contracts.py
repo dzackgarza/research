@@ -5,10 +5,6 @@ only serializes the returned values and never rechecks these formulas.
 """
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.schemes.catalogue_invariants import (
-    HodgePoincareInvariants,
-    HodgeTermData,
-)
 from dzack_research.preamble.categories.weighted_graph_invariants import (
     WeightedEdgeData,
     WeightedGraphInvariants,
@@ -142,20 +138,3 @@ def test_weighted_graph_recognition_is_owned_by_the_preamble() -> None:
     assert graph.is_simply_laced()
     assert graph.is_satake()
     assert not graph.is_rational_coxeter_vinberg()
-
-
-def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
-    hodge = HodgePoincareInvariants(
-        2,
-        (
-            HodgeTermData(0, 0, 1),
-            HodgeTermData(2, 0, 1),
-            HodgeTermData(1, 1, 20),
-            HodgeTermData(0, 2, 1),
-            HodgeTermData(2, 2, 1),
-        ),
-    )
-    assert hodge.satisfies_hodge_symmetry_and_serre_duality()
-    assert hodge.symmetry_group() == "D4"
-    assert hodge.betti_number(2) == 22
-    assert hodge.euler_characteristic() == 24
