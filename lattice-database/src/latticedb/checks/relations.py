@@ -9,6 +9,8 @@ other geometric objects that it names.
 
 from pathlib import Path
 
+from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
+
 from latticedb import records
 from latticedb.corpus import FAMILIES_FILE, Corpus
 from latticedb.geometric import (
@@ -122,6 +124,35 @@ def morphism_problems(loaded: Corpus) -> list[str]:
             found.append(
                 f"{tag}: integral.hyperbolic_index is {stored}, and a stored morphism embeds U^{bound} into it"
             )
+    return found
+
+
+def bond_order_problems(loaded: Corpus) -> list[str]:
+    """The stored Coxeter orders that disagree with the diagram the card's Gram form presents.
+
+    The Coxeter diagram is constructed from the card's Gram form, through its Vinberg
+    invariant matrix, and each bond's stored `order` is compared with that diagram's
+    Coxeter entry: the order of the product of the two reflections, `infinity` being the
+    cardinal aleph_0.
+    """
+    found: list[str] = []
+    for entry in loaded.graphs:
+        graph = entry.graph
+        invariants = graph.vinberg_invariant_matrix()
+        if invariants is None:
+            continue
+        diagram = invariants.coxeter_diagram()
+        for edge in graph.edges:
+            stored = edge.datum("order")
+            if edge.relation != "bond" or stored is None:
+                continue
+            expected = aleph0 if stored == "infinity" else cardinal(int(stored))
+            constructed = diagram.coxeter_entry(edge.source, edge.target)
+            if constructed != expected:
+                found.append(
+                    f"{entry.path}: the bond {edge.id} stores order {stored}, but the "
+                    f"Coxeter diagram of the card's Gram form has order {constructed}"
+                )
     return found
 
 
@@ -242,4 +273,5 @@ def problems(loaded: Corpus, root: Path) -> list[str]:
         *lattice_problems(loaded, root),
         *morphism_problems(loaded),
         *geometric_problems(loaded),
+        *bond_order_problems(loaded),
     ]

@@ -174,6 +174,15 @@ class WeightedGraph(Record):
             rows[position[bond.target]][position[bond.source]] = int(backward)
         return tuple(tuple(row) for row in rows)
 
+    def vinberg_invariant_matrix(self):
+        """The Vinberg invariant matrix of the presented Gram form, or None when there is none."""
+        form = self._gram_form()
+        if form is None:
+            return None
+        return VinbergInvariantMatrices().from_root_gram(
+            form.gram_tensor(), index_set=tuple(vertex.id for vertex in self.vertices)
+        )
+
     def properties(self) -> tuple[str, ...]:
         """The names of the diagram classes the card belongs to, in the order the site lists them.
 
@@ -184,21 +193,22 @@ class WeightedGraph(Record):
           Weyl group, the Coxeter group of the diagram, is finite (Kac, Proposition 4.9);
         - simply laced: every bond of the diagram is 2 or 3;
         - Satake: a finite-type root basis whose simple roots carry Satake marks;
-        - rational Coxeter–Vinberg: rational mirror normals whose Gram form has negative
-          index of inertia one, so that the mirrors bound a polytope in hyperbolic space.
+        - rational Coxeter–Vinberg: rational mirror normals whose Gram tensor is the Gram
+          tensor of the walls of an acute-angled hyperbolic Coxeter polytope: at least
+          three walls, positive norms, nonpositive off-diagonal entries and signature
+          (n - 1, 1, 0).
         """
-        form = self._gram_form()
-        if form is None:
+        invariants = self.vinberg_invariant_matrix()
+        if invariants is None:
             return ()
-        invariants = VinbergInvariantMatrices().from_root_gram(
-            form.gram_tensor(), index_set=tuple(vertex.id for vertex in self.vertices)
-        )
         # The Coxeter diagram is constructed here, so the card is a Coxeter card; an
         # angle that is not pi/m refuses the construction instead of answering False.
         diagram = invariants.coxeter_diagram()
-        dynkin =self._presents_root_basis() and diagram.is_elliptic()
+        dynkin = self._presents_root_basis() and diagram.is_elliptic()
         satake = dynkin and any(vertex.datum("satake") is not None for vertex in self.vertices)
-        hyperbolic = self._presents_mirrors() and int(form.signature_pair().second()) == 1
+        hyperbolic = (
+            self._presents_mirrors() and invariants.is_acute_angled_hyperbolic_polytope_gram()
+        )
         classes = (
             ("Coxeter", True),
             ("Dynkin", dynkin),

@@ -59,6 +59,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.tensors.tensor import tensor
 
 
 def _projective_line_over(base_ring):
@@ -180,11 +181,14 @@ class VinbergInvariantMatrices(OwnedCategory):
         return [LabelledGraphs()]
 
     class ParentMethods:
-        def __init__(self, base_ring, index_set, numerators, denominators, **rest) -> None:
+        def __init__(
+            self, base_ring, index_set, numerators, denominators, root_gram, **rest
+        ) -> None:
             self._base_ring = base_ring
             self._index_set = finite_ordered_set(index_set)
             self._numerators = numerators
             self._denominators = denominators
+            self._root_gram = root_gram
             self._projective_line = _projective_line_over(base_ring)
             super().__init__(**rest)
 
@@ -245,6 +249,78 @@ class VinbergInvariantMatrices(OwnedCategory):
         def projective_line(self):
             r"""Return \(\mathbb P^1(R)\), where the invariants take their values."""
             return self._projective_line
+
+        def is_rooted(self) -> bool:
+            r"""Return whether the matrix was built from a Gram of mirror normals."""
+            return self._root_gram is not None
+
+        def root_gram_tensor(self):
+            r"""Return the Gram tensor of the mirror normals this matrix was built from."""
+            assert self.is_rooted(), (
+                f"{self} has no Gram tensor of mirror normals: it was given by its "
+                f"invariants or by the bonds of a Coxeter diagram, not by normals"
+            )
+            return self._root_gram
+
+        def validate_mirror_normals(self) -> None:
+            r"""Assert that every stated normal is the normal of a mirror.
+
+            The normal of a mirror is not isotropic, so every diagonal entry
+            \(q(r_v)\) of the Gram tensor is nonzero.  This is the validator of
+            the object :meth:`VinbergInvariantMatrices.from_root_gram` builds.
+            """
+            gram = self.root_gram_tensor()
+            squares = tuple(gram[i, i] for i in range(gram.tensor_shape()[0]))
+            assert all(square != 0 for square in squares), (
+                f"the Gram tensor {gram} of {self} is not the Gram tensor of the normals "
+                f"of a family of mirrors: its diagonal {squares} has a zero, and the "
+                f"normal of a mirror is not isotropic"
+            )
+
+        def is_acute_angled_hyperbolic_polytope_gram(self) -> bool:
+            r"""Return whether the normals are the walls of an acute-angled hyperbolic polytope.
+
+            The Gram tensor \(G\) of the outward normals of the \(n\) walls of an
+            acute-angled hyperbolic Coxeter polytope (Vinberg, *Hyperbolic
+            reflection groups*) has, by definition,
+
+            - at least three walls, \(n\geq 3\);
+            - positive norms, \(G_{vv} > 0\);
+            - nonpositive off-diagonal entries, \(G_{vw}\leq 0\) for \(v\neq w\),
+              which is the condition that every dihedral angle is at most
+              \(\pi/2\);
+            - signature \((n-1, 1, 0)\).
+
+            The signature is the Sylvester pair \((p, q)\) of the symmetric
+            form \(G\) on \(R^n\); \(p + q = n\) is the statement that the
+            radical is zero, so the form is nondegenerate.
+            """
+            gram = self.root_gram_tensor()
+            ring = gram.base_ring()
+            rank = gram.tensor_shape()[0]
+            walls = self.cardinality()
+            if walls < cardinal(3):
+                return False
+            positions = range(rank)
+            if any(gram[i, i] <= 0 for i in positions):
+                return False
+            if any(gram[i, j] > 0 for i, j in combinations(positions, 2)):
+                return False
+            normals = ring.free_module(self.index_set()).equip_bilinear_form(ring, gram)
+            signature = normals.signature_pair()
+            return (
+                signature.second() == cardinal(1)
+                and signature.first() + signature.second() == walls
+            )
+
+        def validate_acute_angled_hyperbolic_polytope_gram(self) -> None:
+            r"""Assert :meth:`is_acute_angled_hyperbolic_polytope_gram`."""
+            assert self.is_acute_angled_hyperbolic_polytope_gram(), (
+                f"the Gram tensor {self.root_gram_tensor()} of {self} is not the Gram "
+                f"tensor of the walls of an acute-angled hyperbolic Coxeter polytope: "
+                f"that needs at least three walls, positive norms, nonpositive "
+                f"off-diagonal entries and signature (n - 1, 1, 0)"
+            )
 
         def _positions(self, left, right):
             ranking = self._index_set.ranking_map()
@@ -317,11 +393,23 @@ class VinbergInvariantMatrices(OwnedCategory):
             vertices = tuple(mirrors)
             ranking = self._index_set.ranking_map()
             positions = tuple(ranking(vertex) for vertex in vertices)
+            selected = finite_ordered_set(positions)
+            root_gram = (
+                tensor(
+                    self._root_gram.base_ring(),
+                    (),
+                    (selected.cardinality(), selected.cardinality()),
+                    [[self._root_gram[i, j] for j in positions] for i in positions],
+                )
+                if self.is_rooted()
+                else None
+            )
             return _vinberg_invariant_matrix(
                 self._base_ring,
                 vertices,
                 [[self._numerators[i][j] for j in positions] for i in positions],
                 [[self._denominators[i][j] for j in positions] for i in positions],
+                root_gram,
             )
 
         def weighted_graph(self):
@@ -441,22 +529,20 @@ class VinbergInvariantMatrices(OwnedCategory):
 
         The numerators are \(4b(r_v,r_w)^2\) and the denominators are
         \(q(r_v)q(r_w)\), so the entries are the projective invariants of the
-        pairs of mirrors and nothing is divided.
+        pairs of mirrors and nothing is divided.  The Gram tensor is retained,
+        and :meth:`ParentMethods.validate_mirror_normals` states the condition
+        that it is a Gram tensor of mirror normals.
         """
         rank = gram.tensor_shape()[0]
         if index_set is None:
             index_set = range(rank)
         squares = [gram[i, i] for i in range(rank)]
-        assert all(square != 0 for square in squares), (
-            f"the Gram matrix {gram} is not the Gram matrix of the normals of a family of "
-            f"mirrors: its diagonal {tuple(squares)} has a zero, and the normal of a "
-            f"mirror is not isotropic"
-        )
         return _vinberg_invariant_matrix(
             gram.base_ring(),
             tuple(index_set),
             [[4 * gram[i, j] ** 2 for j in range(rank)] for i in range(rank)],
             [[squares[i] * squares[j] for j in range(rank)] for i in range(rank)],
+            gram,
         )
 
     def from_coxeter_diagram(self, diagram):
@@ -488,6 +574,7 @@ class VinbergInvariantMatrices(OwnedCategory):
             vertices,
             values,
             [[real_algebraics.one() for _ in vertices] for _ in vertices],
+            None,
         )
 
     def from_invariants(self, base_ring, values, index_set=None):
@@ -514,6 +601,7 @@ class VinbergInvariantMatrices(OwnedCategory):
             tuple(mirrors),
             [[base_ring(entry) for entry in row] for row in rows],
             [[base_ring.one() for _ in mirrors] for _ in mirrors],
+            None,
         )
 
 
@@ -529,13 +617,14 @@ def _vinberg_invariant_of_bond(bond):
     return 4 * _reflection_cosine(int(bond)) ** 2
 
 
-def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators):
+def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators, root_gram):
     return _object_of(
         VinbergInvariantMatrices(),
         base_ring=base_ring,
         index_set=index_set,
         numerators=numerators,
         denominators=denominators,
+        root_gram=root_gram,
     )
 
 

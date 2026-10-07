@@ -166,6 +166,36 @@ def test_graph_cards_derive_distinct_datum_from_shared_coxeter_order() -> None:
         "Coxeter",
         "rational Coxeter–Vinberg",
     )
+    # Four walls of norm 1 whose adjacent pairs have Gram entry -1 and whose opposite
+    # pairs have Gram entry -3: the Gram determinant is (a + 1)^3 (a - 3) at a = 3, so
+    # zero, and the signature is (2, 1, 1).  One negative eigenvalue, but a radical,
+    # so these are not the walls of an acute-angled hyperbolic Coxeter polytope.
+    walls = ("w1", "w2", "w3", "w4")
+    degenerate = WeightedGraph.model_validate(
+        {
+            "slug": "degenerate-quadrilateral",
+            "name": "Degenerate quadrilateral Gram form",
+            "vertices": [{"id": wall, "weight": {"norm_squared": 1}} for wall in walls],
+            "edges": [
+                {
+                    "id": f"{source}{target}",
+                    "source": source,
+                    "target": target,
+                    "relation": "bond",
+                    "weight": {"gram": gram, "order": "infinity"},
+                }
+                for source, target, gram in (
+                    ("w1", "w2", -1),
+                    ("w2", "w3", -1),
+                    ("w3", "w4", -1),
+                    ("w4", "w1", -1),
+                    ("w1", "w3", -3),
+                    ("w2", "w4", -3),
+                )
+            ],
+        }
+    )
+    assert degenerate.properties() == ("Coxeter",)
     arbitrary = WeightedGraph.model_validate(
         {
             "slug": "arbitrary",
