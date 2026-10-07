@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -404,7 +405,7 @@ class _AbsoluteGaloisGroupEngine:
         computation_field = _engine_ring(self._field)
         if computation_field is SageQQ or computation_field in NumberFields():
             return False
-        return Unknown
+        return AtomicProposition("is_finitely_generated", self)
 
     def _is_finite_field(self) -> bool:
         return _engine_ring(self._field) in FiniteFields()

@@ -1,7 +1,6 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -22,6 +21,7 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -122,7 +122,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 return True
             if ambient is False and self.contains_character_kernel():
                 return False
-            return Unknown
+            return AtomicProposition("is_finite", self)
 
         def _cardinality_decision(self):
             r"""``|H|``: from the retained character data, else by counting a finite supergroup.

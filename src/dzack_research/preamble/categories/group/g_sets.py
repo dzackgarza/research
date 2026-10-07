@@ -11,7 +11,6 @@ from sage.categories.morphism import SetMorphism
 from sage.categories.category import Category
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
@@ -50,6 +49,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.validation import validator
 
@@ -299,7 +299,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             if group.is_finite() is False:
                 return False
             if group.is_finite() is not True:
-                return Unknown
+                return AtomicProposition("is_free_action", self)
             identity = group.one()
             return all(
                 self.act(group_element, point) != point
