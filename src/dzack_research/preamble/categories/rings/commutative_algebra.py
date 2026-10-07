@@ -20,6 +20,7 @@ from sage.rings.fraction_field import FractionField_generic as SageFractionField
 from sage.rings.ideal import Ideal_generic as SageIdeal
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.quotient_ring import QuotientRing_generic
 from sage.structure.element import CommutativeRingElement, Element, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -59,6 +60,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _install_local_ring_construction,
     _own_ring,
     _ring_morphism_with_engine,
+    _ring_morphisms_equal,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -940,6 +942,42 @@ class QuotientRings(OwnedCategory):
                     f"{morphism.domain()}"
                 )
             return morphism
+
+        def _module_basis_along(self, ring_map):
+            r"""The basis ``1, a, ..., a^{d-1}`` of ``k[x]/(p)`` over ``k``, along the coefficient map.
+
+            Implements the protected contract declared at
+            ``OwnedRings.ParentMethods._module_basis_along``.  The coefficient
+            map is the composite ``k -> k[x] -> k[x]/(p)`` of the structure
+            morphism of the quotient source with the quotient map; a
+            ``ring_map`` equal to it gets the power basis of the class ``a`` of
+            ``x``, by division with remainder by ``p``.  Sage realizes
+            ``k[x]/(p)`` as a ``PolynomialQuotientRing_generic`` only for ``p``
+            with unit leading coefficient, and its elements are remainders of
+            degree below ``d``; this adapter reads them (``OWN-06``).  Every
+            other realization or ring map takes the general contract.
+            """
+            from dzack_research.preamble.categories.modules.native_modules import (
+                _power_module_basis,
+            )
+
+            engine = self._preamble_engine_ring
+            match engine:
+                case PolynomialQuotientRing_generic() if engine.modulus().degree() > 0:
+                    pass
+                case _:
+                    return super()._module_basis_along(ring_map)
+            coefficient_map = self.quotient_map() * self.quotient_source().algebra_structure_morphism()
+            match _ring_morphisms_equal(ring_map, coefficient_map):
+                case True:
+                    return _power_module_basis(
+                        ring_map.domain(),
+                        int(engine.modulus().degree()),
+                        lambda exponent: self._from_engine_element(engine.gen()) ** exponent,
+                        lambda element: self._engine_element(element).list(),
+                    )
+                case _:
+                    return super()._module_basis_along(ring_map)
 
         def localization_comparison(self, localization_ring):
             r"""Return ``S^{-1}(R/I) ~= S^{-1}R/S^{-1}I`` with both maps."""

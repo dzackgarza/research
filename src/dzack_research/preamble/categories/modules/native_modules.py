@@ -24,6 +24,8 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.tensor_quotients import (
     _TensorQuotientClassifierMorphism,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _NativeRingProductClassifierMorphism(_TensorQuotientClassifierMorphism):
@@ -103,6 +105,39 @@ class _NativeModuleBasis(_NativeModuleFrame):
             f"over {source.base_ring()}, but it is in {source.category()}"
         )
         super().__init__(source, images, coordinates)
+
+    def coordinates(self, element):
+        r"""The coordinates ``{i: c_i}`` of ``element = sum_i c_i b_i``, unique on a basis."""
+        return self._coordinates(element)
+
+
+def _power_module_basis(coefficient_ring, degree, power, coordinates):
+    r"""The basis ``1, a, ..., a^{d-1}`` of ``k[x]/(p)`` over ``k``, ``a`` the class of ``x``.
+
+    Let ``p`` in ``k[x]`` have degree ``d`` and unit leading coefficient.
+    Division with remainder by ``p`` writes every class of ``k[x]/(p)``
+    uniquely as ``sum_{i<d} c_i x^i``, so the powers ``a^i`` with ``i < d``
+    are a ``k``-basis of ``k[x]/(p)`` along the coefficient map.
+
+    ``power(i)`` is ``a^i`` in the ring, and ``coordinates(s)`` the ``d``
+    remainder coefficients of ``s`` in the selected realization of that
+    ring, raised here into ``coefficient_ring``.  Callers are the ring
+    adapters whose realization performs that division.
+    """
+    labels = Sets.Δ[degree - 1]
+
+    def basis_coordinates(element):
+        return {
+            label: _owned_engine_element(coefficient_ring, coefficient)
+            for label, coefficient in zip(labels, coordinates(element), strict=True)
+            if coefficient != 0
+        }
+
+    return _NativeModuleBasis(
+        coefficient_ring.free_module(labels),
+        lambda exponent: power(int(exponent)),
+        basis_coordinates,
+    )
 
 
 class _RingModulePresentation:

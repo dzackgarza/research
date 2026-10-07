@@ -435,6 +435,41 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 presentation_lift=presentation_lift,
             )
 
+        def _module_basis_along(self, ring_map):
+            r"""``K`` over ``QQ`` along the inclusion ``QQ -> K``: the basis selected by :meth:`as_algebra`.
+
+            Implements the protected contract declared at
+            ``OwnedRings.ParentMethods._module_basis_along``.  A unital ring
+            map out of ``QQ`` is unique, so a ``ring_map`` starting at ``QQ``
+            is the inclusion, along which :meth:`as_algebra` selects the power
+            basis ``1, a, ..., a^{d-1}`` of an absolute primitive element
+            ``a``.  Elements cross between ``K`` and that presentation through
+            the identification :meth:`multiplication_morphism` uses.  A map
+            out of any other field takes the general contract.
+            """
+            from dzack_research.preamble.categories.modules.native_modules import (
+                _NativeModuleBasis,
+            )
+
+            rationals = _own_number_field(SageQQ)
+            match ring_map.domain() is rationals and self is not rationals:
+                case False:
+                    return super()._module_basis_along(ring_map)
+            algebra = self.as_algebra()
+            framing = algebra.framing_morphism()
+
+            def coordinates(element):
+                vector = framing.lift(_owned_engine_element(algebra, _engine_element(self, element)))
+                return {label: vector(label) for label in vector.support().domain()}
+
+            return _NativeModuleBasis(
+                algebra.framing_source(),
+                lambda label: _owned_engine_element(
+                    self, _engine_element(algebra, algebra.module_generator(label))
+                ),
+                coordinates,
+            )
+
     class ElementMethods:
         def inverse(self):
             r"""Return the multiplicative inverse of this nonzero field element."""
