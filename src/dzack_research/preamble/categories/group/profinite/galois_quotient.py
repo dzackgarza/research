@@ -57,19 +57,19 @@ class _FiniteGaloisExtensionEngine:
     """
 
     def base_field(self):
-        return self.source_object().source_object()
+        return self.coslice_arrow().domain()
 
     def field(self):
-        return self.source_object().target_object()
+        return self.coslice_arrow().codomain()
 
     def algebraic_closure(self):
-        return self.target_object().target_object()
+        return self.slice_arrow().codomain().coslice_arrow().codomain()
 
     def base_embedding(self) -> RingMorphism:
-        return self.source_object().arrow()
+        return self.coslice_arrow()
 
     def embedding(self) -> RingMorphism:
-        return self.arrow().right()
+        return self.slice_arrow().right()
 
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
@@ -104,16 +104,15 @@ class _FiniteGaloisExtensionEngine:
     def __eq__(self, other) -> bool:
         r"""Equal when the defining data ``K -> L -> Kbar`` agree.
 
-        The fields and the closure are compared by identity and the two exact
+        Membership in this stage's slice ``(K/Fields)/e`` fixes ``K`` and
+        ``e: K -> Kbar``; the field is compared by identity and the two exact
         embeddings by their values on field generators.
         """
         return (
-            isinstance(other, _FiniteGaloisExtensionEngine)
-            and other.base_field() is self.base_field()
-            and other.field() is self.field()
-            and other.algebraic_closure() is self.algebraic_closure()
-            and other.base_embedding() == self.base_embedding()
-            and other.embedding() == self.embedding()
+            other in self.slice_category()
+            and other.coslice_arrow().codomain() is self.field()
+            and other.coslice_arrow() == self.base_embedding()
+            and other.slice_arrow().right() == self.embedding()
         )
 
     def __ne__(self, other) -> bool:
@@ -174,14 +173,14 @@ def FiniteGaloisExtension(
             f"the embedding K -> Kbar {extension_object} is not a field extension of "
             f"{base_field}"
         )
-        assert extension_object.target_object() is closure, (
+        assert extension_object.coslice_arrow().codomain() is closure, (
             f"the embedding K -> Kbar {extension_object} does not land in the algebraic "
             f"closure {closure}"
         )
-        assert extension_object.arrow() == composite, (
+        assert extension_object.coslice_arrow() == composite, (
             f"{field} is not an intermediate field of {base_field} -> {closure}: the "
             f"composite {base_field} -> {field} -> {closure} differs from the given "
-            f"embedding {extension_object.arrow()}"
+            f"embedding {extension_object.coslice_arrow()}"
         )
 
     factorization = coslice.Mor(source_object, extension_object)(closure_embedding)

@@ -1372,8 +1372,7 @@ class _FiniteAffineAtlasEngine:
             name="Finite-atlas Čech cover arrows",
         )
         overlaps = {
-            tuple(pair): (
-                site(tuple(pair)),
+            tuple(pair): site.span(
                 site.Mor(site(tuple(pair)), site((pair[0],))).unique(),
                 site.Mor(site(tuple(pair)), site((pair[1],))).unique(),
             )
@@ -1999,8 +1998,7 @@ class FiniteAffineAtlases(OwnedParameterizedCategory):
             left_leg = source_overlap.inclusion()
             right_leg = target_overlap.inclusion() * forward
             overlap_object = site.object(embeddings[left] * left_leg)
-            overlaps[left, right] = (
-                overlap_object,
+            overlaps[left, right] = site.span(
                 site.Mor(overlap_object, chart_objects[left])(left_leg),
                 site.Mor(overlap_object, chart_objects[right])(right_leg),
             )

@@ -57,6 +57,7 @@ from dzack_research.preamble.owned_category_bases import Category as OwnedCatego
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 _Object = TypeVar("_Object")
@@ -119,7 +120,7 @@ class CommutativeSquare(NaturalTransformationMorphism):
     """
 
     def _walking_arrow(self) -> Category:
-        return self.domain().functor().domain()
+        return self.parent().source().domain()
 
     def left(self) -> Morphism:
         r"""The component at ``0``: the edge between the sources."""
@@ -182,6 +183,14 @@ class ArrowMor(NaturalTransformationMor):
         r"""``C``, the category whose morphisms the edges are."""
         return self.source().codomain()
 
+    def _domain_arrow(self) -> Morphism:
+        r"""The arrow of ``C`` that the domain of this Mor is."""
+        return self.domain().arrow()
+
+    def _codomain_arrow(self) -> Morphism:
+        r"""The arrow of ``C`` that the codomain of this Mor is."""
+        return self.codomain().arrow()
+
     def _element_constructor_(self, left, right=None):
         match left:
             case CommutativeSquare() if right is None:
@@ -210,8 +219,8 @@ class ArrowMor(NaturalTransformationMor):
         construction_data=None,
     ) -> CommutativeSquare:
         r"""The transformation with these two edges, after checking they bound a square here."""
-        source = self.domain().arrow()
-        target = self.codomain().arrow()
+        source = self._domain_arrow()
+        target = self._codomain_arrow()
         if left.domain() is not source.domain() or left.codomain() is not target.domain():
             raise ValueError(
                 f"a square from {source} to {target} needs its left edge to be a map {source.domain()} -> "
@@ -250,7 +259,7 @@ class ArrowMor(NaturalTransformationMor):
             raise ValueError(
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        arrow = self.domain().arrow()
+        arrow = self._domain_arrow()
         category = self._edge_category()
         return self._from_commuting_edges(
             _category_mor_parent(category, arrow.domain(), arrow.domain()).identity(),
@@ -606,6 +615,23 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
 class SliceMor(ArrowMor):
     r"""Morphisms in a slice; the edge at the fixed codomain is the identity."""
 
+    def _domain_arrow(self) -> Morphism:
+        return self.domain().slice_arrow()
+
+    def _codomain_arrow(self) -> Morphism:
+        return self.codomain().slice_arrow()
+
+    def _edge_category(self) -> Category:
+        return self.arrow_category().base_category()
+
+    def source(self) -> Functor:
+        r"""The functor ``[1] -> C`` that the domain's chosen arrow determines."""
+        return _walking_arrow_functor(self._edge_category(), self._domain_arrow())
+
+    def target(self) -> Functor:
+        r"""The functor ``[1] -> C`` that the codomain's chosen arrow determines."""
+        return _walking_arrow_functor(self._edge_category(), self._codomain_arrow())
+
     def _element_constructor_(self, factor, right=None):
         match factor:
             case CommutativeSquare() if right is None:
@@ -617,11 +643,11 @@ class SliceMor(ArrowMor):
                         f"category: it is a morphism {factor.domain()} -> {factor.codomain()}"
                     )
                 factor, right = factor.left(), factor.right()
-        fixed = self.domain().arrow().codomain()
-        if self.codomain().arrow().codomain() is not fixed:
+        fixed = self._domain_arrow().codomain()
+        if self._codomain_arrow().codomain() is not fixed:
             raise ValueError(
                 f"a morphism in a slice category C/X needs both objects over one X, but {self.domain()} lies "
-                f"over {fixed} and {self.codomain()} lies over {self.codomain().arrow().codomain()}"
+                f"over {fixed} and {self.codomain()} lies over {self._codomain_arrow().codomain()}"
             )
         identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
         if right is not None and (right == identity) is not True:
@@ -631,8 +657,8 @@ class SliceMor(ArrowMor):
         return self._square(factor, identity, verify=True)
 
     def canonical_morphism(self) -> CommutativeSquare:
-        inclusion = self.domain().arrow()
-        target_inclusion = self.codomain().arrow()
+        inclusion = self._domain_arrow()
+        target_inclusion = self._codomain_arrow()
         return self(inclusion.factor_through(target_inclusion))
 
 
@@ -722,33 +748,78 @@ class SliceCategory(_SubcategoryOfArrows):
         self,
         arrow: Morphism,
         *,
-        _engine=None,
+        categories=(),
         construction_data=None,
+        _engine=None,
     ) -> ObjectOfCategory:
-        r"""Construct an object of ``C/X``, optionally with a private realization."""
+        r"""The object ``(A, p)`` of ``C/X`` on an arrow ``p: A -> X``, optionally with stronger structure.
+
+        The owner of ``A`` constructs it on the data of ``A`` (``OWN-16``):
+        the result is an object of ``C/X``, which adds only ``p``, and of
+        ``C``, which ``C/X`` declares; the finer categories of ``A`` do not
+        place it (``ARC-08``, ``CON-07``).  ``categories`` and
+        ``construction_data`` are further levels that a caller adds with
+        their data, and ``_engine`` is a private computation class of this
+        level.
+        """
         if not self.admits_arrow(arrow):
             raise TypeError(
                 f"{arrow} is not an object of {self}: it is not an arrow of the base category ending at the base object"
             )
-        functor = _walking_arrow_functor(self.base_category(), arrow)
-        if _engine is None and construction_data is None:
-            return self._object_on(functor)
-        return _object_of(
-            self,
-            _engine=None if _engine is None else (self, _engine, None),
-            functor=functor,
-            fixed_mor_category=self,
-            **dict(construction_data or {}),
-        )
+        if _engine is None and construction_data is None and not categories:
+            return self._object_on(arrow)
+        return self._construct_on(arrow, tuple(categories), _engine, construction_data)
 
     __call__ = object
 
-    def super_categories(self):
-        from dzack_research.preamble.categories.abstract_categories.products import (
-            FiniteOrdinalCategory,
+    @cached_method(key=lambda self, arrow: id(arrow))
+    def _object_on(self, arrow: Morphism):
+        return self._construct_on(arrow, (), None, None)
+
+    def _construct_on(self, arrow: Morphism, categories, engine, construction_data):
+        return arrow.domain()._with_structure(
+            (self, *categories),
+            {"slice_arrow": arrow, "slice_category": self, **dict(construction_data or {})},
+            engine=engine,
         )
 
-        return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
+    def super_categories(self):
+        r"""An object ``(A, p: A -> X)`` of ``C/X`` is an object ``A`` of ``C`` with the chosen arrow ``p``.
+
+        The inclusion of ``C/X`` into ``Ar(C)`` is a functor, not this
+        declaration (``CAT-16``, ``CAT-20``).
+        """
+        return [self.base_category()]
+
+    class ParentMethods:
+        r"""An object ``A`` of ``C`` with its chosen arrow ``p: A -> X`` to the fixed object."""
+
+        def __init__(self, slice_arrow, slice_category, **rest) -> None:
+            self._slice_arrow = slice_arrow
+            self._slice_category = slice_category
+            super().__init__(**rest)
+
+        def slice_arrow(self) -> Morphism:
+            r"""The chosen arrow ``p: A -> X``."""
+            return self._slice_arrow
+
+        def slice_category(self) -> Category:
+            r"""``C/X``, the slice this object was constructed in."""
+            return self._slice_category
+
+        def arrow(self) -> Morphism:
+            return self.slice_arrow()
+
+        def _added_structure(
+            self,
+        ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+            r"""``C/X`` and the chosen arrow ``p``, kept when this object is constructed again (``OWN-05``; see ``Objects``)."""
+            categories, data = super()._added_structure()
+            return (*categories, self.slice_category()), {
+                **data,
+                "slice_arrow": self.slice_arrow(),
+                "slice_category": self.slice_category(),
+            }
 
     def an_object(self) -> ObjectOfCategory:
         r"""The identity of the fixed base object."""
@@ -768,6 +839,23 @@ class SliceCategory(_SubcategoryOfArrows):
 class CosliceMor(ArrowMor):
     r"""Morphisms in a coslice; the edge at the fixed domain is the identity."""
 
+    def _domain_arrow(self) -> Morphism:
+        return self.domain().coslice_arrow()
+
+    def _codomain_arrow(self) -> Morphism:
+        return self.codomain().coslice_arrow()
+
+    def _edge_category(self) -> Category:
+        return self.arrow_category().base_category()
+
+    def source(self) -> Functor:
+        r"""The functor ``[1] -> C`` that the domain's chosen arrow determines."""
+        return _walking_arrow_functor(self._edge_category(), self._domain_arrow())
+
+    def target(self) -> Functor:
+        r"""The functor ``[1] -> C`` that the codomain's chosen arrow determines."""
+        return _walking_arrow_functor(self._edge_category(), self._codomain_arrow())
+
     def _element_constructor_(self, left, right=None):
         match left:
             case CommutativeSquare() if right is None:
@@ -779,11 +867,11 @@ class CosliceMor(ArrowMor):
                         f"category: it is a morphism {left.domain()} -> {left.codomain()}"
                     )
                 left, right = left.left(), left.right()
-        fixed = self.domain().arrow().domain()
-        if self.codomain().arrow().domain() is not fixed:
+        fixed = self._domain_arrow().domain()
+        if self._codomain_arrow().domain() is not fixed:
             raise ValueError(
                 f"a morphism in a coslice category X/C needs both objects under one X, but {self.domain()} lies "
-                f"under {fixed} and {self.codomain()} lies under {self.codomain().arrow().domain()}"
+                f"under {fixed} and {self.codomain()} lies under {self._codomain_arrow().domain()}"
             )
         identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
         if right is None:
@@ -799,8 +887,8 @@ class CosliceMor(ArrowMor):
             raise ValueError(
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        target = self.domain().target_object()
-        source = self.domain().source_object()
+        target = self._domain_arrow().codomain()
+        source = self._domain_arrow().domain()
         category = self._edge_category()
         return self._from_commuting_edges(
             _category_mor_parent(category, source, source).identity(),
@@ -843,12 +931,78 @@ class CosliceCategory(_SubcategoryOfArrows):
     def base_object(self) -> ObjectOfCategory:
         return self._base_object
 
-    def super_categories(self):
-        from dzack_research.preamble.categories.abstract_categories.products import (
-            FiniteOrdinalCategory,
+    def object(
+        self,
+        arrow: Morphism,
+        *,
+        _engine=None,
+        construction_data=None,
+    ) -> ObjectOfCategory:
+        r"""The object ``(B, i)`` of ``X/C`` on an arrow ``i: X -> B``, optionally with a private realization.
+
+        The owner of ``B`` constructs it on the data of ``B`` (``OWN-16``):
+        the result is an object of ``X/C``, which adds only ``i``, and of
+        ``C``, which ``X/C`` declares; the finer categories of ``B`` do not
+        place it (``ARC-08``, ``CON-07``).
+        """
+        if not self.admits_arrow(arrow):
+            raise TypeError(
+                f"{arrow} is not an object of {self}: it is not an arrow of the base category starting at the base object"
+            )
+        if _engine is None and construction_data is None:
+            return self._object_on(arrow)
+        return self._construct_on(arrow, _engine, construction_data)
+
+    __call__ = object
+
+    @cached_method(key=lambda self, arrow: id(arrow))
+    def _object_on(self, arrow: Morphism):
+        return self._construct_on(arrow, None, None)
+
+    def _construct_on(self, arrow: Morphism, engine, construction_data):
+        return arrow.codomain()._with_structure(
+            (self,),
+            {"coslice_arrow": arrow, "coslice_category": self, **dict(construction_data or {})},
+            engine=engine,
         )
 
-        return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
+    def super_categories(self):
+        r"""An object ``(B, i: X -> B)`` of ``X/C`` is an object ``B`` of ``C`` with the chosen arrow ``i``.
+
+        The inclusion of ``X/C`` into ``Ar(C)`` is a functor, not this
+        declaration (``CAT-16``, ``CAT-20``).
+        """
+        return [self.base_category()]
+
+    class ParentMethods:
+        r"""An object ``B`` of ``C`` with its chosen arrow ``i: X -> B`` from the fixed object."""
+
+        def __init__(self, coslice_arrow, coslice_category, **rest) -> None:
+            self._coslice_arrow = coslice_arrow
+            self._coslice_category = coslice_category
+            super().__init__(**rest)
+
+        def coslice_arrow(self) -> Morphism:
+            r"""The chosen arrow ``i: X -> B``."""
+            return self._coslice_arrow
+
+        def coslice_category(self) -> Category:
+            r"""``X/C``, the coslice this object was constructed in."""
+            return self._coslice_category
+
+        def arrow(self) -> Morphism:
+            return self.coslice_arrow()
+
+        def _added_structure(
+            self,
+        ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+            r"""``X/C`` and the chosen arrow ``i``, kept when this object is constructed again (``OWN-05``; see ``Objects``)."""
+            categories, data = super()._added_structure()
+            return (*categories, self.coslice_category()), {
+                **data,
+                "coslice_arrow": self.coslice_arrow(),
+                "coslice_category": self.coslice_category(),
+            }
 
     def an_object(self) -> ObjectOfCategory:
         r"""The identity of the fixed base object."""
@@ -1235,19 +1389,21 @@ class SubobjectCategory(OwnedCategoryBase):
 
 
 class SetSubobjectCategory(SliceCategory):
-    r"""The represented subset inclusions ``A -> X`` as the monic objects of ``Set/X``.
+    r"""The subsets ``(A, i: A -> X)`` of ``X``: the objects of ``Set/X`` whose arrow is monic.
 
-    Sets are the case where the subobject itself is naturally represented by
-    its inclusion morphism rather than by a separately structured source
-    parent.  Reuse the ordinary slice object's walking-arrow representation:
-    no second subset wrapper or arrow registry is introduced.
+    The slice ``Set/X`` constructs a subset through the set owner on the
+    data of the received ``A`` (``OWN-16``), so its points, membership and
+    cardinality are those of ``A``.  This level adds the subobject lattice.
     """
 
     def super_categories(self):
-        return [
-            SliceCategory(self.base_category(), self.base_object()),
-            self.base_category().MonomorphismArrowCategory(),
-        ]
+        r"""A subset ``(A, i)`` of ``X`` is an object of ``Set/X`` whose arrow is monic.
+
+        Monicity is the admission condition on ``i``; the inclusion into
+        the monomorphisms of ``Ar(Set)`` is a functor, not a declaration
+        (``CAT-16``, ``CAT-20``).
+        """
+        return [SliceCategory(self.base_category(), self.base_object())]
 
     def admits_arrow(self, arrow: Morphism) -> bool:
         return (
@@ -1255,55 +1411,21 @@ class SetSubobjectCategory(SliceCategory):
             and self.base_category().MonomorphismArrowCategory().admits_arrow(arrow)
         )
 
-    def object(
-        self,
-        arrow: Morphism,
-        *,
-        categories=(),
-        construction_data=None,
-        _engine=None,
-    ):
-        r"""Construct this represented subset, optionally with stronger owned structure or a private realization."""
-        if not self.admits_arrow(arrow):
-            raise TypeError(
-                f"{arrow} is not an object of {self}: it is not a monomorphism into the base set"
-            )
-        category = Cat().meet((self, *tuple(categories)))
-        return _object_of(
-            category,
-            _engine=None if _engine is None else (self, _engine, None),
-            functor=_walking_arrow_functor(self.base_category(), arrow),
-            fixed_mor_category=self,
-            **dict(construction_data or {}),
-        )
-
-    __call__ = object
-
     def cardinality(self):
         r"""The number of represented subsets of the fixed base set."""
         return self.base_object().power_set().cardinality()
 
     class ParentMethods:
+        r"""A set ``A`` with its inclusion into ``X``; its points are those of ``A``, constructed through the set owner."""
+
         def inclusion(self):
             return self.arrow()
 
-        def underlying_set(self):
-            return self.source_object()
-
         def domain(self):
-            return self.source_object()
+            return self.inclusion().domain()
 
         def codomain(self):
-            return self.target_object()
-
-        def __contains__(self, member):
-            return member in self.inclusion()
-
-        def __iter__(self):
-            return iter(self.underlying_set())
-
-        def cardinality(self):
-            return self.underlying_set().cardinality()
+            return self.inclusion().codomain()
 
         def characteristic_morphism(self):
             return self.inclusion().characteristic_morphism()

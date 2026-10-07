@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
-    OwnedRings,
     RingMorphism,
     _engine_ring,
     _own_ring,
@@ -317,8 +316,6 @@ class _AbsoluteGaloisGroupEngine:
         self._field = field
         self._closure = closure
         self._embedding = embedding
-        self._slice_category = OwnedFields().CosliceUnder(self._field)
-        self._extension_object = self._slice_category(self._embedding)
         super().__init__(**rest)
 
     def base_field(self):
@@ -365,11 +362,20 @@ class _AbsoluteGaloisGroupEngine:
         """
         return self._is_finite_field()
 
+    @cached_method
     def slice_category(self):
-        return self._slice_category
+        r"""``K/Fields``, the coslice in which the chosen ``K -> Kbar`` is an object."""
+        return OwnedFields().CosliceUnder(self._field)
 
+    @cached_method
     def extension_object(self):
-        return self._extension_object
+        r"""``Kbar`` with its chosen embedding ``K -> Kbar``, an object of ``K/Fields``."""
+        return self.slice_category()(self._embedding)
+
+    @cached_method
+    def stage_category(self):
+        r"""``(K/Fields)/(K -> Kbar)``, whose objects are the stages ``K -> L -> Kbar``."""
+        return self.slice_category().SliceOver(self.extension_object())
 
     slice_object = extension_object
 
@@ -540,16 +546,7 @@ class _AbsoluteGaloisGroupEngine:
         For a field the embeddings are the stated ones, or the first pair of
         exact embeddings whose composite is the chosen ``K -> Kbar``.
         """
-        if extension not in OwnedRings():
-            if (
-                extension.base_field() is not self._field
-                or extension.algebraic_closure() is not self._closure
-                or extension.embedding() * extension.base_embedding() != self._embedding
-            ):
-                raise ValueError(
-                    f"{extension} is not an intermediate field of {self._field} -> "
-                    f"{self._closure} for the embedding of {self}"
-                )
+        if extension in self.stage_category():
             return extension
         extension_field = extension
         if (

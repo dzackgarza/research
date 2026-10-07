@@ -590,6 +590,52 @@ specimens start from `Sets.Δ[0].End()`.
 `categories/sets/set_categories.py` were read. Repair is the
 `objects-of-sets-answer-their-endomorphisms` node in [TODO.md](TODO.md).
 
+### An object of one slice cannot be placed in a second slice
+
+An object of the slice `C/X` is a pair `(A, p: A -> X)`; `SliceCategory`
+and `CosliceCategory` (`abstract_categories/arrow_categories.py`) declare
+`C` and construct `(A, p)` through the owner of `C` on the data of `A`
+(placement ruled 2026-10-07: `C/X` and `X/C` declare `C`, and only `C`,
+by `CAT-16` and `CAT-20`). One object can be over two objects at once: a
+relative spectrum `Y -> X` over `Spec(QQ)` is an object of `Sch/X` and of
+`Sch/Spec(QQ)`. Every slice level stores its arrow under the one name
+`slice_arrow`, and every coslice level under `coslice_arrow`, so the second
+level cannot add its arrow.
+**Evidence (2026-10-07):** with `X = QQ["x"].affine_spectrum()` and
+`Y = X.relative_spectrum(id)`, `Schemes(QQ).as_slice_object(Y)` raises
+`AssertionError: cannot add the data ['slice_arrow', 'slice_category']`
+from `Objects.ParentMethods._with_structure`.
+**Dependency path:** the slice `C/X` adds `p: A -> X` to `A` -> an object
+is in `C/X` and `C/Y` with one arrow for each -> a family over `X` is also
+a scheme over the base ring.
+**Existing capability:** one slice level and one coslice level on one
+object, as in the Galois stage `F_{q^d}`, an object of
+`(F_q / Fields) / e`.
+**Consumers:** `Schemes(R).as_slice_object` on any object of a scheme slice
+`Sch/X`, the relative spectra of `schemes.py` and `relative_spec.py`
+included.
+**Coverage boundary:** observed on schemes; the same storage is shared by
+every slice and coslice.
+Repair: `an-object-lies-in-several-slices`, in TODO.
+
+### A finite owned ring does not enumerate its points
+
+`GF(25)` is in `FiniteSets()`, but `iter(GF(25))` does not give its 25
+elements. The owned ring has no `__iter__`, so Python uses the sequence
+protocol of `OwnedRings.ParentMethods.__getitem__`
+(`rings/ring_foundation.py:2561`). For an index `k`, the case `names in self`
+returns the ring itself, so the iterator gives `GF(25)` without end
+(observed 2026-10-07). `Set(GF(25))` enumerated through this protocol and did
+not stop; `Set()` now returns an owned set that is not a finite enumerated set
+unchanged.
+**Dependency path:** a finite ring is a finite set -> its points are the
+points of its underlying set -> enumeration comes from the `Sets()`
+placement, never from adjunction syntax.
+**Existing capability:** the engine field enumerates its elements;
+`cardinality()` of the owned ring is correct.
+**Consumers:** every caller that iterates a finite owned ring or builds a
+literal set from one. No TODO node yet.
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers

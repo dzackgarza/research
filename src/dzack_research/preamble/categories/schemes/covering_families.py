@@ -178,8 +178,7 @@ def _ringed_covering_family(
                 f"in two different ways through the two charts: {left_to_ambient} and {right_to_ambient}"
             )
         overlap_object = site_category.object(left_to_ambient)
-        overlap_data[left, right] = (
-            overlap_object,
+        overlap_data[left, right] = site_category.span(
             site_category.Mor(overlap_object, chart_objects[left])(left_map),
             site_category.Mor(overlap_object, chart_objects[right])(right_map),
         )

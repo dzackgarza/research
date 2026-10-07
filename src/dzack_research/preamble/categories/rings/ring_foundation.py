@@ -4375,6 +4375,7 @@ def _presented_ring_category(engine: Ring) -> Category:
         pAdicField,
         pAdicRing,
     )
+    from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
     from sage.rings.finite_rings.finite_field_base import FiniteField
     from sage.rings.fraction_field import FractionField_generic
     from sage.rings.laurent_series_ring import LaurentSeriesRing
@@ -4422,6 +4423,10 @@ def _presented_ring_category(engine: Ring) -> Category:
             # its degree over F_p, a datum of GF(p^k), is k = 1.
             prime_field = (PrimeFields(),) if engine.degree() == 1 else ()
             placements = (*field, *prime_field, owned_sets.FiniteSets())
+        case AlgebraicClosureFiniteField_generic():
+            # An algebraic closure of F_p is a field, and it is the union of
+            # the finite fields F_{p^n}, so countably infinite.
+            placements = (*field, owned_sets.CountablyInfiniteSets())
         case IntegerModRing_generic():
             # ZZ/nZZ is a quotient of ZZ, so commutative and Noetherian, and
             # it has n elements.  Whether n is prime or a prime power is

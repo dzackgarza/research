@@ -749,14 +749,14 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         is finite when \(X\) is.
         """
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            _FilteredOrderedSet,
+            _filtered_ordered_set,
         )
 
         match universe:
             case _ if universe in FiniteSets() and universe in EnumeratedSets():
-                return _FilteredOrderedSet(universe, predicate)
+                return _filtered_ordered_set(universe, predicate)
             case _:
-                return _ConditionSet(universe, predicate)
+                return _condition_set(universe, predicate)
 
     def image_set(self, map_, domain_subset, *, inverse=None):
         r"""Return the image \(f(A)\) of ``domain_subset`` under ``map_``.
@@ -770,14 +770,14 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         engine.
         """
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            _EnumeratedImageSet,
+            _enumerated_image_set,
         )
 
         match domain_subset:
             case _ if inverse is not None and domain_subset in EnumeratedSets():
-                return _EnumeratedImageSet(domain_subset, map_, inverse)
+                return _enumerated_image_set(domain_subset, map_, inverse)
             case _:
-                return _ImageSet(domain_subset, map_, image_inverse=inverse)
+                return _image_set(domain_subset, map_, inverse)
 
     def Mor(self, domain: Parent, codomain: Parent) -> SetMorCategory:
         if domain not in self or codomain not in self:
@@ -1856,11 +1856,15 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Sets().ObjectT
     ``Set`` is the ordinary-set constructor.  In particular, applying it to
     a finite ordered set forgets that order instead of returning the ordered
     object unchanged.  Constructions that require an order use
-    :func:`finite_ordered_set` explicitly.
+    :func:`finite_ordered_set` explicitly.  Any other owned set is already
+    the set of its points and is returned unchanged, without enumerating it:
+    a finite field, for example, has no chosen order to forget.
     """
     if isinstance(source, _FiniteLiteralSet):
         return source
-    if isinstance(source, Parent) and source in Sets() and source not in FiniteSets():
+    if isinstance(source, Parent) and source in Sets() and (
+        source not in FiniteSets() or source not in EnumeratedSets()
+    ):
         return source
     return _FiniteLiteralSet(source)
 
@@ -2437,7 +2441,7 @@ class PowerSets(OwnedCategory):
             target = morphism.codomain().power_set()
 
             def direct_image(subset):
-                inclusion = SetInclusion(subset.underlying_set().image_set(morphism), morphism.codomain())
+                inclusion = SetInclusion(subset.image_set(morphism), morphism.codomain())
                 return Sets().Subobjects(morphism.codomain())(inclusion)
 
             return Sets().Mor(self, target)(direct_image)
@@ -2726,30 +2730,43 @@ def _finite_subsets(source: Parent) -> Sets().ObjectType:
     return FinitePowerSets()(source)
 
 
-class _ConditionSet(Sets().ObjectType):
+def _condition_set(universe: Parent, predicate: Callable[[SourcePointT], bool]) -> Sets().ObjectType:
+    r"""The subset \(\{x\in X : P(x)\}\) of ``universe``, constructed by the set owner.
+
+    A subset of a finite set is finite, which places it.
+    """
+    assert universe in Sets(), (
+        f"a subset cut out by a predicate needs a set to cut it from, but {universe} is not in the "
+        "category of sets"
+    )
+    match universe:
+        case _ if universe in FiniteSets():
+            placement = FiniteSets()
+        case _:
+            placement = Sets()
+    return _object_of(
+        placement,
+        _engine=(placement, _ConditionSetEngine, None),
+        universe=universe,
+        predicate=predicate,
+    )
+
+
+class _ConditionSetEngine:
     r"""The subset \(\{x\in X : P(x)\}\) of a set \(X\) cut out by a predicate \(P\).
 
-    An engine realizing objects of ``Sets()``: the datum is the set \(X\) and
-    the predicate \(P\) on its points, and the object is the set of points
-    satisfying \(P\), whose inclusion into \(X\) is the subobject it is.  A
-    subset of a finite set is finite, which places it.  ``Sets().condition_set``
-    is the construction route; a subset of a finite enumerated set is built
-    there by the ordered filter engine instead.
+    Private computation class (``OWN-06``) of objects of ``Sets()``: the datum
+    is the set \(X\) and the predicate \(P\) on its points, and the object is
+    the set of points satisfying \(P\), whose inclusion into \(X\) is the
+    subobject it is.  ``Sets().condition_set`` is the construction route; a
+    subset of a finite enumerated set is built there by the ordered filter
+    engine instead.
     """
 
-    def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool]) -> None:
-        assert universe in Sets(), (
-            f"a subset cut out by a predicate needs a set to cut it from, but {universe} is not in the "
-            "category of sets"
-        )
+    def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
-        match universe:
-            case _ if universe in FiniteSets():
-                placement = FiniteSets()
-            case _:
-                placement = Sets()
-        super().__init__(category=placement, facade=True)
+        super().__init__(facade=True, **rest)
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(X\) this subset is cut out of."""
@@ -2786,37 +2803,54 @@ class _ConditionSet(Sets().ObjectType):
         return f"Subset of {self.universe()} cut out by {self.predicate()}"
 
 
-class _ImageSet(Sets().ObjectType):
+def _image_set(
+    source: Parent,
+    image_map: Callable[[SourcePointT], TargetPointT],
+    image_inverse: Callable[[TargetPointT], SourcePointT] | None,
+) -> Sets().ObjectType:
+    r"""The image \(f(A)\) of ``source`` under ``image_map``, constructed by the set owner.
+
+    The image of a finite set is finite, which places it.
+    """
+    assert source in Sets(), (
+        f"the image of a map needs a set as domain, but {source} is not in the category of sets"
+    )
+    match source:
+        case _ if source in FiniteSets():
+            placement = FiniteSets()
+        case _:
+            placement = Sets()
+    return _object_of(
+        placement,
+        _engine=(placement, _ImageSetEngine, None),
+        source=source,
+        image_map=image_map,
+        image_inverse=image_inverse,
+    )
+
+
+class _ImageSetEngine:
     r"""The image \(f(A)\) of a set \(A\) under a map \(f\).
 
-    An engine realizing objects of ``Sets()``: the datum is the set \(A\), the
-    map \(f\) on it, and optionally an inverse \(g\) on the image with
-    \(g(f(a)) = a\), which witnesses that \(f\) is injective on \(A\).  A point
-    of the image is a value \(f(a)\).  The image of a finite set is finite,
-    which places it.  ``Sets().image_set`` is the construction route; an image
-    with an inverse over an enumerated \(A\) is built there as an ordered
-    enumerated set instead.
+    Private computation class (``OWN-06``) of objects of ``Sets()``: the datum
+    is the set \(A\), the map \(f\) on it, and optionally an inverse \(g\) on
+    the image with \(g(f(a)) = a\), which witnesses that \(f\) is injective on
+    \(A\).  A point of the image is a value \(f(a)\).  ``Sets().image_set`` is
+    the construction route; an image with an inverse over an enumerated \(A\)
+    is built there as an ordered enumerated set instead.
     """
 
     def __init__(
         self,
         source: Parent,
         image_map: Callable[[SourcePointT], TargetPointT],
-        *,
-        image_inverse: Callable[[TargetPointT], SourcePointT] | None = None,
+        image_inverse: Callable[[TargetPointT], SourcePointT] | None,
+        **rest,
     ) -> None:
-        assert source in Sets(), (
-            f"the image of a map needs a set as domain, but {source} is not in the category of sets"
-        )
         self._source = source
         self._image_map = image_map
         self._image_inverse = image_inverse
-        match source:
-            case _ if source in FiniteSets():
-                placement = FiniteSets()
-            case _:
-                placement = Sets()
-        super().__init__(category=placement, facade=True)
+        super().__init__(facade=True, **rest)
 
     def source_set(self) -> Sets().ObjectType:
         r"""The set \(A\) of which this set is the image \(f(A)\)."""
