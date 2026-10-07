@@ -58,11 +58,11 @@ The category relations are refinements and structure-changing functors. Schemes 
 
 A `projective_complex_variety` card describes a smooth connected projective complex variety or a class whose stated invariants are constant. Its `dimension` is complex dimension; its required `hodge_poincare` is the Hodge–Poincaré series. Symmetric-space cards give the connected group quotient, isotropy group, defining involution and metric normalization. Their `rank` is symmetric-space rank. A Hermitian card also gives complex dimension and can state its bounded realization and the parabolic presentation of its compact dual. A compact dual is another symmetric-space card; a projective algebraic model of its analytic space has its own card.
 
-The `diagrams` field on a symmetric-space card links to graph cards. A graph card stores arbitrary YAML vertex and edge weights, edge direction, a named edge relation, and optional source-stated or preamble-computed `properties` labels. Parallel edges and loops are permitted. Lattice-db does not recognize Coxeter, Dynkin, Satake or Vinberg diagrams from those decorations; such recognition belongs to the preamble and the resulting labels are stored on the card.
+The `diagrams` field on a symmetric-space card links to graph cards. A graph card stores arbitrary YAML vertex and edge weights, edge direction, a named edge relation, and optional source-stated or preamble-computed `properties` labels. Parallel edges and loops are permitted. Coxeter, Dynkin, Satake or Vinberg recognition belongs to the preamble; lattice-db may request that recognition while validating, enriching, certifying, indexing or rendering a card, but contains no independent recognition algorithm.
 
 On projective variety cards, `hodge_poincare` stores the nonzero terms of $H_X(u,v)=\sum_{p,q}h^{p,q}u^pv^q$, where $h^{p,q}=\dim_{\mathbb C}H^q(X,\Omega_X^p)$.
 Each term has `p`, `q` and a positive `coefficient`; omitted terms have coefficient zero.
-The schema checks only that one bidegree is not stored twice. The optional `symmetry_group` is stored data; lattice-db does not derive it, Betti numbers, Euler characteristics, or Hodge symmetries from the coefficients.
+The optional `symmetry_group` is stored data. Any derivation or validation of Hodge symmetry, Betti numbers, Euler characteristics or the symmetry group is delegated to the preamble; lattice-db may call those preamble operations as part of its database workflows but does not implement the mathematics itself.
 
 `geometric-families/` holds parameterized families.
 An instance names its `family` slug and integer `family_parameter`; verification checks that the family exists and that the parameter meets its minimum.
@@ -102,12 +102,12 @@ Cite BibTeX keys from `geometric-bibliography.bib` with Pandoc citation syntax s
 
 ## Related mathematical records
 
-Each additional catalogue uses one Markdown file per permanent slug. Its front matter is parsed when the corpus is read, and `latticedb verify` checks only structural/reference coherence; its body states the source and mathematical identification. Mathematical validation occurs by constructing the corresponding preamble object in CI. These records remain distinct from the lattice, geometric object and geometric family records they link.
+Each additional catalogue uses one Markdown file per permanent slug. Its front matter is parsed when the corpus is read. `latticedb verify` checks structural/reference coherence and may call preamble-owned constructions and invariants to validate mathematical claims; it never reimplements those checks locally. These records remain distinct from the lattice, geometric object and geometric family records they link.
 
 | Catalogue | Defining data and links |
 | --- | --- |
 | `arithmetic-groups/<slug>.md` | One stored arithmetic subgroup $\Gamma\leq O(L)$, including standard subgroups (`O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+`, `SOtilde+`) or named subgroups such as $\Gamma_{\mathrm{En},2}$. Its generators name self-isometries stored on the lattice card; it may also state relators, abstract structure, order, index, parent, a stabilized object, a hyperbolic chamber and orbit representatives. |
-| `genera/` | Signature, determinant, parity, genus symbol, representative lattice tags, class number, completeness and rational mass. A complete list with known group orders checks $\sum 1/|O(L_i)|$. |
+| `genera/` | Signature, determinant, parity, genus symbol, representative lattice tags, class number, completeness and rational mass. For a complete list with known group orders, verification asks the preamble to compare the mass with $\sum 1/|O(L_i)|$. |
 | `lattice-families/` | Parameter name and minimum, rank, signature, and the Gram template whose entries are integers or integer arithmetic in the parameter; the schema checks only template syntax, shape and symmetry. Mathematical claims about the resulting family belong to a preamble-owned family construction, not to lattice-db. |
 | `lattice-polytopes/` | Vertices in a based free abelian group, ambient rank, source identifier, reflexivity, polar dual, and optional Delaunay sphere tied to a quadratic lattice. A toric ambient lattice is not the quadratic lattice of a lattice record. |
 | `toric-varieties/` | A polytope and its normal fan, with optional subdivision rays. |
@@ -120,9 +120,9 @@ Each additional catalogue uses one Markdown file per permanent slug. Its front m
 
 A scaled dual $L^*(k)$ with $k \neq 1$ is a different lattice object, with Gram tensor $kG^{-1}$, and may have its own card. A source title containing the word “dual” therefore does not by itself make a card redundant; only the raw dual $L^*$ is derived automatically from the owner card.
 
-`definite.minimal_vectors` is a complete shell in the record basis and must match the minimum and kissing number. `definite.perfect` is checked by the span of their rank-one tensors. `definite.regular` and `definite.spinor_regular` apply to integral ternary lattices. The Hermite invariant and packing density are exact functions of rank, determinant and minimum; source decimals are checked against those formulas rather than stored as exact values.
+`definite.minimal_vectors` is a complete shell in the record basis; the schema checks that it has `kissing_number` distinct vectors of the record rank. Verification compares `definite.perfect` with the preamble operation `L.is_voronoi_perfect()`. `definite.regular` and `definite.spinor_regular` apply to integral ternary lattices. The Hermite invariant and packing density are exact functions of rank, determinant and minimum; a source decimal is never stored as an exact value.
 
-Projective complex variety cards can also store Pontryagin numbers, a Beauville–Bogomolov Riemann–Roch polynomial, $\operatorname{Aut}^0$, homotopy groups, Fano and surface data, and a homogeneous, horospherical, Calabi–Yau complete-intersection or toric anticanonical construction. A complete-intersection configuration stores its projective factors and equation multidegrees; the schema checks the Calabi–Yau degree and dimension equations.
+Projective complex variety cards can also store Pontryagin numbers, a Beauville–Bogomolov Riemann–Roch polynomial, $\operatorname{Aut}^0$, homotopy groups, Fano and surface data, and a homogeneous, horospherical, Calabi–Yau complete-intersection or toric anticanonical construction. A complete-intersection configuration stores its projective factors and equation multidegrees; the schema asks the preamble whether the configuration satisfies the Calabi–Yau degree and dimension equations.
 
 ## A record
 
@@ -161,9 +161,9 @@ Twisting is not an equivalence relation in the catalogue: $L$, $L(2)$ and $L(-1)
 A construction can still name a twist by reference to another card plus a scale when that is the natural description. For example, `root_span.summands` can state a summand as $M(k)$ without asserting that the catalogue identifies $M(k)$ with $M$.
 
 The Gram tensor is the defining mathematical input. Lattice-db itself performs no mathematical computation. Enrichment and certification construct the corresponding preamble objects, call preamble-owned operations, serialize the returned values into cards, and in the certification phase attach certificate hashes. Potentially expensive exact invariants, including `integral.overlattice_count`, are requested only in the CI certification phase. Archived intake sources are provenance, not verification oracles.
-The build reads the stored values and renders every card.
+The build renders every card and may ask the preamble for mathematical projections needed for publication; it does not implement those computations locally.
 A person writes `name`, `latex`, `aliases`, `families`, `related`, `references` and the prose.
-`latticedb certify` requests exact `integral.overlattice_count`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.hyperbolic_index`, `integral.spinor_genus_count`, `integral.spinor_genera`, `definite.automorphism_group_order` and `definite.automorphism_group_generator_morphisms` from the research preamble. Lattice-db contains no implementation of these operations. For a definite integral lattice, CI consumes `L.orthogonal_group()`: the preamble computes and frames $O(L)$, and lattice-db only serializes its cardinality and generator isometries. Generator matrices are stored once as scale-one self-morphisms and the `definite` field stores their names. `integral.discriminant_sequence`, `integral.primitive_orbits` and `integral.discriminant_orbits` remain card fields but are not CI-computed until corresponding preamble-owned operations are exposed. A completed computation replaces any disagreeing authored value in the scope it computes and then certifies the resulting card value. A computation that does not finish within the time limit writes neither a replacement nor a certificate.
+`latticedb certify` requests exact `integral.overlattice_count`, `integral.genus_symbol`, `integral.genus_class_count`, `integral.hyperbolic_index`, `integral.spinor_genus_count`, `integral.spinor_genera`, `integral.discriminant_sequence`, `integral.primitive_orbits`, `integral.discriminant_orbits`, `definite.automorphism_group_order` and `definite.automorphism_group_generator_morphisms` from the research preamble. Lattice-db contains no implementation of these operations. For a definite integral lattice, CI consumes `L.orthogonal_group()`: the preamble computes and frames $O(L)$, and lattice-db only serializes its cardinality and generator isometries. Generator matrices are stored once as scale-one self-morphisms and the `definite` field stores their names. The discriminant sequence and the two orbit series are likewise computed by lattice methods and serialized by the certification adapter. A completed computation replaces any disagreeing authored value in the scope it computes and then certifies the resulting card value. A computation that does not finish within the time limit writes neither a replacement nor a certificate.
 `hyperbolic.reflective` and a `root_span` block that enrichment does not decide are declared: the prose states the source of each one, and the page of the lattice marks `hyperbolic.reflective` *declared*.
 
 An invariant that exists only under a hypothesis lives in a block named for that hypothesis. The block itself is stored data: the schema validates its shape, while mathematical verification of the hypothesis belongs to the preamble.
@@ -177,7 +177,7 @@ An invariant that exists only under a hypothesis lives in a block named for that
 | `indefinite` | $b(x, x)$ takes both signs | `isotropic` |
 | `hyperbolic` | $b$ is nondegenerate with signature $(1, n)$ or $(n, 1)$, rank at least 2 | `reflective` |
 
-All invariant blocks and computed fields may be absent on a sparse card. A populated field is either authored/source-stated or the serialized result of a preamble operation. `definite.automorphism_group_generator_morphisms` is a list of names of scale-one self-morphisms on the same card; its certificate commits to the corresponding matrices, not to the chosen names. `integral.discriminant_sequence` is stored when available; lattice-db does not currently compute it.
+All invariant blocks and computed fields may be absent on a sparse card. A populated field is either authored/source-stated or the serialized result of a preamble operation. `definite.automorphism_group_generator_morphisms` is a list of names of scale-one self-morphisms on the same card; its certificate commits to the corresponding matrices, not to the chosen names.
 `integral.primitive_orbits` maps each of `O`, `SO`, `O+`, `SO+`, `Otilde`, `SOtilde`, `Otilde+` and `SOtilde+` to the coefficients `constant`, `z` and `w` of the series $F_{L,\Gamma}(z, w)$ of the numbers of $\Gamma$-orbits of primitive vectors of each norm, null where a coefficient is not known (`theory/orbits.md`).
 
 ### Orthogonal, arithmetic and Lie groups
@@ -259,7 +259,7 @@ The address of a lattice is `tag/<TAG>.html`.
 
 **Certify:** `just certify` is the CI orchestration phase. It asks the preamble for each uncertified result, replaces a disagreeing authored value with the returned value, and only then writes the certificate hash to the card and certificate log.
 
-**Verify:** `just verify` performs structural/reference/certificate-coherence checks only. Mathematical validation is a CI construction step: CI instantiates the relevant preamble lattice, morphism, group or other mathematical object, and validity is enforced by that object's constructor. Lattice-db does not run a second mathematical checker. Archived intake sources are not verification oracles. `just build` reads cards and renders stored values.
+**Verify:** `just verify` is read-only. It checks structural/reference/certificate coherence and delegates mathematical validation of stored claims to the corresponding preamble lattice, morphism, group or other mathematical object. Lattice-db contains no second implementation of those operations. Archived intake sources are not verification oracles. `just build` may likewise call preamble-owned projections while rendering cards.
 
 ## Certificates
 
@@ -268,7 +268,7 @@ The value itself is stored only on the lattice card. The card's `certifications`
 
 | Name | Computation | Inputs |
 | --- | --- | --- |
-| `<tag> derive` | Preamble-returned fields serialized by ordinary enrichment | The Gram tensor |
+| `<tag> derive` | The enrichment fields, recomputed by certification and certified together | The Gram tensor |
 | `<tag> <block>.<field>` | A value returned by a preamble operation, such as `0012 integral.genus_symbol` | The Gram tensor |
 
 `latticedb certify` requests a preamble computation exactly when the card does not already cite the matching completed certificate. It writes the returned result to the card whether or not an authored value was already present, then writes the hash citation to `certifications` and writes only the hash and computation provenance to `certificates.yaml`.
@@ -294,9 +294,9 @@ morphisms:
 The matrix is in the bases of the two records, with rank $T$ rows and rank $S$ columns: column $j$ lists the coordinates of $\varphi(e_j)$.
 A morphism with `scale: c` has domain the twist $S(c)$ of its source card $S$, so $b_T(\varphi x,\varphi y)=c\,b_S(x,y)$. This is notation for that map, not a database normalization rule: $S(c)$ may itself also have a lattice card.
 The subdivisions are the lines of a block matrix, as SageMath's `M.subdivisions()` returns them: a line $k$ lies between rows (or columns) $k$ and $k + 1$.
-Verification checks that $M^{\top} G_T M = c \, G_S$, and that the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
+Verification constructs the morphism $S(c) \to T$ in the preamble, which accepts the matrix exactly when $M^{\top} G_T M = c \, G_S$, and asks the preamble whether the parts that the lines cut are orthogonal summands of $T$ (rows) and of $S$ (columns).
 
-`latticedb enrich --summand-maps` writes the resulting embeddings on their source lattice cards, with each morphism naming its orthogonal-sum target $T$.
+`latticedb enrich --summand-maps` asks the preamble operation `Lattices(ZZ).coordinate_diagonal_embeddings` for these embeddings and writes each one on its source lattice card, with the morphism naming its orthogonal-sum target $T$. The preamble computes them as follows; lattice-db only matches the returned lattices to cards and serializes the matrices.
 The orthogonal summands of $T$ are the connected components of the graph on its basis in which $e_i$ and $e_j$ are adjacent when $b(e_i, e_j) \neq 0$; group them by their Gram matrix, $T = \bigoplus_M M^{n_M}$.
 The diagonal $x \mapsto (x, \ldots, x)$ embeds $M(k)$ into $M^k$.
 For each $M$, a partition $\lambda$ of an integer $m \leq n_M$, with its parts placed on consecutive summands, gives an embedding $\bigoplus_M \bigoplus_j M(\lambda_j) \to T$; with $g = \gcd_j \lambda_j$, it is a morphism of scale $g$ from the record with the summands $M(\lambda_j / g)$, when the corpus holds one.
@@ -364,7 +364,7 @@ The query string selects filters, so a filtered view has an address:
 
 ## Commands
 
-The `latticedb` command line owns the four workflows, the build and deployment.
+The `latticedb` command line owns the five workflows (seed, author, enrich, certify, verify), source collation, the build and deployment.
 The `justfile` calls it.
 
 | Recipe | Effect |
@@ -374,16 +374,16 @@ The `justfile` calls it.
 | `just morphism S T ...` | Append a morphism with domain `S` and codomain `T` to lattice card `S` |
 | `just enrich ...` | Compute and store additional fields on existing cards |
 | `just certify ...` | CI orchestration: store preamble-returned uncertified scopes and attach certificate hashes |
-| `just verify` | Report schema/reference/certificate-coherence errors |
+| `just verify` | Report stored-card inconsistencies, using preamble-owned mathematics where required |
 | `just duplicates` | List the tags that share a Gram tensor |
 | `just build` | Render every lattice card into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |
-| `just test` | Run only preamble-free data-model/schema coherence tests; this is the local sub-second gate |
+| `just test` | Run the focused lattice-db model/schema tests with the preamble available; no preamble-free layering rule is imposed |
 | `just test-validation` | CI-only mathematical and integration validation under Sage/preamble |
 | `just test-source-intake` | Exercise archived-source importers and source-to-card collation; provenance only |
 
-`just test` must not import Sage or `dzack_research`. The schema layer parses stored data and checks internal shape/coherence only. Mathematical validation in CI is performed by construction of the corresponding preamble objects; underlying algorithms and constructor contracts are tested at their preamble owners.
+`just test` runs `tests/test_model.py` with the preamble available. Its engine-import test states the boundary: no module under `src/latticedb` imports Sage, PARI/cypari2, python-flint or fpylll directly. Mathematical validation in CI is performed by construction of the corresponding preamble objects; underlying algorithms and constructor contracts are tested at their preamble owners.
 
 `just test-source-intake` exercises the Hashimoto and Höhn--Mason readers and their collation against the cards produced from those sources. These tests detect importer/transcription drift. They do not certify a lattice invariant and do not contribute to `just verify`.
 
@@ -403,7 +403,7 @@ The work that remains, in order:
 
 Source intake is one-way. A source contributes the claims it states — Gram tensors, identifications, invariants, relations, generators and maps — and every claim that belongs to the mathematical corpus lands in the appropriate card, relation, morphism or catalogue record. The source can be used to check that this seeding/import step copied what it was meant to copy, but it is not an oracle afterward. Computable claims are certified independently by mathematics or computation from the stored defining data. Two sources stating the same value are useful provenance, but agreement between sources is not a substitute for certification.
 
-- **Watson's single-class genera**, `Classi/watson` on the catalogue site: 3494 primitive lattices of one class per genus, in machine-readable rows of the lower-triangular Gram entries, dimension by dimension; Lorch's completion is arXiv:1208.5638. A module `latticedb watson` reads it, and each genus's stored `integral.genus_class_count = 1` checks the table's claim.
+- **Watson's single-class genera**, `Classi/watson` on the catalogue site: 3494 primitive lattices of one class per genus, in machine-readable rows of the lower-triangular Gram entries, dimension by dimension; Lorch's completion is arXiv:1208.5638. A module `latticedb watson` reads it and seeds each representative with the table's claim `integral.genus_class_count = 1`; certification recomputes that field from the Gram tensor.
 
 - **The Brandt-Intrau-Schiemann tables** of odd and even primitive positive ternary forms of discriminant at most 1000, `Brandt_1.html` and `Brandt_2.html` on the catalogue site, as recomputed by Schiemann: rank-3 integral records with genus data.
 
@@ -426,9 +426,9 @@ Source intake is one-way. A source contributes the claims it states — Gram ten
 
 - **Martinet's perfect lattices**, <http://jamartin.perso.math.cnrs.fr/Lattices/index.html>: the perfect lattices of dimensions at most 7 in `perf2to7` and the dimension-8 sets in PARI/GP files (`p8.gp.gz` and siblings), readable by `cypari2`; perfectness is a property a record states in its prose, and the Grams are definite integral records.
 
-- **Borcherds's tables of lattices**, <http://math.berkeley.edu/~reb/lattices/>: for each of the 665 odd unimodular and 121 even determinant-2 lattices of dimension 25 the root system, the order of the orthogonal group modulo the reflection group, and the orbits of norm $0,-2,-4,-6$ vectors of $I\!I_{25,1}$ with coordinates and simple-root counts; King's table of masses of the 32-dimensional even unimodular lattices by root system; the `norm*` and Magma-format files, all read on 2026-10-02. It prints no Gram tensor, so it writes no record — its claims land on records the corpus already holds: the twenty-four norm-zero vectors identify the Niemeier lattices as the orthogonal complements of norm-zero vectors of $I\!I_{25,1}$, which is `related` material and outgoing morphism data on the twenty-three Niemeier cards, with the page as the reference; the root system and the group order are the same fields of the rank-25 positive-definite records, the order derived from the stated group structure: Table −2 gives $|O(L)|=|R||G|$ for the even determinant-2 case, while Table −4 gives $|O(L)|=2|R||G|$ for the odd unimodular case, with $R$ the root-reflection group and $G$ the chamber stabilizer — these table values require the identified action before comparison with `definite.automorphism_group_order`; King's mass is a genus-level statement about the 32-dimensional records the corpus does not yet have, to be carried when they arrive.
+- **Borcherds's tables of lattices**, <http://math.berkeley.edu/~reb/lattices/>: for each of the 665 odd unimodular and 121 even determinant-2 lattices of dimension 25 the root system, the order of the orthogonal group modulo the reflection group, and the orbits of norm $0,-2,-4,-6$ vectors of $I\!I_{25,1}$ with coordinates and simple-root counts; King's table of masses of the 32-dimensional even unimodular lattices by root system; the `norm*` and Magma-format files, all read on 2026-10-02. It prints no Gram tensor, so it writes no record — its claims land on records the corpus already holds: the twenty-four norm-zero vectors identify the Niemeier lattices as the orthogonal complements of norm-zero vectors of $I\!I_{25,1}$, which is `related` material and outgoing morphism data on the twenty-three Niemeier cards, with the page as the reference; the root system and the group order are the same fields of the rank-25 positive-definite records, the order derived from the stated group structure: Table −2 gives $|O(L)|=|R||G|$ for the even determinant-2 case, while Table −4 gives $|O(L)|=2|R||G|$ for the odd unimodular case, with $R$ the root-reflection group and $G$ the chamber stabilizer — these table values are provenance for `definite.automorphism_group_order`, which certification computes from the Gram tensor; King's mass is a genus-level statement about the 32-dimensional records the corpus does not yet have, to be carried when they arrive.
 
-- **Cohn's kissing-number table**, <https://cohn.mit.edu/kissing-numbers>: the best known bounds per dimension, its lower bounds originally the Catalogue's table and later improvements naming their lattices — a citation for `definite.kissing_number` and, where a record attains a bound stated elsewhere, an outside table the field checks against.
+- **Cohn's kissing-number table**, <https://cohn.mit.edu/kissing-numbers>: the best known bounds per dimension, its lower bounds originally the Catalogue's table and later improvements naming their lattices — a citation for `definite.kissing_number`, which enrichment computes from the Gram tensor; the table is provenance, not a check.
 
 - **Dutour-Sikiric's Delaunay polytopes of the Niemeier lattices**, <https://github.com/MathieuDutSik/delaunaypolytopeniemeier.github.io>: the `lattice-polytopes/` schema can record their vertices and Delaunay sphere in the basis of each Niemeier lattice. The source values and coordinate identifications remain to be imported.
 

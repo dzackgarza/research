@@ -6,9 +6,8 @@
 default:
     @just --list
 
-# Run mathematical lattice-database workflows in the repository's Sage Python,
-# with both source trees visible. Schema/data-model coherence uses plain Python
-# through `just test` below.
+# Run lattice-database workflows in the repository's Sage Python with both source
+# trees visible.  The preamble is the normal mathematical computation boundary.
 [private]
 _latticedb *ARGS:
     PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m latticedb {{ARGS}}
@@ -33,7 +32,7 @@ enrich *ARGS:
 certify *ARGS:
     just _latticedb certify {{ARGS}}
 
-# Report schema/reference/certificate-coherence errors
+# Report stored-card inconsistencies, delegating mathematical checks to the preamble
 verify:
     just _latticedb verify
 
@@ -49,9 +48,10 @@ deploy:
 tag:
     just _latticedb next-tag
 
-# Local gate: pure data-model/schema coherence only. This target must stay preamble/Sage-free and sub-second.
+# Focused local model/schema gate. The preamble may be imported; lattice-db owns
+# database mechanics, not a preamble-free shadow mathematics layer.
 test:
-    PYTHONPATH="src" uv run python -m pytest tests/test_model.py -q
+    PYTHONPATH="../src:src" "$(just -f ~/ai-review-ci/justfiles/sage.just -d .. _sage-python)" -m pytest tests/test_model.py -q
 
 # CI-only constructor/serialization/publication integration. Mathematical correctness lives in preamble tests.
 test-validation:

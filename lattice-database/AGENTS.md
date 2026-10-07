@@ -14,13 +14,19 @@ algorithm.  This is the cross-repository contract recorded by
 `HANDOFF.md` and by the corresponding foundational complaint in the research
 repository.
 
-The schema/data-model layer (`model`, `catalogues`, `geometric`, `graphs`, `corpus`)
-is deliberately preamble-free and must parse/validate under ordinary CPython.
-`just test` exercises only that fast coherence layer. Workflows that compute or
-compute or validate mathematical lattice claims (`enrich`, certification and CI
-construction-validation) run under the repository's Sage Python with both `../src`
-and this package's `src` on `PYTHONPATH` and consume preamble operations. `verify`
-itself is structural/reference/certificate coherence only.
+There is no preamble-free architectural layer inside `latticedb`. Database code
+may import and call `dzack_research.preamble` wherever orchestration needs a
+mathematical construction, invariant, recognition, comparison, or validation.
+The boundary is ownership, not importability: lattice-db owns cards, schemas,
+source collation, computation scheduling, serialization, caching, certificates,
+indices and publication; the preamble owns the mathematics those workflows ask
+for.  A database module must delegate a mathematical operation to the preamble
+rather than reimplementing it locally.
+
+`just test`, enrichment, verification, certification, source collation,
+construction validation and site generation may therefore run with the preamble
+available.  A particular workflow may remain structural-only because that is its
+job, not because database code is forbidden from importing the preamble.
 
 ## Independent workflows
 
@@ -41,16 +47,18 @@ result replaces it. The
 resulting card value then receives a certificate hash, and `certificates.yaml` records that hash
 with computation provenance.
 
-Verification is read-only. The modules in `src/latticedb/checks/` inspect stored cards and relations
-and report only structural/reference/certificate-consistency errors. Mathematical validation is not
-a checker phase: CI constructs the corresponding preamble objects and morphisms, whose constructors
-own the validation. Source-to-card collation is a separate
-provenance workflow. The site build reads cards and renders pages.
+Verification is read-only. The modules in `src/latticedb/checks/` inspect stored cards and relations,
+check structural/reference/certificate coherence, and may construct the corresponding preamble
+objects and morphisms to validate stored mathematical claims. The mathematics remains owned by
+the preamble; verification only orchestrates those public operations and reports disagreements.
+Source-to-card collation is a separate provenance workflow. The site build reads cards and may
+request preamble-owned mathematical projections needed for publication.
 
 No module under `src/latticedb` may import Sage, PARI/cypari2, python-flint or another mathematical
-engine directly. Preamble imports are the only computational boundary. Pure-Python reimplementations
-of lattice/root/group/polytope algorithms are equally forbidden: moving an algorithm out of an engine
-call does not make it database code.
+engine directly. Preamble imports are the computational boundary and are expected wherever database
+orchestration needs mathematics. Pure-Python reimplementations of lattice/root/group/polytope
+algorithms are equally forbidden: moving an algorithm out of an engine call does not make it database
+code.
 
 ## The database stores every computation
 
