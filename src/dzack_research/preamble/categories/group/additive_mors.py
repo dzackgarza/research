@@ -15,6 +15,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
+    MorCategories,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
@@ -190,8 +191,14 @@ class AdditiveMorGroups(OwnedCategory):
             Sage copies it into the generated arrow type and ``super()`` does
             not reach the root host; the set-level composite is named.
             """
-            if not right.parent().mor_category().is_subcategory(self.parent().mor_category()):
-                return OwnedSetMorphism._composition(self, right)
+            right_mor = right.parent()
+            match right_mor:
+                case _ if right_mor in MorCategories() and right_mor.mor_category().is_subcategory(
+                    self.parent().mor_category()
+                ):
+                    pass
+                case _:
+                    return OwnedSetMorphism._composition(self, right)
             if right.parent() is self.parent() and self.domain() is self.codomain():
                 return self.parent()._compose_endomorphisms(self, right)
             mor = self.parent().mor_family().Of(right.domain(), self.codomain())

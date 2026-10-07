@@ -29,6 +29,7 @@ from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
+from sage.categories.finite_fields import FiniteFields as SageFiniteFields
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
@@ -198,6 +199,74 @@ class RingMorphism:
         if self._engine_morphism is None:
             return False
         return bool(self._engine_morphism.is_identity())
+
+    def inverse(self):
+        r"""Return the inverse ring map of this ring isomorphism.
+
+        A map of fields is injective, so it is invertible exactly when it is
+        surjective; the retained exact engine map decides that and supplies
+        the inverse, which is again a map of fields.
+        """
+        if self._preamble_is_identity:
+            return self
+        domain = self.domain()
+        match domain:
+            case _ if domain in OwnedFields() and self._engine_morphism is not None:
+                return self.codomain().Mor(domain)(self._engine_morphism.inverse())
+            case _:
+                return super().inverse()
+
+    def restrict_along(self, embedding):
+        r"""Return the automorphism ``tau`` of ``K`` with ``j tau = self j``, for ``j: K -> L``.
+
+        ``self`` is an automorphism of ``L``.  The restriction is unique when
+        it exists because ``j`` is injective, and it is found among the
+        automorphisms of ``K`` by comparing values on the field generators.
+        """
+        field = embedding.domain()
+        assert field in OwnedFields() and _is_finite_or_number_field(field), (
+            f"cannot restrict {self} along {embedding}: restriction is computed only along a map out of a "
+            f"finite or number field, but {field} is neither"
+        )
+        assert embedding.codomain() is self.domain() and self.domain() is self.codomain(), (
+            f"cannot restrict {self} along {embedding}: {self} must be an automorphism of the codomain "
+            f"{embedding.codomain()} of {embedding}"
+        )
+        generators = field.field_generators()
+        restrictions = owned_sets.finite_ordered_set(tuple(
+            candidate
+            for candidate in field.Mor(field).embeddings()
+            if all(
+                embedding(candidate(generator)) == self(embedding(generator))
+                for generator in generators
+            )
+        ))
+        assert restrictions.cardinality() == 1, (
+            f"the automorphism {self} does not restrict along {embedding} to an automorphism of {field}: "
+            f"{restrictions.cardinality()} automorphisms of {field} are compatible with it"
+        )
+        return restrictions[0]
+
+    def extensions_along(self, embedding, candidates):
+        r"""Return the candidates ``sigma`` with ``sigma j = j self``, for ``j: K -> L``.
+
+        ``self`` is an automorphism of ``K`` and each candidate a map out of
+        ``L``; the condition is checked on the field generators of ``K``.
+        """
+        field = embedding.domain()
+        assert field in OwnedFields() and _is_finite_or_number_field(field), (
+            f"cannot extend {self} along {embedding}: extension is computed only along a map out of a "
+            f"finite or number field, but {field} is neither"
+        )
+        generators = field.field_generators()
+        return owned_sets.finite_ordered_set(tuple(
+            candidate
+            for candidate in candidates
+            if all(
+                candidate(embedding(generator)) == embedding(self(generator))
+                for generator in generators
+            )
+        ))
 
     def _richcmp_(self, other, op):
         r"""Decide equality from represented universal/construction data.
@@ -381,6 +450,19 @@ def _ringlike_mor_element(parent, datum, provider_type):
             ),
             engine_morphism=datum,
         )
+    if element_parent(datum) is parent.codomain() and _is_number_field(parent.domain()):
+        # A number field is QQ(theta) for its primitive element theta, so a
+        # ring map out of it is the image of theta; out of QQ it is unique.
+        engine_domain = _engine_ring(parent.domain())
+        engine_codomain = _engine_ring(parent.codomain())
+        match engine_domain:
+            case _ if engine_domain is SageQQ:
+                engine_morphism = engine_domain.hom(engine_codomain)
+            case _:
+                engine_morphism = engine_domain.hom(
+                    [_engine_element(parent.codomain(), datum)], engine_codomain
+                )
+        return _ringlike_mor_element(parent, engine_morphism, provider_type)
     if callable(datum):
         return parent.elementwise(datum)
     raise TypeError(
@@ -451,9 +533,22 @@ def _ring_composite(second, first):
     # The composite is a morphism of rings; the domain's own ``Mor`` may be a
     # more structured homset (algebra maps out of a polynomial ring), which
     # the composite need not belong to.
-    return _ring_mor_category(first.domain(), second.codomain()).elementwise(
-        lambda element: second(first(element)),
-    )
+    composite = _ring_mor_category(first.domain(), second.codomain())
+
+    def function(element):
+        return second(first(element))
+
+    # When both factors retain exact engine maps the composite retains their
+    # engine composite, so it stays invertible and comparable on the engine.
+    first_engine = _selected_engine_ring_morphism(first)
+    second_engine = _selected_engine_ring_morphism(second)
+    match (first_engine, second_engine):
+        case (None, _) | (_, None):
+            return composite.elementwise(function)
+        case _ if first_engine.codomain() is second_engine.domain():
+            return composite._elementwise_with_engine(function, second_engine * first_engine)
+        case _:
+            return composite.elementwise(function)
 
 
 def _ring_mor_category(domain, codomain) -> RingMor:
@@ -473,54 +568,132 @@ def _ring_morphism_with_engine(domain, codomain, function, engine_morphism):
     return domain.Mor(codomain, category=OwnedRings())._elementwise_with_engine(function, engine_morphism)
 
 
+def _is_number_field(ring) -> bool:
+    r"""Whether ``ring`` is a number field, a finite extension of ``QQ``."""
+    from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
+
+    return ring in OwnedNumberFields()
+
+
+def _is_finite_or_number_field(field) -> bool:
+    r"""Whether ``field`` is a finite field or a number field.
+
+    These fields are finitely generated over their prime field by generators
+    the session lists (:meth:`field_generators`), so a map out of one is
+    determined by finitely many values.
+    """
+    return field in OwnedFields() and (
+        field in owned_sets.FiniteSets() or _is_number_field(field)
+    )
+
+
+def _native_field_generators(engine):
+    r"""Engine generators over the prime field, including each relative tower level."""
+    match engine:
+        case _ if engine is SageQQ:
+            return (engine.one(),)
+        case _ if engine in SageFiniteFields():
+            return tuple(engine.gens())
+        case _:
+            return tuple(engine.gens()) + tuple(
+                engine(generator)
+                for generator in _native_field_generators(engine.base_field())
+            )
+
+
+def _field_generators(field):
+    r"""A finite set of generators of a finite or number field over its prime field.
+
+    A map of fields fixes the prime field, so two maps out of the field agree
+    when they agree on these generators.
+    """
+    assert _is_finite_or_number_field(field), (
+        f"cannot list field generators of {field}: generators are computed only for finite fields "
+        f"and number fields, and {field} is neither"
+    )
+    return owned_sets.finite_ordered_set(tuple(
+        _owned_engine_element(field, generator)
+        for generator in _native_field_generators(_engine_ring(field))
+    ))
+
+
 def _ring_morphisms_equal(left, right):
-    r"""Return ``True``, ``False`` or ``Unknown`` from represented determining data."""
-    from sage.misc.unknown import Unknown
+    r"""Return ``True``, ``False`` or ``Unknown`` from represented determining data.
+
+    Each case names, for the domain's category, the epimorphism or the finite
+    generating family on which two maps out of it are compared (``DEV-52``).
+    """
     if left is right:
         return True
     if left.domain() is not right.domain() or left.codomain() is not right.codomain():
         return False
 
-    domain = left.domain()
-    if domain in LocalizationRings():
-        source_map = domain.localization_map()
-        return _ring_morphisms_equal(left * source_map, right * source_map)
-
     from dzack_research.preamble.categories.rings.commutative_algebra import (
         QuotientRings,
     )
 
-    if domain in QuotientRings():
-        quotient_map = domain.quotient_map()
-        return _ring_morphisms_equal(left * quotient_map, right * quotient_map)
+    domain = left.domain()
+    match domain:
+        case _ if domain in LocalizationRings():
+            source_map = domain.localization_map()
+            return _ring_morphisms_equal(left * source_map, right * source_map)
+        case _ if domain in QuotientRings():
+            quotient_map = domain.quotient_map()
+            return _ring_morphisms_equal(left * quotient_map, right * quotient_map)
+        case _ if _engine_ring(domain) is SageZZ or domain in PrimeFields():
+            # A unital map out of Z, or out of a prime field when it exists, is
+            # unique.  This includes Q and F_p; proper finite-field extensions
+            # are excluded because they can have distinct embeddings.
+            return True
+        case _ if _is_finite_or_number_field(domain):
+            # A map of fields fixes the prime field, so it is determined by its
+            # values on the field generators over the prime field, finitely
+            # many for a finite or a number field.
+            return all(
+                left(generator) == right(generator)
+                for generator in domain.field_generators()
+            )
+        case _ if domain.is_framed_algebra():
+            labels = domain.algebra_generating_set()
+            if not labels.cardinality().is_finite():
+                return Unknown
+            if any(
+                left(domain.algebra_generator(label)) != right(domain.algebra_generator(label))
+                for label in labels
+            ):
+                return False
+            structure_map = domain.algebra_structure_morphism()
+            if structure_map.domain() is domain:
+                return Unknown
+            return _ring_morphisms_equal(
+                left * structure_map,
+                right * structure_map,
+            )
+        case _:
+            return _engine_ring_morphisms_equal(left, right)
 
-    engine = _engine_ring(domain)
-    if engine is SageZZ or domain in PrimeFields():
-        # A unital map out of Z, or out of a prime field when it exists, is
-        # unique.  This includes Q and F_p; proper finite-field extensions are
-        # deliberately excluded because they can have distinct embeddings.
-        return True
 
-    if domain.is_framed_algebra():
-        labels = domain.algebra_generating_set()
-        if not labels.cardinality().is_finite():
+def _engine_ring_morphisms_equal(left, right):
+    r"""Compare two maps through their retained exact engine maps, or return ``Unknown``.
+
+    The identity retains no engine map; it equals an engine-backed map
+    exactly when that engine map is the identity.
+    """
+    left_engine = left._engine_morphism
+    right_engine = right._engine_morphism
+    match (left_engine, right_engine):
+        case (None, None) if left._preamble_is_identity and right._preamble_is_identity:
+            return True
+        case (None, None):
             return Unknown
-        if any(
-            left(domain.algebra_generator(label)) != right(domain.algebra_generator(label))
-            for label in labels
-        ):
-            return False
-        structure_map = domain.algebra_structure_morphism()
-        if structure_map.domain() is domain:
+        case (None, _) if left._preamble_is_identity:
+            return right._engine_is_identity()
+        case (_, None) if right._preamble_is_identity:
+            return left._engine_is_identity()
+        case (None, _) | (_, None):
             return Unknown
-        return _ring_morphisms_equal(
-            left * structure_map,
-            right * structure_map,
-        )
-
-    if left._engine_morphism is not None and right._engine_morphism is not None:
-        return bool(left._engine_morphism == right._engine_morphism)
-    return Unknown
+        case _:
+            return bool(left_engine == right_engine)
 
 
 
@@ -554,6 +727,23 @@ class RingMor(CategoricalMor):
         identity = self.elementwise(lambda element: element)
         identity._preamble_is_identity = True
         return identity
+
+    def embeddings(self):
+        r"""The elements of ``Mor(K, L)`` for fields ``K`` and ``L``, in the engine's deterministic order.
+
+        Every ring map between fields is injective, so these are the
+        embeddings of ``K`` into ``L``.
+        """
+        domain = self.domain()
+        codomain = self.codomain()
+        assert domain in OwnedFields() and codomain in OwnedFields(), (
+            f"cannot enumerate the embeddings in {self}: embeddings are enumerated between fields, "
+            f"but {domain} -> {codomain} is not a pair of fields"
+        )
+        return owned_sets.finite_ordered_set(tuple(
+            self(engine_embedding)
+            for engine_embedding in _engine_ring(domain).embeddings(_engine_ring(codomain))
+        ))
 
     def _repr_(self):
         return f"Mor_Ring({self.domain()}, {self.codomain()})"
@@ -1703,15 +1893,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return [OwnedRings().NoZeroDivisors()]
 
         class Commutative(CategoryWithAxiom):
-            r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``."""
+            r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``.
 
-            class _MorCategory(MorCategoryConstruction):
-                def fixed_category_class(self):
-                    from dzack_research.preamble.categories.rings.field_morphisms import (
-                        _ExactFieldMor,
-                    )
-
-                    return _ExactFieldMor
+            Fields are a full subcategory of rings, so a map of fields is a
+            ring map and this category inherits the ring ``Mor``.
+            """
 
             @classmethod
             def _repr_object_names(cls):
@@ -1752,23 +1938,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def field_generators(self):
                     r"""Return exact elements which determine a unital map out of this field."""
-                    from dzack_research.preamble.categories.rings.field_morphisms import (
-                        _field_generators,
-                    )
-
                     return _field_generators(self)
 
-                def exact_morphisms_to(self, codomain):
-                    r"""Return the exact-field morphism object from this field to ``codomain``."""
-                    return OwnedFields().MorCategory().Of(self, codomain)
-
                 def exact_embeddings(self, codomain):
-                    r"""Return the exact embeddings of this field into ``codomain``."""
-                    from dzack_research.preamble.categories.rings.field_morphisms import (
-                        _exact_embeddings,
-                    )
-
-                    return _exact_embeddings(self, codomain)
+                    r"""Return the embeddings of this field into ``codomain``, the elements of ``Mor(self, codomain)``."""
+                    return self.Mor(codomain).embeddings()
 
                 def first_exact_embedding(self, codomain):
                     r"""Choose the first exact embedding into ``codomain`` in deterministic order."""

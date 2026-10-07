@@ -4,6 +4,7 @@ from sage.categories.finite_fields import FiniteFields as SageFiniteFields
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -12,11 +13,9 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _fix_selected_group_resolution_data,
 )
-from dzack_research.preamble.categories.rings.field_morphisms import (
-    ExactFieldMorphism,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
+    RingMorphism,
     _engine_ring,
     _own_ring,
     _owned_engine_element,
@@ -66,10 +65,10 @@ class _FiniteGaloisExtensionEngine:
     def algebraic_closure(self):
         return self.target_object().target_object()
 
-    def base_embedding(self) -> ExactFieldMorphism:
+    def base_embedding(self) -> RingMorphism:
         return self.source_object().arrow()
 
-    def embedding(self) -> ExactFieldMorphism:
+    def embedding(self) -> RingMorphism:
         return self.arrow().right()
 
     def degree(self):
@@ -138,9 +137,9 @@ class _FiniteGaloisExtensionEngine:
 def FiniteGaloisExtension(
     base_field,
     field,
-    base_embedding: ExactFieldMorphism,
+    base_embedding: RingMorphism,
     closure,
-    closure_embedding: ExactFieldMorphism,
+    closure_embedding: RingMorphism,
     *,
     extension_object=None,
 ):
@@ -156,11 +155,11 @@ def FiniteGaloisExtension(
     base_field = _own_ring(base_field)
     field = _own_ring(field)
     closure = _own_ring(closure)
-    assert base_embedding.parent() is base_field.exact_morphisms_to(field), (
+    assert base_embedding.parent() is base_field.Mor(field), (
         f"the base inclusion K -> L must be a field morphism {base_field} -> {field}, "
         f"but {base_embedding} lies in {base_embedding.parent()}"
     )
-    assert closure_embedding.parent() is field.exact_morphisms_to(closure), (
+    assert closure_embedding.parent() is field.Mor(closure), (
         f"the embedding L -> Kbar must be a field morphism {field} -> {closure}, "
         f"but {closure_embedding} lies in {closure_embedding.parent()}"
     )
@@ -209,7 +208,7 @@ def FiniteGaloisExtension(
     return stage
 
 
-def _morphism_signature(morphism: ExactFieldMorphism) -> tuple:
+def _morphism_signature(morphism: RingMorphism) -> tuple:
     return tuple(
         morphism(generator) for generator in morphism.domain().field_generators()
     )
@@ -227,7 +226,7 @@ class FiniteGaloisAutomorphism(Element):
         Element.__init__(self, parent)
         self._index = int(index)
 
-    def action(self) -> ExactFieldMorphism:
+    def action(self) -> RingMorphism:
         return self.parent().automorphisms()[self._index]
 
     as_morphism = action
@@ -318,12 +317,7 @@ class _FiniteFieldAutomorphismEngine:
             if datum.parent() is self:
                 return datum
             datum = datum.action()
-        if isinstance(datum, ExactFieldMorphism):
-            if datum.domain() is not self.top_field() or datum.codomain() is not self.top_field():
-                raise ValueError(
-                    f"{datum} is not an automorphism of {self.top_field()}: it is a map "
-                    f"{datum.domain()} -> {datum.codomain()}"
-                )
+        if element_parent(datum) is self.top_field().Mor(self.top_field()):
             position = self._signature_positions().get(_morphism_signature(datum))
             if position is None:
                 raise ValueError(

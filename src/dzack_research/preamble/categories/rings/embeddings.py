@@ -1,150 +1,24 @@
-r"""Exact embeddings of number fields and number-field orders."""
+r"""Embeddings of number-field orders.
 
-from sage.categories.map import Map
-from sage.misc.cachefunc import cached_function
-from sage.rings.rational_field import QQ as SageQQ
-from sage.structure.richcmp import op_EQ, op_NE
+A map of number fields is a ring map, an element of the ring ``Mor`` between
+the fields.  An order embedding is represented by the ring map of fraction
+fields that it extends to.
+"""
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
-from dzack_research.preamble.categories.rings.field_morphisms import ExactFieldMorphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
-    _engine_element,
+    RingMorphism,
     _engine_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-
-class NumberFieldEmbedding:
-    r"""An exact field embedding between owned number fields."""
-
-    def __init__(self, parent, engine_morphism) -> None:
-        domain = parent.domain()
-        codomain = parent.codomain()
-        if not isinstance(engine_morphism, Map):
-            raise TypeError(
-                f"cannot form the embedding {domain} -> {codomain} from {engine_morphism!r}: "
-                f"an embedding of number fields must be a ring morphism, but this is a {type(engine_morphism).__name__}"
-            )
-        if _engine_ring(engine_morphism.domain()) is not _engine_ring(domain):
-            raise ValueError(
-                f"cannot form an embedding {domain} -> {codomain} from {engine_morphism}: "
-                f"its domain is {engine_morphism.domain()}, not {domain}"
-            )
-        if _engine_ring(engine_morphism.codomain()) is not _engine_ring(codomain):
-            raise ValueError(
-                f"cannot form an embedding {domain} -> {codomain} from {engine_morphism}: "
-                f"its codomain is {engine_morphism.codomain()}, not {codomain}"
-            )
-        super().__init__(parent, engine_morphism)
-
-    def _primitive_image_key(self):
-        engine_domain = _engine_ring(self.domain())
-        if engine_domain is SageQQ:
-            return ()
-        return self._engine_morphism(engine_domain.gen())
-
-    def _richcmp_(self, other, op):
-        if op not in (op_EQ, op_NE):
-            return NotImplemented
-        equal = (
-            isinstance(other, NumberFieldEmbedding)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and other._primitive_image_key() == self._primitive_image_key()
-        )
-        return equal if op == op_EQ else not equal
-
-    def __hash__(self):
-        return hash(
-            (
-                id(self.domain()),
-                id(self.codomain()),
-                self._primitive_image_key(),
-            )
-        )
-
-    def __mul__(self, other):
-        from dzack_research.preamble.categories.rings.ring_foundation import (
-            _is_ring_map_into,
-            _ring_composite,
-        )
-
-        if not _is_ring_map_into(other, self.domain()):
-            return NotImplemented
-        if not isinstance(other, NumberFieldEmbedding):
-            return _ring_composite(self, other)
-        target = self.codomain()
-        source = other.domain()
-        if _engine_ring(source) is SageQQ:
-            return source.Mor(target)(
-                _engine_ring(source).hom(_engine_ring(target))
-            )
-        primitive = source.primitive_element()
-        return source.Mor(target)(self(other(primitive)))
-
-
-class NumberFieldMor(CategoricalMor):
-    ElementMethods = NumberFieldEmbedding
-
-    def __init__(self, mor_family, domain, codomain) -> None:
-        CategoricalMor.__init__(self, mor_family, domain, codomain)
-
-    def _element_constructor_(self, datum):
-        if isinstance(datum, NumberFieldEmbedding):
-            if datum.parent() is self:
-                return datum
-            source = self.domain()
-            datum = lambda element, embedding=datum: self.codomain()(
-                embedding(embedding.domain()(source(element)))
-            )
-        if isinstance(datum, Map):
-            return self.element_class(self, datum)
-
-        engine_domain = _engine_ring(self.domain())
-        engine_codomain = _engine_ring(self.codomain())
-        if engine_domain is SageQQ:
-            return self.element_class(self, engine_domain.hom(engine_codomain))
-        image = datum(self.domain().primitive_element()) if callable(datum) else datum
-        owned_image = self.codomain()(image)
-        backend_image = _engine_element(self.codomain(), owned_image)
-        return self.element_class(
-            self,
-            engine_domain.hom([backend_image], engine_codomain),
-        )
-
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-        engine = _engine_ring(self.domain())
-        if engine is SageQQ:
-            return self(engine.hom(engine))
-        return self(self.domain().primitive_element())
-
-    def embeddings(self):
-        # The engine hands back its own ordered listing.  That is syntactic
-        # ingress, parsed once into the owned finite ordered set of arrows.
-        return finite_ordered_set(
-            tuple(
-                self(engine_embedding)
-                for engine_embedding in _engine_ring(self.domain()).embeddings(
-                    _engine_ring(self.codomain())
-                )
-            )
-        )
-
-    def _repr_(self):
-        return f"Emb({self.domain()}, {self.codomain()})"
 
 
 class OrderEmbedding:
     r"""A unital embedding of orders, represented by its fraction-field extension."""
 
-    def __init__(self, parent, field_embedding: NumberFieldEmbedding) -> None:
+    def __init__(self, parent, field_embedding: RingMorphism) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
         source_field = domain.fraction_field()
@@ -170,7 +44,7 @@ class OrderEmbedding:
         self._field_embedding = field_embedding
         super().__init__(parent, self._evaluate_field_embedding)
 
-    def field_embedding(self) -> NumberFieldEmbedding:
+    def field_embedding(self) -> RingMorphism:
         return self._field_embedding
 
     def _evaluate_field_embedding(self, element):
@@ -196,20 +70,10 @@ class OrderMor(CategoricalMor):
         )
 
     def _element_constructor_(self, field_embedding):
+        r"""Admit the ring map of fraction fields, or any datum that ring ``Mor`` admits."""
         source_field = self.domain().fraction_field()
         target_field = self.codomain().fraction_field()
-        if not isinstance(field_embedding, NumberFieldEmbedding):
-            field_embedding = source_field.Mor(target_field)(field_embedding)
-        elif (
-            field_embedding.domain() is not source_field
-            or field_embedding.codomain() is not target_field
-        ):
-            field_embedding = source_field.Mor(target_field)(
-                lambda element, embedding=field_embedding: target_field(
-                    embedding(embedding.domain()(element))
-                )
-            )
-        return self.element_class(self, field_embedding)
+        return self.element_class(self, source_field.Mor(target_field)(field_embedding))
 
     def identity(self):
         if self.domain() is not self.codomain():
@@ -224,8 +88,6 @@ class OrderMor(CategoricalMor):
 
 
 __all__ = [
-    "NumberFieldEmbedding",
-    "NumberFieldMor",
     "OrderEmbedding",
     "OrderMor",
 ]

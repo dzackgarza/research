@@ -10,16 +10,13 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     OpenAbsoluteGaloisSubgroups,
     _absolute_galois_group_category,
-)
-from dzack_research.preamble.categories.rings.field_morphisms import (
-    ExactFieldMorphism,
-    _exact_field_morphism_from_engine,
 )
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
@@ -43,6 +40,7 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
+    RingMorphism,
     _engine_ring,
     _own_ring,
     _owned_engine_element,
@@ -64,7 +62,7 @@ class AbsoluteGaloisGroupElement(Element):
         self,
         parent,
         *,
-        exact_action: ExactFieldMorphism | None = None,
+        exact_action: RingMorphism | None = None,
         coordinates=(),
         frobenius_exponent=None,
     ) -> None:
@@ -285,14 +283,14 @@ def ElementConjugacyClass(supergroup, representative):
     )
 
 
-def _as_exact_embedding(domain, codomain, embedding) -> ExactFieldMorphism:
-    r"""Read ``embedding`` as an element of the exact field Mor from ``domain`` to ``codomain``.
+def _as_exact_embedding(domain, codomain, embedding) -> RingMorphism:
+    r"""Read ``embedding`` as an element of the ring ``Mor`` from ``domain`` to ``codomain``.
 
     That Mor's element constructor admits its own elements and exact Sage
-    field maps between the corresponding engine fields, and refuses anything
-    else, including a map with other endpoints.
+    ring maps between the corresponding engine fields, and refuses a map with
+    other endpoints.
     """
-    return _own_ring(domain).exact_morphisms_to(_own_ring(codomain))(embedding)
+    return _own_ring(domain).Mor(_own_ring(codomain))(embedding)
 
 
 class _AbsoluteGaloisGroupEngine:
@@ -325,13 +323,13 @@ class _AbsoluteGaloisGroupEngine:
     def algebraic_closure(self):
         return self._closure
 
-    def base_embedding(self) -> ExactFieldMorphism:
+    def base_embedding(self) -> RingMorphism:
         return self._embedding
 
     @cached_method
     def field_automorphism_mor(self):
-        r"""The owned field ``Mor(\bar K,\bar K)`` containing the exact actions of elements of ``G_K``."""
-        return self.algebraic_closure().exact_morphisms_to(self.algebraic_closure())
+        r"""The ring ``Mor(\bar K,\bar K)`` containing the exact actions of elements of ``G_K``."""
+        return self.algebraic_closure().Mor(self.algebraic_closure())
 
     def arrow_set(self):
         r"""Return the underlying field Mor carrying these automorphisms."""
@@ -429,21 +427,12 @@ class _AbsoluteGaloisGroupEngine:
             raise ValueError(
                 f"{datum} is an element of {datum.parent()}, not of {self}"
             )
-        if isinstance(datum, ExactFieldMorphism):
-            if (
-                datum.domain() is not self._closure
-                or datum.codomain() is not self._closure
-            ):
-                raise ValueError(
-                    f"an element of {self} is an automorphism of the algebraic closure "
-                    f"{self._closure}, but {datum} is a map {datum.domain()} -> {datum.codomain()}"
-                )
-            element = AbsoluteGaloisGroupElement(self, exact_action=datum)
-        else:
+        if element_parent(datum) is not self.field_automorphism_mor():
             raise TypeError(
                 f"an element of {self} is an automorphism of the algebraic closure "
-                f"{self._closure}, but {datum} is not a field morphism"
+                f"{self._closure}, an element of {self.field_automorphism_mor()}, but {datum} is not"
             )
+        element = AbsoluteGaloisGroupElement(self, exact_action=datum)
         if not element.fixes_base_field():
             raise ValueError(
                 f"{datum} is not an element of {self}: it does not fix the base field "
@@ -468,7 +457,7 @@ class _AbsoluteGaloisGroupEngine:
         r"""The identity: the zeroth Frobenius power over a finite field, else the identity of the closure."""
         if self._is_finite_field():
             return FrobeniusElement(self, ZZ.zero())
-        identity = self._closure.exact_morphisms_to(self._closure).identity()
+        identity = self._closure.Mor(self._closure).identity()
         return AbsoluteGaloisGroupElement(self, exact_action=identity)
 
     def an_element(self):
@@ -556,7 +545,7 @@ class _AbsoluteGaloisGroupEngine:
             and base_embedding is None
         ):
             closure_candidates = (self._embedding,)
-            base_candidates = (self._field.exact_morphisms_to(self._field).identity(),)
+            base_candidates = (self._field.Mor(self._field).identity(),)
         else:
             closure_candidates = (
                 extension_field.exact_embeddings(self._closure)
@@ -615,9 +604,7 @@ class _AbsoluteGaloisGroupEngine:
             total_degree
         )
         extension_field = _own_ring(field_engine)
-        closure_embedding = _exact_field_morphism_from_engine(
-            extension_field, self._closure, embedding_engine
-        )
+        closure_embedding = extension_field.Mor(self._closure)(embedding_engine)
         return self.extension_data(extension_field, embedding=closure_embedding)
 
     def finite_quotient(self, extension):
@@ -856,9 +843,7 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
             "normal_closure", map=True
         )
         normal_field = _own_ring(normal_field)
-        base_embedding = _exact_field_morphism_from_engine(
-            self.supergroup().base_field(), normal_field, base_backend
-        )
+        base_embedding = self.supergroup().base_field().Mor(normal_field)(base_backend)
         # The embeddings N -> Kbar of the normal closure extending the chosen
         # E -> Kbar through some K-embedding E -> N.
         compatible_closure_embeddings = tuple(

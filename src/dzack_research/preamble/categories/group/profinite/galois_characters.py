@@ -11,9 +11,6 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.group.groups import _own_group
-from dzack_research.preamble.categories.rings.field_morphisms import (
-    _exact_field_morphism_from_engine,
-)
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
 )
@@ -132,11 +129,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 field = base.extension(polynomial, f"zeta_{n}")
                 owned_field = _own_ring(field)
                 backend = field.hom([root], closure)
-                embedding = _exact_field_morphism_from_engine(
-                    owned_field,
-                    domain.algebraic_closure(),
-                    backend,
-                )
+                embedding = owned_field.Mor(domain.algebraic_closure())(backend)
                 stage = domain.extension_data(owned_field, embedding=embedding)
                 self._root_at_stage = _owned_engine_element(owned_field, field.gen())
         else:
@@ -225,11 +218,7 @@ class QuadraticCharacter(ProfiniteCharacter):
             field = base.extension(t**2 - backend_a, "sqrt_a")
             owned_field = _own_ring(field)
             backend = field.hom([root], closure)
-            embedding = _exact_field_morphism_from_engine(
-                owned_field,
-                domain.algebraic_closure(),
-                backend,
-            )
+            embedding = owned_field.Mor(domain.algebraic_closure())(backend)
             stage = domain.extension_data(owned_field, embedding=embedding)
             self._root_at_stage = _owned_engine_element(owned_field, field.gen())
 

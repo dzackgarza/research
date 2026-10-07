@@ -734,6 +734,7 @@ class SliceCategory(_SubcategoryOfArrows):
             self,
             _engine=None if _engine is None else (self, _engine, None),
             functor=functor,
+            fixed_mor_category=self,
             **dict(construction_data or {}),
         )
 
