@@ -216,23 +216,6 @@ class RingMorphism:
             case _:
                 return super().inverse()
 
-    def agrees_on_field(self, other) -> bool:
-        r"""Whether ``other`` is this map of fields.
-
-        Two maps out of a finite or number field are equal exactly when they
-        agree on its field generators; out of another field the retained
-        exact engine maps are compared.
-        """
-        assert self.domain() in OwnedFields(), (
-            f"agreement on a field is asked of maps out of a field, but {self} starts at {self.domain()}"
-        )
-        equal = _ring_morphisms_equal(self, other)
-        assert equal is not Unknown, (
-            f"cannot decide whether {self} and {other} agree: {self.domain()} is neither a finite nor a "
-            "number field, and the two maps do not both retain an exact engine map"
-        )
-        return equal
-
     def restrict_along(self, embedding):
         r"""Return the automorphism ``tau`` of ``K`` with ``j tau = self j``, for ``j: K -> L``.
 
