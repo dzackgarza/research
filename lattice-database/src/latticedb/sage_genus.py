@@ -14,6 +14,7 @@ from typing import TypedDict
 from cysignals.alarm import alarm, cancel_alarm
 from cysignals.signals import AlarmInterrupt
 
+from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.rings import session_ring_objects
 
@@ -70,6 +71,19 @@ def _orthogonal_group_data(lattice) -> tuple[int, list[list[list[int]]]]:
     return int(group.cardinality()), generators
 
 
+def _reflective(lattice) -> bool | None:
+    """Serialize the preamble's answer to whether ``W(L)`` has finite index in ``O(L)``.
+
+    ``is_reflective`` answers ``True`` when Vinberg's algorithm completes and
+    otherwise returns the undecided proposition, which certifies nothing.
+    """
+    match HyperbolicLattices(OWNED_ZZ)(lattice).is_reflective():
+        case True:
+            return True
+        case _:
+            return None
+
+
 def main() -> None:
     task = json.load(sys.stdin)
     seconds: int = task["seconds"]
@@ -112,6 +126,7 @@ def main() -> None:
             "discriminant_sequence": lambda: lattice.discriminant_sequence_data(),
             "primitive_orbits": lambda: lattice.primitive_orbit_series(),
             "discriminant_orbits": lambda: lattice.discriminant_orbit_series(),
+            "reflective": lambda: _reflective(lattice),
         }
         for field in request["fields"]:
             if field in {

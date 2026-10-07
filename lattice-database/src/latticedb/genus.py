@@ -21,7 +21,7 @@ from pydantic import BaseModel
 
 from latticedb import certificates, corpus, records
 from latticedb.certificates import Certificate, Certificates
-from latticedb.model import DefiniteData, IntegralData, Lattice, Yaml
+from latticedb.model import DefiniteData, HyperbolicData, IntegralData, Lattice, Yaml
 from latticedb.relations import hyperbolic_index_bounds
 
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
@@ -36,6 +36,7 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "discriminant_sequence": ("integral", IntegralData),
     "primitive_orbits": ("integral", IntegralData),
     "discriminant_orbits": ("integral", IntegralData),
+    "reflective": ("hyperbolic", HyperbolicData),
 }
 """Each preamble-computed field, with the card block that stores it."""
 
@@ -89,6 +90,9 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.definite is not None
         case _ if lattice.integral is None:
             return False
+        case "reflective":
+            # Signature (1, 1) has a half-line as its domain, where no polyhedron criterion applies.
+            return lattice.rank >= 3 and 1 in (lattice.signature or ())
         case "discriminant_sequence":
             return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":
@@ -256,7 +260,8 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
         if field == "automorphism_group_generator_morphisms":
             assert isinstance(value, list)
             value, morphisms = _generator_morphisms(path.stem, morphisms, value)
-        match metadata.get(block_name):
+        # The hyperbolic block holds only computed fields, so the first computed value creates it.
+        match metadata.setdefault(block_name, {}):
             case dict() as block:
                 if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
                     present = block.get(field)
