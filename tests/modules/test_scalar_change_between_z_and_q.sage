@@ -61,6 +61,6 @@ def test_the_counit_of_extension_and_restriction_on_q2_lands_in_q2() -> None:
 
 def test_restriction_to_the_integers_has_a_right_adjoint() -> None:
     r"""$\operatorname{Res}_\iota \dashv \operatorname{Hom}_{\mathbb Z}(\mathbb Q, -)$, whose left adjoint restricts."""
-    adjunction = Modules(ZZ).restriction_coextension_adjunction(inclusion())
+    adjunction = Modules(QQ).restriction_coextension_adjunction(inclusion())
 
     assert adjunction.left_adjoint()(QQ ^ 2).base_ring() is ZZ

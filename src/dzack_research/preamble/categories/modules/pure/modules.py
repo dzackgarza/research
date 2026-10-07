@@ -2581,8 +2581,8 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
             return self.codomain()
 
         def scalar_multiple(self, scalar, morphism):
-            r"""Use the Mor representation's pointwise scalar action without rebuilding the generic module action."""
-            return self._owned_scalar_multiple(scalar, morphism)
+            r"""The pointwise action ``(r f)(m) = r f(m)`` of the Mor representation, not the generic module action."""
+            return self._module_scalar_multiple(scalar, morphism)
 
         def as_morphism(self, element):
             return self(element)
@@ -3608,6 +3608,14 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def is_zero(self) -> bool:
             r"""Return whether the unchanged underlying additive group is zero."""
             return self.module_over_extension().is_zero()
+
+        def _finiteness_decision(self):
+            r"""``Res_f(M)`` is the set of ``M``, so it is finite exactly when ``M`` is."""
+            return self.module_over_extension().is_finite()
+
+        def _cardinality_decision(self):
+            r"""``|Res_f(M)| = |M|``: restriction of scalars keeps the underlying set."""
+            return self.module_over_extension().cardinality()
 
         def _underlying_additive_element(self, element):
             element = self(element)
