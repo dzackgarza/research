@@ -1,12 +1,13 @@
 """The record commands serialize preamble-owned values and certificate metadata."""
 
 import shutil
+from fractions import Fraction
 from pathlib import Path
 
 import frontmatter
 import yaml
 
-from latticedb import certificates, checks, corpus, records
+from latticedb import certificates, checks, corpus, records, site
 from latticedb.cli import app
 from latticedb.model import Lattice, Yaml
 
@@ -32,7 +33,7 @@ def declared(name: str, gram_tensor: list[list[int | str]]) -> dict[str, Yaml]:
     }
 
 
-def test_derive_serializes_preamble_owned_fields_without_synthesizing_root_data() -> None:
+def test_derive_serializes_preamble_owned_root_and_theta_data() -> None:
     e8_source = frontmatter.load(str(REPOSITORY / "lattices" / "0094.md")).metadata
     record = records.derive(declared("E8", e8_source["gram_tensor"]))
     lattice = Lattice.model_validate(record)
@@ -44,10 +45,10 @@ def test_derive_serializes_preamble_owned_fields_without_synthesizing_root_data(
     assert lattice.definite is not None
     assert lattice.definite.minimum is not None
     assert lattice.definite.kissing_number is not None
-    assert lattice.definite.theta_series is None
-    assert lattice.definite.root_system is None
-    assert lattice.definite.roots is None
-    assert lattice.root_sublattice is None
+    assert lattice.definite.theta_series is not None
+    assert lattice.definite.root_system == ("E8",)
+    assert lattice.definite.roots is not None
+    assert lattice.root_sublattice is not None
 
 
 def test_derive_leaves_exact_overlattice_count_to_enrichment() -> None:
@@ -77,22 +78,26 @@ def test_derive_serializes_preamble_reduction_fields_when_available() -> None:
     assert site.zeta_tex(lattice, cone=True) == "\\frac{\\zeta^\\Sigma(s - 1)\\, L^\\Sigma(s - 1, \\chi_{-3})}{L^\\Sigma(s, \\chi_{-3})}"
 
 
-def test_derive_does_not_compute_definite_invariants_for_a_rational_valued_form_without_a_preamble_case() -> None:
+def test_derive_computes_rational_definite_invariants_through_the_integral_reflection_model() -> None:
     record = records.derive(declared("A2 dual", [["2/3", "1/3"], ["1/3", "2/3"]]))
     lattice = Lattice.model_validate(record)
     assert lattice.integral is None
     assert lattice.definite is not None
-    assert (lattice.definite.minimum, lattice.definite.kissing_number, lattice.definite.theta_series) == (None, None, None)
-    assert lattice.definite.roots is None
+    assert lattice.definite.minimum == Fraction(2, 3)
+    assert lattice.definite.kissing_number == 6
+    assert lattice.definite.theta_series is None
+    assert lattice.definite.roots is not None
 
 
-def test_derive_serializes_indefinite_data_without_synthesizing_root_data() -> None:
+def test_derive_serializes_indefinite_root_data_through_the_preamble() -> None:
     record = records.derive(declared("Indefinite binary", [[2, 1], [1, -2]]))
     lattice = Lattice.model_validate(record)
     assert lattice.definite is None
     assert lattice.indefinite is not None
-    assert lattice.root_span is None
-    assert lattice.root_sublattice is None
+    assert lattice.root_span is not None
+    assert lattice.root_sublattice is not None
+    assert lattice.root_sublattice.invariant_factors == (1, 1)
+    assert lattice.root_sublattice.norms == (Fraction(-2), Fraction(2))
 
 
 def test_derive_leaves_root_data_absent_for_an_indefinite_lattice_without_authored_root_data() -> None:
@@ -142,7 +147,7 @@ def test_new_writes_a_sparse_record_and_enrich_fills_derived_fields(tmp_path: Pa
     assert lattice.definite is not None
     assert lattice.definite.minimum is not None
     assert lattice.definite.kissing_number is not None
-    assert lattice.definite.root_system is None
+    assert lattice.definite.root_system == ("A2",)
 
 
 def test_verify_reports_a_family_that_families_yaml_does_not_list(tmp_path: Path) -> None:
@@ -221,3 +226,46 @@ def test_derive_computes_the_dual_gram_tensor() -> None:
     record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
     assert record.get("dual_gram_tensor") is not None
     Lattice.model_validate(record)
+
+
+def test_admission_recomputes_authored_reduction_invariants_through_the_preamble() -> None:
+    record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
+    integral = dict(record["integral"])
+    integral["level"] = 17
+    integral["bad_reduction_primes"] = [17]
+    integral["quadratic_character"] = 17
+    lattice = Lattice.model_validate(record | {"integral": integral})
+    problems = records.local_admission_problems(lattice)
+    assert any("integral.level" in problem for problem in problems)
+    assert any("integral.bad_reduction_primes" in problem for problem in problems)
+    assert any("integral.quadratic_character" in problem for problem in problems)
+
+
+def test_admission_recomputes_authored_perfectness_through_the_preamble() -> None:
+    record = records.derive(declared("A2", [[2, -1], [-1, 2]]))
+    definite = dict(record["definite"])
+    definite["minimal_vectors"] = [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+        [1, 1],
+        [-1, -1],
+    ]
+    definite["perfect"] = False
+    lattice = Lattice.model_validate(record | {"definite": definite})
+    assert any(
+        "definite.perfect" in problem
+        for problem in records.local_admission_problems(lattice)
+    )
+
+
+def test_admission_detects_a_definite_duplicate_in_another_basis() -> None:
+    first_source = declared("A2 first basis", [[2, -1], [-1, 2]])
+    first_source["tag"] = "0001"
+    second_source = declared("A2 second basis", [[2, 1], [1, 2]])
+    second_source["tag"] = "0002"
+    first = Lattice.model_validate(records.derive(first_source))
+    second = Lattice.model_validate(records.derive(second_source))
+    problems = records.relational_admission_problems(second, {"0001": first})
+    assert any("isometric to 0001" in problem for problem in problems)

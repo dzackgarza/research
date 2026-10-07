@@ -202,7 +202,7 @@ LATTICEDB = f"latticedb {version('latticedb')}"
 
 @app.command
 def verify(root: Root = Path()) -> None:
-    """Report schema/reference/certificate-coherence errors without changing cards."""
+    """Report stored-card inconsistencies without changing cards; mathematics is delegated to the preamble."""
     try:
         count, problems = checks.run(root)
     except corpus.CorpusInvalid as invalid:

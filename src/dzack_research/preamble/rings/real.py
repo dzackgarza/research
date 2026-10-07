@@ -547,7 +547,7 @@ class ExactRealField(UniqueRepresentation, Field):
         regular_algebra = Algebras(self).Associative().Unital().Commutative()
         Field.__init__(
             self,
-            base=self,
+            self,
             category=Cat().meet(
                 (
                     OwnedFields(),

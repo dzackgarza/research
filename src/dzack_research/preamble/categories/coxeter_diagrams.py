@@ -523,8 +523,8 @@ class CoxeterDiagrams(OwnedCategory):
             has only the bond labels, so its infinite bond is necessarily the
             parallel boundary value ``-1``.
             """
-            from sage.all import AA as SageAA
             from sage.all import cos, pi
+            from sage.rings.qqbar import AA as SageAA
 
             real_algebraics = _own_ring(SageAA)
             rooted_gram = self.root_gram_tensor() if self.is_rooted() else None
@@ -929,7 +929,13 @@ class CoxeterDiagrams(OwnedCategory):
             return self.roots()[position]
 
         def scaled_cartan_type(self):
-            r"""Recognize a connected elliptic crystallographic rooted diagram as ``(type, scale)``."""
+            r"""Recognize a connected elliptic crystallographic rooted diagram as ``(type, scale)``.
+
+            ``scale`` is the positive rational number for which the shortest
+            root has square ``-2*scale``. Integral root lattices therefore
+            return an integral scale, while an integral lattice can also
+            realize a crystallographic root system at half-integral scale.
+            """
             if not self.is_rooted() or self.cardinality() == 0:
                 return None
             if not self.is_connected() or not self.is_elliptic():
@@ -941,12 +947,12 @@ class CoxeterDiagrams(OwnedCategory):
             rank = int(self.cardinality())
             squares = tuple(-SageZZ(gram[index, index]) for index in range(rank))
             shortest = min(squares)
-            if shortest <= 0 or shortest % 2:
+            if shortest <= 0:
                 raise ValueError(
                     f"cannot recognize a scaled Cartan type of {self}: the shortest root must "
-                    f"have square -2k for a positive integer k, but the squares are {squares}"
+                    f"have negative square, but the oriented root squares are {squares}"
                 )
-            scale = SageZZ(shortest // 2)
+            engine_scale = QQ(shortest) / 2
             coxeter_type = self.coxeter_matrix().coxeter_type()
             if coxeter_type is self.coxeter_matrix():
                 raise ValueError(
@@ -954,13 +960,13 @@ class CoxeterDiagrams(OwnedCategory):
                     f"recognized as a finite Coxeter type"
                 )
             cartan = coxeter_type.cartan_type()
-            if str(cartan[0]) == "H":
+            if str(cartan.type()) == "H":
                 raise ValueError(
                     f"{self} has Coxeter type {cartan}, which is not crystallographic, so it has "
-                    f"no Cartan type and no integral root scale"
+                    f"no Cartan type and no crystallographic root scale"
                 )
-            if str(cartan[0]) == "B":
-                short_count = sum(square == 2 * scale for square in squares)
+            if str(cartan.type()) == "B":
+                short_count = sum(QQ(square) == 2 * engine_scale for square in squares)
                 if rank == 2:
                     cartan = CartanType(["C", 2])
                 elif short_count == 1:
@@ -972,7 +978,15 @@ class CoxeterDiagrams(OwnedCategory):
                         f"{self} has Coxeter type B/C of rank {rank}, but its root squares {squares} "
                         f"match neither B (one short root) nor C (one long root)"
                     )
-            reference = Lattices.root_lattice(str(cartan[0]), int(cartan[1])).twist(scale)
+            reference = Lattices.root_lattice(str(cartan.type()), int(cartan.rank()))
+            if engine_scale.denominator() == 1:
+                scale = reference.base_ring()(int(engine_scale))
+            else:
+                integer_ring = reference.base_ring()
+                fraction_map = integer_ring.fraction_field_map()
+                reference = reference.base_change(fraction_map)
+                scale = fraction_map(integer_ring(int(shortest))) / reference.base_ring()(2)
+            reference = reference.twist(scale)
             reference_diagram = CoxeterDiagrams().from_roots(tuple(reference.module_generators()))
             if not self.root_intersection_graph().is_isomorphic(
                 reference_diagram.root_intersection_graph(), edge_labels=True

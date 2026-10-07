@@ -413,3 +413,286 @@ def derived_projection(record: Mapping[str, Yaml]) -> dict[str, Yaml]:
     if isinstance(record.get("definite"), dict) and "root_sublattice" in record:
         projected["root_sublattice"] = record["root_sublattice"]
     return projected
+
+
+def gram_problems(gram: GramTensor) -> list[str]:
+    """Structural problems of a Gram tensor stored on a lattice card."""
+    rank = len(gram)
+    if any(len(row) != rank for row in gram):
+        return [
+            f"gram_tensor: a (0,2)-tensor on a module of rank {rank} has {rank} rows of {rank} components"
+        ]
+    if any(gram[i][j] != gram[j][i] for i in range(rank) for j in range(i)):
+        return ["gram_tensor: b(e_i, e_j) differs from b(e_j, e_i) for some i, j"]
+    return []
+
+
+def isometry_invariants(lattice: Lattice):
+    """Cheap stored invariants used only to shortlist definite isometry comparisons."""
+    definite = lattice.definite
+    assert definite is not None
+    integral = lattice.integral
+    return (
+        lattice.rank,
+        lattice.definiteness,
+        lattice.determinant,
+        definite.minimum,
+        definite.kissing_number,
+        definite.root_system,
+        definite.theta_series,
+        None if integral is None else integral.discriminant_group,
+    )
+
+
+def local_admission_problems(lattice: Lattice) -> list[str]:
+    """Mathematical problems of one card, decided by preamble-owned operations."""
+    if lattice.rank is None or lattice.gram_tensor is None:
+        return []
+    found: list[str] = []
+    gram = lattice.gram_tensor
+    formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+    integral = lattice.integral
+    if integral is not None:
+        if not formed.is_base_ring_valued():
+            found.append(
+                "integral: the stored integral block requires the form to take values in ZZ"
+            )
+        else:
+            owned = Lattices(ZZ)(gram)
+            if owned.determinant() != 0:
+                if integral.level is not None and integral.level != int(owned.level()):
+                    found.append(
+                        "integral.level: the stated level does not equal the preamble-computed level"
+                    )
+                if integral.bad_reduction_primes is not None:
+                    primes = tuple(int(prime) for prime in owned.bad_reduction_primes())
+                    if tuple(integral.bad_reduction_primes) != primes:
+                        found.append(
+                            f"integral.bad_reduction_primes: stated {integral.bad_reduction_primes}, computed {primes}"
+                        )
+                if integral.quadratic_character is not None:
+                    character = (
+                        int(owned.discriminant_character_discriminant())
+                        if lattice.rank % 2 == 0
+                        else None
+                    )
+                    if integral.quadratic_character != character:
+                        found.append(
+                            f"integral.quadratic_character: stated {integral.quadratic_character}, computed {character}"
+                        )
+                if integral.discriminant_group is not None:
+                    factors = tuple(
+                        abs(int(factor))
+                        for factor in owned.discriminant_group().invariant_factors()
+                        if abs(int(factor)) > 1
+                    )
+                    if tuple(integral.discriminant_group) != factors:
+                        found.append(
+                            f"integral.discriminant_group: stated {integral.discriminant_group}, computed {factors}"
+                        )
+                if integral.delta is not None:
+                    try:
+                        delta = int(owned.delta())
+                    except (AssertionError, ValueError):
+                        found.append(
+                            "integral.delta: delta is stated outside the preamble domain where it is defined"
+                        )
+                    else:
+                        if integral.delta != delta:
+                            found.append(
+                                f"integral.delta: stated {integral.delta}, computed {delta}"
+                            )
+    definite = lattice.definite
+    if definite is not None:
+        if formed.definiteness() not in ("positive_definite", "negative_definite"):
+            found.append("definite: the stored definite block requires a definite form")
+        if definite.perfect is not None:
+            reflection_lattice, _multiplier = integral_reflection_model(formed)
+            if definite.perfect != reflection_lattice.is_voronoi_perfect():
+                found.append(
+                    "definite.perfect: the stated value differs from L.is_voronoi_perfect()"
+                )
+        if (
+            definite.automorphism_group_order is not None
+            and (
+                definite.automorphism_group_order <= 0
+                or definite.automorphism_group_order % 2 == 1
+            )
+        ):
+            found.append(
+                "definite.automorphism_group_order: x -> -x is an isometry of order 2, so the order is even"
+            )
+    span = lattice.root_span
+    if span is not None:
+        reflection_lattice, _multiplier = integral_reflection_model(formed)
+        found.extend(
+            f"root_span.roots: {list(row)} is not a root of L"
+            for row in span.roots
+            if not reflection_lattice(row).is_root()
+        )
+        if span.embedding is not None:
+            ambient = ZZ.free_module(lattice.rank)
+            embedding_span = ambient.subobject_on(
+                tuple(ambient(row) for row in span.embedding)
+            )
+            root_span = ambient.subobject_on(tuple(ambient(row) for row in span.roots))
+            if (
+                int(embedding_span.module_rank()) != len(span.embedding)
+                or any(ambient(row) not in root_span for row in span.embedding)
+                or any(ambient(row) not in embedding_span for row in span.roots)
+            ):
+                found.append(
+                    "root_span.embedding: the rows are not a basis of the sublattice generated by root_span.roots"
+                )
+    return found
+
+
+def relational_admission_problems(
+    lattice: Lattice,
+    written: Mapping[str, Lattice],
+    *,
+    isometry_records: Mapping[str, Lattice] | None = None,
+) -> list[str]:
+    """Mathematical problems relating one card to other cards, via preamble objects."""
+    if lattice.rank is None or lattice.gram_tensor is None:
+        return []
+    found: list[str] = []
+    span = lattice.root_span
+    if span is not None and span.embedding is not None and span.summands is not None:
+        missing = [summand.tag for summand in span.summands if summand.tag not in written]
+        found.extend(
+            f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing
+        )
+        if not missing and span.summands:
+            target = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, lattice.gram_tensor)
+            offset = 0
+            blocks = []
+            valid = True
+            for summand in span.summands:
+                source_record = written[summand.tag]
+                if source_record.rank is None or source_record.gram_tensor is None:
+                    valid = False
+                    break
+                source = ZZ.free_module(source_record.rank).equip_bilinear_form(
+                    QQ, source_record.gram_tensor
+                ).twist(summand.scale)
+                rows = span.embedding[offset : offset + source_record.rank]
+                images = tuple(target(row) for row in rows)
+                offset += source_record.rank
+                try:
+                    source.Mor(target)(images)
+                except ValueError:
+                    valid = False
+                blocks.append(images)
+            if offset != len(span.embedding):
+                valid = False
+            if valid and any(
+                left.b(right) != 0
+                for left_index, left_block in enumerate(blocks)
+                for right_block in blocks[left_index + 1 :]
+                for left in left_block
+                for right in right_block
+            ):
+                valid = False
+            if not valid:
+                found.append(
+                    "root_span.embedding: the rows do not realize the stated orthogonal sum"
+                )
+    if lattice.definite is not None:
+        invariants = isometry_invariants(lattice)
+        compared = written if isometry_records is None else isometry_records
+        source_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(
+            QQ, lattice.gram_tensor
+        )
+        source_lattice, source_multiplier = integral_reflection_model(source_formed)
+        for other in compared.values():
+            if (
+                other is lattice
+                or other.definite is None
+                or other.rank is None
+                or other.gram_tensor is None
+                or isometry_invariants(other) != invariants
+                or other.gram_tensor == lattice.gram_tensor
+            ):
+                continue
+            other_formed = ZZ.free_module(other.rank).equip_bilinear_form(
+                QQ, other.gram_tensor
+            )
+            other_lattice, other_multiplier = integral_reflection_model(other_formed)
+            if source_multiplier == other_multiplier and source_lattice.is_isometric(
+                other_lattice
+            ):
+                found.append(
+                    f"the lattice is isometric to {other.tag} ({other.name}), in another basis"
+                )
+    return found
+
+
+def admission_problems(
+    lattice: Lattice,
+    written: Mapping[str, Lattice],
+    *,
+    isometry_records: Mapping[str, Lattice] | None = None,
+) -> list[str]:
+    """All preamble-backed admission problems of one lattice card."""
+    return [
+        *local_admission_problems(lattice),
+        *relational_admission_problems(
+            lattice, written, isometry_records=isometry_records
+        ),
+    ]
+
+
+def morphism_problems(morphism, source: Lattice, target: Lattice) -> list[str]:
+    """Mathematical problems of a stored lattice morphism, delegated to preamble Mor."""
+    if (
+        source.rank is None
+        or source.gram_tensor is None
+        or target.rank is None
+        or target.gram_tensor is None
+    ):
+        return []
+    if len(morphism.matrix) != target.rank or len(morphism.matrix[0]) != source.rank:
+        return [
+            f"{morphism.name}: the matrix must have {target.rank} rows and {source.rank} columns"
+        ]
+    source_formed = ZZ.free_module(source.rank).equip_bilinear_form(
+        QQ, source.gram_tensor
+    ).twist(morphism.scale)
+    target_formed = ZZ.free_module(target.rank).equip_bilinear_form(
+        QQ, target.gram_tensor
+    )
+    found: list[str] = []
+    try:
+        source_formed.Mor(target_formed)(
+            tuple(target_formed(image) for image in morphism.images)
+        )
+    except ValueError:
+        found.append(
+            f"{morphism.name}: the matrix does not define the stated form-preserving morphism"
+        )
+
+    def crosses_parts(formed, lines) -> bool:
+        bounds = (0, *lines, int(formed.module_rank()))
+        labels = tuple(formed.module_generating_set())
+        blocks = [
+            tuple(formed.module_generator(label) for label in labels[low:high])
+            for low, high in zip(bounds, bounds[1:], strict=False)
+        ]
+        return any(
+            left.b(right) != 0
+            for left_index, left_block in enumerate(blocks)
+            for right_block in blocks[left_index + 1 :]
+            for left in left_block
+            for right in right_block
+        )
+
+    if crosses_parts(target_formed, morphism.row_subdivisions):
+        found.append(
+            f"{morphism.name}: row_subdivisions do not cut orthogonal summands of the target"
+        )
+    if crosses_parts(source_formed, morphism.column_subdivisions):
+        found.append(
+            f"{morphism.name}: column_subdivisions do not cut orthogonal summands of the source"
+        )
+    return found
