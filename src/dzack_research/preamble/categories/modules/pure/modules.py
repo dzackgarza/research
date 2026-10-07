@@ -10,7 +10,6 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.matrix.constructor import matrix as engine_matrix
-from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
@@ -87,6 +86,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -1699,14 +1699,102 @@ class Modules(OwnedCategoryOverBaseRing):
                         f"flatness is decided over a field or a principal ideal domain, and {ring} is neither"
                     )
 
-        @abstract_method
-        def base_change(self, ring_map):
-            r"""Return ``S tensor_R M`` along ``ring_map : R -> S``.
+        @RealizationHook
+        def _rank_decision(self):
+            r"""Protected rank of this module when its data does not reach the general case.
 
-            Every module has a scalar extension; each representation of modules
-            constructs it on its own data.
+            ``module_rank`` is the only caller.  A realization or a more
+            specific category supplies the answer as a cardinal; ``Unknown``
+            here means undecided.
             """
-            ...
+            return Unknown
+
+        def module_rank(self):
+            r"""Return ``rank_R(M)`` (Mathlib ``Module.rank``), a cardinal.
+
+            Over a field ``k`` the rank is the dimension: the cardinality of a
+            basis.  A basis of cardinality ``n`` identifies ``M`` with ``k^n``
+            as a set, so when ``k`` and ``M`` are finite, ``|M| = |k|^n`` and
+            ``n`` is the exact logarithm of ``|M|`` to the base ``|k|``.  A
+            more specific category with a chosen basis or presentation answers
+            from that datum; any other module answers through
+            ``_rank_decision``.
+            """
+            ring = self.base_ring()
+            match self:
+                case _ if ring in OwnedFields() and ring.is_finite() is True and self.is_finite() is True:
+                    return cardinal(SageZZ(int(self.cardinality())).exact_log(int(ring.cardinality())))
+                case _:
+                    decided = self._rank_decision()
+                    assert decided is not Unknown, (
+                        f"the rank of {self} over {ring} is computed over a finite field for a finite "
+                        f"module, or from a chosen basis or presentation, and {self} supplies none of these"
+                    )
+                    return decided
+
+        def base_change(self, ring_map):
+            r"""Return ``f_! M = S tensor_R M`` along ``ring_map = f : R -> S``.
+
+            This is extension of scalars (lean-categories FOUNDATIONS,
+            Definition 83.2): the tensor product over ``R`` of ``S``, read as
+            an ``R``-module along ``f``, with ``M``, on which ``S`` acts
+            through the left factor, ``s (t tensor m) = (s t) tensor m``.
+            Multiplication by ``s`` on ``S`` is the ``S``-linear endomorphism
+            ``mu_s`` of the regular module when ``S`` is commutative, and it
+            acts on the left factor as ``Res_f(mu_s)``.  The tensor product is
+            the generators-and-relations quotient, which is defined for every
+            pair of modules.  A category whose objects carry a chosen basis or
+            presentation computes the same module on that datum and is the
+            more specific owner.
+            """
+            from dzack_research.preamble.categories.modules.general_modules import (
+                GeneralModules,
+            )
+            from dzack_research.preamble.categories.modules.tensor_quotients import (
+                _tensor_quotient,
+            )
+
+            ring = self.base_ring()
+            assert ring_map.domain() is ring, (
+                f"cannot extend the scalars of {self} along {ring_map}: the ring morphism must start at "
+                f"the base ring {ring}, but it starts at {ring_map.domain()}"
+            )
+            scalars = _owned_ring(ring_map.codomain())
+            assert scalars in OwnedRings().Commutative(), (
+                f"the extension of scalars of {self} along {ring_map} is constructed here for a commutative "
+                f"ring of scalars, where multiplication by s is S-linear, and {scalars} is in {scalars.category()}"
+            )
+            regular = scalars.regular_module()
+            restriction = Modules(scalars).restriction_of_scalars(ring_map)
+            scalars_over_ring = restriction(regular)
+            tensor = _tensor_quotient(
+                _finite_factor_family((scalars_over_ring, self), name="Scalar-extension factors")
+            )
+            classes = tensor.underlying_set()
+            endomorphisms = regular.module_category().Mor(regular, regular)
+
+            def scalar_action(scalar, value):
+                multiplication = restriction(
+                    endomorphisms(
+                        {
+                            label: regular.scalar_multiple(scalar, regular.module_generator(label))
+                            for label in regular.module_generating_set()
+                        }
+                    )
+                )
+                return classes.evaluate(
+                    value,
+                    tensor,
+                    lambda left, right: tensor.pure_tensor(multiplication(left), right),
+                ).underlying_element()
+
+            return GeneralModules(scalars).from_operations(
+                classes,
+                addition=classes.add,
+                zero=classes.zero(),
+                negation=lambda value: classes.scale(-ring.one(), value),
+                scalar_action=scalar_action,
+            )
 
         def vector_space(self):
             r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map."""
@@ -3641,6 +3729,38 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def _cardinality_decision(self):
             r"""``|Res_f(M)| = |M|``: restriction of scalars keeps the underlying set."""
             return self.module_over_extension().cardinality()
+
+        def _scalars_act_by_units(self):
+            r"""Whether every nonzero ``r in R`` acts on ``Res_f(M)`` invertibly.
+
+            When ``S`` is a field and ``f`` is injective, ``f(r)`` is a nonzero
+            element of a field for ``r != 0``, so ``r m = f(r) m`` vanishes
+            only when ``m`` does.
+            """
+            return self.extension_ring() in OwnedFields() and self.ring_map().is_injective() is True
+
+        def _torsion_freeness_decision(self):
+            r"""``Res_f(M)`` is torsion-free when ``S`` is a field and ``f`` is injective.
+
+            ``r m = f(r) m = 0`` with ``r != 0`` gives ``m = f(r)^{-1} f(r) m = 0``.
+            """
+            match self._scalars_act_by_units():
+                case True:
+                    return True
+                case False:
+                    return Unknown
+
+        def _torsion_decision(self):
+            r"""``Res_f(M)`` is torsion only when ``M = 0``, when ``S`` is a field and ``f`` is injective.
+
+            No nonzero element is killed by a nonzero scalar, so every element
+            is torsion exactly when there is no nonzero element.
+            """
+            match self._scalars_act_by_units():
+                case True:
+                    return self.is_zero()
+                case False:
+                    return Unknown
 
         def _underlying_additive_element(self, element):
             element = self(element)
