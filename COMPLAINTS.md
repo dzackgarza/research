@@ -514,6 +514,48 @@ module over a finite field.
 Repair: `restriction-along-a-finite-free-extension-is-framed` in TODO, which
 `restricted-scalars-modules-are-modules` needs.
 
+### A slice object does not have the operations of its source object
+
+An object of the slice `C/X` is a pair `(A, p: A -> X)`, and an object of the
+coslice `X/C` is a pair `(B, i: X -> B)`. `SliceCategory` and
+`CosliceCategory` (`abstract_categories/arrow_categories.py`) declare only
+`Ar(C)`. Their objects are functors `[1] -> C`, so the operations of `A` or
+`B` do not reach them. Over `F_5`, the degree-3 stage of `G_{F_5}` is an object
+of `(F_5/Fields)/e` built on `F_125`. The call
+`AbsoluteGaloisGroup(GF(5)).finite_extension(3).cardinality()` fails, because
+the stage has no `cardinality` (observed 2026-10-07).
+**Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C` beside `Ar(C)`.
+By `CAT-16`, an object `(A, p)` with `p` forgotten is `A`, an object of `C`
+over the same parameters. The projection of `lean-categories` `FOUNDATIONS.md`
+Definition 4.2 is that forgetful functor (`ARC-24`). The slice is chosen
+enrichment (`OWN-15`, `CON-16`): `(A, p)` is its own object, constructed on the
+data of the received `A`, as `FormModules` constructs on its module.
+
+**Construction obstruction:** `CON-16`/`OWN-16` require that `(A, p)` is constructed through the owner of `C` on the data of
+the exact `A`. Owners do not supply this construction uniformly:
+- modules supply `_module_with_structure`;
+- schemes supply `_scheme_with_structure`;
+- sets and `Cat` supply no such construction;
+- rings supply only `_OwnedAlgebraParent`, which stores construction data with
+  `setattr` (`algebras/algebras.py:3212`). `_OwnedRingParent.__init__` calls
+  `Parent.__init__` directly (`rings/ring_foundation.py:3820`), so the
+  cooperative `__init__` of an added slice level never runs on a ring.
+
+`AbsoluteGaloisGroup.extension_data` (`group/profinite/absolute_galois_group.py:530`)
+tells a stage from a field by `extension not in OwnedRings()`. This test fails
+when a stage becomes a ring.
+**Dependency path:** the owner of `C` constructs on the data of `A` ->
+the slice and coslice levels thread `p` on that construction -> a Galois stage
+is the field `F_{q^d}` with its two embeddings -> the stage has the
+cardinality of its field.
+**Existing capability:** the domain and codomain functors of `Ar(C)`
+(`source_object()`, `target_object()`). Under the domain projection, the stage
+gives `F_125`, which has the cardinality `125`.
+**Consumers:** every slice and coslice in the tree (Galois stages, schemes over
+a base, `PairedModules`, presheaf sites, analytic families).
+`tests/constructions/test_galois_construct.sage::test_the_absolute_galois_group_of_a_finite_field`.
+Repair: `finite-galois-stages-answer-as-their-fields` in TODO.
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
