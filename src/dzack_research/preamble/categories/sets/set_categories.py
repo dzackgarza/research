@@ -2201,9 +2201,9 @@ class PowerSets(OwnedCategory):
                     raise ValueError(
                         f"{member!r} is not an element of {base}, so it cannot be a member of a subset of {base}"
                     )
-                point = base(member)
-                if point not in normalized:
-                    normalized.append(point)
+                normalized.append(base(member))
+            # ``finite_ordered_set`` identifies equal points; identifying them
+            # here as well compared every pair twice.
             inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
             return Sets().Subobjects(base)(inclusion)
 

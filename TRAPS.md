@@ -100,6 +100,20 @@ Asking its truth (`bool`, `any`, `in` over a list of symbols) makes Sage try to 
 Route chosen: decide membership of hashable points by hashing (`sage.sets.set.Set`, a `frozenset`), never by comparing a candidate with every point.
 Symbols hash consistently with identity of name.
 
+Measured again on SageMath 10.10.beta8, 2026-10-07, Sage alone, over all `n^2` ordered pairs of `n` distinct `SR.var`s (host load average about 7; the `n = 2` row includes first-call warm-up):
+
+| n | `bool(a == b)` per pair | `a.is_trivially_equal(b)` per pair | `a is b` per pair |
+| --- | --- | --- | --- |
+| 2 | 21.6 ms | 7.3 µs | 1.7 µs |
+| 4 | 1.41 ms | 3.3 µs | 0.44 µs |
+| 8 | 1.76 ms | 1.6 µs | 0.16 µs |
+| 16 | 1.29 ms | 1.5 µs | 0.14 µs |
+
+The cost per pair does not fall with `n`, so a scan that identifies `k` points pairwise costs on the order of `k^2` ms.
+The scan still stands in `FiniteOrderedSets._on_points` (`point is present or point == present`), which every `support()` of a framed-free element reaches through `finite_subsets()`.
+On a catalogue lattice, whose basis labels are `SR` symbols, one `L.b(x, y)` with full-support `x`, `y` on `E_8` cost 0.24 s; deleting a second identical scan in `Subsets._from_finite_members` took it to 0.07 s.
+Reproduce: `/home/dzack/gitclones/sage-dev-allopts/sage -python -c "from sage.all import SR; import timeit; a, b = SR.var('e_0'), SR.var('e_1'); print(timeit.timeit(lambda: bool(a == b), number=100) / 100)"`.
+
 ### pytest-timeout's `SIGALRM` inside Cython code stops the whole run
 
 With `--timeout-method=signal`, the alarm that pytest-timeout raises can land inside a Sage `sig_on()` block.
