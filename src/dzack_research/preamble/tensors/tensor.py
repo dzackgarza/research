@@ -1104,6 +1104,32 @@ def _engine_row_action_matrix(morphism):
     return _engine_module_matrix(matrix).transpose()
 
 
+def _engine_column_matrix_from_row_action(row_action):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): raise an engine row action to a column matrix.
+
+    The inverse of :func:`_engine_row_action_matrix`.  An engine that acts on
+    coordinate rows (Sage's matrix groups, OSCAR's isometries and embeddings)
+    returns a matrix whose row ``i`` is the coordinate row of ``f(e_i)``.  The
+    returned Sage matrix has column ``i`` holding those coordinates, the public
+    convention, so its caller reads generator images from its columns.
+    """
+    return row_action.transpose()
+
+
+def _engine_binary_form_pullback(form, linear_map):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): pull a Sage binary form back along a map.
+
+    ``form`` is a Sage ``BinaryQF`` ``Q`` on ``ZZ^2`` and ``linear_map`` a Sage
+    ``2 x 2`` matrix ``M`` acting on coordinate columns.  Return the pullback
+    ``M^*Q = Q o M``.  Sage's ``BinaryQF.matrix_action_right(M)`` evaluates
+    ``Q`` on the columns of ``M``, ``Q(ax+by, cx+dy)`` for
+    ``M = [[a, b], [c, d]]``, which is that pullback; this is the one site that
+    names Sage's side convention for binary forms.  Pullback is contravariant,
+    ``(M N)^*Q = N^*(M^*Q)``, so a chain of reduction steps composes as matrices.
+    """
+    return form.matrix_action_right(linear_map)
+
+
 def _engine_component_vector(value):
     r"""Private engine adapter (`OWN-06`): the Sage vector of a one-index tensor.
 
