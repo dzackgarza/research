@@ -258,7 +258,7 @@ _lock:
     uv lock
 
 # Run commit-tier SageMath QC through the central implementation
-test-commit:
+test-commit: tensor-boundary
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
 
 # Run push-tier SageMath QC through the central implementation

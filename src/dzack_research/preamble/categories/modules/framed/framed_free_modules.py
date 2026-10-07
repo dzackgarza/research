@@ -534,8 +534,11 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 """
                 return all(generator == self.zero() for generator in self.module_generators())
 
-            def _selected_presentation_rows(self):
-                return ()
+            @cached_method
+            def _selected_relation_morphism(self):
+                r"""Return the relation morphism ``0: F(∅) -> M``: a free module has no relations."""
+                relations = _fresh_free_module_on(self.base_ring(), Sets.Δ[-1])
+                return relations.module_category().Mor(relations, self)(lambda label: self.zero())
 
             def fitting_ideal(self, index):
                 r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.

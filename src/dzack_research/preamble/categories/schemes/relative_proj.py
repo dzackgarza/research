@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
+    _coordinate_images,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorphism,
@@ -799,14 +800,15 @@ def _chart_algebra(module, chart_label):
     structure = polynomial.algebra_structure_morphism()
     relations = []
     if module in ModulesWithChosenFinitePresentation(module.base_ring()):
-        matrix = module.presentation_matrix()
-        for row in range(matrix.nrows()):
-            relation = structure(module.base_ring()(matrix[row, chart_position]))
+        # Each relation r(e_i) of the selected presentation, dehomogenized
+        # on the chart: its coordinates are read by application of r.
+        for image in _coordinate_images(module.presentation()):
+            relation = structure(module.base_ring()(image[chart_position]))
             for label in labels:
                 if label == chart_label:
                     continue
                 position = int(ranking(label))
-                coefficient = module.base_ring()(matrix[row, position])
+                coefficient = module.base_ring()(image[position])
                 if coefficient:
                     relation += structure(coefficient) * polynomial.algebra_generator(
                         _ratio_name(module, chart_label, label)

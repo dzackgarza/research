@@ -1725,18 +1725,17 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = (labels, factors, extra_categories, extra_construction_data)
             return NotImplemented
 
-        def _presented_module_from_relation_rows(
+        def _presented_module_from_relation_morphism(
             self,
-            labels,
-            rows,
+            presentation,
             *,
             extra_categories=(),
             extra_construction_data=None,
         ):
-            _ = (labels, rows, extra_categories, extra_construction_data)
+            _ = (presentation, extra_categories, extra_construction_data)
             return NotImplemented
 
-        def _selected_presentation_rows(self):
+        def _selected_relation_morphism(self):
             return None
 
         def _selected_module_coefficients(self, element):
@@ -2638,7 +2637,7 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                 _internal_mor_model_data,
             )
 
-            model, _inclusion, _relations, _presentation = _internal_mor_model_data(self)
+            model, _inclusion, _presentation = _internal_mor_model_data(self)
             return model
 
         def inclusion_into_generator_maps(self):
@@ -2647,7 +2646,7 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                 _internal_mor_model_data,
             )
 
-            _model, inclusion, _relations, _presentation = _internal_mor_model_data(self)
+            _model, inclusion, _presentation = _internal_mor_model_data(self)
             return inclusion
 
         def _morphism_from_internal_model(self, model_element):
@@ -3762,52 +3761,47 @@ def _restricted_scalar_framing_labels(module):
 
 
 def _restricted_scalar_presentation(module, ring_map, labels):
-    r"""Return the finite presentation of ``Res_f(M)`` induced by one of ``M``.
+    r"""Return the relation morphism of ``Res_f(M)`` induced by the one of ``M``.
 
     Suppose ``S`` is finite free over ``R`` on ``(s_i)`` and ``M`` is
-    presented over ``S`` on ``(m_j)`` with relation rows ``(a_j)``.  The
-    restricted module is generated over ``R`` by ``s_i m_j``.  For every
-    selected relation and every ``s_i`` we expand ``s_i a_j`` in the
-    selected ``R``-basis of ``S``.  These are exactly the restriction of
-    the original ``S``-relation submodule to ``R``.
+    presented over ``S`` by ``r: F_S(K) -> F_S(J)``.  The restricted
+    module is generated over ``R`` by ``s_i m_j``.  For every relation
+    ``r(e_k)`` and every ``s_i`` the relation ``s_i r(e_k)`` is expanded
+    in the selected ``R``-basis of ``S``.  These generate the restriction
+    of the ``S``-relation submodule to ``R``.
     """
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_from_relation_rows,
+        _morphism_on_elements,
     )
 
     ring = _owned_ring(ring_map.domain())
     extension_ring = _owned_ring(module.base_ring())
     scalar_labels = extension_ring.module_generating_set()
-    module_labels = module.module_generating_set()
-    width = int(labels.cardinality())
-    relation_rows = []
-    source_rows = module._selected_presentation_rows()
-    assert source_rows is not None, (
+    relations = module._selected_relation_morphism()
+    assert relations is not None, (
         f"the restriction of scalars of {module} needs the relations of its finite presentation, "
         f"but {module} has none"
     )
-    for relation in source_rows:
-        for scalar_label in scalar_labels:
-            scalar_generator = extension_ring.module_generator(scalar_label)
-            row = [ring.zero()] * width
-            for module_label, coefficient in zip(module_labels, relation, strict=True):
-                if not coefficient:
-                    continue
-                product = extension_ring(scalar_generator * extension_ring(coefficient))
-                product_coordinates = extension_ring.framing_morphism().lift(product)
-                for output_scalar_label in product_coordinates.support().domain():
-                    column = labels.ranking_map()(labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
-                    row[column] += ring(product_coordinates(output_scalar_label))
-            if any(row):
-                relation_rows.append(tuple(row))
-    relations = ring.matrix_space(len(relation_rows), width).from_rows(tuple(relation_rows))
-    presentation = _presentation_from_relation_rows(
-        ring,
-        labels,
-        Sets.Δ[len(relation_rows) - 1],
-        relations,
+    generators = ring._fresh_free_module_on(labels)
+
+    def restricted_relation(relation_label, scalar_label):
+        scalar_generator = extension_ring.module_generator(scalar_label)
+        relation = relations(relations.domain().module_generator(relation_label)).to_vector()
+        coefficients = {}
+        for module_label in relation.support().domain():
+            product = extension_ring(scalar_generator * extension_ring(relation(module_label)))
+            product_coordinates = extension_ring.framing_morphism().lift(product)
+            for output_scalar_label in product_coordinates.support().domain():
+                label = labels(lambda index: output_scalar_label if int(index) == 0 else module_label)
+                coefficients[label] = coefficients.get(label, ring.zero()) + ring(product_coordinates(output_scalar_label))
+        return generators.linear_combination({label: value for label, value in coefficients.items() if value})
+
+    restricted = tuple(
+        restricted_relation(relation_label, scalar_label)
+        for relation_label in relations.domain().module_generating_set()
+        for scalar_label in scalar_labels
     )
-    return relations, presentation
+    return _morphism_on_elements(generators, tuple(relation for relation in restricted if relation))
 
 
 def _restricted_scalars_view(
@@ -3845,14 +3839,13 @@ def _restricted_scalars_view(
     )
     match module:
         case _ if framed_over_finite_free_scalars and module in ModulesWithChosenFinitePresentation(extension_ring):
-            relations, presentation = _restricted_scalar_presentation(
+            presentation = _restricted_scalar_presentation(
                 module,
                 ring_map,
                 _restricted_scalar_framing_labels(module),
             )
             placement.append(_SelectedFinitePresentationModules(base_ring))
             data.update(
-                relation_matrix=relations,
                 presentation=presentation,
                 framing_source=presentation.codomain(),
             )
@@ -4327,41 +4320,45 @@ def _module_tensor_product_with_data(
             f"generating sets have cardinalities {tuple(labels.cardinality() for labels in label_sets)}"
         )
 
-    width = int(tensor_labels.cardinality().finite_value())
     ranking = factors.index_set().ranking_map()
-    rows = []
+    generators = ring._fresh_free_module_on(tensor_labels)
+    relations = []
 
     # A relation of one factor, tensored with a generator chosen in each of
     # the others, is a relation of the product; over a family of presented
     # modules those exhaust the relations of the tensor product.
-    for position, factor_labels in enumerate(label_sets):
+    for position, factor in enumerate(values):
         elsewhere_sets = tuple(
             labels for other, labels in enumerate(label_sets) if other != position
         )
-        for relation in values[position]._selected_presentation_rows() or ():
+        factor_relations = factor._selected_relation_morphism()
+        assert factor_relations is not None, (
+            f"the tensor product of {values} needs the relations of {factor}, but they are not known explicitly"
+        )
+        for relation_label in factor_relations.domain().module_generating_set():
+            relation = factor_relations(factor_relations.domain().module_generator(relation_label)).to_vector()
             for elsewhere in itertools.product(*elsewhere_sets):
-                row = [ring.zero()] * width
-                for label_position, coefficient in enumerate(relation):
-                    if coefficient:
-                        section = (
-                            elsewhere[:position]
-                            + (factor_labels[label_position],)
-                            + elsewhere[position:]
-                        )
-                        label = tensor_labels(
-                            lambda place, section=section: section[int(ranking(place))]
-                        )
-                        row[tensor_labels.ranking_map()(label)] = coefficient
-                rows.append(row)
+                coefficients = {}
+                for factor_label in relation.support().domain():
+                    section = elsewhere[:position] + (factor_label,) + elsewhere[position:]
+                    label = tensor_labels(
+                        lambda place, section=section: section[int(ranking(place))]
+                    )
+                    coefficients[label] = relation(factor_label)
+                relations.append(generators.linear_combination(coefficients))
 
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _morphism_on_elements,
+    )
+
+    presentation = _morphism_on_elements(generators, tuple(relations))
     result = NotImplemented
     construction_data = {"tensor_factors": factors}
     if extra_construction_data is not None:
         construction_data.update(extra_construction_data)
     for presentation_owner in values:
-        result = presentation_owner._presented_module_from_relation_rows(
-            tensor_labels,
-            rows,
+        result = presentation_owner._presented_module_from_relation_morphism(
+            presentation,
             extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
             extra_construction_data=construction_data,
         )
@@ -5205,6 +5202,19 @@ def _engine_matrix(morphism):
     )
 
 
+def _morphism_from_engine_matrix(mor, backend):
+    r"""Raise one engine matrix into the matrix Mor ``mor``.
+
+    The raising companion of :func:`_engine_matrix`: entry ``(t, s)`` of
+    ``backend`` is the coefficient of ``e_t`` in the image of ``e_s``.
+    """
+    mor = _require_matrix_mor(mor)
+    ring = mor.base_ring()
+    return mor.from_rows(
+        (_owned_engine_element(ring, entry) for entry in row) for row in backend.rows()
+    )
+
+
 def _matrix_unit(mor, label):
     label = mor.module_generating_set()(label)
     row_label = label[0]
@@ -5258,21 +5268,40 @@ def _coordinate_framed_free_module(module, ring) -> bool:
     )
 
 
+def _coordinate_images(morphism):
+    r"""Return the coordinates of each ``f(e_s)`` in the module generators of the codomain.
+
+    The morphism ``f`` is applied to each module generator of its domain; no
+    side of a matrix is read.  Engine adapters that take a family of
+    generating vectors lower a morphism of free modules through this.
+    """
+    codomain_labels = tuple(morphism.codomain().module_generating_set())
+
+    def coordinates(label):
+        image = morphism(morphism.domain().module_generator(label)).to_vector()
+        return tuple(image(codomain_label) for codomain_label in codomain_labels)
+
+    return tuple(coordinates(label) for label in morphism.domain().module_generating_set())
+
+
 def _torsion_module_presented_by_matrix(
     relations, module_generating_set=None, *, base_ring=None
 ):
-    r"""Return the torsion module presented by relation rows ``relations``."""
+    r"""Return the torsion module presented by ``relations``.
+
+    ``relations`` is either the relation morphism ``r: F_1 -> F_0`` as an
+    owned matrix Mor element, or the family of relations, each written by
+    its coordinates in the module generators.
+    """
 
     ring = _own_ring(SageZZ) if base_ring is None else base_ring
     match relations:
         case _ if element_parent(relations) in MatrixSpaces(ring):
-            width = relations.parent().ncols()
-            relation_count = relations.parent().nrows()
+            images = _coordinate_images(relations)
+            width = int(relations.codomain().module_generating_set().cardinality())
         case _:
-            rows = tuple(tuple(row) for row in relations)
-            relation_count = len(rows)
-            width = 0 if not rows else len(rows[0])
-            relations = ring.matrix_space(relation_count, width).from_rows(rows)
+            images = tuple(tuple(row) for row in relations)
+            width = 0 if not images else len(images[0])
     labels = (
         finite_ordered_set(range(width))
         if module_generating_set is None
@@ -5280,29 +5309,24 @@ def _torsion_module_presented_by_matrix(
     )
     if labels.cardinality() != cardinal(width):
         raise ValueError(
-            f"the relation matrix has {width} columns, but the module has {labels.cardinality()} generators {labels}"
+            f"the relations have {width} coordinates, but the module has {labels.cardinality()} generators {labels}"
         )
     target = ring.free_module(labels)
-    source = ring.free_module(relation_count)
+    source = ring.free_module(len(images))
 
-    def relation_entry(row_position, column_position):
-        row_label = relations.parent().row_index_set()[row_position]
-        column_label = relations.parent().column_index_set()[column_position]
-        return relations.matrix_entry(row_label, column_label)
-
-    def relation_image(row_position):
+    def relation_image(coordinates):
         return target.linear_combination(
             {
-                label: relation_entry(row_position, column_position)
-                for column_position, label in enumerate(labels)
-                if relation_entry(row_position, column_position)
+                label: ring(coefficient)
+                for label, coefficient in zip(labels, coordinates, strict=True)
+                if coefficient
             }
         )
 
-    images = {
-        source_label: relation_image(row_position)
-        for row_position, source_label in enumerate(source.module_generating_set())
+    images_by_label = {
+        source_label: relation_image(coordinates)
+        for source_label, coordinates in zip(source.module_generating_set(), images, strict=True)
     }
     return Modules(ring).FinitelyPresented().Torsion()(
-        source.module_category().Mor(source, target)(images)
+        source.module_category().Mor(source, target)(images_by_label)
     )

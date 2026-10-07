@@ -20,8 +20,7 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     _ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presentation_from_relation_rows,
-    _presentation_matrix,
+    _relation_morphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
@@ -98,46 +97,36 @@ def _finite_coset_sum(module, representatives):
     r"""Return the finite direct sum of copies of ``module`` indexed by cosets.
 
     The framing is the actual product of the representative set with the source
-    framing.  Presentation rows are generated directly from this product; no
-    Python pair family or block-row list is a mathematical object.
+    framing.  The relation morphism is the coset-indexed sum of copies of the
+    relation morphism ``r`` of ``module``: the relation ``(g, k)`` is
+    ``r(e_k)`` placed in the copy indexed by ``g``.
     """
     module = module.unformed_module()
     source_labels = module.module_generating_set()
     labels = _coset_sum_labels(representatives, source_labels)
-    source_relations = _presentation_matrix(module)
-    relation_count = int(source_relations.nrows())
-    if relation_count == 0:
+    source_relations = _relation_morphism(module)
+    source_relation_labels = source_relations.domain().module_generating_set()
+    if source_relation_labels.cardinality() == 0:
         return module.base_ring().free_module(labels)
 
-    representative_count = int(representatives.cardinality())
-    width = int(labels.cardinality())
-    relation_indices = Sets.Δ[relation_count - 1]
-    relation_labels = _coset_sum_labels(representatives, relation_indices)
-    row_count = representative_count * relation_count
     ring = module.base_ring()
+    generators = ring._fresh_free_module_on(labels)
+    relation_source = ring._fresh_free_module_on(
+        _coset_sum_labels(representatives, source_relation_labels)
+    )
 
-    def entry(row_position, column_position):
-        relation_label = relation_labels[row_position]
-        column_label = labels[column_position]
-        if relation_label.component(0) != column_label.component(0):
-            return ring.zero()
-        source_position = int(source_labels.ranking_map()(column_label.component(1)))
-        relation_position = int(relation_label.component(1))
-        return source_relations[relation_position, source_position]
-
-
-    relations = ring.matrix_space(row_count, width).from_rows(
-        tuple(
-            tuple(entry(row_position, column_position) for column_position in range(width))
-            for row_position in range(row_count)
+    def relation(relation_label):
+        image = source_relations(
+            source_relations.domain().module_generator(relation_label.component(1))
+        ).to_vector()
+        return generators.linear_combination(
+            {
+                _coset_label(labels, relation_label.component(0), source_label): image(source_label)
+                for source_label in image.support().domain()
+            }
         )
-    )
-    presentation = _presentation_from_relation_rows(
-        ring,
-        labels,
-        relation_labels,
-        relations,
-    )
+
+    presentation = relation_source.module_category().Mor(relation_source, generators)(relation)
     return presentation.cokernel()
 
 

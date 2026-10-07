@@ -1135,6 +1135,47 @@ def _engine_column_matrix_from_row_action(row_action):
     return row_action.transpose()
 
 
+def _engine_row_family_gram(gram, row_family):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): the Gram matrix of a family given by coordinate rows.
+
+    Sage's lattice reductions (Hermite transforms, ``p_adic_normal_form``)
+    return a basis change ``B`` whose row ``i`` is the coordinate row of the
+    ``i``-th new vector ``b_i``.  For the bilinear form ``b`` with Gram matrix
+    ``G``, the Gram matrix of the family has entry ``(i, j)`` equal to
+    ``b(b_i, b_j)``.  It is the pullback of ``G`` along ``e_i |-> b_i``,
+    whose column matrix is ``B^t``, so it is ``B G B^t``.  This is the one
+    site that names the side of a row family.
+    """
+    return row_family * gram * row_family.transpose()
+
+
+def _engine_dual_row_family(row_family):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): the dual of a basis given by coordinate rows.
+
+    For an invertible ``B`` whose row ``i`` is the coordinate row of a basis
+    vector ``b_i``, return the matrix whose row ``i`` is the coordinate row of
+    the dual basis vector ``b_i^*``, with ``b_i^* . b_j = delta_ij`` for the
+    standard pairing: ``(B^{-1})^t``.  A family that reduces the inverse form,
+    ``B G^{-1} B^t = D``, has a dual family that reduces the form itself:
+    ``(B^{-1})^t`` gives ``D^{-1}`` as the Gram matrix of ``G``.
+    """
+    return row_family.inverse().transpose()
+
+
+def _engine_row_action_from_images(source_rows, target_rows):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): the row action carrying a family to its images.
+
+    Row ``k`` of ``source_rows`` is the coordinate row of a vector ``v_k`` and
+    row ``k`` of ``target_rows`` that of ``f(v_k)``.  When the ``v_k`` span,
+    ``f`` is determined by these images; return its matrix ``A`` in the
+    engine's row convention, ``v A = f(v)``, which is the solution of
+    ``S A = T``.  Sage's ``solve_right`` raises ``ValueError`` when no linear
+    ``f`` has these images.  This is the one site that names the side on which
+    a family's images determine a row action.
+    """
+    return source_rows.solve_right(target_rows)
+
+
 def _engine_binary_form_pullback(form, linear_map):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): pull a Sage binary form back along a map.
 
