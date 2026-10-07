@@ -49,7 +49,7 @@ jobs:
     - name: Install lattice database dependencies into SageMath
       run: |
         uv pip install --python "$SAGE_PYTHON" 'pydantic>=2.11' 'pyyaml>=6.0' 'python-frontmatter>=1.1' 'jinja2>=3.1' 'python-flint>=0.9' 'cyclopts>=3' 'markdown-it-py>=4.2.0' 'pytest>=8'
-        "$SAGE_PYTHON" -c 'import cypari2, flint, frontmatter, jinja2, markdown_it, pydantic, yaml'
+        "$SAGE_BIN" -python -c 'import cypari2, flint, frontmatter, jinja2, markdown_it, pydantic, yaml'
     - name: Compute and certify uncertified card values
       env:
         LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
@@ -58,7 +58,7 @@ jobs:
         if [[ -n "$LATTICEDB_TAG" ]]; then
           args+=(--tag "$LATTICEDB_TAG")
         fi
-        timeout 330m env PYTHONPATH="../src:src" "$SAGE_PYTHON" -m latticedb certify "${args[@]}"
+        timeout 330m env PYTHONPATH="../src:src" "$SAGE_BIN" -python -m latticedb certify "${args[@]}"
     - name: Commit completed computations to main
       if: ${{ always() && steps.checkout.outcome == 'success' }}
       working-directory: ${{ github.workspace }}
