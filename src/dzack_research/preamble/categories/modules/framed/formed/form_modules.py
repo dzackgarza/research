@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -51,6 +52,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     TorsionQuadraticFormIsoCategoryConstruction,
     _bilinear_descends,
     _coerced_gram,
+    _even_lattice_genus_exists,
     _forms_are_isomorphic,
     _invariant_factor_form_isomorphism,
     _p_adic_jordan_decomposition,
@@ -2417,6 +2419,21 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     if other not in TorsionQuadraticFormModules(self.base_ring()):
                         return False
                     return self.is_isomorphic(other.twist(-1))
+
+                def is_discriminant_form_of_even_lattice(self, signature) -> bool:
+                    r"""Return whether an even lattice of ``signature`` has discriminant form ``self``.
+
+                    ``signature`` is a signature pair ``(t_+, t_-)``.  Existence
+                    is decided by [nikulin1979integral, Thm. 1.10.1]: the
+                    signature condition ``t_+ - t_- = sign q mod 8``, the rank
+                    bound ``t_+ + t_- >= l(A_q)``, and the discriminant
+                    conditions at each prime ``p`` with
+                    ``t_+ + t_- = l(A_{q_p})``.
+                    """
+                    assert _engine_ring(self.base_ring()) is SageZZ, (
+                        f"Nikulin's existence theorem concerns finite abelian groups; {self!r} is a finite quadratic module over {self.base_ring()!r}"
+                    )
+                    return _even_lattice_genus_exists(self, signature)
 
                 @cached_method
                 def automorphism_group(self):

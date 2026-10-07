@@ -134,6 +134,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FreeFormModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+    _even_lattice_genus_gram,
     _form_gram_on,
     _relations_among_generators,
     _torsion_form_modules,
@@ -177,6 +178,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
+    FiniteSets,
     Sets,
 )
 from dzack_research.preamble.categories.vector_configurations import (
@@ -392,6 +394,21 @@ class LocalGenusSymbol:
     def number_of_blocks(self):
         return self.prime().parent()(len(self.jordan_blocks()))
 
+    @cached_method
+    def canonical_symbol(self):
+        r"""Return the canonical Conway--Sloane symbol of this local genus.
+
+        For odd ``p`` the Jordan symbol is already canonical.  At ``p = 2``
+        oddity fusion and sign walking reduce it to the canonical symbol, and
+        ``ZZ_p``-equivalence is equality of the canonical ``p``-adic symbols
+        [CS10, Ch. 15, §7.6].
+        """
+        integers = self.prime().parent()
+        return tuple(
+            tuple(_owned_engine_element(integers, SageZZ(entry)) for entry in block)
+            for block in self._engine().canonical_symbol()
+        )
+
     def __eq__(self, other):
         return isinstance(other, LocalGenusSymbol) and self.prime() == other.prime() and self.jordan_blocks() == other.jordan_blocks()
 
@@ -406,77 +423,82 @@ class NotPrimitiveError(ValueError):
     r"""Raised when an operation requiring a primitive lattice vector is given a nonprimitive one."""
 
 
-class Genus:
-    r"""The genus determined by signature and discriminant quadratic form."""
+class _Genus(Sets().ObjectType):
+    r"""The genus of a nondegenerate integral lattice ``L`` of finite rank.
 
-    def __init__(self, signature, discriminant_quadratic_form) -> None:
-        r"""``signature`` is the archimedean signature pair, an object of ``signature_pairs()``."""
-        self._signature_pair = signature
-        self._discriminant_quadratic_form = discriminant_quadratic_form
+    The genus of ``L`` is the set of isometry classes of lattices ``L'``
+    with ``L'_v`` isometric to ``L_v`` at every place ``v`` [PS24, Def.
+    1.9.1].  ``lean-categories`` states it as the fibre of
+    ``isometryClassToGenus`` over the genus of ``L``
+    (``LeanCategories/Lattices/Valued/LocalGlobal.lean``: ``SameGenus``,
+    ``IntegralLatticeGenus``, ``isometryClassToGenus``).  The set is finite
+    [PS24, Cor. 1.10.4]; ``lean-categories`` proves the finiteness for
+    positive definite lattices only (``genus_finite``).  Each point is
+    represented by a lattice in its class, the cardinality is the class
+    number [PS24, Def. 1.10.5], and the determinant and the parity are the
+    same for every member [PS24, Prop. 1.9.2].
+
+    An engine realizing objects of ``FiniteSets()`` (`CAT-28`): the datum is
+    ``L``, construction stores it, and the representatives of the classes
+    are computed on the first request.
+    """
+
+    def __init__(self, lattice) -> None:
+        self._lattice = lattice
+        super().__init__(category=FiniteSets(), facade=True)
+
+    def representative(self):
+        r"""Return the lattice whose genus this is."""
+        return self._lattice
 
     def signature_pair(self):
-        r"""Return the archimedean signature component ``(t_+,t_-)``."""
-        return self._signature_pair
+        r"""Return the signature pair ``(t_+, t_-)`` shared by every member."""
+        return self._lattice.signature_pair()
+
+    def determinant(self):
+        r"""Return the determinant shared by every member [PS24, Prop. 1.9.2]."""
+        return self._lattice.determinant()
+
+    def is_even(self) -> bool:
+        r"""Return whether the members are even; parity is the same for every member [PS24, Prop. 1.9.2]."""
+        return bool(self._lattice.is_even())
+
+    def is_odd(self) -> bool:
+        r"""Return whether the members are odd."""
+        return not self.is_even()
 
     def discriminant_form(self):
-        r"""Return the finite discriminant quadratic form component."""
-        return self._discriminant_quadratic_form
+        r"""Return the discriminant form of a member: quadratic for an even genus, bilinear for an odd one."""
+        return self._lattice.discriminant_group()
 
-    @cached_method
-    def _engine_form(self):
-        r"""Privately rebuild Sage's finite quadratic form from owned data."""
-        from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
-        from sage.rings.rational_field import QQ as SageQQ
+    def exists(self) -> bool:
+        r"""Return ``True``: a genus contains the class of the lattice it is the genus of.
 
-        form = self.discriminant_form()
-        generators = tuple(form.module_generators())
-        rationals = _own_ring(SageQQ)
-        written = tensor(
-            rationals,
-            (),
-            (len(generators), len(generators)),
-            [
-                [form.q(left).parent().lift(form.q(left)) if i == j else form.b(left, right).parent().lift(form.b(left, right)) for j, right in enumerate(generators)]
-                for i, left in enumerate(generators)
-            ],
-        )
-        engine_form = TorsionQuadraticForm(_engine_component_matrix(written))
-        if int(engine_form.cardinality()) != int(form.cardinality()):
-            raise ArithmeticError(
-                f"the torsion quadratic form rebuilt from the discriminant form {form!r} has order {engine_form.cardinality()}, but the discriminant group has order {form.cardinality()}; the rebuilt form is not isomorphic to the discriminant form"
-            )
-        return engine_form
-
-    def _engine_signature_pair(self):
-
-        integers = _own_ring(SageZZ)
-        pair = self.signature_pair()
-        return (
-            _engine_element(integers, integers(int(pair.first()))),
-            _engine_element(integers, integers(int(pair.second()))),
-        )
+        ``lean-categories``: ``isometryClassToGenus_surjective``
+        (``LeanCategories/Lattices/Valued/LocalGlobal.lean``).
+        """
+        return True
 
     @cached_method
     def _engine(self):
-        r"""Return Sage's private global genus realization of these exact data."""
-        return self._engine_form().genus(self._engine_signature_pair())
+        r"""Sage's global genus symbol of the representative, private computation data."""
+        from sage.quadratic_forms.genera.genus import Genus as SageGenus
 
-    def exists(self) -> bool:
-        r"""Return whether the signature/discriminant-form datum is realizable."""
-        return bool(self._engine_form().is_genus(self._engine_signature_pair(), even=True))
+        return SageGenus(_engine_component_matrix(self._lattice.gram_tensor()).change_ring(SageZZ))
 
-    def determinant(self):
-        r"""Return the determinant of a representative of this genus."""
-        integers = _own_ring(SageZZ)
-        return _owned_engine_element(integers, SageZZ(self._engine().determinant()))
-
+    @cached_method
     def local_symbol(self, prime):
-        r"""Return the owned exact ``ZZ_p`` genus symbol at ``prime``."""
+        r"""Return the canonical ``ZZ_p`` genus symbol of the members at ``prime``."""
         integers = _own_ring(SageZZ)
         prime = integers(prime)
-
-        backend = self._engine().local_symbol(_engine_element(integers, prime))
-        return LocalGenusSymbol(prime, backend.symbol_tuple_list())
+        symbol = self._engine().local_symbol(_engine_element(integers, prime))
+        return LocalGenusSymbol(
+            prime,
+            tuple(
+                tuple(_owned_engine_element(integers, SageZZ(entry)) for entry in block)
+                for block in symbol.canonical_symbol()
+            ),
+        )
 
     def excess(self, prime):
         return self.local_symbol(prime).excess()
@@ -484,70 +506,223 @@ class Genus:
     def level(self, prime):
         return self.local_symbol(prime).level()
 
-    def representative(self):
-        r"""Return one owned integral lattice representing this genus."""
-        integers = _own_ring(SageZZ)
-        representative = self._engine().representative()
-        rows = [[_owned_engine_element(integers, entry) for entry in row] for row in representative.rows()]
-        return Lattices(integers)(rows)
-
-    def representatives(self):
-        r"""Return the owned representatives enumerated by the exact genus computation."""
-        integers = _own_ring(SageZZ)
-        return finite_ordered_set(
-            tuple(
-                Lattices(integers)([[_owned_engine_element(integers, entry) for entry in row] for row in representative.rows()])
-                for representative in self._engine().representatives()
-            )
-        )
-
-    def class_number(self):
-        integers = _own_ring(SageZZ)
-        return integers(len(self._engine().representatives()))
-
     def mass(self):
-        r"""Return the Smith--Minkowski--Siegel mass for a definite genus."""
+        r"""Return the Smith--Minkowski--Siegel mass of a definite genus."""
         from sage.rings.rational_field import QQ as SageQQ
 
-        _signature = self.signature_pair()
-
-        positive, negative = _signature.first(), _signature.second()
+        signature = self.signature_pair()
+        positive, negative = signature.first(), signature.second()
         if positive != 0 and negative != 0:
             raise ValueError(
                 f"the Smith--Minkowski--Siegel mass of {self!r} is not defined: the mass is a finite sum only for a definite genus, and this genus has signature ({positive}, {negative})"
             )
-        rationals = _own_ring(SageQQ)
-        return _owned_engine_element(rationals, SageQQ(self._engine().mass()))
+        return _owned_engine_element(_own_ring(SageQQ), SageQQ(self._engine().mass()))
 
-    def __eq__(self, other):
-        if not isinstance(other, Genus):
-            return NotImplemented
-        if self.signature_pair() != other.signature_pair():
-            return False
-        return self.discriminant_form().is_isomorphic(other.discriminant_form())
+    @cached_method
+    def representatives(self):
+        r"""Return one lattice from each isometry class of this genus.
 
-    def __ne__(self, other):
-        result = self.__eq__(other)
-        return result if result is NotImplemented else not result
+        The classes of the improper spinor genus of the representative come
+        first.
+        """
+        integers = _own_ring(SageZZ)
+        gram = _engine_component_matrix(self._lattice.gram_tensor()).change_ring(SageZZ)
+        gram.set_immutable()
+        return finite_ordered_set(
+            tuple(
+                Lattices(integers)([[_owned_engine_element(integers, entry) for entry in row] for row in found.rows()])
+                for spinor_genus in _genus_classes(gram)
+                for found in spinor_genus
+            )
+        )
 
-    def __repr__(self):
-        return f"Genus of even integral lattices with signature {self.signature_pair()} and discriminant order {self.discriminant_form().cardinality()}"
+    def __iter__(self):
+        return iter(self.representatives())
+
+    def class_number(self):
+        r"""Return the number of isometry classes in this genus [PS24, Def. 1.10.5]."""
+        return _own_ring(SageZZ)(int(self.cardinality()))
+
+    def __contains__(self, lattice) -> bool:
+        r"""Return whether ``lattice`` is a lattice whose class lies in this genus."""
+        return (
+            lattice in Lattices(self._lattice.base_ring())
+            and lattice.module_rank().is_finite()
+            and bool(lattice.is_nondegenerate())
+            and lattice.genus() == self
+        )
+
+    def __eq__(self, other) -> bool:
+        r"""Two genera are equal when their signatures, determinants and canonical local symbols agree.
+
+        Two forms are in one genus when they are equivalent over ``RR`` and
+        over ``ZZ_p`` for every prime [CS10, Ch. 15, §7], and
+        ``ZZ_p``-equivalence is equality of the canonical ``p``-adic symbols
+        [CS10, Ch. 15, §7.6].  At a prime not dividing ``2 det`` the local
+        lattice is unimodular and fixed by the rank and the determinant.
+        """
+        match other:
+            case _ if other is self:
+                return True
+            case _ if other in _integral_lattice_genera():
+                integers = _own_ring(SageZZ)
+                return (
+                    self.signature_pair() == other.signature_pair()
+                    and self.determinant() == other.determinant()
+                    and all(
+                        self.local_symbol(prime) == other.local_symbol(prime)
+                        for prime in (
+                            _owned_engine_element(integers, SageZZ(symbol.prime()))
+                            for symbol in self._engine().local_symbols()
+                        )
+                    )
+                )
+            case _:
+                return False
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        signature = self.signature_pair()
+        return hash((int(signature.first()), int(signature.second()), int(self.determinant())))
+
+    def _repr_(self) -> str:
+        signature = self.signature_pair()
+        parity = "even" if self.is_even() else "odd"
+        return f"Genus of {parity} integral lattices of signature ({signature.first()}, {signature.second()}) and determinant {self.determinant()}"
 
 
-def _isometry_class_representatives(grams):
+class _IntegralLatticeGenera(Sets().ObjectType):
+    r"""The set of genera of integral lattices.
+
+    ``lean-categories``: ``IntegralLatticeGenus``, the quotient of the
+    isometry classes by ``SameGenus``
+    (``LeanCategories/Lattices/Valued/LocalGlobal.lean``).  ``L.genus()`` is
+    the quotient map.  The set is infinite: the rank-one lattices ``<n>``
+    lie in distinct genera.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(category=Sets().Infinite(), facade=True)
+
+    def __contains__(self, genus) -> bool:
+        return isinstance(genus, _Genus)
+
+    def _repr_(self) -> str:
+        return "Set of genera of integral lattices"
+
+
+@cached_function
+def _integral_lattice_genera():
+    return _IntegralLatticeGenera()
+
+
+@cached_function
+def _genus_classes(gram):
+    r"""Private computation of the isometry classes of the genus of ``gram``.
+
+    ``gram`` is an immutable Gram matrix over Sage's ``ZZ`` of a
+    nondegenerate integral lattice of finite rank.  Returns the Gram matrices
+    of one lattice from each isometry class of its genus, grouped by improper
+    spinor genus, the spinor genus of ``gram`` first.
+
+    In rank at most ``1`` the genus is one class.  In rank ``2`` the classes
+    are the reduced binary forms of discriminant ``-4 det`` in the genus;
+    an indefinite class has several reduced forms, so those are compared
+    under improper equivalence.  In rank at least ``3`` one seed per
+    improper spinor genus is a chain of ``p``-neighbours along a subset of
+    Sage's spinor generators.  An indefinite spinor genus of rank at least
+    ``3`` is one class [CS10, Ch. 15, §9.1, Thm. 14, p. 388].  A definite
+    spinor genus is enumerated by ``p``-neighbours at a prime ``p`` not
+    dividing the determinant, with ``p`` in the improper spinor kernel so
+    that neighbours stay in the spinor genus.  The masses of the classes
+    found must add up to the mass of the genus, which also stops the last
+    enumeration.
+    """
+    from itertools import chain, combinations
+
+    from sage.quadratic_forms.binary_qf import BinaryQF
+    from sage.quadratic_forms.genera.genus import Genus as SageGenus
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
+    from sage.quadratic_forms.quadratic_form__neighbors import neighbor_iteration
+    from sage.rings.rational_field import QQ as SageQQ
+    from sage.sets.primes import Primes
+
+    genus = SageGenus(gram)
+    positive, negative = genus.signature_pair()
+    indefinite = positive != 0 and negative != 0
+    match gram.nrows():
+        case rank if rank <= 1:
+            return ((gram,),)
+        case 2:
+            classes = []
+            for found in genus.representatives(backend="sage"):
+                form = BinaryQF(found[0, 0], 2 * found[0, 1], found[1, 1])
+                if not (indefinite and any(form.is_equivalent(other, proper=False) for _, other in classes)):
+                    classes.append((found, form))
+            return (tuple(found for found, _ in classes),)
+
+    scale = (SageZZ.one() if genus.is_even() else SageZZ(2)) * (-SageZZ.one() if positive == 0 else SageZZ.one())
+    form = QuadraticForm(SageZZ, scale * gram)
+    spinor_primes = genus.spinor_generators(proper=False)
+    seeds = []
+    for chosen in chain.from_iterable(combinations(spinor_primes, size) for size in range(len(spinor_primes) + 1)):
+        seed = form
+        for spinor_prime in chosen:
+            vector = seed.find_primitive_p_divisible_vector__next(spinor_prime)
+            assert vector is not None, f"the form {seed} has no primitive vector of norm divisible by {spinor_prime}"
+            seed = seed.find_p_neighbor_from_vec(spinor_prime, vector)
+        seeds.append(seed)
+
+    def grams(forms):
+        return tuple((found.Hessian_matrix() / scale).change_ring(SageZZ) for found in forms)
+
+    if indefinite:
+        return tuple(grams((seed,)) for seed in seeds)
+
+    # A ``p``-neighbour ``M`` of ``L`` with ``p`` prime to ``2 det`` has
+    # ``[L : L cap M] = [M : L cap M] = p``, so its spinor genus is that of
+    # ``L`` moved by the spinor operator of ``p`` [CS10, Ch. 15, §9.2,
+    # Thm. 15]; at a prime whose operator lies in the improper spinor kernel
+    # the neighbours stay in their spinor genus.  With one spinor genus every
+    # prime qualifies, and ``2`` is the cheapest for an even form.
+    spinor_operators, kernel = genus._improper_spinor_kernel()
+    spinor_classes = spinor_operators.quotient(kernel)
+    prime = SageZZ(2) if genus.is_even() and not spinor_primes else SageZZ(3)
+    while prime.divides(genus.determinant()) or (
+        spinor_primes and not spinor_classes(spinor_operators.delta(prime)).is_one()
+    ):
+        prime = Primes().next(prime)
+    total = form.conway_mass()
+    found_mass = SageQQ.zero()
+    classes = []
+    for position, seed in enumerate(seeds):
+        spinor_genus = neighbor_iteration(
+            [seed],
+            prime,
+            mass=total - found_mass if position == len(seeds) - 1 else None,
+            algorithm="orbits",
+            max_classes=10**6,
+        )
+        found_mass += sum(SageQQ.one() / found.number_of_automorphisms() for found in spinor_genus)
+        classes.append(grams(spinor_genus))
+    assert found_mass == total, f"the classes found in the genus of {gram} have mass {found_mass}, but the genus has mass {total}"
+    return tuple(classes)
+
+
+def _isometry_class_representatives(grams, genus_of):
     r"""Private computation of ``Lattices.isometry_classes``.
 
     ``grams`` are the Gram matrices over Sage's ``ZZ`` of nondegenerate
-    integral lattices of finite rank.  Returns, for each position, the
-    position of the first Gram matrix isometric to it.
+    integral lattices of finite rank, and ``genus_of(position)`` is the
+    owned genus of the lattice at ``position``.  Returns, for each position,
+    the position of the first Gram matrix isometric to it.
 
     Each position's invariants are computed once, and positions are grouped
     by them in turn: rank, determinant and signature; for a definite form the
     numbers ``N_1, ..., N_4`` of vectors of norm ``1, ..., 4``, which the
-    lattice determines [CS10, Ch. 2, §2.3]; the genus.  Two forms are in one
-    genus when they are equivalent over ``ZZ_p`` for every prime and over
-    ``RR`` [CS10, Ch. 15, §7]; ``ZZ_p``-equivalence is equality of the
-    canonical ``p``-adic symbols [CS10, Ch. 15, §7.6].  Only positions in
+    lattice determines [CS10, Ch. 2, §2.3]; the genus.  Only positions in
     one genus are compared, and a genus of one class is not compared at all:
     an indefinite genus of rank at least 3 with one spinor genus is one class
     [CS10, Ch. 15, §9.1, Thm. 14, p. 388], and a definite genus whose mass
@@ -583,16 +758,8 @@ def _isometry_class_representatives(grams):
         # ``qfrep`` counts the pairs ``±v``.
         return tuple(definite_form(position).qfrep(4, 0)) if is_definite(position) else ()
 
-    def local_symbols(position):
-        # Sage's genus equality compares these and never the signature,
-        # which the first invariant fixes.
-        return tuple(
-            (symbol.prime(), tuple(tuple(constituent) for constituent in symbol.canonical_symbol()))
-            for symbol in genus_symbol(position).local_symbols()
-        )
-
     genera = [tuple(range(len(grams)))]
-    for invariant in (numerical_invariants, short_vector_counts, local_symbols):
+    for invariant in (numerical_invariants, short_vector_counts, genus_of):
         refined = []
         for block in genera:
             parts = {}
@@ -783,7 +950,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             tuple(
                 _engine_component_matrix(lattices.value(index).gram_tensor()).change_ring(SageZZ)
                 for index in indices
-            )
+            ),
+            lambda position: lattices.value(indices[position]).genus(),
         )
         blocks = {}
         for index, representative in zip(indices, representatives, strict=True):
@@ -797,6 +965,28 @@ class Lattices(OwnedCategoryOverBaseRing):
             ),
             name="Isometry classes",
         )
+
+    def genus(self, signature, discriminant_quadratic_form):
+        r"""Return the genus of the even lattices with ``signature`` and ``discriminant_quadratic_form``.
+
+        The signature and the discriminant quadratic form determine the genus
+        of an even lattice [nikulin1979integral, Cor. 1.9.4]; ``signature``
+        is an object of ``signature_pairs()``.  An even lattice with these
+        invariants exists exactly when
+        ``discriminant_quadratic_form.is_discriminant_form_of_even_lattice(signature)``
+        [nikulin1979integral, Thm. 1.10.1], and otherwise there is no genus
+        to return.
+        """
+        integers = self.base_ring()
+        assert _engine_ring(integers) is SageZZ, (
+            f"the genus of even lattices with given signature and discriminant form is implemented for lattices over ZZ, but {self} has base ring {integers}"
+        )
+        if not discriminant_quadratic_form.is_discriminant_form_of_even_lattice(signature):
+            raise ValueError(
+                f"no even lattice of signature ({signature.first()}, {signature.second()}) has discriminant quadratic form {discriminant_quadratic_form!r} [nikulin1979integral, Thm. 1.10.1]"
+            )
+        gram = _even_lattice_genus_gram(discriminant_quadratic_form, signature)
+        return self([[_owned_engine_element(integers, entry) for entry in row] for row in gram.rows()]).genus()
 
     @overload  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
     def __call__(self, data: str | Sequence[Sequence[object]], *args: object, **options: object) -> Lattices.ParentMethods: ...
@@ -2238,10 +2428,12 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def genus(self):
-            r"""Return the genus from signature and discriminant quadratic form.
+            r"""Return the genus of this lattice, the finite set of isometry classes locally isometric to it.
 
-            The current owned realization is the even, finite-rank,
-            nondegenerate ``ZZ`` case, where these data determine the genus.
+            Even and odd lattices alike have a genus [PS24, Def. 1.9.1];
+            ``lean-categories`` states the map from isometry classes to genera
+            as ``isometryClassToGenus``.  Constructing it stores this lattice
+            and computes nothing.
             """
             assert _engine_ring(self.base_ring()) is SageZZ, (
                 f"cannot compute the genus of {self!r}: the genus is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}"
@@ -2250,10 +2442,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"cannot compute the genus of {self!r}: the genus is implemented for a nondegenerate lattice of finite rank, and this lattice has rank {self.module_rank()} or is degenerate"
                 )
-            assert self.is_even(), (
-                f"cannot compute the genus of {self!r}: the genus is computed from the discriminant quadratic form, which exists only for an even lattice, and {self!r} is odd"
-            )
-            return Genus(self.signature_pair(), self.discriminant_quadratic_form())
+            return _Genus(self)
 
         def conway_sloane_genus_symbol(self):
             r"""Return the canonical Conway--Sloane genus-symbol string of an integral lattice."""
@@ -2279,36 +2468,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return f"{head} ({'; '.join(local)})"
 
         def genus_class_number(self):
-            r"""Return the number of isometry classes in the integral genus of this lattice."""
-            from sage.quadratic_forms.binary_qf import BinaryQF
-            from sage.quadratic_forms.genera.genus import Genus as SageGenus
-
-            ring = self.base_ring()
-            assert _engine_ring(ring) is SageZZ, (
-                f"the integral genus class number here is implemented for ZZ-lattices, but {self} is over {ring}"
-            )
-            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
-                f"the integral genus class number of {self} requires finite rank and a nondegenerate form"
-            )
-            gram = _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
-            representatives = SageGenus(gram).representatives(backend="sage")
-            match int(self.module_rank()) == 2, gram.det() < 0:
-                case True, True:
-                    classes = []
-                    for representative in representatives:
-                        form = BinaryQF(
-                            representative[0, 0],
-                            2 * representative[0, 1],
-                            representative[1, 1],
-                        )
-                        match any(form.is_equivalent(other, proper=False) for other in classes):
-                            case False:
-                                classes.append(form)
-                            case True:
-                                pass
-                    return ring(len(classes))
-                case _:
-                    return ring(len(representatives))
+            r"""Return the class number of this lattice, the number of isometry classes in its genus [PS24, Def. 1.10.5]."""
+            return self.genus().class_number()
 
         def spinor_genus_count(self):
             r"""Return the number of improper spinor genera in the integral genus."""
@@ -2326,12 +2487,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def spinor_genus_class_numbers(self):
             r"""Return class numbers of the improper spinor genera, with that of ``self`` first."""
-            from itertools import chain, combinations
-            from sage.quadratic_forms.genera.genus import Genus as SageGenus
-            from sage.quadratic_forms.quadratic_form import QuadraticForm
-            from sage.quadratic_forms.quadratic_form__neighbors import neighbor_iteration
-            from sage.sets.primes import Primes
-
             ring = self.base_ring()
             assert _engine_ring(ring) is SageZZ, (
                 f"spinor genera here are implemented for ZZ-lattices, but {self} is over {ring}"
@@ -2339,56 +2494,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite() and int(self.module_rank()) >= 3 and self.is_nondegenerate(), (
                 f"spinor genera of {self} require a nondegenerate lattice of finite rank at least three"
             )
-            count = int(self.spinor_genus_count())
-            signature = self.signature_pair()
-            match signature.first() != ring.zero() and signature.second() != ring.zero():
-                case True:
-                    return finite_family(tuple(ring.one() for _ in range(count)), name=f"Spinor-genus class numbers of {self}")
-                case False:
-                    pass
-
             gram = _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
-            genus = SageGenus(gram)
-            match signature.second() == ring.zero():
-                case True:
-                    sign = SageZZ.one()
-                case False:
-                    sign = -SageZZ.one()
-            form = QuadraticForm(SageZZ, (sign if genus.is_even() else 2 * sign) * gram)
-            spinor_operators, kernel = genus._improper_spinor_kernel()
-            primes = genus.spinor_generators(proper=False)
-            prime = SageZZ(2)
-            while prime.divides(genus.determinant()) or spinor_operators.delta(prime) not in kernel:
-                prime = Primes().next(prime)
-
-            classes = []
-            for chosen in chain.from_iterable(
-                combinations(primes, size) for size in range(len(primes) + 1)
-            ):
-                seed = form
-                for selected_prime in chosen:
-                    vector = seed.find_primitive_p_divisible_vector__next(selected_prime)
-                    assert vector is not None, (
-                        f"the form representing {self} has no primitive vector of norm divisible by {selected_prime}"
-                    )
-                    seed = seed.find_p_neighbor_from_vec(selected_prime, vector)
-                classes.append(
-                    neighbor_iteration(
-                        [seed],
-                        int(prime),
-                        algorithm="orbits",
-                        max_classes=10**6,
-                    )
-                )
-            from sage.rings.rational_field import QQ as SageQQ
-            mass = sum(
-                SageQQ.one() / found.number_of_automorphisms()
-                for spinor_genus in classes
-                for found in spinor_genus
-            )
-            assert mass == form.conway_mass(), (
-                f"the spinor genera computed for {self} have mass {mass}, but its genus has mass {form.conway_mass()}"
-            )
+            gram.set_immutable()
+            classes = _genus_classes(gram)
             numbers = (
                 ring(len(classes[0])),
                 *(ring(value) for value in sorted((len(spinor_genus) for spinor_genus in classes[1:]), reverse=True)),
@@ -2961,7 +3069,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     f"cannot decide whether {self!r} embeds primitively in II_({positive},{negative}): Nikulin's criterion needs an even nondegenerate lattice of finite rank, and {self!r} fails one of these"
                 )
             _signature = self.signature_pair()
-            source_positive, source_negative = _signature.first(), _signature.second()
+            source_positive, source_negative = ring(int(_signature.first())), ring(int(_signature.second()))
             if (positive - negative) % 8 != 0:
                 return False
             if positive < source_positive or negative < source_negative:
@@ -2970,10 +3078,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 positive - source_positive,
                 negative - source_negative,
             )
-            return Genus(
-                complement_signature,
-                self.discriminant_quadratic_form().twist(-1),
-            ).exists()
+            return self.discriminant_quadratic_form().twist(-1).is_discriminant_form_of_even_lattice(complement_signature)
 
         def embed_in_even_unimodular(self, positive, negative):
             r"""Return one primitive embedding into an even unimodular lattice."""

@@ -222,30 +222,86 @@ rank-at-least-three integral witness route was found. Repair requires the
 `higher-rank-representation-engine-ruling` and then
 `higher-rank-integral-lattice-representation` nodes in [TODO.md](TODO.md).
 
-### The genus of an odd integral lattice has no owned object
+### Genera of integral lattices are formalized without finiteness, parity or classification
 
-Two integral lattices are in one genus when they are equivalent over `RR`
-and over `ZZ_p` for every prime `p` [CS10, Ch. 15, §7]. The owned
-`Lattices(ZZ).genus()` asserts `is_even()` and returns a `Genus` built from
-the signature and the discriminant quadratic form, so an odd lattice has no
-genus in the session, and two genera have no equality to group by.
-`Lattices(ZZ).isometry_classes` must split a family of even and odd cards by
-genus before it decides isometry, so it keys each card in private on Sage's
-canonical `p`-adic symbols [CS10, Ch. 15, §7.6] together with the signature.
-Sage's `GenusSymbol_global_ring.__eq__` compares the local symbols only and
-never the signature, and the class has no `__hash__`, so the key is a tuple
-of `(p, canonical_symbol)` pairs beside the signature.
+The genus of a nondegenerate integral lattice `L` is the set of isometry
+classes of lattices locally isometric to `L` at every place [PS24, Def.
+1.9.1]. Every genus is finite [PS24, Cor. 1.10.4], from the Eisenstein-Hermite
+theorem for nondegenerate lattices of bounded discriminant [PS24, Thm.
+1.10.1]; its cardinality is the class number [PS24, Def. 1.10.5]. Parity is a
+genus invariant [PS24, Prop. 1.9.2(2)]. The signature and the discriminant
+quadratic form determine the genus of an even lattice [nikulin1979integral,
+Cor. 1.9.4], and [nikulin1979integral, Thm. 1.10.1] decides which pairs occur.
+An odd genus is fixed by the signature and the local symbols at every prime
+[CS10, Ch. 15, §7]. A genus is a union of spinor genera, a power of 2 in
+number, and an indefinite spinor genus of rank at least 3 is one class [CS10,
+Ch. 15, §9.1, Thm. 14].
 
-**Dependency path:** local integral equivalence classes at every prime and
-at the real place -> the genus of an integral lattice, even or odd -> the
-genus as the finite set of isometry classes it contains -> grouping a family
-by genus.
-**Consumers:** `Lattices(ZZ).isometry_classes`; lattice-db duplicate
-detection (`latticedb.records.definite_isometry_problems`).
-**Coverage boundary:** the owned `genus()` and `Genus` in
-`categories/lattices.py` and Sage's `sage/quadratic_forms/genera/genus.py`
-were inspected. Repair is the `genera-are-finite-sets-of-isometry-classes`
-node in [TODO.md](TODO.md).
+The preamble presents the genus: `L.genus()` is an object of `FiniteSets()`
+whose elements are the isometry classes of the genus, `representatives()`
+enumerates them, `class_number()` is its cardinality, `is_even()` reads its
+parity, equality compares the signature, the determinant and the local
+symbols, and `Lattices(ZZ).genus(signature, q)` constructs an even genus from
+Nikulin's data. `lean-categories` (`LeanCategories/Lattices/Valued/`, checkout
+`1008f05`, 2026-10-03) states `SameGenus` (`LocalGlobal.lean:133`), the set of
+genera `IntegralLatticeGenus` (`:223`) with the surjection
+`isometryClassToGenus` (`:226`, `:231`), the full subcategory `GenusCat L` of
+lattices in the genus of `L` (`:244`), the class set `genusClassSet L`
+(`Mass.lean:92`), `classNumber L` given a `Finite` instance (`Mass.lean:101`),
+rank, signature and determinant as genus invariants
+(`GenusInvariants.lean:192`, `:208`, `:238`), and finiteness only for
+positive definite `L` (`genus_finite`, `ReducedBasis.lean:458`). A search of
+`LeanCategories/` for `SameGenus`, `genusSetoid`, `genusClassSet`,
+`classNumber`, `GenusCat` and `Nikulin` found no parity invariant, no
+finiteness of an indefinite genus, neither of Nikulin's results and no
+classification of odd genera by local symbols.
+
+**Dependency path:** local isometry at every place -> `SameGenus` -> the class
+set of a genus -> its finiteness and its class number -> parity and the
+discriminant quadratic form as genus invariants -> the classification of even
+genera by signature and discriminant form, and of odd genera by local symbols.
+**Consumers:** `L.genus()` and `Lattices(ZZ).genus(signature, q)`;
+`Lattices(ZZ).isometry_classes`, which groups a family by genus; lattice-db
+duplicate detection (`latticedb.records.definite_isometry_problems`).
+**Coverage boundary:** `_Genus` and `_genus_classes` in
+`categories/lattices.py`, Sage's `sage/quadratic_forms/genera/genus.py`, and
+the `lean-categories` files above were inspected. The finiteness of an
+indefinite binary genus rests on PS24, Cor. 1.10.4; no binary-form source was
+opened.
+**Request (not yet filed):** `lean-categories` formalizes the finiteness of
+`genusClassSet L` for every nondegenerate `L` [PS24, Thm. 1.10.1, Cor.
+1.10.4]; parity as a genus invariant [PS24, Prop. 1.9.2(2)]; the discriminant
+quadratic form as a genus invariant and Nikulin's classification and existence
+theorem for even genera [nikulin1979integral, Cor. 1.9.4, Thm. 1.10.1]; and
+the classification of genera by local symbols [CS10, Ch. 15, §7]. Repair is the
+`genera-present-their-formalization` node in [TODO.md](TODO.md).
+
+### Dynamic peeking stands in for category membership across the preamble
+
+`AGENTS.md`, *Dynamic peeking is prohibited; the category is the type*, bans
+`getattr`, `setattr`, `hasattr`, `isinstance`, `type(...)` comparisons and
+`cast` in mathematical code, and `try`/`except` in owned runtime code, outside
+four named exceptions: `__contains__`, `_element_constructor_`, a documented
+Sage runtime protocol or an `OWN-06` adapter, and `TYPE_CHECKING`
+declarations. On 2026-10-08, `rg -n 'isinstance\(|getattr\(|hasattr\(|setattr\(|\bcast\(|^\s*try:' src/dzack_research/preamble`
+listed 383 `isinstance`, 29 `getattr`, 1 `hasattr`, 5 `setattr`, 9 `cast` and
+40 `try:` sites; the `isinstance`, `getattr`, `hasattr`, `setattr` and `cast`
+sites were heaviest in `categories/modules/` (112), `categories/algebras/`
+(63) and `categories/rings/` (51). Which sites fall inside an exception was not
+inspected. One that does not: `LocalGenusSymbol.__eq__`
+(`categories/lattices.py:413`) decides equality by
+`isinstance(other, LocalGenusSymbol)`, and `LocalGenusSymbol` is a plain
+Python class in no category, so `A2.genus().local_symbol(3)`, the isometry
+class of `A2 ⊗ ZZ_3` [CS10, Ch. 15, §7], is no preamble object.
+
+**Dependency path:** category membership as the type -> routing by
+`case`/`match` on membership -> every public result an object of its category.
+**Consumers:** every routing site the tell lists; `L.genus().local_symbol(p)`
+and `excess(p)`.
+**Coverage boundary:** the counts come from the tell above; only
+`LocalGenusSymbol` and the genus code in `categories/lattices.py` were read.
+Repair is the `membership-replaces-dynamic-peeking` node in
+[TODO.md](TODO.md).
 
 ### Arithmetic reflection subgroups outside the definite and Vinberg regimes have no exact backend
 
