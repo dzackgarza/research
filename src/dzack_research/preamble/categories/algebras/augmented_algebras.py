@@ -5,7 +5,6 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _root_algebra_law_decisions,
 )
@@ -40,16 +39,6 @@ class _SelectedAugmentationModuleMorphism(ModuleMorphism):
 
     def _elementwise_linearity_derivation(self):
         return self._selected_augmentation.linearity_decision()
-
-
-class _SelectedAugmentationAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
-    r"""An augmentation whose algebra laws are part of the selected augmentation datum."""
-
-    def _multiplicativity_derivation(self):
-        return True
-
-    def _unit_preservation_derivation(self):
-        return True
 
 
 class AugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -113,7 +102,7 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
             parent = Algebras(self.base_ring()).Associative().Unital().Mor(
                 self, target
             )
-            return _SelectedAugmentationAlgebraMorphism(parent, linear)
+            return parent(linear)
 
 
 class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):

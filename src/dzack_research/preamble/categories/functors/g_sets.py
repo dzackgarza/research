@@ -288,7 +288,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
 
     def __init__(self, group) -> None:
         group = _owned_group(group)
-        super().__init__(FreeGSetFunctor(group), UnderlyingFiniteGSetFunctor(group))
+        super().__init__(FreeGSetFunctor(group), FiniteGSets(group).forgetful_functor())
 
     def _repr_(self):
         return f"Free/underlying adjunction G x - ⊣ U for {self.left_adjoint().group()}"
@@ -314,7 +314,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
 
     def __init__(self, group) -> None:
         group = _owned_group(group)
-        super().__init__(UnderlyingFiniteGSetFunctor(group), CofreeGSetFunctor(group))
+        super().__init__(FiniteGSets(group).forgetful_functor(), CofreeGSetFunctor(group))
 
     def _repr_(self):
         return f"Underlying/cofree adjunction U ⊣ Map(G, -) for {self.right_adjoint().group()}"

@@ -456,6 +456,39 @@ class ModulesOverGroupAlgebra(Modules):
                         ),
                     )
 
+        @validator
+        def validate_action(self) -> None:
+            r"""Raise ``ValueError`` unless the supplied ``rho : G -> End_R(M)`` is a left action (``OWN-22``).
+
+            On a group with chosen generators: ``rho(1)`` is the identity,
+            each generator acts by an automorphism, and every chosen relator
+            acts as the identity.  Construction stores the action and calls
+            this validator with ``check=False``.
+            """
+            group = self.group()
+            module = self.unformed_module()
+            endomorphisms = Modules(self.coefficient_ring()).Mor(module, module)
+            identity = endomorphisms.identity()
+            action = self.action()
+            if group.has_selected_group_resolution():
+                if (action(group.one()) == identity) is not True:
+                    raise ValueError(
+                        f"the proposed action of {group} on {module} is not an action: the identity of {group} "
+                        f"does not act as the identity map"
+                    )
+                for group_generator in group.group_generators():
+                    forward = action(group_generator)
+                    inverse = action(~group_generator)
+                    if (inverse * forward == identity) is not True or (forward * inverse == identity) is not True:
+                        raise ValueError(
+                            f"the proposed action of {group} on {module} is not an action: the generator "
+                            f"{group_generator} does not act by an automorphism, since its action and that of "
+                            f"its inverse do not compose to the identity"
+                        )
+            from dzack_research.preamble.categories.group.g_objects import _verify_relators
+
+            _verify_relators(action, group, endomorphisms)
+
         @cached_method
         def action_of(self, group_element):
             r"""The coefficient-linear automorphism induced by ``group_element``."""
@@ -1397,39 +1430,8 @@ def _equip_action(module, group_or_action, action=None):
                     functor(classifying_arrows(group_element))
                 )
 
-    match group.has_selected_group_resolution():
-        case True:
-            identity = coefficient_endomorphisms.identity()
-            match admitted_action_morphism(group.one()) == identity:
-                case True:
-                    pass
-                case _:
-                    raise ValueError(
-                        f"the proposed action of {group} on {module} is not an action: the identity of {group} "
-                        f"does not act as the identity map"
-                    )
-            for group_generator in group.group_generators():
-                forward = admitted_action_morphism(group_generator)
-                inverse = admitted_action_morphism(~group_generator)
-                match (inverse * forward == identity, forward * inverse == identity):
-                    case (True, True):
-                        pass
-                    case _:
-                        raise ValueError(
-                            f"the proposed action of {group} on {module} is not an action: the generator "
-                            f"{group_generator} does not act by an automorphism, since its action and that of "
-                            f"its inverse do not compose to the identity"
-                        )
-        case _:
-            pass
-
     from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
-    from dzack_research.preamble.categories.group.g_objects import _verify_relators
 
-    represented_action = Sets().Mor(group, coefficient_endomorphisms)(
-        admitted_action_morphism
-    )
-    _verify_relators(represented_action, group, coefficient_endomorphisms)
     match supplied_action_functor:
         case None:
             source_action_functor = GroupActionFunctor(
@@ -1482,7 +1484,7 @@ def _equip_action(module, group_or_action, action=None):
         )
     )
     framing_source = group_algebra.free_module(labels)
-    return _object_of(
+    equipped = _object_of(
         GeneralModules(group_algebra),
         _engine=(Modules(group_algebra), _CoefficientModuleEngine, None),
         base_ring=group_algebra,
@@ -1493,6 +1495,8 @@ def _equip_action(module, group_or_action, action=None):
         unformed_module=module,
         source_action_functor=source_action_functor,
     )
+    equipped.validate_action(check=False)
+    return equipped
 
 
 class _RestrictionAlongGroupInclusionFunctor(Functor):

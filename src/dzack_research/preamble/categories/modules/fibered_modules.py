@@ -20,6 +20,7 @@ arXiv:0907.0061, for the Grothendieck construction.
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -34,6 +35,7 @@ from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     ModuleMorphismMethods,
+    _finite_generating_elements,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -169,28 +171,41 @@ class SemilinearModuleMorphism:
             self.scalar_map()
         ).left_adjoint()(self.domain())
 
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, SemilinearModuleMorphism) or other.parent() is not self.parent():
-            return False
-        scalar_equal = self.scalar_map() == other.scalar_map()
-        if scalar_equal is False:
-            return False
-        if scalar_equal is not True:
-            return Unknown
-        source = self.domain()
-        if source.has_selected_module_resolution():
-            return all(
-                self(source.module_generator(label))
-                == other(source.module_generator(label))
-                for label in source.module_generating_set()
-            )
-        return self.additive_map() == other.additive_map()
+    def _richcmp_(self, other, op):
+        r"""Decide equality of two semilinear arrows of one Mor.
 
-    def __ne__(self, other):
-        equal = self == other
-        return Unknown if equal is Unknown else not equal
+        Arrows over ``sigma`` and ``tau`` are equal when ``sigma = tau`` and
+        their additive maps are equal.  A ``sigma``-semilinear map sends
+        ``sum r_i x_i`` to ``sum sigma(r_i) f(x_i)``, so on a finite spanning
+        family of the source the two maps agree everywhere when they agree
+        there.  Without such a family the additive maps' own three-valued
+        comparison answers; no infinite family is iterated.
+        """
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if self is other:
+            return op == op_EQ
+        match self.scalar_map() == other.scalar_map():
+            case True:
+                pass
+            case False:
+                return op == op_NE
+            case _:
+                return Unknown
+        elements = _finite_generating_elements(self.domain())
+        match elements:
+            case None:
+                equal = self.additive_map() == other.additive_map()
+            case _:
+                decisions = tuple(self(element) == other(element) for element in elements)
+                match any(value is False for value in decisions), all(value is True for value in decisions):
+                    case True, _:
+                        equal = False
+                    case _, True:
+                        equal = True
+                    case _:
+                        equal = Unknown
+        return equal if op == op_EQ or equal is Unknown else not equal
 
     def __mul__(self, other):
         match other:

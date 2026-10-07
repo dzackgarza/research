@@ -83,6 +83,7 @@ from dzack_research.preamble.categories.sets.set_categories import EnumeratedSet
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.validation import validator
 
 
 class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
@@ -141,13 +142,14 @@ def _selected_scalar_base_reaches(extension_ring, base_ring) -> bool:
 class MultiplicativeAlgebraMorphism:
     r"""An algebra morphism: an ``R``-linear \(f\colon A\to B\) with \(f\,m_A = m_B\,(f\otimes f)\).
 
-    The datum is the linear map, an element of the module Mor.  The defining
-    equation is one equation between two module morphisms out of
-    \(A\otimes_R A\), asked of the module Mor: its finite generating data
-    decide the equation when value equality is decided; otherwise it answers
-    ``Unknown``.  A map
-    for which it answers ``False`` is refused; ``Unknown`` is recorded as the
-    hypothesis the arrow is stated under (``CON-16``, ``DEV-52``).
+    The datum is the linear map, an element of the module Mor.  Construction
+    stores it and stops (``OWN-22``).  The defining equation is one equation
+    between two module morphisms out of \(A\otimes_R A\), asked of the module
+    Mor when :meth:`is_multiplicative` is first asked: its finite generating
+    data decide the equation when value equality is decided; otherwise it
+    answers ``Unknown``, the hypothesis the arrow is stated under
+    (``CON-16``, ``DEV-52``).  :meth:`validate_multiplicativity` refuses a map
+    for which it answers ``False``.
     """
 
     def _multiplicativity_derivation(self):
@@ -159,21 +161,7 @@ class MultiplicativeAlgebraMorphism:
         codomain = parent.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
         super().__init__(parent, linear)
-        derived = self._multiplicativity_derivation()
-        if derived is None:
-            source_multiplication = domain.multiplication_morphism()
-            target_multiplication = codomain.multiplication_morphism()
-            preserved = (
-                ModuleMorphismMethods.__mul__(self, source_multiplication)
-                == target_multiplication * self.tensor_square_morphism()
-            )
-        else:
-            preserved = derived
-        assert preserved is not False, (
-            f"{underlying_morphism} is not an algebra morphism {domain} -> {codomain}: it does not "
-            "preserve the multiplication, f(xy) != f(x) f(y)"
-        )
-        self._preserves_multiplication = preserved
+        self.validate_multiplicativity(check=False)
 
     @cached_method
     def tensor_square_morphism(self):
@@ -186,9 +174,25 @@ class MultiplicativeAlgebraMorphism:
             target=target_multiplication.domain(),
         )
 
+    @cached_method
     def is_multiplicative(self):
-        r"""``True`` when \(f\,m_A = m_B\,(f\otimes f)\) was decided, ``Unknown`` when it is the stated hypothesis."""
-        return self._preserves_multiplication
+        r"""The decision of \(f\,m_A = m_B\,(f\otimes f)\), or ``Unknown`` when it is the stated hypothesis."""
+        derived = self._multiplicativity_derivation()
+        if derived is not None:
+            return derived
+        return (
+            ModuleMorphismMethods.__mul__(self, self.domain().multiplication_morphism())
+            == self.codomain().multiplication_morphism() * self.tensor_square_morphism()
+        )
+
+    @validator
+    def validate_multiplicativity(self) -> None:
+        r"""Raise ``ValueError`` when this map does not preserve the multiplication (``OWN-22``)."""
+        if self.is_multiplicative() is False:
+            raise ValueError(
+                f"{self} is not an algebra morphism {self.domain()} -> {self.codomain()}: it does not "
+                "preserve the multiplication, f(xy) != f(x) f(y)"
+            )
 
     def corestrict_to_center(self):
         r"""Factor this algebra morphism through the represented centre of its codomain."""
@@ -213,13 +217,19 @@ class MultiplicativeAlgebraMorphism:
         return category.Mor(self.codomain(), quotient)(quotient.algebra_quotient_projection())
 
     def __mul__(self, other):
+        r"""``self . other``, admitted on the composite of the underlying linear maps.
+
+        The forgetful functor ``U : Alg_R -> Mod_R`` preserves composition,
+        so the composite of algebra maps is the algebra map whose underlying
+        linear map is ``U(self) U(other)``.  The composite is formed in the
+        module Mor, which owns linear composition.
+        """
         if other.codomain() is not self.domain():
             return NotImplemented
+        source = other.domain()
+        forget = Algebras(source.algebra_base_ring()).underlying_module()
         category = self.parent().mor_category()
-        linear = ModuleMorphismMethods.__mul__(self, other)
-        if linear is NotImplemented:
-            return NotImplemented
-        return category.Mor(other.domain(), self.codomain())(linear)
+        return category.Mor(source, self.codomain())(forget(self) * forget(other))
 
 
 class MultiplicativeAlgebraMor(CategoricalMor):
@@ -265,20 +275,40 @@ class UnitalMultiplicativeAlgebraMorphism:
 
     def __init__(self, parent, underlying_morphism) -> None:
         super().__init__(parent, underlying_morphism)
+        self.validate_unit_preservation(check=False)
+
+    @cached_method
+    def preserves_unit(self):
+        r"""The decision of the unit equation \(f(1) = 1\), or ``Unknown`` for its stated hypothesis."""
         derived = self._unit_preservation_derivation()
-        self._preserves_unit = (
-            self(self.domain().one()) == self.codomain().one()
-            if derived is None
-            else derived
-        )
-        assert self._preserves_unit is not False, (
-            f"{underlying_morphism} is not a unital algebra morphism {self.domain()} -> {self.codomain()}: "
-            "it does not send 1 to 1"
+        if derived is not None:
+            return derived
+        return self(self.domain().one()) == self.codomain().one()
+
+    def is_group_algebra_augmentation(self) -> bool:
+        r"""Return whether this map is the represented augmentation ``R[G] -> R``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _is_augmentation_of_group_algebra,
         )
 
-    def preserves_unit(self):
-        r"""The decision of the unit equation, or ``Unknown`` for its stated hypothesis."""
-        return self._preserves_unit
+        return _is_augmentation_of_group_algebra(self)
+
+    def is_group_algebra_subgroup_inclusion(self) -> bool:
+        r"""Return whether this map is ``R[H] -> R[G]`` induced by a represented subgroup inclusion."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            _is_group_algebra_map_of_subgroup_inclusion,
+        )
+
+        return _is_group_algebra_map_of_subgroup_inclusion(self)
+
+    @validator
+    def validate_unit_preservation(self) -> None:
+        r"""Raise ``ValueError`` when this map does not send ``1`` to ``1`` (``OWN-22``)."""
+        if self.preserves_unit() is False:
+            raise ValueError(
+                f"{self} is not a unital algebra morphism {self.domain()} -> {self.codomain()}: "
+                "it does not send 1 to 1"
+            )
 
 
 class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):

@@ -41,7 +41,7 @@ class _AbelianizationFunctor(Functor):
             case _ if group in OwnedFiniteGroups():
                 model = _gap_model(group)
                 derived = libgap.DerivedSubgroup(model)
-                projection = libgap.NaturalMorphismByNormalSubgroup(model, derived)
+                projection = libgap.NaturalHomomorphismByNormalSubgroup(model, derived)
                 quotient = _own_group(
                     GroupLibGAP(projection.Range()),
                     refinements=(OwnedFiniteAbelianGroups(),),
