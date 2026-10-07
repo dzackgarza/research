@@ -293,6 +293,28 @@ class AdditiveMagmas(CategoryPacketMethods, OwnedCategory):
             r"""Return this category with the axiom ``x + y = y + x``."""
             return self._with_axiom("AdditiveCommutative")
 
+    class AdditiveCommutative(CategoryWithAxiom):
+        r"""Additive magmas whose law satisfies ``x + y = y + x``.
+
+        The axiom is implemented here, at the level that introduces the
+        additive law.  ``Category._with_axiom_as_tuple``
+        (``sage/categories/category.py``) returns the category itself for an
+        axiom no class on its path implements, so without this class
+        ``AdditiveMagmas().AdditiveCommutative()`` would be
+        ``AdditiveMagmas()`` and every additive magma, semigroup and monoid
+        would be additively commutative.  Sage joins this class into the
+        supercategories of every category with the ``AdditiveCommutative``
+        axiom whose path reaches ``AdditiveMagmas()``.
+        """
+
+        def an_object(self):
+            r"""The owned integers under addition."""
+            return AdditiveMagmas().an_object()
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "additive commutative magmas"
+
 
 class AdditiveSemigroups(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):

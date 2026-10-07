@@ -114,7 +114,7 @@ Route chosen: none yet; the owner rules (`TODO.md`, `modules-over-a-group-algebr
 Observed 2026-10-07 in a preamble session: `Magmas().Commutative() is Magmas()` was `True`. `Magmas.ParentMethods.is_commutative` answers `True` on membership in `Magmas().Commutative()`, so every owned magma that does not override `is_commutative` answered `True`. This was observed on `T(QQ^2)`. For `End(QQ^2)` and `S_3` it follows from the same membership test and was not run. `_algebra_from_native_ring` then placed the tensor algebra in the commutative algebras on that answer.
 
 Consequence: a category that introduces a law must declare the nested axiom class for every axiom its `SubcategoryMethods` names.
-Route chosen: `Magmas.Commutative(CategoryWithAxiom)` in `categories/group/magmas.py`. Sage joins it into every category with the `Commutative` axiom whose path reaches `Magmas()`.
+Route chosen: `Magmas.Commutative(CategoryWithAxiom)` and `AdditiveMagmas.AdditiveCommutative(CategoryWithAxiom)` in `categories/group/magmas.py`. Sage joins each into every category with its axiom whose path reaches the base. A 2026-10-07 probe over the 204 owned categories that construct with no parameter or with `ZZ`, `QQ` or `Groups.C(2)` found no other accessor that returns its own category for an axiom outside `axioms()`, except the group shorthands `FinitelyGenerated` and `FinitelyPresented`, which name `FinitelyGeneratedAsMagma` and `FinitelyPresentedAsGroup`.
 
 ### `DiGraph.longest_path()` is a MILP by default; a DAG's longest chain is `level_sets()`
 
