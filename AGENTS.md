@@ -1464,6 +1464,16 @@ in a leaf: not as a local definition, a substitute category, a temporary notion
 to reconcile later, or a Lean file here. Until `lean-categories` formalizes and
 releases it, research has no such notion.
 
+**`lean-categories` is Lean, not implementation code, and its gaps never park a
+computation.** No algorithm moves to `lean-categories`, and no computation waits
+for it. An algorithm or computation that research needs is a method of the
+preamble category whose objects it acts on, written now, whether or not
+`lean-categories` has formalized the notion yet. The request upstream, when one
+is owed, runs beside that work and never blocks it. On 2026-10-07 a worker
+parked the Coxeter, Dynkin, Satake and Vinberg recognition, the Hodge-number
+arithmetic and the root-system typing in leaf-named modules, with a TODO node
+waiting on a `lean-categories` release, and the owner rejected the parking.
+
 You never proceed past an observed mathematical deficiency. Not with a note
 attached, not with a substitute in place, not with a `TODO` at the site. The
 work is genuinely blocked, and the blockage is a discovery about the shape of
