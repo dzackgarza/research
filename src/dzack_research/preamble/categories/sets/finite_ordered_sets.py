@@ -67,12 +67,17 @@ class OrderedEnumeratedSets(OwnedCategory):
         assert index_set in EnumeratedSets(), (
             f"an ordered set is indexed by an enumerated set, but {index_set} is not enumerated"
         )
-        if index_set in FiniteSets():
-            return FiniteOrderedSets().from_indexed(
-                index_set, element_at, index_of=index_of, contains=contains, name=name
-            )
+        match index_set:
+            case _ if index_set in FiniteSets():
+                return FiniteOrderedSets().from_indexed(
+                    index_set, element_at, index_of=index_of, contains=contains, name=name
+                )
+            case _ if index_set in Sets().Infinite():
+                placement = owned_category_join((self, Sets().Infinite()))
+            case _:
+                placement = self
         return _object_of(
-            self,
+            placement,
             index_set=index_set,
             element_at=element_at,
             index_of=index_of,
@@ -89,7 +94,6 @@ class OrderedEnumeratedSets(OwnedCategory):
             index_of: Callable[[PointT], IndexT | None],
             contains: Callable[[PointT], bool] | None = None,
             name: str | None = None,
-            category=None,
             **rest,
         ) -> None:
             assert callable(element_at), (
@@ -105,13 +109,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             self._index_of_function = index_of
             self._contains_function = contains
             self._name = name
-            placement = category if category is not None else OrderedEnumeratedSets()
-            match index_set:
-                case _ if index_set in FiniteSets():
-                    placement = owned_category_join((placement, FiniteSets()))
-                case _ if index_set in Sets().Infinite():
-                    placement = owned_category_join((placement, Sets().Infinite()))
-            super().__init__(category=placement, facade=True, **rest)
+            super().__init__(facade=True, **rest)
 
         def index_set(self) -> Sets().ObjectType:
             return self._index_set
@@ -507,7 +505,12 @@ def _enumerated_image_set(
             def contains(value):
                 return any(map_(point) == value for point in source)
         case _:
-            placement = OrderedEnumeratedSets()
+            # The image of an infinite set under an injection is infinite.
+            placement = (
+                owned_category_join((OrderedEnumeratedSets(), Sets().Infinite()))
+                if source in Sets().Infinite()
+                else OrderedEnumeratedSets()
+            )
 
             def contains(value):
                 preimage = inverse(value)

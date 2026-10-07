@@ -754,8 +754,9 @@ class SliceCategory(_SubcategoryOfArrows):
         r"""The object ``(A, p)`` of ``C/X`` on an arrow ``p: A -> X``, optionally with stronger structure.
 
         The owner of ``A`` constructs it on the data of ``A`` (``OWN-16``):
-        the result is an object of ``C`` with every operation of ``A``'s
-        category, and of ``C/X``, which adds only ``p``.  ``categories`` and
+        the result is an object of ``C/X``, which adds only ``p``, and of
+        ``C``, which ``C/X`` declares; the finer categories of ``A`` do not
+        place it (``ARC-08``, ``CON-07``).  ``categories`` and
         ``construction_data`` are further levels that a caller adds with
         their data, and ``_engine`` is a private computation class of this
         level.
@@ -939,8 +940,9 @@ class CosliceCategory(_SubcategoryOfArrows):
         r"""The object ``(B, i)`` of ``X/C`` on an arrow ``i: X -> B``, optionally with a private realization.
 
         The owner of ``B`` constructs it on the data of ``B`` (``OWN-16``):
-        the result is an object of ``C`` with every operation of ``B``'s
-        category, and of ``X/C``, which adds only ``i``.
+        the result is an object of ``X/C``, which adds only ``i``, and of
+        ``C``, which ``X/C`` declares; the finer categories of ``B`` do not
+        place it (``ARC-08``, ``CON-07``).
         """
         if not self.admits_arrow(arrow):
             raise TypeError(

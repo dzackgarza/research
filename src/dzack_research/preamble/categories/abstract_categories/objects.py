@@ -32,33 +32,33 @@ if TYPE_CHECKING:
 type Realization = tuple[Category, type, type | None]
 
 
-def _engine_with_caller_engine(
-    own_engine: Realization | None,
-    categories: tuple[Category, ...],
+def _realization_with_caller_engine(
+    target: Category,
+    received_type: type,
+    received_element_type: type,
     engine: type | None,
-) -> Realization | None:
-    r"""The computation of an object constructed again with added structure.
+) -> Realization:
+    r"""The computation of an object constructed again in ``target``.
 
     Engine adapter (``OWN-06``) of ``Objects.ParentMethods._with_structure``,
-    and called by nothing else.  ``own_engine`` is the realization of the
-    received object, or ``None``; ``engine`` is the class of the caller's
-    added level, the first of ``categories``.  The caller's class precedes
-    the received object's, and both then precede the providers of the added
-    level.  The inputs and the result are engine classes, which no public
-    operation exchanges, so this stays inside the construction contract.
+    and called by nothing else.  ``received_type`` and
+    ``received_element_type`` realize the received object and its elements;
+    they consume its defining data and compute on it, and they serve
+    ``target``, which places the result.  ``engine`` is the class of the
+    caller's added level, and it precedes the received realization.  The
+    inputs and the result are engine classes, which no public operation
+    exchanges, so this stays inside the construction contract.
     """
     from sage.structure.dynamic_class import dynamic_class
 
-    match own_engine, engine:
-        case _, None:
-            return own_engine
-        case None, _:
-            return (categories[0], engine, None)
-        case (_, object_engine, element_engine), _:
+    match engine:
+        case None:
+            return (target, received_type, received_element_type)
+        case _:
             return (
-                categories[0],
-                dynamic_class(engine.__name__, (engine, object_engine)),
-                element_engine,
+                target,
+                dynamic_class(engine.__name__, (engine, received_type)),
+                received_element_type,
             )
 
 
@@ -255,9 +255,12 @@ class Objects(OwnedCategory):
             ``C``.  ``categories`` are the categories of the added levels, the
             first of them the level that ``engine`` serves; ``construction_data``
             is their data, and ``engine`` an optional private computation class
-            (``OWN-06``).  The result is a new object of the meet of this
-            object's categories with ``categories``, and it keeps the structure
-            this object already has.
+            (``OWN-06``).  The result is a new object of the join of
+            ``categories`` and of their supercategories, and of nothing else:
+            placement follows construction (``ARC-08``, ``CON-07``), and the
+            categories finer than ``C`` that hold this object are facts about
+            this object, not about the result.  ``C/X`` declares ``C``, so the
+            result has the operations of ``C``.
 
             No public operation can do this: the caller holds only the
             received object, and the data that construct it again (its
@@ -266,10 +269,12 @@ class Objects(OwnedCategory):
             restate that data, which is the parallel construction ``OWN-16``
             forbids.
 
-            Here the category that constructed this object constructs it
-            again from the same data, in the meet with ``categories`` and with
-            their data; the computation class this object was realized by
-            follows ``engine``.  An owner whose objects are built otherwise
+            Here the result is constructed in the join of ``categories`` on
+            the defining data of this object and the data of ``categories``.
+            The class that realizes this object and its elements is the
+            private computation of the result (``OWN-06``): it consumes the
+            defining data and computes on them, and ``engine`` precedes it.
+            An owner whose objects are built otherwise
             (an algebra on its engine ring, a module on its presentation)
             supplies its own construction.
             """
@@ -278,14 +283,17 @@ class Objects(OwnedCategory):
                 f"cannot construct {self} with the further structure of {categories}: it was not built by its "
                 "category's constructor, so no owner constructs it again on its data"
             )
-            category, own_engine, data = construction
+            _, _, data = construction
             assert data.keys().isdisjoint(construction_data), (
                 f"cannot add the data {sorted(construction_data)} to {self}: it already has "
                 f"the data {sorted(data)} of the same names"
             )
+            target = owned_category_join(categories)
             return _object_of(
-                owned_category_join((category, *categories)),
-                _engine=_engine_with_caller_engine(own_engine, categories, engine),
+                target,
+                _engine=_realization_with_caller_engine(
+                    target, type(self), self.element_class, engine
+                ),
                 **data,
                 **construction_data,
             )
