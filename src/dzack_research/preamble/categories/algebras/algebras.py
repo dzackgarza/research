@@ -1345,16 +1345,12 @@ class Algebras(OwnedCategoryOverBaseRing):
             given ``categories`` and ``construction_data``.  Callers are the
             levels that add structure on a received object (slices, coslices).
             """
-            added_categories, added_data = self._added_structure()
-            assert added_data.keys().isdisjoint(construction_data), (
-                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
-                f"the data {sorted(added_data)} of the same names"
-            )
+            added_categories, added_data = self._added_structure(construction_data)
             return _algebra_structure_on(
                 self,
                 self.algebra_structure_morphism(),
                 categories=(*added_categories, *categories),
-                construction_data={**added_data, **construction_data},
+                construction_data=added_data,
                 engine=engine,
             )
 

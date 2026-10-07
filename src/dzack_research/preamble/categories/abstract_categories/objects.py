@@ -284,35 +284,43 @@ class Objects(OwnedCategory):
                 "category's constructor, so no owner constructs it again on its data"
             )
             _, _, data = construction
-            assert data.keys().isdisjoint(construction_data), (
+            _, level_data = self._added_structure({})
+            owner_data = {name: datum for name, datum in data.items() if name not in level_data}
+            added_categories, added_data = self._added_structure(construction_data)
+            assert owner_data.keys().isdisjoint(added_data), (
                 f"cannot add the data {sorted(construction_data)} to {self}: it already has "
-                f"the data {sorted(data)} of the same names"
+                f"the data {sorted(owner_data)} of the same names"
             )
-            target = owned_category_join(categories)
+            target = owned_category_join((*added_categories, *categories))
             return _object_of(
                 target,
                 _engine=_realization_with_caller_engine(
                     target, type(self), self.element_class, engine
                 ),
-                **data,
-                **construction_data,
+                **owner_data,
+                **added_data,
             )
 
         def _added_structure(
             self,
+            construction_data: dict[str, ConstructionData],
         ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
-            r"""The categories and data that levels above this object's owner add to it.
+            r"""The categories and data that levels above this object's owner add to it, with ``construction_data``.
 
             Protected companion of :meth:`_with_structure` (``OWN-05``).
             Implementing roles: a level that adds structure on a received
-            object extends this cooperatively, so constructing the object
-            again with further structure keeps it.  Calling roles: an owner's
-            :meth:`_with_structure` that does not construct through the
-            defining construction (the module and algebra owners).  The root
-            adds nothing.  The result is construction data, which no public
-            operation returns.
+            object extends this cooperatively.  It returns its categories and
+            its data merged with the data of the same level in
+            ``construction_data``, so constructing the object again with
+            further structure keeps the structure it has: an object of
+            ``C/X`` constructed in ``C/Y`` is an object of both slices, with
+            one arrow in each.  Calling roles: an owner's
+            :meth:`_with_structure`, and the arrow levels' ``arrow()``, which
+            read the categories of the levels.  The root adds nothing and
+            passes ``construction_data`` on.  The result is construction
+            data, which no public operation returns.
             """
-            return (), {}
+            return (), dict(construction_data)
 
         @cached_method
         def _selected_resolution_registry(self):

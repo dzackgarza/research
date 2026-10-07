@@ -590,33 +590,36 @@ specimens start from `Sets.Δ[0].End()`.
 `categories/sets/set_categories.py` were read. Repair is the
 `objects-of-sets-answer-their-endomorphisms` node in [TODO.md](TODO.md).
 
-### An object of one slice cannot be placed in a second slice
+### A scheme over a scheme does not answer its structure morphism
 
-An object of the slice `C/X` is a pair `(A, p: A -> X)`; `SliceCategory`
-and `CosliceCategory` (`abstract_categories/arrow_categories.py`) declare
-`C` and construct `(A, p)` through the owner of `C` on the data of `A`
-(placement ruled 2026-10-07: `C/X` and `X/C` declare `C`, and only `C`,
-by `CAT-16` and `CAT-20`). One object can be over two objects at once: a
-relative spectrum `Y -> X` over `Spec(QQ)` is an object of `Sch/X` and of
-`Sch/Spec(QQ)`. Every slice level stores its arrow under the one name
-`slice_arrow`, and every coslice level under `coslice_arrow`, so the second
-level cannot add its arrow.
-**Evidence (2026-10-07):** with `X = QQ["x"].affine_spectrum()` and
-`Y = X.relative_spectrum(id)`, `Schemes(QQ).as_slice_object(Y)` raises
-`AssertionError: cannot add the data ['slice_arrow', 'slice_category']`
-from `Objects.ParentMethods._with_structure`.
-**Dependency path:** the slice `C/X` adds `p: A -> X` to `A` -> an object
-is in `C/X` and `C/Y` with one arrow for each -> a family over `X` is also
-a scheme over the base ring.
-**Existing capability:** one slice level and one coslice level on one
-object, as in the Galois stage `F_{q^d}`, an object of
-`(F_q / Fields) / e`.
+An object `(A, p: A -> X)` of the slice `Schemes(R)/X` is a scheme over
+`Spec(R)`: its structure morphism is the structure morphism of `X` after
+`p`. The owned `structure_morphism` (`schemes/schemes.py`) answers the base
+scheme, a glued scheme and an object of `Schemes(R).Affine()` from their
+data, and every other scheme from its engine's base morphism. A slice
+object is not in `Schemes(R).Affine()` (owner ruling of 2026-10-08), so it
+takes the engine case, and the engine's base is not the owned base scheme.
+**Evidence (2026-10-08):** with `X = QQ["x"].affine_spectrum()` and
+`Y = X.relative_spectrum(id)`, the Sage base morphism of the engine of `Y`
+ends at a scheme with base ring `Integer Ring`, the engine of
+`Schemes(QQ).base_scheme()` has base ring `Rational Field`, and
+`Y.structure_morphism()` raises `AssertionError: cannot make the Sage
+morphism ... a morphism ...` from the scheme `Mor` element constructor.
+`Schemes(QQ).as_slice_object(Y)` asks that morphism and fails.
+**Dependency path:** `p: A -> X` in `Schemes(R)` -> structure morphism of
+`X` -> structure morphism of `(A, p)` -> `Schemes(R).as_slice_object` of a
+scheme over `X`.
+**Existing capability:** one object is an object of several slices, and
+`SliceCategory.arrow` answers its arrow in each (shown on finite sets:
+an object of `Sets()/{*}` and of `Sets()/{0, 1}` answers both arrows).
 **Consumers:** `Schemes(R).as_slice_object` on any object of a scheme slice
-`Sch/X`, the relative spectra of `schemes.py` and `relative_spec.py`
+`Schemes(R)/X`, the relative spectra of `schemes.py` and `relative_spec.py`
 included.
-**Coverage boundary:** observed on schemes; the same storage is shared by
-every slice and coslice.
-Repair: `an-object-lies-in-several-slices`, in TODO.
+**Coverage boundary:** observed on the affine relative spectrum; other
+slice objects of schemes are untested. The missing part is the route,
+not mathematics: the answer is the forgetful functor `Schemes(R)/X ->
+Schemes(R)` applied to the object, so no `lean-categories` request is filed.
+Repair: `scheme-slice-objects-answer-their-structure-morphism`, in TODO.
 
 ### A finite owned ring does not enumerate its points
 

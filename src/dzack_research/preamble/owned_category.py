@@ -381,6 +381,15 @@ class _OwnedCategoryComparisonKey:
     always compares below its owned supercategory; a digest of the category
     graph resolves siblings reproducibly.
 
+    The structural integer does not separate two categories of one family whose
+    parameter is an object rather than a category: ``C/X`` and ``C/Y`` have the
+    same declaring class, the same supercategory ``C`` and the same base
+    category.  Sage's C3 merge (``C3_sorted_merge`` in
+    ``sage/misc/c3_controlled.pyx``) keys its tails by ``_cmp_key``, so two such
+    categories in one join -- an object of ``C/X`` and of ``C/Y`` at once --
+    need distinct keys.  Sage's session counter is kept as the last component;
+    it orders only categories whose structural keys agree.
+
     This is a non-data descriptor.  Its first use writes the resulting tuple to
     the category instance, exactly as Sage's Cython descriptor does, after which
     normal instance lookup is the fast path.
@@ -392,11 +401,11 @@ class _OwnedCategoryComparisonKey:
     def __get__(self, category: Category | None, owner=None):
         if category is None:
             return self
-        # Ask Sage's original descriptor for the flags.  It temporarily stores
-        # its session counter on the instance; the assignment below immediately
-        # replaces that value with the owned structural key.
+        # Ask Sage's original descriptor for the flags and its session counter.
+        # It temporarily stores them on the instance; the assignment below
+        # immediately replaces that value with the owned structural key.
         native_descriptor = Category.__dict__["_cmp_key"]
-        flags, _session_counter = native_descriptor.__get__(category, type(category))
+        flags, session_counter = native_descriptor.__get__(category, type(category))
         depth = _category_graph_depth(category)
         signature = (
             _category_graph_signature(category),
@@ -407,7 +416,7 @@ class _OwnedCategoryComparisonKey:
             + (depth << self._DEPTH_SHIFT)
             + _stable_signature_integer(signature)
         )
-        result = (flags, structural)
+        result = (flags, structural, session_counter)
         category._cmp_key = result
         return result
 
