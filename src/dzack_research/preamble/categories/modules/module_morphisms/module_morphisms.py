@@ -2504,7 +2504,16 @@ class _ModuleMorCommonMethods:
             _SelectedFinitePresentationModules,
         )
 
-        if self in _SelectedFinitePresentationModules(base_ring) and images in self._internal_mor_model():
+        # Generator images, or a function giving them, store their data and
+        # build no model of Hom_R(M, N); the relation check is
+        # ``validate_linearity`` (``OWN-22``).  Only an element of the model
+        # is read through it.
+        if (
+            not image_data
+            and not callable(images)
+            and self in _SelectedFinitePresentationModules(base_ring)
+            and images in self._internal_mor_model()
+        ):
             return self._morphism_from_internal_model(self._internal_mor_model()(images))
         morphism = self.element_class(self, images)
         morphism.validate_linearity(check=check)
