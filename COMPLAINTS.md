@@ -514,53 +514,33 @@ module over a finite field.
 Repair: `restriction-along-a-finite-free-extension-is-framed` in TODO, which
 `restricted-scalars-modules-are-modules` needs.
 
-### A slice object does not have the operations of its source object
+### An object of one slice cannot be placed in a second slice
 
-An object of the slice `C/X` is a pair `(A, p: A -> X)`, and an object of the
-coslice `X/C` is a pair `(B, i: X -> B)`. `SliceCategory` and
-`CosliceCategory` (`abstract_categories/arrow_categories.py`) declared only
-`Ar(C)`, and their objects were functors `[1] -> C`, so the operations of `A`
-or `B` did not reach them. They now declare `C` and construct through the
-owner of `C`. Over rings this delivers: the degree-3 stage of `G_{F_5}` is
-`F_125` with its embeddings and has cardinality `125`. Over sets, a subset
-is the received set with its inclusion and has that set's points. Over `Cat`,
-a covering family is its presentation `J -> C`, an object of `Cat/C`.
-**Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C`, and only `C`.
-By `CAT-16`, an object `(A, p)` with `p` forgotten is `A`, an object of `C`
-over the same parameters. The projection of `lean-categories` `FOUNDATIONS.md`
-Definition 4.2 is that forgetful functor (`ARC-24`). The slice is a category of
-objects of `C` with selected data, so it declares `C` (`CAT-20`). The inclusion
-into `Ar(C)` is a structural functor, not a declaration: both levels have a
-datum named `functor`, and nested categories of one kind share one method
-class. The slice is chosen enrichment (`OWN-15`, `CON-16`): `(A, p)` is its
-own object, constructed on the data of the received `A`, as `FormModules`
-constructs on its module.
-
-**Construction obstruction:** `CON-16`/`OWN-16` require that `(A, p)` is
-constructed through the owner of `C` on the data of the exact `A`. Owners do
-not supply this construction uniformly:
-- modules supply `_module_with_structure`;
-- rings construct through `Algebras.ParentMethods._with_structure`, the
-  algebra on the data of the received ring with the categories and data of
-  the added levels;
-- every other object that `_object_of` builds, an object of `Cat()`
-  included, constructs at the root, `Objects.ParentMethods._with_structure`,
-  which builds the object again from the category, computation class and
-  data that `_object_of` records, in the join with the added categories.
-
-**Dependency path:** the owner of `C` constructs on the data of `A` ->
-the slice and coslice levels thread `p` on that construction -> a Galois stage
-is the field `F_{q^d}` with its two embeddings -> the stage has the
-cardinality of its field.
-**Existing capability:** the route through the owners of rings, modules
-and of every object built by `_object_of`, schemes, sets and categories
-included (`Objects.ParentMethods._with_structure`, `OWN-05`). A paired module
-is constructed on this route as an object of `Modules(R)/W`.
-**Consumers:** the slices of
-`analytic_families.py`, `relative_spec.py`,
-`base_change.py`, `relative_proj.py`, `ringed_spaces.py` and `schemes.py`,
-each still to be moved onto the route of its base owner.
-Repair: `finite-galois-stages-answer-as-their-fields`, in TODO.
+An object of the slice `C/X` is a pair `(A, p: A -> X)`; `SliceCategory`
+and `CosliceCategory` (`abstract_categories/arrow_categories.py`) declare
+`C` and construct `(A, p)` through the owner of `C` on the data of `A`
+(placement ruled 2026-10-07: `C/X` and `X/C` declare `C`, and only `C`,
+by `CAT-16` and `CAT-20`). One object can be over two objects at once: a
+relative spectrum `Y -> X` over `Spec(QQ)` is an object of `Sch/X` and of
+`Sch/Spec(QQ)`. Every slice level stores its arrow under the one name
+`slice_arrow`, and every coslice level under `coslice_arrow`, so the second
+level cannot add its arrow.
+**Evidence (2026-10-07):** with `X = QQ["x"].affine_spectrum()` and
+`Y = X.relative_spectrum(id)`, `Schemes(QQ).as_slice_object(Y)` raises
+`AssertionError: cannot add the data ['slice_arrow', 'slice_category']`
+from `Objects.ParentMethods._with_structure`.
+**Dependency path:** the slice `C/X` adds `p: A -> X` to `A` -> an object
+is in `C/X` and `C/Y` with one arrow for each -> a family over `X` is also
+a scheme over the base ring.
+**Existing capability:** one slice level and one coslice level on one
+object, as in the Galois stage `F_{q^d}`, an object of
+`(F_q / Fields) / e`.
+**Consumers:** `Schemes(R).as_slice_object` on any object of a scheme slice
+`Sch/X`, the relative spectra of `schemes.py` and `relative_spec.py`
+included.
+**Coverage boundary:** observed on schemes; the same storage is shared by
+every slice and coslice.
+Repair: `an-object-lies-in-several-slices`, in TODO.
 
 ### A finite owned ring does not enumerate its points
 

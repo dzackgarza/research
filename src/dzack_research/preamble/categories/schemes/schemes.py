@@ -3515,7 +3515,9 @@ class Schemes(OwnedCategoryOverBaseRing):
                     f"algebra map out of the coordinate algebra {self.coordinate_algebra()}, but it starts at "
                     f"{algebra_structure.domain()}"
                 )
-                structure_morphism = _affine_spec_morphism(algebra_structure)
+                structure_morphism = _affine_morphism_from_pullback(
+                    algebra_structure.codomain().affine_spectrum(), self, algebra_structure
+                )
                 return self.scheme_category().SliceOver(self)(structure_morphism)
 
     class QuasiAffine(CategoryWithAxiom):
