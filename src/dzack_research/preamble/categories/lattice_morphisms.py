@@ -361,14 +361,6 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
         ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
-        if self.linearity_decision() is not True:
-            raise ValueError(f"{self} is not a lattice morphism: the map from {self.domain()} to {self.codomain()} is not known to be {self.domain().base_ring()}-linear")
-        domain = self.domain()
-        codomain = self.codomain()
-        if domain.module_rank().is_finite() and codomain.module_rank().is_finite():
-            pulled_back = codomain.gram_tensor().pullback(self)
-            if not pulled_back.is_equal_tensor(domain.gram_tensor()):
-                raise ValueError(f"{self} is not a lattice morphism from {domain} to {codomain}: the pullback of the form of {codomain} is not the form of {domain}")
 
 
 class LatticeEmbeddingMethods:
@@ -482,20 +474,8 @@ class LatticeEmbeddingMethods:
 class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
     r"""Compatibility shell for private lattice-embedding realizations."""
 
-    def _injectivity_derivation(self):
-        return None
-
-    def __init__(self, parent, images, *, elementwise=False) -> None:
-        LatticeMorphism.__init__(self, parent, images, elementwise=elementwise)
-        decision = self._injectivity_derivation()
-        if decision is None:
-            decision = ModuleMorphism.is_injective(self)
-        if decision is False:
-            raise ValueError(f"{self} is not a lattice embedding of {self.domain()} into {self.codomain()}: it is not injective")
-        if decision is not True:
-            raise ValueError(f"{self} is not known to be a lattice embedding of {self.domain()} into {self.codomain()}: injectivity could not be decided")
-
     def is_injective(self) -> bool:
+        r"""True: membership in the embedding Mor states it (``OWN-22``)."""
         return True
 
 
@@ -510,9 +490,6 @@ class _TransportedLatticeEmbedding(LatticeEmbedding):
             lambda label: embedding(source.module_generator(label)),
         )
 
-    def _injectivity_derivation(self):
-        return True
-
 
 class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
@@ -526,10 +503,9 @@ class LatticeIsometryMethods:
                 super().__init__(parent, forward, forward.inverse())
             case False:
                 super().__init__(parent, images)
-        if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
-            raise ValueError(f"{self} is not an isometry of {self.domain()} onto {self.codomain()}: it is not surjective")
 
     def is_surjective(self) -> bool:
+        r"""True: membership in the isometry Mor states it (``OWN-22``)."""
         return True
 
     def inverse(self):
@@ -946,6 +922,31 @@ class LatticeIsometry(LatticeIsometryMethods, LatticeEmbedding):
     r"""Compatibility shell for private lattice-isometry realizations."""
 
 
+def _checked_lattice_morphism(morphism, *, injective: bool, surjective: bool):
+    r"""Check the caller's data under ``check=True`` (``OWN-22``), and return ``morphism``.
+
+    The check asks the morphism whether it is linear and whether it pulls the
+    form of the codomain back to the form of the domain, and asks the
+    underlying module map whether it is injective or surjective when the
+    Mor it was read in states that.  The answers are untrusted computations.
+    """
+    domain = morphism.domain()
+    codomain = morphism.codomain()
+    if morphism.linearity_decision() is not True:
+        raise ValueError(f"{morphism} is not a lattice morphism: the map from {domain} to {codomain} is not known to be {domain.base_ring()}-linear")
+    assert domain.module_rank().is_finite() and codomain.module_rank().is_finite(), (
+        f"cannot check {morphism}: the form check compares Gram tensors, and {domain} or {codomain} has infinite rank"
+    )
+    if not codomain.gram_tensor().pullback(morphism).is_equal_tensor(domain.gram_tensor()):
+        raise ValueError(f"{morphism} is not a lattice morphism from {domain} to {codomain}: the pullback of the form of {codomain} is not the form of {domain}")
+    module_map = domain.module_category().Mor(domain, codomain)(morphism)
+    if injective and module_map.is_injective() is not True:
+        raise ValueError(f"{morphism} is not known to be a lattice embedding of {domain} into {codomain}: its module map is not known to be injective")
+    if surjective and module_map.is_surjective() is not True:
+        raise ValueError(f"{morphism} is not known to be an isometry of {domain} onto {codomain}: its module map is not known to be surjective")
+    return morphism
+
+
 class LatticeMor(CategoricalMor):
     ElementMethods = LatticeMorphismMethods
 
@@ -963,7 +964,13 @@ class LatticeMor(CategoricalMor):
             codomain,
         )
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        morphism = self._morphism_from_images(images)
+        if check:
+            return _checked_lattice_morphism(morphism, injective=False, surjective=False)
+        return morphism
+
+    def _morphism_from_images(self, images):
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -973,8 +980,6 @@ class LatticeMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            if images.linearity_decision() is not True:
-                raise ValueError(f"{images} is not a lattice morphism from {self.domain()} to {self.codomain()}: it is not known to be {self.domain().base_ring()}-linear")
             return self.elementwise(lambda element: images(element))
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
@@ -1023,7 +1028,13 @@ class LatticeEmbeddingMor(CategoricalMor):
         if category is not None:
             realize_owned_category(self)
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        embedding = self._morphism_from_images(images)
+        if check:
+            return _checked_lattice_morphism(embedding, injective=True, surjective=False)
+        return embedding
+
+    def _morphism_from_images(self, images):
         if isinstance(images, ModuleEmbeddingMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -1041,8 +1052,6 @@ class LatticeEmbeddingMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            if images.linearity_decision() is not True:
-                raise ValueError(f"{images} is not a lattice embedding of {self.domain()} into {self.codomain()}: it is not known to be {self.domain().base_ring()}-linear")
             source = self.domain()
             return self.element_class(
                 self,
@@ -1315,7 +1324,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         ):
             self._retain_group_framing(self._computed_group_generators())
 
-    def _element_constructor_(self, images):
+    def _element_constructor_(self, images, *, check=False):
+        isometry = self._morphism_from_images(images)
+        if check:
+            return _checked_lattice_morphism(isometry, injective=True, surjective=True)
+        return isometry
+
+    def _morphism_from_images(self, images):
         if isinstance(images, LatticeIsometryMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(

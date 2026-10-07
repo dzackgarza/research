@@ -177,9 +177,12 @@ class FormedModuleMorphism:
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
-    and a module map on the value objects, satisfying the form square.  The
-    form is preserved exactly, and the morphism is an isometry onto its image,
-    exactly when ``h`` is the identity; :meth:`preserves_form_exactly` asks that.
+    and a module map on the value objects, satisfying the form square
+    ``h(b(x,y)) = b'(f(x),f(y))``.  Construction states the square and does not
+    compute it (``OWN-22``); :meth:`preserves_forms` computes it when asked.
+    The form is preserved exactly, and the morphism is an isometry onto its
+    image, exactly when ``h`` is the identity; :meth:`preserves_form_exactly`
+    asks that.
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
@@ -209,7 +212,6 @@ class FormedModuleMorphism:
             )
         self._value_morphism = value_morphism
         super().__init__(parent, module_morphism)
-        self._check_form_square()
 
     def value_morphism(self):
         return self._value_morphism
@@ -230,8 +232,12 @@ class FormedModuleMorphism:
             self.codomain(), self.value_morphism()(source_element)
         )
 
-    def _check_form_square(self) -> None:
-        domain = self.domain()
+    def preserves_forms(self) -> bool:
+        r"""Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on the module generators.
+
+        The caller's diagnostic of ``OWN-22``: construction does not compute
+        it, and its answer is an untrusted computation.
+        """
         source_form = self.domain().form()
         target_form = self.codomain().form()
         source_generators = tuple(self.domain().module_generators())
@@ -241,7 +247,7 @@ class FormedModuleMorphism:
                     f"{self.domain()} has a bilinear form, so a morphism out of it must land in a "
                     f"module with a bilinear form, but {self.codomain()} has form {target_form}"
                 )
-            commutes = all(
+            return all(
                 self.map_value(self.domain().b(left, right))
                 == self.codomain().b(
                     self(left), self(right)
@@ -249,7 +255,7 @@ class FormedModuleMorphism:
                 for left in source_generators
                 for right in source_generators
             )
-        elif _is_quadratic_form(source_form):
+        if _is_quadratic_form(source_form):
             if not _is_quadratic_form(target_form):
                 raise TypeError(
                     f"{self.domain()} has a quadratic form, so a morphism out of it must land in a "
@@ -260,22 +266,15 @@ class FormedModuleMorphism:
                 for index, left in enumerate(source_generators)
                 for right in source_generators[index + 1 :]
             )
-            commutes = all(
+            return all(
                 self.map_value(self.domain().norm(element))
                 == self.codomain().norm(self(element))
                 for element in probes
             )
-        else:
-            raise TypeError(
-                f"a morphism of formed modules requires a bilinear or quadratic form on its domain, "
-                f"but {self.domain()} has form {source_form}"
-            )
-        if not commutes:
-            raise ValueError(
-                f"({self}, {self.value_morphism()}) is not a morphism of formed modules "
-                f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not equal "
-                f"the target form on the images of the generators"
-            )
+        raise TypeError(
+            f"a morphism of formed modules requires a bilinear or quadratic form on its domain, "
+            f"but {self.domain()} has form {source_form}"
+        )
 
     def __eq__(self, other) -> bool:
         r"""A formed morphism is the pair ``(f,h)``; both components decide."""
@@ -413,9 +412,11 @@ class FormEmbeddingMor(CategoricalMor):
             )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
-    def _element_constructor_(self, images, *, quadratic: bool | None = None):
+    def _element_constructor_(self, images, *, quadratic: bool | None = None, check=False):
+        domain = self.domain()
+        codomain = self.codomain()
         if isinstance(images, FormEmbedding):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+            if images.domain() is not domain or images.codomain() is not codomain:
                 raise ValueError(
                     f"{images} is an embedding {images.domain()} -> {images.codomain()}, "
                     f"not an element of {self}"
@@ -424,8 +425,6 @@ class FormEmbeddingMor(CategoricalMor):
                 return images
             images = domain.module_category().Mor(domain, codomain)(images)
 
-        domain = self.domain()
-        codomain = self.codomain()
         if quadratic is None:
             ring = domain.base_ring()
             quadratic = domain in QuadraticFormModules(ring)
@@ -442,7 +441,14 @@ class FormEmbeddingMor(CategoricalMor):
             values.module_category().Mor(values, values).identity(),
             quadratic=quadratic,
         )
-        injective = embedding.is_injective()
+        if not check:
+            return embedding
+        if not embedding.preserves_forms():
+            raise ValueError(
+                f"{module_morphism} is not a form-preserving embedding {domain} -> {codomain}: "
+                f"it does not carry the form of {domain} to the form of {codomain} on generators"
+            )
+        injective = module_morphism.is_injective()
         if injective is not True:
             raise ValueError(
                 f"{module_morphism} is not a form-preserving embedding {domain} -> {codomain}: "
@@ -481,7 +487,7 @@ class FormedModuleMor(CategoricalMor):
             codomain,
         )
 
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, *, check=False):
 
         explicit_pair = (
             isinstance(datum, tuple)
@@ -522,7 +528,14 @@ class FormedModuleMor(CategoricalMor):
                 )
             datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
         module_morphism, value_morphism = datum
-        return self.element_class(self, module_morphism, value_morphism)
+        morphism = self.element_class(self, module_morphism, value_morphism)
+        if check and not morphism.preserves_forms():
+            raise ValueError(
+                f"({morphism}, {value_morphism}) is not a morphism of formed modules "
+                f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not "
+                f"equal the target form on the images of the generators"
+            )
+        return morphism
 
     @cached_method
     def identity(self):
@@ -599,7 +612,6 @@ class FiberedFormedModuleMorphism:
             domain,
         )
         super().__init__(parent, parent.ring_map(), compatible)
-        self._check_form_square()
 
     def ring_map(self):
         return self.parent().ring_map()
@@ -617,7 +629,12 @@ class FiberedFormedModuleMorphism:
             self.codomain(), self.value_morphism()(source_element)
         )
 
-    def _check_form_square(self) -> None:
+    def preserves_forms(self) -> bool:
+        r"""Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on generators of the scalar extension.
+
+        The caller's diagnostic of ``OWN-22``: construction does not compute
+        it, and its answer is an untrusted computation.
+        """
         changed = self.base_changed_domain()
         module_morphism = self.linearization()
         source_form = changed.form()
@@ -629,7 +646,7 @@ class FiberedFormedModuleMorphism:
                     f"{changed} has a bilinear form, so a morphism out of it must land in a "
                     f"module with a bilinear form, but {self.codomain()} has form {target_form}"
                 )
-            commutes = all(
+            return all(
                 self.map_value(changed.b(left, right))
                 == self.codomain().b(
                     module_morphism(left), module_morphism(right)
@@ -637,7 +654,7 @@ class FiberedFormedModuleMorphism:
                 for left in generators
                 for right in generators
             )
-        elif _is_quadratic_form(source_form):
+        if _is_quadratic_form(source_form):
             if not _is_quadratic_form(target_form):
                 raise TypeError(
                     f"{changed} has a quadratic form, so a morphism out of it must land in a "
@@ -648,22 +665,15 @@ class FiberedFormedModuleMorphism:
                 for index, left in enumerate(generators)
                 for right in generators[index + 1 :]
             )
-            commutes = all(
+            return all(
                 self.map_value(changed.norm(element))
                 == self.codomain().norm(module_morphism(element))
                 for element in probes
             )
-        else:
-            raise TypeError(
-                f"a morphism of formed modules over {self.ring_map()} requires a bilinear or quadratic "
-                f"form on its domain, but {changed} has form {source_form}"
-            )
-        if not commutes:
-            raise ValueError(
-                f"({module_morphism}, {self.value_morphism()}) is not a morphism of formed modules "
-                f"{changed} -> {self.codomain()} over {self.ring_map()}: the value map applied to the source "
-                f"form does not equal the target form on the images of the generators"
-            )
+        raise TypeError(
+            f"a morphism of formed modules over {self.ring_map()} requires a bilinear or quadratic "
+            f"form on its domain, but {changed} has form {source_form}"
+        )
 
     def __mul__(self, other):
         if not isinstance(other, FiberedFormedModuleMorphism):
@@ -755,9 +765,16 @@ class FiberedFormedModuleMor(CategoricalMor):
         r"""The lower arrow theory is the varying-ring semilinear module Mor."""
         return [self.module_mor()]
 
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, *, check=False):
         module_morphism, value_morphism = datum
-        return self.element_class(self, module_morphism, value_morphism)
+        morphism = self.element_class(self, module_morphism, value_morphism)
+        if check and not morphism.preserves_forms():
+            raise ValueError(
+                f"({module_morphism}, {value_morphism}) is not a morphism of formed modules "
+                f"{morphism.base_changed_domain()} -> {self.codomain()} over {self.ring_map()}: the value map "
+                f"applied to the source form does not equal the target form on the images of the generators"
+            )
+        return morphism
 
     def identity(self):
         if self.domain() is not self.codomain():
