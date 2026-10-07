@@ -33,7 +33,7 @@ class MagmaMorphism:
             right.domain() not in category
             or not right.parent().mor_family().base_category().is_subcategory(category)
         ):
-            return NotImplemented
+            return super()._composition(right)
         return self.parent().mor_family().Of(
             right.domain(), self.codomain()
         )(lambda element: self(right(element)))

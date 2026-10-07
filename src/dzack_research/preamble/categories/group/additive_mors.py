@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -43,7 +44,7 @@ class AdditiveMagmaMorphism:
             right.domain() not in category
             or not right.parent().mor_family().base_category().is_subcategory(category)
         ):
-            return NotImplemented
+            return super()._composition(right)
         return self.parent().mor_family().Of(
             right.domain(), self.codomain()
         )(lambda element: self(right(element)))
@@ -183,12 +184,14 @@ class AdditiveMorGroups(OwnedCategory):
         def _composition(self, right):
             r"""``self ∘ right`` in the additive Mor family.
 
-            Sage's ``Map.__mul__`` has checked that ``right`` is a map into
-            this morphism's domain; a map outside the additive Mor theory is
-            not composed here.
+            The root arrow host has checked that ``right`` is a map into
+            this morphism's domain; a map outside the additive Mor theory
+            composes as a map of sets.  This is a category arrow method, so
+            Sage copies it into the generated arrow type and ``super()`` does
+            not reach the root host; the set-level composite is named.
             """
             if not right.parent().mor_category().is_subcategory(self.parent().mor_category()):
-                return NotImplemented
+                return OwnedSetMorphism._composition(self, right)
             if right.parent() is self.parent() and self.domain() is self.codomain():
                 return self.parent()._compose_endomorphisms(self, right)
             mor = self.parent().mor_family().Of(right.domain(), self.codomain())
