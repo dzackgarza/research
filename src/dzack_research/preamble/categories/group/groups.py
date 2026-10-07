@@ -2846,17 +2846,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             r"""Return this category with the axiom that some finite subset generates."""
             return self._with_axiom("FinitelyGeneratedAsMagma")
 
-        def FinitelyGenerated(self) -> Category:
-            r"""Sage's shorthand for :meth:`FinitelyGeneratedAsMagma`."""
-            return self.FinitelyGeneratedAsMagma()
-
         def FinitelyPresentedAsGroup(self) -> Category:
             r"""Return this category with the axiom that some finite presentation exists."""
             return self._with_axiom("FinitelyPresentedAsGroup")
-
-        def FinitelyPresented(self) -> Category:
-            r"""Shorthand for :meth:`FinitelyPresentedAsGroup`."""
-            return self.FinitelyPresentedAsGroup()
 
         # Functors out of ``Grp``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
