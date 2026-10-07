@@ -7758,6 +7758,29 @@ class there before using it.
   filter rewrites the key to the one global Stacks entry and appends a linked
   `[Tag 02LS]`.
 
+### Source-grounded mathematics and original work
+
+Before inserting a mathematical definition, hypothesis, criterion, theorem,
+or identification into a research artifact, establish its source and its
+place in the requested task. Read the cited passage and check the objects,
+hypotheses, and conclusion against the proposed statement. Cite the exact
+location. For a derivation of a requested claim, identify the cited premises
+and supply the derivation.
+
+If the required result has not been verified, keep the research question
+open. Do not replace it with an agent-devised condition, conjecture, or
+different theorem. A request to explain, compare, or document existing
+theory does not authorize original mathematical development. Neither an
+agent-written proof nor a label such as “sufficient condition” supplies
+that authorization.
+
+Original mathematical development requires an explicit request from the
+user. Attribute it as original work and distinguish proved results from
+conjectures. Before committing source-based exposition, check each added
+statement for a verified source or a derivation of a requested claim;
+remove additions that satisfy neither condition. Record unresolved source
+questions under the house rule for open problems.
+
 ### House parameters
 
 - **Definiendum (`DEF-26`, `PR-10`).** The term being defined is in *italics*
