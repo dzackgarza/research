@@ -16,7 +16,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import cmp_to_key
-from typing import SupportsInt, TypeVar
+from typing import TYPE_CHECKING, SupportsInt, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
@@ -36,6 +36,9 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.owned_category import _object_of
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 IndexT = TypeVar("IndexT")
 
@@ -197,20 +200,22 @@ class _PowerCardinal(_CardinalExpression):
         below ``kappa^lambda`` by monotonicity.
         """
         cardinalities = Cardinalities()
-        if cardinalities.le(cardinal_number, self.base):
+        if cardinalities._proves_le(cardinal_number, self.base):
             return True
-        if cardinalities.le(2, self.base) and cardinalities.le(cardinal_number, self.exponent):
+        if cardinalities._proves_le(2, self.base) and cardinalities._proves_le(cardinal_number, self.exponent):
             return True
         return cardinal_number.expression().is_componentwise_below(self)
 
     def strictly_bounds_above(self, cardinal_number: Cardinal) -> bool:
         r"""Decide ``cardinal_number < kappa^lambda`` by Cantor's theorem: ``nu <= lambda < 2^lambda <= kappa^lambda``."""
         cardinalities = Cardinalities()
-        return cardinalities.le(2, self.base) and cardinalities.le(cardinal_number, self.exponent)
+        return cardinalities._proves_le(2, self.base) and cardinalities._proves_le(cardinal_number, self.exponent)
 
     def is_componentwise_below(self, power: _PowerCardinal) -> bool:
         cardinalities = Cardinalities()
-        return cardinalities.le(self.base, power.base) and cardinalities.le(self.exponent, power.exponent)
+        return cardinalities._proves_le(self.base, power.base) and cardinalities._proves_le(
+            self.exponent, power.exponent
+        )
 
 
 @dataclass(frozen=True)
@@ -333,19 +338,12 @@ class CardinalityMor(CategoricalMor):
     def is_empty(self):
         r"""The cardinal-order Mor is empty exactly when its source exceeds its target.
 
-        The comparison owner proves some inequalities and leaves others
-        undecided.  Failure to prove an inequality is not its negation.
+        It is the negation of ``domain <= codomain``: decided when that
+        comparison is decided, and otherwise the proposition that states it.
         """
-        cardinals = Cardinalities()
-        match (cardinals.le(self.domain(), self.codomain()), cardinals.lt(self.codomain(), self.domain())):
-            case (True, _):
-                return False
-            case (_, True):
-                return True
-            case _:
-                from dzack_research.preamble.logic import AtomicProposition
+        from dzack_research.preamble.logic import negation
 
-                return AtomicProposition("is_empty", self)
+        return negation(Cardinalities().le(self.domain(), self.codomain()))
 
     def cardinality(self) -> Cardinal:
         r"""Zero or one when the cardinal comparison decides the Mor's emptiness."""
@@ -474,16 +472,16 @@ class Cardinalities(OwnedCategory):
         def __ne__(self, other) -> bool:
             return not self == other
 
-        def __lt__(self, other) -> bool:
+        def __lt__(self, other) -> bool | Predicate:
             return Cardinalities().lt(self, other)
 
-        def __le__(self, other) -> bool:
+        def __le__(self, other) -> bool | Predicate:
             return Cardinalities().le(self, other)
 
-        def __gt__(self, other) -> bool:
+        def __gt__(self, other) -> bool | Predicate:
             return Cardinalities().gt(self, other)
 
-        def __ge__(self, other) -> bool:
+        def __ge__(self, other) -> bool | Predicate:
             return Cardinalities().ge(self, other)
 
         def __add__(self, other):
@@ -671,7 +669,7 @@ class Cardinalities(OwnedCategory):
             if cardinal_base.is_finite():
                 return cardinal(cardinal_base._finite_int() ** cardinal_exponent._finite_int())
             return cardinal_base
-        if cardinal_base.is_finite() or self.le(cardinal_base, cardinal_exponent):
+        if cardinal_base.is_finite() or self._proves_le(cardinal_base, cardinal_exponent):
             cardinal_base = cardinal(2)
         return cardinal_exponent.expression().power_with_this_exponent(cardinal_base, cardinal_exponent)
 
@@ -699,10 +697,15 @@ class Cardinalities(OwnedCategory):
         exponent_morphism: CardinalityMorphism,
     ) -> CardinalityMorphism:
         r"""Apply exponentiation to comparisons when the source base is nonzero."""
-        if not self.le(1, base_morphism.domain()):
+        nonzero = self.le(1, base_morphism.domain())
+        assert nonzero is True or nonzero is False, (
+            f"cannot apply exponentiation to {base_morphism}: whether its source base "
+            f"{base_morphism.domain()} is nonzero, {nonzero}, is not decided by the represented cardinal laws"
+        )
+        if nonzero is False:
             raise ValueError(
                 f"exponentiation is monotone in the exponent only for a nonzero base, but the base "
-                f"{base_morphism.domain()} may be zero"
+                f"{base_morphism.domain()} is zero"
             )
         source = self.power(
             base_morphism.domain(),
@@ -729,9 +732,9 @@ class Cardinalities(OwnedCategory):
         )
         maximal_terms: list[Cardinal] = []
         for candidate in sorted(set(terms), key=lambda term: term.sort_key()):
-            if any(self.le(candidate, term) for term in maximal_terms):
+            if any(self._proves_le(candidate, term) for term in maximal_terms):
                 continue
-            maximal_terms = [term for term in maximal_terms if not self.le(term, candidate)]
+            maximal_terms = [term for term in maximal_terms if not self._proves_le(term, candidate)]
             maximal_terms.append(candidate)
         maximal_terms.sort(key=lambda term: term.sort_key())
         if len(maximal_terms) == 1:
@@ -742,11 +745,34 @@ class Cardinalities(OwnedCategory):
         self,
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
+    ) -> bool | Predicate:
+        r"""Decide ``source <= target``, or return the proposition ``le(source, target)``.
+
+        ``True`` when the represented laws prove ``source <= target``;
+        ``False`` when they prove ``target < source``, which excludes
+        ``source <= target`` by the Cantor--Schroeder--Bernstein theorem;
+        otherwise the proposition, which ``ask`` answers ``Unknown`` (`DEF-06`).
+        """
+        match (self._proves_le(source, target), self._proves_lt(target, source)):
+            case (True, _):
+                return True
+            case (_, True):
+                return False
+            case _:
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("le", cardinal(source), cardinal(target))
+
+    def _proves_le(
+        self,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
-        r"""Prove ``source <= target`` by the represented laws; ``False`` means no proof was found.
+        r"""Whether the represented laws prove ``source <= target``.
 
         A supremum is below ``target`` when each of its terms is, and
         ``source`` is below a supremum when it is below one of its terms.
+        ``False`` means that no proof was found, not that the inequality fails.
         """
         left = cardinal(source)
         right = cardinal(target)
@@ -782,8 +808,30 @@ class Cardinalities(OwnedCategory):
         self,
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
+    ) -> bool | Predicate:
+        r"""Decide ``source < target``, or return the proposition ``lt(source, target)``.
+
+        ``True`` when the represented laws prove ``source < target``;
+        ``False`` when they prove ``target <= source``, which excludes
+        ``source < target`` by the Cantor--Schroeder--Bernstein theorem;
+        otherwise the proposition, which ``ask`` answers ``Unknown`` (`DEF-06`).
+        """
+        match (self._proves_lt(source, target), self._proves_le(target, source)):
+            case (True, _):
+                return True
+            case (_, True):
+                return False
+            case _:
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("lt", cardinal(source), cardinal(target))
+
+    def _proves_lt(
+        self,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
-        r"""Prove ``source < target`` by the represented laws; ``False`` means no proof was found."""
+        r"""Whether the represented laws prove ``source < target``; ``False`` means that no proof was found."""
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
@@ -816,14 +864,14 @@ class Cardinalities(OwnedCategory):
         self,
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
-    ) -> bool:
+    ) -> bool | Predicate:
         return self.le(target, source)
 
     def gt(
         self,
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
-    ) -> bool:
+    ) -> bool | Predicate:
         return self.lt(target, source)
 
     def compare(
@@ -831,17 +879,22 @@ class Cardinalities(OwnedCategory):
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
     ) -> CardinalComparison:
+        r"""The strongest relation between ``source`` and ``target`` that the represented laws decide.
+
+        ``INCOMPARABLE`` means that neither ``source <= target`` nor
+        ``target <= source`` is decided.
+        """
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
             return CardinalComparison.EQUAL
-        if self.lt(left, right):
+        if self.lt(left, right) is True:
             return CardinalComparison.LESS
-        if self.lt(right, left):
+        if self.lt(right, left) is True:
             return CardinalComparison.GREATER
-        if self.le(left, right):
+        if self.le(left, right) is True:
             return CardinalComparison.LESS_OR_EQUAL
-        if self.le(right, left):
+        if self.le(right, left) is True:
             return CardinalComparison.GREATER_OR_EQUAL
         return CardinalComparison.INCOMPARABLE
 
@@ -850,7 +903,16 @@ class Cardinalities(OwnedCategory):
         source: Cardinal | SupportsInt | AnInfinity,
         target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
-        return not self.le(source, target) and not self.le(target, source)
+        r"""Whether the represented cardinal laws leave both ``source <= target`` and ``target <= source`` undecided.
+
+        ``True`` exactly when neither comparison is decided ``True`` or
+        ``False``.  This is a statement about the represented laws, not
+        incomparability in ZFC: under the axiom of choice any two cardinals
+        are comparable.
+        """
+        forward = self.le(source, target)
+        backward = self.le(target, source)
+        return forward is not True and forward is not False and backward is not True and backward is not False
 
 
 Cardinal = Cardinalities().ObjectType
