@@ -426,7 +426,28 @@ Repair the existing public construction routes and inherited methods before prov
   **Policy search:** `CAT-02` forbids a property category from computing a witness on demand; the basis `1, ..., x^{d-1}` is the datum the quotient by a monic `p` determines, not a witness a property category selects. `CON-16` and `OWN-15` (chosen enrichment) keep `Res_f(S)` and `S` distinct objects, which is the distinction the current code erases.
   **Closure:** `Modules(A).restriction_of_scalars(f)(A.regular_module()).has_selected_module_resolution()` is true for `A = GF(2)[x]/(x^2)` and `f: GF(2) -> A`, with module generating set of cardinality 2.
 
-- [ ] **`finite-galois-stages-answer-as-their-fields`**. **Needs:** none.
+- [ ] **`rings-construct-with-added-structure`**. **Needs:** none.
+  **Violated statement:** `OWN-16`: "Construct `X=(M,d)` through the immediate category owner on the data of the exact `M` received"; `CON-16` (chosen enrichment); `AGENTS.md`, *How the preamble presents the mathematics*: "a constructor that calls `Parent.__init__` instead of `super().__init__`" and *Dynamic peeking is prohibited*: "Every use of `setattr` is suspect".
+  **Evidence:** a slice over `Fields` declares `Fields` (`CAT-16`, `CAT-20`, ruled 2026-10-07), so an object `(K, p)` of `Fields/X` is constructed through the ring owner on the data of `K`. The ring owner builds an algebra on a received ring (`algebras/algebras.py`, `_algebra_structure_view`), but no caller can add the categories and data of another level to it. `_OwnedAlgebraParent.__init__` stores construction data with `setattr` (`algebras/algebras.py:3212`), and `_OwnedRingParent.__init__` calls `Parent.__init__` directly (`rings/ring_foundation.py:3820`).
+  **Policy search:** `OWN-17` permits a received ring to be retained as defining data; no rule permits a slice level to construct a ring object outside the ring owner.
+  **Owner and delta:** an object of `Algebras(R)` constructs, on the data of the exact received ring `A` with its structure morphism, the object of the meet of `Algebras(R)` with given categories, with the data of those levels.
+  **Closure:** for the coslice `GF(5)/Fields` and `i: GF(5) -> GF(125)`, `OwnedFields().CosliceUnder(GF(5))(i).cardinality()` is `125`.
+
+- [ ] **`sets-construct-with-added-structure`**. **Needs:** none.
+  **Violated statement:** `OWN-16` and `CON-16` as in `rings-construct-with-added-structure`; `AGENTS.md`, *How the preamble presents the mathematics*: a leaf "never writes a forwarding method".
+  **Evidence:** the set owner has no construction of a set with added structure on the data of a received set. `SetSubobjectCategory.ParentMethods` (`abstract_categories/arrow_categories.py:1287`-`1302`) forwards `underlying_set`, `__contains__`, `__iter__` and `cardinality` to the domain of the inclusion, which is the forwarding that rule forbids.
+  **Policy search:** `CAT-20` gives `Sets/X` the declaration `Sets`; no rule permits a set-level object without the set's own operations.
+  **Owner and delta:** an object of `Sets()` constructs, on the data of the exact received set `S`, the object of the meet of `Sets()` with given categories, with the data of those levels; set subobjects construct through it and the forwarding methods are removed.
+  **Closure:** `Sets().SliceOver(X)(f).cardinality()` equals the cardinality of `f.domain()` for a finite set map `f`, and `SetSubobjectCategory.ParentMethods` defines no set operation.
+
+- [ ] **`categories-construct-with-added-structure`**. **Needs:** none.
+  **Violated statement:** `OWN-16` and `CON-16` as in `rings-construct-with-added-structure`.
+  **Evidence:** `CoveringFamilies.presentation_category` (`abstract_categories/presheaves.py:721`) is `SliceCategory(Cat(), Cat().object(C))`. Under the declaration `Cat` (`CAT-20`), its objects are constructed through the owner of `Cat` on the data of a received category, and `Cat` supplies no such construction.
+  **Policy search:** as in `sets-construct-with-added-structure`.
+  **Owner and delta:** an object of `Cat()` constructs, on the data of the exact received category, the object of the meet of `Cat()` with given categories, with the data of those levels.
+  **Closure:** `CoveringFamilies(C).an_object()` constructs for a finite site `C`, and its presentation diagram is an object of `Cat()` over `C`.
+
+- [ ] **`finite-galois-stages-answer-as-their-fields`**. **Needs:** `rings-construct-with-added-structure`, `sets-construct-with-added-structure`, `categories-construct-with-added-structure`.
   **Violated statement:** `OWN-15`: "construct the weaker object first and retain that exact object as part of the stronger object's defining data"; `AGENTS.md`, *Added structure enriches an object; it never wraps one*: "every set-theoretic answer -- cardinality, finiteness, ... -- is *inherited through the construction*".
   **Evidence:** over `F_q` the degree-`d` stage of `G_{F_q}` is the field `F_{q^d}` with its maps `F_q -> F_{q^d} -> Fbar_q`, an object of the slice `(F_q / Fields) / e` (`group/profinite/galois_quotient.py`, `FiniteGaloisExtension`). `AbsoluteGaloisGroup(GF(5)).finite_extension(3).cardinality()` fails: the stage object (`SliceCategory.parent_class[_FiniteGaloisExtensionEngine].ObjectType`) has no `cardinality`, so the operations of `F_125` do not reach it.
   **Policy search:** `CON-16`/`OWN-15` (chosen enrichment) make the stage its own object constructed on `F_{q^d}`, which is what the code builds; neither permits the stage to lose the operations of the field it is built on. `CAT-15`/`CAT-16` place the slice over `Fields` by its projection, which carries no rule that hides the field's operations.

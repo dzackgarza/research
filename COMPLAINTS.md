@@ -524,22 +524,29 @@ coslice `X/C` is a pair `(B, i: X -> B)`. `SliceCategory` and
 of `(F_5/Fields)/e` built on `F_125`. The call
 `AbsoluteGaloisGroup(GF(5)).finite_extension(3).cardinality()` fails, because
 the stage has no `cardinality` (observed 2026-10-07).
-**Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C` beside `Ar(C)`.
+**Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C`, and only `C`.
 By `CAT-16`, an object `(A, p)` with `p` forgotten is `A`, an object of `C`
 over the same parameters. The projection of `lean-categories` `FOUNDATIONS.md`
-Definition 4.2 is that forgetful functor (`ARC-24`). The slice is chosen
-enrichment (`OWN-15`, `CON-16`): `(A, p)` is its own object, constructed on the
-data of the received `A`, as `FormModules` constructs on its module.
+Definition 4.2 is that forgetful functor (`ARC-24`). The slice is a category of
+objects of `C` with selected data, so it declares `C` (`CAT-20`). The inclusion
+into `Ar(C)` is a structural functor, not a declaration: both levels have a
+datum named `functor`, and nested categories of one kind share one method
+class. The slice is chosen enrichment (`OWN-15`, `CON-16`): `(A, p)` is its
+own object, constructed on the data of the received `A`, as `FormModules`
+constructs on its module.
 
-**Construction obstruction:** `CON-16`/`OWN-16` require that `(A, p)` is constructed through the owner of `C` on the data of
-the exact `A`. Owners do not supply this construction uniformly:
+**Construction obstruction:** `CON-16`/`OWN-16` require that `(A, p)` is
+constructed through the owner of `C` on the data of the exact `A`. Owners do
+not supply this construction uniformly:
 - modules supply `_module_with_structure`;
 - schemes supply `_scheme_with_structure`;
 - sets and `Cat` supply no such construction;
-- rings supply only `_OwnedAlgebraParent`, which stores construction data with
-  `setattr` (`algebras/algebras.py:3212`). `_OwnedRingParent.__init__` calls
-  `Parent.__init__` directly (`rings/ring_foundation.py:3820`), so the
-  cooperative `__init__` of an added slice level never runs on a ring.
+- rings construct an algebra on the data of a received ring
+  (`_algebra_structure_view`, `_algebra_on_module`), but give a caller no
+  route to add the categories and data of another level. Construction data
+  is stored with `setattr` (`algebras/algebras.py:3212`), and
+  `_OwnedRingParent.__init__` calls `Parent.__init__` directly
+  (`rings/ring_foundation.py:3820`).
 
 `AbsoluteGaloisGroup.extension_data` (`group/profinite/absolute_galois_group.py:530`)
 tells a stage from a field by `extension not in OwnedRings()`. This test fails
@@ -554,7 +561,10 @@ gives `F_125`, which has the cardinality `125`.
 **Consumers:** every slice and coslice in the tree (Galois stages, schemes over
 a base, `PairedModules`, presheaf sites, analytic families).
 `tests/constructions/test_galois_construct.sage::test_the_absolute_galois_group_of_a_finite_field`.
-Repair: `finite-galois-stages-answer-as-their-fields` in TODO.
+Repair: `rings-construct-with-added-structure`,
+`sets-construct-with-added-structure` and
+`categories-construct-with-added-structure`, then
+`finite-galois-stages-answer-as-their-fields`, in TODO.
 
 ## Workflow Papercuts
 
