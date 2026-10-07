@@ -25,7 +25,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytopes
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSets,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -67,7 +71,7 @@ def _element_from_coordinates(lattice, coordinates):
             return coefficient
         return _owned_engine_element(ring, coefficient)
 
-    return lattice.linear_combination(
+    return lattice(
         {
             label: owned(coefficient)
             for label, coefficient in zip(
@@ -75,6 +79,41 @@ def _element_from_coordinates(lattice, coordinates):
             )
             if coefficient
         }
+    )
+
+
+def _shell(lattice, square, coordinate_rows):
+    r"""Return the finite ordered set of the vectors of ``lattice`` with these coordinates.
+
+    The engine enumerates each vector of a shell once, so the rows are
+    distinct and need no identification.  A vector is raised into the
+    lattice when it is first asked for, and membership is the lookup of its
+    coordinates.
+    """
+    index_set = finite_ordinal_set(len(coordinate_rows))
+    positions = {
+        tuple(int(coordinate) for coordinate in row): position
+        for position, row in enumerate(coordinate_rows)
+    }
+
+    @cache
+    def element_at(position):
+        return _element_from_coordinates(lattice, coordinate_rows[int(position)])
+
+    def index_of(element):
+        if element_parent(element) is not lattice:
+            return None
+        position = positions.get(tuple(int(coordinate) for coordinate in element))
+        if position is None:
+            return None
+        return index_set(position)
+
+    return FiniteOrderedSets().from_indexed(
+        index_set,
+        element_at,
+        index_of=index_of,
+        contains=lambda element: index_of(element) is not None,
+        name=f"vectors of square {square} in {lattice}",
     )
 
 
@@ -231,10 +270,7 @@ def _vectors_of_square(lattice, square):
     lists = backend.short_vectors(int(target) + 1)
     if int(target) >= len(lists):
         return finite_ordered_set(())
-    return finite_ordered_set(tuple(
-        _element_from_coordinates(lattice, coordinates)
-        for coordinates in lists[int(target)]
-    ))
+    return _shell(lattice, square, tuple(lists[int(target)]))
 
 
 def _roots(lattice):
@@ -261,8 +297,8 @@ def _roots_of_square(lattice, square):
         return finite_ordered_set(())
     shell = engine_matrix(SageZZ, shells[target])
     pairings = shell * gram
-    return finite_ordered_set(tuple(
-        _element_from_coordinates(lattice, coordinates)
+    return _shell(lattice, square, tuple(
+        coordinates
         for coordinates, row in zip(shell.rows(), pairings.rows(), strict=True)
         if all((2 * pairing) % target == 0 for pairing in row)
     ))
