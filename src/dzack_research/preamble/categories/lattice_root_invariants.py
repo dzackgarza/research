@@ -20,7 +20,7 @@ TYPE_PATTERN = r"^(A[1-9]\d*|B[2-9]|B[1-9]\d+|C[3-9]|C[1-9]\d+|D[4-9]|D[1-9]\d+|
 
 
 def _fraction(value) -> Fraction:
-    if isinstance(value, int):
+    if isinstance(value, (int, Fraction)):
         return Fraction(value)
     return Fraction(int(value.numerator()), int(value.denominator()))
 
