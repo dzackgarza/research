@@ -45,7 +45,7 @@ jobs:
     - name: Install lattice database in the SageMath environment
       run: |
         uv pip install --python "$(command -v python)" -e . pytest
-        python -c 'import sys, sage.all; assert sys.version_info >= (3, 14); print(sys.version); print(sage.all.version.version)'
+        python -c 'import sys, sage.all; assert sys.version_info >= (3, 14); print(sys.version)'
     - name: Compute and certify uncertified card values
       env:
         LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
@@ -58,6 +58,7 @@ jobs:
     - name: Commit completed computations to main
       if: ${{ always() && steps.checkout.outcome == 'success' }}
       working-directory: ${{ github.workspace }}
+      shell: bash --noprofile --norc -e -o pipefail {0}
       run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git add lattice-database/lattices lattice-database/certificates.yaml
