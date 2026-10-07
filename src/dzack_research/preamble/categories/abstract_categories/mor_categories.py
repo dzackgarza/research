@@ -1439,7 +1439,7 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
                 f"Iso({self.domain_object()}, {self.codomain_object()})"
             )
         obj = self.domain_object()
-        return self(self.base_category().Core().Mor(obj, obj).identity())
+        return self.base_category().Core().Mor(obj, obj).identity()
 
     one = identity_automorphism
 
@@ -1454,9 +1454,15 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
 
 class FixedAutCategory(FixedIsoCategory):
     def identity_automorphism(self) -> CategoricalIsomorphism:
-        r"""The identity of ``X``, an element of ``Core(C).Mor(X, X)``, placed in ``Aut_C(X)``."""
+        r"""The identity of ``X``, the identity arrow of ``Core(C).Mor(X, X)``.
+
+        ``Aut_C(X)`` is ``Map_{C^≃}(X, X)`` (`lean-categories` FOUNDATIONS,
+        Definition 2.4), so its unit is the identity of ``X`` in the core of
+        ``C``: an isomorphism whose forward and inverse arrows are the identity
+        of ``C.Mor(X, X)``.
+        """
         obj = self.domain_object()
-        return self(self.base_category().Core().Mor(obj, obj).identity())
+        return self.base_category().Core().Mor(obj, obj).identity()
 
     one = identity_automorphism
 
