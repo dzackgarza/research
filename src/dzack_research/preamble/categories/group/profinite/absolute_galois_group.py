@@ -6,15 +6,16 @@ from sage.categories.finite_fields import FiniteFields
 from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
-from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
+    AbsoluteGaloisGroups,
     OpenAbsoluteGaloisSubgroups,
     _absolute_galois_group_category,
 )
@@ -191,12 +192,17 @@ class AbsoluteGaloisGroupElement(Element):
     def conjugacy_class(self):
         return ElementConjugacyClass(self.parent(), self)
 
-    def __eq__(self, other) -> bool:
-        if (
-            not isinstance(other, AbsoluteGaloisGroupElement)
-            or other.parent() is not self.parent()
-        ):
-            return False
+    def _richcmp_(self, other, op):
+        r"""Compare two elements of one ``G_K``; Sage calls this with one parent.
+
+        Only equality is defined: ``G_K`` carries no order.
+        """
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        return self._same_automorphism(other) == (op == op_EQ)
+
+    def _same_automorphism(self, other) -> bool:
+        r"""Whether ``self`` and ``other`` of the same parent are the same automorphism."""
         if (
             self._frobenius_exponent is not None
             or other._frobenius_exponent is not None
@@ -205,9 +211,6 @@ class AbsoluteGaloisGroupElement(Element):
         if self._exact_action is not None and other._exact_action is not None:
             return self._exact_action == other._exact_action
         return False
-
-    def __ne__(self, other) -> bool:
-        return not self == other
 
     def __hash__(self) -> int:
         datum: tuple[object, ...]
@@ -383,8 +386,8 @@ class _AbsoluteGaloisGroupEngine:
             inverse,
         )
 
-    def order(self):
-        r"""Return the order of ``G_K``, infinite for a finite or number field ``K``.
+    def _finiteness_decision(self):
+        r"""Return ``False`` for a finite or number field ``K``: ``G_K`` is infinite.
 
         ``G_K`` surjects onto every ``Gal(L/K)`` with ``L`` finite Galois over
         ``K`` inside the chosen closure, so finite quotients of unbounded
@@ -393,16 +396,6 @@ class _AbsoluteGaloisGroupEngine:
         field ``K`` the quotient ``(C_2)^r`` exists for every ``r`` (see
         ``_finite_generation_decision``), of order ``2^r``.
         """
-        assert self._is_finite_field() or self._is_number_field(), (
-            f"the order of {self} is computed only when its base field is finite or a "
-            f"number field, but the base field is {self._field}"
-        )
-        return Infinity
-
-    cardinality = order
-
-    def _finiteness_decision(self):
-        r"""Return ``False`` when :meth:`order` decides that ``G_K`` is infinite."""
         match self:
             case _ if self._is_finite_field() or self._is_number_field():
                 return False
@@ -443,11 +436,11 @@ class _AbsoluteGaloisGroupEngine:
         )
 
     def _element_constructor_(self, datum=None, **options):
-        if isinstance(datum, AbsoluteGaloisGroupElement):
-            if datum.parent() is self:
-                return datum
+        if element_parent(datum) is self:
+            return datum
+        if element_parent(datum) in AbsoluteGaloisGroups():
             raise ValueError(
-                f"{datum} is an element of {datum.parent()}, not of {self}"
+                f"{datum} is an element of {element_parent(datum)}, not of {self}"
             )
         if element_parent(datum) is not self.field_automorphism_mor():
             raise TypeError(
@@ -463,10 +456,7 @@ class _AbsoluteGaloisGroupEngine:
         return element
 
     def __contains__(self, element) -> bool:
-        return (
-            isinstance(element, AbsoluteGaloisGroupElement)
-            and element.parent() is self
-        )
+        return element_parent(element) is self
 
     def __eq__(self, other) -> bool:
         return self is other
@@ -809,7 +799,7 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         return self._fixed_extension.is_galois()
 
     def __contains__(self, element) -> bool:
-        if isinstance(element, AbsoluteGaloisGroupElement) and element.parent() is self:
+        if element_parent(element) is self:
             return True
         if element not in self.supergroup():
             return False
@@ -820,10 +810,7 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         )
 
     def _element_constructor_(self, datum=None, **options):
-        if (
-            isinstance(datum, AbsoluteGaloisGroupElement)
-            and datum.parent() is self.supergroup()
-        ):
+        if element_parent(datum) is self.supergroup():
             if datum not in self:
                 raise ValueError(
                     f"{datum} is not an element of {self}: it does not fix "

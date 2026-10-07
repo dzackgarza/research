@@ -1,5 +1,6 @@
 r"""Owned categories for absolute Galois groups."""
 
+from sage.categories.finite_fields import FiniteFields
 from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_method
 from sage.rings.rational_field import QQ as SageQQ
@@ -21,6 +22,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -68,6 +70,31 @@ class AbsoluteGaloisGroups(OwnedCategory):
         def has_computed_group_generators(self) -> bool:
             r"""Whether an algebraic generating set has been materialized."""
             return False
+
+        def _cardinality_decision(self):
+            r"""``|G_K| = 2^{aleph_0}`` for a finite field or a number field ``K``.
+
+            ``K`` is countable, so ``\bar K`` has countably many finite
+            subextensions and ``G_K`` is a second-countable profinite group.
+            An infinite second-countable profinite group has cardinality
+            ``2^{aleph_0}``.  ``G_K`` is infinite: over ``F_q`` it is
+            ``\widehat{ZZ}``, and over a number field the cyclotomic
+            character has infinite image.
+            """
+            computation_field = _engine_ring(self.base_field())
+            match computation_field:
+                case _ if (
+                    computation_field is SageQQ
+                    or computation_field in FiniteFields()
+                    or computation_field in NumberFields()
+                ):
+                    return continuum
+                case _:
+                    assert False, (
+                        f"cannot compute the cardinality of {self}: it is computed for the "
+                        f"absolute Galois group of a finite field or a number field, but the "
+                        f"base field is {self.base_field()}"
+                    )
 
         def _finite_quotient_witnesses(self):
             r"""Yield restrictions ``G_K -> Gal(L/K)`` to cubic splitting fields over ``K``.
@@ -229,8 +256,6 @@ class OpenAbsoluteGaloisSubgroups(OwnedParameterizedCategory):
 
 
 def _absolute_galois_group_category(field):
-    from sage.categories.finite_fields import FiniteFields
-
     return (
         AbsoluteGaloisGroupsOfFiniteFields()
         if _engine_ring(field) in FiniteFields()
