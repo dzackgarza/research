@@ -171,16 +171,18 @@ decides a specific question about its own edit, and then it runs that test alone
 A preamble import, `just test`, a collection run or a subtree suite is not
 targeted.
 
-A probe script is a test under this rule. Each Sage process pays about 60 s
-of session import before it reaches the question. So a subagent puts its open
-questions into one probe and runs it once per unit, on the smallest specimen
-that decides them: `U`, `A_2`, `C_2` acting on `ZZ^2`. It never reruns a probe
-to confirm an edit that the source shows. It never runs a probe over the
-lattice-database corpus or an E-series lattice unless the node is about that
-corpus or that lattice. A size it did not measure is written "untested". On
-2026-10-07 one worker ended its turn to wait on a probe over 8,000
-lattice-database cards. Another spent about 12 minutes on repeated 60 s probe
-processes.
+A probe script is a test under this rule. A subagent puts its open questions
+into one probe and runs it once per unit, on the smallest specimen that decides
+them: `U`, `A_2`, `C_2` acting on `ZZ^2`. It never reruns a probe to confirm an
+edit that the source shows. A probe over a family is run at two small sizes
+first, with each stage timed. A probe that is slow at a small size is the
+finding: the subagent profiles it and reports the cost, and never waits on a
+larger run. The session import takes under 10 s, and ten thousand cards is a
+small input, so a probe that runs for minutes measures a defect. On 2026-10-07
+a worker waited 15 minutes on a duplicate-detection probe over 8,000
+lattice-database cards. Twenty cards took 44.6 s to build into lattices, almost
+all of it in re-deriving each Gram tensor entry by entry, while partitioning them
+took 0.11 s.
 
 Only the orchestrating agent:
 
