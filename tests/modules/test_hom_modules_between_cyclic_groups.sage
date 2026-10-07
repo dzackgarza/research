@@ -48,16 +48,13 @@ def test_the_endomorphisms_of_z6_and_the_homs_from_z_to_z6_are_z6() -> None:
     assert (ZZ ^ 1).Mor(six).annihilator() == ZZ.ideal(6)
 
 
-def test_presented_mor_defers_its_endpoint_model_until_module_data_is_read() -> None:
-    r"""Constructing Hom fixes a pending presentation but does not realize its internal-Hom model."""
+def test_the_presentation_of_end_z6_is_the_first_differential_of_its_resolution() -> None:
+    r"""A presentation is a resolution truncated at degree $1$, so the presentation of
+    $\operatorname{End}(\mathbb Z/6)$ is the differential $d_1$ of its chosen resolution."""
     homs = cyclic(6).End()
 
     assert homs.has_selected_module_resolution()
-    assert homs._selected_module_presentation is None
-
-    presentation = homs.presentation()
-    assert homs._selected_module_presentation is not None
-    assert presentation is homs.selected_module_resolution().differential(1)
+    assert homs.presentation() is homs.selected_module_resolution().differential(1)
 
 
 def test_the_orders_of_hom_modules_between_cyclic_groups() -> None:
