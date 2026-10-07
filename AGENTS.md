@@ -2342,9 +2342,14 @@ Banned outright, each observed and removed on 2026-09-16: `Sets()` or
 `Objects()` declared because the real parent is missing; a class named for a
 combination of properties; a class for a property that Sage's axiom mechanism
 states; a `super_categories` override on an axiom class; a category declaring
-its own name over a lower base; `__contains__` deciding membership by a
-predicate, a base tower or an attribute probe; a declaration computed from a
-local variable; a second class for a notion the tree already presents.
+its own name over a lower base; `__contains__` deciding membership by a base
+tower or an attribute probe; a declaration computed from a local variable; a
+second class for a notion the tree already presents. Membership of a property
+subcategory is the property's proposition, asked only when needed
+(`CON-07`): `I in Ideals(R).Maximal()` asks whether `R/I` is a field. The
+answer goes to the caller and never changes the object's category or its
+operations; placement comes only from construction, including routing on a
+`lean-categories` theorem, so no engine answer selects what an object can do.
 
 Banned on 2026-09-17 (`CAT-28`): a category declared for the class of objects
 an engine or a construction produces (a condition set is a class; the groups

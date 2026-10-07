@@ -4920,7 +4920,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: The mathematical data of an owned object is sufficient to state and construct that object independently of any computation engine.
   A backend may be present, absent, or replaceable without changing the object's defining mathematical data or identity.
-  A backend's answers never change an object's category: it is untrusted, and category placement follows construction, never a computed answer.  The backend's class or availability is never category data either.
+  A backend's answer never changes an object's category: it is untrusted.  Placement comes from construction, including routing on a cheap computation that a `lean-categories` theorem makes equivalent to the property (`CON-07`); a computed membership answer goes to its caller only.  The backend's class or availability is never category data either.
   Missing backend support limits a computation; it does not turn the mathematical object into a backend object or make the object cease to exist.
 
 - **Rationale**: A chosen presentation `F_1 -> F_0 -> M`, for example, already defines the presented module.
@@ -5371,13 +5371,17 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `CON-07`: Chosen Structure Is Data; a Property Is Placement, Never a Mode Flag
 
-- **Rule**: Do not encode a mathematical property or category membership as a mode boolean or constructor switch.  A property is placement: the object is constructed in the property category (`CAT-17`), and that construction claims the property.  A computed predicate is an untrusted answer returned to its caller; it never places or refines an object.  If an additional *choice* is genuinely part of the structure, accept the actual chosen datum, not a boolean claiming it exists.
+- **Rule**: Do not encode a mathematical property or category membership as a mode boolean or constructor switch.  If an additional *choice* is genuinely part of the structure, accept the actual chosen datum, not a boolean claiming it exists.
+  Keep two things apart.  *Membership* of an object in a property subcategory `D ≤ C` is a fact about that one object.  The object's *placement* is the category it is constructed in, and it selects the operations the object has.
+  - **Placement** comes from construction only, in two forms.  A constructor named for the property places its result in `D` directly: `R.maximal_ideal(...)` and `R.prime_ideal(...)` beside `R.ideal(...)`; the caller's construction is trusted (`OWN-22`).  A constructor for a specific object may decide the property from a cheap computation that a `lean-categories` theorem makes equivalent, and place the result in `D`: `ZZ.ideal(n)` is maximal exactly when `n` is prime, so it asks `n.is_prime()`.  That routing lives in the specific object's override and cites the theorem.
+  - **Membership** that placement does not settle is a proposition (`Predicate`).  `ask()` decides it only when it is needed, which triggers the computation where one is available: `I in Ideals(R).Maximal()` asks whether `R/I` is a field.  The answer goes to the caller.  It never changes the object's placement, its class or its operations.  Construction never forces that computation; an explicit argument may enable an available, fast computation at construction.
+  Finding that an object lies in `D` never makes it a different object.  An object's identity, its equality and every cache keyed on it depend on its defining data only, never on its placement or on how membership was decided.
 
-- **Rationale**: Flags such as `even=True`, `negative=True`, `torsion=True`, or `nondegenerate=True` duplicate placement in a second, unchecked channel and permit contradictions between the flag and the data.  Refining from a computed predicate would let an implementation decide which operations an object has.  Conversely, a selected orientation, framing, action, embedding, or volume form is real extra data and must remain explicit.
+- **Rationale**: Flags such as `even=True`, `negative=True`, `torsion=True`, or `nondegenerate=True` duplicate placement in a second, unchecked channel and permit contradictions between the flag and the data.  An answer from an engine is untrusted: if it could place an object, an implementation would decide which operations the object has.  A theorem cited from `lean-categories` is not such an answer; it states that the cheap computation and the property agree, so routing on it is placement by construction.  Membership asked on demand lets a caller branch on a property without letting the engine's answer reach the object.  Placement never enters identity: two equal ideals, one constructed as maximal and one not, have one quotient `R/I`.  Conversely, a selected orientation, framing, action, embedding, or volume form is real extra data and must remain explicit.
 
-- **Violation Example**: `Lattice(G, even=True)`; `Form(..., nondegenerate=True)`; `saturation(in_ambient=M)` where the missing datum is actually an inclusion morphism; refining a lattice into `EvenLattices` because a parity computation returned `True`.
+- **Violation Example**: `Lattice(G, even=True)`; `Form(..., nondegenerate=True)`; `saturation(in_ambient=M)` where the missing datum is actually an inclusion morphism; refining a lattice into `EvenLattices` because a parity computation returned `True`; a quotient constructor that computes `I.is_maximal()` to choose the category of `R/I`; a cache of `R/I` keyed on the placement of `I`, so equal ideals give two quotients.
 
-- **Correct Example**: Construct the lattice in the even-lattice category when evenness is the claim; `L.is_even()` returns a computed answer; pass an actual `rho:G->Aut(M)` for an action; call saturation on the subobject/inclusion that already carries its codomain.
+- **Correct Example**: Construct the lattice in the even-lattice category when evenness is the claim; `L.is_even()` returns a computed answer; `ZZ.ideal(5)` is placed maximal by its cited routing, and `ZZ.quotient(ZZ.ideal(5))` is that one field; `if I in Ideals(R).Maximal():` asks the proposition; pass an actual `rho:G->Aut(M)` for an action; call saturation on the subobject/inclusion that already carries its codomain.
 
 
 #### `CON-08`: A Mathematical Choice Is Represented by Its Selecting Datum
@@ -5427,7 +5431,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `CON-12`: Public Construction Enters Through the Category the Caller Names; Implementation Selection Is Private
 
-- **Rule**: A public constructor is the category, presenting a `lean-categories` category, applied to the defining datum the caller has.  The object is placed where that construction places it; placement in a stronger category comes from constructing there, never from a computed predicate (`CON-07`).  Do not require callers to choose a concrete implementation class; implementation selection is private.
+- **Rule**: A public constructor is the category, presenting a `lean-categories` category, applied to the defining datum the caller has.  The object is placed where that construction places it; placement in a stronger category comes from constructing there, including theorem-backed routing in the constructor (`CON-07`); a membership proposition asked later answers its caller and never places the object.  Do not require callers to choose a concrete implementation class; implementation selection is private.
 
 - **Rationale**: A researcher who knows a Gram form, presentation, group action, polynomial, scheme datum, etc. should not need to predict which backend class the finished object will occupy.  Placement is a mathematical claim made by construction; an implementation's answer cannot make it.
 
@@ -5835,7 +5839,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `DEF-03`: Return the Codomain the Definition Gives; Do Not Presume Special Cases
 
 - **Rule**: A constructor or general operation returns the object in the codomain `lean-categories` gives it.
-  Do not construct the result directly in a special subcategory merely because current examples usually land there.  A special codomain is used only where `lean-categories` states it for the operation under the operation's hypotheses; a computed property of the result is an answer, never a refinement (`CON-07`).
+  Do not construct the result directly in a special subcategory merely because current examples usually land there.  A special codomain is used only where `lean-categories` states it for the operation under the operation's hypotheses; a computed property of the result is an answer to its caller, never a refinement (`CON-07`).
 
 - **Rationale**: Presuming the special case turns an accidental property of test data into part of the operation's codomain.
   Keeping the formalized codomain lets special algorithms remain available where their hypotheses are stated.
