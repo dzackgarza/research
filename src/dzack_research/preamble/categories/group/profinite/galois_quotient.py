@@ -173,14 +173,14 @@ def FiniteGaloisExtension(
             f"the embedding K -> Kbar {extension_object} is not a field extension of "
             f"{base_field}"
         )
-        assert extension_object.target_object() is closure, (
+        assert extension_object.coslice_arrow().codomain() is closure, (
             f"the embedding K -> Kbar {extension_object} does not land in the algebraic "
             f"closure {closure}"
         )
-        assert extension_object.arrow() == composite, (
+        assert extension_object.coslice_arrow() == composite, (
             f"{field} is not an intermediate field of {base_field} -> {closure}: the "
             f"composite {base_field} -> {field} -> {closure} differs from the given "
-            f"embedding {extension_object.arrow()}"
+            f"embedding {extension_object.coslice_arrow()}"
         )
 
     factorization = coslice.Mor(source_object, extension_object)(closure_embedding)

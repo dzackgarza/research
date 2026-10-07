@@ -1,6 +1,6 @@
 """Dependency-light bases for the owned mathematical category graph."""
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
 from sage.categories.map import Map
@@ -24,16 +24,28 @@ from dzack_research.preamble.owned_category_bases import (
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
 
-def _engine_with_caller_engine(own_engine, categories, engine):
+# The private realization of an object: its owner category, its object class
+# and its element class, as ``_object_of`` receives it (``OWN-06``).
+type Realization = tuple[Category, type, type | None]
+
+
+def _engine_with_caller_engine(
+    own_engine: Realization | None,
+    categories: tuple[Category, ...],
+    engine: type | None,
+) -> Realization | None:
     r"""The computation of an object constructed again with added structure.
 
-    Engine adapter (``OWN-06``) of ``Objects.ParentMethods._with_structure``.
-    ``own_engine`` is the ``(owner, object class, element class)`` the
-    received object was realized by, or ``None``; ``engine`` is the class of
-    the caller's added level, the first of ``categories``.  The caller's class
-    precedes the received object's, and both then precede the providers of
-    the added level.
+    Engine adapter (``OWN-06``) of ``Objects.ParentMethods._with_structure``,
+    and called by nothing else.  ``own_engine`` is the realization of the
+    received object, or ``None``; ``engine`` is the class of the caller's
+    added level, the first of ``categories``.  The caller's class precedes
+    the received object's, and both then precede the providers of the added
+    level.  The inputs and the result are engine classes, which no public
+    operation exchanges, so this stays inside the construction contract.
     """
     from sage.structure.dynamic_class import dynamic_class
 
@@ -227,7 +239,13 @@ class Objects(OwnedCategory):
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
 
-        def _with_structure(self, categories, construction_data, *, engine=None):
+        def _with_structure(
+            self,
+            categories: tuple[Category, ...],
+            construction_data: dict[str, ConstructionData],
+            *,
+            engine: type | None = None,
+        ) -> ObjectOfCategory:
             r"""Construct, on the data of this exact object, an object of further categories.
 
             Protected construction contract (``OWN-05``, ``OWN-16``).  Owner:
@@ -240,6 +258,13 @@ class Objects(OwnedCategory):
             (``OWN-06``).  The result is a new object of the meet of this
             object's categories with ``categories``, and it keeps the structure
             this object already has.
+
+            No public operation can do this: the caller holds only the
+            received object, and the data that construct it again (its
+            owner's constructor, its defining data, its realization) belong to
+            its owner.  A public constructor of the meet would make the caller
+            restate that data, which is the parallel construction ``OWN-16``
+            forbids.
 
             Here the category that constructed this object constructs it
             again from the same data, in the meet with ``categories`` and with
@@ -265,13 +290,19 @@ class Objects(OwnedCategory):
                 **construction_data,
             )
 
-        def _added_structure(self):
+        def _added_structure(
+            self,
+        ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
             r"""The categories and data that levels above this object's owner add to it.
 
-            Protected companion of :meth:`_with_structure`.  A level that adds
-            structure on a received object extends this cooperatively, so
-            constructing the object again with further structure keeps it.
-            The root adds nothing.
+            Protected companion of :meth:`_with_structure` (``OWN-05``).
+            Implementing roles: a level that adds structure on a received
+            object extends this cooperatively, so constructing the object
+            again with further structure keeps it.  Calling roles: an owner's
+            :meth:`_with_structure` that does not construct through the
+            defining construction (the module and algebra owners).  The root
+            adds nothing.  The result is construction data, which no public
+            operation returns.
             """
             return (), {}
 

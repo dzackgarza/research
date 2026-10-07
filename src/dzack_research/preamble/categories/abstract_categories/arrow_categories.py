@@ -17,7 +17,7 @@ of ``Ar(C)``: each declares it and states only its condition on arrows.
 
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset as SageHomset
@@ -55,6 +55,9 @@ from dzack_research.preamble.categories.sets.indexed_families import IndexedFami
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 _Object = TypeVar("_Object")
@@ -805,15 +808,10 @@ class SliceCategory(_SubcategoryOfArrows):
         def arrow(self) -> Morphism:
             return self.slice_arrow()
 
-        def source_object(self):
-            r"""``A``, the object of ``C`` this object was constructed on."""
-            return self.slice_arrow().domain()
-
-        def target_object(self):
-            r"""``X``, the fixed object of the slice."""
-            return self.slice_arrow().codomain()
-
-        def _added_structure(self):
+        def _added_structure(
+            self,
+        ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+            r"""``C/X`` and the chosen arrow ``p``, kept when this object is constructed again (``OWN-05``; see ``Objects``)."""
             categories, data = super()._added_structure()
             return (*categories, self.slice_category()), {
                 **data,
@@ -992,15 +990,10 @@ class CosliceCategory(_SubcategoryOfArrows):
         def arrow(self) -> Morphism:
             return self.coslice_arrow()
 
-        def source_object(self):
-            r"""``X``, the fixed object of the coslice."""
-            return self.coslice_arrow().domain()
-
-        def target_object(self):
-            r"""``B``, the object of ``C`` this object was constructed on."""
-            return self.coslice_arrow().codomain()
-
-        def _added_structure(self):
+        def _added_structure(
+            self,
+        ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+            r"""``X/C`` and the chosen arrow ``i``, kept when this object is constructed again (``OWN-05``; see ``Objects``)."""
             categories, data = super()._added_structure()
             return (*categories, self.coslice_category()), {
                 **data,
@@ -1426,10 +1419,10 @@ class SetSubobjectCategory(SliceCategory):
             return self.arrow()
 
         def domain(self):
-            return self.source_object()
+            return self.inclusion().domain()
 
         def codomain(self):
-            return self.target_object()
+            return self.inclusion().codomain()
 
         def characteristic_morphism(self):
             return self.inclusion().characteristic_morphism()

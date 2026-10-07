@@ -16,6 +16,7 @@ algebra -- computes \((M, m)\) and reaches the same construction,
 
 import itertools
 from functools import reduce
+from typing import TYPE_CHECKING
 
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.commutative_algebras import (
@@ -84,6 +85,12 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.validation import validator
+
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
@@ -1320,11 +1327,19 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             return _algebra_structure_morphism(self)
 
-        def _with_structure(self, categories, construction_data, *, engine=None):
+        def _with_structure(
+            self,
+            categories: tuple[Category, ...],
+            construction_data: dict[str, ConstructionData],
+            *,
+            engine: type | None = None,
+        ) -> ObjectOfCategory:
             r"""Construct this algebra again with the categories and data of further levels.
 
             The protected construction contract of ``Objects`` (``OWN-05``,
-            ``OWN-16``), supplied by the algebra owner: the new object is the
+            ``OWN-16``); its roles and the reason no public operation does
+            this are stated at ``Objects.ParentMethods._with_structure``.
+            Supplied by the algebra owner: the new object is the
             ``R``-algebra on the data of this exact ring and its structure
             morphism, with the structure this algebra already has and the
             given ``categories`` and ``construction_data``.  Callers are the

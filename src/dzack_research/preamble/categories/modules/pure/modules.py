@@ -3,6 +3,7 @@
 import itertools
 import operator
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from sage.categories.action import Action
 from sage.categories.category import Category
@@ -87,6 +88,10 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.owned_category import ConstructionData
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -1978,13 +1983,20 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             return element
 
-        def _with_structure(self, categories, construction_data, *, engine=None):
+        def _with_structure(
+            self,
+            categories: tuple[Category, ...],
+            construction_data: dict[str, ConstructionData],
+            *,
+            engine: type | None = None,
+        ) -> ObjectOfCategory:
             r"""The protected construction contract of ``Objects``, supplied by the module owner.
 
-            The module owner constructs on this exact module's data
-            (``OWN-16``) and keeps the structure this module already adds.
-            It selects its own realization, so it takes no further
-            computation class.
+            Contract, roles and the reason no public operation does this: see
+            ``Objects.ParentMethods._with_structure`` (``OWN-05``).  The module
+            owner constructs on this exact module's data (``OWN-16``) and
+            keeps the structure this module already adds.  It selects its own
+            realization, so it takes no further computation class.
             """
             assert engine is None, (
                 f"cannot construct {self} again with the computation class {engine}: the module "
