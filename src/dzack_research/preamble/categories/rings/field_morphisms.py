@@ -225,10 +225,10 @@ class _ExactFieldMor(CategoricalMor):
                 f"cannot form a field morphism {self.domain()} -> {self.codomain()} from {datum!r}: "
                 f"it is a {type(datum).__name__}, not a map"
             )
-        if not datum.parent().mor_category().is_subcategory(SageFields()):
+        if not datum.parent().homset_category().is_subcategory(SageFields()):
             raise TypeError(
                 f"cannot form a field morphism {self.domain()} -> {self.codomain()} from {datum}: "
-                f"it is a morphism in {datum.parent().mor_category()}, not a homomorphism of fields"
+                f"it is a morphism in {datum.parent().homset_category()}, not a homomorphism of fields"
             )
         if _engine_ring(datum.domain()) is not _engine_ring(self.domain()):
             raise ValueError(
