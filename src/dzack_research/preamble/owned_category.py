@@ -1462,7 +1462,11 @@ def _object_of(
     _construction_contract_from_type(
         category, implementation, owned_object_chain=True
     ).validate(data)
-    return implementation(category=category, **data)
+    return implementation(
+        category=category,
+        _defining_construction=(category, _engine, data),
+        **data,
+    )
 
 
 def _cat() -> Category:
@@ -1496,8 +1500,15 @@ class OwnedParent:
     enters such a parent's MRO and cannot shadow it.
     """
 
-    def __init__(self, category=None, **rest) -> None:
+    def __init__(self, category=None, _defining_construction=None, **rest) -> None:
         r"""Initialize the host shell without a second class rewrite.
+
+        ``_defining_construction`` is the category, private computation class
+        and data that :func:`_object_of` constructed this object from.  The
+        root retains it, so the owner can construct an object with added
+        structure on the data of this exact object (``OWN-16``,
+        ``Objects.ParentMethods._with_structure``).  It is ``None`` for an
+        object that its category's constructor did not build.
 
         A chain-built parent already *is* ``category.ObjectType``, which is the
         category's ``parent_class``.  ``Parent.__init__`` would rewrite
@@ -1516,6 +1527,7 @@ class OwnedParent:
             run_construction_hooks,
         )
 
+        self._defining_construction = _defining_construction
         with construction_scope(self) as reached:
             SageParent.__init__(self, category=category, **rest)
             realize_owned_category(self)

@@ -522,7 +522,8 @@ coslice `X/C` is a pair `(B, i: X -> B)`. `SliceCategory` and
 `Ar(C)`, and their objects were functors `[1] -> C`, so the operations of `A`
 or `B` did not reach them. They now declare `C` and construct through the
 owner of `C`. Over rings this delivers: the degree-3 stage of `G_{F_5}` is
-`F_125` with its embeddings and has cardinality `125`. Over sets and `Cat`
+`F_125` with its embeddings and has cardinality `125`. Over sets, a subset
+is the received set with its inclusion and has that set's points. Over `Cat`
 the owner has no route, so those slices do not construct (below).
 **Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C`, and only `C`.
 By `CAT-16`, an object `(A, p)` with `p` forgotten is `A`, an object of `C`
@@ -543,21 +544,25 @@ not supply this construction uniformly:
 - rings construct through `Algebras.ParentMethods._with_structure`, the
   algebra on the data of the received ring with the categories and data of
   the added levels;
-- sets and `Cat` supply no such construction.
+- every other object that `_object_of` builds constructs at the root,
+  `Objects.ParentMethods._with_structure`, which builds the object again
+  from the category, computation class and data that `_object_of` records,
+  in the join with the added categories;
+- `Cat().object` builds `CategoryObject` without `_object_of`, so a
+  received category has no recorded construction.
 
 **Dependency path:** the owner of `C` constructs on the data of `A` ->
 the slice and coslice levels thread `p` on that construction -> a Galois stage
 is the field `F_{q^d}` with its two embeddings -> the stage has the
 cardinality of its field.
-**Existing capability:** the route through the owners of rings, modules and
-schemes (`Objects.ParentMethods._with_structure`, `OWN-05`).
-**Consumers:** set subobjects (`SetSubobjectCategory`, and through it every
-finite power-set element), presheaf sites (`CoveringFamilies`), and the
-slices of `form_modules.py`, `analytic_families.py`, `relative_spec.py`,
+**Existing capability:** the route through the owners of rings, modules,
+schemes and of every object built by `_object_of`, sets included
+(`Objects.ParentMethods._with_structure`, `OWN-05`).
+**Consumers:** presheaf sites (`CoveringFamilies`), and the slices of
+`form_modules.py`, `analytic_families.py`, `relative_spec.py`,
 `base_change.py`, `relative_proj.py`, `ringed_spaces.py` and `schemes.py`,
 each still to be moved onto the route of its base owner.
-Repair: `sets-construct-with-added-structure` and
-`categories-construct-with-added-structure`, then
+Repair: `categories-construct-with-added-structure`, then
 `finite-galois-stages-answer-as-their-fields`, in TODO.
 
 ### A finite owned ring does not enumerate its points

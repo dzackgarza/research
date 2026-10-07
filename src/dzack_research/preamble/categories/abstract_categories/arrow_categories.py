@@ -744,32 +744,36 @@ class SliceCategory(_SubcategoryOfArrows):
         self,
         arrow: Morphism,
         *,
-        _engine=None,
+        categories=(),
         construction_data=None,
+        _engine=None,
     ) -> ObjectOfCategory:
-        r"""The object ``(A, p)`` of ``C/X`` on an arrow ``p: A -> X``, optionally with a private realization.
+        r"""The object ``(A, p)`` of ``C/X`` on an arrow ``p: A -> X``, optionally with stronger structure.
 
         The owner of ``A`` constructs it on the data of ``A`` (``OWN-16``):
         the result is an object of ``C`` with every operation of ``A``'s
-        category, and of ``C/X``, which adds only ``p``.
+        category, and of ``C/X``, which adds only ``p``.  ``categories`` and
+        ``construction_data`` are further levels that a caller adds with
+        their data, and ``_engine`` is a private computation class of this
+        level.
         """
         if not self.admits_arrow(arrow):
             raise TypeError(
                 f"{arrow} is not an object of {self}: it is not an arrow of the base category ending at the base object"
             )
-        if _engine is None and construction_data is None:
+        if _engine is None and construction_data is None and not categories:
             return self._object_on(arrow)
-        return self._construct_on(arrow, _engine, construction_data)
+        return self._construct_on(arrow, tuple(categories), _engine, construction_data)
 
     __call__ = object
 
     @cached_method(key=lambda self, arrow: id(arrow))
     def _object_on(self, arrow: Morphism):
-        return self._construct_on(arrow, None, None)
+        return self._construct_on(arrow, (), None, None)
 
-    def _construct_on(self, arrow: Morphism, engine, construction_data):
+    def _construct_on(self, arrow: Morphism, categories, engine, construction_data):
         return arrow.domain()._with_structure(
-            (self,),
+            (self, *categories),
             {"slice_arrow": arrow, "slice_category": self, **dict(construction_data or {})},
             engine=engine,
         )
@@ -1389,19 +1393,21 @@ class SubobjectCategory(OwnedCategoryBase):
 
 
 class SetSubobjectCategory(SliceCategory):
-    r"""The represented subset inclusions ``A -> X`` as the monic objects of ``Set/X``.
+    r"""The subsets ``(A, i: A -> X)`` of ``X``: the objects of ``Set/X`` whose arrow is monic.
 
-    Sets are the case where the subobject itself is naturally represented by
-    its inclusion morphism rather than by a separately structured source
-    parent.  Reuse the ordinary slice object's walking-arrow representation:
-    no second subset wrapper or arrow registry is introduced.
+    The slice ``Set/X`` constructs a subset through the set owner on the
+    data of the received ``A`` (``OWN-16``), so its points, membership and
+    cardinality are those of ``A``.  This level adds the subobject lattice.
     """
 
     def super_categories(self):
-        return [
-            SliceCategory(self.base_category(), self.base_object()),
-            self.base_category().MonomorphismArrowCategory(),
-        ]
+        r"""A subset ``(A, i)`` of ``X`` is an object of ``Set/X`` whose arrow is monic.
+
+        Monicity is the admission condition on ``i``; the inclusion into
+        the monomorphisms of ``Ar(Set)`` is a functor, not a declaration
+        (``CAT-16``, ``CAT-20``).
+        """
+        return [SliceCategory(self.base_category(), self.base_object())]
 
     def admits_arrow(self, arrow: Morphism) -> bool:
         return (
@@ -1409,55 +1415,21 @@ class SetSubobjectCategory(SliceCategory):
             and self.base_category().MonomorphismArrowCategory().admits_arrow(arrow)
         )
 
-    def object(
-        self,
-        arrow: Morphism,
-        *,
-        categories=(),
-        construction_data=None,
-        _engine=None,
-    ):
-        r"""Construct this represented subset, optionally with stronger owned structure or a private realization."""
-        if not self.admits_arrow(arrow):
-            raise TypeError(
-                f"{arrow} is not an object of {self}: it is not a monomorphism into the base set"
-            )
-        category = Cat().meet((self, *tuple(categories)))
-        return _object_of(
-            category,
-            _engine=None if _engine is None else (self, _engine, None),
-            functor=_walking_arrow_functor(self.base_category(), arrow),
-            fixed_mor_category=self,
-            **dict(construction_data or {}),
-        )
-
-    __call__ = object
-
     def cardinality(self):
         r"""The number of represented subsets of the fixed base set."""
         return self.base_object().power_set().cardinality()
 
     class ParentMethods:
+        r"""A set ``A`` with its inclusion into ``X``; its points are those of ``A``, constructed through the set owner."""
+
         def inclusion(self):
             return self.arrow()
-
-        def underlying_set(self):
-            return self.source_object()
 
         def domain(self):
             return self.source_object()
 
         def codomain(self):
             return self.target_object()
-
-        def __contains__(self, member):
-            return member in self.inclusion()
-
-        def __iter__(self):
-            return iter(self.underlying_set())
-
-        def cardinality(self):
-            return self.underlying_set().cardinality()
 
         def characteristic_morphism(self):
             return self.inclusion().characteristic_morphism()

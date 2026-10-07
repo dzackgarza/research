@@ -15,12 +15,39 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.owned_category import (  # noqa: F401
     OwnedCategoryMixin,
     OwnedParent,
+    _object_of,
+    owned_category_join,
 )
 from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategoryBase,
     CategoryWithAxiom,
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+
+
+def _engine_with_caller_engine(own_engine, categories, engine):
+    r"""The computation of an object constructed again with added structure.
+
+    Engine adapter (``OWN-06``) of ``Objects.ParentMethods._with_structure``.
+    ``own_engine`` is the ``(owner, object class, element class)`` the
+    received object was realized by, or ``None``; ``engine`` is the class of
+    the caller's added level, the first of ``categories``.  The caller's class
+    precedes the received object's, and both then precede the providers of
+    the added level.
+    """
+    from sage.structure.dynamic_class import dynamic_class
+
+    match own_engine, engine:
+        case _, None:
+            return own_engine
+        case None, _:
+            return (categories[0], engine, None)
+        case (_, object_engine, element_engine), _:
+            return (
+                categories[0],
+                dynamic_class(engine.__name__, (engine, object_engine)),
+                element_engine,
+            )
 
 
 class _PendingResolution:
@@ -200,22 +227,43 @@ class Objects(OwnedCategory):
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
 
-        @abstract_method
         def _with_structure(self, categories, construction_data, *, engine=None):
             r"""Construct, on the data of this exact object, an object of further categories.
 
             Protected construction contract (``OWN-05``, ``OWN-16``).  Owner:
-            the category whose constructor builds this object; each such owner
-            supplies it.  Permitted callers: a level that adds chosen structure
-            to a received object, as the slice ``C/X`` adds ``p: A -> X`` to an
-            object ``A`` of ``C``.  ``categories`` are the categories of the
-            added levels, ``construction_data`` their data, and ``engine`` an
-            optional private computation class (``OWN-06``).  The result is a
-            new object of the meet of this object's categories with
-            ``categories``; it keeps the structure this object already adds
-            (:meth:`_added_structure`).  An owner that does not supply it
-            leaves the construction undefined, and the call fails.
+            the category whose constructor builds this object.  Permitted
+            callers: a level that adds chosen structure to a received object,
+            as the slice ``C/X`` adds ``p: A -> X`` to an object ``A`` of
+            ``C``.  ``categories`` are the categories of the added levels, the
+            first of them the level that ``engine`` serves; ``construction_data``
+            is their data, and ``engine`` an optional private computation class
+            (``OWN-06``).  The result is a new object of the meet of this
+            object's categories with ``categories``, and it keeps the structure
+            this object already has.
+
+            Here the category that constructed this object constructs it
+            again from the same data, in the meet with ``categories`` and with
+            their data; the computation class this object was realized by
+            follows ``engine``.  An owner whose objects are built otherwise
+            (an algebra on its engine ring, a module on its presentation)
+            supplies its own construction.
             """
+            construction = self._defining_construction
+            assert construction is not None, (
+                f"cannot construct {self} with the further structure of {categories}: it was not built by its "
+                "category's constructor, so no owner constructs it again on its data"
+            )
+            category, own_engine, data = construction
+            assert data.keys().isdisjoint(construction_data), (
+                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
+                f"the data {sorted(data)} of the same names"
+            )
+            return _object_of(
+                owned_category_join((category, *categories)),
+                _engine=_engine_with_caller_engine(own_engine, categories, engine),
+                **data,
+                **construction_data,
+            )
 
         def _added_structure(self):
             r"""The categories and data that levels above this object's owner add to it.
