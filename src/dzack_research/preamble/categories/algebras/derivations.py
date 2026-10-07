@@ -51,6 +51,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.validation import validator
 
 
 def _commutative_presentation_data(algebra):
@@ -137,7 +138,6 @@ class Derivation(ModuleElement):
             label: target(image) if image.parent() is not target else image
             for label, image in images.items()
         }
-        self._check_relations()
 
     def domain(self):
         return self.parent().algebra()
@@ -164,7 +164,14 @@ class Derivation(ModuleElement):
             target.zero(),
         )
 
-    def _check_relations(self) -> None:
+    @validator
+    def validate_relations(self) -> None:
+        r"""Raise ``ValueError`` unless the chain rule on the generator images sends every defining relation to zero (``OWN-22``).
+
+        Generator images ``D(x_i) = m_i`` define a derivation of
+        ``A = R[x]/(f_1, ..., f_k)`` exactly when
+        ``sum_i (df_j/dx_i) m_i = 0`` for every relation ``f_j``.
+        """
         algebra = self.domain()
         if algebra in LocalizationRings():
             source = algebra.localization_source()
@@ -512,11 +519,12 @@ class DerivationSpace(RestrictedMorCategoryParent):
         coordinates = classifiers.framing_morphism().lift(self._to_kahler_classifier(derivation))
         return {label: coordinates(label) for label in coordinates.support().domain()}
 
-    def __call__(self, generator_images):
+    def __call__(self, generator_images, *, check=False):
         r"""Construct a derivation from its generator images, not an arrow object."""
-        return self._element_constructor_(generator_images)
+        return self._element_constructor_(generator_images, check=check)
 
-    def _element_constructor_(self, generator_images):
+    def _element_constructor_(self, generator_images, *, check=False):
+        r"""Construct the derivation; ``check=True`` runs its validator (``OWN-22``)."""
         if isinstance(generator_images, Derivation) and generator_images.parent() is self:
             return generator_images
         if isinstance(generator_images, Morphism):
@@ -541,7 +549,9 @@ class DerivationSpace(RestrictedMorCategoryParent):
                 label: selected.generator_image(label)
                 for label in self.generator_labels()
             }
-        return Derivation(self, generator_images)
+        derivation = Derivation(self, generator_images)
+        derivation.validate_relations(check=check)
+        return derivation
 
     def zero(self):
         return self({label: self.target_module().zero() for label in self.generator_labels()})
@@ -620,42 +630,47 @@ class GradedDerivation(ModuleElement):
             )
         ModuleElement.__init__(self, parent)
         self._function = function
-        observed = self.check_on_generators()
-        match observed:
-            case False:
-                raise ValueError(
-                    f"{function} is not a graded derivation of degree {self.degree_shift()}: it fails the graded "
-                    "Leibniz rule on a generator"
-                )
-            case _:
-                pass
-        derived = self._graded_derivation_derivation()
-        match derived:
-            case None:
-                self._linearity_decision = Unknown
-                self._degree_preservation_decision = Unknown
-                self._graded_leibniz_decision = Unknown
-            case decision if decision is True or decision is Unknown:
-                self._linearity_decision = decision
-                self._degree_preservation_decision = decision
-                self._graded_leibniz_decision = decision
-            case _:
-                raise ValueError(
-                    f"a graded derivation is recorded only when its defining laws are True or Unknown, but got {derived}"
-                )
 
     def _graded_derivation_derivation(self):
         r"""Return a construction-derived graded-derivation premise, or ``None`` for a stated map."""
         return None
 
+    @cached_method
+    def _graded_derivation_decision(self):
+        r"""The decision on linearity, degree and graded Leibniz that the construction supplies.
+
+        A stated map carries no theorem, so its laws are ``Unknown``; a
+        construction-derived map carries ``True`` or ``Unknown``.  Read on the
+        first request, not at construction (``OWN-22``).
+        """
+        derived = self._graded_derivation_derivation()
+        match derived:
+            case None:
+                return Unknown
+            case decision if decision is True or decision is Unknown:
+                return decision
+            case _:
+                raise ValueError(
+                    f"a graded derivation is recorded only when its defining laws are True or Unknown, but got {derived}"
+                )
+
     def linearity_decision(self):
-        return self._linearity_decision
+        return self._graded_derivation_decision()
 
     def degree_preservation_decision(self):
-        return self._degree_preservation_decision
+        return self._graded_derivation_decision()
 
     def graded_leibniz_decision(self):
-        return self._graded_leibniz_decision
+        return self._graded_derivation_decision()
+
+    @validator
+    def validate_graded_leibniz(self) -> None:
+        r"""Raise ``ValueError`` when the finite generator check refutes degree or graded Leibniz (``OWN-22``)."""
+        if self.check_on_generators() is False:
+            raise ValueError(
+                f"{self._function} is not a graded derivation of degree {self.degree_shift()}: it fails the graded "
+                "Leibniz rule on a generator"
+            )
 
     def __call__(self, element):
         return self.target()(self._function(self.algebra()(element)))
@@ -909,11 +924,12 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
     def degree_shift(self):
         return self._shift
 
-    def __call__(self, function):
+    def __call__(self, function, *, check=False):
         r"""Construct a graded derivation, not an arrow object."""
-        return self._element_constructor_(function)
+        return self._element_constructor_(function, check=check)
 
-    def _element_constructor_(self, function):
+    def _element_constructor_(self, function, *, check=False):
+        r"""Construct the graded derivation; ``check=True`` runs its validator (``OWN-22``)."""
         if isinstance(function, GradedDerivation) and function.parent() is self:
             return function
         if isinstance(function, Morphism):
@@ -937,31 +953,38 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
                 lambda element: derivation(element),
                 derivation,
             )
-        return GradedDerivation(self, function)
+        return self.elementwise(function, check=check)
 
     def zero(self):
         return self._from_constructed_elementwise(
             lambda _element: self.target().zero()
         )
 
-    def elementwise(self, function):
+    def elementwise(self, function, *, check=False):
+        r"""Construct the graded derivation given on elements; ``check=True`` runs its validator (``OWN-22``)."""
         if not callable(function):
             raise TypeError(
                 f"a graded derivation of {self.algebra()} needs a map on elements, but {function!r} is not callable"
             )
-        return GradedDerivation(self, function)
+        derivation = GradedDerivation(self, function)
+        derivation.validate_graded_leibniz(check=check)
+        return derivation
 
     def _from_constructed_elementwise(self, function):
         r"""Construct from a formula whose owner proves linearity, degree and Leibniz."""
-        return _ConstructedGradedDerivation(self, function)
+        derivation = _ConstructedGradedDerivation(self, function)
+        derivation.validate_graded_leibniz(check=False)
+        return derivation
 
     def _from_derived_elementwise(self, function, *derivations):
         r"""Construct by a theorem-preserving operation on represented derivations."""
-        return _DerivedGradedDerivation(
+        derivation = _DerivedGradedDerivation(
             self,
             function,
             _combined_graded_derivation_decision(derivations),
         )
+        derivation.validate_graded_leibniz(check=False)
+        return derivation
 
     def scalar_multiple(self, scalar, derivation):
         if derivation.parent() is not self:

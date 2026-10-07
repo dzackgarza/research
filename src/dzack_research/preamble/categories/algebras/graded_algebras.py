@@ -161,8 +161,12 @@ class GradedAlgebraMor(CategoricalMor):
     def grading_monoid(self):
         return self._grading_monoid
 
-    def _element_constructor_(self, images):
-        return self.element_class(self, images)
+    def _element_constructor_(self, images, *, check=False):
+        r"""Construct the graded algebra map; ``check=True`` runs its validators (``OWN-22``)."""
+        morphism = self.element_class(self, images)
+        morphism.validate_linearity(check=check)
+        morphism.validate_degree_preservation(check=check)
+        return morphism
 
     def _from_degree_preserving_generator_map(self, images):
         r"""Construct a graded map whose generator construction preserves degree."""
