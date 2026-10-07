@@ -131,6 +131,20 @@ class AbsoluteGaloisGroups(OwnedCategory):
                 case _:
                     return Unknown
 
+        def normalizer(self, subgroup):
+            r"""``N_{G_K}(G_E)``; it is ``G_K`` itself when ``E/K`` is Galois.
+
+            ``G_E`` is normal in ``G_K`` exactly when ``E/K`` is Galois, and
+            then its normalizer is the open subgroup ``G_K`` of index ``1``.
+            Otherwise the normalizer is the stabilizer of ``G_E`` under
+            conjugation, cut out by its defining condition.
+            """
+            match subgroup:
+                case _ if subgroup in OpenAbsoluteGaloisSubgroups(self) and subgroup.is_normal():
+                    return self.open_subgroup(self.base_field())
+                case _:
+                    return super().normalizer(subgroup)
+
         def _cardinality_decision(self):
             r"""``|G_K| = 2^{aleph_0}`` for a finite field or a number field ``K``.
 

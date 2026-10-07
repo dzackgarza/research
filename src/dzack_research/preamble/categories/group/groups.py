@@ -460,6 +460,45 @@ def _reduced_word_data(group, element):
     return letters[::-1] if _law_reversed(group) else letters
 
 
+def _free_group_conjugacy(group, source, target) -> bool:
+    r"""Whether ``source`` and ``target`` are conjugate in the free group ``group``.
+
+    Sage decides it: ``is_conjugate`` of an element of a finite-rank
+    ``FreeGroup`` (``ElementLibGAP.is_conjugate``) is GAP's
+    ``IsConjugate``, which dispatches to the FGA package's
+    ``RepresentativeActionOp`` for conjugation of elements in a free group
+    (``fga/lib/ReprAct.gi``); it compares cyclically reduced words up to
+    cyclic permutation.  ``IndexedFreeGroup`` has no such method, so both
+    engines are read through their reduced words.  The two words use finitely many
+    letters ``S'`` of the basis ``S``, and the retraction ``F(S) -> F(S')``
+    sending the other letters to ``1`` fixes ``F(S')``, so they are
+    conjugate in ``F(S)`` exactly when they are conjugate in ``F(S')``.
+    That finite-rank free group is the one the question is asked in,
+    whatever the cardinality of ``S``.  The words are read in the owned
+    order; conjugacy is the same relation under the engine's reversed
+    product, since reversal is an anti-automorphism.
+    """
+    from sage.groups.free_group import FreeGroup
+
+    words = tuple(_reduced_word_data(group, element) for element in (source, target))
+    positions = {}
+    for word in words:
+        for label, _ in word:
+            positions.setdefault(label, len(positions) + 1)
+    finite_rank = FreeGroup(max(len(positions), 1))
+    finite_source, finite_target = (
+        finite_rank(
+            [
+                positions[label] if exponent > 0 else -positions[label]
+                for label, exponent in word
+                for _ in range(abs(int(exponent)))
+            ]
+        )
+        for word in words
+    )
+    return bool(finite_source.is_conjugate(finite_target))
+
+
 def _reduced_word(group, element):
     r"""Return the reduced word as an owned finite family of signed generators."""
     from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -3344,13 +3383,40 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             return CentralizerSubgroups(self)(element)
 
+        def normalizer(self, subgroup):
+            r"""Return ``N_G(H) = {g in G : g H g^-1 = H}``, the stabilizer of ``H`` under conjugation."""
+            assert subgroup in self.subgroups(), f"{subgroup} is not a subgroup of {self}"
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                StabilizerSubgroups,
+            )
+
+            return StabilizerSubgroups(self)(
+                subgroup,
+                "conjugation",
+                lambda group_element: self.conjugate_subgroup(group_element, subgroup) == subgroup,
+                description=f"normalizer of {subgroup} in {self}",
+            )
+
+        @RealizationHook
+        def _conjugacy_decision(self, source, target):
+            r"""Protected decision whether ``target = g source g^-1`` for some ``g``.
+
+            ``conjugation_g_set`` is the only caller, after equality and
+            commutativity have not decided it.  A category whose objects
+            supply a procedure answers ``True`` or ``False``; ``Unknown``
+            means that no procedure decides it.
+            """
+            return Unknown
+
         @cached_method
         def conjugation_g_set(self):
             r"""Return ``G`` with its conjugation action ``g.x = g x g^-1``.
 
             Two elements are conjugate when one is the other; in an abelian
             group exactly then.  A finite group decides the relation from
-            its orbits; elsewhere it is undecided.
+            its orbits; elsewhere the procedure its category supplies
+            decides it, or it is undecided.  The stabilizer of ``x`` is its
+            centralizer.
             """
             from dzack_research.preamble.categories.group.g_sets import (
                 FiniteGSets,
@@ -3370,9 +3436,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                             return True
                         if self.is_abelian() is True:
                             return False
-                        return Unknown
+                        return self._conjugacy_decision(source, target)
 
-                    return _g_set_on_points(self, self, conjugate, conjugacy)
+                    return _g_set_on_points(
+                        self, self, conjugate, conjugacy, self.centralizer
+                    )
 
         @cached_method
         def conjugacy_classes(self):
@@ -3405,7 +3473,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def subgroup_conjugation_g_set(self):
-            r"""The set of subgroups of ``G`` with the conjugation action ``g.H = g H g^-1``."""
+            r"""The set of subgroups of ``G`` with the conjugation action ``g.H = g H g^-1``.
+
+            The stabilizer of ``H`` is its normalizer.
+            """
             from dzack_research.preamble.categories.group.g_sets import _g_set_on_points
 
             return _g_set_on_points(
@@ -3413,6 +3484,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 self.subgroups(),
                 self.conjugate_subgroup,
                 self._subgroup_conjugacy_decision,
+                self.normalizer,
             )
 
         def left_cosets(self, subgroup):
@@ -3895,6 +3967,10 @@ class GroupsWithChosenFreeBasis(OwnedCategory):
             r"""Return the reduced word as an owned finite family of signed generators."""
             return _reduced_word(self, element)
 
+        def _conjugacy_decision(self, source, target) -> bool:
+            r"""Conjugacy in a free group is decided by cyclic reduction of reduced words."""
+            return _free_group_conjugacy(self, source, target)
+
 
 class PermutationGroups(OwnedCategory):
     """Groups carrying a chosen faithful action on a finite set of points.
@@ -4176,6 +4252,10 @@ class Subgroups(OwnedParameterizedCategory):
         @cached_method
         def inclusion(self):
             return _canonical_subgroup_inclusion(self)
+
+        def index(self):
+            r"""``[G : H]``, the cardinality of the left-coset space ``G/H``."""
+            return self.supergroup().left_cosets(self).cardinality()
 
 
 class GeneratedSubgroups(OwnedParameterizedCategory):

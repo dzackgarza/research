@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
@@ -1013,22 +1013,24 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             """
             return Unknown
 
-        def in_same_orbit(self, source, target) -> bool:
+        def in_same_orbit(self, source, target) -> bool | Predicate:
             r"""Whether some ``g`` in ``G`` carries ``source`` to ``target``.
 
             This is the orbit relation: ``x ~ y`` exactly when
             ``y in G . x``.  Its classes are the points of ``X/G``.  It is
-            decided by the procedure this object's construction supplies,
-            and assertion-gated where none is supplied.
+            an exact predicate (``DEF-06``): ``True`` or ``False`` where the
+            procedure this object's construction supplies decides it, and
+            otherwise the proposition ``in_same_orbit(X, x, y)``, whose
+            ``ask`` is ``Unknown``.
             """
             assert source in self, f"{source} is not a point of {self}"
             assert target in self, f"{target} is not a point of {self}"
             decision = self._orbit_relation_decision(source, target)
-            assert decision is not Unknown, (
-                f"whether {target} lies in the orbit of {source} under {self.acting_group()} is "
-                f"defined, but no procedure supplied by {self} decides it"
-            )
-            return decision
+            match decision:
+                case _ if decision is Unknown:
+                    return AtomicProposition("in_same_orbit", self, source, target)
+                case _:
+                    return decision
 
         @cached_method
         def orbits(self):
@@ -1051,15 +1053,34 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                         f"in {category}, and the preamble constructs it only for G-sets"
                     )
 
+        @RealizationHook
+        def _named_stabilizer(self, point):
+            r"""Protected value hook: the stabilizer of ``point`` as the subgroup the action names.
+
+            ``stabilizer`` is the only caller.  A realization whose
+            construction names the stabilizer (the centralizer for the
+            conjugation action on elements, the normalizer for the
+            conjugation action on subgroups) supplies it; ``None`` here
+            states that the construction names none.
+            """
+            return None
+
         def stabilizer(self, point):
             r"""The subgroup ``G_point = {g in G : g.point = point}``.
 
-            This is a predicate subgroup of the acting group.  Membership is
-            exact from the represented action and does not require choosing
-            group generators for the stabilizer.
+            Where the construction of this object names the stabilizer, it
+            is that subgroup, which carries the operations of its own
+            category (an open subgroup of a profinite group knows its
+            index).  Otherwise it is the predicate subgroup of the acting
+            group cut out by the action; membership is exact from the
+            represented action and does not require choosing group
+            generators for the stabilizer.
             """
             if point not in self:
                 raise ValueError(f"{point} is not a point of {self}")
+            named = self._named_stabilizer(point)
+            if named is not None:
+                return named
             from dzack_research.preamble.categories.group.predicate_subgroups import (
                 StabilizerSubgroups,
             )
