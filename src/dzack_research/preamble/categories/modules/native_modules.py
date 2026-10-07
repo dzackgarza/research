@@ -52,9 +52,8 @@ class _NativeFramedRingProductClassifierMorphism(
     map.
     """
 
-    def __init__(self, parent, product) -> None:
-        super().__init__(parent, product)
-        self._linearity_decision = True
+    def linearity_decision(self):
+        return True
 
 
 class _NativeModuleFrame:
