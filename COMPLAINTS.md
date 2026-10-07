@@ -337,11 +337,11 @@ neither injective nor surjective in general. The session's free `matrix`
 (`preamble/language_runtime.py:63`) reads the ring from the entries and
 returns an element of `ring.matrix_space(n, m)`, which `MatrixSpaces`
 presents as a Mor object. So one free function hides the parent and turns a
-matrix into a map. Eleven other free session functions also return new
+matrix into a map. Five other free session functions also return new
 objects without their category: `finite_ordered_set`, `nikulin_invariants`,
-`signature_pair`, `signature_pairs`, `reflection_cosines`, `factorial`,
-`binomial`, `lmap`, `lzip`, `zipsum` and `to_var_names` (session survey,
-2026-10-08).
+`signature_pair`, `signature_pairs` and `reflection_cosines` (session
+survey, 2026-10-08). The code-wrangling helpers `lmap`, `lzip`, `zipsum` and
+`to_var_names` are typed loosely.
 **Consumers:** `tests/lattices/test_vinberg_invariants.sage:145` and
 `tests/user_simulations/test_newcomer_session.sage:126` call `matrix(ZZ, ...)`.
 Repair: `session-objects-are-built-by-their-parents` in TODO.
