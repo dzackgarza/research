@@ -566,6 +566,24 @@ Repair: `rings-construct-with-added-structure`,
 `categories-construct-with-added-structure`, then
 `finite-galois-stages-answer-as-their-fields`, in TODO.
 
+### A finite owned ring does not enumerate its points
+
+`GF(25)` is in `FiniteSets()`, but `iter(GF(25))` does not give its 25
+elements. The owned ring has no `__iter__`, so Python uses the sequence
+protocol of `OwnedRings.ParentMethods.__getitem__`
+(`rings/ring_foundation.py:2561`). For an index `k`, the case `names in self`
+returns the ring itself, so the iterator gives `GF(25)` without end
+(observed 2026-10-07). `Set(GF(25))` enumerated through this protocol and did
+not stop; `Set()` now returns an owned set that is not a finite enumerated set
+unchanged.
+**Dependency path:** a finite ring is a finite set -> its points are the
+points of its underlying set -> enumeration comes from the `Sets()`
+placement, never from adjunction syntax.
+**Existing capability:** the engine field enumerates its elements;
+`cardinality()` of the owned ring is correct.
+**Consumers:** every caller that iterates a finite owned ring or builds a
+literal set from one. No TODO node yet.
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers

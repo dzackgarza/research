@@ -1837,11 +1837,15 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Sets().ObjectT
     ``Set`` is the ordinary-set constructor.  In particular, applying it to
     a finite ordered set forgets that order instead of returning the ordered
     object unchanged.  Constructions that require an order use
-    :func:`finite_ordered_set` explicitly.
+    :func:`finite_ordered_set` explicitly.  Any other owned set is already
+    the set of its points and is returned unchanged, without enumerating it:
+    a finite field, for example, has no chosen order to forget.
     """
     if isinstance(source, _FiniteLiteralSet):
         return source
-    if isinstance(source, Parent) and source in Sets() and source not in FiniteSets():
+    if isinstance(source, Parent) and source in Sets() and (
+        source not in FiniteSets() or source not in EnumeratedSets()
+    ):
         return source
     return _FiniteLiteralSet(source)
 

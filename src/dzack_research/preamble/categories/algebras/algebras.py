@@ -3450,7 +3450,7 @@ def _algebra_structure_view(ring, structure_map):
         module, multiplication, placement=(category,),
         unit=module(selected_ring.one()),
         construction_data={
-            "_engine": (Algebras(base), _ScalarAlgebraEngine, None),
+            "_engine": (OwnedRings(), _ScalarAlgebraEngine, None),
             "native_ring": selected_ring,
         },
         law_decisions=law_decisions,
