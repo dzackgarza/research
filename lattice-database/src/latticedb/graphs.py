@@ -86,4 +86,13 @@ class WeightedGraph(Record):
         return self._invariants().is_satake()
 
     def properties(self) -> tuple[str, ...]:
-        return self._invariants().properties()
+        """The names of the diagram classes the card belongs to, in the order the site lists them."""
+        invariants = self._invariants()
+        classes = (
+            ("Coxeter", invariants.is_coxeter()),
+            ("Dynkin", invariants.is_dynkin()),
+            ("simply laced", invariants.is_simply_laced()),
+            ("Satake", invariants.is_satake()),
+            ("rational Coxeter–Vinberg", invariants.is_rational_coxeter_vinberg()),
+        )
+        return tuple(name for name, holds in classes if holds)

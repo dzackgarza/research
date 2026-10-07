@@ -137,7 +137,11 @@ def test_weighted_graph_recognition_is_owned_by_the_preamble() -> None:
         ),
     )
     assert graph.cartan_matrix() == ((2, -1), (-1, 2))
-    assert graph.properties() == ("Coxeter", "Dynkin", "simply laced", "Satake")
+    assert graph.is_coxeter()
+    assert graph.is_dynkin()
+    assert graph.is_simply_laced()
+    assert graph.is_satake()
+    assert not graph.is_rational_coxeter_vinberg()
 
 
 def test_hodge_catalogue_arithmetic_is_owned_by_the_preamble() -> None:
