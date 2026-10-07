@@ -9,12 +9,10 @@ stored fields. It contains no independent lattice algorithm.
 
 from collections.abc import Mapping
 from fractions import Fraction
+from itertools import combinations
 import yaml
 
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.lattice_root_invariants import (
-    integral_reflection_model,
-)
 from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import model
@@ -152,6 +150,74 @@ def _ordered(block: dict[str, Yaml], fields: tuple[str, ...]) -> dict[str, Yaml]
     return {field: block[field] for field in fields if field in block}
 
 
+def _fraction_of(value) -> Fraction:
+    """A rational value of the preamble, as the `Fraction` a card stores."""
+    return Fraction(int(value.numerator()), int(value.denominator()))
+
+
+def _integral_reflection_model(formed):
+    """The twist `L(m)` of `formed` by the denominator `m` of its scale, as a ZZ-lattice, and `m`.
+
+    `formed` is a finite free ZZ-module with a QQ-valued bilinear form.  Its twist by
+    the denominator of its scale is integral, and a twist does not change which
+    vectors define reflections; card fields stated in the original scale divide by `m`.
+    """
+    multiplier = ZZ(int(formed.scale_submodule().principal_generator().denominator()))
+    gram = formed.twist(multiplier).gram_tensor().change_ring(ZZ)
+    return Lattices(ZZ)(gram), int(multiplier)
+
+
+def _theta_series_prefix(lattice, minimum: Fraction, existing_length: int) -> tuple[int, ...]:
+    """The coefficients of the theta series that a card stores.
+
+    The card stores the coefficients up to 12 in rank at most 4, 8 in rank at most 8,
+    6 in rank at most 12 and 4 above, never fewer than the minimum asks for and never
+    fewer than a prefix already stored on the card.
+    """
+    rank = int(lattice.module_rank())
+    match rank:
+        case _ if rank <= 4:
+            default = 12
+        case _ if rank <= 8:
+            default = 8
+        case _ if rank <= 12:
+            default = 6
+        case _:
+            default = 4
+    bound = max(int(minimum), default, max(0, existing_length - 1))
+    series = lattice.theta_series(precision=bound + 1)
+    return tuple(int(series[index]) for index in range(bound + 1))
+
+
+def _norm_two_root_types(lattice) -> tuple[str, ...]:
+    """The ADE types of the roots of square 2 (square -2 when negative definite), as `E8`, `A2`.
+
+    The preamble recognizes the type on the root sublattice of the negative-definite
+    model; the card lists the irreducible components by decreasing rank.
+    """
+    negative = lattice if lattice.is_negative_definite() else lattice.twist(-1)
+    root_sublattice = negative.root_sublattice()
+    if root_sublattice.module_rank() == 0:
+        return ()
+    cartan_type = root_sublattice.cartan_type()
+    components = (
+        cartan_type.component_types() if cartan_type.is_reducible() else (cartan_type,)
+    )
+    ranked = sorted(
+        (-int(component.rank()), f"{component.type()}{component.rank()}")
+        for component in components
+    )
+    return tuple(name for _rank, name in ranked)
+
+
+def _smith_factors(rows: tuple[tuple[int, ...], ...], rank: int) -> tuple[int, ...]:
+    """The nonzero invariant factors of the integer matrix with these rows."""
+    if not rows:
+        return ()
+    matrix = ZZ.matrix_space(len(rows), rank).from_rows(rows)
+    return tuple(abs(int(factor)) for factor in matrix.invariant_factors())
+
+
 def _integral(
     record: dict[str, Yaml],
     gram: GramTensor,
@@ -207,11 +273,9 @@ def _definite(
         stored_theta = declared.get("theta_series")
         existing_length = len(stored_theta) if isinstance(stored_theta, list) else 0
         block["theta_series"] = list(
-            integral_lattice.standard_theta_series_prefix(
-                minimum=minimum, existing_length=existing_length
-            )
+            _theta_series_prefix(integral_lattice, minimum, existing_length)
         )
-        block["root_system"] = list(integral_lattice.norm_two_root_types())
+        block["root_system"] = list(_norm_two_root_types(integral_lattice))
     components = computation_lattice.reflective_root_system_components()
     block["roots"] = [
         {
@@ -228,47 +292,41 @@ def _definite(
 
 
 def _root_span(
-    record: dict[str, Yaml], formed, reflection_lattice
+    record: dict[str, Yaml], formed
 ) -> tuple[dict[str, Yaml], tuple[tuple[int, ...], ...]] | None:
-    """Serialize authored or preamble-found roots spanning the root sublattice."""
+    """Serialize the authored roots spanning the root sublattice, with their norms."""
     match record.get("root_span"):
         case dict() as authored:
             block = dict(authored)
             roots = tuple(tuple(int(entry) for entry in row) for row in block["roots"])
         case _:
-            found = reflection_lattice.small_root_span()
-            if found is None:
-                return None
-            roots = found
-            block = {"roots": [list(root) for root in roots]}
-    block["norms"] = [
-        rational(
-            Fraction(
-                int(formed(root).q().numerator()),
-                int(formed(root).q().denominator()),
-            )
-        )
-        for root in roots
-    ]
+            return None
+    block["norms"] = [rational(_fraction_of(formed(root).q())) for root in roots]
     return _ordered(block, tuple(model.RootSpan.model_fields)), roots
 
 
-def _root_sublattice(reflection_lattice, formed, roots) -> dict[str, Yaml]:
-    """Serialize preamble-computed root-sublattice invariant factors and generating norms."""
-    items = tuple(
-        (
-            root,
-            Fraction(
-                int(formed(root).q().numerator()),
-                int(formed(root).q().denominator()),
-            ),
-        )
-        for root in roots
-    )
-    factors, norms = reflection_lattice.root_sublattice_data(items)
+def _root_sublattice(formed, roots) -> dict[str, Yaml]:
+    """Serialize the invariant factors of the root rows and, when the roots span, the norms that suffice.
+
+    The stored norms are the fewest distinct root norms, smallest first, whose roots
+    alone still span the lattice.
+    """
+    rank = int(formed.module_rank())
+    norm_of = {root: _fraction_of(formed(root).q()) for root in roots}
+    factors = _smith_factors(roots, rank)
     block: dict[str, Yaml] = {"invariant_factors": list(factors)}
-    if norms is not None:
-        block["norms"] = [rational(norm) for norm in norms]
+    unimodular_span = (1,) * rank
+    if factors != unimodular_span:
+        return block
+    norms = sorted(set(norm_of.values()), key=lambda norm: (abs(norm), norm))
+    selected = next(
+        subset
+        for size in range(1, len(norms) + 1)
+        for subset in combinations(norms, size)
+        if _smith_factors(tuple(root for root in roots if norm_of[root] in subset), rank)
+        == unimodular_span
+    )
+    block["norms"] = [rational(norm) for norm in selected]
     return block
 
 
@@ -307,7 +365,7 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     )
     match integral_lattice:
         case None:
-            reflection_lattice, reflection_multiplier = integral_reflection_model(formed)
+            reflection_lattice, reflection_multiplier = _integral_reflection_model(formed)
         case _:
             reflection_lattice, reflection_multiplier = integral_lattice, 1
     definiteness = formed.definiteness()
@@ -354,17 +412,13 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
             tuple(int(root.to_vector()(label)) for label in labels)
             for root in reflection_lattice.reflective_roots()
         )
-        derived["root_sublattice"] = _root_sublattice(
-            reflection_lattice, formed, reflective_roots
-        )
+        derived["root_sublattice"] = _root_sublattice(formed, reflective_roots)
     else:
-        found = _root_span(record, formed, reflection_lattice)
+        found = _root_span(record, formed)
         if found is not None:
             span, spanning = found
             derived["root_span"] = span
-            derived["root_sublattice"] = _root_sublattice(
-                reflection_lattice, formed, spanning
-            )
+            derived["root_sublattice"] = _root_sublattice(formed, spanning)
     if definiteness == "indefinite":
         derived["indefinite"] = _indefinite(gram)
     return {key: derived[key] for key in KEYS if key in derived}
@@ -514,7 +568,7 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         if formed.definiteness() not in ("positive_definite", "negative_definite"):
             found.append("definite: the stored definite block requires a definite form")
         if definite.perfect is not None:
-            reflection_lattice, _multiplier = integral_reflection_model(formed)
+            reflection_lattice, _multiplier = _integral_reflection_model(formed)
             if definite.perfect != reflection_lattice.is_voronoi_perfect():
                 found.append(
                     "definite.perfect: the stated value differs from L.is_voronoi_perfect()"
@@ -531,7 +585,7 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
             )
     span = lattice.root_span
     if span is not None:
-        reflection_lattice, _multiplier = integral_reflection_model(formed)
+        reflection_lattice, _multiplier = _integral_reflection_model(formed)
         found.extend(
             f"root_span.roots: {list(row)} is not a root of L"
             for row in span.roots
@@ -605,7 +659,7 @@ def relational_admission_problems(
         source_formed = ZZ.free_module(lattice.rank).equip_bilinear_form(
             QQ, lattice.gram_tensor
         )
-        source_lattice, source_multiplier = integral_reflection_model(source_formed)
+        source_lattice, source_multiplier = _integral_reflection_model(source_formed)
         for other in compared.values():
             if (
                 other is lattice
@@ -618,7 +672,7 @@ def relational_admission_problems(
             other_formed = ZZ.free_module(other.rank).equip_bilinear_form(
                 QQ, other.gram_tensor
             )
-            other_lattice, other_multiplier = integral_reflection_model(other_formed)
+            other_lattice, other_multiplier = _integral_reflection_model(other_formed)
             if (
                 source_multiplier == other_multiplier
                 and source_lattice.is_isometric(other_lattice) is True

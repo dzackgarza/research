@@ -123,19 +123,8 @@ def test_root_and_theta_catalogue_invariants_are_owned_by_the_lattice() -> None:
     lattice = Lattices(ZZ)([[2, -1], [-1, 2]])
     components = lattice.reflective_root_system_components()
     assert [(component.type, component.scale) for component in components] == [("G2", 1)]
-    assert lattice.norm_two_root_types() == ("A2",)
-    labels = tuple(lattice.module_generating_set())
-    roots = tuple(
-        tuple(int(root.to_vector()(label)) for label in labels)
-        for root in lattice.reflective_roots()
-    )
-    factors, norms = lattice.root_sublattice_data(
-        (root, lattice(root).q()) for root in roots
-    )
-    assert factors == (1, 1)
-    assert norms == (2,)
-    theta = lattice.standard_theta_series_prefix(minimum=2)
-    assert theta[:5] == (1, 0, 6, 0, 0)
+    theta = lattice.theta_series(precision=5)
+    assert tuple(int(theta[index]) for index in range(5)) == (1, 0, 6, 0, 0)
 
 
 def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:

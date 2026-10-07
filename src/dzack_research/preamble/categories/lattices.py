@@ -3378,56 +3378,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return reflective_root_system_components(self)
 
-        def norm_two_root_types(self):
-            r"""Return the ADE types of the square-two roots (square minus two when negative definite)."""
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                norm_two_root_types,
-            )
-
-            return norm_two_root_types(self)
-
-        def small_coordinate_roots(self, max_support=3):
-            r"""Return roots with coordinates in ``{-1,0,1}`` and support at most ``max_support``."""
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                small_coordinate_roots,
-            )
-
-            return small_coordinate_roots(self, max_support=max_support)
-
-        def generating_root_subset(self, roots):
-            r"""Choose a basis of ``roots`` when possible, otherwise a generating sublist."""
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                generating_root_subset,
-            )
-
-            return generating_root_subset(self, roots)
-
-        def small_root_span(self, max_support=3):
-            r"""Return a generating subset when the bounded coordinate-root search spans this lattice."""
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                small_root_span,
-            )
-
-            return small_root_span(self, max_support=max_support)
-
-        def root_sublattice_data(self, roots_with_norms):
-            r"""Return invariant factors and generating root norms for the stated roots."""
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                root_sublattice_data,
-            )
-
-            return root_sublattice_data(self, roots_with_norms)
-
-        def standard_theta_series_prefix(self, minimum=None, existing_length=0):
-            r"""Return the bounded theta-series prefix used by the lattice catalogue."""
-            from dzack_research.preamble.categories.lattice_root_invariants import (
-                standard_theta_series_prefix,
-            )
-
-            return standard_theta_series_prefix(
-                self, minimum=minimum, existing_length=existing_length
-            )
-
         def reduction_cell(self, inequalities, *, equations=()):
             r"""Return the homogeneous rational cell ``{x : a(x) >= 0, e(x) = 0}`` in this lattice.
 

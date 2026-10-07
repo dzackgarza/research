@@ -90,7 +90,9 @@ def test_derive_computes_rational_definite_invariants_through_the_integral_refle
 
 
 def test_derive_serializes_indefinite_root_data_through_the_preamble() -> None:
-    record = records.derive(declared("Indefinite binary", [[2, 1], [1, -2]]))
+    authored = declared("Indefinite binary", [[2, 1], [1, -2]])
+    authored["root_span"] = {"roots": [[1, 0], [0, 1]]}
+    record = records.derive(authored)
     lattice = Lattice.model_validate(record)
     assert lattice.definite is None
     assert lattice.indefinite is not None
