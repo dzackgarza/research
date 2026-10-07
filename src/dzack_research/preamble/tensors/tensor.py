@@ -914,22 +914,86 @@ class Tensor:
                     inverse._component_array(),
                 )
 
-    def pullback(self, morphism):
-        r"""Pull this covariant tensor back along an owned linear morphism.
+    def pullback(self, morphism, *slot_morphisms):
+        r"""Pull this covariant tensor back along owned linear morphisms.
 
         For ``f: V -> W`` and ``T`` of type ``(0,q)`` on ``W``, return
-        ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
-        matrices are only an implementation of this transport: the endpoint
-        module Mor must itself be the finite framed-free matrix Mor.  When
-        ``f`` is linear over ``R`` and ``T`` has components in an ``R``-algebra
-        ``S``, the pullback is along the base change ``f \otimes_R S``, whose
-        matrix is that of ``f`` read in ``S``.
+        ``f^*T = T \circ (f \times \cdots \times f)`` on ``V``.  Given one
+        morphism ``f_k: V_k -> W`` for each covariant slot, return
+        ``T \circ (f_1 \times \cdots \times f_q)`` on
+        ``V_1 \times \cdots \times V_q``.  For a form ``b`` on ``L`` and
+        ``i: S -> L``, the pullback along ``(i, 1_L)`` is the pairing
+        ``S \times L -> R``, ``(s, x) \mapsto b(i s, x)``.
+
+        The public datum is the morphism.  Finite coordinate matrices are
+        only an implementation of this transport: each endpoint module Mor
+        must itself be the finite framed-free matrix Mor.  When ``f`` is
+        linear over ``R`` and ``T`` has components in an ``R``-algebra ``S``,
+        the pullback is along the base change ``f \otimes_R S``, whose matrix
+        is that of ``f`` read in ``S``.
         """
         if self._upper_index_ranks():
             raise TypeError(
                 f"cannot pull back a type-{self.tensor_valence()} tensor along "
                 f"{morphism}: pullback f^*T is defined for a covariant tensor, type (0, q)"
             )
+        given = tuple(
+            self._pullback_matrix(f) for f in (morphism, *slot_morphisms)
+        )
+        q = len(self._lower_index_ranks())
+        matrices = given * q if not slot_morphisms else given
+        if len(matrices) != q:
+            raise ValueError(
+                f"cannot pull back a tensor with {q} covariant slots along "
+                f"{len(matrices)} morphisms: give one morphism, or one per slot"
+            )
+        target_ranks = tuple(matrix.parent().matrix_shape()[0] for matrix in matrices)
+        if target_ranks != self._lower_index_ranks():
+            raise ValueError(
+                f"cannot pull back a tensor with covariant index ranks "
+                f"{self._lower_index_ranks()} along morphisms whose codomains have ranks "
+                f"{target_ranks}: each covariant index must have its morphism's codomain rank"
+            )
+        if q == 0:
+            return self
+        ring = self.base_ring()
+        source_ranks = tuple(matrix.parent().matrix_shape()[1] for matrix in matrices)
+
+        # The ubiquitous bilinear case is exactly A_1^t G A_2.  Use the
+        # selected exact matrix backend only inside this boundary and cross
+        # every entry back before constructing the owned tensor.
+        if q == 2:
+            left, right = (
+                _engine_module_matrix(matrix).change_ring(_engine_ring(ring))
+                for matrix in matrices
+            )
+            backend_pullback = left.transpose() * _engine_component_matrix(self) * right
+            entries = tuple(
+                _owned_engine_element(ring, entry) for entry in backend_pullback.list()
+            )
+            return tensor(ring, (), source_ranks, _nested(entries, source_ranks))
+
+        from itertools import product as cartesian_product
+
+        source_positions = cartesian_product(*(range(rank) for rank in source_ranks))
+        target_positions = tuple(
+            cartesian_product(*(range(rank) for rank in self._lower_index_ranks()))
+        )
+        entries = []
+        for source_indices in source_positions:
+            value = ring.zero()
+            for target_indices in target_positions:
+                coefficient = self[target_indices]
+                for matrix, target_index, source_index in zip(
+                    matrices, target_indices, source_indices, strict=True
+                ):
+                    coefficient *= ring(matrix[target_index, source_index])
+                value += coefficient
+            entries.append(value)
+        return tensor(ring, (), source_ranks, _nested(tuple(entries), source_ranks))
+
+    def _pullback_matrix(self, morphism):
+        r"""Return the framed-free module Mor element of ``morphism`` for :meth:`pullback`."""
         if _is_coordinate_tensor(morphism, self.base_ring()):
             raise TypeError(
                 f"cannot pull back along the tensor {morphism!r}: pullback takes a linear "
@@ -939,64 +1003,13 @@ class Tensor:
         matrix = morphism.domain().module_category().Mor(
             morphism.domain(), morphism.codomain()
         )(morphism)
-
         if matrix.parent() not in MatrixSpaces(matrix.parent().base_ring()):
             raise TypeError(
                 f"cannot pull back a tensor along {morphism}: its domain and codomain must be "
                 f"free modules of finite rank with a chosen basis, but the module maps between "
                 f"them form {matrix.parent()}"
             )
-        ring = self.base_ring()
-        target_rank, source_rank = matrix.parent().matrix_shape()
-        if any(rank != target_rank for rank in self._lower_index_ranks()):
-            raise ValueError(
-                f"cannot pull back a tensor with covariant index ranks "
-                f"{self._lower_index_ranks()} along {morphism}, whose codomain has rank "
-                f"{target_rank}: every covariant index must have the codomain's rank"
-            )
-        q = len(self._lower_index_ranks())
-        if q == 0:
-            return self
-
-        # The ubiquitous bilinear case is exactly A^t G A.  Use the selected
-        # exact matrix backend only inside this boundary and cross every entry
-        # back before constructing the owned tensor.
-        if q == 2:
-
-            backend_map = _engine_module_matrix(matrix).change_ring(_engine_ring(ring))
-            backend_form = _engine_component_matrix(self)
-            backend_pullback = backend_map.transpose() * backend_form * backend_map
-            entries = tuple(
-                _owned_engine_element(ring, entry) for entry in backend_pullback.list()
-            )
-            return tensor(
-                ring,
-                (),
-                (source_rank, source_rank),
-                _nested(entries, (source_rank, source_rank)),
-            )
-
-        from itertools import product as cartesian_product
-
-        source_positions = tuple(cartesian_product(range(source_rank), repeat=q))
-        target_positions = tuple(cartesian_product(range(target_rank), repeat=q))
-        entries = []
-        for source_indices in source_positions:
-            value = ring.zero()
-            for target_indices in target_positions:
-                coefficient = self[target_indices]
-                for target_index, source_index in zip(
-                    target_indices, source_indices, strict=True
-                ):
-                    coefficient *= ring(matrix[target_index, source_index])
-                value += coefficient
-            entries.append(value)
-        return tensor(
-            ring,
-            (),
-            (source_rank,) * q,
-            _nested(tuple(entries), (source_rank,) * q),
-        )
+        return matrix
 
 
 def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):

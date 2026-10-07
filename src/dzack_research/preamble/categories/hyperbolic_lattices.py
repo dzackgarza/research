@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.refine import refine
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 _VINBERG_NF_PROJECT = Path(__file__).resolve().parents[4] / "src.bak" / "backends" / "external" / "vinbergs_algorithm" / "references" / "VinbergsAlgorithmNF"
 
@@ -625,7 +625,13 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             _complete, roots = self._vinberg_search(controlling_vector, max_roots, max_decompositions)
             wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
             chamber = Cone(wall_normals).dual()
-            return tuple((engine_matrix(ray) * gram * engine_matrix(ray).transpose())[0][0] for ray in chamber.rays())
+            ring = self.base_ring()
+            gram_tensor = self.gram_tensor()
+            vertices = (
+                tensor.vector(ring, [_owned_engine_element(ring, coordinate) for coordinate in ray])
+                for ray in chamber.rays()
+            )
+            return tuple(gram_tensor.contract(vertex, vertex) for vertex in vertices)
 
         def is_cocompact(self, controlling_vector=None, *, max_roots=None, max_decompositions=None):
             r"""Return whether \(W(L)\) acts cocompactly, or ``Unknown``.

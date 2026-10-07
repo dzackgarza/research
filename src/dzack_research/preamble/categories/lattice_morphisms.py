@@ -402,12 +402,12 @@ class LatticeEmbeddingMethods:
     def orthogonal_complement(self):
         r"""Return the orthogonal complement of this embedded lattice.
 
-        For a finite-rank integral lattice embedding with coordinate matrix
-        ``M`` and ambient Gram matrix ``G``, the orthogonal complement is the
-        integral kernel of ``M^T G``.  Computing that kernel directly is the
-        finite-free realization of the generic pairing-morphism kernel and
-        avoids rebuilding the pairing through elementwise categorical
-        evaluation.
+        For an embedding ``i: S -> L`` of finite-rank integral lattices the
+        orthogonal complement is the right kernel of the pairing
+        ``S \times L -> ZZ``, ``(s, x) \mapsto b_L(i s, x)``, which is the
+        pullback of ``b_L`` along ``(i, 1_L)``.  Computing that kernel from the
+        pulled-back tensor is the finite-free realization of the generic
+        pairing-morphism kernel.
         """
         source = self.domain()
         target = self.codomain()
@@ -419,9 +419,9 @@ class LatticeEmbeddingMethods:
         ):
             return super().orthogonal_complement()
 
-        inclusion = _engine_matrix(_module_matrix(self))
-        ambient_gram = _engine_component_matrix(target.gram_tensor())
-        kernel_basis = (inclusion.transpose() * ambient_gram).right_kernel().basis_matrix()
+        identity = target.module_category().Mor(target, target).identity()
+        pairing = target.gram_tensor().pullback(self, identity)
+        kernel_basis = _engine_component_matrix(pairing).right_kernel().basis_matrix()
         target_labels = tuple(target.module_generating_set())
         ring = target.base_ring()
         embedded_basis = tuple(
@@ -867,22 +867,35 @@ class LatticeIsometryMethods:
 
     @cached_method
     def _discriminant_forward_morphism(self):
-        r"""Return the induced module map on discriminant groups."""
+        r"""Return the induced module map on discriminant groups.
+
+        For an isometry ``f: L -> M`` the map ``f^#: L^# -> M^#`` sends the
+        dual basis vector ``e^s`` to the vector whose ``r``-th dual-basis
+        coordinate is ``b_M(f e^s, m_r) = b_L(e^s, f^{-1} m_r)``, the
+        ``e_s``-coordinate of ``f^{-1}(m_r)``.
+        """
         source = self.domain().discriminant_group()
         target = self.codomain().discriminant_group()
         target_dual = target.projection().domain()
         target_dual_generators = target_dual.module_generators()
-        dual_map = _module_matrix(self).inverse().transpose()
+        inverse = ~self
+        codomain = self.codomain()
+        preimage_coordinates = tuple(
+            inverse(codomain.module_generator(label)).to_vector()
+            for label in codomain.module_generating_set()
+        )
         images = {}
-        for source_position, label in enumerate(source.module_generating_set()):
+        for domain_label, label in zip(
+            self.domain().module_generating_set(), source.module_generating_set(), strict=True
+        ):
             dual_image = sum(
                 (
                     target_dual.scalar_multiple(
-                        dual_map[target_position, source_position],
+                        coordinates(domain_label),
                         target_dual_generators[target_position],
                     )
-                    for target_position in range(dual_map.parent().nrows())
-                    if dual_map[target_position, source_position]
+                    for target_position, coordinates in enumerate(preimage_coordinates)
+                    if coordinates(domain_label)
                 ),
                 target_dual.zero(),
             )
