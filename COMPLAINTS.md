@@ -488,6 +488,45 @@ comparison of a card with the preamble's realization.
 `lattice-database/geometric-objects/` was read. Repair is the
 `geometric-cards-store-betti-numbers` node in [TODO.md](TODO.md).
 
+### Restriction of scalars is framed from the extension's own module structure
+
+For a ring map `f: R -> S` with `S` finite free over `R` along `f`, and `M`
+free over `S`, `Res_f(M)` is free over `R` on the products of a basis of
+`Res_f(S)` with a basis of `M`. `_restricted_scalars_view`
+(`modules/pure/modules.py`) instead asks whether `S` is a finitely generated
+free `R`-module through `S`'s own module structure over `S.base_ring()`, and
+takes the scalar labels from `S.module_generating_set()`; neither reads `f`.
+Independently, `k[x]/(p)` for monic `p` of degree `d` is free over `k` on
+`1, ..., x^{d-1}`, and `QuotientRings` (`rings/commutative_algebra.py`)
+supplies no such basis. For `A = GF(2)[x]/(x^2)` and `f: GF(2) -> A`,
+`A.base_ring()` is `GF(2)[x]`, `Res_f(A^1)` has no selected module
+resolution, and `times_x.kernel()` on it raises "no algorithm is available"
+(observed 2026-10-07).
+**Dependency path:** the quotient by a monic polynomial -> its basis over
+`k` along the coefficient map -> a framing of `Res_f(S)` -> a framing of
+`Res_f(M)` -> kernel, image and equality of `R`-linear maps; the tower law
+`rank_R Res_f(M) = rank_R(S) · rank_S(M)`.
+**Existing capability:** the framing route of `_restricted_scalars_view`
+when `f` is the structure map of `S`; `Modules.module_rank` for a finite
+module over a finite field.
+**Consumers:** `tests/modules/test_restriction_of_scalars_on_morphisms.sage`
+(`test_restricting_f2_x_mod_x2_to_f2_gives_a_plane_of_four_elements_on_which_x_squares_to_zero`).
+Repair: `restriction-along-a-finite-free-extension-is-framed` in TODO, which
+`restricted-scalars-modules-are-modules` needs.
+
+### A set map out of a field is reported injective
+
+`OwnedSetMorphism.is_injective` (`sets/set_categories.py`) answers `True`
+whenever the domain is a field or an order. That is a theorem about unital
+ring morphisms, which `RingMorphism.is_injective`
+(`rings/ring_foundation.py`) decides. On a set map it is false:
+`Sets().Mor(QQ, QQ)(lambda q: QQ(0)).is_injective()` returns `True`
+(observed 2026-10-07), and `SetMonoCategory.accepts` admits such a map as a
+monomorphism.
+**Consumers:** every caller of set-level `is_injective` and
+`Sets().Mono(...)`.
+Repair: `set-injectivity-is-decided-on-the-set-map` in TODO.
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
