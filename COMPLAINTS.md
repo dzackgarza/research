@@ -518,12 +518,12 @@ Repair: `restriction-along-a-finite-free-extension-is-framed` in TODO, which
 
 An object of the slice `C/X` is a pair `(A, p: A -> X)`, and an object of the
 coslice `X/C` is a pair `(B, i: X -> B)`. `SliceCategory` and
-`CosliceCategory` (`abstract_categories/arrow_categories.py`) declare only
-`Ar(C)`. Their objects are functors `[1] -> C`, so the operations of `A` or
-`B` do not reach them. Over `F_5`, the degree-3 stage of `G_{F_5}` is an object
-of `(F_5/Fields)/e` built on `F_125`. The call
-`AbsoluteGaloisGroup(GF(5)).finite_extension(3).cardinality()` fails, because
-the stage has no `cardinality` (observed 2026-10-07).
+`CosliceCategory` (`abstract_categories/arrow_categories.py`) declared only
+`Ar(C)`, and their objects were functors `[1] -> C`, so the operations of `A`
+or `B` did not reach them. They now declare `C` and construct through the
+owner of `C`. Over rings this delivers: the degree-3 stage of `G_{F_5}` is
+`F_125` with its embeddings and has cardinality `125`. Over sets and `Cat`
+the owner has no route, so those slices do not construct (below).
 **Placement (ruled 2026-10-07):** `C/X` and `X/C` declare `C`, and only `C`.
 By `CAT-16`, an object `(A, p)` with `p` forgotten is `A`, an object of `C`
 over the same parameters. The projection of `lean-categories` `FOUNDATIONS.md`
@@ -540,29 +540,23 @@ constructed through the owner of `C` on the data of the exact `A`. Owners do
 not supply this construction uniformly:
 - modules supply `_module_with_structure`;
 - schemes supply `_scheme_with_structure`;
-- sets and `Cat` supply no such construction;
-- rings construct an algebra on the data of a received ring
-  (`_algebra_structure_view`, `_algebra_on_module`), but give a caller no
-  route to add the categories and data of another level. Construction data
-  is stored with `setattr` (`algebras/algebras.py:3212`), and
-  `_OwnedRingParent.__init__` calls `Parent.__init__` directly
-  (`rings/ring_foundation.py:3820`).
+- rings construct through `Algebras.ParentMethods._with_structure`, the
+  algebra on the data of the received ring with the categories and data of
+  the added levels;
+- sets and `Cat` supply no such construction.
 
-`AbsoluteGaloisGroup.extension_data` (`group/profinite/absolute_galois_group.py:530`)
-tells a stage from a field by `extension not in OwnedRings()`. This test fails
-when a stage becomes a ring.
 **Dependency path:** the owner of `C` constructs on the data of `A` ->
 the slice and coslice levels thread `p` on that construction -> a Galois stage
 is the field `F_{q^d}` with its two embeddings -> the stage has the
 cardinality of its field.
-**Existing capability:** the domain and codomain functors of `Ar(C)`
-(`source_object()`, `target_object()`). Under the domain projection, the stage
-gives `F_125`, which has the cardinality `125`.
-**Consumers:** every slice and coslice in the tree (Galois stages, schemes over
-a base, `PairedModules`, presheaf sites, analytic families).
-`tests/constructions/test_galois_construct.sage::test_the_absolute_galois_group_of_a_finite_field`.
-Repair: `rings-construct-with-added-structure`,
-`sets-construct-with-added-structure` and
+**Existing capability:** the route through the owners of rings, modules and
+schemes (`Objects.ParentMethods._with_structure`, `OWN-05`).
+**Consumers:** set subobjects (`SetSubobjectCategory`, and through it every
+finite power-set element), presheaf sites (`CoveringFamilies`), and the
+slices of `form_modules.py`, `analytic_families.py`, `relative_spec.py`,
+`base_change.py`, `relative_proj.py`, `ringed_spaces.py` and `schemes.py`,
+each still to be moved onto the route of its base owner.
+Repair: `sets-construct-with-added-structure` and
 `categories-construct-with-added-structure`, then
 `finite-galois-stages-answer-as-their-fields`, in TODO.
 

@@ -200,6 +200,33 @@ class Objects(OwnedCategory):
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
 
+        @abstract_method
+        def _with_structure(self, categories, construction_data, *, engine=None):
+            r"""Construct, on the data of this exact object, an object of further categories.
+
+            Protected construction contract (``OWN-05``, ``OWN-16``).  Owner:
+            the category whose constructor builds this object; each such owner
+            supplies it.  Permitted callers: a level that adds chosen structure
+            to a received object, as the slice ``C/X`` adds ``p: A -> X`` to an
+            object ``A`` of ``C``.  ``categories`` are the categories of the
+            added levels, ``construction_data`` their data, and ``engine`` an
+            optional private computation class (``OWN-06``).  The result is a
+            new object of the meet of this object's categories with
+            ``categories``; it keeps the structure this object already adds
+            (:meth:`_added_structure`).  An owner that does not supply it
+            leaves the construction undefined, and the call fails.
+            """
+
+        def _added_structure(self):
+            r"""The categories and data that levels above this object's owner add to it.
+
+            Protected companion of :meth:`_with_structure`.  A level that adds
+            structure on a received object extends this cooperatively, so
+            constructing the object again with further structure keeps it.
+            The root adds nothing.
+            """
+            return (), {}
+
         @cached_method
         def _selected_resolution_registry(self):
             return {}

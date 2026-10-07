@@ -142,6 +142,32 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             """
             return self._with_axiom("Commutative")
 
+        def Unital(self):
+            r"""Return this category with a two-sided unit for its multiplication.
+
+            ``lean-categories``: ``LeanCategories.Algebra.unital``, the
+            classifier ``UnitalMagma -> MagmaCat`` on magmas
+            (``Algebra/Concrete/Magmas.lean``).
+            """
+            return self._with_axiom("Unital")
+
+    class Unital(CategoryWithAxiom):
+        r"""Unital magmas: a magma ``(M, *)`` with an element ``1`` with ``1 * x = x = x * 1``.
+
+        ``lean-categories``: ``UnitalMagma`` (``Algebra/Concrete/Magmas.lean``).
+        The unit is introduced at this level, so its contract is stated here:
+        monoids and unital algebras are unital magmas and supply it.
+        """
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "unital magmas"
+
+        class ParentMethods:
+            @abstract_method
+            def one(self):
+                r"""Return the two-sided unit of this magma."""
+
 
 class MonoidMorCategoryConstruction(MorCategoryConstruction):
     r"""The fixed-endpoint Mor categories of owned monoids."""
@@ -165,7 +191,8 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
         return Magmas().an_object()
 
     def super_categories(self):
-        return [Semigroups()]
+        r"""A monoid is a semigroup whose magma is unital (Mathlib ``Monoid.toMulOneClass``)."""
+        return [Semigroups(), Magmas().Unital()]
 
     class ElementMethods:
         def _unit_decision(self):
@@ -187,10 +214,6 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
             return generic_power(self, exponent)
 
     class ParentMethods:
-        @abstract_method
-        def one(self):
-            r"""Return the identity element of this monoid."""
-
         def generated_submonoid(
             self, generators, *, description=None, structure_data=None
         ):

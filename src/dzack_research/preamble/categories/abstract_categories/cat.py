@@ -1132,15 +1132,15 @@ class NaturalTransformationMorphism(Morphism):
         transformation: NaturalTransformation,
     ) -> None:
         Morphism.__init__(self, parent)
-        if transformation.source() is not self.domain().functor():
+        if transformation.source() is not parent.source():
             raise ValueError(
                 f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
-                f"transformation from {self.domain().functor()}, but {transformation} starts at {transformation.source()}"
+                f"transformation from {parent.source()}, but {transformation} starts at {transformation.source()}"
             )
-        if transformation.target() is not self.codomain().functor():
+        if transformation.target() is not parent.target():
             raise ValueError(
                 f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
-                f"transformation to {self.codomain().functor()}, but {transformation} ends at {transformation.target()}"
+                f"transformation to {parent.target()}, but {transformation} ends at {transformation.target()}"
             )
         self._transformation = transformation
 
@@ -1182,8 +1182,8 @@ class NaturalTransformationMorphism(Morphism):
             return other
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        source = other.domain().functor()
-        target = self.codomain().functor()
+        source = other.parent().source()
+        target = self.parent().target()
 
         composite = NaturalTransformation(
             source,
@@ -1232,7 +1232,7 @@ class NaturalTransformationMor(CategoricalMor):
                 pass
             case _:
                 transformation = NaturalTransformation(
-                    self.domain().functor(), self.codomain().functor(), transformation
+                    self.source(), self.target(), transformation
                 )
         selected = NaturalTransformationMorphism if element_class is None else element_class
         return selected(self, transformation, **dict(construction_data or {}))
@@ -1244,9 +1244,7 @@ class NaturalTransformationMor(CategoricalMor):
                 f"the identity natural transformation exists only on Mor(F, F), but this is "
                 f"Mor({self.domain()}, {self.codomain()})"
             )
-        functor = self.domain().functor()
-
-
+        functor = self.source()
         return self(
             NaturalTransformation(
                 functor,

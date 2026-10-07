@@ -1978,6 +1978,27 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             return element
 
+        def _with_structure(self, categories, construction_data, *, engine=None):
+            r"""The protected construction contract of ``Objects``, supplied by the module owner.
+
+            The module owner constructs on this exact module's data
+            (``OWN-16``) and keeps the structure this module already adds.
+            It selects its own realization, so it takes no further
+            computation class.
+            """
+            assert engine is None, (
+                f"cannot construct {self} again with the computation class {engine}: the module "
+                "owner selects the realization of a module with added structure"
+            )
+            added_categories, added_data = self._added_structure()
+            assert added_data.keys().isdisjoint(construction_data), (
+                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
+                f"the data {sorted(added_data)} of the same names"
+            )
+            return self._module_with_structure(
+                (*added_categories, *categories), {**added_data, **construction_data},
+            )
+
         def _module_with_structure(self, categories, construction_data):
             r"""Construct further structure on this exact module's data.
 
