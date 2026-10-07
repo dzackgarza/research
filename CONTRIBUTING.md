@@ -7397,6 +7397,53 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   inherited operation works on that object rather than just disappearing from
   the search results.
 
+#### `DEV-69`: A Node Is Admitted Only on a Cited Violation
+
+- **Rule:** A TODO node that changes existing code is admitted only when its
+  entry states three things:
+  1. **The violated statement.** Cite the rule code in this document or a
+     section of `AGENTS.md`, or the `lean-categories` definition or theorem,
+     that the current code contradicts. Quote the clause.
+  2. **The evidence.** Give the specimen, the call and the observed result
+     that show the contradiction.
+  3. **The policy search.** Name the rules that were searched for an answer
+     that supports the current code, and say why none of them applies.
+
+  A node that changes a public operation (its name, its result type, its
+  owner or its signature) also states why the current operation is not
+  mathematically correct. A different spelling that is equally correct is
+  no reason.
+
+  These are not admission reasons:
+  - **A failing test alone.** First derive the type of the operation's
+    result (object or morphism, and which morphism), independently of the
+    test and of the code. If the test asks a question of the wrong type,
+    the test is the finding. An expectation file is protected from edits
+    that match an implementation. It does not give a failing line the
+    authority to redesign a correct API.
+  - **A preference.** "Should return a form", "a cleaner spelling" and "the
+    usual name" do not show a contradiction.
+  - **"Owner ruling owed"** on a question that `CONTRIBUTING.md`, `AGENTS.md`
+    or `lean-categories` already decides. Search them first. A ruling is owed
+    only when the search finds two rules in conflict or finds nothing, and the
+    entry names what was searched.
+- **Rationale:** A node is an instruction to a worker who trusts it. A node
+  with no cited violation sends that worker to change correct code, and the
+  cost lands on the owner, who must find and revert it.
+- **Violation Example:** On 2026-10-07 `test_forms_construct.sage:208` called
+  `.cardinality()` on `form.normal_form()`. The orchestrator filed a node to
+  make `normal_form()` return a form. A normal form is a different module with
+  a different form in its own coordinates. The isometry to it is the correct
+  result, and the normal form is its codomain. The same day, a topology node
+  required "one underlying set S, with no conversion". The chosen-enrichment
+  rule (`CON-16`, `OWN-15`) already decides the opposite: a space `(S, tau)`
+  is its own object.
+- **Correct Example:** The node quotes `CON-07` ("a computed predicate ...
+  never places") and shows that `from_module` refines the form into a
+  subcategory on a computed answer. Its specimen is `A_1` built from
+  relations, and it notes that `OWN-22` and `CAT-17` were searched and do not
+  sanction the refinement.
+
 ### 13. Notebook, REPL & Mathematical Example Style (`NB-*`)
 
 #### `NB-01`: Every Mathematical Claim in an Executable Example Is Executable

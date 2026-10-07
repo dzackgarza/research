@@ -593,6 +593,13 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   it to the owner's ruling in a transcript, a plan, or a `CONTRIBUTING` rule, and if none
   exists rewrite the node before working it (`DEV-56`). The `algebras-are-modules` node
   named a copy-and-identify mechanism nobody had ruled on, and it was built.
+- **A node is admitted only on a cited violation (`DEV-69`).** The entry quotes the
+  rule, the `AGENTS.md` section or the `lean-categories` statement that the current code
+  contradicts. It also gives the specimen that shows the contradiction, and names the rules
+  searched for an answer that supports the current code. A failing test, a preferred
+  spelling, or a question that policy already answers is no reason to admit a node. On
+  2026-10-07 a node told a worker to change the correct `normal_form()` API, because one
+  expectation line asked the isometry for its cardinality.
 
 This is required maintenance of the work being delivered, not a separate audit
 project. Do not accumulate progress tables, handoff histories, completed rows,
