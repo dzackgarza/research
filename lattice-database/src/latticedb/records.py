@@ -207,12 +207,21 @@ def _norm_two_root_types(lattice) -> tuple[str, ...]:
     return tuple(name for _rank, name in ranked)
 
 
-def _smith_factors(rows: tuple[tuple[int, ...], ...], rank: int) -> tuple[int, ...]:
-    """The nonzero invariant factors of the integer matrix with these rows."""
-    if not rows:
+def _root_span_factors(formed, roots: tuple[tuple[int, ...], ...]) -> tuple[int, ...]:
+    """The invariant factors of the inclusion of the span of these roots.
+
+    They are the units up to the rank of the span, followed by the torsion
+    invariant factors of the cokernel of the inclusion.
+    """
+    if not roots:
         return ()
-    matrix = ZZ.matrix_space(len(rows), rank).from_rows(rows)
-    return tuple(abs(int(factor)) for factor in matrix.invariant_factors())
+    span = formed.subobject_on(tuple(formed(root) for root in roots))
+    torsion = tuple(
+        abs(int(factor))
+        for factor in span.inclusion().cokernel().invariant_factors()
+        if factor != 0
+    )
+    return (1,) * (int(span.module_rank()) - len(torsion)) + torsion
 
 
 def _integral(
@@ -347,7 +356,7 @@ def _root_sublattice(formed, roots) -> dict[str, Yaml]:
     """
     rank = int(formed.module_rank())
     norm_of = {root: _fraction_of(formed(root).q()) for root in roots}
-    factors = _smith_factors(roots, rank)
+    factors = _root_span_factors(formed, roots)
     block: dict[str, Yaml] = {"invariant_factors": list(factors)}
     unimodular_span = (1,) * rank
     if factors != unimodular_span:
@@ -357,7 +366,7 @@ def _root_sublattice(formed, roots) -> dict[str, Yaml]:
         subset
         for size in range(1, len(norms) + 1)
         for subset in combinations(norms, size)
-        if _smith_factors(tuple(root for root in roots if norm_of[root] in subset), rank)
+        if _root_span_factors(formed, tuple(root for root in roots if norm_of[root] in subset))
         == unimodular_span
     )
     block["norms"] = [rational(norm) for norm in selected]

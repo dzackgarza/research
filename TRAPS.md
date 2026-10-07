@@ -349,6 +349,21 @@ Reproduce with `.tmp/`-local probes that build `Lattices(ZZ)(G)` from the card a
 Route chosen: `_roots_of_square` in `src/dzack_research/preamble/categories/definite_lattices.py` takes the shell from `short_vectors`, pairs it against the basis in one product with the symmetric Gram matrix, keeps the rows where `b(v,v)` divides `2 b(v,w)`, and raises only the roots.  `reflective_roots` on `K8` then takes 5.3 s, and its derive 11.9 s.
 Depends on this: `reflective_roots`, `reflective_root_system_components`, and through them the lattice-db `root_system` of a definite card.
 
+### Two distinct symbolic variables take about 0.3 ms to compare, so a lattice basis label comparison is a symbolic decision
+
+The basis labels of a preamble lattice are the symbolic variables `e_i = SR.var("e_i")` (`_formal_symbol` in `src/dzack_research/preamble/categories/_lattice.py`).
+`bool(e_0 == e_1)` decides a symbolic relation, and for two distinct symbols Sage runs its numerical test with random interval values before it returns `False`; `bool(e_0 == SR.var("e_0"))` returns at once.
+SageMath 10.10.beta8, no preamble in the process, 2026-10-08:
+
+| comparisons | distinct symbols | equal symbols |
+| --- | --- | --- |
+| 100 | 0.038 s | 0.000 s |
+| 1,000 | 0.289 s | 0.012 s |
+
+`_finite_support_labels` (`framed_free_modules.py`) took the union of the supports of the spanning vectors by comparing labels pairwise, and each `support()` built its finite subset by the same comparisons.  On `E8` (lattice-db record `0094`) with its 240 roots, `L.subobject_on(roots)` took 5.9 s, almost all of it in those comparisons.
+Route chosen: a finite framing is its own finite coordinate window, so its labels are taken whole and none are compared.  `subobject_on` then takes 0.36 s.  A framing of infinite cardinality still forms the union, and still pays per comparison.
+Depends on this: every span, saturation and sublattice of a finite-rank lattice, and through them the lattice-db `root_sublattice` field.
+
 ### The rational spinor norm costs nothing per isometry; reaching it through OSCAR costs about 25 s once per process
 
 Sage has no spinor norm of an isometry of a rational quadratic space: `sage/quadratic_forms/genera/spinor_genus.py` and `genus.py` hold only spinor operators and the spinor kernel of a genus, and `sage/groups/matrix_gps/` has nothing.

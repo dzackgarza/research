@@ -2702,13 +2702,17 @@ def _form_subobject_spanning(module, basis):
     subobject = _module_subobject_spanning(module, basis)
     construction = subobject.module_subobject_construction()
     restricted = module._formed_form().pullback(subobject.inclusion())
+    embedded = construction.generator_images()
+
+    def inclusion_factory(source):
+        return source.Mono(module)(embedded)
 
     return FormModules(module.base_ring())(
         restricted,
         _subobject_ambient=construction.ambient_module(),
-        _subobject_generator_images=construction.generator_images(),
+        _subobject_generator_images=embedded,
         _subobject_lift=construction.selected_lift(),
-        _subobject_inclusion_factory=construction.inclusion_factory(),
+        _subobject_inclusion_factory=inclusion_factory,
     )
 
 
