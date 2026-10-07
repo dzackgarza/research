@@ -212,11 +212,12 @@ class EnumeratedSets(OwnedCategory):
             backward = Sets().Mor(counting_order, self)(
                 lambda position: point_at(int(position))
             )
-            return CategoricalIsomorphism(
-                _set_core().Mor(self, counting_order),
-                forward,
-                backward,
-                verify=False,
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _isomorphism_from_known_inverse_pair,
+            )
+
+            return _isomorphism_from_known_inverse_pair(
+                forward, backward, base_category=_set_core()
             )
 
         def fixed_size_selections(self, selection_size, *, repetition):
