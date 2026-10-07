@@ -66,8 +66,8 @@ def matrix(*data):
     ``matrix(R, rows)`` has the given rows, with entries in ``R``;
     ``matrix(R, m, n, f)`` has ``m`` rows and ``n`` columns, with the entry
     ``f(i, j)`` of ``R`` in row ``i`` and column ``j``, counted from ``0``;
-    ``matrix(rows)`` is over the ring of its entries, the integers when no
-    entry is an element of a ring.
+    ``matrix(rows)`` is over the one ring that all of its entries are
+    elements of.
     """
     match data:
         case (rows,):
@@ -92,38 +92,32 @@ def matrix(*data):
                 )
             )
         case _:
-            raise TypeError(
-                f"matrix takes (rows), (R, rows) or (R, m, n, f), "
-                f"but {len(data)} arguments were given"
+            assert False, (
+                f"matrix{data} is not a matrix: give the rows, the ring and the rows "
+                f"as matrix(R, rows), or the ring, the shape and the entry function "
+                f"as matrix(R, m, n, f)"
             )
 
 
 def _rectangular_rows(rows):
     r"""The rows of a matrix, which have one common length."""
     rows = tuple(tuple(row) for row in rows)
-    if rows:
-        width = len(rows[0])
-        if any(len(row) != width for row in rows):
-            raise ValueError(
-                f"a matrix needs rows of one common length, but the given rows have "
-                f"lengths {tuple(len(row) for row in rows)}"
-            )
+    assert len({len(row) for row in rows}) <= 1, (
+        f"the rows {rows} are not the rows of a matrix: their lengths "
+        f"{tuple(len(row) for row in rows)} are not all equal"
+    )
     return rows
 
 
 def _entry_ring(rows):
-    r"""The ring of the first entry that is a ring element; the integers if none is."""
-    from sage.rings.integer_ring import ZZ as SageZZ
-
-    return next(
-        (
-            element_parent(entry)
-            for row in rows
-            for entry in row
-            if element_parent(entry) in OwnedRings()
-        ),
-        _own_ring(SageZZ),
+    r"""The one ring that every entry of the rows is an element of."""
+    rings = {element_parent(entry) for row in rows for entry in row}
+    assert len(rings) == 1 and next(iter(rings)) in OwnedRings(), (
+        f"the entries of {rows} are not elements of one ring: their parents are "
+        f"{rings}; give the ring of the entries as matrix(R, rows)"
     )
+    (ring,) = rings
+    return ring
 
 
 def Set(iterable):
