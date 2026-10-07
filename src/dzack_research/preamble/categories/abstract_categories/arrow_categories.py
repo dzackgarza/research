@@ -1297,7 +1297,9 @@ class SetSubobjectCategory(SliceCategory):
             return self.target_object()
 
         def __contains__(self, member):
-            return member in self.inclusion()
+            r"""Whether ``member`` names a point of \(X\) in the image of \(A\hookrightarrow X\)."""
+            base = self.codomain()
+            return member in base and base(member) in self.inclusion().image()
 
         def __iter__(self):
             return iter(self.underlying_set())
@@ -1319,34 +1321,70 @@ class SetSubobjectCategory(SliceCategory):
 
             return Sets().Subobjects(self.codomain())
 
+        def _subset_from_predicate(self, other, predicate):
+            r"""The subset of \(X\) cut out by ``predicate``, for two subsets of one \(X\)."""
+            if other.codomain() is not self.codomain():
+                raise ValueError(
+                    f"cannot combine the subsets {self.domain()} and {other.domain()}: they are subsets of "
+                    f"different sets {self.codomain()} and {other.codomain()}"
+                )
+            return self.codomain().power_set().from_predicate(predicate)
+
         def __le__(self, other):
-            return self.inclusion() <= other.inclusion()
+            r"""\(A\subseteq B\): the inclusion of \(A\) factors through the inclusion of \(B\)."""
+            return self.factor_through_or_none(other) is not None
 
         def union(self, other):
-            return self._set_subobject_category()(self.inclusion().union(other.inclusion()))
+            return self._subset_from_predicate(other, lambda member: member in self or member in other)
 
         def intersection(self, other):
-            return self._set_subobject_category()(self.inclusion().intersection(other.inclusion()))
+            return self._subset_from_predicate(other, lambda member: member in self and member in other)
 
         def difference(self, other):
-            return self._set_subobject_category()(self.inclusion().difference(other.inclusion()))
+            return self._subset_from_predicate(other, lambda member: member in self and member not in other)
 
         def symmetric_difference(self, other):
-            return self._set_subobject_category()(self.inclusion().symmetric_difference(other.inclusion()))
+            return self._subset_from_predicate(other, lambda member: (member in self) != (member in other))
 
         def complement(self):
-            return self._set_subobject_category()(self.inclusion().complement())
+            return self.codomain().power_set().from_predicate(lambda member: member not in self)
 
         def __or__(self, other):
             return self.union(other)
 
         def __eq__(self, other):
-            return other in self._set_subobject_category() and self.inclusion() == other.inclusion()
+            r"""Two subsets of \(X\) are equal when they have the same members.
+
+            Decided when \(X\) is finite enumerated, or when both subsets are;
+            otherwise the proposition that they are equal.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import (
+                EnumeratedSets,
+                FiniteSets,
+            )
+            from dzack_research.preamble.logic import AtomicProposition
+
+            if self is other:
+                return True
+            if other not in self._set_subobject_category():
+                return False
+            base = self.codomain()
+            if base in FiniteSets() and base in EnumeratedSets():
+                return all((member in self) == (member in other) for member in base)
+            left, right = self.domain(), other.domain()
+            if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
+                return left.cardinality() == right.cardinality() and self <= other
+            return AtomicProposition("equal", self, other)
+
+        def __ne__(self, other):
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
 
         __hash__ = None
 
         def _repr_(self):
-            return repr(self.inclusion())
+            return f"Subobject of {self.codomain()} defined by {self.domain()}"
 
 
 class SuperobjectCategory(CosliceCategory):

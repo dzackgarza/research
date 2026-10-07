@@ -500,13 +500,13 @@ injections and surjections, of finite `G`-sets, of modules, of graded modules
 of cones and cocones and of the core of a category now construct every
 arrow as their element class, and so do the module arrows of scalar change,
 localization, algebra augmentations and units, tensor classifiers, sheaf
-modules and connections. Schemes, module embeddings, the restriction of
+modules and connections, and the inclusions of subsets. Schemes, module embeddings, the restriction of
 projective sections, the degreewise linear maps of graded algebras and the
 arrows of the Mors of derivations and connections still construct their
 arrows as instances of handwritten classes (the private hosts the node's tell
 lists and the public bases `SchemeMorphism`, `FramingMorphism`,
 `ModuleEmbedding` and `ModuleMorphism`), so one Mor holds arrows on several classes and none of
-them is its element class. `SetInclusion`, `SubgroupInclusion` and
+them is its element class. `SubgroupInclusion` and
 `FiniteGroupClassFunction` are set arrows built the same way.
 
 **Dependency path:** category `C` -> `C.Mor(A, B)` -> generated arrow type ->

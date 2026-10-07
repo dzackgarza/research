@@ -453,7 +453,6 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     PartiallyOrderedSets,
     PowerSets,
     Set,
-    SetInclusion,
     SetInjection,
     Sets,
     SetSurjection,

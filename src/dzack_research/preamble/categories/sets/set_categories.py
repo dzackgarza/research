@@ -646,7 +646,9 @@ class SetMorCategory(CategoricalMor):
         r"""Admit an arrow: a set map between these endpoints, or a callable.
 
         The element constructor is the one boundary that reads foreign data,
-        so it is where the datum's shape is inspected.
+        so it is where the datum's shape is inspected.  An injection or a
+        surjection ``X -> Y`` is an arrow of a full subcategory of this Mor,
+        so it is a map ``X -> Y`` and is admitted as itself.
         """
         if isinstance(datum, Morphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
@@ -654,7 +656,8 @@ class SetMorCategory(CategoricalMor):
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
                     f"{datum.domain()} -> {datum.codomain()}"
                 )
-            if datum.parent() is self:
+            arrows = datum.parent()
+            if arrows is self or (arrows in MorCategories() and self in arrows.super_categories()):
                 return datum
         if not callable(datum):
             raise TypeError(
@@ -1872,10 +1875,25 @@ class SetInjection(OwnedSetMorphism):
     A construction that gives injectivity -- the identity, a composite of
     injections -- supplies it as its premise ``injectivity_decision``;
     otherwise :meth:`is_injective` decides it on the map's own data.
+
+    A monomorphism \(m\colon A\hookrightarrow X\) of sets is a subobject of
+    \(X\): it has a characteristic map \(\chi_m\colon X\to\Delta[1]\), and it
+    factors through a second monomorphism into \(X\) exactly when its image
+    is contained in the second image.  The inclusion of a subset \(A\subseteq
+    X\) sends each point to itself, so its image is \(A\); that construction
+    supplies it as its premise ``subset_of_codomain``.
     """
 
-    def __init__(self, parent, function, *, injectivity_decision=None) -> None:
+    def __init__(
+        self,
+        parent,
+        function,
+        *,
+        injectivity_decision=None,
+        subset_of_codomain=False,
+    ) -> None:
         self._injectivity_premise = injectivity_decision
+        self._subset_premise = subset_of_codomain
         super().__init__(parent, function)
 
     @cached_method
@@ -1899,6 +1917,89 @@ class SetInjection(OwnedSetMorphism):
                 raise ValueError(
                     f"cannot decide whether {self} is injective as a map {self.domain()} -> {self.codomain()}"
                 )
+
+    @cached_method
+    def image(self) -> Sets().ObjectType:
+        r"""The image \(m(A)\subseteq X\); for the inclusion of a subset \(A\), the set \(A\) itself."""
+        match self._subset_premise:
+            case True:
+                return self.domain()
+            case _:
+                return super().image()
+
+    @cached_method
+    def inverse_on_image(self) -> OwnedSetMorphism:
+        r"""The inverse \(m(A)\to A\) of the bijection \(A\to m(A)\) that \(m\) restricts to.
+
+        For the inclusion of a subset it is the identity of \(A\).  Otherwise
+        it is read off the values of \(m\) on a finite enumerated \(A\).
+        """
+        domain = self.domain()
+        image = self.image()
+        match self._subset_premise:
+            case True:
+                return Sets().Mor(domain, domain).identity()
+            case _:
+                assert domain in FiniteSets() and domain in EnumeratedSets(), (
+                    f"the inverse of {self} on its image exists, but it is read off the values of the map "
+                    f"here only when {domain} is finite and enumerated"
+                )
+                return Sets().Mor(image, domain)(
+                    lambda value: next(point for point in domain if self(point) == value)
+                )
+
+    @cached_method
+    def characteristic_morphism(self) -> OwnedSetMorphism:
+        r"""The characteristic map \(\chi_m\colon X\to\Delta[1]\): \(1\) exactly on the image of \(m\)."""
+        truth_values = Sets.Δ[1]
+        image = self.image()
+        return Sets().Mor(self.codomain(), truth_values)(
+            lambda point: truth_values(int(point in image))
+        )
+
+    def factor_through_or_none(self, target: SetInjection) -> OwnedSetMorphism | None:
+        r"""The map \(f\colon A\to B\) with \(n\circ f = m\), or ``None`` when \(m(A)\not\subseteq n(B)\).
+
+        ``target`` is a monomorphism \(n\colon B\hookrightarrow X\).  The
+        containment is decided over a finite enumerated \(A\) or \(X\); the
+        factor sends \(a\) to the point of \(B\) over \(m(a)\).
+        """
+        base = self.codomain()
+        if target.codomain() is not base:
+            raise ValueError(
+                f"cannot factor {self} through {target}: they are subobjects of different sets {base} and "
+                f"{target.codomain()}"
+            )
+        assert target.is_injective() is True, (
+            f"cannot factor {self} through {target}: a factorization through a subobject needs a monomorphism, "
+            f"and {target} is not known to be injective"
+        )
+        domain = self.domain()
+        image = self.image()
+        target_image = target.image()
+        match domain:
+            case _ if domain in FiniteSets() and domain in EnumeratedSets():
+                contained = all(self(point) in target_image for point in domain)
+            case _:
+                assert base in FiniteSets() and base in EnumeratedSets(), (
+                    f"cannot decide whether {image} is contained in {target_image}: containment is decided here "
+                    f"only when {domain} or {base} is finite and enumerated"
+                )
+                contained = all(point not in image or point in target_image for point in base)
+        if not contained:
+            return None
+        inverse = target.inverse_on_image()
+        return Sets().Mor(domain, target.domain())(lambda point: inverse(self(point)))
+
+    def factor_through(self, target: SetInjection) -> OwnedSetMorphism:
+        r"""The map \(f\colon A\to B\) with \(n\circ f = m\); raises when \(m(A)\not\subseteq n(B)\)."""
+        factor = self.factor_through_or_none(target)
+        if factor is None:
+            raise ValueError(
+                f"{self} does not factor through {target}: its image {self.image()} is not contained in "
+                f"{target.image()}"
+            )
+        return factor
 
     def __mul__(self, other):
         r"""Compose; a composite of monomorphisms is placed as a monomorphism."""
@@ -1987,6 +2088,21 @@ class SetInjectionMor(SetMorCategory):
         injection = self.element_class(self, datum)
         injection.validate_injectivity(check=check)
         return injection
+
+    @cached_method
+    def _from_subset_inclusion(self) -> SetInjection:
+        r"""The inclusion \(A\hookrightarrow X\) of a subset, \(a\mapsto a\).
+
+        The construction that calls it gives that every point of \(A\) is a
+        point of \(X\); that is its premise, so the inclusion is injective and
+        its image is \(A\).  Nothing is checked here.
+        """
+        return self.element_class(
+            self,
+            lambda point: point,
+            injectivity_decision=True,
+            subset_of_codomain=True,
+        )
 
     def arrow_set(self):
         return Sets().Mor(self.domain(), self.codomain())
@@ -2120,156 +2236,6 @@ Sets._MonoCategory = SetMonoCategoryConstruction
 Sets._EpiCategory = SetEpiCategoryConstruction
 
 
-class SetInclusion(OwnedSetMorphism):
-    r"""A represented subobject inclusion \(A\hookrightarrow X\).
-
-    A subobject of \(X\) is the pair \((A, i\colon A\hookrightarrow X)\): the
-    set \(A\) is the domain, \(X\) the codomain, and every question about
-    the subset -- membership, enumeration, cardinality -- is asked of the
-    set \(A\).  The characteristic morphism \(\chi_A\colon X\to\Delta[1]\)
-    is derived from membership in \(A\); nothing is stored beside the two
-    endpoints.
-    """
-
-    def __init__(self, domain: Parent, codomain: Parent) -> None:
-        parent = Sets().Mor(domain, codomain)
-        super().__init__(parent, lambda member: codomain(member))
-
-    def inclusion(self) -> Self:
-        return self
-
-    def __call__(self, member, *args, **kwargs):
-        r"""Apply the inclusion using the codomain's owned ingress."""
-        point = self.codomain()(member)
-        match point in self:
-            case True:
-                return point
-            case _:
-                raise ValueError(
-                    f"{member!r} is not in the subset {self.domain()} of {self.codomain()}"
-                )
-
-    def is_injective(self) -> bool:
-        return True
-
-    def factor_through(self, target_inclusion: SetInclusion) -> SetMorphism:
-        r"""Return the canonical map of subset objects when this subset is contained."""
-        factor = self.factor_through_or_none(target_inclusion)
-        if factor is None:
-            raise ValueError(
-                f"the subset {self.domain()} of {self.codomain()} is not contained in the subset "
-                f"{target_inclusion.domain()}"
-            )
-        return factor
-
-    def factor_through_or_none(self, target_inclusion: SetInclusion):
-        r"""Return the canonical subset factor, or None when containment fails."""
-        if target_inclusion.codomain() is not self.codomain():
-            raise ValueError(
-                f"cannot compare the subsets {self.domain()} and {target_inclusion.domain()}: they are subsets "
-                f"of different sets {self.codomain()} and {target_inclusion.codomain()}"
-            )
-        if not self <= target_inclusion:
-            return None
-        return Sets().Mor(self.domain(), target_inclusion.domain())(lambda member: target_inclusion.domain()(self(member)))
-
-    def underlying_set(self) -> Sets().ObjectType:
-        r"""The set \(A\), which is the domain of the inclusion."""
-        return self.domain()
-
-    def characteristic_morphism(self) -> SetMorphism:
-        r"""The characteristic map \(\chi_A\colon X\to\Delta[1]\), read off membership."""
-        truth_values = Sets.Δ[1]
-        return Sets().Mor(self.codomain(), truth_values)(
-            lambda member: truth_values(int(member in self))
-        )
-
-    def __contains__(self, member) -> bool:
-        r"""Whether ``member`` names a point of \(X\) lying in \(A\)."""
-        return member in self.codomain() and self.codomain()(member) in self.domain()
-
-    def __iter__(self):
-        return iter(self.domain())
-
-    def cardinality(self) -> Cardinalities.ObjectType:
-        r"""The cardinality of the subset \(A\subseteq X\) this inclusion presents as an element of \(P(X)\).
-
-        An element of the power set is a subset, a set with a cardinality;
-        here it is presented by its inclusion, whose domain is \(A\).
-        """
-        return cardinal(self.domain().cardinality())
-
-    def _check_common_base(self, other) -> None:
-        if self.codomain() is not other.codomain():
-            raise ValueError(
-                f"cannot combine the subsets {self.domain()} and {other.domain()}: they are subsets of different "
-                f"sets {self.codomain()} and {other.codomain()}"
-            )
-
-    def __le__(self, other) -> bool:
-        self._check_common_base(other)
-        domain = self.domain()
-        if domain in FiniteSets() and domain in EnumeratedSets():
-            return all(member in other for member in domain)
-        base = self.codomain()
-        assert base in FiniteSets() and base in EnumeratedSets(), (
-            f"cannot decide whether {domain} is contained in {other.domain()}: containment is decided here "
-            f"only when {domain} or {base} is finite and enumerated"
-        )
-        return all(member not in self or member in other for member in base)
-
-    def union(self, other: SetInclusion) -> SetInclusion:
-        self._check_common_base(other)
-        return self.codomain().power_set().from_predicate(lambda member: member in self or member in other)
-
-    def intersection(self, other: SetInclusion) -> SetInclusion:
-        self._check_common_base(other)
-        return self.codomain().power_set().from_predicate(lambda member: member in self and member in other)
-
-    def difference(self, other: SetInclusion) -> SetInclusion:
-        self._check_common_base(other)
-        return self.codomain().power_set().from_predicate(lambda member: member in self and member not in other)
-
-    def symmetric_difference(self, other: SetInclusion) -> SetInclusion:
-        self._check_common_base(other)
-        return self.codomain().power_set().from_predicate(lambda member: (member in self) != (member in other))
-
-    def complement(self) -> SetInclusion:
-        return self.codomain().power_set().from_predicate(lambda member: member not in self)
-
-    def __or__(self, other):
-        return self.union(other)
-
-    def __eq__(self, other) -> bool | Predicate:
-        r"""Two subsets of \(X\) are equal when they have the same members.
-
-        Decided when the base is finite enumerated, or when both subsets are
-        finite enumerated; otherwise the proposition that they are equal.
-        """
-        from dzack_research.preamble.logic import AtomicProposition
-
-        if self is other:
-            return True
-        if other not in self.codomain().power_set():
-            return False
-        other = self.codomain().power_set()(other)
-        base = self.codomain()
-        if base in FiniteSets() and base in EnumeratedSets():
-            return all((member in self) == (member in other) for member in base)
-        left, right = self.domain(), other.domain()
-        if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
-            return left.cardinality() == right.cardinality() and all(member in other for member in left)
-        return AtomicProposition("equal", self, other)
-
-    def __ne__(self, other) -> bool | Predicate:
-        from dzack_research.preamble.logic import negation
-
-        return negation(self == other)
-
-    def _repr_(self) -> str:
-        return f"Subobject of {self.codomain()} defined by {self.domain()}"
-
-
 class PowerSets(OwnedCategory):
     r"""The power object \(P(X)\), represented by subobjects of ``X``."""
 
@@ -2355,8 +2321,8 @@ class PowerSets(OwnedCategory):
                 normalized.append(base(member))
             # ``finite_ordered_set`` identifies equal points; identifying them
             # here as well compared every pair twice.
-            inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
-            return Sets().Subobjects(base)(inclusion)
+            subset = finite_ordered_set(tuple(normalized))
+            return Sets().Subobjects(base)(Sets().Mono(subset, base)._from_subset_inclusion())
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
@@ -2367,10 +2333,10 @@ class PowerSets(OwnedCategory):
             subobjects = Sets().Subobjects(self.base_set())
             if candidate in subobjects:
                 return candidate
-            if isinstance(candidate, SetInclusion):
+            if isinstance(candidate, Morphism):
                 if candidate.codomain() is not self.base_set():
                     raise ValueError(
-                        f"{candidate} is a subset of {candidate.codomain()}, not of {self.base_set()}"
+                        f"{candidate} is a map into {candidate.codomain()}, so it is not a subset of {self.base_set()}"
                     )
                 return subobjects(candidate)
             if candidate is self.base_set():
@@ -2407,8 +2373,8 @@ class PowerSets(OwnedCategory):
                         and candidate in EnumeratedSets()
                         and all(point in base for point in candidate)
                     )
-                case _ if isinstance(candidate, SetInclusion):
-                    return candidate.codomain() is base
+                case _ if isinstance(candidate, Morphism):
+                    return Sets().Subobjects(base).admits_arrow(candidate)
                 case _:
                     return False
 
@@ -2437,8 +2403,10 @@ class PowerSets(OwnedCategory):
             target = morphism.codomain().power_set()
 
             def direct_image(subset):
-                inclusion = SetInclusion(subset.underlying_set().image_set(morphism), morphism.codomain())
-                return Sets().Subobjects(morphism.codomain())(inclusion)
+                image = subset.underlying_set().image_set(morphism)
+                return Sets().Subobjects(morphism.codomain())(
+                    Sets().Mono(image, morphism.codomain())._from_subset_inclusion()
+                )
 
             return Sets().Mor(self, target)(direct_image)
 
@@ -2760,9 +2728,9 @@ class _ConditionSet(Sets().ObjectType):
         return self._predicate
 
     @cached_method
-    def inclusion(self) -> SetInclusion:
+    def inclusion(self) -> SetInjection:
         r"""The inclusion \(\{x\in X : P(x)\}\hookrightarrow X\)."""
-        return SetInclusion(self, self.universe())
+        return Sets().Mono(self, self.universe())._from_subset_inclusion()
 
     def __contains__(self, element) -> bool:
         r"""Whether ``element`` is a point of \(X\) satisfying \(P\)."""
@@ -4084,7 +4052,6 @@ __all__ = [
     "PartiallyOrderedSets",
     "PowerSets",
     "Set",
-    "SetInclusion",
     "SetInjection",
     "SetSubcategoryMethods",
     "SetSurjection",
