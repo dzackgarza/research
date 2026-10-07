@@ -4347,9 +4347,8 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
 def _presented_ring_category(engine: Ring) -> Category:
     r"""The owned ring placement given by the construction that presents ``engine``.
 
-    Placement follows construction (``ARC-08``, ``CON-07``).  Each case names
-    one ring constructor and reads only the data that constructor received:
-    the modulus ``n`` of ``ZZ/nZZ``, the degree of ``F_q``, the coefficient
+    Each case names one ring constructor and reads only the data that
+    constructor received: the modulus ``n`` of ``ZZ/nZZ``, the degree of ``F_q``, the coefficient
     ring and the number of indeterminates of a polynomial, Laurent, power
     series or free algebra, the cover of a quotient, the ring of a fraction
     field, the size and entries of a matrix ring.  A constituent ring the
@@ -4360,9 +4359,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     procedures of the owned ring.  A construction no case names is placed in
     ``OwnedRings()`` alone, with no size.
 
-    The case is selected by the Sage parent class that the constructor
-    returned, inside this private adapter (``OWN-06``): that class is the
-    record of which constructor was applied, and nothing it computes is read.
+    The case is selected by the Sage parent class of ``engine``.
     """
     from sage.algebras.free_algebra import FreeAlgebra_generic
     from sage.matrix.matrix_space import MatrixSpace
@@ -4426,10 +4423,11 @@ def _presented_ring_category(engine: Ring) -> Category:
             prime_field = (PrimeFields(),) if engine.degree() == 1 else ()
             placements = (*field, *prime_field, owned_sets.FiniteSets())
         case IntegerModRing_generic():
-            placements = (
-                OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(),
-                *_integer_mod_placements(SageZZ(engine.order())),
-            )
+            # ZZ/nZZ is a quotient of ZZ, so commutative and Noetherian, and
+            # it has n elements.  Whether n is prime or a prime power is
+            # computed, never a datum of the construction, so it places
+            # nothing here.
+            placements = (OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets())
         case NumberField():
             # A number field K = QQ[x]/(f) with f irreducible, presented by
             # its chosen generator.
@@ -4543,36 +4541,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             return joined
 
 
-def _integer_mod_placements(modulus) -> tuple[Category, ...]:
-    r"""The placements of ``ZZ/nZZ`` given by its modulus ``n``.
-
-    ``ZZ/nZZ`` is the field ``F_p`` exactly when ``n = p`` is prime, and a
-    local ring with maximal ideal ``(p)`` exactly when ``n = p^k``.  The
-    factorization of ``n`` is arithmetic of the construction datum.
-    """
-    match _prime_power_base(modulus):
-        case None:
-            return ()
-        case prime if prime == modulus:
-            return (
-                OwnedRings().Division().Commutative(),
-                OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals(),
-                PrimeFields(),
-            )
-        case _:
-            return (OwnedRings().Commutative().Local(),)
-
-
-def _prime_power_base(modulus):
-    r"""The prime ``p`` with ``modulus = p^k`` for some ``k >= 1``, else ``None``."""
-    factors = tuple(SageZZ(modulus).factor())
-    match factors:
-        case ((prime, _exponent),):
-            return SageZZ(prime)
-        case _:
-            return None
-
-
 def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
     r"""Return the owned ring category the construction of ``engine`` places it in.
 
@@ -4653,27 +4621,6 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
 def _install_engine_selected_ring_data(ring, engine) -> None:
     r"""Fix constructor data required by exact initial ring placement."""
     match engine:
-        case IntegerModRing_generic() if ring in OwnedRings().Commutative().Local():
-            # ZZ/p^kZZ with k >= 2: the maximal ideal (p) and the residue
-            # field F_p are data of the modulus.
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                GeneratedIdealView,
-            )
-
-            prime = _prime_power_base(SageZZ(engine.order()))
-            residue = GF(prime)
-            maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
-            residue_map = ring.Mor(residue)(
-                lambda element: residue(
-                    SageZZ(_engine_element(ring, element).lift())
-                )
-            )
-            _install_local_ring_construction(
-                ring,
-                maximal_ideal,
-                residue,
-                residue_map,
-            )
         case SageNumberFieldOrder() if engine is not SageZZ:
             from dzack_research.preamble.categories.modules.pure.modules import (
                 _fix_selected_module_resolution,
