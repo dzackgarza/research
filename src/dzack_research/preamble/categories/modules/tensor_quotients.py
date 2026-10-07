@@ -22,9 +22,6 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    TensorProductModuleMorphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     TensorProductModules,
 )
@@ -151,53 +148,24 @@ class _TensorClasses:
         return "Classes in the multilinear tensor presentation"
 
 
-class _TensorQuotientClassifierMorphism(TensorProductModuleMorphism):
-    r"""The classifier induced by one elementwise bilinear evaluation.
-
-    A raw Python evaluation does not prove its own bilinearity.  The map is an
-    element of the tensor Mor whose linearity decision is the proposition
-    ``is_linear(f)``; named
-    constructions whose bilinearity is derived override that decision.
-    """
-
-    def __init__(self, parent, bilinear) -> None:
-        self._bilinear_evaluation = bilinear
-        source = parent.domain()
-        target = parent.codomain()
-        super().__init__(
-            parent,
-            lambda value: source.underlying_set().evaluate(
-                source(value).underlying_element(),
-                target,
-                bilinear,
-            ),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return None
-
-
-class _UniversalTensorClassifierMorphism(_TensorQuotientClassifierMorphism):
-    r"""The quotient's balanced pure-tensor map, bilinear by construction."""
-
-    def __init__(self, parent) -> None:
-        tensor = parent.domain()
-        super().__init__(parent, lambda left, right: tensor.pure_tensor(left, right))
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
 class _TensorQuotientModule:
     r"""Universal maps of the tensor quotient; arithmetic belongs to GeneralModules."""
 
     def pure_tensor(self, *values):
         return self(self.underlying_set().pure(values))
 
+    def _classifier_evaluation(self, codomain, bilinear):
+        r"""The map ``x ⊗ y ↦ b(x, y)`` on elements of this quotient."""
+        return lambda value: self.underlying_set().evaluate(
+            self(value).underlying_element(),
+            codomain,
+            bilinear,
+        )
+
     def universal_bilinear_map(self):
-        return _UniversalTensorClassifierMorphism(
-            self.module_category().Mor(self, self)
+        r"""The classifier of the balanced pure-tensor map, bilinear by construction."""
+        return self.module_category().Mor(self, self)._from_constructed_element_map(
+            self._classifier_evaluation(self, lambda left, right: self.pure_tensor(left, right))
         )
 
     def from_bilinear_map(self, codomain, bilinear):
@@ -224,9 +192,10 @@ class _TensorQuotientModule:
                     f"cannot induce a linear map {self} -> {codomain}: {bilinear!r} is not a "
                     "function of two arguments"
                 )
-        return _TensorQuotientClassifierMorphism(
-            self.module_category().Mor(self, codomain),
-            bilinear,
+        # A raw Python evaluation does not prove its own bilinearity, so the
+        # classifier's linearity decision is the proposition ``is_linear(f)``.
+        return self.module_category().Mor(self, codomain).elementwise(
+            self._classifier_evaluation(codomain, bilinear)
         )
 
 

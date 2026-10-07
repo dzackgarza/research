@@ -20,25 +20,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _owned_ring,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-)
-
-
-class _SelectedAugmentationModuleMorphism(ModuleMorphism):
-    r"""The selected augmentation transported to the structured algebra endpoint."""
-
-    def __init__(self, parent, augmentation, source_algebra) -> None:
-        self._selected_augmentation = augmentation
-        self._source_algebra = source_algebra
-        super().__init__(
-            parent,
-            lambda element: augmentation(source_algebra(element)),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._selected_augmentation.linearity_decision()
 
 
 class AugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -94,10 +75,11 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
             selected = self._preamble_selected_augmentation
             source = self.unformed_module()
             target = selected.codomain()
-            linear = _SelectedAugmentationModuleMorphism(
-                self.module_category().Mor(self, target),
-                selected,
-                source,
+            # The selected augmentation read on this structured endpoint is
+            # linear exactly when the selected augmentation is.
+            linear = self.module_category().Mor(self, target)._from_constructed_element_map(
+                lambda element: selected(source(element)),
+                premises=(selected,),
             )
             parent = Algebras(self.base_ring()).Associative().Unital().Mor(
                 self, target

@@ -230,7 +230,6 @@ class ModuleMorphismMethods:
                     parent,
                     scalar_map,
                     evaluator=self._call_,
-                    linearity_decision=None,
                 )
             case _:
                 super().__init__(parent, self._call_)
@@ -247,6 +246,14 @@ class ModuleMorphismMethods:
         if source_morphism is not None:
             return source_morphism.linearity_decision()
         return None
+
+    def _generator_image_linearity_derivation(self):
+        r"""The linearity decision of a map given by images of a chosen generating set.
+
+        Its linear extension is linear by construction once the images kill
+        the selected relations of the domain, so those relations are checked.
+        """
+        return self._check_selected_domain_relations()
 
     def _selected_lift_derivation(self):
         r"""Return whether a supplied lift is exact by construction, or ``None``.
@@ -498,7 +505,7 @@ class ModuleMorphismMethods:
                 return _combined_linearity_decision(premises)
         match self._element_function:
             case None:
-                return self._check_selected_domain_relations()
+                return self._generator_image_linearity_derivation()
             case _:
                 derivation = self._elementwise_linearity_derivation()
                 match derivation:
@@ -2713,7 +2720,49 @@ def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
 
 
 class TensorProductModuleMorphismMethods:
-    r"""A linear map out of a chosen tensor product, hence a bilinear map."""
+    r"""A linear map out of a chosen tensor product, hence a bilinear map.
+
+    A map stated by a two-variable evaluation ``b`` keeps ``b``: its values
+    on the selected tensor framing are its generator images, and it answers
+    ``f(x, y)`` with ``b(x, y)``.  A Python callable does not establish that
+    its values on arbitrary factor elements agree with that bilinear
+    extension, so unless the construction supplies it as a premise, the
+    linearity decision is the proposition ``is_linear(f)`` once the framing
+    values kill the selected tensor relations.
+    """
+
+    _bilinear_evaluation = None
+
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        elementwise=False,
+        scalar_extension_of=None,
+        scalar_extension_functor=None,
+        lift=None,
+        linearity_premises=None,
+        bilinear_evaluation=None,
+    ) -> None:
+        self._bilinear_evaluation = bilinear_evaluation
+        super().__init__(
+            parent,
+            images,
+            elementwise=elementwise,
+            scalar_extension_of=scalar_extension_of,
+            scalar_extension_functor=scalar_extension_functor,
+            lift=lift,
+            linearity_premises=linearity_premises,
+        )
+
+    def _generator_image_linearity_derivation(self):
+        decision = super()._generator_image_linearity_derivation()
+        match self._bilinear_evaluation:
+            case None:
+                return decision
+            case _:
+                return AtomicProposition("is_linear", self)
 
     def left_module(self):
         return self.domain().tensor_factor(0)
@@ -2729,6 +2778,10 @@ class TensorProductModuleMorphismMethods:
     def __call__(self, *arguments):
         if len(arguments) == 1:
             return self._call_(arguments[0])
+        if len(arguments) == 2 and self._bilinear_evaluation is not None:
+            left, right = arguments
+            value = self._bilinear_evaluation(self.left_module()(left), self.right_module()(right))
+            return value if element_parent(value) is self.codomain() else self.codomain()(value)
         if len(arguments) == 2 and self._generator_image is not None:
             return self._evaluate_by_bilinearity(*arguments)
         if len(arguments) == 2:
@@ -2825,62 +2878,6 @@ class TensorProductModuleMorphismMethods:
 
 class TensorProductModuleMorphism(TensorProductModuleMorphismMethods, ModuleMorphism):
     r"""Compatibility shell for private tensor-product arrow realizations."""
-
-
-class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
-    r"""Conditional classifier of a two-variable evaluation on framed factors.
-
-    The selected tensor framing determines the only possible linear extension
-    from the values on pairs of factor generators, and ordinary module-Mor
-    admission still rejects any selected tensor relation that those values do
-    not kill.  A Python callable, however, does not establish that its values
-    on arbitrary factor elements agree with that bilinear extension.  So the
-    linearity is not decided by construction: agreement on the selected framing does
-    not decide bilinearity, and the linearity decision is the proposition
-    ``is_linear(f)``.
-    """
-
-    def __init__(self, parent, evaluation) -> None:
-        self._bilinear_evaluation = evaluation
-        source = parent.domain()
-        left = source.tensor_factor(0)
-        right = source.tensor_factor(1)
-
-        def generator_image(pair):
-            value = evaluation(
-                left.module_generator(pair.component(0)),
-                right.module_generator(pair.component(1)),
-            )
-            match element_parent(value) is parent.codomain():
-                case True:
-                    return value
-                case False:
-                    return parent.codomain()(value)
-
-        super().__init__(parent, generator_image)
-
-    @cached_method
-    def linearity_decision(self):
-        r"""Reject a selected tensor relation the values do not kill; otherwise return ``is_linear(f)``."""
-        self._check_selected_domain_relations()
-        return AtomicProposition("is_linear", self)
-
-    def __call__(self, *arguments):
-        match len(arguments):
-            case 2:
-                left, right = arguments
-                value = self._bilinear_evaluation(
-                    self.left_module()(left),
-                    self.right_module()(right),
-                )
-                match element_parent(value) is self.codomain():
-                    case True:
-                        return value
-                    case False:
-                        return self.codomain()(value)
-            case _:
-                return super().__call__(*arguments)
-
 
 
 class ModuleAutomorphismMethods:
@@ -3151,10 +3148,34 @@ class TensorProductModuleMor(ModuleMor):
 
         return super()._element_constructor_(images)
 
-    def _from_bilinear_evaluation(self, evaluation):
-        r"""Classify a stated bilinear evaluation without proving it from a framing sample."""
+    def _from_bilinear_evaluation(self, evaluation, premises=None):
+        r"""Classify a stated bilinear evaluation without proving it from a framing sample.
+
+        The values on pairs of factor generators are the images of the
+        selected tensor framing.  A construction whose evaluation is bilinear
+        by its own data, such as the product of a ring, supplies the empty
+        family of premises.
+        """
         match callable(evaluation):
             case True:
-                return _FramedTensorBilinearEvaluationMorphism(self, evaluation)
+                pass
             case False:
                 raise TypeError(f"cannot define a bilinear map on {self.domain()} from {evaluation!r}: it must be a function of two arguments")
+        source = self.domain()
+        left = source.tensor_factor(0)
+        right = source.tensor_factor(1)
+        codomain = self.codomain()
+
+        def generator_image(pair):
+            value = evaluation(
+                left.module_generator(pair.component(0)),
+                right.module_generator(pair.component(1)),
+            )
+            return value if element_parent(value) is codomain else codomain(value)
+
+        return self.element_class(
+            self,
+            generator_image,
+            linearity_premises=premises,
+            bilinear_evaluation=evaluation,
+        )

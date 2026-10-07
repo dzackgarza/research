@@ -43,7 +43,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -82,17 +81,6 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.validation import validator
-
-
-class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
-    r"""An existing module map read between algebra objects built on those modules."""
-
-    def __init__(self, parent, underlying_morphism, action) -> None:
-        self._underlying_morphism = underlying_morphism
-        super().__init__(parent, action, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return self._underlying_morphism.linearity_decision()
 
 
 if "Lie" not in all_axioms:
@@ -395,21 +383,18 @@ def _scalar_module(ring):
             return OwnedRings().Mor(ring, ring).identity().as_algebra()
 
 
-class _AlgebraUnitModuleMorphism(ModuleMorphism):
-    r"""The linear unit map ``R -> A`` determined by the module scalar action."""
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
 def _unit_morphism_from_element(module, unit, ring):
-    r"""The linear map ``U_R(R) -> module`` determined by ``1 |-> unit``."""
+    r"""The linear map ``U_R(R) -> module`` determined by ``1 |-> unit``.
+
+    The map \(r\mapsto r\cdot u\) is linear by the module axioms, so the
+    construction alone gives linearity.
+    """
     ring = _owned_ring(ring)
     scalar_module = _scalar_module(ring)
-    return _AlgebraUnitModuleMorphism(
-        scalar_module.module_category().Mor(scalar_module, module),
-        lambda scalar: module.scalar_multiple(ring(scalar), unit),
-        elementwise=True,
+    return scalar_module.module_category().Mor(
+        scalar_module, module
+    )._from_constructed_element_map(
+        lambda scalar: module.scalar_multiple(ring(scalar), unit)
     )
 
 
@@ -1508,10 +1493,11 @@ class Algebras(OwnedCategoryOverBaseRing):
                 case _ if center in Algebras(self.algebra_base_ring()):
                     submodule = center.unformed_module()
                     inclusion = submodule.inclusion()
-                    return _StructuredAlgebraModuleTransportMorphism(
-                        center.module_category().Mor(center, self),
-                        inclusion,
+                    return center.module_category().Mor(
+                        center, self
+                    )._from_constructed_element_map(
                         lambda element: inclusion(submodule(element)),
+                        premises=(inclusion,),
                     )
                 case _:
                     return center.inclusion()
@@ -1625,10 +1611,11 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             projection = self.unformed_module().cokernel_projection()
             ambient = projection.domain()
-            return _StructuredAlgebraModuleTransportMorphism(
-                ambient.module_category().Mor(ambient, self),
-                projection,
+            return ambient.module_category().Mor(
+                ambient, self
+            )._from_constructed_element_map(
                 lambda element: self(projection(element)),
+                premises=(projection,),
             )
 
         def algebra_quotient_ideal(self):

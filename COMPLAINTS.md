@@ -498,15 +498,16 @@ A morphism `A -> B` of a category `C` is an element of `C.Mor(A, B)`, and its
 type is the one the Mor category graph generates. The Mors of sets, of
 injections and surjections, of finite `G`-sets, of modules, of graded modules
 and of the core of a category now construct every arrow as their element
-class. Schemes, cones, connections, framings, scalar change, localization,
-algebra augmentations, tensor classifiers and sheaf modules still construct
-their arrows as instances of handwritten classes (41 private hosts and the
-public bases `SchemeMorphism`, `ConeMorphism`, `ConnectionMorphism`,
-`FramingMorphism` and `ModuleMorphism`), so one Mor holds arrows on several
-classes and none of them is its element class. `SetInclusion`,
-`SubgroupInclusion` and `FiniteGroupClassFunction` are set arrows built the
-same way. Two `R[G]`-module isomorphisms are built by hand under the plain Mor
-and composed both ways at construction.
+class, and so do the module arrows of scalar change, localization, algebra
+augmentations and units, tensor classifiers, sheaf modules and connections.
+Schemes, cones, module embeddings, the restriction of projective sections,
+the degreewise linear maps of graded algebras and the arrows of the Mors of
+derivations and connections still construct their arrows as instances of
+handwritten classes (the private hosts the node's tell lists and the public
+bases `SchemeMorphism`, `ConeMorphism`, `FramingMorphism`, `ModuleEmbedding`
+and `ModuleMorphism`), so one Mor holds arrows on several classes and none of
+them is its element class. `SetInclusion`, `SubgroupInclusion` and
+`FiniteGroupClassFunction` are set arrows built the same way.
 
 **Dependency path:** category `C` -> `C.Mor(A, B)` -> generated arrow type ->
 the Mor's private operation that applies its element class to the arrow's
