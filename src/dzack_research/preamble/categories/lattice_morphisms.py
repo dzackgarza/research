@@ -592,7 +592,7 @@ class LatticeIsometryMethods:
         homset = source.Isom(target)
         return homset.element_class(homset, module_isomorphism)
 
-    def extend_from_perpendicular(self, source_vector, target_vector):
+    def extension_across(self, source_vector, target_vector):
         r"""Extend this perpendicular isometry over the common fraction field.
 
         The endpoints must be represented codimension-one subobjects of the
@@ -611,10 +611,10 @@ class LatticeIsometryMethods:
             sage: v = L.basis_vector(0)
             sage: P = L.subobject_on((v,)).orthogonal_complement()
             sage: a = P.Isom(P)(lambda s: -P.module_generator(s))
-            sage: g = a.extend_from_perpendicular(v, v)
-            sage: g.integral_restriction(L, L)(v) == v
+            sage: g = a.extension_across(v, v)
+            sage: g.is_integral_on(L) and L.integral_isometry(g)(v) == v
             True
-            sage: g.integral_restriction(L, L)(L.basis_vector(1)) == -L.basis_vector(1)
+            sage: L.integral_isometry(g)(L.basis_vector(1)) == -L.basis_vector(1)
             True
         """
         source = source_vector.parent()
@@ -650,14 +650,51 @@ class LatticeIsometryMethods:
         w = rational_target.linear_combination(
             {label: fraction_map(target_coordinates(label)) for label in target_coordinates.support().domain()}
         )
+        source_line = rational_source.subobject_on((v,))
+        target_line = rational_target.subobject_on((w,))
+        source_splitting = rational_source.orthogonal_decomposition(
+            (source_line.inclusion(), source_embedding)
+        )
+        target_splitting = rational_target.orthogonal_decomposition(
+            (target_line.inclusion(), target_embedding)
+        )
 
-        def image(label):
-            x = rational_source.module_generator(label)
+        def line_image(label):
+            x = source_line.inclusion()(source_line.module_generator(label))
             coefficient = rational_source.b(x, v) / v.q()
-            perpendicular = x - rational_source.scalar_multiple(coefficient, v)
-            return target_embedding(restriction(source_embedding.lift(perpendicular))) + rational_target.scalar_multiple(coefficient, w)
+            return target_line.inclusion().lift(rational_target.scalar_multiple(coefficient, w))
 
-        return rational_source.Isom(rational_target)(image)
+        line_isometry = source_line.Isom(target_line)(line_image)
+        source_sum = source_splitting.codomain()
+        target_sum = target_splitting.codomain()
+        assembled = source_sum.from_coproduct_cocone((
+            target_sum.injection(0) * line_isometry,
+            target_sum.injection(1) * restriction,
+        ))
+        sum_isometry = source_sum.Isom(target_sum)(
+            lambda label: assembled(source_sum.module_generator(label))
+        )
+        return target_splitting.inverse() * sum_isometry * source_splitting
+
+    def is_integral_on(self, source, target=None):
+        r"""Decide whether this rational map sends ``source`` into ``target``.
+
+        For an endomorphism, ``target`` defaults to ``source``. Otherwise
+        the target integral structure must be supplied: a rational vector
+        space alone does not specify an integral lattice.
+        """
+        if target is None:
+            target = source
+        ring = source.base_ring()
+        fraction_map = ring.fraction_field_map()
+        if target.base_ring() is not ring:
+            raise ValueError("integrality requires a common integral scalar ring")
+        if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
+            raise ValueError("integrality requires the source and target integral structures of this rational map")
+        restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
+        return (restrict(self) * source.generic_fibre_map()).factor_through_or_none(
+            target.generic_fibre_map()
+        ) is not None
 
     def integral_restriction(self, source, target):
         r"""Return the induced lattice isometry, or ``None`` if it is not integral.

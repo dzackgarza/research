@@ -280,7 +280,7 @@ def _definite_complement_extensions(lattice, left, right):
         source.complement.inclusion().domain(),
         target.complement.inclusion().domain(),
     ):
-        rational = restriction.extend_from_perpendicular(source.vector, target.vector)
+        rational = restriction.extension_across(source.vector, target.vector)
         integral = rational.integral_restriction(lattice, lattice)
         if integral is not None:
             extensions.append(integral)

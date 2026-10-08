@@ -1933,6 +1933,52 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(f"cannot take the orthogonal complement of {sublattice!r} in {self!r}: it is a sublattice of {inclusion.codomain()!r}, not of {self!r}")
             return inclusion.orthogonal_complement()
 
+        def integral_isometry(self, morphism, *, source=None):
+            r"""Descend a rational isometry onto this integral lattice.
+
+            For a rational automorphism of ``self``, the source integral
+            structure is ``self``. For distinct rational endpoints, supply
+            ``source`` explicitly. Both directions must preserve the stated
+            integral lattices; raise ``ValueError`` otherwise.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("U")
+                sage: V = L.vector_space()
+                sage: phi = V.Isom(V)(lambda label: -V.module_generator(label))
+                sage: g = L.integral_isometry(phi)
+                sage: all(g(x) == -x for x in L.module_generators())
+                True
+            """
+            if source is None:
+                if morphism.domain() is not self.vector_space():
+                    raise ValueError("the source integral lattice must be supplied for distinct rational endpoints")
+                source = self
+            isometry = morphism.integral_restriction(source, self)
+            if isometry is None:
+                raise ValueError("the rational isometry does not map the source integral lattice onto the target")
+            return isometry
+
+        def orthogonal_decomposition(self, embeddings):
+            r"""Return ``self -> direct_sum(S_i)`` for chosen orthogonal embeddings.
+
+            The embeddings must have codomain ``self`` and assemble to an
+            isometry from their orthogonal biproduct. The isomorphism
+            constructor enforces both the form equation and invertibility;
+            an orthogonal finite-index sublattice is not a decomposition.
+            The result retains all summands, injections and projections.
+            """
+            embeddings = tuple(embeddings)
+            if any(embedding.codomain() is not self for embedding in embeddings):
+                raise ValueError("orthogonal summand embeddings must end in the ambient lattice")
+            normal = Lattices(self.base_ring()).biproduct(tuple(
+                embedding.domain() for embedding in embeddings
+            ))
+            assembled = normal.from_coproduct_cocone(embeddings)
+            return normal.Isom(self)(
+                lambda label: assembled(normal.module_generator(label))
+            ).inverse()
+
         def perp(self, sublattice=None):
             r"""Synonym for :meth:`orthogonal_complement`."""
             return self.orthogonal_complement(sublattice)
@@ -5816,11 +5862,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             plane_embedding = plane.Mor(ambient)(
                 lambda label: e if label == labels[0] else f
             )
-            normal = Lattices(ring).biproduct((plane, self))
-            assembled = normal.from_coproduct_cocone((plane_embedding, section))
-            return normal.Isom(ambient)(
-                lambda label: assembled(normal.module_generator(label))
-            ).inverse()
+            return ambient.orthogonal_decomposition((plane_embedding, section))
 
         @cached_method
         def rational_witt_decomposition(self):
