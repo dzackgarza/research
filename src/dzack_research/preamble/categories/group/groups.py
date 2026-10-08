@@ -4456,9 +4456,11 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
                 return False
             if word is not None:
                 free = self.selected_group_resolution().level(0)
-                product = ambient.one()
-                for generator, exponent in _reduced_word_data(free, word):
-                    product = product * (ambient(generator) ** exponent)
+                labels = self.selected_subgroup_generators()
+                generating_map = free.Mor(ambient)(
+                    Sets().Mor(labels, ambient)(lambda generator: generator)
+                )
+                product = generating_map(free(word))
                 if product == candidate:
                     return True
                 return AtomicProposition("is_member", candidate, self)

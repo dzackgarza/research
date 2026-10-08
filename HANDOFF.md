@@ -66,6 +66,8 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 
 ## Closure work
 
+- **Generated-word evaluation uses its universal map:** `GeneratedSubgroups.membership_decision(candidate,word=...)` now evaluates the word through the morphism from the selected free group to the containing group, rather than independently multiplying extracted letters. The `diag(2,1/2)` specimen confirms the correct word `t*t` proves `g*g` and the mismatched word for `g` remains undecided. This retains the generating map as the owner of word evaluation.
+
 - **Generated-subgroup witness validation corrected:** an explicitly supplied free-group word is evaluated before any direct generator/identity membership shortcut. The word `t*t` certifies `g*g` for `g=diag(2,1/2)` on the rational hyperbolic plane, but does not certify `g`; the latter query retains its undecided `is_member` proposition when accompanied by the mismatched word. Direct membership of the selected generator remains `True`. This distinguishes positive subgroup membership from validity of the supplied witness.
 
 - **Bounded signed shell and sphere specimens verified:** for Gram `[2]`, target one-half of the selected generator and square bound zero, multiplier one gives no shell, while multiplier two gives a singleton shell; for Gram `[-2]` at target zero, bound `-2` and multiplier one give the two-point sphere. Both returned multiplier and cardinality were checked in Sage. The shell's existing doctest had assumed that the framing label was the Python integer `0`; the documented construction now reads the selected generator label instead, in the same commit as this status update.
