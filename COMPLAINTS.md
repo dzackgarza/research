@@ -778,6 +778,94 @@ placement, never from adjunction syntax.
 **Consumers:** every caller that iterates a finite owned ring or builds a
 literal set from one. No TODO node yet.
 
+### Spaces of modular forms with a character are not presented
+
+Let `L` be a positive definite integral lattice of rank `n`, level `N` and
+quadratic character `chi`. Then `theta_L` is a modular form of weight `n/2`
+for `Gamma_0(N)` with character `chi`. Its cuspidal component
+`theta_L - theta_gen(L)` lies in `S_{n/2}(Gamma_0(N), chi)`. The coordinates
+of that component in a basis of `S_{n/2}(Gamma_0(N), chi)` are the input of
+the Bhargava–Hanke and Rouse cusp constant. `M_k(Gamma, chi)` is the set of
+holomorphic functions `f` on the upper half-plane `H` that satisfy
+`f|_k gamma = chi(d) f` for every `gamma` in `Gamma` and are holomorphic at
+the cusps. `S_k(Gamma, chi)` is the subset of forms that vanish at the cusps.
+So `M_k(Gamma, chi)` is a subset of the hom `Mor(H, C)`, hence a
+subcategory of that hom-category. It is also a subobject of `Mor(H, C)`, with
+its inclusion, in topological `C`-modules.
+
+**Dependency path:** `H` as an open complex submanifold of `C` ->
+`ComplexManifolds().Mor(H, C)` with its `C`-module structure and topology ->
+the weight-`k` slash action of `SL_2(ZZ)` on that hom -> the subset cut out
+by `Gamma_0(N)`-invariance up to `chi` and the cusp conditions -> a basis of
+the subset, with `q`-expansions at infinity -> the coordinates of the
+cuspidal component of `theta_L`.
+**Existing capability:** `ComplexManifolds` (`categories/manifolds.py`)
+presents `Mor(X, Y)` only for maps given by polynomials in selected charts,
+and presents only affine spaces as objects. No preamble object is the upper
+half-plane, and `Mor(H, C)` has no `C`-module structure, no slash action and
+no `q`-expansion. A search of `src/dzack_research/preamble` for
+`upper half`, `modular form`, `cusp` and `slash` found no presentation
+(2026-10-09). `Lattices.ParentMethods.theta_series_cuspidal_component`
+returns the component as a power series, without the space it lies in.
+Sage's `ModularForms(Gamma0(N), k, chi)` computes bases in integral weight,
+and `half_integral_weight_modform_basis` computes them in half-integral weight.
+**Consumers:** the lattice-db field `definite.cusp_form_coordinates`, which is
+not requested until this space exists, and the cusp constant of
+`definite-representation-exceptions`.
+**Coverage boundary:** the `lean-categories` checkout (`LeanCategories/`,
+`FOUNDATIONS.md`, `FOUNDATIONAL_FRONTIER.md`, `TODO.md`) was searched for
+`modular form`, `ModularForm`, `SlashAction` and `Siegel`. It formalizes the
+theta series of a definite integral lattice (Definition 29b.1, `Theta.lean`)
+and nothing about modular forms. Mathlib was not inspected, because no local
+checkout and no corpus index was found.
+**Request (not yet filed):** `lean-categories` formalizes
+`M_k(Gamma_0(N), chi)` and `S_k(Gamma_0(N), chi)`, in integral and
+half-integral weight, as subsets of the holomorphic functions on `H`. It
+also formalizes the statement that `theta_L` lies in
+`M_{n/2}(Gamma_0(N), chi)`. Sources: Miyake, *Modular Forms*, §2.1 and
+§4.3; Shimura, *On modular forms of half integral weight* (Ann. of Math. 97,
+1973); Iwaniec, *Topics in Classical Automorphic Forms*, Chapter 10.
+Repair: `modular-forms-and-hecke-algebras`, then
+`theta-cusp-form-coordinates`, in TODO.
+
+### No independent Siegel product computes the Eisenstein coefficients of a definite genus
+
+By Siegel's formula, the coefficient `a_E(m)` of `q^m` in the genus theta
+series is the product of the real density and the local densities
+`beta_p(L, m)` over all primes `p`. Only finitely many factors are not given
+by the local `L`-factor of `chi`. This product is an independent computation
+of the coefficients of `theta_gen(L)`, which the preamble now computes as a
+weighted average over the classes of the genus. The Bhargava–Hanke and Rouse
+method needs it, because it gives a lower bound on `a_E(m)` for every `m`,
+not only on a finite prefix.
+**Dependency path:** `beta_p(L, m)` at `p | 2 m det L` (delivered:
+`Genus.local_density`) -> the local factors at the remaining primes ->
+the real density -> their product -> agreement with the coefficients of
+`Genus.theta_series`.
+**Existing capability:** Sage's `QuadraticForm.siegel_product` is correct in
+ranks 4 and 8. In rank 2 it returns half of the value, and in rank 3 it
+raises a `TypeError` or returns a wrong value (`TRAPS.md`, measured on
+2026-10-09). No route uses it.
+**Consumers:** the lattice-db field `definite.siegel_eisenstein_coefficients`,
+which is not requested, and the Eisenstein lower bound of
+`definite-representation-exceptions`.
+**Coverage boundary:** Sage's `quadratic_form__siegel_product.py` and
+`quadratic_form__local_density_interfaces.py` were measured. No other
+maintained Siegel product was inspected. `lean-categories` formalizes the
+local density only as the Haar volume of the local integral orthogonal group
+(`Valued/LocalDensity.lean`, `Valued/DensityProduct.lean`). It does not
+formalize the representation density `beta_p(L, m)` or Siegel's formula.
+**Request (not yet filed):** `lean-categories` formalizes the representation
+densities `beta_p(L, m)` and Siegel's formula
+`theta_gen(L) = E_L`, the Eisenstein series whose coefficients are the
+product of the local representation densities. Sources: Siegel, *Über die
+analytische Theorie der quadratischen Formen* (Ann. of Math. 36, 1935);
+Hanke, *Local densities and explicit bounds for representability by a
+quadratic form* (Duke Math. J. 124, 2004).
+Repair: `siegel-eisenstein-coefficients` in TODO, which needs the engine
+ruling `siegel-product-engine-ruling`, because the maintained route is wrong
+outside ranks 4 and 8.
+
 ## Workflow Papercuts
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
