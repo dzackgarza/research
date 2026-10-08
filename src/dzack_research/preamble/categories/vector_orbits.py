@@ -260,18 +260,11 @@ def _isometries_between_definite_lattices(source, target):
 
 
 def _definite_complement_extensions(lattice, left, right):
-    r"""Return every ``g in O(L)`` carrying ``left`` to ``right`` when complements are definite.
+    r"""Return all integral extensions when the two complements are definite.
 
-    This is Dawes' definite-complement route.  An isometry of the two
-    complements, together with ``left -> right``, defines an isometry
-    ``C:M_left -> M_right`` on the orthogonal sums.  With the finite-index
-    inclusions ``A_i:M_i -> L``, its rational ambient extension is
-
-    ``A_right * C * A_left^{-1}``.
-
-    Exactly the rational ambient morphisms preserving the integral lattice
-    belong to ``O(L)``.  Since the complement isometry Mor is a finite
-    torsor in this regime, the returned tuple is exhaustive.
+    Definite complement isometries form a finite torsor. Each member extends
+    through the general nonisotropic orthogonal splitting, and its integral
+    restriction exists exactly when it preserves both ambient lattices.
     """
     source = VectorPrimitiveExtension(lattice, left)
     target = VectorPrimitiveExtension(lattice, right)
@@ -279,98 +272,18 @@ def _definite_complement_extensions(lattice, left, right):
         return ()
     if not source.complement_is_definite() or not target.complement_is_definite():
         raise ValueError(
-            f"cannot list isometries of {lattice} carrying {left} to {right} by extending "
-            f"isometries of their orthogonal complements: both complements must be "
-            f"definite, and at least one is not"
+            f"cannot list isometries of {lattice} carrying {left} to {right}: "
+            "both orthogonal complements must be definite"
         )
-    source_complement = source.complement.inclusion().domain()
-    target_complement = target.complement.inclusion().domain()
-    source_line = source.line.inclusion().domain()
-    target_line = target.line.inclusion().domain()
-    source_rank = int(source.sum_lattice.module_rank())
-    target_rank = int(target.sum_lattice.module_rank())
-    if source_rank != target_rank:
-        return ()
-
-    ring = lattice.base_ring()
-    rationals = ring.fraction_field()
-
-    source_inclusion = _module_matrix(source.inclusion).change_ring(rationals)
-    target_inclusion = _module_matrix(target.inclusion).change_ring(rationals)
-    source_inverse = source_inclusion.inverse()
-    ambient_generators = lattice.module_generators()
-    source_line_vector = source.line.inclusion().lift(source.vector)
-    target_line_vector = target.line.inclusion().lift(target.vector)
-    target_line_generator = target_line.module_generators()[0]
-    source_coefficient = _rank_one_coefficient(source_line_vector)
-    target_coefficient = _rank_one_coefficient(target_line_vector)
-    if source_coefficient not in (ring.one(), -ring.one()) or target_coefficient not in (ring.one(), -ring.one()):
-        raise ArithmeticError(
-            f"the primitive vectors {source.vector} and {target.vector} are not plus or minus "
-            f"the basis vector of the lines they span: their coefficients are "
-            f"{source_coefficient} and {target_coefficient}"
-        )
-    line_isometry = source_line.Isom(target_line)(
-        (
-            target_line.scalar_multiple(
-                source_coefficient * target_coefficient, target_line_generator
-            ),
-        )
-    )
-    if line_isometry(source_line_vector) != target_line_vector:
-        raise ArithmeticError(
-            f"the isometry {line_isometry} of lines does not send {source.vector} to "
-            f"{target.vector}"
-        )
-    line_matrix = _module_matrix(line_isometry).change_ring(rationals)
     extensions = []
     for restriction in _isometries_between_definite_lattices(
-        source_complement,
-        target_complement,
+        source.complement.inclusion().domain(),
+        target.complement.inclusion().domain(),
     ):
-        restriction_matrix = _module_matrix(restriction).change_ring(rationals)
-        block = rationals.matrix_space(source_rank).from_rows(
-            (
-                line_matrix[0, 0]
-                if row == column == 0
-                else restriction_matrix[row - 1, column - 1]
-                if row > 0 and column > 0
-                else rationals.zero()
-                for column in range(source_rank)
-            )
-            for row in range(source_rank)
-        )
-        candidate = target_inclusion * block * source_inverse
-        if not all(
-            candidate[row, column] in ring
-            for row in range(source_rank)
-            for column in range(source_rank)
-        ):
-            continue
-        integral = ring.matrix_space(source_rank).from_rows(
-            (ring(candidate[row, column]) for column in range(source_rank))
-            for row in range(source_rank)
-        )
-        images = tuple(
-            sum(
-                (
-                    lattice.scalar_multiple(
-                        integral[row, column], ambient_generators[row]
-                    )
-                    for row in range(source_rank)
-                    if integral[row, column]
-                ),
-                lattice.zero(),
-            )
-            for column in range(source_rank)
-        )
-        isometry = lattice.O()(images)
-        if isometry(source.vector) != target.vector:
-            raise ArithmeticError(
-                f"the isometry {isometry} of {lattice} built from the line and its complement "
-                f"sends {source.vector} to {isometry(source.vector)}, not to {target.vector}"
-            )
-        extensions.append(isometry)
+        rational = restriction.extend_from_perpendicular(source.vector, target.vector)
+        integral = rational.integral_restriction(lattice, lattice)
+        if integral is not None:
+            extensions.append(integral)
     return tuple(extensions)
 
 
