@@ -891,33 +891,24 @@ also formalizes the statement that `theta_L` lies in
 Repair: `modular-forms-and-hecke-algebras`, then
 `theta-cusp-form-coordinates`, in TODO.
 
-### No independent Siegel product computes the Eisenstein coefficients of a definite genus
+### `lean-categories` does not formalize the representation density or Siegel's formula
 
-By Siegel's formula, the coefficient `a_E(m)` of `q^m` in the genus theta
-series is the product of the real density and the local densities
-`beta_p(L, m)` over all primes `p`. Only finitely many factors are not given
-by the local `L`-factor of `chi`. This product is an independent computation
-of the coefficients of `theta_gen(L)`, which the preamble now computes as a
-weighted average over the classes of the genus. The Bhargava–Hanke and Rouse
-method needs it, because it gives a lower bound on `a_E(m)` for every `m`,
-not only on a finite prefix.
-**Dependency path:** `beta_p(L, m)` at `p | 2 m det L` (delivered:
-`Genus.local_density`) -> the local factors at the remaining primes ->
-the real density -> their product -> agreement with the coefficients of
-`Genus.theta_series`.
-**Existing capability:** Sage's `QuadraticForm.siegel_product` is correct in
-ranks 4 and 8. In rank 2 it returns half of the value, and in rank 3 it
-raises a `TypeError` or returns a wrong value (`TRAPS.md`, measured on
-2026-10-09). No route uses it.
+`Genus.siegel_eisenstein_coefficient` computes the coefficient `a_E(m)` of
+`q^m` in the genus theta series as Siegel's product of the real density and
+the local representation densities `beta_p(L, m)`, and
+`Genus.local_density` computes `beta_p(L, m)`. Both present notions that
+`lean-categories` does not formalize.
+**Dependency path:** the representation density `beta_p(L, m)` -> Siegel's
+product over all places -> Siegel's formula `theta_gen(L) = E_L`.
+**Existing capability:** the preamble computes both, citing Siegel (1935) and
+Hanke (2004); on `A_2`, `diag(1,1,1)`, `diag(1,1,16)` and the sum of four
+squares the product agrees with `Genus.theta_series` through `q^12`.
 **Consumers:** the lattice-db field `definite.siegel_eisenstein_coefficients`,
-which is not requested, and the Eisenstein lower bound of
+`definite.local_densities`, and the Eisenstein lower bound of
 `definite-representation-exceptions`.
-**Coverage boundary:** Sage's `quadratic_form__siegel_product.py` and
-`quadratic_form__local_density_interfaces.py` were measured. No other
-maintained Siegel product was inspected. `lean-categories` formalizes the
-local density only as the Haar volume of the local integral orthogonal group
-(`Valued/LocalDensity.lean`, `Valued/DensityProduct.lean`). It does not
-formalize the representation density `beta_p(L, m)` or Siegel's formula.
+**Coverage boundary:** `lean-categories` formalizes the local density only as
+the Haar volume of the local integral orthogonal group
+(`Valued/LocalDensity.lean`, `Valued/DensityProduct.lean`).
 **Request (not yet filed):** `lean-categories` formalizes the representation
 densities `beta_p(L, m)` and Siegel's formula
 `theta_gen(L) = E_L`, the Eisenstein series whose coefficients are the
@@ -925,8 +916,8 @@ product of the local representation densities. Sources: Siegel, *Über die
 analytische Theorie der quadratischen Formen* (Ann. of Math. 36, 1935);
 Hanke, *Local densities and explicit bounds for representability by a
 quadratic form* (Duke Math. J. 124, 2004).
-Repair: `siegel-eisenstein-coefficients` in TODO. The preamble owns the
-product and repairs Sage's defects outside ranks 4 and 8 in its own route.
+Repair: file the request with `lean-categories`. It runs beside the preamble
+computation and blocks no node.
 
 ## Workflow Papercuts
 

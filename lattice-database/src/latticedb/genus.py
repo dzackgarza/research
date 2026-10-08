@@ -109,9 +109,12 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.rank >= 3 and 1 in (lattice.signature or ())
         case "roots" | "norms":
             return lattice.definite is None
-        case "cusp_form_coordinates" | "siegel_eisenstein_coefficients":
-            # The preamble presents neither yet: TODO nodes `theta-cusp-form-coordinates` and `siegel-eisenstein-coefficients`.
+        case "cusp_form_coordinates":
+            # The preamble does not present it yet: TODO node `theta-cusp-form-coordinates`.
             return False
+        case "siegel_eisenstein_coefficients":
+            # Siegel's Hauptsatz requires more than one variable.
+            return lattice.definite is not None and lattice.rank >= 2
         case "regular" | "genus_theta_series" | "theta_series_cuspidal_component":
             return lattice.definite is not None
         case "anisotropic_primes" | "local_representations":

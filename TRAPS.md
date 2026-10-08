@@ -410,8 +410,8 @@ The forms are `QuadraticForm(ZZ, 2*G)`, so `Q(x) = x^T G x`, for `m = 1, ..., 32
 The source divides by 2 when `n == 2`, which accounts for the binary case.
 `theta_gen` of `diag(1,1,16)` through `q^16` is `1, 2, 4, 0, 4, 8, 0, 0, 4, 10, 8, 0, 0, 8, 0, 0, 6`, in 1.18 s; since `r_L(1) = 4`, its cuspidal component is nonzero.
 Reproduce with `sage probe.sage`, where the probe computes `theta_gen` from the genus representatives and compares `siegel_product(m)` with it for each specimen.
-Route chosen: none. The genus theta series is the weighted average over the genus representatives (`Genus.theta_series` in `src/dzack_research/preamble/categories/lattices.py`); no route uses `siegel_product`, and lattice-db does not request `definite.siegel_eisenstein_coefficients` until an independent Siegel product exists.
-Depends on this: `definite.siegel_eisenstein_coefficients` in lattice-db.
+Route chosen: the preamble forms Siegel's product itself in `Genus.siegel_eisenstein_coefficient` (`src/dzack_research/preamble/categories/lattices.py`), and no route uses `siegel_product`. The factors at `p | 2 m det L` are `Genus.local_density`; the product of the remaining factors is a quotient of the exact values of `quadratic_L_function__exact` and `zeta__exact` (`sage.quadratic_forms.special_values`) with their Euler factors at `2 m det L` removed; the real density is Siegel's Hilfssatz 26; and the product is halved in rank 2. The whole product is formed in `SR` before `QQ(...)`, so the square roots and powers of `pi` cancel: on 2026-10-09 the conversion succeeded for `A_2`, `-A_2`, `diag(1,1,1)`, `diag(1,1,16)` and the identity of rank 4 at every `m` up to 12, and each value equals `theta_gen`, in 0.1 s to 0.26 s per specimen for the 12 coefficients.
+Depends on this: `Genus.siegel_eisenstein_coefficient`, and `definite.siegel_eisenstein_coefficients` in lattice-db.
 
 ### `QuadraticForm.local_density(p, m)` drops the factor `p^v` of the content
 
