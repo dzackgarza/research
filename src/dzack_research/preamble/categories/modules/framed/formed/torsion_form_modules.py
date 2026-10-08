@@ -1200,6 +1200,9 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         r"""Lower an ambient automorphism into the subgroup's private engine."""
         return engine_subgroup(self._to_engine(automorphism))
 
+    def _engine_subgroup_contains(self, automorphism, engine_subgroup):
+        return self._to_engine(automorphism) in engine_subgroup
+
     def _from_subgroup_engine(self, engine_element):
         r"""Raise a subgroup element as an automorphism in the ambient group."""
         return self._from_engine(engine_element)

@@ -348,7 +348,7 @@ def _binary_reduction_cycle(lattice, bound, start):
     ring = lattice.base_ring()
 
     def raise_vector(point):
-        return lattice.linear_combination({label: ring(coordinate) for label, coordinate in zip(labels, point, strict=True)})
+        return lattice.linear_combination({label: _owned_engine_element(ring, coordinate) for label, coordinate in zip(labels, point, strict=True)})
 
     automorphism = lattice.Isom(lattice)(tuple(raise_vector(row) for row in period.rows()))
     return automorphism, tuple(raise_vector(point) for point in cycle)

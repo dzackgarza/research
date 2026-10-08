@@ -1227,6 +1227,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return ring.cardinality() ** self.module_rank() * prod(cyclic_orders, Cardinalities().one())
 
+        def _finiteness_decision(self):
+            return self.cardinality().is_finite()
+
         @cached_method
         def invariant_factor_presentation(self):
             r"""Normalize the selected presentation through the PID structure theorem.

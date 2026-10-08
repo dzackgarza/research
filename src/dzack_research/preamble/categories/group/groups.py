@@ -124,7 +124,9 @@ if "FinitelyPresentedAsGroup" not in all_axioms:
 # ``_from_engine(engine_element)``; a group whose subgroups are generated in
 # its engine also supplies ``_engine_subgroup_from_generators(generators)``,
 # ``_to_subgroup_engine(element, engine_subgroup)`` and
-# ``_from_subgroup_engine(engine_element)``.  Implementers:
+# ``_from_subgroup_engine(engine_element)``. Membership uses
+# ``_engine_subgroup_contains(element, engine_subgroup)`` and returns a
+# Boolean without requiring an engine for the full containing group. Implementers:
 # :class:`_GroupEngine`, selected privately at ``OwnedGroups``; the
 # group-automorphism, lattice orthogonal-group and torsion-form
 # orthogonal-group Mor parents; and predicate subgroups of a finite group,
@@ -234,6 +236,9 @@ class _AdditiveGroupForGroupExp(Parent):
     def _element_constructor_(self, value):
         return self._additive_group(value)
 
+    def __contains__(self, value):
+        return value in self._additive_group
+
     def zero(self):
         return self._additive_group.zero()
 
@@ -254,7 +259,7 @@ def _additive_group_exponential(additive_group):
     engine = GroupExp()(_AdditiveGroupForGroupExp(additive_group))
     group = _own_group(engine)
     forward = Sets().Mor(additive_group, group)(
-        lambda element: group._from_engine(engine(element))
+        lambda element: group._from_engine(engine._element_constructor_(element))
     )
     backward = Sets().Mor(group, additive_group)(
         lambda element: additive_group(group._to_engine(element).value)
@@ -1091,6 +1096,9 @@ class _GroupEngine:
 
     def _to_subgroup_engine(self, element, engine_subgroup):
         return engine_subgroup(self._to_engine(element))
+
+    def _engine_subgroup_contains(self, element, engine_subgroup):
+        return self._to_engine(element) in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         return self._from_engine(engine_element)
@@ -2535,6 +2543,9 @@ class GroupAutomorphismGroups(OwnedCategory):
         def _to_subgroup_engine(self, automorphism, engine_subgroup):
             return engine_subgroup(self._to_engine(automorphism))
 
+        def _engine_subgroup_contains(self, automorphism, engine_subgroup):
+            return self._to_engine(automorphism) in engine_subgroup
+
         def _from_subgroup_engine(self, engine_automorphism):
             return self(engine_automorphism.gap(), check=False)
 
@@ -3176,15 +3187,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return self.selected_group_resolution().generators(
                 name="Group generators"
             )
-
-        def _engine_subgroup_contains(self, element, engine_subgroup):
-            r"""Decide membership in a private generated subgroup.
-
-            The group adapters call this protected protocol with an owned
-            ambient element and the subgroup engine. A realization whose
-            full group has no engine overrides this crossing at its owner.
-            """
-            return self._to_engine(element) in engine_subgroup
 
         def invariant_overlattice(self, lattice):
             r"""Return the least integral invariant overlattice for this rational orthogonal action.
