@@ -1256,6 +1256,12 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected form datum, stated on the unformed module."""
             return self._preamble_form
 
+        def pullback_form(self, morphism):
+            r"""Pull back this formed module's form along a map into this module."""
+            if morphism.codomain() is not self:
+                raise ValueError("the form pullback requires a map into this formed module")
+            return self._formed_form().pullback(morphism)
+
         @cached_method
         def _formed_form(self):
             r"""The selected form read on this module.
@@ -1512,7 +1518,8 @@ class FormModules(OwnedCategoryOverBaseRing):
             return Lattices(self.base_ring())("U").discriminant_group()
 
         class ParentMethods:
-            base_change = _formed_module_base_change
+            def base_change(self, ring_map):
+                return FormBaseChanges(ring_map.codomain())(self, ring_map)
 
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):
@@ -1536,6 +1543,13 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             r"""Return ``b^flat : M -> Hom_R(M,R)`` for this scalar-valued bilinear form."""
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
+
+        @cached_method
+        def ideal_dual(self, modulus):
+            r"""Return the rational vectors whose pairings lie in the principal ideal ``(modulus)``."""
+            from dzack_research.preamble.categories.modules.ideal_duals import IdealMetricDuals
+
+            return IdealMetricDuals(self.base_ring())(self, modulus)
 
         @cached_method
         def scale_submodule(self):
@@ -2586,7 +2600,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
         return [FormModules(self.base_ring()), FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
-        base_change = _formed_module_base_change
+        def base_change(self, ring_map):
+            return FormBaseChanges(ring_map.codomain())(self, ring_map)
 
         @cached_method
         def correlation_morphism(self):
@@ -2618,7 +2633,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             return Lattices(self.base_ring())("U")
 
         class ParentMethods:
-            base_change = _formed_module_base_change
+            def base_change(self, ring_map):
+                return FormBaseChanges(ring_map.codomain())(self, ring_map)
 
             def gram_matrix(self, basis=None):
                 r"""Return the coordinate matrix of the selected finite free form."""
@@ -2835,7 +2851,7 @@ def _form_subobject_spanning(module, basis):
 
     subobject = _module_subobject_spanning(module, basis)
     construction = subobject.module_subobject_construction()
-    restricted = module._formed_form().pullback(subobject.inclusion())
+    restricted = module.pullback_form(subobject.inclusion())
     embedded = construction.generator_images()
 
     def inclusion_factory(source):

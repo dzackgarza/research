@@ -2155,6 +2155,29 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
 
+        @cached_method
+        def zero_subobject(self):
+            r"""The zero module with its unique monomorphism into this module.
+
+            This construction does not require generators of the ambient
+            module: its image is the singleton consisting of zero.
+            """
+            ring = self.base_ring()
+            zero = ring._fresh_free_module_on(Sets.Δ[-1])
+
+            def inclusion(source):
+                arrow = Modules(ring).Mor(source, self)._from_constructed_element_map(
+                    lambda element: self.zero()
+                )
+                return Modules(ring).Mono(source, self)._subobject_inclusion(
+                    arrow, lift=lambda value: source.zero() if value == self.zero() else None,
+                )
+
+            return zero._module_with_structure(
+                (ModuleSubobjects(ring),),
+                {"subobject_ambient": self, "subobject_inclusion_factory": inclusion},
+            )
+
         def torsion_submodule(self):
             r"""Return ``Tor(M) = ker(M -> K tensor_R M)`` over an integral domain.
 

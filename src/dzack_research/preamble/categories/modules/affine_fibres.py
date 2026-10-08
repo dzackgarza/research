@@ -287,7 +287,7 @@ class AffineModuleFibres(OwnedCategoryOverBaseRing):
                 raise ValueError("the integral parameter inclusion has the wrong rational ambient module")
             linear = restrict(self.linear_part()) * integral_parameters
             values = linear.codomain()
-            zero = values.subobject_on(())
+            zero = values.zero_subobject()
             result = AffineModuleFibres(ring)(
                 linear, zero.inclusion(), values(self.offset()),
                 parameter_inclusion=integral_parameters,

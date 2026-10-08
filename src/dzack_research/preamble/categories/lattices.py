@@ -3186,6 +3186,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``L -> L.linear_dual()``, ``v |-> b(v,-)``."""
             return self.algebraic_correlation_morphism()
 
+        def divisible_sublattice(self, divisor):
+            r"""Return ``{v in L : b(v,L) subset divisor*R}`` with both pullback maps.
+
+            At divisor zero this is the radical. The inclusion ``i`` into
+            this lattice and ``k=map_to_ideal_dual()`` satisfy ``j*i=u*k``,
+            where ``j`` is the generic-fibre inclusion and ``u`` the
+            retained ideal-dual inclusion.
+            """
+            return self.ideal_dual(divisor).integral_pullback()
+
         @cached_method
         def dual_lattice(self):
             r"""Return the metric dual ``L^#`` in the rational span of L.

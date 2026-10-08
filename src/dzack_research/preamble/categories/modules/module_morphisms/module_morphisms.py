@@ -1218,7 +1218,7 @@ class ModuleMorphismMethods:
         from dzack_research.preamble.categories.modules.affine_fibres import AffineModuleFibres
 
         values = self.codomain()
-        zero = values.subobject_on(())
+        zero = values.zero_subobject()
         return AffineModuleFibres(self.domain().base_ring())(
             self, zero.inclusion(), -values(right_hand_side)
         )
