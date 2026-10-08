@@ -86,9 +86,13 @@ class CategoryDeclaration:
     abstract: bool
     supercategories: tuple[Supercategory, ...] = field(default_factory=tuple)
     axiom_of: str = ""  # for a nested axiom class, the category it refines
+    nested_in: str = ""  # for a nested construction such as ``_MorCategory``, the vertex enclosing it
+    object_methods: tuple[str, ...] = ()  # the methods its ``ParentMethods`` installs on objects
 
     @property
     def vertex(self) -> str:
+        if self.nested_in:
+            return f"{self.nested_in}::{self.name}"
         if not self.axiom_of:
             return self.name
         return _vertex(self.axiom_of, tuple(self.qualified_name.split(".")[1:]))
@@ -227,6 +231,46 @@ def _declarations(node: ast.ClassDef) -> list[ast.FunctionDef]:
     return [statement for statement in node.body if isinstance(statement, ast.FunctionDef) and statement.name in DECLARATIONS]
 
 
+def _object_methods(node: ast.ClassDef) -> dict[str, ast.FunctionDef]:
+    """The methods a category installs on its objects: its ``ParentMethods`` body."""
+    for statement in node.body:
+        if isinstance(statement, ast.ClassDef) and statement.name == "ParentMethods":
+            return {method.name: method for method in statement.body if isinstance(method, ast.FunctionDef)}
+    return {}
+
+
+def _factories(trees: list[ast.Module]) -> dict[str, str]:
+    """Module-level functions whose whole body returns one category expression.
+
+    ``def FiniteSets(): return Sets().Finite()`` names the category
+    ``Sets.Finite``; a declaration of ``FiniteSets()`` declares that vertex.
+    A name defined twice is left unresolved.
+    """
+    found: dict[str, list[str]] = {}
+    for tree in trees:
+        for statement in tree.body:
+            if not isinstance(statement, ast.FunctionDef) or statement.args.args:
+                continue
+            body = [s for s in statement.body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Constant))]
+            match body:
+                case [ast.Return(value=ast.Call() as value)]:
+                    found.setdefault(statement.name, []).append(ast.unparse(value))
+    return {name: expressions[0] for name, expressions in found.items() if len(expressions) == 1}
+
+
+def _unfold(expression: str, factories: dict[str, str], imported: dict[str, tuple[str, str]]) -> str:
+    """The expression with a factory call replaced by the category it returns."""
+    base, axioms = _axiom_calls(expression)
+    match base:
+        case ast.Call(func=ast.Name(id=name), args=[], keywords=[]) if _resolved(name, imported) in factories:
+            return factories[_resolved(name, imported)] + "".join(f".{axiom}()" for axiom in axioms)
+    return expression
+
+
+def _protected(names: tuple[str, ...]) -> bool:
+    return any(name.startswith("_") for name in names)
+
+
 def _is_category(node: ast.ClassDef, known: set[str]) -> bool:
     for base in node.bases:
         if _head(ast.unparse(base)) in CATEGORY_BASES | known:
@@ -274,6 +318,7 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
     # those count as defined when a declaration names them.
     for _, tree in parsed:
         known |= _module_level_names(tree)
+    factories = _factories([tree for _, tree in parsed])
 
     declarations: list[CategoryDeclaration] = []
     for path, tree in parsed:
@@ -295,18 +340,23 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                     supercategories=tuple(
                         Supercategory(
                             expression=expression,
-                            head=_head(expression),
-                            resolved=_resolved(_head(expression), imported),
-                            origin=_origin(_head(expression), imported, known),
-                            axioms=_axioms(expression),
-                            parameters=_category_parameters(expression, imported, category_classes),
+                            head=_head(unfolded),
+                            resolved=_resolved(_head(unfolded), imported),
+                            origin=_origin(_head(unfolded), imported, known),
+                            axioms=_axioms(unfolded),
+                            parameters=_category_parameters(unfolded, imported, category_classes),
                         )
                         for declaration in declaring
                         for expression in _returned_supercategories(declaration)
+                        for unfolded in (_unfold(expression, factories, imported),)
                     ),
-                    # A class nested in a category and based on CategoryWithAxiom
-                    # is that category with the axioms the nesting names.
-                    axiom_of=scope[0] if scope and scope[0] in known else "",
+                    # A class nested in a category is that category with the
+                    # axioms the nesting names; a protected nested class is a
+                    # construction on it, such as its Mor category, and refines
+                    # nothing.
+                    axiom_of=scope[0] if scope and scope[0] in known and not _protected((*scope[1:], node.name)) else "",
+                    nested_in=_vertex(scope[0], scope[1:]) if scope and scope[0] in known and _protected((*scope[1:], node.name)) else "",
+                    object_methods=tuple(_object_methods(node)),
                 )
             )
     return declarations
@@ -810,6 +860,239 @@ def render_json(declarations: list[CategoryDeclaration]) -> str:
     return json.dumps(payload, indent=1) + "\n"
 
 
+@dataclass(frozen=True)
+class Dispatch:
+    """How an object operation reaches an answer, read from its owner's body.
+
+    ``hooks`` are the protected methods the body calls on ``self``; a category
+    below the owner that defines one, or the operation itself, supplies a
+    route.  ``branches`` are the memberships the body matches on, each a set of
+    vertices an object must lie under together; ``conditional`` marks a branch
+    whose guard also tests something other than membership.  ``asserts`` marks
+    a body that ends in an assertion when no hook or branch answers; a body
+    without one answers on every inheriting category.  An abstract operation
+    has neither: every inheriting category must define it.
+    """
+
+    operation: str
+    owner: str
+    source: str
+    abstract: bool
+    asserts: bool
+    hooks: tuple[str, ...]
+    branches: tuple[tuple[frozenset[str], bool], ...]
+
+
+def _class_at(declaration: CategoryDeclaration) -> tuple[ast.ClassDef, dict[str, tuple[str, str]]]:
+    tree = ast.parse(Path(declaration.path).read_text(encoding="utf-8"))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef) and node.lineno == declaration.line:
+            return node, _imported_names(tree)
+    raise AssertionError(f"no class at {declaration.path}:{declaration.line}")
+
+
+def _membership(node: ast.expr, imported: dict[str, tuple[str, str]], factories: dict[str, str]) -> str | None:
+    """The vertex ``X`` of a guard ``self in X``, or nothing for any other test."""
+    match node:
+        case ast.Compare(left=ast.Name(id="self"), ops=[ast.In()], comparators=[category]):
+            text = _unfold(ast.unparse(category), factories, imported)
+            return _vertex(_resolved(_head(text), imported), _axioms(text))
+    return None
+
+
+_THE_OBJECT = ast.Name(id="self")
+"""The guard of a body reached without a branch: it is about the object."""
+
+
+def _hook_called(node: ast.AST) -> str | None:
+    """The name ``_x`` when ``node`` is a call ``self._x(...)`` of a protected method of the object."""
+    match node:
+        case ast.Call(func=ast.Attribute(value=ast.Name(id="self"), attr=attr)) if attr.startswith("_") and not attr.startswith("__"):
+            return attr
+    return None
+
+
+def _about_the_object(test: ast.expr, hooked: set[str]) -> bool:
+    """Whether an assertion tests the object itself or what one of its hooks returned.
+
+    ``assert ring in IntegralDomains()`` states a hypothesis on a parameter,
+    not the absence of a route for the object.
+    """
+    names = {node.id for node in ast.walk(test) if isinstance(node, ast.Name)}
+    return "self" in names or bool(names & hooked)
+
+
+def _ends_in_assertion(body: list[ast.stmt], hooked: set[str], guard: ast.expr = _THE_OBJECT) -> bool:
+    """Whether the statement reached when every earlier branch falls through asserts about the object.
+
+    A precondition such as ``assert other in Sets()`` opens a body and is not
+    this; the last statement, an assertion just before a final ``return``, the
+    last case of a final ``match`` and the ``else`` of a final ``if`` are.  A
+    ``raise`` is judged by the guard that reaches it, so the last case of
+    ``match ring:`` states a hypothesis on the ring.
+    """
+    match body[-2:]:
+        case [ast.Assert(test=test), ast.Return()]:
+            return _about_the_object(test, hooked)
+    match body[-1]:
+        case ast.Assert(test=test):
+            return _about_the_object(test, hooked)
+        case ast.Raise():
+            return _about_the_object(guard, hooked)
+        case ast.Match(subject=subject, cases=cases):
+            guards = [case.guard for case in cases if case.guard is not None]
+            return _ends_in_assertion(cases[-1].body, hooked, ast.Tuple(elts=[subject, *guards]))
+        case ast.If(test=test, orelse=orelse) if orelse:
+            return _ends_in_assertion(orelse, hooked, test)
+    return False
+
+
+def _dispatch(declaration: CategoryDeclaration, operation: str, factories: dict[str, str]) -> Dispatch:
+    node, imported = _class_at(declaration)
+    method = _object_methods(node)[operation]
+    hooks = sorted({hook for node in ast.walk(method) if (hook := _hook_called(node)) is not None})
+    branches: list[tuple[frozenset[str], bool]] = []
+    consumed: set[int] = set()
+    for test in ast.walk(method):
+        if isinstance(test, ast.BoolOp) and isinstance(test.op, ast.And):
+            found = {vertex for value in test.values if (vertex := _membership(value, imported, factories)) is not None}
+            consumed.update(id(value) for value in test.values)
+            if found:
+                branches.append((frozenset(found), len(found) < len(test.values)))
+    for test in ast.walk(method):
+        if isinstance(test, ast.Compare) and id(test) not in consumed and (vertex := _membership(test, imported, factories)) is not None:
+            branches.append((frozenset({vertex}), False))
+    return Dispatch(
+        operation=operation,
+        owner=declaration.vertex,
+        source=f"{declaration.path}:{method.lineno}",
+        abstract=_is_abstract(method),
+        asserts=_ends_in_assertion(
+            method.body,
+            {
+                target.id
+                for assignment in ast.walk(method)
+                if isinstance(assignment, ast.Assign) and any(_hook_called(node) is not None for node in ast.walk(assignment.value))
+                for target in assignment.targets
+                if isinstance(target, ast.Name)
+            },
+        ),
+        hooks=tuple(hooks),
+        branches=tuple(dict.fromkeys(branches)),
+    )
+
+
+def _up_sets(declarations: list[CategoryDeclaration]) -> dict[str, set[str]]:
+    """Every vertex above each vertex, strictly, along declared and axiom edges."""
+    edges = _all_edges(declarations)
+    vertices = {d.vertex for d in declarations} | {v for e in edges for v in e}
+    supers = {v: {b for a, b in edges if a == v} for v in vertices}
+    above: dict[str, set[str]] = {}
+    for vertex in TopologicalSorter(supers).static_order():
+        above[vertex] = set(supers[vertex])
+        for parent in supers[vertex]:
+            above[vertex].update(above[parent])
+    return above
+
+
+def _realization_methods(declarations: list[CategoryDeclaration]) -> dict[str, list[str]]:
+    """Methods of the classes that are not categories, by method name."""
+    found: dict[str, list[str]] = {}
+    for path in sorted({Path(d.path) for d in declarations}):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        categories = {d.line for d in declarations if Path(d.path) == path}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.lineno not in categories and node.name != "ParentMethods":
+                for method in node.body:
+                    if isinstance(method, ast.FunctionDef):
+                        found.setdefault(method.name, []).append(f"{node.name} {path}:{method.lineno}")
+    return found
+
+
+def render_routes(declarations: list[CategoryDeclaration], operations: list[str]) -> str:
+    """Each category that inherits an object operation, and what answers it there.
+
+    An operation is placed where it is defined; whether it answers on the
+    objects of a category below is a separate fact.  The owner's body reaches
+    an answer through protected hooks, through branches on membership, or, for
+    an abstract operation, through an override.  A category below the owner
+    with none of these in its up-set inherits the operation with only the
+    owner's assertion.  Without ``--operation`` the view lists only operations
+    whose body asserts; an abstract operation is a contract on the classes
+    that realize objects, and is listed when it is named.
+    A construction declaring only its parameter (``SliceCategory(C, X)``
+    declares ``C``) inherits every operation of every category it is applied
+    to, so it is listed under every operation.
+
+    This is a source reading.  A realization class outside the category graph
+    may supply a hook for its own objects; those classes are listed, and they
+    route only the objects they construct.
+    """
+    above = _up_sets(declarations)
+    by_vertex = {d.vertex: d for d in declarations}
+    parameterized = {d.vertex for d in declarations if d.supercategories and all(s.origin == "expression" for s in d.supercategories)}
+    on_parameter = {v for v in above if v in parameterized or above[v] & parameterized}
+    realizations = _realization_methods(declarations)
+    factories = _factories([ast.parse(path.read_text(encoding="utf-8")) for path in sorted({Path(d.path) for d in declarations})])
+
+    definers: dict[str, list[str]] = {}
+    for d in declarations:
+        for name in d.object_methods:
+            if not name.startswith("_"):
+                definers.setdefault(name, []).append(d.vertex)
+    selected = operations or sorted(definers)
+    unknown = [name for name in selected if name not in definers]
+    assert not unknown, f"no category defines the object operation(s) {unknown!r}"
+
+    reports: list[tuple[int, list[str]]] = []
+    for name in selected:
+        owners = [v for v in definers[name] if not any(other in above.get(v, set()) for other in definers[name])]
+        for owner in sorted(owners):
+            dispatch = _dispatch(by_vertex[owner], name, factories)
+            if not (dispatch.abstract or dispatch.asserts):
+                if operations:
+                    reports.append((0, [f"## {name}, introduced by {owner} ({dispatch.source})", "", "its body answers on every inheriting category; it ends in no assertion"]))
+                continue
+            if dispatch.abstract and not operations:
+                continue
+            supplies = {name, *dispatch.hooks}
+            inheritors = sorted(v for v in above if owner in above[v]) + sorted(v for v in on_parameter if owner not in above[v] and v != owner)
+            rows: list[tuple[str, str]] = []
+            for vertex in inheritors:
+                reach = above[vertex] | {vertex}
+                providers = sorted(
+                    w for w in reach if w != owner and w in by_vertex and supplies & set(by_vertex[w].object_methods) and (owner in above[w] or w in on_parameter)
+                )
+                taken = [" and ".join(sorted(members)) + (" (with a further condition)" if conditional else "") for members, conditional in dispatch.branches if members <= reach]
+                route = "; ".join([*(f"defined at {w}" for w in providers), *(f"branch on {t}" for t in taken)])
+                construction = "  [a construction on its parameter category]" if vertex in on_parameter else ""
+                rows.append((vertex + construction, route))
+            unrouted = [vertex for vertex, route in rows if not route]
+            lines = [
+                f"## {name}, introduced by {owner} ({dispatch.source})",
+                "",
+                "abstract: every inheriting category must define it" if dispatch.abstract else f"hooks: {', '.join(dispatch.hooks) or 'none'}",
+                f"branches: {'; '.join(dict.fromkeys(' and '.join(sorted(m)) for m, _ in dispatch.branches)) or 'none'}",
+            ]
+            hooked = sorted({entry for hook in supplies for entry in realizations.get(hook, [])})
+            if hooked:
+                lines += [f"realization classes defining {name} or a hook, routing only the objects they construct:", *(f"  {entry}" for entry in hooked)]
+            lines += ["", f"### Inherit {name} with no route ({len(unrouted)} of {len(rows)})", ""]
+            lines += unrouted or ["none"]
+            if operations:
+                lines += ["", f"### Routed ({len(rows) - len(unrouted)})", ""]
+                lines += [f"{vertex}  <- {route}" for vertex, route in rows if route] or ["none"]
+            reports.append((len(unrouted), lines))
+    header = [
+        "Object operations and the categories that inherit them, read from source.",
+        "Each section lists first the inheriting categories where no hook,",
+        "override or membership branch of the operation applies.",
+        "",
+    ]
+    body = [line for _, lines in sorted(reports, key=lambda r: -r[0]) for line in [*lines, ""]]
+    return "\n".join(header + body)
+
+
 def _default_root() -> Path:
     return Path(__file__).resolve().parents[1] / "preamble"
 
@@ -829,8 +1112,6 @@ def select_vertices(
     """
     edges = _all_edges(declarations)
     vertices = {d.vertex for d in declarations} | {v for e in edges for v in e}
-    self_declarations = [d.vertex for d in declarations if any(s.vertex == d.vertex for s in d.supercategories)]
-    assert not self_declarations, f"Self-declarations cannot define a strict category order: {self_declarations}"
     supers = {v: {b for a, b in edges if a == v} for v in vertices}
     above: dict[str, set[str]] = {}
     for vertex in TopologicalSorter(supers).static_order():
@@ -860,6 +1141,11 @@ def select_vertices(
     return selected, {(a, b) for a, b in edges if a in selected and b in selected}
 
 
+def _self_declarations(declarations: list[CategoryDeclaration]) -> list[str]:
+    """Categories declaring their own vertex, which the edge set drops; ``audit`` reports them."""
+    return sorted(f"{d.vertex} {d.path}:{d.line}" for d in declarations if any(s.vertex == d.vertex for s in d.supercategories))
+
+
 def render_slice(declarations: list[CategoryDeclaration], vertices: set[str], edges: set[tuple[str, str]]) -> str:
     declared = _declared_edges(declarations)
     return json.dumps(
@@ -878,6 +1164,7 @@ def render_slice(declarations: list[CategoryDeclaration], vertices: set[str], ed
                 for a, b in sorted(edges)
             ],
             "declarations": json.loads(render_json([d for d in declarations if d.vertex in vertices])),
+            "self_declarations": _self_declarations(declarations),
             "boundary": "Parameters, dynamic returns and aliases require source review; absent paths are not proofs of missing mathematics.",
         },
         indent=2,
@@ -948,6 +1235,7 @@ def main() -> None:
             "json",
             "slice",
             "topology",
+            "routes",
         ),
         default="table",
     )
@@ -959,6 +1247,7 @@ def main() -> None:
     parser.add_argument("--complex", choices=("graph", "flag", "order"), default="order")
     parser.add_argument("--max-vertices", type=int, default=40, help="explicit size bound for topology")
     parser.add_argument("--fundamental-group", action="store_true")
+    parser.add_argument("--operation", action="append", default=[], help="object operation for --format routes; repeatable")
     arguments = parser.parse_args()
 
     declarations = read_tree(arguments.root)
@@ -973,6 +1262,9 @@ def main() -> None:
             arguments.output.write_text(rendered, encoding="utf-8")
         else:
             print(rendered)
+        return
+    if arguments.format == "routes":
+        print(render_routes(declarations, arguments.operation), end="")
         return
     if arguments.select or arguments.between or arguments.remove:
         parser.error("selection options require --format slice or topology")
