@@ -372,7 +372,8 @@ class FormedModuleMorphism:
 
     def __mul__(self, other):
         if not isinstance(other, FormedModuleMorphism):
-            return NotImplemented
+            modules = Modules(self.domain().base_ring())
+            return modules.Mor(self.domain(), self.codomain())(self) * other
         if other.codomain() is not self.domain():
             raise ValueError(
                 f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
@@ -2772,6 +2773,9 @@ class FormValueScalings(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
+
+    def __call__(self, source, scalar):
+        return self._call_(source, scalar)
 
     def _call_(self, source, scalar):
         scalar = self.base_ring()(scalar)

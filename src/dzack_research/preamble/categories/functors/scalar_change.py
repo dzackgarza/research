@@ -251,7 +251,7 @@ class _RestrictionOfScalarsFunctor(Functor):
             return module
         if self._restricts_group_modules():
             return module.unformed_module()
-        return module.restrict_scalars(self.ring_map())
+        return RestrictedScalarsModules(self._source_ring)(module, self.ring_map())
 
     def _restricted_element(self, source_module, restricted, element):
         r"""Read an element of ``source_module`` in its restriction ``restricted``."""

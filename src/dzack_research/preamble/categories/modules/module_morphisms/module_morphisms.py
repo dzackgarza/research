@@ -1246,10 +1246,8 @@ class ModuleMorphismMethods:
         if not _has_finite_free_framing(source) or not _has_finite_free_framing(target):
             raise NotImplementedError("denominator-ideal computation requires finite integral bases")
         restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
-        integral_coordinates = target.finite_free_trivialization().forward()
-        rational_coordinates = integral_coordinates.base_change(field_map)
-        restricted = restrict(rational_coordinates * self) * source.generic_fibre_map()
-        framing = rational_coordinates.codomain().framing_morphism()
+        restricted = restrict(self) * source.generic_fibre_map()
+        framing = self.codomain().framing_morphism()
         denominator = ring.one()
         for vector in source.module_generators():
             coordinates = framing.lift(restricted(vector).underlying_element())

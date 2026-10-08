@@ -2217,6 +2217,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
             return self.module_category().Mor(self, ring.regular_module())
 
+        @cached_method
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""
             return _restricted_scalars_view(self, ring_map)
@@ -4058,7 +4059,7 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            cleared_morphism = domain.Mor(cleared_module)(
+            cleared_morphism = Modules(ring).Mor(domain, cleared_module)(
                 {
                     label: cleared(coordinates)
                     for label, coordinates in image_coordinates.items()
@@ -4131,6 +4132,9 @@ def _restricted_scalar_presentation(module, ring_map, labels, scalar_basis):
     return _morphism_on_elements(generators, tuple(relation for relation in restricted if relation))
 
 
+@cached_function(key=lambda module, ring_map, **data: (
+    id(module), id(ring_map), tuple(sorted((name, id(value)) for name, value in data.items()))
+))
 def _restricted_scalars_view(
     module,
     ring_map,

@@ -4858,8 +4858,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             while base.parent() is not ambient.base_change(field_map):
                 if ambient not in ModuleSubobjects(ring):
                     raise ValueError("the affine base must belong to a retained ambient rational span")
-                inclusion = ambient.inclusion() * inclusion
-                ambient = ambient.inclusion().codomain()
+                next_inclusion = ambient.inclusion()
+                inclusion = Modules(ring).Mor(ambient, next_inclusion.codomain())(next_inclusion) * inclusion
+                ambient = next_inclusion.codomain()
             rational = ambient.base_change(field_map)
             if direction.parent() is ambient:
                 direction = ambient.generic_fibre_map()(direction).underlying_element()
