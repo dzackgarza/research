@@ -14,6 +14,30 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### An integral isotropic partner with minimal pairing can fail to exist
+
+[Research #401](https://github.com/dzackgarza/research/issues/401) requests,
+for a primitive isotropic vector `v`, an integral isotropic vector `w` with
+`b(v,w) = div(v)`. This requires an existence hypothesis. In the lattice
+with Gram matrix `[[0,2],[2,1]]`, take `v = e`. Then `div(e) = 2`.
+The pairing equation forces `w = a*e + f`, whose square is `4*a + 1`.
+There is no integral solution. Evenness alone is insufficient: for
+`[[0,2],[2,2]]` the same equation gives square `4*a + 2`.
+
+The general dependency is the integral point locus cut out by `q(w)=0`
+and `b(v,w)=div(v)` in the affine fibre of the pairing morphism. A Bezout
+partner solves only the linear equation. The rational Witt construction
+in `categories/lattices.py` corrects its square over the fraction field.
+For an even integral lattice and `div(v)=1`, that correction is integral.
+
+The inspected `find_hyperbolic_pair` in `sage-indefinite-port` at `b3fd95d`
+instead forms `2*d*h - q(h)*v` after selecting a nonorthogonal `h`, giving
+pairing `2*d^2`. Its bounded initial search also supplies no minimal-pairing
+existence decision. Its consumers include the port's two-hyperbolic-plane
+decomposition. The API must distinguish an integral solution, an empty
+locus, and an unsupported computation. The remaining work is owned by
+[`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
+
 ### Hodge-isometry planning did not assign the general Hodge categories
 
 The `hodge-lattice-isometries` node previously referred to compatible Hodge

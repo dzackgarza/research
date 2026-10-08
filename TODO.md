@@ -734,6 +734,12 @@ Consolidate the suite around the frozen API, retaining distinct mathematical obl
 
 These remain required constructions with their original generality, maps, specimens and unresolved engine decisions. Their roots wait for the accepted frozen API. Split a genuine prerequisite needed earlier into the consuming milestone, retaining the rest here.
 
+<a id="indefinite-port-primitives"></a>
+
+- [ ] **`indefinite-port-primitives`**. **Needs:** none.
+  **Owner and delta:** finish the general module and lattice operations requested in [research #401](https://github.com/dzackgarza/research/issues/401), using the existing implementations inventoried by [sage-indefinite-port #37](https://github.com/dzackgarza/sage-indefinite-port/issues/37). Remaining source work: integral isotropic partners with an honest existence contract, recovery of a two-hyperbolic-plane splitting, affine integral loci, linear matrix-equation solution spaces, invariant overlattices, perpendicular and degenerate Witt extensions, binary fixed-norm orbit representatives, and conversion of the port's consumers to the public owners. The [integral partner obstruction](COMPLAINTS.md#an-integral-isotropic-partner-with-minimal-pairing-can-fail-to-exist) fixes the required distinction between rational and integral extension.
+  **Closure:** migrate each computation with its consuming call sites; exercise the public constructions on the cited issue specimens, including scrambled `2U + E8(-1)`. Run the banked vector and affine-shell specimens when DEV-58 permits execution. Correctness assertions remain at `lean-cas-dsl`, independent of the port.
+
 - [ ] **`lattice-represents-an-integer`**. **Needs:** `higher-rank-integral-lattice-representation`.
   **Owner and delta:** `Lattices(R)` answers the existential question whether `L` represents `n`, i.e. whether the hypersurface `V(q - n)` has an `R`-point.
   It also answers `representation_vector(n)`, a witness as an element of `L`. The elementwise `represents` on form-module elements (`categories/modules/framed/formed/form_modules.py`, ~line 1260) is a different statement and stays.

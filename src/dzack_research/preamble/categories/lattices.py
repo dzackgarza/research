@@ -1911,6 +1911,40 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return lattice_engines._isotropic_vector_witness(self)
 
+        def positive_vector(self) -> "Lattices.ElementMethods | None":
+            r"""Return a vector of positive square, or ``None`` if none exists.
+
+            Computed over ZZ and QQ by rational diagonalization; over ZZ the
+            vector is primitive. On a formed subobject the vector lies in
+            that subobject and its inclusion maps it into the containing space.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: v = U.positive_vector()
+                sage: v.parent() is U and v.q() > ZZ(0) and v.content() == ZZ(1)
+                True
+                sage: Lattices(ZZ)([[-2]]).positive_vector() is None
+                True
+            """
+            return lattice_engines._signed_vector_witness(self, 1)
+
+        def negative_vector(self) -> "Lattices.ElementMethods | None":
+            r"""Return a vector of negative square, or ``None`` if none exists.
+
+            Computed over ZZ and QQ by rational diagonalization; over ZZ the
+            vector is primitive.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
+                sage: w = S.negative_vector()
+                sage: w.parent() is S and S.inclusion()(w).q() < ZZ(0)
+                True
+            """
+            return lattice_engines._signed_vector_witness(self, -1)
+
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
 
@@ -4482,6 +4516,40 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
                 gcd_value = new_gcd
             return -partner if gcd_value < ring.zero() else partner
+
+        def hyperbolic_partner(self) -> "Lattices.ElementMethods":
+            r"""Return an integral isotropic partner with pairing ``self.div()``.
+
+            The vector must be primitive, isotropic and outside the radical.
+            The Bezout correction is integral when ``2*div(self)`` divides
+            the square of the selected Bezout partner. This includes every
+            primitive isotropic vector of divisibility one in an even lattice.
+            Other cases require solving the integral affine quadratic locus.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[0, 1], [1, 2]])
+                sage: e = L.basis_vector(0)
+                sage: f = e.hyperbolic_partner()
+                sage: f.parent() is L and f.q() == ZZ(0) and e.b(f) == ZZ(1)
+                True
+            """
+            lattice = self.parent()
+            ring = lattice.base_ring()
+            assert self.content() == ring.one() and self.q() == ring.zero(), (
+                f"an integral hyperbolic partner requires a primitive isotropic vector, not {self}"
+            )
+            divisibility = self.div()
+            assert divisibility != ring.zero(), (
+                f"{self} lies in the radical of {lattice} and cannot span a hyperbolic plane"
+            )
+            partner = self.bezout_partner()
+            correction, remainder = partner.q().quo_rem(ring(2) * divisibility)
+            assert remainder == ring.zero(), (
+                f"the Bezout partner of {self} has square {partner.q()}, which is not divisible by "
+                f"{ring(2) * divisibility}; solving its integral affine quadratic locus is required"
+            )
+            return partner - lattice.scalar_multiple(correction, self)
 
         def primitive_dual(self):
             r"""Return ``v/div(v)`` under the metric embedding ``L -> L^#``."""

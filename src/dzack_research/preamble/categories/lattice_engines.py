@@ -48,12 +48,12 @@ def validate_even_unimodular_gram(gram):
         raise ValueError(f"the form {gram} is not even: some diagonal entry is odd")
 
 
-def _rational_positive_vector(gram):
-    r"""Return one exact rational positive vector for signature ``(1,n)``.
+def _rational_signed_direction(gram, sign):
+    r"""Select a column of Sage's rational diagonalization with the requested sign.
 
-    Sage supplies the rational diagonalization privately.  The returned value
-    is immediately re-entered into the preamble as a type-``(1,0)`` tensor;
-    the transformation matrix itself is never public API.
+    This is the shared diagonalization step of the port's positive-direction
+    and negative-direction-in-span computations. A subspace supplies its own
+    restricted Gram tensor through its formed subobject construction.
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
@@ -63,17 +63,52 @@ def _rational_positive_vector(gram):
         2 * engine_gram,
     ).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
-    positive = [index for index in range(diagonal_matrix.nrows()) if diagonal_matrix[index, index] > 0]
-    if len(positive) != 1:
-        raise ValueError(
-            f"the form with Gram tensor {gram} has {len(positive)} positive directions, but its positive cone has two components only for signature (1, n), with exactly one"
-        )
-    column = change.column(positive[0])
+    index = next((
+        index for index in range(diagonal_matrix.nrows())
+        if sign * diagonal_matrix[index, index] > 0
+    ), None)
+    return None if index is None else change.column(index)
+
+
+def _rational_positive_vector(gram):
+    r"""Return one rational positive vector as a type-``(1,0)`` tensor."""
+    column = _rational_signed_direction(gram, 1)
+    if column is None:
+        raise ValueError(f"the form with Gram tensor {gram} has no positive direction")
     rationals = gram.base_ring().fraction_field()
     return tensor.vector(
         rationals,
         tuple(_owned_engine_element(rationals, entry) for entry in column),
     )
+
+
+def _raise_rational_lattice_vector(lattice, coordinates):
+    r"""Raise a rational direction, primitively over ZZ, in its given lattice."""
+    ring = lattice.base_ring()
+    engine_ring = _engine_ring(ring)
+    if engine_ring is SageZZ:
+        coordinates = coordinates * coordinates.denominator()
+    vector = lattice.linear_combination({
+        label: _owned_engine_element(ring, engine_ring(coordinate))
+        for label, coordinate in zip(lattice.module_generating_set(), coordinates, strict=True)
+        if coordinate
+    })
+    return vector.primitive_part() if engine_ring is SageZZ else vector
+
+
+def _signed_vector_witness(lattice, sign):
+    r"""Return a vector of the requested sign, or None if that sign is absent."""
+    ring = lattice.base_ring()
+    assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
+        f"signed vector witnesses are computed over ZZ or QQ, not {ring}"
+    )
+    assert lattice.module_rank().is_finite(), (
+        f"rational diagonalization requires finite rank, not {lattice.module_rank()}"
+    )
+    if lattice.module_rank() == 0:
+        return None
+    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
+    return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
 
 
 def _isotropic_vector_witness(lattice):
@@ -99,14 +134,7 @@ def _isotropic_vector_witness(lattice):
         return None
     if isinstance(solution, Matrix):
         solution = solution.column(0)
-    if engine_ring is SageZZ:
-        solution = solution * solution.denominator()
-    vector = lattice.linear_combination({
-        label: _owned_engine_element(ring, engine_ring(coordinate))
-        for label, coordinate in zip(lattice.module_generating_set(), solution, strict=True)
-        if coordinate
-    })
-    return vector.primitive_part() if engine_ring is SageZZ else vector
+    return _raise_rational_lattice_vector(lattice, solution)
 
 
 def _integer_engine_matrix(value):
