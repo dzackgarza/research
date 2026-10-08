@@ -180,8 +180,10 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductsOfSets,
     NN,
     FiniteSets,
+    SetInjection,
     Sets,
 )
 from dzack_research.preamble.categories.vector_configurations import (
@@ -4118,6 +4120,58 @@ class Lattices(OwnedCategoryOverBaseRing):
         def close_vectors(self, target, square_bound):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
             return _close_vectors(self, target, square_bound)
+
+        def first_close_vectors(self, target, square_bound) -> CartesianProductsOfSets.ElementMethods:
+            r"""Return the least positive scale and its complete affine shell.
+
+            The result belongs to ``NN x self.finite_subsets()``. For a
+            positive definite form its shell is
+            ``{x in self : q(x - m*target) <= m^2*square_bound}``.
+            For a negative definite form both the bound and inequality
+            reverse sign. The target belongs to this lattice or its rational
+            span. Clearing its denominators gives a finite search bound.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[2]])
+                sage: V = L.vector_space()
+                sage: t = V.linear_combination({0: QQ(1)/QQ(2)})
+                sage: m, shell = L.first_close_vectors(t, QQ(0))
+                sage: m == NN(2) and shell.domain() == Set((L.basis_vector(0),))
+                True
+            """
+            assert _engine_ring(self.base_ring()) is SageZZ, (
+                f"affine close-vector shells are computed for ZZ-lattices, not over {self.base_ring()}"
+            )
+            assert element_parent(target) is self or element_parent(target) is self.vector_space(), (
+                f"the affine target must belong to {self} or its rational span, not {element_parent(target)}"
+            )
+            return self._exact_cvp_engine().first_close_vectors(target, square_bound)
+
+        def affine_close_vectors(self, target, square_bound, multiplier) -> SetInjection:
+            r"""Return the affine shell at a specified positive integer scale.
+
+            Use the signed bound convention of :meth:`first_close_vectors`.
+            The result is a finite subset with its inclusion into this lattice.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[2]])
+                sage: V = L.vector_space()
+                sage: t = V.linear_combination({0: QQ(1)/QQ(2)})
+                sage: L.affine_close_vectors(t, QQ(1)/QQ(2), NN(1)).domain() == Set((L.zero(), L.basis_vector(0)))
+                True
+            """
+            assert _engine_ring(self.base_ring()) is SageZZ, (
+                f"affine close-vector shells are computed for ZZ-lattices, not over {self.base_ring()}"
+            )
+            assert element_parent(target) is self or element_parent(target) is self.vector_space(), (
+                f"the affine target must belong to {self} or its rational span, not {element_parent(target)}"
+            )
+            multiplier = NN(multiplier)
+            if multiplier == 0:
+                raise ValueError("an affine shell scale must be positive")
+            return self._exact_cvp_engine().affine_close_vectors(target, square_bound, multiplier)
 
         def babai(self, target):
 

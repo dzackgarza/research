@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets, finite_ordinal_set
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -504,15 +504,13 @@ class _ExactCVPEngine:
         return SageQQ(_engine_element(self.rationals, owned))
 
     def _engine_target_coordinates(self, target):
-        if self.lattice is not None and element_parent(target) is self.lattice:
+        if self.lattice is not None and (
+            element_parent(target) is self.lattice
+            or element_parent(target) is self.lattice.vector_space()
+        ):
             coordinates = target.to_vector()
             return tuple(
-                SageQQ(
-                    _engine_element(
-                        self.ring,
-                        coordinates(label),
-                    )
-                )
+                self._engine_scalar(coordinates(label))
                 for label in self.lattice.module_generating_set()
             )
         coordinates = tuple(target)
@@ -577,6 +575,40 @@ class _ExactCVPEngine:
             exact_distance=exact_distance,
         )
         return None if result is None else result[0]
+
+    def first_close_vectors(self, target, square_bound):
+        r"""Raise the first affine CVP shell and its scale from one PARI search."""
+        coordinates = self._engine_target_coordinates(target)
+        positive_bound = self.engine_sign * self._engine_scalar(square_bound)
+        if positive_bound < 0:
+            raise ValueError("the affine shell bound must have the sign of the definite form")
+        # At this scale the rational target is integral, so the shell contains it.
+        denominator = engine_vector(SageQQ, coordinates).denominator()
+        result = self.first_close_vector_scale_coordinates(
+            coordinates, square_bound, denominator
+        )
+        if result is None:
+            raise ArithmeticError("PARI returned no affine shell at an integral target")
+        multiplier, candidates = result
+        subsets = self.lattice.finite_subsets()
+        shell = subsets(tuple(
+            _element_from_coordinates(
+                self.lattice,
+                tuple(_owned_engine_element(self.ring, entry) for entry in coordinates),
+            )
+            for coordinates, _square in candidates
+        ))
+        return Sets().product((NN, subsets))((NN(multiplier), shell))
+
+    def affine_close_vectors(self, target, square_bound, multiplier):
+        r"""Raise the complete affine CVP shell at the specified positive scale."""
+        scale = SageZZ(int(multiplier))
+        coordinates = self._engine_target_coordinates(target)
+        family = self.close_vectors(
+            tuple(scale * coordinate for coordinate in coordinates),
+            scale**2 * self._engine_scalar(square_bound),
+        )
+        return self.lattice.finite_subsets()(family.index_set())
 
     def first_close_vector_scale_coordinates(
         self,
