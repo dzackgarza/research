@@ -68,6 +68,8 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 
 ## Closure work
 
+- **Finite residue-subset placement repaired at the set owner:** `Sets().condition_set` now recognizes a universe with a proved `is_finite() is True` even if its category is not yet refined to `FiniteSets()`. The `U+<2>` integral-lift residue quotient reports finite, and `integral_parameter_classes()` now belongs to `Sets().Finite()` with its inclusion still targeting that exact quotient. This placement check does not enumerate the integral-lift predicate or assert a residue count.
+
 - **Finite generated-subgroup decision corrected:** for a finite containing group, an explicitly supplied but mismatched free-word witness no longer turns decidable membership into an unresolved proposition. After testing the word, membership falls back to the exact generated finite-subgroup engine. On `O(A_{U(2),q})` of order two, a mismatched word `t*t` for the nonidentity generator correctly returns membership `True`, and the trivial subgroup rejects it (`False`). For infinite containing groups the unresolved-proposition contract remains unchanged.
 
 - **Generated-word evaluation uses its universal map:** `GeneratedSubgroups.membership_decision(candidate,word=...)` now evaluates the word through the morphism from the selected free group to the containing group, rather than independently multiplying extracted letters. The `diag(2,1/2)` specimen confirms the correct word `t*t` proves `g*g` and the mismatched word for `g` remains undecided. This retains the generating map as the owner of word evaluation.

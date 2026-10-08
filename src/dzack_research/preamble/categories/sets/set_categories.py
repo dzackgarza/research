@@ -2743,7 +2743,7 @@ def _condition_set(universe: Parent, predicate: Callable[[SourcePointT], bool]) 
         "category of sets"
     )
     match universe:
-        case _ if universe in FiniteSets():
+        case _ if universe in FiniteSets() or universe.is_finite() is True:
             placement = FiniteSets()
         case _:
             placement = Sets()
