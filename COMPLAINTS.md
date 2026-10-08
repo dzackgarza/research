@@ -122,8 +122,9 @@ The dependency is the denominator ideal of a rational module map,
 factorization through integral subobjects, and transport of the form
 equation. In `categories/lattices.py`, `similarity_mor` constructs
 `Isom(L.twist(scale), E)`, which requires surjectivity and does not give
-the requested finite-index embedding. The two scalar conventions must
-also be resolved in the frozen `integral_similarity(...).scale()` contract.
+the requested finite-index embedding. The [frozen amendment](https://github.com/dzackgarza/research/issues/401#issuecomment-6065197711)
+specifies `.scale()` as the least denominator factor `N`; the form multiplier
+is `N^2`.
 The [audit](docs/issue-401-abstraction-audit.md#13-clearing-denominators-of-a-rational-isometry--frozen-phiintegral_similarityle-and-scale)
 records the inspected formal change-of-value and module foundations,
 the unresolved denominator-ideal/similarity-embedding declarations,
@@ -151,6 +152,16 @@ from the prior TODO account. Resolve the formal owners and route frozen
 contract changes through port #33 before implementation continues.
 The existing [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives)
 node owns the repair.
+
+The live issue body additionally requests `divisible_sublattice(d)` and
+separates split binary norm fibres, primitive isotropic vectors, and
+anisotropic reduction cycles. The frozen binary row still promises orbit
+representatives from `vectors_of_square(n)`. Reconcile those result types
+through #33. The audit's row 20 maps the divisibility sublattice to the
+inverse image of `idealDual`, using `toRationalSpan_mem_idealDual_iff`;
+its domain at `d=0` and its public formed inclusion remain to be fixed.
+The signed shell/sphere amendment already determines the bounds, names
+and `None` result for an exhausted multiplier range.
 
 ### Hodge-isometry planning did not assign the general Hodge categories
 
