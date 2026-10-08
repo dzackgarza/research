@@ -157,7 +157,7 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 **Contract:** transport both a map and its inverse; preserve composition. Scaling twice has the comparison with scaling by the product. For the sign twist, the requested Python identity `L.twist(-1).twist(-1) is L` additionally requires constructor normalization of this action. Mathematical functoriality alone does not imply object identity in Python. Nonzero versus invertible scaling must be separated when claiming an equivalence over a general ring.
 
-**Trace:** F2 → F6 `changeValue` and its identity/composition laws → core functor → chosen presentation normalization. `TwistFunctor._apply_morphism` currently calls `source.Mor(target)`, forgetting the isomorphism specialization. Repair belongs to value-change transport and its restriction, not a port-specific matrix retargeting method.
+**Trace:** F2 → F6 `changeValue` and its identity/composition laws → core functor → chosen presentation normalization. `TwistFunctor._apply_morphism` now preserves the isomorphism specialization and transports its inverse pair. Targeted Sage execution confirms that twisting the identity of U yields an isomorphism between the exact twisted endpoints with a two-sided inverse, and that `U.twist(-1).twist(-1) is U`. General formal comparison of value-change composition remains open.
 
 ### 15. Lifts through isotropic reductions — frozen `R.rational_lifts(target,psi)`
 
