@@ -68,6 +68,8 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 
 ## Closure work
 
+- **Finite power-object placement repaired:** on the `U+<2>` integral-lift residue quotient, the ordinary power set and finite-subset power object were both missing finite placement despite the source's proved finiteness. `PowerSets` and `FinitePowerSets` now accept `source.is_finite() is True` as well as explicit `FiniteSets()` membership. Both categorical placements passed targeted Sage checks, without enumeration.
+
 - **Finite image placement repaired at the set owner:** a proved finite source of a set morphism now places its represented image in `Sets().Finite()` even before the source's category is refined. On the finite residue quotient for `U+<2>`, the identity map's image previously lacked finite placement; targeted Sage execution now gives `image in Sets().Finite()` as `True`. The image map and source remain retained; no enumeration was needed.
 
 - **Finite residue-subset placement repaired at the set owner:** `Sets().condition_set` now recognizes a universe with a proved `is_finite() is True` even if its category is not yet refined to `FiniteSets()`. The `U+<2>` integral-lift residue quotient reports finite, and `integral_parameter_classes()` now belongs to `Sets().Finite()` with its inclusion still targeting that exact quotient. This placement check does not enumerate the integral-lift predicate or assert a residue count.

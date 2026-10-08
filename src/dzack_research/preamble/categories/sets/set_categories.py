@@ -2292,7 +2292,7 @@ class PowerSets(OwnedCategory):
         r"""Construct the power object of ``base_set``."""
         placements = [self]
         engine = None
-        if base_set in FiniteSets():
+        if base_set in FiniteSets() or base_set.is_finite() is True:
             placements.append(FiniteSets())
             if base_set in EnumeratedSets():
                 placements.append(EnumeratedSets())
@@ -2677,7 +2677,7 @@ class FinitePowerSets(OwnedCategory):
         r"""Construct the finite-subset object of ``source``."""
         placements = [self]
         engine = None
-        if source in FiniteSets():
+        if source in FiniteSets() or source.is_finite() is True:
             placements.append(FiniteSets())
         elif source in CountablyInfiniteSets():
             placements.append(CountablyInfiniteSets())
