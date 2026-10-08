@@ -925,9 +925,8 @@ product of the local representation densities. Sources: Siegel, *Über die
 analytische Theorie der quadratischen Formen* (Ann. of Math. 36, 1935);
 Hanke, *Local densities and explicit bounds for representability by a
 quadratic form* (Duke Math. J. 124, 2004).
-Repair: `siegel-eisenstein-coefficients` in TODO, which needs the engine
-ruling `siegel-product-engine-ruling`, because the maintained route is wrong
-outside ranks 4 and 8.
+Repair: `siegel-eisenstein-coefficients` in TODO. The preamble owns the
+product and repairs Sage's defects outside ranks 4 and 8 in its own route.
 
 ## Workflow Papercuts
 
