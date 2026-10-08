@@ -994,6 +994,43 @@ quadratic form* (Duke Math. J. 124, 2004).
 Repair: file the request with `lean-categories`. It runs beside the preamble
 computation and blocks no node.
 
+### `lean-categories` does not formalize the values of a unimodular binary `ZZ_p`-lattice
+
+`Genus.local_representations` gives the least represented valuation of each
+square class of `QQ_p^x` for a lattice of rank 1 or 2. At an odd prime `p`
+where `L tensor ZZ_p` is unimodular of rank 2, `_least_represented_valuations`
+in `categories/lattices.py` uses a criterion. If `L tensor QQ_p` is isotropic,
+it represents every nonzero element of `ZZ_p`. If it is anisotropic, it
+represents exactly the elements of even valuation. `lean-categories` states
+neither theorem.
+**Dependency path:** the values of a unimodular `ZZ_p`-lattice of rank 2 ->
+the least represented valuation of each square class -> the local
+representation conditions of the genus at every prime.
+**Existing capability:** the preamble computes the criterion, citing Serre,
+*A Course in Arithmetic*, Ch. IV, 1.7, Prop. 4, and Ch. II, 2.2, Cor. 2 of
+Thm. 1. On `A_2`, `<1>` and `diag(2, 6)` it gives the values in `TRAPS.md`
+(2026-10-09).
+**Consumers:** `Genus.anisotropic_primes` and `Genus.local_representations`
+in rank 1 and 2, and the lattice-db fields `integral.anisotropic_primes` and
+`integral.local_representations`, whose schema states the rule at primes not
+dividing `2 det L`.
+**Coverage boundary:** `lean-categories` has these results over fields:
+- `exists_repr_of_isotropic` (`ForMathlib/WittCancellation.lean`): an
+  isotropic binary form over a field represents every scalar.
+- `not_isNormFromSqrt_p` (`Lattices/Valued/PadicMixedSymbol.lean`): for a
+  nonsquare unit `u`, the norm form `x^2 - u y^2` does not take the value
+  `p`.
+It does not have the integral statement for a unimodular `ZZ_p`-lattice.
+**Request (not yet filed):** `lean-categories` formalizes the following. For
+an odd prime `p` and a unimodular `ZZ_p`-lattice `M` of rank 2:
+- if `M tensor QQ_p` is isotropic, `M` represents every element of `ZZ_p`;
+- if it is anisotropic, `M` represents exactly the elements of `ZZ_p` of
+  even valuation.
+Source: Serre, *A Course in Arithmetic*, Ch. II, 2.2, Cor. 2 of Thm. 1;
+Ch. IV, 1.7, Prop. 4; Ch. IV, 2.2, Thm. 6.
+Repair: file the request with `lean-categories`. It runs beside the preamble
+computation and blocks no node.
+
 ## Workflow Papercuts
 
 ### Formal power series and their rings print without their coefficients

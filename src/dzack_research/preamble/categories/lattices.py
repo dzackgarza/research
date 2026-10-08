@@ -703,21 +703,30 @@ class _Genus(Sets().ObjectType):
         series = engine([_engine_element(rationals, coefficient) for coefficient in coefficients]).add_bigoh(int(precision))
         return _owned_engine_element(series_ring, series)
 
+    @cached_method
     def anisotropic_primes(self):
-        r"""Return the primes ``p`` at which ``L tensor QQ_p`` is anisotropic, for a member ``L`` of rank at least 3.
+        r"""Return the set of primes ``p`` at which ``L tensor QQ_p`` is anisotropic, for a member ``L``.
 
-        In rank at least 3 a form unimodular at ``p`` is isotropic over
-        ``QQ_p``, so the set is a finite set of primes dividing ``2 det L``.
-        The real place is not a member; the signature decides it.
+        The real place is not a member; the signature decides it.  In rank
+        at least 3 a form unimodular at ``p`` is isotropic over ``QQ_p``
+        (Serre, *A Course in Arithmetic*, Ch. IV, 1.7, Prop. 4 for the
+        reduction, Ch. II, 2.2, Cor. 2 of Thm. 1 for the lift), so the set
+        is the finite set of such primes dividing ``2 det L``.  In rank 1 it
+        is every prime.  In rank 2 it is the set of ``p`` at which
+        ``-det L`` is not a square in ``QQ_p`` (Serre, Ch. IV, 2.2, Thm. 6
+        i)), infinite unless ``-det L`` is a rational square; it is the set
+        of primes of ``ZZ`` cut out by that criterion, decided at each
+        prime.
         """
-        rank = self._lattice.module_rank()
-        assert int(rank) >= 3, (
-            f"the anisotropic primes of {self!r} are a finite set computed in rank at least 3; in rank {rank} a form is anisotropic at infinitely many primes unless -det is a square"
-        )
         integers = _own_ring(SageZZ)
-        return finite_ordered_set(
-            tuple(_owned_engine_element(integers, SageZZ(prime)) for prime in self._engine_form().anisotropic_primes() if prime > 0)
-        )
+        form = self._engine_form()
+        match int(self._lattice.module_rank()):
+            case rank if rank >= 3:
+                return finite_ordered_set(
+                    tuple(_owned_engine_element(integers, SageZZ(prime)) for prime in form.anisotropic_primes() if prime > 0)
+                )
+            case _:
+                return integers.condition_set(lambda number: number.is_prime() and form.is_anisotropic(_engine_element(integers, number)))
 
     @cached_method
     def local_representations(self):
@@ -731,16 +740,30 @@ class _Genus(Sets().ObjectType):
         ``u`` the least quadratic nonresidue), and takes the least valuation
         ``v`` at which the class is represented; ``L tensor ZZ_p`` represents
         an element of the class exactly when its valuation is ``v + 2j``,
-        ``j >= 0``.  In rank at least 3 every such prime divides ``2 det L``.
+        ``j >= 0``.
+
+        In rank at least 3 every such prime divides ``2 det L``, and the
+        index set is that finite set.  In rank 1 every prime is a member,
+        and in rank 2 every prime at which the form is anisotropic and
+        unimodular is one; there the index set is the set of primes of
+        ``ZZ`` cut out by the definition, decided at each prime by
+        :func:`_least_represented_valuations`.
         """
-        rank = self._lattice.module_rank()
-        assert int(rank) >= 3, (
-            f"the local representation conditions of {self!r} are finite data in rank at least 3; in rank {rank} a form fails to represent a square class at infinitely many primes unless -det is a square"
-        )
         integers = _own_ring(SageZZ)
-        conditions = self._engine_form().local_representation_conditions()
-        primes = finite_ordered_set(tuple(_owned_engine_element(integers, SageZZ(prime)) for prime in conditions.exceptional_primes[1:]))
-        return indexed_family(primes, lambda prime: _represented_square_classes(conditions, _engine_element(integers, prime)))
+        form = self._engine_form()
+        conditions = form.local_representation_conditions()
+
+        def least(prime):
+            return _least_represented_valuations(form, conditions, _engine_element(integers, prime))
+
+        match int(self._lattice.module_rank()):
+            case rank if rank >= 3:
+                primes = finite_ordered_set(tuple(_owned_engine_element(integers, SageZZ(prime)) for prime in conditions.exceptional_primes[1:]))
+            case _:
+                primes = integers.condition_set(
+                    lambda number: number.is_prime() and not _represents_every_integer(conditions, _engine_element(integers, number), least(number))
+                )
+        return indexed_family(primes, lambda prime: _square_class_family(least(prime)))
 
     @cached_method
     def _engine_form(self):
@@ -943,25 +966,74 @@ def _local_density(form, prime, value):
     return prime ** content.valuation(prime) * form.local_density(prime, value)
 
 
-def _represented_square_classes(conditions, prime):
-    r"""Private raising of Sage's local representation conditions at ``prime``.
+def _least_represented_valuations(form, conditions, prime):
+    r"""Private computation of the least valuation at which ``L tensor ZZ_p`` represents each square class of ``QQ_p^x``.
 
-    Sage stores, for each square class with representative ``r``, the least
-    ``e`` with ``r p^{2e}`` represented, or ``+Infinity``; the least
-    represented valuation is ``v_p(r) + 2e`` (``TRAPS.md``).  Returns the
-    family on the represented classes, valued in those least valuations.
+    ``form`` is Sage's integral form ``Q(x) = b(x, x)`` of ``L``,
+    ``conditions`` its local representation conditions and ``prime`` a
+    prime ``p`` of Sage's ``ZZ``.  Returns, for Sage's representative ``r``
+    of each square class (``conditions.squareclass_vector(p)``) of which
+    ``L tensor ZZ_p`` represents an element, the least valuation of such an
+    element.
+
+    - Rank 1, ``Q = c X^2``: the values are ``c u^2 p^{2k}``, so the one
+      class is that of ``c``, from ``v_p(c)``.
+    - Rank 2 at a prime where Sage records no condition and ``p`` does not
+      divide the level of ``Q``: ``L tensor ZZ_p`` is unimodular and ``p``
+      odd.  Over ``F_p`` the reduction of a form of rank 2 represents every
+      nonzero element (Serre, *A Course in Arithmetic*, Ch. IV, 1.7,
+      Prop. 4), and a primitive solution of ``Q(x) = a mod p`` lifts to a
+      solution in ``ZZ_p`` (Ch. II, 2.2, Cor. 2 of Thm. 1).  If ``Q`` is
+      isotropic over ``QQ_p`` the reduction is isotropic (Ch. IV, 2.2,
+      proof of Thm. 6 i), over ``F_p``), so every ``a`` in ``ZZ_p`` is
+      represented.  If ``Q`` is anisotropic, a primitive ``x`` with
+      ``p | Q(x)`` would be a zero of the reduction and lift to a zero over
+      ``QQ_p``, so the represented elements are those of even valuation:
+      the classes ``1`` and ``u`` from valuation 0.  Sage writes the
+      second answer at every such prime (``TRAPS.md``).
+    - Rank 2 at a prime dividing the level where Sage records no
+      condition: Sage found each class at its least possible valuation and
+      omitted the prime, so every class is represented from ``v_p(r)``.
+    - Otherwise Sage stores, for each class, the least ``e`` with
+      ``r p^{2e}`` represented, or ``+Infinity``; the least represented
+      valuation is ``v_p(r) + 2e`` (``TRAPS.md``).
     """
     from sage.rings.infinity import infinity
+    from sage.rings.rational_field import QQ as SageQQ
 
+    classes = tuple(SageZZ(representative) for representative in conditions.squareclass_vector(prime))
+    recorded = prime in conditions.exceptional_primes
+    match int(form.dim()):
+        case 1:
+            coefficient = SageZZ(form[0, 0])
+            return {
+                representative: coefficient.valuation(prime)
+                for representative in classes
+                if (SageQQ(coefficient) / representative).is_padic_square(prime)
+            }
+        case 2 if not recorded and not prime.divides(form.level()) and form.is_anisotropic(prime):
+            return {representative: SageZZ.zero() for representative in classes if representative.valuation(prime) == 0}
+        case 2 if not recorded:
+            return {representative: representative.valuation(prime) for representative in classes}
+        case _:
+            steps = conditions.local_conditions_vector_for_prime(prime)[1:]
+            return {
+                representative: representative.valuation(prime) + 2 * step
+                for representative, step in zip(classes, steps, strict=False)
+                if step != infinity
+            }
+
+
+def _represents_every_integer(conditions, prime, least):
+    r"""Whether ``least`` represents every square class from its least possible valuation ``v_p(r)``, so every nonzero ``p``-adic integer."""
+    return least == {SageZZ(representative): SageZZ(representative).valuation(prime) for representative in conditions.squareclass_vector(prime)}
+
+
+def _square_class_family(least):
+    r"""Private raising of the least represented valuations: the family on the represented square classes, valued in those valuations."""
     integers = _own_ring(SageZZ)
-    steps = conditions.local_conditions_vector_for_prime(prime)[1:]
-    least = {
-        SageZZ(representative): SageZZ(representative).valuation(prime) + 2 * step
-        for representative, step in zip(conditions.squareclass_vector(prime), steps, strict=False)
-        if step != infinity
-    }
     classes = finite_ordered_set(tuple(_owned_engine_element(integers, representative) for representative in least))
-    return indexed_family(classes, lambda representative: _owned_engine_element(integers, least[_engine_element(integers, representative)]))
+    return indexed_family(classes, lambda representative: _owned_engine_element(integers, SageZZ(least[_engine_element(integers, representative)])))
 
 
 def _isometry_class_representatives(grams, genus_of):
