@@ -1435,7 +1435,9 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""This module with the form scaled by ``scalar``: Gram tensor ``m G`` when it has one."""
             return FormValueScalings(self.base_ring())(self, scalar)
 
-        base_change = _formed_module_base_change
+        def base_change(self, ring_map):
+            r"""Extend the form through its source-retaining scalar-change construction."""
+            return FormBaseChanges(ring_map.codomain())(self, ring_map)
     class ElementMethods:
         @cached_method
         def b(self, other):
