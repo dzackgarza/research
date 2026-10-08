@@ -3193,6 +3193,20 @@ class Lattices(OwnedCategoryOverBaseRing):
             this lattice and ``k=map_to_ideal_dual()`` satisfy ``j*i=u*k``,
             where ``j`` is the generic-fibre inclusion and ``u`` the
             retained ideal-dual inclusion.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[0, 0], [0, 2]])
+                sage: e, f = tuple(L.module_generators())
+                sage: i0 = L.divisible_sublattice(0).inclusion()
+                sage: i2 = L.divisible_sublattice(2).inclusion()
+                sage: i3 = L.divisible_sublattice(3).inclusion()
+                sage: i0.is_in_image(e) and not i0.is_in_image(f)
+                True
+                sage: i2.is_in_image(e) and i2.is_in_image(f)
+                True
+                sage: i3.is_in_image(e) and not i3.is_in_image(f) and i3.is_in_image(L.scalar_multiple(3, f))
+                True
             """
             return self.ideal_dual(divisor).integral_pullback()
 
