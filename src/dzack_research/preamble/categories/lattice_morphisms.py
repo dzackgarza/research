@@ -592,6 +592,98 @@ class LatticeIsometryMethods:
         homset = source.Isom(target)
         return homset.element_class(homset, module_isomorphism)
 
+    def extend_from_perpendicular(self, source_vector, target_vector):
+        r"""Extend this perpendicular isometry over the common fraction field.
+
+        The endpoints must be represented codimension-one subobjects of the
+        vectors' ambient lattices. The vectors must have the same nonzero
+        square. Their lines and perpendicular spaces then give orthogonal
+        direct sums, so the extension is unique. No signature hypothesis is
+        needed. The result retains the scalar-extended ambient endpoints.
+
+        The defining splitting is
+        ``LeanCategories.Lattices.Valued.isCompl_span_anisotropicComplement``
+        in ``Lattices/Valued/OrthogonalSplitting.lean``.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)([[2, 0, 0], [0, 2, 0], [0, 0, -2]])
+            sage: v = L.basis_vector(0)
+            sage: P = L.subobject_on((v,)).orthogonal_complement()
+            sage: a = P.Isom(P)(lambda s: -P.module_generator(s))
+            sage: g = a.extend_from_perpendicular(v, v)
+            sage: g.integral_restriction(L, L)(v) == v
+            True
+            sage: g.integral_restriction(L, L)(L.basis_vector(1)) == -L.basis_vector(1)
+            True
+        """
+        source = source_vector.parent()
+        target = target_vector.parent()
+        ring = source.base_ring()
+        if target.base_ring() is not ring:
+            raise ValueError("orthogonal extension requires a common base ring")
+        if not source_vector.q() or source_vector.q() != target_vector.q():
+            raise ValueError("orthogonal extension requires equal nonzero vector squares")
+        source_inclusion = self.domain().inclusion()
+        target_inclusion = self.codomain().inclusion()
+        for inclusion, ambient, vector in (
+            (source_inclusion, source, source_vector),
+            (target_inclusion, target, target_vector),
+        ):
+            if inclusion.codomain() is not ambient:
+                raise ValueError("the perpendicular inclusion has the wrong ambient lattice")
+            if inclusion.domain().module_rank() + 1 != ambient.module_rank():
+                raise ValueError("the perpendicular subobject must have codimension one")
+            if any(ambient.b(vector, inclusion(x)) for x in inclusion.domain().module_generators()):
+                raise ValueError("the subobject is not perpendicular to the selected vector")
+        fraction_map = ring.fraction_field_map()
+        rational_source = source.base_change(fraction_map)
+        rational_target = target.base_change(fraction_map)
+        source_embedding = source_inclusion.base_change(fraction_map)
+        target_embedding = target_inclusion.base_change(fraction_map)
+        restriction = self.base_change(fraction_map)
+        source_coordinates = source_vector.to_vector()
+        target_coordinates = target_vector.to_vector()
+        v = rational_source.linear_combination(
+            {label: fraction_map(source_coordinates(label)) for label in source_coordinates.support().domain()}
+        )
+        w = rational_target.linear_combination(
+            {label: fraction_map(target_coordinates(label)) for label in target_coordinates.support().domain()}
+        )
+
+        def image(label):
+            x = rational_source.module_generator(label)
+            coefficient = rational_source.b(x, v) / v.q()
+            perpendicular = x - rational_source.scalar_multiple(coefficient, v)
+            return target_embedding(restriction(source_embedding.lift(perpendicular))) + rational_target.scalar_multiple(coefficient, w)
+
+        return rational_source.Isom(rational_target)(image)
+
+    def integral_restriction(self, source, target):
+        r"""Return the induced lattice isometry, or ``None`` if it is not integral.
+
+        ``self`` must have the fraction-field extensions of ``source`` and
+        ``target`` as endpoints. Both the map and its inverse must preserve
+        the respective lattices; an integral embedding alone is insufficient.
+        """
+        ring = source.base_ring()
+        if target.base_ring() is not ring:
+            raise ValueError("integral restriction requires a common base ring")
+        fraction_map = ring.fraction_field_map()
+        if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
+            raise ValueError("the isometry must join the selected lattices' fraction-field extensions")
+        for morphism in (self, self.inverse()):
+            for generator in morphism.domain().module_generators():
+                coordinates = morphism(generator).to_vector()
+                if any(coordinates(label) not in ring for label in coordinates.support().domain()):
+                    return None
+
+        def image(label):
+            coordinates = self(self.domain().module_generator(label)).to_vector()
+            return target.linear_combination({index: ring(coordinates(index)) for index in coordinates.support().domain()})
+
+        return source.Isom(target)(image)
+
     def inverse(self):
         r"""Return the inverse isometry."""
         codomain = self.codomain()
