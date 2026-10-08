@@ -381,7 +381,7 @@ def _engine_subgroup_admits(subgroup, element) -> bool:
     engine subgroup whether that engine element belongs to it.  Membership is
     therefore a predicate, not exception-driven control flow.
     """
-    return subgroup.supergroup()._to_engine(element) in _engine_group(subgroup)
+    return subgroup.supergroup()._engine_subgroup_contains(element, _engine_group(subgroup))
 
 
 def _engine_cosets(group, subgroup, side):
@@ -1834,6 +1834,14 @@ def _abelian_subgroup_quotient(subgroup):
 
 
 class SubgroupInclusion(SetMorphism):
+    def _composition(self, right):
+        r"""Compose an inclusion in the owned group morphism category."""
+        if right.codomain() is not self.domain():
+            return NotImplemented
+        return OwnedGroups().Mor(right.domain(), self.codomain())(
+            lambda element: self(right(element))
+        )
+
     def is_injective(self):
         return True
 
@@ -3169,6 +3177,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 name="Group generators"
             )
 
+        def _engine_subgroup_contains(self, element, engine_subgroup):
+            r"""Decide membership in a private generated subgroup.
+
+            The group adapters call this protected protocol with an owned
+            ambient element and the subgroup engine. A realization whose
+            full group has no engine overrides this crossing at its owner.
+            """
+            return self._to_engine(element) in engine_subgroup
+
         def invariant_overlattice(self, lattice):
             r"""Return the least integral invariant overlattice for this rational orthogonal action.
 
@@ -3196,7 +3213,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             group = self
             group_inclusion = OwnedGroups().Mor(self, self).identity()
             while group.supergroup() is not group:
-                group_inclusion = group.inclusion() * group_inclusion
+                inclusion = group.inclusion()
+                group_inclusion = OwnedGroups().Mor(group, inclusion.codomain())(inclusion) * group_inclusion
                 group = group.supergroup()
             if group is not rational.Aut():
                 raise ValueError("the group must be included in the orthogonal group of this rational span")

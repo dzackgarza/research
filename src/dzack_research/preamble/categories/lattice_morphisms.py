@@ -2046,7 +2046,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 sum(
                     (
                         codomain.scalar_multiple(
-                            _owned_engine_element(ring, SageZZ(coefficient)),
+                            _owned_engine_element(ring, _engine_ring(ring)(coefficient)),
                             generator,
                         )
                         for coefficient, generator in zip(column, generators, strict=True)
@@ -2087,6 +2087,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def _to_subgroup_engine(self, automorphism, engine_subgroup):
         r"""Cross a live isometry directly into a generated matrix subgroup."""
         return engine_subgroup(self._row_action_matrix(automorphism))
+
+    def _engine_subgroup_contains(self, automorphism, engine_subgroup):
+        return self._row_action_matrix(automorphism) in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         r"""Raise an element of a generated matrix subgroup to a live isometry."""

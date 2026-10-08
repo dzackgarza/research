@@ -989,6 +989,8 @@ class TrivializedTorsors(OwnedParameterizedCategory):
         return [Torsors(self.base())]
 
     class ParentMethods:
+        _derived_construction_parameters = ("acting_group", "action", "underlying_category")
+
         def __init__(self, trivialization, **rest):
             self._trivialization = trivialization
             group = trivialization.domain()

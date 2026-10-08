@@ -2793,7 +2793,7 @@ class _ConditionSetEngine:
 
     def __iter__(self):
         universe = self.universe()
-        assert universe in FiniteSets() or universe in EnumeratedSets(), (
+        assert universe in FiniteSets() or universe in EnumeratedSets() or universe.is_finite() is True, (
             f"cannot list the elements of {self}: the set {universe} it is cut out of is neither finite "
             "nor enumerated"
         )

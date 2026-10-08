@@ -523,6 +523,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return whether the underlying free module is finite."""
             return self.cardinality().is_finite()
 
+        @cached_method
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 

@@ -278,6 +278,8 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self._element_constructor_(value)
 
         def __contains__(self, value) -> bool:
+            if element_parent(value) is self:
+                return True
             if isinstance(value, self.category().ElementType):
                 return value.parent() is self
             return value in self.underlying_set()
