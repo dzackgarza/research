@@ -4493,6 +4493,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             edgewalk realization follows the frozen cycle contract. The
             period is a lattice isometry; its vector family is a finite
             subset with its inclusion into this lattice.
+
+            EXAMPLES::
+
+                sage: for gram, size in (([[2, 0], [0, -6]], 1), ([[4, 2], [2, -2]], 1), ([[2, 0], [0, -4]], 2)):
+                ....:     L = Lattices(ZZ)(gram)
+                ....:     period, vectors = L.reduction_cycle(ZZ(4), L.basis_vector(0))
+                ....:     assert period.inverse() * period == L.Isom(L).identity()
+                ....:     assert vectors.cardinality() == size
+                ....:     assert all(v.parent() is L and ZZ(0) < v.q() <= ZZ(4) for v in vectors)
             """
             result = lattice_engines._binary_reduction_cycle(self, bound, start)
             if result is None:
