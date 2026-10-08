@@ -132,6 +132,7 @@ SERIES = {
     "genus_theta_series": lambda lattice, bound: _coefficients(lattice.genus().theta_series(precision=bound + 1), bound),
     "theta_series_cuspidal_component": lambda lattice, bound: _coefficients(lattice.theta_series_cuspidal_component(precision=bound + 1), bound),
     "local_densities": _local_densities,
+    "siegel_eisenstein_coefficients": lambda lattice, bound: _coefficients(lattice.genus().siegel_eisenstein_series(precision=bound + 1), bound)[1:],
 }
 """Fields whose value is a prefix of a series, computed through the request's `series_bound`."""
 
