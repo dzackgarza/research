@@ -108,6 +108,26 @@ membership questions must remain propositions rather than false Boolean
 answers. The general contract and all affected consumers remain in
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
+### Recovery of two hyperbolic planes fails when the first isotropic witness has larger divisibility
+
+The existence of an integral orthogonal decomposition `L ≅ U + U + K` is
+not decided by the divisibility of one selected primitive isotropic vector.
+For the explicitly represented lattice `L = U(2) + U + U`, the selected
+`L.isotropic_vector()` is the first null basis vector in `U(2)` and has
+divisibility two. Nevertheless the two copies of `U` are already summands,
+and `L.splits_two_hyperbolic_planes()` returns `True`. A targeted Sage run
+shows `L.two_hyperbolic_plane_splitting()` instead raises an assertion that
+the selected vector has divisibility two. This is a counterexample to the
+current search contract, not to the existence of the splitting.
+
+The required construction selects a rank-two unimodular hyperbolic summand
+and its two-sided orthogonal decomposition (with comparison to the two
+isotropic reductions); its source object need not arrive with a decomposition.
+Searching only for one arbitrary isotropic witness, or inspecting only the
+visible biproduct components, does not decide existence. The general
+selection/existence algorithm and full comparison maps remain in
+[`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
+
 ### Isotropic-reduction lifts need a kernel torsor with nonlinear evaluation
 
 The frozen lift-family contract in [research #401](https://github.com/dzackgarza/research/issues/401)
