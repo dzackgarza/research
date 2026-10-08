@@ -133,6 +133,12 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+## Owner resume — 2026-10-08
+
+The repository owner resumed this workstream on 2026-10-08 after the October stop. Work from
+`HANDOFF.md` first, in the priority order it states, then from the `TODO.md` dependency graph.
+Only a later explicit owner instruction stops the repository again.
+
 ## Owner resume — 2026-09-17
 
 The repository owner resumed this workstream on 2026-09-17. The initial
