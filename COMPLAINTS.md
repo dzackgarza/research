@@ -55,8 +55,10 @@ construction must retain the full inverse image as a scalar-restricted
 submodule, or explicitly require injective parameterization. Its defining
 data are the parameter morphism, the integral target inclusion, and their
 pullback; Smith form only supplies a realization. The existing restricted
-scalar finite-span constructor represents the lattice part. General
-inverse images with a rational kernel remain in
+scalar finite-span constructor represents the lattice part. Research's
+general affine inverse-image construction now retains the rational kernel,
+both maps and the translation torsor. The port adoption and independent
+acceptance of this construction remain in
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
 ### A commensurating group need not admit an invariant overlattice
@@ -100,14 +102,15 @@ See the cited transvection formula and the complete dependency account in
 At port `b3fd95d`, `IsometryExtensionTorsor` stores a particular map and
 linear directions, and `IsotropicVectorSection.rational_lift` supplies
 empty directions. In research, `IsotropicReductions` retains the quotient
-data, while `Torsors._call_` in `categories/group/g_sets.py` requires a
-finite G-set. Neither inspected constructor supplies the requested
-rational lift torsor. The searched formal slice and partial Witt/action
-declarations are recorded in the audit; the exact parabolic kernel,
-torsor evaluation, and integral subgroup declarations remain unresolved.
-Their location or formalization is required in lean-categories before
-presentation work. This is a source-level architectural finding, not an
-executed failure. Remediation belongs to
+data. Research now constructs the marked-line lift torsor by transporting
+the regular kernel action through a base lift. It retains transvection
+parameters, nonlinear evaluation, and the integral-kernel action on the
+integral descent locus. Point selection in that integral locus, port
+adoption, and formal comparison remain unresolved. The searched formal
+slice and partial Witt/action declarations are recorded in the audit.
+Their location or formalization and the comparison proofs belong to
+lean-categories. Computational source repair follows the mathematical
+construction traced above. Remediation belongs to
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
 ### Clearing denominators requires similarity embeddings
@@ -136,20 +139,19 @@ finding and its mathematical specimen belong to
 
 The live [migration procedure](https://github.com/dzackgarza/research/issues/396)
 requires research to supply the frozen operations already called by the
-port. Research instead added names including `isotropic_vector_witness`,
-`extend_from_perpendicular`, `first_close_vectors`, and
-`binary_fixed_norm_representatives`, with differing result/failure contracts.
-Local port branch `research-401-primitives` changes consumers to those
-names, while the procedure says the port side is already complete.
-Those commits have not established migration completion.
+port. The research-side source repairs are listed in the audit's
+disposition table. The remaining frozen operations,
+formal comparisons and execution are still open. Local port branch
+`research-401-primitives` changes consumer names, while the migration
+procedure requires the research-side names and contracts.
 
 The [complete abstraction audit](docs/issue-401-abstraction-audit.md)
 maps every body/comment item and private access to its mathematical
 construction, identifies contract conflicts, and records the disposition
 of the added code. It includes integral descent, similarity embeddings,
 twist transport, lift torsors, and affine-line points, which were missing
-from the prior TODO account. Resolve the formal owners and route frozen
-contract changes through port #33 before implementation continues.
+from the prior TODO account. Resolve the formal owners and route the
+mathematically determined frozen-contract corrections through port #33.
 The existing [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives)
 node owns the repair.
 
