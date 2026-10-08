@@ -1133,7 +1133,14 @@ class _GroupEngine:
             case Element() if self.supergroup() is self:
                 return value.parent() is self
             case Element():
-                return value in self.supergroup() and _engine_subgroup_admits(self, value)
+                if value not in self.supergroup():
+                    return False
+                if self in GeneratedSubgroups(self.supergroup()) and self.supergroup().is_finite() is not True:
+                    decision = self.membership_decision(value)
+                    if decision is True:
+                        return True
+                    raise TypeError(f"membership of {value} in {self} is undecided; supply a word witness to membership_decision")
+                return _engine_subgroup_admits(self, value)
             case _:
                 return False
 
@@ -4437,6 +4444,32 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
 
         def selected_subgroup_generators(self):
             return self._selected_subgroup_generators
+
+        def membership_decision(self, candidate, *, word=None):
+            r"""Membership certified by a word in the selected free generators.
+
+            When no word is supplied, a general infinite matrix-subgroup
+            membership question remains an unevaluated proposition.
+            """
+            ambient = self.supergroup()
+            if candidate not in ambient:
+                return False
+            if candidate == ambient.one() or any(
+                candidate == generator or candidate == ~generator
+                for generator in self.selected_subgroup_generators()
+            ):
+                return True
+            if word is not None:
+                free = self.selected_group_resolution().level(0)
+                product = ambient.one()
+                for generator, exponent in _reduced_word_data(free, word):
+                    product = product * (ambient(generator) ** exponent)
+                if product == candidate:
+                    return True
+                return AtomicProposition("is_member", candidate, self)
+            if ambient.is_finite() is True:
+                return _engine_subgroup_admits(self, candidate)
+            return AtomicProposition("is_member", candidate, self)
 
 
 def _coxeter_presentation(coxeter_matrix, names=None):
