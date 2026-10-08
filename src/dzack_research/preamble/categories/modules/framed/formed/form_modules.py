@@ -1416,40 +1416,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def twist(self, scalar):
             r"""This module with the form scaled by ``scalar``: Gram tensor ``m G`` when it has one."""
-            form = self._formed_form()
-            if _is_bilinear_form(form):
-                if form.codomain() in OwnedRings() and _has_finite_framing(form.module()):
-                    return FormModules(self.base_ring())(
-                        self.bilinear_forms(self.value_module())(scalar * form.gram_tensor())
-                    )
-                if _has_finite_framing(form.module()):
-                    values = form.coordinate_values().map(
-                        lambda value: scalar * value,
-                        name="Twisted bilinear coordinate values",
-                    )
-                    return FormModules(self.base_ring())(
-                        self.bilinear_forms(self.value_module())(values)
-                    )
-                return FormModules(self.base_ring())(
-                    self.bilinear_forms(self.value_module())(
-                        lambda left, right: scalar * form(left, right)
-                    )
-                )
-            source_form = self.form()
-            if source_form.has_selected_bilinear_lift():
-                values = source_form.lift_coordinate_values().map(
-                    lambda value: scalar * value,
-                    name="Twisted quadratic-lift coordinate values",
-                )
-                return FormModules(self.base_ring())(
-                    self.quadratic_forms(self.value_module())(values)
-                )
-            return FormModules(self.base_ring())(
-                self.quadratic_map(
-                    self.value_module(),
-                    lambda element: scalar * form(element),
-                )
-            )
+            return FormValueScalings(self.base_ring())(self, scalar)
 
         base_change = _formed_module_base_change
     class ElementMethods:
@@ -2681,6 +2648,71 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     f"but it takes values in {self.value_module()}, in {self.value_module().category()}"
                 )
                 return self.gram_matrix().determinant()
+
+class FormValueScalings(OwnedCategoryOverBaseRing):
+    r"""Scalar changes of a form's values, normalized under composition."""
+
+    def super_categories(self):
+        return [FormModules(self.base_ring())]
+
+    def _call_(self, source, scalar):
+        scalar = self.base_ring()(scalar)
+        if source in self:
+            scalar *= source.form_scale()
+            source = source.unscaled_form_module()
+        if scalar == self.base_ring().one():
+            return source
+        return _scaled_form_module(source, scalar)
+
+    class ParentMethods:
+        def __init__(self, unscaled_form_module, form_scale, **rest):
+            self._unscaled_form_module = unscaled_form_module
+            self._form_scale = form_scale
+            super().__init__(**rest)
+
+        def unscaled_form_module(self):
+            return self._unscaled_form_module
+
+        def form_scale(self):
+            return self._form_scale
+
+
+@cached_function(key=lambda source, scalar: (id(source), scalar))
+def _scaled_form_module(source, scalar):
+    r"""Realize value scaling on the original underlying module and form.
+
+    Composition multiplies the value scalars before this constructor runs.
+    Thus the unit action returns the original object, including a double
+    sign twist. No cancellation by a nonunit is used.
+    """
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    form = source._formed_form()
+    module = form.module()
+    values = source.value_module()
+    if _is_bilinear_form(form):
+        forms = module.bilinear_forms(values)
+        if form.codomain() in OwnedRings() and _has_finite_framing(module):
+            scaled = forms(scalar * form.gram_tensor())
+        elif _has_finite_framing(module):
+            scaled = forms(form.coordinate_values().map(lambda value: scalar * value))
+        else:
+            scaled = forms(lambda left, right: scalar * form(left, right))
+    elif form.has_selected_bilinear_lift():
+        scaled = module.quadratic_forms(values)(
+            form.lift_coordinate_values().map(lambda value: scalar * value)
+        )
+    else:
+        scaled = module.quadratic_map(values, lambda element: scalar * form(element))
+
+    ring = source.base_ring()
+    categories = [FormValueScalings(ring)]
+    data = dict(unscaled_form_module=source, form_scale=scalar)
+    if source in Lattices(ring):
+        categories.append(Lattices(ring))
+        data["gram_tensor"] = scaled.gram_tensor()
+    return _form_module(scaled, _extra_categories=categories, _extra_construction_data=data)
+
 
 def _form_module(
     form,

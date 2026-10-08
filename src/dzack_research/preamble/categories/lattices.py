@@ -4738,22 +4738,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 2 I_∞ ∈ (ZZ^NN ⊗ ZZ^NN)*
             """
 
-            ring = self.base_ring()
-            gram = self.gram_tensor()
-            scalar = ring(scalar)
-            lattices = Lattices(ring)
-            match self.module_rank().is_finite():
-                case True:
-                    size = int(self.module_rank())
-                    scaled = tensor(
-                        ring,
-                        (),
-                        (size, size),
-                        [[scalar * gram[row, column] for column in range(size)] for row in range(size)],
-                    )
-                    return lattices(scaled, module_generators=self.module_generating_set())
-                case False:
-                    return lattices(gram.scaled_by(scalar))
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormValueScalings
+
+            return FormValueScalings(self.base_ring())(self, scalar)
 
         def __matmul__(self, other):
             r"""Return the tensor product lattice ``self \otimes other``."""
