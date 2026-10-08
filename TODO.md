@@ -751,7 +751,12 @@ These remain required constructions with their original generality, maps, specim
   **Closure specimens:** `E_8` represents 2 and not 1. `U` represents every integer.
   `A_1(-1) + A_1(-1) + A_1(-1)`, the form `-(x^2 + y^2 + z^2)`, does not represent `-7`, the Legendre obstruction at 2. `U + U` represents 0 with a nonzero witness.
 
-- [ ] **`theta-cusp-form-coordinates`**. **Needs:** `modular-forms-and-hecke-algebras`.
+- [ ] **`modular-form-spaces-with-character`**. **Needs:** none.
+  **Owner and delta:** for `N >= 1`, a Dirichlet character `chi` modulo `N` and a weight `k` in `(1/2)ZZ` (with `4 | N` when `k` is not an integer), the preamble presents `M_k(Gamma_0(N), chi)` and `S_k(Gamma_0(N), chi)`. Each is the subset of `ComplexManifolds().Mor(H, C)` cut out by the weight-`k` slash action of `Gamma_0(N)` with character `chi` and the cusp conditions; `Gamma_0(N)` is cut out of `SL_2(ZZ)` by its membership predicate. Each is also a subobject of that hom in topological `C`-modules, with its inclusion, finite-dimensional with a rational structure, with a basis whose elements answer `q`-expansions, and with its Eisenstein and cuspidal subspaces `E_k` and `S_k` as subobjects of `M_k`. `COMPLAINTS.md`, *Spaces of modular forms with a character are not presented*, holds the `lean-categories` request, which runs beside this node. This is the part of `modular-forms-and-hecke-algebras` that needs no generators of a finite-index subgroup: membership in `Gamma_0(N)` cuts out the space, and Sage computes the bases privately.
+  **Cited violation:** `AGENTS.md`, *Object and category are not exclusive*, states `M_k(Gamma, chi)` as a subcategory of the hom out of `H`; the preamble presents no such space. **Specimen:** `S_{3/2}(Gamma_0(64), chi_{-4})`, which holds the cuspidal component `2q - 6q^9 + O(q^13)` of `x^2 + y^2 + 16 z^2`. **Rules searched:** `ENG-06`, which a private call to Sage's modular-form bases does not engage.
+  **Closure specimens:** `dim M_2(Gamma_0(11)) = 2` and `dim S_2(Gamma_0(11)) = 1`, with the newform `q - 2q^2 - q^3 + 2q^4 + ...`; `S_2(Gamma_0(4), chi_{-4})` has dimension 0.
+
+- [ ] **`theta-cusp-form-coordinates`**. **Needs:** `modular-form-spaces-with-character`.
   **Owner and delta:** for a positive definite integral lattice `L` of rank `n`, level `N` and quadratic character `chi`, `Lattices(ZZ)` answers `theta_L` as an element of `M_{n/2}(Gamma_0(N), chi)`, and the cuspidal component `theta_L - theta_gen(L)` (`theta_series_cuspidal_component`) as an element of `S_{n/2}(Gamma_0(N), chi)`, with its coordinates in a basis of that space (newforms and their lifts in integral weight; `half_integral_weight_modform_basis` in half-integral weight, privately). The lattice-db field `definite.cusp_form_coordinates` is requested through `sage_genus.SERIES`, and `genus.applies` stops excluding it.
   **Cited violation:** `lattice-database/AGENTS.md`, *The database stores every computation*: "When a result has no place in the schema, the schema gains one". The published pipelines that decide representation by quaternary forms compute these coordinates for each form: Rouse, 451-Theorem, `prep6.txt` at https://users.wfu.edu/rouseja/451/; Hanke, QFLib `Representability`, https://github.com/jonhanke/qflib. **Specimen:** `x^2 + y^2 + 16 z^2`, whose cuspidal component through `q^12` is `2q - 6q^9`, and whose space has no preamble presentation. **Rules searched:** `ENG-06`, which the change of basis does not engage. `COMPLAINTS.md`, *Spaces of modular forms with a character are not presented*, holds the `lean-categories` request, which runs beside this node.
   **Closure specimens:** for the sum of four squares the coordinates are zero; for `x^2 + y^2 + 16 z^2` they are nonzero and reproduce the cuspidal component through `q^12`.
@@ -897,15 +902,13 @@ These remain required constructions with their original generality, maps, specim
     The Davis complex of the infinite dihedral group is a line.
     The building of `SL_3(F_2)` has 21 chambers and apartments that are hexagons.
 
-- [ ] **`modular-forms-and-hecke-algebras`**. **Needs:** `finite-index-subgroup-generators`. **Owner and delta:**
+- [ ] **`modular-forms-and-hecke-algebras`**. **Needs:** `finite-index-subgroup-generators`, `modular-form-spaces-with-character`. **Owner and delta:**
 
   - Congruence subgroups of `SL_n(ZZ)` (`Γ(N)`, and `Γ_0(N)` and `Γ_1(N)` for `n = 2`) as subobjects with their inclusions and generators.
 
   - The modular curves `Y_0(N)`, `X_0(N)`, `Y_1(N)`, `X_1(N)` and `X(N)`, with cusps, genus, and their moduli interpretation.
 
   - Modular and cusp forms `M_k(Γ)` and `S_k(Γ)`, with Fourier (q-)expansions, inside the general setting of automorphic forms.
-
-  - The spaces `M_k(Γ_0(N), χ)` and `S_k(Γ_0(N), χ)` with a Dirichlet character `χ`, in integral and half-integral weight `k`, each presented as a subset of the hom `ComplexManifolds().Mor(H, C)` out of the upper half-plane, cut out by the weight-`k` slash action and the cusp conditions, and as a subobject of that hom, with its inclusion, in topological `C`-modules. Each space has a basis with `q`-expansions and its Eisenstein and cuspidal subspaces; the theta series of a positive definite integral lattice of rank `n` is an element of `M_{n/2}(Γ_0(N), χ)` for its level and quadratic character. `COMPLAINTS.md`, *Spaces of modular forms with a character are not presented*, holds the `lean-categories` request.
 
   - The Hecke operators `T_n` and the Hecke algebra they generate, with its eigenforms.
 
