@@ -101,8 +101,10 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.rank >= 3 and 1 in (lattice.signature or ())
         case "roots" | "norms":
             return lattice.definite is None
-        case "regular" | "spinor_regular":
-            return lattice.definite is not None and lattice.rank == 3
+        case "regular":
+            return lattice.definite is not None
+        case "spinor_regular":
+            return lattice.definite is not None and lattice.rank >= 3
         case "discriminant_sequence":
             return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":
