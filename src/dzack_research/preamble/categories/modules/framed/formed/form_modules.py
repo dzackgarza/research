@@ -1086,15 +1086,32 @@ class PairedModules(OwnedParameterizedCategory):
             )
 
 
+@cached_function(key=lambda source, ring_map: (id(source), id(ring_map)))
 def _formed_module_base_change(self, ring_map):
     r"""Base-change a scalar-valued finite free form along ``R -> S``."""
 
     assert self.value_module() is self.base_ring()
     target_ring = _base_change_codomain(self, ring_map)
+    if ring_map.is_identity():
+        return self
     source = self
     source_labels = source.module_generating_set()
-    changed = target_ring.free_module(source_labels)
     form = self._formed_form()
+    changed = form.module().base_change(ring_map)
+
+    def equip(changed_form):
+        from dzack_research.preamble.categories._lattice import _BaseChangedGram
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        categories = [FormBaseChanges(target_ring)]
+        data = dict(base_change_source=source, base_change_ring_map=ring_map)
+        if source in Lattices(source.base_ring()):
+            categories.append(Lattices(target_ring))
+            data["gram_tensor"] = (
+                changed_form.gram_tensor() if source.module_rank().is_finite()
+                else _BaseChangedGram(changed, source.gram_tensor(), ring_map, changed_form)
+            )
+        return _form_module(changed_form, _extra_categories=categories, _extra_construction_data=data)
 
     if _is_bilinear_form(form):
         if _has_finite_framing(form.module()):
@@ -1102,7 +1119,7 @@ def _formed_module_base_change(self, ring_map):
                 lambda value: _base_change_scalar(ring_map, value),
                 name="Base-changed bilinear coordinate values",
             )
-            return FormModules(target_ring)(
+            return equip(
                 changed.bilinear_forms(target_ring)(changed_values)
             )
 
@@ -1124,7 +1141,7 @@ def _formed_module_base_change(self, ring_map):
                     )
             return result
 
-        return FormModules(target_ring)(
+        return equip(
             changed.bilinear_forms(target_ring)(changed_bilinear_value)
         )
 
@@ -1140,7 +1157,7 @@ def _formed_module_base_change(self, ring_map):
             lambda value: _base_change_scalar(ring_map, value),
             name="Base-changed quadratic-lift coordinate values",
         )
-        return FormModules(target_ring)(
+        return equip(
             changed.quadratic_forms(target_ring)(changed_lift_values)
         )
 
@@ -1168,7 +1185,7 @@ def _formed_module_base_change(self, ring_map):
                 )
         return target_ring(result)
 
-    return FormModules(target_ring)(
+    return equip(
         changed.quadratic_map(target_ring, changed_quadratic_value)
     )
 
@@ -2648,6 +2665,35 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     f"but it takes values in {self.value_module()}, in {self.value_module().category()}"
                 )
                 return self.gram_matrix().determinant()
+
+class FormBaseChanges(OwnedCategoryOverBaseRing):
+    r"""Formed scalar extensions retaining their source and scalar map."""
+
+    def super_categories(self):
+        return [FormModules(self.base_ring())]
+
+    def _call_(self, source, ring_map):
+        if ring_map.codomain() is not self.base_ring():
+            raise ValueError("the scalar extension must end at this category's base ring")
+        return _formed_module_base_change(source, ring_map)
+
+    class ParentMethods:
+        def __init__(self, base_change_source, base_change_ring_map, **rest):
+            self._base_change_source = base_change_source
+            self._base_change_ring_map = base_change_ring_map
+            super().__init__(**rest)
+
+        def base_change_source(self):
+            return self._base_change_source
+
+        def base_change_ring_map(self):
+            return self._base_change_ring_map
+
+        def base_change_unit(self):
+            r"""The source-to-restriction map of this scalar-extension construction."""
+            source = self.base_change_source()
+            return Modules(source.base_ring()).base_change_adjunction(self.base_change_ring_map()).unit(source)
+
 
 class FormValueScalings(OwnedCategoryOverBaseRing):
     r"""Scalar changes of a form's values, normalized under composition."""

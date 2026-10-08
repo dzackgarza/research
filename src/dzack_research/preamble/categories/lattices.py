@@ -34,7 +34,6 @@ from sage.structure.parent import Parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories._lattice import (
-    _BaseChangedGram,
     _IdentityGram,
     _block_offsets,
     _block_position,
@@ -1936,10 +1935,11 @@ class Lattices(OwnedCategoryOverBaseRing):
         def integral_isometry(self, morphism, *, source=None):
             r"""Descend a rational isometry onto this integral lattice.
 
-            For a rational automorphism of ``self``, the source integral
-            structure is ``self``. For distinct rational endpoints, supply
-            ``source`` explicitly. Both directions must preserve the stated
-            integral lattices; raise ``ValueError`` otherwise.
+            A formed scalar extension retains its defining source lattice.
+            That source supplies the integral model even when the rational
+            endpoints differ. A rational space presented without an integral
+            model requires ``source`` explicitly. Both directions must
+            preserve the stated lattices; raise ``ValueError`` otherwise.
 
             EXAMPLES::
 
@@ -1951,9 +1951,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
             """
             if source is None:
-                if morphism.domain() is not self.vector_space():
+                from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormBaseChanges
+
+                rational_source = morphism.domain()
+                if rational_source in FormBaseChanges(rational_source.base_ring()):
+                    source = rational_source.base_change_source()
+                    if rational_source.base_change_ring_map() != self.base_ring().fraction_field_map():
+                        raise ValueError("the rational source must retain scalar extension from the target integral ring")
+                elif rational_source is self.vector_space():
+                    source = self
+                else:
                     raise ValueError("the source integral lattice must be supplied for distinct rational endpoints")
-                source = self
             isometry = morphism.integral_restriction(source, self)
             if isometry is None:
                 raise ValueError("the rational isometry does not map the source integral lattice onto the target")
@@ -2134,37 +2142,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(L\).  Along \(R\to\operatorname{Frac}(R)\) it is the quadratic
             space \(L_K=L\otimes_R K\) that :meth:`vector_space` returns.
             """
-            if ring_map.is_identity():
-                return self
-            target_ring = _base_change_codomain(self, ring_map)
-            rank = self.module_rank()
-            if not rank.is_finite():
-                from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-                    _formed_module_base_change,
-                )
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormBaseChanges
 
-                changed_form_module = _formed_module_base_change(self, ring_map)
-                changed_module = changed_form_module.unformed_module()
-                changed_gram = _BaseChangedGram(
-                    changed_module,
-                    self.gram_tensor(),
-                    ring_map,
-                    changed_form_module.form(),
-                )
-                return _lattice_object(
-                    Lattices(target_ring),
-                    changed_module,
-                    changed_gram,
-                )
-            size = int(rank)
-            gram = self.gram_tensor()
-            changed = tensor(
-                target_ring,
-                (),
-                (size, size),
-                [[_base_change_scalar(ring_map, gram[row, column]) for column in range(size)] for row in range(size)],
-            )
-            return Lattices(target_ring)(changed, module_generators=self.module_generating_set())
+            return FormBaseChanges(ring_map.codomain())(self, ring_map)
 
         def orthogonal_group_base_change(self, ring_map):
             r"""Return \(O(L)\to O(L\otimes_R S)\), \(g\mapsto g\otimes S\), along ``ring_map``.

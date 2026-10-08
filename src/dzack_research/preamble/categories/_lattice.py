@@ -626,7 +626,12 @@ class _PairingGram(ModuleElement, Tensor):
 
 
 class _BaseChangedGram(_PairingGram):
-    r"""The scalar extension of a represented pairing rule along ``R -> S``."""
+    r"""The scalar extension of a represented pairing rule along ``R -> S``.
+
+    Protected construction for the formed scalar-extension owner. It retains
+    the source pairing, scalar map and changed form on the changed module;
+    the lattice specialization consumes the resulting pairing tensor.
+    """
 
     def __init__(self, module, source_gram, ring_map, changed_form) -> None:
         self._source_gram = source_gram
@@ -895,7 +900,7 @@ class _IdentityGram(_DiagonalGram):
         super().__init__(module, {}, module.base_ring().one())
 
     def _inertia(self):
-        _rational_fraction_field(self.base_ring())
+        _ordered_fraction_field(self.base_ring())
         return signature_pair(cardinal(self._module.module_rank()), 0)
 
     def dual_gram_on(self, dual_module):
