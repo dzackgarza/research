@@ -456,9 +456,9 @@ the distinguishing specimens are `U+U` at `n=0` and
 **Coverage boundary:** Sage's quadratic-form and binary-form sources, the
 installed Hecke/Oscar quadratic-form sources, and the repository's current
 lattice engine capability map were inspected. No complete maintained exact
-rank-at-least-three integral witness route was found. Repair requires the
-`higher-rank-representation-engine-ruling` and then
-`higher-rank-integral-lattice-representation` nodes in [TODO.md](TODO.md).
+rank-at-least-three integral witness route was found. The owner ruled on
+2026-10-09 that the preamble owns the algorithm. Repair is the
+`higher-rank-integral-lattice-representation` node in [TODO.md](TODO.md).
 
 ### Genera of integral lattices are formalized without finiteness, parity or classification
 
