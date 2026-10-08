@@ -19,6 +19,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from fnmatch import fnmatchcase
+from functools import cache
 from graphlib import TopologicalSorter
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -990,10 +991,62 @@ class Dispatch:
     branches: tuple[tuple[frozenset[str], bool], ...]
 
 
+@cache
+def _parsed(path: str) -> ast.Module:
+    return ast.parse(Path(path).read_text(encoding="utf-8"))
+
+
+def _construction_axioms(
+    declarations: list[CategoryDeclaration], axiom_names: set[str]
+) -> dict[str, tuple[str, ...]]:
+    """The constructions on a category or an object, and the property axioms each names.
+
+    A construction declares only categories computed from its parameters,
+    or another construction: a slice ``C/X`` declares ``C``.  An axiom it
+    names is one it can place on the objects it builds.
+    """
+    names: set[str] = set()
+    while True:
+        grown = names | {
+            d.name
+            for d in declarations
+            if d.supercategories
+            and all(
+                s.origin == "expression" or s.resolved in names
+                for s in d.supercategories
+            )
+        }
+        if grown == names:
+            break
+        names = grown
+    found: dict[str, tuple[str, ...]] = {}
+    for d in declarations:
+        if d.name not in names:
+            continue
+        node, _ = _class_at(d)
+        found[d.name] = tuple(
+            sorted(
+                {
+                    n.func.attr
+                    for n in ast.walk(node)
+                    if isinstance(n, ast.Call)
+                    and isinstance(n.func, ast.Attribute)
+                    and n.func.attr in axiom_names
+                }
+                | {
+                    n.value
+                    for n in ast.walk(node)
+                    if isinstance(n, ast.Constant) and n.value in axiom_names
+                }
+            )
+        )
+    return found
+
+
 def _class_at(
     declaration: CategoryDeclaration,
 ) -> tuple[ast.ClassDef, dict[str, tuple[str, str]]]:
-    tree = ast.parse(Path(declaration.path).read_text(encoding="utf-8"))
+    tree = _parsed(declaration.path)
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.lineno == declaration.line:
             return node, _imported_names(tree)
@@ -1479,48 +1532,13 @@ def render_properties(declarations: list[CategoryDeclaration], root: Path) -> st
         ]
         reports.append((len(claimants), lines))
     axiom_names = {v.split(".")[1] for v in axiom_vertices}
-    construction_names: set[str] = set()
-    while True:
-        grown = construction_names | {
-            d.name
-            for d in declarations
-            if d.supercategories
-            and all(
-                s.origin == "expression" or s.resolved in construction_names
-                for s in d.supercategories
-            )
-        }
-        if grown == construction_names:
-            break
-        construction_names = grown
-    constructions = []
-    for d in sorted(declarations, key=lambda d: d.vertex):
-        if d.name not in construction_names:
-            continue
-        tree = ast.parse(Path(d.path).read_text(encoding="utf-8"))
-        node = next(
-            n
-            for n in ast.walk(tree)
-            if isinstance(n, ast.ClassDef) and n.lineno == d.line
-        )
-        named = sorted(
-            {
-                n.func.attr
-                for n in ast.walk(node)
-                if isinstance(n, ast.Call)
-                and isinstance(n.func, ast.Attribute)
-                and n.func.attr in axiom_names
-            }
-            | {
-                n.value
-                for n in ast.walk(node)
-                if isinstance(n, ast.Constant) and n.value in axiom_names
-            }
-        )
-        declared = ", ".join(s.expression for s in d.supercategories)
-        constructions.append(
-            f"{d.vertex}  ({d.path}:{d.line}) declares {declared}; places {', '.join(named) or 'no property axiom'}"
-        )
+    construction_axioms = _construction_axioms(declarations, axiom_names)
+    constructions = [
+        f"{d.vertex}  ({d.path}:{d.line}) declares {', '.join(s.expression for s in d.supercategories)}; "
+        f"places {', '.join(construction_axioms[d.name]) or 'no property axiom'}"
+        for d in sorted(declarations, key=lambda d: d.vertex)
+        if d.name in construction_axioms
+    ]
     constructions_section = [
         "## Constructions on a category or an object, and the property axioms they place on their objects",
         "",
@@ -1555,6 +1573,200 @@ def render_properties(declarations: list[CategoryDeclaration], root: Path) -> st
         for line in [*lines_, ""]
     ]
     return "\n".join([*header, *body, *constructions_section, *lines, ""])
+
+
+def _returns(function: ast.FunctionDef) -> list[ast.expr]:
+    """The returned expressions of ``function``, not of the functions nested in it."""
+    found: list[ast.expr] = []
+    pending: list[ast.AST] = list(function.body)
+    while pending:
+        node = pending.pop()
+        match node:
+            case ast.FunctionDef() | ast.Lambda() | ast.ClassDef():
+                continue
+            case ast.Return(value=value) if value is not None:
+                found.append(value)
+        pending.extend(ast.iter_child_nodes(node))
+    return found
+
+
+def _signature(function: ast.FunctionDef) -> str:
+    names = [a.arg for a in function.args.args[1:]] + [
+        a.arg for a in function.args.kwonlyargs
+    ]
+    return ", ".join(names)
+
+
+def render_constructions(
+    declarations: list[CategoryDeclaration], root: Path, selected: list[str]
+) -> str:
+    """Each operation on the objects of a category that builds an object, and where the result is placed.
+
+    The route is followed through the source: a module function, a method of
+    the same object, a method of a category, an application of a category to
+    data, ``_object_of`` and ``_with_structure``.  The lines state what the
+    source places; whether that placement is the mathematics is for the
+    reader.  A subset of a finite set placed only in ``Sets/X`` reads as
+    wrong at sight, beside a subset placed in ``Sets.Finite`` when ``X`` is.
+    """
+    trees = {
+        path: ast.parse(path.read_text(encoding="utf-8"))
+        for path in sorted(root.rglob("*.py"))
+    }
+    factories = _factories(list(trees.values()))
+    module_functions: dict[str, list[tuple[ast.FunctionDef, Path]]] = {}
+    for path, tree in trees.items():
+        for statement in tree.body:
+            if isinstance(statement, ast.FunctionDef):
+                module_functions.setdefault(statement.name, []).append(
+                    (statement, path)
+                )
+    by_name = {d.name: d for d in declarations if not d.axiom_of and not d.nested_in}
+    classes = {name: _class_at(d)[0] for name, d in by_name.items()}
+    sites = {
+        site: (default, pairs)
+        for site, default, pairs in _construction_sites(root, factories)
+    }
+    above = _up_sets(declarations)
+    construction_axioms = _construction_axioms(
+        declarations,
+        {v.split(".")[1] for v in above if v.count(".") == 1 and "::" not in v},
+    )
+
+    def category_class(expression: ast.expr) -> str | None:
+        head = _head(ast.unparse(expression))
+        head = factories.get(head, head)
+        head = _head(head)
+        return head if head in classes else None
+
+    def class_method(name: str, method: str) -> ast.FunctionDef | None:
+        for statement in classes[name].body:
+            if isinstance(statement, ast.FunctionDef) and statement.name == method:
+                return statement
+        return None
+
+    def placed_by(expression: ast.expr) -> str:
+        r"""What applying the category ``expression`` places its result in, read from its class."""
+        match expression:
+            case ast.Call(func=ast.Attribute(value=owner, attr=method)) if (
+                name := category_class(owner)
+            ) and (found := class_method(name, method)):
+                returned = _returns(found)
+                if returned:
+                    return placed_by(returned[0])
+        name = category_class(expression)
+        if name is None:
+            return ast.unparse(expression)
+        d = by_name[name]
+        declared = ", ".join(s.expression for s in d.supercategories) or "nothing"
+        stated = f"{name}, which declares {declared}"
+        if name in construction_axioms:
+            axioms = construction_axioms[name]
+            stated += "; it places " + (
+                ", ".join(axioms)
+                if axioms
+                else "no property of its parameters or base object"
+            )
+        return stated
+
+    def trace(
+        function: ast.FunctionDef,
+        path: Path,
+        owner: str,
+        methods: dict[str, ast.FunctionDef],
+        depth: int,
+    ) -> list[str]:
+        site = f"{path}:{function.lineno} {function.name}"
+        if site in sites:
+            default, pairs = sites[site]
+            stated = "; ".join(
+                f"{result} when an input is in {source}" for source, result in pairs
+            )
+            return [
+                f"placed in {default if default and not default.isidentifier() else 'a category computed in the body'}"
+                + (
+                    f"; {stated}"
+                    if stated
+                    else "; no property of an input changes the placement"
+                )
+            ]
+        outcomes: list[str] = []
+        for value in _returns(function):
+            match value:
+                case ast.Call(
+                    func=ast.Attribute(attr="_with_structure"),
+                    args=[ast.Tuple(elts=elts), *_],
+                ):
+                    added = ", ".join(
+                        owner if ast.unparse(e) == "self" else ast.unparse(e)
+                        for e in elts
+                    )
+                    outcomes.append(
+                        f"the input object, placed also in {added}; no property of the input changes the placement"
+                    )
+                case (
+                    ast.Call(func=ast.Call() as category)
+                    | ast.Call(
+                        func=ast.Attribute(value=ast.Call() as category, attr="object")
+                    )
+                ) if category_class(category.func):
+                    outcomes.append(
+                        f"an object of {ast.unparse(category)}, that is of {placed_by(category)}"
+                    )
+                case ast.Call(func=ast.Name(id=name)) if (
+                    depth and len(module_functions.get(name, [])) == 1
+                ):
+                    callee, callee_path = module_functions[name][0]
+                    outcomes.extend(
+                        trace(callee, callee_path, owner, methods, depth - 1)
+                    )
+                case ast.Call(
+                    func=ast.Attribute(value=ast.Name(id="self"), attr=name)
+                ) if depth and name in methods:
+                    outcomes.extend(
+                        trace(methods[name], path, owner, methods, depth - 1)
+                    )
+                case ast.Call(func=ast.Attribute(value=receiver, attr=name)) if (
+                    depth
+                    and (cls := category_class(receiver))
+                    and (found := class_method(cls, name))
+                ):
+                    outcomes.extend(
+                        trace(found, Path(by_name[cls].path), cls, methods, depth - 1)
+                    )
+        return list(dict.fromkeys(outcomes))
+
+    lines = [
+        "Operations on the objects of each category that build an object, and the category the source places the result in.",
+        "",
+    ]
+    for d in sorted(by_name.values(), key=lambda d: d.name):
+        if selected and not any(fnmatchcase(d.name, p) for p in selected):
+            continue
+        node, _ = _class_at(d)
+        methods = _object_methods(node)
+        rows = []
+        for name, method in methods.items():
+            if name.startswith("_"):
+                continue
+            outcomes = trace(method, Path(d.path), d.name, methods, 4)
+            if outcomes:
+                rows.append(
+                    f"  X.{name}({_signature(method)})  ->  " + "  |  ".join(outcomes)
+                )
+        if rows:
+            kind = (
+                " (a construction on a category or an object)"
+                if d.name in construction_axioms
+                else ""
+            )
+            lines += [
+                f"## Objects X of {d.name}{kind}  ({d.path}:{d.line})",
+                "",
+                *rows,
+                "",
+            ]
+    return "\n".join(lines)
 
 
 def _default_root() -> Path:
@@ -1741,6 +1953,7 @@ def main() -> None:
             "topology",
             "routes",
             "properties",
+            "constructions",
         ),
         default="table",
     )
@@ -1800,6 +2013,11 @@ def main() -> None:
         return
     if arguments.format == "routes":
         print(render_routes(declarations, arguments.operation), end="")
+        return
+    if arguments.format == "constructions":
+        print(
+            render_constructions(declarations, arguments.root, arguments.select), end=""
+        )
         return
     if arguments.format == "properties":
         print(render_properties(declarations, arguments.root), end="")
