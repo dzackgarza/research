@@ -942,22 +942,39 @@ So `M_k(Gamma, chi)` is a subset of the hom `Mor(H, C)`, hence a
 subcategory of that hom-category. It is also a subobject of `Mor(H, C)`, with
 its inclusion, in topological `C`-modules.
 
-**Dependency path:** `H` as an open complex submanifold of `C` ->
-`ComplexManifolds().Mor(H, C)` with its `C`-module structure and topology ->
-the weight-`k` slash action of `SL_2(ZZ)` on that hom -> the subset cut out
-by `Gamma_0(N)`-invariance up to `chi` and the cusp conditions -> a basis of
+**Dependency path:** the field `C` of complex numbers -> `H` as an open
+complex submanifold of the complex line -> `ComplexManifolds().Mor(H, C)` as
+the ring `O(H)` of holomorphic functions, with its pointwise `C`-algebra
+structure and an element constructor for formulas in the chart coordinate ->
+holomorphic functions given by power series, and the composite with
+`q_h: H -> D*` that gives a `q`-expansion -> `O(H)` as a topological
+`C`-module, in a category of topological modules -> the weight-`k` slash
+action of `SL_2(ZZ)` on that hom -> the subset cut out by
+`Gamma_0(N)`-invariance up to `chi` and the cusp conditions -> a basis of
 the subset, with `q`-expansions at infinity -> the coordinates of the
 cuspidal component of `theta_L`.
 **Existing capability:** `ComplexManifolds` (`categories/manifolds.py`)
-presents `Mor(X, Y)` only for maps given by polynomials in selected charts,
-and presents only affine spaces as objects. No preamble object is the upper
-half-plane, and `Mor(H, C)` has no `C`-module structure, no slash action and
-no `q`-expansion. A search of `src/dzack_research/preamble` for
-`upper half`, `modular form`, `cusp` and `slash` found no presentation
-(2026-10-09). `Lattices.ParentMethods.theta_series_cuspidal_component`
-returns the component as a power series, without the space it lies in.
-Sage's `ModularForms(Gamma0(N), k, chi)` computes bases in integral weight,
-and `half_integral_weight_modform_basis` computes them in half-integral weight.
+presents affine spaces, discs and open submanifolds as objects, and its
+`Mor(X, Y)` constructs a map only through `ComplexManifoldMor.polynomial`,
+which raises `ValueError` for a formula that is not a polynomial in the chart
+coordinates, so `z -> exp(2 pi i z)` is refused. `Mor(X, C)` has no
+pointwise `C`-algebra structure, no slash action and no `q`-expansion, and
+the preamble presents no category of topological rings or modules. Observed
+on 2026-10-09 at `c7e0793f1e`, with the worktree source loaded:
+`ComplexManifolds` is not in the session namespace;
+`ComplexManifolds().affine_space(1, name="C", coordinate_names=("z",))`
+raises `AttributeError: 'Algebras' object has no attribute
+'subcategory_class'` from `Algebras.__init__`, reached through
+`_own_ring(SR)` in `_manifold_expression_ring`, so no complex manifold with a
+chart constructs; and the session `CC` is Sage's 53-bit MPFR field, in which
+`(CC(10)**16 + CC(1)) - CC(10)**16 == CC(1)` and
+`CC(2).sqrt()**2 == CC(2)` are `False`. A search of
+`src/dzack_research/preamble` for `upper half`, `modular form`, `cusp` and
+`slash` found no presentation (2026-10-09).
+`Lattices.ParentMethods.theta_series_cuspidal_component` returns the
+component as a power series, without the space it lies in. Sage's
+`ModularForms(Gamma0(N), k, chi)` computes bases in integral weight, and
+`half_integral_weight_modform_basis` computes them in half-integral weight.
 **Consumers:** the lattice-db field `definite.cusp_form_coordinates`, which is
 not requested until this space exists, and the cusp constant of
 `definite-representation-exceptions`.
@@ -965,17 +982,55 @@ not requested until this space exists, and the cusp constant of
 `FOUNDATIONS.md`, `FOUNDATIONAL_FRONTIER.md`, `TODO.md`) was searched for
 `modular form`, `ModularForm`, `SlashAction` and `Siegel`. It formalizes the
 theta series of a definite integral lattice (Definition 29b.1, `Theta.lean`)
-and nothing about modular forms. Mathlib was not inspected, because no local
-checkout and no corpus index was found.
+and nothing about modular forms. It uses Mathlib's classes
+`IsTopologicalRing` and `ContinuousSMul`
+(`LeanCategories/ForMathlib/AdicCompletionTopology.lean`) and presents no
+category of topological modules. Its gap `LC-12`
+(`LeanCategories/Analytic/LocalModel.lean`) records that it has no sheaf of
+holomorphic functions and no complex analytic space. Mathlib was not
+inspected, because no local checkout and no corpus index was found.
 **Request (not yet filed):** `lean-categories` formalizes
 `M_k(Gamma_0(N), chi)` and `S_k(Gamma_0(N), chi)`, in integral and
 half-integral weight, as subsets of the holomorphic functions on `H`. It
 also formalizes the statement that `theta_L` lies in
-`M_{n/2}(Gamma_0(N), chi)`. Sources: Miyake, *Modular Forms*, §2.1 and
+`M_{n/2}(Gamma_0(N), chi)`, and the category of topological `R`-modules
+over a topological ring `R`, with its forgetful functors to `R`-modules and
+to topological spaces. Sources: Miyake, *Modular Forms*, §2.1 and
 §4.3; Shimura, *On modular forms of half integral weight* (Ann. of Math. 97,
-1973); Iwaniec, *Topics in Classical Automorphic Forms*, Chapter 10.
-Repair: `modular-forms-and-hecke-algebras`, then
-`theta-cusp-form-coordinates`, in TODO.
+1973); Iwaniec, *Topics in Classical Automorphic Forms*, Chapter 10;
+Diamond–Shurman [DS05] §1.1 and §1.2 for the `q`-expansion.
+Repair: `exact-complex-field`, `manifold-function-rings`,
+`topological-rings-and-modules` and
+`holomorphic-functions-from-power-series`, then
+`modular-form-spaces-with-character`, `theta-cusp-form-coordinates` and
+`modular-forms-and-hecke-algebras`, in TODO.
+
+### The session's complex field rounds, and rounded fields are placed as fields
+
+The complex numbers form a field: a quadratic extension of the real numbers by
+a square root of `-1`. The session name `CC` is `_own_ring` of Sage's 53-bit
+MPFR complex field, whose arithmetic rounds. On 2026-10-09 at `c7e0793f1e`,
+`(CC(10)**16 + CC(1)) - CC(10)**16 == CC(1)` and `CC(2).sqrt()**2 == CC(2)`
+returned `False`, so addition in `CC` is not associative. `RR` is already the
+owned exact real field of `rings/real.py`, so the real and complex fields of
+one session disagree on what a number is.
+`_presented_ring_category` (`categories/rings/ring_foundation.py`) places
+every engine of the Sage classes `RealField`, `RealDoubleField`,
+`RealBallField`, `RealIntervalField`, `ComplexField`, `ComplexDoubleField`,
+`ComplexBallField` and `ComplexIntervalField` in
+`OwnedRings().Division().Commutative()`, a false placement for each of them.
+**Dependency path:** the exact real field `RR` -> its quadratic extension by
+`i` -> the topological field `CC` -> every `C`-module and `C`-algebra of the
+session, including the holomorphic functions on a complex manifold.
+**Existing capability:** `ExactRealField` (`rings/real.py`) represents a real
+number by a closed expression and decides relations through Arb balls.
+**Consumers:** `manifold-function-rings`, `topological-rings-and-modules` and,
+through them, `modular-form-spaces-with-character`; every session computation
+that writes `CC`, `CDF`, `RDF`, `RealField(prec)` or `ComplexField(prec)`.
+**Coverage boundary:** `rings/__init__.py`, `rings/real.py` and the
+placement cases of `_presented_ring_category` were inspected. The consumers
+of `CC` across the preamble were not enumerated.
+Repair: `exact-complex-field` in TODO.
 
 ### `lean-categories` does not formalize the representation density or Siegel's formula
 
