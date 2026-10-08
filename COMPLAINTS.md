@@ -62,6 +62,17 @@ Each node names the categories, defining data, arrows and comparison maps
 it must consume from the formal side before presenting them. K3
 automorphisms and the other K3 consumers inherit this chain.
 
+The computational consumer also requires complete generators and the inclusion
+of the Hodge-isometry subgroup in the lattice orthogonal group, followed by its
+discriminant action. The inspected `StabilizerSubgroups` in
+`categories/group/predicate_subgroups.py` retains an action and predicate;
+that alone does not compute this subgroup. The exact-period computation and
+its finite completeness bound are assigned to
+`hodge-isometry-subgroup-computation`, after the Hodge-category chain.
+The Torelli and Fourier–Mukai nodes depend explicitly on that output.
+Support for bounded enumeration with a real-algebraic Hodge metric remains
+an engine-capability question, not an asserted absence from maintained systems.
+
 ### K3 automorphism pullback lacks explicit chamber and Torelli consumers
 
 The cospan `P_S -> O(A_S) <- O_Hdg(T)` requires the actual ample-chamber
