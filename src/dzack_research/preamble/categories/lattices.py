@@ -4509,6 +4509,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ....:     assert period.inverse() * period == L.Isom(L).identity()
                 ....:     assert vectors.cardinality() == size
                 ....:     assert all(v.parent() is L and ZZ(0) < v.q() <= ZZ(4) for v in vectors)
+                sage: L = Lattices(ZZ)([[2, 0], [0, -6]])
+                sage: period, vectors = L.reduction_cycle(ZZ(4), L.basis_vector(0))
+                sage: labels = tuple(L.module_generating_set())
+                sage: tuple(tuple(int(period(v).to_vector()(label)) for label in labels) for v in L.module_generators())
+                ((2, 1), (3, 2))
+                sage: tuple(tuple(int(v.to_vector()(label)) for label in labels) for v in vectors)
+                ((2, 1),)
             """
             result = lattice_engines._binary_reduction_cycle(self, bound, start)
             if result is None:
