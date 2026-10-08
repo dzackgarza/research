@@ -49,6 +49,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
@@ -695,6 +696,130 @@ class LatticeIsometryMethods:
         return (restrict(self) * source.generic_fibre_map()).factor_through_or_none(
             target.generic_fibre_map()
         ) is not None
+
+    @cached_method
+    def witt_extension_locus(self, source_inclusion, target_inclusion):
+        r"""The full locus of ambient isometries extending this partial isometry."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        if source_inclusion.domain() is not self.domain() or target_inclusion.domain() is not self.codomain():
+            raise ValueError("the inclusions must start at the endpoints of the partial isometry")
+        source, target = source_inclusion.codomain(), target_inclusion.codomain()
+        maps = Modules(source.base_ring()).Mor(self.domain(), target)
+        isometries = source.Isom(target)
+        restriction = Sets().Mor(isometries, maps)(
+            lambda extension: Modules(source.base_ring()).Mor(source, target)(extension) * source_inclusion
+        )
+        prescribed = Modules(source.base_ring()).Mor(self.codomain(), target)(target_inclusion) * self
+        constant = Sets().Mor(isometries, maps)(lambda extension: prescribed)
+        return Sets().equalizer_construction(restriction, constant)
+
+    def witt_extension(self, source_inclusion, target_inclusion):
+        r"""Extend a codimension-one partial rational isometry when compatible with radicals.
+
+        The affine pairing fibre supplies the image of a complementary vector.
+        Its norm equation is linear for an isotropic normal, and quadratic
+        otherwise. A complementary ambient radical vector is handled as a
+        radical vector. This is the codimension-one Witt construction; the
+        isotropic norm correction is the one in sage-indefinite-port at
+        709f81a, ``CodimensionOneIsotropicExtension.rational_extension``.
+        The extension locus retains the square with the two given inclusions.
+        """
+        locus = self.witt_extension_locus(source_inclusion, target_inclusion)
+        source, target = source_inclusion.codomain(), target_inclusion.codomain()
+        field = source.base_ring()
+        if field is not _own_ring(SageQQ) or target.base_ring() is not field:
+            raise TypeError("this codimension-one extension requires rational quadratic spaces")
+        for inclusion in (source_inclusion, target_inclusion):
+            if inclusion.domain().module_rank() + 1 != inclusion.codomain().module_rank():
+                raise ValueError("the specified subspaces must have codimension one")
+        source_radical = source.metric_map().kernel()
+        target_radical = target.metric_map().kernel()
+        if source_radical.module_rank() != target_radical.module_rank():
+            raise ValueError("isometric ambient spaces must have radicals of equal dimension")
+        for partial, first, second, ambient in (
+            (self, source_inclusion, target_inclusion, target),
+            (self.inverse(), target_inclusion, source_inclusion, source),
+        ):
+            intersection = (first.codomain().metric_map() * first).kernel()
+            for vector in intersection.module_generators():
+                image = second(partial(intersection.inclusion()(vector)))
+                if ambient.metric_map()(image) != ambient.metric_map().codomain().zero():
+                    raise ValueError("the partial isometry does not identify the ambient radical intersections")
+
+        radical_complements = tuple(
+            source_radical.inclusion()(vector)
+            for vector in source_radical.module_generators()
+            if not source_inclusion.is_in_image(source_radical.inclusion()(vector))
+        )
+        if radical_complements:
+            source_vector = radical_complements[0]
+            target_vector = next(
+                target_radical.inclusion()(vector)
+                for vector in target_radical.module_generators()
+                if not target_inclusion.is_in_image(target_radical.inclusion()(vector))
+            )
+        else:
+            source_vector = next(
+                vector for vector in source.module_generators()
+                if not source_inclusion.is_in_image(vector)
+            )
+            scalars = field.regular_module()
+            functionals = Modules(field).Mor(self.domain(), scalars)
+            pairing = Modules(field).Mor(target, functionals)(
+                lambda label: functionals(
+                    lambda index: scalars(target.b(
+                        target.module_generator(label),
+                        target_inclusion(self(self.domain().module_generator(index))),
+                    ))
+                )
+            )
+            prescribed = functionals(
+                lambda label: scalars(source.b(
+                    source_vector, source_inclusion(self.domain().module_generator(label))
+                ))
+            )
+            target_vector = pairing.solution_fibre(prescribed).base_point()
+            perpendicular = pairing.kernel()
+            normal = next(
+                perpendicular.inclusion()(vector)
+                for vector in perpendicular.module_generators()
+                if not target_radical.inclusion().is_in_image(perpendicular.inclusion()(vector))
+            )
+            a = target.q(normal)
+            b = field(2) * target.b(target_vector, normal)
+            c = target.q(target_vector) - source.q(source_vector)
+            if a == field.zero():
+                if b == field.zero():
+                    if c != field.zero():
+                        raise ValueError("the complementary norm equation has no solution")
+                    parameters = (field.zero(), field.one())
+                else:
+                    parameters = (-c / b,)
+            else:
+                discriminant = b * b - field(4) * a * c
+                if not discriminant.is_square():
+                    raise ValueError("the complementary norm equation has no rational solution")
+                root = discriminant.sqrt()
+                parameters = ((-b + root) / (field(2) * a), (-b - root) / (field(2) * a))
+            candidates = tuple(target_vector + target.scalar_multiple(t, normal) for t in parameters)
+            target_vector = next(
+                (vector for vector in candidates if not target_inclusion.is_in_image(vector)), None
+            )
+            if target_vector is None:
+                raise ValueError("no norm-compatible complementary vector extends the partial isometry")
+
+        scalars = field.regular_module()
+        frame = Modules(field).biproduct((self.domain(), scalars))
+        source_map = frame.from_summands(
+            source_inclusion, Modules(field).Mor(scalars, source)(lambda label: source_vector)
+        )
+        target_map = frame.from_summands(
+            target_inclusion * self, Modules(field).Mor(scalars, target)(lambda label: target_vector)
+        )
+        extension = source.Isom(target)(target_map * source_map.section())
+        points = locus.object()
+        return points.inclusion()(points(extension))
 
     def integral_restriction(self, source, target):
         r"""Return the induced lattice isometry, or ``None`` if it is not integral.
