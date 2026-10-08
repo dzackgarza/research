@@ -115,6 +115,7 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeEmbeddingMor,
     LatticeMor,
     LatticeIsometryMor,
+    LatticeIsometryMethods,
     _lattice_embedding_mor,
     _lattice_mor,
     _lattice_isometry_mor,
@@ -3428,6 +3429,70 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
             return TwoUEichlerModel.from_represented_biproduct(self)
+
+        def two_hyperbolic_plane_splitting(self) -> LatticeIsometryMethods | None:
+            r"""Return a selected isometry ``U + U + K -> self``.
+
+            The source is the existing represented Eichler model. Its
+            complement and injections are retained by the biproduct. The
+            computation finds primitive isotropic vectors and splits off
+            their unimodular hyperbolic planes through orthogonal complements.
+            It applies when both selected vectors have divisibility one,
+            in particular to even unimodular lattices containing ``2U``.
+            A rationally anisotropic stage returns ``None``; a selected
+            vector of larger divisibility requires another integral search.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[0, 1, 1, 0], [1, 2, 1, 1], [1, 1, 0, 2], [0, 1, 2, 2]])
+                sage: splitting = L.two_hyperbolic_plane_splitting()
+                sage: splitting.codomain() is L
+                True
+                sage: splitting.inverse() * splitting == splitting.domain().Isom(splitting.domain()).one()
+                True
+            """
+            assert _engine_ring(self.base_ring()) is SageZZ and self.is_even(), (
+                f"the integral two-hyperbolic-plane splitting is computed for even ZZ-lattices, not {self}"
+            )
+            first = self.isotropic_vector_witness()
+            if first is None:
+                return None
+            assert first.div() == self.base_ring().one(), (
+                f"the selected isotropic vector {first} has divisibility {first.div()}; "
+                "splitting off U requires an isotropic vector of divisibility one"
+            )
+            first_partner = first.hyperbolic_partner()
+            perpendicular = self.subobject_on(
+                finite_ordered_set((first, first_partner))
+            ).orthogonal_complement()
+            second = perpendicular.isotropic_vector_witness()
+            if second is None:
+                return None
+            assert second.div() == self.base_ring().one(), (
+                f"the selected isotropic vector {second} has divisibility {second.div()}; "
+                "splitting off the second U requires an isotropic vector of divisibility one"
+            )
+            second_partner = second.hyperbolic_partner()
+            complement = perpendicular.subobject_on(
+                finite_ordered_set((second, second_partner))
+            ).orthogonal_complement()
+            normal = complement.two_u_eichler_model().lattice()
+            first_plane = normal.biproduct_factor(0)
+            second_plane = normal.biproduct_factor(1)
+            first_map = first_plane.Mor(self)(
+                lambda label: first if label == first_plane.module_generating_set()[0] else first_partner
+            )
+            second_map = second_plane.Mor(perpendicular)(
+                lambda label: second if label == second_plane.module_generating_set()[0] else second_partner
+            )
+            assembled = normal.from_coproduct_cocone((
+                first_map,
+                perpendicular.inclusion() * second_map,
+                perpendicular.inclusion() * complement.inclusion(),
+            ))
+            return normal.Isom(self)(
+                lambda label: assembled(normal.module_generator(label))
+            )
 
         def rational_polyhedral_cone(
             self,
