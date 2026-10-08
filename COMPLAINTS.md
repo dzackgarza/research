@@ -931,6 +931,24 @@ outside ranks 4 and 8.
 
 ## Workflow Papercuts
 
+### Formal power series and their rings print without their coefficients
+
+`QQ.power_series_ring("q")` prints as `Ring over Rational Field`, and each of
+its elements prints as `element of Ring over Rational Field`. The element text
+comes from the last branch of the element display in
+`categories/rings/ring_foundation.py`, which has no case for a power series.
+So `Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 16]]).genus().theta_series()`
+shows nothing of its value at a prompt. The coefficients are still available
+by index: the genus series begins `1, 2, 4, 0, 4, 8` (observed 2026-10-09).
+
+**Dependency path:** `FormalPowerSeriesRings(R)` -> its element type -> a
+display that states the truncated expansion `sum a_i q^i + O(q^n)` and the ring
+`R[[q]]`.
+**Consumer:** every theta series, genus theta series and cuspidal component
+shown in a session or a notebook.
+**Repair:** the element type of `FormalPowerSeriesRings` owns its display,
+instead of one more branch in the shared fallback.
+
 ### Finite cyclic subgroup membership is decided by enumerating powers
 
 `CyclicGroups.__contains__` in
