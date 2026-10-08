@@ -23,6 +23,8 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A defect that a check exposes in step 1 is the current unit: repair it at its owner before moving to the next check or row. A COMPLAINTS.md entry or a HANDOFF status line is the residue of that repair, committed with the code that makes it, never a commit on its own and never a substitute for the repair. File a TODO node instead only when the repair genuinely needs a prerequisite that is not yet built, and name that prerequisite.
 
+A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
+
 ## In progress
 
 The remaining unit is integration of the affine fibres, integral lift torsors, and generated orthogonal-group actions. The checkpoint includes shared-owner changes whose broader contracts still need review:
