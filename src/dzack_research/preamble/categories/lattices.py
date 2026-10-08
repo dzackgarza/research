@@ -4958,6 +4958,34 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return inclusion(restricted.preimage(generator))
             return pairing.preimage(generator)
 
+        def hyperbolic_partner_locus(self):
+            r"""Return the selected fibre of ``w |-> (b(self,w), q(w))``.
+
+            The prescribed value is ``(div(self), 0)``. The set equalizer
+            retains the two constraint maps and its universal inclusion
+            into the lattice. Its object contains every integral partner,
+            whether or not a point-finding algorithm is available.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[0, 2, 0], [2, 2, 0], [0, 0, -2]])
+                sage: e, f, a = tuple(L.module_generators())
+                sage: locus = e.hyperbolic_partner_locus()
+                sage: f + a in locus.object() and f not in locus.object()
+                True
+                sage: locus.object().inclusion()(locus.object()(f + a)) == f + a
+                True
+            """
+            lattice = self.parent()
+            ring = lattice.base_ring()
+            values = Sets().product((ring, ring))
+            constraints = Sets().Mor(lattice, values)(
+                lambda vector: values((self.b(vector), vector.q()))
+            )
+            prescribed = values((self.div(), ring.zero()))
+            constant = Sets().Mor(lattice, values)(lambda vector: prescribed)
+            return Sets().equalizer_construction(constraints, constant)
+
         def hyperbolic_partner(self) -> "Lattices.ElementMethods":
             r"""Return an integral isotropic partner with pairing ``self.div()``.
 
@@ -4965,7 +4993,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             The Bezout correction is integral when ``2*div(self)`` divides
             the square of the selected Bezout partner. This includes every
             primitive isotropic vector of divisibility one in an even lattice.
-            Other cases require solving the integral affine quadratic locus.
+            In rank two, failure of this divisibility condition proves that
+            the partner locus is empty and raises ``ValueError``. In higher
+            rank, it leaves the existence question open and raises
+            ``NotImplementedError``. The full locus remains represented by
+            :meth:`hyperbolic_partner_locus`.
 
             EXAMPLES::
 
@@ -4974,6 +5006,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: f = e.hyperbolic_partner()
                 sage: f.parent() is L and f.q() == ZZ(0) and e.b(f) == ZZ(1)
                 True
+                sage: Lattices(ZZ)([[0, 2], [2, 2]]).basis_vector(0).hyperbolic_partner()
+                Traceback (most recent call last):
+                ...
+                ValueError: the integral hyperbolic partner locus is empty
             """
             lattice = self.parent()
             ring = lattice.base_ring()
@@ -4986,11 +5022,17 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             partner = self.bezout_partner()
             correction, remainder = partner.q().quo_rem(ring(2) * divisibility)
-            assert remainder == ring.zero(), (
-                f"the Bezout partner of {self} has square {partner.q()}, which is not divisible by "
-                f"{ring(2) * divisibility}; solving its integral affine quadratic locus is required"
-            )
-            return partner - lattice.scalar_multiple(correction, self)
+            if remainder != ring.zero():
+                if lattice.module_rank() == 2:
+                    # In rank two, ker b(e,-) is Qe intersect L = Ze,
+                    # since e is primitive and b(e,-) is nonzero.
+                    raise ValueError("the integral hyperbolic partner locus is empty")
+                raise NotImplementedError(
+                    "finding a point in this integral quadratic locus requires more than the Bezout correction"
+                )
+            candidate = partner - lattice.scalar_multiple(correction, self)
+            locus = self.hyperbolic_partner_locus().object()
+            return locus.inclusion()(locus(candidate))
 
         def primitive_dual(self):
             r"""Return ``v/div(v)`` under the metric embedding ``L -> L^#``."""
