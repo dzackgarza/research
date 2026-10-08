@@ -403,12 +403,58 @@ class FormEmbedding:
         value_morphism,
         *,
         quadratic: bool | None = None,
+        denominator_clearing=None,
     ) -> None:
         super().__init__(parent, module_morphism, value_morphism)
         if quadratic is None:
             domain = parent.domain()
             quadratic = domain in QuadraticFormModules(domain.base_ring())
         self._quadratic = bool(quadratic)
+        self._denominator_clearing = denominator_clearing
+
+    def scale(self):
+        r"""The least positive denominator factor of a retained rational isometry."""
+        if self._denominator_clearing is None:
+            raise ValueError("this embedding has no denominator-clearing construction")
+        return self._denominator_clearing[2]
+
+    def rational_isometry(self):
+        r"""The rational isometry from which this integral similarity was obtained."""
+        if self._denominator_clearing is None:
+            raise ValueError("this embedding has no denominator-clearing construction")
+        return self._denominator_clearing[0]
+
+    def clearing_ideal(self):
+        if self._denominator_clearing is None:
+            raise ValueError("this embedding has no denominator-clearing construction")
+        return self._denominator_clearing[1]
+
+    def multiplier(self):
+        r"""The scalar multiplying the form, distinct from a denominator factor."""
+        ring = self.domain().base_ring()
+        if self.domain().value_module() is not ring or self.codomain().value_module() is not ring:
+            raise TypeError("a scalar multiplier requires forms valued in their common scalar ring")
+        return self.map_value(ring.one())
+
+    @validator
+    def validate_denominator_clearing(self):
+        r"""Check the retained normalization and its defining scalar-extension equation."""
+        if self._denominator_clearing is None:
+            return
+        rational, ideal, scale = self._denominator_clearing
+        source, target = self.domain(), self.codomain()
+        ring = source.base_ring()
+        if scale <= ring.zero() or ideal != rational.denominator_ideal(source, target):
+            raise ValueError("the retained ideal must be the denominator ideal of the rational map")
+        if ring.ideal(scale) != ideal or self.multiplier() != scale * scale:
+            raise ValueError("the clearing factor must generate the denominator ideal and square to the multiplier")
+        fraction_map = ring.fraction_field_map()
+        restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
+        extended = restrict(rational) * source.generic_fibre_map()
+        integral = target.generic_fibre_map()
+        for vector in source.module_generators():
+            if integral(self(vector)) != extended.codomain().scalar_multiple(scale, extended(vector)):
+                raise ValueError("the embedding must equal the clearing factor times its retained rational map")
 
     def is_quadratic(self) -> bool:
         return self._quadratic
@@ -502,7 +548,7 @@ class FormEmbeddingMor(CategoricalMor):
             )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
-    def _element_constructor_(self, images, *, quadratic: bool | None = None, check=False):
+    def _element_constructor_(self, images, *, quadratic: bool | None = None, value_morphism=None, denominator_clearing=None, check=False):
         domain = self.domain()
         codomain = self.codomain()
         if isinstance(images, FormEmbedding):
@@ -513,6 +559,10 @@ class FormEmbeddingMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
+            if value_morphism is None:
+                value_morphism = images.value_morphism()
+            if denominator_clearing is None:
+                denominator_clearing = images._denominator_clearing
             images = domain.module_category().Mor(domain, codomain)(images)
 
         if quadratic is None:
@@ -525,14 +575,18 @@ class FormEmbeddingMor(CategoricalMor):
                 f"but they take values in {values} and {_represented_value_module(codomain)}"
             )
         module_morphism = domain.module_category().Mor(domain, codomain)(images)
+        if value_morphism is None:
+            value_morphism = values.module_category().Mor(values, values).identity()
         embedding = self.element_class(
             self,
             module_morphism,
-            values.module_category().Mor(values, values).identity(),
+            value_morphism,
             quadratic=quadratic,
+            denominator_clearing=denominator_clearing,
         )
         embedding.validate_form_preservation(check=check)
         embedding.validate_injectivity(check=check)
+        embedding.validate_denominator_clearing(check=check)
         return embedding
 
     def super_categories(self):

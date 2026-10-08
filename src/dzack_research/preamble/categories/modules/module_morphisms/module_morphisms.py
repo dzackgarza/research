@@ -1223,6 +1223,40 @@ class ModuleMorphismMethods:
             self, zero.inclusion(), -values(right_hand_side)
         )
 
+    def denominator_ideal(self, source, target):
+        r"""Return ``{a in ZZ : a*self(source) subset target}``.
+
+        The endpoints are the chosen rational extensions of finite free
+        integral modules. In integral bases, a scalar clears the map exactly
+        when it clears every matrix entry. Thus this basis-independent ideal
+        is the intersection of the principal denominator ideals, computed
+        by the ring's lcm. This is the usual localization description of
+        ``Hom_ZZ(source,target)`` inside its rational scalar extension.
+        """
+        from sage.rings.integer_ring import ZZ as SageZZ
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        ring = source.base_ring()
+        if ring is not _own_ring(SageZZ) or target.base_ring() is not ring:
+            raise TypeError("the normalized denominator ideal requires integral modules over ZZ")
+        field_map = ring.fraction_field_map()
+        if self.domain() is not source.base_change(field_map) or self.codomain() is not target.base_change(field_map):
+            raise ValueError("the rational map must join the chosen generic fibres")
+        if not _has_finite_free_framing(source) or not _has_finite_free_framing(target):
+            raise NotImplementedError("denominator-ideal computation requires finite integral bases")
+        restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
+        integral_coordinates = target.finite_free_trivialization().forward()
+        rational_coordinates = integral_coordinates.base_change(field_map)
+        restricted = restrict(rational_coordinates * self) * source.generic_fibre_map()
+        framing = rational_coordinates.codomain().framing_morphism()
+        denominator = ring.one()
+        for vector in source.module_generators():
+            coordinates = framing.lift(restricted(vector).underlying_element())
+            for label in coordinates.support().domain():
+                denominator = denominator.lcm(coordinates(label).denominator())
+        return ring.ideal(denominator)
+
     def affine_inverse_image(self, target_inclusion, offset=None):
         r"""Return all parameters ``p`` with ``offset+self(p)`` in the target submodule.
 

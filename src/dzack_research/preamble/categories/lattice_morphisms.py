@@ -722,6 +722,39 @@ class LatticeIsometryMethods:
         homset = source.Isom(target)
         return homset.element_class(homset, module_isomorphism)
 
+    def integral_similarity(self, source, target):
+        r"""Clear the least integral denominator, retaining ``sigma=N*self``.
+
+        The result is a formed module embedding from source to target with
+        form multiplier ``N^2``. Its ``scale()`` is ``N`` and its image
+        is the integral image submodule, which may have nontrivial index.
+        For ``diag(2,1/2)`` on U, these are 2, 4, and index 4 respectively.
+        """
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+
+        ideal = self.denominator_ideal(source, target)
+        (scale,) = tuple(ideal.ideal_generators())
+        ring = source.base_ring()
+        field_map = ring.fraction_field_map()
+        restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
+        rational = restrict(self) * source.generic_fibre_map()
+        scaled = Modules(ring).Mor(source, rational.codomain())(
+            lambda label: rational.codomain().scalar_multiple(
+                scale, rational(source.module_generator(label))
+            )
+        )
+        integral = scaled.factor_through_or_none(target.generic_fibre_map())
+        if integral is None:
+            raise ArithmeticError("the denominator ideal failed to clear the rational map")
+        values = ring.regular_module()
+        value_map = Modules(ring).Mor(values, values)(
+            lambda label: values.scalar_multiple(scale * scale, values.module_generator(label))
+        )
+        return FormModules(ring).Mono(source, target)(
+            integral, value_morphism=value_map,
+            denominator_clearing=(self, ideal, scale),
+        )
+
     def inverse(self):
         r"""Return the inverse isometry."""
         codomain = self.codomain()
