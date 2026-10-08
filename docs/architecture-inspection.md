@@ -10,7 +10,7 @@ Start with the mathematical construction and the maps it must retain. Inspect it
 | --- | --- | --- |
 | What ancestry does the source declare? | `just category-graph table`, `json`, or `slice` | Python declarations and computed axiom edges; conditional returns are a union, and dynamic expressions still need review |
 | Where can an inherited operation be examined? | `just placement` | Introduced object, element and arrow methods, their definitions and candidate upper categories from a saved live survey |
-| Which categories inherit an operation that answers nowhere on them? | `just category-graph routes`, `--operation NAME` | For each object operation whose body ends in an assertion about the object, every category below its owner, and the constructions on a parameter category, where no hook definition, override or membership branch of that body applies; read from source, so a realization class routes only the objects it constructs, and the classes it lists are leads |
+| Where do objects reach an operation's fallback assertion? | `just category-graph routes`, `--operation NAME` | For each object operation whose definition ends in a case/match fallback assertion: where it is defined and overridden, and the topmost categories with no override, hook definition or case of the definition above them; read from source, so a realization class answers only for the objects it constructs |
 | Where are constructions entered and delegated? | `just refactor-survey --view constructors` | Constructor hooks, lexical owners, arguments, return expressions and calls; public named factories can be queried separately |
 | Who calls a method, and on what receiver? | `just refactor-survey METHOD` | Source locations, caller, receiver expression and use of the return value; attribute calls are not statically resolved dispatch |
 | Where is private data reached through another expression? | `just refactor-survey --view private` | Private attribute accesses on receivers other than `self`, `cls` and `super()`; the declaration-side protected contract decides legitimacy |
@@ -23,13 +23,13 @@ Source tables, source slices, source surveys, Ctags, and saved-survey queries ru
 
 All source surveys identify their population as Python source. They do not preparse `.sage` files. Parser failures name the file and stop the report. Decorators, generated classes, dynamic imports and receiver-dependent dispatch require declaration or runtime inspection; a call-site match is a lead, not a proved call-graph edge.
 
-## Find the categories on which an inherited operation does not answer
+## Find where objects reach an operation's fallback assertion
 
 ```sh
 just category-graph routes --operation cardinality
 ```
 
-An operation is placed where it is defined; whether it answers on the objects of each category below is a separate fact. `Sets().cardinality` answers through the `_cardinality_decision` hook and through branches on membership, and otherwise ends in its assertion. The view lists each category that inherits it with none of these in its up-set, `SliceCategory` and `SetSubobjectCategory` among them, then the routed categories with the route each takes. Without `--operation`, the view ranks every asserting operation by the number of such categories. The live survey does not construct the categories that take two parameters, such as slices and subobject categories, so `just placement` does not show them.
+`Sets().cardinality` answers for the objects its cases cover: power sets, function sets, products, coproducts, finite and countably infinite sets, and whatever the `_cardinality_decision` hook decides. Every other object reaches its fallback assertion unless a category above it overrides `cardinality`, for instance by applying a functor to sets and asking the result. The view names those overrides, then the topmost categories whose objects still reach the fallback, with the number of categories below each; one override at such a category covers everything below it. For `cardinality` the list includes `AdditiveMagmas`, `Magmas`, `SliceCategory` and `SubobjectCategory`. Without `--operation`, the view ranks every such operation by the number of topmost categories. The live survey does not construct the categories that take two parameters, such as slices and subobject categories, so `just placement` does not show them.
 
 ## Follow a construction through its general owners
 

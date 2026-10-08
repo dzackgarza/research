@@ -1057,36 +1057,48 @@ def render_routes(declarations: list[CategoryDeclaration], operations: list[str]
                 continue
             supplies = {name, *dispatch.hooks}
             inheritors = sorted(v for v in above if owner in above[v]) + sorted(v for v in on_parameter if owner not in above[v] and v != owner)
-            rows: list[tuple[str, str]] = []
+            routes: dict[str, str] = {}
             for vertex in inheritors:
                 reach = above[vertex] | {vertex}
                 providers = sorted(
                     w for w in reach if w != owner and w in by_vertex and supplies & set(by_vertex[w].object_methods) and (owner in above[w] or w in on_parameter)
                 )
                 taken = [" and ".join(sorted(members)) + (" (with a further condition)" if conditional else "") for members, conditional in dispatch.branches if members <= reach]
-                route = "; ".join([*(f"defined at {w}" for w in providers), *(f"branch on {t}" for t in taken)])
-                construction = "  [a construction on its parameter category]" if vertex in on_parameter else ""
-                rows.append((vertex + construction, route))
-            unrouted = [vertex for vertex, route in rows if not route]
+                routes[vertex] = "; ".join([*(f"defined at {w}" for w in providers), *(f"branch on {t}" for t in taken)])
+            fallback = {vertex for vertex, route in routes.items() if not route}
+            topmost = sorted(vertex for vertex in fallback if not (above[vertex] & fallback))
+            definitions = sorted({w for vertex in inheritors for w in [vertex] if w in by_vertex and supplies & set(by_vertex[w].object_methods)})
             lines = [
-                f"## {name}, introduced by {owner} ({dispatch.source})",
+                f"## {name}, defined at {owner} ({dispatch.source})",
                 "",
-                "abstract: every inheriting category must define it" if dispatch.abstract else f"hooks: {', '.join(dispatch.hooks) or 'none'}",
-                f"branches: {'; '.join(dict.fromkeys(' and '.join(sorted(m)) for m, _ in dispatch.branches)) or 'none'}",
+                "abstract: every inheriting category must define it" if dispatch.abstract else f"its hooks: {', '.join(dispatch.hooks) or 'none'}",
+                f"its branches: {'; '.join(dict.fromkeys(' and '.join(sorted(m)) for m, _ in dispatch.branches)) or 'none'}",
+                f"categories below it that define {name} or a hook: {', '.join(definitions) or 'none'}",
             ]
             hooked = sorted({entry for hook in supplies for entry in realizations.get(hook, [])})
             if hooked:
-                lines += [f"realization classes defining {name} or a hook, routing only the objects they construct:", *(f"  {entry}" for entry in hooked)]
-            lines += ["", f"### Inherit {name} with no route ({len(unrouted)} of {len(rows)})", ""]
-            lines += unrouted or ["none"]
+                lines += [f"realization classes defining {name} or a hook, for the objects they construct:", *(f"  {entry}" for entry in hooked)]
+            lines += [
+                "",
+                f"### Topmost categories whose objects reach the fallback assertion ({len(topmost)})",
+                "",
+                "An override or a functor to an answering category at one of these covers the categories below it.",
+                "",
+            ]
+            lines += [
+                f"{vertex}{'  [a construction on its parameter category]' if vertex in on_parameter else ''}"
+                f"  ({sum(1 for other in fallback if vertex in above[other])} below it also reach it)"
+                for vertex in topmost
+            ] or ["none"]
             if operations:
-                lines += ["", f"### Routed ({len(rows) - len(unrouted)})", ""]
-                lines += [f"{vertex}  <- {route}" for vertex, route in rows if route] or ["none"]
-            reports.append((len(unrouted), lines))
+                lines += ["", f"### Categories answered, and how ({len(routes) - len(fallback)})", ""]
+                lines += [f"{vertex}  <- {route}" for vertex, route in sorted(routes.items()) if route] or ["none"]
+            reports.append((len(topmost), lines))
     header = [
-        "Object operations and the categories that inherit them, read from source.",
-        "Each section lists first the inheriting categories where no hook,",
-        "override or membership branch of the operation applies.",
+        "Object operations whose definition ends in a fallback assertion, read from source.",
+        "Each section names where the operation is defined and overridden, then the",
+        "topmost categories whose objects reach that fallback: no override, hook",
+        "definition or case of the definition applies anywhere above them.",
         "",
     ]
     body = [line for _, lines in sorted(reports, key=lambda r: -r[0]) for line in [*lines, ""]]
