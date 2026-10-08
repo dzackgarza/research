@@ -27,10 +27,10 @@ The remaining unit is integration of the affine fibres, integral lift torsors, a
 
 | Owner | Check still needed |
 | --- | --- |
-| `categories/group/groups.py` | Check the GroupExp facade's element conversion and the generated-subgroup membership protocol on each supported group realization. |
+| `categories/group/groups.py` | **GroupExp targeted checks passed:** on the regular ZZ-module, the additive/multiplicative identification has inverse, preserves addition as multiplication and sends zero to the identity; on the regular module over `ZZ/(2)`, the inverse and order-two generator relation hold. Generated-subgroup membership on other group realizations still needs review. |
 | `categories/modules/framed/formed/torsion_form_modules.py` | Exercise generated finite orthogonal-subgroup membership after the protocol change. |
 | `categories/modules/framed/finitely_generated/finitely_presented_modules.py` | Check the new finiteness decision outside the PID regime: cardinality computation currently requires a PID. Preserve an unresolved decision where no computation is represented. |
-| `categories/abstract_categories/products.py` | Review retention of parallel-pair diagrams by arrow identity against the universal-construction contract. |
+| `categories/abstract_categories/products.py` | **Targeted checks passed:** the diagram of two distinct but extensionally equal `Sets().Mor(X,Y)` maps retains the exact left and right arrow objects, repeat construction reuses the diagram, and reversing the arrows gives a distinct diagram with the reversed images. The construction is keyed by arrow identity, as the retained universal diagram contract requires. |
 | `categories/lattice_engines.py` | **Targeted check passed:** for Gram `diag(2,-4)`, bound 2 and primitive positive start `e`, the period map sends `e -> 3e+2f`, `f -> 4e+3f`, is invertible and preserves the form; the one-vector cycle is bounded. Zero/negative bounds return `None`, and nonprimitive/negative-square starts raise `ValueError`. The implementation was compared with `edgewalk_rank2.py` at frozen port commit `709f81a` (companion, promised step, shorter pair, reduction and period). Broader comparison of reduction-cycle specimens and the proof of the iteration contract remain open. |
 
 These paths are relative to `src/dzack_research/preamble/`. Continue at these owners; the lattice consumer must not acquire duplicate implementations.

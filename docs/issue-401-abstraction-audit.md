@@ -227,7 +227,7 @@ The issue's instruction to supply public operations does not authorize exporting
 
 ## Disposition of the code already added
 
-The source now composes the owners described below. These changes remain unexecuted under DEV-58 while the M1 source prerequisites are open; they do not establish correctness acceptance.
+The source now composes the owners described below. Targeted issue-401 engineering specimens have since executed as authorized in `HANDOFF.md`; the remaining source obligations are not thereby discharged, and no run constitutes independent correctness acceptance.
 
 | Added surface | Required architectural disposition |
 | --- | --- |
@@ -252,7 +252,7 @@ The source now composes the owners described below. These changes remain unexecu
 
 ## Unresolved formal and contract work
 
-The source rework above is committed. Python parsing, undefined-name checks on the affected owners, and whitespace checks pass. These are engineering checks. No mathematical specimen or preamble runtime was executed during this source phase. The M1 prerequisites and DEV-58 still govern execution, and correctness acceptance belongs to `lean-cas-dsl`.
+The source rework above is committed. Python parsing, undefined-name checks on the affected owners, and whitespace checks were engineering checks. Subsequent targeted Sage execution verified the integral reduction-lift parameter/inverse and full integral-kernel membership on `U+<2>`, the invariant-overlattice obstruction for `diag(2,1/2)` on U, signed witnesses and the primitive null family of U, a nonzero affine-line torsor action, the integral 2-by-2 matrix symmetrization fibre and its skew translation action, similarity factor/multiplier/index `(2,4,4)`, finite orthogonal-subgroup membership on the `U(2)` discriminant form, and the period map of a binary anisotropic form with Gram `diag(2,-4)`. The exact checks and remaining contracts are recorded in `HANDOFF.md`. These are engineering checks, not independent correctness evidence. The M1 prerequisites and DEV-58 govern broad verification; correctness acceptance belongs to `lean-cas-dsl`.
 
 The listed frozen source operations and the finite-rank point-selection constructions now have implementations. Their integrated execution, port contract reconciliation, and independent acceptance remain open. Infinite-rank quadratic point selection and orbit spans without a finite-generation hypothesis are outside the finite realizations stated above.
 
@@ -273,7 +273,7 @@ Formal availability remains unresolved where stated; the inspected declarations 
 
 ## Separating mathematical specimens for the remaining execution phase
 
-These are deductions from the displayed forms and inclusions. They are unexecuted source specimens, not correctness acceptance results.
+These are deductions from the displayed forms and inclusions. Some neighboring and directly matching specimens have been executed as described above and in `HANDOFF.md`; other rows remain unexecuted. None is an independent correctness acceptance result.
 
 | Construction | Mathematical specimen |
 | --- | --- |
