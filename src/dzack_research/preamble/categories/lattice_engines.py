@@ -3,6 +3,7 @@ r"""Private exact computational realizations for owned lattice constructions."""
 from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.matrix.matrix0 import Matrix
+from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.qfsolve import qfsolve
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer import Integer as SageInteger
@@ -135,6 +136,30 @@ def _isotropic_vector_witness(lattice):
     if isinstance(solution, Matrix):
         solution = solution.column(0)
     return _raise_rational_lattice_vector(lattice, solution)
+
+
+def _binary_special_orthogonal_representatives(lattice, square):
+    r"""Raise PARI representatives for a nonsplit indefinite binary form.
+
+    PARI ``qfbsolve`` flag 3 includes imprimitive solutions and returns
+    every class modulo the integral special orthogonal group:
+    https://pari.math.u-bordeaux.fr/dochtml/html-stable/Arithmetic_functions.html#qfbsolve
+    """
+    ring = lattice.base_ring()
+    if _engine_ring(ring) is not SageZZ or lattice.module_rank() != 2:
+        raise ValueError("binary representation classes require a rank-two ZZ-lattice")
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    form = BinaryQF((gram[0, 0], 2 * gram[0, 1], gram[1, 1]))
+    discriminant = form.discriminant()
+    if discriminant <= 0 or discriminant.is_square():
+        raise ValueError("this binary representation computation requires positive nonsquare discriminant")
+    if not square:
+        return (lattice.zero(),)
+    labels = tuple(lattice.module_generating_set())
+    return tuple(
+        lattice.linear_combination({label: ring(coordinate) for label, coordinate in zip(labels, solution, strict=True)})
+        for solution in form.solve_integer(SageZZ(int(square)), _flag=3)
+    )
 
 
 def _integer_engine_matrix(value):

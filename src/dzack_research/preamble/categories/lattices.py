@@ -4012,6 +4012,45 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _definite_complement_extensions(self, left, right)
 
+        def binary_fixed_norm_representatives(self, square):
+            r"""Return representatives modulo ``O(self)`` for a nonsplit binary form.
+
+            The lattice must be indefinite of rank two over ``ZZ``, with
+            nonsquare form discriminant. PARI enumerates all integral
+            representations, including imprimitive ones, modulo ``SO(self)``.
+            The rank-one perpendicular extension decides which classes merge
+            under ``O(self)``. The returned finite set contains lattice vectors.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[1, 0], [0, -2]])
+                sage: representatives = L.binary_fixed_norm_representatives(1)
+                sage: representatives.cardinality() == NN(1)
+                True
+                sage: all(v.q() == ZZ(1) for v in representatives)
+                True
+                sage: L.binary_fixed_norm_representatives(3).cardinality() == NN(0)
+                True
+                sage: tuple(L.binary_fixed_norm_representatives(0)) == (L.zero(),)
+                True
+            """
+            square = self.base_ring()(square)
+            candidates = lattice_engines._binary_special_orthogonal_representatives(self, square)
+            if not square:
+                return finite_ordered_set(candidates)
+            representatives = []
+            for candidate in candidates:
+                content = candidate.content()
+                primitive = candidate.primitive_part()
+                if any(
+                    representative.content() == content
+                    and self.definite_complement_extensions(primitive, representative.primitive_part())
+                    for representative in representatives
+                ):
+                    continue
+                representatives.append(candidate)
+            return finite_ordered_set(representatives)
+
         def gluing_route_discriminant_classes(self, left, right):
             r"""Return admissible ``O(A_L)`` classes from the primitive-extension gluing route."""
 
