@@ -227,18 +227,18 @@ The issue's instruction to supply public operations does not authorize exporting
 
 ## Disposition of the code already added
 
-No implementation is accepted merely because it computes a useful specimen. The following changes remain committed; this audit neither rewrites them nor treats them as the definition of the requested objects.
+The source now composes the owners described below. These changes remain unexecuted under DEV-58 while the M1 source prerequisites are open; they do not establish correctness acceptance.
 
 | Added surface | Required architectural disposition |
 | --- | --- |
-| `content`, `primitive_part` in `framed_free_modules.py` | Establish the intrinsic order-ideal owner and its coordinate comparison; retain the integer normalization as a specialization. |
-| `bezout_partner` and the rational Witt edit | Route through the functional image fibre; avoid a separate lattice-owned elimination implementation. |
-| `isotropic_vector_witness` and signed witnesses | Preserve the zero/signed loci, scalar-extension relation, and frozen witness contracts. Backend rank/ring limits remain realization limits. |
-| `hyperbolic_partner` | Preserve the quadratic fibre and existence conditions; the correction of one Bezout lift is not a general solver. |
-| `two_hyperbolic_plane_splitting` | Build through the reduction-owned one-plane split and general chosen orthogonal decomposition, not an Eichler-model-specific constructor. |
-| `first_close_vectors`, `affine_close_vectors` | Use the common signed shell family and its sphere fibres; supply the amended names, multiplier bound, and `None` result. |
+| `content`, `primitive_part` | Module elements define the evaluation-image order ideal. Free integral module elements take its nonnegative generator as content. Framed free modules compute that ideal from finite-support coordinates. The general primitive-part operation lifts through scalar multiplication; the framed realization divides coordinates. Formal comparison and acceptance remain. |
+| `bezout_partner` and the rational Witt edit | The pairing covector lifts its image generator through the general module-map `preimage`; infinite rank uses the finite pairing support. Full affine fibres and their actions remain required. |
+| `isotropic_vector` and signed witnesses | The frozen isotropic-vector name raises for an empty locus. Symmetric bilinear formed modules own `vector_of_sign`; positive and negative requests consume it and retain the submodule parent. Backend rank/ring limits remain realization limits. |
+| `hyperbolic_partner` | The general set equalizer represents the complete partner locus with its constraint maps and inclusion. The correction returns a point through this locus. Failed correction proves emptiness in primitive rank two; in higher rank it reports unsupported point finding. The general integral quadratic solver remains required. |
+| `integral_hyperbolic_splitting`, `two_hyperbolic_plane_splitting` | The isotropic reduction supplies `L -> U + (I^perp/I)` by its orthogonal quotient section and the shared chosen orthogonal decomposition. The two-plane operation composes two reduction splittings and the orthogonal biproduct. Acceptance and formal comparison maps remain. |
+| `first_close_vector_shell`, `first_close_vector_sphere` | Both use one exact signed CVP search and retain the supplied multiplier bound, complete finite subset with inclusion, and `None` for an empty bounded search. The shell-family formal comparison and acceptance remain. |
 | Restricted-scalar `subobject_on` | Treat the fractional PID span as a realization of the same generated-submodule construction with inclusion; it is only the finite lattice part of an affine inverse image. |
-| `extend_from_perpendicular`, `integral_restriction`, and definite-complement refactor | Use orthogonal decomposition and general integral factorization; reconcile frozen names, endpoints, and failure semantics. |
+| `extension_across`, `integral_restriction`, `integral_isometry`, `is_integral_on` | Perpendicular extension transports the direct sum of the line map and the given perpendicular map through chosen orthogonal decompositions. Integral descent factors both directions through generic-fibre inclusions after restriction of scalars. `integral_isometry` raises on failed descent; distinct rational endpoints require an explicit source integral structure. Retaining that structure through arbitrary scalar extension remains required for the one-argument constructor in that case. |
 | `symmetrized_right_multiplication` | Keep the displayed based operator subordinate to general linear-map fibres and integral inverse images. It does not complete the solution-space item. |
 | `binary_fixed_norm_representatives` | Supply the norm-fibre action and quotient/representative data; cover the stated binary regimes without changing the shell's meaning. |
 | Local port branch `research-401-primitives` | Preserve its commits without further edits or integration. The live migration procedure says the port side already targets the frozen API; research must implement that contract. |
