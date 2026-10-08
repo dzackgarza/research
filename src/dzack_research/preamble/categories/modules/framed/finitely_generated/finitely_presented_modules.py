@@ -1228,7 +1228,20 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return ring.cardinality() ** self.module_rank() * prod(cyclic_orders, Cardinalities().one())
 
         def _finiteness_decision(self):
-            return self.cardinality().is_finite()
+            r"""Use finite generation over finite rings or PID invariant factors.
+
+            A quotient of a finite-rank free module over a finite ring is
+            finite.  Without a finite base or a PID decomposition, the
+            selected presentation does not supply a finiteness decision.
+            """
+            ring = self.base_ring()
+            match ring.is_finite():
+                case True:
+                    return True
+                case _ if ring in PrincipalIdealDomains() or ring in OwnedFields():
+                    return self.cardinality().is_finite()
+                case _:
+                    return AtomicProposition("is_finite", self)
 
         @cached_method
         def invariant_factor_presentation(self):
