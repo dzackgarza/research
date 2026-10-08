@@ -837,10 +837,15 @@ class LatticeIsometryMethods:
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
         source_inclusion = source.generic_fibre_map()
         target_inclusion = target.generic_fibre_map()
-        forward = (restrict(self) * source_inclusion).factor_through_or_none(target_inclusion)
+        rational_source = self.domain()
+        rational_target = self.codomain()
+        linear = rational_source.module_category().Mor(rational_source, rational_target)(self)
+        forward = (restrict(linear) * source_inclusion).factor_through_or_none(target_inclusion)
         if forward is None:
             return None
-        backward = (restrict(self.inverse()) * target_inclusion).factor_through_or_none(source_inclusion)
+        inverse = self.inverse()
+        inverse_linear = rational_target.module_category().Mor(rational_target, rational_source)(inverse)
+        backward = (restrict(inverse_linear) * target_inclusion).factor_through_or_none(source_inclusion)
         if backward is None:
             return None
         module_isomorphism = Modules(ring).Core().Mor(source, target)(forward, backward)
