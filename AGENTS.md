@@ -1716,6 +1716,8 @@ just category-graph foreign             # owned categories declaring a Sage cate
 just category-graph shape               # breadth, depth, shortcut declarations
 just category-graph cells               # homology, and the cycles owing a 2-cell
 just category-graph-svg                 # the literal graph, rendered
+just category-graph constructions       # each construction on objects, and where its result is placed
+just category-graph routes              # where objects reach an operation's fallback assertion
 ```
 
 The `by-supercategory` view is the audit surface: a large group under one
@@ -1726,6 +1728,20 @@ than the single row it adds. `just category-graph audit` reports what needs no
 reading of the objects: a name declared as a supercategory and defined nowhere,
 a declaration computed from a local expression so the edge is not stated at
 all, a category declaring its own name, and cycles.
+
+`just category-graph constructions` is the audit surface for placement of
+results. For each category it lists every operation on its objects that builds
+an object, with the category the source places the result in and the property
+of an input that changes that placement. Each line is a statement a
+mathematician reads and rejects on sight when it is wrong: under `PowerSets`,
+`X.from_predicate(predicate)` is an object of a slice category that places no
+property of its base object, so a subset of a finite set is not placed finite.
+The view does not decide which placement is correct; the reader does, and needs
+no prior knowledge of a defect to see one. Run it with `--select CATEGORY` after
+any change to a construction, and read every line of the categories the change
+touches. `just category-graph routes --operation NAME` then shows which
+categories' objects reach the fallback assertion of an operation such as
+`cardinality`. `docs/architecture-inspection.md` gives the full list of views.
 
 The live survey (`just preamble-megadoc`) answers a different question -- what a
 session *does* -- and its `supers` field is empty for parameterized categories,
