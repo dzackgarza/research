@@ -1,6 +1,10 @@
 r"""Discriminant modules and their quotient-valued forms."""
 
+from math import lcm, prod
+
+import numpy
 from sage.categories.category import Category
+from sage.rings.integer import Integer
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 
@@ -25,6 +29,7 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -35,7 +40,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets, finite_ordinal_set
 from dzack_research.preamble.owned_category import owned_category_join
 
 
@@ -225,9 +230,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which the bilinear form vanishes."""
-            return self.subgroups().condition_set(
-                lambda subgroup: self.form_vanishes_on(subgroup.embedded_elements()),
-            )
+            return _isotropic_subgroups(self, quadratic=False)
 
         @cached_method
         def maximal_isotropic_subgroups(self):
@@ -438,14 +441,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which ``q`` vanishes identically."""
-
-            zero = self.quadratic_value_module().zero()
-            return self.subgroups().condition_set(
-                lambda subgroup: all(
-                    self.q(element) == zero
-                    for element in subgroup.embedded_elements()
-                ),
-            )
+            return _isotropic_subgroups(self, quadratic=True)
 
         @cached_method
         def maximal_isotropic_subgroups(self):
@@ -812,6 +808,212 @@ def _discriminant_subgroup(ambient, generators):
             _extra_construction_data=construction_data,
         )
     return source
+
+
+def _isotropic_subgroups(ambient, quadratic):
+    r"""Return the subgroups of ``ambient`` on which its form vanishes.
+
+    For the bilinear form a subgroup ``K`` is isotropic when ``b(K, K) = 0``;
+    for the quadratic form when ``q(K) = 0``.  Either way ``K`` is isotropic
+    exactly when it is spanned by elements ``x`` with ``b(x, x) = 0``
+    (respectively ``q(x) = 0``) that are pairwise orthogonal, since
+    ``q(h + x) = q(h) + q(x) + 2 b(h, x)``.
+
+    A nonzero finite abelian group has a subgroup of prime index, and a
+    subgroup of an isotropic group is isotropic, so every isotropic ``K``
+    is reached from ``0`` through isotropic subgroups ``H < H + <x>`` of
+    prime index, with ``x`` in ``H^perp``.  The enumeration is a reverse
+    search (D. Avis and K. Fukuda, Reverse search for enumeration, Discrete
+    Appl. Math. 65 (1996) 21--46) over that graph.  The parent of ``K`` is
+    read from its canonical generators ``g_1, ..., g_k`` -- each the least
+    element, in the Smith coordinates, outside the span of the previous
+    ones -- as ``<g_1, ..., g_{k-1}, p g_k>`` for the least prime ``p``
+    dividing the order of ``g_k`` modulo ``<g_1, ..., g_{k-1}>``.  A child is
+    kept only from its parent, so each subgroup is visited once and no set
+    of visited subgroups is held.
+
+    The subgroups are raised into ``ambient`` when they are asked for.
+    """
+    unformed = ambient.unformed_module()
+    smith_engine = unformed._smith_engine()
+    assert smith_engine is not None, (
+        f"the isotropic subgroups of {ambient} are enumerated in its invariant factor decomposition, "
+        f"which has not been computed for {ambient}, in {ambient.category()}"
+    )
+    invariants = tuple(int(order) for order in smith_engine.invariants())
+    order = prod(invariants, start=1)
+    rank = len(invariants)
+    moduli = numpy.array(invariants, dtype=numpy.int64)
+    coordinates = numpy.stack(
+        numpy.unravel_index(numpy.arange(order), invariants), axis=1
+    ).astype(numpy.int64) if rank else numpy.zeros((1, 0), dtype=numpy.int64)
+
+    def raised(code):
+        return ambient._element_from_unformed_module(
+            unformed._from_smith_engine_element(
+                smith_engine.linear_combination_of_smith_form_gens(
+                    tuple(int(entry) for entry in coordinates[code])
+                )
+            )
+        )
+
+    def lowered(element):
+        engine_coordinates = unformed._to_smith_engine_element(
+            ambient._element_of_unformed_module(element)
+        ).vector()
+        return int(numpy.ravel_multi_index(
+            tuple(int(entry) % modulus for entry, modulus in zip(engine_coordinates, invariants, strict=True)),
+            invariants,
+        )) if rank else 0
+
+    smith_generators = tuple(raised(int(numpy.ravel_multi_index(
+        tuple(int(i == j) for j in range(rank)), invariants
+    ))) for i in range(rank))
+    bilinear = [
+        [_engine_element(value.parent(), value) for value in (ambient.b(left, right).lift() for right in smith_generators)]
+        for left in smith_generators
+    ]
+    if quadratic:
+        diagonal = [_engine_element(value.parent(), value) for value in (ambient.q(generator).lift() for generator in smith_generators)]
+        self_gram = [
+            [diagonal[i] if i == j else bilinear[i][j] for j in range(rank)]
+            for i in range(rank)
+        ]
+        self_modulus = 2
+    else:
+        self_gram = bilinear
+        self_modulus = 1
+    denominator = lcm(1, *(int(entry.denominator()) for row in bilinear + self_gram for entry in row))
+    bilinear_numerators = numpy.array(
+        [[int(entry * denominator) % denominator for entry in row] for row in bilinear], dtype=numpy.int64
+    ).reshape(rank, rank)
+    self_numerators = numpy.array(
+        [[int(entry * denominator) % (self_modulus * denominator) for entry in row] for row in self_gram],
+        dtype=numpy.int64,
+    ).reshape(rank, rank)
+    pairings = (coordinates @ bilinear_numerators % denominator) @ coordinates.T % denominator
+    self_values = numpy.einsum(
+        "ij,jk,ik->i", coordinates, self_numerators, coordinates
+    ) % (self_modulus * denominator)
+    width = (order + 7) // 8
+
+    def mask_of(codes):
+        members = numpy.zeros(order, dtype=bool)
+        members[codes] = True
+        return int.from_bytes(numpy.packbits(members, bitorder="little").tobytes(), "little")
+
+    def codes_of(mask):
+        bits = numpy.unpackbits(
+            numpy.frombuffer(mask.to_bytes(width, "little"), dtype=numpy.uint8),
+            bitorder="little",
+        )[:order]
+        return numpy.flatnonzero(bits)
+
+    perpendicular = tuple(mask_of(numpy.flatnonzero(row == 0)) for row in pairings)
+    self_isotropic = mask_of(numpy.flatnonzero(self_values == 0))
+    primes = tuple(int(prime) for prime in Integer(order).prime_divisors())
+    multiples = {
+        prime: numpy.ravel_multi_index(tuple((prime * coordinates % moduli).T), invariants)
+        if rank else numpy.zeros(1, dtype=numpy.int64)
+        for prime in primes
+    }
+
+    def extended(codes, code, steps):
+        r"""The codes of ``H + <x>`` for ``H`` given by its codes and ``steps x`` in ``H``."""
+        if not rank:
+            return codes
+        span = coordinates[codes]
+        step = coordinates[code]
+        return numpy.concatenate([
+            numpy.ravel_multi_index(tuple(((span + multiple * step) % moduli).T), invariants)
+            for multiple in range(steps)
+        ])
+
+    def prime_step(mask, code):
+        r"""The least prime ``p`` with ``p x`` in ``H``, or ``None``."""
+        return next(
+            (prime for prime in primes if mask >> int(multiples[prime][code]) & 1),
+            None,
+        )
+
+    def order_modulo(mask, code):
+        multiple, current = 1, code
+        while not mask >> current & 1:
+            multiple += 1
+            current = int(numpy.ravel_multi_index(
+                tuple(multiple * coordinates[code] % moduli), invariants
+            ))
+        return multiple
+
+    def canonical_generators(mask):
+        r"""The canonical generators of a subgroup and its parent's mask."""
+        span_codes = numpy.zeros(1, dtype=numpy.int64)
+        span_mask = 1
+        generators = []
+        parent_mask = 1
+        for code in codes_of(mask):
+            code = int(code)
+            if span_mask >> code & 1:
+                continue
+            steps = order_modulo(span_mask, code)
+            prime = min(prime for prime in primes if steps % prime == 0)
+            parent_codes = extended(span_codes, int(multiples[prime][code]), steps // prime)
+            parent_mask = mask_of(parent_codes)
+            span_codes = extended(span_codes, code, steps)
+            span_mask = mask_of(span_codes)
+            generators.append(code)
+        return generators, parent_mask
+
+    rows = [()]
+    stack = [(1, numpy.zeros(1, dtype=numpy.int64), (1 << order) - 1)]
+    while stack:
+        mask, codes, orthogonal = stack.pop()
+        candidates = orthogonal & self_isotropic & ~mask
+        while candidates:
+            lowest = candidates & -candidates
+            code = lowest.bit_length() - 1
+            prime = prime_step(mask, code)
+            if prime is None:
+                candidates ^= lowest
+                continue
+            child_codes = extended(codes, code, prime)
+            child_mask = mask_of(child_codes)
+            candidates &= ~child_mask
+            generators, parent_mask = canonical_generators(child_mask)
+            if parent_mask != mask:
+                continue
+            rows.append(tuple(generators))
+            stack.append((child_mask, child_codes, orthogonal & perpendicular[code]))
+
+    index_set = finite_ordinal_set(len(rows))
+    positions = {}
+
+    def element_at(position):
+        return ambient.subgroup_on(tuple(raised(code) for code in rows[int(position)]))
+
+    def index_of(subgroup):
+        if subgroup not in DiscriminantSubmodules(ambient.base_ring()):
+            return None
+        if subgroup.ambient_discriminant_module() is not ambient:
+            return None
+        codes = numpy.zeros(1, dtype=numpy.int64)
+        for generator in subgroup.embedded_module_generators():
+            code = lowered(generator)
+            codes = extended(codes, code, order_modulo(mask_of(codes), code))
+        if not positions:
+            positions.update((row, position) for position, row in enumerate(rows))
+        position = positions.get(tuple(canonical_generators(mask_of(codes))[0]))
+        if position is None:
+            return None
+        return index_set(position)
+
+    return FiniteOrderedSets().from_indexed(
+        index_set,
+        element_at,
+        index_of=index_of,
+        contains=lambda subgroup: index_of(subgroup) is not None,
+        name=f"isotropic subgroups of {ambient}",
+    )
 
 
 def _all_discriminant_subgroups(ambient):

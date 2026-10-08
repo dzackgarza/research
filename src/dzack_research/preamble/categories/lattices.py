@@ -22,6 +22,8 @@ from typing import TYPE_CHECKING, overload
 from sage.arith.misc import gcd
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.root_system import RootSystem
+from functools import cache
+
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
@@ -279,6 +281,36 @@ def _indecomposable_name(lattice):
         if name is not None:
             return f"{name}({scale})"
     return None
+
+
+def _overlattice_inclusions(form):
+    r"""Return the overlattice inclusions glued along the isotropic subgroups of ``form``.
+
+    Nikulin's correspondence is a bijection, so the inclusions are indexed
+    by the isotropic subgroups, and each is built once, when it is asked for.
+    An inclusion is a member exactly when this set built it: an overlattice
+    built elsewhere has another codomain object, so it is another arrow.
+    """
+    isotropic = form.isotropic_subgroups()
+    glue = isotropic.enumeration()
+    positions = {}
+
+    @cache
+    def element_at(index):
+        inclusion = form.overlattice_from_isotropic_subobject(glue(index))
+        positions[id(inclusion)] = index
+        return inclusion
+
+    def index_of(inclusion):
+        return positions.get(id(inclusion))
+
+    return FiniteOrderedSets().from_indexed(
+        isotropic.index_set(),
+        element_at,
+        index_of=index_of,
+        contains=lambda inclusion: index_of(inclusion) is not None,
+        name=f"overlattice inclusions of {form.source_lattice()}",
+    )
 
 
 @cached_function(
@@ -731,7 +763,6 @@ def _isometry_class_representatives(grams, genus_of):
     formula*, §1, eq. (1)].  TRAPS.md records the wall times that order the
     steps.
     """
-    from functools import cache
 
     from sage.libs.pari import pari
     from sage.quadratic_forms.binary_qf import BinaryQF
@@ -3009,13 +3040,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"cannot enumerate the integral overlattices of {self!r}: Nikulin's correspondence needs a nondegenerate lattice of finite rank"
                 )
-            form = self.discriminant_bilinear_form()
-            return finite_ordered_set(
-                tuple(
-                    form.overlattice_from_isotropic_subobject(subgroup)
-                    for subgroup in form.isotropic_subgroups()
-                )
-            )
+            return _overlattice_inclusions(self.discriminant_bilinear_form())
 
         def local_modification(self, prime, *discriminant_classes):
             r"""Return the isotropic ``p``-primary overlattice modification.
@@ -3053,8 +3078,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"cannot enumerate the even overlattices of {self!r}: Nikulin's correspondence with isotropic subgroups of the discriminant quadratic form needs an even nondegenerate lattice of finite rank, and {self!r} fails one of these"
                 )
-            form = self.discriminant_quadratic_form()
-            return finite_ordered_set(tuple(form.overlattice_from_isotropic_subobject(subgroup) for subgroup in form.isotropic_subgroups()))
+            return _overlattice_inclusions(self.discriminant_quadratic_form())
 
         def embeds_in_even_unimodular(self, positive, negative) -> bool:
             r"""Decide primitive embeddability into an even unimodular ``II_{p,q}``.
