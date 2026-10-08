@@ -3742,10 +3742,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         def two_hyperbolic_plane_splitting(self) -> LatticeIsometryMethods | None:
             r"""Return a selected isometry ``U + U + K -> self``.
 
-            The source is the existing represented Eichler model. Its
-            complement and injections are retained by the biproduct. The
-            computation finds primitive isotropic vectors and splits off
-            their unimodular hyperbolic planes through orthogonal complements.
+            Each plane is split by its isotropic reduction. The source is
+            their orthogonal biproduct with the second reduction, retaining
+            the quotient lattices and their universal injections.
             It applies when both selected vectors have divisibility one,
             in particular to even unimodular lattices containing ``2U``.
             A rationally anisotropic stage returns ``None``; a selected
@@ -3785,34 +3784,31 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"the selected isotropic vector {first} has divisibility {first.div()}; "
                 "splitting off U requires an isotropic vector of divisibility one"
             )
-            first_partner = first.hyperbolic_partner()
-            perpendicular = self.subobject_on(
-                finite_ordered_set((first, first_partner))
-            ).orthogonal_complement()
-            second = perpendicular.isotropic_vector_witness()
+            first_reduction = first.isotropic_reduction()
+            first_splitting = first_reduction.integral_hyperbolic_splitting()
+            second = first_reduction.isotropic_vector_witness()
             if second is None:
                 return None
             assert second.div() == self.base_ring().one(), (
                 f"the selected isotropic vector {second} has divisibility {second.div()}; "
                 "splitting off the second U requires an isotropic vector of divisibility one"
             )
-            second_partner = second.hyperbolic_partner()
-            complement = perpendicular.subobject_on(
-                finite_ordered_set((second, second_partner))
-            ).orthogonal_complement()
-            normal = complement.two_u_eichler_model().lattice()
-            first_plane = normal.biproduct_factor(0)
-            second_plane = normal.biproduct_factor(1)
-            first_map = first_plane.Mor(self)(
-                lambda label: first if label == first_plane.module_generating_set()[0] else first_partner
+            second_reduction = second.isotropic_reduction()
+            second_splitting = second_reduction.integral_hyperbolic_splitting()
+            first_sum = first_splitting.codomain()
+            second_sum = second_splitting.codomain()
+            first_plane = first_sum.biproduct_factor(0)
+            second_plane = second_sum.biproduct_factor(0)
+            normal = Lattices(self.base_ring()).biproduct(
+                (first_plane, second_plane, second_reduction)
             )
-            second_map = second_plane.Mor(perpendicular)(
-                lambda label: second if label == second_plane.module_generating_set()[0] else second_partner
-            )
+            first_assembly = first_splitting.inverse()
+            reduction_embedding = first_assembly * first_sum.injection(1)
+            second_assembly = reduction_embedding * second_splitting.inverse()
             assembled = normal.from_coproduct_cocone((
-                first_map,
-                perpendicular.inclusion() * second_map,
-                perpendicular.inclusion() * complement.inclusion(),
+                first_assembly * first_sum.injection(0),
+                second_assembly * second_sum.injection(0),
+                second_assembly * second_sum.injection(1),
             ))
             return normal.Isom(self)(
                 lambda label: assembled(normal.module_generator(label))
@@ -5801,6 +5797,57 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def inclusion(self):
             r"""Return \(I\hookrightarrow I^\perp\), the inclusion defining the quotient."""
             return self.isotropic_inclusion()
+
+        @cached_method
+        def integral_hyperbolic_splitting(self):
+            r"""Return ``L -> U orthogonal_sum (I^perp/I)`` for a unit cusp.
+
+            The ambient lattice must be even over ``ZZ`` and the isotropic
+            line must have divisibility one. If ``e`` generates the line
+            and ``f`` is its integral isotropic partner, a quotient lift
+            ``z`` is sent to ``z-b(z,f)e``. This is independent of its lift
+            modulo ``I`` and lies in ``<e,f>^perp``. The resulting section
+            and the hyperbolic-plane embedding assemble through the general
+            orthogonal biproduct.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("U") + Lattices(ZZ)([[-2]])
+                sage: R = L.basis_vector(0).isotropic_reduction()
+                sage: splitting = R.integral_hyperbolic_splitting()
+                sage: splitting.domain() is L and splitting.codomain().biproduct_factor(1) is R
+                True
+                sage: all(splitting.inverse()(splitting(x)) == x for x in L.module_generators())
+                True
+            """
+            ambient = self.isotropic_embedding().codomain()
+            ring = ambient.base_ring()
+            if _engine_ring(ring) is not SageZZ or not ambient.is_even():
+                raise ValueError("an integral hyperbolic splitting requires an even ZZ-lattice")
+            line = self.isotropic_sublattice()
+            if line.module_rank() != 1:
+                raise ValueError("an integral hyperbolic splitting requires an isotropic line")
+            e = self.isotropic_embedding()(line.module_generators()[0])
+            if e.div() != ring.one():
+                raise ValueError("an integral hyperbolic splitting requires divisibility one")
+            f = e.hyperbolic_partner()
+            perpendicular_inclusion = self.orthogonal_complement().inclusion()
+
+            def section_image(label):
+                lift = perpendicular_inclusion(self.coordinate_frame()[label])
+                return lift - ambient.scalar_multiple(lift.b(f), e)
+
+            section = self.Mor(ambient)(section_image)
+            plane = Lattices(ring)("U")
+            labels = tuple(plane.module_generating_set())
+            plane_embedding = plane.Mor(ambient)(
+                lambda label: e if label == labels[0] else f
+            )
+            normal = Lattices(ring).biproduct((plane, self))
+            assembled = normal.from_coproduct_cocone((plane_embedding, section))
+            return normal.Isom(ambient)(
+                lambda label: assembled(normal.module_generator(label))
+            ).inverse()
 
         @cached_method
         def rational_witt_decomposition(self):
