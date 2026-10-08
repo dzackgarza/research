@@ -14,6 +14,54 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Hodge-isometry planning did not assign the general Hodge categories
+
+The `hodge-lattice-isometries` node previously referred to compatible Hodge
+structures and a period stabilizer, while its research prerequisite only
+asked for a dependency trace. Neither assigned delivery of the general
+categories of pure and mixed Hodge structures, their morphisms or tensor
+constructions. A Hodge-isometry group requires the Hodge object and pairing
+first; its inclusion in the lattice orthogonal group is a forgetful map.
+
+The inspected `_QuarticK3HodgeData` in
+`categories/schemes/geometric_cohomology.py` supplies cohomology, a space of
+holomorphic forms and Hodge numbers. Those methods do not supply a Hodge
+filtration embedded in complexified integral cohomology, or general mixed
+Hodge objects and their morphisms. `modules/hodge.py` implements Hodge-star
+operations on formed modules; those are a different construction.
+
+The formal source `LeanCategories/Homological/SpectralSequenceConvergence.lean`
+has `FiniteIncreasingFiltration`, `FiniteDecreasingFiltration` and their
+`gradedPiece` on a fixed object of an abelian category. The adjacent
+`IncreasingFiltration` has quotient maps and a quotient functor. These give
+actual retained subobjects and cokernels, not the whole category of
+filtered objects with filtration-preserving arrows. `Modules/Total.lean`
+supplies `ModulesOverRings` and its fixed-ring fibres and reindexing;
+`Modules/Mathlib.lean` imports module change of rings.
+`FOUNDATIONS.md` §61.1–61.2 gives pure/polarized Hodge definitions in prose.
+Preamble `GradedModules`, scalar-change functors and semilinear arrows are
+partial presentation owners. No named method is taken as proof that the
+required Hodge category or comparison theorem exists.
+
+The [upstream request](../gitclones/lean-categories/COMPLAINTS.md#hodge-structures-need-filtered-module-categories-and-their-comparison-maps)
+records the named category chain, source locators, searched formal slice
+and remaining search boundary. The formal source slice was inspected at
+`lean-categories` revision `1008f05540c101e1fc0e1ad719ff6c6092508116`.
+The additional LeanSearch
+queries for filtered vector spaces and mixed Hodge structures returned
+indexing-category filteredness and ring/module filtrations, respectively;
+neither result supplies the requested Hodge categories. This is bounded
+source evidence, not a global absence claim.
+
+The research dependency chain is now
+`filtered-objects-and-associated-graded` ->
+`filtered-scalar-extension-and-conjugation` ->
+`pure-and-mixed-hodge-structures` ->
+`hodge-tensors-pairings-and-polarizations` -> `hodge-lattice-isometries`.
+Each node names the categories, defining data, arrows and comparison maps
+it must consume from the formal side before presenting them. K3
+automorphisms and the other K3 consumers inherit this chain.
+
 ### K3 automorphism pullback lacks explicit chamber and Torelli consumers
 
 The cospan `P_S -> O(A_S) <- O_Hdg(T)` requires the actual ample-chamber
