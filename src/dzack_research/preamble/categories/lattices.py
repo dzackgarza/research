@@ -4593,57 +4593,47 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
             return _close_vectors(self, target, square_bound)
 
-        def first_close_vectors(self, target, square_bound) -> CartesianProductsOfSets.ElementMethods:
-            r"""Return the least positive scale and its complete affine shell.
+        def first_close_vector_shell(self, target, square_bound, max_multiplier):
+            r"""Return the first nonempty scaled shell with ``1 <= m <= M``.
 
-            The result belongs to ``NN x self.finite_subsets()``. For a
-            positive definite form its shell is
-            ``{x in self : q(x - m*target) <= m^2*square_bound}``.
-            For a negative definite form both the bound and inequality
-            reverse sign. The target belongs to this lattice or its rational
-            span. Clearing its denominators gives a finite search bound.
+            The shell consists of ``x`` with ``q(x-m*target)`` between zero
+            and ``m^2*square_bound``. The bound has the sign of the definite
+            form (or is zero). Return ``None`` when the bounded family is
+            empty. A nonempty result is an element of
+            ``NN x self.finite_subsets()``; its subset retains its inclusion.
 
             EXAMPLES::
 
                 sage: L = Lattices(ZZ)([[2]])
                 sage: V = L.vector_space()
                 sage: t = V.linear_combination({0: QQ(1)/QQ(2)})
-                sage: m, shell = L.first_close_vectors(t, QQ(0))
+                sage: L.first_close_vector_shell(t, QQ(0), NN(1)) is None
+                True
+                sage: m, shell = L.first_close_vector_shell(t, QQ(0), NN(2))
                 sage: m == NN(2) and shell.domain() == Set((L.basis_vector(0),))
                 True
             """
-            assert _engine_ring(self.base_ring()) is SageZZ, (
-                f"affine close-vector shells are computed for ZZ-lattices, not over {self.base_ring()}"
+            return self._exact_cvp_engine().first_close_vectors(
+                target, square_bound, NN(max_multiplier)
             )
-            assert element_parent(target) is self or element_parent(target) is self.vector_space(), (
-                f"the affine target must belong to {self} or its rational span, not {element_parent(target)}"
-            )
-            return self._exact_cvp_engine().first_close_vectors(target, square_bound)
 
-        def affine_close_vectors(self, target, square_bound, multiplier) -> SetInjection:
-            r"""Return the affine shell at a specified positive integer scale.
+        def first_close_vector_sphere(self, target, square_bound, max_multiplier):
+            r"""Return the first nonempty scaled sphere with ``1 <= m <= M``.
 
-            Use the signed bound convention of :meth:`first_close_vectors`.
-            The result is a finite subset with its inclusion into this lattice.
+            Use the same scaled family as :meth:`first_close_vector_shell`,
+            with equality ``q(x-m*target) = m^2*square_bound``. Return
+            ``None`` if no sphere in the bounded family contains a vector.
 
             EXAMPLES::
 
-                sage: L = Lattices(ZZ)([[2]])
-                sage: V = L.vector_space()
-                sage: t = V.linear_combination({0: QQ(1)/QQ(2)})
-                sage: L.affine_close_vectors(t, QQ(1)/QQ(2), NN(1)).domain() == Set((L.zero(), L.basis_vector(0)))
+                sage: L = Lattices(ZZ)([[-2]])
+                sage: m, sphere = L.first_close_vector_sphere(L.zero(), QQ(-2), NN(1))
+                sage: m == NN(1) and sphere.domain() == Set((L.basis_vector(0), -L.basis_vector(0)))
                 True
             """
-            assert _engine_ring(self.base_ring()) is SageZZ, (
-                f"affine close-vector shells are computed for ZZ-lattices, not over {self.base_ring()}"
+            return self._exact_cvp_engine().first_close_vectors(
+                target, square_bound, NN(max_multiplier), exact_distance=True
             )
-            assert element_parent(target) is self or element_parent(target) is self.vector_space(), (
-                f"the affine target must belong to {self} or its rational span, not {element_parent(target)}"
-            )
-            multiplier = NN(multiplier)
-            if multiplier == 0:
-                raise ValueError("an affine shell scale must be positive")
-            return self._exact_cvp_engine().affine_close_vectors(target, square_bound, multiplier)
 
         def babai(self, target):
 
@@ -4923,11 +4913,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         def bezout_partner(self) -> "Lattices.ElementMethods":
             r"""Return an integral ``h`` with ``b(self,h) = self.div()``.
 
-            Migrated from the integral Bezout step in
-            ``IsotropicReductions.rational_witt_decomposition`` and
-            ``sage-indefinite-port``'s ``_bezout_partner``. Scalar extended
-            gcd is supplied by the coefficient ring. For a radical vector
-            the selected partner is zero.
+            Lift the positive generator of the image of ``b(self,-)``
+            through that module morphism. The module-map image factorization
+            owns the lift. For a radical vector the selected partner is zero.
 
             EXAMPLES::
 
@@ -4944,16 +4932,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert _engine_ring(ring) is SageZZ, (
                 f"an integer Bezout partner requires a lattice over ZZ, not {ring}"
             )
-            gcd_value = ring.zero()
-            partner = lattice.zero()
-            for label, pairing in lattice.generator_pairings(self).items():
-                new_gcd, old_coefficient, new_coefficient = gcd_value.xgcd(pairing)
-                partner = (
-                    lattice.scalar_multiple(old_coefficient, partner)
-                    + lattice.scalar_multiple(new_coefficient, lattice.module_generator(label))
-                )
-                gcd_value = new_gcd
-            return -partner if gcd_value < ring.zero() else partner
+            pairing = self.to_covector()
+            if not lattice.module_rank().is_finite():
+                support = lattice.subobject_on(tuple(
+                    lattice.module_generator(label)
+                    for label in lattice.generator_pairings(self)
+                ))
+                inclusion = support.inclusion()
+                restricted = pairing * inclusion
+                return inclusion(restricted.preimage(pairing.codomain()(self.div())))
+            return pairing.preimage(pairing.codomain()(self.div()))
 
         def hyperbolic_partner(self) -> "Lattices.ElementMethods":
             r"""Return an integral isotropic partner with pairing ``self.div()``.

@@ -576,19 +576,22 @@ class _ExactCVPEngine:
         )
         return None if result is None else result[0]
 
-    def first_close_vectors(self, target, square_bound):
+    def first_close_vectors(self, target, square_bound, max_multiplier, *, exact_distance=False):
         r"""Raise the first affine CVP shell and its scale from one PARI search."""
+        if element_parent(target) is not self.lattice and element_parent(target) is not self.lattice.vector_space():
+            raise TypeError(
+                f"the affine target must belong to {self.lattice} or its rational span, "
+                f"not {element_parent(target)}"
+            )
         coordinates = self._engine_target_coordinates(target)
         positive_bound = self.engine_sign * self._engine_scalar(square_bound)
         if positive_bound < 0:
             raise ValueError("the affine shell bound must have the sign of the definite form")
-        # At this scale the rational target is integral, so the shell contains it.
-        denominator = engine_vector(SageQQ, coordinates).denominator()
         result = self.first_close_vector_scale_coordinates(
-            coordinates, square_bound, denominator
+            coordinates, square_bound, max_multiplier, exact_distance=exact_distance
         )
         if result is None:
-            raise ArithmeticError("PARI returned no affine shell at an integral target")
+            return None
         multiplier, candidates = result
         subsets = self.lattice.finite_subsets()
         shell = subsets(tuple(
@@ -599,16 +602,6 @@ class _ExactCVPEngine:
             for coordinates, _square in candidates
         ))
         return Sets().product((NN, subsets))((NN(multiplier), shell))
-
-    def affine_close_vectors(self, target, square_bound, multiplier):
-        r"""Raise the complete affine CVP shell at the specified positive scale."""
-        scale = SageZZ(int(multiplier))
-        coordinates = self._engine_target_coordinates(target)
-        family = self.close_vectors(
-            tuple(scale * coordinate for coordinate in coordinates),
-            scale**2 * self._engine_scalar(square_bound),
-        )
-        return self.lattice.finite_subsets()(family.index_set())
 
     def first_close_vector_scale_coordinates(
         self,
