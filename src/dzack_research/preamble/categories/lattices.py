@@ -4277,6 +4277,21 @@ class Lattices(OwnedCategoryOverBaseRing):
                 representatives.append(candidate)
             return action.orbit_representatives(representatives)
 
+        def reduction_cycle(self, bound, start):
+            r"""Return the binary period automorph and bounded vectors, or ``None``.
+
+            Start at the specified primitive positive vector. The private
+            edgewalk realization follows the frozen cycle contract. The
+            period is a lattice isometry; its vector family is a finite
+            subset with its inclusion into this lattice.
+            """
+            result = lattice_engines._binary_reduction_cycle(self, bound, start)
+            if result is None:
+                return None
+            automorphism, vectors = result
+            values = Sets().product((self.Isom(self), self.finite_subsets()))
+            return values((automorphism, self.finite_subsets()(vectors)))
+
         def gluing_route_discriminant_classes(self, left, right):
             r"""Return admissible ``O(A_L)`` classes from the primitive-extension gluing route."""
 

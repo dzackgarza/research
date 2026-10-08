@@ -225,6 +225,100 @@ def _binary_special_orthogonal_representatives(lattice, square):
     )
 
 
+def _binary_reduction_cycle(lattice, bound, start):
+    r"""Realize the specified binary edgewalk cycle and raise its period map.
+
+    The computation is the frozen provider in sage-indefinite-port commit
+    709f81a, indefinite/edgewalk_rank2.py: canonical_companion, promised_step,
+    shorter_pair, reduced_start_pair, and anisotropic_cycle. It is kept
+    private here; its rows are raised through the lattice Mor constructor.
+    """
+    from sage.modules.free_module_element import vector
+
+    discriminant = _binary_form_discriminant(lattice)
+    if discriminant <= 0 or discriminant.is_square():
+        raise ValueError("a binary reduction cycle requires a rationally anisotropic indefinite form")
+    if start.parent() is not lattice or start.content() != lattice.base_ring().one() or start.q() <= 0:
+        raise ValueError("the cycle start must be a primitive positive vector of the lattice")
+    rational_bound = lattice.base_ring().fraction_field()(bound)
+    bound = SageQQ(int(rational_bound.numerator())) / int(rational_bound.denominator())
+    if bound <= 0:
+        return None
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    labels = tuple(lattice.module_generating_set())
+
+    def pairing(left, right):
+        return left * gram * right
+
+    def square(point):
+        return pairing(point, point)
+
+    def companion(limit, right, left):
+        rr, rl, ll = square(right), pairing(right, left), square(left)
+        radicand = SageQQ(rl*rl - rr*(ll-limit))
+        root = SageZZ(radicand.floor()).isqrt()
+        multiple = SageZZ((SageQQ(-rl + root) / rr).floor())
+        return left + multiple*right
+
+    def step(limit, right, left):
+        while True:
+            middle = right + left
+            if square(middle) <= limit or pairing(middle, right) < 0:
+                left = middle
+            elif square(left) >= 0 and pairing(right, left) > 0:
+                return left, -right
+            else:
+                right = middle
+
+    def characteristic(right, left):
+        return square(right), pairing(right, left), square(left)
+
+    def shorter(right, left):
+        initial_square = square(right)
+        initial = characteristic(right, left)
+        while True:
+            right, left = step(square(right), right, left)
+            left = companion(square(right), right, left)
+            if square(right) < initial_square:
+                return right, left
+            if characteristic(right, left) == initial:
+                return None
+
+    coordinates = start.to_vector()
+    right = vector(SageZZ, [SageZZ(int(coordinates(label))) for label in labels])
+    _gcd, s, t = right[0].xgcd(right[1])
+    left = companion(bound, right, vector(SageZZ, [-t, s]))
+    if square(right) <= bound:
+        right, left = step(bound, right, left)
+        left = companion(bound, right, left)
+    else:
+        while square(right) > bound:
+            pair = shorter(right, left)
+            if pair is None:
+                return None
+            right, left = pair
+        left = companion(bound, right, left)
+
+    initial = characteristic(right, left)
+    frame = engine_matrix(SageQQ, [right, left])
+    cycle = []
+    while True:
+        cycle.append(right)
+        right, left = step(bound, right, left)
+        left = companion(bound, right, left)
+        if characteristic(right, left) == initial:
+            period = (frame.inverse() * engine_matrix(SageQQ, [right, left])).change_ring(SageZZ)
+            break
+
+    ring = lattice.base_ring()
+
+    def raise_vector(point):
+        return lattice.linear_combination({label: ring(coordinate) for label, coordinate in zip(labels, point, strict=True)})
+
+    automorphism = lattice.Isom(lattice)(tuple(raise_vector(row) for row in period.rows()))
+    return automorphism, tuple(raise_vector(point) for point in cycle)
+
+
 def _integer_engine_matrix(value):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
         raise TypeError(f"{value} cannot be passed to OSCAR as an integer matrix: it must be a tensor with two indices")
