@@ -3756,6 +3756,35 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Return the original ``S``-module before restriction of scalars."""
             return self._module_over_extension
 
+        def subobject_on(self, module_generators) -> "ModuleSubobjects.ParentMethods":
+            r"""Return the finite span over the restricted base ring, with its inclusion.
+
+            For restriction from the fraction field of a PID, Sage computes
+            the span over the PID, retaining fractional generator entries.
+
+            EXAMPLES::
+
+                sage: V = QQ**2
+                sage: M = V.restrict_scalars(ZZ.fraction_field_map())
+                sage: a = M(V.linear_combination({0: QQ(1)/QQ(2)}))
+                sage: b = M(V.linear_combination({0: QQ(1)/QQ(3)}))
+                sage: S = M.subobject_on((a, b))
+                sage: c = M(V.linear_combination({0: QQ(1)/QQ(6)}))
+                sage: S.inclusion().is_in_image(c)
+                True
+                sage: S.inclusion().is_in_image(M(V.linear_combination({0: QQ(1)/QQ(12)})))
+                False
+            """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+                _module_subobject_on,
+                _restricted_fraction_field_subobject_on,
+            )
+
+            if self in FramedFreeModules(self.base_ring()):
+                return _module_subobject_on(self, module_generators)
+            return _restricted_fraction_field_subobject_on(self, module_generators)
+
         def extension_ring(self):
             return _owned_ring(self.module_over_extension().base_ring())
 
