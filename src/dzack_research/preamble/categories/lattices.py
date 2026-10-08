@@ -4908,7 +4908,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: L = Lattices(ZZ)([[2]])
                 sage: V = L.vector_space()
-                sage: t = V.linear_combination({0: QQ(1)/QQ(2)})
+                sage: label = next(iter(V.module_generating_set()))
+                sage: t = V.scalar_multiple(QQ(1)/QQ(2), V.module_generator(label))
                 sage: L.first_close_vector_shell(t, QQ(0), NN(1)) is None
                 True
                 sage: m, shell = L.first_close_vector_shell(t, QQ(0), NN(2))
