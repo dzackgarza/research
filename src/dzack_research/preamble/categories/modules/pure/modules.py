@@ -5211,6 +5211,49 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 name=f"Kernel spanning family of {self}",
             )
 
+        def symmetrized_right_multiplication(self):
+            r"""Return the linear map ``X |-> X*A + (X*A).transpose()``.
+
+            Here ``A`` is this matrix, from ``V`` to ``W``. Parameters lie
+            in ``Hom(W,V)`` and values in ``End(V)``. Transpose uses the
+            chosen finite framings. The base ring must be commutative.
+
+            The map's kernel is the homogeneous solution module over its
+            base ring. In particular, over ``ZZ`` it is the full integral
+            solution lattice. Its ordinary ``preimage(B)`` supplies a
+            particular solution when one exists. Scalar extension gives
+            the corresponding rational equation.
+
+            This presents the linear operator used by
+            ``sage-indefinite-port.indefinite.isotropic_lifts`` through
+            module composition, transpose, kernel and preimage.
+
+            EXAMPLES::
+
+                sage: A = ZZ.matrix_space(2).from_rows(((1, 0), (0, 1)))
+                sage: equation = A.symmetrized_right_multiplication()
+                sage: equation.kernel().module_rank() == NN(1)
+                True
+                sage: B = A + A
+                sage: equation(equation.preimage(B)) == B
+                True
+                sage: X = A.parent().from_rows(((0, 1), (-1, 0)))
+                sage: equation(X) == equation.codomain().zero()
+                True
+            """
+            ring = self.parent().base_ring()
+            if ring not in OwnedRings().Commutative():
+                raise ValueError("symmetrized multiplication requires a commutative base ring")
+            modules = Modules(ring)
+            parameters = modules.Mor(self.codomain(), self.domain())
+            values = modules.Mor(self.domain(), self.domain())
+
+            def image(label):
+                product = parameters.module_generator(label) * self
+                return product + product.transpose()
+
+            return modules.Mor(parameters, values)(image)
+
         def transpose(self):
 
             source = self.codomain()
