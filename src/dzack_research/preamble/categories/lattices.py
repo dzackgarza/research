@@ -587,6 +587,122 @@ class _Genus(Sets().ObjectType):
         )
         return _owned_engine_element(_own_ring(SageQQ), SageQQ(density))
 
+    def siegel_eisenstein_coefficient(self, value):
+        r"""Return Siegel's product ``a_E(m)`` of the local densities of this definite genus at ``value``.
+
+        For a definite member ``L`` of rank ``n >= 2``, ``Q(x) = b(x, x)``
+        taken positive (``-b`` on a negative definite genus) and ``D`` the
+        determinant of ``Q``'s Gram matrix, the product is computed in four
+        steps.
+
+        1. The real density is ``beta_oo(m) = n w_n D^{-1/2} m^{(n-2)/2} / 2``
+           with ``w_n = pi^{n/2} / Gamma(n/2 + 1)`` the volume of the unit
+           ``n``-ball: Siegel, Ann. of Math. (2) 36 (1935), Hilfssatz 26,
+           pp. 554--555, as stated in Hanke, *Local densities and explicit
+           bounds for representability by a quadratic form*, Duke Math. J.
+           124 (2004), (5.5).  Section and equation numbers of Hanke are
+           those of his preprint, web.math.princeton.edu/~jonhanke/Web-02/
+           Local-Densities.
+        2. At a prime ``p`` not dividing ``2 m D`` the density is
+           ``beta_p(m) = p^{1-n} #{x mod p : Q(x) = m mod p}``, and Hanke,
+           Lemma 9.1 counts the solutions: ``1 - chi(p) p^{-n/2}`` with
+           ``chi`` the character of ``(-1)^{n/2} D`` for even ``n``, and
+           ``1 + chi(p) p^{(1-n)/2}`` with ``chi`` the character of
+           ``(-1)^{(n-1)/2} m D`` for odd ``n``.  With ``k = n/2``,
+           respectively ``k = (n-1)/2``, and ``S`` the primes dividing
+           ``2 m D``, the product over ``p`` not in ``S`` is
+           ``1 / L^S(k, chi)`` for even ``n`` and
+           ``L^S(k, chi) / zeta^S(2k)`` for odd ``n``, since
+           ``1 + x = (1 - x^2) / (1 - x)``; ``L^S`` and ``zeta^S`` omit the
+           Euler factors at ``S``.  The ``L``-values are exact through
+           ``sage.quadratic_forms.special_values``, which evaluates
+           Iwasawa, *Lectures on p-adic L-functions* (1972), pp. 16--17.
+        3. At each ``p`` in ``S`` the density is :meth:`local_density`,
+           the limit of Hanke, (5.2).
+        4. Siegel's Hauptsatz (Siegel 1935; Hanke, (5.3) for ``n >= 3``)
+           equates the product of all densities with the coefficient of
+           ``q^m`` of :meth:`theta_series`, and halves the product when
+           ``n = 2``.  Rank 1 is outside the theorem, which requires the
+           number of variables to exceed 1.
+
+        The value is rational: the powers of ``pi`` and the square roots
+        of steps 1 and 2 cancel.
+        """
+        from sage.arith.misc import fundamental_discriminant, kronecker_symbol, prime_divisors
+        from sage.functions.gamma import gamma
+        from sage.misc.misc_c import prod
+        from sage.quadratic_forms.special_values import quadratic_L_function__exact, zeta__exact
+        from sage.rings.rational_field import QQ as SageQQ
+        from sage.symbolic.constants import pi
+        from sage.symbolic.ring import SR
+
+        signature = self.signature_pair()
+        positive, negative = int(signature.first()), int(signature.second())
+        assert positive == 0 or negative == 0, (
+            f"the Siegel product of {self!r} is the Eisenstein coefficient of a definite genus, and this genus has signature ({positive}, {negative})"
+        )
+        rank = positive + negative
+        assert rank >= 2, (
+            f"Siegel's Hauptsatz for {self!r} requires at least 2 variables, and this genus has rank {rank}"
+        )
+        sign = 1 if negative == 0 else -1
+        integers = _own_ring(SageZZ)
+        rationals = _own_ring(SageQQ)
+        m = _engine_element(integers, integers(value))
+        assert m >= 1, f"the Siegel product of {self!r} is taken at a positive integer, not at {m}"
+        determinant = abs(_engine_element(integers, integers(self.determinant())))
+        exceptional = prime_divisors(2 * m * determinant)
+
+        # Step 1: the real density, Siegel's Hilfssatz 26 (Hanke (5.5)).
+        half_rank = SageQQ(rank) / 2
+        unit_ball_volume = pi**half_rank / gamma(half_rank + 1)
+        real_density = rank * unit_ball_volume / 2 * SR(determinant) ** (-SageQQ.one() / 2) * SR(m) ** (half_rank - 1)
+
+        # Step 2: the primes outside S, by Hanke's Lemma 9.1 as L-values.
+        match rank % 2:
+            case 0:
+                k = rank // 2
+                character = fundamental_discriminant((-1) ** k * determinant)
+                partial_l_value = quadratic_L_function__exact(k, character) * prod(
+                    1 - SageQQ(kronecker_symbol(character, p)) / p**k for p in exceptional
+                )
+                generic_density = 1 / partial_l_value
+            case _:
+                k = (rank - 1) // 2
+                character = fundamental_discriminant((-1) ** k * m * determinant)
+                partial_l_value = quadratic_L_function__exact(k, character) * prod(
+                    1 - SageQQ(kronecker_symbol(character, p)) / p**k for p in exceptional
+                )
+                partial_zeta_value = zeta__exact(2 * k) * prod(1 - SageQQ.one() / p ** (2 * k) for p in exceptional)
+                generic_density = partial_l_value / partial_zeta_value
+
+        # Step 3: the primes in S, as local densities of the positive form.
+        positive_value = _owned_engine_element(integers, sign * m)
+        exceptional_density = prod(
+            _engine_element(rationals, self.local_density(_owned_engine_element(integers, p), positive_value)) for p in exceptional
+        )
+
+        # Step 4: Siegel's Hauptsatz, with its factor 1/2 in two variables.
+        hauptsatz_factor = SageQQ.one() / 2 if rank == 2 else SageQQ.one()
+        coefficient = hauptsatz_factor * real_density * generic_density * exceptional_density
+        return _owned_engine_element(rationals, SageQQ(coefficient))
+
+    def siegel_eisenstein_series(self, precision=20, variable="q"):
+        r"""Return ``1 + sum_{0 < m < precision} a_E(m) q^m`` for this definite genus.
+
+        Each coefficient is :meth:`siegel_eisenstein_coefficient`, so the
+        series is computed from local densities alone, independently of
+        the classes of the genus.  The constant term is 1, the zero vector
+        of every member.  By Siegel's Hauptsatz the series equals
+        :meth:`theta_series` to the same precision.
+        """
+        rationals = self._lattice.base_ring().fraction_field()
+        series_ring = rationals.power_series_ring(variable)
+        coefficients = [rationals.one()] + [self.siegel_eisenstein_coefficient(m) for m in range(1, int(precision))]
+        engine = _engine_ring(series_ring)
+        series = engine([_engine_element(rationals, coefficient) for coefficient in coefficients]).add_bigoh(int(precision))
+        return _owned_engine_element(series_ring, series)
+
     def anisotropic_primes(self):
         r"""Return the primes ``p`` at which ``L tensor QQ_p`` is anisotropic, for a member ``L`` of rank at least 3.
 
