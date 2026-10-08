@@ -491,14 +491,14 @@ class DefiniteData(Record):
     regular: bool | Literal["true under GRH"] | None = Field(
         default=None,
         description=(
-            "For an integral ternary form: every positive integer represented by its genus is represented by this lattice. "
+            "For a definite integral lattice: every value $b(x, x)$ represented by some lattice of its genus is represented by this lattice. "
             "`true under GRH` when it is proved under the generalized Riemann hypothesis; `references` names the proof."
         ),
     )
     spinor_regular: bool | Literal["true under GRH"] | None = Field(
         default=None,
         description=(
-            "For an integral ternary form: every positive integer represented by its spinor genus is represented by this lattice. "
+            "For a definite integral lattice of rank at least 3: every value $b(x, x)$ represented by some lattice of its spinor genus is represented by this lattice. "
             "`true under GRH` when it is proved under the generalized Riemann hypothesis; `references` names the proof."
         ),
     )
