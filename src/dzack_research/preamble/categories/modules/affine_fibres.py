@@ -47,6 +47,8 @@ class ModuleInverseImages(OwnedCategoryOverBaseRing):
         return _object_of(self, linear_map=linear_map, target_inclusion=target_inclusion)
 
     class ParentMethods:
+        _derived_construction_parameters = ("base_ring",)
+
         def __init__(self, linear_map, target_inclusion, **rest):
             self._linear_map = linear_map
             self._target_inclusion = target_inclusion
