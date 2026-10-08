@@ -8,6 +8,19 @@ Finish the research-side primitives required by the pinned `sage-indefinite-port
 
 Read `INTENT.md`, `AGENTS.md`, `CONTRIBUTING.md`, `TODO.md`, `COMPLAINTS.md`, and `docs/preamble-megadoc.md` before editing. The formal authority is `lean-categories`; correctness acceptance belongs to `lean-cas-dsl`. Research runtime checks establish engineering integration only. Formal requests run beside computational work.
 
+## Priorities
+
+Do the work in this order. Do not start a later step while an earlier step has ready work.
+
+1. **Everything that `sage-indefinite-port` needs.** This includes the primitives in this file, the audit rows, and every preamble owner that those primitives depend on. Each item is a blocker for the port.
+2. **Obvious mathematical errors and wrong placements.** Read the audit views as a mathematician:
+   - `just category-graph constructions --select CATEGORY` shows the category of each construction's result.
+   - `just category-graph properties` shows the properties that each category places on its objects.
+   - `just category-graph routes --operation NAME` shows the routes to one operation.
+
+   Read each line as a mathematical statement. A line that is obviously false is a defect. For example, an element of the power set of a finite set that is not placed in finite sets is a defect. Repair the placement at its owner, and file a TODO node when the repair is not immediate.
+3. **Duplication.** Reduce duplicate implementations only after steps 1 and 2. A duplicate that blocks the port or causes a wrong placement belongs to the earlier step.
+
 ## In progress
 
 The remaining unit is integration of the affine fibres, integral lift torsors, and generated orthogonal-group actions. The checkpoint includes shared-owner changes whose broader contracts still need review:
