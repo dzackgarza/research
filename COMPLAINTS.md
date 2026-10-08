@@ -1218,33 +1218,41 @@ affine covers.
 were inspected.  No claim is made here about other same-class parameterized
 relations.
 
-### A finite subset over a set does not answer its cardinality
+### A slice object does not answer the set invariants of its underlying object
 
-**Missing general mathematics:** an element of `X.finite_subsets()` is a
-subobject `(A, i: A -> X)` with `A` finite, an object of the slice `Sets/X`.
-Its cardinality is `|A|`, reached through the forgetful functor
-`Sets/X -> Sets`, and the object belongs to the finite sets.
-**Dependency path:** `Lattices(ZZ).vectors_of_square(n)` on a definite or
-split binary lattice returns `self.finite_subsets()(...)`;
-`Lattices(ZZ).represents(n)` asks whether that set is empty.
-**Evidence (2026-10-09):** for `L = <-1>^3`,
-`L.vectors_of_square(-6).cardinality()` raises `AssertionError: cannot compute
-the cardinality ... it is not known to be finite or countably infinite`; the
-object is in `Join of Category of facade sets and Slice category Category of
-sets/Integral lattice`, not in `Sets().Finite()`, and it has no `is_empty`.
-`.domain().cardinality()` answers 24.
-**Existing partial capability:** `FinitePowerSets.ParentMethods._element_constructor_`
-checks that the domain is finite and returns the power-set element; on the
-other branches `vectors_of_square` returns `square_fibre(n).object()`, a plain
-set, so the operation answers two kinds of object.
-**Affected consumers:** `represents`, which reads `.domain()` as a stopgap, and
-every caller of `vectors_of_square` that asks a set question.
-**Coverage boundary:** `set_categories.py` `FinitePowerSets` and
-`_finite_subsets`, and `lattices.py` `vectors_of_square` were inspected; the
-slice-category owner was not.
-**Repair:** a finite subset is placed in `Sets().Finite()` and answers set
-operations through its domain, and `vectors_of_square` answers one kind of
-object on every branch.
+**Missing general mathematics:** an object `(A, p: A -> X)` of `C/X` has the
+underlying object `U(A, p) = A` under the projection `U: C/X -> C`, so its
+underlying set, its cardinality and its finiteness are those of `A`. A subset
+of `X` is the case `C = Set` with `p` monic.
+**Dependency path:** `Sets().Subobjects(X)` and `X.power_set()` construct a
+subset as an object of `Set/X` through `SliceCategory._construct_on` and
+`Objects.ParentMethods._with_structure`; `Sets().ParentMethods.cardinality`
+answers only from placement in a cardinality category or from a formula.
+**Evidence (2026-10-09):** with `points = Sets.Δ[2]` and
+`pair = points.power_set()((points(0), points(1)))`, `pair.category()` is the
+join of the facade sets and `Sets/{0,...,2}`; `pair.domain() in FiniteSets()`
+is `True`; `pair.cardinality()` and `points.power_set().top().cardinality()`
+raise `AssertionError: cannot compute the cardinality ... it is not known to be
+finite or countably infinite`. The protected expectation
+`tests/objects/test_power_set_of_a_three_element_set.sage::test_the_boolean_operations`
+asks `pair.cardinality() == 2`. `Lattices(ZZ).vectors_of_square` returns such
+a subset, so `represents` reads `.domain().cardinality()` in its place.
+**How it entered:** `520ffee4d8` (2026-10-08) applied the owner's ruling that
+an object of `C/X` lies in `C/X` and its supercategories only, and removed
+`FiniteSets` with the other categories of `A`. Its specimen asserted that the
+slice object is not in `FiniteSets`; no specimen asked a slice object for a
+set invariant. `SetSubobjectCategory`'s docstring states that the points,
+membership and cardinality of `(A, i)` are those of `A`; no level supplies them.
+**Existing partial capability:** the arrow's domain answers every set
+question; `SetSubobjectCategory` supplies the subobject lattice only.
+**Affected consumers:** every subset of a set (`power_set`, `finite_subsets`,
+`Subobjects`, `subsets_of_size`), every slice object over a set, and
+`represents`.
+**Coverage boundary:** `set_categories.py` power sets,
+`arrow_categories.py` `SliceCategory` and `SetSubobjectCategory`, and
+`objects.py` `_with_structure` were inspected; the module and algebra
+`_with_structure` routes were not probed.
+**Repair:** `TODO.md` `slice-objects-answer-the-set-invariants-of-their-underlying-object`.
 
 ### Module-subobject joins and meets do not transport canonical ideal structure
 
