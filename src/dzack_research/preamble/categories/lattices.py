@@ -4098,27 +4098,38 @@ class Lattices(OwnedCategoryOverBaseRing):
             return _theta_series(self, precision=precision, variable=variable)
 
         def is_regular(self, *, max_value=None):
-            r"""Return ``False`` when the genus represents a value this definite lattice does not.
+            r"""Return whether this definite lattice represents every value its genus represents.
 
             A definite lattice is regular when it represents every value
-            \(b(x,x)\) that some lattice of its genus represents.  The search
-            compares theta series with those of the classes of the genus and
-            answers ``False`` at the first value one of them represents and
-            this lattice does not.  It never answers ``True``: without
-            ``max_value`` it does not return on a regular lattice, and a
-            search that ``max_value`` stopped answers the proposition.
+            \(b(x,x)\) that some lattice of its genus represents.  A genus of
+            one class holds only this lattice, so the lattice is regular.
+            Otherwise the search compares theta series with those of the
+            classes of the genus and answers ``False`` at the first value one
+            of them represents and this lattice does not.  Without
+            ``max_value`` it does not return on a regular lattice of class
+            number above one, and a search that ``max_value`` stopped answers
+            the proposition.
             """
-            return _first_unrepresented_value(self, self.genus().representatives(), max_value, "is_regular")
+            match int(self.genus_class_number()):
+                case 1:
+                    return True
+                case _:
+                    return _first_unrepresented_value(self, self.genus().representatives(), max_value, "is_regular")
 
         def is_spinor_regular(self, *, max_value=None):
-            r"""Return ``False`` when the spinor genus represents a value this definite lattice does not.
+            r"""Return whether this definite lattice represents every value its spinor genus represents.
 
-            The search of :meth:`is_regular` over the classes of the spinor
+            The procedure of :meth:`is_regular` over the classes of the spinor
             genus of this lattice, which come first among the representatives
-            of its genus.
+            of its genus: a spinor genus of one class answers ``True``.
             """
-            classes = tuple(self.genus().representatives())[: int(self.spinor_genus_class_numbers()[0])]
-            return _first_unrepresented_value(self, classes, max_value, "is_spinor_regular")
+            count = int(self.spinor_genus_class_numbers()[0])
+            match count:
+                case 1:
+                    return True
+                case _:
+                    classes = tuple(self.genus().representatives())[:count]
+                    return _first_unrepresented_value(self, classes, max_value, "is_spinor_regular")
 
         def is_modular(self, scale):
             r"""Return whether this lattice is isometric to \(L^*(k)\) for ``scale`` \(k\).

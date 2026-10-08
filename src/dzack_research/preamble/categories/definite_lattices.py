@@ -1177,6 +1177,9 @@ __all__ = [
 def _first_unrepresented_value(lattice, classes, max_value, predicate):
     r"""Answer ``False`` at the least value a lattice of ``classes`` represents and ``lattice`` does not.
 
+    ``classes`` holds more than the class of ``lattice``; the callers answer
+    ``True`` for a genus or spinor genus of one class.
+
     The value \(n\) is represented by a definite lattice exactly when the
     coefficient of \(q^{|n|}\) in its theta series is nonzero.  The search
     reads the theta series to a precision that doubles from 64.  Without

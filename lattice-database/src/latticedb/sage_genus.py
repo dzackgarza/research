@@ -87,9 +87,11 @@ def _reflective(lattice) -> bool | None:
             return None
 
 
-def _irregular(answer) -> bool | None:
-    """Serialize a regularity semi-decision, whose only definite answer is ``False``."""
+def _decided(answer) -> bool | None:
+    """Serialize a regularity answer: ``True`` or ``False`` when decided, else nothing."""
     match answer:
+        case True:
+            return True
         case False:
             return False
         case _:
@@ -128,8 +130,8 @@ VALUES = {
     "discriminant_orbits": lambda lattice: lattice.discriminant_orbit_series(),
     "reflective": _reflective,
     "modular_scale": _modular_scale,
-    "regular": lambda lattice: _irregular(lattice.is_regular()),
-    "spinor_regular": lambda lattice: _irregular(lattice.is_spinor_regular()),
+    "regular": lambda lattice: _decided(lattice.is_regular()),
+    "spinor_regular": lambda lattice: _decided(lattice.is_spinor_regular()),
 }
 
 
