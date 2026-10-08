@@ -672,17 +672,18 @@ class LatticeIsometryMethods:
         fraction_map = ring.fraction_field_map()
         if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
             raise ValueError("the isometry must join the selected lattices' fraction-field extensions")
-        for morphism in (self, self.inverse()):
-            for generator in morphism.domain().module_generators():
-                coordinates = morphism(generator).to_vector()
-                if any(coordinates(label) not in ring for label in coordinates.support().domain()):
-                    return None
-
-        def image(label):
-            coordinates = self(self.domain().module_generator(label)).to_vector()
-            return target.linear_combination({index: ring(coordinates(index)) for index in coordinates.support().domain()})
-
-        return source.Isom(target)(image)
+        restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
+        source_inclusion = source.generic_fibre_map()
+        target_inclusion = target.generic_fibre_map()
+        forward = (restrict(self) * source_inclusion).factor_through_or_none(target_inclusion)
+        if forward is None:
+            return None
+        backward = (restrict(self.inverse()) * target_inclusion).factor_through_or_none(source_inclusion)
+        if backward is None:
+            return None
+        module_isomorphism = Modules(ring).Core().Mor(source, target)(forward, backward)
+        homset = source.Isom(target)
+        return homset.element_class(homset, module_isomorphism)
 
     def inverse(self):
         r"""Return the inverse isometry."""
