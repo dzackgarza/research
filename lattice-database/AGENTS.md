@@ -92,6 +92,29 @@ A script that produced stored data is itself part of the database. Its source re
 cards. Source-intake tests may check that the importer copied or transformed that source as intended;
 agreement with the archived source is not evidence that the resulting mathematical claim is true.
 
+## Certification certifies values; a procedure need not terminate
+
+An invariant is computable here when a procedure produces its value. The procedure does not have
+to decide the general problem or terminate on every input. Vinberg's algorithm computes
+`hyperbolic.reflective`; the search of `L.is_regular()` computes `definite.regular`.
+
+Certification certifies the values that appear. A value that a procedure produced, or that a cited
+source proves, gets a certificate. A field with no value claims nothing: its value is unknown, and
+that is a correct card state. A procedure that does not terminate on a card certifies nothing for
+that card, so it can never put a false claim on it.
+
+So these are never reasons to call an invariant uncomputable, to request it on fewer cards, to remove
+or weaken its operation, or to report it as a gap:
+
+- the general problem is undecidable or not known to be decidable;
+- the procedure does not terminate on some cards;
+- the procedure is slow.
+
+A gap is an invariant for which no procedure produces the value that a card would state. The CI
+certification job, about six hours, is the only time bound, and each run certifies more values. A
+local run only shows correct values on small nontrivial specimens, or finds a performance defect
+after a CI timeout.
+
 ## A certified computation never runs again
 
 The lattice card is the only store of a computed value. Its `certifications` map cites a SHA-256
