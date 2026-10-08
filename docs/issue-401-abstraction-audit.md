@@ -93,7 +93,7 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 **Contract:** return a chosen isometry and its summand maps for `L ≅ U ⊥ U ⊥ K`. Finding a suitable divisibility-one isotropic vector is a separate integral existence/search problem. A rational witness with larger divisibility does not refute the existence of a splitting. A construction from a supplied complement is not recovery from an arbitrary Gram presentation.
 
-**Trace:** rows 1, 4, 5, with the integral hypotheses retained at both stages. The local `two_hyperbolic_plane_splitting()` bypasses the requested reduction-owned splitting and does not supply the general existence search. Its `TwoUEichlerModel` source is a downstream specialization, not the owner of an orthogonal decomposition. The scrambled `2U + E8(-1)` specimen does not settle that abstraction.
+**Trace:** rows 1, 4, 5, with the integral hypotheses retained at both stages. The current `two_hyperbolic_plane_splitting()` composes two `isotropic_reduction().integral_hyperbolic_splitting()` arrows, their orthogonal-biproduct injections, and an explicit isometry from `U + U + K` to the original lattice. Its `integral_hyperbolic_index()` existence check precedes an exhaustive divisibility-one null-vector search in each reduction when the initial witness is unsuitable. The two summand injections and both inverse identities passed targeted execution on a nontrivial Gram presentation; the scrambled `2U + E8(-1)` specimen is additionally present at the owner. General formal comparison and independent acceptance are not established by these examples. `TwoUEichlerModel` remains a downstream consumer, not this decomposition's owner.
 
 ### 7. Affine integral solution locus — frozen `family.integral_members()`
 

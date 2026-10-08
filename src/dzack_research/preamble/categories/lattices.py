@@ -3986,6 +3986,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: splitting.inverse() * splitting == splitting.domain().Isom(splitting.domain()).one()
                 True
+                sage: source = splitting.domain()
+                sage: source.biproduct_factor(0).module_rank() == source.biproduct_factor(1).module_rank() == 2
+                True
+                sage: all(splitting.inverse()(splitting(source.injection(i)(v))) == source.injection(i)(v) for i in (0, 1) for v in source.biproduct_factor(i).module_generators())
+                True
+                sage: splitting * splitting.inverse() == L.Isom(L).identity()
+                True
 
             Recover the splitting after changing the basis of ``2U + E8(-1)``::
 
