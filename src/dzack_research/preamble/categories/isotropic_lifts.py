@@ -12,9 +12,22 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import TrivializedTorsors
 from dzack_research.preamble.categories.lattices import IsotropicReductions, Lattices
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+
+
+def _vector_denominator(vector, integral_module):
+    r"""The denominator ideal of the map taking 1 to this vector."""
+    ring = integral_module.base_ring()
+    field_map = ring.fraction_field_map()
+    line = ring.regular_module()
+    arrow = Modules(field_map.codomain()).Mor(line.base_change(field_map), vector.parent())(
+        lambda label: vector
+    )
+    (denominator,) = tuple(arrow.denominator_ideal(line, integral_module).ideal_generators())
+    return denominator
 
 
 def _rational_splitting(reduction, plane):
@@ -167,4 +180,89 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
                 lambda g: g.integral_restriction(target, target) is not None,
                 "integral automorphisms in the marked-line reduction kernel",
             )
-            return GObjects(integral_kernel, Sets()).on_set(points, lambda g, lift: g * lift)
+            return GObjects(integral_kernel, Sets()).on_set(
+                points, lambda g, lift: g * lift, orbit_relation=lambda left, right: True
+            )
+
+        @cached_method
+        def integral_parameter_quotient(self):
+            r"""Retain a finite quotient containing every integral lift parameter class.
+
+            Write ``x=base^-1(f_target)`` and choose D with Dx integral.
+            Every integral lift has parameter in ``P=projection(E)/D``.
+            If e has denominator A and the section of P has denominator B,
+            then ``m=2AB`` makes the section of mP lie in ``2A*E``.
+            The Eichler formula and its inverse are integral for these
+            parameters. Thus integrality is constant on cosets of mP in P.
+            This quotient is a finite search presentation, not an assertion
+            that mP is the entire integral kernel.
+            """
+            source = self.source_reduction().isotropic_embedding().codomain()
+            target = self.target_reduction().isotropic_embedding().codomain()
+            ring = source.base_ring()
+            field_map = ring.fraction_field_map()
+            field = field_map.codomain()
+            parameters = self.parameter_space()
+            restricted_parameters = parameters.restrict_scalars(field_map)
+            witt = self._target_witt
+            rational_target = witt.rational_lattice()
+            source_vector = self.base_point().inverse()(witt.dual_isotropic_vector())
+            denominator = _vector_denominator(source_vector, source)
+            projection = self.target_splitting().codomain().projection(1) * self.target_splitting()
+            rationalize = target.generic_fibre_map()
+            parameter_lattice = restricted_parameters.subobject_on(tuple(
+                restricted_parameters(parameters.scalar_multiple(
+                    field.one() / field_map(denominator),
+                    projection(rationalize(vector).underlying_element()),
+                )) for vector in target.module_generators()
+            ))
+            section = Modules(field).Mor(parameter_lattice.base_change(field_map), rational_target)(
+                lambda label: self._target_section(
+                    parameter_lattice.inclusion()(parameter_lattice.module_generator(label)).underlying_element()
+                )
+            )
+            (section_denominator,) = tuple(section.denominator_ideal(parameter_lattice, target).ideal_generators())
+            isotropic_denominator = _vector_denominator(witt.isotropic_vector(), target)
+            period = ring(2) * isotropic_denominator * section_denominator
+            multiplication = Modules(ring).Mor(parameter_lattice, parameter_lattice)(
+                lambda label: parameter_lattice.scalar_multiple(period, parameter_lattice.module_generator(label))
+            )
+            return multiplication.cokernel_projection()
+
+        @cached_method
+        def integral_parameter_classes(self):
+            r"""The complete finite residue locus for integral isometry lifts."""
+            quotient = self.integral_parameter_quotient()
+            lattice = quotient.domain()
+            source = self.source_reduction().isotropic_embedding().codomain()
+            target = self.target_reduction().isotropic_embedding().codomain()
+
+            def integral(residue):
+                parameter = lattice.inclusion()(quotient.preimage(residue)).underlying_element()
+                lift = self.parameterization()(parameter)
+                return lift.integral_restriction(source, target) is not None
+
+            return quotient.codomain().condition_set(integral)
+
+        @cached_method
+        def integral_base_point(self):
+            r"""Select an integral lift, or raise when the integral lift locus is empty."""
+            quotient = self.integral_parameter_quotient()
+            for residue in self.integral_parameter_classes():
+                parameter = quotient.domain().inclusion()(quotient.preimage(residue)).underlying_element()
+                return self.parameterization()(parameter)
+            raise ValueError("the integral reduction-lift locus is empty")
+
+        @cached_method
+        def integral_torsor(self):
+            r"""Trivialize the integral lift locus under its full integral kernel."""
+            from dzack_research.preamble.categories.group.g_sets import Torsors
+
+            members = self.integral_members()
+            group = members.acting_group()
+            points = members.point_set()
+            chosen = self.integral_base_point()
+            forward = Sets().Mor(group, points)(lambda g: points(g * chosen))
+            backward = Sets().Mor(points, group)(lambda lift: group(lift * chosen.inverse()))
+            trivialization = Sets().Core().Mor(group, points)._from_known_inverse_pair(forward, backward)
+            return Torsors(group).from_trivialization(trivialization)
