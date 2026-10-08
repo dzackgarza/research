@@ -4454,11 +4454,6 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
             ambient = self.supergroup()
             if candidate not in ambient:
                 return False
-            if candidate == ambient.one() or any(
-                candidate == generator or candidate == ~generator
-                for generator in self.selected_subgroup_generators()
-            ):
-                return True
             if word is not None:
                 free = self.selected_group_resolution().level(0)
                 product = ambient.one()
@@ -4467,6 +4462,11 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
                 if product == candidate:
                     return True
                 return AtomicProposition("is_member", candidate, self)
+            if candidate == ambient.one() or any(
+                candidate == generator or candidate == ~generator
+                for generator in self.selected_subgroup_generators()
+            ):
+                return True
             if ambient.is_finite() is True:
                 return _engine_subgroup_admits(self, candidate)
             return AtomicProposition("is_member", candidate, self)
