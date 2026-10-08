@@ -88,6 +88,14 @@ When a result has no place in the schema, the schema gains one: a field in `mode
 validator, its row in `README.md`, and the value on every record that the computation covers.
 It is never left in a scratch script, a terminal or a chat.
 
+**The schema lands first.** Work that adds invariants to the database starts with the schema: each
+field in `model.py` with its validator, its `README.md` row, and its certificate name and request
+wiring, committed before any preamble operation is probed or implemented. The committed schema is
+the specification that the preamble work then fills. A worker that probes the preamble or an engine
+before that commit is selecting work by what already computes, not by what the database must store.
+On 2026-10-09 a worker on `definite-theta-series-modular-decomposition` spent its first hours
+reading Sage's local-density and Siegel-product sources with no field committed.
+
 A script that produced stored data is itself part of the database. Its source reader can seed
 cards. Source-intake tests may check that the importer copied or transformed that source as intended;
 agreement with the archived source is not evidence that the resulting mathematical claim is true.
