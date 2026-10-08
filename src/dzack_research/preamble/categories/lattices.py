@@ -5300,11 +5300,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             The Bezout correction is integral when ``2*div(self)`` divides
             the square of the selected Bezout partner. This includes every
             primitive isotropic vector of divisibility one in an even lattice.
-            In rank two, failure of this divisibility condition proves that
-            the partner locus is empty and raises ``ValueError``. In higher
-            rank, it leaves the existence question open and raises
-            ``NotImplementedError``. The full locus remains represented by
-            :meth:`hyperbolic_partner_locus`.
+            Otherwise, in finite rank, put ``K=ker b(self,-)``. The square
+            of ``h+k`` modulo ``2d`` depends only on the class of ``k`` in
+            ``K/(ZZ*self+2d*K)``. Enumerating this finite module decides
+            existence: a zero residue permits the exact correction along
+            ``self``; every partner gives such a residue. The full locus
+            remains represented by :meth:`hyperbolic_partner_locus`.
 
             EXAMPLES::
 
@@ -5330,13 +5331,23 @@ class Lattices(OwnedCategoryOverBaseRing):
             partner = self.bezout_partner()
             correction, remainder = partner.q().quo_rem(ring(2) * divisibility)
             if remainder != ring.zero():
-                if lattice.module_rank() == 2:
-                    # In rank two, ker b(e,-) is Qe intersect L = Ze,
-                    # since e is primitive and b(e,-) is nonzero.
-                    raise ValueError("the integral hyperbolic partner locus is empty")
-                raise NotImplementedError(
-                    "finding a point in this integral quadratic locus requires more than the Bezout correction"
+                if not lattice.module_rank().is_finite():
+                    raise NotImplementedError("the norm-congruence selection requires a finite-rank pairing kernel")
+                kernel = self.to_covector().kernel()
+                modulus = ring(2) * divisibility
+                relations = kernel.subobject_on(
+                    tuple(kernel.scalar_multiple(modulus, v) for v in kernel.module_generators())
+                    + (kernel.inclusion().lift(self),)
                 )
+                projection = relations.inclusion().cokernel_projection()
+                for residue in projection.codomain():
+                    lifted = partner + kernel.inclusion()(projection.preimage(residue))
+                    quotient, residue_square = lifted.q().quo_rem(modulus)
+                    if residue_square == ring.zero():
+                        partner, correction = lifted, quotient
+                        break
+                else:
+                    raise ValueError("the integral hyperbolic partner locus is empty")
             candidate = partner - lattice.scalar_multiple(correction, self)
             locus = self.hyperbolic_partner_locus().object()
             return locus.inclusion()(locus(candidate))
