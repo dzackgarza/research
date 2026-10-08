@@ -221,9 +221,14 @@ def duplicates(root: Root = Path()) -> None:
     for tags in found.values():
         print(f"{' '.join(tags)}")
     if found:
-        print(f"{sum(len(tags) for tags in found.values())} cards share a Gram tensor", file=sys.stderr)
+        print(
+            f"{sum(len(tags) for tags in found.values())} cards share a Gram tensor",
+            file=sys.stderr,
+        )
         sys.exit(1)
-    print(f"{sum(len(tags) for tags in index.values())} lattice cards have distinct Gram tensors")
+    print(
+        f"{sum(len(tags) for tags in index.values())} lattice cards have distinct Gram tensors"
+    )
 
 
 @app.command
@@ -267,11 +272,10 @@ def certify(
     *,
     tag: Annotated[
         tuple[str, ...],
-        Parameter(help="Tag of a card to certify; repeat for each one. All cards when absent."),
+        Parameter(
+            help="Tag of a card to certify; repeat for each one. All cards when absent."
+        ),
     ] = (),
-    seconds: Annotated[
-        int, Parameter(help="Time limit of SageMath for one value of one record.")
-    ] = 120,
     root: Root = Path(),
 ) -> None:
     """Compute uncertified card values, replace disagreements, and certify the computed results."""
@@ -300,9 +304,11 @@ def certify(
         card_certifications["derive"] = certificate_hash
         computed["certifications"] = card_certifications
         entry.path.write_text(records.record_text(computed, document.content))
-        held[computation] = certificates.Certificate(hash=certificate_hash, by=LATTICEDB)
+        held[computation] = certificates.Certificate(
+            hash=certificate_hash, by=LATTICEDB
+        )
         certificates.save(root, held)
-    genus.certify(root, corpus.load(root), held, tag, seconds)
+    genus.certify(root, corpus.load(root), held, tag)
 
 
 @app.command

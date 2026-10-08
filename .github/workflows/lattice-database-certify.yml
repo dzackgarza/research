@@ -8,11 +8,6 @@ name: lattice-database-certify
         description: 'Certify one lattice tag while debugging this workflow; omit for the full corpus.'
         required: false
         type: string
-      seconds:
-        description: 'Per-computation timeout for a manual debug run.'
-        required: false
-        default: 600
-        type: number
 permissions:
   contents: write
 concurrency:
@@ -80,9 +75,8 @@ jobs:
       - name: Compute and certify uncertified card values
         env:
           LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
-          LATTICEDB_SECONDS: ${{ github.event.inputs.seconds || 600 }}
         run: |
-          args=(--seconds "$LATTICEDB_SECONDS")
+          args=()
           if [[ -n "$LATTICEDB_TAG" ]]; then
             args+=(--tag "$LATTICEDB_TAG")
           fi

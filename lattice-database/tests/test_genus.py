@@ -22,7 +22,11 @@ def test_a_computed_series_of_orbits_replaces_its_prefix_and_preserves_the_autho
     shutil.copy(REPOSITORY / "lattices" / "0012.md", path)
     document = frontmatter.load(str(path))
     document.metadata["integral"]["primitive_orbits"] = {
-        "O": {"constant": 0, "z": [None, 1, 9, 9, 7, 8], "reference": {"citation": "source"}}
+        "O": {
+            "constant": 0,
+            "z": [None, 1, 9, 9, 7, 8],
+            "reference": {"citation": "source"},
+        }
     }
     path.write_text(frontmatter.dumps(document))
     genus.store(
@@ -71,7 +75,10 @@ def test_a_stored_value_that_differs_is_replaced(tmp_path: Path) -> None:
     path = tmp_path / "0012.md"
     shutil.copy(REPOSITORY / "lattices" / "0012.md", path)
     genus.store(path, {"automorphism_group_order": 6})
-    assert frontmatter.load(str(path)).metadata["definite"]["automorphism_group_order"] == 6
+    assert (
+        frontmatter.load(str(path)).metadata["definite"]["automorphism_group_order"]
+        == 6
+    )
 
 
 def test_a_certified_value_is_not_requested(tmp_path: Path) -> None:
@@ -99,7 +106,7 @@ def test_a_certified_value_is_not_requested(tmp_path: Path) -> None:
         records.record_text(metadata, source.content)
     )
     loaded = corpus.load(tmp_path)
-    requests = genus.requests(loaded, held, ("0012",), seconds=60)
+    requests = genus.requests(loaded, held, ("0012",))
     assert requests
     assert "genus_symbol" not in requests[0]["fields"]
     assert "genus_class_count" not in requests[0]["fields"]
@@ -111,4 +118,4 @@ def test_a_certified_value_is_not_requested(tmp_path: Path) -> None:
         records.record_text(corpus.front_matter(changed), changed.content)
     )
     loaded = corpus.load(tmp_path)
-    assert "genus_class_count" in genus.requests(loaded, held, ("0012",), seconds=60)[0]["fields"]
+    assert "genus_class_count" in genus.requests(loaded, held, ("0012",))[0]["fields"]

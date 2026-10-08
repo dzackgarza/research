@@ -2,17 +2,13 @@
 
 This module contains no lattice mathematics. It reads JSON requests from
 ``latticedb certify``, constructs the corresponding preamble lattice, invokes
-preamble-owned operations, serializes their returned values, and enforces the
-per-computation wall-clock alarm.
+preamble-owned operations, serializes their returned values, and writes each completed value as one
+JSON line.
 """
 
 import json
 import sys
-from collections.abc import Callable
 from typing import TypedDict
-
-from cysignals.alarm import alarm, cancel_alarm
-from cysignals.signals import AlarmInterrupt
 
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
@@ -31,18 +27,6 @@ class Request(TypedDict):
 
 
 JsonValue = object
-
-
-def within(seconds: int, compute: Callable[[], JsonValue]) -> JsonValue | None:
-    """Return ``compute()`` or ``None`` when the process-local alarm fires."""
-    alarm(seconds)
-    try:
-        value = compute()
-    except AlarmInterrupt:
-        return None
-    finally:
-        cancel_alarm()
-    return value
 
 
 def _matrix_rows(morphism) -> list[list[int]]:
@@ -84,58 +68,50 @@ def _reflective(lattice) -> bool | None:
             return None
 
 
+GROUP_FIELDS = {"automorphism_group_order", "automorphism_group_generator_morphisms"}
+
+
+VALUES = {
+    "genus_symbol": lambda lattice: str(lattice.conway_sloane_genus_symbol()),
+    "genus_class_count": lambda lattice: int(lattice.genus_class_number()),
+    "overlattice_count": lambda lattice: int(
+        lattice.integral_overlattice_inclusions().cardinality()
+    ),
+    "spinor_genus_count": lambda lattice: int(lattice.spinor_genus_count()),
+    "spinor_genera": lambda lattice: [
+        int(value) for value in lattice.spinor_genus_class_numbers()
+    ],
+    "hyperbolic_index": lambda lattice: int(lattice.integral_hyperbolic_index()),
+    "discriminant_sequence": lambda lattice: lattice.discriminant_sequence_data(),
+    "primitive_orbits": lambda lattice: lattice.primitive_orbit_series(),
+    "discriminant_orbits": lambda lattice: lattice.discriminant_orbit_series(),
+    "reflective": _reflective,
+}
+
+
+def _emit(tag: str, values: dict[str, JsonValue]) -> None:
+    """Write one completed computation, so a run that ends early keeps every finished value."""
+    print(json.dumps({"tag": tag, "by": "research preamble", **values}), flush=True)
+
+
 def main() -> None:
     task = json.load(sys.stdin)
-    seconds: int = task["seconds"]
     lattices: list[Request] = task["lattices"]
     for request in lattices:
         ring = OWNED_ZZ if request["integral"] else OWNED_QQ
         lattice = Lattices(ring)(request["gram"])
-        requested = set(request["fields"])
-        line: dict[str, JsonValue | None] = {
-            "tag": request["tag"],
-            "by": "research preamble",
-        }
-
-        group_data = None
-        if requested & {
-            "automorphism_group_order",
-            "automorphism_group_generator_morphisms",
-        }:
-            group_data = within(seconds, lambda: list(_orthogonal_group_data(lattice)))
-        if "automorphism_group_order" in requested:
-            line["automorphism_group_order"] = (
-                int(group_data[0]) if isinstance(group_data, list) else None
-            )
-        if "automorphism_group_generator_morphisms" in requested:
-            line["automorphism_group_generator_morphisms"] = (
-                group_data[1] if isinstance(group_data, list) else None
-            )
-
-        computations: dict[str, Callable[[], JsonValue]] = {
-            "genus_symbol": lambda: str(lattice.conway_sloane_genus_symbol()),
-            "genus_class_count": lambda: int(lattice.genus_class_number()),
-            "overlattice_count": lambda: int(
-                lattice.integral_overlattice_inclusions().cardinality()
-            ),
-            "spinor_genus_count": lambda: int(lattice.spinor_genus_count()),
-            "spinor_genera": lambda: [
-                int(value) for value in lattice.spinor_genus_class_numbers()
-            ],
-            "hyperbolic_index": lambda: int(lattice.integral_hyperbolic_index()),
-            "discriminant_sequence": lambda: lattice.discriminant_sequence_data(),
-            "primitive_orbits": lambda: lattice.primitive_orbit_series(),
-            "discriminant_orbits": lambda: lattice.discriminant_orbit_series(),
-            "reflective": lambda: _reflective(lattice),
-        }
+        group_fields = GROUP_FIELDS & set(request["fields"])
+        if group_fields:
+            order, generators = _orthogonal_group_data(lattice)
+            group_data = {
+                "automorphism_group_order": order,
+                "automorphism_group_generator_morphisms": generators,
+            }
+            _emit(request["tag"], {field: group_data[field] for field in group_fields})
         for field in request["fields"]:
-            if field in {
-                "automorphism_group_order",
-                "automorphism_group_generator_morphisms",
-            }:
+            if field in group_fields:
                 continue
-            line[field] = within(seconds, computations[field])
-        print(json.dumps(line), flush=True)
+            _emit(request["tag"], {field: VALUES[field](lattice)})
 
 
 if __name__ == "__main__":

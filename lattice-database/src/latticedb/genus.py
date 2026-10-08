@@ -56,10 +56,7 @@ def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> 
         }
         if any(name not in by_name for name in value):
             return value
-        matrices = [
-            [list(row) for row in by_name[name].matrix]
-            for name in value
-        ]
+        matrices = [[list(row) for row in by_name[name].matrix] for name in value]
         return sorted(
             matrices,
             key=lambda rows: tuple(entry for row in rows for entry in row),
@@ -101,7 +98,11 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.definite is not None
         case "discriminant_orbits":
             index = max(planes, lattice.integral.hyperbolic_index or 0)
-            return lattice.definite is None and lattice.integral.parity == "even" and index >= 2
+            return (
+                lattice.definite is None
+                and lattice.integral.parity == "even"
+                and index >= 2
+            )
         case _:
             return True
 
@@ -124,17 +125,14 @@ def name(tag: str, field: str) -> str:
 
 
 def requests(
-    loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...], seconds: int
+    loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...]
 ) -> list[Request]:
     """For each nondegenerate record, the uncertified applicable preamble computations."""
     chosen: list[Request] = []
     bounds = hyperbolic_index_bounds(loaded.entries)
     for entry in loaded.entries:
         lattice = entry.lattice
-        if (
-            lattice.determinant == 0
-            or (tags and lattice.tag not in tags)
-        ):
+        if lattice.determinant == 0 or (tags and lattice.tag not in tags):
             continue
         applicable = [
             field
@@ -173,9 +171,9 @@ def requests(
     return chosen
 
 
-def computed(chosen: list[Request], seconds: int) -> Iterator[dict[str, Yaml]]:
+def computed(chosen: list[Request]) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
-    task = json.dumps({"seconds": seconds, "lattices": chosen})
+    task = json.dumps({"lattices": chosen})
     # Keep the host SageMath environment separate from the project environment.
     environment = {
         variable: value
@@ -263,7 +261,9 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
         # The hyperbolic block holds only computed fields, so the first computed value creates it.
         match metadata.setdefault(block_name, {}):
             case dict() as block:
-                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
+                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(
+                    value, dict
+                ):
                     present = block.get(field)
                     replacement = dict(present) if isinstance(present, dict) else {}
                     for group, computed_series in value.items():
@@ -271,11 +271,17 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
                             replacement[group] = computed_series
                             continue
                         old_series = replacement.get(group)
-                        updated_series = dict(old_series) if isinstance(old_series, dict) else {}
+                        updated_series = (
+                            dict(old_series) if isinstance(old_series, dict) else {}
+                        )
                         for key, computed_part in computed_series.items():
                             if key in {"z", "w"} and isinstance(computed_part, list):
                                 old_part = updated_series.get(key)
-                                tail = old_part[len(computed_part):] if isinstance(old_part, list) else []
+                                tail = (
+                                    old_part[len(computed_part) :]
+                                    if isinstance(old_part, list)
+                                    else []
+                                )
                                 updated_series[key] = [*computed_part, *tail]
                             else:
                                 updated_series[key] = computed_part
@@ -297,11 +303,10 @@ def certify(
     loaded: corpus.Corpus,
     held: Certificates,
     tags: tuple[str, ...],
-    seconds: int,
 ) -> None:
     """Compute every uncertified value, replace its card scope, and certify the result."""
     by_tag = {entry.lattice.tag: entry for entry in loaded.entries}
-    for values in computed(requests(loaded, held, tags, seconds), seconds):
+    for values in computed(requests(loaded, held, tags)):
         entry = by_tag[str(values["tag"])]
         store(entry.path, values)
         stored = corpus.front_matter(frontmatter.load(str(entry.path)))
@@ -315,7 +320,9 @@ def certify(
             assert isinstance(block, dict)
             computation = name(entry.lattice.tag, field)
             certificate_hash = certificates.certification_hash(
-                computation, stored_lattice, certified_value(field, block.get(field), stored_lattice)
+                computation,
+                stored_lattice,
+                certified_value(field, block.get(field), stored_lattice),
             )
             card_certifications[f"{block_name}.{field}"] = certificate_hash
             held[computation] = Certificate(hash=certificate_hash, by=str(values["by"]))
