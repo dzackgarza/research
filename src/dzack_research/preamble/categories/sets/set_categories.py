@@ -2360,7 +2360,10 @@ class PowerSets(OwnedCategory):
             # ``finite_ordered_set`` identifies equal points; identifying them
             # here as well compared every pair twice.
             inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
-            return Sets().Subobjects(base)(inclusion)
+            # The slice constructor retains the inclusion but does not infer
+            # finiteness from the domain's other categorical placements.
+            # This constructor supplied a finite ordered domain explicitly.
+            return Sets().Subobjects(base).object(inclusion, categories=(FiniteSets(),))
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
