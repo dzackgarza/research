@@ -2973,6 +2973,8 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
         return "module automorphism groups"
 
     def an_object(self):
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
         return Modules(self.base_ring()).an_object().Aut()
 
     def super_categories(self):

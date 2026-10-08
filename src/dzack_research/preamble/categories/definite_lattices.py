@@ -577,7 +577,8 @@ class _ExactCVPEngine:
         return None if result is None else result[0]
 
     def first_close_vectors(self, target, square_bound, max_multiplier, *, exact_distance=False):
-        r"""Raise the first affine CVP shell and its scale from one PARI search."""
+        r"""Select a member or its boundary from the shared affine shell family."""
+        family = self.lattice.scaled_close_vector_shells(target, square_bound, max_multiplier)
         if element_parent(target) is not self.lattice and element_parent(target) is not self.lattice.vector_space():
             raise TypeError(
                 f"the affine target must belong to {self.lattice} or its rational span, "
@@ -592,14 +593,13 @@ class _ExactCVPEngine:
         )
         if result is None:
             return None
-        multiplier, candidates = result
+        multiplier, _candidates = result
         subsets = self.lattice.finite_subsets()
+        distances = family.value(NN(multiplier))
+        boundary_value = self.rationals(multiplier * multiplier) * self.rationals(square_bound)
         shell = subsets(tuple(
-            _element_from_coordinates(
-                self.lattice,
-                tuple(_owned_engine_element(self.ring, entry) for entry in coordinates),
-            )
-            for coordinates, _square in candidates
+            vector for vector in distances.index_set()
+            if not exact_distance or distances.value(vector) == boundary_value
         ))
         return Sets().product((NN, subsets))((NN(multiplier), shell))
 

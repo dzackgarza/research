@@ -85,7 +85,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 

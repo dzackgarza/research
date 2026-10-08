@@ -4087,9 +4087,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             enumerated. Other fibres retain the complete defining locus.
             """
             square = self.base_ring()(square)
+            if not self.module_rank().is_finite():
+                return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
                 return self.finite_subsets()(_vectors_of_square(self, square))
-            if self.module_rank() == 2 and square:
+            if self.module_rank() == 2 and square and _engine_ring(self.base_ring()) is SageZZ:
                 discriminant = lattice_engines._binary_form_discriminant(self)
                 if discriminant > 0 and discriminant.is_square():
                     return self.finite_subsets()(lattice_engines._split_binary_vectors_of_square(self, square))
@@ -4447,7 +4449,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             each supplies its two primitive generators. Higher-rank loci
             retain their exact membership predicate.
             """
-            if self.module_rank() == 2 and self.is_nondegenerate():
+            if self.module_rank() == 2 and self.is_nondegenerate() and _engine_ring(self.base_ring()) is SageZZ:
                 return self.finite_subsets()(lattice_engines._binary_primitive_isotropic_vectors(self))
             zero = self.zero()
             value_zero = self.base_ring().zero()
@@ -4669,6 +4671,36 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return self._exact_cvp_engine().first_close_vectors(
                 target, square_bound, NN(max_multiplier)
+            )
+
+        def scaled_close_vector_shells(self, target, square_bound, max_multiplier):
+            r"""The bounded family ``m |-> close_vectors(m*t,m^2*b)``.
+
+            Its positive integer index is the multiplier. Each value is
+            the finite distance family on the whole signed sublevel shell;
+            its boundary consists of points whose value is exactly ``m^2*b``.
+            """
+            maximum = NN(max_multiplier)
+            ambient = self.vector_space()
+            if target.parent() is self:
+                target = self.generic_fibre_map()(target).underlying_element()
+            if target.parent() is not ambient:
+                raise ValueError("the affine target must belong to the lattice or its rational span")
+            field = ambient.base_ring()
+            bound = field(square_bound)
+            sign_type = self.definiteness()
+            if sign_type not in ("positive_definite", "negative_definite"):
+                raise ValueError("close-vector shells require a definite form")
+            if (sign_type == "positive_definite" and bound < 0) or (sign_type == "negative_definite" and bound > 0):
+                raise ValueError("the shell bound must have the sign of the definite form")
+            indices = FiniteOrderedSets().from_indexed(
+                Sets.Δ[int(maximum)-1], lambda index: NN(int(index)+1),
+                name="Positive multipliers up to the bound",
+            )
+            return indexed_family(
+                indices,
+                lambda m: self.close_vectors(ambient.scalar_multiple(field(int(m)), target), field(int(m)**2)*bound),
+                name="Scaled affine close-vector shells",
             )
 
         def first_close_vector_sphere(self, target, square_bound, max_multiplier):
@@ -4987,12 +5019,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             return pairing.preimage(generator)
 
         def hyperbolic_partner_locus(self):
-            r"""Return the selected fibre of ``w |-> (b(self,w), q(w))``.
+            r"""Restrict the square-zero locus to the pairing's affine fibre.
 
-            The prescribed value is ``(div(self), 0)``. The set equalizer
-            retains the two constraint maps and its universal inclusion
-            into the lattice. Its object contains every integral partner,
-            whether or not a point-finding algorithm is available.
+            The module-map fibre first imposes ``b(self,w)=div(self)``.
+            Its square-zero equalizer retains the quadratic constraint and
+            the inclusion into that affine fibre. Composing with the fibre
+            inclusion gives the lattice inclusion. The object contains every
+            integral partner, whether or not point finding is available.
 
             EXAMPLES::
 
@@ -5006,13 +5039,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             lattice = self.parent()
             ring = lattice.base_ring()
-            values = Sets().product((ring, ring))
-            constraints = Sets().Mor(lattice, values)(
-                lambda vector: values((self.b(vector), vector.q()))
-            )
-            prescribed = values((self.div(), ring.zero()))
-            constant = Sets().Mor(lattice, values)(lambda vector: prescribed)
-            return Sets().equalizer_construction(constraints, constant)
+            pairing = self.to_covector()
+            regular = pairing.codomain()
+            prescribed = regular.scalar_multiple(self.div(), regular.module_generators()[0])
+            fibre = pairing.solution_fibre(prescribed)
+            square = Sets().Mor(fibre, ring)(lambda vector: vector.q())
+            zero = Sets().Mor(fibre, ring)(lambda vector: ring.zero())
+            return Sets().equalizer_construction(square, zero)
 
         def hyperbolic_partner(self) -> "Lattices.ElementMethods":
             r"""Return an integral isotropic partner with pairing ``self.div()``.
