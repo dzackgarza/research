@@ -844,6 +844,7 @@ def _isotropic_subgroups(ambient, quadratic):
     order = prod(invariants, start=1)
     rank = len(invariants)
     moduli = numpy.array(invariants, dtype=numpy.int64)
+    strides = numpy.array([prod(invariants[i + 1:], start=1) for i in range(rank)], dtype=numpy.int64)
     coordinates = numpy.stack(
         numpy.unravel_index(numpy.arange(order), invariants), axis=1
     ).astype(numpy.int64) if rank else numpy.zeros((1, 0), dtype=numpy.int64)
@@ -913,21 +914,15 @@ def _isotropic_subgroups(ambient, quadratic):
     self_isotropic = mask_of(numpy.flatnonzero(self_values == 0))
     primes = tuple(int(prime) for prime in Integer(order).prime_divisors())
     multiples = {
-        prime: numpy.ravel_multi_index(tuple((prime * coordinates % moduli).T), invariants)
-        if rank else numpy.zeros(1, dtype=numpy.int64)
+        prime: (prime * coordinates % moduli) @ strides
         for prime in primes
     }
 
     def extended(codes, code, steps):
         r"""The codes of ``H + <x>`` for ``H`` given by its codes and ``steps x`` in ``H``."""
-        if not rank:
-            return codes
         span = coordinates[codes]
         step = coordinates[code]
-        return numpy.concatenate([
-            numpy.ravel_multi_index(tuple(((span + multiple * step) % moduli).T), invariants)
-            for multiple in range(steps)
-        ])
+        return numpy.concatenate([(span + multiple * step) % moduli @ strides for multiple in range(steps)])
 
     def prime_step(mask, code):
         r"""The least prime ``p`` with ``p x`` in ``H``, or ``None``."""
@@ -937,12 +932,11 @@ def _isotropic_subgroups(ambient, quadratic):
         )
 
     def order_modulo(mask, code):
-        multiple, current = 1, code
-        while not mask >> current & 1:
+        step = coordinates[code]
+        multiple, current = 1, step
+        while not mask >> int(current @ strides) & 1:
             multiple += 1
-            current = int(numpy.ravel_multi_index(
-                tuple(multiple * coordinates[code] % moduli), invariants
-            ))
+            current = (current + step) % moduli
         return multiple
 
     def canonical_generators(mask):
