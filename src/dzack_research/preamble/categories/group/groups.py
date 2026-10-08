@@ -218,6 +218,52 @@ def _encodes_elements_in_gap(engine) -> bool:
             return False
 
 
+class _AdditiveGroupForGroupExp(Parent):
+    r"""The Sage additive-parent interface required by ``sage.groups.group_exp``.
+
+    Operations and elements are those of the given owned abelian group;
+    this private parent supplies Sage's runtime category to GroupExp.
+    """
+
+    def __init__(self, additive_group):
+        from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
+
+        self._additive_group = additive_group
+        Parent.__init__(self, category=CommutativeAdditiveGroups(), facade=additive_group)
+
+    def _element_constructor_(self, value):
+        return self._additive_group(value)
+
+    def zero(self):
+        return self._additive_group.zero()
+
+    def _repr_(self):
+        return repr(self._additive_group)
+
+
+@cached_function
+def _additive_group_exponential(additive_group):
+    r"""Realize multiplicative notation by Sage's maintained ``GroupExp`` functor.
+
+    The adapter owns the two crossings; both public endpoints and every
+    value of the identification are owned objects. Sage reference:
+    ``sage.groups.group_exp.GroupExp``.
+    """
+    from sage.groups.group_exp import GroupExp
+
+    engine = GroupExp()(_AdditiveGroupForGroupExp(additive_group))
+    group = _own_group(engine)
+    forward = Sets().Mor(additive_group, group)(
+        lambda element: group._from_engine(engine(element))
+    )
+    backward = Sets().Mor(group, additive_group)(
+        lambda element: additive_group(group._to_engine(element).value)
+    )
+    # GroupExp wraps an additive element; reading its value reverses that
+    # constructor. This inverse pair belongs to the notation-change functor.
+    return Sets().Core().Mor(additive_group, group)._from_known_inverse_pair(forward, backward)
+
+
 def _element_to_engine(group, element):
     r"""Return the GAP element modelling ``element`` of ``group``."""
     match group:

@@ -5270,11 +5270,11 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             in ``Hom(W,V)`` and values in ``End(V)``. Transpose uses the
             chosen finite framings. The base ring must be commutative.
 
-            The map's kernel is the homogeneous solution module over its
-            base ring. In particular, over ``ZZ`` it is the full integral
-            solution lattice. Its ordinary ``preimage(B)`` supplies a
-            particular solution when one exists. Scalar extension gives
-            the corresponding rational equation.
+            ``equation.solution_fibre(B)`` retains the whole affine solution
+            set, its translation module and its torsor when nonempty.
+            After scalar extension, ``fibre.integral_members(j)`` intersects
+            that fibre with the chosen integral parameter inclusion ``j``.
+            Its kernel alone supplies only the homogeneous solutions.
 
             This presents the linear operator used by
             ``sage-indefinite-port.indefinite.isotropic_lifts`` through
@@ -5289,8 +5289,13 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 sage: B = A + A
                 sage: equation(equation.preimage(B)) == B
                 True
+                sage: fibre = equation.solution_fibre(B)
+                sage: fibre.base_point() in fibre
+                True
                 sage: X = A.parent().from_rows(((0, 1), (-1, 0)))
                 sage: equation(X) == equation.codomain().zero()
+                True
+                sage: fibre.base_point() + X in fibre
                 True
             """
             ring = self.parent().base_ring()

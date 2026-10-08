@@ -402,6 +402,19 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""
 
+        class ParentMethods:
+            def multiplicative_group_identification(self):
+                r"""Return the set isomorphism ``a |-> exp(a)`` with ``exp(a+b)=exp(a)exp(b)``."""
+                from dzack_research.preamble.categories.group.groups import (
+                    _additive_group_exponential,
+                )
+
+                return _additive_group_exponential(self)
+
+            def multiplicative_group(self):
+                r"""Return this abelian group written multiplicatively."""
+                return self.multiplicative_group_identification().codomain()
+
         class _MorCategory(MorCategoryConstruction):
             def fixed_category_class(self):
                 from dzack_research.preamble.categories.group.additive_mors import (
