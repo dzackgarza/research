@@ -85,6 +85,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
     OwnedRings,
     Zmod,
     _engine_element,
@@ -2829,6 +2830,14 @@ def _scaled_form_module(source, scalar):
 
     ring = source.base_ring()
     categories = [FormValueScalings(ring)]
+    if source in FormModules(ring).Nondegenerate() and (
+        scalar.is_unit() or (ring in OwnedIntegralDomains() and scalar != ring.zero())
+    ):
+        # Multiplication by a unit is injective on every value module;
+        # on an integral domain it is injective on this R-valued form.
+        # Hence both radicals remain zero under the scalar change.
+        if scalar.is_unit() or form.codomain() in OwnedRings():
+            categories.append(FormModules(ring).Nondegenerate())
     data = dict(unscaled_form_module=source, form_scale=scalar)
     if source in Lattices(ring):
         categories.append(Lattices(ring))
