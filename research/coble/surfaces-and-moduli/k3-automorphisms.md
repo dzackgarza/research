@@ -85,6 +85,47 @@ the integral gluing stabilizer with the ample condition. Restricting along $G_X\
 
 For Picard rank two, the fibre-product construction still applies. For an elliptic K3 surface of Picard rank two, Proposition 3.10 additionally proves $A_1=1$; the rank-at-least-three Miranda–Morrison computation must be replaced by the explicit binary-lattice discriminant image [@MS24, Proposition 3.10].
 
+## Computing the pullback
+
+The pullback formula applies to every complex projective K3 surface, with its actual period and ample cone. Its computation requires more than the abstract isometry types of $S$ and $T$.
+
+| Construction | Hypotheses |
+| --- | --- |
+| $\operatorname{Aut}(X)=P_S\times_{O(A_S)}G_X$ | $X$ is a complex projective K3 surface; $S$ and $T$ are its primitive orthogonal sublattices in $H^2(X,\mathbf Z)$; $\gamma$ is their gluing anti-isometry; $G_X$ preserves its Hodge structure; $P_S$ preserves its ample cone |
+| Signed Miranda–Morrison obstruction $e_S^+$ | In addition, $\rho(X)\ge3$, so $S$ is even, indefinite and of rank at least three |
+| Injectivity $\operatorname{Aut}(X)\hookrightarrow G_X$ from Proposition 3.10 | $X$ is elliptic and $\rho(X)=2$ |
+
+The first row follows from integral gluing and Torelli [@MS24, Theorem 2.3 and equation (3.15)]. The second is the domain of the signed sequence [@AD15, §3.7]. The last is the additional conclusion of [@MS24, Proposition 3.10].
+
+Suppose exact generators of $P_S$ and $G_X$, their lattice actions, and $\gamma$ are available. Put
+$$
+Q=O(A_S),\qquad
+a=\rho_S|_{P_S}:P_S\to Q,\qquad
+b:G_X\to Q,\quad b(t)=\gamma\bar t\gamma^{-1}.
+$$
+The following steps construct generators of the pullback.
+
+1. Compute the finite subgroup $H=a(P_S)\le Q$ from the images of the generators of $P_S$. Retain words in those generators that lift generators of $H$.
+2. Compute $K=b^{-1}(H)\le G_X$. The group $G_X$ is finite cyclic for a complex projective K3 surface [@MS24, §2.2]. Thus this step is a finite group computation.
+3. Compute $N=\ker(a)\le P_S$. Its index is $|H|$. A transversal obtained from the finite quotient $P_S\to H$ gives Schreier generators for $N$.
+4. For each generator $t_i$ of $K$, express $b(t_i)$ as a word in the generators of $H$ and lift that word to $s_i\in P_S$.
+5. Generate a subgroup of $P_S\times G_X$ by the pairs $(n,1)$ for generators $n$ of $N$, together with the pairs $(s_i,t_i)$. Extend each pair across the gluing to obtain its integral action on $H^2(X,\mathbf Z)$. Torelli identifies these actions with automorphisms of $X$.
+
+These generators give the whole pullback: any compatible pair $(s,t)$ has $t\in K$. A word in the chosen lifts has the same second component $t$; dividing by that word leaves a pair in $N\times\{1\}$. This also constructs the exact sequence
+$$
+1\longrightarrow N\longrightarrow\operatorname{Aut}(X)
+\longrightarrow K\longrightarrow1.
+$$
+
+More explicitly, if $K=\langle t\rangle$ has order $m>1$ and $s\in P_S$ lifts $b(t)$, put $u=(s,t)$. The extension is determined by
+$$
+u(n,1)u^{-1}=(sns^{-1},1),\qquad
+u^m=(s^m,1),\qquad s^m\in N.
+$$
+A presentation of $N$, together with words for this conjugation action and for $s^m$, therefore gives a presentation of $\operatorname{Aut}(X)$. If $K=1$, the automorphism group is $N$.
+
+Obtaining the exact period stabilizer $G_X$ and the ample-cone stabilizer $P_S$ is a separate mathematical computation. The procedure above is effective once those generators and actions are supplied; a Gram matrix or approximate period alone does not supply them. Signed Miranda–Morrison can determine $K=\ker(\operatorname{ob}_X)$ in its range, but constructing automorphisms still requires the lifts and the kernel generators.
+
 ## Markings and the two restrictions
 
 **The full cohomological action restricts to both $O(S)$ and $O(T)$. The pullback records the compatibility between those restrictions.** Neither restriction must be faithful by itself.
