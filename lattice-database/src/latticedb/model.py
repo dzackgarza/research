@@ -303,6 +303,71 @@ class DiscriminantSequenceData(Record):
         return self
 
 
+QSeriesPrefix = Annotated[tuple[Rational, ...], Field(strict=False)]
+"""Entry $k$ is the coefficient of $q^k$, for $k = 0, 1, 2, \\dots$ in order: the first terms of a power series in $q$."""
+
+
+def series_bound(rank: int) -> int:
+    """The exponent $N$ through which a card stores the series of a lattice of this rank.
+
+    $N$ is 12, 8, 6 or 4 for rank at most 4, at most 8, at most 12, or greater: the number of
+    vectors of norm at most $N$ grows like $N^{n/2}$ in rank $n$.
+    """
+    match rank:
+        case _ if rank <= 4:
+            return 12
+        case _ if rank <= 8:
+            return 8
+        case _ if rank <= 12:
+            return 6
+        case _:
+            return 4
+
+
+class LocalDensities(Record):
+    """The local densities $\\beta_p(L, m)$ of $L$ at one prime $p$."""
+
+    prime: Annotated[int, Field(ge=2)] = Field(description="The prime $p$; it divides $2 \\det L$.")
+    densities: QSeriesPrefix = Field(
+        description=(
+            "Entry $m - 1$ is $\\beta_p(L, m) = \\lim_{k \\to \\infty} p^{k(1-n)} \\#\\{x \\in L/p^k L : b(x, x) \\equiv m \\pmod{p^k}\\}$ "
+            "for $m = 1, \\dots, N$ in order, where $n$ is the rank and $N$ is the bound of `theta_series`: 12, 8, 6 or 4 for rank at most 4, at most 8, at most 12, or greater. "
+            "Values are integers or strings `p/q`."
+        )
+    )
+
+
+class SquareClassRepresentation(Record):
+    """Which elements of one square class of $\\mathbb{Q}_p^\\times$ the local lattice $L \\otimes \\mathbb{Z}_p$ represents."""
+
+    representative: Annotated[int, Field(gt=0)] = Field(
+        description=(
+            "The representative of the class: for $p = 2$ one of 1, 3, 5, 7, 2, 6, 10, 14; for odd $p$ one of $1$, $\\nu$, $p$, $p\\nu$, "
+            "where $\\nu$ is the least positive quadratic nonresidue modulo $p$."
+        )
+    )
+    least_valuation: Annotated[int, Field(ge=0)] = Field(
+        description=(
+            "The least $v$ such that $L \\otimes \\mathbb{Z}_p$ represents the elements of the class of valuation $v$. "
+            "It then represents every element of the class of valuation $v + 2j$, $j \\geq 0$, and no other element of the class; "
+            "$v$ has the parity of the valuation of the representative."
+        )
+    )
+
+
+class LocalRepresentation(Record):
+    """The nonzero $p$-adic integers that $L \\otimes \\mathbb{Z}_p$ represents, at a prime where it does not represent all of them."""
+
+    prime: Annotated[int, Field(ge=2)] = Field(description="The prime $p$.")
+    classes: Annotated[tuple[SquareClassRepresentation, ...], Field(strict=False)] = Field(
+        description=(
+            "One entry for each square class of $\\mathbb{Q}_p^\\times$ of which $L \\otimes \\mathbb{Z}_p$ represents some element, "
+            "in the order the representatives are listed; it represents no element of a class that is not listed. "
+            "There are eight square classes for $p = 2$ and four for odd $p$."
+        )
+    )
+
+
 class IntegralData(Record):
     """Stored invariants of an integer-valued lattice, when available."""
 
@@ -428,6 +493,33 @@ class IntegralData(Record):
             "$L$ containing two orthogonal hyperbolic planes (Eichler; theory/orbits.md), and it is defined for every nondegenerate $L$."
         ),
     )
+    anisotropic_primes: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "The primes $p$, in increasing order, at which $L \\otimes \\mathbb{Q}_p$ is anisotropic: $b(x, x) \\neq 0$ for every nonzero $x$. "
+            "The real place is not listed; the signature decides it. "
+            "Requires a nonzero determinant and rank at least 3, where every such prime divides $2 \\det L$; "
+            "a form of rank 1 is anisotropic at every prime, and one of rank 2 at infinitely many primes unless $-\\det L$ is a square."
+        ),
+    )
+    local_representations: Annotated[tuple[LocalRepresentation, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "The values $b(x, x)$ of the localizations of $L$, as conditions on square classes: "
+            "for each prime $p$ at which $L \\otimes \\mathbb{Z}_p$ does not represent every nonzero $p$-adic integer, in increasing order, "
+            "the least valuation at which it represents each square class of $\\mathbb{Q}_p^\\times$. "
+            "A nonzero integer $m$ is represented by $L \\otimes \\mathbb{Z}_p$ for every prime $p$ exactly when, at each listed prime, "
+            "the valuation of $m$ is at least the least valuation of its class, and the signature decides the real place. "
+            "Requires a nonzero determinant and rank at least 3, where every listed prime divides $2 \\det L$."
+        ),
+    )
+    local_densities: Annotated[tuple[LocalDensities, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "The local densities $\\beta_p(L, m)$ at each prime $p$ that divides $2 \\det L$, in increasing order of $p$. "
+            "Requires a nonzero determinant."
+        ),
+    )
 
 
 class RootSystemComponent(Record):
@@ -508,6 +600,41 @@ class DefiniteData(Record):
             "Entry $k$ is the number of $x$ with $b(x, x) = k$, for $k = 0, 1, 2, \\dots$. "
             "The entries run through $k = \\max(\\mu, N)$ at least, "
             "where $\\mu$ is the minimum and $N$ is 12, 8, 6 or 4 for rank at most 4, at most 8, at most 12, or greater."
+        ),
+    )
+    genus_theta_series: QSeriesPrefix | None = Field(
+        default=None,
+        description=(
+            "The theta series of the genus of an integral $L$: $\\theta_{\\operatorname{gen}(L)} = \\sum_i \\theta_{L_i} / |O(L_i)| \\big/ \\sum_i 1 / |O(L_i)|$, "
+            "over representatives $L_i$ of the isometry classes of the genus, with the exponent $b(x, x)$ of `theta_series`. "
+            "Entry $k$ is the coefficient of $q^k$, for $k = 0, \\dots, N$ with $N$ as for `theta_series`: 12, 8, 6 or 4 for rank at most 4, at most 8, at most 12, or greater. "
+            "Values are integers or strings `p/q`, and entry 0 is 1. "
+            "By the Siegel–Weil formula it is the Eisenstein component of $\\theta_L$."
+        ),
+    )
+    theta_series_cuspidal_component: QSeriesPrefix | None = Field(
+        default=None,
+        description=(
+            "$\\theta_L - \\theta_{\\operatorname{gen}(L)}$ for an integral $L$, the cuspidal component of $\\theta_L$: entry $k$ is the coefficient of $q^k$ for $k = 0, \\dots, N$ as in `genus_theta_series`, "
+            "values are integers or strings `p/q`, and entry 0 is 0. It is zero when the genus has one class."
+        ),
+    )
+    cusp_form_coordinates: QSeriesPrefix | None = Field(
+        default=None,
+        description=(
+            "For an integral $L$ of even rank $n$: the coordinates of `theta_series_cuspidal_component` in the basis of "
+            "$S_{n/2}(\\Gamma_0(N), \\chi)$ whose $q$-expansions are in reduced row echelon form, in the order of that basis. "
+            "With the exponent $b(x, x)$, $\\theta_L$ is the theta series of $L(2)$ in the usual normalization, so $N = 2\\,\\ell$ for the level $\\ell$ of $L$, "
+            "and $\\chi$ is the Kronecker character of `quadratic_character`. The space has a basis of forms with rational $q$-expansions, "
+            "and the reduced echelon basis of their span is unique, so the coordinates do not depend on a choice."
+        ),
+    )
+    siegel_eisenstein_coefficients: QSeriesPrefix | None = Field(
+        default=None,
+        description=(
+            "For an integral $L$: entry $m - 1$ is the coefficient of $q^m$, $m = 1, 2, \\dots$, of the Eisenstein series of the Siegel–Weil formula, "
+            "computed as the Siegel product of the real density and the local densities $\\beta_p(L, m)$ over every prime. "
+            "By the Siegel–Weil formula it equals entry $m$ of `genus_theta_series`; the two are independent computations of one number."
         ),
     )
     root_system: Annotated[tuple[AdeType, ...], Field(strict=False)] | None = Field(
@@ -781,6 +908,42 @@ class Lattice(Record):
                     ("integral", "discriminant_sequence", "discriminant_factors"),
                 )
         yield from self._spinor_problems()
+        yield from self._local_problems()
+
+    def _local_problems(self) -> Iterator[InitErrorDetails]:
+        """Structural conditions on stored local data: primes in increasing order, and one entry per square class."""
+        assert self.integral is not None
+        data = self.integral
+        for field, primes in (
+            ("anisotropic_primes", data.anisotropic_primes),
+            ("local_representations", None if data.local_representations is None else tuple(entry.prime for entry in data.local_representations)),
+            ("local_densities", None if data.local_densities is None else tuple(entry.prime for entry in data.local_densities)),
+        ):
+            if primes is not None and (any(prime < 2 for prime in primes) or any(first >= second for first, second in zip(primes, primes[1:], strict=False))):
+                yield _problem(
+                    "local_primes_order",
+                    "the primes increase strictly",
+                    ("integral", field),
+                )
+        for position, entry in enumerate(data.local_representations or ()):
+            representatives = tuple(found.representative for found in entry.classes)
+            expected = 8 if entry.prime == 2 else 4
+            if len(set(representatives)) != len(representatives) or len(representatives) > expected or (entry.prime == 2 and not set(representatives) <= {1, 3, 5, 7, 2, 6, 10, 14}):
+                yield _problem(
+                    "square_classes_shape",
+                    "the prime {prime} has {expected} square classes, and each listed class is listed once by its representative",
+                    ("integral", "local_representations", str(position)),
+                    {"prime": entry.prime, "expected": expected},
+                )
+            for found in entry.classes:
+                odd_valuation = found.representative % entry.prime == 0
+                if found.least_valuation % 2 != int(odd_valuation):
+                    yield _problem(
+                        "square_class_valuation_parity",
+                        "the least valuation of the class of {representative} has the parity of the valuation of {representative}",
+                        ("integral", "local_representations", str(position)),
+                        {"representative": found.representative},
+                    )
 
     def _dual_problems(self) -> Iterator[InitErrorDetails]:
         """Structural conditions on a stored dual Gram tensor."""
@@ -833,6 +996,7 @@ class Lattice(Record):
                     "each generator name occurs once in the generator list and names exactly one isometry L -> L (a morphism entry with scale 1) on this lattice card",
                     ("definite", "automorphism_group_generator_morphisms"),
                 )
+        yield from self._theta_problems()
         if data.roots is not None and any(
             len(component.simple_roots) != component.rank or any(len(row) != self.rank for row in component.simple_roots) for component in data.roots
         ):
@@ -856,6 +1020,34 @@ class Lattice(Record):
                     "the complete minimal shell has distinct vectors of the lattice rank and the kissing number",
                     ("definite", "minimal_vectors"),
                 )
+
+    def _theta_problems(self) -> Iterator[InitErrorDetails]:
+        """Structural conditions on the stored theta data: constant terms, and the cuspidal component as the stated difference."""
+        assert self.definite is not None
+        data = self.definite
+        if data.genus_theta_series is not None and data.genus_theta_series[:1] != (1,):
+            yield _problem(
+                "genus_theta_constant",
+                "the genus theta series has constant term 1, the weighted average of the constant terms 1",
+                ("definite", "genus_theta_series"),
+            )
+        cuspidal = data.theta_series_cuspidal_component
+        if cuspidal is None:
+            return
+        if cuspidal[:1] != (0,):
+            yield _problem(
+                "cuspidal_constant",
+                "the cuspidal component has constant term 0",
+                ("definite", "theta_series_cuspidal_component"),
+            )
+        if data.theta_series is not None and data.genus_theta_series is not None and any(
+            difference != own - average for difference, own, average in zip(cuspidal, data.theta_series, data.genus_theta_series, strict=False)
+        ):
+            yield _problem(
+                "cuspidal_difference",
+                "each entry of the cuspidal component is the entry of `theta_series` minus the entry of `genus_theta_series`",
+                ("definite", "theta_series_cuspidal_component"),
+            )
 
     def _root_problems(self) -> Iterator[InitErrorDetails]:
         span = self.root_span

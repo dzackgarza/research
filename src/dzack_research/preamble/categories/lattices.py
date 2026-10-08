@@ -544,6 +544,95 @@ class _Genus(Sets().ObjectType):
             )
         return _owned_engine_element(_own_ring(SageQQ), SageQQ(self._engine().mass()))
 
+    def theta_series(self, precision=20, variable="q"):
+        r"""Return the theta series of this definite genus.
+
+        It is the average of the theta series of the classes weighted by the
+        reciprocal orders of their orthogonal groups,
+        ``theta_gen = (sum_i theta_{L_i} / |O(L_i)|) / (sum_i 1 / |O(L_i)|)``
+        over one lattice ``L_i`` from each class, each ``theta_{L_i}`` with the
+        exponent ``b(x, x)`` of a lattice's ``theta_series``.  Its coefficients
+        are rational.  By the Siegel--Weil formula it is the Eisenstein
+        component of the theta series of every member.
+        """
+        signature = self.signature_pair()
+        assert signature.first() == 0 or signature.second() == 0, (
+            f"the theta series of {self!r} is a power series only for a definite genus, and this genus has signature ({signature.first()}, {signature.second()})"
+        )
+        rationals = self._lattice.base_ring().fraction_field()
+        series_ring = rationals.power_series_ring(variable)
+        weights = indexed_family(
+            self.representatives(),
+            lambda member: rationals.one() / rationals(int(member.orthogonal_group().cardinality())),
+        )
+        weighted = sum(
+            (weight * series_ring(member.theta_series(precision=precision, variable=variable)) for member, weight in weights.items()),
+            series_ring.zero(),
+        )
+        return weighted * (rationals.one() / sum(weights.values(), rationals.zero()))
+
+    def local_density(self, prime, value):
+        r"""Return the local density ``beta_p(L, m)`` of a member ``L`` at ``prime`` for ``value``.
+
+        ``beta_p(L, m) = lim_k p^{k(1-n)} #{x in L/p^k L : b(x, x) = m mod p^k}``
+        in rank ``n``; it depends only on ``L tensor ZZ_p``, so on the genus.
+        """
+        from sage.rings.rational_field import QQ as SageQQ
+
+        integers = _own_ring(SageZZ)
+        density = _local_density(
+            self._engine_form(),
+            _engine_element(integers, integers(prime)),
+            _engine_element(integers, integers(value)),
+        )
+        return _owned_engine_element(_own_ring(SageQQ), SageQQ(density))
+
+    def anisotropic_primes(self):
+        r"""Return the primes ``p`` at which ``L tensor QQ_p`` is anisotropic, for a member ``L`` of rank at least 3.
+
+        In rank at least 3 a form unimodular at ``p`` is isotropic over
+        ``QQ_p``, so the set is a finite set of primes dividing ``2 det L``.
+        The real place is not a member; the signature decides it.
+        """
+        rank = self._lattice.module_rank()
+        assert int(rank) >= 3, (
+            f"the anisotropic primes of {self!r} are a finite set computed in rank at least 3; in rank {rank} a form is anisotropic at infinitely many primes unless -det is a square"
+        )
+        integers = _own_ring(SageZZ)
+        return finite_ordered_set(
+            tuple(_owned_engine_element(integers, SageZZ(prime)) for prime in self._engine_form().anisotropic_primes() if prime > 0)
+        )
+
+    @cached_method
+    def local_representations(self):
+        r"""Return the values ``b(x, x)`` of the localizations of a member, at the primes where they are not every ``p``-adic integer.
+
+        The family is indexed by the primes ``p`` at which ``L tensor ZZ_p``
+        does not represent every nonzero ``p``-adic integer.  Its value at
+        ``p`` is indexed by the square classes of ``QQ_p^x`` that
+        ``L tensor ZZ_p`` represents, each by its representative (``1, 3, 5,
+        7, 2, 6, 10, 14`` for ``p = 2``; ``1, u, p, u p`` for odd ``p``, with
+        ``u`` the least quadratic nonresidue), and takes the least valuation
+        ``v`` at which the class is represented; ``L tensor ZZ_p`` represents
+        an element of the class exactly when its valuation is ``v + 2j``,
+        ``j >= 0``.  In rank at least 3 every such prime divides ``2 det L``.
+        """
+        rank = self._lattice.module_rank()
+        assert int(rank) >= 3, (
+            f"the local representation conditions of {self!r} are finite data in rank at least 3; in rank {rank} a form fails to represent a square class at infinitely many primes unless -det is a square"
+        )
+        integers = _own_ring(SageZZ)
+        conditions = self._engine_form().local_representation_conditions()
+        primes = finite_ordered_set(tuple(_owned_engine_element(integers, SageZZ(prime)) for prime in conditions.exceptional_primes[1:]))
+        return indexed_family(primes, lambda prime: _represented_square_classes(conditions, _engine_element(integers, prime)))
+
+    @cached_method
+    def _engine_form(self):
+        r"""Sage's integral quadratic form ``x |-> b(x, x)`` of the representative, private computation data."""
+        from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+        return QuadraticForm(SageZZ, 2 * _engine_component_matrix(self._lattice.gram_tensor()).change_ring(SageZZ))
+
     @cached_method
     def representatives(self):
         r"""Return one lattice from each isometry class of this genus.
@@ -725,6 +814,38 @@ def _genus_classes(gram):
         classes.append(grams(spinor_genus))
     assert found_mass == total, f"the classes found in the genus of {gram} have mass {found_mass}, but the genus has mass {total}"
     return tuple(classes)
+
+
+def _local_density(form, prime, value):
+    r"""Private computation of ``beta_p(Q, m)`` for Sage's integral quadratic form ``Q``.
+
+    For ``Q = p^v f`` with ``f`` primitive at ``p``,
+    ``beta_p(Q, m) = p^v beta_p(f, m / p^v)``; Sage's ``local_density``
+    returns ``beta_p(f, m / p^v)`` without the factor ``p^v`` (``TRAPS.md``).
+    """
+    content = gcd(form.coefficients())
+    return prime ** content.valuation(prime) * form.local_density(prime, value)
+
+
+def _represented_square_classes(conditions, prime):
+    r"""Private raising of Sage's local representation conditions at ``prime``.
+
+    Sage stores, for each square class with representative ``r``, the least
+    ``e`` with ``r p^{2e}`` represented, or ``+Infinity``; the least
+    represented valuation is ``v_p(r) + 2e`` (``TRAPS.md``).  Returns the
+    family on the represented classes, valued in those least valuations.
+    """
+    from sage.rings.infinity import infinity
+
+    integers = _own_ring(SageZZ)
+    steps = conditions.local_conditions_vector_for_prime(prime)[1:]
+    least = {
+        SageZZ(representative): SageZZ(representative).valuation(prime) + 2 * step
+        for representative, step in zip(conditions.squareclass_vector(prime), steps, strict=False)
+        if step != infinity
+    }
+    classes = finite_ordered_set(tuple(_owned_engine_element(integers, representative) for representative in least))
+    return indexed_family(classes, lambda representative: _owned_engine_element(integers, least[_engine_element(integers, representative)]))
 
 
 def _isometry_class_representatives(grams, genus_of):
@@ -4103,6 +4224,16 @@ class Lattices(OwnedCategoryOverBaseRing):
         def theta_series(self, precision=20, variable="q"):
 
             return _theta_series(self, precision=precision, variable=variable)
+
+        def theta_series_cuspidal_component(self, precision=20, variable="q"):
+            r"""Return ``theta_L - theta_gen(L)``, the cuspidal component of the theta series of this definite integral lattice.
+
+            By the Siegel--Weil formula the genus theta series is the
+            Eisenstein component of ``theta_L``, so the difference is a cusp
+            form; it is zero when the genus has one class.
+            """
+            genus_series = self.genus().theta_series(precision=precision, variable=variable)
+            return genus_series.parent()(self.theta_series(precision=precision, variable=variable)) - genus_series
 
         def is_regular(self, *, max_value=None):
             r"""Return whether this definite lattice represents every value its genus represents.

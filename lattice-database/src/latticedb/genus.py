@@ -29,6 +29,7 @@ from latticedb.model import (
     Lattice,
     RootSpan,
     Yaml,
+    series_bound,
 )
 from latticedb.relations import hyperbolic_index_bounds
 
@@ -48,6 +49,13 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "modular_scale": ("integral", IntegralData),
     "regular": ("definite", DefiniteData),
     "spinor_regular": ("definite", DefiniteData),
+    "genus_theta_series": ("definite", DefiniteData),
+    "theta_series_cuspidal_component": ("definite", DefiniteData),
+    "cusp_form_coordinates": ("definite", DefiniteData),
+    "siegel_eisenstein_coefficients": ("definite", DefiniteData),
+    "anisotropic_primes": ("integral", IntegralData),
+    "local_representations": ("integral", IntegralData),
+    "local_densities": ("integral", IntegralData),
     "roots": ("root_span", RootSpan),
     "norms": ("root_span", RootSpan),
 }
@@ -101,8 +109,14 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.rank >= 3 and 1 in (lattice.signature or ())
         case "roots" | "norms":
             return lattice.definite is None
-        case "regular":
+        case "cusp_form_coordinates" | "siegel_eisenstein_coefficients":
+            # The preamble presents neither yet: TODO nodes `theta-cusp-form-coordinates` and `siegel-eisenstein-coefficients`.
+            return False
+        case "regular" | "genus_theta_series" | "theta_series_cuspidal_component":
             return lattice.definite is not None
+        case "anisotropic_primes" | "local_representations":
+            # Below rank 3 the anisotropic primes and the exceptional primes of local representation are not a finite set in general.
+            return lattice.rank >= 3
         case "spinor_regular":
             return lattice.definite is not None and lattice.rank >= 3
         case "discriminant_sequence":
@@ -128,6 +142,7 @@ class Request(TypedDict):
     gram: list[list[int | str]]
     integral: bool
     fields: list[str]
+    series_bound: int
 
 
 def name(tag: str, field: str) -> str:
@@ -178,6 +193,7 @@ def requests(
                     "gram": gram,
                     "integral": lattice.integral is not None,
                     "fields": fields,
+                    "series_bound": series_bound(lattice.rank),
                 }
             )
     return resumed + chosen
