@@ -87,6 +87,27 @@ decision terminate. Degenerate lattices use the finite-group realization.
 Formal comparison, port adoption, and independent acceptance remain in
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
+### Generated infinite matrix subgroups do not admit their known words
+
+For a group `G` and a chosen generator `g`, the subgroup `H=<g>` contains
+`g^n` for every integer `n`, by its defining generating morphism. On the
+rational hyperbolic plane `U_QQ`, take `g=diag(2,1/2)`. The targeted Sage
+specimen constructs `H=U_QQ.Aut().subgroup((g,))`, but reports both `g*g in H`
+and `(~g)*(~g) in H` as `False`. The underlying native Sage `MatrixGroup`
+likewise reports `A*A in MatrixGroup((A,))` as `False` for this matrix; its
+attempted coercion raises a GAP enumerator error. The negative computation
+therefore is not evidence of nonmembership.
+
+The `lattice_morphisms.py` generated-subgroup adapter recognizes a chosen
+generator and its inverse directly (`21cef09ae5`), which suffices to exercise
+the finite containing-bound obstruction in `invariant_overlattice` but does
+not give a complete membership procedure. The required owner is the selected
+generating map from the free group and its word evaluation into the ambient
+group; word witnesses must provide positive membership, while undecidable
+membership questions must remain propositions rather than false Boolean
+answers. The general contract and all affected consumers remain in
+[`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
+
 ### Isotropic-reduction lifts need a kernel torsor with nonlinear evaluation
 
 The frozen lift-family contract in [research #401](https://github.com/dzackgarza/research/issues/401)
