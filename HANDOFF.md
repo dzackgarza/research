@@ -31,7 +31,7 @@ The remaining unit is integration of the affine fibres, integral lift torsors, a
 | `categories/modules/framed/formed/torsion_form_modules.py` | Exercise generated finite orthogonal-subgroup membership after the protocol change. |
 | `categories/modules/framed/finitely_generated/finitely_presented_modules.py` | Check the new finiteness decision outside the PID regime: cardinality computation currently requires a PID. Preserve an unresolved decision where no computation is represented. |
 | `categories/abstract_categories/products.py` | Review retention of parallel-pair diagrams by arrow identity against the universal-construction contract. |
-| `categories/lattice_engines.py` | Check binary-cycle bounds, starting-vector hypotheses, and the retained period map against the pinned source. |
+| `categories/lattice_engines.py` | **Targeted check passed:** for Gram `diag(2,-4)`, bound 2 and primitive positive start `e`, the period map sends `e -> 3e+2f`, `f -> 4e+3f`, is invertible and preserves the form; the one-vector cycle is bounded. Zero/negative bounds return `None`, and nonprimitive/negative-square starts raise `ValueError`. The implementation was compared with `edgewalk_rank2.py` at frozen port commit `709f81a` (companion, promised step, shorter pair, reduction and period). Broader comparison of reduction-cycle specimens and the proof of the iteration contract remain open. |
 
 These paths are relative to `src/dzack_research/preamble/`. Continue at these owners; the lattice consumer must not acquire duplicate implementations.
 
