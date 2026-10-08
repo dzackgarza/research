@@ -3169,6 +3169,56 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 name="Group generators"
             )
 
+        def invariant_overlattice(self, lattice):
+            r"""Return the least integral invariant overlattice for this rational orthogonal action.
+
+            The group must be a retained subgroup of the orthogonal group
+            of the chosen rational span. For a nondegenerate lattice L,
+            every integral overlattice is contained in L-sharp and hence
+            in ``(1/abs(det L))*L``. This finite bound makes orbit-span
+            closure terminate even for an infinite finitely generated group.
+            A degenerate L requires a finite group for this realization.
+            """
+            from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.modules.orbit_spans import OrbitSpanLattices
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            ring = lattice.base_ring()
+            if ring is not _own_ring(ZZ):
+                raise TypeError("an integral invariant overlattice requires a lattice over ZZ")
+            if not lattice.module_rank().is_finite():
+                raise NotImplementedError("the invariant overlattice construction requires finite rank")
+            field_map = ring.fraction_field_map()
+            rational = lattice.base_change(field_map)
+            seed = lattice.generic_fibre_map()
+            ambient = seed.codomain()
+            group = self
+            group_inclusion = OwnedGroups().Mor(self, self).identity()
+            while group.supergroup() is not group:
+                group_inclusion = group.inclusion() * group_inclusion
+                group = group.supergroup()
+            if group is not rational.Aut():
+                raise ValueError("the group must be included in the orthogonal group of this rational span")
+            restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
+            action = GroupActionFunctor(
+                self, Modules(ring), ambient,
+                lambda g: restrict(Modules(field_map.codomain()).Mor(rational, rational)(group_inclusion(g))),
+            )
+            determinant = abs(lattice.determinant())
+            bound = None
+            if determinant != ring.zero():
+                inverse = field_map.codomain().one() / field_map(determinant)
+                containing = ambient.subobject_on(tuple(
+                    ambient(rational.scalar_multiple(inverse, seed(v).underlying_element()))
+                    for v in lattice.module_generators()
+                ))
+                bound = containing.inclusion()
+            construction = GObjects(self, Modules(ring)).orbit_generated_submodule(
+                action, seed, containing=bound
+            )
+            return OrbitSpanLattices(ring)(construction, rational)
+
         def number_of_group_generators(self):
             return self.selected_group_resolution().generator_count()
 

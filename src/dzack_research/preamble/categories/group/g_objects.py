@@ -813,6 +813,16 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             ),
         )
 
+    def orbit_generated_submodule(self, action, seed, *, containing=None):
+        r"""Construct the least submodule containing the seed and stable under this action."""
+        from dzack_research.preamble.categories.modules.orbit_spans import OrbitSpanConstructions
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        ring = seed.domain().base_ring()
+        if self.underlying_category() is not Modules(ring) or action.group() is not self.acting_group():
+            raise ValueError("the orbit span requires an action in this module category")
+        return OrbitSpanConstructions(ring)(action, seed, containing=containing)
+
     def Mor(self, source, target):
         r"""Equivariant morphisms, as natural transformations on generic actions."""
         functors = self.functor_category()
