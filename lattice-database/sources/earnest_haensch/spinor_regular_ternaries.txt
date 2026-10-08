@@ -1,0 +1,34 @@
+// Jagy's 29 spinor regular ternary forms that are not regular, numbered as in Table 1 of A. G. Earnest and A. Haensch,
+// Completeness of the list of spinor regular ternary quadratic forms, arXiv:1711.05811v2 (2018), https://arxiv.org/abs/1711.05811v2.
+// Columns: row a b c d e f proof, for the form ax^2 + by^2 + cz^2 + dyz + ezx + fxy.
+// proof: one-class (its spinor genus has one class), BEHH90 (spinor regular by Benham, Earnest, Hsia and Hung,
+// J. London Math. Soc. 42 (1990), 1-10).
+1 2 2 5 2 2 0 one-class
+2 3 3 4 0 0 3 one-class
+3 3 4 4 4 3 3 one-class
+4 1 4 9 4 0 0 one-class
+5 2 5 8 4 0 2 one-class
+6 4 4 5 0 4 0 one-class
+7 1 7 12 0 0 1 one-class
+8 2 7 8 7 1 0 one-class
+9 3 7 7 5 3 3 BEHH90
+10 4 4 9 0 0 4 one-class
+11 3 4 9 0 0 0 one-class
+12 4 9 9 2 4 4 one-class
+13 4 5 13 2 0 0 one-class
+14 5 8 8 0 4 4 one-class
+15 7 8 9 6 7 0 one-class
+16 4 9 12 0 0 0 one-class
+17 4 8 17 0 4 0 one-class
+18 4 9 28 0 4 0 one-class
+19 9 9 16 8 8 2 one-class
+20 4 9 32 0 0 4 one-class
+21 5 13 16 0 0 2 one-class
+22 8 9 25 2 4 8 one-class
+23 9 16 16 16 0 0 one-class
+24 13 13 16 -8 8 10 one-class
+25 9 17 32 -8 8 6 one-class
+26 9 16 36 16 4 8 one-class
+27 9 16 48 0 0 0 BEHH90
+28 9 16 112 16 0 0 one-class
+29 29 32 36 32 12 24 one-class

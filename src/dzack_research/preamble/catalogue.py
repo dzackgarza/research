@@ -1,10 +1,9 @@
 r"""Named integral lattices and primitive embeddings used by the research layer."""
 
 from collections.abc import Mapping
-from functools import cache, reduce
+from functools import cache
 
 from sage.combinat.root_system.cartan_type import CartanType
-from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_class_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -24,13 +23,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.logic import AtomicProposition, ConditionalProposition
-from dzack_research.preamble.regular_ternary_forms import (
-    JAGY_KAPLANSKY_SCHIEMANN,
-    JAGY_SPINOR_REGULAR,
-    REGULAR_BY_OH,
-    REGULAR_UNDER_GRH,
-)
 from dzack_research.preamble.tensors.tensor import tensor
 
 ZZ = _own_ring(SageZZ)
@@ -428,162 +420,6 @@ class _TwoElementaryTable(Mapping):
 
 
 TwoElementary = _TwoElementaryTable()
-
-
-GENERALIZED_RIEMANN_HYPOTHESIS = AtomicProposition("GRH for all Dirichlet L-functions and all modular L-functions")
-r"""The hypothesis of Lemke Oliver's Theorem 1.1 [LO14]."""
-
-_JKS97 = "W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341"
-_OH11 = "B.-K. Oh, Regular positive ternary quadratic forms, Acta Arith. 147 (2011), 233-243"
-_LO14 = "R. J. Lemke Oliver, Representations by ternary quadratic forms, Bull. London Math. Soc. 46 (2014), 1237-1247"
-_DMPW19 = (
-    "A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams, Positive integers represented by regular primitive "
-    "positive-definite integral ternary quadratic forms, Integers 19 (2019), #A45, Tables 1 and 2"
-)
-_EH18 = "A. G. Earnest and A. Haensch, Completeness of the list of spinor regular ternary quadratic forms, arXiv:1711.05811v2 (2018)"
-_BEHH90 = "J. W. Benham, A. G. Earnest, J. S. Hsia and D. C. Hung, Spinor regular positive ternary quadratic forms, J. London Math. Soc. 42 (1990), 1-10"
-
-
-def _ternary_form_lattice(coefficients):
-    r"""The even lattice with \(b(x, x) = 2Q(x)\) for \(Q = ax^2 + by^2 + cz^2 + dyz + ezx + fxy\)."""
-    a, b, c, d, e, f = coefficients
-    return Lattices(ZZ)(tensor(ZZ, (), (3, 3), [[2 * a, f, e], [f, 2 * b, d], [e, d, 2 * c]]))
-
-
-def _scale_generator(lattice):
-    r"""The positive generator of the scale ideal \(b(L, L)\) of a lattice over \(\mathbb Z\)."""
-    return reduce(
-        lambda left, right: left.gcd(right),
-        lattice.scale_submodule().ideal_generators(),
-    )
-
-
-class _TernaryFormTable(Mapping):
-    r"""A numbered table of primitive positive ternary forms, as the lattices with \(b(x, x) = 2Q(x)\)."""
-
-    def __init__(self, coefficients) -> None:
-        self._coefficients = coefficients
-
-    @cached_method
-    def __getitem__(self, row):
-        return _ternary_form_lattice(self._coefficients[row])
-
-    def __iter__(self):
-        return iter(self._coefficients)
-
-    def __len__(self):
-        return len(self._coefficients)
-
-    def cardinality(self):
-        return cardinal(len(self))
-
-    @cached_method
-    def _scale_and_determinant(self, row):
-        form = self[row]
-        return _scale_generator(form), form.determinant()
-
-    def row_of(self, lattice):
-        r"""Return the row whose form a rescaling of ``lattice`` is isometric to, or ``None``.
-
-        ``lattice`` is a definite ternary lattice over \(\mathbb Z\).  Up to
-        sign, \(L \cong E(s_L / s_E)\) for the form lattice \(E\) of a row
-        exactly when \(L(s_E) \cong E(s_L)\), where \(s\) is the generator of
-        the scale ideal.  A row whose determinant does not satisfy
-        \(\det L \cdot s_E^3 = \det E \cdot s_L^3\) is skipped before the
-        isometry is asked.
-        """
-        assert lattice in Lattices(ZZ) and int(lattice.module_rank()) == 3 and lattice.is_definite(), (
-            f"{lattice!r} has no row in a table of ternary forms: it must be a definite lattice of rank 3 over ZZ"
-        )
-        positive = lattice.twist(1 if lattice.is_positive_definite() else -1)
-        scale = _scale_generator(positive)
-        determinant = positive.determinant()
-        for row in self:
-            form_scale, form_determinant = self._scale_and_determinant(row)
-            if determinant * form_scale**3 != form_determinant * scale**3:
-                continue
-            if positive.twist(form_scale).is_isometric(self[row].twist(scale)) is True:
-                return row
-        return None
-
-
-class _RegularTernaryTable(_TernaryFormTable):
-    r"""The 913 forms of Jagy, Kaplansky and Schiemann [JKS97], keyed by row number.
-
-    Every primitive positive ternary form that is regular is equivalent to a
-    form of this list [JKS97].  Regularity is proved for 891 rows in
-    [JKS97], for rows 384, 469, 489, 559, 578, 609, 858 and 895 by Oh
-    [Oh11], and for the 14 rows of :data:`REGULAR_UNDER_GRH` by Lemke
-    Oliver [LO14, Theorem 1.1] under :data:`GENERALIZED_RIEMANN_HYPOTHESIS`.
-
-    The coefficients are transcribed from Tables 1 and 2 of [DMPW19], which
-    reproduce the list of [JKS97] with the same numbering.  The printed
-    discriminant of each row fixes the sign of \(def\); a change of sign of a
-    variable changes the signs of two of \(d, e, f\), so the row's class is
-    determined.
-
-    [JKS97] W. C. Jagy, I. Kaplansky and A. Schiemann, *There are 913 regular
-    ternary forms*, Mathematika 44 (1997), 332--341.
-    [Oh11] B.-K. Oh, *Regular positive ternary quadratic forms*, Acta Arith.
-    147 (2011), 233--243.
-    [LO14] R. J. Lemke Oliver, *Representations by ternary quadratic forms*,
-    Bull. London Math. Soc. 46 (2014), 1237--1247.
-    [DMPW19] A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams,
-    *Positive integers represented by regular primitive positive-definite
-    integral ternary quadratic forms*, Integers 19 (2019), #A45.
-    """
-
-    def consequence_of_regularity(self, row, statement):
-        r"""Return ``statement``, which the regularity of ``row`` implies, as far as that regularity is proved.
-
-        ``True`` when the regularity of ``row`` is proved unconditionally,
-        and otherwise ``statement`` under
-        :data:`GENERALIZED_RIEMANN_HYPOTHESIS`.
-        """
-        if row in REGULAR_UNDER_GRH:
-            return ConditionalProposition(statement, GENERALIZED_RIEMANN_HYPOTHESIS)
-        return True
-
-    def citation(self, row):
-        r"""The literature that lists ``row`` and proves its form regular."""
-        listing = f"{_JKS97}, form {row}, as tabulated in {_DMPW19}"
-        match row:
-            case _ if row in REGULAR_UNDER_GRH:
-                return f"{listing}; regular under the generalized Riemann hypothesis by {_LO14}, Theorem 1.1"
-            case _ if row in REGULAR_BY_OH:
-                return f"{listing}; regular by {_OH11}"
-            case _:
-                return f"{listing}; regular by {_JKS97}"
-
-
-RegularTernaries = _RegularTernaryTable(JAGY_KAPLANSKY_SCHIEMANN)
-
-
-class _SpinorRegularTernaryTable(_TernaryFormTable):
-    r"""Jagy's 29 forms that are spinor regular and not regular, keyed by their row in [EH18, Table 1].
-
-    Every spinor regular ternary form that is not regular is equivalent to one
-    of them [EH18, Theorem 1.1].  Rows 9 and 27 lie in spinor genera of two
-    classes; their spinor regularity is proved in [BEHH90].  The other 27 lie
-    in spinor genera of one class.
-
-    [EH18] A. G. Earnest and A. Haensch, *Completeness of the list of spinor
-    regular ternary quadratic forms*, arXiv:1711.05811v2 (2018).
-    [BEHH90] J. W. Benham, A. G. Earnest, J. S. Hsia and D. C. Hung, *Spinor
-    regular positive ternary quadratic forms*, J. London Math. Soc. 42 (1990), 1--10.
-    """
-
-    def citation(self, row):
-        r"""The literature that lists ``row`` and proves its form spinor regular."""
-        listing = f"{_EH18}, Table 1, row {row}"
-        match row:
-            case 9 | 27:
-                return f"{listing}; spinor regular by {_BEHH90}"
-            case _:
-                return f"{listing}; its spinor genus has one class"
-
-
-SpinorRegularTernaries = _SpinorRegularTernaryTable(JAGY_SPINOR_REGULAR)
 
 
 def _sum_spec(*parts):
@@ -1258,10 +1094,7 @@ __all__ = [
     "Embeddings",
     "Involutions",
     "NamedLattices",
-    "GENERALIZED_RIEMANN_HYPOTHESIS",
     "NegativeDefTwoElementary",
-    "RegularTernaries",
-    "SpinorRegularTernaries",
     "TwoElementary",
     "signature_orthogonal_sums",
     "two_elementary_orthogonal_sums",

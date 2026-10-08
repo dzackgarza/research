@@ -193,7 +193,7 @@ from dzack_research.preamble.categories.vector_orbits import (
     _gluing_route_discriminant_classes,
     _stable_complement_root_reflections,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate, negation
+from dzack_research.preamble.logic import Predicate, negation
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -3993,21 +3993,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``max_value`` it does not return on a regular lattice of class
             number above one, and a search that ``max_value`` stopped answers
             the proposition.
-
-            In rank 3 a rescaling of every primitive regular form is a row of
-            :data:`~dzack_research.preamble.catalogue.RegularTernaries`
-            [JKS97], and regularity is invariant under rescaling.  A lattice
-            whose class is a row answers that row's proved regularity, which
-            for 14 rows holds under the generalized Riemann hypothesis.  Any
-            other ternary lattice is not regular, so the search returns.
             """
-            from dzack_research.preamble.catalogue import RegularTernaries
-
-            match int(self.genus_class_number()), int(self.module_rank()):
-                case 1, _:
+            match int(self.genus_class_number()):
+                case 1:
                     return True
-                case _, 3 if (row := RegularTernaries.row_of(self)) is not None:
-                    return RegularTernaries.consequence_of_regularity(row, AtomicProposition("is_regular", self))
                 case _:
                     return _first_unrepresented_value(self, self.genus().representatives(), max_value, "is_regular")
 
@@ -4017,27 +4006,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             The procedure of :meth:`is_regular` over the classes of the spinor
             genus of this lattice, which come first among the representatives
             of its genus: a spinor genus of one class answers ``True``.
-
-            In rank 3 a regular lattice is spinor regular, so a row of
-            :data:`~dzack_research.preamble.catalogue.RegularTernaries`
-            answers its regularity, and a row of
-            :data:`~dzack_research.preamble.catalogue.SpinorRegularTernaries`
-            answers ``True`` [EH18, Theorem 1.1; BEHH90].  Every other
-            ternary lattice is not spinor regular [EH18, Theorem 1.1], so the
-            search returns.
             """
-            from dzack_research.preamble.catalogue import (
-                RegularTernaries,
-                SpinorRegularTernaries,
-            )
-
             count = int(self.spinor_genus_class_numbers()[0])
-            match count, int(self.module_rank()):
-                case 1, _:
-                    return True
-                case _, 3 if (row := RegularTernaries.row_of(self)) is not None:
-                    return RegularTernaries.consequence_of_regularity(row, AtomicProposition("is_spinor_regular", self))
-                case _, 3 if SpinorRegularTernaries.row_of(self) is not None:
+            match count:
+                case 1:
                     return True
                 case _:
                     classes = tuple(self.genus().representatives())[:count]

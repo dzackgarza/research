@@ -20,7 +20,7 @@ from typing import TypedDict
 import frontmatter
 from pydantic import BaseModel
 
-from latticedb import certificates, corpus, exceeded, records
+from latticedb import certificates, corpus, exceeded, records, regular_ternaries
 from latticedb.certificates import Certificate, Certificates
 from latticedb.model import (
     DefiniteData,
@@ -183,7 +183,7 @@ def requests(
 
 def computed(chosen: list[Request]) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
-    task = json.dumps({"lattices": chosen})
+    task = json.dumps({"lattices": chosen, "ternary_rows": regular_ternaries.requested()})
     # Keep the host SageMath environment separate from the project environment.
     environment = {variable: value for variable, value in os.environ.items() if variable != "VIRTUAL_ENV"}
     own = str(Path(sys.prefix) / "bin")
@@ -273,7 +273,7 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
                 else:
                     block[field] = value
                 metadata[block_name] = {key: block[key] for key in model.model_fields if key in block}
-    # A regularity value decided by a literature row cites that row.
+    # A regularity value read from a table row cites that row.
     references = list(metadata.get("references", []))
     for reference in values.get("references") or []:
         if reference not in references:

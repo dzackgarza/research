@@ -139,36 +139,6 @@ class Conjunction(Predicate):
         return " and ".join(repr(statement) for statement in self._statements)
 
 
-class ConditionalProposition(Predicate):
-    r"""A proposition \(P\) for which a theorem \(H \Rightarrow P\) is known and \(H\) is open.
-
-    ``ask`` answers ``True`` when ``ask`` of the hypothesis \(H\) answers
-    ``True``, and ``Unknown`` otherwise: the theorem decides nothing when
-    \(H\) fails.
-    """
-
-    def __init__(self, statement: Predicate, hypothesis: Predicate) -> None:
-        self._statement = statement
-        self._hypothesis = hypothesis
-        super().__init__()
-
-    def statement(self) -> Predicate:
-        return self._statement
-
-    def hypothesis(self) -> Predicate:
-        return self._hypothesis
-
-    def _ask_(self, *, max_prec: int = 4096) -> bool | UnknownClass:
-        match ask(self._hypothesis, max_prec=max_prec):
-            case True:
-                return True
-            case _:
-                return ask(self._statement, max_prec=max_prec)
-
-    def _repr_(self) -> str:
-        return f"{self._statement!r}, which holds under {self._hypothesis!r}"
-
-
 def negation(statement: bool | Predicate) -> bool | Predicate:
     r"""The negation of a proposition, decided when ``statement`` is decided."""
     match statement:
@@ -230,7 +200,6 @@ def ask(
 
 __all__ = [
     "AtomicProposition",
-    "ConditionalProposition",
     "Conjunction",
     "Negation",
     "Predicate",
