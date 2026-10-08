@@ -153,7 +153,8 @@ def regular_ternaries_seed(root: Root = Path()) -> None:
             index[key] = [path.stem]
             written += 1
         for tag in index[key]:
-            genus.cite(root / "lattices" / f"{tag}.md", entry.field, entry.proved, entry.reference, held)
+            for field, reference in entry.certified.items():
+                genus.cite(root / "lattices" / f"{tag}.md", field, entry.proved, reference, held)
     certificates.save(root, held)
     print(f"{written} lattice cards written; {len(regular_ternaries.entries())} table rows certified by citation")
 

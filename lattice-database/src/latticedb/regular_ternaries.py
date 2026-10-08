@@ -65,15 +65,26 @@ class TernaryEntry:
                 return True
 
     @property
-    def field(self) -> Literal["regular", "spinor_regular"]:
-        """The card field whose value the table proves."""
-        return "regular" if self.table == REGULAR else "spinor_regular"
-
-    @property
     def reference(self) -> dict[str, str]:
         """The citation of this row, with its locator and the proof of its property."""
         listing = f"{_JKS97}, form {self.row}, as tabulated in {_DMPW19}" if self.table == REGULAR else f"{_EH18}, Table 1, row {self.row}"
         return {"citation": f"{listing}; {_PROOFS[self.proof]}.", "url": _URLS[self.table]}
+
+    @property
+    def certified(self) -> dict[Literal["regular", "spinor_regular"], dict[str, str]]:
+        """Each card field whose value `proved` the row's source proves, with the citation that proves it.
+
+        A regular form is spinor regular: a form is spinor regular if it
+        represents every positive integer that its spinor genus represents,
+        and the spinor genus lies in the genus.
+        """
+        if self.table == SPINOR_REGULAR:
+            return {"spinor_regular": self.reference}
+        spinor = (
+            f"{self.reference['citation'][:-1]}; hence spinor regular, since a form is spinor regular if it represents all the "
+            f"positive integers represented by its spinor genus ({_EH18}, Abstract) and the spinor genus lies in the genus."
+        )
+        return {"regular": self.reference, "spinor_regular": {"citation": spinor, "url": self.reference["url"]}}
 
 
 def stored(table: Path) -> list[TernaryEntry]:
@@ -108,7 +119,7 @@ def record(entry: TernaryEntry) -> tuple[dict[str, Yaml], str]:
         "families": [],
         "related": [],
         "references": [entry.reference],
-        "definite": {entry.field: entry.proved},
+        "definite": {field: entry.proved for field in entry.certified},
     }
     prose = (
         f"Row {entry.row} of `sources/{entry.table.parent.name}/{entry.table.name}` gives the coefficients "

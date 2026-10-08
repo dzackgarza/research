@@ -5,16 +5,20 @@ latex: Jagy–Kaplansky–Schiemann regular ternary form 859
 aliases: []
 certifications:
   definite.regular: fabc90f232eb1563d4c172aa5763533cf23006b064fe4451ce276493fd53afa7
+  definite.spinor_regular: 28a68cb10eb565d94e129b83cb9e5a501e92c572c8beba626b5addec8fd7a59a
 gram_tensor:
 - [10, 0, 5]
 - [0, 12, 3]
 - [5, 3, 22]
 definite:
   regular: true
+  spinor_regular: true
 families: []
 related: []
 references:
 - citation: 'W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341, form 859, as tabulated in A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams, Positive integers represented by regular primitive positive-definite integral ternary quadratic forms, Integers 19 (2019), #A45, Tables 1 and 2; regular by W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341.'
+  url: https://math.colgate.edu/~integers/t45/t45.pdf
+- citation: 'W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341, form 859, as tabulated in A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams, Positive integers represented by regular primitive positive-definite integral ternary quadratic forms, Integers 19 (2019), #A45, Tables 1 and 2; regular by W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341; hence spinor regular, since a form is spinor regular if it represents all the positive integers represented by its spinor genus (A. G. Earnest and A. Haensch, Completeness of the list of spinor regular ternary quadratic forms, arXiv:1711.05811v2 (2018), Abstract) and the spinor genus lies in the genus.'
   url: https://math.colgate.edu/~integers/t45/t45.pdf
 ---
 

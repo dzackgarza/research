@@ -5,6 +5,7 @@ latex: brandt_intrau Brandt_1.html:5099
 aliases: []
 certifications:
   definite.regular: c78b088b9d91e8977eecbac2df4c33a45bf144e0366eba54c4a4c9dd76408f34
+  definite.spinor_regular: ec7c26eca4f254514e574c275a27aae963363fc83ebf608cadc6b074244ef1e8
 rank: 3
 gram_tensor:
 - [7, 3, 2]
@@ -15,6 +16,7 @@ determinant: 240
 definiteness: positive_definite
 definite:
   regular: true
+  spinor_regular: true
 families: []
 related: []
 references:
@@ -24,6 +26,8 @@ references:
   url: https://math.colgate.edu/~integers/t45/t45.pdf
 - citation: Watson, primitive lattices of class number one, 3:329.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+- citation: 'W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341, form 233, as tabulated in A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams, Positive integers represented by regular primitive positive-definite integral ternary quadratic forms, Integers 19 (2019), #A45, Tables 1 and 2; regular by W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341; hence spinor regular, since a form is spinor regular if it represents all the positive integers represented by its spinor genus (A. G. Earnest and A. Haensch, Completeness of the list of spinor regular ternary quadratic forms, arXiv:1711.05811v2 (2018), Abstract) and the spinor genus lies in the genus.'
+  url: https://math.colgate.edu/~integers/t45/t45.pdf
 ---
 
 Source entry `brandt_intrau:Brandt_1.html:5099` gives this Gram tensor.
