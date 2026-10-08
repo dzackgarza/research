@@ -1018,7 +1018,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             arrows = classifying.Mor(point, point)
             return Sets().Mor(self.acting_group(), endomorphisms)(lambda group_element: functor(arrows(group_element)))
 
-        @cached_method
         def action_of(self, group_element):
             r"""Return the automorphism of ``X`` in ``C`` induced by ``group_element``."""
             assert group_element in self.acting_group(), f"{group_element} is not an element of {self.acting_group()}"
