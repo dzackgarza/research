@@ -117,9 +117,6 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.definite is not None and lattice.rank >= 2
         case "regular" | "genus_theta_series" | "theta_series_cuspidal_component":
             return lattice.definite is not None
-        case "anisotropic_primes" | "local_representations":
-            # Below rank 3 the anisotropic primes and the exceptional primes of local representation are not a finite set in general.
-            return lattice.rank >= 3
         case "spinor_regular":
             return lattice.definite is not None and lattice.rank >= 3
         case "discriminant_sequence":

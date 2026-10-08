@@ -439,7 +439,7 @@ SageMath 10.10.beta8, 2026-10-09.
 An entry is not a valuation: entry `e` means the class is represented by `r p^{2e}` and every `r p^{2(e+j)}`, where `r` is the listed representative, so the least represented valuation is `v_p(r) + 2e`; `+Infinity` means no element of the class.
 Specimens, conditions at `p = 2`, with times: `x^2 + y^2 + 16 z^2` `[0, 2, 0, +Inf, 0, 1, 0, 1]` (0.19 s); `A_2` `[+Inf, +Inf, +Inf, +Inf, 0, 0, 0, 0]` and at `p = 3` `[+Inf, 0, +Inf, 0]` (0.13 s); `E_8` `[1, 1, 1, 1, 0, 0, 0, 0]` (0.41 s).
 Reproduce with `sage probe.sage`, where the probe compares the values represented by `x^T G x` below 40 with both methods.
-Route chosen: `Genus.local_representations` in `src/dzack_research/preamble/categories/lattices.py` reads `local_representation_conditions()`, converts each entry to the least valuation `v_p(r) + 2e`, and omits the classes marked `+Infinity`; no route calls `is_locally_represented_number`.
+Route chosen: `_least_represented_valuations` in `src/dzack_research/preamble/categories/lattices.py`, behind `Genus.local_representations`, reads `local_representation_conditions()` at each prime where Sage records a condition, converts each entry to the least valuation `v_p(r) + 2e`, and omits the classes marked `+Infinity`; no route calls `is_locally_represented_number`.
 Depends on this: `integral.local_representations` in lattice-db.
 
 ### `anisotropic_primes` and `local_representation_conditions` inspect only the primes dividing `2 det`, which is wrong below rank 3
@@ -449,7 +449,38 @@ For a binary form this fails: `x^T G x` for `A_2` is twice the norm form of `Q(s
 `QuadraticForm(ZZ, 2*G).anisotropic_primes()` returns `[2, 3, -1]` for `A_2`, and `local_representation_conditions()` lists only 2 and 3.
 Other specimens, `-1` standing for the real place: `x^2 + y^2 + 16 z^2` `[2, -1]` in 0.0078 s; `E_8` `[-1]`.
 SageMath 10.10.beta8, 2026-10-09.
-Route chosen: `Genus.anisotropic_primes` and `Genus.local_representations` in `src/dzack_research/preamble/categories/lattices.py` assert rank at least 3 and return only finite primes; lattice-db requests both fields only at rank at least 3.
+
+The class `QuadraticFormLocalRepresentationConditions` (`sage/quadratic_forms/quadratic_form__local_representation_conditions.py`, Sage checkout `4b7841fd01a`) has three further defects below rank 3. They were read in the source and not measured.
+
+- In dimension 1, `__init__` stores only the coefficient (lines 132--134). `local_conditions_vector_for_prime(p)` builds the vector at lines 346--353 and does not return it, so every call reaches `raise RuntimeError("the stored dimension should be a nonnegative integer")` at line 360. The built vector also marks the represented class `None`, not `0`.
+- In dimension 2, at a prime outside `exceptional_primes`, `local_conditions_vector_for_prime` returns `[p, 0, 0, +Inf, +Inf]` at odd `p` and `[2, 0, 0, 0, 0, +Inf, +Inf, +Inf, +Inf]` at 2 (lines 341--344). That is the answer of a unimodular anisotropic form. At a prime where the form is isotropic it is wrong, because there the form represents every class from valuation `v_p(r)`.
+- In dimension at least 2, a prime of the level is omitted from `exceptional_primes` when every entry it computed is `0` or `None` (lines 189--198). In dimension 2 such a prime then receives the wrong vector of the previous item.
+
+`is_anisotropic(p)` (`quadratic_form__local_field_invariants.py`, lines 662--682) decides each dimension at any `p` from the determinant and the Hasse invariant. `anisotropic_primes` is wrong below rank 3 only because it tests `prime_divisors(2 * det) + [-1]` (lines 757--758).
+
+The preamble route was measured on 2026-10-09:
+
+| Specimen | Anisotropic, among 2, 3, 5, 7, 11, 13 | Least valuations | Time for all calls |
+| --- | --- | --- | --- |
+| `A_2` | 2, 3, 5, 11 | at 2: `2, 6, 10, 14` from 1; at 3: `2` from 0 and `6` from 1; at 5 and 11: `1, 2` from 0 | 0.24 s |
+| `<1>` | every listed prime | at every listed prime: `1` from 0 | 0.02 s |
+| `x^T G x` with `G = diag(2, 6)` | 2, 3, 5, 11 | the same as `A_2` | 0.07 s |
+
+In all three specimens the primes of the level of `QuadraticForm(ZZ, 2*G)` are the primes of `2 det G`.
+
+Route chosen: `Genus.anisotropic_primes` in `src/dzack_research/preamble/categories/lattices.py`:
+
+- In rank at least 3, it returns the finite set from `anisotropic_primes()`.
+- In rank 1 and 2, it returns the condition set of primes `p` of `ZZ` at which `is_anisotropic(p)` holds.
+
+`Genus.local_representations` reads, through `_least_represented_valuations`:
+
+- in rank 1, the class of the coefficient `c`, from `v_p(c)`;
+- in rank 2, at a prime that Sage omits and that does not divide the level, the classes `1, u` from valuation 0 when the form is anisotropic there, and every class from `v_p(r)` otherwise (Serre, *A Course in Arithmetic*, Ch. IV, 1.7, Prop. 4; Ch. II, 2.2, Cor. 2 of Thm. 1);
+- in rank 2, at an omitted prime of the level, every class from `v_p(r)`;
+- otherwise, Sage's stored vector.
+
+In rank 1 and 2 the index set is the condition set of primes at which some class is not represented from `v_p(r)`. lattice-db stores both fields at the primes dividing `2 det L`. Its schema states the rule at the other primes.
 Depends on this: `integral.anisotropic_primes` and `integral.local_representations` in lattice-db.
 
 ## mypy

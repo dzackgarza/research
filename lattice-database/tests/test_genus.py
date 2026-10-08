@@ -137,7 +137,7 @@ def test_a_definite_binary_lattice_requests_regularity_and_no_spinor_regularity(
     assert "spinor_regular" not in fields
 
 
-def test_a_definite_binary_lattice_requests_its_genus_series_and_siegel_product_and_no_rank_three_conditions(
+def test_a_definite_binary_lattice_requests_its_genus_series_siegel_product_and_local_conditions(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "lattices").mkdir()
@@ -147,10 +147,16 @@ def test_a_definite_binary_lattice_requests_its_genus_series_and_siegel_product_
     request = genus.requests(corpus.load(tmp_path), {}, {}, ())[0]
     assert request["series_bound"] == 12
     fields = request["fields"]
-    for field in ("genus_theta_series", "theta_series_cuspidal_component", "local_densities", "siegel_eisenstein_coefficients"):
+    for field in (
+        "genus_theta_series",
+        "theta_series_cuspidal_component",
+        "local_densities",
+        "siegel_eisenstein_coefficients",
+        "anisotropic_primes",
+        "local_representations",
+    ):
         assert field in fields
-    for field in ("anisotropic_primes", "local_representations", "cusp_form_coordinates"):
-        assert field not in fields
+    assert "cusp_form_coordinates" not in fields
 
 
 def test_a_computation_that_outran_a_job_is_skipped_and_a_cut_one_runs_first(

@@ -117,14 +117,26 @@ def _local_densities(lattice, bound: int) -> list[dict[str, JsonValue]]:
     ]
 
 
+def _anisotropic_primes(lattice) -> list[int]:
+    """Serialize the primes dividing `2 det L` at which the preamble's genus is anisotropic."""
+    anisotropic = lattice.genus().anisotropic_primes()
+    return [int(prime) for prime in lattice.bad_reduction_primes() if prime in anisotropic]
+
+
 def _local_representations(lattice) -> list[dict[str, JsonValue]]:
-    """Serialize the preamble's least represented valuation of each square class, at each prime where it is not every class."""
+    """Serialize the preamble's least represented valuation of each square class, at each prime dividing `2 det L` where it is not every class."""
+    representations = lattice.genus().local_representations()
+    exceptional = representations.index_set()
     return [
         {
             "prime": int(prime),
-            "classes": [{"representative": int(representative), "least_valuation": int(valuation)} for representative, valuation in classes.items()],
+            "classes": [
+                {"representative": int(representative), "least_valuation": int(valuation)}
+                for representative, valuation in representations.value(prime).items()
+            ],
         }
-        for prime, classes in lattice.genus().local_representations().items()
+        for prime in lattice.bad_reduction_primes()
+        if prime in exceptional
     ]
 
 
@@ -161,7 +173,7 @@ VALUES = {
     "modular_scale": _modular_scale,
     "regular": lambda lattice: _decided(lattice.is_regular()),
     "spinor_regular": lambda lattice: _decided(lattice.is_spinor_regular()),
-    "anisotropic_primes": lambda lattice: [int(prime) for prime in lattice.genus().anisotropic_primes()],
+    "anisotropic_primes": _anisotropic_primes,
     "local_representations": _local_representations,
 }
 
