@@ -496,21 +496,27 @@ class IntegralData(Record):
     anisotropic_primes: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
-            "The primes $p$, in increasing order, at which $L \\otimes \\mathbb{Q}_p$ is anisotropic: $b(x, x) \\neq 0$ for every nonzero $x$. "
+            "The primes $p$ dividing $2 \\det L$, in increasing order, at which $L \\otimes \\mathbb{Q}_p$ is anisotropic: $b(x, x) \\neq 0$ for every nonzero $x$. "
             "The real place is not listed; the signature decides it. "
-            "Requires a nonzero determinant and rank at least 3, where every such prime divides $2 \\det L$; "
-            "a form of rank 1 is anisotropic at every prime, and one of rank 2 at infinitely many primes unless $-\\det L$ is a square."
+            "At a prime $p$ not dividing $2 \\det L$ the rank and the determinant decide it: a form of rank 1 is anisotropic, "
+            "one of rank 2 is anisotropic exactly when $-\\det L$ is not a square modulo $p$, and one of rank at least 3 is isotropic. "
+            "Requires a nonzero determinant."
         ),
     )
     local_representations: Annotated[tuple[LocalRepresentation, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
             "The values $b(x, x)$ of the localizations of $L$, as conditions on square classes: "
-            "for each prime $p$ at which $L \\otimes \\mathbb{Z}_p$ does not represent every nonzero $p$-adic integer, in increasing order, "
+            "for each prime $p$ dividing $2 \\det L$ at which $L \\otimes \\mathbb{Z}_p$ does not represent every nonzero $p$-adic integer, in increasing order, "
             "the least valuation at which it represents each square class of $\\mathbb{Q}_p^\\times$. "
-            "A nonzero integer $m$ is represented by $L \\otimes \\mathbb{Z}_p$ for every prime $p$ exactly when, at each listed prime, "
+            "At a prime $p$ not dividing $2 \\det L$ the rank and the determinant decide the conditions: "
+            "a form $\\langle d \\rangle$ of rank 1 represents exactly the class of $d$, from valuation 0; "
+            "a form of rank 2 represents every nonzero $p$-adic integer when $-\\det L$ is a square modulo $p$, "
+            "and otherwise exactly the elements of even valuation, the classes $1$ and $\\nu$ from valuation 0; "
+            "a form of rank at least 3 represents every nonzero $p$-adic integer. "
+            "A nonzero integer $m$ is represented by $L \\otimes \\mathbb{Z}_p$ for every prime $p$ exactly when, at each prime, "
             "the valuation of $m$ is at least the least valuation of its class, and the signature decides the real place. "
-            "Requires a nonzero determinant and rank at least 3, where every listed prime divides $2 \\det L$."
+            "Requires a nonzero determinant."
         ),
     )
     local_densities: Annotated[tuple[LocalDensities, ...], Field(strict=False)] | None = Field(
@@ -911,7 +917,7 @@ class Lattice(Record):
         yield from self._local_problems()
 
     def _local_problems(self) -> Iterator[InitErrorDetails]:
-        """Structural conditions on stored local data: primes in increasing order, and one entry per square class."""
+        """Structural conditions on stored local data: primes dividing `2 det L` in increasing order, and one entry per square class."""
         assert self.integral is not None
         data = self.integral
         for field, primes in (
@@ -923,6 +929,12 @@ class Lattice(Record):
                 yield _problem(
                     "local_primes_order",
                     "the primes increase strictly",
+                    ("integral", field),
+                )
+            if primes is not None and self.determinant is not None and self.determinant != 0 and any((2 * self.determinant) % prime != 0 for prime in primes):
+                yield _problem(
+                    "local_primes_divide_2_det",
+                    "every listed prime divides 2 det L",
                     ("integral", field),
                 )
         for position, entry in enumerate(data.local_representations or ()):
