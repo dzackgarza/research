@@ -5,154 +5,333 @@ The category $R\text{-}\mathbf{Mod}$ and extension of scalars are defined in @se
 
 ::: {.definition #def:form-presheaves title="Bilinear and quadratic form presheaves"}
 
-Let $\Bil_{R,W}(M)$ be the $R$-module of $R$-bilinear maps $M\times M\to W$, with pointwise operations.
-Pullback along $f\colon M\to N$ sends $b$ to
+For $M\in R\text{-}\mathbf{Mod}$, write
 $$
-f^*b(x,y)=b(fx,fy),
+T_R(M)_2\definedas M\tensor_RM
 $$
-and defines a presheaf $\Bil_{R,W}\colon(R\text{-}\mathbf{Mod})^{\opop} \to R\text{-}\mathbf{Mod}$.
+for the degree-two homogeneous summand of the tensor algebra $T_R(M)$. Define
+$$
+\Bil_{R,W}(M)
+\definedas
+\Hom_{R\text{-}\mathbf{Mod}}\qty{T_R(M)_2,W}.
+$$
+For $f\colon M\to N$, pullback is
+$$
+f^*\colon\Bil_{R,W}(N)\too\Bil_{R,W}(M),
+\qquad
+b\longmapsto b\circ(f\tensor_Rf),
+$$
+so
+$$
+\Bil_{R,W}\colon(R\text{-}\mathbf{Mod})^{\opop}\too R\text{-}\mathbf{Mod}
+$$
+is a presheaf.
 
-Let $\operatorname{Quad}_{R,W}(M)$ be the $R$-module, under pointwise operations, of maps $q\colon M\to W$ for which $q(rx)=r^2q(x)$ and
+For $M\in R\text{-}\mathbf{Mod}$, let $\Gamma_R^2(M)$ be the quotient of the free $R$-module on symbols $[x]$, $x\in M$, by the relations
 $$
-b_q(x,y)=q(x+y)-q(x)-q(y)
+\begin{aligned}
+[rx]&=r^2[x],\\
+[x+y+z]-[x+y]-[x+z]-[y+z]+[x]+[y]+[z]&=0,\\
+[rx+y]-[rx]-[y]&=r\qty{[x+y]-[x]-[y]}.
+\end{aligned}
 $$
-is $R$-bilinear.
-Pullback defines the presheaf $\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\opop} \to R\text{-}\mathbf{Mod}$.
+The map $\gamma_M\colon M\to\Gamma_R^2(M)$, $x\mapsto[x]$, is universal among maps $q\colon M\to W$ satisfying $q(rx)=r^2q(x)$ and having $R$-bilinear polarization.
+Hence
+$$
+\operatorname{Quad}_{R,W}(M)
+\definedas
+\Hom_{R\text{-}\mathbf{Mod}}\qty{\Gamma_R^2(M),W}.
+$$
+For $f\colon M\to N$, the morphism $\Gamma_R^2(f)[x]=[f(x)]$ gives pullback by precomposition, so
+$$
+\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\opop}\too R\text{-}\mathbf{Mod}
+$$
+is a presheaf.
 :::
 
 ::: {.definition #def:form-categories title="Form categories"}
 
-Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor.
-Define
+For fixed value module $W$, define $\mathcal B_{R,W}$ to have pairs $(M,b)$ with $b\in\Bil_{R,W}(M)$ and morphisms
 $$
-\mathcal B_{R,W}=\int_{R\text{-}\mathbf{Mod}}(U\circ\Bil_{R,W}),
+f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)
+$$
+satisfying
+$$
+b_M=b_N\circ(f\tensor_Rf).
+$$
+Define $\mcq_{R,W}$ similarly from $\operatorname{Quad}_{R,W}$.
+
+Define the variable-value category $\mathbf{BilMod}_R$ to have triples $(M,W,b)$ and morphisms
+$$
+(f,u)\colon(M,W,b_M)\too(N,V,b_N)
+$$
+with $f\colon M\to N$, $u\colon W\to V$ in $R\text{-}\mathbf{Mod}$ and
+$$
+u\circ b_M=b_N\circ(f\tensor_Rf).
+$$
+The projection
+$$
+p_{\mathrm{Bil}}\colon\mathbf{BilMod}_R\too R\text{-}\mathbf{Mod},
 \qquad
-\mcq_{R,W}=\int_{R\text{-}\mathbf{Mod}}(U\circ\operatorname{Quad}_{R,W}).
+(M,W,b)\longmapsto W
 $$
-An object of $\mathcal B_{R,W}$ is a pair $(M,b)$.
-A morphism $(M,b_M)\to(N,b_N)$ has underlying morphism
-$f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ and satisfies $f^*b_N=b_M$.
-The projection to $R\text{-}\mathbf{Mod}$ is the discrete fibration of @def:category-of-elements.
-The quadratic category uses the same convention.
-:::
+has fibre $p_{\mathrm{Bil}}^{-1}(W)=\mathcal B_{R,W}$.
+Define $\mathbf{QuadMod}_R$ and $p_{\mathrm{Quad}}$ analogously using $\Gamma_R^2(M)$; its fibre over $W$ is $\mcq_{R,W}$.
 
-::: {.convention #conv:bilinear-module-fibration title="Bilinear modules versus form-preserving maps"}
-
-Write
-$$
-\mathbf{BilMod}_R\too R\text{-}\mathbf{Mod}
-$$
-for the abelian category of bilinear modules fibred over their value modules.
-Its fibre over $W$ is the category of $W$-valued bilinear modules.
-
-Kernels, cokernels, images, exact sequences, and epi--mono factorizations of bilinear modules are taken intrinsically in $\mathbf{BilMod}_R$.
-They are not computed in $R\text{-}\mathbf{Mod}$ and then equipped with a form afterward.
-The fixed-value form-preserving category $\mathcal B_{R,W}$ above is a separate construction.
+The category-of-elements presentations of $\mathcal B_{R,W}$ and $\mcq_{R,W}$ are the fixed-value fibres of these projections, not additional form categories.
+Kernel, cokernel, image, and exact-sequence notation below is always taken in the explicitly named form category.
 :::
 
 ::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness"}
-For $b\colon M\times M\to W$:
 
-- $b$ is *symmetric* if $b(x,y)=b(y,x)$;
+Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor and let
+$$
+\Delta_M\colon U(M)\too U(M\tensor_RM),
+\qquad
+x\longmapsto x\tensor x
+$$
+be the natural diagonal of underlying sets. For a bilinear map $b\colon M\tensor_RM\to W$, define
+$$
+q_b
+\definedas
+U(b)\circ\Delta_M\colon U(M)\too U(W).
+$$
+Let
+$$
+\tau\colon M\tensor_RM\isoto M\tensor_RM,
+\qquad
+x\tensor y\longmapsto y\tensor x.
+$$
 
-- $b$ is *skew-symmetric* if $b(x,y)=-b(y,x)$;
+- $b$ is **symmetric** when $b\circ\tau=b$.
 
-- $b$ is *alternating* if $b(x,x)=0$;
+- $b$ is **skew-symmetric** when $b\circ\tau=-b$.
 
-- $b$ is *even* if $b(x,x)\in 2W$ for every $x$.
+- $b$ is **alternating** when $q_b=0$.
+
+- Let multiplication by $2$ have image factorization
+  $$
+  W\xrightarrow{2}W
+  =
+  W\twoheadrightarrow 2W\injects W.
+  $$
+  The form $b$ is **even** when there is a quadratic map $\widetilde q_b\in\operatorname{Quad}_{R,2W}(M)$ for which
+  $$
+  q_b
+  =
+  U(2W\injects W)\circ U(\widetilde q_b).
+  $$
 
 Alternating forms are skew-symmetric.
-The converse holds when multiplication by $2$ is injective on $W$.
-When $2W=W$, every bilinear form satisfies the evenness condition; quadratic refinements retain additional information in the discriminant setting.
+The converse holds when multiplication by $2$ on $W$ is a monomorphism.
+When multiplication by $2$ is an epimorphism, every bilinear form is even; quadratic refinements retain additional information.
 :::
 
-::: {.definition #def:polarization title="The adjoint maps and the radicals"}
+::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy"}
 
-The bilinear form $b$ determines two $R$-linear maps to $\Hom_R(M,W)$,
+For a bilinear module $(M,W,b)$ define
+$$
+b^\sharp\colon M\too\Hom_R(M,W),
+\qquad
+{}^\sharp b\colon M\too\Hom_R(M,W)
+$$
+by
 $$
 b^\sharp(x)(y)=b(x,y),
 \qquad
 {}^\sharp b(y)(x)=b(x,y).
 $$
-Their kernels are the *left radical* and the *right radical*
+Define the left and right radicals and coradicals by the exact sequences
 $$
-\radic_{\mathrm L}(M)=\{x\in M\mid b(x,M)=0\},
-\qquad
-\radic_{\mathrm R}(M)=\{y\in M\mid b(M,y)=0\}.
+0\too\radic_{\mathrm L}(M)
+\too M
+\xrightarrow{b^\sharp}
+\Hom_R(M,W)
+\too\operatorname{corad}_{\mathrm L}(M)
+\too0
 $$
-The form is *left nondegenerate* if $b^\sharp$ is injective, *right nondegenerate* if ${}^\sharp b$ is injective, and *nondegenerate* if both hold.
-It is *perfect* if $b^\sharp$ and ${}^\sharp b$ are isomorphisms.
-Perfect forms are nondegenerate; the converse requires additional hypotheses.
+and
+$$
+0\too\radic_{\mathrm R}(M)
+\too M
+\xrightarrow{{}^\sharp b}
+\Hom_R(M,W)
+\too\operatorname{corad}_{\mathrm R}(M)
+\too0.
+$$
+The form is **nondegenerate** exactly when
+$$
+\radic_{\mathrm L}(M)=0=\radic_{\mathrm R}(M).
+$$
+It is **perfect** exactly when
+$$
+\radic_{\mathrm L}(M)=\radic_{\mathrm R}(M)
+=\operatorname{corad}_{\mathrm L}(M)=\operatorname{corad}_{\mathrm R}(M)=0.
+$$
 
-If $b$ is symmetric then ${}^\sharp b=b^\sharp$, and if $b$ is skew-symmetric then ${}^\sharp b=-b^\sharp$.
-In both cases the two radicals coincide, are written $\radic(M)$, and the one condition $\radic(M)=0$ is nondegeneracy.
-
-In [@MH73] a module equipped with a perfect form is called an *inner product space*.
-:::
-
-::: {.example #ex:two-radicals title="Left and right radicals can differ"}
-Let $b$ be the form on $R^{2}$ with Gram matrix $\left(\begin{smallmatrix}1&2\\3&4\end{smallmatrix}\right)$ in the basis $e_1,e_2$.
-Then $b(e_1,w)=w_1+2w_2$ while $b(w,e_1)=w_1+3w_2$, so the two conditions $b(e_1,w)=0$ and $b(w,e_1)=0$ cut out different submodules of $R^{2}$.
+If $b$ is symmetric, $b^\sharp={}^\sharp b$, so the two exact sequences are the same and the common radical and coradical are written $\radic(M)$ and $\operatorname{corad}(M)$.
+If $b$ is skew-symmetric, ${}^\sharp b=-b^\sharp$; multiplication by $-1$ on $\Hom_R(M,W)$ induces the unique isomorphisms between the corresponding kernels and cokernels.
 :::
 
 ::: {.definition #def:orthogonal-sum title="Orthogonal sum"}
 
-The orthogonal sum of $(M,b_M)$ and $(N,b_N)$ is
+Let $\iota_M\colon M\to M\oplus N$ and $\iota_N\colon N\to M\oplus N$ be the biproduct injections.
+The orthogonal sum $(M,b_M)\perp(N,b_N)$ is the unique bilinear module $(M\oplus N,b_{M\perp N})$ satisfying
 $$
-(M,b_M)\perp(N,b_N)
-=
-(M\oplus N,b_M\oplus b_N),
+\begin{aligned}
+b_{M\perp N}\circ(\iota_M\tensor\iota_M)&=b_M,
+&
+b_{M\perp N}\circ(\iota_N\tensor\iota_N)&=b_N,\\
+b_{M\perp N}\circ(\iota_M\tensor\iota_N)&=0,
+&
+b_{M\perp N}\circ(\iota_N\tensor\iota_M)&=0.
+\end{aligned}
 $$
-where the mixed terms vanish.
-With zero module as unit and the standard associativity, symmetry, and unit isomorphisms, this defines a symmetric monoidal structure on $\mathcal B_{R,W}$.
+The biproduct coherence morphisms of $R\text{-}\mathbf{Mod}$ are form-preserving for these forms, giving the symmetric monoidal category
+$$
+\qty{
+\mathcal B_{R,W},
+\perp,
+(0,0),
+a^\perp,
+\lambda^\perp,
+\rho^\perp,
+\sigma^\perp
+}.
+$$
 The quadratic form category has the analogous orthogonal sum.
 :::
 
 ## Orthogonality {#sec-orthogonality}
 
-::: {.definition #def:orthogonal-complement title="Orthogonal complements and isotropy"}
+::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements"}
 
-For a submodule $N\iscontainedin M$ set
+Let $(M,W,b)$ be a bilinear module and let $\iota\colon T\injects M$ be a monomorphism of $R$-modules.
+Define
 $$
-N^{\perp_{\mathrm L}}=\{x\in M\mid b(x,N)=0\},
+\lambda_{\iota}^{\mathrm L}\colon
+M
+\too
+\Hom_R(T,W),
 \qquad
-N^{\perp_{\mathrm R}}=\{x\in M\mid b(N,x)=0\}.
+\lambda_{\iota}^{\mathrm L}(x)(t)
+=
+b(x,\iota(t)),
 $$
-When $b$ is symmetric or skew-symmetric these agree and are written $N^{\perp}$.
+and
+$$
+\lambda_{\iota}^{\mathrm R}\colon
+M
+\too
+\Hom_R(T,W),
+\qquad
+\lambda_{\iota}^{\mathrm R}(x)(t)
+=
+b(\iota(t),x).
+$$
+Define the **left orthogonal complement** \({}^{\perp_b}T\), the **right orthogonal complement** \(T^{\perp_b}\), and their coradicals by the exact sequences
+$$
+0
+\too
+{}^{\perp_b}T
+\xrightarrow{\kappa_{\iota}^{\mathrm L}}
+M
+\xrightarrow{\lambda_{\iota}^{\mathrm L}}
+\Hom_R(T,W)
+\too\operatorname{corad}_{\mathrm L}(\iota)
+\too0
+$$
+and
+$$
+0
+\too
+T^{\perp_b}
+\xrightarrow{\kappa_{\iota}^{\mathrm R}}
+M
+\xrightarrow{\lambda_{\iota}^{\mathrm R}}
+\Hom_R(T,W)
+\too\operatorname{corad}_{\mathrm R}(\iota)
+\too0.
+$$
+If $b$ is symmetric, then $\lambda_{\iota}^{\mathrm L}=\lambda_{\iota}^{\mathrm R}$; the universal properties of kernel and cokernel give unique isomorphisms
+$$
+{}^{\perp_b}T\isoto T^{\perp_b},
+\qquad
+\operatorname{corad}_{\mathrm L}(\iota)\isoto\operatorname{corad}_{\mathrm R}(\iota)
+$$
+commuting with the four structure morphisms above.
 
-An element $x\in M$ is *isotropic* if $b(x,x)=0$, and $b$ is *anisotropic* if $0$ is its only isotropic element.
-A submodule $N$ is *totally isotropic* if $b|_{N\times N}=0$, equivalently $N\iscontainedin N^{\perp}$.
-The radical of the restricted form is
+The subobject $\iota$ is **isotropic** when
 $$
-\radic(N)=N\cap N^{\perp},
+\iota^*b=0.
 $$
-so $N$ is totally isotropic exactly when $\radic(N)=N$ and the restriction $b|_{N\times N}$ is nondegenerate exactly when $N\cap N^{\perp}=0$.
+Equivalently, there are unique lifts $\ell_{\iota}^{\mathrm L}$ and $\ell_{\iota}^{\mathrm R}$ in the commuting triangles
+```tikzcd
+& {}^{\perp_b}T \arrow[d,"\kappa_{\iota}^{\mathrm L}"]
+&
+& T^{\perp_b} \arrow[d,"\kappa_{\iota}^{\mathrm R}"] \\
+T \arrow[ur,dashed,"\ell_{\iota}^{\mathrm L}"] \arrow[r,"\iota"']
+& M
+&
+T \arrow[ur,dashed,"\ell_{\iota}^{\mathrm R}"] \arrow[r,"\iota"']
+& M
+```
+so that
+$$
+\kappa_{\iota}^{\mathrm L}\circ\ell_{\iota}^{\mathrm L}=\iota,
+\qquad
+\kappa_{\iota}^{\mathrm R}\circ\ell_{\iota}^{\mathrm R}=\iota.
+$$
+:::
+
+::: {.definition #def:nondegenerate-reduction title="Nondegenerate reduction"}
+
+Let $B$ be a symmetric bilinear module and let
+$$
+\rho_B\colon\radic(B)\too B
+$$
+be its radical morphism.
+Define
+$$
+B^{\mathrm{nd}}
+\definedas
+\coker_{\mathbf{BilMod}_R}(\rho_B).
+$$
+This defines the **nondegenerate-reduction endofunctor**
+$$
+(-)^{\mathrm{nd}}\colon
+\mathbf{BilMod}_R
+\too
+\mathbf{BilMod}_R.
+$$
+
+If $L$ is nondegenerate and
+$$
+\iota\colon T\injects L
+$$
+is an isotropic sublattice over the commutative ring $R$, then in lattice-theoretic notation
+$$
+T^\perp
+\definedas
+\bigl(T^\perp_{\mathbf{BilMod}_R}\bigr)^{\mathrm{nd}}.
+$$
+Thus the orthogonal complement in the lattice category is the nondegenerate reduction of the right orthogonal-complement kernel in $\mathbf{BilMod}_R$.
 :::
 
 ::: {.theorem #thm:orthogonal-decomposition title="Orthogonal decomposition"}
 
-Let $b$ be symmetric or skew-symmetric on $M$ and let $N\iscontainedin M$ be a submodule on which $b$ restricts to a perfect form.
-Then $M=N\oplus N^{\perp}$ and the sum is orthogonal, so
+Let $(M,W,b)$ be symmetric and let
 $$
-(M,b)\cong(N,b|_N)\perp(N^{\perp},b|_{N^{\perp}})
+\iota\colon T\injects M
 $$
-in the sense of @def:orthogonal-sum; see [@MH73, I §3.1].
-If $x_1,\dots,x_k\in M$ have invertible Gram matrix $\bigl(b(x_i,x_j)\bigr)$, then they are linearly independent and this applies to the free submodule they span [@MH73, I §3.2].
-:::
-
-::: {.proposition #prop:quotient-form title="Forms on quotients"}
-
-Let $b$ be symmetric on $M$ and let $N\iscontainedin M$ be a submodule.
-
-The rule $\bar b(x+N,y+N)=b(x,y)$ defines a form on $M/N$ if and only if $N\iscontainedin\radic(M)$.
-For well-definedness one needs $b(x+n,y+n')=b(x,y)$ for all $n,n'\in N$; taking $n'=0$ gives $b(n,y)=0$ for every $y\in M$, which is $N\iscontainedin\radic(M)$, and that condition conversely kills all three correction terms.
-
-The same rule defines a form on $N^{\perp}/N$ whenever $N$ is totally isotropic: for $x,y\in N^{\perp}$ and $n,n'\in N$,
+be a bilinear submodule on which the restricted form is perfect.
+Then the canonical orthogonal-sum morphism
 $$
-b(x+n,y+n')=b(x,y)+b(x,n')+b(n,y)+b(n,n')=b(x,y).
+T\perp T^\perp
+\too
+M
 $$
-
-Taking $N=\radic(M)$ gives the *radical quotient* $M/\radic(M)$, whose induced form is nondegenerate.
+is an isomorphism [@MH73, I §3.1].
 :::
 
 ## Gram matrices and the determinant {#sec-gram-determinant}
@@ -253,7 +432,17 @@ with
 $$
 (b_M\tensor_R b_N)(x\tensor_R u,\;y\tensor_R v)=b_M(x,y)\tensor_R b_N(u,v),
 $$
-obtained by factoring the four-linear map $(x,u,y,v)\mapsto b_M(x,y)\tensor_R b_N(u,v)$ through the tensor products [@MH73, I §5.1].
+induced by the morphism
+$$
+M\tensor_RN\tensor_RM\tensor_RN
+\too
+W_M\tensor_RW_N,
+\qquad
+x\tensor u\tensor y\tensor v
+\longmapsto
+b_M(x,y)\tensor b_N(u,v),
+$$
+after the symmetry isomorphism carrying $(M\tensor_RN)^{\tensor2}$ to $M\tensor_RM\tensor_RN\tensor_RN$ [@MH73, I §5.1].
 For $W_M=W_N=R$ the value module is $R$.
 
 Call a form $\eps$-symmetric when $b(x,y)=\eps\,b(y,x)$, so that $1$-symmetric means symmetric and $(-1)$-symmetric means skew-symmetric.
@@ -281,18 +470,44 @@ A morphism $f$ of @def:form-categories satisfies $f^{*}b_N=b_M$ and hence $f^{*}
 For $\lambda$ a unit it is an isomorphism of categories with inverse $(-)(\lambda^{-1})$, and $(-)(-1)$ is an involution.
 :::
 
-## Signature at a real place {#sec-signature}
+## Signatures at real places {#sec-signature}
 
 ::: {.definition #def:signature title="Signature"}
 
 Let $F$ be an ordered field and let $b$ be a symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
-Write $p$ for the greatest dimension of a subspace on which $b$ is positive definite, $q$ for the greatest dimension of a subspace on which $b$ is negative definite, and $r=\dim\radic(V)$.
-The triple $(p,q,r)$ is the *signature* of $b$.
+Define
+$$
+\operatorname{sig}(V,b)\definedas(p,q,r),
+$$
+where $p$ and $q$ are the maximal dimensions of positive- and negative-definite subspaces and
+$$
+r\definedas\dim_F\radic(V).
+$$
 
-For an $R$-module with form and a ring embedding $\sigma\colon R\hookrightarrow\bR$, the signature of $(M,b)$ at $\sigma$ is the signature of the base change along $\sigma$ of @def:module-base-change.
-For $R=\bZ$ there is one such embedding and the qualifier is omitted.
+For a commutative ring $R$, define the set of real places
+$$
+\Sigma_\infty(R)
+\definedas
+\Hom_{\mathbf{CRing}}(R,\bR).
+$$
+For
+$$
+\sigma\in\Sigma_\infty(R)
+$$
+let
+$$
+\operatorname{sig}_\sigma(M,b)
+$$
+be the signature of the scalar extension along $\sigma$ from @def:module-base-change.
+The signature over $R$ is the tuple
+$$
+\operatorname{sig}_R(M,b)
+\definedas
+\bigl(\operatorname{sig}_\sigma(M,b)\bigr)_{\sigma\in\Sigma_\infty(R)}.
+$$
+For $R=\bZ$ there is one real place and the tuple is identified with its single component.
 
-For a nondegenerate form $r=0$, and the signature is then written as the pair $(p,q)$.
+For a nondegenerate form every component has radical dimension $0$ and is written as a pair.
 :::
 
 ::: {.theorem #thm:sylvester title="Sylvester's law of inertia"}
@@ -342,7 +557,7 @@ b(e,e)=b(f,f)=0,\qquad b(e,f)=b(f,e)=1,
 $$
 so its Gram matrix is $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$, its form is perfect and even, and its signature over an ordered field is $(1,1,0)$.
 
-A perfect symmetric form on $M$ is *split* if $M$ has a direct summand $N$ with $N=N^{\perp}$ [@MH73, I §6.1].
+A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1].
 Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes [@MH73, I §6.3]; this applies to a field of characteristic other than $2$.
 :::
 

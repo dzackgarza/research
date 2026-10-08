@@ -35,7 +35,7 @@ $$
 unconditionally, with $A$ symmetric.
 
 The canonical form records the angles between the simple roots and gives them all the same length.
-A root system with roots of two lengths has $d_i\neq d_j$ and a Cartan matrix that is not symmetric, so its Cartan matrix arises from no canonical form; the diagrams $B_n$, $C_n$, $F_4$ and $G_2$ are of this kind.
+For a root system with two root lengths, the diagonal symmetrizer has unequal entries $d_i\neq d_j$; its Cartan matrix is therefore symmetrizable by $G_{ij}=d_jA_{ij}$ rather than symmetric. This is the case for $B_n$, $C_n$, $F_4$, and $G_2$.
 The specimen in @def:cartan-matrix is the $m(s,t)=4$ case, where the two roots have squares $-2$ and $-4$.
 What connects the two matrices in general is the symmetrization $G_{ij}=d_jA_{ij}$ of @def:cartan-matrix.
 :::
@@ -111,7 +111,7 @@ A *Coxeter system in a lattice* over $R$ is a triple $(\Phi,L,\iota)$ consisting
 
 A morphism $(\Phi_1,L_1,\iota_1)\to(\Phi_2,L_2,\iota_2)$ is a pair $(u,g)$ consisting of a morphism $u\colon\langle\Phi_1\rangle\to\langle\Phi_2\rangle$ of $\mathbf{Lat}_R$ sending $\Phi_1$ into $\Phi_2$ and a morphism $g\colon L_1\to L_2$ of $\mathbf{Lat}_R$, such that the square
 
-```tikzcd id="coxeter-morphism-square"
+```tikzcd
 \langle\Phi_1\rangle \arrow[r,"u"] \arrow[d,hook,"\iota_1"'] &
 \langle\Phi_2\rangle \arrow[d,hook,"\iota_2"] \\
 L_1 \arrow[r,"g"'] & L_2
@@ -132,10 +132,10 @@ are functors to $\mathbf{Lat}_R$.
 Let $\iota\colon\langle\Phi\rangle\to L$ be a morphism of $\mathbf{Lat}_R$ with $R=\mathbb Z$ and with the two lattices of equal rank.
 Its index $[L:\iota(\langle\Phi\rangle)]$ of @def:index satisfies
 $$
-\det\bigl(b_{\langle\Phi\rangle}\bigr)=[L:\iota(\langle\Phi\rangle)]^{2}\det(b_L)
+\det\qty{b_{\langle\Phi\rangle}}=[L:\iota(\langle\Phi\rangle)]^{2}\det(b_L)
 $$
 by @prop:embedding-index, and equals $1$ exactly when $\iota$ is an isometry.
 
 For an object $(\Phi,L,\iota)$ of $\mathbf{Cox}_{\mathbb Z}$ the index is therefore $1$ whenever the ranks agree: the cokernel of $\iota$ is torsion-free by primitivity and of rank $0$ by equality of ranks, so it vanishes.
-The invariant that survives on $\mathbf{Cox}_{\mathbb Z}$ is the orthogonal complement $\iota(\langle\Phi\rangle)^{\perp}\subseteq L$ of @def:orthogonal-complement together with its induced form.
+The invariant that survives on $\mathbf{Cox}_{\mathbb Z}$ is the orthogonal-complement subobject $\iota(\langle\Phi\rangle)^{\perp L}\injects L$ of @def:orthogonal-complement together with its induced form.
 :::

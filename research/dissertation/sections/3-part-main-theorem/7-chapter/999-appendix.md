@@ -231,7 +231,7 @@ Note that for $D_n$, $A_L = \ZZ_{2^2}$ when $n$ is odd, and $A_L = (\ZZ_2)^2$ wh
 | $W(L)$ | $S_{n+1}$ | $(\ZZ_2)^{n-1} \rtimes S_n$ | $W(E_6)$ | $W(E_7)$ | $W(E_8)$ |
 | $|W(L)|$ | $(n+1)!$ | $2^{n-1}\cdot n!$ | $2^7 \cdot 3^4 \cdot 5$ | $2^{10} \cdot 3^4 \cdot 5 \cdot 7$ | $2^{14} \cdot 3^5 \cdot 5^2 \cdot 7$ |
 | $A_L$ | $\ZZ_{n+1}$ | $\ZZ_{2^2}$ or $\ZZ_2^2$ | $\ZZ_3$ | $\ZZ_2$ | $\{0\}$ |
-| $\disc(L)$ | $n+1$ | $2^2$ | $3$ | $2$ | $1$ |
+| $\disc{L}$ | $n+1$ | $2^2$ | $3$ | $2$ | $1$ |
 
 : Simply Laced Root Lattices (A, D, E types)
 
@@ -242,7 +242,7 @@ Note that for $D_n$, $A_L = \ZZ_{2^2}$ when $n$ is odd, and $A_L = (\ZZ_2)^2$ wh
 | $W(L)$ | $\ZZ_2^n \rtimes S_n$ | $\ZZ_2^n \rtimes S_n$ | $W(F_4)$ | $W(G_2)$ |
 | $|W(L)|$ | $2^n \cdot n!$ | $2^n n!$ | $2^7 \cdot 3^2$ | $2^2 \cdot 3$ |
 | $A_L$ | $\ZZ_2$ | $\ZZ_2$ | $\{0\}$ | $\ZZ_3$ |
-| $\disc(L)$ | $2$ | $2$ | $1$ | $3$ |
+| $\disc{L}$ | $2$ | $2$ | $1$ | $3$ |
 
 : Non-Simply Laced Root Lattices (B, C, F, G types)
 

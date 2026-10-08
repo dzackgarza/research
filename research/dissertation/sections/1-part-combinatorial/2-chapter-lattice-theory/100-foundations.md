@@ -64,13 +64,13 @@ A lattice $(L,\beta)$ is **even** if $\beta(v,v) \in 2\ZZ$ for all $v \in L$, an
 Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \definedas (\beta(e_i, e_j))_{i,j} \in \Mat_{n \times n}(\QQ)$.
 For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
 Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.
-We define the **discriminant** $\disc(L)$ of $L$ as $\det(G_\beta)$ in any choice of basis.
+We define the **discriminant** $\disc{L}$ of $L$ as $\det(G_\beta)$ in any choice of basis.
 We note that for any sublattice $S \leq L$, we have the formula
 $$
-\disc(S) = [L:S]^2 \disc(L)
+\disc{S} = [L:S]^2 \disc{L}
 ,$$
 so the discriminant typically *increases* when passing to a sublattice.
-We say $L$ is **unimodular** of $\disc(L) = \pm 1$.
+We say $L$ is **unimodular** of $\disc{L} = \pm 1$.
 The Gram matrix reflects properties of the form: $\beta$ is symmetric $\iff G_\beta^t = G_\beta$, skew-symmetric $\iff G_\beta^t = -G_\beta$, and an integral lattice is even $\iff G_\beta$ is an integer matrix with diagonal entries in $2\ZZ$.
 :::
 
@@ -85,9 +85,9 @@ Moreover, if $S$ is unimodular, then so is $T$.
 :::
 
 ::: {.proof}
-This follows from [@PS24, Lem. 1.3.1]: we can write $\disc(S) = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$.
-By unimodularity, $\disc(S) = \pm 1$ forces $c_S = \pm 1$ and $[S\oplus T: L] = 1$, yielding the first claim.
-For the second, we note that $\disc(S\oplus T) = \disc(S) \cdot \disc(T)$ by standard properties of determinants, forcing $\disc(T) = \pm 1$.
+This follows from [@PS24, Lem. 1.3.1]: we can write $\disc{S} = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$.
+By unimodularity, $\disc{S} = \pm 1$ forces $c_S = \pm 1$ and $[S\oplus T: L] = 1$, yielding the first claim.
+For the second, we note that $\disc{S\oplus T} = \disc{S} \cdot \disc{T}$ by standard properties of determinants, forcing $\disc{T} = \pm 1$.
 :::
 
 ::: {.definition title="{Rank and Signature}" #def:rank-signature}
@@ -124,7 +124,7 @@ depends-on: "#def:lattice"
 audited: false
 ```
 For any lattice $(L,\beta)$ and positive integer $m$, the **scaled lattice** $L(m)$ is the same $\ZZ$-module $L$ equipped with the bilinear form $\beta_m(v,w) = m \cdot \beta(v,w)$.
-The signature of $L(m)$ is the same as $L$, but the discriminant scales as $\disc(L(m)) = m^{\rank(L)} \cdot \disc(L)$.
+The signature of $L(m)$ is the same as $L$, but the discriminant scales as $\disc{L(m)} = m^{\rank(L)} \cdot \disc{L}$.
 If $L$ is unimodular and $m>1$, $L(m)$ is not unimodular.
 :::
 
@@ -213,7 +213,7 @@ The **divisibility** of $v$ in $L$, denoted $\div_L(v)$, is the positive generat
 ::: {.proposition title="{Divisibility and Discriminant for Primitive Vectors}" #prop:divisibility-discriminant}
 Let $L$ be a nondegenerate lattice, and $v \in L$ an arbitrary (not necessarily isotropic) vector.
 The element $v^* \definedas v/\div_L(v) \in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$.
-In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc(L)|$.
+In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc{L}|$.
 :::
 
 ::: {.proof}
@@ -221,7 +221,7 @@ Since the divisibility $\div_L(v) = d$ is by definition the positive generator o
 Indeed, if $v/d = m y$ for some $m \in \ZZ$, $y \in \dualof{L}$, then $v = d m y \in L$, and primitivity of $v$ in $L$ implies $m = \pm 1$.
 The order of $v^*$ in $A_L$ is the minimal positive $n$ such that $n v^* \in L$.
 This occurs precisely when $n$ is divisible by $d$, so the order is $d = \div_L(v)$.
-Since $A_L$ is finite of order $|\disc(L)|$, it follows in particular that $\div_L(v)$ divides $|\disc(L)|$.
+Since $A_L$ is finite of order $|\disc{L}|$, it follows in particular that $\div_L(v)$ divides $|\disc{L}|$.
 :::
 
 ::: {.lemma title="Divisibility of Isotropic Vectors in Unimodular Lattices" #lem:isotropic-pairing-unimodular}
@@ -256,13 +256,13 @@ We summarize some standard properties of dual lattices
 
 - If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis satisfies $B_{\dualof{L}} = \inverseof{(B_L^t)}$, and the Gram matrix of the dual form is $G_{\beta^\vee} = \inverseof{G_\beta}$.
 
-- The discriminant of the dual satisfies $\disc(\dualof{L}) = 1/\disc(L)$, and the dual of a scaled lattice is $(L(m))^\vee = \dualof{L}(1/m)$.
+- The discriminant of the dual satisfies $\disc{\dualof{L}} = 1/\disc{L}$, and the dual of a scaled lattice is $(L(m))^\vee = \dualof{L}(1/m)$.
 :::
 
 ::: {.definition title="{Discriminant Group and Discriminant}" #def:discriminant-group}
 
 For a nondegenerate lattice $(L,\beta)$, the **discriminant group** is the finite abelian group $A_L \definedas \dualof{L} / L$.
-The order of the discriminant group equals the absolute value of the discriminant, i.e. $|A_L| = |\disc(L)| = [\dualof{L}\colon L]$, so $L$ is unimodular if and only if $A_L$ is trivial.
+The order of the discriminant group equals the absolute value of the discriminant, i.e. $|A_L| = |\disc{L}| = [\dualof{L}\colon L]$, so $L$ is unimodular if and only if $A_L$ is trivial.
 :::
 
 ::: {.definition title="Discriminant Forms, [@PS24, Def. 1.6.5]" #def:discriminant-forms}

@@ -10,7 +10,7 @@ G_U = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}.
 .\end{align*}
 
 A vector $v \in U$ is called **isotropic** if $v^2 = 0$.
-We have $\disc(U) = -1$, and thus $U \cong \dualof{U}$, hence $U$ is unimodular and $A_U = 0$.
+We have $\disc{U} = -1$, and thus $U \cong \dualof{U}$, hence $U$ is unimodular and $A_U = 0$.
 This can also be computed directly: if $v\in \dualof{U}$, then $v = ae + bf$ where $a,b\in \QQ$.
 We then must have $vw\in \ZZ$ for all $w\in U$, and in particular this must hold for $w=e$ and $w=f$.
 We compute $ev = b$ and $fv = a$, so $a,b\in \ZZ$.
@@ -64,7 +64,7 @@ We refer to Appendix~@sec:root-lattice-conventions for explicit computations, di
 
 We summarize below all of the relevant information for the simply-laced $\ADE$ types, as well as the exceptional types $E_6, E_7, E_8, F_4$, and $G_2$.
 In all cases, the lattices $L$ can be realized by a primitive embedding $L\injects \QQ^n$ for some $n$, where we identify $\ZZ^n \iscontainedin \QQ^n$ with the abstract diagonal lattice $\generators{1,1,\cdots, 1}$.
-In these Euclidean embeddings, one can explicitly compute the Gram matrices $G_L$, the duals $\dualof{L}$ and discriminant groups $A_L$, and invariants such as $\disc(L)$ using standard linear algebra.
+In these Euclidean embeddings, one can explicitly compute the Gram matrices $G_L$, the duals $\dualof{L}$ and discriminant groups $A_L$, and invariants such as $\disc{L}$ using standard linear algebra.
 We let $R(L) \iscontainedin L$ denote the set of *roots* in each lattice (vectors $v\in L$ with $v^2=2$), $\Phi(L)\iscontainedin R(L)$ its corresponding *simple root system* -- a subset of roots $\alpha_i$ such that, without loss of generality, $\ZZ_{\geq 0} \Phi(L) = R(L)$, i.e. every $v\in R(L)$ can be written as $v=\Sum_{\alpha_i \in \Phi(L)} c_i \alpha_i$ with all $c_i \geq 0$ integral.
 This defines a sublattice $\ZZ\Phi(L) \injects L$, and we say $L$ is a **root lattice** if this is index 1. In any case, one can define a *Weyl group* $W(L) \leq \Orth(L)$ of reflections generated in by hyperplanes $H_{\alpha_i} \definedas \alpha_i^{\perp L}$ for $\alpha_i\in \Phi(L)$.
 For root lattices, we can identify $G_L$ with $G_{\ZZ \Phi(L)}$, the Gram matrix of intersections between the simple roots; these agree up to similarity since $\Phi(L)$ generates $L$.
@@ -187,7 +187,7 @@ $$
 \end{aligned}
 ,$$
 and so on.
-Finally, the lattice $E_8(2)$ frequently appears in moduli-theoretic applications.A direct determinant computation shows that $\disc(E_8(2)) = 2^8$, and using the exact sequences of the previous chapter, we can write
+Finally, the lattice $E_8(2)$ frequently appears in moduli-theoretic applications.A direct determinant computation shows that $\disc{E_8(2)} = 2^8$, and using the exact sequences of the previous chapter, we can write
 $$
 \dualof{E_8(2)} \iso {1\over 2}E_8 \implies A_{E_8(2)} \cong E_8/2E_8 \cong {1\over 2}E_8/E_8 \cong \ZZ_2^8
 ,$$

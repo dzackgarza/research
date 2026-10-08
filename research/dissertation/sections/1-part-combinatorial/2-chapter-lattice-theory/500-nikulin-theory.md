@@ -137,7 +137,7 @@ Let $L$ be as above; a primitive embedding $S \injects L$ with $T\definedas S^{\
 
 Letting $\Gamma$ be the graph of $\gamma$ in $A_{L} \oplus A_{S}(-1)$, one has $A_{T}=\Gamma^{\perp} / \Gamma$ and we note that there is a discriminant formula
 $$
-|\disc T|=\frac{|\disc L| \cdot|\disc S|}{(\sharp H)^{2}}
+|\disc{T}|=\frac{|\disc{L}| \cdot|\disc{S}|}{(\sharp H)^{2}}
 .$$
 Now let $\iota: S \injects L$ be an embedding of even lattices where $L$ is unimodular, and define $H_{L}\definedas L / \iota(S)$.
 Using the chain of embeddings $S \injects L \injects L^{\vee} \injects S^{\vee}$ to produce embeddings $H_{L} \injects L^{\vee} / S \injects A_{S}$, one can regard $H_L$ as a subgroup of $A_S$.
@@ -155,17 +155,17 @@ We apply this to the following:
 
 ::: {.proposition}
 Let $L$ be a unimodular lattice and $\iota: S \injects L$ be a primitively embedded sublattice.
-Then $|\disc(S)|=|\disc(T)|$, and if $S$ is unimodular, then $L \cong$ $S \oplus T$.
+Then $|\disc{S}|=|\disc{T}|$, and if $S$ is unimodular, then $L \cong$ $S \oplus T$.
 :::
 
 ::: {.proof}
 We have
 $$
-|\disc(S)|=\sharp A_{S} = \size A_{T}=|\disc(T)| .
+|\disc{S}|=\sharp A_{S} = \size A_{T}=|\disc{T}| .
 $$
 The isometry follows from Proposition 1.3.7: since $S \oplus T \leq L$ is a full-rank sublattice, $T$ is also unimodular and thus
 $$
-[L: S \oplus T]^{2}=\frac{\disc(S \oplus T)}{\disc(L)}=\frac{\disc(S) \cdot \disc(T)}{\disc(L)}=1 .
+[L: S \oplus T]^{2}=\frac{\disc{S \oplus T}}{\disc{L}}=\frac{\disc{S} \cdot \disc{T}}{\disc{L}}=1 .
 $$
 Finally, a pair of isometries of $S$ and $T$ lifts to an isometry of $L$ if and only if they preserve $H_{L}$, or equivalently commute with the glue map.
 Thus given $S\injects L$ as above with $T\definedas S^{\perp L}$, even if $S$ does not split $L$, we still have a way to construct isometries on $L$: one first constructs isometries $f_S\in \Orth(S)$ and $f_T \in \Orth(T)$ such that the restricted action of $f_S$ to $A_S$ and that of $f_T$ to $A_T$ agree, using the anti-isometry $A_S\iso A_T(-1)$, then produces a lift of $f_S \oplus f_T$ to an element of $f\in \Orth(L)$ that restricts to both $f_S$ and $f_T$.

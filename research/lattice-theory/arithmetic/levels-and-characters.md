@@ -56,7 +56,7 @@ For a nondegenerate integral lattice $L$, define
 $$
 \Sigma_L
 \definedas
-\theset{p\text{ prime}\st p\mid2\disc L}.
+\Sigma_L\definedas\theset{p\text{ prime}\st p\mid2\disc{L}}.
 $$
 For every odd prime $p\notin\Sigma_L$, the reduction
 $$
@@ -70,7 +70,7 @@ is nondegenerate.
 Let $L$ be a nondegenerate integral lattice of even rank $2m$.
 Set
 $$
-\Delta_L\definedas(-1)^m\disc L.
+\Delta_L\definedas(-1)^m\disc{L}.
 $$
 Let $d_L$ be the fundamental discriminant of $\bQ(\sqrt{\Delta_L})$, with $d_L=1$ when $\Delta_L$ is a square.
 Define
@@ -86,7 +86,7 @@ using the Kronecker symbol.
 
 Let $p$ be an odd prime with
 $$
-p\nmid2\disc L.
+p\nmid2\disc{L}.
 $$
 Then $L_{\bF_p}$ is a nondegenerate quadratic space of dimension $2m$, and
 $$

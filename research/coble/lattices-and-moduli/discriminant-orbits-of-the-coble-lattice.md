@@ -4,7 +4,7 @@
 
 The Coble period lattice $T_\Co = \generators{2}\oplus E_{10}(2)$ is the twist by $2$ of an odd unimodular lattice, and this single fact controls both its isometry group and its discriminant form.
 We compute the discriminant quadratic form $(A_{T_\Co}, q_{T_\Co})$ explicitly, determine its isometry group and the decomposition of its isotropic classes into orbits, and record the bridge between that finite datum and the primitive isotropic vectors of $T_\Co$ themselves.
-Throughout we use the discriminant apparatus of the discriminant-form definition (@def:coble-discriminant-forms) and the invariant triple $(r, a, \delta)$ of the Lattice Theory section.
+Throughout we use the discriminant apparatus of @def:coble-discriminant-forms and the invariant triple $(r, a, \delta)$ of the Lattice Theory section.
 :::
 
 ## The Coble lattice as a twist
@@ -26,8 +26,8 @@ Consequently $\Orth(T_\Co) = \Orth(B)$ as subgroups of $\GL(B)$, and a vector of
 
 ::: {.proof}
 
-The lattice $E_{10} = U\oplus E_8$ is even and unimodular of signature $(1,9)$ (the Enriques-lattice definition (@def:enriques-lattice)), so $B = \generators{1}\oplus E_{10}$ is unimodular of signature $(2,9)$ and is odd because the generator of $\generators{1}$ has norm $1$.
-By the classification of indefinite unimodular lattices (the indefinite unimodular classification (@thm:indefinite-unimodular-classification)) an odd unimodular lattice of signature $(2,9)$ is isometric to $\latI_{2,9}$.
+By @def:enriques-lattice, the lattice $E_{10} = U\oplus E_8$ is even and unimodular of signature $(1,9)$, so $B = \generators{1}\oplus E_{10}$ is unimodular of signature $(2,9)$ and is odd because the generator of $\generators{1}$ has norm $1$.
+By @thm:indefinite-unimodular-classification, an odd unimodular lattice of signature $(2,9)$ is isometric to $\latI_{2,9}$.
 Twisting distributes over orthogonal direct sums and $\generators{1}(2) = \generators{2}$, whence $B(2) = \generators{2}\oplus E_{10}(2) = T_\Co$.
 
 A twist leaves the underlying $\ZZ$-module unchanged and multiplies the form by a nonzero scalar, so an automorphism of the module preserves $\beta_B$ if and only if it preserves $2\beta_B = \beta_{B(2)}$; this gives $\Orth(T_\Co) = \Orth(B)$.
@@ -36,7 +36,7 @@ The same scaling shows $\beta_{T_\Co}(v,v) = 2\beta_B(v,v)$ vanishes exactly whe
 
 ::: {.remark}
 
-The presentation $T_\Co\cong\latI_{2,9}(2)$ is the one recorded in the K3-cover invariants remark (@rmk:k3-cover-invariants), and it is the form in which the divisibility computation of the divisibility lemma (@lem:divisibilityAlwaysTwoTco) is carried out.
+The presentation $T_\Co\cong\latI_{2,9}(2)$ is recorded in @rmk:k3-cover-invariants; @lem:divisibilityAlwaysTwoTco carries out the divisibility computation in this presentation.
 Applying the indefinite unimodular classification (@thm:indefinite-unimodular-classification) once more to $U\oplus U\oplus\latI_{0,7}$, which is odd unimodular of signature $(2,9)$, gives the further presentation
 $$
 T_\Co \cong U(2)^{\oplus 2}\oplus\generators{-2}^{\oplus 7}
@@ -48,7 +48,7 @@ in which the Witt index $2$ and the negative-definite rank-$7$ complement of a m
 
 ::: {.proposition #prop:tco-split-maximal title="$T_\Co$ is the twist of a split maximal lattice"}
 
-The lattice $B\cong\latI_{2,9}$ of the twist proposition (@prop:tco-as-twist) is maximal in the sense of the maximal-lattice definition (@def:maximal-lattice) and split in the sense of the split-maximal definition (@def:split-maximal):
+The lattice $B\cong\latI_{2,9}$ of @prop:tco-as-twist is maximal in the sense of @def:maximal-lattice and split in the sense of @def:split-maximal:
 $$
 B \cong U\oplus U\oplus\latI_{0,7}
 .
@@ -64,8 +64,8 @@ $$
 
 ::: {.proof}
 
-$B$ is unimodular, hence maximal by the maximal-overlattice lemma (@lem:maximal-overlattice-exists).
-The lattice $U\oplus U\oplus\latI_{0,7}$ is unimodular of signature $(2,9)$ and odd, because $\latI_{0,7}$ is, so it is isometric to $\latI_{2,9}\cong B$ by the indefinite unimodular classification (@thm:indefinite-unimodular-classification); this exhibits $B$ in the shape required by the split-maximal definition (@def:split-maximal), as the maximal-splitting theorem (@thm:maximal-splits-for-large-n) also predicts for $n = 9\geq 5$.
+$B$ is unimodular, hence maximal by @lem:maximal-overlattice-exists.
+The lattice $U\oplus U\oplus\latI_{0,7}$ is unimodular of signature $(2,9)$ and odd, because $\latI_{0,7}$ is, so it is isometric to $\latI_{2,9}\cong B$ by @thm:indefinite-unimodular-classification; this exhibits $B$ in the shape required by @def:split-maximal, as @thm:maximal-splits-for-large-n also predicts for $n = 9\geq 5$.
 For the quotients, take $e$ to be an isotropic generator of the first hyperbolic summand of $B\cong U\oplus U\oplus\latI_{0,7}$; then $e^{\perp B} = \ZZ e\oplus U\oplus\latI_{0,7}$ and $e^{\perp}/e\cong U\oplus\latI_{0,7}\cong\latI_{1,8}$, which is odd unimodular of signature $(1,8)$.
 Taking $J$ to be spanned by isotropic generators of the two hyperbolic summands gives $J^{\perp B} = J\oplus\latI_{0,7}$ and $J^{\perp}/J\cong\latI_{0,7}$.
 Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of signature $(1,8)$ and $\latI_{0,7}(2) = \generators{-2}^{\oplus 7} = (7,7,1)$ of signature $(0,7)$.
@@ -73,13 +73,13 @@ Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of s
 
 ::: {.remark}
 
-Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are unchanged by the twist, the split-maximal proposition (@prop:tco-split-maximal) places $T_\Co$ under the split-maximal isotropic transitivity theorem (@thm:split-maximal-isotropic-transitivity): this is the mechanism behind the unpolarized-cusp theorem (@thm:unpolarized-cusps), and the computation above identifies the two boundary lattices there with the Coble cusp invariants $(9,9,1)_1$ and $(7,7,1)_0$ used in the cusp correspondence.
+Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are unchanged by the twist, @prop:tco-split-maximal places $T_\Co$ under @thm:split-maximal-isotropic-transitivity; @thm:unpolarized-cusps gives the corresponding full-group cusp classification, and the computation above identifies its two boundary lattices with the Coble cusp invariants $(9,9,1)_1$ and $(7,7,1)_0$ used in the cusp correspondence.
 The $1$-cusp lattice $\latI_{0,7}(2)\cong A_1^{\oplus 7}$ is negative definite of rank $7$, consistent with Witt index $2$ in signature $(2,9)$: $11 - 2\cdot 2 = 7$.
 :::
 
 ## The discriminant form of $T_\Co$
 
-Applying the twisted-unimodular discriminant proposition (@prop:twisted-unimodular-discriminant) to $T_\Co=B(2)$ gives
+Applying @prop:twisted-unimodular-discriminant to $T_\Co=B(2)$ gives
 $$
 A_{T_\Co}\cong B/2B\cong(\ZZ/2\ZZ)^{11},
 \qquad
@@ -89,7 +89,7 @@ Thus the isotropic classes are exactly the residue classes of vectors of $B$ who
 
 ::: {.definition #def:coble-mod-four-form title="The mod-$4$ norm on $B/2B$"}
 
-For $B = \generators{1}\oplus E_{10}$ as in the twist proposition (@prop:tco-as-twist), define
+For $B = \generators{1}\oplus E_{10}$ as in @prop:tco-as-twist, define
 $$
 \begin{aligned}
 Q: B/2B &\to \ZZ/4\ZZ \\
@@ -98,7 +98,7 @@ x + 2B &\mapsto \beta_B(x, x) \bmod 4
 \end{aligned}
 $$
 This is well defined, since $\beta_B(x + 2z, x + 2z) = \beta_B(x,x) + 4\beta_B(x,z) + 4\beta_B(z,z)$.
-Under the identification $A_{T_\Co}\cong B/2B$ of the twisted-unimodular discriminant proposition (@prop:twisted-unimodular-discriminant) one has $q_{T_\Co} = \tfrac12 Q$, so $Q$ and $q_{T_\Co}$ have the same fibers and $\Orth(A_{T_\Co}, q_{T_\Co})$ is the stabilizer in $\GL(B/2B)$ of the four fibers of $Q$.
+Under the identification $A_{T_\Co}\cong B/2B$ of @prop:twisted-unimodular-discriminant one has $q_{T_\Co} = \tfrac12 Q$, so $Q$ and $q_{T_\Co}$ have the same fibers and $\Orth(A_{T_\Co}, q_{T_\Co})$ is the stabilizer in $\GL(B/2B)$ of the four fibers of $Q$.
 :::
 
 ::: {.proposition #prop:coble-q-fibers title="The fibers of $Q$"}
@@ -174,7 +174,7 @@ Since $q_{E_{10}(2)}$ is $\ZZ$-valued, $A^0 = A_{E_{10}(2)}$, and $A^0$ is intri
 Restriction therefore gives a homomorphism $\rho\colon\Orth(A_{T_\Co}, q_{T_\Co})\to\Orth(A^0, q_{T_\Co}|_{A^0})$.
 
 $\rho$ is injective.
-If $g$ restricts to the identity on $A^0$ then $g(\bar h) = \bar h + z$ for some $z\in A^0$, and preservation of the bilinear form gives $b(z, y) = b(g\bar h, y) - b(\bar h, y) = 0$ for every $y\in A^0$; the form $q_{E_{10}(2)}$ is nondegenerate (the discriminant nondegeneracy proposition (@prop:discriminant-nondegenerate)), so $z = 0$.
+If $g$ restricts to the identity on $A^0$ then $g(\bar h) = \bar h + z$ for some $z\in A^0$, and preservation of the bilinear form gives $b(z, y) = b(g\bar h, y) - b(\bar h, y) = 0$ for every $y\in A^0$; by @prop:discriminant-nondegenerate, the form $q_{E_{10}(2)}$ is nondegenerate, so $z = 0$.
 
 $\rho$ is surjective.
 Given $g_0\in\Orth(A^0)$, extend it by $\bar h\mapsto\bar h$; the extension preserves $q_{T_\Co}$ because the decomposition $A_{T_\Co} = \ZZ\bar h\perp A^0$ is orthogonal.
@@ -189,9 +189,9 @@ The group $\Orth(A_{T_\Co}, q_{T_\Co})$ has exactly two orbits on the $528$ isot
 
 ::: {.proof}
 
-By the Coble discriminant-group proposition (@prop:coble-discriminant-group) the action is that of $\Orth(A_{E_{10}(2)}, q_{E_{10}(2)})$ on the singular vectors of the nondegenerate plus-type quadratic form $\bar q$ on the $10$-dimensional $\bF_2$-space $E_{10}/2E_{10}$ identified in the proof of the fiber-count proposition (@prop:coble-q-fibers).
+By @prop:coble-discriminant-group, the action is that of $\Orth(A_{E_{10}(2)}, q_{E_{10}(2)})$ on the singular vectors of the nondegenerate plus-type quadratic form $\bar q$ on the $10$-dimensional $\bF_2$-space $E_{10}/2E_{10}$ identified in @prop:coble-q-fibers.
 Witt's extension theorem for nondegenerate quadratic forms over a field states that an isometry between subspaces extends to the whole space; applied to the lines spanned by two nonzero singular vectors it shows that the orthogonal group is transitive on nonzero singular vectors.
-The zero class is fixed, and by the fiber-count proposition (@prop:coble-q-fibers) there are $528 - 1 = 527$ nonzero singular vectors.
+The zero class is fixed, and by @prop:coble-q-fibers there are $528 - 1 = 527$ nonzero singular vectors.
 :::
 
 ## From discriminant classes to lattice vectors
@@ -203,31 +203,31 @@ $$
 v^* \definedas \tfrac{1}{2}v + T_\Co \in A_{T_\Co}
 $$
 is a nonzero isotropic class.
-All such classes lie in the single nonzero orbit of the isotropic-class orbit theorem (@thm:coble-isotropic-class-orbits).
+By @thm:coble-isotropic-class-orbits, all such classes lie in the single nonzero orbit.
 :::
 
 ::: {.proof}
 
-The divisibility statement is the divisibility lemma (@lem:divisibilityAlwaysTwoTco), and $v^*$ has order $\div_{T_\Co}(v) = 2$ in $A_{T_\Co}$ (the discriminant-form definition (@def:coble-discriminant-forms) and the divisibility conventions of the Lattice Theory section), so $v^*\neq 0$.
-Writing $v\in B$ and using $\beta_{T_\Co} = 2\beta_B$, isotropy of $v$ gives $\beta_B(v,v) = 0$, hence $Q(v) = 0$ and $q_{T_\Co}(v^*) = 0$ by the twisted-unimodular discriminant proposition (@prop:twisted-unimodular-discriminant).
-The final assertion is the isotropic-class orbit theorem (@thm:coble-isotropic-class-orbits), which has a single orbit of nonzero isotropic classes.
+By @lem:divisibilityAlwaysTwoTco, $\div_{T_\Co}(v)=2$. By @def:coble-discriminant-forms and the divisibility conventions of the Lattice Theory section, $v^*$ therefore has order $2$ in $A_{T_\Co}$, so $v^*\neq0$.
+Writing $v\in B$ and using $\beta_{T_\Co} = 2\beta_B$, isotropy of $v$ gives $\beta_B(v,v) = 0$, hence $Q(v) = 0$ and, by @prop:twisted-unimodular-discriminant, $q_{T_\Co}(v^*) = 0$.
+By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a single orbit.
 :::
 
 ::: {.remark title="What the finite orbit count does and does not determine"}
 
-For the full orthogonal group the lattice-level statement is stronger than the finite one: $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors and on primitive isotropic planes, with the quotients $e^{\perp}/e\cong\latI_{1,8}(2)$ and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ (the unpolarized-cusp theorem (@thm:unpolarized-cusps)), and the primitive-isotropic-class proposition (@prop:coble-primitive-isotropic-classes) then places every primitive isotropic vector in the single nonzero orbit of the isotropic-class orbit theorem (@thm:coble-isotropic-class-orbits).
+For the full orthogonal group, @thm:unpolarized-cusps states that $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors and on primitive isotropic planes, with quotients $e^{\perp T_\Co}/e\cong\latI_{1,8}(2)$ and $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$. By @prop:coble-primitive-isotropic-classes and @thm:coble-isotropic-class-orbits, every primitive isotropic vector maps to the unique nonzero orbit.
 
 For a subgroup $\Gamma\leq\Orth(T_\Co)$ the passage runs the other way and is not automatic.
 The reduction map sends $\Gamma$-orbits of primitive isotropic vectors to $\rho(\Gamma)$-orbits of nonzero isotropic classes, but the integral parabolic stabilizer can have proper image in the finite stabilizer, so a finite orbit may split.
-The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in the Coble Heegner finite-orbit theorem (@thm:coble-heegner-finite-orbits), and the lift of that finite decomposition to primitive isotropic vectors of $T_\Co$ is open.
+The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and the lift of that finite decomposition to primitive isotropic vectors of $T_\Co$ is open.
 :::
 
 ## The Eichler criterion and its hypothesis
 
 ::: {.remark title="Why the Eichler criterion is unavailable for $T_\Co$"}
 
-The Eichler criterion (the Eichler criterion (@thm:eichler-criterion)) reduces $\widetilde{\SO}^+(L)$-equivalence of primitive vectors to the pair $(v^2, v^*\bmod L)$, but only for lattices containing $U^{\oplus 2}$.
-That hypothesis fails for $T_\Co$: by the twist proposition (@prop:tco-as-twist) every value of $\beta_{T_\Co}$ is even, so no two vectors of $T_\Co$ pair to $1$ and $T_\Co$ contains no copy of $U$ at all, let alone two; the remark following the Eichler criterion (@thm:eichler-criterion) records the same obstruction for $S_\Co$ and $\sen$.
+By @thm:eichler-criterion, for lattices containing $U^{\oplus 2}$, $\widetilde{\SO}^+(L)$-equivalence of primitive vectors is determined by the pair $(v^2, v^*\bmod L)$.
+For $T_\Co$, @prop:tco-as-twist implies that every value of $\beta_{T_\Co}$ is even, so no two vectors pair to $1$ and $T_\Co$ contains no copy of $U$; the same obstruction is recorded after @thm:eichler-criterion for $S_\Co$ and $\sen$.
 An orbit statement for $T_\Co$ therefore needs a different mechanism.
-Two are available: the transitivity of the unpolarized-cusp theorem (@thm:unpolarized-cusps) for the full orthogonal group, resting on the split-maximal proposition (@prop:tco-split-maximal), and the algorithms of [@Daw22] for a subgroup specified by its image in $\Orth(q)$.
+For the full orthogonal group, @thm:unpolarized-cusps gives transitivity using @prop:tco-split-maximal; for a subgroup specified by its image in $\Orth(q)$, the algorithms of [@Daw22] apply.
 :::

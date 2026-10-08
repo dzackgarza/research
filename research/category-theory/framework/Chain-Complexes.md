@@ -14,7 +14,15 @@ The hypotheses this construction places on $\mca$ are collected in @sec-additive
 
 ::: {.theorem #thm:chain-complexes-abelian title="Complexes over an abelian category"}
 
-If $\mca$ is abelian, then $\mathbf{Ch}(\mca)$ is abelian, and a sequence $0\to A\to B\to C\to0$ in $\mathbf{Ch}(\mca)$ is exact if and only if $0\to A_n\to B_n\to C_n\to0$ is exact in $\mca$ for every $n$ [@Wei94, Thm. 1.2.3, Ex. 1.2.4].
+If $\mca$ is abelian, then $\mathbf{Ch}(\mca)$ is abelian. A sequence
+$$
+0\to A\to B\to C\to0
+$$
+in $\mathbf{Ch}(\mca)$ is exact if and only if, for every $n$, the sequence
+$$
+0\to A_n\to B_n\to C_n\to0
+$$
+is exact in $\mca$ [@Wei94, Thm. 1.2.3, Ex. 1.2.4].
 :::
 
 ## Homology and exactness {#sec-homology-and-exactness}
@@ -42,7 +50,11 @@ $$
 A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree.
 Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mca)$ and therefore define replete full subcategories (@def:subcategory), the second being the intersection over $n\in\bZ$ of the first.
 
-A short exact sequence $0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0$ is the complex concentrated in degrees $2,1,0$ with $d_2=i$ and $d_1=p$, together with the assertion that this complex is exact: exactness at $2$ says $i$ is monic, exactness at $1$ says $\im i$ and $\ker p$ are the same subobject of $B$, and exactness at $0$ says $p$ is epic.
+A short exact sequence
+$$
+0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0
+$$
+is the complex concentrated in degrees $2,1,0$ with $d_2=i$ and $d_1=p$, together with the assertion that this complex is exact: exactness at $2$ says $i$ is monic, exactness at $1$ says $\im i$ and $\ker p$ are the same subobject of $B$, and exactness at $0$ says $p$ is epic.
 :::
 
 ::: {.definition #def:quasi-isomorphism title="Quasi-isomorphisms"}
@@ -53,7 +65,11 @@ These are the weak equivalences of the model structure of @thm:projective-model-
 
 ::: {.theorem #thm:homology-les title="The long exact homology sequence"}
 
-Let $0\to A\xrightarrow{\,f\,}B\xrightarrow{\,g\,}C\to0$ be a short exact sequence in $\mathbf{Ch}(\mca)$.
+Let
+$$
+0\to A\xrightarrow{\,f\,}B\xrightarrow{\,g\,}C\to0
+$$
+be a short exact sequence in $\mathbf{Ch}(\mca)$.
 There are natural connecting morphisms $\del\colon H_n(C)\to H_{n-1}(A)$ for which
 $$
 \cdots\too H_n(A)\xrightarrow{\,H_n(f)\,}H_n(B)\xrightarrow{\,H_n(g)\,}H_n(C)
@@ -311,5 +327,8 @@ $$
 [@Wei94, §2.7].
 For projective $A$, $\Tor^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\Ext^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
-These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\Tor^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
+These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\Tor^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the coefficient sequence
+$$
+0\to R\to K\to K/R\to0.
+$$
 :::

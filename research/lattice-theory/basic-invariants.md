@@ -15,24 +15,30 @@ q\colon L\too\bZ,
 \qquad
 q(v)\definedas v^2.
 $$
-For $v\in L$, let
-$$
-i_v\colon\bZ\too L,
-\qquad
-i_v(1)=v.
-$$
 For $n\in\bZ$, define
 $$
-L[n]\definedas q^{-1}(n),
-\qquad
-L^{\mathrm{prim}}[n]
-\definedas
-\theset{v\in L[n]\st i_v\in\operatorname{PrimEmb}(\bZ,L)}.
+L[n]\definedas q^{-1}(n).
 $$
+For $v\in L[n]$, let
+$$
+\iota_v\colon\generators{v}_{\bZ}\injects L
+$$
+be the canonical rank-one module monomorphism.
+Define $L^{\mathrm{prim}}[n]$ by the condition that the cokernel exact sequence
+$$
+0\too\generators{v}_{\bZ}
+\xrightarrow{\iota_v}
+L
+\too
+Q_v
+\too
+0
+$$
+has torsion-free $Q_v$.
 
 Define the **divisibility** $\div_L(v)\geq0$ by the image factorization
 $$
-\operatorname{im}\bigl(\beta_L(v,-)\colon L\to\bZ\bigr)
+\operatorname{im}\qty{\beta_L(v,-)\colon L\to\bZ}
 =
 \div_L(v)\bZ.
 $$
@@ -48,16 +54,16 @@ $$
 $$
 Let
 $$
-\pi_L\colon L^\#\twoheadrightarrow L^\#/L
+\pi_L\colon L^\#\twoheadrightarrow A_L^\sharp
 $$
-be the quotient map to the carrier of $A_L$.
+be the cokernel morphism of @def:metric-dual.
 Define the **discriminant class**
 $$
 v^*
 \definedas
 \pi_L\!\left(\frac{v}{\div_L(v)}\right)
 \in
-L^\#/L.
+A_L^\sharp.
 $$
 
 For a scalar extension $\bZ\to R$, write
