@@ -2094,7 +2094,15 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         return engine_subgroup(self._row_action_matrix(automorphism))
 
     def _engine_subgroup_contains(self, automorphism, engine_subgroup):
-        return self._row_action_matrix(automorphism) in engine_subgroup
+        matrix = self._row_action_matrix(automorphism)
+        # The selected generator and its inverse are members by the
+        # definition of generated subgroup, independently of whether Sage's
+        # matrix-group membership algorithm decides an infinite subgroup.
+        # Orbit-span closure needs precisely these two directions.
+        if any(matrix == generator.matrix() or matrix == generator.matrix().inverse()
+               for generator in engine_subgroup.gens()):
+            return True
+        return matrix in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         r"""Raise an element of a generated matrix subgroup to a live isometry."""
