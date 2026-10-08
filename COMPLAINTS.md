@@ -14,6 +14,33 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### K3 automorphism pullback lacks explicit chamber and Torelli consumers
+
+The cospan `P_S -> O(A_S) <- O_Hdg(T)` requires the actual ample-chamber
+stabilizer, both discriminant actions, and integral extension followed by
+strong Torelli. The inspected source supplies a generic product/equalizer
+formula in `abstract_categories/cat.py`, discriminant representations and a
+positive-cone subgroup in `categories/lattices.py`, and image lifts in
+`categories/lattice_morphisms.py`. These are partial prerequisites; they do
+not establish the K3 automorphism identification. The positive-cone subgroup
+currently accepts signature `(1,n)` only for `n >= 1`, so it also does not
+cover the Picard-rank-one positive ray.
+
+Source searches in `src/dzack_research/preamble` for ample-cone stabilizers
+and signed Miranda–Morrison constructions found no corresponding owner.
+The existing TODO graph covered Hodge groups and lattice gluing but did not
+name their ample-chamber or Torelli consumer. This is a source and queue
+coverage finding, not a runtime claim or a claim that `lean-categories`
+lacks these foundations. The upstream request is to locate or formalize
+cones and chamber actions, their stabilizers and transporters, strong
+Torelli, and the signed discriminant obstruction at their mathematical
+owners. The dependency path runs from K3 cohomology and Hodge lattices
+through chamber stabilizers and discriminant actions to the group pullback
+and geometric automorphisms. Remediation is recorded in TODO nodes
+`k3-ample-cones-and-stabilizers`,
+`signed-discriminant-lifting-obstructions`, and
+`k3-automorphisms-by-torelli`, with the full cospan coverage recorded there.
+
 ### Backing-core constructor narrowing and colimit lifting block integration specimens
 
 The backing core must preserve the constructor of a fixed-endpoint Mor under
