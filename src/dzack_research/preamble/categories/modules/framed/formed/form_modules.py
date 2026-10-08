@@ -1606,6 +1606,26 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             return Lattices(self.base_ring())("U")
 
         class ParentMethods:
+            @cached_method
+            def square_fibre(self, square):
+                r"""The fibre of ``v |-> b(v,v)``, retaining its defining maps."""
+                values = self.value_module()
+                square = values(square)
+                return OwnedSets().equalizer_construction(
+                    OwnedSets().Mor(self, values)(lambda vector: self.b(vector, vector)),
+                    OwnedSets().Mor(self, values)(lambda vector: square),
+                )
+
+            def square_fibre_action(self, square, *, orbit_relation=None):
+                r"""The orthogonal action on the complete square fibre."""
+                from dzack_research.preamble.categories.group.g_objects import GObjects
+
+                points = self.square_fibre(square).object()
+                return GObjects(self.Aut(), OwnedSets()).on_set(
+                    points, lambda isometry, vector: isometry(vector),
+                    orbit_relation=orbit_relation,
+                )
+
             def vector_of_sign(self, sign):
                 r"""Return a vector of square sign ``-1`` or ``1``, or ``None``.
 

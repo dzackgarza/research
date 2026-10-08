@@ -144,6 +144,63 @@ def _isotropic_vector_witness(lattice):
     return _raise_rational_lattice_vector(lattice, solution)
 
 
+def _binary_form_discriminant(lattice):
+    r"""Private binary-form datum for the lattice square-fibre operations."""
+    if _engine_ring(lattice.base_ring()) is not SageZZ or lattice.module_rank() != 2:
+        raise ValueError("binary square-fibre computation requires a rank-two ZZ-lattice")
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    return gram[0, 1] ** 2 - gram[0, 0] * gram[1, 1]
+
+
+def _split_binary_vectors_of_square(lattice, square):
+    r"""All vectors of nonzero square for a split nondegenerate binary form.
+
+    SymPy's BinaryQuadratic.solve handles the finite square-discriminant
+    case by its maintained factor/divisor algorithm; unlike qfbsolve this
+    returns the full fibre here. See sympy/solvers/diophantine/diophantine.py,
+    BinaryQuadratic, case (3), and its Alpertron reference.
+    """
+    from sympy import symbols
+    from sympy.solvers.diophantine.diophantine import BinaryQuadratic
+
+    discriminant = _binary_form_discriminant(lattice)
+    if not square or discriminant <= 0 or not discriminant.is_square():
+        raise ValueError("a finite split binary square fibre requires nonzero square and positive square discriminant")
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    x, y = symbols("x y", integer=True)
+    polynomial = int(gram[0, 0]) * x*x + 2*int(gram[0, 1]) * x*y + int(gram[1, 1]) * y*y - int(square)
+    solutions = BinaryQuadratic(polynomial, free_symbols=[x, y]).solve()
+    labels = tuple(lattice.module_generating_set())
+    ring = lattice.base_ring()
+    return tuple(
+        lattice.linear_combination({label: ring(int(coordinate)) for label, coordinate in zip(labels, solution, strict=True)})
+        for solution in sorted(solutions)
+    )
+
+
+def _binary_primitive_isotropic_vectors(lattice):
+    r"""Raise the primitive generators of the rational linear factors, with both signs."""
+    from sympy import Poly, factor_list, symbols
+
+    discriminant = _binary_form_discriminant(lattice)
+    if not discriminant:
+        raise ValueError("this finite null-line computation requires a nondegenerate binary form")
+    if discriminant < 0 or not discriminant.is_square():
+        return ()
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    x, y = symbols("x y", integer=True)
+    polynomial = int(gram[0, 0]) * x*x + 2*int(gram[0, 1]) * x*y + int(gram[1, 1]) * y*y
+    labels = tuple(lattice.module_generating_set())
+    ring = lattice.base_ring()
+    points = []
+    for factor, _multiplicity in factor_list(polynomial)[1]:
+        line = Poly(factor, x, y)
+        coefficients = (-int(line.coeff_monomial(y)), int(line.coeff_monomial(x)))
+        vector = lattice.linear_combination(dict(zip(labels, (ring(c) for c in coefficients), strict=True))).primitive_part()
+        points.extend((vector, -vector))
+    return tuple(points)
+
+
 def _binary_special_orthogonal_representatives(lattice, square):
     r"""Raise PARI representatives for a nonsplit indefinite binary form.
 

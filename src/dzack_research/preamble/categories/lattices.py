@@ -4081,8 +4081,19 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def vectors_of_square(self, square):
+            r"""Return the complete square fibre with its lattice inclusion.
 
-            return _vectors_of_square(self, square)
+            Definite fibres and nonzero split binary fibres are finite and
+            enumerated. Other fibres retain the complete defining locus.
+            """
+            square = self.base_ring()(square)
+            if self.definiteness() in ("positive_definite", "negative_definite"):
+                return self.finite_subsets()(_vectors_of_square(self, square))
+            if self.module_rank() == 2 and square:
+                discriminant = lattice_engines._binary_form_discriminant(self)
+                if discriminant > 0 and discriminant.is_square():
+                    return self.finite_subsets()(lattice_engines._split_binary_vectors_of_square(self, square))
+            return self.square_fibre(square).object()
 
         @cached_method
         def vectors_of_square_and_divisibility(self, square, divisibility):
@@ -4214,13 +4225,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             return _definite_complement_extensions(self, left, right)
 
         def binary_fixed_norm_representatives(self, square):
-            r"""Return representatives modulo ``O(self)`` for a nonsplit binary form.
+            r"""Return a selected transversal of the binary square-fibre action.
 
-            The lattice must be indefinite of rank two over ``ZZ``, with
-            nonsquare form discriminant. PARI enumerates all integral
-            representations, including imprimitive ones, modulo ``SO(self)``.
+            The lattice must be nondegenerate of rank two over ``ZZ``.
+            PARI enumerates nonsplit indefinite representations, including
+            imprimitive ones, modulo ``SO(self)``. Finite fibres are enumerated
+            in full by their square-fibre owner.
             The rank-one perpendicular extension decides which classes merge
-            under ``O(self)``. The returned finite set contains lattice vectors.
+            under ``O(self)``. The returned finite set retains the action,
+            quotient, projection and representative section. At square zero
+            a split form has infinitely many content classes.
 
             EXAMPLES::
 
@@ -4236,21 +4250,32 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
             """
             square = self.base_ring()(square)
-            candidates = lattice_engines._binary_special_orthogonal_representatives(self, square)
-            if not square:
-                return finite_ordered_set(candidates)
+            discriminant = lattice_engines._binary_form_discriminant(self)
+            if not discriminant:
+                raise ValueError("binary orbit representatives require a nondegenerate form")
+            if discriminant > 0 and not discriminant.is_square():
+                candidates = lattice_engines._binary_special_orthogonal_representatives(self, square)
+            elif not square and discriminant > 0:
+                raise ValueError("the split zero-square fibre has infinitely many orthogonal orbits")
+            else:
+                candidates = self.vectors_of_square(square)
+
+            def same_orbit(left, right):
+                if left == right:
+                    return True
+                if left.content() != right.content():
+                    return False
+                if not square:
+                    return False
+                return bool(self.definite_complement_extensions(left.primitive_part(), right.primitive_part()))
+
+            action = self.square_fibre_action(square, orbit_relation=same_orbit)
             representatives = []
             for candidate in candidates:
-                content = candidate.content()
-                primitive = candidate.primitive_part()
-                if any(
-                    representative.content() == content
-                    and self.definite_complement_extensions(primitive, representative.primitive_part())
-                    for representative in representatives
-                ):
+                if any(same_orbit(candidate, representative) for representative in representatives):
                     continue
                 representatives.append(candidate)
-            return finite_ordered_set(representatives)
+            return action.orbit_representatives(representatives)
 
         def gluing_route_discriminant_classes(self, left, right):
             r"""Return admissible ``O(A_L)`` classes from the primitive-extension gluing route."""
@@ -4403,11 +4428,12 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             Membership is ``q(v) = 0`` together with saturation of ``Z v``:
             the vector is not a proper multiple of another lattice vector.
-            For an indefinite isotropic lattice this locus is countably
-            infinite, so it is represented by exact membership rather than by
-            enumeration; its finite ``O(L)`` orbit decomposition gives the
-            cusps.
+            A nondegenerate binary form has at most two rational null lines;
+            each supplies its two primitive generators. Higher-rank loci
+            retain their exact membership predicate.
             """
+            if self.module_rank() == 2 and self.is_nondegenerate():
+                return self.finite_subsets()(lattice_engines._binary_primitive_isotropic_vectors(self))
             zero = self.zero()
             value_zero = self.base_ring().zero()
 
