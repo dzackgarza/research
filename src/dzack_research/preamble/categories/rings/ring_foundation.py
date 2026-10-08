@@ -75,7 +75,7 @@ from dzack_research.preamble.categories.rings.semirings import (
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category
 
 
 class _OwnedRingBootstrapParent(metaclass=ABCMeta):
@@ -2579,6 +2579,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return self
             return self.free_module(1)
 
+        @RealizationHook
         def _module_basis_along(self, ring_map):
             r"""A basis of ``Res_f(S)`` over ``R`` for ``f = ring_map: R -> S = self``, or ``None``.
 
@@ -2591,7 +2592,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             Implementers are ring owners: this default, and the owners whose
             realization supplies a basis along a coefficient map
-            (``QuotientRings``, ``OwnedNumberFields``).  Callers are
+            (``QuotientRings``, ``OwnedNumberFields``, ``ExactComplexField``).
+            It is a realization hook, so a ring class that supplies the basis
+            from its own construction wins over this default.  Callers are
             ``_restricted_scalars_view`` and ``RestrictedScalarsModules``.
 
             The result is a ``_NativeModuleBasis``.  Its source is a free

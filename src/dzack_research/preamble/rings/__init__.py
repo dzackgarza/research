@@ -80,6 +80,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     Zmod as _Zmod,
 )
+from dzack_research.preamble.rings.complex import CC, ExactComplexField, ExactComplexNumber
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
 from dzack_research.preamble.rings.real import (
     RR,
@@ -156,7 +157,6 @@ def QuadraticField(*args, **kwargs):
 def session_ring_objects() -> dict[str, object]:
     r"""Return the standard session scalar names under their owned parents."""
     from sage.all import AA as SageAA
-    from sage.all import CC as SageCC
     from sage.all import CDF as SageCDF
     from sage.all import QQ as SageQQ
     from sage.all import RDF as SageRDF
@@ -175,12 +175,6 @@ def session_ring_objects() -> dict[str, object]:
     _set_owned_ring_display(rdf, "Real double field", kind="real")
     cdf = _public_commutative_ring(_own_ring(SageCDF))
     _set_owned_ring_display(cdf, "Complex double field", kind="complex")
-    cc = _public_commutative_ring(_own_ring(SageCC))
-    _set_owned_ring_display(
-        cc,
-        f"Complex field with {SageCC.precision()} bits precision",
-        kind="complex",
-    )
     return {
         "ZZ": integers,
         "QQ": rationals,
@@ -189,7 +183,7 @@ def session_ring_objects() -> dict[str, object]:
         "RR": RR,
         "RDF": rdf,
         "CDF": cdf,
-        "CC": cc,
+        "CC": CC,
     }
 
 
@@ -225,6 +219,7 @@ __all__ = [
     "AdicCompletions",
     "AdicallyCompleteRings",
     "ArtinianRings",
+    "CC",
     "CommutativeIdeals",
     "CommutativeRings",
     "OwnedCommutativeRings",
@@ -233,6 +228,8 @@ __all__ = [
     "CyclotomicField",
     "DistinguishedOpenSubobjects",
     "DivisionRings",
+    "ExactComplexField",
+    "ExactComplexNumber",
     "ExactRealField",
     "ExactRealNumber",
     "Fields",

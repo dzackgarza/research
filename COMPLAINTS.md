@@ -966,9 +966,7 @@ on 2026-10-09 at `c7e0793f1e`, with the worktree source loaded:
 raises `AttributeError: 'Algebras' object has no attribute
 'subcategory_class'` from `Algebras.__init__`, reached through
 `_own_ring(SR)` in `_manifold_expression_ring`, so no complex manifold with a
-chart constructs; and the session `CC` is Sage's 53-bit MPFR field, in which
-`(CC(10)**16 + CC(1)) - CC(10)**16 == CC(1)` and
-`CC(2).sqrt()**2 == CC(2)` are `False`. A search of
+chart constructs. A search of
 `src/dzack_research/preamble` for `upper half`, `modular form`, `cusp` and
 `slash` found no presentation (2026-10-09).
 `Lattices.ParentMethods.theta_series_cuspidal_component` returns the
@@ -999,37 +997,62 @@ to topological spaces. Sources: Miyake, *Modular Forms*, §2.1 and
 §4.3; Shimura, *On modular forms of half integral weight* (Ann. of Math. 97,
 1973); Iwaniec, *Topics in Classical Automorphic Forms*, Chapter 10;
 Diamond–Shurman [DS05] §1.1 and §1.2 for the `q`-expansion.
-Repair: `exact-complex-field`, `manifold-function-rings`,
-`topological-rings-and-modules` and
+Repair: `manifold-function-rings`, `topological-rings-and-modules` and
 `holomorphic-functions-from-power-series`, then
 `modular-form-spaces-with-character`, `theta-cusp-form-coordinates` and
 `modular-forms-and-hecke-algebras`, in TODO.
 
-### The session's complex field rounds, and rounded fields are placed as fields
+### Rounded real and complex fields are placed as fields
 
-The complex numbers form a field: a quadratic extension of the real numbers by
-a square root of `-1`. The session name `CC` is `_own_ring` of Sage's 53-bit
-MPFR complex field, whose arithmetic rounds. On 2026-10-09 at `c7e0793f1e`,
-`(CC(10)**16 + CC(1)) - CC(10)**16 == CC(1)` and `CC(2).sqrt()**2 == CC(2)`
-returned `False`, so addition in `CC` is not associative. `RR` is already the
-owned exact real field of `rings/real.py`, so the real and complex fields of
-one session disagree on what a number is.
 `_presented_ring_category` (`categories/rings/ring_foundation.py`) places
 every engine of the Sage classes `RealField`, `RealDoubleField`,
 `RealBallField`, `RealIntervalField`, `ComplexField`, `ComplexDoubleField`,
 `ComplexBallField` and `ComplexIntervalField` in
-`OwnedRings().Division().Commutative()`, a false placement for each of them.
-**Dependency path:** the exact real field `RR` -> its quadratic extension by
-`i` -> the topological field `CC` -> every `C`-module and `C`-algebra of the
-session, including the holomorphic functions on a complex manifold.
-**Existing capability:** `ExactRealField` (`rings/real.py`) represents a real
-number by a closed expression and decides relations through Arb balls.
-**Consumers:** `manifold-function-rings`, `topological-rings-and-modules` and,
-through them, `modular-form-spaces-with-character`; every session computation
-that writes `CC`, `CDF`, `RDF`, `RealField(prec)` or `ComplexField(prec)`.
-**Coverage boundary:** `rings/__init__.py`, `rings/real.py` and the
-placement cases of `_presented_ring_category` were inspected. The consumers
-of `CC` across the preamble were not enumerated.
+`OwnedRings().Division().Commutative()`. Their arithmetic rounds: in Sage's
+53-bit complex field, `(CC(10)**16 + CC(1)) - CC(10)**16 == CC(1)` and
+`CC(2).sqrt()**2 == CC(2)` are `False` (2026-10-09, `c7e0793f1e`), so
+addition is not associative and none of them is a field. The session's `RR`
+and `CC` are the exact fields of `rings/real.py` and `rings/complex.py`, so the
+rounded fields remain only as `RDF`, `CDF`, `RealField(prec)`,
+`ComplexField(prec)` and the homes of the approximations that `.n()` returns.
+Removing their placement conflicts with the ratified destination map `ρ`,
+which assigns a Sage ring the category it purports to represent, and with
+`abb1dfafc2`, which placed every precision as an uncountable field by that
+reading; an owner ruling decides it.
+**Dependency path:** the exact fields `RR` and `CC` -> numerical approximation
+of their elements -> a home for rounded arithmetic that is not a ring.
+**Existing capability:** `ExactRealNumber.n()` and `ExactComplexNumber.n()`
+approximate through the rounded fields privately and return elements of them.
+**Consumers:** every session computation that writes `CDF`, `RDF`,
+`RealField(prec)` or `ComplexField(prec)`, and every `.n()` of a real or
+complex number.
+**Coverage boundary:** `rings/__init__.py`, `rings/real.py`,
+`rings/complex.py` and the placement cases of `_presented_ring_category` were
+inspected.
+Repair: `exact-complex-field` in TODO.
+
+### A coercion map that is an owned morphism loses its homset once Sage registers it
+
+A morphism of a category is an element of its homset. The exact fields `RR`
+and `CC` answer Sage's coercion model with the element of `source.Mor(RR)` or
+`source.Mor(CC)` for an owned source ring, because Sage's default map lives in
+the meet of the two categories, which does not contain the target (TRAPS.md,
+*Sage's default conversion into a parent needs the source in Sage's
+categories*). Sage then calls `Map._make_weak_references`, which drops the
+map's parent and keeps `homset_category()`; `Map.parent()` rebuilds
+`Hom(domain, codomain, that category)`, and the rebuild raises. On 2026-10-09,
+`RR.coerce_map_from(ZZ)` raised `ValueError: Integer Ring is not in Category
+of sets`, while `RR(1) + 1` returned `2`, so the arithmetic uses the map and
+only its parent is lost. `OwnedSemirings().initial_morphism`, which answers
+the coercion from `NN`, takes the same route.
+**Dependency path:** owned homsets -> owned morphisms registered with Sage's
+coercion model -> every coercion between owned rings.
+**Existing capability:** the owned morphism constructor `_ringlike_mor_element`
+(`ring_foundation.py`) builds the map; the arithmetic it supports works.
+**Consumers:** any caller of `coerce_map_from` or of the parent of a coercion
+map between owned rings.
+**Coverage boundary:** observed for `ZZ -> RR` only; the `NN` route was read in
+source, not run.
 Repair: `exact-complex-field` in TODO.
 
 ### `lean-categories` does not formalize the representation density or Siegel's formula

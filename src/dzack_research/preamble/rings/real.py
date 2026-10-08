@@ -338,18 +338,19 @@ class ExactRealNumber(FieldElement):
         The coefficient product cannot call the algebra tensor classifier
         whose own linear evaluation uses these coefficients.
         """
-        ring = self.parent()
-        source = parent(other)
-        if source is ring:
-            return ExactRealNumber._mul_(self, other)
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        if source in Modules(ring):
-            return source.scalar_multiple(self, other)
-        try:
-            return ExactRealNumber._mul_(self, ring(other))
-        except (TypeError, ValueError):
-            return NotImplemented
+        ring = self.parent()
+        source = parent(other)
+        match other:
+            case _ if source is ring:
+                return ExactRealNumber._mul_(self, other)
+            case _ if source in Modules(ring):
+                return source.scalar_multiple(self, other)
+            case _ if _is_real_argument(other):
+                return ExactRealNumber._mul_(self, ring(other))
+            case _:
+                return NotImplemented
 
     def __rmul__(self, other):
         return ExactRealNumber.__mul__(self, other)
@@ -383,7 +384,13 @@ class ExactRealNumber(FieldElement):
                 f"cannot compute {self}^{exponent} mod {modulus}: modular exponentiation is not defined "
                 "on the real numbers"
             )
-        return self.parent()(self._expression ** _closed_exact_real_expression(exponent))
+        match exponent:
+            case _ if _is_real_argument(exponent):
+                return self.parent()(self._expression ** _closed_exact_real_expression(exponent))
+            case _:
+                # A complex exponent is the complex field's power
+                # ``x^w = e^{w Log x}`` [Gam01, Ch. I, §7].
+                return NotImplemented
 
     def __rpow__(self, base):
         base_expression = _closed_exact_real_expression(base)
@@ -597,15 +604,24 @@ class ExactRealField(UniqueRepresentation, Field):
         return True
 
     def _coerce_map_from_(self, source):
+        r"""The canonical ring map into ``RR`` from a ring whose computation embeds in ``AA``.
 
-        computation_source = _engine_ring(source)
-        if computation_source in (ZZ, QQ, AA):
-            return True
-        if computation_source not in SageRings():
-            return None
-        if AA.has_coerce_map_from(computation_source):
-            return True
-        return None
+        From an owned ring it is the element of ``source.Mor(RR)`` sending each
+        element to the real number it names.  Sage's default map would live in
+        the meet of the two owned categories, which need not contain ``RR``
+        (TRAPS.md, *Sage's default conversion into a parent needs the source in
+        Sage's categories*).  A Sage ring is met only when the coercion model
+        passes a Python scalar through its Sage parent, and takes Sage's
+        conversion.  A source that is not a ring, such as Python's ``int``, has
+        no map here.
+        """
+        match source:
+            case _ if source in OwnedRings() and _embeds_in_real_algebraic_numbers(_engine_ring(source)):
+                return source.Mor(self, category=OwnedRings())(lambda value: self(value))
+            case _ if source in SageRings() and _embeds_in_real_algebraic_numbers(source):
+                return True
+            case _:
+                return None
 
     def relation(self, left: ExactRealNumber, right: ExactRealNumber, relation):
         r"""Return a decided Boolean or an exact real relation predicate."""
@@ -659,6 +675,11 @@ class ExactRealField(UniqueRepresentation, Field):
         return self(e)
 
 
+def _embeds_in_real_algebraic_numbers(engine_ring) -> bool:
+    r"""Whether a computation ring has Sage's canonical map into ``AA``."""
+    return engine_ring in SageRings() and AA.has_coerce_map_from(engine_ring)
+
+
 _OwnedRingBootstrapParent.register(ExactRealField)
 
 
@@ -669,16 +690,33 @@ pi = RR.pi()
 e = RR.e()
 
 
+def _is_real_argument(x) -> bool:
+    r"""Whether ``x`` is a real number to the operations of the real field.
+
+    An element of a ring that the real field coerces into, such as ``CC`` or
+    a polynomial ring over ``RR``, is that ring's element even when it names a
+    real number, and an operation on it has its value in that ring.
+    """
+    source = parent(x)
+    match x:
+        case _ if source is RR:
+            return True
+        case _ if source in OwnedRings() and source.has_coerce_map_from(RR):
+            return False
+        case _:
+            return x in RR
+
+
 # The elementary functions of a session.  On a real number each is the
-# operation of the real field.  Any other argument -- a power series, a
-# matrix, a symbolic expression -- goes to Sage's function of the same name,
-# which applies the argument's own method where it has one.
+# operation of the real field.  Any other argument -- a complex number, a
+# power series, a matrix, a symbolic expression -- goes to Sage's function of
+# the same name, which applies the argument's own method where it has one.
 
 
 def sqrt(x):
     r"""The square root of ``x``; of a real number, the nonnegative real root."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).sqrt()
         case _:
             return _sage_functional.sqrt(x)
@@ -687,7 +725,7 @@ def sqrt(x):
 def exp(x):
     r"""The exponential of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).exp()
         case _:
             return _sage_log.exp(x)
@@ -696,7 +734,7 @@ def exp(x):
 def log(x, base=None):
     r"""The logarithm of ``x``, natural unless ``base`` is given."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).log(base)
         case _:
             return _sage_functional.log(x) if base is None else _sage_functional.log(x, base)
@@ -705,7 +743,7 @@ def log(x, base=None):
 def sin(x):
     r"""The sine of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).sin()
         case _:
             return _sage_trig.sin(x)
@@ -714,7 +752,7 @@ def sin(x):
 def cos(x):
     r"""The cosine of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).cos()
         case _:
             return _sage_trig.cos(x)
@@ -723,7 +761,7 @@ def cos(x):
 def tan(x):
     r"""The tangent of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).tan()
         case _:
             return _sage_trig.tan(x)
@@ -732,7 +770,7 @@ def tan(x):
 def sinh(x):
     r"""The hyperbolic sine of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).sinh()
         case _:
             return _sage_hyperbolic.sinh(x)
@@ -741,7 +779,7 @@ def sinh(x):
 def cosh(x):
     r"""The hyperbolic cosine of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).cosh()
         case _:
             return _sage_hyperbolic.cosh(x)
@@ -750,7 +788,7 @@ def cosh(x):
 def tanh(x):
     r"""The hyperbolic tangent of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).tanh()
         case _:
             return _sage_hyperbolic.tanh(x)
@@ -759,7 +797,7 @@ def tanh(x):
 def sech(x):
     r"""The hyperbolic secant of ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).sech()
         case _:
             return _sage_hyperbolic.sech(x)
@@ -768,7 +806,7 @@ def sech(x):
 def sgn(x):
     r"""The sign of ``x``: \(1\), \(0\) or \(-1\) for a real number."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).sgn()
         case _:
             return _sage_generalized.sgn(x)
@@ -777,7 +815,7 @@ def sgn(x):
 def zeta(x):
     r"""The Riemann zeta function at ``x``."""
     match x:
-        case _ if x in RR:
+        case _ if _is_real_argument(x):
             return RR(x).zeta()
         case _:
             return _sage_transcendental.zeta(x)

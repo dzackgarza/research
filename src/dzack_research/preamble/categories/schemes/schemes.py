@@ -2904,18 +2904,17 @@ class Schemes(OwnedCategoryOverBaseRing):
                 part of the input.  Dimca [Dim92], Ch. 1, (6.10): ``X(CC)``
                 has the homotopy type of a finite CW complex.
                 """
-                from sage.all import CC as SageCC
-
                 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
                     _complex_realization,
                 )
+                from dzack_research.preamble.rings.complex import CC
 
                 assert scalar_embedding.domain() is self.scheme_base_ring(), (
                     f"the complex points of {self} are taken along an embedding of its base "
                     f"{self.scheme_base_ring()} into CC, but {scalar_embedding} has domain "
                     f"{scalar_embedding.domain()}"
                 )
-                assert _engine_ring(scalar_embedding.codomain()) is SageCC, (
+                assert scalar_embedding.codomain() is CC, (
                     f"the complex points of {self} are taken along an embedding into CC, but "
                     f"{scalar_embedding} has codomain {scalar_embedding.codomain()}"
                 )

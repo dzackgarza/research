@@ -2,7 +2,6 @@ r"""Geometric cochain complexes and comparison-owned cohomology constructions.""
 
 from math import prod
 
-from sage.all import CC as SageCC
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -1525,9 +1524,10 @@ def _complex_realization(scheme, scalar_embedding):
 @cached_function
 def _rational_complex_embedding():
     r"""The embedding ``QQ -> CC``; it is the only one, since ``QQ`` is the prime field."""
+    from dzack_research.preamble.rings.complex import CC
+
     rationals = _own_ring(SageQQ)
-    complexes = _own_ring(SageCC)
-    return rationals.Mor(complexes, category=OwnedRings())(lambda scalar: complexes(scalar))
+    return rationals.Mor(CC, category=OwnedRings())(lambda scalar: CC(scalar))
 
 
 __all__ = [

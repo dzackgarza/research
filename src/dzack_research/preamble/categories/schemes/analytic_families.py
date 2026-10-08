@@ -13,9 +13,9 @@ requires the usual proper complex-algebraic hypotheses, which this family does
 not satisfy.
 """
 
-from sage.all import CC as SageCC
 from sage.all import QQ as SageQQ
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import (
@@ -45,9 +45,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     """
     backend = _engine_element(algebra, algebra(polynomial))
     source_ring = algebra.base_ring()
-    target_ring = scalar_embedding.codomain()
     engine_source = _engine_ring(source_ring)
-    engine_target = _engine_ring(target_ring)
     variables = tuple(
         _engine_manifold_expression(variable)
         for variable in chart.coordinates()
@@ -56,7 +54,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     for exponent, coefficient in backend.monomial_coefficients().items():
         powers = _polynomial_exponents(exponent, len(variables))
         owned_coefficient = _owned_engine_element(source_ring, engine_source(coefficient))
-        term = engine_target(_engine_element(target_ring, scalar_embedding(owned_coefficient)))
+        term = SR(scalar_embedding(owned_coefficient))
         for variable, power in zip(variables, powers, strict=True):
             if power:
                 term *= variable**power
@@ -70,8 +68,10 @@ class _AffineSpaceAnalytificationFunctor(Functor):
     def __init__(self, scalar_embedding) -> None:
         self._scalar_embedding = scalar_embedding
         source = _own_ring(scalar_embedding.domain())
+        from dzack_research.preamble.rings.complex import CC
+
         target = _own_ring(scalar_embedding.codomain())
-        assert _engine_ring(target) is SageCC, (
+        assert target is CC, (
             f"analytification along {scalar_embedding} needs an embedding into the complex "
             f"numbers CC, but its codomain is {target}"
         )
@@ -203,9 +203,10 @@ def AnalyticDiscFamily(radius=1):
     Restricting the base to ``Delta={|t|<r}`` and the total space to its inverse
     image gives the represented slice object.
     """
+    from dzack_research.preamble.rings.complex import CC
+
     qq = _own_ring(SageQQ)
-    cc = _own_ring(SageCC)
-    embedding = qq.Mor(cc)(lambda scalar: cc(scalar))
+    embedding = qq.Mor(CC)(lambda scalar: CC(scalar))
     algebraic_total = AffineSpaces(qq)(2, names=("x", "t"))
     algebraic_base = AffineSpaces(qq)(1, names=("t",))
     total_algebra = algebraic_total.coordinate_algebra()
