@@ -1150,7 +1150,7 @@ def _formed_module_base_change(self, ring_map):
         return self
     source = self
     source_labels = source.module_generating_set()
-    form = self._formed_form()
+    form = self.form()
     changed = form.module().base_change(ring_map)
 
     def equip(changed_form):
@@ -1182,9 +1182,9 @@ def _formed_module_base_change(self, ring_map):
             right_coordinates = changed(right).to_vector()
             result = target_ring.zero()
             for left_label in left_coordinates.support().domain():
-                source_left = source.module_generator(left_label)
+                source_left = form.module().module_generator(left_label)
                 for right_label in right_coordinates.support().domain():
-                    source_right = source.module_generator(right_label)
+                    source_right = form.module().module_generator(right_label)
                     result += (
                         left_coordinates(left_label)
                         * right_coordinates(right_label)
@@ -1219,7 +1219,7 @@ def _formed_module_base_change(self, ring_map):
         coordinates = changed(element).to_vector()
         result = target_ring.zero()
         for left_label in coordinates.support().domain():
-            source_left = source.module_generator(left_label)
+            source_left = form.module().module_generator(left_label)
             result += (
                 coordinates(left_label)**2
                 * _base_change_scalar(ring_map, form(source_left))
@@ -1228,7 +1228,7 @@ def _formed_module_base_change(self, ring_map):
             for right_label in coordinates.support().domain():
                 if source_labels.ranking_map()(right_label) <= left_rank:
                     continue
-                source_right = source.module_generator(right_label)
+                source_right = form.module().module_generator(right_label)
                 result += (
                     coordinates(left_label)
                     * coordinates(right_label)

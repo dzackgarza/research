@@ -5250,9 +5250,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"an integer Bezout partner requires a lattice over ZZ, not {ring}"
             )
             regular = ring.regular_module()
-            pairing = lattice.module_category().Mor(lattice, regular)(
-                lambda label: regular(lattice.b(self, lattice.module_generator(label)))
-            )
+            pairing = lattice.left_curry()(self)
             generator = regular.scalar_multiple(self.div(), regular.module_generators()[0])
             if not lattice.module_rank().is_finite():
                 support = lattice.subobject_on(tuple(
@@ -5285,7 +5283,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             lattice = self.parent()
             ring = lattice.base_ring()
-            pairing = self.to_covector()
+            pairing = lattice.left_curry()(self)
             regular = pairing.codomain()
             prescribed = regular.scalar_multiple(self.div(), regular.module_generators()[0])
             fibre = pairing.solution_fibre(prescribed)
@@ -5333,7 +5331,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             if remainder != ring.zero():
                 if not lattice.module_rank().is_finite():
                     raise NotImplementedError("the norm-congruence selection requires a finite-rank pairing kernel")
-                kernel = self.to_covector().kernel()
+                kernel = lattice.left_curry()(self).kernel()
                 modulus = ring(2) * divisibility
                 relations = kernel.subobject_on(
                     tuple(kernel.scalar_multiple(modulus, v) for v in kernel.module_generators())
