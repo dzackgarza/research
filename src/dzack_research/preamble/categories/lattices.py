@@ -6003,6 +6003,12 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 orthogonal_summand,
             )
 
+        def rational_lifts(self, target, isometry):
+            r"""The kernel-group torsor of rational lifts of a marked-line reduction map."""
+            from dzack_research.preamble.categories.isotropic_lifts import IsotropicReductionLiftTorsors
+
+            return IsotropicReductionLiftTorsors(self.base_ring())(self, target, isometry)
+
         def coordinate_frame(self):
             r"""Return the chosen lifts of the framing of \(K_I\) into \(I^\perp\)."""
             return self._preamble_coordinate_frame
