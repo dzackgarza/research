@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+hooks=$(git config --global --path --get core.hooksPath)
+exec "$hooks/pre-push" "$@"

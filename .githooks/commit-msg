@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+# Git owns trailer parsing and the hook protocol: https://git-scm.com/docs/githooks
+# https://git-scm.com/docs/git-interpret-trailers
+trailers=$(git interpret-trailers --parse "$1")
+if ! printf '%s\n' "$trailers" | grep -Fxq 'Policy-Code: c2291c7ab917bf86978a564337f00d5f'; then
+    printf '%s\n' 'Commit rejected: missing or incorrect Policy-Code. Read CONTRIBUTING.md, COMMIT-01.' >&2
+    exit 1
+fi
+if ! printf '%s\n' "$trailers" | grep -Fxq 'Policy-Attestation: I have read all contributing policies in CONTRIBUTING.md and certify that none were violated by the work in this commit.'; then
+    printf '%s\n' 'Commit rejected: missing Policy-Attestation. Read CONTRIBUTING.md, COMMIT-01.' >&2
+    exit 1
+fi
+if ! printf '%s\n' "$trailers" | grep -Eq '^Applicable-Policy: [A-Z]+-[0-9]+: [^[:space:]].*'; then
+    printf '%s\n' 'Commit rejected: cite applicable policy codes and explain compliance in Applicable-Policy trailers.' >&2
+    exit 1
+fi
