@@ -1606,6 +1606,40 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             return Lattices(self.base_ring())("U")
 
         class ParentMethods:
+            def vector_of_sign(self, sign):
+                r"""Return a vector of square sign ``-1`` or ``1``, or ``None``.
+
+                The vector belongs to this formed module. For a represented
+                submodule its inclusion supplies the ambient vector. Rational
+                diagonalization supplies the computation over ``QQ`` and
+                ``ZZ``; the integral result is primitive.
+
+                EXAMPLES::
+
+                    sage: U = Lattices(ZZ)("U")
+                    sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
+                    sage: v = S.vector_of_sign(-1)
+                    sage: v.parent() is S and S.inclusion()(v).q() < ZZ(0)
+                    True
+                    sage: S.vector_of_sign(1) is None
+                    True
+                """
+                if sign not in (-1, 1):
+                    raise ValueError("a signed-vector request requires sign -1 or 1")
+                from dzack_research.preamble.categories.lattice_engines import (
+                    _signed_vector_witness,
+                )
+
+                return _signed_vector_witness(self, sign)
+
+            def positive_vector(self):
+                r"""Return a positive-square vector, or ``None`` if none exists."""
+                return self.vector_of_sign(1)
+
+            def negative_vector(self):
+                r"""Return a negative-square vector, or ``None`` if none exists."""
+                return self.vector_of_sign(-1)
+
             def signature_pair(self):
                 r"""Return the Sylvester inertia pair of a finite symmetric form."""
                 assert self.module_rank().is_finite(), (

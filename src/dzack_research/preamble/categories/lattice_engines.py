@@ -98,7 +98,13 @@ def _raise_rational_lattice_vector(lattice, coordinates):
 
 
 def _signed_vector_witness(lattice, sign):
-    r"""Return a vector of the requested sign, or None if that sign is absent."""
+    r"""Realize a finite symmetric formed module's signed-vector operation.
+
+    Private computation for ``BilinearFormModules.Symmetric.vector_of_sign``.
+    The input retains its own form and selected framing; the raised vector
+    belongs to that same module, including a represented formed submodule.
+    Return None if the requested sign is absent.
+    """
     ring = lattice.base_ring()
     assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
         f"signed vector witnesses are computed over ZZ or QQ, not {ring}"

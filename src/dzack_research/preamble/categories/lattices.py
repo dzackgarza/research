@@ -2199,8 +2199,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case True:
                     return bool(self.witt_index() > 0)
 
-        def isotropic_vector_witness(self) -> "Lattices.ElementMethods | None":
-            r"""Return a nonzero isotropic vector, or ``None`` if anisotropic.
+        def isotropic_vector(self) -> "Lattices.ElementMethods":
+            r"""Return a nonzero isotropic vector; raise ``ValueError`` if none exists.
 
             PARI supplies the witness over QQ. Over ZZ the returned vector
             is integral and primitive. A nonzero radical also supplies a
@@ -2209,51 +2209,22 @@ class Lattices(OwnedCategoryOverBaseRing):
             EXAMPLES::
 
                 sage: L = Lattices(ZZ)([[3, 0, 0, 0], [0, 5, 0, 0], [0, 0, -7, 0], [0, 0, 0, -11]])
-                sage: v = L.isotropic_vector_witness()
+                sage: v = L.isotropic_vector()
                 sage: v.parent() is L and v != L.zero() and v.q() == ZZ(0) and v.content() == ZZ(1)
                 True
-                sage: Lattices(ZZ)([[1, 0], [0, -2]]).isotropic_vector_witness() is None
-                True
+                sage: Lattices(ZZ)([[1, 0], [0, -2]]).isotropic_vector()
+                Traceback (most recent call last):
+                ...
+                ValueError: the lattice has no nonzero isotropic vector
                 sage: D = Lattices(ZZ)([[0, 0], [0, 2]])
-                sage: r = D.isotropic_vector_witness()
+                sage: r = D.isotropic_vector()
                 sage: r != D.zero() and r.q() == ZZ(0)
                 True
             """
-            return lattice_engines._isotropic_vector_witness(self)
-
-        def positive_vector(self) -> "Lattices.ElementMethods | None":
-            r"""Return a vector of positive square, or ``None`` if none exists.
-
-            Computed over ZZ and QQ by rational diagonalization; over ZZ the
-            vector is primitive. On a formed subobject the vector lies in
-            that subobject and its inclusion maps it into the containing space.
-
-            EXAMPLES::
-
-                sage: U = Lattices(ZZ)("U")
-                sage: v = U.positive_vector()
-                sage: v.parent() is U and v.q() > ZZ(0) and v.content() == ZZ(1)
-                True
-                sage: Lattices(ZZ)([[-2]]).positive_vector() is None
-                True
-            """
-            return lattice_engines._signed_vector_witness(self, 1)
-
-        def negative_vector(self) -> "Lattices.ElementMethods | None":
-            r"""Return a vector of negative square, or ``None`` if none exists.
-
-            Computed over ZZ and QQ by rational diagonalization; over ZZ the
-            vector is primitive.
-
-            EXAMPLES::
-
-                sage: U = Lattices(ZZ)("U")
-                sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
-                sage: w = S.negative_vector()
-                sage: w.parent() is S and S.inclusion()(w).q() < ZZ(0)
-                True
-            """
-            return lattice_engines._signed_vector_witness(self, -1)
+            vector = lattice_engines._isotropic_vector_witness(self)
+            if vector is None:
+                raise ValueError("the lattice has no nonzero isotropic vector")
+            return vector
 
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
@@ -3777,18 +3748,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert _engine_ring(self.base_ring()) is SageZZ and self.is_even(), (
                 f"the integral two-hyperbolic-plane splitting is computed for even ZZ-lattices, not {self}"
             )
-            first = self.isotropic_vector_witness()
-            if first is None:
+            if not self.is_isotropic():
                 return None
+            first = self.isotropic_vector()
             assert first.div() == self.base_ring().one(), (
                 f"the selected isotropic vector {first} has divisibility {first.div()}; "
                 "splitting off U requires an isotropic vector of divisibility one"
             )
             first_reduction = first.isotropic_reduction()
             first_splitting = first_reduction.integral_hyperbolic_splitting()
-            second = first_reduction.isotropic_vector_witness()
-            if second is None:
+            if not first_reduction.is_isotropic():
                 return None
+            second = first_reduction.isotropic_vector()
             assert second.div() == self.base_ring().one(), (
                 f"the selected isotropic vector {second} has divisibility {second.div()}; "
                 "splitting off the second U requires an isotropic vector of divisibility one"
