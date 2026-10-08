@@ -1,6 +1,5 @@
 """Free modules with their canonical framing."""
 
-from functools import reduce
 from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
@@ -58,10 +57,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-
-if TYPE_CHECKING:
-    from dzack_research.preamble.categories.rings.ring_foundation import _OwnedIntegerElement
-
 
 def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
@@ -356,33 +351,30 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         if TYPE_CHECKING:
             def __call__(self, label) -> RingElement: ...
 
-        def content(self) -> "_OwnedIntegerElement":
-            r"""Return the nonnegative content of a vector over ``ZZ``.
+        def order_ideal(self):
+            r"""Compute the module order ideal using the chosen free basis.
 
-            The zero vector has content zero. Only the finite support is read,
-            including when the chosen basis is infinite.
-
-            Migrated from ``sage-indefinite-port``'s ``vector_content``;
-            scalar gcd is supplied by the coefficient ring.
+            Coordinate functionals show that every coordinate belongs to
+            the evaluation image. Conversely every linear functional on a
+            finite-support vector is a linear combination of its nonzero
+            coordinates. Thus these generate the intrinsic order ideal,
+            including for an infinite basis.
 
             EXAMPLES::
 
                 sage: M = ZZ**2
                 sage: v = M.linear_combination({0: ZZ(-6), 1: ZZ(9)})
-                sage: v.content() == ZZ(3)
+                sage: v.order_ideal() == ZZ.ideal(3) and v.content() == ZZ(3)
                 True
-                sage: M.zero().content() == ZZ(0)
+                sage: M.zero().order_ideal() == ZZ.ideal(0)
                 True
             """
             ring = self.parent().base_ring()
-            assert _engine_ring(ring) is SageZZ, (
-                f"integer content requires a free module over ZZ, not {ring}"
-            )
+            if ring not in OwnedRings().Commutative():
+                raise TypeError("the module order ideal requires a commutative scalar ring")
             coordinates = self.to_vector()
-            return abs(reduce(
-                lambda left, right: left.gcd(right),
-                (coordinates(label) for label in coordinates.support().domain()),
-                ring.zero(),
+            return ring.ideal(*(
+                coordinates(label) for label in coordinates.support().domain()
             ))
 
         def primitive_part(self) -> "FramedFreeModules.ElementMethods":

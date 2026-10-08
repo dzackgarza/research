@@ -4900,6 +4900,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"an integer Bezout partner requires a lattice over ZZ, not {ring}"
             )
             pairing = self.to_covector()
+            regular = pairing.codomain()
+            generator = regular.scalar_multiple(self.div(), regular.module_generators()[0])
             if not lattice.module_rank().is_finite():
                 support = lattice.subobject_on(tuple(
                     lattice.module_generator(label)
@@ -4907,8 +4909,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ))
                 inclusion = support.inclusion()
                 restricted = pairing * inclusion
-                return inclusion(restricted.preimage(pairing.codomain()(self.div())))
-            return pairing.preimage(pairing.codomain()(self.div()))
+                return inclusion(restricted.preimage(generator))
+            return pairing.preimage(generator)
 
         def hyperbolic_partner(self) -> "Lattices.ElementMethods":
             r"""Return an integral isotropic partner with pairing ``self.div()``.

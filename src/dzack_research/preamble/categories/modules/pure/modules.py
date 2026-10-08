@@ -1138,6 +1138,27 @@ class Modules(OwnedCategoryOverBaseRing):
     class ElementMethods:
         __add__ = Element.__add__
 
+        def order_ideal(self):
+            r"""Return ``O_M(v) = {phi(v) : phi in Hom_R(M,R)}``.
+
+            This is the image ideal of evaluation at this element. The
+            represented computation uses generators of the linear dual;
+            it does not require a chosen basis of ``M``.
+            """
+            module = self.parent()
+            ring = module.base_ring()
+            dual = module.dual_module()
+            regular = dual.codomain()
+            evaluation = Modules(ring).Mor(dual, regular)(
+                lambda label: dual.module_generator(label)(self)
+            )
+            image = evaluation.image()
+            regular_label = regular.module_generating_set()[0]
+            return ring.ideal(*(
+                image.inclusion()(generator).to_vector()(regular_label)
+                for generator in image.module_generators()
+            ))
+
         def __rmul__(self, scalar):
             r"""Return ring multiplication or the left module scalar action.
 
@@ -2613,6 +2634,37 @@ class Modules(OwnedCategoryOverBaseRing):
 
     class Free(CategoryWithAxiom):
         r"""Modules admitting a basis."""
+
+        class ElementMethods:
+            def content(self):
+                r"""Return the nonnegative generator of ``O_M(self)`` over ``ZZ``.
+
+                The order ideal is intrinsic to the module element. Its
+                computation in a basis yields the gcd of the coordinates.
+                The zero element has content zero.
+                """
+                ring = self.parent().base_ring()
+                if _engine_ring(ring) is not SageZZ:
+                    raise TypeError("integer content requires a free module over ZZ")
+                generator = ring.zero()
+                for value in self.order_ideal().ideal_generators():
+                    generator = generator.gcd(value)
+                return abs(generator)
+
+            def primitive_part(self):
+                r"""Return the unique ``w`` with ``content(self)*w = self``.
+
+                This is the preimage under scalar multiplication by the
+                nonzero content, which is injective on a free ZZ-module.
+                """
+                content = self.content()
+                if not content:
+                    raise ValueError("the zero vector has no primitive part")
+                module = self.parent()
+                multiplication = Modules(module.base_ring()).Mor(module, module)(
+                    lambda label: module.scalar_multiple(content, module.module_generator(label))
+                )
+                return multiplication.preimage(self)
 
         def an_object(self):
             r"""The free module of rank one."""
