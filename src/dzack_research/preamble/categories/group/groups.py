@@ -4463,6 +4463,8 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
                 product = generating_map(free(word))
                 if product == candidate:
                     return True
+                if ambient.is_finite() is True:
+                    return _engine_subgroup_admits(self, candidate)
                 return AtomicProposition("is_member", candidate, self)
             if candidate == ambient.one() or any(
                 candidate == generator or candidate == ~generator
