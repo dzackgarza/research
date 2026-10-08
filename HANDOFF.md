@@ -21,6 +21,8 @@ Do the work in this order. Do not start a later step while an earlier step has r
    Read each line as a mathematical statement. A line that is obviously false is a defect. For example, an element of the power set of a finite set that is not placed in finite sets is a defect. Repair the placement at its owner, and file a TODO node when the repair is not immediate.
 3. **Duplication.** Reduce duplicate implementations only after steps 1 and 2. A duplicate that blocks the port or causes a wrong placement belongs to the earlier step.
 
+A defect that a check exposes in step 1 is the current unit: repair it at its owner before moving to the next check or row. A COMPLAINTS.md entry or a HANDOFF status line is the residue of that repair, committed with the code that makes it, never a commit on its own and never a substitute for the repair. File a TODO node instead only when the repair genuinely needs a prerequisite that is not yet built, and name that prerequisite.
+
 ## In progress
 
 The remaining unit is integration of the affine fibres, integral lift torsors, and generated orthogonal-group actions. The checkpoint includes shared-owner changes whose broader contracts still need review:
