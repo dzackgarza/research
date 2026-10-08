@@ -202,7 +202,6 @@ def _binary_primitive_isotropic_vectors(lattice):
     return tuple(points)
 
 
-||||||| c16c58338d
 def _rational_representation_witness(lattice, value):
     r"""Return a vector ``x`` of the nondegenerate ``QQ``-lattice with ``b(x, x) = value``, or ``None``.
 

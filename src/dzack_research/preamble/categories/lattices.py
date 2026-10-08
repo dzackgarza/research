@@ -2381,7 +2381,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, f"representation of {value} by {self!r} is decided here over ZZ and QQ, not over {ring}"
                 case _ if self.is_definite():
-                    return self.vectors_of_square(value).cardinality() != 0
+                    return self.vectors_of_square(value).domain().cardinality() != 0
                 case _ if rank == 2:
                     return _indefinite_binary_representation(self, value) is not None
                 case _ if not _locally_represented(self.genus().local_representations(), value):

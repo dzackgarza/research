@@ -1218,6 +1218,34 @@ affine covers.
 were inspected.  No claim is made here about other same-class parameterized
 relations.
 
+### A finite subset over a set does not answer its cardinality
+
+**Missing general mathematics:** an element of `X.finite_subsets()` is a
+subobject `(A, i: A -> X)` with `A` finite, an object of the slice `Sets/X`.
+Its cardinality is `|A|`, reached through the forgetful functor
+`Sets/X -> Sets`, and the object belongs to the finite sets.
+**Dependency path:** `Lattices(ZZ).vectors_of_square(n)` on a definite or
+split binary lattice returns `self.finite_subsets()(...)`;
+`Lattices(ZZ).represents(n)` asks whether that set is empty.
+**Evidence (2026-10-09):** for `L = <-1>^3`,
+`L.vectors_of_square(-6).cardinality()` raises `AssertionError: cannot compute
+the cardinality ... it is not known to be finite or countably infinite`; the
+object is in `Join of Category of facade sets and Slice category Category of
+sets/Integral lattice`, not in `Sets().Finite()`, and it has no `is_empty`.
+`.domain().cardinality()` answers 24.
+**Existing partial capability:** `FinitePowerSets.ParentMethods._element_constructor_`
+checks that the domain is finite and returns the power-set element; on the
+other branches `vectors_of_square` returns `square_fibre(n).object()`, a plain
+set, so the operation answers two kinds of object.
+**Affected consumers:** `represents`, which reads `.domain()` as a stopgap, and
+every caller of `vectors_of_square` that asks a set question.
+**Coverage boundary:** `set_categories.py` `FinitePowerSets` and
+`_finite_subsets`, and `lattices.py` `vectors_of_square` were inspected; the
+slice-category owner was not.
+**Repair:** a finite subset is placed in `Sets().Finite()` and answers set
+operations through its domain, and `vectors_of_square` answers one kind of
+object on every branch.
+
 ### Module-subobject joins and meets do not transport canonical ideal structure
 
 The placement audit found that `CommutativeIdeals(R)` is a strict subcategory
