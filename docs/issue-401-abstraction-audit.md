@@ -2,7 +2,7 @@
 
 This audit covers the [issue body and all comments](https://github.com/dzackgarza/research/issues/401), including the frozen API, affine shells, and affine-line points. It determines the mathematical constructions required before further implementation. It does not authorize implementation where the formal declaration or the contract remains unresolved.
 
-The governing rules are [mathematical dependency tracing](../CONTRIBUTING.md#mathematical-dependency-tracing), `OWN-01`, `OWN-04`, `OWN-08`, and `OWN-14`. Mathematical authority belongs to `lean-categories`. A proposed mathematical owner below is not a new local declaration of that authority.
+The governing rules are [mathematical dependency tracing](../CONTRIBUTING.md#mathematical-dependency-tracing), `OWN-01`, `OWN-04`, `OWN-08`, and `OWN-14`. The definitions, hypotheses, and morphisms in `lean-categories` determine mathematical ownership. Each unresolved declaration mapping below is a source-search or formalization obligation.
 
 Source snapshot for the implementation findings: research `9e448424e5`; lean-categories `aca89befcd1ade794aa3b7a93f320de995c7a5bc`. Contract reconciliation uses research #401, updated `2026-10-08T17:38:15Z`, including its comments. Port implementation evidence uses the previously inspected `b3fd95d` source and the local `research-401-primitives` branch. The live [migration procedure in #396](https://github.com/dzackgarza/research/issues/396) instead pins `709f81a`, freezes names through port #33, and says to leave the port unchanged. That procedure governs subsequent work. The local port branch is not the migration authority.
 
@@ -19,7 +19,7 @@ The issue does not call for a collection of independent lattice helpers. Its sha
 
 Named lattice operations specialize these constructions. Coordinate matrices, chosen bases, finite search bounds, and backend applicability belong to realizations. They do not determine the mathematical domain or result type.
 
-Several frozen rows need a mathematical clarification through port #33: unconditional integral partners, arbitrary invariant overlattices, affine parameter kernels, lift torsors, and the distinction between a norm fibre and its orbit quotient. The recorded amendments already specify the similarity denominator factor and the signed shell/sphere contracts. The names are not silently replaced while the remaining questions are resolved.
+The definitions and counterexamples below determine the corrections to unconditional integral partners, arbitrary invariant overlattices, affine parameter kernels, lift torsors, and norm-fibre versus orbit-quotient results. Record the resulting interface corrections through port #33. The recorded amendments specify the similarity denominator factor and the signed shell/sphere contracts. Preserve each existing name whose mathematical meaning agrees with its operation.
 
 ## Formal dependency paths and evidence
 
@@ -77,7 +77,7 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 **Contract:** retain that locus and distinguish an empty locus from an unavailable computation. Primitivity alone does not imply a point exists. In the even lattice with Gram `[[0,2],[2,2]]`, `v=e` is primitive and has divisibility two. Minimal pairing forces `w=a e+f`, with square `4a+2`, so no integral partner exists. For an even integer lattice and divisibility one, any Bezout partner `h` gives `w=h-q(h)v/2`.
 
-**Trace:** row 3 → affine fibre → quadratic restriction → integral points; F2/F3/F5. The general integral-point construction and the integral splitting theorem need explicit upstream declarations. The added correction method handles a sufficient case; failure of that correction does not decide the whole locus. The unconditional frozen row requires clarification through #33.
+**Trace:** row 3 → affine fibre → quadratic restriction → integral points; F2/F3/F5. The general integral-point construction and the integral splitting theorem need explicit upstream declarations. The added correction method handles a sufficient case; failure of that correction does not decide the whole locus. The counterexample determines the required correction to the unconditional frozen row: selection requires a nonempty locus. Record that correction through #33.
 
 ### 5. Integral hyperbolic splitting — frozen `R.integral_hyperbolic_splitting()`
 
@@ -183,9 +183,9 @@ The parameter space can be affine while its evaluation in the space of matrices 
 
 **Contract:** distinguish all vectors in the fibre from one vector in each orbit. A definite shell currently returns vectors; replacing its meaning by orbit representatives only in the indefinite case is not a signature-based specialization of the same object. Distinguish `O`, `SO`, primitive vectors, and all vectors. A generator of the infinite cyclic part is not the whole automorphism group. At norm zero a split binary lattice has infinitely many content classes unless primitivity is imposed.
 
-**Trace:** F0/F2 → norm fibre → represented action (F7) → orbit equivalence relation and quotient → representative section. Binary reduction cycles and PARI are realizations. The added nonsplit-only `binary_fixed_norm_representatives()` neither supplies the frozen API nor the retained action/quotient/automorph data. Resolve the frozen shell-versus-quotient type through #33; do not hide the difference in a finite-set return value.
+**Trace:** F0/F2 → norm fibre → represented action (F7) → orbit equivalence relation and quotient → representative section. Binary reduction cycles and PARI are realizations. The added nonsplit-only `binary_fixed_norm_representatives()` neither supplies the frozen API nor the retained action/quotient/automorph data. The norm fibre and its orbit quotient have different codomains and therefore require distinct operations (`LEX-11`). Record that correction to the frozen row through #33.
 
-The current issue body distinguishes the cases explicitly: `vectors_of_square(n)` returns all vectors for a split binary form and `n != 0`; `primitive_isotropic_vectors()` returns the primitive vectors on its isotropic lines; `reduction_cycle(bound,start)` returns the cycle automorph as an isometry and the bounded vectors met in one period, or `None`, for an anisotropic binary form. The older frozen table instead assigns orbit representatives to `vectors_of_square(n)`. Resolve this disagreement through #33. The cycle operation also retains its primitive positive starting vector and the action of the returned automorph; a norm-fibre quotient alone does not specify a reduction cycle.
+The current issue body distinguishes the cases explicitly: `vectors_of_square(n)` returns all vectors for a split binary form and `n != 0`; `primitive_isotropic_vectors()` returns the primitive vectors on its isotropic lines; `reduction_cycle(bound,start)` returns the cycle automorph as an isometry and the bounded vectors met in one period, or `None`, for an anisotropic binary form. The older frozen table instead assigns orbit representatives to `vectors_of_square(n)`. Preserve the norm-fibre meaning of `vectors_of_square`; the quotient belongs to the group action. The cycle operation also retains its primitive positive starting vector and the action of the returned automorph; a norm-fibre quotient alone does not specify a reduction cycle.
 
 ### 18. Affine close-vector shells — frozen shell methods with a multiplier bound
 
@@ -207,9 +207,9 @@ The current issue body distinguishes the cases explicitly: `vectors_of_square(n)
 
 **Owner:** inverse image of an ideal-valued metric dual along the integral inclusion into the rational span. For `j: L -> L_Q` and `I=(d)`, form the pullback of `idealDual(ZZ,L,I) -> L_Q` along `j`.
 
-**Contract:** return the formed submodule `D` of `L` with its inclusion `i: D -> L`, its map `k` to the ideal dual, and the commuting equation `j*i = idealDualInclusion*k`. Its vectors satisfy `b(v,L) subset d*ZZ`, as requested in the issue body. The definition by inverse image also applies at `d=0`, where it selects the radical. The expression `L intersect d*L^#` needs `d != 0`; at zero it can lose a nonzero radical. The API's permitted values of `d` must be explicit.
+**Contract:** return the formed submodule `D` of `L` with its inclusion `i: D -> L`, its map `k` to the ideal dual, and the commuting equation `j*i = idealDualInclusion*k`. Its vectors satisfy `b(v,L) subset d*ZZ`, as requested in the issue body. The ideal-dual definition permits every integer `d`; at zero its pairing condition is `b(v,L)=0`, so it selects the radical. The expression `L intersect d*L^#` needs `d != 0`; at zero it can lose a nonzero radical.
 
-**Trace:** F1 → F2 pairing and restriction → F10 ideal dual → inverse image. A concrete formal composite is `Submodule.comap (toRationalSpan ZZ L) (idealDual ZZ L (Ideal.span {d}))`. The theorem `toRationalSpan_mem_idealDual_iff` gives its required membership predicate; `idealDualMap` realizes the ideal dual as a kernel, and `idealDualInclusion` retains its ambient map. This identifies the formal constituents and the membership theorem. Acceptance of that composite as the public operation, its formed-subobject presentation, and the domain of `d` remain to be resolved. The adjacent metric-dual and rank-one-dual theories concern the general dual and rank-one modularity; they do not by themselves register this public operation.
+**Trace:** F1 → F2 pairing and restriction → F10 ideal dual → inverse image. The composite is `Submodule.comap (toRationalSpan ZZ L) (idealDual ZZ L (Ideal.span {d}))`. The theorem `toRationalSpan_mem_idealDual_iff` gives its required membership predicate; `idealDualMap` realizes the ideal dual as a kernel, and `idealDualInclusion` retains its ambient map. Its mathematical placement is the general inverse-image construction applied to the ideal dual. The remaining formal work is to locate the packaged composite or request it at that owner, with its formed inclusion and comparison maps. The adjacent metric-dual and rank-one-dual theories concern the general dual and rank-one modularity.
 
 ## Private API accesses
 
@@ -245,7 +245,7 @@ No implementation is accepted merely because it computes a useful specimen. The 
 
 ## Unresolved formal and contract work
 
-The ownership decisions above cover every issue item. They do not claim that every needed formal declaration is already available. Before implementation resumes, the selected operation must have its exact declaration or approved formal composite, hypotheses, maps, and presentation identified. The remaining upstream mapping/request subjects are:
+The dependency traces above cover every issue item. Before implementing a selected operation, identify its formal definition or formalized composite, hypotheses, maps, and presentation. Search for unresolved declarations at their mathematical owners and request the missing mathematics from `lean-categories`. The remaining subjects are:
 
 - order ideals and normalized content, and generic image-generator fibres;
 - mixed-scalar affine inverse images, their rational kernels, and integral descent/denominator ideals;
@@ -255,22 +255,7 @@ The ownership decisions above cover every issue item. They do not claim that eve
 - orbit-generated modules with finite-generation and integrality hypotheses;
 - norm-fibre actions and quotient representations, signed witness selection, and affine shell families;
 - similarity embeddings with separate denominator factor and form multiplier, and normalized form-change transport;
-- the divisibility sublattice as the inverse-image composite in row 20, with its formed inclusion and the permitted domain of `d`;
+- the divisibility sublattice as the inverse-image composite in row 20, with its formed inclusion and comparison maps;
 - binary reduction cycles with their starting data, period automorph, and bounded vector family.
 
-## Contract decisions required before implementation
-
-The following are proposed resolutions for the frozen-API owner. They preserve the requested mathematical domains where a general construction exists. They require acceptance through [port #33](https://github.com/dzackgarza/sage-indefinite-port/issues/33).
-
-| Contract | Proposed resolution | Remaining decision |
-| --- | --- | --- |
-| `hyperbolic_partner()` | Select a point of the integral quadratic locus in row 4; return `None` for a proved empty locus and report unavailable computation separately. Use the divisibility-one theorem under its evenness hypothesis. | Approve the absence result. The unconditional successful-return promise is contradicted by row 4. |
-| `invariant_overlattice(L)` | Construct the orbit-generated module with its inclusion and action. Return it as a lattice when finitely generated and integral-valued; return `None` when no such lattice exists, and report unavailable computation separately. | Approve this partial existence contract on the original domain. Finite groups or a supplied finite stable containing module give finite-generation cases, with integral-valuedness checked separately. |
-| Affine `integral_members()` | Return the full coset under the scalar-restricted inverse-image module, including its rational kernel. | Approve the module-valued result on the original parameter domain. |
-| `rational_lifts(target,psi)` | For the rank-one contract, require marked generators `e` and `e'` and lifts sending `e` to `e'`. Return the kernel torsor with nonlinear evaluation and a chosen base point. Its integral members use the integral kernel subgroup. | Approve the marking and torsor result in place of an affine-linear matrix family. |
-| Binary representations | Adopt the issue body's separate split norm fibre, primitive isotropic-vector set, and anisotropic reduction-cycle operations from row 17. | Reconcile the frozen orbit-quotient row with that body through #33. |
-| `divisible_sublattice(d)` | Use the ideal-dual inverse image in row 20 for integer `d`, including the radical at zero. | Approve the domain and the restriction `d != 0` on the scaled-dual formula. |
-
-The shell/sphere names, signed interval, multiplier bound and bounded-search failure result follow the shell amendment. The similarity `.scale()` follows the denominator-factor amendment. These settled conventions do not require a new choice; their formal mappings and implementations remain separate obligations.
-
-For these subjects, the audit supplies the requested mathematical object and dependency path. Formal availability is unresolved where stated; the inspected declarations are partial capabilities, not a proof of a whole-repository absence. These questions belong to lean-categories and the frozen-API owner, not to new preamble helper classes. Research runtime and correctness acceptance are separate subsequent obligations; this audit performed neither.
+Formal availability remains unresolved where stated; the inspected declarations give partial coverage. Research runtime and correctness acceptance are separate subsequent obligations.

@@ -157,9 +157,12 @@ The live issue body additionally requests `divisible_sublattice(d)` and
 separates split binary norm fibres, primitive isotropic vectors, and
 anisotropic reduction cycles. The frozen binary row still promises orbit
 representatives from `vectors_of_square(n)`. Reconcile those result types
-through #33. The audit's row 20 maps the divisibility sublattice to the
-inverse image of `idealDual`, using `toRationalSpan_mem_idealDual_iff`;
-its domain at `d=0` and its public formed inclusion remain to be fixed.
+through #33: `vectors_of_square(n)` denotes the norm fibre, while the
+orbit quotient belongs to its group action (`LEX-11`). The audit's row 20
+maps the divisibility sublattice to the inverse image of `idealDual`, using
+`toRationalSpan_mem_idealDual_iff`. That pairing condition gives the radical
+at `d=0`; the formalized composite and its public formed inclusion remain
+to be supplied at their mathematical owners.
 The signed shell/sphere amendment already determines the bounds, names
 and `None` result for an exhausted multiplier range.
 
