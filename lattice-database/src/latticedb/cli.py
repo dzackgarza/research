@@ -2,6 +2,7 @@
 
 import json
 import sys
+import time
 from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
@@ -276,9 +277,16 @@ def certify(
             help="Tag of a card to certify; repeat for each one. All cards when absent."
         ),
     ] = (),
+    minutes: Annotated[
+        int,
+        Parameter(
+            help="Minutes until the job's timeout ends this run; a computation still running then stays in `exceeded.yaml`."
+        ),
+    ],
     root: Root = Path(),
 ) -> None:
     """Compute uncertified card values, replace disagreements, and certify the computed results."""
+    deadline = time.time() + 60 * minutes
     loaded = corpus.load(root)
     held = certificates.load(root)
     selected = set(tag)
@@ -308,7 +316,7 @@ def certify(
             hash=certificate_hash, by=LATTICEDB
         )
         certificates.save(root, held)
-    genus.certify(root, corpus.load(root), held, tag)
+    genus.certify(root, corpus.load(root), held, tag, deadline)
 
 
 @app.command

@@ -96,7 +96,9 @@ certificate hash that commits to the computation name, the Gram tensor and that 
 `certificates.yaml` stores the same hash with computation provenance, never a second copy of the
 result. A matching completed certificate is permanent: implementation/version changes do not make
 it stale. Changing the Gram tensor or result breaks the hash and requires a new computation.
-A timeout or unfinished computation has no certificate.
+A timeout or unfinished computation has no certificate. A computation that ran for a whole
+certification job without finishing is logged in `exceeded.yaml` and is never requested again,
+so the nightly job does not spend each run on the same computation.
 
 The scheduled certification job runs in CI, never during seeding, authoring, enrichment or site
 rendering. A test computes on one small specimen, such as $A_2$ (record `0012`); the full

@@ -89,6 +89,11 @@ VALUES = {
 }
 
 
+def _start(tag: str, fields: list[str]) -> None:
+    """Announce the computation of `fields`, so a run that ends during it can log it."""
+    print(json.dumps({"tag": tag, "started": fields}), flush=True)
+
+
 def _emit(tag: str, values: dict[str, JsonValue]) -> None:
     """Write one completed computation, so a run that ends early keeps every finished value."""
     print(json.dumps({"tag": tag, "by": "research preamble", **values}), flush=True)
@@ -102,6 +107,7 @@ def main() -> None:
         lattice = Lattices(ring)(request["gram"])
         group_fields = GROUP_FIELDS & set(request["fields"])
         if group_fields:
+            _start(request["tag"], sorted(group_fields))
             order, generators = _orthogonal_group_data(lattice)
             group_data = {
                 "automorphism_group_order": order,
@@ -111,6 +117,7 @@ def main() -> None:
         for field in request["fields"]:
             if field in group_fields:
                 continue
+            _start(request["tag"], [field])
             _emit(request["tag"], {field: VALUES[field](lattice)})
 
 

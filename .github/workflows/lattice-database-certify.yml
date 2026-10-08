@@ -76,21 +76,25 @@ jobs:
         env:
           LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
         run: |
-          args=()
+          # The job allows 350 minutes; the run gets 330 of them, and the rest commits its results.
+          minutes=330
+          args=(--minutes "$minutes")
           if [[ -n "$LATTICEDB_TAG" ]]; then
             args+=(--tag "$LATTICEDB_TAG")
           fi
-          timeout 330m docker exec -i \
+          # The timeout runs inside the container, so it ends the certify process itself
+          # before the commit step reads the cards and `exceeded.yaml`.
+          docker exec -i \
             --env "PYTHONPATH=$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/lattice-database/src" \
             --workdir "$GITHUB_WORKSPACE/lattice-database" \
-            sage-env /sage/.venv/bin/python -m latticedb certify "${args[@]}"
+            sage-env timeout "${minutes}m" /sage/.venv/bin/python -m latticedb certify "${args[@]}"
       - name: Commit completed computations to main
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         working-directory: ${{ github.workspace }}
         shell: bash --noprofile --norc -e -o pipefail {0}
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git add lattice-database/lattices lattice-database/certificates.yaml
+          git add lattice-database/lattices lattice-database/certificates.yaml lattice-database/exceeded.yaml
           if git diff --cached --quiet; then
             echo "No newly completed computations."
             exit 0

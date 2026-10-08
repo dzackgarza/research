@@ -276,6 +276,8 @@ The value itself is stored only on the lattice card. The card's `certifications`
 
 `latticedb certify` requests a preamble computation exactly when the card does not already cite the matching completed certificate. It writes the returned result to the card whether or not an authored value was already present, then writes the hash citation to `certifications` and writes only the hash and computation provenance to `certificates.yaml`.
 
+`exceeded.yaml` is the permanent log of computations that a certification job ended before they finished. An entry maps the computation name to a hash of that name and the Gram tensor, and to the seconds the computation had run when the job's timeout ended it. Certification writes the entry when the computation starts and deletes it when the computation finishes, so the entries that remain after a job are the computations its timeout ended. A computation that ran for at least five hours does not fit in one job, and certification never requests it again. A computation that ran for less started late in its job; the next job computes it first. A changed Gram tensor changes the hash, so the entry no longer applies. After a faster implementation lands, delete the entry by hand.
+
 Run ordinary enrichment for selected cards with `just enrich --tag <tag>`. Certification is run by the nightly CI certification workflow; a selected card can be certified explicitly with `just certify --tag <tag>` when debugging that workflow.
 
 ## Morphisms

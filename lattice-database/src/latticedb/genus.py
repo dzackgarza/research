@@ -12,6 +12,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from collections.abc import Iterator
 from pathlib import Path
 from typing import TypedDict
@@ -19,7 +20,7 @@ from typing import TypedDict
 import frontmatter
 from pydantic import BaseModel
 
-from latticedb import certificates, corpus, records
+from latticedb import certificates, corpus, exceeded, records
 from latticedb.certificates import Certificate, Certificates
 from latticedb.model import DefiniteData, HyperbolicData, IntegralData, Lattice, Yaml
 from latticedb.relations import hyperbolic_index_bounds
@@ -125,9 +126,17 @@ def name(tag: str, field: str) -> str:
 
 
 def requests(
-    loaded: corpus.Corpus, held: Certificates, tags: tuple[str, ...]
+    loaded: corpus.Corpus,
+    held: Certificates,
+    log: exceeded.Interruptions,
+    tags: tuple[str, ...],
 ) -> list[Request]:
-    """For each nondegenerate record, the uncertified applicable preamble computations."""
+    """For each nondegenerate record, the uncertified applicable preamble computations.
+
+    A computation that ran for a whole job without finishing is not requested. One
+    that a job ended after a shorter time is requested first, so it runs for a whole job.
+    """
+    resumed: list[Request] = []
     chosen: list[Request] = []
     bounds = hyperbolic_index_bounds(loaded.entries)
     for entry in loaded.entries:
@@ -148,6 +157,8 @@ def requests(
             block = metadata.get(block_name)
             stored_value = block.get(field) if isinstance(block, dict) else None
             computation = name(lattice.tag, field)
+            if exceeded.is_exceeded(log, computation, lattice):
+                continue
             expected_hash = certificates.certification_hash(
                 computation, lattice, certified_value(field, stored_value, lattice)
             )
@@ -156,11 +167,20 @@ def requests(
             ):
                 fields.append(field)
         if fields:
+            interrupted = [
+                field
+                for field in fields
+                if exceeded.seconds_run(log, name(lattice.tag, field), lattice)
+                is not None
+            ]
+            fields = interrupted + [
+                field for field in fields if field not in interrupted
+            ]
             gram = [
                 [int(value) if value.denominator == 1 else str(value) for value in row]
                 for row in lattice.gram_tensor
             ]
-            chosen.append(
+            (resumed if interrupted else chosen).append(
                 {
                     "tag": lattice.tag,
                     "gram": gram,
@@ -168,7 +188,7 @@ def requests(
                     "fields": fields,
                 }
             )
-    return chosen
+    return resumed + chosen
 
 
 def computed(chosen: list[Request]) -> Iterator[dict[str, Yaml]]:
@@ -303,11 +323,33 @@ def certify(
     loaded: corpus.Corpus,
     held: Certificates,
     tags: tuple[str, ...],
+    deadline: float,
 ) -> None:
-    """Compute every uncertified value, replace its card scope, and certify the result."""
+    """Compute every uncertified value, replace its card scope, and certify the result.
+
+    `deadline` is the time, in seconds since the epoch, at which the job's timeout
+    ends this run. A computation in progress is logged in `exceeded.yaml` until it
+    finishes, with the seconds it will have run if the timeout ends it.
+    """
     by_tag = {entry.lattice.tag: entry for entry in loaded.entries}
-    for values in computed(requests(loaded, held, tags)):
+    log = exceeded.load(root)
+    for values in computed(requests(loaded, held, log, tags)):
         entry = by_tag[str(values["tag"])]
+        match values:
+            case {"started": list() as started}:
+                seconds = int(deadline - time.time())
+                for field in started:
+                    computation = name(entry.lattice.tag, str(field))
+                    log[computation] = exceeded.Interruption(
+                        hash=exceeded.input_hash(computation, entry.lattice),
+                        seconds=seconds,
+                    )
+                exceeded.save(root, log)
+                continue
+        for field in BLOCKS:
+            if field in values:
+                log.pop(name(entry.lattice.tag, field), None)
+        exceeded.save(root, log)
         store(entry.path, values)
         stored = corpus.front_matter(frontmatter.load(str(entry.path)))
         stored_lattice = Lattice.model_validate(stored)
