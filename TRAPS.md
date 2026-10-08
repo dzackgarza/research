@@ -483,6 +483,25 @@ Route chosen: `Genus.anisotropic_primes` in `src/dzack_research/preamble/categor
 In rank 1 and 2 the index set is the condition set of primes at which some class is not represented from `v_p(r)`. lattice-db stores both fields at the primes dividing `2 det L`. Its schema states the rule at the other primes.
 Depends on this: `integral.anisotropic_primes` and `integral.local_representations` in lattice-db.
 
+### Isotropy through the Witt index starts Julia; PARI's `qfsolve` decides it in hundredths of a second
+
+Over `QQ` the preamble's `witt_index()` calls OSCAR's `rational_witt_index` through `sage-julia-bridge`.
+A nonzero rational isotropic vector exists exactly when the Witt index is positive, so `is_isotropic()` routed through `witt_index()` paid the Julia start-up on its first call.
+In a fresh process after the session import, `(Lattices(ZZ)("U") + Lattices(ZZ)("U")).represents(0)` on that route took 48.59 s and 45.19 s in two runs, and a later isotropy call in the same process took 2.58 s.
+PARI's `qfsolve`, which the preamble already calls for an isotropic vector (`_isotropic_vector_witness` in `lattice_engines.py`), returns a zero or an obstruction and decides the same question (Serre, *A Course in Arithmetic*, Ch. IV, 3.2, Thm. 8).
+`is_isotropic()` on that route, one run each, 2026-10-09:
+
+| Gram matrix | rank | answer | time |
+| --- | --- | --- | --- |
+| `diag(1, -1)` | 2 | True | 0.063 s |
+| `diag(1, 1, -3)` | 3 | False | 0.019 s |
+| `diag(1, 1, 1, 1, -7)` | 5 | True | 0.032 s |
+| `U + U` | 4 | True | 0.02 s, with `U + U + U` 0.02 s |
+
+Reproduce with `direnv exec /home/dzack/research env PYTHONPATH=<worktree>/src sage -python probe.py`, where the probe times `is_isotropic()` on the specimens above in a fresh process.
+Route chosen: `is_isotropic` in `src/dzack_research/preamble/categories/lattices.py` decides isotropy over `ZZ` and `QQ` from `_isotropic_vector_witness`; over number fields it keeps `witt_index()`.
+Depends on this: `is_isotropic`, `isotropic_vector`, `represents(0)` and `representation_vector(0)` of a lattice over `ZZ` or `QQ`.
+
 ## mypy
 
 ### A star import that rebinds a name is rejected, and the first binding wins

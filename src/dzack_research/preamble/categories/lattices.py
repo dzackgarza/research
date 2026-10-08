@@ -195,7 +195,7 @@ from dzack_research.preamble.categories.vector_orbits import (
     _gluing_route_discriminant_classes,
     _stable_complement_root_reflections,
 )
-from dzack_research.preamble.logic import Predicate, negation
+from dzack_research.preamble.logic import AtomicProposition, Predicate, negation
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -1033,6 +1033,64 @@ def _square_class_family(least):
     integers = _own_ring(SageZZ)
     classes = finite_ordered_set(tuple(_owned_engine_element(integers, representative) for representative in least))
     return indexed_family(classes, lambda representative: _owned_engine_element(integers, SageZZ(least[_engine_element(integers, representative)])))
+
+
+def _locally_represented(local_representations, value) -> bool:
+    r"""Private computation: whether every ``L tensor ZZ_p`` represents the nonzero integer ``value``.
+
+    ``local_representations`` is :meth:`_Genus.local_representations`: it is
+    indexed by the primes ``p`` at which ``L tensor ZZ_p`` misses some
+    nonzero ``p``-adic integer, so every other ``L tensor ZZ_p`` represents
+    ``value``.  At an index ``p`` its value is indexed by the represented
+    square classes of ``QQ_p^x``, each valued in the least valuation of a
+    represented element of the class; the represented elements of a class
+    are those of that valuation and above, in steps of 2, so ``value`` is
+    represented exactly when its class ``r`` (``value / r`` a square in
+    ``QQ_p``) is an index and ``v_p(value)`` is at least the value at ``r``.
+    """
+    from sage.rings.rational_field import QQ as SageQQ
+
+    integers = _own_ring(SageZZ)
+    numerator = SageQQ(_engine_element(integers, value))
+
+    def represented_at(prime) -> bool:
+        classes = local_representations.value(prime)
+        engine_prime = _engine_element(integers, prime)
+        return any(
+            (numerator / _engine_element(integers, representative)).is_padic_square(engine_prime) and value.valuation(prime) >= classes.value(representative)
+            for representative in classes.index_set()
+        )
+
+    return all(represented_at(prime) for prime in local_representations.index_set())
+
+
+def _indefinite_binary_representation(lattice, value):
+    r"""Private computation: a vector ``x`` of the indefinite ``ZZ``-lattice ``L`` of rank 2 with ``b(x, x) = value != 0``, or ``None``.
+
+    With ``L tensor QQ`` anisotropic, PARI's ``qfbsolve`` lists a
+    representative of each solution class
+    (:func:`lattice_engines._binary_special_orthogonal_representatives`).
+    With ``L tensor QQ`` isotropic, let ``e`` be a primitive isotropic vector
+    and ``f`` its Bezout partner, ``b(e, f) = d = div(e)``.  The kernel of
+    ``b(e, -)`` on ``L`` is ``QQ e cap L = ZZ e``, so ``b(e, -)`` maps ``L``
+    onto ``d ZZ`` and ``{e, f}`` is a basis of ``L``.  Then
+    ``b(x e + y f, x e + y f) = y (2 d x + c y)`` with ``c = b(f, f)``, so a
+    solution has ``y`` a divisor of ``value`` and ``2 d x = value / y - c y``,
+    a finite search over the divisors of ``value``.
+    """
+    isotropic = lattice_engines._isotropic_vector_witness(lattice)
+    if isotropic is None:
+        found = lattice_engines._binary_special_orthogonal_representatives(lattice, value)
+        return found[0] if found else None
+    partner = isotropic.bezout_partner()
+    divisibility = isotropic.div()
+    partner_square = partner.q()
+    for positive in value.divisors():
+        for second in (positive, -positive):
+            first, remainder = (value // second - partner_square * second).quo_rem(2 * divisibility)
+            if remainder == value.parent().zero():
+                return lattice.scalar_multiple(first, isotropic) + lattice.scalar_multiple(second, partner)
+    return None
 
 
 def _isometry_class_representatives(grams, genus_of):
@@ -2214,14 +2272,23 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             Here $K=\operatorname{Frac}(R)$. A nonzero radical already gives
             an isotropic vector; in the nondegenerate case isotropy is
-            equivalent to positive Witt index.
+            equivalent to positive Witt index.  Over ``ZZ`` and ``QQ`` the
+            question is whether ``b(x, x) = 0`` has a nonzero rational
+            solution, which PARI's ``qfsolve`` decides with a witness or an
+            obstruction (Hasse--Minkowski, Serre, *A Course in Arithmetic*,
+            Ch. IV, 3.2, Thm. 8); ``TRAPS.md`` records why this route is not
+            the Witt index.
             """
+            from sage.rings.rational_field import QQ as SageQQ
+
             rank = self.module_rank()
             if not rank.is_finite():
                 raise ValueError(f"isotropy is defined here for finite-rank lattices, not {self!r}")
             match self.is_nondegenerate():
                 case False:
                     return int(rank) > 0
+                case True if _engine_ring(self.base_ring()) is SageZZ or _engine_ring(self.base_ring()) is SageQQ:
+                    return lattice_engines._isotropic_vector_witness(self) is not None
                 case True:
                     return bool(self.witt_index() > 0)
 
@@ -2251,6 +2318,141 @@ class Lattices(OwnedCategoryOverBaseRing):
             if vector is None:
                 raise ValueError("the lattice has no nonzero isotropic vector")
             return vector
+
+        def represents(self, value) -> bool | Predicate:
+            r"""Return whether some nonzero ``x`` in this lattice has ``b(x, x) = value``.
+
+            A form represents ``a`` when ``b(x, x) = a`` for some ``x != 0``
+            (Serre, *A Course in Arithmetic*, Ch. IV, 1.6): the hypersurface
+            ``b(x, x) = a`` has a nonzero point in ``L``.  The elementwise
+            ``represents`` of a vector is the statement ``b(v, v) = a`` about
+            that one vector.  The lattice is nondegenerate of finite rank over
+            ``QQ`` or ``ZZ``.
+
+            - ``a = 0``: isotropy, :meth:`is_isotropic`.  Over ``ZZ`` a
+              rational isotropic vector clears to an integral one.
+            - Over ``QQ``, ``a != 0``: ``L`` represents ``a`` exactly when
+              ``L perp <-a>`` represents 0 (Serre, Ch. IV, 1.6, Cor. 1 of
+              Prop. 3'), which PARI decides (Hasse--Minkowski, Ch. IV, 3.2,
+              Thm. 8).
+            - Over ``ZZ``, definite: every solution lies in the bounded region
+              of Cassels, *Rational Quadratic Forms*, Ch. 9, §1, (1.2)--(1.3),
+              which :meth:`vectors_of_square` enumerates.
+            - Over ``ZZ``, indefinite of rank 2: :meth:`representation_vector`
+              finds every solution class.
+            - Over ``ZZ``, indefinite of rank at least 3: every ``L tensor
+              ZZ_p`` must represent ``a``, read from the genus's
+              :meth:`~_Genus.local_representations`; ``L tensor RR`` does,
+              being indefinite.  In rank at least 4 this suffices (Cassels,
+              Ch. 9, Thm. 1.5).  In rank 3 it puts ``a`` in some lattice of the
+              genus (Cassels, Ch. 9, Thm. 1.3).  A genus of one improper
+              spinor genus is then one isometry class, because an indefinite
+              spinor genus of rank at least 3 is one proper class (Cassels,
+              Ch. 11, Thm. 1.4), so ``L`` represents ``a``.  Otherwise ``a``
+              can be a spinor exception, and the answer is the proposition.
+
+            EXAMPLES::
+
+                sage: C = Lattices(ZZ)
+                sage: C("E8").represents(-2) and not C("E8").represents(-1)
+                True
+                sage: C([[-1, 0, 0], [0, -1, 0], [0, 0, -1]]).represents(-7)
+                False
+                sage: (C("U") + C("U")).represents(0)
+                True
+                sage: C("U").represents(2) and not C("U").represents(1)
+                True
+                sage: C([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]]).represents(1)
+                False
+            """
+            from sage.rings.rational_field import QQ as SageQQ
+
+            ring = self.base_ring()
+            value = ring(value)
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"representation of {value} is decided here for a nondegenerate lattice of finite rank, and {self!r} is not one"
+            )
+            rank = int(self.module_rank())
+            match ring:
+                case _ if value == ring.zero():
+                    return self.is_isotropic()
+                case _ if _engine_ring(ring) is SageQQ:
+                    return lattice_engines._rational_representation_witness(self, value) is not None
+                case _ if _engine_ring(ring) is not SageZZ:
+                    assert False, f"representation of {value} by {self!r} is decided here over ZZ and QQ, not over {ring}"
+                case _ if self.is_definite():
+                    return self.vectors_of_square(value).cardinality() != 0
+                case _ if rank == 2:
+                    return _indefinite_binary_representation(self, value) is not None
+                case _ if not _locally_represented(self.genus().local_representations(), value):
+                    return False
+                case _ if rank >= 4 or self.spinor_genus_count() == ring.one():
+                    return True
+                case _:
+                    return AtomicProposition("represents", self, value)
+
+        def representation_vector(self, value) -> "Lattices.ElementMethods":
+            r"""Return a nonzero ``x`` in this lattice with ``b(x, x) = value``; raise ``ValueError`` if none exists.
+
+            The routing is that of :meth:`represents`.
+
+            - ``a = 0``: :meth:`isotropic_vector`, primitive over ``ZZ``.
+            - Over ``QQ``: the zero of ``L perp <-a>`` that decides
+              :meth:`represents`, rescaled.
+            - Over ``ZZ``, definite: a vector of :meth:`vectors_of_square`.
+            - Over ``ZZ``, indefinite of rank 2 with ``L tensor QQ``
+              anisotropic: PARI's ``qfbsolve`` representatives.  With ``L
+              tensor QQ`` isotropic, a primitive isotropic ``e`` and an
+              ``f`` with ``b(e, f) = d = div(e)`` form a basis of ``L``,
+              because ``b(e, -)`` has kernel ``QQ e cap L = ZZ e``; so
+              ``b(x e + y f, x e + y f) = y (2 d x + c y)`` with ``c = b(f, f)``,
+              and every solution has ``y | a`` and ``2 d x = a / y - c y``.
+            - Over ``ZZ``, indefinite of rank at least 3 with ``a != 0``: no
+              cited construction of an integral point is available; the
+              ``TODO.md`` node ``higher-rank-integral-lattice-representation``
+              owns it.
+
+            EXAMPLES::
+
+                sage: C = Lattices(ZZ)
+                sage: L = C("U") + C("U")
+                sage: x = L.representation_vector(0)
+                sage: x != L.zero() and x.q() == ZZ(0)
+                True
+                sage: C([[1, 0], [0, -2]]).representation_vector(-1).q() == ZZ(-1)
+                True
+                sage: C([[0, 2], [2, 2]]).representation_vector(6).q() == ZZ(6)
+                True
+            """
+            from sage.rings.rational_field import QQ as SageQQ
+
+            ring = self.base_ring()
+            value = ring(value)
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"a representation of {value} is constructed here in a nondegenerate lattice of finite rank, and {self!r} is not one"
+            )
+            rank = int(self.module_rank())
+            match ring:
+                case _ if value == ring.zero():
+                    return self.isotropic_vector()
+                case _ if _engine_ring(ring) is SageQQ:
+                    found = lattice_engines._rational_representation_witness(self, value)
+                case _ if _engine_ring(ring) is not SageZZ:
+                    assert False, f"a representation of {value} in {self!r} is constructed here over ZZ and QQ, not over {ring}"
+                case _ if self.is_definite():
+                    found = next(iter(self.vectors_of_square(value)), None)
+                case _ if rank == 2:
+                    found = _indefinite_binary_representation(self, value)
+                case _ if self.represents(value) is False:
+                    found = None
+                case _:
+                    assert False, (
+                        f"{self!r} is indefinite of rank {rank}, and no cited construction of an integral vector of square {value} is "
+                        "available; the TODO.md node higher-rank-integral-lattice-representation owns it"
+                    )
+            if found is None:
+                raise ValueError(f"{self!r} does not represent {value}")
+            return found
 
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
@@ -4985,8 +5187,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert _engine_ring(ring) is SageZZ, (
                 f"an integer Bezout partner requires a lattice over ZZ, not {ring}"
             )
-            pairing = self.to_covector()
-            regular = pairing.codomain()
+            regular = ring.regular_module()
+            pairing = lattice.module_category().Mor(lattice, regular)(
+                lambda label: regular(lattice.b(self, lattice.module_generator(label)))
+            )
             generator = regular.scalar_multiple(self.div(), regular.module_generators()[0])
             if not lattice.module_rank().is_finite():
                 support = lattice.subobject_on(tuple(

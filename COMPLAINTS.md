@@ -436,30 +436,73 @@ Gaussian heuristic.
 ### Indefinite integral lattices of rank at least three have no exact represented-value witness backend
 
 For an integral lattice `L` and integer `n`, `representation_vector(n)` must
-return an integral vector `v in L` with `q(v)=n`, or establish that none
-exists. Rational solvability of `q(v)=n` is a different problem. The current
-tree has exact maintained routes for the two lower-complexity regimes:
-definite lattices enumerate exact vectors through PARI `qfminim`, and Sage's
-`BinaryQF.solve_integer` delegates binary integral equations to PARI
-`qfbsolve`. Installed Sage/Hecke/OSCAR source was searched for the higher-rank
-integral operation. Hecke supplies rational quadratic-space isotropy,
-isometry-class representation and hyperbolic decomposition, but no complete
-integral lattice witness for a prescribed norm; OSCAR exposes the same
-quadratic-space layer here. Thus `QuadraticForm.solve`/Hecke `represents`
-cannot be used to justify the requested integral result.
+return an integral vector `v in L` with `b(v, v) = n`, or establish that none
+exists. Rational solvability of `b(v, v) = n` is a different problem.
+`Lattices(ZZ)` answers `represents(n)` and `representation_vector(n)` for
+`n = 0` (PARI `qfsolve`, cleared to a primitive integral vector), for definite
+`L` (`vectors_of_square`, inside the region of Cassels, *Rational Quadratic
+Forms*, Ch. 9, §1, (1.2)--(1.3)) and for indefinite `L` of rank 2 (PARI
+`qfbsolve` when `L tensor QQ` is anisotropic, a divisor search in the basis of
+a primitive isotropic vector and its Bezout partner otherwise). For indefinite
+`L` of rank at least 3 and `n != 0`, `represents(n)` reads the local
+conditions from `Genus.local_representations`; it answers `True` in rank at
+least 4 (Cassels, Ch. 9, Thm. 1.5) and in rank 3 when the genus has one spinor
+genus (Cassels, Ch. 9, Thm. 1.3 and Ch. 11, Thm. 1.4).
 
-**Dependency path:** exact local integral representability -> strong
-approximation/Kneser construction in indefinite rank at least four; in rank
-three, local conditions plus the spinor-exceptional square classes -> exact
-integral witness or exact nonrepresentation.
-**Consumers:** `Lattices(ZZ).representation_vector(n)` and `represents(n)`;
-the distinguishing specimens are `U+U` at `n=0` and
-`-(x^2+y^2+z^2)` at `n=-7`.
+Two operations remain without a route. `representation_vector(n)` has no
+integral witness in that regime and asserts. `represents(n)` in rank 3, when
+the genus has more than one spinor genus and the local conditions hold,
+returns the proposition `represents(L, n)`, since `n` can be a spinor
+exception. Installed Sage, Hecke and OSCAR source supplies rational
+quadratic-space isotropy, isometry-class representation and hyperbolic
+decomposition, but no integral witness for a prescribed norm, so
+`QuadraticForm.solve` and Hecke's `represents` cannot supply it.
+
+The sources in the Zotero library (searched 2026-10-09) state strong
+approximation as an existence theorem with no bound and no construction:
+O'Meara, *Introduction to Quadratic Forms*, 104:3 (vectors of a prescribed
+norm, dimension at least 4), 104:4 (rotations, dimension at least 3) and
+104:5 (class equals proper spinor genus for indefinite dimension at least 3);
+Kneser--Scharlau, *Quadratische Formen*, (22.1), (24.1), (25.2) and (25.3).
+Cassels, Ch. 9, Lemma 6.1, puts the integral representations of `n != 0` in
+finitely many orbits of the integral proper orthogonal group; its proof
+completes a primitive representation `b` to a basis of `ZZ^n` in which the
+form becomes one of a finite set of forms `h`, so a witness is the first
+column of an integral isometry from `h` to the form of `L`. No installed
+engine constructs an integral isometry between indefinite lattices (Hecke
+0.39.21 `is_isometric_with_isometry` has no indefinite method). Grunewald--Segal,
+"On the integer solutions of quadratic equations" (J. reine angew. Math. 569,
+2004), Thm. 0.1 and §2, Step 3, Case 2, decide representability in every rank
+with a finite set containing a representative of each such orbit. That set is
+constructed in §5 of Grunewald--Segal, "How to solve a quadratic equation in
+integers" (Math. Proc. Cambridge Philos. Soc. 89, 1981, 1--5), which is not in
+the library. Generators of the integral orthogonal group (Grunewald--Segal,
+Ann. Math. 112, 1980, Algorithm B, in the library; Siegel, "Zur Theorie der
+quadratischen Formen", Nachr. Akad. Wiss. Göttingen 1972, Satz 9, not in the
+library) are needed only for congruence conditions, which `represents` does
+not impose. The spinor-exception papers of Schulze-Pillot and of
+Earnest--Hsia, and a theorem bounding a smallest integral solution of
+`b(x, x) = n`, are not in the library. Kneser, "Klassenzahlen indefiniter
+quadratischer Formen in drei oder mehr Veränderlichen" (1956), is in the
+library and was not read for this.
+
+**Dependency path:** local integral representability (delivered) -> a finite
+set of representatives of the integral proper orthogonal orbits on the
+vectors of norm `n` (Cassels, Ch. 9, Lemma 6.1; constructed in
+Grunewald--Segal 1981, §5) -> exact integral witness or exact
+nonrepresentation in every indefinite rank at least 3, the rank-3 spinor
+exceptions included.
+**Consumers:** `Lattices(ZZ).representation_vector(n)` and, in rank 3,
+`represents(n)`. The distinguishing specimens are `U + A_1 + A_1` at
+`n = 2`, `<1> + <1> + <-1> + <-1>` at `n = 5` and `U + <1>` at `n = 3`: each
+`represents` call answers `True` and each `representation_vector` call
+asserts.
 **Coverage boundary:** Sage's quadratic-form and binary-form sources, the
-installed Hecke/Oscar quadratic-form sources, and the repository's current
-lattice engine capability map were inspected. No complete maintained exact
-rank-at-least-three integral witness route was found. The owner ruled on
-2026-10-09 that the preamble owns the algorithm. Repair is the
+installed Hecke/Oscar quadratic-form sources, the repository's lattice engine
+capability map and the four books above were inspected. No indefinite ternary
+genus with more than one spinor genus was found among the specimens tried
+(`A_2 + <-18>` and `-A_2 + <18>` each have one). The owner ruled on 2026-10-09
+that the preamble owns the algorithm. Repair is the
 `higher-rank-integral-lattice-representation` node in [TODO.md](TODO.md).
 
 ### Genera of integral lattices are formalized without finiteness, parity or classification

@@ -11,6 +11,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
     _engine_ring,
     _owned_engine_element,
 )
@@ -201,6 +202,41 @@ def _binary_primitive_isotropic_vectors(lattice):
     return tuple(points)
 
 
+||||||| c16c58338d
+def _rational_representation_witness(lattice, value):
+    r"""Return a vector ``x`` of the nondegenerate ``QQ``-lattice with ``b(x, x) = value``, or ``None``.
+
+    ``value`` is a nonzero element of the base ring, so ``b perp <-value>`` is
+    nondegenerate and ``qfsolve`` returns either PARI's integer obstruction
+    or one isotropic vector, never a matrix spanning a radical.  The space represents
+    ``a != 0`` exactly when ``b perp <-a>`` represents 0 (Serre, *A Course
+    in Arithmetic*, Ch. IV, 1.6, Cor. 1 of Prop. 3'), and PARI's
+    ``qfsolve`` decides that isotropy (Hasse--Minkowski, Ch. IV, 3.2,
+    Thm. 8).  A zero ``(x, z)`` with ``z != 0`` gives ``b(x/z, x/z) = a``.
+    A zero with ``z = 0`` is a nonzero isotropic ``x`` of ``L``, and then
+    every value is represented (Ch. IV, 1.3, Cor. of Prop. 3): with Gram
+    matrix ``G``, ``y = G x`` has ``b(x, y) = (G x) . (G x) != 0``, and
+    ``y + t x`` with ``t = (a - b(y, y)) / (2 b(x, y))`` has square ``a``.
+    """
+    assert _engine_ring(lattice.base_ring()) is SageQQ, (
+        f"the rational representation witness is computed over QQ, not {lattice.base_ring()}"
+    )
+    gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ)
+    rank = gram.nrows()
+    augmented = gram.block_sum(engine_matrix(SageQQ, [[-SageQQ(_engine_element(lattice.base_ring(), value))]]))
+    solution = qfsolve(augmented)
+    if solution in SageZZ:
+        return None
+    last = solution[rank]
+    isotropic = solution[:rank]
+    if last:
+        return _raise_rational_lattice_vector(lattice, isotropic / last)
+    partner = gram * isotropic
+    pairing = isotropic * gram * partner
+    shift = (SageQQ(_engine_element(lattice.base_ring(), value)) - partner * gram * partner) / (2 * pairing)
+    return _raise_rational_lattice_vector(lattice, partner + shift * isotropic)
+
+
 def _binary_special_orthogonal_representatives(lattice, square):
     r"""Raise PARI representatives for a nonsplit indefinite binary form.
 
@@ -220,7 +256,7 @@ def _binary_special_orthogonal_representatives(lattice, square):
         return (lattice.zero(),)
     labels = tuple(lattice.module_generating_set())
     return tuple(
-        lattice.linear_combination({label: ring(coordinate) for label, coordinate in zip(labels, solution, strict=True)})
+        lattice.linear_combination({label: _owned_engine_element(ring, SageZZ(coordinate)) for label, coordinate in zip(labels, solution, strict=True)})
         for solution in form.solve_integer(SageZZ(int(square)), _flag=3)
     )
 
