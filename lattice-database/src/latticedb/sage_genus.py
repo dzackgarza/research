@@ -48,11 +48,30 @@ def _matrix_rows(morphism) -> list[list[int]]:
     ]
 
 
-def _orthogonal_group_data(lattice) -> tuple[int, list[list[list[int]]]]:
+def _orthogonal_group_data(lattice) -> dict[str, JsonValue]:
     """Serialize the preamble-owned ``O(L)`` and its selected generators."""
     group = lattice.orthogonal_group().select_group_resolution()
-    generators = [_matrix_rows(generator) for generator in group.group_generators()]
-    return int(group.cardinality()), generators
+    return {
+        "automorphism_group_order": int(group.cardinality()),
+        "automorphism_group_generator_morphisms": [
+            _matrix_rows(generator) for generator in group.group_generators()
+        ],
+    }
+
+
+def _root_span_data(lattice) -> dict[str, JsonValue]:
+    """Serialize roots of ``L`` that generate ``L``, with their norms ``b(r, r)``.
+
+    ``root_module_generating_set`` returns only when the roots generate ``L``,
+    which proves ``L = ZPhi(L)``; otherwise it runs until the job ends.
+    """
+    labels = tuple(lattice.module_generating_set())
+    framing = lattice.framing_morphism()
+    roots = tuple(lattice.root_module_generating_set())
+    return {
+        "roots": [[int(framing.lift(root)(label)) for label in labels] for root in roots],
+        "norms": [int(root.q()) for root in roots],
+    }
 
 
 def _reflective(lattice) -> bool | None:
@@ -83,7 +102,14 @@ def _modular_scale(lattice) -> int | bool:
     return False if scale is None else int(scale)
 
 
-GROUP_FIELDS = {"automorphism_group_order", "automorphism_group_generator_morphisms"}
+JOINT = (
+    (
+        frozenset({"automorphism_group_order", "automorphism_group_generator_morphisms"}),
+        _orthogonal_group_data,
+    ),
+    (frozenset({"roots", "norms"}), _root_span_data),
+)
+"""Fields that one preamble computation answers together, with that computation."""
 
 
 VALUES = {
@@ -123,17 +149,17 @@ def main() -> None:
     for request in lattices:
         ring = OWNED_ZZ if request["integral"] else OWNED_QQ
         lattice = Lattices(ring)(request["gram"])
-        group_fields = GROUP_FIELDS & set(request["fields"])
-        if group_fields:
-            _start(request["tag"], sorted(group_fields))
-            order, generators = _orthogonal_group_data(lattice)
-            group_data = {
-                "automorphism_group_order": order,
-                "automorphism_group_generator_morphisms": generators,
-            }
-            _emit(request["tag"], {field: group_data[field] for field in group_fields})
+        joint_fields: set[str] = set()
+        for fields, compute in JOINT:
+            chosen = fields & set(request["fields"])
+            if not chosen:
+                continue
+            _start(request["tag"], sorted(fields))
+            # The answer is one computation, so every field of it is stored together.
+            _emit(request["tag"], compute(lattice))
+            joint_fields |= fields
         for field in request["fields"]:
-            if field in group_fields:
+            if field in joint_fields:
                 continue
             _start(request["tag"], [field])
             _emit(request["tag"], {field: VALUES[field](lattice)})

@@ -598,3 +598,55 @@ class _OscarLatticeAdapter:
 _oscar_lattices = _OscarLatticeAdapter()
 
 __all__: list[str] = []
+
+
+_ROOTS_IN_ANNULUS = (
+    "(form, majorant, inner, outer, lengths) -> my(found = List());"
+    " forqfvec(v, majorant, outer, if(v~ * majorant * v > inner,"
+    " my(square = v~ * form * v);"
+    " if(square && setsearch(lengths, abs(square)) && content(2 * form * v) % square == 0, listput(found, v))));"
+    " Vec(found)"
+)
+r"""PARI closure listing, one of each pair \(\pm v\), the roots \(v\) with ``inner < M(v) <= outer``.
+
+``forqfvec`` visits the ball without storing it, so memory holds only the roots found.
+"""
+
+
+def _roots_generating_lattice(gram, lengths):
+    r"""Return coordinate rows of roots that generate \(\mathbb Z^n\) under the integral form ``gram``.
+
+    A root is a vector \(r\) with \(b(r,r)\ne 0\) dividing \(2b(r,x)\) for every
+    \(x\); its \(|b(r,r)|\) lies in ``lengths``.  With
+    \(T^{t}GT=D\) a rational diagonalization, \(T^{-t}|D|T^{-1}\) is a positive
+    definite majorant \(M\) of \(G\), so each ball of \(M\) holds finitely many
+    vectors.  The annuli between radii \(R\) and \(2R\) are searched in turn,
+    and a root is kept when it enlarges the span of those kept.  The search
+    returns once they span \(\mathbb Z^n\), and runs without end, in memory
+    bounded by the roots found, when \(\mathbb Z\Phi(L)\ne L\).
+    """
+    from sage.arith.functions import lcm
+    from sage.libs.pari import pari
+
+    form = _engine_component_matrix(gram).change_ring(SageZZ)
+    rank = form.nrows()
+    diagonal, change = QuadraticForm(SageQQ, 2 * form).rational_diagonal_form(return_matrix=True)
+    inverse = change.inverse()
+    majorant = inverse.transpose() * diagonal.matrix().apply_map(abs) * inverse
+    majorant = (lcm(entry.denominator() for entry in majorant.list()) * majorant).change_ring(SageZZ)
+    roots_in_annulus = pari(_ROOTS_IN_ANNULUS)
+    lengths = pari(sorted(int(length) for length in lengths))
+    identity = engine_matrix.identity(SageZZ, rank)
+    kept = []
+    span = engine_matrix(SageZZ, 0, rank)
+    inner, outer = 0, max(majorant.diagonal())
+    while span != identity:
+        for column in roots_in_annulus(pari(form), pari(majorant), inner, outer, lengths):
+            vector = tuple(int(entry) for entry in column)
+            enlarged = engine_matrix(SageZZ, [*span.rows(), vector]).echelon_form()
+            enlarged = enlarged.matrix_from_rows([row for row in range(enlarged.nrows()) if not enlarged.row(row).is_zero()])
+            if enlarged != span:
+                kept.append(vector)
+                span = enlarged
+        inner, outer = outer, 2 * outer
+    return tuple(kept)

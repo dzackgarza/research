@@ -22,7 +22,14 @@ from pydantic import BaseModel
 
 from latticedb import certificates, corpus, exceeded, records
 from latticedb.certificates import Certificate, Certificates
-from latticedb.model import DefiniteData, HyperbolicData, IntegralData, Lattice, Yaml
+from latticedb.model import (
+    DefiniteData,
+    HyperbolicData,
+    IntegralData,
+    Lattice,
+    RootSpan,
+    Yaml,
+)
 from latticedb.relations import hyperbolic_index_bounds
 
 BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
@@ -41,6 +48,8 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "modular_scale": ("integral", IntegralData),
     "regular": ("definite", DefiniteData),
     "spinor_regular": ("definite", DefiniteData),
+    "roots": ("root_span", RootSpan),
+    "norms": ("root_span", RootSpan),
 }
 """Each preamble-computed field, with the card block that stores it."""
 
@@ -94,6 +103,8 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
         case "reflective":
             # Signature (1, 1) has a half-line as its domain, where no polyhedron criterion applies.
             return lattice.rank >= 3 and 1 in (lattice.signature or ())
+        case "roots" | "norms":
+            return lattice.definite is None
         case "regular" | "spinor_regular":
             return lattice.definite is not None and lattice.rank == 3
         case "discriminant_sequence":
@@ -276,6 +287,9 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
     document = frontmatter.load(str(path))
     metadata = corpus.front_matter(document)
     morphisms = list(metadata.get("morphisms", []))
+    if "roots" in values:
+        # Computed roots generate L, so L = ZPhi(L) and the block has no summands or embedding.
+        metadata["root_span"] = {}
     for field, (block_name, model) in BLOCKS.items():
         value = values.get(field)
         if value is None:

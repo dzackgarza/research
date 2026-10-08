@@ -3744,6 +3744,22 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
+        def root_module_generating_set(self):
+            r"""Return a set of roots of \(L\) that generates \(L\) as a module.
+
+            A semi-decision for \(L=\mathbb Z\Phi(L)\) on a lattice of any
+            signature: the roots are searched in balls of growing radius for a
+            positive definite majorant of \(b\), so the search returns exactly
+            when \(\Phi(L)\) generates \(L\) and runs without end otherwise.
+            """
+            from dzack_research.preamble.categories.lattice_engines import (
+                _roots_generating_lattice,
+            )
+
+            rows = _roots_generating_lattice(self.gram_tensor(), self.possible_root_lengths())
+            return finite_ordered_set(tuple(self(row) for row in rows))
+
+        @cached_method
         def reflective_roots(self):
             r"""Return all primitive reflective roots of a definite lattice."""
             match self.is_positive_definite(), self.is_negative_definite():
