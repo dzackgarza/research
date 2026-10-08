@@ -3571,6 +3571,21 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: splitting.inverse() * splitting == splitting.domain().Isom(splitting.domain()).one()
                 True
+
+            Recover the splitting after changing the basis of ``2U + E8(-1)``::
+
+                sage: C = Lattices(ZZ)
+                sage: standard = C("U") + C("U") + C("E8")
+                sage: basis = tuple(standard.module_generators())
+                sage: changed = tuple(basis[i] + basis[i + 1] for i in range(11)) + (basis[11],)
+                sage: scrambled = C(tuple(tuple(standard.b(x, y) for y in changed) for x in changed))
+                sage: recovered = scrambled.two_hyperbolic_plane_splitting()
+                sage: recovered.domain().splits_two_hyperbolic_planes()
+                True
+                sage: all(recovered.inverse()(recovered(x)) == x for x in recovered.domain().module_generators())
+                True
+                sage: all(scrambled.b(recovered(x), recovered(y)) == recovered.domain().b(x, y) for x in recovered.domain().module_generators() for y in recovered.domain().module_generators())
+                True
             """
             assert _engine_ring(self.base_ring()) is SageZZ and self.is_even(), (
                 f"the integral two-hyperbolic-plane splitting is computed for even ZZ-lattices, not {self}"
