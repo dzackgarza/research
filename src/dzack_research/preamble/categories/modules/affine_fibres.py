@@ -183,6 +183,38 @@ class AffineModuleFibres(OwnedCategoryOverBaseRing):
             return ModuleInverseImages(self.base_ring())(self.linear_part(), self.target_inclusion())
 
         @cached_method
+        def image_translation_module(self):
+            r"""Return the translations of the affine image inside the target module.
+
+            For ``A:P -> V`` over ``K=Frac(R)``, with ``j:M -> V``,
+            this is ``ker(M -> V/im(A))``. Unlike the parameter module,
+            it contains no copy of ``ker(A)``. This distinction includes
+            the constant affine map, whose image has zero translations.
+            """
+            linear = self.linear_part()
+            target = self.target_inclusion()
+            ring = self.base_ring()
+            source, values = linear.domain(), linear.codomain()
+            if source in RestrictedScalarsModules(ring) and values in RestrictedScalarsModules(ring):
+                field = ring.fraction_field()
+                if source.extension_ring() is not field or values.extension_ring() is not field:
+                    raise NotImplementedError("image translations require restriction from the fraction field")
+                rational_map = Modules(field).Mor(
+                    source.module_over_extension(), values.module_over_extension()
+                )._from_constructed_element_map(
+                    lambda point: linear(source(point)).underlying_element()
+                )
+                quotient = rational_map.cokernel_projection()
+                restrict = Modules(field).restriction_of_scalars(source.ring_map())
+                return (restrict(quotient) * target).kernel()
+            return (linear.cokernel_projection() * target).kernel()
+
+        @cached_method
+        def image_point_set(self):
+            r"""The affine image, retained separately from its parameter fibre."""
+            return self.evaluation().image()
+
+        @cached_method
         def base_point(self):
             r"""Select a point by module-image lifting; raise ``ValueError`` for an empty fibre.
 

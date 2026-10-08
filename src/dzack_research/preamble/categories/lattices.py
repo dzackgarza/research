@@ -4831,6 +4831,58 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
             return _close_vectors(self, target, square_bound)
 
+        @cached_method
+        def affine_line_fibre(self, base, direction):
+            r"""Retain all rational parameters whose affine-line point belongs to this lattice.
+
+            The base lies in this lattice's rational span, or in the rational
+            span of one of its retained ambient lattices. The fibre retains
+            its evaluation into this lattice and its affine image. These
+            distinguish a constant parameterization from its singleton image.
+            """
+            ring = self.base_ring()
+            field_map = ring.fraction_field_map()
+            field = field_map.codomain()
+            ambient = self
+            inclusion = Modules(ring).Mor(self, self).identity()
+            while base.parent() is not ambient.base_change(field_map):
+                if ambient not in ModuleSubobjects(ring):
+                    raise ValueError("the affine base must belong to a retained ambient rational span")
+                inclusion = ambient.inclusion() * inclusion
+                ambient = ambient.inclusion().codomain()
+            rational = ambient.base_change(field_map)
+            if direction.parent() is ambient:
+                direction = ambient.generic_fibre_map()(direction).underlying_element()
+            direction = rational(direction)
+            scalars = field.regular_module()
+            linear = Modules(field).Mor(scalars, rational)(lambda label: direction)
+            integral_inclusion = ambient.generic_fibre_map() * inclusion
+            return linear.affine_inverse_image(integral_inclusion, offset=base)
+
+        def affine_line_points(self, base, direction):
+            r"""Return ``(p,s)`` presenting the integral points ``p + ZZ*s``, or ``None``.
+
+            The full affine image and its maps are retained by
+            ``affine_line_fibre(base,direction)``. The generator ``s`` is
+            primitive in the intersection with the line. A constant line
+            has ``s=0`` when its point is integral and is empty otherwise.
+            """
+            if self.base_ring() is not _own_ring(SageZZ):
+                raise TypeError("an integral affine-line presentation requires ZZ")
+            fibre = self.affine_line_fibre(base, direction)
+            try:
+                point = fibre.evaluation()(fibre.base_point())
+            except ValueError:
+                return None
+            translations = fibre.image_translation_module()
+            if translations.module_rank() == 0:
+                step = self.zero()
+            else:
+                if translations.module_rank() != 1:
+                    raise ArithmeticError("the intersection of a rational line with a lattice must have rank at most one")
+                step = translations.inclusion()(next(iter(translations.module_generators())))
+            return Sets().product((self, self))((point, step))
+
         def first_close_vector_shell(self, target, square_bound, max_multiplier):
             r"""Return the first nonempty scaled shell with ``1 <= m <= M``.
 

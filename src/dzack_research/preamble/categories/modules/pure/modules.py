@@ -4006,6 +4006,11 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             ):
                 return NotImplemented
 
+            if not _coordinate_framed_free_module(extension, fractions):
+                coordinates = extension.finite_free_trivialization().forward()
+                restricted = Modules(fractions).restriction_of_scalars(self.ring_map())(coordinates)
+                return (restricted * morphism).kernel()
+
             framing = extension.framing_morphism()
             image_coordinates = {
                 label: framing.lift(
