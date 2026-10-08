@@ -5329,6 +5329,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: f = e.hyperbolic_partner()
                 sage: f.parent() is L and f.q() == ZZ(0) and e.b(f) == ZZ(1)
                 True
+                sage: M = Lattices(ZZ)([[0, 2, 0], [2, 2, 0], [0, 0, -2]])
+                sage: u = M.basis_vector(0)
+                sage: h = u.hyperbolic_partner()
+                sage: h.parent() is M and h.q() == ZZ(0) and u.b(h) == ZZ(2)
+                True
                 sage: Lattices(ZZ)([[0, 2], [2, 2]]).basis_vector(0).hyperbolic_partner()
                 Traceback (most recent call last):
                 ...
