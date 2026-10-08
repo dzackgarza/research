@@ -1680,7 +1680,10 @@ def _lattice(
     ``Lattices(R)(R^n)`` is the standard Euclidean lattice: the identity
     Gram tensor on \(R^n\).  ``Lattices(R)(R^{\mathbb N})`` is the colimit
     of those, with \(\langle x,y\rangle=\sum_i x_i y_i\) on finite
-    supports.  A pairing Gram on a free module is itself a lattice:
+    supports.  A form module of finite rank whose form takes values in
+    \(R\) is the lattice on its module with that form, so
+    ``Lattices(ZZ)(L.dual_lattice().twist(k))`` is \(L^*(k)\) when it is
+    integral.  A pairing Gram on a free module is itself a lattice:
     ``Lattices(R)((R^NN).diagonal_gram({0: -1}))``.  ``form=`` equips a
     given free module with a finite Gram.  ``module_generators=`` is the
     generating set of that free module; when omitted, the generators
@@ -1691,6 +1694,10 @@ def _lattice(
     assert basis is None, (
         f"{category} cannot construct a lattice from the spanning vectors {basis}: construct the free module and its Gram matrix instead"
     )
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        FormModules,
+    )
+
     ring = category.base_ring()
     match form:
         case None:
@@ -1706,6 +1713,16 @@ def _lattice(
             return _lattice_from_gram_tensor(data, ring, names, module_generators, category)
         case Tensor() | Matrix():
             raise TypeError(f"{data} cannot be the Gram matrix of a lattice: it is a linear map, a tensor of type (1, 1), but a bilinear form is a tensor of type (0, 2)")
+        case _ if data in FormModules(ring) and data.module_rank().is_finite():
+            rank = int(data.module_rank())
+            gram = data.gram_tensor()
+            return _lattice_on_gram(
+                category,
+                data.unformed_module(),
+                _nested_gram_tensor([[gram[row, column] for column in range(rank)] for row in range(rank)], ring),
+                _normalized_lattice_names(names, rank),
+                None,
+            )
         case _ if data in FramedFreeModules(ring):
             return _identity_lattice(data, ring, names, module_generators, category)
         case "U" | "H":

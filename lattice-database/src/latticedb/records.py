@@ -224,6 +224,14 @@ def _root_span_factors(formed, roots: tuple[tuple[int, ...], ...]) -> tuple[int,
     return (1,) * (int(span.module_rank()) - len(torsion)) + torsion
 
 
+def card_level(lattice) -> int:
+    """The least k with k b(x,x) even on L^*, for a nondegenerate integral lattice.
+
+    L(2) is even with L(2)^* = L^*/2 and b_{L(2)}(x/2, x/2) = b(x,x)/2, so this k is half the level of L(2).
+    """
+    return int(lattice.twist(2).level()) // 2
+
+
 def _integral(
     record: dict[str, Yaml],
     gram: GramTensor,
@@ -250,8 +258,7 @@ def _integral(
             block["quadratic_character"] = int(
                 lattice.discriminant_character_discriminant()
             )
-        if lattice.is_even():
-            block["level"] = int(lattice.level())
+        block["level"] = card_level(lattice)
         # Other stored invariants are preserved; their computation has separate preamble owners.
         for field in model.IntegralData.model_fields:
             if field not in block and field in declared:
@@ -577,7 +584,7 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         else:
             owned = Lattices(ZZ)(gram)
             if owned.determinant() != 0:
-                if integral.level is not None and integral.level != int(owned.level()):
+                if integral.level is not None and integral.level != card_level(owned):
                     found.append(
                         "integral.level: the stated level does not equal the preamble-computed level"
                     )

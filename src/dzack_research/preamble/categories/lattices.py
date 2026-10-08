@@ -88,6 +88,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _roots_of_square,
     _shortest_vectors,
     _successive_minima,
+    _first_unrepresented_value,
     _theta_series,
     _vectors_of_square,
     _vectors_of_square_and_divisibility,
@@ -4079,6 +4080,65 @@ class Lattices(OwnedCategoryOverBaseRing):
         def theta_series(self, precision=20, variable="q"):
 
             return _theta_series(self, precision=precision, variable=variable)
+
+        def is_regular(self, *, max_value=None):
+            r"""Return ``False`` when the genus represents a value this definite lattice does not.
+
+            A definite lattice is regular when it represents every value
+            \(b(x,x)\) that some lattice of its genus represents.  The search
+            compares theta series with those of the classes of the genus and
+            answers ``False`` at the first value one of them represents and
+            this lattice does not.  It never answers ``True``: without
+            ``max_value`` it does not return on a regular lattice, and a
+            search that ``max_value`` stopped answers the proposition.
+            """
+            return _first_unrepresented_value(self, self.genus().representatives(), max_value, "is_regular")
+
+        def is_spinor_regular(self, *, max_value=None):
+            r"""Return ``False`` when the spinor genus represents a value this definite lattice does not.
+
+            The search of :meth:`is_regular` over the classes of the spinor
+            genus of this lattice, which come first among the representatives
+            of its genus.
+            """
+            classes = tuple(self.genus().representatives())[: int(self.spinor_genus_class_numbers()[0])]
+            return _first_unrepresented_value(self, classes, max_value, "is_spinor_regular")
+
+        def is_modular(self, scale):
+            r"""Return whether this lattice is isometric to \(L^*(k)\) for ``scale`` \(k\).
+
+            \(L^*(k)\) is the dual lattice with its form multiplied by \(k\).
+            Its determinant is \(k^n/\det L\) in rank \(n\), and it is integral
+            exactly when its Gram tensor is, so a scale with \(k^n\ne(\det L)^2\)
+            or a nonintegral \(L^*(k)\) answers ``False`` before the isometry
+            question is asked.
+            """
+            ring = self.base_ring()
+            rank = int(self.module_rank())
+            determinant = self.determinant()
+            match ring(scale) ** rank == determinant**2:
+                case False:
+                    return False
+            twisted = self.dual_lattice().twist(scale)
+            gram = twisted.gram_tensor()
+            match all(gram[row, column] in ring for row in range(rank) for column in range(rank)):
+                case False:
+                    return False
+            return self.is_isometric(Lattices(ring)(twisted))
+
+        def modular_scale(self):
+            r"""Return the positive \(k\) with \(L\cong L^*(k)\), or ``None`` when there is none.
+
+            \(L\cong L^*(k)\) forces \(k^n=(\det L)^2\) in rank \(n\), so at most one
+            positive \(k\) is a candidate, and :meth:`is_modular` decides it.
+            """
+            square = self.determinant() ** 2
+            rank = int(self.module_rank())
+            scale = next((k for k in square.divisors() if k**rank == square), None)
+            match scale is not None and self.is_modular(scale):
+                case True:
+                    return scale
+            return None
 
         def hermite_invariant(self):
 

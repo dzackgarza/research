@@ -1172,3 +1172,32 @@ def _kissing_number(lattice):
 __all__ = [
     "LatticeReduction",
 ]
+
+
+def _first_unrepresented_value(lattice, classes, max_value, predicate):
+    r"""Answer ``False`` at the least value a lattice of ``classes`` represents and ``lattice`` does not.
+
+    The value \(n\) is represented by a definite lattice exactly when the
+    coefficient of \(q^{|n|}\) in its theta series is nonzero.  The search
+    reads the theta series to a precision that doubles from 64.  Without
+    ``max_value`` it does not stop while no such value appears; a search
+    that reaches ``max_value`` answers the proposition ``predicate``.
+    """
+    from dzack_research.preamble.logic import AtomicProposition
+
+    precision = 64
+    while True:
+        searched = precision if max_value is None else min(precision, int(max_value))
+        own = lattice.theta_series(precision=searched + 1)
+        others = tuple(other.theta_series(precision=searched + 1) for other in classes)
+        found = next(
+            (value for value in range(1, searched + 1) if own[value] == 0 and any(series[value] != 0 for series in others)),
+            None,
+        )
+        match found, max_value is not None and searched >= int(max_value):
+            case None, True:
+                return AtomicProposition(predicate, lattice)
+            case None, False:
+                precision *= 2
+            case _:
+                return False

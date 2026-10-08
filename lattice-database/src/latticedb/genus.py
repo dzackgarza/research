@@ -38,6 +38,9 @@ BLOCKS: dict[str, tuple[str, type[BaseModel]]] = {
     "primitive_orbits": ("integral", IntegralData),
     "discriminant_orbits": ("integral", IntegralData),
     "reflective": ("hyperbolic", HyperbolicData),
+    "modular_scale": ("integral", IntegralData),
+    "regular": ("definite", DefiniteData),
+    "spinor_regular": ("definite", DefiniteData),
 }
 """Each preamble-computed field, with the card block that stores it."""
 
@@ -91,6 +94,8 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
         case "reflective":
             # Signature (1, 1) has a half-line as its domain, where no polyhedron criterion applies.
             return lattice.rank >= 3 and 1 in (lattice.signature or ())
+        case "regular" | "spinor_regular":
+            return lattice.definite is not None and lattice.rank == 3
         case "discriminant_sequence":
             return lattice.definite is not None and lattice.integral.parity == "even"
         case "spinor_genus_count" | "spinor_genera":

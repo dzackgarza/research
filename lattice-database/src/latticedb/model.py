@@ -362,9 +362,9 @@ class IntegralData(Record):
         default=None,
         description="Least positive $k$ for which $k b(x,x)$ is even for every $x$ in the dual lattice. Requires nonzero determinant.",
     )
-    modular_scale: Annotated[int, Field(gt=0)] | None = Field(
+    modular_scale: Literal[False] | Annotated[int, Field(gt=0)] | None = Field(
         default=None,
-        description="The $k$ for which the card states $L\\cong L^*(k)$; an explicit chosen isometry, when stored, belongs to this card's morphisms rather than a separate object.",
+        description="The $k > 0$ with $L\\cong L^*(k)$, or `false` when there is no such $k$; an explicit chosen isometry, when stored, belongs to this card's morphisms rather than a separate object.",
     )
     discriminant_group: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,

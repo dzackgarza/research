@@ -68,6 +68,21 @@ def _reflective(lattice) -> bool | None:
             return None
 
 
+def _irregular(answer) -> bool | None:
+    """Serialize a regularity semi-decision, whose only definite answer is ``False``."""
+    match answer:
+        case False:
+            return False
+        case _:
+            return None
+
+
+def _modular_scale(lattice) -> int | bool:
+    """Serialize the preamble's \\(k\\) with \\(L\\cong L^*(k)\\), or ``False`` when there is none."""
+    scale = lattice.modular_scale()
+    return False if scale is None else int(scale)
+
+
 GROUP_FIELDS = {"automorphism_group_order", "automorphism_group_generator_morphisms"}
 
 
@@ -86,6 +101,9 @@ VALUES = {
     "primitive_orbits": lambda lattice: lattice.primitive_orbit_series(),
     "discriminant_orbits": lambda lattice: lattice.discriminant_orbit_series(),
     "reflective": _reflective,
+    "modular_scale": _modular_scale,
+    "regular": lambda lattice: _irregular(lattice.is_regular()),
+    "spinor_regular": lambda lattice: _irregular(lattice.is_spinor_regular()),
 }
 
 
