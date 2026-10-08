@@ -35,7 +35,10 @@ instead forms `2*d*h - q(h)*v` after selecting a nonorthogonal `h`, giving
 pairing `2*d^2`. Its bounded initial search also supplies no minimal-pairing
 existence decision. Its consumers include the port's two-hyperbolic-plane
 decomposition. The API must distinguish an integral solution, an empty
-locus, and an unsupported computation. The remaining work is owned by
+locus, and an unsupported computation. Research now decides the finite-rank
+partner locus through the norm congruence on `K/(ZZ*v+2d*K)`, with K the
+pairing kernel. Formal comparison, port contract reconciliation, and
+independent acceptance remain owned by
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
 ### An affine integral parameter locus can contain a rational kernel
@@ -77,9 +80,11 @@ orbit. A finite acting group or a supplied finite stable containing module
 provides a finite-generation case. Integral-valuedness of the restricted
 form is separate: on `U`, the involution `e -> 2f, f -> e/2` generates
 `ZZ*(e/2) + ZZ*f`, whose cross-pairing is `1/2`. Its finite orbit span
-cannot be an integral-valued overlattice. The exact span and inclusion now
-belong to scalar restriction; the group-action closure and its existence
-hypotheses remain in
+cannot be an integral-valued overlattice. Research's orbit-span construction
+now retains the action and both inclusions. For nondegenerate integral L,
+the bound `L^sharp subset L/abs(det L)` makes the integral-overlattice
+decision terminate. Degenerate lattices use the finite-group realization.
+Formal comparison, port adoption, and independent acceptance remain in
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
 ### Isotropic-reduction lifts need a kernel torsor with nonlinear evaluation
@@ -105,8 +110,9 @@ empty directions. In research, `IsotropicReductions` retains the quotient
 data. Research now constructs the marked-line lift torsor by transporting
 the regular kernel action through a base lift. It retains transvection
 parameters, nonlinear evaluation, and the integral-kernel action on the
-integral descent locus. Point selection in that integral locus, port
-adoption, and formal comparison remain unresolved. The searched formal
+integral descent locus. A finite parameter quotient now supplies complete
+integral residue selection and a chosen integral torsor when nonempty.
+Port adoption and formal comparison remain unresolved. The searched formal
 slice and partial Witt/action declarations are recorded in the audit.
 Their location or formalization and the comparison proofs belong to
 lean-categories. Computational source repair follows the mathematical
@@ -123,16 +129,17 @@ onto. For `L=E=U` and `phi=diag(2,1/2)`, the least denominator is two,
 
 The dependency is the denominator ideal of a rational module map,
 factorization through integral subobjects, and transport of the form
-equation. In `categories/lattices.py`, `similarity_mor` constructs
-`Isom(L.twist(scale), E)`, which requires surjectivity and does not give
-the requested finite-index embedding. The [frozen amendment](https://github.com/dzackgarza/research/issues/401#issuecomment-6065197711)
+equation. Research now constructs the denominator ideal at the module-map
+owner and factors the scaled map through the integral target inclusion.
+The formed monomorphism retains the rational isometry, ideal, denominator
+factor, and value map. The [frozen amendment](https://github.com/dzackgarza/research/issues/401#issuecomment-6065197711)
 specifies `.scale()` as the least denominator factor `N`; the form multiplier
 is `N^2`.
 The [audit](docs/issue-401-abstraction-audit.md#13-clearing-denominators-of-a-rational-isometry--frozen-phiintegral_similarityle-and-scale)
 records the inspected formal change-of-value and module foundations,
 the unresolved denominator-ideal/similarity-embedding declarations,
-and the request boundary at lean-categories and port #33. This source
-finding and its mathematical specimen belong to
+and the request boundary at lean-categories and port #33. Formal comparison,
+contract reconciliation, and independent acceptance belong to
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
 ### Issue 401 migration does not match the frozen public contract
@@ -140,8 +147,8 @@ finding and its mathematical specimen belong to
 The live [migration procedure](https://github.com/dzackgarza/research/issues/396)
 requires research to supply the frozen operations already called by the
 port. The research-side source repairs are listed in the audit's
-disposition table. The remaining frozen operations,
-formal comparisons and execution are still open. Local port branch
+disposition table. Formal comparisons, group-consumer integration,
+contract reconciliation and execution are still open. Local port branch
 `research-401-primitives` changes consumer names, while the migration
 procedure requires the research-side names and contracts.
 
