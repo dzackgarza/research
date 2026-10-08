@@ -4,8 +4,6 @@ name: D1 (union:154)
 latex: D1
 aliases: [D1]
 rank: 1
-gram_tensor:
-- [1]
 determinant: 4
 families: []
 related: []
@@ -15,3 +13,5 @@ references:
 ---
 
 Catalogue of Lattices archive entry `union:154` names `D1`.
+
+The entry's `GRAM` section gives $[1]$, whose determinant $1$ contradicts the entry's `DET` $4$ and its `TRIANGULAR_BASIS` $[2]$; the card states no Gram tensor.

@@ -20,6 +20,18 @@ related: []
 references:
 - citation: Watson, primitive lattices of class number one, 7:7.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:211.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:533.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Source entry `watson:7:7` gives this Gram tensor.
+
+Catalogue of Lattices archive entry `union:211` names `E7`.
+
+x in E8 with sum x(i) = 0
+
+Catalogue of Lattices archive entry `union:533` names `P7.1`.
+
+One of the perfect 7-dimensional lattices. This is E7.

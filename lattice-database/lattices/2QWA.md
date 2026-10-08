@@ -16,6 +16,12 @@ related: []
 references:
 - citation: Brandt–Intrau–Schiemann ternary form table, Brandt_2.html:65.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_2.html
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:631.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Source entry `brandt_intrau:Brandt_2.html:65` gives this Gram tensor.
+
+Catalogue of Lattices archive entry `union:631` names `digonal F (even holotype)`.
+
+Also called orthorhombic F One of the Bravais lattices. Holotype = smallest determinant of any even integral lattice of this type.

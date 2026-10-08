@@ -22,6 +22,10 @@ references:
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Brandt_1.html
 - citation: 'W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341, form 37, as tabulated in A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams, Positive integers represented by regular primitive positive-definite integral ternary quadratic forms, Integers 19 (2019), #A45, Tables 1 and 2; regular by W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341.'
   url: https://math.colgate.edu/~integers/t45/t45.pdf
+- citation: Watson, primitive lattices of class number one, 3:54.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
 ---
 
 Source entry `brandt_intrau:Brandt_1.html:60` gives this Gram tensor.
+
+Source entry `watson:3:54` gives this Gram tensor.

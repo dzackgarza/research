@@ -15,6 +15,10 @@ related: []
 references:
 - citation: Watson, primitive lattices of class number one, 2:169.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:141.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Source entry `watson:2:169` gives this Gram tensor.
+
+Catalogue of Lattices archive entry `union:141` names `C2`.

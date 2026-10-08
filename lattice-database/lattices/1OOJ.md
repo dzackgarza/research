@@ -18,6 +18,10 @@ related: []
 references:
 - citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, tbl.256.html:1952.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/tbl.256.html
+- citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, tbl.256.html:2003.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/tbl.256.html
 ---
 
 Source entry `nipp:tbl.256.html:1952` gives this Gram tensor.
+
+Source entry `nipp:tbl.256.html:2003` gives this Gram tensor.

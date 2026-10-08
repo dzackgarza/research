@@ -68,3 +68,7 @@ test-source-intake:
 # List the tags that share a Gram tensor
 duplicates:
     just _latticedb duplicates
+
+# Merge each card into the earliest card that states its Gram tensor, retiring its tag
+deduplicate:
+    just _latticedb deduplicate

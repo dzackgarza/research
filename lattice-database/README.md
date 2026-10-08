@@ -254,7 +254,7 @@ The address of a lattice is `tag/<TAG>.html`.
 
 ## Workflows
 
-**Seed:** `just seed` converts stored source rows into `lattices/<TAG>.md`. Each card keeps its permanent tag, defining Gram tensor, source identity and citation. Seeding reads the source rows and writes cards. A source that proves a value of its rows certifies it: `just regular-ternaries` stores each regular or spinor regular ternary form's value with a certificate whose provenance is the row's citation.
+**Seed:** `just seed` converts stored source rows into `lattices/<TAG>.md`. Each card keeps its permanent tag, defining Gram tensor, source identity and citation. Seeding reads the source rows and writes cards. A row whose Gram tensor a card already states joins that card: its citation, families, related lattices and prose are added there, its other stated values must agree with the card's, and no second card is written. A source that proves a value of its rows certifies it: `just regular-ternaries` stores each regular or spinor regular ternary form's value with a certificate whose provenance is the row's citation.
 
 **Author:** Write or edit `lattices/<TAG>.md` for a lattice without a stored source row. The tag names its permanent page. State only data and claims that the card can support.
 
@@ -262,7 +262,7 @@ The address of a lattice is `tag/<TAG>.html`.
 
 **Certify:** `just certify` is the CI orchestration phase. It asks the preamble for each uncertified result, replaces a disagreeing authored value with the returned value, and only then writes the certificate hash to the card and certificate log.
 
-**Verify:** `just verify` is read-only. It checks structural/reference/certificate coherence and delegates mathematical validation of stored claims to the corresponding preamble lattice, morphism, group or other mathematical object. Lattice-db contains no second implementation of those operations. Archived intake sources are not verification oracles. `just build` may likewise call preamble-owned projections while rendering cards.
+**Verify:** `just verify` is read-only. A Gram tensor determines its lattice, so two cards stating one Gram tensor are a verification error. It checks structural/reference/certificate coherence and delegates mathematical validation of stored claims to the corresponding preamble lattice, morphism, group or other mathematical object. Lattice-db contains no second implementation of those operations. Archived intake sources are not verification oracles. `just build` may likewise call preamble-owned projections while rendering cards.
 
 ## Certificates
 
@@ -382,6 +382,7 @@ The `justfile` calls it.
 | `just certify ...` | CI orchestration: store preamble-returned uncertified scopes and attach certificate hashes |
 | `just verify` | Report stored-card inconsistencies, using preamble-owned mathematics where required |
 | `just duplicates` | List the tags that share a Gram tensor |
+| `just deduplicate` | Merge each card into the earliest card that states its Gram tensor and retire its tag |
 | `just build` | Render every lattice card into `_site/` |
 | `just deploy` | Build, link `_site/` to `/var/www/static-sites/lattice-database`, and check that nginx serves it |
 | `just tag` | Print the tag for the next new record |

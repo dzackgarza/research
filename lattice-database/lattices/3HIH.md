@@ -43,8 +43,12 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:120.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:291.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:120` names `LL32''`.
 
 Called LAMBDA_32'' in Bachoc-Nebe As Z-lattice isometric to the Barnes-Wall lattice.
+
+Catalogue of Lattices archive entry `union:291` names `LAMBDA(RM)=BW32`.

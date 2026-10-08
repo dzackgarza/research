@@ -82,9 +82,7 @@ def write(root: Path, *records: dict[str, Yaml]) -> Path:
     (root / corpus.RETIRED_FILE).write_text(yaml.safe_dump(RETIRED))
     (root / "lattices").mkdir()
     for record in records:
-        (root / "lattices" / f"{record['tag']}.md").write_text(
-            "---\n" + yaml.safe_dump(record) + "---\n\nA test record.\n"
-        )
+        (root / "lattices" / f"{record['tag']}.md").write_text("---\n" + yaml.safe_dump(record) + "---\n\nA test record.\n")
     return root
 
 
@@ -117,21 +115,15 @@ def test_a_record_is_accepted_when_each_of_its_families_is_listed_and_rejected_w
     tmp_path: Path,
 ) -> None:
     listed = rank_one("0001") | {"families": ["root-lattice", "even-unimodular"]}
-    plane = hyperbolic_plane(
-        [{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}]
-    ) | {"families": ["root-lattice"]}
+    plane = hyperbolic_plane([{"tag": "0001", "scale": 2}, {"tag": "0001", "scale": -2}]) | {"families": ["root-lattice"]}
     directory = write(tmp_path, listed, plane)
     assert [entry.lattice.families for entry in corpus.load(directory).entries] == [
         ("root-lattice", "even-unimodular"),
         ("root-lattice",),
     ]
 
-    unlisted = rank_one("0001") | {
-        "families": ["root-lattice", "hexagonal", "laminated"]
-    }
-    (directory / "lattices" / "0001.md").write_text(
-        "---\n" + yaml.safe_dump(unlisted) + "---\n\nA test record.\n"
-    )
+    unlisted = rank_one("0001") | {"families": ["root-lattice", "hexagonal", "laminated"]}
+    (directory / "lattices" / "0001.md").write_text("---\n" + yaml.safe_dump(unlisted) + "---\n\nA test record.\n")
     assert len(checks.report(directory)) == 2
 
 
@@ -143,16 +135,8 @@ def test_a_record_cannot_take_a_retired_tag_and_the_next_tag_counts_the_retired_
     assert loaded.retired == RETIRED
     assert corpus.next_tag(directory) == "0010"
 
-    (directory / "lattices" / "000Z.md").write_text(
-        "---\n"
-        + yaml.safe_dump(hyperbolic_plane([]) | {"tag": "000Z"})
-        + "---\n\nA test record.\n"
-    )
-    assert [
-        problem
-        for problem in checks.report(directory)
-        if "000Z" in problem and "retired" in problem
-    ]
+    (directory / "lattices" / "000Z.md").write_text("---\n" + yaml.safe_dump(hyperbolic_plane([]) | {"tag": "000Z"}) + "---\n\nA test record.\n")
+    assert [problem for problem in checks.report(directory) if "000Z" in problem and "retired" in problem]
 
 
 def test_next_tag_starts_an_empty_corpus_at_0001(tmp_path: Path) -> None:
@@ -167,16 +151,10 @@ def test_source_cards_do_not_reserve_tags_and_verify_reports_them(tmp_path: Path
     source.mkdir()
     (source / "0010.md").write_text("---\ntag: '0010'\nkind: source\n---\n")
     assert corpus.next_tag(directory) == "0010"
-    assert any(
-        "source card has not been seeded" in problem
-        for problem in checks.report(directory)
-    )
+    assert any("source card has not been seeded" in problem for problem in checks.report(directory))
 
     (source / "0001.md").write_text("---\ntag: '0001'\nkind: source\n---\n")
-    assert any(
-        "also assigned to a source card" in problem
-        for problem in checks.report(directory)
-    )
+    assert any("also assigned to a source card" in problem for problem in checks.report(directory))
 
 
 def test_the_families_file_is_read_as_one_line_of_meaning_per_family(
@@ -185,11 +163,7 @@ def test_the_families_file_is_read_as_one_line_of_meaning_per_family(
     directory = write(tmp_path, rank_one("0002"))
     assert corpus.load(directory).families == FAMILIES
 
-    (directory / corpus.FAMILIES_FILE).write_text(
-        yaml.safe_dump(
-            {"Root Lattice": "A family whose name is not lower-case with hyphens."}
-        )
-    )
+    (directory / corpus.FAMILIES_FILE).write_text(yaml.safe_dump({"Root Lattice": "A family whose name is not lower-case with hyphens."}))
     with pytest.raises(corpus.CorpusInvalid) as raised:
         corpus.load(directory)
     assert len(raised.value.problems) == 1
@@ -265,12 +239,8 @@ def test_the_identity_and_the_exchange_of_e_and_f_are_morphisms_of_u(
 def test_the_inclusion_of_a_summand_is_a_morphism_whose_lines_cut_orthogonal_summands(
     tmp_path: Path,
 ) -> None:
-    morphisms: list[dict[str, Yaml]] = [
-        {"name": "first summand", "matrix": [[1], [0]], "row_subdivisions": [1]}
-    ]
-    directory = write_morphisms(
-        write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", morphisms
-    )
+    morphisms: list[dict[str, Yaml]] = [{"name": "first summand", "matrix": [[1], [0]], "row_subdivisions": [1]}]
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", morphisms)
     source = next(entry.lattice for entry in corpus.load(directory).entries if entry.lattice.tag == "0001")
     assert source.morphisms[0].images == ((1, 0),)
 
@@ -279,9 +249,7 @@ def test_the_summands_of_1_plus_1_give_its_inclusion_once_and_its_diagonal_at_sc
     tmp_path: Path,
 ) -> None:
     stated: list[dict[str, Yaml]] = [{"name": "first summand", "matrix": [[1], [0]]}]
-    directory = write_morphisms(
-        write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", stated
-    )
+    directory = write_morphisms(write(tmp_path, rank_one("0001"), square_sum()), "0001", "0002", stated)
     assert summands.store(directory, corpus.load(directory)) == []
     assert summands.store(directory, corpus.load(directory)) == []
 
@@ -299,28 +267,23 @@ def test_a_morphism_is_rejected_when_its_target_is_not_in_the_corpus_or_is_retir
 ) -> None:
     retired_root = tmp_path / "retired"
     retired_root.mkdir()
-    retired = morphism_problems(
-        retired_root, "0001", "000Z", [{"name": "identity", "matrix": [[1]]}]
-    )
-    assert retired == (
-        f"{retired_root / 'lattices' / '0001.md'}: morphism target 000Z is retired ({RETIRED['000Z']})",
-    )
+    retired = morphism_problems(retired_root, "0001", "000Z", [{"name": "identity", "matrix": [[1]]}])
+    assert retired == (f"{retired_root / 'lattices' / '0001.md'}: morphism target 000Z is retired ({RETIRED['000Z']})",)
     missing_root = tmp_path / "missing"
     missing_root.mkdir()
-    missing = morphism_problems(
-        missing_root, "0001", "0003", [{"name": "identity", "matrix": [[1]]}]
-    )
-    assert missing == (
-        f"{missing_root / 'lattices' / '0001.md'}: morphism target 0003 is not in the corpus",
-    )
+    missing = morphism_problems(missing_root, "0001", "0003", [{"name": "identity", "matrix": [[1]]}])
+    assert missing == (f"{missing_root / 'lattices' / '0001.md'}: morphism target 0003 is not in the corpus",)
 
 
 def test_duplicate_grams_lists_the_tags_that_share_a_gram_tensor(tmp_path: Path) -> None:
     directory = write(tmp_path, rank_one("0001"), rank_one("0002"), hyperbolic_plane([]))
     loaded = corpus.load(directory)
-    assert corpus.duplicate_grams(loaded.entries) == {
-        ((Fraction(1),),): ["0001", "0002"]
-    }
+    assert corpus.duplicate_grams(loaded.entries) == {((Fraction(1),),): ["0001", "0002"]}
+
+
+def test_verification_reports_two_cards_stating_one_gram_tensor(tmp_path: Path) -> None:
+    directory = write(tmp_path, rank_one("0001"), rank_one("0002"), hyperbolic_plane([]))
+    assert "cards 0001, 0002 state one Gram tensor; a lattice has one card" in checks.report(directory)
 
 
 def test_duplicate_grams_is_empty_when_every_gram_tensor_is_held_once(tmp_path: Path) -> None:

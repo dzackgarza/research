@@ -31,8 +31,9 @@ job, not because database code is forbidden from importing the preamble.
 ## Independent workflows
 
 Seeding reads a stored source and writes a permanent `lattices/<TAG>.md` card from its defining
-data, source identity and citation. It uses the assigned tag. It does not load other cards, derive
-invariants or run verification.
+data, source identity and citation. It uses the assigned tag. A row whose Gram tensor a card already
+states joins that card instead, because a Gram tensor determines its lattice and a lattice has one
+card. Seeding does not derive invariants or run verification.
 
 Authoring writes or edits the same card format without a stored source row. It does not run
 verification. A sparse card is a site card.

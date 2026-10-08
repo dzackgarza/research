@@ -9,6 +9,7 @@ from typing import Annotated
 from urllib.request import Request, urlopen
 
 import frontmatter
+import yaml
 from cyclopts import App, Parameter
 
 from latticedb import (
@@ -130,8 +131,8 @@ def bulk_index_write(root: Root = Path()) -> None:
 @app.command(name="seed")
 def seed_cards(*, limit: int | None = None, root: Root = Path()) -> None:
     """Write permanent lattice cards from stored source rows without verification or enrichment."""
-    seeded, without_gram = seed.run(root, limit)
-    print(f"{seeded} lattice cards written; {len(without_gram)} source rows need a defining Gram tensor")
+    seeded, attached, without_gram = seed.run(root, limit)
+    print(f"{seeded} lattice cards written; {attached} source rows joined the card that states their Gram tensor; {len(without_gram)} source rows need a defining Gram tensor")
 
 
 @app.command(name="regular-ternaries")
@@ -232,6 +233,45 @@ def duplicates(root: Root = Path()) -> None:
         )
         sys.exit(1)
     print(f"{sum(len(tags) for tags in index.values())} lattice cards have distinct Gram tensors")
+
+
+@app.command
+def deduplicate(root: Root = Path()) -> None:
+    """Merge every card into the earliest card that states its Gram tensor, and retire its tag.
+
+    The merged card's references, families, related lattices and prose join the
+    earliest card, whose stated values they must agree with. Its certificates
+    leave `certificates.yaml`: a value it certified is already on the earliest
+    card under that card's own certificate.
+    """
+    loaded = corpus.load(root)
+    held = certificates.load(root)
+    retired: corpus.Retired = {}
+    for tags in corpus.duplicate_grams(loaded.entries).values():
+        earliest, *later = sorted(tags)
+        survivor = root / "lattices" / f"{earliest}.md"
+        kept = corpus.front_matter(frontmatter.load(str(survivor)))
+        for tag in later:
+            path = root / "lattices" / f"{tag}.md"
+            document = frontmatter.load(str(path))
+            fields = corpus.front_matter(document)
+            cited = fields.get("certifications")
+            for certified in cited if isinstance(cited, dict) else {}:
+                block, _, field = certified.partition(".")
+                stated = kept.get(block)
+                assert certified == "derive" or (isinstance(stated, dict) and stated.get(field) is not None), (
+                    f"{tag}: {certified} is certified and {earliest} does not state it"
+                )
+            seed.attach(survivor, fields, document.content.strip())
+            path.unlink()
+            for name in [name for name in held if name.startswith(f"{tag} ")]:
+                del held[name]
+            retired[tag] = f"{fields['name']}; its Gram tensor is stated by lattice card {earliest}"
+    certificates.save(root, held)
+    with (root / corpus.RETIRED_FILE).open("a") as output:
+        output.write(yaml.safe_dump(retired, sort_keys=False, allow_unicode=True, width=100000) if retired else "")
+    corpus.gram_index(root)
+    print(f"{len(retired)} cards merged into the earliest card that states their Gram tensor")
 
 
 @app.command

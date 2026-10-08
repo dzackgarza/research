@@ -18,6 +18,10 @@ related: []
 references:
 - citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, tbl.256.html:31.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/tbl.256.html
+- citation: Watson, primitive lattices of class number one, 5:8.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
 ---
 
 Source entry `nipp:tbl.256.html:31` gives this Gram tensor.
+
+Source entry `watson:5:8` gives this Gram tensor.
