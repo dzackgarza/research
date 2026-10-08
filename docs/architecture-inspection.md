@@ -11,6 +11,7 @@ Start with the mathematical construction and the maps it must retain. Inspect it
 | What ancestry does the source declare? | `just category-graph table`, `json`, or `slice` | Python declarations and computed axiom edges; conditional returns are a union, and dynamic expressions still need review |
 | Where can an inherited operation be examined? | `just placement` | Introduced object, element and arrow methods, their definitions and candidate upper categories from a saved live survey |
 | Where do objects reach an operation's fallback assertion? | `just category-graph routes`, `--operation NAME` | For each object operation whose definition ends in a case/match fallback assertion: where it is defined and overridden, and the topmost categories with no override, hook definition or case of the definition above them; read from source, so a realization class answers only for the objects it constructs |
+| Which objects are placed in the wrong property subcategory? | `just category-graph properties` | For each property axiom such as `Sets.Finite`: the categories whose name states it and that do not lie under it, the construction sites that place a result under it from a property of an input, the constructions on a category or object (slice, subobject, coslice, direct sum, G-objects) with the property axioms each places on its objects, and the construction sites that place their result by no property of their input; read from source |
 | Where are constructions entered and delegated? | `just refactor-survey --view constructors` | Constructor hooks, lexical owners, arguments, return expressions and calls; public named factories can be queried separately |
 | Who calls a method, and on what receiver? | `just refactor-survey METHOD` | Source locations, caller, receiver expression and use of the return value; attribute calls are not statically resolved dispatch |
 | Where is private data reached through another expression? | `just refactor-survey --view private` | Private attribute accesses on receivers other than `self`, `cls` and `super()`; the declaration-side protected contract decides legitimacy |
@@ -30,6 +31,14 @@ just category-graph routes --operation cardinality
 ```
 
 `Sets().cardinality` answers for the objects its cases cover: power sets, function sets, products, coproducts, finite and countably infinite sets, and whatever the `_cardinality_decision` hook decides. Every other object reaches its fallback assertion unless a category above it overrides `cardinality`, for instance by applying a functor to sets and asking the result. The view names those overrides, then the topmost categories whose objects still reach the fallback, with the number of categories below each; one override at such a category covers everything below it. For `cardinality` the list includes `AdditiveMagmas`, `Magmas`, `SliceCategory` and `SubobjectCategory`. Without `--operation`, the view ranks every such operation by the number of topmost categories. The live survey does not construct the categories that take two parameters, such as slices and subobject categories, so `just placement` does not show them.
+
+## Find objects placed without the properties of their inputs
+
+```sh
+just category-graph properties
+```
+
+A subset of a finite set is finite, and so are a quotient, a product and an image of finite sets. The view lists, for each property axiom, where it is propagated and where it is not. Its section on constructions on a category or an object shows `SliceCategory`, `SubobjectCategory` and `SetSubobjectCategory` with no property axiom placed: an element of the power set of `{0, 1, 2}` is an object of `Sets/{0, 1, 2}` and is not placed in `Sets.Finite`, so its cardinality reaches the fallback assertion of `Sets().cardinality`. The first section of the view lists categories whose name states a property that their declarations do not place them under, such as `FiniteEnumeratedCartesianProductsOfSets`, which does not lie under `Sets.Finite`.
 
 ## Follow a construction through its general owners
 
