@@ -2819,7 +2819,7 @@ def _image_set(
         f"the image of a map needs a set as domain, but {source} is not in the category of sets"
     )
     match source:
-        case _ if source in FiniteSets():
+        case _ if source in FiniteSets() or source.is_finite() is True:
             placement = FiniteSets()
         case _:
             placement = Sets()
