@@ -2,7 +2,10 @@ r"""Private exact computational realizations for owned lattice constructions."""
 
 from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
+from sage.matrix.matrix0 import Matrix
+from sage.quadratic_forms.qfsolve import qfsolve
 from sage.quadratic_forms.quadratic_form import QuadraticForm
+from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -71,6 +74,39 @@ def _rational_positive_vector(gram):
         rationals,
         tuple(_owned_engine_element(rationals, entry) for entry in column),
     )
+
+
+def _isotropic_vector_witness(lattice):
+    r"""Raise PARI's rational isotropic vector into the given lattice.
+
+    Migrated from ``sage-indefinite-port``'s ``find_hyperbolic_pair``.
+    Sage's ``quadratic_forms.qfsolve.qfsolve`` returns an integer obstruction,
+    a vector, or a matrix whose columns span the radical. Integral inputs
+    receive a primitive integral vector after clearing denominators.
+    """
+    ring = lattice.base_ring()
+    engine_ring = _engine_ring(ring)
+    assert engine_ring is SageZZ or engine_ring is SageQQ, (
+        f"isotropic witnesses are computed over ZZ or QQ, not {ring}"
+    )
+    assert lattice.module_rank().is_finite(), (
+        f"PARI isotropic witnesses require finite rank, not {lattice.module_rank()}"
+    )
+    if lattice.module_rank() == 0:
+        return None
+    solution = qfsolve(_engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ))
+    if isinstance(solution, SageInteger):
+        return None
+    if isinstance(solution, Matrix):
+        solution = solution.column(0)
+    if engine_ring is SageZZ:
+        solution = solution * solution.denominator()
+    vector = lattice.linear_combination({
+        label: _owned_engine_element(ring, engine_ring(coordinate))
+        for label, coordinate in zip(lattice.module_generating_set(), solution, strict=True)
+        if coordinate
+    })
+    return vector.primitive_part() if engine_ring is SageZZ else vector
 
 
 def _integer_engine_matrix(value):

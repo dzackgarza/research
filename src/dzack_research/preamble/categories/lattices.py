@@ -1887,6 +1887,28 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case True:
                     return bool(self.witt_index() > 0)
 
+        def isotropic_vector_witness(self) -> "Lattices.ElementMethods | None":
+            r"""Return a nonzero isotropic vector, or ``None`` if anisotropic.
+
+            PARI supplies the witness over QQ. Over ZZ the returned vector
+            is integral and primitive. A nonzero radical also supplies a
+            witness; the zero lattice has none.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[3, 0, 0, 0], [0, 5, 0, 0], [0, 0, -7, 0], [0, 0, 0, -11]])
+                sage: v = L.isotropic_vector_witness()
+                sage: v.parent() is L and v != L.zero() and v.q() == ZZ(0) and v.content() == ZZ(1)
+                True
+                sage: Lattices(ZZ)([[1, 0], [0, -2]]).isotropic_vector_witness() is None
+                True
+                sage: D = Lattices(ZZ)([[0, 0], [0, 2]])
+                sage: r = D.isotropic_vector_witness()
+                sage: r != D.zero() and r.q() == ZZ(0)
+                True
+            """
+            return lattice_engines._isotropic_vector_witness(self)
+
         def spinor_norm(self, field_map=None, form_multiplier=None):
             r"""Return the spinor norm \(g\mapsto\mathrm{sn}_{K'}(g\otimes K')\) on \(O(L)\).
 
@@ -4372,6 +4394,41 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the positive generator of ``b(v,L)`` over ``ZZ``."""
             return self.div()
 
+        def bezout_partner(self) -> "Lattices.ElementMethods":
+            r"""Return an integral ``h`` with ``b(self,h) = self.div()``.
+
+            Migrated from the integral Bezout step in
+            ``IsotropicReductions.rational_witt_decomposition`` and
+            ``sage-indefinite-port``'s ``_bezout_partner``. Scalar extended
+            gcd is supplied by the coefficient ring. For a radical vector
+            the selected partner is zero.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[0, 6], [6, 0]])
+                sage: v = L.linear_combination({0: ZZ(2), 1: ZZ(3)})
+                sage: h = v.bezout_partner()
+                sage: h.parent() is L and v.b(h) == ZZ(6)
+                True
+                sage: L.zero().bezout_partner() == L.zero()
+                True
+            """
+            lattice = self.parent()
+            ring = lattice.base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"an integer Bezout partner requires a lattice over ZZ, not {ring}"
+            )
+            gcd_value = ring.zero()
+            partner = lattice.zero()
+            for label, pairing in lattice.generator_pairings(self).items():
+                new_gcd, old_coefficient, new_coefficient = gcd_value.xgcd(pairing)
+                partner = (
+                    lattice.scalar_multiple(old_coefficient, partner)
+                    + lattice.scalar_multiple(new_coefficient, lattice.module_generator(label))
+                )
+                gcd_value = new_gcd
+            return -partner if gcd_value < ring.zero() else partner
+
         def primitive_dual(self):
             r"""Return ``v/div(v)`` under the metric embedding ``L -> L^#``."""
             return self.parent().primitive_dual(self)
@@ -5225,26 +5282,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 )
             line_generator = line.module_generators()[0]
             isotropic = self.isotropic_embedding()(line_generator)
-            labels = tuple(ambient.module_generating_set())
-            pairings = tuple(ambient.b(isotropic, ambient.module_generator(label)) for label in labels)
-            gcd_value = ring.zero()
-            coefficients = []
-            for pairing in pairings:
-                new_gcd, old_coefficient, new_coefficient = gcd_value.xgcd(pairing)
-                coefficients = [old_coefficient * coefficient for coefficient in coefficients]
-                coefficients.append(new_coefficient)
-                gcd_value = new_gcd
             divisibility = isotropic.div()
-            if gcd_value != divisibility:
-                coefficients = [-coefficient for coefficient in coefficients]
-                gcd_value = -gcd_value
-            if gcd_value != divisibility:
-                raise ArithmeticError(f"the Bezout combination of the pairings b(e, e_i) of e = {isotropic!r} in {ambient!r} has gcd {gcd_value}, but div(e) = {divisibility}")
-            bezout_partner = ambient.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
-            if ambient.b(isotropic, bezout_partner) != divisibility:
-                raise ArithmeticError(
-                    f"the Bezout partner h = {bezout_partner!r} of e = {isotropic!r} in {ambient!r} has b(e, h) = {ambient.b(isotropic, bezout_partner)}, but it must equal div(e) = {divisibility}"
-                )
+            bezout_partner = isotropic.bezout_partner()
 
             fraction_map = ring.fraction_field_map()
             rational = ambient.base_change(fraction_map)

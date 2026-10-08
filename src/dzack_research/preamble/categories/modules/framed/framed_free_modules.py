@@ -1,5 +1,6 @@
 """Free modules with their canonical framing."""
 
+from functools import reduce
 from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
@@ -57,6 +58,9 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.rings.ring_foundation import _OwnedIntegerElement
 
 
 def _finitely_generated_free_placement(ring, module_generating_set):
@@ -351,6 +355,54 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
     class ElementMethods:
         if TYPE_CHECKING:
             def __call__(self, label) -> RingElement: ...
+
+        def content(self) -> "_OwnedIntegerElement":
+            r"""Return the nonnegative content of a vector over ``ZZ``.
+
+            The zero vector has content zero. Only the finite support is read,
+            including when the chosen basis is infinite.
+
+            Migrated from ``sage-indefinite-port``'s ``vector_content``;
+            scalar gcd is supplied by the coefficient ring.
+
+            EXAMPLES::
+
+                sage: M = ZZ**2
+                sage: v = M.linear_combination({0: ZZ(-6), 1: ZZ(9)})
+                sage: v.content() == ZZ(3)
+                True
+                sage: M.zero().content() == ZZ(0)
+                True
+            """
+            ring = self.parent().base_ring()
+            assert _engine_ring(ring) is SageZZ, (
+                f"integer content requires a free module over ZZ, not {ring}"
+            )
+            coordinates = self.to_vector()
+            return abs(reduce(
+                lambda left, right: left.gcd(right),
+                (coordinates(label) for label in coordinates.support().domain()),
+                ring.zero(),
+            ))
+
+        def primitive_part(self) -> "FramedFreeModules.ElementMethods":
+            r"""Return ``v/content(v)`` for a nonzero vector over ``ZZ``.
+
+            EXAMPLES::
+
+                sage: M = ZZ**2
+                sage: v = M.linear_combination({0: ZZ(-6), 1: ZZ(9)})
+                sage: v.primitive_part() == M.linear_combination({0: ZZ(-2), 1: ZZ(3)})
+                True
+            """
+            content = self.content()
+            if not content:
+                raise ValueError("the zero vector has no primitive part")
+            coordinates = self.to_vector()
+            return self.parent().linear_combination({
+                label: coordinates(label) // content
+                for label in coordinates.support().domain()
+            })
 
         def to_vector(self) -> "FramedFreeModules.ElementMethods":
             r"""The coordinates of this element in the chosen basis ``I``.
