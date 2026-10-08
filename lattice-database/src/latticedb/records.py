@@ -175,16 +175,7 @@ def _theta_series_prefix(lattice, minimum: Fraction, existing_length: int) -> tu
     6 in rank at most 12 and 4 above, never fewer than the minimum asks for and never
     fewer than a prefix already stored on the card.
     """
-    rank = int(lattice.module_rank())
-    match rank:
-        case _ if rank <= 4:
-            default = 12
-        case _ if rank <= 8:
-            default = 8
-        case _ if rank <= 12:
-            default = 6
-        case _:
-            default = 4
+    default = model.series_bound(int(lattice.module_rank()))
     bound = max(int(minimum), default, max(0, existing_length - 1))
     series = lattice.theta_series(precision=bound + 1)
     return tuple(int(series[index]) for index in range(bound + 1))

@@ -8,6 +8,7 @@ JSON line.
 
 import json
 import sys
+from fractions import Fraction
 from typing import TypedDict
 
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
@@ -24,6 +25,7 @@ class Request(TypedDict):
     gram: list[list[int | str]]
     integral: bool
     fields: list[str]
+    series_bound: int
 
 
 JsonValue = object
@@ -95,6 +97,45 @@ def _modular_scale(lattice) -> int | bool:
     return False if scale is None else int(scale)
 
 
+def _rational(value) -> int | str:
+    """Serialize a preamble rational number as an integer or a string `p/q`."""
+    number = Fraction(str(value))
+    return number.numerator if number.denominator == 1 else f"{number.numerator}/{number.denominator}"
+
+
+def _coefficients(series, bound: int) -> list[int | str]:
+    """Serialize the coefficients of `q^0, ..., q^bound` of a preamble power series."""
+    return [_rational(series[exponent]) for exponent in range(bound + 1)]
+
+
+def _local_densities(lattice, bound: int) -> list[dict[str, JsonValue]]:
+    """Serialize the preamble's local densities `beta_p(L, m)`, `m = 1, ..., bound`, at each prime dividing `2 det L`."""
+    genus = lattice.genus()
+    return [
+        {"prime": int(prime), "densities": [_rational(genus.local_density(prime, value)) for value in range(1, bound + 1)]}
+        for prime in lattice.bad_reduction_primes()
+    ]
+
+
+def _local_representations(lattice) -> list[dict[str, JsonValue]]:
+    """Serialize the preamble's least represented valuation of each square class, at each prime where it is not every class."""
+    return [
+        {
+            "prime": int(prime),
+            "classes": [{"representative": int(representative), "least_valuation": int(valuation)} for representative, valuation in classes.items()],
+        }
+        for prime, classes in lattice.genus().local_representations().items()
+    ]
+
+
+SERIES = {
+    "genus_theta_series": lambda lattice, bound: _coefficients(lattice.genus().theta_series(precision=bound + 1), bound),
+    "theta_series_cuspidal_component": lambda lattice, bound: _coefficients(lattice.theta_series_cuspidal_component(precision=bound + 1), bound),
+    "local_densities": _local_densities,
+}
+"""Fields whose value is a prefix of a series, computed through the request's `series_bound`."""
+
+
 JOINT = (
     (
         frozenset({"automorphism_group_order", "automorphism_group_generator_morphisms"}),
@@ -119,6 +160,8 @@ VALUES = {
     "modular_scale": _modular_scale,
     "regular": lambda lattice: _decided(lattice.is_regular()),
     "spinor_regular": lambda lattice: _decided(lattice.is_spinor_regular()),
+    "anisotropic_primes": lambda lattice: [int(prime) for prime in lattice.genus().anisotropic_primes()],
+    "local_representations": _local_representations,
 }
 
 
@@ -151,7 +194,8 @@ def main() -> None:
             if field in joint_fields:
                 continue
             _start(request["tag"], [field])
-            _emit(request["tag"], {field: VALUES[field](lattice)})
+            value = SERIES[field](lattice, request["series_bound"]) if field in SERIES else VALUES[field](lattice)
+            _emit(request["tag"], {field: value})
 
 
 if __name__ == "__main__":
