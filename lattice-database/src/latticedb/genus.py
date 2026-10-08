@@ -20,7 +20,7 @@ from typing import TypedDict
 import frontmatter
 from pydantic import BaseModel
 
-from latticedb import certificates, corpus, exceeded, records, regular_ternaries
+from latticedb import certificates, corpus, exceeded, records
 from latticedb.certificates import Certificate, Certificates
 from latticedb.model import (
     DefiniteData,
@@ -183,7 +183,7 @@ def requests(
 
 def computed(chosen: list[Request]) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
-    task = json.dumps({"lattices": chosen, "ternary_rows": regular_ternaries.requested()})
+    task = json.dumps({"lattices": chosen})
     # Keep the host SageMath environment separate from the project environment.
     environment = {variable: value for variable, value in os.environ.items() if variable != "VIRTUAL_ENV"}
     own = str(Path(sys.prefix) / "bin")
@@ -273,13 +273,6 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
                 else:
                     block[field] = value
                 metadata[block_name] = {key: block[key] for key in model.model_fields if key in block}
-    # A regularity value read from a table row cites that row.
-    references = list(metadata.get("references", []))
-    for reference in values.get("references") or []:
-        if reference not in references:
-            references.append(reference)
-    if references:
-        metadata["references"] = references
     metadata["morphisms"] = morphisms
     text = records.record_text(metadata, document.content)
     if text != path.read_text():
@@ -345,3 +338,28 @@ def certify(
             {field: values[field] for field in BLOCKS if field in values},
             flush=True,
         )
+
+
+def cite(path: Path, field: str, value: Yaml, reference: dict[str, str], held: Certificates) -> None:
+    """Store `value` of `field` on the card at `path` and certify it by the source that proves it.
+
+    The certificate's provenance is the citation, so certification never
+    recomputes the value. A different value already on the card contradicts
+    the source and stops the run.
+    """
+    document = frontmatter.load(str(path))
+    metadata = corpus.front_matter(document)
+    block_name = BLOCKS[field][0]
+    block = dict(metadata.get(block_name) or {})
+    assert block.get(field) in (None, value), f"{path}: {block_name}.{field} is {block.get(field)}, the source proves {value}"
+    block[field] = value
+    metadata[block_name] = {key: block[key] for key in BLOCKS[field][1].model_fields if key in block}
+    references = list(metadata.get("references") or [])
+    if reference not in references:
+        metadata["references"] = [*references, reference]
+    lattice = Lattice.model_validate(metadata)
+    computation = name(lattice.tag, field)
+    certificate_hash = certificates.certification_hash(computation, lattice, certified_value(field, value, lattice))
+    metadata["certifications"] = {**dict(metadata.get("certifications") or {}), f"{block_name}.{field}": certificate_hash}
+    held[computation] = Certificate(hash=certificate_hash, by=reference["citation"])
+    path.write_text(records.record_text(metadata, document.content))

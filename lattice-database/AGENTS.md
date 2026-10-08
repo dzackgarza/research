@@ -45,7 +45,9 @@ Certification is a separate CI phase. It asks the preamble to compute each uncer
 the card's defining mathematical input. If an authored or seeded value disagrees, the preamble
 result replaces it. The
 resulting card value then receives a certificate hash, and `certificates.yaml` records that hash
-with computation provenance.
+with computation provenance. A value that a seeded source proves, such as the regularity of a form
+in the Jagy–Kaplansky–Schiemann list, is certified when it is seeded: its certificate names the
+source's citation as provenance, and certification never computes it.
 
 Verification is read-only. The modules in `src/latticedb/checks/` inspect stored cards and relations,
 check structural/reference/certificate coherence, and may construct the corresponding preamble

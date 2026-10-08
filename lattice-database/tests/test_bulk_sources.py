@@ -5,7 +5,7 @@ from pathlib import Path
 
 from flint import fmpz_mat
 
-from latticedb import brandt_intrau, nebe_sloane, nipp, records, watson
+from latticedb import brandt_intrau, nebe_sloane, nipp, records, regular_ternaries, watson
 from latticedb.model import Lattice
 
 SOURCES = Path(__file__).resolve().parent.parent / "sources"
@@ -51,3 +51,15 @@ def test_brandt_and_watson_source_forms_seed_valid_lattice_records() -> None:
     ):
         lattice = Lattice.model_validate(records.derive({"tag": "ZZZZ", **declared}))
         assert lattice.gram_tensor == entry.gram_tensor
+
+
+def test_regular_ternary_tables_seed_valid_lattice_records_with_their_proved_values() -> None:
+    entries = regular_ternaries.entries()
+    assert [entry.field for entry in entries].count("regular") == 913
+    assert [entry.field for entry in entries].count("spinor_regular") == 29
+    assert sum(entry.proved == "true under GRH" for entry in entries) == 14
+    for entry in (entries[0], entries[225], entries[913]):
+        declared = regular_ternaries.record(entry)[0]
+        lattice = Lattice.model_validate(records.derive({"tag": "ZZZZ", **declared}))
+        assert [list(row) for row in lattice.gram_tensor] == entry.gram_tensor
+        assert declared["definite"] == {entry.field: entry.proved}

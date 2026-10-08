@@ -8,7 +8,6 @@ JSON line.
 
 import json
 import sys
-from functools import cache, reduce
 from typing import TypedDict
 
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
@@ -25,16 +24,6 @@ class Request(TypedDict):
     gram: list[list[int | str]]
     integral: bool
     fields: list[str]
-
-
-class TernaryRow(TypedDict):
-    """A row of a table of regular or spinor regular ternary forms, as `regular_ternaries.requested` sends it."""
-
-    field: str
-    gram: list[list[int]]
-    proved: bool | str
-    reference: dict[str, str]
-    locator: str
 
 
 JsonValue = object
@@ -100,56 +89,6 @@ def _decided(answer) -> bool | None:
             return None
 
 
-def _scale(lattice):
-    """The positive generator of the scale ideal \\(b(L, L)\\) of a lattice over \\(\\mathbb Z\\)."""
-    return reduce(lambda left, right: left.gcd(right), lattice.scale_submodule().ideal_generators())
-
-
-@cache
-def _row_lattice(index: int):
-    """The lattice of row ``index`` of the tables, with its scale and determinant."""
-    form = Lattices(OWNED_ZZ)(TERNARY_ROWS[index]["gram"])
-    return form, _scale(form), form.determinant()
-
-
-def _identified_rows(lattice) -> list[TernaryRow]:
-    """The table rows whose form is isometric to a rescaling of ``lattice``, up to sign.
-
-    \\(L \\cong E(s_L / s_E)\\) exactly when \\(L(s_E) \\cong E(s_L)\\), where
-    \\(s\\) is the generator of the scale ideal; a row whose determinant does
-    not satisfy \\(\\det L \\cdot s_E^3 = \\det E \\cdot s_L^3\\) is skipped
-    before the isometry is asked.
-    """
-    positive = lattice.twist(1 if lattice.is_positive_definite() else -1)
-    scale = _scale(positive)
-    determinant = positive.determinant()
-    identified = []
-    for index, row in enumerate(TERNARY_ROWS):
-        form, form_scale, form_determinant = _row_lattice(index)
-        if determinant * form_scale**3 != form_determinant * scale**3:
-            continue
-        if positive.twist(form_scale).is_isometric(form.twist(scale)) is True:
-            identified.append(row)
-    return identified
-
-
-def _regularity(lattice, field: str) -> dict[str, JsonValue]:
-    """The value of ``field`` from the table row that lists ``lattice``, or the preamble's answer.
-
-    A regular form is spinor regular, so a row of the regular table also
-    answers ``spinor_regular``.
-    """
-    fields = {"regular": ("regular",), "spinor_regular": ("regular", "spinor_regular")}[field]
-    for row in _identified_rows(lattice):
-        if row["field"] in fields:
-            return {field: row["proved"], "references": [row["reference"]], "by": f"research preamble isometry to {row['locator']}"}
-    match field:
-        case "regular":
-            return {field: _decided(lattice.is_regular())}
-        case _:
-            return {field: _decided(lattice.is_spinor_regular())}
-
-
 def _modular_scale(lattice) -> int | bool:
     """Serialize the preamble's \\(k\\) with \\(L\\cong L^*(k)\\), or ``False`` when there is none."""
     scale = lattice.modular_scale()
@@ -178,6 +117,8 @@ VALUES = {
     "discriminant_orbits": lambda lattice: lattice.discriminant_orbit_series(),
     "reflective": _reflective,
     "modular_scale": _modular_scale,
+    "regular": lambda lattice: _decided(lattice.is_regular()),
+    "spinor_regular": lambda lattice: _decided(lattice.is_spinor_regular()),
 }
 
 
@@ -191,14 +132,9 @@ def _emit(tag: str, values: dict[str, JsonValue]) -> None:
     print(json.dumps({"tag": tag, "by": "research preamble", **values}), flush=True)
 
 
-TERNARY_ROWS: list[TernaryRow] = []
-"""The rows of the regular and spinor regular ternary tables that the task supplies."""
-
-
 def main() -> None:
     task = json.load(sys.stdin)
     lattices: list[Request] = task["lattices"]
-    TERNARY_ROWS.extend(task["ternary_rows"])
     for request in lattices:
         ring = OWNED_ZZ if request["integral"] else OWNED_QQ
         lattice = Lattices(ring)(request["gram"])
@@ -215,8 +151,7 @@ def main() -> None:
             if field in joint_fields:
                 continue
             _start(request["tag"], [field])
-            values = _regularity(lattice, field) if field in {"regular", "spinor_regular"} else {field: VALUES[field](lattice)}
-            _emit(request["tag"], values)
+            _emit(request["tag"], {field: VALUES[field](lattice)})
 
 
 if __name__ == "__main__":

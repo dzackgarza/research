@@ -6,7 +6,9 @@ is the only place that stores the value itself.
 
 A computation that does not finish has no certificate. Authored or seeded
 card values have no certification status until the certification phase
-computes them and writes a certificate.
+computes them and writes a certificate, except a value that a seeded source
+proves: its certificate names that source's citation, and the value is never
+recomputed.
 """
 
 import hashlib
@@ -25,7 +27,7 @@ class Certificate(Record):
     hash: str = Field(
         description="SHA-256 digest of the computation name, Gram tensor, and certified card value.",
     )
-    by: str = Field(description="The program that carried out the computation, with its version.")
+    by: str = Field(description="The program that carried out the computation, with its version, or the citation of the source that proves the value.")
 
 
 Certificates = dict[str, Certificate]
@@ -53,9 +55,7 @@ def certification_hash(name: str, lattice: Lattice, value: object) -> str:
         json.dumps(
             {
                 "computation": name,
-                "gram_tensor": [
-                    [str(entry) for entry in row] for row in lattice.gram_tensor
-                ],
+                "gram_tensor": [[str(entry) for entry in row] for row in lattice.gram_tensor],
                 "result": value,
             },
             sort_keys=True,
@@ -74,11 +74,7 @@ def is_certified(
 ) -> bool:
     """Whether the card cites the exact completed certificate for its stored result."""
     certificate = certificates.get(name)
-    return (
-        cited_hash == expected_hash
-        and certificate is not None
-        and certificate.hash == cited_hash
-    )
+    return cited_hash == expected_hash and certificate is not None and certificate.hash == cited_hash
 
 
 def is_pending(

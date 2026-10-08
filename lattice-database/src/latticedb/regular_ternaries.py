@@ -39,9 +39,20 @@ class TernaryEntry:
     proof: str
 
     @property
+    def classically_integral(self) -> bool:
+        """Whether the cross coefficients are even, so that b(x, x) = Q(x) is an integral form."""
+        return all(coefficient % 2 == 0 for coefficient in self.coefficients[3:])
+
+    @property
     def gram_tensor(self) -> list[list[int]]:
-        """The Gram tensor of the even lattice with b(x, x) = 2Q(x), as the source's coefficients print it."""
+        """The Gram tensor of b(x, x) = Q(x) when that form is integral, and of b(x, x) = 2Q(x) otherwise.
+
+        This is the convention of the Brandt–Intrau–Schiemann tables; regularity
+        and spinor regularity do not change under rescaling the form.
+        """
         a, b, c, d, e, f = self.coefficients
+        if self.classically_integral:
+            return [[a, f // 2, e // 2], [f // 2, b, d // 2], [e // 2, d // 2, c]]
         return [[2 * a, f, e], [f, 2 * b, d], [e, d, 2 * c]]
 
     @property
@@ -78,10 +89,30 @@ def stored(table: Path) -> list[TernaryEntry]:
     return entries
 
 
-def requested() -> list[dict[str, Yaml]]:
-    """Every row of both tables, as `latticedb certify` sends it to the preamble adapter."""
-    return [
-        {"field": entry.field, "gram": entry.gram_tensor, "proved": entry.proved, "reference": entry.reference, "locator": f"{entry.table.parent.name} row {entry.row}"}
-        for table in (REGULAR, SPINOR_REGULAR)
-        for entry in stored(table)
-    ]
+_NAMES = {REGULAR: "Jagy–Kaplansky–Schiemann regular ternary form", SPINOR_REGULAR: "Earnest–Haensch spinor regular ternary form"}
+
+
+def entries() -> list[TernaryEntry]:
+    """Every row of both stored tables."""
+    return stored(REGULAR) + stored(SPINOR_REGULAR)
+
+
+def record(entry: TernaryEntry) -> tuple[dict[str, Yaml], str]:
+    """State one row as a lattice card's declared fields, with the value its source proves."""
+    name = f"{_NAMES[entry.table]} {entry.row}"
+    declared: dict[str, Yaml] = {
+        "name": name,
+        "latex": name,
+        "aliases": [],
+        "gram_tensor": entry.gram_tensor,
+        "families": [],
+        "related": [],
+        "references": [entry.reference],
+        "definite": {entry.field: entry.proved},
+    }
+    prose = (
+        f"Row {entry.row} of `sources/{entry.table.parent.name}/{entry.table.name}` gives the coefficients "
+        f"$(a, b, c, d, e, f) = {entry.coefficients}$ of $Q = ax^2 + by^2 + cz^2 + dyz + ezx + fxy$; the Gram tensor is that of "
+        f"{'$b(x, x) = Q(x)$' if entry.classically_integral else '$b(x, x) = 2Q(x)$'}."
+    )
+    return declared, prose
