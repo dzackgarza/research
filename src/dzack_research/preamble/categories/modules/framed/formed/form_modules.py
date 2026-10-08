@@ -1699,6 +1699,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     True
                     sage: S.vector_of_sign(1) is None
                     True
+                    sage: T = U.subobject_on((U.basis_vector(0) + U.basis_vector(1), U.basis_vector(0) - U.basis_vector(1)))
+                    sage: p, n = T.positive_vector(), T.negative_vector()
+                    sage: p.parent() is T and n.parent() is T
+                    True
+                    sage: p.q() > 0 and n.q() < 0
+                    True
+                    sage: T.inclusion()(p).q() == p.q() and T.inclusion()(n).q() == n.q()
+                    True
                 """
                 if sign not in (-1, 1):
                     raise ValueError("a signed-vector request requires sign -1 or 1")
