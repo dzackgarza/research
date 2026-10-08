@@ -64,9 +64,7 @@ def rational(value: Yaml | Fraction) -> Fraction:
                 {"value": value},
             )
         case _:
-            raise PydanticCustomError(
-                "rational_type", "a rational is an integer or a string 'p/q'"
-            )
+            raise PydanticCustomError("rational_type", "a rational is an integer or a string 'p/q'")
 
 
 Rational = Annotated[Fraction, BeforeValidator(rational)]
@@ -94,9 +92,7 @@ def _problem(
     location: tuple[str, ...],
     context: dict[str, str | int] | None = None,
 ) -> InitErrorDetails:
-    return InitErrorDetails(
-        type=PydanticCustomError(kind, message, context), loc=location, input=None
-    )
+    return InitErrorDetails(type=PydanticCustomError(kind, message, context), loc=location, input=None)
 
 
 class Record(BaseModel):
@@ -110,9 +106,7 @@ class Record(BaseModel):
 
 class Related(Record):
     tag: Tag = Field(description="Tag of another lattice in the catalogue.")
-    relation: str = Field(
-        description="One sentence that states how that lattice is related to this one."
-    )
+    relation: str = Field(description="One sentence that states how that lattice is related to this one.")
 
 
 class Summand(Record):
@@ -124,9 +118,7 @@ class Summand(Record):
     """
 
     tag: Tag = Field(description="Tag of the lattice $M$ in the catalogue.")
-    scale: int = Field(
-        description="The nonzero integer $k$: the summand is $M$ with the form $k b_M$."
-    )
+    scale: int = Field(description="The nonzero integer $k$: the summand is $M$ with the form $k b_M$.")
 
     @model_validator(mode="after")
     def _nonzero_scale(self) -> Self:
@@ -142,18 +134,14 @@ class Summand(Record):
 
 class Reference(Record):
     citation: str = Field(description="Bibliographic citation as plain text.")
-    url: str | None = Field(
-        default=None, description="Address of the source, when it has one."
-    )
+    url: str | None = Field(default=None, description="Address of the source, when it has one.")
 
 
 OrbitGroup = Literal["O", "O+", "SO", "SO+", "Otilde", "Otilde+", "SOtilde", "SOtilde+"]
 """A subgroup $\\Gamma$ of $O(L)$: $S$ is the kernel of the determinant, `+` the kernel of the real spinor norm, and `tilde` the kernel of the action on $A_L$."""
 
 
-OrbitCounts = Annotated[
-    tuple[Annotated[int, Field(ge=0)] | None, ...], Field(strict=False)
-]
+OrbitCounts = Annotated[tuple[Annotated[int, Field(ge=0)] | None, ...], Field(strict=False)]
 
 
 class PrimitiveOrbitSeries(Record):
@@ -195,18 +183,14 @@ class PrimitiveOrbitSeries(Record):
 class StabilizedObject(Record):
     """The object a subgroup of $O(L)$ fixes, named by a card's slug."""
 
-    kind: Literal[
-        "vector_orbit", "chamber", "geometric_object", "geometric_family", "embedding"
-    ]
+    kind: Literal["vector_orbit", "chamber", "geometric_object", "geometric_family", "embedding"]
     identifier: str = Field(min_length=1)
 
 
 class ChamberData(Record):
     """A chamber in the real hyperbolic lattice: a fundamental domain of a reflection subgroup."""
 
-    interior_vector: IntegerVector = Field(
-        description="An interior point of the chamber, in the record basis."
-    )
+    interior_vector: IntegerVector = Field(description="An interior point of the chamber, in the record basis.")
     wall_normals: tuple[IntegerVector, ...] = Field(
         strict=False,
         description="One inward normal for each wall of the chamber, in the record basis.",
@@ -216,9 +200,7 @@ class ChamberData(Record):
 class OrbitRepresentatives(Record):
     """Orbit representatives of the primitive vectors of one norm: one vector per $\\Gamma$-orbit, in the record basis."""
 
-    square: int = Field(
-        description="The norm $n = b(v, v)$ of each representative in this group."
-    )
+    square: int = Field(description="The norm $n = b(v, v)$ of each representative in this group.")
     representatives: VectorList = Field(
         strict=False,
         description="One primitive vector of norm $n$ for each $\\Gamma$-orbit, in the record basis.",
@@ -241,9 +223,7 @@ class GroupData(Record):
         ),
     )
 
-    index_in_orthogonal_group: Annotated[int, Field(gt=0)] | None = Field(
-        default=None, description="The index $[O(L) : \\Gamma]$."
-    )
+    index_in_orthogonal_group: Annotated[int, Field(gt=0)] | None = Field(default=None, description="The index $[O(L) : \\Gamma]$.")
     parent: str | None = Field(
         default=None,
         description="The key of a containing subgroup of the same lattice.",
@@ -252,16 +232,12 @@ class GroupData(Record):
         default=None,
         description="Names of self-isometries in this lattice card's `morphisms` field that generate $\\Gamma$.",
     )
-    defining_relators: (
-        tuple[Annotated[tuple[int, ...], Field(strict=False)], ...] | None
-    ) = Field(
+    defining_relators: tuple[Annotated[tuple[int, ...], Field(strict=False)], ...] | None = Field(
         default=None,
         strict=False,
         description="Words in the signed generators above, one generator index per entry, that present $\\Gamma$.",
     )
-    abstract_structure: str | None = Field(
-        default=None, description="The abstract group $\\Gamma$, as plain text."
-    )
+    abstract_structure: str | None = Field(default=None, description="The abstract group $\\Gamma$, as plain text.")
     stabilized: StabilizedObject | None = Field(
         default=None,
         description="A vector orbit, chamber, geometric object, family or embedding that $\\Gamma$ fixes.",
@@ -278,9 +254,7 @@ class GroupData(Record):
             "in the record basis. A group states a set of representatives, not necessarily all of them."
         ),
     )
-    reference: Reference | None = Field(
-        default=None, description="The source of the structure and the representatives."
-    )
+    reference: Reference | None = Field(default=None, description="The source of the structure and the representatives.")
 
 
 class DiscriminantSequenceData(Record):
@@ -310,40 +284,17 @@ class DiscriminantSequenceData(Record):
             *self.image_generators,
             *self.coset_representatives,
         ]
-        if any(
-            len(rows) != size or any(len(row) != size for row in rows)
-            for rows in matrices
-        ):
-            raise ValueError(
-                "discriminant isometry matrices must be square in the stated basis"
-            )
-        if (
-            len(self.discriminant_basis_lifts) != size
-            or len(self.discriminant_quadratic_gram) != size
-        ):
-            raise ValueError(
-                "the discriminant basis and quadratic Gram matrix must match the invariant factors"
-            )
-        if self.image_normal != (
-            self.quotient_multiplication is not None
-            and self.quotient_generator_cosets is not None
-        ):
-            raise ValueError(
-                "quotient group data are present exactly when the image is normal"
-            )
+        if any(len(rows) != size or any(len(row) != size for row in rows) for rows in matrices):
+            raise ValueError("discriminant isometry matrices must be square in the stated basis")
+        if len(self.discriminant_basis_lifts) != size or len(self.discriminant_quadratic_gram) != size:
+            raise ValueError("the discriminant basis and quadratic Gram matrix must match the invariant factors")
+        if self.image_normal != (self.quotient_multiplication is not None and self.quotient_generator_cosets is not None):
+            raise ValueError("quotient group data are present exactly when the image is normal")
         if self.quotient_multiplication is not None:
             count = len(self.coset_representatives)
-            if len(self.quotient_multiplication) != count or any(
-                len(row) != count for row in self.quotient_multiplication
-            ):
-                raise ValueError(
-                    "the quotient multiplication table must index the cosets"
-                )
-            if any(
-                value < 0 or value >= count
-                for row in self.quotient_multiplication
-                for value in row
-            ):
+            if len(self.quotient_multiplication) != count or any(len(row) != count for row in self.quotient_multiplication):
+                raise ValueError("the quotient multiplication table must index the cosets")
+            if any(value < 0 or value >= count for row in self.quotient_multiplication for value in row):
                 raise ValueError("quotient products must index the stated cosets")
         if self.quotient_invariant_factors is not None and self.quotient_multiplication is None:
             raise ValueError("quotient invariant factors require stored quotient-group data")
@@ -355,9 +306,7 @@ class DiscriminantSequenceData(Record):
 class IntegralData(Record):
     """Stored invariants of an integer-valued lattice, when available."""
 
-    parity: Literal["even", "odd"] = Field(
-        description="`even` when $b(x, x)$ is even for every $x$, `odd` otherwise."
-    )
+    parity: Literal["even", "odd"] = Field(description="`even` when $b(x, x)$ is even for every $x$, `odd` otherwise.")
     level: Annotated[int, Field(gt=0)] | None = Field(
         default=None,
         description="Least positive $k$ for which $k b(x,x)$ is even for every $x$ in the dual lattice. Requires nonzero determinant.",
@@ -399,14 +348,12 @@ class IntegralData(Record):
             "This field is meaningful for an even nondegenerate 2-elementary lattice."
         ),
     )
-    bad_reduction_primes: Annotated[tuple[int, ...], Field(strict=False)] | None = (
-        Field(
-            default=None,
-            description=(
-                "The primes that divide $2 \\det L$, in increasing order: the primes $p$ at which $Q(x) = b(x, x)$ is degenerate modulo $p$. "
-                "Outside them and the primes that divide $n$, the scheme $Q(x) = n$ over $\\mathbb{Z}$ has good reduction."
-            ),
-        )
+    bad_reduction_primes: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
+        default=None,
+        description=(
+            "The primes that divide $2 \\det L$, in increasing order: the primes $p$ at which $Q(x) = b(x, x)$ is degenerate modulo $p$. "
+            "Outside them and the primes that divide $n$, the scheme $Q(x) = n$ over $\\mathbb{Z}$ has good reduction."
+        ),
     )
     quadratic_character: int | None = Field(
         default=None,
@@ -541,13 +488,19 @@ class DefiniteData(Record):
         default=None,
         description="Whether the rank-one tensors $v v^T$ of minimal vectors span $\\operatorname{Sym}^2(\\mathbb Q^n)$.",
     )
-    regular: bool | None = Field(
+    regular: bool | Literal["true under GRH"] | None = Field(
         default=None,
-        description="For an integral ternary form: every positive integer represented by its genus is represented by this lattice.",
+        description=(
+            "For an integral ternary form: every positive integer represented by its genus is represented by this lattice. "
+            "`true under GRH` when it is proved under the generalized Riemann hypothesis; `references` names the proof."
+        ),
     )
-    spinor_regular: bool | None = Field(
+    spinor_regular: bool | Literal["true under GRH"] | None = Field(
         default=None,
-        description="For an integral ternary form: every positive integer represented by its spinor genus is represented by this lattice.",
+        description=(
+            "For an integral ternary form: every positive integer represented by its spinor genus is represented by this lattice. "
+            "`true under GRH` when it is proved under the generalized Riemann hypothesis; `references` names the proof."
+        ),
     )
     theta_series: Annotated[tuple[int, ...], Field(strict=False)] | None = Field(
         default=None,
@@ -582,9 +535,7 @@ class IndefiniteData(Record):
 class HyperbolicData(Record):
     """Invariants of a nondegenerate lattice of rank at least 2 whose signature is $(1, n)$ or $(n, 1)$."""
 
-    reflective: bool = Field(
-        description="Whether the subgroup generated by reflections has finite index in the isometry group."
-    )
+    reflective: bool = Field(description="Whether the subgroup generated by reflections has finite index in the isometry group.")
 
 
 class RootSpan(Record):
@@ -598,9 +549,7 @@ class RootSpan(Record):
             "When they do not, the notes of the record prove that each root of $L$ is in the sublattice that the rows generate."
         )
     )
-    norms: Annotated[tuple[Rational, ...], Field(strict=False)] = Field(
-        description="Entry $i$ is $b(r_i, r_i)$ for the root $r_i$ in row $i$ of `roots`."
-    )
+    norms: Annotated[tuple[Rational, ...], Field(strict=False)] = Field(description="Entry $i$ is $b(r_i, r_i)$ for the root $r_i$ in row $i$ of `roots`.")
     summands: Annotated[tuple[Summand, ...], Field(strict=False)] | None = Field(
         default=None,
         description=(
@@ -648,8 +597,7 @@ class Morphism(Record):
     )
     matrix: Annotated[tuple[IntegerVector, ...], Field(strict=False, min_length=1)] = Field(
         description=(
-            "Matrix with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: "
-            "column $j$ lists the coordinates of $\\varphi(e_j)$ in the chosen basis of $T$."
+            "Matrix with $\\operatorname{rank} T$ rows and $\\operatorname{rank} S$ columns: column $j$ lists the coordinates of $\\varphi(e_j)$ in the chosen basis of $T$."
         )
     )
     scale: int = Field(
@@ -679,16 +627,8 @@ class Morphism(Record):
                     ("scale",),
                 )
             )
-        problems.extend(
-            _subdivision_problems(
-                self.row_subdivisions, len(self.matrix), ("row_subdivisions",)
-            )
-        )
-        problems.extend(
-            _subdivision_problems(
-                self.column_subdivisions, columns, ("column_subdivisions",)
-            )
-        )
+        problems.extend(_subdivision_problems(self.row_subdivisions, len(self.matrix), ("row_subdivisions",)))
+        problems.extend(_subdivision_problems(self.column_subdivisions, columns, ("column_subdivisions",)))
         if problems:
             raise ValidationError.from_exception_data(type(self).__name__, problems)
         return self
@@ -700,19 +640,14 @@ class Morphism(Record):
 
 
 class Lattice(Record):
-    tag: Tag = Field(
-        description="Permanent identifier: four characters from 0-9 and A-Z. The file name is the tag."
-    )
+    tag: Tag = Field(description="Permanent identifier: four characters from 0-9 and A-Z. The file name is the tag.")
     name: str = Field(description="Name as plain text, for search.")
     latex: str = Field(description="Name as TeX, without math delimiters.")
-    aliases: Annotated[tuple[str, ...], Field(strict=False)] = Field(
-        default=(), description="Other names, as plain text."
-    )
+    aliases: Annotated[tuple[str, ...], Field(strict=False)] = Field(default=(), description="Other names, as plain text.")
     certifications: dict[str, str] = Field(
         default_factory=dict,
         description=(
-            "Completed computations cited by computation name. Each value is the SHA-256 "
-            "certificate hash of that computation on this card's Gram tensor and stored result."
+            "Completed computations cited by computation name. Each value is the SHA-256 certificate hash of that computation on this card's Gram tensor and stored result."
         ),
     )
     rank: int | None = Field(
@@ -766,31 +701,15 @@ class Lattice(Record):
             "Computed by `latticedb enrich` from the Gram tensor; it requires a nonzero determinant."
         ),
     )
-    families: Annotated[tuple[Family, ...], Field(strict=False)] = Field(
-        default=(), description="Named families that contain the lattice."
-    )
-    related: Annotated[tuple[Related, ...], Field(strict=False)] = Field(
-        default=(), description="Related lattices in the catalogue."
-    )
-    references: Annotated[tuple[Reference, ...], Field(strict=False)] = Field(
-        default=(), description="Literature for the lattice."
-    )
-    integral: IntegralData | None = Field(
-        default=None, description=IntegralData.__doc__
-    )
-    definite: DefiniteData | None = Field(
-        default=None, description=DefiniteData.__doc__
-    )
-    indefinite: IndefiniteData | None = Field(
-        default=None, description=IndefiniteData.__doc__
-    )
-    hyperbolic: HyperbolicData | None = Field(
-        default=None, description=HyperbolicData.__doc__
-    )
+    families: Annotated[tuple[Family, ...], Field(strict=False)] = Field(default=(), description="Named families that contain the lattice.")
+    related: Annotated[tuple[Related, ...], Field(strict=False)] = Field(default=(), description="Related lattices in the catalogue.")
+    references: Annotated[tuple[Reference, ...], Field(strict=False)] = Field(default=(), description="Literature for the lattice.")
+    integral: IntegralData | None = Field(default=None, description=IntegralData.__doc__)
+    definite: DefiniteData | None = Field(default=None, description=DefiniteData.__doc__)
+    indefinite: IndefiniteData | None = Field(default=None, description=IndefiniteData.__doc__)
+    hyperbolic: HyperbolicData | None = Field(default=None, description=HyperbolicData.__doc__)
     root_span: RootSpan | None = Field(default=None, description=RootSpan.__doc__)
-    root_sublattice: RootSublattice | None = Field(
-        default=None, description=RootSublattice.__doc__
-    )
+    root_sublattice: RootSublattice | None = Field(default=None, description=RootSublattice.__doc__)
     morphisms: Annotated[tuple[Morphism, ...], Field(strict=False)] = Field(
         default=(),
         description="Stored morphisms whose domain is this lattice card; each morphism names its codomain lattice by tag.",
@@ -806,11 +725,7 @@ class Lattice(Record):
 
     @property
     def nullity(self) -> int | None:
-        return (
-            None
-            if self.rank is None or self.signature is None
-            else self.rank - self.signature[0] - self.signature[1]
-        )
+        return None if self.rank is None or self.signature is None else self.rank - self.signature[0] - self.signature[1]
 
     @property
     def is_definite(self) -> bool:
@@ -820,11 +735,7 @@ class Lattice(Record):
     @property
     def root_span_factors(self) -> tuple[int, ...] | None:
         """The invariant factors of $R(L)$ in $L$; `None` when $R(L)$ is not decided."""
-        return (
-            None
-            if self.root_sublattice is None
-            else self.root_sublattice.invariant_factors
-        )
+        return None if self.root_sublattice is None else self.root_sublattice.invariant_factors
 
     @model_validator(mode="after")
     def _well_defined(self) -> Self:
@@ -842,17 +753,9 @@ class Lattice(Record):
         return self
 
     def _shape_problems(self) -> Iterator[InitErrorDetails]:
-        if (
-            self.rank is None
-            or self.gram_tensor is None
-            or self.signature is None
-            or self.determinant is None
-            or self.definiteness is None
-        ):
+        if self.rank is None or self.gram_tensor is None or self.signature is None or self.determinant is None or self.definiteness is None:
             return
-        if len(self.gram_tensor) != self.rank or any(
-            len(row) != self.rank for row in self.gram_tensor
-        ):
+        if len(self.gram_tensor) != self.rank or any(len(row) != self.rank for row in self.gram_tensor):
             yield _problem(
                 "gram_tensor_shape",
                 "a (0,2)-tensor on a module of rank {rank} has {rank} rows of {rank} components",
@@ -871,10 +774,7 @@ class Lattice(Record):
         if self.integral is None:
             return
         if self.integral.discriminant_sequence is not None:
-            if (
-                tuple(self.integral.discriminant_sequence.discriminant_factors)
-                != self.integral.discriminant_group
-            ):
+            if tuple(self.integral.discriminant_sequence.discriminant_factors) != self.integral.discriminant_group:
                 yield _problem(
                     "discriminant_sequence_factors",
                     "the discriminant sequence must use the stated invariant factors",
@@ -926,23 +826,15 @@ class Lattice(Record):
         data = self.definite
         generator_names = data.automorphism_group_generator_morphisms
         if generator_names is not None:
-            self_isometry_names = [
-                morphism.name
-                for morphism in self.morphisms
-                if morphism.target == self.tag and morphism.scale == 1
-            ]
-            if len(set(generator_names)) != len(generator_names) or any(
-                self_isometry_names.count(name) != 1 for name in generator_names
-            ):
+            self_isometry_names = [morphism.name for morphism in self.morphisms if morphism.target == self.tag and morphism.scale == 1]
+            if len(set(generator_names)) != len(generator_names) or any(self_isometry_names.count(name) != 1 for name in generator_names):
                 yield _problem(
                     "automorphism_group_generators",
                     "each generator name occurs once in the generator list and names exactly one isometry L -> L (a morphism entry with scale 1) on this lattice card",
                     ("definite", "automorphism_group_generator_morphisms"),
                 )
         if data.roots is not None and any(
-            len(component.simple_roots) != component.rank
-            or any(len(row) != self.rank for row in component.simple_roots)
-            for component in data.roots
+            len(component.simple_roots) != component.rank or any(len(row) != self.rank for row in component.simple_roots) for component in data.roots
         ):
             yield _problem(
                 "roots_shape",
@@ -974,9 +866,7 @@ class Lattice(Record):
                     "`definite.roots` states the roots of a definite lattice, so the `root_span` block is an error there",
                     ("root_span",),
                 )
-            if any(
-                len(row) != self.rank for row in (*span.roots, *(span.embedding or ()))
-            ):
+            if any(len(row) != self.rank for row in (*span.roots, *(span.embedding or ()))):
                 yield _problem(
                     "root_span_shape",
                     "each row lists {rank} coordinates",
@@ -996,10 +886,7 @@ class Lattice(Record):
                     ("root_span",),
                 )
         sublattice = self.root_sublattice
-        decided = (
-            (self.definite is not None and self.definite.roots is not None)
-            or span is not None
-        )
+        decided = (self.definite is not None and self.definite.roots is not None) or span is not None
         if sublattice is None:
             return
         if not decided:
@@ -1010,17 +897,8 @@ class Lattice(Record):
             )
             return
         factors = sublattice.invariant_factors
-        if (
-            len(factors) > self.rank
-            or any(d < 1 for d in factors)
-            or any(
-                second % first != 0
-                for first, second in zip(factors, factors[1:], strict=False)
-            )
-        ):
-            message = (
-                "at most {rank} positive invariant factors, each dividing the next"
-            )
+        if len(factors) > self.rank or any(d < 1 for d in factors) or any(second % first != 0 for first, second in zip(factors, factors[1:], strict=False)):
+            message = "at most {rank} positive invariant factors, each dividing the next"
             yield _problem(
                 "root_sublattice_factors_shape",
                 message,
@@ -1028,12 +906,9 @@ class Lattice(Record):
                 {"rank": self.rank},
             )
 
-def _subdivision_problems(
-    lines: Vector, size: int, location: tuple[str, ...]
-) -> Iterator[InitErrorDetails]:
-    if any(not 0 < line < size for line in lines) or any(
-        first >= second for first, second in zip(lines, lines[1:], strict=False)
-    ):
+
+def _subdivision_problems(lines: Vector, size: int, location: tuple[str, ...]) -> Iterator[InitErrorDetails]:
+    if any(not 0 < line < size for line in lines) or any(first >= second for first, second in zip(lines, lines[1:], strict=False)):
         yield _problem(
             "subdivision_range",
             "the lines increase strictly and each lies strictly between 0 and {size}",

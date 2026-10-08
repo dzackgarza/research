@@ -62,11 +62,7 @@ def certified_value(field: str, value: Yaml, lattice: Lattice | None = None) -> 
     if field == "automorphism_group_generator_morphisms":
         if lattice is None or not isinstance(value, list):
             return value
-        by_name = {
-            morphism.name: morphism
-            for morphism in lattice.morphisms
-            if morphism.target == lattice.tag and morphism.scale == 1
-        }
+        by_name = {morphism.name: morphism for morphism in lattice.morphisms if morphism.target == lattice.tag and morphism.scale == 1}
         if any(name not in by_name for name in value):
             return value
         matrices = [[list(row) for row in by_name[name].matrix] for name in value]
@@ -115,11 +111,7 @@ def applies(field: str, lattice: Lattice, planes: int) -> bool:
             return lattice.definite is not None
         case "discriminant_orbits":
             index = max(planes, lattice.integral.hyperbolic_index or 0)
-            return (
-                lattice.definite is None
-                and lattice.integral.parity == "even"
-                and index >= 2
-            )
+            return lattice.definite is None and lattice.integral.parity == "even" and index >= 2
         case _:
             return True
 
@@ -159,11 +151,7 @@ def requests(
         lattice = entry.lattice
         if lattice.determinant == 0 or (tags and lattice.tag not in tags):
             continue
-        applicable = [
-            field
-            for field in BLOCKS
-            if applies(field, lattice, bounds.get(lattice.tag, 0))
-        ]
+        applicable = [field for field in BLOCKS if applies(field, lattice, bounds.get(lattice.tag, 0))]
         metadata = corpus.front_matter(frontmatter.load(str(entry.path)))
         card_certifications = metadata.get("certifications")
         cited = card_certifications if isinstance(card_certifications, dict) else {}
@@ -175,27 +163,13 @@ def requests(
             computation = name(lattice.tag, field)
             if exceeded.is_exceeded(log, computation, lattice):
                 continue
-            expected_hash = certificates.certification_hash(
-                computation, lattice, certified_value(field, stored_value, lattice)
-            )
-            if stored_value is None or certificates.is_pending(
-                held, computation, cited.get(f"{block_name}.{field}"), expected_hash
-            ):
+            expected_hash = certificates.certification_hash(computation, lattice, certified_value(field, stored_value, lattice))
+            if stored_value is None or certificates.is_pending(held, computation, cited.get(f"{block_name}.{field}"), expected_hash):
                 fields.append(field)
         if fields:
-            interrupted = [
-                field
-                for field in fields
-                if exceeded.seconds_run(log, name(lattice.tag, field), lattice)
-                is not None
-            ]
-            fields = interrupted + [
-                field for field in fields if field not in interrupted
-            ]
-            gram = [
-                [int(value) if value.denominator == 1 else str(value) for value in row]
-                for row in lattice.gram_tensor
-            ]
+            interrupted = [field for field in fields if exceeded.seconds_run(log, name(lattice.tag, field), lattice) is not None]
+            fields = interrupted + [field for field in fields if field not in interrupted]
+            gram = [[int(value) if value.denominator == 1 else str(value) for value in row] for row in lattice.gram_tensor]
             (resumed if interrupted else chosen).append(
                 {
                     "tag": lattice.tag,
@@ -211,15 +185,9 @@ def computed(chosen: list[Request]) -> Iterator[dict[str, Yaml]]:
     """The values that SageMath computes for `chosen`, one record at a time."""
     task = json.dumps({"lattices": chosen})
     # Keep the host SageMath environment separate from the project environment.
-    environment = {
-        variable: value
-        for variable, value in os.environ.items()
-        if variable != "VIRTUAL_ENV"
-    }
+    environment = {variable: value for variable, value in os.environ.items() if variable != "VIRTUAL_ENV"}
     own = str(Path(sys.prefix) / "bin")
-    environment["PATH"] = os.pathsep.join(
-        entry for entry in environment["PATH"].split(os.pathsep) if entry != own
-    )
+    environment["PATH"] = os.pathsep.join(entry for entry in environment["PATH"].split(os.pathsep) if entry != own)
     command = [
         environment["SAGE_BIN"],
         "-c",
@@ -237,33 +205,17 @@ def computed(chosen: list[Request]) -> Iterator[dict[str, Yaml]]:
         process.stdin.close()
         # SageMath writes a carriage return to standard output for some lattices (for E8, record 0094), which reads as an empty line.
         yield from (json.loads(line) for line in process.stdout if line.strip())
-    assert process.returncode == 0, (
-        f"{SAGE_MODULE} exited with status {process.returncode}"
-    )
+    assert process.returncode == 0, f"{SAGE_MODULE} exited with status {process.returncode}"
 
 
-def _generator_morphisms(
-    tag: str, morphisms: list[dict[str, Yaml]], matrices: list[Yaml]
-) -> tuple[list[str], list[dict[str, Yaml]]]:
+def _generator_morphisms(tag: str, morphisms: list[dict[str, Yaml]], matrices: list[Yaml]) -> tuple[list[str], list[dict[str, Yaml]]]:
     """Place computed generators of O(L) on the lattice card and return their names."""
     names: list[str] = []
-    used_self_names = {
-        morphism["name"]
-        for morphism in morphisms
-        if morphism.get("target") == tag
-        and morphism.get("scale", 1) == 1
-        and isinstance(morphism.get("name"), str)
-    }
+    used_self_names = {morphism["name"] for morphism in morphisms if morphism.get("target") == tag and morphism.get("scale", 1) == 1 and isinstance(morphism.get("name"), str)}
     for index, matrix in enumerate(matrices, start=1):
         assert isinstance(matrix, list)
         existing = next(
-            (
-                morphism
-                for morphism in morphisms
-                if morphism.get("target") == tag
-                and morphism["matrix"] == matrix
-                and morphism.get("scale", 1) == 1
-            ),
+            (morphism for morphism in morphisms if morphism.get("target") == tag and morphism["matrix"] == matrix and morphism.get("scale", 1) == 1),
             None,
         )
         if existing is None:
@@ -300,9 +252,7 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
         # The hyperbolic block holds only computed fields, so the first computed value creates it.
         match metadata.setdefault(block_name, {}):
             case dict() as block:
-                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(
-                    value, dict
-                ):
+                if field in {"primitive_orbits", "discriminant_orbits"} and isinstance(value, dict):
                     present = block.get(field)
                     replacement = dict(present) if isinstance(present, dict) else {}
                     for group, computed_series in value.items():
@@ -310,17 +260,11 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
                             replacement[group] = computed_series
                             continue
                         old_series = replacement.get(group)
-                        updated_series = (
-                            dict(old_series) if isinstance(old_series, dict) else {}
-                        )
+                        updated_series = dict(old_series) if isinstance(old_series, dict) else {}
                         for key, computed_part in computed_series.items():
                             if key in {"z", "w"} and isinstance(computed_part, list):
                                 old_part = updated_series.get(key)
-                                tail = (
-                                    old_part[len(computed_part) :]
-                                    if isinstance(old_part, list)
-                                    else []
-                                )
+                                tail = old_part[len(computed_part) :] if isinstance(old_part, list) else []
                                 updated_series[key] = [*computed_part, *tail]
                             else:
                                 updated_series[key] = computed_part
@@ -328,9 +272,14 @@ def store(path: Path, values: dict[str, Yaml]) -> None:
                     block[field] = replacement
                 else:
                     block[field] = value
-                metadata[block_name] = {
-                    key: block[key] for key in model.model_fields if key in block
-                }
+                metadata[block_name] = {key: block[key] for key in model.model_fields if key in block}
+    # A regularity value decided by a literature row cites that row.
+    references = list(metadata.get("references", []))
+    for reference in values.get("references") or []:
+        if reference not in references:
+            references.append(reference)
+    if references:
+        metadata["references"] = references
     metadata["morphisms"] = morphisms
     text = records.record_text(metadata, document.content)
     if text != path.read_text():

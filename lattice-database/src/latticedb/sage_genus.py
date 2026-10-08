@@ -10,8 +10,14 @@ import json
 import sys
 from typing import TypedDict
 
+from dzack_research.preamble.catalogue import (
+    GENERALIZED_RIEMANN_HYPOTHESIS,
+    RegularTernaries,
+    SpinorRegularTernaries,
+)
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.logic import ConditionalProposition
 from dzack_research.preamble.rings import session_ring_objects
 
 _RINGS = session_ring_objects()
@@ -36,14 +42,7 @@ def _matrix_rows(morphism) -> list[list[int]]:
     source_labels = tuple(domain.module_generating_set())
     target_labels = tuple(codomain.module_generating_set())
     return [
-        [
-            int(
-                codomain.framing_morphism().lift(
-                    morphism(domain.module_generator(source_label))
-                )(target_label)
-            )
-            for source_label in source_labels
-        ]
+        [int(codomain.framing_morphism().lift(morphism(domain.module_generator(source_label)))(target_label)) for source_label in source_labels]
         for target_label in target_labels
     ]
 
@@ -53,9 +52,7 @@ def _orthogonal_group_data(lattice) -> dict[str, JsonValue]:
     group = lattice.orthogonal_group().select_group_resolution()
     return {
         "automorphism_group_order": int(group.cardinality()),
-        "automorphism_group_generator_morphisms": [
-            _matrix_rows(generator) for generator in group.group_generators()
-        ],
+        "automorphism_group_generator_morphisms": [_matrix_rows(generator) for generator in group.group_generators()],
     }
 
 
@@ -87,15 +84,32 @@ def _reflective(lattice) -> bool | None:
             return None
 
 
-def _decided(answer) -> bool | None:
-    """Serialize a regularity answer: ``True`` or ``False`` when decided, else nothing."""
+def _decided(answer) -> bool | str | None:
+    """Serialize a regularity answer.
+
+    ``True`` or ``False`` when decided, ``"true under GRH"`` when the preamble proves it
+    under the generalized Riemann hypothesis, and otherwise nothing.
+    """
     match answer:
         case True:
             return True
         case False:
             return False
+        case ConditionalProposition() if answer.hypothesis() is GENERALIZED_RIEMANN_HYPOTHESIS:
+            return "true under GRH"
         case _:
             return None
+
+
+def _identification(lattice) -> list[dict[str, str]]:
+    """The literature row of the regular or spinor regular ternary forms that lists ``lattice``."""
+    regular_row = RegularTernaries.row_of(lattice)
+    if regular_row is not None:
+        return [{"citation": RegularTernaries.citation(regular_row)}]
+    spinor_row = SpinorRegularTernaries.row_of(lattice)
+    if spinor_row is not None:
+        return [{"citation": SpinorRegularTernaries.citation(spinor_row)}]
+    return []
 
 
 def _modular_scale(lattice) -> int | bool:
@@ -117,13 +131,9 @@ JOINT = (
 VALUES = {
     "genus_symbol": lambda lattice: str(lattice.conway_sloane_genus_symbol()),
     "genus_class_count": lambda lattice: int(lattice.genus_class_number()),
-    "overlattice_count": lambda lattice: int(
-        lattice.integral_overlattice_inclusions().cardinality()
-    ),
+    "overlattice_count": lambda lattice: int(lattice.integral_overlattice_inclusions().cardinality()),
     "spinor_genus_count": lambda lattice: int(lattice.spinor_genus_count()),
-    "spinor_genera": lambda lattice: [
-        int(value) for value in lattice.spinor_genus_class_numbers()
-    ],
+    "spinor_genera": lambda lattice: [int(value) for value in lattice.spinor_genus_class_numbers()],
     "hyperbolic_index": lambda lattice: int(lattice.integral_hyperbolic_index()),
     "discriminant_sequence": lambda lattice: lattice.discriminant_sequence_data(),
     "primitive_orbits": lambda lattice: lattice.primitive_orbit_series(),
@@ -164,7 +174,10 @@ def main() -> None:
             if field in joint_fields:
                 continue
             _start(request["tag"], [field])
-            _emit(request["tag"], {field: VALUES[field](lattice)})
+            values = {field: VALUES[field](lattice)}
+            if field in {"regular", "spinor_regular"}:
+                values["references"] = _identification(lattice)
+            _emit(request["tag"], values)
 
 
 if __name__ == "__main__":

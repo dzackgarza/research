@@ -1,24 +1,36 @@
 r"""Named integral lattices and primitive embeddings used by the research layer."""
 
 from collections.abc import Mapping
-from functools import cache
+from functools import cache, reduce
 
 from sage.combinat.root_system.cartan_type import CartanType
+from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_class_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
     Lattices,
+    _register_indecomposable,
     _register_indecomposable_gram,
     nikulin_invariants,
-    _register_indecomposable,
     signature_pair,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.logic import AtomicProposition, ConditionalProposition
+from dzack_research.preamble.regular_ternary_forms import (
+    JAGY_KAPLANSKY_SCHIEMANN,
+    JAGY_SPINOR_REGULAR,
+    REGULAR_BY_OH,
+    REGULAR_UNDER_GRH,
+)
 from dzack_research.preamble.tensors.tensor import tensor
 
 ZZ = _own_ring(SageZZ)
@@ -32,10 +44,7 @@ def _gram_from_engine_matrix(engine_matrix):
         ZZ,
         (),
         (rows, columns),
-        [
-            [_owned_engine_element(ZZ, SageZZ(engine_matrix[i, j])) for j in range(columns)]
-            for i in range(rows)
-        ],
+        [[_owned_engine_element(ZZ, SageZZ(engine_matrix[i, j])) for j in range(columns)] for i in range(rows)],
     )
 
 
@@ -47,11 +56,7 @@ def _block_gram(*grams):
     offset = 0
     for gram, rank in zip(grams, ranks, strict=True):
         shape = gram.tensor_shape()
-        if (
-            gram.tensor_valence() != (NN**2)((0, 2))
-            or shape[0] != rank
-            or shape[1] != rank
-        ):
+        if gram.tensor_valence() != (NN**2)((0, 2)) or shape[0] != rank or shape[1] != rank:
             raise TypeError(
                 f"{gram} cannot be a block of an orthogonal direct sum: a Gram block must be "
                 f"a square tensor of type (0, 2), but it has type {gram.tensor_valence()} "
@@ -262,9 +267,7 @@ def _catalogue_entry(name):
     return lazy_class_attribute(entry)
 
 
-_NAMED_LATTICE_NAMES = frozenset(
-    name for name, entry in vars(NamedLattices).items() if isinstance(entry, lazy_class_attribute)
-)
+_NAMED_LATTICE_NAMES = frozenset(name for name, entry in vars(NamedLattices).items() if isinstance(entry, lazy_class_attribute))
 
 
 def _named_lattice_block(name):
@@ -390,11 +393,7 @@ def _orthogonal_sum(recipe):
     realization by five blocks has five summands, not a nest of two-summand
     sums that ``indecomposable_summands`` would have to walk back apart.
     """
-    blocks = tuple(
-        _named_lattice_block(name)
-        for name, multiplicity in recipe
-        for _index in range(multiplicity)
-    )
+    blocks = tuple(_named_lattice_block(name) for name, multiplicity in recipe for _index in range(multiplicity))
     match blocks:
         case ():
             return NamedLattices.Zero
@@ -429,6 +428,162 @@ class _TwoElementaryTable(Mapping):
 
 
 TwoElementary = _TwoElementaryTable()
+
+
+GENERALIZED_RIEMANN_HYPOTHESIS = AtomicProposition("GRH for all Dirichlet L-functions and all modular L-functions")
+r"""The hypothesis of Lemke Oliver's Theorem 1.1 [LO14]."""
+
+_JKS97 = "W. C. Jagy, I. Kaplansky and A. Schiemann, There are 913 regular ternary forms, Mathematika 44 (1997), 332-341"
+_OH11 = "B.-K. Oh, Regular positive ternary quadratic forms, Acta Arith. 147 (2011), 233-243"
+_LO14 = "R. J. Lemke Oliver, Representations by ternary quadratic forms, Bull. London Math. Soc. 46 (2014), 1237-1247"
+_DMPW19 = (
+    "A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams, Positive integers represented by regular primitive "
+    "positive-definite integral ternary quadratic forms, Integers 19 (2019), #A45, Tables 1 and 2"
+)
+_EH18 = "A. G. Earnest and A. Haensch, Completeness of the list of spinor regular ternary quadratic forms, arXiv:1711.05811v2 (2018)"
+_BEHH90 = "J. W. Benham, A. G. Earnest, J. S. Hsia and D. C. Hung, Spinor regular positive ternary quadratic forms, J. London Math. Soc. 42 (1990), 1-10"
+
+
+def _ternary_form_lattice(coefficients):
+    r"""The even lattice with \(b(x, x) = 2Q(x)\) for \(Q = ax^2 + by^2 + cz^2 + dyz + ezx + fxy\)."""
+    a, b, c, d, e, f = coefficients
+    return Lattices(ZZ)(tensor(ZZ, (), (3, 3), [[2 * a, f, e], [f, 2 * b, d], [e, d, 2 * c]]))
+
+
+def _scale_generator(lattice):
+    r"""The positive generator of the scale ideal \(b(L, L)\) of a lattice over \(\mathbb Z\)."""
+    return reduce(
+        lambda left, right: left.gcd(right),
+        lattice.scale_submodule().ideal_generators(),
+    )
+
+
+class _TernaryFormTable(Mapping):
+    r"""A numbered table of primitive positive ternary forms, as the lattices with \(b(x, x) = 2Q(x)\)."""
+
+    def __init__(self, coefficients) -> None:
+        self._coefficients = coefficients
+
+    @cached_method
+    def __getitem__(self, row):
+        return _ternary_form_lattice(self._coefficients[row])
+
+    def __iter__(self):
+        return iter(self._coefficients)
+
+    def __len__(self):
+        return len(self._coefficients)
+
+    def cardinality(self):
+        return cardinal(len(self))
+
+    @cached_method
+    def _scale_and_determinant(self, row):
+        form = self[row]
+        return _scale_generator(form), form.determinant()
+
+    def row_of(self, lattice):
+        r"""Return the row whose form a rescaling of ``lattice`` is isometric to, or ``None``.
+
+        ``lattice`` is a definite ternary lattice over \(\mathbb Z\).  Up to
+        sign, \(L \cong E(s_L / s_E)\) for the form lattice \(E\) of a row
+        exactly when \(L(s_E) \cong E(s_L)\), where \(s\) is the generator of
+        the scale ideal.  A row whose determinant does not satisfy
+        \(\det L \cdot s_E^3 = \det E \cdot s_L^3\) is skipped before the
+        isometry is asked.
+        """
+        assert lattice in Lattices(ZZ) and int(lattice.module_rank()) == 3 and lattice.is_definite(), (
+            f"{lattice!r} has no row in a table of ternary forms: it must be a definite lattice of rank 3 over ZZ"
+        )
+        positive = lattice.twist(1 if lattice.is_positive_definite() else -1)
+        scale = _scale_generator(positive)
+        determinant = positive.determinant()
+        for row in self:
+            form_scale, form_determinant = self._scale_and_determinant(row)
+            if determinant * form_scale**3 != form_determinant * scale**3:
+                continue
+            if positive.twist(form_scale).is_isometric(self[row].twist(scale)) is True:
+                return row
+        return None
+
+
+class _RegularTernaryTable(_TernaryFormTable):
+    r"""The 913 forms of Jagy, Kaplansky and Schiemann [JKS97], keyed by row number.
+
+    Every primitive positive ternary form that is regular is equivalent to a
+    form of this list [JKS97].  Regularity is proved for 891 rows in
+    [JKS97], for rows 384, 469, 489, 559, 578, 609, 858 and 895 by Oh
+    [Oh11], and for the 14 rows of :data:`REGULAR_UNDER_GRH` by Lemke
+    Oliver [LO14, Theorem 1.1] under :data:`GENERALIZED_RIEMANN_HYPOTHESIS`.
+
+    The coefficients are transcribed from Tables 1 and 2 of [DMPW19], which
+    reproduce the list of [JKS97] with the same numbering.  The printed
+    discriminant of each row fixes the sign of \(def\); a change of sign of a
+    variable changes the signs of two of \(d, e, f\), so the row's class is
+    determined.
+
+    [JKS97] W. C. Jagy, I. Kaplansky and A. Schiemann, *There are 913 regular
+    ternary forms*, Mathematika 44 (1997), 332--341.
+    [Oh11] B.-K. Oh, *Regular positive ternary quadratic forms*, Acta Arith.
+    147 (2011), 233--243.
+    [LO14] R. J. Lemke Oliver, *Representations by ternary quadratic forms*,
+    Bull. London Math. Soc. 46 (2014), 1237--1247.
+    [DMPW19] A. G. Doyle, B. Muskat, K. Pehlivan and K. S. Williams,
+    *Positive integers represented by regular primitive positive-definite
+    integral ternary quadratic forms*, Integers 19 (2019), #A45.
+    """
+
+    def consequence_of_regularity(self, row, statement):
+        r"""Return ``statement``, which the regularity of ``row`` implies, as far as that regularity is proved.
+
+        ``True`` when the regularity of ``row`` is proved unconditionally,
+        and otherwise ``statement`` under
+        :data:`GENERALIZED_RIEMANN_HYPOTHESIS`.
+        """
+        if row in REGULAR_UNDER_GRH:
+            return ConditionalProposition(statement, GENERALIZED_RIEMANN_HYPOTHESIS)
+        return True
+
+    def citation(self, row):
+        r"""The literature that lists ``row`` and proves its form regular."""
+        listing = f"{_JKS97}, form {row}, as tabulated in {_DMPW19}"
+        match row:
+            case _ if row in REGULAR_UNDER_GRH:
+                return f"{listing}; regular under the generalized Riemann hypothesis by {_LO14}, Theorem 1.1"
+            case _ if row in REGULAR_BY_OH:
+                return f"{listing}; regular by {_OH11}"
+            case _:
+                return f"{listing}; regular by {_JKS97}"
+
+
+RegularTernaries = _RegularTernaryTable(JAGY_KAPLANSKY_SCHIEMANN)
+
+
+class _SpinorRegularTernaryTable(_TernaryFormTable):
+    r"""Jagy's 29 forms that are spinor regular and not regular, keyed by their row in [EH18, Table 1].
+
+    Every spinor regular ternary form that is not regular is equivalent to one
+    of them [EH18, Theorem 1.1].  Rows 9 and 27 lie in spinor genera of two
+    classes; their spinor regularity is proved in [BEHH90].  The other 27 lie
+    in spinor genera of one class.
+
+    [EH18] A. G. Earnest and A. Haensch, *Completeness of the list of spinor
+    regular ternary quadratic forms*, arXiv:1711.05811v2 (2018).
+    [BEHH90] J. W. Benham, A. G. Earnest, J. S. Hsia and D. C. Hung, *Spinor
+    regular positive ternary quadratic forms*, J. London Math. Soc. 42 (1990), 1--10.
+    """
+
+    def citation(self, row):
+        r"""The literature that lists ``row`` and proves its form spinor regular."""
+        listing = f"{_EH18}, Table 1, row {row}"
+        match row:
+            case 9 | 27:
+                return f"{listing}; spinor regular by {_BEHH90}"
+            case _:
+                return f"{listing}; its spinor genus has one class"
+
+
+SpinorRegularTernaries = _SpinorRegularTernaryTable(JAGY_SPINOR_REGULAR)
 
 
 def _sum_spec(*parts):
@@ -838,10 +993,7 @@ def _negative_two_elementary_row(key):
             coefficients = rest[0]
             labels = tuple(lattice.module_generating_set())
             if len(coefficients) != len(labels):
-                raise RuntimeError(
-                    f"the Nikulin table row {key} records a glue vector with "
-                    f"{len(coefficients)} coefficients for {lattice}, which has rank {len(labels)}"
-                )
+                raise RuntimeError(f"the Nikulin table row {key} records a glue vector with {len(coefficients)} coefficients for {lattice}, which has rank {len(labels)}")
             vector = lattice.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             discriminant_class = vector.divided_discriminant_class()
             if lattice.discriminant_module().q(discriminant_class) != 0:
@@ -878,8 +1030,18 @@ class _NegativeDefTwoElementaryTable(Mapping):
 NegativeDefTwoElementary = _NegativeDefTwoElementaryTable()
 
 
-
-_TWO_ELEMENTARY_BLOCK_NAMES = ("A1", "D4", "D6", "D8", "E7", "E8", "E8_2", "Z_2", "U", "U_2")
+_TWO_ELEMENTARY_BLOCK_NAMES = (
+    "A1",
+    "D4",
+    "D6",
+    "D8",
+    "E7",
+    "E8",
+    "E8_2",
+    "Z_2",
+    "U",
+    "U_2",
+)
 
 
 @cache
@@ -904,20 +1066,11 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
     target_a = int(a)
     target_delta = int(delta)
     if min(positive_target, negative_target, target_a) < 0:
-        raise ValueError(
-            f"there is no 2-elementary lattice of signature {target_signature} and "
-            f"discriminant length a = {a}: the signature and a must be nonnegative"
-        )
+        raise ValueError(f"there is no 2-elementary lattice of signature {target_signature} and discriminant length a = {a}: the signature and a must be nonnegative")
     if positive_target + negative_target == 0:
-        raise ValueError(
-            f"cannot write a lattice of signature {target_signature} as an orthogonal sum "
-            f"of blocks: it is the zero lattice, and the sum must be nonempty"
-        )
+        raise ValueError(f"cannot write a lattice of signature {target_signature} as an orthogonal sum of blocks: it is the zero lattice, and the sum must be nonempty")
     if target_delta not in (0, 1):
-        raise ValueError(
-            f"there is no 2-elementary lattice with delta = {delta}: Nikulin's invariant "
-            f"delta is 0 or 1"
-        )
+        raise ValueError(f"there is no 2-elementary lattice with delta = {delta}: Nikulin's invariant delta is 0 or 1")
 
     block_data = _two_elementary_blocks()
     realizations = []
@@ -927,11 +1080,7 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
             return
         if index == len(block_data):
             if positive == negative == length == 0 and realized_delta == target_delta:
-                recipe = tuple(
-                    (name, count)
-                    for name, count in zip(_TWO_ELEMENTARY_BLOCK_NAMES, counts, strict=True)
-                    if count
-                )
+                recipe = tuple((name, count) for name, count in zip(_TWO_ELEMENTARY_BLOCK_NAMES, counts, strict=True) if count)
                 realizations.append(_orthogonal_sum(recipe))
             return
         _block, block_positive, block_negative, block_length, block_delta = block_data[index]
@@ -963,24 +1112,20 @@ def signature_orthogonal_sums(target_signature, blocks):
     positive_target = int(target_signature.first())
     negative_target = int(target_signature.second())
     if min(positive_target, negative_target) < 0:
-        raise ValueError(
-            f"there is no lattice of signature {target_signature}: both entries of a "
-            f"signature must be nonnegative"
-        )
+        raise ValueError(f"there is no lattice of signature {target_signature}: both entries of a signature must be nonnegative")
     if positive_target + negative_target == 0:
-        raise ValueError(
-            f"cannot write a lattice of signature {target_signature} as an orthogonal sum "
-            f"of blocks: it is the zero lattice, and the sum must be nonempty"
-        )
+        raise ValueError(f"cannot write a lattice of signature {target_signature} as an orthogonal sum of blocks: it is the zero lattice, and the sum must be nonempty")
     block_data = tuple(
-        (block, int(block.signature_pair().first()), int(block.signature_pair().second()))
+        (
+            block,
+            int(block.signature_pair().first()),
+            int(block.signature_pair().second()),
+        )
         for block in blocks
     )
     if any(positive + negative == 0 for _block, positive, negative in block_data):
         raise ValueError(
-            f"cannot enumerate orthogonal sums of the blocks {blocks} with signature "
-            f"{target_signature}: some block has rank zero, so there are infinitely many "
-            f"such sums"
+            f"cannot enumerate orthogonal sums of the blocks {blocks} with signature {target_signature}: some block has rank zero, so there are infinitely many such sums"
         )
     realizations = []
 
@@ -1006,7 +1151,6 @@ def signature_orthogonal_sums(target_signature, blocks):
 
     extend(0, positive_target, negative_target, ())
     return finite_ordered_set(tuple(realizations))
-
 
 
 def _generators(lattice):
@@ -1057,16 +1201,12 @@ class Embeddings:
     @lazy_class_attribute
     def E8_2_into_TdP(cls):
         tdp = _generators(NamedLattices.TdP)
-        return NamedLattices.E8_2.Emb(NamedLattices.TdP)(
-            tuple(tdp[4 + index] + tdp[12 + index] for index in range(8))
-        )
+        return NamedLattices.E8_2.Emb(NamedLattices.TdP)(tuple(tdp[4 + index] + tdp[12 + index] for index in range(8)))
 
     @lazy_class_attribute
     def TCo_into_TEn(cls):
         ten = _generators(NamedLattices.TEn)
-        return NamedLattices.Tco.Emb(NamedLattices.TEn)(
-            (ten[0] + ten[1], ten[2], ten[3], *ten[4:12])
-        )
+        return NamedLattices.Tco.Emb(NamedLattices.TEn)((ten[0] + ten[1], ten[2], ten[3], *ten[4:12]))
 
     @lazy_class_attribute
     def TEn_into_TdP(cls):
@@ -1118,7 +1258,10 @@ __all__ = [
     "Embeddings",
     "Involutions",
     "NamedLattices",
+    "GENERALIZED_RIEMANN_HYPOTHESIS",
     "NegativeDefTwoElementary",
+    "RegularTernaries",
+    "SpinorRegularTernaries",
     "TwoElementary",
     "signature_orthogonal_sums",
     "two_elementary_orthogonal_sums",

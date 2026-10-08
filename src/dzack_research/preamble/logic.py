@@ -41,10 +41,7 @@ class _PropositionElement:
         ...
 
     def __bool__(self):
-        raise TypeError(
-            f"the proposition {self} has no Python truth value, because it may be "
-            f"undecided; call ask(...) on it to get True, False or Unknown"
-        )
+        raise TypeError(f"the proposition {self} has no Python truth value, because it may be undecided; call ask(...) on it to get True, False or Unknown")
 
 
 class _PropositionSetEngine:
@@ -61,10 +58,7 @@ class _PropositionSetEngine:
     def _element_constructor_(self, statement):
         if element_parent(statement) is self:
             return statement
-        raise TypeError(
-            f"{statement!r} cannot be converted into a proposition: a proposition is "
-            f"constructed from its defining relation"
-        )
+        raise TypeError(f"{statement!r} cannot be converted into a proposition: a proposition is constructed from its defining relation")
 
     def _repr_(self) -> str:
         return "Set of represented closed propositions"
@@ -145,6 +139,36 @@ class Conjunction(Predicate):
         return " and ".join(repr(statement) for statement in self._statements)
 
 
+class ConditionalProposition(Predicate):
+    r"""A proposition \(P\) for which a theorem \(H \Rightarrow P\) is known and \(H\) is open.
+
+    ``ask`` answers ``True`` when ``ask`` of the hypothesis \(H\) answers
+    ``True``, and ``Unknown`` otherwise: the theorem decides nothing when
+    \(H\) fails.
+    """
+
+    def __init__(self, statement: Predicate, hypothesis: Predicate) -> None:
+        self._statement = statement
+        self._hypothesis = hypothesis
+        super().__init__()
+
+    def statement(self) -> Predicate:
+        return self._statement
+
+    def hypothesis(self) -> Predicate:
+        return self._hypothesis
+
+    def _ask_(self, *, max_prec: int = 4096) -> bool | UnknownClass:
+        match ask(self._hypothesis, max_prec=max_prec):
+            case True:
+                return True
+            case _:
+                return ask(self._statement, max_prec=max_prec)
+
+    def _repr_(self) -> str:
+        return f"{self._statement!r}, which holds under {self._hypothesis!r}"
+
+
 def negation(statement: bool | Predicate) -> bool | Predicate:
     r"""The negation of a proposition, decided when ``statement`` is decided."""
     match statement:
@@ -198,10 +222,7 @@ def ask(
             return statement
         case Predicate():
             answer = statement._ask_(max_prec=max_prec)
-            assert answer is True or answer is False or answer is Unknown, (
-                f"deciding the proposition {statement} returned {answer!r}, "
-                f"which is not True, False or Unknown"
-            )
+            assert answer is True or answer is False or answer is Unknown, f"deciding the proposition {statement} returned {answer!r}, which is not True, False or Unknown"
             return answer
         case _:
             raise TypeError(f"ask(...) decides True, False, Unknown or a proposition, but was given {statement!r}")
@@ -209,6 +230,7 @@ def ask(
 
 __all__ = [
     "AtomicProposition",
+    "ConditionalProposition",
     "Conjunction",
     "Negation",
     "Predicate",
