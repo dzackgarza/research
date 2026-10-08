@@ -3954,10 +3954,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             Each plane is split by its isotropic reduction. The source is
             their orthogonal biproduct with the second reduction, retaining
             the quotient lattices and their universal injections.
-            It applies when both selected vectors have divisibility one,
-            in particular to even unimodular lattices containing ``2U``.
-            A rationally anisotropic stage returns ``None``; a selected
-            vector of larger divisibility requires another integral search.
+            The genus comparison first decides whether two integral U
+            summands exist. For an even indefinite lattice in such a genus,
+            rank(L) >= length(A_L)+4; uniqueness in that genus follows from
+            Nikulin, Theorem 1.14.2 (Math. USSR-Izv. 14 (1980), 103--167).
+            Therefore exhaustive integral-vector enumeration for a null
+            vector of divisibility one terminates whenever it is invoked.
+            The second reduction similarly has rank >= length(A)+2 and a
+            unimodular hyperbolic summand. Neither selected PARI witness
+            nor an initial Gram framing determines which null line is used.
 
             EXAMPLES::
 
@@ -3986,22 +3991,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert _engine_ring(self.base_ring()) is SageZZ and self.is_even(), (
                 f"the integral two-hyperbolic-plane splitting is computed for even ZZ-lattices, not {self}"
             )
-            if not self.is_isotropic():
+            if not self.is_isotropic() or self.integral_hyperbolic_index() < 2:
                 return None
             first = self.isotropic_vector()
-            assert first.div() == self.base_ring().one(), (
-                f"the selected isotropic vector {first} has divisibility {first.div()}; "
-                "splitting off U requires an isotropic vector of divisibility one"
-            )
+            if first.div() != self.base_ring().one():
+                first = lattice_engines._unit_divisibility_isotropic_witness(self)
             first_reduction = first.isotropic_reduction()
             first_splitting = first_reduction.integral_hyperbolic_splitting()
             if not first_reduction.is_isotropic():
                 return None
             second = first_reduction.isotropic_vector()
-            assert second.div() == self.base_ring().one(), (
-                f"the selected isotropic vector {second} has divisibility {second.div()}; "
-                "splitting off the second U requires an isotropic vector of divisibility one"
-            )
+            if second.div() != self.base_ring().one():
+                second = lattice_engines._unit_divisibility_isotropic_witness(first_reduction)
             second_reduction = second.isotropic_reduction()
             second_splitting = second_reduction.integral_hyperbolic_splitting()
             first_sum = first_splitting.codomain()
