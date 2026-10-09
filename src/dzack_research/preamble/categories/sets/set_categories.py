@@ -2328,7 +2328,9 @@ class PowerSets(OwnedCategory):
         ):
             r"""The subset \(\{x\in X : P(x)\}\) with its inclusion."""
             inclusion = self.base_set().condition_set(predicate).inclusion()
-            return Sets().Subobjects(self.base_set())(inclusion)
+            base = self.base_set()
+            placements = (FiniteSets(),) if base in FiniteSets() or base.is_finite() is True else ()
+            return Sets().Subobjects(base).object(inclusion, categories=placements)
 
         def from_characteristic_morphism(
             self,
