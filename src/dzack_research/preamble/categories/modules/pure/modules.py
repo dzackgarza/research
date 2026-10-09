@@ -2415,6 +2415,15 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         def extra_super_categories(self):
+            r"""A finitely presented module is finitely generated over the same ring.
+
+                sage: C = Modules(ZZ)
+                sage: C.FinitelyPresented().extra_super_categories()[0] is C.FinitelyGenerated()
+                True
+                sage: X = ZZ.free_module(1)
+                sage: X in C.FinitelyPresented() and X in C.FinitelyGenerated()
+                True
+            """
             return [self.base_category().FinitelyGenerated()]
 
         def biproduct_bifunctor(self):
@@ -2699,6 +2708,15 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         def extra_super_categories(self):
+            r"""A free module is projective over the same scalar ring.
+
+                sage: C = Modules(ZZ)
+                sage: C.Free().extra_super_categories()[0] is C.Projective()
+                True
+                sage: X = ZZ.free_module(1)
+                sage: X in C.Free() and X in C.Projective()
+                True
+            """
             return [self.base_category().Projective()]
 
     class Projective(CategoryWithAxiom):

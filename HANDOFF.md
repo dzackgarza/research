@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Generic module axiom expression results verified (2026-10-09):** `Modules(ZZ).FinitelyPresented().extra_super_categories()[0]` is the exact `Modules(ZZ).FinitelyGenerated()` category, and `Modules(ZZ).Free().extra_super_categories()[0]` is the exact projective-module category. An actual free rank-one `ZZ`-module lies in all four respective categories. Targeted Sage passed; the declared-base `self.base_category().FinitelyGenerated()` and `self.base_category().Projective()` edges now have owner-local executable specimens.
+
 **Module-subobject base-category edge checked (2026-10-09):** For the ideal `2ZZ` as a submodule of `ZZ`, `SubobjectCategory(Modules(ZZ),ZZ)` has the exact `Modules(ZZ)` supercategory and retains the selected inclusion; its identity subobject morphism composes with itself. Focused Sage passed. The `self.base_category()` expression records ordinary module placement without identifying the restricted triangle Mor with every module map.
 
 **Lattice embedding Mor inherited-endpoint expression checked (2026-10-09):** For `L=U`, every selected supercategory of `L.Mono(L)` retains exactly `L` as both endpoint objects; its chosen embedding identity composes to itself. Focused Sage passed, and the owner specimen now includes these assertions. The dependent `*inherited` graph entry is an endpoint-admissible family of monomorphism categories, not a declaration that all embeddings arise from one fixed scalar restriction.
