@@ -38,6 +38,10 @@ def test_regular_representation_has_a_rank_one_group_algebra_basis_isomorphism()
     )
     matrices = ordinary.Mor(free, free)
     assert matrices in MatrixSpaces(algebra)
+    acted_matrices = ordinary.Mor(acted, acted)
+    assert acted_matrices in MatrixSpaces(algebra)
+    assert acted_matrices in MatrixEndomorphismSpaces(algebra)
+    assert acted_matrices.domain() is acted and acted_matrices.codomain() is acted
     equivariant_identity = acted.Mor(acted)(
         framing.forward() * matrices.identity() * framing.inverse()
     )
