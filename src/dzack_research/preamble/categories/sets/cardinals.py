@@ -441,9 +441,7 @@ class Cardinalities(OwnedCategory):
         zero ring gives a singleton, and any nonzero ring gives cardinality
         ``max(|coefficient_ring|, |index_set|)``.
         """
-        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-
-        match index_set in FiniteSets(), coefficient_ring.one() == coefficient_ring.zero():
+        match cardinal(index_set.cardinality()).is_finite(), coefficient_ring.one() == coefficient_ring.zero():
             case True, _:
                 return self.set_power_category(coefficient_ring, index_set)
             case False, True:
