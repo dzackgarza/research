@@ -451,14 +451,28 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def kernel_morphism(self):
             return self._kernel_morphism
 
-        def schreier_generators(self):
+        def index(self, *, generators=None):
+            r"""The index of a kernel with a represented finite image.
+
+            First isomorphism: ``G/ker(f)`` is the image of ``f``. The
+            finite-image transversal retains a representative of every
+            image element, including when ``G`` is infinite. Explicit
+            generators may be supplied when the ambient group has not
+            selected a generating resolution.
+            """
+            morphism = self.kernel_morphism()
+            return len(self.supergroup().finite_image_lifts(morphism, generators=generators))
+
+        def schreier_generators(self, *, generators=None):
             r"""Generators of the kernel of a homomorphism with finite image.
 
             For left image representatives ``t_q`` and each selected source
             generator ``s``, Schreier's rewriting gives
             ``t_(f(s)q)^(-1) s t_q``. The finite image and its chosen lifts
             come from the group owner's ``finite_image_lifts`` construction;
-            no ambient finite-group hypothesis is imposed.
+            no ambient finite-group hypothesis is imposed. Explicit source
+            generators may be provided when the ambient resolution has not
+            been selected.
 
             EXAMPLES::
 
@@ -492,7 +506,10 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             """
             morphism = self.kernel_morphism()
             ambient = self.supergroup()
-            generators = tuple(ambient.group_generators())
+            if generators is None:
+                generators = tuple(ambient.group_generators())
+            else:
+                generators = tuple(generators)
             lifts = ambient.finite_image_lifts(morphism, generators=generators)
             return tuple(
                 self((~lifts[morphism(s) * image]) * s * representative)
@@ -582,14 +599,15 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         def target_subgroup(self):
             return self._target_subgroup
 
-        def schreier_generators(self):
+        def schreier_generators(self, *, generators=None):
             r"""Generate a finite-index preimage using cosets ``t J`` of its image.
 
             Let ``Q=f(G)`` and ``J=Q intersect H``. Choose a representative
             ``t`` for each left coset ``q J`` and lift it to ``G``. For
             each source generator ``s`` and representative ``t``, the
             element ``t_(f(s)tJ)^-1 s t`` belongs to the preimage and the
-            resulting Schreier family generates it.
+            resulting Schreier family generates it. The supplied generator
+            family, when present, must generate the whole ambient group.
 
             EXAMPLES::
 
@@ -609,7 +627,10 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             morphism = self.preimage_morphism()
             ambient = self.supergroup()
             target = self.target_subgroup()
-            source_generators = tuple(ambient.group_generators())
+            if generators is None:
+                source_generators = tuple(ambient.group_generators())
+            else:
+                source_generators = tuple(generators)
             lifts = ambient.finite_image_lifts(morphism, generators=source_generators)
             representatives = []
             for image in lifts:

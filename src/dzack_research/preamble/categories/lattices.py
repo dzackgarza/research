@@ -2159,6 +2159,16 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: stable.image_under(L.discriminant_representation()).cardinality() == 1
                 True
+                sage: L = Lattices(ZZ)([[0,2],[2,0]])
+                sage: O = L.Aut()
+                sage: exchange = O([[0,1],[1,0]])
+                sage: minus_id = O([[-1,0],[0,-1]])
+                sage: generators = L.stable_orthogonal_group().schreier_generators(generators=(exchange, minus_id))
+                sage: rho = L.discriminant_representation()
+                sage: all(rho(g) == rho.codomain().one() for g in generators)
+                True
+                sage: L.stable_orthogonal_group().image_under(rho, ambient_generators=(exchange, minus_id)).cardinality() == 1
+                True
             """
             target = self.discriminant_group().orthogonal_group()
             trivial = target.subgroup_on(())

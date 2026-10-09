@@ -29,6 +29,8 @@ Step 1 ends when the TODO nodes `finite-index-subgroup-generators`, `images-of-s
 
 ## In progress
 
+**Closure gate evidence (2026-10-09):** The TODO nodes `finite-index-subgroup-generators` and `images-of-subgroups-and-predicate-subsets` are checked with the four focused specimens in `tests/groups/test_finite_index_closure_401.sage`. The mod-two kernel of `SL_2(ZZ)` has computed index six and twelve Schreier generators mapping to the identity. For the indefinite lattice `U(2)`, the exchange and minus-identity isometries generate its four-element integral orthogonal group; the stable preimage returns four Schreier generators, all in `ker rho`, and its subgroup image under `rho` is trivial. The generated image of `O(A_2)` is all of its order-two discriminant group. A general infinite predicate-set image with no inverse correctly reports the missing image-membership procedure. Direct Sage execution passed all four functions; the targeted pytest entrypoint stopped on the independent preamble star-import 2-second timing gate. The canonical provider import for indefinite `O(L)` generators is not available in the current port tree; frozen `709f81a` does export it, so port snapshot parity remains part of the `indefinite-port-primitives` closure gate. The pinned port source, not the divergent current port tree, is authoritative.
+
 The remaining unit is integration of the affine fibres, integral lift torsors, and generated orthogonal-group actions. The checkpoint includes shared-owner changes whose broader contracts still need review:
 
 | Owner | Check still needed |
