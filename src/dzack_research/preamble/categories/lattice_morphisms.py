@@ -714,8 +714,9 @@ class LatticeIsometryMethods:
 
             sage: L = Lattices(ZZ)("U")
             sage: V = L.vector_space()
-            sage: e, f = V.basis_vector(0), V.basis_vector(1)
-            sage: phi = V.Isom(V)(lambda j: V.scalar_multiple(QQ(2), e) if j == 0 else V.scalar_multiple(QQ(1)/QQ(2), f))
+            sage: labels = tuple(V.module_generating_set())
+            sage: e, f = V.module_generator(labels[0]), V.module_generator(labels[1])
+            sage: phi = V.Isom(V)(lambda j: V.scalar_multiple(QQ(2), e) if j == labels[0] else V.scalar_multiple(QQ(1)/QQ(2), f))
             sage: phi.is_integral_on(L)
             False
             sage: phi.integral_restriction(L, L) is None

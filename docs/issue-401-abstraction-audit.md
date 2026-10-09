@@ -147,6 +147,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 13. Clearing denominators of a rational isometry — frozen `phi.integral_similarity(L,E)` and `.scale()`
 
+**Frozen-call reconciliation (2026-10-09):** The frozen `phi.integral_similarity(L,E)` is present and returns a formed-module monomorphism, not an isometry onto `E`; `sigma.scale()` is the positive denominator generator `N`, `sigma.multiplier()` is `N^2`, and `sigma.index()` is the cokernel cardinality. With the *actual chosen frame labels* on `U`, the rational isometry `diag(2,1/2)` gives scale `2`, multiplier `4`, and finite index `4` (targeted Sage). Literal integer comparisons against labels construct the wrong map and cannot serve as this specimen. A failure to clear the computed denominator raises `ArithmeticError`; the non-PID or nonprincipal denominator cases require their stated ring hypotheses rather than pretending this integral scalar is universal.
+
 **Owner:** the denominator ideal of a rational module map relative to integral structures, followed by scalar multiplication of the map and transport of its form equation. Over `ZZ`, this ideal has a least positive generator `N` for finite-rank full lattices.
 
 **Contract:** retain the map `sigma=N*phi`, its finite-index image, the denominator factor `N`, and its form multiplier `N^2`. Indeed `b_E(sigma x,sigma y)=N^2*b_L(x,y)`. These are different scalars. `sigma` is generally an embedding, not an isomorphism onto `E`. On `U`, `phi=diag(2,1/2)` has `N=2`; `sigma=diag(4,1)` has index four and form multiplier four.

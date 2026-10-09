@@ -31,6 +31,8 @@ The owner stopped `sage-indefinite-port` on 2026-10-07. Its unfinished `orthogon
 
 ## In progress
 
+**Frozen-call row 13 reconciled (2026-10-09):** `phi.integral_similarity(L,E)` returns a formed monomorphism with denominator factor `scale()`, form `multiplier()`, and image `index()`. The genuine `diag(2,1/2)` isometry over the chosen labels of `U` returned `(2,4,4)` by focused Sage. An initial fixture using `j==0` instead of an actual frame label falsely produced rank one; this was a specimen error, not a failure of the index implementation. Both such docstring fixtures were corrected to use selected labels. The returned embedding need not be onto `E`.
+
 **Frozen-call row 19 reconciled (2026-10-09):** Research `L.affine_line_points(base,direction)` retains the frozen name and returns either `None` or the point/primitive-step presentation in `L×L`; the actual integral image with its maps is `L.affine_line_fibre(base,direction).image_point_set()`. On constant zero direction over U, targeted Sage verified the pair is `(0,0)` but the image cardinality is one. The audit now explicitly separates the return presentation from the point-set object and records the stopped port's responsibility not to conflate them.
 
 **Frozen-call row 12 reconciled (2026-10-09):** `M.integral_isometry(phi)` returns an actual integral isometry or raises; `phi.is_integral_on(L)` is a forward-only Boolean and `phi.integral_restriction(L,M)` returns an integral isometry or `None`. On U, `diag(2,1/2)` gives respectively `ValueError`, `False` and `None` (focused Sage). The exact constructor failure specimen is retained at its owner and the audit identifies the three distinct contracts.
