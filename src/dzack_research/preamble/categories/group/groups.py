@@ -4459,6 +4459,12 @@ class Subgroups(OwnedParameterizedCategory):
                 True
                 sage: f.preimage_subgroup(B.subgroup(())).image_under(f).cardinality() == 1
                 True
+                sage: G = Groups.S(3)
+                sage: t = G((1, 2))
+                sage: f = G.Mor(G)({g: g for g in G.group_generators()})
+                sage: P = f.preimage_subgroup(G.subgroup((t,)))
+                sage: P.image_under(f).cardinality() == 2 and t in P.image_under(f)
+                True
             """
             if morphism.domain() is not self.supergroup():
                 raise ValueError("a subgroup image requires a morphism of its containing group")
