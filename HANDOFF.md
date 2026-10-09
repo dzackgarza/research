@@ -25,6 +25,8 @@ A defect that a check exposes in step 1 is the current unit: repair it at its ow
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
+Step 1 ends when the TODO nodes `finite-index-subgroup-generators`, `images-of-subgroups-and-predicate-subsets` and then `indefinite-port-primitives` are closed: run each node's **Closure specimens** as written in `TODO.md` (for example the index-6 kernel of `SL_2(ZZ) -> SL_2(ZZ/2)`, generators of `\tilde O(L)` lying in `ker rho`, the image of `O(A_2)` under `rho`), repair what they expose, and tick the node with that evidence. Further boundary specimens for rows that already passed are not step-1 work; once the three nodes are closed, step 2 begins.
+
 ## In progress
 
 The remaining unit is integration of the affine fibres, integral lift torsors, and generated orthogonal-group actions. The checkpoint includes shared-owner changes whose broader contracts still need review:
@@ -135,6 +137,8 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 - **Distinct perpendicular endpoints verified:** on Gram `diag(2,2,-2)` with `v=e_0`, `w=e_1`, the perpendicular subobjects `P=v^perp` and `Q=w^perp` are distinct parents of rank two embedded in the same ambient lattice. The represented isometry `P -> Q` extends across the explicit embeddings and descends integrally (targeted Sage). This discharges the previously open distinct-endpoint regression specimen; it does not by itself settle general formed embeddings not presented as canonical subobjects.
 
 - **Mismatched explicit endpoint rejected:** on the same distinct subobjects `P` and `Q`, supplying `Q.inclusion()` as the source embedding for an isometry `P -> Q` raises `ValueError` identifying the incorrect endpoint (targeted Sage). This separates actual arrow-domain validation from rank and orthogonality alone.
+
+- **Integral-descent nonintegral boundary verified:** on the rational hyperbolic plane, the isometry with diagonal entries `2` and `1/2` does not carry the integral lattice U into itself. Targeted Sage execution confirms `is_integral_on(U)` is false and `integral_restriction(U,U)` returns `None`. The two-sided forward/inverse distinction for a proper integral embedding remains a separate comparison obligation.
 
 - **Noncanonical formed embedding restriction verified:** on the same Gram `diag(2,2,-2)`, let `P=v^perp`, `j:P -> L` its inclusion, and `a=-id_P`. The explicit source embedding `j*a` differs from `j`, although both have the same image. Extending the identity of `P` with source embedding `j*a` and target embedding `j` gives an integral ambient isometry `h` satisfying `h*(j*a)=j` on every generator (targeted Sage). This checks that `extension_across` uses the *supplied arrows*, not only the endpoint objects or their images.
 
