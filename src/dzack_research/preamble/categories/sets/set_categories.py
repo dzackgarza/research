@@ -3708,6 +3708,12 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
     """
     index_set = family.index_set()
     placements = [CoproductsOfSets()]
+    if index_set in FiniteSets() and any(
+        family(index) in UncountableSets() for index in index_set
+    ):
+        # Each summand injects into the disjoint union, regardless of the
+        # cardinalities or enumerability of the other summands.
+        placements.append(UncountableSets())
     if index_set in FiniteSets() and all(
         family(index) in FiniteSets() for index in index_set
     ):
