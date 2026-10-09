@@ -4980,7 +4980,11 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         modules = Modules(self.base_ring())
-        free = modules.an_object()
+        match _is_group_algebra(self.base_ring()):
+            case True:
+                free = self.base_ring().regular_representation()
+            case False:
+                free = modules.an_object()
         return modules.Mor(free, free)
 
     @classmethod
@@ -5475,7 +5479,11 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         modules = Modules(self.base_ring())
-        free = modules.an_object()
+        match _is_group_algebra(self.base_ring()):
+            case True:
+                free = self.base_ring().regular_representation()
+            case False:
+                free = modules.an_object()
         return modules.Mor(free, free)
 
     @classmethod

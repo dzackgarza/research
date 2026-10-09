@@ -31,6 +31,8 @@ The owner stopped `sage-indefinite-port` on 2026-10-07. Its unfinished `orthogon
 
 ## In progress
 
+**Step-2 matrix-category exemplars repaired (2026-10-09):** `MatrixSpaces(R).an_object()` and `MatrixEndomorphismSpaces(R).an_object()` formerly obtained a source via `Modules(R).an_object()`, which for `R=ZZ[C_2]` is a trivial-action coefficient module, not rank-one free over `R`. Their group-algebra specialization now selects the existing `R.regular_representation()`: the left regular `R`-module, free of rank one over the group algebra, with its action retained. Focused Sage verifies that both exemplar morphism objects construct, both sources are in `Modules(R)`, and their base ring is the exact `R`. Ordinary coefficient rings retain the prior exemplar path.
+
 **Step-2 scalar-interface regression (2026-10-09):** The represented trivial-action `ZZ[C_2]`-module satisfies both the algebra identity action `M.scalar_multiple(R.one(),v)==v` and coefficient inclusion `M.scalar_multiple(ZZ(2),v)==v+v` in focused Sage. Both cases are now retained as executable owner docstring specimens, guarding against a change that fixes coefficient ingress by breaking the native group-algebra action.
 
 **Step-2 coefficient scalar action repaired (2026-10-09):** A represented `R[G]`-module rejected scalars from `R` that had not been explicitly embedded into the group algebra. The group-module owner now uses the retained `coefficient_inclusion():R→R[G]` before applying its algebra action, while preserving native `R[G]` scalars. Focused Sage for the trivial `C_2`-module verifies `M.scalar_multiple(ZZ(4),v)==v+v+v+v`. A scalar in neither ring raises `TypeError` rather than being silently interpreted as a group-algebra element.
