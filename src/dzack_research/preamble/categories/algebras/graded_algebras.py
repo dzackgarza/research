@@ -247,6 +247,11 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             True
             sage: C.super_categories()[1] is C._graded_modules
             True
+            sage: A = C.an_object()
+            sage: A in C and A in C._graded_modules
+            True
+            sage: A in C.super_categories()[0]
+            True
         """
         return [
             Algebras(self.base_ring()).Associative().Unital(),
