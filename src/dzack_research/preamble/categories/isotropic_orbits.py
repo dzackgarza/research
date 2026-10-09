@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobj
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets, CountableSets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets, FiniteSets, CountableSets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -298,15 +298,17 @@ class _IsotropicFlagLocusEngine:
 
 
 def _isotropic_locus_placement(lattice):
-    r"""Finite-rank sublattices of a countable lattice form a countable set.
+    r"""Finite-rank sublattices of a finite/countable lattice form a finite/countable set.
 
     A finite-rank sublattice is determined by a finite tuple of vectors;
-    finite flags of such sublattices obey the same countability bound.
+    finite flags of such sublattices obey the same cardinality bound.
     """
-    match lattice in CountableSets():
-        case True:
-            return owned_category_join((Sets(), CountableSets()))
-        case False:
+    match lattice in FiniteSets(), lattice in CountableSets():
+        case True, _:
+            return FiniteSets()
+        case _, True:
+            return CountableSets()
+        case _:
             return Sets()
 
 
