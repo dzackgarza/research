@@ -3573,15 +3573,14 @@ class FiniteAtlasModuleSheafMorphism(
 
 
 class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
-    r"""The represented Mor between two finite-atlas module sheaves."""
+    r"""The Mor between represented finite-atlas module sheaves.
+
+    Its endpoints are sheaves, not their descent data.  The separate
+    ``descent_morphism`` comparison transports an arrow to the Mor between
+    those data; that Mor is not a supercategory with the same endpoints.
+    """
 
     ElementMethods = FiniteAtlasModuleSheafMorphismMethods
-
-    def super_categories(self):
-        source = self.domain().gluing_datum()
-        target = self.codomain().gluing_datum()
-        gluing = source.category().Mor(source, target)
-        return [gluing, *super().super_categories()]
 
     def _element_constructor_(self, local_maps):
         match local_maps:
