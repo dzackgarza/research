@@ -122,8 +122,14 @@ class ModulesOverGroupAlgebra(Modules):
         return f"modules over {self.base_ring()}"
 
     def super_categories(self):
-        r"""What every module category declares; ``G``-objects over ``R`` are reached by :meth:`restriction_along_group_inclusion`."""
-        return [AdditiveGroups().AdditiveCommutative()]
+        r"""A module over ``R[G]`` is, in particular, a module over that ring.
+
+        Construct the generic ``Modules`` base without dispatching back to
+        this group-algebra specialization.
+        """
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+        ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+        return [ordinary]
 
     _MorCategory = GroupModuleMorCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
