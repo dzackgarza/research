@@ -1574,6 +1574,34 @@ class FixedWideMorCategory(FixedRestrictedMorCategory):
 
     underlying_mor = arrow_set
 
+    def cardinality(self):
+        r"""Count finite-set injections when this Mor restricts to monomorphisms.
+
+        An injection from an m-element set to an n-element set is a choice
+        of m distinct images in order, numbering n!/(n-m)! for m <= n.
+
+            sage: from dzack_research.preamble.all import Sets
+            sage: X = Sets.Δ[1]
+            sage: wide = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+            sage: wide.Mor(X, X).cardinality()
+            2
+        """
+        from math import factorial
+
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+
+        wide = self.base_category()
+        source, target = self.domain_object(), self.codomain_object()
+        if (
+            wide.base_category() is Sets()
+            and isinstance(wide.arrow_category(), _MonomorphismArrowCategory)
+            and source in FiniteSets() and target in FiniteSets()
+        ):
+            m, n = int(source.cardinality()), int(target.cardinality())
+            return cardinal(0 if m > n else factorial(n) // factorial(n - m))
+        raise TypeError("the cardinality of this restricted Mor is not determined by a finite injection count")
+
     def super_categories(self) -> list[Category]:
         return [
             self.base_category().base_category().category_packet().Mors().Of(
@@ -1777,6 +1805,26 @@ class _WideSubcategory(OwnedCategoryBase):
 
 class CoreMor(CategoricalMor):
     Element = CategoricalIsomorphism
+
+    def cardinality(self):
+        r"""The number of bijections between two finite sets.
+
+        For finite sets of cardinality m and n this is m! if m=n,
+        and zero otherwise; no chosen ordering is part of this statement.
+        """
+        from math import factorial
+
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+
+        source, target = self.domain(), self.codomain()
+        if (
+            self.core_category().base_category() is Sets()
+            and source in FiniteSets() and target in FiniteSets()
+        ):
+            m, n = int(source.cardinality()), int(target.cardinality())
+            return cardinal(factorial(m) if m == n else 0)
+        raise TypeError("the cardinality of this core Mor is not determined by finite-set bijections")
 
     def __init__(
         self,
