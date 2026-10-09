@@ -4257,10 +4257,14 @@ def _affine_space(base, coordinates, placements=(), **level_data):
     an affine space.
     """
     engine, algebra = coordinates
+    dimension = int(algebra.algebra_generating_set().cardinality())
+    if dimension == 0:
+        # A^0_R = Spec R is the identity over Spec R, hence projective.
+        placements = (Schemes(base).Projective(), *placements)
     return _object_of(
         owned_category_join((
             AffineSpaces(base),
-            *_space_placements(base, int(algebra.algebra_generating_set().cardinality())),
+            *_space_placements(base, dimension),
             *placements,
         )),
         scheme_base_ring=base,
