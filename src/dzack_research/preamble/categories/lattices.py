@@ -3239,6 +3239,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: i3.is_in_image(e) and not i3.is_in_image(f) and i3.is_in_image(L.scalar_multiple(3, f))
                 True
+                sage: D = L.divisible_sublattice(3)
+                sage: j = L.generic_fibre_map()
+                sage: i = D.inclusion()
+                sage: k = D.map_to_ideal_dual()
+                sage: u = D.defining_ideal_dual().inclusion()
+                sage: all(j(i(x)) == u(k(x)) for x in D.module_generators())
+                True
             """
             return self.ideal_dual(divisor).integral_pullback()
 
