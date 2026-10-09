@@ -434,6 +434,23 @@ class Cardinalities(OwnedCategory):
             case _:
                 return Sets()
 
+    def finite_support_power_category(self, coefficient_ring, index_set):
+        r"""Place finite-support functions ``index_set -> coefficient_ring``.
+
+        For finite indices these are all functions. For infinite indices the
+        zero ring gives a singleton, and any nonzero ring gives cardinality
+        ``max(|coefficient_ring|, |index_set|)``.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+        match index_set in FiniteSets(), coefficient_ring.one() == coefficient_ring.zero():
+            case True, _:
+                return self.set_power_category(coefficient_ring, index_set)
+            case False, True:
+                return self.set_category(self.one())
+            case _:
+                return self.set_category(self.supremum(coefficient_ring.cardinality(), index_set.cardinality()))
+
     def set_subset_category(self, source, *, fixed_size=None):
         r"""Place finite-subset sets from `2^|X|` or `|[X]^k|`."""
         from math import comb

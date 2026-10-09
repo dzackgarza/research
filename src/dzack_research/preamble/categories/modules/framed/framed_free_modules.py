@@ -71,20 +71,9 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     match Cardinalities().lt(module_generating_set.cardinality(), aleph0):
         case True:
             categories.append(FramedFreeModules(ring).FinitelyGenerated())
-            categories.append(Cardinalities().set_power_category(ring, module_generating_set))
         case False:
-            # The finite-support functions on an infinite basis have cardinal
-            # max(|R|, |S|) for any nonzero ring: choose finitely many labels
-            # and coefficients, and embed S using the basis vectors.
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-            if ring.one() != ring.zero():
-                size = Cardinalities().supremum(
-                    cardinal(ring.cardinality()), cardinal(module_generating_set.cardinality())
-                )
-                categories.append(Cardinalities().set_category(size))
-            else:
-                categories.append(Cardinalities().set_category(Cardinalities().one()))
+            pass
+    categories.append(Cardinalities().finite_support_power_category(ring, module_generating_set))
     return categories
 
 
