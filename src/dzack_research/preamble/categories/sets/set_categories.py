@@ -624,6 +624,8 @@ class SetMorCategory(CategoricalMor):
         )
         if domain in FiniteSets() and codomain in FiniteSets():
             placement = owned_category_join((placement, FiniteSets()))
+        elif domain in FiniteSets() and codomain in CountableSets():
+            placement = owned_category_join((placement, CountableSets()))
         CategoricalMor.__init__(
             self,
             mor_family,
