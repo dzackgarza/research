@@ -1577,6 +1577,10 @@ class _WideSubcategory(OwnedCategoryBase):
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
         sage: points = finite_ordered_set(("a", "b"))
         sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+        sage: injections.super_categories()[0] is Sets()
+        True
+        sage: points in injections
+        True
         sage: maps = Sets().Mor(points, points)
         sage: Mor = injections.Mor(points, points)
         sage: Mor is injections.MorCategory().Of(points, points)
