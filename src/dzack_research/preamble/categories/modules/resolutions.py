@@ -34,7 +34,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _module_subobjects_agree,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing, _owned_ring
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.owned_category import _object_of
 
@@ -225,7 +225,8 @@ class ModuleResolutions(OwnedCategory):
             case True:
                 pass
         zero = self.base_ring().free_module(0)
-        identity = projective_object.module_category().Mor(
+        ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+        identity = ordinary_modules.Mor(
             projective_object, projective_object
         ).identity()
 
@@ -243,7 +244,7 @@ class ModuleResolutions(OwnedCategory):
         def differential(degree):
             match int(degree):
                 case 1:
-                    return zero.module_category().Mor(zero, projective_object).zero()
+                    return ordinary_modules.Mor(zero, projective_object).zero()
                 case _:
                     raise ValueError(
                         f"the canonical finite presentation of {projective_object} has only the degree-one differential"
@@ -784,10 +785,13 @@ class ModuleResolutions(OwnedCategory):
 
 def finitely_generated_resolution_category(base_ring):
     r"""The chosen finite-free degree-zero classifier whose image is finite generation."""
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+
     ring = _owned_ring(base_ring)
+    ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, ring)
     return Resolutions(
-        Modules(ring),
-        Modules(ring).Projective(),
+        ordinary,
+        ordinary.Projective(),
         0,
         FinitelyGeneratedFreeModules(ring),
     ).dold_kan_image()
@@ -795,10 +799,13 @@ def finitely_generated_resolution_category(base_ring):
 
 def finitely_presented_resolution_category(base_ring):
     r"""The chosen finite-free degree-one classifier whose image is finite presentation."""
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+
     ring = _owned_ring(base_ring)
+    ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, ring)
     return Resolutions(
-        Modules(ring),
-        Modules(ring).Projective(),
+        ordinary,
+        ordinary.Projective(),
         1,
         FinitelyGeneratedFreeModules(ring),
     ).dold_kan_image()

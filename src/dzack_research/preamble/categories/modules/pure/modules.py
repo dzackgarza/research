@@ -3709,20 +3709,21 @@ def _fix_selected_module_resolution(
             pass
 
     def selected_resolution():
+        ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(Modules, base_ring)
         generator_morphism = Sets().Mor(labels, module)(
             lambda label: module(generator_function(label))
         )
         augmentation = _framing_morphism(module, source, generator_morphism)
         match source is module, labels.cardinality().is_finite():
             case (True, True):
-                return Modules(base_ring).FinitelyPresented().resolution_category().selected_constant(
+                return ordinary_modules.FinitelyPresented().resolution_category().selected_constant(
                     module,
                     generating_set=labels,
                     generator_morphism=generator_morphism,
                 )
             case _:
                 pass
-        return Modules(base_ring).resolutions(0).selected_degree_zero(
+        return ordinary_modules.resolutions(0).selected_degree_zero(
             module,
             source,
             augmentation,
