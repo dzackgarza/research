@@ -31,6 +31,8 @@ The owner stopped `sage-indefinite-port` on 2026-10-07. Its unfinished `orthogon
 
 ## In progress
 
+**Category-graph object-level verification continued (2026-10-09):** Focused Sage confirms the exact selected supercategory of `DirectSumObjects(Modules(ZZ))` is `Modules(ZZ)`, and that of `GObjects(Groups.C(2),Sets())` is `Sets()`. Their corresponding dynamic expression edges have executable runtime evidence in addition to source-level dispositions. Mor and universal-property comparisons remain distinct.
+
 **Category-graph slice/coslice runtime check (2026-10-09):** Focused Sage on `X=Sets.Δ[0]` confirms both `SliceCategory(Sets(),X)` and `CosliceCategory(Sets(),X)` have `Sets()` as the selected supercategory and retain `X` as their fixed base object. This advances the active expression-edge audit without reopening the module-exemplar dependency or confusing an arrow-category forgetful functor with a supercategory assertion. The commuting-square Mor acceptance remains separate.
 
 **Inherited embedding-Mor graph edge verified (2026-10-09):** The `*inherited` expression at the module, formed-module and lattice embedding Mor owners is an endpoint-filtered list of monomorphism categories of super-packets, not an unresolved uniform category name. Targeted Sage on `L=U` confirms `L.Mono(L)` has source and target `L` and three inherited/base supercategories. An executable lattice-owner specimen and TODO disposition retain that evidence. The graph flag is not a reason to replace endpoint-specific inheritance by an untyped category.
