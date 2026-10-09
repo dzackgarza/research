@@ -709,6 +709,17 @@ class LatticeIsometryMethods:
         For an endomorphism, ``target`` defaults to ``source``. Otherwise
         the target integral structure must be supplied: a rational vector
         space alone does not specify an integral lattice.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U")
+            sage: V = L.vector_space()
+            sage: e, f = V.basis_vector(0), V.basis_vector(1)
+            sage: phi = V.Isom(V)(lambda j: V.scalar_multiple(QQ(2), e) if j == 0 else V.scalar_multiple(QQ(1)/QQ(2), f))
+            sage: phi.is_integral_on(L)
+            False
+            sage: phi.integral_restriction(L, L) is None
+            True
         """
         if target is None:
             target = source
