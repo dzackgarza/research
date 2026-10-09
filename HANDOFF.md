@@ -29,6 +29,12 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+**Covering-family presentation edge (2026-10-09).** The parameterized
+`CoveringFamilies(Sets())` retains its site by identity, and its selected
+supercategory is exactly the constructed `presentation_category()` (two
+focused assertions). This is a category of diagrams into the site, not a
+claim that a cover is itself a set or a scheme.
+
 **Action-category forgetful Mor edge (2026-10-09).** For the trivial action
 of `C_2` on `Sets.Δ[1]`, the evaluation functor of `GObjects(C_2,Sets())`
 sends the acted object into `Sets()`. Its declared supercategory is exactly
