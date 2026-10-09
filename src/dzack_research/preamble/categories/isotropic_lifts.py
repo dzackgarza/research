@@ -270,7 +270,22 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
 
         @cached_method
         def integral_torsor(self):
-            r"""Trivialize the integral lift locus under its full integral kernel."""
+            r"""Trivialize the integral lift locus under its full integral kernel.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("U") + Lattices(ZZ)([[2]])
+                sage: R = L.basis_vector(0).isotropic_reduction()
+                sage: T = R.rational_lifts(R, R.Isom(R).identity())
+                sage: a = T.parameter_space().module_generators()[0]
+                sage: lift = T.parameterization()(a)
+                sage: torsor = T.integral_torsor()
+                sage: coordinate = torsor.trivialization().inverse()(lift)
+                sage: coordinate != torsor.acting_group().one()
+                True
+                sage: torsor.trivialization()(coordinate) == lift
+                True
+            """
             from dzack_research.preamble.categories.group.g_sets import Torsors
 
             members = self.integral_members()
