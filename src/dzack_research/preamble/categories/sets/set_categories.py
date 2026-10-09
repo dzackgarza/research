@@ -3697,6 +3697,10 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
         family(index) in FiniteSets() for index in index_set
     ):
         placements.append(FiniteSets())
+    elif index_set in FiniteSets() and all(
+        family(index) in CountableSets() for index in index_set
+    ):
+        placements.append(CountableSets())
     if (
         index_set in FiniteSets()
         and index_set in EnumeratedSets()
