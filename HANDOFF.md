@@ -29,6 +29,14 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+**Category-functor Mor endpoints reconciled (2026-10-09).** The apparent
+`Cat().functor_mor(Sets(),Sets())` endpoint-identity failure compared the
+represented `CategoryObject` endpoints with the unrepresented category.
+Both endpoints are exactly `Cat().object(Sets())` and their
+`represented_category()` is `Sets()` by identity. Its selected supercategory
+is exactly `functor_category()` (five focused identity assertions passed).
+This is a valid dynamic functor-category edge, not a wrong placement.
+
 **Fibered formed-module Mor expression edge (2026-10-09).** On the hyperbolic
 lattice `L=U`, scalar extension along `ZZ.fraction_field_map()` gives `V`.
 `FiberedFormedModuleMor(L,V,f)` has endpoints `L,V` by identity, and its
