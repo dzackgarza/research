@@ -825,12 +825,17 @@ def _divided_square_morphism(morphism):
 def _tensor_power(module, degree):
     r"""Return the selected iterated tensor power ``M^{\otimes degree}``."""
     degree = _degree(degree)
-    if degree == 0:
-
-        return module.base_ring().regular_module()
-    if degree == 1:
-        return module
-    return _tensor_power_nontrivial(module, degree)
+    match degree:
+        case 0:
+            underlying = module.base_ring().regular_module()
+        case 1:
+            underlying = module
+        case _:
+            return _tensor_power_nontrivial(module, degree)
+    return underlying._with_structure(
+        (TensorPowerModules(module.base_ring()),),
+        {"power_source": module, "power_degree": degree},
+    )
 
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
