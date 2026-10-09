@@ -75,10 +75,12 @@ def _finitely_generated_free_placement(ring, module_generating_set):
                 FiniteSets, CountableSets,
             )
 
-            match ring in FiniteSets(), ring in CountableSets():
-                case True, _:
+            match module_generating_set.cardinality() == Cardinalities().zero(), ring in FiniteSets(), ring in CountableSets():
+                case True, _, _:
                     categories.append(FiniteSets())
-                case _, True:
+                case _, True, _:
+                    categories.append(FiniteSets())
+                case _, _, True:
                     categories.append(CountableSets())
                 case _:
                     pass
