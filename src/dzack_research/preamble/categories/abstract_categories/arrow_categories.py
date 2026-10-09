@@ -1403,7 +1403,25 @@ class SetSubobjectCategory(SliceCategory):
         the monomorphisms of ``Ar(Set)`` is a functor, not a declaration
         (``CAT-16``, ``CAT-20``).
         """
-        return [SliceCategory(self.base_category(), self.base_object())]
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+        categories = [SliceCategory(self.base_category(), self.base_object())]
+        base = self.base_object()
+        if base in FiniteSets() or base.is_finite() is True:
+            categories.append(FiniteSets())
+        return categories
+
+    def object(self, arrow, *, categories=(), construction_data=None, _engine=None):
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+        domain = arrow.domain()
+        if domain in FiniteSets() or domain.is_finite() is True:
+            categories = (*categories, FiniteSets())
+        return super().object(
+            arrow, categories=categories, construction_data=construction_data, _engine=_engine
+        )
+
+    __call__ = object
 
     def admits_arrow(self, arrow: Morphism) -> bool:
         return (

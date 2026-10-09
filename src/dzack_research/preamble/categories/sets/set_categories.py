@@ -2329,8 +2329,7 @@ class PowerSets(OwnedCategory):
             r"""The subset \(\{x\in X : P(x)\}\) with its inclusion."""
             inclusion = self.base_set().condition_set(predicate).inclusion()
             base = self.base_set()
-            placements = (FiniteSets(),) if base in FiniteSets() or base.is_finite() is True else ()
-            return Sets().Subobjects(base).object(inclusion, categories=placements)
+            return Sets().Subobjects(base).object(inclusion)
 
         def from_characteristic_morphism(
             self,
@@ -2362,10 +2361,7 @@ class PowerSets(OwnedCategory):
             # ``finite_ordered_set`` identifies equal points; identifying them
             # here as well compared every pair twice.
             inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
-            # The slice constructor retains the inclusion but does not infer
-            # finiteness from the domain's other categorical placements.
-            # This constructor supplied a finite ordered domain explicitly.
-            return Sets().Subobjects(base).object(inclusion, categories=(FiniteSets(),))
+            return Sets().Subobjects(base).object(inclusion)
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
@@ -2448,8 +2444,7 @@ class PowerSets(OwnedCategory):
             def direct_image(subset):
                 image = subset.image_set(morphism)
                 inclusion = SetInclusion(image, morphism.codomain())
-                placements = (FiniteSets(),) if image in FiniteSets() or image.is_finite() is True else ()
-                return Sets().Subobjects(morphism.codomain()).object(inclusion, categories=placements)
+                return Sets().Subobjects(morphism.codomain()).object(inclusion)
 
             return Sets().Mor(self, target)(direct_image)
 
@@ -2714,11 +2709,7 @@ class FinitePowerSets(OwnedCategory):
             subset = self.source().power_set()(members)
             if not subset.domain().cardinality().is_finite():
                 raise ValueError(f"{subset.domain()} is not in {self}: it is not finite")
-            if subset in FiniteSets():
-                return subset
-            return Sets().Subobjects(self.source()).object(
-                subset.inclusion(), categories=(FiniteSets(),)
-            )
+            return subset
 
         def __contains__(self, candidate) -> bool:
             ambient_power_set = self.source().power_set()
