@@ -1408,6 +1408,10 @@ def _construction_sites(
         def placed(statements: list[ast.stmt]) -> list[str]:
             found = []
             for statement in statements:
+                # A nested guard has its own hypotheses.  Its placement is
+                # not a consequence of an enclosing, weaker guard alone.
+                if isinstance(statement, (ast.If, ast.Match, ast.For, ast.While)):
+                    continue
                 for node in ast.walk(statement):
                     match node:
                         case ast.Call(
@@ -1444,13 +1448,17 @@ def _construction_sites(
                         guarded.append((guard, body))
             pairs = []
             for test, body in guarded:
-                inputs = [
-                    vertex_of(compare.comparators[0])
-                    for compare in ast.walk(test)
-                    if isinstance(compare, ast.Compare)
-                    and isinstance(compare.ops[0], ast.In)
-                    and isinstance(compare.left, ast.Name)
-                ]
+                # Do not turn one conjunct of a compound guard into a
+                # sufficient hypothesis (enumerated factors alone never
+                # make their Cartesian product finite).
+                inputs = (
+                    [vertex_of(test.comparators[0])]
+                    if isinstance(test, ast.Compare)
+                    and len(test.ops) == 1
+                    and isinstance(test.ops[0], ast.In)
+                    and isinstance(test.left, ast.Name)
+                    else []
+                )
                 for result in placed(body):
                     pairs.extend((source, result) for source in inputs)
             default = ", ".join(

@@ -37,8 +37,10 @@ Both complete reports were read together (478 construction lines and 410 propert
 
 - [x] `WeilDivisorGroups ... places Affine`: a Weil divisor group is a free abelian group of divisors, not an affine scheme. Its `affine_divisor_coordinate_ring()` queries whether the **underlying scheme** is affine; the group itself declares `DivisorGroups()`.
 - [x] `FiniteAffineAtlases ... places Affine`: an atlas of affine charts need not be an affine scheme (e.g. the standard atlas of projective space). Its objects are covering families, and its declaration is `ZariskiCoveringFamilies(X)`.
+- [x] `_cartesian_product_of: input in EnumeratedSets` appears among the construction sites placing in `Sets.Finite`: being enumerated does not make a factor finite; this placement actually requires all factors finite and a finite index set. The scanner wrongly attributed a nested finite placement to one conjunct of the enclosing enumerability guard.
+- [x] `_coproduct_of_indexed_family: input in EnumeratedSets` appears among the construction sites placing in `Sets.Finite`: enumerability of the index set or summands does not imply finiteness of the disjoint union. The finite placement is conditional on every summand being finite. The same nested-guard attribution defect caused this line.
 
-The common owner repair is in `utilities/category_graph.py`: property-placement inference now inspects only category supercategory declarations, not arbitrary uses of an axiom name in any member method. The `Sets.Finite` category-name warnings concerning a *finite presentation*, a *finite field*, or the finite-subset construction are not mathematical assertions that the resulting groups/algebras/power sets are finite, and are not added as false placements.
+The common owner repair is in `utilities/category_graph.py`: category property-placement inference inspects only supercategory declarations, not arbitrary member methods; construction-site inference no longer treats a conjunct of a compound guard as sufficient or attributes a nested conditional placement to the outer guard. The `Sets.Finite` category-name warnings concerning a *finite presentation*, a *finite field*, or the finite-subset construction are not mathematical assertions that the resulting groups/algebras/power sets are finite, and are not added as false placements.
 
 ## In progress
 
