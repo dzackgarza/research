@@ -3960,6 +3960,25 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
+        r"""Construct a ring element, including the image of a finite cardinal.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.all import ZZ, finite_ordered_set
+            sage: ZZ(finite_ordered_set((4, 3)).cardinality()) == ZZ(2)
+            True
+        """
+        from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+        # A cardinal is an owned parent, not an element with a scalar parent.
+        # Its finite value is the natural number mapped into this ring.
+        match value:
+            case Parent() if value in Cardinalities():
+                if not value.is_finite():
+                    raise TypeError(f"cannot convert infinite cardinal {value} into {self}")
+                return self._from_engine_element(self._engine(value.finite_value()))
+            case _:
+                pass
         parent = element_parent(value)
         if parent is self:
             return value
