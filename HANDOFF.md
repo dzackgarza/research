@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Group-algebra ordinary module-supercategory expression verified (2026-10-09):** For `R=ZZ[C_2]`, `Modules(R).super_categories()[0]` is exactly the generic `Modules(R)` constructed through its declaring base-category constructor, and `R.regular_representation()` lies in both that ordinary category and the specialized group-action category while retaining `R` as the identical scalar ring. Focused Sage passed and the specialization owner now has the executable result-placement specimen. This is not an assertion that its rank-two coefficient framing is an `R`-basis; the rank-one transport remains under its distinct TODO node.
+
 **Semilinear formed-module Mor expression edge verified (2026-10-09):** With `L=U` over `ZZ`, the Mor category `FiberedFormedModuleMor(L,L.vector_space(),ZZ.fraction_field_map())` retains exactly the chosen integral lattice and rational extension as its endpoints and has the selected varying-ring module Mor as its immediate supercategory by identity. Focused Sage passed; the owner specimen now records both the endpoint and lower-Mor comparison without identifying a form-preserving arrow with an arbitrary semilinear arrow.
 
 **Functor-category expression-edge endpoints verified (2026-10-09):** `Cat().functor_mor(Sets(),Sets())` has its actual functor category as its selected supercategory. Its source and target are the distinct endpoint *objects of Cat* representing `Sets()`, rather than literally the underlying `Sets()` category; both `.represented_category()` maps return the exact selected `Sets()`. Focused Sage passed, and the functor-Mor owner specimen now records the category-versus-category-object distinction.

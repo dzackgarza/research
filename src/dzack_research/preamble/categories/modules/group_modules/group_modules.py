@@ -127,6 +127,20 @@ class ModulesOverGroupAlgebra(Modules):
 
         Construct the generic ``Modules`` base without dispatching back to
         this group-algebra specialization.
+
+        The left regular module lies in both categories, with the same
+        coefficient algebra as its scalar ring::
+
+            sage: from dzack_research.preamble.all import ZZ, Groups, Modules
+            sage: from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+            sage: R = ZZ[Groups.C(2)]
+            sage: C = Modules(R)
+            sage: ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, R)
+            sage: C.super_categories()[0] is ordinary
+            True
+            sage: A = R.regular_representation()
+            sage: A in C and A in ordinary and A.base_ring() is R
+            True
         """
         from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
         ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
