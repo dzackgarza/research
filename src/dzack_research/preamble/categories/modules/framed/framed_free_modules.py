@@ -347,8 +347,12 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return "framed free modules"
 
     def super_categories(self):
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
-        return [Modules(self.base_ring()).Free()]
+        # The Free axiom belongs to Modules; use that base rather than the
+        # group-algebra specialization when constructing the axiom category.
+        ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+        return [ordinary.Free()]
 
     class ElementMethods:
         if TYPE_CHECKING:

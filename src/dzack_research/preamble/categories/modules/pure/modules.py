@@ -2695,7 +2695,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         def extra_super_categories(self):
-            return [Modules(self.base_ring()).Projective()]
+            return [self.base_category().Projective()]
 
     class Projective(CategoryWithAxiom):
         r"""Direct summands of free modules."""
