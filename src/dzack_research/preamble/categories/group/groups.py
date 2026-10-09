@@ -3464,6 +3464,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             makes this operation unsuitable for an arbitrary nonhomomorphic
             callback: it is the owner for finite group images with lifts, not
             a generic graph traversal.
+
+            The image-size bound must be integral; truncating a rational
+            bound would silently change the contract of the finite search.
             """
             if generators is None:
                 assert self.has_selected_group_resolution(), (
@@ -3486,7 +3489,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     f"pass image_bound, a bound on the order of the image"
                 )
                 image_bound = int(codomain.cardinality())
+            original_bound = image_bound
             image_bound = int(image_bound)
+            if image_bound != original_bound:
+                raise ValueError("the finite-image cardinality bound must be an integer")
             if image_bound < 1:
                 raise ValueError(f"image_bound = {image_bound} is not a bound on the order of the image of {self}: every image contains the identity, so its order is at least 1")
 

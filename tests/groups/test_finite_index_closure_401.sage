@@ -37,6 +37,19 @@ def test_mod_two_kernel_of_sl2z_has_index_six_and_schreier_generators():
     assert Gamma(2).index() == 6
 
 
+def test_finite_image_bound_is_not_truncated():
+    source, target = Groups.C(4), Groups.C(2)
+    s, t = source.group_generators()[0], target.group_generators()[0]
+    morphism = source.Mor(target)({s: t})
+    assert len(source.finite_image_lifts(morphism, image_bound=2)) == 2
+    try:
+        source.finite_image_lifts(morphism, image_bound=2.5)
+    except ValueError as error:
+        assert "must be an integer" in str(error)
+    else:
+        raise AssertionError("a nonintegral image-size bound was truncated")
+
+
 def test_indefinite_stable_orthogonal_kernel_with_supplied_generators():
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
     group = lattice.Aut()
